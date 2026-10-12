@@ -15,6 +15,16 @@ export interface LastWorkingSession {
 
 export interface StartTargetInput {
   last: LastWorkingSession;
+  /**
+   * The session before `last` also ended with no reps in reserve at the same load. One session at
+   * failure is a hard day, not a stall, so it alone never deloads.
+   */
+  failedBefore?: boolean;
+  /**
+   * The reps the plan prescribes, when there is a plan. `reps_first` then works upward from them
+   * instead of from a generic range, so a 5-rep strength block stays a 5-rep block.
+   */
+  planReps?: number;
   progressionMode: ProgressionMode;
   isCompound: boolean;
   /** The smallest sensible change in load for this equipment (see `incrementFor`). */
@@ -29,10 +39,15 @@ export interface StartTarget {
   kind: StartAdjustmentCause;
 }
 
-/** Rep ranges the reps-first mode works within: compound lifts live lower than isolation work. */
+/**
+ * Rep ranges the reps-first mode works within when there is no plan to anchor it (an exercise added
+ * mid-session): compound lifts live lower than isolation work.
+ */
 const COMPOUND_BASE_REPS = 10;
 const ISOLATION_BASE_REPS = 14;
 const REP_RANGE_HALF_WIDTH = 2;
+/** With a plan, reps climb this far above the planned reps before the load goes up instead. */
+const PLAN_REP_HEADROOM = 2;
 /** Reps in reserve at or above which last time was clearly too easy. */
 const TOO_EASY_REPS_IN_RESERVE = 3;
 
@@ -40,19 +55,34 @@ const TOO_EASY_REPS_IN_RESERVE = 3;
 export const defaultRepsFor = (isCompound: boolean): number =>
   isCompound ? COMPOUND_BASE_REPS : ISOLATION_BASE_REPS;
 
+/** The rep range `reps_first` progresses through: anchored on the plan when there is one. */
+export function repsFirstRange(
+  isCompound: boolean,
+  planReps?: number
+): { minReps: number; maxReps: number } {
+  if (planReps != null && planReps > 0) {
+    return { minReps: planReps, maxReps: planReps + PLAN_REP_HEADROOM };
+  }
+  const baseReps = defaultRepsFor(isCompound);
+  return { minReps: baseReps - REP_RANGE_HALF_WIDTH, maxReps: baseReps + REP_RANGE_HALF_WIDTH };
+}
+
 /**
  * What the next session of an exercise should start at, from how the last one went — the smart
  * double progression the app has always offered when an exercise is added mid-session, now with the
  * REASON attached so it can be shown.
  *
  *  - Plenty left in the tank (average ≥ 3 reps in reserve): progress. `weight_first` adds one
- *    increment; `reps_first` adds a rep until the top of the range, then adds the increment and
- *    resets to the bottom.
- *  - Nothing left (average 0): deload by one increment.
+ *    increment; `reps_first` adds a rep until the top of the range (`repsFirstRange`), then adds
+ *    the increment and resets to the bottom.
+ *  - Nothing left (average 0) for the second session in a row at this load: deload by one
+ *    increment. The first such session repeats — one hard day is noise, not a stall.
  *  - Otherwise: repeat last time.
  */
 export function computeStartTarget({
   last,
+  failedBefore = false,
+  planReps,
   progressionMode,
   isCompound,
   incrementKg,
@@ -72,16 +102,14 @@ export function computeStartTarget({
       };
     }
 
-    const baseReps = defaultRepsFor(isCompound);
-    const maxReps = baseReps + REP_RANGE_HALF_WIDTH;
-    const minReps = baseReps - REP_RANGE_HALF_WIDTH;
+    const { minReps, maxReps } = repsFirstRange(isCompound, planReps);
     if (last.reps < maxReps) {
       return { weightKg: last.weightKg, reps: last.reps + 1, kind: 'progression' };
     }
     return { weightKg: roundLoad(last.weightKg + incrementKg), reps: minReps, kind: 'progression' };
   }
 
-  if (averageRir === 0) {
+  if (averageRir === 0 && failedBefore) {
     return {
       weightKg: roundLoad(Math.max(0, last.weightKg - incrementKg)),
       reps: last.reps,

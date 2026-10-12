@@ -1,6 +1,7 @@
 # Codebase Index
 
 ## Overview
+
 This repository contains a comprehensive mobile app UI/UX design skill and reference guide focused on creating professional, polished mobile interfaces.
 
 ## File Structure
@@ -17,11 +18,13 @@ mobile-app-ui-design/
 ---
 
 ## SKILL.md
+
 **Mobile App UI/UX Design Skill**
 
 A comprehensive guide for designing high-quality mobile app interfaces following proven design principles from top-tier apps.
 
 ### Key Sections:
+
 - **Core Philosophy** (lines 10-18): User-centric design approach
 - **Design Process** (lines 20-96): 5-step framework
   - Step 1: Understand Context (lines 23-27)
@@ -39,6 +42,7 @@ A comprehensive guide for designing high-quality mobile app interfaces following
 - **Implementation Notes** (lines 138-149): Technical guidance for React/Tailwind
 
 ### Design Principles Summary:
+
 - One font family, max 4 sizes, 2 weights
 - 60/30/10 color rule
 - 8-point grid spacing system
@@ -50,11 +54,13 @@ A comprehensive guide for designing high-quality mobile app interfaces following
 ---
 
 ## references/industry-conventions.md
+
 **Industry Conventions & Emotional Design Reference**
 
 Deep dive into industry-specific design languages and psychological principles for emotional design.
 
 ### Key Sections:
+
 - **Industry-Specific Design Languages** (lines 3-55)
   - AI/Tech (lines 7-11)
   - Crypto/Web3 (lines 13-17): Phantom case study
@@ -82,6 +88,7 @@ Deep dive into industry-specific design languages and psychological principles f
   - UI vs UX lens separation (lines 150-152)
 
 ### Key Insights:
+
 - Industry conventions build familiarity vs. breaking them stands out
 - Peak-end rule: users remember the most intense moment + final impression
 - Emotional feedback > functional feedback
@@ -92,6 +99,7 @@ Deep dive into industry-specific design languages and psychological principles f
 ## Quick Reference Guide
 
 ### When to Use This Skill
+
 - Designing mobile app screens
 - Creating app mockups
 - Building mobile UI components
@@ -101,6 +109,7 @@ Deep dive into industry-specific design languages and psychological principles f
 - Building React Native/Flutter/SwiftUI prototypes
 
 ### Core Design Framework
+
 1. **Understand** → Context, user, primary action, industry conventions
 2. **Structure** → User flow, MVP elements, thumb zone, F-pattern
 3. **Visual Design** → Typography, color (60/30/10), spacing (8pt grid), shadows
@@ -108,6 +117,7 @@ Deep dive into industry-specific design languages and psychological principles f
 5. **Polish** → Micro-interactions, states, accessibility
 
 ### Design Laws Applied
+
 - **60/30/10 Color Rule**: 60% neutral, 30% complementary, 10% accent
 - **8-Point Grid**: All spacing divisible by 8 or 4
 - **Peak-End Rule**: Users remember peak + ending moments
@@ -118,6 +128,7 @@ Deep dive into industry-specific design languages and psychological principles f
 ---
 
 ## Implementation Tech Stack
+
 - React (for artifacts)
 - Tailwind CSS (utility classes)
 - Lucide React (iconography)
@@ -128,4 +139,5 @@ Deep dive into industry-specific design languages and psychological principles f
 ---
 
 ## Tags
+
 `mobile-ui` `ux-design` `emotional-design` `design-system` `react-native` `flutter` `swiftui` `tailwind` `design-principles` `app-design`

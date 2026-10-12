@@ -128,45 +128,45 @@ Use the `Color` API from `expo-router` for native semantic colors. It is a type-
 
 ```tsx
 // theme/colors.ts
-import { Platform } from "react-native";
-import { Color } from "expo-router";
+import { Platform } from 'react-native';
+import { Color } from 'expo-router';
 
 export const colors = {
   label: Platform.select({
     ios: Color.ios.label,
     android: Color.android.dynamic.onSurface,
-    default: "#000000",
+    default: '#000000',
   })!,
   secondaryLabel: Platform.select({
     ios: Color.ios.secondaryLabel,
     android: Color.android.dynamic.onSurfaceVariant,
-    default: "#3c3c43",
+    default: '#3c3c43',
   })!,
   separator: Platform.select({
     ios: Color.ios.separator,
     android: Color.android.dynamic.outlineVariant,
-    default: "#c6c6c8",
+    default: '#c6c6c8',
   })!,
   systemBackground: Platform.select({
     ios: Color.ios.systemBackground,
     android: Color.android.dynamic.surface,
-    default: "#ffffff",
+    default: '#ffffff',
   })!,
   secondarySystemBackground: Platform.select({
     ios: Color.ios.secondarySystemBackground,
     android: Color.android.dynamic.surfaceVariant,
-    default: "#f2f2f7",
+    default: '#f2f2f7',
   })!,
   systemBlue: Platform.select({
     ios: Color.ios.systemBlue,
     android: Color.android.dynamic.primary,
-    default: "#007aff",
+    default: '#007aff',
   })!,
 };
 ```
 
 ```tsx
-import { colors } from "@/theme/colors";
+import { colors } from '@/theme/colors';
 
 <View style={{ backgroundColor: colors.systemBackground }}>
   <Text style={{ color: colors.label }}>Title</Text>
@@ -187,15 +187,18 @@ import { colors } from "@/theme/colors";
 Use CSS `boxShadow` style prop. NEVER use legacy React Native shadow or elevation styles.
 
 ```tsx
-<View style={{ boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)" }} />
+<View style={{ boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)' }} />
 ```
 
 'inset' shadows are supported.
 
 ## Submitting Feedback
+
 If you encounter errors, misleading or outdated information in this skill, report it so Expo can improve:
+
 ```bash
 npx --yes submit-expo-feedback@latest --category skills --subject "expo-native-ui" "<actionable feedback>"
 ```
+
 Only submit when you have something specific and actionable to report. Include as much relevant context as possible.
 If an AI agent repeatedly failed or the user had to take over an Expo task, load the expo-skill-feedback skill and follow its eval-candidate flow instead of reusing the command above.

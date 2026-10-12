@@ -6,6 +6,11 @@ import { WorkoutSessionService } from '@/database/services/WorkoutSessionService
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
 import { NotificationService } from '@/services/NotificationService';
+import {
+  clearActiveWorkoutLogId,
+  clearRestTimerEndAt,
+  getRestTimerEndAt,
+} from '@/utils/activeWorkoutStorage';
 
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
@@ -14,7 +19,10 @@ jest.mock('@/database/services/SettingsService', () => ({
   },
 }));
 jest.mock('@/database/services/WorkoutService', () => ({
-  WorkoutService: { completeWorkout: jest.fn(async () => {}) },
+  WorkoutService: {
+    completeWorkout: jest.fn(async () => {}),
+    deleteWorkoutLog: jest.fn(async () => {}),
+  },
 }));
 jest.mock('@/database/services/WorkoutSessionService', () => ({
   WorkoutSessionService: { saveSet: jest.fn(async () => {}) },
@@ -32,6 +40,7 @@ jest.mock('@/utils/activeWorkoutStorage', () => ({
   getRestTimerEndAt: jest.fn(async () => Date.now() + 90000),
   setRestTimerEndAt: jest.fn(async () => {}),
   clearRestTimerEndAt: jest.fn(async () => {}),
+  clearActiveWorkoutLogId: jest.fn(async () => {}),
 }));
 const set = {
   id: 's1',
@@ -203,4 +212,53 @@ it('undo retains effort and partials while removing weight and reps overrides', 
     })
   );
   hook.unmount();
+});
+
+it('discarding deletes the log and everything that would outlive it, without reloading it', async () => {
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  act(() => hook.result.current.edit('s1', { weight: '70', reps: '8' }));
+  await waitFor(async () => expect(await AsyncStorage.getItem('workout_drafts_log')).toBeTruthy());
+
+  await act(() => hook.result.current.discard());
+
+  expect(WorkoutService.deleteWorkoutLog).toHaveBeenCalledWith('log');
+  // A pending "rest over" reminder and the resume-workout pointer would otherwise point at a
+  // deleted log.
+  expect(clearRestTimerEndAt).toHaveBeenCalled();
+  expect(NotificationService.cancelRestTimerNotification).toHaveBeenCalled();
+  expect(clearActiveWorkoutLogId).toHaveBeenCalled();
+  expect(await AsyncStorage.getItem('workout_drafts_log')).toBeNull();
+  expect(hook.result.current.drafts).toEqual({});
+  expect(options.refresh).not.toHaveBeenCalled();
+});
+
+it('a failed discard keeps the session and its drafts', async () => {
+  (WorkoutService.deleteWorkoutLog as jest.Mock).mockRejectedValueOnce(new Error('disk'));
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  act(() => hook.result.current.edit('s1', { weight: '70', reps: '8' }));
+
+  await act(async () => {
+    await expect(hook.result.current.discard()).rejects.toThrow('disk');
+  });
+
+  expect(clearActiveWorkoutLogId).not.toHaveBeenCalled();
+  expect(hook.result.current.drafts.s1).toEqual({ weight: '70', reps: '8' });
+  expect(hook.result.current.error?.message).toBe('disk');
+});
+
+it('only runs its clock while a rest is counting down', async () => {
+  (getRestTimerEndAt as jest.Mock).mockResolvedValueOnce(null);
+  const interval = jest.spyOn(global, 'setInterval');
+  // `waitFor` polls with its own interval; the controller's clock is the one-second one.
+  const clocks = () => interval.mock.calls.filter(([, delay]) => delay === 1000).length;
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  expect(clocks()).toBe(0);
+
+  await act(() => hook.result.current.startRest(30));
+  expect(clocks()).toBe(1);
+  expect(hook.result.current.restSeconds).toBe(30);
+  interval.mockRestore();
 });

@@ -547,7 +547,6 @@ The web summary split its duration label with `/\s*(m|min|minutes?)/` — unanch
 
 The progression spec emulated 1.3× text with `document.documentElement.style.zoom`. react-native-web sizes sheets from JS window dimensions, which CSS zoom does not change, so every `BottomPopUp` rendered 1.3× too tall and wide and its footer left the viewport — a failure no device can produce. The `phone-large-text` project now uses the layout that text size really yields: a 318×689 viewport at `deviceScaleFactor: 1.3`.
 
-
 ## Progression and Weekly Review: state ownership regressions
 
 Goal editors changed mode/macros without closing dated weekly periods, which continued to outrank
@@ -575,3 +574,26 @@ it. Photo gestures clamp the fitted image, rather than its letterboxed container
 Regression coverage includes Loki integration tests for goal transitions and historical movement
 identity, controller restart/undo tests, focus/recording-owner tests, gesture-bound tests, and browser
 checks of complete previous values, edited-draft undo and summary feedback across four layouts.
+
+## Weekly Review dead ends and leftovers from a discarded workout
+
+Weekly Review evidence is counted over the week that has already closed, yet its "Log weight" and
+"Complete food entries" buttons opened today's progress screen and food diary, and applying needed
+food on all seven days with flagged fasting days ignored — so the buttons could never unlock the
+week, and anyone using the fasting-day feature could never apply. The copy promised "at least three
+days". Applying now needs food (or a flagged fast) on 5 of 7 days and two weigh-ins, the sentence
+interpolates those constants, and each button opens the diary or a dated weight entry on the exact
+day still missing (`overview().gaps`).
+
+Discarding a live workout deleted only the log: the stored active workout survived (Home offered to
+resume a deleted log), a scheduled "rest over" reminder still fired, and the drafts stayed in storage
+and in every backup. `useWorkoutSessionController().discard` now clears all of them. Finishing used
+to navigate twice (once without the feedback flag); the `completedAt` effect is now the only
+navigation. The controller's once-a-second clock ran for the whole session and re-rendered every set
+row; it now runs only during a rest.
+
+Progression deloaded after a single session at failure (automatic) or below the rep range (double
+progression, top set); it now holds once and deloads on the second consecutive miss at that load.
+Automatic `reps_first` used a fixed 8–12 / 12–16 range whatever the plan said, walking a 5×5 up to
+12 reps; it now climbs from the planned reps. Cardio, mobility and stretching were excluded from
+progression only at session start, so previews could promise changes the session never made.

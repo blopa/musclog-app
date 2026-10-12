@@ -12,28 +12,35 @@
 The example uses the `GlassButton` helper defined in `visual-effects.md` (Glass Buttons section).
 
 ```tsx
-import React, { useRef, useState } from "react";
-import { View, Pressable, Text } from "react-native";
-import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-import * as ImagePicker from "expo-image-picker";
-import * as Haptics from "expo-haptics";
-import { colors } from "@/theme/colors";
-import { GlassView } from "expo-glass-effect";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React, { useRef, useState } from 'react';
+import { View, Pressable, Text } from 'react-native';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import * as Haptics from 'expo-haptics';
+import { colors } from '@/theme/colors';
+import { GlassView } from 'expo-glass-effect';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function Camera({ onPicture }: { onPicture: (uri: string) => Promise<void> }) {
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
-  const [type, setType] = useState<CameraType>("back");
+  const [type, setType] = useState<CameraType>('back');
   const { bottom } = useSafeAreaInsets();
 
   if (!permission?.granted) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.systemBackground }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.systemBackground,
+        }}
+      >
         <Text style={{ color: colors.label, padding: 16 }}>Camera access is required</Text>
         <GlassView isInteractive tintColor={colors.systemBlue} style={{ borderRadius: 12 }}>
           <Pressable onPress={requestPermission} style={{ padding: 12, borderRadius: 12 }}>
-            <Text style={{ color: "white" }}>Grant Permission</Text>
+            <Text style={{ color: 'white' }}>Grant Permission</Text>
           </Pressable>
         </GlassView>
       </View>
@@ -50,7 +57,7 @@ function Camera({ onPicture }: { onPicture: (uri: string) => Promise<void> }) {
   const selectPhoto = async () => {
     await Haptics.selectionAsync();
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
+      mediaTypes: 'images',
       allowsEditing: false,
       quality: 0.8,
     });
@@ -60,15 +67,32 @@ function Camera({ onPicture }: { onPicture: (uri: string) => Promise<void> }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
+    <View style={{ flex: 1, backgroundColor: 'black' }}>
       <CameraView ref={cameraRef} mirror style={{ flex: 1 }} facing={type} />
-      <View style={{ position: "absolute", left: 0, right: 0, bottom: bottom, gap: 16, alignItems: "center" }}>
+      <View
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: bottom,
+          gap: 16,
+          alignItems: 'center',
+        }}
+      >
         <GlassView isInteractive style={{ padding: 8, borderRadius: 99 }}>
-          <Pressable onPress={takePhoto} style={{ width: 64, height: 64, borderRadius: 99, backgroundColor: "white" }} />
+          <Pressable
+            onPress={takePhoto}
+            style={{ width: 64, height: 64, borderRadius: 99, backgroundColor: 'white' }}
+          />
         </GlassView>
-        <View style={{ flexDirection: "row", justifyContent: "space-around", paddingHorizontal: 8 }}>
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 8 }}
+        >
           <GlassButton onPress={selectPhoto} icon="photo" />
-          <GlassButton onPress={() => setType(t => t === "back" ? "front" : "back")} icon="arrow.triangle.2.circlepath" />
+          <GlassButton
+            onPress={() => setType((t) => (t === 'back' ? 'front' : 'back'))}
+            icon="arrow.triangle.2.circlepath"
+          />
         </View>
       </View>
     </View>
@@ -85,7 +109,7 @@ import { useAudioPlayer } from 'expo-audio';
 
 const player = useAudioPlayer({ uri: 'https://stream.nightride.fm/rektory.mp3' });
 
-<Button title="Play" onPress={() => player.play()} />
+<Button title="Play" onPress={() => player.play()} />;
 ```
 
 ## Audio Recording (Microphone)
@@ -137,17 +161,18 @@ import { useEvent } from 'expo';
 
 const videoSource = 'https://example.com/video.mp4';
 
-const player = useVideoPlayer(videoSource, player => {
+const player = useVideoPlayer(videoSource, (player) => {
   player.loop = true;
   player.play();
 });
 
 const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
-<VideoView player={player} fullscreenOptions={{}} allowsPictureInPicture />
+<VideoView player={player} fullscreenOptions={{}} allowsPictureInPicture />;
 ```
 
 VideoView options:
+
 - `allowsPictureInPicture`: boolean
 - `contentFit`: 'contain' | 'cover' | 'fill'
 - `nativeControls`: boolean
@@ -157,7 +182,7 @@ VideoView options:
 ## Saving Media
 
 ```tsx
-import * as MediaLibrary from "expo-media-library";
+import * as MediaLibrary from 'expo-media-library';
 
 const { granted } = await MediaLibrary.requestPermissionsAsync();
 if (granted) {
@@ -170,16 +195,16 @@ if (granted) {
 `MediaLibrary.saveToLibraryAsync` only accepts local file paths. Save base64 strings to disk first:
 
 ```tsx
-import { File, Paths } from "expo-file-system/next";
+import { File, Paths } from 'expo-file-system/next';
 
 function base64ToLocalUri(base64: string, filename?: string) {
   if (!filename) {
     const match = base64.match(/^data:(image\/[a-zA-Z]+);base64,/);
-    const ext = match ? match[1].split("/")[1] : "jpg";
+    const ext = match ? match[1].split('/')[1] : 'jpg';
     filename = `generated-${Date.now()}.${ext}`;
   }
 
-  if (base64.startsWith("data:")) base64 = base64.split(",")[1];
+  if (base64.startsWith('data:')) base64 = base64.split(',')[1];
   const binaryString = atob(base64);
   const len = binaryString.length;
   const bytes = new Uint8Array(new ArrayBuffer(len));

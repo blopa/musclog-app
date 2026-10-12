@@ -24,7 +24,6 @@ import {
   WorkoutTrainingView,
 } from '@/components/workout/WorkoutTrainingView';
 import { WorkoutLogExerciseService } from '@/database/services/WorkoutLogExerciseService';
-import { WorkoutService } from '@/database/services/WorkoutService';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { type CurrentSetData, useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
@@ -163,14 +162,13 @@ export default function WorkoutSessionScreen() {
   }, [workoutLog?.completedAt, workoutLog?.id, params.showFeedback, router]);
 
   const close = () => setPanel(null);
+  // Navigation to the summary is the `completedAt` effect's job alone: it fires when the refreshed
+  // log comes back completed. Replacing here as well navigated twice, once without the feedback flag.
   const finish = async () => {
     try {
       await ble.finishSetRecording();
       await controller.finish();
       setPanel(null);
-      if (workoutLog) {
-        router.replace(`/app/workout/workout-summary?workoutLogId=${workoutLog.id}`);
-      }
     } catch {
       // The controller keeps the error and the session for a retry.
     }
@@ -303,8 +301,14 @@ export default function WorkoutSessionScreen() {
           onClose={close}
           onFinishAndSave={finish}
           onFinishAndDiscard={async () => {
-            await WorkoutService.deleteWorkoutLog(workoutLog.id);
-            router.replace('/app/workout/workouts');
+            try {
+              await controller.discard();
+              router.replace('/app/workout/workouts');
+            } catch (error) {
+              handleError(error, 'workout-session.discard', {
+                snackbarMessage: t('errors.somethingWentWrong'),
+              });
+            }
           }}
         />
       );

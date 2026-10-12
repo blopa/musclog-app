@@ -13,6 +13,7 @@ import { loadStepFor } from '@/utils/loadIncrement';
 import { platesPerSide } from '@/utils/plateCalculator';
 import {
   type ExerciseRecommendation,
+  progressesLoad,
   projectExerciseProgression,
 } from '@/utils/progressionProjection';
 import {
@@ -63,6 +64,8 @@ export class WorkoutProgressionService {
       progressionMode: context.mode,
       isCompound: exercise.mechanicType === 'compound',
       isBodyweight: exercise.equipmentType === 'bodyweight',
+      mechanicType: exercise.mechanicType,
+      plannedFromHistory: true,
     });
   }
 
@@ -112,6 +115,7 @@ export class WorkoutProgressionService {
             progressionMode: context.mode,
             isCompound: exercise.mechanicType === 'compound',
             isBodyweight: exercise.equipmentType === 'bodyweight',
+            mechanicType: exercise.mechanicType,
           });
           if (
             context.gym &&
@@ -194,7 +198,7 @@ export class WorkoutProgressionService {
       await commitPrepared(database, [...sets, ...logExercises], () => {
         for (const [index, row] of logExercises.entries()) {
           const exercise = exercises.get(row.exerciseId);
-          if (!exercise || ['cardio', 'mobility', 'stretching'].includes(exercise.mechanicType)) {
+          if (!exercise || !progressesLoad(exercise.mechanicType)) {
             continue;
           }
           const planned = sets
@@ -210,6 +214,7 @@ export class WorkoutProgressionService {
             progressionMode: context.mode,
             isCompound: exercise.mechanicType === 'compound',
             isBodyweight: exercise.equipmentType === 'bodyweight',
+            mechanicType: exercise.mechanicType,
           });
           const changes = new Map(projection.changes.map((change) => [change.setId, change]));
           changed += changes.size;
@@ -321,41 +326,39 @@ export class WorkoutProgressionService {
         Q.take(PROGRESSION_HISTORY_SESSIONS)
       )
       .fetch();
-    const sessions = await Promise.all(
-      recent.map(async (row) => {
-        const working = (
-          await database
-            .get<WorkoutLogSet>('workout_log_sets')
-            .query(
-              Q.where('log_exercise_id', row.id),
-              Q.where('deleted_at', Q.eq(null)),
-              Q.sortBy('set_order', Q.asc)
-            )
-            .fetch()
-        ).filter((set) => !isWarmupSet(set));
-        return {
-          sets: working.filter(isPerformedWorkoutSet).map((set) => ({
-            weightKg: set.weight,
-            reps: set.reps,
-            repsInReserve: set.repsInReserve,
-            rirRecorded: set.rirRecorded,
-            prescribedIndex: working.indexOf(set),
-          })),
-          allPrescribedSetsPerformed:
-            working.length > 0 &&
-            working.every(isPerformedWorkoutSet) &&
-            working.length >=
-              Math.max(
-                ...working.map(
-                  (set) =>
-                    parseSetPrescription(set.prescriptionJson)?.workingSetCount ?? working.length
-                )
-              ),
-          rule: parseProgressionRule(row.progressionJson),
-          state: parseSessionProgressionState(row.progressionJson),
-        };
-      })
+    // One query for every session's sets, not one per session.
+    const allSets = await fetchByIds<WorkoutLogSet>(
+      'workout_log_sets',
+      'log_exercise_id',
+      recent.map((row) => row.id),
+      Q.where('deleted_at', Q.eq(null))
     );
+    const sessions = recent.map((row) => {
+      const working = allSets
+        .filter((set) => set.logExerciseId === row.id && !isWarmupSet(set))
+        .sort((a, b) => a.setOrder - b.setOrder);
+      return {
+        sets: working.filter(isPerformedWorkoutSet).map((set) => ({
+          weightKg: set.weight,
+          reps: set.reps,
+          repsInReserve: set.repsInReserve,
+          rirRecorded: set.rirRecorded,
+          prescribedIndex: working.indexOf(set),
+        })),
+        allPrescribedSetsPerformed:
+          working.length > 0 &&
+          working.every(isPerformedWorkoutSet) &&
+          working.length >=
+            Math.max(
+              ...working.map(
+                (set) =>
+                  parseSetPrescription(set.prescriptionJson)?.workingSetCount ?? working.length
+              )
+            ),
+        rule: parseProgressionRule(row.progressionJson),
+        state: parseSessionProgressionState(row.progressionJson),
+      };
+    });
     return sessions.filter((session) => session.sets.length > 0);
   }
 }

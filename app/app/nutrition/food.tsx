@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ArrowRight,
   Copy,
@@ -95,7 +95,7 @@ import {
   calendarDateFromRecordDay,
   formatLocalCalendarDayIso,
   formatLocalCalendarDayNumericIntl,
-  localCalendarDayDate,
+  localCalendarDayFromParam,
 } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { getMealCritique } from '@/utils/coachAI';
@@ -299,7 +299,17 @@ export default function FoodScreen() {
   } = useMealGroupUi();
 
   const screenModals = useFoodScreenModals();
-  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
+  // `date` (yyyy-MM-dd) opens the diary on a specific day, e.g. a day the Weekly Review is missing.
+  const { date: dateParam } = useLocalSearchParams<{ date?: string }>();
+  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayFromParam(dateParam));
+  // A screen that is already mounted receives a new `date` without remounting; follow it once.
+  const [appliedDateParam, setAppliedDateParam] = useState(dateParam);
+  if (dateParam !== appliedDateParam) {
+    setAppliedDateParam(dateParam);
+    if (dateParam) {
+      setSelectedDate(localCalendarDayFromParam(dateParam));
+    }
+  }
 
   // The optical send target is captured before each share handler clears its menu selection, so the
   // screen-level sender can outlive the menu that launched it. One slot, not one per kind: only

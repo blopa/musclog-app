@@ -1,7 +1,9 @@
 # Ch 5: Advanced Training Practices
+
 Book: Science and Development of Muscle Hypertrophy (2nd ed) | Author: Brad Schoenfeld
 
 ## Core Principle
+
 Advanced strategies can potentially augment hypertrophy but are highly taxing. Evidence is limited; periodize their use to avoid overtraining.
 
 ---
@@ -9,12 +11,14 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 ## ACCUMULATION STRATEGIES (Increase Volume)
 
 ### Loaded Stretch Training
+
 - Animal studies: dramatic hypertrophy + hyperplasia with chronic loaded stretch
 - Human evidence: interset stretching (30 sec during 90 sec rest) may enhance gains
 - Training at long muscle lengths produces greater hypertrophy
 - **Application**: Include exercises that challenge muscles in stretched position
 
 ### Drop Sets
+
 - Perform set to failure → immediately reduce load 20-25% → continue to failure
 - Can repeat multiple times ("running the rack")
 - **Evidence**: Similar hypertrophy to traditional training; more time-efficient
@@ -22,6 +26,7 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 - **Application**: Use sparingly; best for isolation exercises at end of workout
 
 ### Supersets
+
 - Two exercises back-to-back with no rest
 - **Agonist-antagonist**: Biceps curl + triceps extension
 - **Compound sets**: Two exercises for same muscle (incline + flat press)
@@ -29,6 +34,7 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 - **Application**: Time-efficient option; compound sets very fatiguing
 
 ### Pre-Exhaustion
+
 - Isolation exercise immediately before compound for same muscle
 - Theory: Pre-fatigue target muscle to ensure it limits compound
 - **Evidence**: Does NOT increase target muscle activation; may actually decrease it
@@ -40,6 +46,7 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 ## INTENSIFICATION STRATEGIES (Increase Loading)
 
 ### Intraset Rest (Cluster Sets)
+
 - Brief rest periods (10-30 sec) within a set
 - Allows heavier loads or more reps with same load
 - **Rest-pause**: Set to failure → 10-20 sec rest → additional reps to failure
@@ -47,6 +54,7 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 - **Application**: Can be useful for maintaining load with compound exercises
 
 ### Accentuated Eccentrics
+
 - Supramaximal eccentric loading (>100% concentric 1RM)
 - Requires partner or specialized equipment
 - **Evidence**: Greatest research support for enhancing hypertrophy
@@ -55,6 +63,7 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 - **Application**: Very demanding; use sparingly with adequate recovery
 
 ### Forced Reps
+
 - Partner assists with concentric once failure is reached
 - Allows additional reps beyond muscular failure
 - **Evidence**: Limited; may enhance metabolic stress
@@ -62,6 +71,7 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 - **Application**: Sparingly; primarily on last set of isolation exercises
 
 ### Heavy Negatives
+
 - Supramaximal load (100-140% 1RM) for eccentric-only reps
 - Requires spotters/equipment for concentric
 - **Evidence**: May enhance hypertrophy; very demanding
@@ -73,21 +83,25 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 ## BLOOD FLOW RESTRICTION (BFR/KAATSU)
 
 ### Method
+
 - Cuffs/wraps on proximal limb at 40-80% arterial occlusion
 - Low loads (20-30% 1RM) to failure
 - Typically 75 total reps (30-15-15-15 with 30 sec rest)
 
 ### Mechanism
+
 - Hypoxia → metabolite accumulation → Type I fiber fatigue
 - Shifts burden to Type II fibers despite low load
 - Cell swelling, myokine production
 
 ### Evidence
+
 - Produces similar hypertrophy to heavy-load training
 - May preferentially hypertrophy Type I fibers
 - Safe when properly applied; avoid excessive pressure
 
 ### Application
+
 - Useful during deload, injury rehab, or travel
 - Can supplement traditional training for variety
 - Learn proper cuff application technique
@@ -96,13 +110,13 @@ Advanced strategies can potentially augment hypertrophy but are highly taxing. E
 
 ## IMPLEMENTATION GUIDELINES
 
-| Strategy | Best For | Frequency |
-|----------|----------|-----------|
-| Drop sets | Time efficiency, metabolic stress | 1-2x/week per muscle |
-| Supersets | Time efficiency | Regular use okay |
-| Accentuated eccentrics | Maximizing tension | 1x/week per movement |
-| BFR | Deload, rehab, variety | As needed |
-| Forced reps | Final sets | Sparingly |
+| Strategy               | Best For                          | Frequency            |
+| ---------------------- | --------------------------------- | -------------------- |
+| Drop sets              | Time efficiency, metabolic stress | 1-2x/week per muscle |
+| Supersets              | Time efficiency                   | Regular use okay     |
+| Accentuated eccentrics | Maximizing tension                | 1x/week per movement |
+| BFR                    | Deload, rehab, variety            | As needed            |
+| Forced reps            | Final sets                        | Sparingly            |
 
 ---
 

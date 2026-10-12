@@ -19,7 +19,16 @@ import { NutritionTargetService } from '@/database/services/NutritionTargetServi
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
 import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
 import { WorkoutSessionService } from '@/database/services/WorkoutSessionService';
-import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
+import {
+  localDayKeyPlusCalendarDays,
+  localDayStartMs,
+  utcDayKeyFromLocalDate,
+} from '@/utils/calendarDate';
+import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
 import { serializeProgressionRule, parseSessionProgressionState } from '@/utils/progressionRules';
 import { parseSetPrescription } from '@/utils/setPrescription';
@@ -61,6 +70,7 @@ jest.mock('@/database/services/SettingsService', () => ({
     getReviewWeekday: async () => 1,
     getThemePreference: async () => 'kinetic-depth',
     getIntuitiveEatingMode: async () => false,
+    getEnableFastedDay: jest.fn(async () => false),
   },
 }));
 jest.mock('@/database/services/ExerciseUserSettingsService', () => ({
@@ -975,4 +985,45 @@ it('a split partial block cannot trigger a full-success linear load increase', a
   const projection = await WorkoutProgressionService.projectTemplate(w.template.id);
   expect(projection[0].previous?.allPrescribedSetsPerformed).toBe(false);
   expect(projection[0].sets[0].weight).toBe(60);
+});
+
+it('counts flagged fasts as food days and points the review at the days it is missing', async () => {
+  await goal();
+  const period = weeklyReviewPeriod();
+  const day = (offset: number) => localDayKeyPlusCalendarDays(period.start, offset);
+  // Food on the first four days of the week; nothing on days 4–6, and no weigh-ins at all.
+  jest
+    .spyOn(NutritionService, 'getNutritionLogsForDateRange')
+    .mockResolvedValue(
+      [0, 1, 2, 3].map((offset) => ({ date: day(offset) + 12 * 3600_000 })) as any
+    );
+  const proposed = { ...accepted, usedEmpiricalData: true, tdee: 2500, isDynamic: true as const };
+  (resolveWeeklyRecommendation as jest.Mock).mockResolvedValue(proposed);
+  try {
+    const short = await WeeklyReviewService.overview();
+    expect(short.nutrition).toMatchObject({ foodDays: 4, weightDays: 0, canApply: false });
+    // The earliest day still missing food, and the latest still missing a weigh-in — both inside
+    // the reviewed week, never today.
+    expect(short.gaps).toEqual({ foodDay: day(4), weightDay: day(6) });
+
+    // Day 4 flagged as a fast, and two weigh-ins: five of seven days is enough to apply.
+    (SettingsService.getEnableFastedDay as jest.Mock).mockResolvedValue(true);
+    jest
+      .spyOn(FastedDayRepository, 'getFastedDayKeysForRange')
+      .mockResolvedValue(new Set([utcDayKeyFromLocalDate(new Date(day(4)))]));
+    jest.spyOn(UserMetricService, 'getMetricsHistory').mockResolvedValue(
+      [1, 5].map((offset) => ({
+        date: day(offset) + 8 * 3600_000,
+        timezone: null,
+        getDecrypted: async () => ({ value: 80, unit: 'kg' }),
+      })) as any
+    );
+    const enough = await WeeklyReviewService.overview();
+    expect(enough.nutrition).toMatchObject({ foodDays: 5, weightDays: 2, canApply: true });
+    expect(enough.gaps).toEqual({ foodDay: null, weightDay: null });
+  } finally {
+    (resolveWeeklyRecommendation as jest.Mock).mockResolvedValue(null);
+    (SettingsService.getEnableFastedDay as jest.Mock).mockResolvedValue(false);
+    jest.restoreAllMocks();
+  }
 });

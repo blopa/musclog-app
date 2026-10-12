@@ -118,11 +118,14 @@ describe('WorkoutProgressionService', () => {
     function installHistory(options: {
       sets: any[];
       previousSets?: any[];
+      /** The session before the previous one, for rules that look two sessions back. */
+      earlierSets?: any[];
       exercise?: Record<string, unknown>;
       userSettings?: any[];
       onHistoryRead?: () => void;
     }) {
       const previousLogExercise = { id: 'prev-le' };
+      const earlierLogExercise = { id: 'earlier-le' };
       mockDatabase.get.mockImplementation((table: string) => {
         if (table === 'exercise_user_settings') {
           return collection({ fetch: jest.fn().mockResolvedValue(options.userSettings ?? []) });
@@ -137,7 +140,12 @@ describe('WorkoutProgressionService', () => {
                   return [{ id: 'le-bench', exerciseId: 'bench' }];
                 }
                 options.onHistoryRead?.();
-                return options.previousSets ? [previousLogExercise] : [];
+                if (!options.previousSets) {
+                  return [];
+                }
+                return options.earlierSets
+                  ? [previousLogExercise, earlierLogExercise]
+                  : [previousLogExercise];
               }),
             })),
           } as any;
@@ -145,13 +153,20 @@ describe('WorkoutProgressionService', () => {
         if (table === 'workout_log_sets') {
           return {
             query: jest.fn((...clauses: any[]) => ({
-              fetch: jest
-                .fn()
-                .mockResolvedValue(
-                  clauses.some((c) => c?.field === 'log_exercise_id' && c.condition === 'prev-le')
-                    ? (options.previousSets ?? [])
-                    : options.sets
-                ),
+              // History reads every past session's sets in one `oneOf` query.
+              fetch: jest.fn(async () => {
+                const ids: unknown[] =
+                  clauses.find((c) => c?.field === 'log_exercise_id')?.condition ?? [];
+                if (![ids].flat().includes(previousLogExercise.id)) {
+                  return options.sets;
+                }
+                const tag = (rows: any[] | undefined, logExerciseId: string) =>
+                  (rows ?? []).map((set) => ({ logExerciseId, ...set }));
+                return [
+                  ...tag(options.previousSets, previousLogExercise.id),
+                  ...tag(options.earlierSets, earlierLogExercise.id),
+                ];
+              }),
             })),
           } as any;
         }
@@ -297,9 +312,19 @@ describe('WorkoutProgressionService', () => {
       expect(backOff.weight).toBe(50);
     });
 
-    it('deloads by one step when the last session left nothing in reserve', async () => {
+    it('holds the load after a single session with nothing left in reserve', async () => {
       const sets = [planned('s1')];
       installHistory({ sets, previousSets: lastSession(70, 0) });
+
+      await WorkoutProgressionService.applyStartProgression('wl-1');
+
+      expect(sets[0].weight).toBe(70);
+      expect(JSON.parse(sets[0].adjustmentJson)).toMatchObject({ cause: 'repeat', to: 70 });
+    });
+
+    it('deloads by one step after two sessions in a row with nothing left in reserve', async () => {
+      const sets = [planned('s1')];
+      installHistory({ sets, previousSets: lastSession(70, 0), earlierSets: lastSession(70, 0) });
 
       await WorkoutProgressionService.applyStartProgression('wl-1');
 

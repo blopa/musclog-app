@@ -51,11 +51,11 @@
       "startProgressionWeight": "Omhoog naar {{to}} {{unit}} vanaf de {{last}} {{unit}} van vorige keer — je had nog ongeveer {{rir}} herhalingen over.",
       "startProgressionWeightReps": "Omhoog naar {{to}} {{unit}} × {{reps}} vanaf {{last}} {{unit}} × {{lastReps}} van vorige keer — je had nog ongeveer {{rir}} herhalingen over.",
       "startProgressionReps": "Eén herhaling meer dan vorige keer ({{to}} in plaats van {{last}}) — je had nog ongeveer {{rir}} herhalingen over.",
-      "startDeload": "Omlaag naar {{to}} {{unit}} vanaf de {{last}} {{unit}} van vorige keer — je had geen herhalingen meer over.",
+      "startDeload": "Omlaag naar {{to}} {{unit}} vanaf de {{last}} {{unit}} van vorige keer — twee sessies op rij zonder herhalingen over.",
       "startRepeatWeight": "Je start met {{to}} {{unit}}, wat je vorige keer gebruikte, in plaats van de {{from}} {{unit}} uit het schema.",
       "startRepeatReps": "Je start met {{to}} herhalingen, wat je vorige keer deed, in plaats van de {{from}} uit het schema.",
       "usePlan": "Gebruik het schema",
-      "startDeloadWeightReps": "Omlaag naar {{to}} {{unit}} × {{reps}} vanaf {{last}} {{unit}} × {{lastReps}} van vorige keer — je had geen herhalingen meer over.",
+      "startDeloadWeightReps": "Omlaag naar {{to}} {{unit}} × {{reps}} vanaf {{last}} {{unit}} × {{lastReps}} van vorige keer — twee sessies op rij zonder herhalingen over.",
       "startRepeatWeightReps": "Je start met {{to}} {{unit}} × {{reps}}, wat je vorige keer deed, in plaats van de {{from}} {{unit}} × {{planReps}} uit het schema."
     },
     "startRest": "Rust starten ({{seconds}} sec)",
@@ -118,7 +118,7 @@
         "add_weight": "Elke geplande set haalde {{repMax}} herhalingen. Verhoog één stap en begin bij {{repMin}}.",
         "add_reps": "Streef naar één herhaling meer dan dezelfde vorige set, binnen {{repMin}}–{{repMax}}.",
         "hold": "Houd dit gewicht aan en werk binnen {{repMin}}–{{repMax}} herhalingen.",
-        "deload": "Geen uitgevoerde set haalde {{repMin}} herhalingen. Verlaag één stap."
+        "deload": "Twee sessies op rij met dit gewicht haalden geen {{repMin}} herhalingen. Verlaag één stap."
       },
       "linear": {
         "add_weight": "Alle geplande herhalingen zijn voltooid. Verhoog één stap voor {{reps}} herhalingen.",
@@ -265,7 +265,7 @@
       "fats": "Vet (g)",
       "fiber": "Vezels (g)"
     },
-    "collectData": "Houd doelen aan terwijl je meer gegevens verzamelt. Log gewicht en voeding op minstens drie dagen.",
+    "collectData": "Houd doelen aan terwijl je meer gegevens verzamelt. Log om een advies toe te passen op minstens {{food}} dagen je voeding en op minstens {{weight}} dagen je gewicht van deze week.",
     "empiricalReason": "Advies gebruikt historische inname en verbruik op basis van trendgewicht, samen met je doeltraject.",
     "baselineReason": "Startschatting op basis van een formule. Meer geschiedenis is nodig om verbruik uit je logs te schatten.",
     "switchWeekly": "Overschakelen op wekelijkse doelen",
@@ -275,8 +275,8 @@
     "applied": "Doelen goedgekeurd",
     "kept": "Huidige doelen behouden",
     "effective": "Sinds {{date}}",
-    "logWeight": "Gewicht loggen",
-    "logFood": "Voedingslog aanvullen",
+    "logWeightOn": "Gewicht loggen voor {{date}}",
+    "logFoodOn": "Voeding loggen voor {{date}}",
     "editGoal": "Gewichtsdoel of datum bewerken",
     "noGoal": "Training is beschikbaar zonder voedingsdoel. Stel voedingsdoelen in je profiel in wanneer je wilt.",
     "intuitive": "Intuïtief eten staat aan. Je trainingsoverzicht blijft beschikbaar.",

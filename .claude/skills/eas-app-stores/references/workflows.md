@@ -19,8 +19,8 @@ jobs:
   publish:
     type: update
     params:
-      branch: "pr-${{ github.event.pull_request.number }}"
-      message: "PR #${{ github.event.pull_request.number }}"
+      branch: 'pr-${{ github.event.pull_request.number }}'
+      message: 'PR #${{ github.event.pull_request.number }}'
 ```
 
 ## Production Release

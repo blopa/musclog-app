@@ -7,12 +7,14 @@ Analysis of five successful products using the Fogg Behavior Model (B=MAP). Unli
 ### The Behavior: Share a photo daily
 
 **Motivation analysis:**
+
 - Belonging: desire for social validation (likes, comments, followers)
 - Sensation: pleasure of curating a beautiful feed
 - Anticipation: hope of growing influence, building personal brand
 - Motivation level: Moderate-high for core users (social reward is powerful)
 
 **Ability analysis (Ability Chain):**
+
 - Time: 30-60 seconds (snap → filter → caption → post)
 - Money: Free
 - Physical effort: Minimal (camera is in your hand)
@@ -23,6 +25,7 @@ Analysis of five successful products using the Fogg Behavior Model (B=MAP). Unli
 **Key insight:** Instagram succeeded because it made photography effortless. Before Instagram, sharing a quality photo required a camera, editing software, and a hosting platform. Instagram collapsed all six Ability Chain factors simultaneously. Filters were the breakthrough: they reduced mental effort (no editing skill needed) and physical effort (no desktop software) while increasing quality — making the behavior both easier AND more rewarding.
 
 **Prompt analysis:**
+
 - Action Prompts: Notifications ("X liked your photo", "X started following you")
 - Context Prompts: Red badge count on app icon
 - Person Prompts (formed over time): See something interesting → instinct to capture and share
@@ -36,12 +39,14 @@ Analysis of five successful products using the Fogg Behavior Model (B=MAP). Unli
 ### The Behavior: Practice a language daily
 
 **Motivation analysis:**
+
 - Anticipation (hope): Learn a new language, travel, career opportunities
 - Anticipation (fear): Lose streak, fall behind in league
 - Belonging: Compete in leagues, compare with friends
 - Motivation level: Spikes and crashes — learning a language is a months-long commitment
 
 **Ability analysis (Ability Chain):**
+
 - Time: 5 minutes per lesson (critical design decision)
 - Money: Free tier available
 - Physical effort: Tap-to-answer eliminates typing for beginners
@@ -52,6 +57,7 @@ Analysis of five successful products using the Fogg Behavior Model (B=MAP). Unli
 **Key insight:** Duolingo is the purest implementation of Tiny Habits in a product. The 5-minute lesson is a Starter Step — small enough to survive any motivation trough. Users who "just do one lesson" often do three or four (natural scaling). The genius is that the product delivers value at the tiny level, not just at the ambitious level.
 
 **Prompt analysis:**
+
 - Action Prompts: "Don't lose your streak!" notification (precisely timed)
 - Context Prompts: Streak widget on phone home screen
 - Person Prompts: "After I pour my morning coffee, I do one Duolingo lesson" (user-formed anchor)
@@ -68,12 +74,14 @@ Most analyses frame the streak as motivation (gamification). Through Fogg's lens
 ### The Behavior: Communicate through Slack instead of email
 
 **Motivation analysis:**
+
 - Sensation: Faster responses, real-time interaction (pleasure)
 - Anticipation: Fear of missing important messages (FOMO)
 - Belonging: Team is here, be part of the conversation
 - Motivation level: Varies — champions have high motivation, late adopters have low
 
 **Ability analysis (Ability Chain):**
+
 - Time: Typing a message takes seconds
 - Money: Free tier available
 - Physical effort: Desktop app, always open (minimal effort to switch to it)
@@ -84,6 +92,7 @@ Most analyses frame the streak as motivation (gamification). Through Fogg's lens
 **Key insight:** Slack's biggest Ability Chain challenge is Social Deviance and Non-Routine — not for the individual user, but for the team. One person can't use Slack alone; the behavior depends on the team adopting it. Slack solved this with the "invite your team" flow and by making the first team messages happen in the onboarding itself.
 
 **Prompt analysis:**
+
 - Action Prompts: Desktop notifications for @mentions and DMs
 - Context Prompts: App always open in taskbar, persistent badge counts
 - Person Prompts: Hearing the notification sound triggers checking Slack
@@ -97,12 +106,14 @@ Most analyses frame the streak as motivation (gamification). Through Fogg's lens
 ### The Behavior: Meditate daily
 
 **Motivation analysis:**
+
 - Sensation: Relaxation, stress relief (pleasure)
 - Anticipation: Better mental health, sleep improvement (hope)
 - Belonging: Low — meditation is often solitary
 - Motivation level: Highly variable — spikes during stress, drops when life is calm
 
 **Ability analysis (Ability Chain):**
+
 - Time: Calm offers sessions from 3 to 25 minutes (range matters)
 - Money: Subscription required for most content
 - Physical effort: Minimal (sit and listen)
@@ -113,6 +124,7 @@ Most analyses frame the streak as motivation (gamification). Through Fogg's lens
 **Key insight:** Calm's Ability Chain bottleneck is mental effort for beginners. Meditation is paradoxically "easy" physically (just sit) but "hard" mentally (quiet your mind). Calm solved this with guided meditations — the instructor removes mental effort by telling you exactly what to do moment by moment. The "Daily Calm" (one specific session each day) eliminates decision fatigue (which session should I pick?).
 
 **Prompt analysis:**
+
 - Action Prompts: Daily reminder notification (user-set time)
 - Context Prompts: Evening routine association, sleep timer
 - Person Prompts: "After I get into bed, I open Calm" (bedtime anchor)
@@ -129,12 +141,14 @@ Calm's most powerful retention mechanism is the bedtime anchor. Sleep Stories ti
 ### The Behavior: Exercise on the bike 3-4 times per week
 
 **Motivation analysis:**
+
 - Sensation: Endorphins, music, instructor energy (pleasure)
 - Anticipation: Fitness goals, personal records (hope)
 - Belonging: Live leaderboard, high-fives, instructor community
 - Motivation level: High during class, low before starting
 
 **Ability analysis (Ability Chain):**
+
 - Time: 20-45 minute commitment per session
 - Money: High ($1,400+ bike + $44/month subscription)
 - Physical effort: High (it's a workout)
@@ -145,6 +159,7 @@ Calm's most powerful retention mechanism is the bedtime anchor. Sleep Stories ti
 **Key insight:** Peloton breaks a core Fogg principle — it's a high-motivation, low-ability product. Exercise is hard (physically and time-wise) and expensive. Peloton survives because it maximizes every motivation lever simultaneously: live social pressure (belonging), instructor charisma (sensation), personal records (anticipation), and real-time leaderboard (all three motivators at once).
 
 **Prompt analysis:**
+
 - Action Prompts: Push notifications for favorite instructor's live classes
 - Context Prompts: Physical bike in the home (the most powerful context prompt)
 - Person Prompts: Scheduled class time becomes a routine
@@ -158,13 +173,13 @@ Peloton's most underrated design decision: the bike is always visible in your ho
 
 ## Cross-Case Patterns
 
-| Product | Primary Lever | Why It Works | Vulnerability |
-|---------|-------------|-------------|---------------|
-| **Instagram** | Ability | Made photography effortless | If competition becomes equally easy |
-| **Duolingo** | Ability + Prompt | Tiny lessons + streak prompt | If users stop caring about streak |
-| **Slack** | Prompt (Context) | Always-on desktop presence | If team switches to competitor |
-| **Calm** | Prompt (Anchor) | Bedtime routine is universal | If subscription price creates money barrier |
-| **Peloton** | Motivation | Triple-stacked motivators | If motivation drops (high dependency) |
+| Product       | Primary Lever    | Why It Works                 | Vulnerability                               |
+| ------------- | ---------------- | ---------------------------- | ------------------------------------------- |
+| **Instagram** | Ability          | Made photography effortless  | If competition becomes equally easy         |
+| **Duolingo**  | Ability + Prompt | Tiny lessons + streak prompt | If users stop caring about streak           |
+| **Slack**     | Prompt (Context) | Always-on desktop presence   | If team switches to competitor              |
+| **Calm**      | Prompt (Anchor)  | Bedtime routine is universal | If subscription price creates money barrier |
+| **Peloton**   | Motivation       | Triple-stacked motivators    | If motivation drops (high dependency)       |
 
 ### Key Takeaway
 

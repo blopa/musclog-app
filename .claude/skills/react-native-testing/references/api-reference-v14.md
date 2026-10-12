@@ -64,7 +64,7 @@ In v14, the following APIs are **async** and must always be awaited:
 ```ts
 async function render(
   component: React.Element<any>,
-  options?: RenderOptions,
+  options?: RenderOptions
 ): Promise<RenderResult>;
 ```
 
@@ -400,7 +400,7 @@ Available automatically with any `@testing-library/react-native` import. No setu
 ```ts
 function waitFor<T>(
   expectation: () => T,
-  options?: { timeout?: number; interval?: number },
+  options?: { timeout?: number; interval?: number }
 ): Promise<T>;
 ```
 
@@ -418,7 +418,7 @@ Rules:
 ```ts
 function waitForElementToBeRemoved<T>(
   expectation: () => T,
-  options?: { timeout?: number; interval?: number },
+  options?: { timeout?: number; interval?: number }
 ): Promise<T>;
 ```
 
@@ -458,7 +458,7 @@ Unmounts rendered trees and clears `screen`. Automatic after each test (if test 
 ```ts
 async function renderHook<Result, Props>(
   hookFn: (props?: Props) => Result,
-  options?: { initialProps?: Props; wrapper?: React.ComponentType },
+  options?: { initialProps?: Props; wrapper?: React.ComponentType }
 ): Promise<{
   result: { current: Result };
   rerender: (props: Props) => Promise<void>;
@@ -512,7 +512,7 @@ function configure(
     asyncUtilTimeout: number; // default timeout for waitFor/findBy* (default: 1000ms)
     defaultIncludeHiddenElements: boolean; // default for includeHiddenElements option (default: false)
     defaultDebugOptions: Partial<DebugOptions>;
-  }>,
+  }>
 ): void;
 
 function resetToDefaults(): void;

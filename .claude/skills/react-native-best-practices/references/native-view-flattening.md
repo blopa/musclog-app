@@ -14,7 +14,7 @@ Understand and debug React Native's view flattening optimization.
 
 ```jsx
 <NativeTabBar>
-  <Tab1 />  // May be flattened, breaking native component
+  <Tab1 /> // May be flattened, breaking native component
   <Tab2 />
 </NativeTabBar>
 ```
@@ -40,6 +40,7 @@ Understand and debug React Native's view flattening optimization.
 ## What is View Flattening?
 
 React Native's renderer automatically removes "layout-only" views that:
+
 - Only affect layout (no visual rendering)
 - Don't need to exist in native view hierarchy
 
@@ -104,10 +105,14 @@ const NativeTabBar = requireNativeComponent('RCTTabBar');
 const MyTabs = () => (
   <NativeTabBar>
     <TabContent title="Home">
-      <View><Text>Home content</Text></View>
+      <View>
+        <Text>Home content</Text>
+      </View>
     </TabContent>
     <TabContent title="Profile">
-      <View><Text>Profile content</Text></View>
+      <View>
+        <Text>Profile content</Text>
+      </View>
     </TabContent>
   </NativeTabBar>
 );
@@ -116,10 +121,14 @@ const MyTabs = () => (
 const MyTabs = () => (
   <NativeTabBar>
     <TabContent title="Home" collapsable={false}>
-      <View><Text>Home content</Text></View>
+      <View>
+        <Text>Home content</Text>
+      </View>
     </TabContent>
     <TabContent title="Profile" collapsable={false}>
-      <View><Text>Profile content</Text></View>
+      <View>
+        <Text>Profile content</Text>
+      </View>
     </TabContent>
   </NativeTabBar>
 );
@@ -140,7 +149,7 @@ const NativeChildWrapper = ({ children, ...props }) => (
   <NativeChildWrapper>
     <ComplexChild />
   </NativeChildWrapper>
-</NativeComponent>
+</NativeComponent>;
 ```
 
 ## When Views Get Flattened

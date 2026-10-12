@@ -34,6 +34,7 @@ eas credentials -p ios
 ```
 
 This interactive flow helps you:
+
 - Create or select a distribution certificate
 - Create or select a provisioning profile
 - Configure App Store Connect API key (recommended)
@@ -180,18 +181,19 @@ Perform these publication steps only within the requested release scope. Prepari
 
 ### Common Rejection Reasons
 
-| Issue | Solution |
-|-------|----------|
-| Crashes/bugs | Test thoroughly before submission |
-| Incomplete metadata | Fill all required fields |
-| Placeholder content | Remove "lorem ipsum" and test data |
-| Missing login credentials | Provide demo account |
-| Privacy policy missing | Add URL in App Store Connect |
-| Guideline 4.2 (minimum functionality) | Ensure app provides value |
+| Issue                                 | Solution                           |
+| ------------------------------------- | ---------------------------------- |
+| Crashes/bugs                          | Test thoroughly before submission  |
+| Incomplete metadata                   | Fill all required fields           |
+| Placeholder content                   | Remove "lorem ipsum" and test data |
+| Missing login credentials             | Provide demo account               |
+| Privacy policy missing                | Add URL in App Store Connect       |
+| Guideline 4.2 (minimum functionality) | Ensure app provides value          |
 
 ### Expedited Review
 
 Request expedited review for:
+
 - Critical bug fixes
 - Time-sensitive events
 - Security issues

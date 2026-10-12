@@ -43,6 +43,8 @@ type AddUserMetricEntryModalProps = {
   visible: boolean;
   onClose: () => void;
   onSave?: () => void;
+  /** The day the entry starts on; defaults to today. Read once, when the modal mounts. */
+  initialDate?: Date;
 };
 
 // Map metric types to page indices
@@ -59,10 +61,11 @@ export default function AddUserMetricEntryModal({
   visible,
   onClose,
   onSave: onSaveCallback,
+  initialDate,
 }: AddUserMetricEntryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { showSnackbar } = useSnackbar();
+  const { showSnackbar } = useSnackbar(); // TODO: why here if not used?
   const { units } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const pagerRef = useRef<PagerViewRef>(null);
@@ -71,7 +74,9 @@ export default function AddUserMetricEntryModal({
   const [bodyFat, setBodyFat] = useState(15.0);
   const [height, setHeight] = useState(DEFAULT_HEIGHT_CM);
   const [mood, setMood] = useState(3); // 0-4: Poor, Low, Okay, Good, Great
-  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
+  const [selectedDate, setSelectedDate] = useState(() =>
+    localCalendarDayDate(initialDate ?? new Date())
+  );
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [note, setNote] = useState('');
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);

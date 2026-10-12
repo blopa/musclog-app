@@ -12,7 +12,7 @@ strong evidence from weak, and never state a contested claim as settled fact.
   review.
 - **Cite when it helps the athlete trust or understand a number** (e.g. why protein
   is 1.6–2.2 g/kg, why the deficit is moderate). Use the short form: author/body +
-  year, e.g. *(Morton et al., 2018)*, *(ACSM, 2009)*. Full references are listed at
+  year, e.g. _(Morton et al., 2018)_, _(ACSM, 2009)_. Full references are listed at
   the bottom.
 - **Grade your confidence.** Use plain tags when it matters:
   - **Strong** — meta-analyses / consensus position stands (e.g. protein for muscle,
@@ -32,79 +32,77 @@ strong evidence from weak, and never state a contested claim as settled fact.
 
 **Hypertrophy: volume is the primary driver.** Weekly sets per muscle group is the
 strongest modifiable lever; ~10+ hard sets/week beats lower volumes, with a
-dose–response up to a point *(Schoenfeld, Ogborn & Krieger, 2017)*. Train each muscle
-≥2×/week for a small hypertrophy edge over 1×/week at matched volume *(Schoenfeld et
-al., 2016)*.
+dose–response up to a point _(Schoenfeld, Ogborn & Krieger, 2017)_. Train each muscle
+≥2×/week for a small hypertrophy edge over 1×/week at matched volume _(Schoenfeld et
+al., 2016)_.
 
 **Load/rep range is flexible.** Hypertrophy is similar across a wide load spectrum
-(~30–85% 1RM) **when sets are taken close to failure** *(Schoenfeld et al., 2017,
-load meta-analysis)*. Strength, by contrast, is more load-dependent — heavier loads
-(>80% 1RM) drive maximal strength *(ACSM position stand, 2009)*. This is why the
+(~30–85% 1RM) **when sets are taken close to failure** _(Schoenfeld et al., 2017,
+load meta-analysis)_. Strength, by contrast, is more load-dependent — heavier loads
+(>80% 1RM) drive maximal strength _(ACSM position stand, 2009)_. This is why the
 Coach uses RPE 7–8 for hypertrophy work and RPE 8–9 for strength work.
 
 **Proximity to failure (RPE/RIR) governs the stimulus.** Most growth-oriented sets
 should be taken to ~1–3 reps in reserve; going to absolute failure on every set adds
-fatigue without proportionate benefit, especially on compounds *(Grgic et al., 2022,
-RIR/failure review)*. RPE-based autoregulation matches or beats fixed
-percentage-based loading for adapting to daily readiness *(Helms et al., 2018)*.
+fatigue without proportionate benefit, especially on compounds _(Grgic et al., 2022,
+RIR/failure review)_. RPE-based autoregulation matches or beats fixed
+percentage-based loading for adapting to daily readiness _(Helms et al., 2018)_.
 
 **Progressive overload is non-negotiable** but need not be linear forever — adding
 load, reps, or sets over time is what forces adaptation. Beginners progress nearly
 session-to-session; trained lifters need structured progression and periodisation
-*(ACSM, 2009)*.
+_(ACSM, 2009)_.
 
 **Periodisation / deloads.** Periodised programming modestly outperforms
-non-periodised for strength *(Williams et al., 2017)*. Planned recovery (deloads
+non-periodised for strength _(Williams et al., 2017)_. Planned recovery (deloads
 every ~4–6 weeks or when performance/fatigue markers slip) manages accumulated
 fatigue; "more is always better" is not supported once recovery is exceeded.
 
 **Rest periods.** Longer rest (~2–3 min) on compounds preserves volume and supports
-hypertrophy/strength better than short rest *(Schoenfeld et al., 2016, rest
-interval study)*.
+hypertrophy/strength better than short rest _(Schoenfeld et al., 2016, rest
+interval study)_.
 
 **Cardio doesn't necessarily kill gains** — the "interference effect" is real but
-small and manageable with sensible scheduling and modality choice *(Wilson et al.,
-2012)*.
+small and manageable with sensible scheduling and modality choice _(Wilson et al., 2012)_.
 
 ## Nutrition — what the literature supports
 
 **Energy balance is the master variable for fat loss.** Fat loss requires a sustained
-calorie deficit; no food, timing, or macro trick overrides this *(Hall & Guo, 2017)*.
+calorie deficit; no food, timing, or macro trick overrides this _(Hall & Guo, 2017)_.
 The Coach's 300–500 kcal deficit targets ~0.5–1% bodyweight/week, the rate associated
-with better lean-mass retention than aggressive cuts *(Garthe et al., 2011)*.
+with better lean-mass retention than aggressive cuts _(Garthe et al., 2011)_.
 
 **Protein is the highest-leverage macro.** ~1.6–2.2 g/kg/day (≈0.73–1.0 g/lb)
 maximises muscle protein synthesis and lean-mass retention; intakes toward the upper
-end help during a deficit *(Morton et al., 2018; Helms et al., 2014)*. Per-meal doses
-of ~0.4 g/kg spread over 3–5 meals are sufficient to maximise the response *(Schoenfeld
-& Aragon, 2018)*. This is the basis for the skill's 0.8–1 g/lb target.
+end help during a deficit _(Morton et al., 2018; Helms et al., 2014)_. Per-meal doses
+of ~0.4 g/kg spread over 3–5 meals are sufficient to maximise the response _(Schoenfeld
+& Aragon, 2018)_. This is the basis for the skill's 0.8–1 g/lb target.
 
 **Fat: don't go too low.** Keeping fat ≥~0.5 g/kg (the skill uses ≥0.35 g/lb as a
 practical floor) supports hormonal health; very low fat for extended periods is
-ill-advised *(general sports-nutrition consensus, e.g. ISSN)*.
+ill-advised _(general sports-nutrition consensus, e.g. ISSN)_.
 
 **Carbohydrate fuels training.** After protein and a fat floor are met, carbs fill
-remaining calories and support training performance and recovery *(Kerksick et al.,
-ISSN position stands)*.
+remaining calories and support training performance and recovery _(Kerksick et al.,
+ISSN position stands)_.
 
 **Meal timing and frequency are minor** once total intake and protein distribution
-are set. The "anabolic window" is far wider than once claimed *(Aragon & Schoenfeld,
-2013)*. Frequency mainly matters for hitting protein distribution and adherence.
+are set. The "anabolic window" is far wider than once claimed _(Aragon & Schoenfeld, 2013)_. Frequency mainly matters for hitting protein distribution and adherence.
 
 **Weight-loss stalls** are usually explained, in order, by: drifting tracking
 accuracy, water retention masking fat loss, adaptive thermogenesis after prolonged
 dieting, and overestimated maintenance — investigate these before cutting calories
-further *(Trexler, Smith-Ryan & Norton, 2014, on metabolic adaptation)*.
+further _(Trexler, Smith-Ryan & Norton, 2014, on metabolic adaptation)_.
 
 ## Supplements — graded by evidence
 
 - **Creatine monohydrate** — strongest evidence of any training supplement; improves
-  strength/power and lean mass, safe, does not cause fat gain *(Kreider et al., 2017,
-  ISSN position stand)*. ~3–5 g/day.
+  strength/power and lean mass, safe, does not cause fat gain _(Kreider et al., 2017,
+  ISSN position stand)_. ~3–5 g/day.
 - **Protein powder** — a convenient way to hit protein targets; no magic beyond that
-  *(Morton et al., 2018)*.
+  _(Morton et al., 2018)_.
 - **Caffeine** — reliable ergogenic for performance and mild appetite effect
-  *(Guest et al., 2021, ISSN position stand)*. ~3–6 mg/kg pre-training.
+  _(Guest et al., 2021, ISSN position stand)_. ~3–6 mg/kg pre-training.
 - **Omega-3** — general health benefit, useful if dietary fish is low; modest claims
   only.
 - **Not recommended** — fat burners, "detox"/cleanse products, testosterone boosters,
@@ -118,23 +116,23 @@ evidence allows and defer to a registered dietitian / GP for condition-specific 
 
 ## References (short list — expand or update as needed)
 
-- ACSM (2009). *Progression Models in Resistance Training for Healthy Adults.* Position stand.
-- Aragon & Schoenfeld (2013). *Nutrient timing revisited.* J Int Soc Sports Nutr.
-- Garthe et al. (2011). *Effect of two different weight-loss rates on body composition…* Int J Sport Nutr Exerc Metab.
-- Grgic et al. (2022). *Effects of resistance training to failure vs not to failure.* (RIR/failure review).
-- Guest et al. (2021). *ISSN position stand: caffeine and exercise performance.*
-- Hall & Guo (2017). *Obesity energetics: body weight regulation and the effects of diet composition.* Gastroenterology.
-- Helms et al. (2014). *Evidence-based recommendations for natural bodybuilding contest preparation: nutrition and supplementation.* J Int Soc Sports Nutr.
-- Helms et al. (2018). *RPE and velocity-based autoregulation.*
+- ACSM (2009). _Progression Models in Resistance Training for Healthy Adults._ Position stand.
+- Aragon & Schoenfeld (2013). _Nutrient timing revisited._ J Int Soc Sports Nutr.
+- Garthe et al. (2011). _Effect of two different weight-loss rates on body composition…_ Int J Sport Nutr Exerc Metab.
+- Grgic et al. (2022). _Effects of resistance training to failure vs not to failure._ (RIR/failure review).
+- Guest et al. (2021). _ISSN position stand: caffeine and exercise performance._
+- Hall & Guo (2017). _Obesity energetics: body weight regulation and the effects of diet composition._ Gastroenterology.
+- Helms et al. (2014). _Evidence-based recommendations for natural bodybuilding contest preparation: nutrition and supplementation._ J Int Soc Sports Nutr.
+- Helms et al. (2018). _RPE and velocity-based autoregulation._
 - Kerksick et al. (ISSN position stands on nutrient timing / diets).
-- Kreider et al. (2017). *ISSN position stand: safety and efficacy of creatine supplementation.*
-- Morton et al. (2018). *A systematic review, meta-analysis… protein supplementation on resistance training-induced gains.* Br J Sports Med.
-- Schoenfeld, Ogborn & Krieger (2017). *Dose-response relationship between weekly resistance training volume and increases in muscle mass.* J Sports Sci.
-- Schoenfeld et al. (2016/2017). *Frequency, load, and rest-interval meta-analyses.*
-- Schoenfeld & Aragon (2018). *How much protein can the body use in a single meal…* J Int Soc Sports Nutr.
-- Trexler, Smith-Ryan & Norton (2014). *Metabolic adaptation to weight loss.* J Int Soc Sports Nutr.
-- Williams et al. (2017). *Comparison of periodized and non-periodized resistance training on strength.* Sports Med.
-- Wilson et al. (2012). *Concurrent training: a meta-analysis examining interference of aerobic and resistance exercise.* J Strength Cond Res.
+- Kreider et al. (2017). _ISSN position stand: safety and efficacy of creatine supplementation._
+- Morton et al. (2018). _A systematic review, meta-analysis… protein supplementation on resistance training-induced gains._ Br J Sports Med.
+- Schoenfeld, Ogborn & Krieger (2017). _Dose-response relationship between weekly resistance training volume and increases in muscle mass._ J Sports Sci.
+- Schoenfeld et al. (2016/2017). _Frequency, load, and rest-interval meta-analyses._
+- Schoenfeld & Aragon (2018). _How much protein can the body use in a single meal…_ J Int Soc Sports Nutr.
+- Trexler, Smith-Ryan & Norton (2014). _Metabolic adaptation to weight loss._ J Int Soc Sports Nutr.
+- Williams et al. (2017). _Comparison of periodized and non-periodized resistance training on strength._ Sports Med.
+- Wilson et al. (2012). _Concurrent training: a meta-analysis examining interference of aerobic and resistance exercise._ J Strength Cond Res.
 
 > Citations are to the established literature in these fields; when stating a specific
 > figure to an athlete, present it as evidence-based guidance and note where individual

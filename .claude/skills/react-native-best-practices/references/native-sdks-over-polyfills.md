@@ -57,19 +57,19 @@ import '@formatjs/intl-displaynames/polyfill';
 
 **Hermes Intl support must be checked against the Hermes version in the app:**
 
-| API | Hermes | Keep Polyfill? |
-|-----|--------|----------------|
-| `Intl.Collator` | ✅ | No |
-| `Intl.DateTimeFormat` | ⚠️ Partial | Maybe |
-| `Intl.NumberFormat` | ⚠️ Partial | Maybe |
-| `Intl.getCanonicalLocales()` | ✅ | No |
-| `Intl.supportedValuesOf()` | ✅ | No |
-| `Intl.Locale` | ❌ | Yes |
-| `Intl.PluralRules` | ❌ | Yes |
-| `Intl.RelativeTimeFormat` | ❌ | Yes |
-| `Intl.DisplayNames` | ❌ | Yes |
-| `Intl.ListFormat` | ❌ | Yes |
-| `Intl.Segmenter` | ❌ | Yes |
+| API                          | Hermes     | Keep Polyfill? |
+| ---------------------------- | ---------- | -------------- |
+| `Intl.Collator`              | ✅         | No             |
+| `Intl.DateTimeFormat`        | ⚠️ Partial | Maybe          |
+| `Intl.NumberFormat`          | ⚠️ Partial | Maybe          |
+| `Intl.getCanonicalLocales()` | ✅         | No             |
+| `Intl.supportedValuesOf()`   | ✅         | No             |
+| `Intl.Locale`                | ❌         | Yes            |
+| `Intl.PluralRules`           | ❌         | Yes            |
+| `Intl.RelativeTimeFormat`    | ❌         | Yes            |
+| `Intl.DisplayNames`          | ❌         | Yes            |
+| `Intl.ListFormat`            | ❌         | Yes            |
+| `Intl.Segmenter`             | ❌         | Yes            |
 
 Constructor support does not guarantee every option or method your app uses. Keep polyfills for any API, option, locale data, or method the app depends on but Hermes does not fully support on the target platform.
 
@@ -107,6 +107,7 @@ import { createHash } from 'react-native-quick-crypto';
 ```
 
 Essential for:
+
 - Web3 wallet seed generation
 - CSPRNG (Cryptographically Secure Random Numbers)
 - Any heavy cryptographic operations
@@ -132,10 +133,11 @@ const Stack = createNativeStackNavigator();
 <Stack.Navigator>
   <Stack.Screen name="Home" component={HomeScreen} />
   <Stack.Screen name="Details" component={DetailsScreen} />
-</Stack.Navigator>
+</Stack.Navigator>;
 ```
 
 **Benefits:**
+
 - Native navigation animations
 - Platform-specific headers (large titles on iOS)
 - Lower memory usage
@@ -159,26 +161,26 @@ const Tabs = createNativeBottomTabNavigator();
 <Tabs.Navigator>
   <Tabs.Screen name="Home" component={HomeScreen} />
   <Tabs.Screen name="Profile" component={ProfileScreen} />
-</Tabs.Navigator>
+</Tabs.Navigator>;
 ```
 
 ## Recommended Native Libraries
 
-| Category | Library | Description |
-|----------|---------|-------------|
-| Navigation | `react-native-screens` | Native screen containers |
-| Menus | `zeego` | Native menus (Radix-like API) |
-| Slider | `@react-native-community/slider` | Native slider |
-| Date Picker | `react-native-date-picker` | Native date/time picker |
+| Category    | Library                          | Description                   |
+| ----------- | -------------------------------- | ----------------------------- |
+| Navigation  | `react-native-screens`           | Native screen containers      |
+| Menus       | `zeego`                          | Native menus (Radix-like API) |
+| Slider      | `@react-native-community/slider` | Native slider                 |
+| Date Picker | `react-native-date-picker`       | Native date/time picker       |
 
 ## Decision Matrix
 
-| Scenario | Use Native? | Tradeoff |
-|----------|-------------|----------|
-| Standard navigation | ✅ Yes | Slight API differences |
-| Custom transition animations | ⚠️ Maybe | Native is more limited |
-| Platform-consistent UI | ✅ Yes | Less customization |
-| Unique/branded design | ⚠️ Consider JS | Native may not support |
+| Scenario                     | Use Native?    | Tradeoff               |
+| ---------------------------- | -------------- | ---------------------- |
+| Standard navigation          | ✅ Yes         | Slight API differences |
+| Custom transition animations | ⚠️ Maybe       | Native is more limited |
+| Platform-consistent UI       | ✅ Yes         | Less customization     |
+| Unique/branded design        | ⚠️ Consider JS | Native may not support |
 
 ## Common Pitfalls
 

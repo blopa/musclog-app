@@ -25,25 +25,27 @@ do not guess or assume.
 **1. Estimate TDEE** using Mifflin-St Jeor for BMR, then × activity factor:
 
 BMR (Mifflin-St Jeor):
+
 - Men: `10 × kg + 6.25 × cm − 5 × age + 5`
 - Women: `10 × kg + 6.25 × cm − 5 × age − 161`
 
 Activity multiplier:
-| Activity | Multiplier |
-|----------|-----------|
-| Sedentary (desk job, little movement) | × 1.2 |
-| Lightly active (1–3 days training/week) | × 1.375 |
-| Moderately active (3–5 days training/week) | × 1.55 |
-| Very active (6–7 days hard training) | × 1.725 |
+
+| Activity                                   | Multiplier |
+| ------------------------------------------ | ---------- |
+| Sedentary (desk job, little movement)      | × 1.2      |
+| Lightly active (1–3 days training/week)    | × 1.375    |
+| Moderately active (3–5 days training/week) | × 1.55     |
+| Very active (6–7 days hard training)       | × 1.725    |
 
 **2. Apply the deficit**: 300–500 kcal below TDEE for steady fat loss (~0.5–1 lb/week).
 Only suggest a larger deficit if there's a specific short-term deadline and the
 athlete understands the trade-offs (more muscle/strength risk, harder adherence).
 
 **3. Set macros in priority order:**
+
 - **Protein**: 0.8–1 g per lb bodyweight (≈1.6–2.2 g/kg) — non-negotiable for muscle
-  retention; the upper end helps in a deficit *(Morton et al., 2018; Helms et al.,
-  2014)*.
+  retention; the upper end helps in a deficit _(Morton et al., 2018; Helms et al., 2014)_.
 - **Fat**: minimum 0.35 g per lb bodyweight — hormonal health; don't go very low for
   long.
 - **Carbohydrates**: fill the remaining calories — fuel for training and recovery.
@@ -84,6 +86,7 @@ number means and why. Then save the result to `coach-data/nutrition.md`.
 ## Supplements
 
 Only recommend evidence-backed options:
+
 - **Protein powder** — if they struggle to hit protein through food.
 - **Creatine** — muscle retention during a cut; explain it does **not** cause fat gain.
 - **Caffeine** — pre-workout energy and mild appetite suppression.

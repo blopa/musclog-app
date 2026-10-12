@@ -61,10 +61,10 @@ Use uncontrolled TextInput primarily as a responsiveness or legacy-architecture 
 // Controlled - value prop syncs state to native
 const ControlledInput = () => {
   const [value, setValue] = useState('');
-  
+
   return (
     <TextInput
-      value={value}           // This causes sync issues
+      value={value} // This causes sync issues
       onChangeText={setValue}
     />
   );
@@ -79,11 +79,11 @@ Remove the `value` prop to make it uncontrolled:
 // Uncontrolled - native owns the state
 const UncontrolledInput = () => {
   const [value, setValue] = useState('');
-  
+
   return (
     <TextInput
-      defaultValue={value}     // Only sets initial value
-      onChangeText={setValue}  // Still updates React state
+      defaultValue={value} // Only sets initial value
+      onChangeText={setValue} // Still updates React state
     />
   );
 };
@@ -96,15 +96,15 @@ If you need to read/set value programmatically:
 ```jsx
 const UncontrolledWithRef = () => {
   const inputRef = useRef(null);
-  
+
   const clearInput = () => {
     inputRef.current?.clear();
   };
-  
+
   const getValue = () => {
     // Use onChangeText to track value, or native methods
   };
-  
+
   return (
     <TextInput
       ref={inputRef}
@@ -125,16 +125,16 @@ const UncontrolledWithRef = () => {
 const SearchInput = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  
+
   const handleChange = (text) => {
     setQuery(text);
     fetchResults(text).then(setResults);
   };
-  
+
   return (
     <View>
       <TextInput
-        value={query}              // Remove this
+        value={query} // Remove this
         onChangeText={handleChange}
         placeholder="Search..."
       />
@@ -150,16 +150,16 @@ const SearchInput = () => {
 const SearchInput = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  
+
   const handleChange = (text) => {
     setQuery(text);
     fetchResults(text).then(setResults);
   };
-  
+
   return (
     <View>
       <TextInput
-        defaultValue=""           // Initial value only
+        defaultValue="" // Initial value only
         onChangeText={handleChange}
         placeholder="Search..."
       />
@@ -177,16 +177,16 @@ For input masking or validation that modifies input:
 // Option 1: Accept the controlled behavior (may flicker)
 const MaskedInput = () => {
   const [value, setValue] = useState('');
-  
+
   const handleChange = (text) => {
     // Phone mask: (123) 456-7890
     const masked = maskPhone(text);
     setValue(masked);
   };
-  
+
   return (
     <TextInput
-      value={value}  // Necessary for masking
+      value={value} // Necessary for masking
       onChangeText={handleChange}
     />
   );
@@ -198,14 +198,14 @@ const MaskedInput = () => {
 
 ## Decision Matrix
 
-| Scenario | Recommendation |
-|----------|---------------|
-| Simple text input | Uncontrolled |
-| Search/filter input | Uncontrolled |
-| Form with validation on submit | Uncontrolled |
+| Scenario                           | Recommendation               |
+| ---------------------------------- | ---------------------------- |
+| Simple text input                  | Uncontrolled                 |
+| Search/filter input                | Uncontrolled                 |
+| Form with validation on submit     | Uncontrolled                 |
 | Input masking (phone, credit card) | Controlled or native library |
-| Character-by-character validation | Controlled |
-| New Architecture app | Either works well |
+| Character-by-character validation  | Controlled                   |
+| New Architecture app               | Either works well            |
 
 ## Common Pitfalls
 

@@ -13,6 +13,7 @@ Performance optimization guide for React Native applications, covering JavaScrip
 ## When to Apply
 
 Reference these guidelines when:
+
 - Debugging slow/janky UI or animations
 - Investigating memory leaks (JS or native)
 - Optimizing app startup time (TTI)
@@ -29,14 +30,14 @@ Reference these guidelines when:
 
 ## Priority-Ordered Guidelines
 
-| Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
-| 1 | FPS & Re-renders | CRITICAL | `js-*` |
-| 2 | Bundle Size | CRITICAL | `bundle-*` |
-| 3 | TTI Optimization | HIGH | `native-*`, `bundle-*` |
-| 4 | Native Performance | HIGH | `native-*` |
-| 5 | Memory Management | MEDIUM-HIGH | `js-*`, `native-*` |
-| 6 | Animations | MEDIUM | `js-*` |
+| Priority | Category           | Impact      | Prefix                 |
+| -------- | ------------------ | ----------- | ---------------------- |
+| 1        | FPS & Re-renders   | CRITICAL    | `js-*`                 |
+| 2        | Bundle Size        | CRITICAL    | `bundle-*`             |
+| 3        | TTI Optimization   | HIGH        | `native-*`, `bundle-*` |
+| 4        | Native Performance | HIGH        | `native-*`             |
+| 5        | Memory Management  | MEDIUM-HIGH | `js-*`, `native-*`     |
+| 6        | Animations         | MEDIUM      | `js-*`                 |
 
 Impact labels are triage hints: CRITICAL first, HIGH next, MEDIUM when evidence points there.
 
@@ -63,6 +64,7 @@ If metrics did not improve, revert and try the next suggested fix.
 ### Critical: FPS & Re-renders
 
 **Profile first:**
+
 ```bash
 agent-device react-devtools status
 agent-device react-devtools wait --connected
@@ -80,6 +82,7 @@ Manual fallback when `agent-device` is unavailable: open React Native DevTools f
 For release-build React component profiling, connect [`@callstack/inspector`](https://github.com/callstackincubator/inspector#inspector) first so React DevTools can attach to the release app, then run the `agent-device react-devtools` flow above.
 
 **Common fixes:**
+
 - Replace ScrollView with FlatList/FlashList/Legend List for long lists
 - After profiling shows cascading re-renders, use React Compiler for automatic memoization
 - After profiling shows broad store/context updates, use atomic state (Jotai/Zustand) to reduce re-renders
@@ -88,6 +91,7 @@ For release-build React component profiling, connect [`@callstack/inspector`](ht
 ### Critical: Bundle Size
 
 **Analyze bundle:**
+
 ```bash
 npx react-native bundle \
   --entry-file index.js \
@@ -100,6 +104,7 @@ npx source-map-explorer output.js --no-border-checks
 ```
 
 **Verify improvement after optimization:**
+
 ```bash
 # Record baseline size before changes
 ls -lh output.js  # e.g., Before: 2.1 MB
@@ -111,6 +116,7 @@ ls -lh output.js  # e.g., After: 1.6 MB  (24% reduction)
 ```
 
 **Common fixes:**
+
 - Avoid barrel imports (import directly from source)
 - Remove unnecessary Intl polyfills only after checking Hermes API and method coverage
 - Evaluate tree shaking (Expo SDK 52+ experimental unused import/export removal, or Re.Pack only if already configured)
@@ -119,10 +125,12 @@ ls -lh output.js  # e.g., After: 1.6 MB  (24% reduction)
 ### High: TTI Optimization
 
 **Measure TTI:**
+
 - Use `react-native-performance` for markers
 - Only measure cold starts (exclude warm/hot/prewarm)
 
 **Common fixes:**
+
 - For React Native 0.78 and earlier, disable Android JS bundle compression to enable Hermes mmap
 - Use native navigation (react-native-screens)
 - Preload commonly-used expensive screens before navigating to them
@@ -130,10 +138,12 @@ ls -lh output.js  # e.g., After: 1.6 MB  (24% reduction)
 ### High: Native Performance
 
 **Profile native:**
+
 - iOS: Xcode Instruments → Time Profiler
 - Android: Android Studio → CPU Profiler
 
 **Common fixes:**
+
 - Use background threads for heavy native work
 - Prefer async over sync Turbo Module methods
 - Use C++ for cross-platform performance-critical code
@@ -144,63 +154,63 @@ Full documentation with code examples in [references/][references]:
 
 ### JavaScript/React (`js-*`)
 
-| File | Impact | Description |
-|------|--------|-------------|
+| File                                                          | Impact   | Description                               |
+| ------------------------------------------------------------- | -------- | ----------------------------------------- |
 | [js-lists-flatlist-flashlist.md][js-lists-flatlist-flashlist] | CRITICAL | Replace ScrollView with virtualized lists |
-| [js-profile-react.md][js-profile-react] | MEDIUM | `agent-device react-devtools` profiling |
-| [js-measure-fps.md][js-measure-fps] | HIGH | FPS monitoring and measurement |
-| [js-memory-leaks.md][js-memory-leaks] | MEDIUM | JS memory leak hunting |
-| [js-atomic-state.md][js-atomic-state] | HIGH | Jotai/Zustand patterns |
-| [js-concurrent-react.md][js-concurrent-react] | HIGH | useDeferredValue, useTransition |
-| [js-react-compiler.md][js-react-compiler] | HIGH | Automatic memoization |
-| [js-animations-reanimated.md][js-animations-reanimated] | MEDIUM | Reanimated worklets |
-| [js-bottomsheet.md][js-bottomsheet] | HIGH | Bottom sheet optimization |
-| [js-uncontrolled-components.md][js-uncontrolled-components] | HIGH | TextInput optimization |
+| [js-profile-react.md][js-profile-react]                       | MEDIUM   | `agent-device react-devtools` profiling   |
+| [js-measure-fps.md][js-measure-fps]                           | HIGH     | FPS monitoring and measurement            |
+| [js-memory-leaks.md][js-memory-leaks]                         | MEDIUM   | JS memory leak hunting                    |
+| [js-atomic-state.md][js-atomic-state]                         | HIGH     | Jotai/Zustand patterns                    |
+| [js-concurrent-react.md][js-concurrent-react]                 | HIGH     | useDeferredValue, useTransition           |
+| [js-react-compiler.md][js-react-compiler]                     | HIGH     | Automatic memoization                     |
+| [js-animations-reanimated.md][js-animations-reanimated]       | MEDIUM   | Reanimated worklets                       |
+| [js-bottomsheet.md][js-bottomsheet]                           | HIGH     | Bottom sheet optimization                 |
+| [js-uncontrolled-components.md][js-uncontrolled-components]   | HIGH     | TextInput optimization                    |
 
 ### Native (`native-*`)
 
-| File | Impact | Description |
-|------|--------|-------------|
-| [native-turbo-modules.md][native-turbo-modules] | HIGH | Building fast native modules |
-| [native-sdks-over-polyfills.md][native-sdks-over-polyfills] | HIGH | Native vs JS libraries |
-| [native-measure-tti.md][native-measure-tti] | HIGH | TTI measurement setup |
-| [native-threading-model.md][native-threading-model] | HIGH | Turbo Module threads |
-| [native-profiling.md][native-profiling] | MEDIUM | Xcode/Android Studio profiling |
-| [native-platform-setup.md][native-platform-setup] | MEDIUM | iOS/Android tooling guide |
-| [native-view-flattening.md][native-view-flattening] | MEDIUM | View hierarchy debugging |
-| [native-memory-patterns.md][native-memory-patterns] | MEDIUM | C++/Swift/Kotlin memory |
-| [native-memory-leaks.md][native-memory-leaks] | MEDIUM | Native memory leak hunting |
+| File                                                              | Impact   | Description                                   |
+| ----------------------------------------------------------------- | -------- | --------------------------------------------- |
+| [native-turbo-modules.md][native-turbo-modules]                   | HIGH     | Building fast native modules                  |
+| [native-sdks-over-polyfills.md][native-sdks-over-polyfills]       | HIGH     | Native vs JS libraries                        |
+| [native-measure-tti.md][native-measure-tti]                       | HIGH     | TTI measurement setup                         |
+| [native-threading-model.md][native-threading-model]               | HIGH     | Turbo Module threads                          |
+| [native-profiling.md][native-profiling]                           | MEDIUM   | Xcode/Android Studio profiling                |
+| [native-platform-setup.md][native-platform-setup]                 | MEDIUM   | iOS/Android tooling guide                     |
+| [native-view-flattening.md][native-view-flattening]               | MEDIUM   | View hierarchy debugging                      |
+| [native-memory-patterns.md][native-memory-patterns]               | MEDIUM   | C++/Swift/Kotlin memory                       |
+| [native-memory-leaks.md][native-memory-leaks]                     | MEDIUM   | Native memory leak hunting                    |
 | [native-android-16kb-alignment.md][native-android-16kb-alignment] | CRITICAL | Third-party library alignment for Google Play |
 
 ### Bundling (`bundle-*`)
 
-| File | Impact | Description |
-|------|--------|-------------|
-| [bundle-barrel-exports.md][bundle-barrel-exports] | CRITICAL | Avoid barrel imports |
-| [bundle-analyze-js.md][bundle-analyze-js] | CRITICAL | JS bundle visualization |
-| [bundle-tree-shaking.md][bundle-tree-shaking] | HIGH | Dead code elimination |
-| [bundle-analyze-app.md][bundle-analyze-app] | HIGH | App size analysis |
-| [bundle-r8-android.md][bundle-r8-android] | HIGH | Android code shrinking |
-| [bundle-hermes-mmap.md][bundle-hermes-mmap] | HIGH | Disable bundle compression |
-| [bundle-native-assets.md][bundle-native-assets] | HIGH | Asset catalog setup |
-| [bundle-library-size.md][bundle-library-size] | MEDIUM | Evaluate dependencies |
-| [bundle-code-splitting.md][bundle-code-splitting] | MEDIUM | Remote chunk loading safeguards |
+| File                                              | Impact   | Description                     |
+| ------------------------------------------------- | -------- | ------------------------------- |
+| [bundle-barrel-exports.md][bundle-barrel-exports] | CRITICAL | Avoid barrel imports            |
+| [bundle-analyze-js.md][bundle-analyze-js]         | CRITICAL | JS bundle visualization         |
+| [bundle-tree-shaking.md][bundle-tree-shaking]     | HIGH     | Dead code elimination           |
+| [bundle-analyze-app.md][bundle-analyze-app]       | HIGH     | App size analysis               |
+| [bundle-r8-android.md][bundle-r8-android]         | HIGH     | Android code shrinking          |
+| [bundle-hermes-mmap.md][bundle-hermes-mmap]       | HIGH     | Disable bundle compression      |
+| [bundle-native-assets.md][bundle-native-assets]   | HIGH     | Asset catalog setup             |
+| [bundle-library-size.md][bundle-library-size]     | MEDIUM   | Evaluate dependencies           |
+| [bundle-code-splitting.md][bundle-code-splitting] | MEDIUM   | Remote chunk loading safeguards |
 
 ## Problem → Skill Mapping
 
-| Problem | Start With |
-|---------|------------|
-| App feels slow/janky | [js-measure-fps.md][js-measure-fps] → [js-profile-react.md][js-profile-react] |
-| Too many re-renders | [js-profile-react.md][js-profile-react] → [js-react-compiler.md][js-react-compiler] |
-| Slow startup (TTI) | [native-measure-tti.md][native-measure-tti] → [bundle-analyze-js.md][bundle-analyze-js] |
-| Large app size | [bundle-analyze-app.md][bundle-analyze-app] → [bundle-r8-android.md][bundle-r8-android] |
-| Memory growing | [js-memory-leaks.md][js-memory-leaks] or [native-memory-leaks.md][native-memory-leaks] |
-| Animation drops frames | [js-animations-reanimated.md][js-animations-reanimated] |
-| Bottom sheet jank/re-renders | [js-bottomsheet.md][js-bottomsheet] → [js-animations-reanimated.md][js-animations-reanimated] |
-| List scroll jank | [js-lists-flatlist-flashlist.md][js-lists-flatlist-flashlist] |
-| TextInput lag | [js-uncontrolled-components.md][js-uncontrolled-components] |
-| Native module slow | [native-turbo-modules.md][native-turbo-modules] → [native-threading-model.md][native-threading-model] |
-| Native library alignment issue | [native-android-16kb-alignment.md][native-android-16kb-alignment] |
+| Problem                        | Start With                                                                                            |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| App feels slow/janky           | [js-measure-fps.md][js-measure-fps] → [js-profile-react.md][js-profile-react]                         |
+| Too many re-renders            | [js-profile-react.md][js-profile-react] → [js-react-compiler.md][js-react-compiler]                   |
+| Slow startup (TTI)             | [native-measure-tti.md][native-measure-tti] → [bundle-analyze-js.md][bundle-analyze-js]               |
+| Large app size                 | [bundle-analyze-app.md][bundle-analyze-app] → [bundle-r8-android.md][bundle-r8-android]               |
+| Memory growing                 | [js-memory-leaks.md][js-memory-leaks] or [native-memory-leaks.md][native-memory-leaks]                |
+| Animation drops frames         | [js-animations-reanimated.md][js-animations-reanimated]                                               |
+| Bottom sheet jank/re-renders   | [js-bottomsheet.md][js-bottomsheet] → [js-animations-reanimated.md][js-animations-reanimated]         |
+| List scroll jank               | [js-lists-flatlist-flashlist.md][js-lists-flatlist-flashlist]                                         |
+| TextInput lag                  | [js-uncontrolled-components.md][js-uncontrolled-components]                                           |
+| Native module slow             | [native-turbo-modules.md][native-turbo-modules] → [native-threading-model.md][native-threading-model] |
+| Native library alignment issue | [native-android-16kb-alignment.md][native-android-16kb-alignment]                                     |
 
 [references]: references/
 [js-lists-flatlist-flashlist]: references/js-lists-flatlist-flashlist.md

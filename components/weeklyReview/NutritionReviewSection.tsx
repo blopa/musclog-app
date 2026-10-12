@@ -12,11 +12,16 @@ import { Pressable, Text, View } from 'react-native';
 import { StatStrip } from '@/components/StatStrip';
 import { Button } from '@/components/theme/Button';
 import { nutritionTargetMode } from '@/database/services/NutritionTargetService';
-import type { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
+import {
+  MIN_WEEKLY_FOOD_DAYS,
+  type WeeklyReviewService,
+} from '@/database/services/WeeklyReviewService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { MIN_WEIGHT_ENTRIES } from '@/utils/historicalNutritionParams';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -41,8 +46,6 @@ const MODE_KEYS = {
   weekly: 'weeklyReview.modes.weekly',
 } as const;
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
 /**
  * The Nutrition half of a Weekly Review: this week's evidence, the recommended targets beside the
  * current ones, and the decision. Approved targets start tomorrow and stay put until the next
@@ -66,8 +69,10 @@ export function NutritionReviewSection({
   onEdit: () => void;
   onSwitchWeekly: () => void;
   onEditGoal: () => void;
-  onLogWeight: () => void;
-  onLogFood: () => void;
+  /** Opens weight entry on `day` (local midnight), a day of the reviewed week with no weigh-in. */
+  onLogWeight: (day: number) => void;
+  /** Opens the food diary on `day` (local midnight), a day of the reviewed week with no food. */
+  onLogFood: (day: number) => void;
 }) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
@@ -119,7 +124,11 @@ export function NutritionReviewSection({
   } else if ('expenditure' in why) {
     reason = t(why.key, { expenditure: formatInteger(why.expenditure) });
   } else {
-    reason = t(why.key);
+    // `collectData` states the thresholds `canApply` checks, so the copy cannot drift from them.
+    reason = t(why.key, {
+      food: formatInteger(MIN_WEEKLY_FOOD_DAYS),
+      weight: formatInteger(MIN_WEIGHT_ENTRIES),
+    });
   }
   const largeChange =
     !decided &&
@@ -139,7 +148,14 @@ export function NutritionReviewSection({
           {applied && data.review?.nutritionReviewedAt ? (
             <Text className="text-sm text-text-secondary">
               {t('weeklyReview.effective', {
-                date: date(data.review.nutritionReviewedAt + DAY_MS),
+                // Approved targets start the next local calendar day (see `WeeklyReviewService.decide`);
+                // adding 24 hours lands on the wrong day across a daylight-saving change.
+                date: date(
+                  localDayKeyPlusCalendarDays(
+                    localDayStartFromUtcMs(data.review.nutritionReviewedAt),
+                    1
+                  )
+                ),
               })}
             </Text>
           ) : null}
@@ -167,24 +183,33 @@ export function NutritionReviewSection({
       </View>
     );
   } else if (!recommendation?.canApply) {
+    const { foodDay, weightDay } = data.gaps;
     decision = (
       <View className="gap-3">
-        <View className="flex-row flex-wrap gap-2">
-          <Button
-            label={t('weeklyReview.logWeight')}
-            icon={Scale}
-            size="sm"
-            variant="secondary"
-            onPress={onLogWeight}
-          />
-          <Button
-            label={t('weeklyReview.logFood')}
-            icon={UtensilsCrossed}
-            size="sm"
-            variant="secondary"
-            onPress={onLogFood}
-          />
-        </View>
+        {/* Each button opens the reviewed week on a day still missing, never today: a closed
+            week cannot gain evidence from anything logged after it. */}
+        {weightDay != null || foodDay != null ? (
+          <View className="flex-row flex-wrap gap-2">
+            {weightDay != null ? (
+              <Button
+                label={t('weeklyReview.logWeightOn', { date: date(weightDay) })}
+                icon={Scale}
+                size="sm"
+                variant="secondary"
+                onPress={() => onLogWeight(weightDay)}
+              />
+            ) : null}
+            {foodDay != null ? (
+              <Button
+                label={t('weeklyReview.logFoodOn', { date: date(foodDay) })}
+                icon={UtensilsCrossed}
+                size="sm"
+                variant="secondary"
+                onPress={() => onLogFood(foodDay)}
+              />
+            ) : null}
+          </View>
+        ) : null}
         <Button
           label={t('weeklyReview.keepCollecting')}
           variant="gradientCta"
@@ -318,7 +343,8 @@ export function NutritionReviewSection({
           <Text className="text-sm text-text-secondary">{t('weeklyReview.largeChangeBody')}</Text>
           <Pressable
             accessibilityRole="button"
-            onPress={onLogFood}
+            // The week under review, not today: that is the log this warning asks to check.
+            onPress={() => onLogFood(data.period.start)}
             className="min-h-11 justify-center self-start"
           >
             <Text className="text-sm font-bold text-accent-primary">

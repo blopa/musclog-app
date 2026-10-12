@@ -32,13 +32,13 @@ Older CLIs such as 18.6.0 lack these commands. Check `eas --version` and command
 
 ## Track the release state
 
-| Verified state | What it establishes | Next check |
-| --- | --- | --- |
-| EAS build finished | An artifact was produced | Confirm the intended build ID, source revision and store-distribution profile |
-| Submission queued | EAS scheduled an upload | Follow the returned submission URL and worker logs |
-| Apple upload/processing succeeded | Apple accepted the binary | Check TestFlight availability and any export-compliance work |
-| Build assigned and available to testers | The intended testers can install it | Verify the beta app on a device |
-| App Review approved and released | Public App Store distribution | Only part of an authorized production release |
+| Verified state                          | What it establishes                 | Next check                                                                    |
+| --------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------- |
+| EAS build finished                      | An artifact was produced            | Confirm the intended build ID, source revision and store-distribution profile |
+| Submission queued                       | EAS scheduled an upload             | Follow the returned submission URL and worker logs                            |
+| Apple upload/processing succeeded       | Apple accepted the binary           | Check TestFlight availability and any export-compliance work                  |
+| Build assigned and available to testers | The intended testers can install it | Verify the beta app on a device                                               |
+| App Review approved and released        | Public App Store distribution       | Only part of an authorized production release                                 |
 
 Do not report an upload as finished based only on `--no-wait` returning successfully. If a submission fails with an empty summary, inspect its worker logs; the underlying Apple error may be there. Report the exact version/build and the furthest state actually verified.
 
@@ -46,14 +46,14 @@ Do not report an upload as finished based only on `--no-wait` returning successf
 
 ## Troubleshooting
 
-| Symptom | Action |
-| --- | --- |
-| Required agreement missing or expired | The Account Holder must resolve it for the app's Apple team. Retrying or rebuilding does not accept an agreement. |
-| App missing in App Store Connect | Check the selected organization and `ascAppId` against the native bundle identifier. One login may belong to several teams. |
-| Duplicate build number despite EAS auto-increment | Inspect the archive's `CFBundleVersion`; for native Swift, check explicit versus generated plist configuration in `native-ios.md`. |
-| Invalid large app icon / alpha channel | For the default (Any/light) AppIcon PNG, remove the alpha channel and rebuild. Even an all-opaque RGBA file can fail. Check the icon selected by that profile; preserve transparency in dark variants and Icon Composer layers. See the icon checks in `native-ios.md`. |
-| Upload accepted but no installable build | Check processing/compliance state and the intended tester group's build assignment in App Store Connect. |
-| Optional release-notes feature rejected by the EAS plan | Complete the required upload without that optional parameter and use App Store Connect for notes. Do not rebuild a valid binary or change the account plan for this. |
+| Symptom                                                 | Action                                                                                                                                                                                                                                                                  |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Required agreement missing or expired                   | The Account Holder must resolve it for the app's Apple team. Retrying or rebuilding does not accept an agreement.                                                                                                                                                       |
+| App missing in App Store Connect                        | Check the selected organization and `ascAppId` against the native bundle identifier. One login may belong to several teams.                                                                                                                                             |
+| Duplicate build number despite EAS auto-increment       | Inspect the archive's `CFBundleVersion`; for native Swift, check explicit versus generated plist configuration in `native-ios.md`.                                                                                                                                      |
+| Invalid large app icon / alpha channel                  | For the default (Any/light) AppIcon PNG, remove the alpha channel and rebuild. Even an all-opaque RGBA file can fail. Check the icon selected by that profile; preserve transparency in dark variants and Icon Composer layers. See the icon checks in `native-ios.md`. |
+| Upload accepted but no installable build                | Check processing/compliance state and the intended tester group's build assignment in App Store Connect.                                                                                                                                                                |
+| Optional release-notes feature rejected by the EAS plan | Complete the required upload without that optional parameter and use App Store Connect for notes. Do not rebuild a valid binary or change the account plan for this.                                                                                                    |
 
 After an archive-content failure, fix the cause, validate the new artifact and submit its exact ID. After an account/submission-only failure, reuse the valid existing artifact once the account issue is resolved. Keep the requested release scope; uploading a beta does not authorize a public App Store release.
 

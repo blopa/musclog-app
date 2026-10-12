@@ -54,6 +54,7 @@ Not all behaviors are the same. Fogg categorizes behaviors by their relationship
 ### One-Time Behaviors (Dot Behaviors)
 
 Behaviors you want to happen once:
+
 - Sign up for an account
 - Complete a purchase
 - Accept an invitation
@@ -64,6 +65,7 @@ Behaviors you want to happen once:
 ### Habitual Behaviors (Span Behaviors)
 
 Behaviors you want to happen repeatedly:
+
 - Check the dashboard daily
 - Review weekly reports
 - Use the collaboration tool
@@ -74,6 +76,7 @@ Behaviors you want to happen repeatedly:
 ### Stop Behaviors
 
 Behaviors you want to stop:
+
 - Churning from the product
 - Skipping onboarding steps
 - Ignoring notifications
@@ -91,6 +94,7 @@ When a target behavior isn't happening, diagnose using B=MAP:
 If the user never receives a prompt, behavior won't happen — regardless of motivation and ability.
 
 **Check:**
+
 - Is there a visible CTA?
 - Does a notification or email fire?
 - Is there an environmental cue?
@@ -103,6 +107,7 @@ If the user never receives a prompt, behavior won't happen — regardless of mot
 If the prompt exists but the behavior isn't happening, check ability next (not motivation).
 
 **Check:**
+
 - Can the user complete the behavior in under 60 seconds?
 - Is any of the six Ability Chain factors a bottleneck?
 - Is the behavior familiar or does it require learning?
@@ -115,6 +120,7 @@ If the prompt exists but the behavior isn't happening, check ability next (not m
 Only check motivation last. If prompt and ability are present and the behavior still isn't happening, motivation is the issue.
 
 **Check:**
+
 - Does the user understand the benefit?
 - Is the timing right (motivation wave present)?
 - Is there a motivation mismatch (product solving wrong problem)?
@@ -130,13 +136,13 @@ Only check motivation last. If prompt and ability are present and the behavior s
 
 For any product, identify and map these behaviors:
 
-| Behavior Category | Examples | B=MAP Priority |
-|-------------------|----------|----------------|
-| **Activation** | First core action, onboarding completion | Ability + Prompt (motivation is high at start) |
-| **Engagement** | Daily/weekly core actions | Ability (must survive low motivation) |
-| **Retention** | Return visits, habit loops | Prompt + Ability (internal prompts take time) |
-| **Expansion** | Feature adoption, upgrades | Motivation + Prompt (new behaviors need motivation) |
-| **Advocacy** | Referrals, reviews, sharing | Motivation + Ability (make sharing easy) |
+| Behavior Category | Examples                                 | B=MAP Priority                                      |
+| ----------------- | ---------------------------------------- | --------------------------------------------------- |
+| **Activation**    | First core action, onboarding completion | Ability + Prompt (motivation is high at start)      |
+| **Engagement**    | Daily/weekly core actions                | Ability (must survive low motivation)               |
+| **Retention**     | Return visits, habit loops               | Prompt + Ability (internal prompts take time)       |
+| **Expansion**     | Feature adoption, upgrades               | Motivation + Prompt (new behaviors need motivation) |
+| **Advocacy**      | Referrals, reviews, sharing              | Motivation + Ability (make sharing easy)            |
 
 ### The B=MAP Audit Template
 

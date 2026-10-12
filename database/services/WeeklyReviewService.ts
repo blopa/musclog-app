@@ -6,15 +6,17 @@ import type NutritionGoal from '@/database/models/NutritionGoal';
 import type NutritionTargetPeriod from '@/database/models/NutritionTargetPeriod';
 import type WeeklyReview from '@/database/models/WeeklyReview';
 import type WorkoutLog from '@/database/models/WorkoutLog';
+import { getNutritionDayCoverage } from '@/database/nutritionDayCoverage';
 import { WorkoutTodayRepository } from '@/database/repositories/WorkoutTodayRepository';
 import {
+  dayKeyRange,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
-import { MIN_DAYS_WITH_NUTRITION, MIN_WEIGHT_ENTRIES } from '@/utils/historicalNutritionParams';
+import { MIN_WEIGHT_ENTRIES } from '@/utils/historicalNutritionParams';
 import {
   calculateTrendWeightSeries,
   TREND_WEIGHT_WARMUP_DAYS,
@@ -51,6 +53,26 @@ export type WeeklyNutritionRecommendation = {
    */
   expenditure?: number;
   trendChangeKg?: number;
+};
+
+/**
+ * Days of the reviewed week that must have logged food (or, with the fasting-day feature on, be
+ * flagged as a fast) before its recommendation can be applied. The recommendation itself is built
+ * from the 30-day history, so this only asks whether the week is representative: requiring all
+ * seven let one forgotten day block the whole week.
+ */
+export const MIN_WEEKLY_FOOD_DAYS = 5;
+
+/**
+ * The days of a reviewed week the user could still fill in, as local midnights, so the review can
+ * open the diary or the weight entry ON one of them. Logging today never counts toward a week that
+ * has already closed, which is why "Log food" used to be a dead end.
+ */
+export type WeeklyEvidenceGaps = {
+  /** The earliest day with neither food nor a flagged fast, when the week is short of food days. */
+  foodDay: number | null;
+  /** The latest day with no weigh-in, when the week is short of weigh-ins. */
+  weightDay: number | null;
 };
 
 export class WeeklyReviewService {
@@ -114,6 +136,7 @@ export class WeeklyReviewService {
     const targets = next ? await WorkoutProgressionService.projectTemplate(next.template.id) : [];
     let nutrition: WeeklyNutritionRecommendation | null = null;
     let trendWeight: number | null = null;
+    let gaps: WeeklyEvidenceGaps = { foodDay: null, weightDay: null };
     const current = goal
       ? await NutritionTargetService.resolve(goal, saved ? new Date(saved.periodEnd) : new Date())
       : null;
@@ -138,12 +161,31 @@ export class WeeklyReviewService {
           };
         })
       );
-      const weightDays = new Set(
+      const weightDayKeys = new Set(
         points
           .filter((point) => point.date >= startKey && point.date < endKey)
           .map((point) => point.date)
-      ).size;
-      const foodDays = new Set(logs.map((log) => utcNormalizedDayKey(log.date, log.timezone))).size;
+      );
+      const weightDays = weightDayKeys.size;
+      // A flagged fast is a real 0-kcal day, exactly as every other average treats it.
+      const { effectiveDayKeys: foodDayKeys } = await getNutritionDayCoverage(logs, {
+        range: dayKeyRange(startKey, utcDayKeyFromLocalDate(lastDay)),
+      });
+      const foodDays = foodDayKeys.size;
+      const days = Array.from({ length: 7 }, (_, offset) =>
+        localDayKeyPlusCalendarDays(period.start, offset)
+      ).filter((day) => day < period.end);
+      const keyOf = (day: number) => utcDayKeyFromLocalDate(new Date(day));
+      gaps = {
+        foodDay:
+          foodDays < MIN_WEEKLY_FOOD_DAYS
+            ? (days.find((day) => !foodDayKeys.has(keyOf(day))) ?? null)
+            : null,
+        weightDay:
+          weightDays < MIN_WEIGHT_ENTRIES
+            ? ([...days].reverse().find((day) => !weightDayKeys.has(keyOf(day))) ?? null)
+            : null,
+      };
       const series = calculateTrendWeightSeries(points);
       trendWeight = trendWeightAtOrBefore(series, utcDayKeyFromLocalDate(lastDay))?.value ?? null;
       const weekStartTrend = trendWeightAtOrBefore(series, startKey - 1)?.value ?? null;
@@ -159,7 +201,7 @@ export class WeeklyReviewService {
           foodDays,
           weightDays,
           canApply:
-            foodDays >= MIN_DAYS_WITH_NUTRITION &&
+            foodDays >= MIN_WEEKLY_FOOD_DAYS &&
             weightDays >= MIN_WEIGHT_ENTRIES &&
             trendWeight != null,
         };
@@ -199,6 +241,7 @@ export class WeeklyReviewService {
       goal,
       current,
       nutrition,
+      gaps,
       accepted,
       trendWeight,
       intuitive,

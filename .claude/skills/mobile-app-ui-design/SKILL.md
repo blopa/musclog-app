@@ -12,6 +12,7 @@ This skill guides the creation of professional, polished mobile app interfaces t
 Great mobile UI isn't about flashiness — it's about intentionality. Every pixel, every spacing value, every color choice should serve the user. The goal is to create interfaces that feel smooth, personal, and alive — not just functional.
 
 Before designing anything, understand three things:
+
 1. **What is the user trying to accomplish?** (reduce friction to that goal)
 2. **How should this make the user feel?** (trust, delight, confidence, calm)
 3. **What's the one thing they should notice first?** (visual hierarchy)
@@ -21,12 +22,14 @@ Before designing anything, understand three things:
 Follow this sequence for any mobile screen:
 
 ### Step 1: Understand the Context
+
 - What type of app? (fitness, finance, social, productivity, health, crypto, etc.)
 - Who is the user? (new, returning, power user — adapt the experience)
 - What's the primary action on this screen?
 - What industry design conventions apply? (See `references/industry-conventions.md`)
 
 ### Step 2: Structure First (UX Lens)
+
 - Map the user flow: what screen comes before and after?
 - Identify the MVP elements — only what's essential for this screen
 - Place primary actions in the **thumb zone** (bottom 1/3 of screen)
@@ -36,9 +39,11 @@ Follow this sequence for any mobile screen:
 - Choose the right input method: sliders/scroll wheels for one-time setup, text fields for repeated/precise entry
 
 ### Step 3: Apply Visual Design (UI Lens)
+
 Follow these rules in order:
 
 #### Typography
+
 - Use **one font family** (two max, with clear hierarchy purpose)
 - Maximum **4 font sizes** and **2 font weights**
 - Use monospace variants for large numbers (prices, stats, metrics)
@@ -46,6 +51,7 @@ Follow these rules in order:
 - Create hierarchy with size, weight, and opacity — not just bold everything
 
 #### Color System (60/30/10 Rule)
+
 - **60%** — neutral base (white, light gray, or dark background)
 - **30%** — complementary color (black text, dark elements)
 - **10%** — brand/accent color (CTAs, key indicators, icons)
@@ -55,6 +61,7 @@ Follow these rules in order:
 - Save strong colors (like red) for meaningful moments — overuse kills hierarchy
 
 #### Spacing (8-Point Grid System)
+
 - All spacing values must be divisible by **8 or 4** (8, 12, 16, 24, 32, 48, 64, 80, 96)
 - Use **relationship-based spacing**: related elements closer together, unrelated further apart
 - Multiplier rule: if related text elements are 16px apart, the gap to the next group should be 2× (32px)
@@ -63,12 +70,14 @@ Follow these rules in order:
 - Larger text = larger spacing needed
 
 #### Shadows
+
 - Always use **soft shadows** — never harsh/distinct
 - Match shadow color to the background with a tinted hue
 - Use subtle white inner shadows on buttons to add dimension
 - Add faded drop shadows for depth without heaviness
 
 #### Visual Cues & Imagery
+
 - Use icons, emojis, illustrations, and images to make information digestible
 - User avatars/photos > initials > generic icons (for representing people)
 - Color-coded categories with soft solid backgrounds + clean isolated images
@@ -76,6 +85,7 @@ Follow these rules in order:
 - Use AI-generated or curated visuals with matching color palettes
 
 ### Step 4: Design for Emotion (Peak-End Rule)
+
 The user will remember two moments: the **peak** (most intense) and the **end** (last impression).
 
 - **Identify your peak moment**: completing a core task, hitting a milestone, finding what they want
@@ -86,6 +96,7 @@ The user will remember two moments: the **peak** (most intense) and the **end** 
 - Use motion and animation as trust signals, especially in high-stakes domains (finance, crypto, health)
 
 ### Step 5: Polish & Details
+
 - Add subtle glow effects behind key elements (blur + opacity)
 - Use tiny white inner shadows on primary buttons
 - Add 5% opacity primary-color borders on secondary elements
@@ -97,32 +108,39 @@ The user will remember two moments: the **peak** (most intense) and the **end** 
 ## Smart Patterns to Apply
 
 ### Personalization by User Stage
+
 - **New users**: simple welcome, guided setup, minimal options
 - **Returning users**: personalized content, routine-focused, progress indicators
 - **Power users**: advanced stats, optimization tools, dense information
 
 ### Smarter Search
+
 Never show a blank search screen. Include:
+
 - Recent searches
 - Popular/trending items
 - Personalized recommendations
 
 ### Order/Status Tracking
+
 - Open with a confident status message
 - Humanize with photos, names, quick-action buttons
 - Use visual timelines instead of text-based date lists
 
 ### Category Screens
+
 - Use color-coded cards with soft backgrounds and clean isolated images
 - Ensure visual consistency across all category items
 - Create rhythm in the layout for effortless scanning
 
 ### Selection Over Manual Input
+
 - Offer tappable selections for common options (job titles, preferences, etc.)
 - Include icons/emojis alongside options for personality
 - Provide an "Other" option with manual input as fallback
 
 ## Anti-Patterns to Avoid
+
 - Overusing flashy gradients and blur effects (unless you can truly pull it off)
 - More than 4 font sizes or 3 font weights
 - Random spacing values (use the 8-point grid!)
@@ -137,6 +155,7 @@ Never show a blank search screen. Include:
 ## Implementation Notes
 
 When building these designs as React artifacts or HTML:
+
 - Use Tailwind CSS utility classes for spacing, colors, and typography
 - Import Lucide React for clean, consistent iconography
 - Use Recharts for any data visualization

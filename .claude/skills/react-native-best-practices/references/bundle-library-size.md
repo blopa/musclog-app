@@ -27,10 +27,10 @@ npx bundle-phobia-cli <package-name>
 
 ## Tools Overview
 
-| Tool | Type | Best For |
-|------|------|----------|
-| bundlephobia.com | Web | Quick size check |
-| pkg-size.dev | Web | Backup/alternative |
+| Tool                  | Type          | Best For                 |
+| --------------------- | ------------- | ------------------------ |
+| bundlephobia.com      | Web           | Quick size check         |
+| pkg-size.dev          | Web           | Backup/alternative       |
 | Import Cost (VS Code) | IDE extension | Rough JS import feedback |
 
 ## bundlephobia.com
@@ -82,9 +82,9 @@ code --install-extension wix.vscode-import-cost
 Shows inline size next to imports:
 
 ```tsx
-import React from 'react';           // 6.5K (gzipped)
-import lodash from 'lodash';         // 71.5K (gzipped: 24.7K)
-import get from 'lodash/get';        // 8K (gzipped: 2.9K)
+import React from 'react'; // 6.5K (gzipped)
+import lodash from 'lodash'; // 71.5K (gzipped: 24.7K)
+import get from 'lodash/get'; // 8K (gzipped: 2.9K)
 ```
 
 ### Limitations
@@ -100,11 +100,13 @@ Bundlephobia, pkg-size.dev, and Import Cost measure JavaScript package cost. The
 ### Before Adding Dependency
 
 1. Check on bundlephobia:
+
    ```
    https://bundlephobia.com/package/[package-name]
    ```
 
 2. Compare alternatives:
+
    ```
    moment (289 kB) vs date-fns (75 kB) vs dayjs (6 kB)
    ```
@@ -121,12 +123,12 @@ Bundlephobia, pkg-size.dev, and Import Cost measure JavaScript package cost. The
 
 ## Common Large Dependencies
 
-| Library | Size (gzipped) | Alternative |
-|---------|----------------|-------------|
-| moment | ~70 KB | dayjs (~3 KB) |
-| lodash (full) | ~25 KB | Built-ins or direct imports |
-| aws-sdk (full) | 200+ KB | @aws-sdk/client-* |
-| crypto-js | ~15 KB | react-native-quick-crypto |
+| Library        | Size (gzipped) | Alternative                 |
+| -------------- | -------------- | --------------------------- |
+| moment         | ~70 KB         | dayjs (~3 KB)               |
+| lodash (full)  | ~25 KB         | Built-ins or direct imports |
+| aws-sdk (full) | 200+ KB        | @aws-sdk/client-*           |
+| crypto-js      | ~15 KB         | react-native-quick-crypto   |
 
 ## Quick Size Check Script
 

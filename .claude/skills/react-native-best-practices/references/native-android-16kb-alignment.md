@@ -10,12 +10,12 @@ tags: android, native, 16kb, alignment, page-size, google-play, third-party
 
 ## Quick Reference
 
-| Item                   | Details                                              |
-| ---------------------- | ---------------------------------------------------- |
-| Google Play requirement | Apps and updates targeting Android 15+ must support 16 KB page sizes on 64-bit devices |
-| React Native support   | RN 0.79+ includes aligned RN-provided native binaries; still verify third-party `.so` files |
-| What to check          | Third-party native libraries (`.so` files)           |
-| Official documentation | [developer.android.com/guide/practices/page-sizes][] |
+| Item                    | Details                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------- |
+| Google Play requirement | Apps and updates targeting Android 15+ must support 16 KB page sizes on 64-bit devices      |
+| React Native support    | RN 0.79+ includes aligned RN-provided native binaries; still verify third-party `.so` files |
+| What to check           | Third-party native libraries (`.so` files)                                                  |
+| Official documentation  | [developer.android.com/guide/practices/page-sizes][]                                        |
 
 [developer.android.com/guide/practices/page-sizes]: https://developer.android.com/guide/practices/page-sizes
 
@@ -42,9 +42,9 @@ For deeper ELF-level inspection, use Android's [check_elf_alignment.sh][] script
 React Native 0.79+ builds core binaries with correct alignment. However, **third-party
 native libraries** may still be misaligned. Check alignment when:
 
-* Adding or updating SDKs with native code
-* Preparing a release for Google Play
-* Investigating crashes on Android 15+ devices with 16 KB page size
+- Adding or updating SDKs with native code
+- Preparing a release for Google Play
+- Investigating crashes on Android 15+ devices with 16 KB page size
 
 ---
 
@@ -90,11 +90,11 @@ Once identified, update the dependency or contact the vendor for a 16KB-compatib
 
 ## Common Pitfalls
 
-* Waiting for Play Store rejection instead of checking in CI
-* Assuming a React Native upgrade rebuilds third-party native binaries
-* Only checking 32-bit ABIs (`armeabi-v7a`, `x86`) — these are not affected
-* Using `zipalign` without the `-P 16` flag (checks 4 KB, not 16 KB)
-* Validating only debug builds
+- Waiting for Play Store rejection instead of checking in CI
+- Assuming a React Native upgrade rebuilds third-party native binaries
+- Only checking 32-bit ABIs (`armeabi-v7a`, `x86`) — these are not affected
+- Using `zipalign` without the `-P 16` flag (checks 4 KB, not 16 KB)
+- Validating only debug builds
 
 ---
 
@@ -111,4 +111,4 @@ See [official remediation steps][] for detailed guidance.
 
 ## Related Skills
 
-* [native-profiling.md](./native-profiling.md) — Native debugging tools
+- [native-profiling.md](./native-profiling.md) — Native debugging tools

@@ -12,6 +12,7 @@ import {
 } from '@/database/services/WorkoutSessionService';
 import { NotificationService } from '@/services/NotificationService';
 import {
+  clearActiveWorkoutLogId,
   clearRestTimerEndAt,
   getRestTimerEndAt,
   setRestTimerEndAt,
@@ -60,6 +61,7 @@ export function useWorkoutSessionController(
           return;
         }
         setView(value);
+        setNow(Date.now());
         setRestEnd(timer);
         setRestTotal(timer ? Math.max(0, Math.ceil((timer - Date.now()) / 1000)) : 0);
         setDrafts({});
@@ -82,15 +84,28 @@ export function useWorkoutSessionController(
       live = false;
     };
   }, [logId, key]);
+  // The clock only matters while a rest is counting down. Ticking all session long re-rendered every
+  // set row once a second for nothing. Whoever starts or restores a rest also resets `now`, so the
+  // first frame of a rest never reads a stale clock.
   useEffect(() => {
-    const tick = () => setNow(Date.now());
+    if (restEnd == null) {
+      return;
+    }
+    const tick = () => {
+      const current = Date.now();
+      setNow(current);
+      // Once the rest has run out the remaining time stays at zero; stop re-rendering for it.
+      if (current >= restEnd) {
+        clearInterval(timer);
+      }
+    };
     const timer = setInterval(tick, 1000);
     const subscription = AppState.addEventListener('change', tick);
     return () => {
       clearInterval(timer);
       subscription.remove();
     };
-  }, []);
+  }, [restEnd]);
   const persist = (next: Record<string, Partial<SessionDraft>>) => {
     if (key) {
       writeQueue.current = writeQueue.current
@@ -119,6 +134,7 @@ export function useWorkoutSessionController(
     }
     const end = Date.now() + seconds * 1000;
     await setRestTimerEndAt(logId, end);
+    setNow(Date.now());
     setRestEnd(end);
     setRestTotal(seconds);
     setRestId((id) => id + 1);
@@ -132,6 +148,7 @@ export function useWorkoutSessionController(
     const remaining = Math.max(1, Math.ceil((restEnd - Date.now()) / 1000) + deltaSeconds);
     const end = Date.now() + remaining * 1000;
     await setRestTimerEndAt(logId, end);
+    setNow(Date.now());
     setRestEnd(end);
     setRestTotal((total) => Math.max(remaining, total + deltaSeconds));
     await NotificationService.cancelRestTimerNotification();
@@ -233,6 +250,35 @@ export function useWorkoutSessionController(
       }
       setDrafts({});
     });
+  /**
+   * Throws the session away. Everything that outlives the screen goes with it: the stored active
+   * workout (or Home keeps offering to resume a deleted log), a scheduled "rest over" reminder,
+   * and the persisted drafts. It does not go through `run`, whose refresh would reload a log that no
+   * longer exists.
+   */
+  const discard = async () => {
+    if (!logId || lock.current) {
+      return;
+    }
+    lock.current = true;
+    setBusy(true);
+    setError(null);
+    try {
+      await WorkoutService.deleteWorkoutLog(logId);
+      await Promise.all([stopRest(), clearActiveWorkoutLogId()]);
+      await writeQueue.current;
+      if (key) {
+        await AsyncStorage.removeItem(key);
+      }
+      setDrafts({});
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error(String(e)));
+      throw e;
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  };
   return {
     view,
     changeView,
@@ -242,6 +288,7 @@ export function useWorkoutSessionController(
     skip,
     revert,
     finish,
+    discard,
     startRest,
     stopRest,
     adjustRest,

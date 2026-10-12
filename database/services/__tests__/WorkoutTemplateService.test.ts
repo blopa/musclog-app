@@ -2671,7 +2671,9 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
     installTables({
       exercises: { find: jest.fn().mockResolvedValue(exercise) },
       workout_log_exercises: [{ id: 'le-1' }],
-      workout_log_sets: [{ weight, reps: 8, repsInReserve, completionStatus: 'performed' }],
+      workout_log_sets: [
+        { logExerciseId: 'le-1', weight, reps: 8, repsInReserve, completionStatus: 'performed' },
+      ],
     });
   }
 
@@ -2740,9 +2742,29 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
     expect(suggestion.weightKg).toBe(22);
   });
 
-  it('deloads by the same step when the last session left nothing in reserve', async () => {
+  it('holds the load after one session with nothing left in reserve', async () => {
     jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(commercialGym);
     lastSession(barbell, 100, 0);
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    expect(suggestion.weightKg).toBe(100);
+  });
+
+  it('deloads by the same step after two sessions in a row with nothing in reserve', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(commercialGym);
+    const failed = (logExerciseId: string) => ({
+      logExerciseId,
+      weight: 100,
+      reps: 8,
+      repsInReserve: 0,
+      completionStatus: 'performed',
+    });
+    installTables({
+      exercises: { find: jest.fn().mockResolvedValue(barbell) },
+      workout_log_exercises: [{ id: 'le-1' }, { id: 'le-2' }],
+      workout_log_sets: [failed('le-1'), failed('le-2')],
+    });
 
     const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
 
@@ -2755,7 +2777,15 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
       exercises: { find: jest.fn().mockResolvedValue(barbell) },
       exercise_user_settings: [{ exerciseId: 'bench', weightUnit: 'lbs' }],
       workout_log_exercises: [{ id: 'le-1' }],
-      workout_log_sets: [{ weight: 100, reps: 8, repsInReserve: 4, completionStatus: 'performed' }],
+      workout_log_sets: [
+        {
+          logExerciseId: 'le-1',
+          weight: 100,
+          reps: 8,
+          repsInReserve: 4,
+          completionStatus: 'performed',
+        },
+      ],
     });
 
     const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
@@ -2772,6 +2802,7 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
       workout_log_exercises: [{ id: 'le-1' }],
       workout_log_sets: [
         {
+          logExerciseId: 'le-1',
           weight: 100,
           reps: 8,
           repsInReserve: 0,

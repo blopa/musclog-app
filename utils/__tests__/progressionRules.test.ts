@@ -46,10 +46,39 @@ describe('explicit progression projections', () => {
         .weight
     ).toBe(60);
   });
-  it('drops one step when none reaches the bottom', () =>
+  it('holds the load after one session that missed the bottom of the range', () => {
+    const projection = project(defaultProgressionRule('double_progression'), [history([6, 7, 5])]);
+    expect(projection.sets.map((s) => [s.weight, s.reps])).toEqual([
+      [60, 8],
+      [60, 8],
+      [60, 8],
+    ]);
+    // The plan already is the hold target, so nothing is rewritten — and nothing deloaded.
+    expect(projection.changes).toEqual([]);
+  });
+  it('drops one step when two sessions in a row at this load missed the bottom', () => {
     expect(
-      project(defaultProgressionRule('double_progression'), [history([6, 7, 5])]).sets[0]
-    ).toMatchObject({ weight: 57.5, reps: 8 }));
+      project(defaultProgressionRule('double_progression'), [
+        history([6, 7, 5]),
+        history([7, 6, 6]),
+      ]).sets[0]
+    ).toMatchObject({ weight: 57.5, reps: 8 });
+    // A miss at a different load does not count towards the stall.
+    expect(
+      project(defaultProgressionRule('double_progression'), [
+        history([6, 7, 5]),
+        history([7, 6, 6], 65),
+      ]).sets[0]
+    ).toMatchObject({ weight: 60, reps: 8 });
+  });
+  it('deloads a top set only after two misses at the same load', () => {
+    const rule = defaultProgressionRule('top_set_backoff');
+    expect(project(rule, [history([3, 8, 8])]).sets[0]).toMatchObject({ weight: 60, reps: 4 });
+    expect(project(rule, [history([3, 8, 8]), history([3, 8, 8])]).sets[0]).toMatchObject({
+      weight: 57.5,
+      reps: 4,
+    });
+  });
   it('prescribes first-session reps and loadable back-offs without inventing evidence', () => {
     expect(project(defaultProgressionRule('linear')).sets[0]).toMatchObject({
       weight: 60,
@@ -149,6 +178,56 @@ describe('explicit progression projections', () => {
         isBodyweight: false,
       }).sets
     ).toEqual(planned));
+  it('anchors automatic reps_first on the plan and deloads only after two failed sessions', () => {
+    const rated = (weight: number, reps: number, rir: number): HistorySession => ({
+      sets: [{ weightKg: weight, reps, repsInReserve: rir, rirRecorded: true }],
+      allPrescribedSetsPerformed: true,
+      rule: null,
+      state: null,
+    });
+    const auto = (sessions: HistorySession[], extra: Record<string, unknown> = {}) =>
+      projectExerciseProgression({
+        planned: [{ id: '1', weight: 100, reps: 5 }],
+        history: sessions,
+        step,
+        automatic: true,
+        rule: null,
+        progressionMode: 'reps_first',
+        isCompound: true,
+        isBodyweight: false,
+        ...extra,
+      }).sets[0];
+    expect(auto([rated(100, 7, 3)])).toEqual({ id: '1', weight: 102.5, reps: 5 });
+    // An exercise added mid-session copies its plan from history, so the generic range applies.
+    expect(auto([rated(100, 7, 3)], { plannedFromHistory: true })).toEqual({
+      id: '1',
+      weight: 100,
+      reps: 8,
+    });
+    expect(auto([rated(100, 5, 0)])).toEqual({ id: '1', weight: 100, reps: 5 });
+    expect(auto([rated(100, 5, 0), rated(100, 5, 0)])).toEqual({
+      id: '1',
+      weight: 97.5,
+      reps: 5,
+    });
+  });
+  it('never progresses cardio, mobility or stretching, whichever caller projects it', () => {
+    for (const mechanicType of ['cardio', 'mobility', 'stretching']) {
+      const projection = projectExerciseProgression({
+        planned,
+        history: [history([12, 12, 12])],
+        step,
+        automatic: true,
+        rule: defaultProgressionRule('double_progression'),
+        progressionMode: 'weight_first',
+        isCompound: false,
+        isBodyweight: false,
+        mechanicType,
+      });
+      expect(projection.changes).toEqual([]);
+      expect(projection.sets).toEqual(planned);
+    }
+  });
   it('retains original targets and undo across serialization', () => {
     const prescription = {
       established: true,

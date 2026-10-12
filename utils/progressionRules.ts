@@ -276,13 +276,19 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 /**
  * One rep range worked at one load: the double progression rule, and the top set of the top set +
  * back-off rule. `last` is the performed set this target follows from.
+ *
+ * Missing the bottom of the range deloads only when the session before missed it too, at the same
+ * load (`missedBefore`): a single short session is a bad day, and the first answer to it is to hold
+ * the load and aim for the bottom of the range again — the same patience the linear rule's
+ * `failuresBeforeDeload` gives.
  */
 function rangeTarget(
   last: HistorySet,
   allReachedTop: boolean,
   bestReps: number,
   { repMin, repMax }: { repMin: number; repMax: number },
-  step: RuleLoadStep
+  step: RuleLoadStep,
+  missedBefore = false
 ): SetTarget {
   const range = { repMin, repMax };
   if (allReachedTop) {
@@ -294,12 +300,19 @@ function rangeTarget(
     };
   }
   if (bestReps < repMin && last.weightKg > 0) {
-    return {
-      weightKg: step.roundLoad(Math.max(0, last.weightKg - step.incrementKg)),
-      reps: repMin,
-      cause: 'deload',
-      rule: { kind: 'range', outcome: 'deload', ...range },
-    };
+    return missedBefore
+      ? {
+          weightKg: step.roundLoad(Math.max(0, last.weightKg - step.incrementKg)),
+          reps: repMin,
+          cause: 'deload',
+          rule: { kind: 'range', outcome: 'deload', ...range },
+        }
+      : {
+          weightKg: last.weightKg,
+          reps: repMin,
+          cause: 'repeat',
+          rule: { kind: 'range', outcome: 'hold', ...range },
+        };
   }
   const reps = clamp(last.reps + 1, repMin, repMax);
   const addsReps = reps > last.reps;
@@ -311,11 +324,36 @@ function rangeTarget(
   };
 }
 
+/**
+ * Whether `before` — the session ahead of the last one — also fell short of `repMin` at the last
+ * session's load, which is what turns a miss into a stall worth deloading for.
+ */
+function missedAtSameLoad(
+  before: HistorySession | undefined,
+  lastLoadKg: number,
+  repMin: number,
+  setIndex?: number
+): boolean {
+  if (!before?.sets.length) {
+    return false;
+  }
+  const sets =
+    setIndex == null
+      ? before.sets
+      : before.sets.filter((set, i) => (set.prescribedIndex ?? i) === setIndex);
+  return (
+    sets.length > 0 &&
+    sameLoad(sets[0].weightKg, lastLoadKg) &&
+    Math.max(...sets.map((set) => set.reps)) < repMin
+  );
+}
+
 /** Double progression: each set aims one rep past its counterpart last time, within the range. */
 function doubleProgressionTargets(
   rule: DoubleProgressionRule,
   planned: readonly PlannedRuleSet[],
   last: HistorySession,
+  before: HistorySession | undefined,
   step: RuleLoadStep
 ): SetTarget[] {
   const allReachedTop =
@@ -325,7 +363,14 @@ function doubleProgressionTargets(
   const bestReps = Math.max(...last.sets.map((set) => set.reps));
   // Load moves for the whole exercise at once, from its first working set; while it holds, each
   // set aims one rep past its own counterpart.
-  const lead = rangeTarget(last.sets[0], allReachedTop, bestReps, rule, step);
+  const lead = rangeTarget(
+    last.sets[0],
+    allReachedTop,
+    bestReps,
+    rule,
+    step,
+    missedAtSameLoad(before, last.sets[0].weightKg, rule.repMin)
+  );
   if (!sameLoad(lead.weightKg, last.sets[0].weightKg)) {
     return planned.map(() => lead);
   }
@@ -420,6 +465,7 @@ function topSetBackoffTargets(
   rule: TopSetBackoffRule,
   planned: readonly PlannedRuleSet[],
   last: HistorySession,
+  before: HistorySession | undefined,
   step: RuleLoadStep
 ): SetTarget[] {
   const lastTop = last.sets.find((set, index) => (set.prescribedIndex ?? index) === 0);
@@ -448,7 +494,8 @@ function topSetBackoffTargets(
     lastTop.reps >= rule.repMax,
     lastTop.reps,
     { repMin: rule.repMin, repMax: rule.repMax },
-    step
+    step,
+    missedAtSameLoad(before, lastTop.weightKg, rule.repMin, 0)
   );
   const backoffLoad = step.roundLoad((top.weightKg * rule.backoffPercent) / 100);
   const lastBackoffLoad = last.sets[1]?.weightKg ?? backoffLoad;
@@ -600,11 +647,11 @@ export function planRuleChanges(
       }));
     }
   } else if (rule.type === 'double_progression') {
-    targets = doubleProgressionTargets(rule, planned, history[0], step);
+    targets = doubleProgressionTargets(rule, planned, history[0], history[1], step);
   } else if (rule.type === 'linear') {
     targets = linearTargets(rule, planned, history, step);
   } else {
-    targets = topSetBackoffTargets(rule, planned, history[0], step);
+    targets = topSetBackoffTargets(rule, planned, history[0], history[1], step);
   }
 
   const lastSets = history[0]?.sets ?? [];

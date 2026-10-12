@@ -51,11 +51,11 @@
       "startProgressionWeight": "Up to {{to}} {{unit}} from last time's {{last}} {{unit}} — you had about {{rir}} reps in reserve.",
       "startProgressionWeightReps": "Up to {{to}} {{unit}} × {{reps}} from last time's {{last}} {{unit}} × {{lastReps}} — you had about {{rir}} reps in reserve.",
       "startProgressionReps": "One more rep than last time ({{to}}, not {{last}}) — you had about {{rir}} reps in reserve.",
-      "startDeload": "Down to {{to}} {{unit}} from last time's {{last}} {{unit}} — you had no reps left in reserve.",
+      "startDeload": "Down to {{to}} {{unit}} from last time's {{last}} {{unit}} — two sessions in a row with no reps left in reserve.",
       "startRepeatWeight": "Starting at {{to}} {{unit}}, what you used last time, instead of the plan's {{from}} {{unit}}.",
       "startRepeatReps": "Starting at {{to}} reps, what you did last time, instead of the plan's {{from}}.",
       "usePlan": "Use the plan's",
-      "startDeloadWeightReps": "Down to {{to}} {{unit}} × {{reps}} from last time's {{last}} {{unit}} × {{lastReps}} — you had no reps left in reserve.",
+      "startDeloadWeightReps": "Down to {{to}} {{unit}} × {{reps}} from last time's {{last}} {{unit}} × {{lastReps}} — two sessions in a row with no reps left in reserve.",
       "startRepeatWeightReps": "Starting at {{to}} {{unit}} × {{reps}}, what you did last time, instead of the plan's {{from}} {{unit}} × {{planReps}}."
     },
     "startRest": "Start rest ({{seconds}}s)",
@@ -118,7 +118,7 @@
         "add_weight": "Every prescribed set reached {{repMax}} reps. Add one load step and restart at {{repMin}}.",
         "add_reps": "Aim for one more rep than the corresponding set last time, within {{repMin}}–{{repMax}}.",
         "hold": "Keep this load and work within {{repMin}}–{{repMax}} reps.",
-        "deload": "No performed set reached {{repMin}} reps. Reduce one load step."
+        "deload": "Two sessions in a row at this load missed {{repMin}} reps. Reduce one load step."
       },
       "linear": {
         "add_weight": "All prescribed reps were completed. Add one load step for {{reps}} reps.",
@@ -265,7 +265,7 @@
       "fats": "Fat (g)",
       "fiber": "Fiber (g)"
     },
-    "collectData": "Keep targets while collecting more data. Log weight and food on at least three days.",
+    "collectData": "Keep targets while collecting more data. To apply a recommendation, log food on at least {{food}} days and your weight on at least {{weight}} days of this week.",
     "empiricalReason": "Recommendation uses historical intake and trend-weight expenditure, combined with your goal trajectory.",
     "baselineReason": "Formula-based baseline estimate. More history is needed to estimate expenditure from your logs.",
     "switchWeekly": "Switch to weekly targets",
@@ -275,8 +275,8 @@
     "applied": "Targets approved",
     "kept": "Current targets kept",
     "effective": "Since {{date}}",
-    "logWeight": "Log weight",
-    "logFood": "Complete food entries",
+    "logWeightOn": "Log weight for {{date}}",
+    "logFoodOn": "Log food for {{date}}",
     "editGoal": "Edit weight goal or date",
     "noGoal": "Training is available without a nutrition goal. Set nutrition goals in your profile when ready.",
     "intuitive": "Intuitive eating is on. Your training review remains available.",

@@ -12,12 +12,12 @@ progress below. Default structure: 12-week block periodisation
 
 Record working weight at the start and end of each block. This shows real progress.
 
-| Lift | Start | End Wk4 | End Wk8 | End Wk11 |
-|------|-------|---------|---------|----------|
-| Squat |  |  |  |  |
-| Bench Press |  |  |  |  |
-| Deadlift |  |  |  |  |
-| OHP |  |  |  |  |
+| Lift        | Start | End Wk4 | End Wk8 | End Wk11 |
+| ----------- | ----- | ------- | ------- | -------- |
+| Squat       |       |         |         |          |
+| Bench Press |       |         |         |          |
+| Deadlift    |       |         |         |          |
+| OHP         |       |         |         |          |
 
 ## Notes & adjustments log
 

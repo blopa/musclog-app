@@ -50,6 +50,7 @@ Find native memory leaks using Xcode Leaks and Android Studio Memory Profiler.
 **Red markers** = Leaked memory detected
 
 Click on leak to see:
+
 - **Leaked Object**: Type and size
 - **Responsible Library**: Which code leaked
 - **Responsible Frame**: Exact function
@@ -82,6 +83,7 @@ Use Android Studio Memory Profiler and select a memory-consumption recording for
 ### Analyzing Allocations
 
 Memory profiler shows:
+
 - **Allocations count**: Objects created
 - **Deallocations count**: Objects freed
 - **Live objects**: Still in memory
@@ -110,7 +112,7 @@ class MainActivity : AppCompatActivity(), Callback {
         super.onCreate(savedInstanceState)
         EventManager.addListener(this)
     }
-    
+
     override fun onDestroy() {
         EventManager.removeListener(this)
         super.onDestroy()
@@ -186,6 +188,7 @@ void process() {
 ## Verification
 
 After fixing:
+
 1. Re-run profiler
 2. Perform same actions
 3. Verify:

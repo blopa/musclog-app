@@ -10,12 +10,12 @@ Understand memory management patterns in C++, Swift, and Kotlin for React Native
 
 ## Quick Reference
 
-| Pattern | Languages | Mechanism |
-|---------|-----------|-----------|
-| Reference Counting | Swift, Obj-C | Count refs, free at zero |
-| Smart pointers | C++ | Ownership encoded in pointer type |
-| Garbage Collection | Kotlin/Java, JavaScript | GC scans and frees unreachable |
-| Manual | C, C++ (raw pointers) | Explicit new/delete |
+| Pattern            | Languages               | Mechanism                         |
+| ------------------ | ----------------------- | --------------------------------- |
+| Reference Counting | Swift, Obj-C            | Count refs, free at zero          |
+| Smart pointers     | C++                     | Ownership encoded in pointer type |
+| Garbage Collection | Kotlin/Java, JavaScript | GC scans and frees unreachable    |
+| Manual             | C, C++ (raw pointers)   | Explicit new/delete               |
 
 **Key rule**: Prefer stack allocation or `std::unique_ptr` for single ownership; use `std::shared_ptr` only for real shared ownership and `std::weak_ptr` to break cycles. In Swift, use `weak` when the referenced object can disappear first; use `unowned` only when its lifetime is guaranteed to be at least as long.
 
@@ -40,11 +40,11 @@ void takeOwnership(std::unique_ptr<std::string> s) {
 
 int main() {
     auto str = std::make_unique<std::string>("Hello");
-    
+
     // Can only be moved, not copied
     takeOwnership(std::move(str));
     // str is now empty
-    
+
     return 0;
 }
 ```
@@ -62,10 +62,10 @@ void useReference(const std::shared_ptr<std::string>& s) {
 
 int main() {
     auto str = std::make_shared<std::string>("Hello");
-    
+
     useShared(str);      // Copies pointer, ref count +1
     useReference(str);   // No copy, ref count unchanged
-    
+
     std::cout << *str;   // Still valid
     return 0;
 }
@@ -85,11 +85,11 @@ void useWeak(std::weak_ptr<std::string> weak) {
 int main() {
     auto str = std::make_shared<std::string>("Hello");
     std::weak_ptr<std::string> weak = str;  // No ref count increase
-    
+
     useWeak(weak);  // Works
     str.reset();    // Destroys object
     useWeak(weak);  // "Object destroyed"
-    
+
     return 0;
 }
 ```
@@ -105,11 +105,11 @@ class Person {
 
 do {
     let person1 = Person(name: "John")  // Ref count: 1
-    
+
     do {
         let person2 = person1  // Ref count: 2
     }  // person2 out of scope, ref count: 1
-    
+
 }  // person1 out of scope, ref count: 0, "Deallocated"
 ```
 
@@ -145,11 +145,11 @@ class B {
 class DataManager {
     // Weak references to listeners prevent memory leaks
     private val listeners = mutableListOf<WeakReference<DataListener>>()
-    
+
     fun addListener(listener: DataListener) {
         listeners.add(WeakReference(listener))
     }
-    
+
     fun notifyListeners(data: String) {
         listeners.forEach { ref ->
             ref.get()?.onDataChanged(data)
@@ -198,7 +198,7 @@ class MyClass {
     private val listener = object : Callback {
         override fun onEvent() { /* ... */ }
     }
-    
+
     init {
         EventManager.addListener(listener)
         // Never removed!
@@ -210,11 +210,11 @@ class MyClass : AutoCloseable {
     private val listener = object : Callback {
         override fun onEvent() { /* ... */ }
     }
-    
+
     init {
         EventManager.addListener(listener)
     }
-    
+
     override fun close() {
         EventManager.removeListener(listener)
     }
@@ -227,12 +227,12 @@ Use `Unmanaged` only for C interop that explicitly transfers ownership. Match `p
 
 ## Best Practices Summary
 
-| Language | Best Practice |
-|----------|---------------|
-| C++ | Prefer stack or `unique_ptr`; use `shared_ptr` only for shared ownership |
-| Swift | Use `weak` for delegates and disappearing references; use `unowned` only with guaranteed lifetime |
-| Kotlin | Implement `AutoCloseable`, use `WeakReference` |
-| All | Prefer stack over heap when possible |
+| Language | Best Practice                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------- |
+| C++      | Prefer stack or `unique_ptr`; use `shared_ptr` only for shared ownership                          |
+| Swift    | Use `weak` for delegates and disappearing references; use `unowned` only with guaranteed lifetime |
+| Kotlin   | Implement `AutoCloseable`, use `WeakReference`                                                    |
+| All      | Prefer stack over heap when possible                                                              |
 
 ## Related Skills
 

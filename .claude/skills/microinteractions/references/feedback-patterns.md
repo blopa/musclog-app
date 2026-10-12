@@ -6,13 +6,13 @@ Feedback is how a microinteraction communicates its rules to the user. It answer
 
 Not all feedback is equal. The type, intensity, and duration of feedback should match the significance of the event.
 
-| Event Significance | Feedback Level | Duration | Example |
-|-------------------|---------------|----------|---------|
-| **Micro** (hover, focus) | Subtle visual change | Instant, continuous | Background lightens on hover |
-| **Minor** (tap, toggle) | Clear visual change | 100-300ms | Toggle slides, color shifts |
-| **Medium** (save, send) | Visual change + state label | 1-3 seconds | "Saved" text appears briefly |
-| **Major** (purchase, delete) | Multi-signal confirmation | 3-5 seconds, user-dismissable | Confirmation banner with undo option |
-| **Critical** (error, failure) | Prominent, persistent | Until acknowledged | Red banner with error message and action |
+| Event Significance            | Feedback Level              | Duration                      | Example                                  |
+| ----------------------------- | --------------------------- | ----------------------------- | ---------------------------------------- |
+| **Micro** (hover, focus)      | Subtle visual change        | Instant, continuous           | Background lightens on hover             |
+| **Minor** (tap, toggle)       | Clear visual change         | 100-300ms                     | Toggle slides, color shifts              |
+| **Medium** (save, send)       | Visual change + state label | 1-3 seconds                   | "Saved" text appears briefly             |
+| **Major** (purchase, delete)  | Multi-signal confirmation   | 3-5 seconds, user-dismissable | Confirmation banner with undo option     |
+| **Critical** (error, failure) | Prominent, persistent       | Until acknowledged            | Red banner with error message and action |
 
 ### The Minimum Feedback Rule
 
@@ -26,27 +26,27 @@ Visual feedback is the primary feedback channel for nearly every microinteractio
 
 ### Color Changes
 
-| Pattern | When to Use | Implementation | Example |
-|---------|-------------|---------------|---------|
-| **State color shift** | Show current state | Background or border color changes | Toggle track: gray (off) to green (on) |
-| **Validation color** | Indicate input validity | Border or icon color changes | Green border = valid, red border = invalid |
-| **Progress color** | Show completion level | Fill color changes as progress increases | Upload bar shifts from blue to green at 100% |
-| **Attention color** | Draw focus to a change | Brief highlight animation | Row flashes yellow after being updated |
-| **Semantic color** | Communicate meaning | Consistent color system | Red = error, green = success, yellow = warning, blue = info |
+| Pattern               | When to Use             | Implementation                           | Example                                                     |
+| --------------------- | ----------------------- | ---------------------------------------- | ----------------------------------------------------------- |
+| **State color shift** | Show current state      | Background or border color changes       | Toggle track: gray (off) to green (on)                      |
+| **Validation color**  | Indicate input validity | Border or icon color changes             | Green border = valid, red border = invalid                  |
+| **Progress color**    | Show completion level   | Fill color changes as progress increases | Upload bar shifts from blue to green at 100%                |
+| **Attention color**   | Draw focus to a change  | Brief highlight animation                | Row flashes yellow after being updated                      |
+| **Semantic color**    | Communicate meaning     | Consistent color system                  | Red = error, green = success, yellow = warning, blue = info |
 
 ### Animations
 
-| Animation Type | Duration | Easing | When to Use | Example |
-|---------------|----------|--------|-------------|---------|
-| **Button press** | 50-100ms | ease-out | Every button interaction | Scale down to 0.97, then back |
-| **Toggle slide** | 150-250ms | ease-in-out | Binary state change | Thumb slides from left to right |
-| **Expand/collapse** | 200-300ms | ease-in-out | Revealing or hiding content | Accordion section opens smoothly |
-| **Fade in/out** | 150-300ms | ease-in (in), ease-out (out) | Elements appearing/disappearing | Toast notification fades in |
-| **Slide in/out** | 200-400ms | ease-out (in), ease-in (out) | Panels, drawers, sheets | Side panel slides from right edge |
-| **Skeleton to content** | 200-400ms | ease-in-out | Content loading | Gray placeholders crossfade to real content |
-| **Checkmark draw** | 300-500ms | ease-out | Success confirmation | SVG checkmark animates stroke from left to right |
-| **Shake** | 300-500ms | ease-in-out (oscillate) | Invalid input | Field shakes horizontally 2-3 times |
-| **Bounce** | 200-400ms | spring | Attention, arrival | New item bounces into list |
+| Animation Type          | Duration  | Easing                       | When to Use                     | Example                                          |
+| ----------------------- | --------- | ---------------------------- | ------------------------------- | ------------------------------------------------ |
+| **Button press**        | 50-100ms  | ease-out                     | Every button interaction        | Scale down to 0.97, then back                    |
+| **Toggle slide**        | 150-250ms | ease-in-out                  | Binary state change             | Thumb slides from left to right                  |
+| **Expand/collapse**     | 200-300ms | ease-in-out                  | Revealing or hiding content     | Accordion section opens smoothly                 |
+| **Fade in/out**         | 150-300ms | ease-in (in), ease-out (out) | Elements appearing/disappearing | Toast notification fades in                      |
+| **Slide in/out**        | 200-400ms | ease-out (in), ease-in (out) | Panels, drawers, sheets         | Side panel slides from right edge                |
+| **Skeleton to content** | 200-400ms | ease-in-out                  | Content loading                 | Gray placeholders crossfade to real content      |
+| **Checkmark draw**      | 300-500ms | ease-out                     | Success confirmation            | SVG checkmark animates stroke from left to right |
+| **Shake**               | 300-500ms | ease-in-out (oscillate)      | Invalid input                   | Field shakes horizontally 2-3 times              |
+| **Bounce**              | 200-400ms | spring                       | Attention, arrival              | New item bounces into list                       |
 
 ### Animation Principles for Microinteractions
 
@@ -60,24 +60,24 @@ Visual feedback is the primary feedback channel for nearly every microinteractio
 
 ### Progress Indicators
 
-| Indicator Type | When to Use | Design Details |
-|---------------|-------------|----------------|
-| **Determinate progress bar** | Duration is known or estimable | Shows percentage; bar fills left to right; show time remaining if > 10s |
-| **Indeterminate spinner** | Duration is unknown, expected < 10s | Rotating circle or dots; use brand-consistent style |
-| **Skeleton screen** | Content layout is known, data loading | Gray rectangles matching final layout shape and size |
-| **Percentage text** | Long operations where users want precision | "47% complete" text; pair with progress bar |
-| **Step indicator** | Multi-step process | "Step 2 of 4" with visual step markers |
-| **Inline spinner** | Loading within a specific component | Small spinner inside the button or field that triggered loading |
+| Indicator Type               | When to Use                                | Design Details                                                          |
+| ---------------------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
+| **Determinate progress bar** | Duration is known or estimable             | Shows percentage; bar fills left to right; show time remaining if > 10s |
+| **Indeterminate spinner**    | Duration is unknown, expected < 10s        | Rotating circle or dots; use brand-consistent style                     |
+| **Skeleton screen**          | Content layout is known, data loading      | Gray rectangles matching final layout shape and size                    |
+| **Percentage text**          | Long operations where users want precision | "47% complete" text; pair with progress bar                             |
+| **Step indicator**           | Multi-step process                         | "Step 2 of 4" with visual step markers                                  |
+| **Inline spinner**           | Loading within a specific component        | Small spinner inside the button or field that triggered loading         |
 
 ### Progress Indicator Selection Guide
 
-| Load Time | Best Indicator | Why |
-|-----------|---------------|-----|
-| < 0.3s | None (instant) | Any indicator would flash and distract |
-| 0.3-1s | Subtle inline spinner | Acknowledges loading without overdoing it |
-| 1-5s | Skeleton screen or spinner | Shows the system is working |
-| 5-30s | Determinate progress bar | Users need to see progress |
-| 30s+ | Progress bar + percentage + estimated time | Users need reassurance and ability to leave |
+| Load Time | Best Indicator                             | Why                                         |
+| --------- | ------------------------------------------ | ------------------------------------------- |
+| < 0.3s    | None (instant)                             | Any indicator would flash and distract      |
+| 0.3-1s    | Subtle inline spinner                      | Acknowledges loading without overdoing it   |
+| 1-5s      | Skeleton screen or spinner                 | Shows the system is working                 |
+| 5-30s     | Determinate progress bar                   | Users need to see progress                  |
+| 30s+      | Progress bar + percentage + estimated time | Users need reassurance and ability to leave |
 
 ---
 
@@ -87,13 +87,13 @@ Audio feedback provides confirmation through sound. It is powerful when visual a
 
 ### When Audio Feedback Is Appropriate
 
-| Appropriate | Inappropriate |
-|-------------|---------------|
-| Confirmation of important action (payment, send) | Every button click |
-| Error that needs immediate attention | Form validation errors |
-| Background task completion (download, print) | Hover or focus changes |
-| Accessibility (screen reader announcements) | Decorative or branding sounds |
-| Physical product interaction (keyboard typing) | Any action that occurs frequently (> 10x/min) |
+| Appropriate                                      | Inappropriate                                 |
+| ------------------------------------------------ | --------------------------------------------- |
+| Confirmation of important action (payment, send) | Every button click                            |
+| Error that needs immediate attention             | Form validation errors                        |
+| Background task completion (download, print)     | Hover or focus changes                        |
+| Accessibility (screen reader announcements)      | Decorative or branding sounds                 |
+| Physical product interaction (keyboard typing)   | Any action that occurs frequently (> 10x/min) |
 
 ### Audio Feedback Design Rules
 
@@ -109,14 +109,14 @@ Audio feedback provides confirmation through sound. It is powerful when visual a
 
 ### Audio Feedback Patterns
 
-| Event | Sound Character | Duration | Example Reference |
-|-------|----------------|----------|-------------------|
-| **Success** | Rising pitch, major chord | 100-300ms | iOS payment success chime |
-| **Error** | Low buzz or discordant tone | 100-200ms | macOS alert sound |
-| **Notification** | Gentle chime, mid-range | 200-500ms | Slack notification ding |
-| **Completion** | Satisfying click or chime | 100-200ms | Camera shutter sound |
-| **Typing** | Soft click per keystroke | 20-50ms | iPhone keyboard clicks |
-| **Delete/Trash** | Crumple or whoosh | 200-400ms | macOS trash sound |
+| Event            | Sound Character             | Duration  | Example Reference         |
+| ---------------- | --------------------------- | --------- | ------------------------- |
+| **Success**      | Rising pitch, major chord   | 100-300ms | iOS payment success chime |
+| **Error**        | Low buzz or discordant tone | 100-200ms | macOS alert sound         |
+| **Notification** | Gentle chime, mid-range     | 200-500ms | Slack notification ding   |
+| **Completion**   | Satisfying click or chime   | 100-200ms | Camera shutter sound      |
+| **Typing**       | Soft click per keystroke    | 20-50ms   | iPhone keyboard clicks    |
+| **Delete/Trash** | Crumple or whoosh           | 200-400ms | macOS trash sound         |
 
 ---
 
@@ -126,15 +126,15 @@ Haptic feedback uses vibration or force feedback to communicate through touch. I
 
 ### Haptic Feedback Patterns
 
-| Pattern | iOS API | Android API | When to Use |
-|---------|---------|-------------|-------------|
-| **Light tap** | .light impact | HapticFeedbackConstants.CLOCK_TICK | Toggle, checkbox, minor selection |
-| **Medium tap** | .medium impact | HapticFeedbackConstants.CONTEXT_CLICK | Button press, drag snap |
-| **Heavy tap** | .heavy impact | HapticFeedbackConstants.LONG_PRESS | Confirmation of significant action |
-| **Success** | .success notification | Custom pattern: short-pause-long | Action completed successfully |
-| **Warning** | .warning notification | Custom pattern: two short bursts | Approaching limit, caution needed |
-| **Error** | .error notification | Custom pattern: three rapid bursts | Action failed, attention needed |
-| **Selection tick** | .selection changed | HapticFeedbackConstants.KEYBOARD_TAP | Scrolling through picker values |
+| Pattern            | iOS API               | Android API                           | When to Use                        |
+| ------------------ | --------------------- | ------------------------------------- | ---------------------------------- |
+| **Light tap**      | .light impact         | HapticFeedbackConstants.CLOCK_TICK    | Toggle, checkbox, minor selection  |
+| **Medium tap**     | .medium impact        | HapticFeedbackConstants.CONTEXT_CLICK | Button press, drag snap            |
+| **Heavy tap**      | .heavy impact         | HapticFeedbackConstants.LONG_PRESS    | Confirmation of significant action |
+| **Success**        | .success notification | Custom pattern: short-pause-long      | Action completed successfully      |
+| **Warning**        | .warning notification | Custom pattern: two short bursts      | Approaching limit, caution needed  |
+| **Error**          | .error notification   | Custom pattern: three rapid bursts    | Action failed, attention needed    |
+| **Selection tick** | .selection changed    | HapticFeedbackConstants.KEYBOARD_TAP  | Scrolling through picker values    |
 
 ### Haptic Design Rules
 
@@ -154,33 +154,35 @@ When feedback occurs is as important as what feedback occurs. The human percepti
 
 ### Perception Thresholds
 
-| Delay | User Perception | Required Feedback |
-|-------|----------------|-------------------|
-| **0-100ms** | Instantaneous -- feels like direct manipulation | Visual state change (color, position) |
-| **100-300ms** | Slight lag but still responsive | Transition animation, inline spinner |
-| **300ms-1s** | Noticeable delay | Loading indicator, cursor change |
-| **1-5s** | Waiting | Spinner, skeleton screen, "Loading..." |
-| **5-10s** | Attention wanders | Progress bar with estimate |
-| **10-30s** | Impatient | Progress bar + percentage + "X seconds remaining" |
-| **30s+** | Will leave or switch tasks | Progress bar + allow backgrounding + notification on completion |
+| Delay         | User Perception                                 | Required Feedback                                               |
+| ------------- | ----------------------------------------------- | --------------------------------------------------------------- |
+| **0-100ms**   | Instantaneous -- feels like direct manipulation | Visual state change (color, position)                           |
+| **100-300ms** | Slight lag but still responsive                 | Transition animation, inline spinner                            |
+| **300ms-1s**  | Noticeable delay                                | Loading indicator, cursor change                                |
+| **1-5s**      | Waiting                                         | Spinner, skeleton screen, "Loading..."                          |
+| **5-10s**     | Attention wanders                               | Progress bar with estimate                                      |
+| **10-30s**    | Impatient                                       | Progress bar + percentage + "X seconds remaining"               |
+| **30s+**      | Will leave or switch tasks                      | Progress bar + allow backgrounding + notification on completion |
 
 ### Optimistic UI Pattern
 
 Show the result immediately and correct later if the action fails. This makes the interface feel instant even when the server takes time.
 
-| Step | What Happens | Example |
-|------|-------------|---------|
-| 1. User triggers | Show success state immediately | Heart fills red instantly on like |
-| 2. Send request | API call fires in background | POST /like runs asynchronously |
-| 3a. Server confirms | Nothing changes (already showing success) | Response 200: no visual change |
-| 3b. Server fails | Revert to previous state with error | Heart unfills; toast: "Could not save like" |
+| Step                | What Happens                              | Example                                     |
+| ------------------- | ----------------------------------------- | ------------------------------------------- |
+| 1. User triggers    | Show success state immediately            | Heart fills red instantly on like           |
+| 2. Send request     | API call fires in background              | POST /like runs asynchronously              |
+| 3a. Server confirms | Nothing changes (already showing success) | Response 200: no visual change              |
+| 3b. Server fails    | Revert to previous state with error       | Heart unfills; toast: "Could not save like" |
 
 **When to use optimistic UI:**
+
 - Action is very likely to succeed (> 99%)
 - Reverting is possible and not confusing
 - The action is low-stakes (not a payment or deletion)
 
 **When NOT to use optimistic UI:**
+
 - Action has a significant failure rate
 - Action is irreversible
 - Reverting would be confusing (e.g., message appears then disappears)
@@ -193,21 +195,21 @@ Not all feedback needs to appear at once. Progressive disclosure reveals informa
 
 ### Feedback Layering
 
-| Layer | What It Shows | When | Example |
-|-------|-------------|------|---------|
-| **Immediate** | "Your action was received" | 0-100ms | Button changes state |
-| **Status** | "Here's what's happening" | 100ms-3s | Spinner, progress bar |
-| **Result** | "Here's the outcome" | On completion | Success message, error details |
-| **Detail** | "Here's the specifics" | On demand (hover, click) | Tooltip with timestamp, expandable error log |
+| Layer         | What It Shows              | When                     | Example                                      |
+| ------------- | -------------------------- | ------------------------ | -------------------------------------------- |
+| **Immediate** | "Your action was received" | 0-100ms                  | Button changes state                         |
+| **Status**    | "Here's what's happening"  | 100ms-3s                 | Spinner, progress bar                        |
+| **Result**    | "Here's the outcome"       | On completion            | Success message, error details               |
+| **Detail**    | "Here's the specifics"     | On demand (hover, click) | Tooltip with timestamp, expandable error log |
 
 ### Progressive Error Disclosure
 
-| Level | What to Show | Example |
-|-------|-------------|---------|
-| **Summary** | One-line human-readable error | "Upload failed" |
-| **Explanation** | Why it happened | "The file is too large (12MB). Maximum size is 10MB." |
-| **Resolution** | How to fix it | "Try compressing the image or choosing a smaller file." |
-| **Technical detail** | For developers or support | Expandable: "Error 413: Request Entity Too Large. Request ID: abc123" |
+| Level                | What to Show                  | Example                                                               |
+| -------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| **Summary**          | One-line human-readable error | "Upload failed"                                                       |
+| **Explanation**      | Why it happened               | "The file is too large (12MB). Maximum size is 10MB."                 |
+| **Resolution**       | How to fix it                 | "Try compressing the image or choosing a smaller file."               |
+| **Technical detail** | For developers or support     | Expandable: "Error 413: Request Entity Too Large. Request ID: abc123" |
 
 ---
 
@@ -217,13 +219,13 @@ Too much feedback is as bad as too little. When every action triggers a toast no
 
 ### Signs of Feedback Overload
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Users ignore toast notifications | Too many toasts for minor events | Reserve toasts for actions user may want to undo |
-| Interface feels "jittery" | Too many animations on trivial events | Remove animation from hover/focus; keep for state changes |
-| Users disable notifications | Every event sends a push notification | Tier notifications; only push for high-priority events |
-| Sound becomes annoying | Every click has an audio cue | Remove audio from routine actions; keep for confirmations |
-| Screen reader users overwhelmed | Too many aria-live announcements | Announce only meaningful state changes |
+| Symptom                          | Cause                                 | Fix                                                       |
+| -------------------------------- | ------------------------------------- | --------------------------------------------------------- |
+| Users ignore toast notifications | Too many toasts for minor events      | Reserve toasts for actions user may want to undo          |
+| Interface feels "jittery"        | Too many animations on trivial events | Remove animation from hover/focus; keep for state changes |
+| Users disable notifications      | Every event sends a push notification | Tier notifications; only push for high-priority events    |
+| Sound becomes annoying           | Every click has an audio cue          | Remove audio from routine actions; keep for confirmations |
+| Screen reader users overwhelmed  | Too many aria-live announcements      | Announce only meaningful state changes                    |
 
 ### Feedback Reduction Strategies
 
@@ -233,13 +235,14 @@ Too much feedback is as bad as too little. When every action triggers a toast no
 
 **3. Tier by priority.** Define three tiers of feedback intensity and assign every event type to a tier:
 
-| Tier | Intensity | Feedback Type | Events |
-|------|-----------|--------------|--------|
-| **1 (High)** | Multi-signal, persistent | Banner + sound + haptic | Errors, destructive confirmations, payment success |
-| **2 (Medium)** | Single signal, temporary | Toast or inline text | Save success, status change, minor warning |
-| **3 (Low)** | Minimal, passive | Visual state change only | Hover, focus, toggle, minor selection |
+| Tier           | Intensity                | Feedback Type            | Events                                             |
+| -------------- | ------------------------ | ------------------------ | -------------------------------------------------- |
+| **1 (High)**   | Multi-signal, persistent | Banner + sound + haptic  | Errors, destructive confirmations, payment success |
+| **2 (Medium)** | Single signal, temporary | Toast or inline text     | Save success, status change, minor warning         |
+| **3 (Low)**    | Minimal, passive         | Visual state change only | Hover, focus, toggle, minor selection              |
 
 **4. Respect context.** Reduce feedback when:
+
 - User is performing rapid sequential actions (bulk editing)
 - System is in background/minimized
 - User has indicated preference for fewer notifications
@@ -252,13 +255,13 @@ Feedback must work for all users, including those who cannot see animations, hea
 
 ### Accessibility Requirements
 
-| User Group | Feedback Adaptation |
-|-----------|---------------------|
-| **Screen reader users** | Use aria-live regions (polite for status, assertive for errors) to announce state changes |
-| **Low vision users** | Ensure color changes have sufficient contrast (3:1 minimum for state changes); do not rely on color alone |
-| **Motion-sensitive users** | Respect prefers-reduced-motion; replace animations with instant state changes |
-| **Deaf/hard of hearing users** | Never rely on audio as sole feedback channel; always pair with visual |
-| **Keyboard-only users** | Focus indicators must be visible on all interactive elements; state changes near focus |
+| User Group                     | Feedback Adaptation                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| **Screen reader users**        | Use aria-live regions (polite for status, assertive for errors) to announce state changes                 |
+| **Low vision users**           | Ensure color changes have sufficient contrast (3:1 minimum for state changes); do not rely on color alone |
+| **Motion-sensitive users**     | Respect prefers-reduced-motion; replace animations with instant state changes                             |
+| **Deaf/hard of hearing users** | Never rely on audio as sole feedback channel; always pair with visual                                     |
+| **Keyboard-only users**        | Focus indicators must be visible on all interactive elements; state changes near focus                    |
 
 ### Accessibility Feedback Checklist
 

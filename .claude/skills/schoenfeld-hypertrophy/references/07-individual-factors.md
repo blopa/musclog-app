@@ -1,7 +1,9 @@
 # Ch 7: Factors in Maximal Hypertrophic Development
+
 Book: Science and Development of Muscle Hypertrophy (2nd ed) | Author: Brad Schoenfeld
 
 ## Core Principle
+
 Individual hypertrophic response varies enormously based on genetics, age, sex, and training status. Everyone can gain muscle, but ultimate potential differs greatly.
 
 ---
@@ -9,18 +11,21 @@ Individual hypertrophic response varies enormously based on genetics, age, sex, 
 ## GENETICS
 
 ### Heritability
+
 - Up to 90% of variance in baseline muscle mass is hereditary
 - Hypertrophic RESPONSE to training also genetically influenced
 - Different genes affect baseline mass vs training-induced gains
 
 ### Response Variation
-| Responder Category | 12-Week Biceps CSA Change |
-|--------------------|--------------------------|
-| High responders | Up to +59% |
-| Moderate responders | ~28% |
-| Low/Non-responders | ~0% |
+
+| Responder Category  | 12-Week Biceps CSA Change |
+| ------------------- | ------------------------- |
+| High responders     | Up to +59%                |
+| Moderate responders | ~28%                      |
+| Low/Non-responders  | ~0%                       |
 
 ### Key Genetic Factors
+
 - **BMP2 gene**: CC genotype shows greater gains; explains ~3.9% of variance
 - **ACE gene**: Polymorphisms affect exercise-induced development
 - **ACTN3 gene**: "Speed gene" variants influence fiber composition
@@ -28,6 +33,7 @@ Individual hypertrophic response varies enormously based on genetics, age, sex, 
 - **IL-15 levels**: Higher resting levels correlate with greater gains
 
 ### Important Caveats
+
 - "Responders" and "non-responders" are oversimplifications
 - Virtually everyone gains SOME muscle with consistent training
 - Baseline muscularity ≠ hypertrophic potential
@@ -38,17 +44,20 @@ Individual hypertrophic response varies enormously based on genetics, age, sex, 
 ## AGE
 
 ### Peak Muscle Mass
+
 - Achieved between 3rd and 5th decade (20s-40s)
 - Gradual progressive loss thereafter (sarcopenia)
 
 ### Sarcopenia (Age-Related Muscle Loss)
+
 | Age Range | Annual Loss Rate |
-|-----------|------------------|
-| 40-60 | ~0.5%/year |
-| 60+ | ~1-2%/year |
-| 80+ | Accelerated |
+| --------- | ---------------- |
+| 40-60     | ~0.5%/year       |
+| 60+       | ~1-2%/year       |
+| 80+       | Accelerated      |
 
 ### Mechanisms of Age-Related Decline
+
 - Reduced anabolic hormones (testosterone, GH, IGF-1)
 - Impaired satellite cell function and number
 - Chronic low-grade inflammation ("inflammaging")
@@ -56,6 +65,7 @@ Individual hypertrophic response varies enormously based on genetics, age, sex, 
 - Neural changes (motor unit loss, fiber denervation)
 
 ### Training Response in Elderly
+
 - CAN build muscle with resistance training
 - May achieve greater muscle mass than sedentary younger individuals
 - Rate of gain slower than younger counterparts
@@ -63,6 +73,7 @@ Individual hypertrophic response varies enormously based on genetics, age, sex, 
 - Higher protein intake helps overcome anabolic resistance
 
 ### Practical Implications
+
 - Start/continue resistance training regardless of age
 - May need higher volumes/protein as age increases
 - Consistency over time crucial for maintaining gains
@@ -72,24 +83,28 @@ Individual hypertrophic response varies enormously based on genetics, age, sex, 
 ## SEX
 
 ### Baseline Differences
-| Measure | Women vs Men |
-|---------|--------------|
-| Total muscle mass | ~50-60% of men |
-| Upper body mass | Greater disparity |
-| Lower body mass | Smaller disparity |
-| Testosterone levels | ~10% of men |
+
+| Measure             | Women vs Men      |
+| ------------------- | ----------------- |
+| Total muscle mass   | ~50-60% of men    |
+| Upper body mass     | Greater disparity |
+| Lower body mass     | Smaller disparity |
+| Testosterone levels | ~10% of men       |
 
 ### Response to Training
+
 - **Relative gains**: Similar between sexes (% increase)
 - **Absolute gains**: Men gain significantly more total muscle
 - Women may show greater relative gains in some upper body muscles
 
 ### Hormonal Factors
+
 - Testosterone: Primary driver of sex differences
 - Estrogen: May have protective/anabolic effects
 - Post-menopause: Accelerated muscle loss (estrogen decline)
 
 ### Practical Implications
+
 - Women can and should train for hypertrophy
 - Same training principles apply to both sexes
 - Women won't "get bulky" without extreme measures
@@ -100,30 +115,35 @@ Individual hypertrophic response varies enormously based on genetics, age, sex, 
 ## TRAINING STATUS
 
 ### Ceiling Effect
+
 - Hypertrophic capacity diminishes with training experience
 - Rate of gain follows logarithmic curve (fast→slow)
 - Never truly reach genetic ceiling; always some potential remaining
 
 ### Proposed Timelines (Highly Individual)
-| Training Status | Potential Monthly Gain |
-|-----------------|----------------------|
-| Beginner (0-1 yr) | 1-1.5% bodyweight |
-| Intermediate (1-3 yr) | 0.5-1% bodyweight |
-| Advanced (3+ yr) | <0.5% bodyweight |
-| Elite (5+ yr) | Minimal |
+
+| Training Status       | Potential Monthly Gain |
+| --------------------- | ---------------------- |
+| Beginner (0-1 yr)     | 1-1.5% bodyweight      |
+| Intermediate (1-3 yr) | 0.5-1% bodyweight      |
+| Advanced (3+ yr)      | <0.5% bodyweight       |
+| Elite (5+ yr)         | Minimal                |
 
 ### Mechanisms of Diminished Returns
+
 - Reduced anabolic signaling response
 - Altered mTOR sensitivity
 - Muscle already near functional optimum
 - Increased systemic stress from higher training demands
 
 ### Muscle Memory
+
 - Previously trained muscle regains size faster
 - Myonuclei retained even during atrophy
 - "Detraining" periods may resensitize muscle to growth stimulus
 
 ### Practical Implications
+
 - Beginners: Rapid gains with basic programming
 - Intermediate: Progressive programming crucial
 - Advanced: Meticulous attention to all variables
@@ -134,11 +154,13 @@ Individual hypertrophic response varies enormously based on genetics, age, sex, 
 ## MORPHOLOGICAL FACTORS
 
 ### Muscle Architecture
+
 - Fiber length, pennation angle affect force production
 - Tendon insertion points influence mechanical advantage
 - Limb length affects leverage and exercise selection
 
 ### Fiber Type Distribution
+
 - Higher Type II proportion = greater hypertrophic potential
 - Genetically determined but slightly modifiable
 - Varies by muscle (e.g., soleus vs gastrocnemius)

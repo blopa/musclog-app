@@ -21,6 +21,7 @@ This skill guides the creation of mobile app UIs that are intentional, smooth, p
 ## When to Use
 
 This skill automatically triggers when you ask Claude to:
+
 - Design a mobile app screen
 - Create app mockups
 - Build mobile UI components
@@ -32,9 +33,11 @@ This skill automatically triggers when you ask Claude to:
 ## Design Principles
 
 ### Core Philosophy
+
 Great mobile UI isn't about flashiness — it's about intentionality. Every pixel, spacing value, and color choice should serve the user.
 
 ### Key Design Laws
+
 - **60/30/10 Color Rule**: 60% neutral, 30% complementary, 10% accent
 - **8-Point Grid System**: All spacing divisible by 8 or 4
 - **Peak-End Rule**: Users remember peak moment + ending
@@ -66,16 +69,19 @@ Great mobile UI isn't about flashiness — it's about intentionality. Every pixe
 ## Installation
 
 ### Quick Install (Recommended)
+
 ```bash
 npx skills add ceorkm/mobile-app-ui-design
 ```
 
 ### Manual Installation
+
 1. Clone this repository
 2. Copy files to `~/.claude/skills/mobile-app-ui-design/`
 3. Restart Claude Code
 
 ### Direct Download
+
 ```bash
 npx skills add ceorkm/mobile-app-ui-design
 ```
@@ -83,6 +89,7 @@ npx skills add ceorkm/mobile-app-ui-design
 ## What's Included
 
 ### SKILL.md
+
 - Core design philosophy
 - 5-step design process
 - Visual design rules (typography, color, spacing, shadows)
@@ -91,6 +98,7 @@ npx skills add ceorkm/mobile-app-ui-design
 - Implementation notes
 
 ### industry-conventions.md
+
 - Industry-specific design languages (AI, Crypto, Finance, Health, etc.)
 - Peak-End Rule from Nobel Prize research
 - Emotional feedback loops
@@ -98,6 +106,7 @@ npx skills add ceorkm/mobile-app-ui-design
 - 4-phase design process for client work
 
 ### INDEX.md
+
 - Complete navigation with line numbers
 - Quick reference guide
 - Design laws summary
@@ -106,6 +115,7 @@ npx skills add ceorkm/mobile-app-ui-design
 ## Tech Stack
 
 The skill provides guidance for:
+
 - React (artifacts)
 - Tailwind CSS (utility classes)
 - Lucide React (icons)
@@ -123,6 +133,7 @@ MIT License - feel free to use this skill in your projects.
 ## Credits
 
 Design principles compiled from industry best practices, research papers, and case studies from leading design teams at:
+
 - Airbnb
 - Duolingo
 - Spotify

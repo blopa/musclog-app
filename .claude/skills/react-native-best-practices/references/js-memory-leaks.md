@@ -62,6 +62,7 @@ React Native DevTools supports heap snapshots, allocation instrumentation on tim
 ### 3. Analyze the Timeline
 
 **Key indicators:**
+
 - **Blue bars** = Memory allocated
 - **Gray bars** = Memory freed (garbage collected)
 - **Blue bars that stay blue** = Potential leak!
@@ -71,10 +72,12 @@ React Native DevTools supports heap snapshots, allocation instrumentation on tim
 ![Memory Heap Snapshot](images/memory-heap-snapshot.png)
 
 The Memory tab shows:
+
 - **Timeline** (top): Blue bars = allocations, select time range to filter
 - **Summary view** (bottom): Lists constructors with allocation counts
 
 **Key columns:**
+
 - **Constructor**: Object type (e.g., `JSObject`, `Function`, `(string)`)
 - **Count**: Number of instances
 - **Shallow Size**: Memory of the object itself
@@ -83,6 +86,7 @@ The Memory tab shows:
 **Red flag**: Large retained size % with small shallow size % = closures or references holding large objects.
 
 **To investigate:**
+
 1. Click on a blue spike in the timeline
 2. Look at the Constructor list below
 3. Check **Shallow size** vs **Retained size**
@@ -106,7 +110,7 @@ const BadEventComponent = () => {
     const subscription = EventEmitter.addListener('myEvent', handleEvent);
     // Missing cleanup!
   }, []);
-  
+
   return <Text>Listening...</Text>;
 };
 
@@ -116,7 +120,7 @@ const GoodEventComponent = () => {
     const subscription = EventEmitter.addListener('myEvent', handleEvent);
     return () => subscription.remove(); // Cleanup!
   }, []);
-  
+
   return <Text>Listening...</Text>;
 };
 ```
@@ -128,7 +132,7 @@ const GoodEventComponent = () => {
 const BadTimerComponent = () => {
   useEffect(() => {
     const timer = setInterval(() => {
-      setCount(prev => prev + 1);
+      setCount((prev) => prev + 1);
     }, 1000);
     // Missing cleanup!
   }, []);
@@ -138,7 +142,7 @@ const BadTimerComponent = () => {
 const GoodTimerComponent = () => {
   useEffect(() => {
     const timer = setInterval(() => {
-      setCount(prev => prev + 1);
+      setCount((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(timer); // Cleanup!
   }, []);
@@ -149,9 +153,9 @@ Other common sources are closures that retain large objects and module-level arr
 
 ## Memory Profiler Metrics
 
-| Metric | Meaning |
-|--------|---------|
-| **Shallow size** | Memory held by the object itself |
+| Metric            | Meaning                                                 |
+| ----------------- | ------------------------------------------------------- |
+| **Shallow size**  | Memory held by the object itself                        |
 | **Retained size** | Memory freed if object is deleted (includes references) |
 
 **Large retained size with small shallow size** = Object holding references to other large objects (common in closures).

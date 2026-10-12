@@ -8,16 +8,16 @@ Manual triggers require a deliberate user action. They live inside UI controls -
 
 ### Types of Manual Triggers
 
-| Trigger Type | Mechanism | Best For | Example |
-|-------------|-----------|----------|---------|
-| **Tap/Click** | Single press on a target | Most common actions | Submit button, checkbox, link |
-| **Long press** | Press and hold | Secondary actions, previews | iOS Haptic Touch preview, Android context menu |
-| **Swipe** | Horizontal or vertical drag | Spatial navigation, destructive actions | Swipe to delete, swipe between pages |
-| **Drag** | Press, hold, and move | Reordering, adjusting values | Slider thumb, list reordering |
-| **Pinch/Spread** | Two-finger scale gesture | Zoom, resize | Map zoom, photo zoom |
-| **Double-tap** | Two rapid taps | Quick positive action | Instagram double-tap to like |
-| **Voice** | Spoken command | Hands-free contexts | "Hey Siri, set a timer" |
-| **Type** | Keyboard input | Search, data entry | Search-as-you-type, password field |
+| Trigger Type     | Mechanism                   | Best For                                | Example                                        |
+| ---------------- | --------------------------- | --------------------------------------- | ---------------------------------------------- |
+| **Tap/Click**    | Single press on a target    | Most common actions                     | Submit button, checkbox, link                  |
+| **Long press**   | Press and hold              | Secondary actions, previews             | iOS Haptic Touch preview, Android context menu |
+| **Swipe**        | Horizontal or vertical drag | Spatial navigation, destructive actions | Swipe to delete, swipe between pages           |
+| **Drag**         | Press, hold, and move       | Reordering, adjusting values            | Slider thumb, list reordering                  |
+| **Pinch/Spread** | Two-finger scale gesture    | Zoom, resize                            | Map zoom, photo zoom                           |
+| **Double-tap**   | Two rapid taps              | Quick positive action                   | Instagram double-tap to like                   |
+| **Voice**        | Spoken command              | Hands-free contexts                     | "Hey Siri, set a timer"                        |
+| **Type**         | Keyboard input              | Search, data entry                      | Search-as-you-type, password field             |
 
 ### Manual Trigger Design Principles
 
@@ -29,22 +29,22 @@ Manual triggers require a deliberate user action. They live inside UI controls -
 
 **4. Placement convention:** Triggers should appear where users expect them based on platform conventions:
 
-| Action Type | Expected Position | Platform Convention |
-|-------------|-------------------|---------------------|
-| Primary action | Bottom-right (mobile), top-right (desktop) | FAB on Android, toolbar on macOS |
-| Cancel/Back | Top-left (mobile), bottom-left (dialogs) | Back chevron on iOS, Escape key on desktop |
-| Destructive | Bottom of menu, separated from safe actions | Red text, separated by divider |
-| Settings | Top-right corner or hamburger menu | Gear icon, three dots |
-| Search | Top of screen, center or right | Magnifying glass icon |
+| Action Type    | Expected Position                           | Platform Convention                        |
+| -------------- | ------------------------------------------- | ------------------------------------------ |
+| Primary action | Bottom-right (mobile), top-right (desktop)  | FAB on Android, toolbar on macOS           |
+| Cancel/Back    | Top-left (mobile), bottom-left (dialogs)    | Back chevron on iOS, Escape key on desktop |
+| Destructive    | Bottom of menu, separated from safe actions | Red text, separated by divider             |
+| Settings       | Top-right corner or hamburger menu          | Gear icon, three dots                      |
+| Search         | Top of screen, center or right              | Magnifying glass icon                      |
 
 **5. Discoverability hierarchy:**
 
-| Visibility Level | When to Use | Example |
-|------------------|-------------|---------|
-| **Always visible** | Primary actions, frequent use | Send button in messaging app |
-| **Visible on hover/focus** | Secondary actions, contextual | Edit icon appears on card hover |
-| **Visible on gesture** | Tertiary actions, power users | Swipe to reveal archive/delete |
-| **Hidden (keyboard shortcut)** | Expert acceleration | Cmd+K for command palette |
+| Visibility Level               | When to Use                   | Example                         |
+| ------------------------------ | ----------------------------- | ------------------------------- |
+| **Always visible**             | Primary actions, frequent use | Send button in messaging app    |
+| **Visible on hover/focus**     | Secondary actions, contextual | Edit icon appears on card hover |
+| **Visible on gesture**         | Tertiary actions, power users | Swipe to reveal archive/delete  |
+| **Hidden (keyboard shortcut)** | Expert acceleration           | Cmd+K for command palette       |
 
 ---
 
@@ -54,15 +54,15 @@ System triggers fire automatically when predefined conditions are met. The user 
 
 ### Types of System Triggers
 
-| Trigger Condition | How It Works | Example |
-|-------------------|-------------|---------|
-| **Time-based** | Fires at a specific time or after a duration | Alarm at 7am, session timeout at 30 minutes |
-| **Threshold-based** | Fires when a value crosses a limit | Low battery at 20%, storage full at 95% |
-| **Data-based** | Fires when new data arrives | New email, incoming message, price change |
-| **Location-based** | Fires when user enters or exits a geofence | "You're near a store" reminder, weather alerts |
-| **State-change** | Fires when system state changes | Connection lost, sync complete, download finished |
-| **Error-based** | Fires when an error condition is detected | Form validation failure, payment declined |
-| **Inactivity** | Fires after a period of no user input | Screen dims after 30 seconds, "Are you still watching?" |
+| Trigger Condition   | How It Works                                 | Example                                                 |
+| ------------------- | -------------------------------------------- | ------------------------------------------------------- |
+| **Time-based**      | Fires at a specific time or after a duration | Alarm at 7am, session timeout at 30 minutes             |
+| **Threshold-based** | Fires when a value crosses a limit           | Low battery at 20%, storage full at 95%                 |
+| **Data-based**      | Fires when new data arrives                  | New email, incoming message, price change               |
+| **Location-based**  | Fires when user enters or exits a geofence   | "You're near a store" reminder, weather alerts          |
+| **State-change**    | Fires when system state changes              | Connection lost, sync complete, download finished       |
+| **Error-based**     | Fires when an error condition is detected    | Form validation failure, payment declined               |
+| **Inactivity**      | Fires after a period of no user input        | Screen dims after 30 seconds, "Are you still watching?" |
 
 ### System Trigger Design Principles
 
@@ -70,10 +70,10 @@ System triggers fire automatically when predefined conditions are met. The user 
 
 **2. Threshold calibration:** Set thresholds that balance urgency with usefulness:
 
-| Too Early | Right Threshold | Too Late |
-|-----------|-----------------|----------|
-| Battery warning at 50% | Battery warning at 20% | Battery warning at 2% |
-| Disk full warning at 50% | Disk full warning at 90% | Disk full warning at 99% |
+| Too Early                   | Right Threshold              | Too Late                      |
+| --------------------------- | ---------------------------- | ----------------------------- |
+| Battery warning at 50%      | Battery warning at 20%       | Battery warning at 2%         |
+| Disk full warning at 50%    | Disk full warning at 90%     | Disk full warning at 99%      |
 | Inactivity timeout at 1 min | Inactivity timeout at 15 min | Inactivity timeout at 2 hours |
 
 **3. Escalation:** Important system triggers should escalate if ignored:
@@ -84,6 +84,7 @@ Passive indicator → Active notification → Blocking alert
 ```
 
 **4. Silencing rules:** Users must be able to silence system triggers. Provide:
+
 - Global mute (Do Not Disturb)
 - Per-category control (mute marketing, keep security)
 - Scheduled quiet hours
@@ -96,33 +97,33 @@ Every manual trigger exists in multiple states. Users must be able to distinguis
 
 ### The Five Essential Trigger States
 
-| State | Visual Treatment | Purpose | Example |
-|-------|-----------------|---------|---------|
-| **Default** | Normal appearance, ready for interaction | Shows availability | Blue button with white text |
-| **Hover** | Subtle change on cursor proximity | Confirms interactivity (desktop only) | Background darkens slightly |
-| **Active/Pressed** | Visual depression or color shift | Confirms action registration | Button scales down 2%, color deepens |
-| **Disabled** | Reduced opacity, no cursor change | Prevents action, shows unavailability | 40% opacity, cursor: not-allowed |
-| **Loading** | Spinner or animation replaces label | Shows processing in progress | Spinner replaces "Save" text |
+| State              | Visual Treatment                         | Purpose                               | Example                              |
+| ------------------ | ---------------------------------------- | ------------------------------------- | ------------------------------------ |
+| **Default**        | Normal appearance, ready for interaction | Shows availability                    | Blue button with white text          |
+| **Hover**          | Subtle change on cursor proximity        | Confirms interactivity (desktop only) | Background darkens slightly          |
+| **Active/Pressed** | Visual depression or color shift         | Confirms action registration          | Button scales down 2%, color deepens |
+| **Disabled**       | Reduced opacity, no cursor change        | Prevents action, shows unavailability | 40% opacity, cursor: not-allowed     |
+| **Loading**        | Spinner or animation replaces label      | Shows processing in progress          | Spinner replaces "Save" text         |
 
 ### Additional States for Complex Triggers
 
-| State | When Used | Visual Treatment | Example |
-|-------|-----------|-----------------|---------|
-| **Focus** | Keyboard navigation | Focus ring or outline | Blue 2px outline on Tab focus |
-| **Selected/On** | Toggle or checkbox in active state | Filled, checked, or colored | Toggle thumb slides right, track turns green |
-| **Error** | Associated input has validation error | Red border, error icon | Red outline on text field |
-| **Success** | Action completed successfully | Green checkmark, brief animation | Checkmark replaces spinner for 1.5s |
+| State           | When Used                             | Visual Treatment                 | Example                                      |
+| --------------- | ------------------------------------- | -------------------------------- | -------------------------------------------- |
+| **Focus**       | Keyboard navigation                   | Focus ring or outline            | Blue 2px outline on Tab focus                |
+| **Selected/On** | Toggle or checkbox in active state    | Filled, checked, or colored      | Toggle thumb slides right, track turns green |
+| **Error**       | Associated input has validation error | Red border, error icon           | Red outline on text field                    |
+| **Success**     | Action completed successfully         | Green checkmark, brief animation | Checkmark replaces spinner for 1.5s          |
 
 ### State Transition Timing
 
-| Transition | Duration | Easing | Why |
-|-----------|----------|--------|-----|
-| Default to Hover | Instant or 50ms | ease-out | Must feel responsive to cursor |
-| Default to Active | Instant | none | Must feel like physical press |
-| Active to Loading | Instant | none | Immediate acknowledgment |
-| Loading to Success | 200-400ms | ease-in-out | Smooth enough to notice |
-| Loading to Error | 200-400ms | ease-in-out | Smooth enough to notice |
-| Any to Disabled | 150ms | ease-out | Gentle enough not to flash |
+| Transition         | Duration        | Easing      | Why                            |
+| ------------------ | --------------- | ----------- | ------------------------------ |
+| Default to Hover   | Instant or 50ms | ease-out    | Must feel responsive to cursor |
+| Default to Active  | Instant         | none        | Must feel like physical press  |
+| Active to Loading  | Instant         | none        | Immediate acknowledgment       |
+| Loading to Success | 200-400ms       | ease-in-out | Smooth enough to notice        |
+| Loading to Error   | 200-400ms       | ease-in-out | Smooth enough to notice        |
+| Any to Disabled    | 150ms           | ease-out    | Gentle enough not to flash     |
 
 ---
 
@@ -132,12 +133,12 @@ Some triggers have no visible control -- they rely on gestures, sensor input, or
 
 ### When Invisible Triggers Are Appropriate
 
-| Appropriate | Inappropriate |
-|-------------|---------------|
-| Shortcut for an action also available through a visible trigger | Only way to access a feature |
-| Power-user acceleration | First-time user critical path |
-| Delight/easter egg with no functional consequence | Destructive or irreversible action |
-| Platform-standard gesture (pinch to zoom) | Novel gesture with no convention |
+| Appropriate                                                     | Inappropriate                      |
+| --------------------------------------------------------------- | ---------------------------------- |
+| Shortcut for an action also available through a visible trigger | Only way to access a feature       |
+| Power-user acceleration                                         | First-time user critical path      |
+| Delight/easter egg with no functional consequence               | Destructive or irreversible action |
+| Platform-standard gesture (pinch to zoom)                       | Novel gesture with no convention   |
 
 ### Making Invisible Triggers Learnable
 
@@ -165,13 +166,13 @@ Where a trigger lives on screen determines whether users find it. Placement foll
 
 ### Visibility Priority Framework
 
-| Priority | Screen Position | What Goes Here |
-|----------|----------------|----------------|
-| **1 (highest)** | Center of viewport | Primary CTA, hero action, onboarding step |
-| **2** | Top-right (desktop) or bottom-center (mobile) | Primary persistent action (FAB, "New" button) |
-| **3** | Inline with content | Contextual actions (edit, delete, reply) |
-| **4** | Navigation bar / toolbar | Frequent global actions (search, settings) |
-| **5 (lowest)** | Overflow menu, long-press, swipe | Secondary and tertiary actions |
+| Priority        | Screen Position                               | What Goes Here                                |
+| --------------- | --------------------------------------------- | --------------------------------------------- |
+| **1 (highest)** | Center of viewport                            | Primary CTA, hero action, onboarding step     |
+| **2**           | Top-right (desktop) or bottom-center (mobile) | Primary persistent action (FAB, "New" button) |
+| **3**           | Inline with content                           | Contextual actions (edit, delete, reply)      |
+| **4**           | Navigation bar / toolbar                      | Frequent global actions (search, settings)    |
+| **5 (lowest)**  | Overflow menu, long-press, swipe              | Secondary and tertiary actions                |
 
 ### Fitts's Law Application
 
@@ -184,13 +185,13 @@ Fitts's Law states that the time to reach a target is proportional to the distan
 
 ### Trigger Grouping Patterns
 
-| Pattern | When to Use | Example |
-|---------|-------------|---------|
-| **Toolbar** | Multiple peer-level actions | Text formatting: Bold, Italic, Underline |
-| **Action group** | Primary + secondary actions | "Save" (primary) + "Save as Draft" (secondary) |
-| **Contextual menu** | Many actions on a single object | Right-click: Copy, Paste, Delete, Rename |
-| **FAB with expansion** | Primary action with variants | "+" FAB expands to: New Message, New Group, New Channel |
-| **Inline actions** | Actions tied to specific content | Reply, Like, Share below a social post |
+| Pattern                | When to Use                      | Example                                                 |
+| ---------------------- | -------------------------------- | ------------------------------------------------------- |
+| **Toolbar**            | Multiple peer-level actions      | Text formatting: Bold, Italic, Underline                |
+| **Action group**       | Primary + secondary actions      | "Save" (primary) + "Save as Draft" (secondary)          |
+| **Contextual menu**    | Many actions on a single object  | Right-click: Copy, Paste, Delete, Rename                |
+| **FAB with expansion** | Primary action with variants     | "+" FAB expands to: New Message, New Group, New Channel |
+| **Inline actions**     | Actions tied to specific content | Reply, Like, Share below a social post                  |
 
 ---
 
@@ -199,24 +200,28 @@ Fitts's Law states that the time to reach a target is proportional to the distan
 Use this checklist to evaluate triggers across an interface.
 
 ### Discoverability
+
 - [ ] Can a first-time user find the trigger within 5 seconds?
 - [ ] Is the trigger labeled with a clear verb (not "Submit" or "OK")?
 - [ ] Does the trigger look interactive (distinct from static elements)?
 - [ ] Is the trigger large enough for its input method (touch: 44pt+, mouse: 24px+)?
 
 ### State Communication
+
 - [ ] Can users distinguish default, hover, active, disabled, and loading states?
 - [ ] Does the disabled state explain why it is disabled (tooltip or nearby text)?
 - [ ] Does the loading state indicate progress or at least activity?
 - [ ] Is the success/error state visible for long enough to register?
 
 ### Placement
+
 - [ ] Is the trigger where platform conventions suggest?
 - [ ] Is the primary action more visually prominent than secondary actions?
 - [ ] Are related triggers grouped together?
 - [ ] Is the trigger reachable with one hand on mobile (bottom two-thirds of screen)?
 
 ### Edge Cases
+
 - [ ] What happens on double-tap/double-click? (Prevent duplicate submissions)
 - [ ] What happens if the trigger is activated during loading? (Disable or queue)
 - [ ] What happens on very slow connections? (Show loading state immediately)

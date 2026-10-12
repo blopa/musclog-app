@@ -12,12 +12,12 @@ Understand which threads Turbo Modules and Fabric use for initialization, method
 
 Thread names and exact scheduling can vary by React Native version, architecture, and host app setup. Use this as a default mental model, then confirm with a profiler when the exact thread matters.
 
-| Action | Default assumption |
-|--------|--------------------|
-| UI view creation/updates | Main/UI thread |
-| Sync value-returning Turbo Module method | Blocks the JS caller until it returns |
-| Async Turbo Module method | Does not block JS, but may run on a shared native modules executor |
-| Heavy CPU/I/O work | Move to a module-owned background queue/coroutine |
+| Action                                   | Default assumption                                                 |
+| ---------------------------------------- | ------------------------------------------------------------------ |
+| UI view creation/updates                 | Main/UI thread                                                     |
+| Sync value-returning Turbo Module method | Blocks the JS caller until it returns                              |
+| Async Turbo Module method                | Does not block JS, but may run on a shared native modules executor |
+| Heavy CPU/I/O work                       | Move to a module-owned background queue/coroutine                  |
 
 **Key rule**: Sync methods should be trivial and deterministic. Move anything that can block, allocate heavily, perform I/O, or wait on locks to async/background work.
 
@@ -30,21 +30,21 @@ Thread names and exact scheduling can vary by React Native version, architecture
 
 ## Available Threads
 
-| Thread | Name in Debugger | Purpose |
-|--------|------------------|---------|
-| Main/UI | Main thread | UI rendering, UIKit/Android Views |
-| JavaScript | `mqt_v_js` | JS execution, React |
-| Native Modules | `mqt_v_native` | Async Turbo Module calls |
-| Custom | Various | Your background threads |
+| Thread         | Name in Debugger | Purpose                           |
+| -------------- | ---------------- | --------------------------------- |
+| Main/UI        | Main thread      | UI rendering, UIKit/Android Views |
+| JavaScript     | `mqt_v_js`       | JS execution, React               |
+| Native Modules | `mqt_v_native`   | Async Turbo Module calls          |
+| Custom         | Various          | Your background threads           |
 
 ## Turbo Modules Threading
 
 ### Initialization
 
-| Platform | Thread | Notes |
-|----------|--------|-------|
-| iOS | Main thread | Assumes UIKit access needed |
-| Android (lazy) | JS thread | Default behavior |
+| Platform        | Thread                | Notes                        |
+| --------------- | --------------------- | ---------------------------- |
+| iOS             | Main thread           | Assumes UIKit access needed  |
+| Android (lazy)  | JS thread             | Default behavior             |
 | Android (eager) | Native modules thread | When `needsEagerInit = true` |
 
 **iOS**: React Native runs `init` on main thread assuming UIKit access.
@@ -116,10 +116,10 @@ override fun asyncOperation(a: Double, promise: Promise?) {
 
 Called when React Native instance is torn down (e.g., Metro reload):
 
-| Platform | Thread |
-|----------|--------|
-| iOS | Native modules thread |
-| Android | ReactHost thread pool |
+| Platform | Thread                |
+| -------- | --------------------- |
+| iOS      | Native modules thread |
+| Android  | ReactHost thread pool |
 
 **iOS**: Implement `RCTInvalidating` protocol.
 
@@ -127,10 +127,10 @@ Called when React Native instance is torn down (e.g., Metro reload):
 
 ### View Lifecycle
 
-| Operation | Default assumption |
-|-----------|--------------------|
-| View init | Main thread |
-| Prop updates | Main thread |
+| Operation               | Default assumption                                               |
+| ----------------------- | ---------------------------------------------------------------- |
+| View init               | Main thread                                                      |
+| Prop updates            | Main thread                                                      |
 | Layout/shadow tree work | Architecture-dependent; profile before assuming thread ownership |
 
 Views always manipulate UI on main thread (UIKit/Android requirement).
@@ -159,9 +159,9 @@ Do not use a hard-coded "Yoga runs on X thread" rule when diagnosing performance
 ```kotlin
 class MyModule(reactContext: ReactApplicationContext) :
     NativeMyModuleSpec(reactContext) {
-    
+
     private val moduleScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-    
+
     override fun heavyWork(promise: Promise?) {
         moduleScope.launch {
             // Heavy computation here
@@ -169,7 +169,7 @@ class MyModule(reactContext: ReactApplicationContext) :
             promise?.resolve(result)
         }
     }
-    
+
     override fun invalidate() {
         super.invalidate()
         moduleScope.cancel()  // Important: cancel to prevent leaks
@@ -179,19 +179,19 @@ class MyModule(reactContext: ReactApplicationContext) :
 
 ## Thread Safety Checklist
 
-| Scenario | Safe? | Solution |
-|----------|-------|----------|
-| Sync method accessing shared state | ⚠️ | Use locks/synchronized |
-| Async method accessing UI | ❌ | Dispatch to main thread |
-| Multiple async calls to same resource | ⚠️ | Queue or mutex |
-| Accessing JS from background | ❌ | Use CallInvoker |
+| Scenario                              | Safe? | Solution                |
+| ------------------------------------- | ----- | ----------------------- |
+| Sync method accessing shared state    | ⚠️    | Use locks/synchronized  |
+| Async method accessing UI             | ❌    | Dispatch to main thread |
+| Multiple async calls to same resource | ⚠️    | Queue or mutex          |
+| Accessing JS from background          | ❌    | Use CallInvoker         |
 
 ### Accessing UI from Background (iOS)
 
 ```swift
 DispatchQueue.global().async {
     let result = self.heavyComputation()
-    
+
     DispatchQueue.main.async {
         // Safe to update UI here
         self.updateUI(with: result)
@@ -204,7 +204,7 @@ DispatchQueue.global().async {
 ```kotlin
 moduleScope.launch(Dispatchers.Default) {
     val result = heavyComputation()
-    
+
     withContext(Dispatchers.Main) {
         // Safe to update UI here
         updateUI(result)
@@ -214,15 +214,15 @@ moduleScope.launch(Dispatchers.Default) {
 
 ## Summary Table
 
-| Action | iOS Thread | Android Thread |
-|--------|------------|----------------|
-| Module init | Version/setup dependent; avoid blocking | Version/setup dependent; avoid blocking |
-| Sync method | Blocks JS caller | Blocks JS caller |
+| Action       | iOS Thread                                       | Android Thread                                   |
+| ------------ | ------------------------------------------------ | ------------------------------------------------ |
+| Module init  | Version/setup dependent; avoid blocking          | Version/setup dependent; avoid blocking          |
+| Sync method  | Blocks JS caller                                 | Blocks JS caller                                 |
 | Async method | Shared native executor or implementation-defined | Shared native executor or implementation-defined |
-| View init | Main | Main |
-| Prop update | Main | Main |
-| Yoga/layout | Profile; do not assume fixed ownership | Profile; do not assume fixed ownership |
-| Invalidate | Native modules | ReactHost pool |
+| View init    | Main                                             | Main                                             |
+| Prop update  | Main                                             | Main                                             |
+| Yoga/layout  | Profile; do not assume fixed ownership           | Profile; do not assume fixed ownership           |
+| Invalidate   | Native modules                                   | ReactHost pool                                   |
 
 ## Related Skills
 

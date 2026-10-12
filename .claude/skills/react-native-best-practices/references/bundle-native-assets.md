@@ -49,11 +49,13 @@ Android handles this automatically.
 ### How It Works
 
 1. Build AAB:
+
    ```bash
    cd android && ./gradlew bundleRelease
    ```
 
 2. Metro places images in density folders:
+
    ```
    android/app/build/outputs/bundle/release/
    └── base/
@@ -164,12 +166,12 @@ npx sharp-cli input.jpg -o output.jpg --quality 80
 
 ### 2. Use Appropriate Formats
 
-| Format | Best For |
-|--------|----------|
-| JPEG | Photos |
-| PNG | Icons, transparency |
-| WebP | Both (smaller) |
-| SVG | Vector icons |
+| Format | Best For            |
+| ------ | ------------------- |
+| JPEG   | Photos              |
+| PNG    | Icons, transparency |
+| WebP   | Both (smaller)      |
+| SVG    | Vector icons        |
 
 ### 3. Separate Bundled Assets from Remote Images
 

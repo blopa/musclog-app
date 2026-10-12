@@ -57,7 +57,7 @@ function render(component: React.Element<any>, options?: RenderOptions): RenderR
 ```ts
 async function renderAsync(
   component: React.Element<any>,
-  options?: RenderAsyncOptions,
+  options?: RenderAsyncOptions
 ): Promise<RenderAsyncResult>;
 ```
 
@@ -398,7 +398,7 @@ Available automatically with any `@testing-library/react-native` import. No setu
 ```ts
 function waitFor<T>(
   expectation: () => T,
-  options?: { timeout?: number; interval?: number },
+  options?: { timeout?: number; interval?: number }
 ): Promise<T>;
 ```
 
@@ -416,7 +416,7 @@ Rules:
 ```ts
 function waitForElementToBeRemoved<T>(
   expectation: () => T,
-  options?: { timeout?: number; interval?: number },
+  options?: { timeout?: number; interval?: number }
 ): Promise<T>;
 ```
 
@@ -469,7 +469,7 @@ function renderHook<Result, Props>(
     initialProps?: Props;
     wrapper?: React.ComponentType;
     concurrentRoot?: boolean;
-  },
+  }
 ): {
   result: { current: Result };
   rerender: (props: Props) => void;
@@ -486,7 +486,7 @@ async function renderHookAsync<Result, Props>(
     initialProps?: Props;
     wrapper?: React.ComponentType;
     concurrentRoot?: boolean;
-  },
+  }
 ): Promise<{
   result: { current: Result };
   rerenderAsync: (props: Props) => Promise<void>;
@@ -521,7 +521,7 @@ function configure(
     defaultIncludeHiddenElements: boolean; // default for includeHiddenElements option (default: false)
     defaultDebugOptions: Partial<DebugOptions>;
     concurrentRoot: boolean; // default concurrent rendering (default: true)
-  }>,
+  }>
 ): void;
 
 function resetToDefaults(): void;

@@ -4,7 +4,7 @@ description: 'Diagnose and fix retention problems using behavior design (B=MAP).
 license: MIT
 metadata:
   author: wondelai
-  version: "1.4.0"
+  version: '1.4.0'
 ---
 
 # Behavior Design Framework
@@ -47,6 +47,7 @@ See: [references/behavior-model.md](references/behavior-model.md) when you need 
 **Why it works:** Motivation comes in waves — it spikes (New Year's resolutions, product launches) and crashes (day 3, week 2). Products that depend on high motivation fail when the wave recedes; the best designs work at the trough.
 
 **Key insights:**
+
 - "Motivation is unreliable. Ability is not." — BJ Fogg
 - Design for low-motivation moments, not peak excitement
 - Motivation-first tactics (inspiring videos, aspirational messaging) produce spikes, not sustained behavior
@@ -54,13 +55,14 @@ See: [references/behavior-model.md](references/behavior-model.md) when you need 
 
 **Product applications:**
 
-| Context | Application | Example |
-|---------|-------------|---------|
-| **Onboarding** | Don't count on the new-user spike lasting | First actions work even when excitement fades |
-| **Re-engagement** | Assume returning users have low motivation | Show immediate value before asking for effort |
-| **Messaging** | Tap the right motivator | Social fitness → belonging; financial tool → hope |
+| Context           | Application                                | Example                                           |
+| ----------------- | ------------------------------------------ | ------------------------------------------------- |
+| **Onboarding**    | Don't count on the new-user spike lasting  | First actions work even when excitement fades     |
+| **Re-engagement** | Assume returning users have low motivation | Show immediate value before asking for effort     |
+| **Messaging**     | Tap the right motivator                    | Social fitness → belonging; financial tool → hope |
 
 **Copy patterns:**
+
 - "Takes 30 seconds" (signals ease, lowers motivation needed)
 - "Join 50,000 teams who..." (belonging motivator)
 - "Don't lose your 7-day streak" (anticipation/fear motivator)
@@ -76,6 +78,7 @@ See: [references/motivation-waves.md](references/motivation-waves.md) for the th
 **Why it works:** Unlike motivation, ability can be systematically engineered: every removed field, eliminated step, and preset default moves the behavior right on the model, crossing the Action Line even at low motivation. The Ability Chain gives you the diagnostic — find the weakest link and fix it.
 
 **Key insights:**
+
 - Six factors: Time, Money, Physical Effort, Mental Effort, Social Deviance, Non-Routine
 - Simplicity is a function of the scarcest resource — find the bottleneck, not the most obvious factor
 - "Simplicity changes behavior" — BJ Fogg
@@ -84,13 +87,14 @@ See: [references/motivation-waves.md](references/motivation-waves.md) for the th
 
 **Product applications:**
 
-| Context | Application | Example |
-|---------|-------------|---------|
-| **Signup** | Cut cost across all six factors | One-click SSO removes time, mental effort, non-routine |
-| **Core action** | Fix the weakest link | Mental-effort bottleneck → smart defaults and templates |
-| **Enterprise adoption** | Address social deviance | "Your team already uses this" reduces social risk |
+| Context                 | Application                     | Example                                                 |
+| ----------------------- | ------------------------------- | ------------------------------------------------------- |
+| **Signup**              | Cut cost across all six factors | One-click SSO removes time, mental effort, non-routine  |
+| **Core action**         | Fix the weakest link            | Mental-effort bottleneck → smart defaults and templates |
+| **Enterprise adoption** | Address social deviance         | "Your team already uses this" reduces social risk       |
 
 **Copy patterns:**
+
 - "One click to get started" (time + physical effort)
 - "No technical skills needed" (mental effort)
 - "Works just like tools you already use" (non-routine)
@@ -106,19 +110,21 @@ See: [references/ability-chain.md](references/ability-chain.md) for the six fact
 **Why it works:** Teams assume motivation + ability is enough — it isn't, not without a well-timed prompt. But prompts only work above the Action Line: a push notification to someone lacking motivation or ability is spam.
 
 **Key insights:**
+
 - A prompt at the wrong moment is noise; at the right moment, magic
 - Anchor moments tie new behaviors to existing routines ("After I open Slack, I will...")
 - Prompt fatigue is real — every unnecessary prompt degrades the value of future ones
 
 **Product applications:**
 
-| Context | Application | Example |
-|---------|-------------|---------|
-| **Notifications** | Prompt only above the Action Line | Send digest when there's content to review, not on a schedule |
-| **Re-engagement** | Tie prompts to real events | "Your report is ready" (event-based, not time-based) |
-| **Feature discovery** | Prompt when motivation and ability align | Feature tour appears when user hits the problem it solves |
+| Context               | Application                              | Example                                                       |
+| --------------------- | ---------------------------------------- | ------------------------------------------------------------- |
+| **Notifications**     | Prompt only above the Action Line        | Send digest when there's content to review, not on a schedule |
+| **Re-engagement**     | Tie prompts to real events               | "Your report is ready" (event-based, not time-based)          |
+| **Feature discovery** | Prompt when motivation and ability align | Feature tour appears when user hits the problem it solves     |
 
 **Copy patterns:**
+
 - "Your weekly report is ready" (context prompt — real event)
 - "One thing left to complete your setup" (action prompt with progress)
 - Never: "We miss you!" (product need, not user need)
@@ -145,11 +151,11 @@ After I [ANCHOR MOMENT], I will [TINY BEHAVIOR], then I [CELEBRATION].
 
 Every target behavior has a Starter Step — the tiniest meaningful version:
 
-| Target Behavior | Starter Step | Why It Works |
-|----------------|--------------|--------------|
-| Complete onboarding | Fill in one field | Momentum from completion |
-| Use analytics daily | Open the dashboard | Seeing data creates curiosity |
-| Collaborate with team | Send one comment | Social reciprocity kicks in |
+| Target Behavior       | Starter Step       | Why It Works                  |
+| --------------------- | ------------------ | ----------------------------- |
+| Complete onboarding   | Fill in one field  | Momentum from completion      |
+| Use analytics daily   | Open the dashboard | Seeing data creates curiosity |
+| Collaborate with team | Send one comment   | Social reciprocity kicks in   |
 
 ### Scaling Behaviors
 
@@ -162,18 +168,23 @@ See: [references/tiny-habits.md](references/tiny-habits.md) for the full Tiny Ha
 Fogg's systematic process for lasting behavior change:
 
 ### Step 1: Clarify the Aspiration
+
 What outcome does the user want — their aspiration, not the product's goal ("stay on top of my team's progress", not "increase DAU").
 
 ### Step 2: Explore Behavior Options
+
 List all possible behaviors that could achieve the aspiration. Be exhaustive — don't commit yet.
 
 ### Step 3: Match Behaviors
+
 Assess each for motivation and ease; plot on a 2×2 of impact vs. feasibility (Focus Mapping).
 
 ### Step 4: Start Tiny
+
 Shrink the best-matched behavior to its Starter Step; design the prompt; add celebration.
 
 ### Step 5: Optimize
+
 Expand once wired. Fix bottlenecks with the Ability Chain; refine prompt timing from data.
 
 See: [references/product-applications.md](references/product-applications.md) when applying this process to a specific category — B=MAP mapped to SaaS onboarding, mobile, e-commerce, health, and education with per-category motivation timelines and bottlenecks.
@@ -190,46 +201,46 @@ See: [references/product-applications.md](references/product-applications.md) wh
 
 Map B=MAP to product metrics:
 
-| Metric | B=MAP Diagnosis | Action |
-|--------|----------------|--------|
-| **Low activation** | First action below the Action Line | Shrink onboarding to Starter Step; fix weakest Ability Chain link |
-| **Day-1 drop-off** | Prompt failed or mistimed | Redesign first-day prompts; anchor to an existing routine |
-| **Day-7 drop-off** | Motivation wave receded, behavior too hard | Reduce core action difficulty |
-| **Day-30 drop-off** | Habit didn't form, no internal prompt | Create tiny habit recipe; add celebration loops |
-| **Low feature adoption** | Feature below the Action Line for most users | Friction-audit it; prompt only when motivation is present |
-| **Notification fatigue** | Prompts sent below the Action Line | Cut volume; send only with motivation + ability |
+| Metric                   | B=MAP Diagnosis                              | Action                                                            |
+| ------------------------ | -------------------------------------------- | ----------------------------------------------------------------- |
+| **Low activation**       | First action below the Action Line           | Shrink onboarding to Starter Step; fix weakest Ability Chain link |
+| **Day-1 drop-off**       | Prompt failed or mistimed                    | Redesign first-day prompts; anchor to an existing routine         |
+| **Day-7 drop-off**       | Motivation wave receded, behavior too hard   | Reduce core action difficulty                                     |
+| **Day-30 drop-off**      | Habit didn't form, no internal prompt        | Create tiny habit recipe; add celebration loops                   |
+| **Low feature adoption** | Feature below the Action Line for most users | Friction-audit it; prompt only when motivation is present         |
+| **Notification fatigue** | Prompts sent below the Action Line           | Cut volume; send only with motivation + ability                   |
 
 See: [references/case-studies.md](references/case-studies.md) for a worked diagnosis of Instagram, Duolingo, Slack, Calm, and Peloton — read it to see how M, A, and P are scored independently on a real product before diagnosing your own.
 
 ## Common Mistakes
 
-| Mistake | Why It Fails | Fix |
-|---------|-------------|------|
-| **Relying on motivation for retention** | Motivation always recedes; products needing it fail at the trough | Make behaviors tiny enough to survive motivation dips |
-| **Ignoring the Ability Chain bottleneck** | You optimized time but the barrier is mental effort or social deviance | Audit all six factors; fix the scarcest resource |
-| **Prompting below the Action Line** | Notifications to unmotivated/unable users = spam | Event-based triggers only when motivation + ability suffice |
-| **Skipping celebration in onboarding** | Without positive emotion, repetition doesn't wire habits | Add success states and micro-celebrations after key actions |
-| **First action too ambitious** | "Complete your profile" is a project, not a behavior | Shrink to Starter Step: one field, one action |
-| **Copying products without diagnosing B=MAP** | A high-motivation audience's design fails yours | Diagnose your users' motivation, ability, and prompt context first |
+| Mistake                                       | Why It Fails                                                           | Fix                                                                |
+| --------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Relying on motivation for retention**       | Motivation always recedes; products needing it fail at the trough      | Make behaviors tiny enough to survive motivation dips              |
+| **Ignoring the Ability Chain bottleneck**     | You optimized time but the barrier is mental effort or social deviance | Audit all six factors; fix the scarcest resource                   |
+| **Prompting below the Action Line**           | Notifications to unmotivated/unable users = spam                       | Event-based triggers only when motivation + ability suffice        |
+| **Skipping celebration in onboarding**        | Without positive emotion, repetition doesn't wire habits               | Add success states and micro-celebrations after key actions        |
+| **First action too ambitious**                | "Complete your profile" is a project, not a behavior                   | Shrink to Starter Step: one field, one action                      |
+| **Copying products without diagnosing B=MAP** | A high-motivation audience's design fails yours                        | Diagnose your users' motivation, ability, and prompt context first |
 
 ## Quick Diagnostic
 
-| Question | If No | Action |
-|----------|-------|--------|
-| Can a new user do the core action in under 60 seconds? | Ability too low | Friction audit; shrink to Starter Step |
-| Does the product work when motivation is low? | Design depends on spikes | Redesign core behaviors for minimal motivation |
-| Are prompts tied to real events or anchors? | Prompts feel like spam | Switch to event-based or anchor-based prompts |
-| Is there immediate feedback after key actions? | No celebration = no habit wiring | Add success states, progress, social feedback |
-| Have you found the weakest Ability Chain link? | Optimizing the wrong thing | Rate each of the six factors 1-5 for the core behavior |
-| Do users scale naturally from tiny behaviors? | Forcing complexity too early | Starter Steps; let behaviors grow organically |
+| Question                                               | If No                            | Action                                                 |
+| ------------------------------------------------------ | -------------------------------- | ------------------------------------------------------ |
+| Can a new user do the core action in under 60 seconds? | Ability too low                  | Friction audit; shrink to Starter Step                 |
+| Does the product work when motivation is low?          | Design depends on spikes         | Redesign core behaviors for minimal motivation         |
+| Are prompts tied to real events or anchors?            | Prompts feel like spam           | Switch to event-based or anchor-based prompts          |
+| Is there immediate feedback after key actions?         | No celebration = no habit wiring | Add success states, progress, social feedback          |
+| Have you found the weakest Ability Chain link?         | Optimizing the wrong thing       | Rate each of the six factors 1-5 for the core behavior |
+| Do users scale naturally from tiny behaviors?          | Forcing complexity too early     | Starter Steps; let behaviors grow organically          |
 
 ## Further Reading
 
 Based on BJ Fogg's behavior design research:
 
-- [*"Tiny Habits: The Small Changes That Change Everything"*](https://www.amazon.com/Tiny-Habits-Small-Changes-Everything/dp/0358003326?tag=wondelai00-20) by BJ Fogg
-- [*"Designing for Behavior Change: Applying Psychology and Behavioral Economics"*](https://www.amazon.com/Designing-Behavior-Change-Psychology-Behavioral/dp/1492056030?tag=wondelai00-20) by Stephen Wendel (companion: applying behavior science to product design)
+- [_"Tiny Habits: The Small Changes That Change Everything"_](https://www.amazon.com/Tiny-Habits-Small-Changes-Everything/dp/0358003326?tag=wondelai00-20) by BJ Fogg
+- [_"Designing for Behavior Change: Applying Psychology and Behavioral Economics"_](https://www.amazon.com/Designing-Behavior-Change-Psychology-Behavioral/dp/1492056030?tag=wondelai00-20) by Stephen Wendel (companion: applying behavior science to product design)
 
 ## About the Author
 
-**BJ Fogg, PhD** founded the Behavior Design Lab at Stanford University, where he has researched behavior change since 1998. He created the Fogg Behavior Model (B=MAP), coined the term "behavior design", and trained thousands of innovators — including Instagram co-founder Mike Krieger. *Tiny Habits* distills two decades of that research: lasting change comes from behaviors that are tiny, anchored, and celebrated.
+**BJ Fogg, PhD** founded the Behavior Design Lab at Stanford University, where he has researched behavior change since 1998. He created the Fogg Behavior Model (B=MAP), coined the term "behavior design", and trained thousands of innovators — including Instagram co-founder Mike Krieger. _Tiny Habits_ distills two decades of that research: lasting change comes from behaviors that are tiny, anchored, and celebrated.

@@ -12,13 +12,13 @@ progress.
 These are the actual weights you lift in sessions (NOT one-rep maxes). Updated
 whenever a weight increases.
 
-| Lift | Weight (kg) | Last updated |
-|------|-------------|--------------|
-| Squat |  |  |
-| Bench Press |  |  |
-| Deadlift |  |  |
-| OHP |  |  |
-| Barbell Row |  |  |
+| Lift        | Weight (kg) | Last updated |
+| ----------- | ----------- | ------------ |
+| Squat       |             |              |
+| Bench Press |             |              |
+| Deadlift    |             |              |
+| OHP         |             |              |
+| Barbell Row |             |              |
 
 ## Session log
 

@@ -114,12 +114,12 @@ For non-React CPU issues, use platform CPU profilers or `agent-device perf` inst
 
 ## Interpreting Results
 
-| Symptom | Likely Cause | Solution |
-|---------|--------------|----------|
-| Many yellow components | Cascading re-renders | Add memoization or use React Compiler |
-| "Props changed" on callbacks | Inline functions recreated | Use `useCallback` |
-| "Parent component rendered" | State too high in tree | Move state down or use atomic state |
-| Long JS thread block | Heavy computation | Move to background or use `useDeferredValue` |
+| Symptom                      | Likely Cause               | Solution                                     |
+| ---------------------------- | -------------------------- | -------------------------------------------- |
+| Many yellow components       | Cascading re-renders       | Add memoization or use React Compiler        |
+| "Props changed" on callbacks | Inline functions recreated | Use `useCallback`                            |
+| "Parent component rendered"  | State too high in tree     | Move state down or use atomic state          |
+| Long JS thread block         | Heavy computation          | Move to background or use `useDeferredValue` |
 
 Only propose callback or dependency-array changes when the profiler or a reproducible bug shows they matter. Do not infer stale closures from a snippet alone.
 

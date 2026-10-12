@@ -7,6 +7,7 @@ import {
 import {
   computeStartTarget,
   defaultRepsFor,
+  repsFirstRange,
   type LastWorkingSession,
   planStartChanges,
   type StartTarget,
@@ -46,12 +47,22 @@ describe('computeStartTarget', () => {
       expect(target({ roundLoad: (kg) => kg })).toMatchObject({ weightKg: 102.5 });
     });
 
-    it('deloads by one increment when nothing was left in reserve', () => {
-      expect(target({ last: last(100, 8, 0) })).toEqual({ weightKg: 98, reps: 8, kind: 'deload' });
+    it('holds after one session with nothing left in reserve: one hard day is not a stall', () => {
+      expect(target({ last: last(100, 8, 0) })).toEqual({ weightKg: 100, reps: 8, kind: 'repeat' });
+    });
+
+    it('deloads by one increment when the session before also had nothing left', () => {
+      expect(target({ last: last(100, 8, 0), failedBefore: true })).toEqual({
+        weightKg: 98,
+        reps: 8,
+        kind: 'deload',
+      });
     });
 
     it('never deloads below zero', () => {
-      expect(target({ last: last(1, 8, 0), incrementKg: 2.5 }).weightKg).toBe(0);
+      expect(target({ last: last(1, 8, 0), failedBefore: true, incrementKg: 2.5 }).weightKg).toBe(
+        0
+      );
     });
 
     it('repeats last time in between', () => {
@@ -82,6 +93,26 @@ describe('computeStartTarget', () => {
       });
     });
 
+    it('works upward from the planned reps instead of drifting into a generic range', () => {
+      // A 5-rep strength block climbs to 7 reps, then adds load and returns to 5 — it never
+      // becomes the 8–12 hypertrophy range the generic default would walk it into.
+      expect(target({ progressionMode: 'reps_first', planReps: 5, last: last(100, 5, 4) })).toEqual(
+        { weightKg: 100, reps: 6, kind: 'progression' }
+      );
+      expect(target({ progressionMode: 'reps_first', planReps: 5, last: last(100, 7, 4) })).toEqual(
+        { weightKg: 103, reps: 5, kind: 'progression' }
+      );
+      // A high-rep plan is not cut down to the default range's ceiling either.
+      expect(
+        target({
+          progressionMode: 'reps_first',
+          isCompound: false,
+          planReps: 20,
+          last: last(10, 20, 4),
+        })
+      ).toEqual({ weightKg: 10, reps: 21, kind: 'progression' });
+    });
+
     it('uses a higher range for isolation work', () => {
       expect(defaultRepsFor(true)).toBe(10);
       expect(defaultRepsFor(false)).toBe(14);
@@ -93,6 +124,14 @@ describe('computeStartTarget', () => {
         target({ progressionMode: 'reps_first', isCompound: false, last: last(20, 16, 4) })
       ).toMatchObject({ weightKg: 23, reps: 12 });
     });
+  });
+});
+
+describe('repsFirstRange', () => {
+  it('anchors on the plan when there is one, and on the generic range otherwise', () => {
+    expect(repsFirstRange(true, 5)).toEqual({ minReps: 5, maxReps: 7 });
+    expect(repsFirstRange(true)).toEqual({ minReps: 8, maxReps: 12 });
+    expect(repsFirstRange(false, 0)).toEqual({ minReps: 12, maxReps: 16 });
   });
 });
 

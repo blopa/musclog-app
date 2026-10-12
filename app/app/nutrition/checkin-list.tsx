@@ -1,12 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CheckCircle2, ChevronLeft, ChevronRight, Circle } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { MasterLayout } from '@/components/MasterLayout';
+import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
 import { CheckinDetailsModal } from '@/components/modals/CheckinDetailsModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
@@ -27,6 +28,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
 import { NotificationService } from '@/services/NotificationService';
+import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 
@@ -62,6 +64,8 @@ export default function CheckinListScreen() {
   const [editor, setEditor] = useState(false);
   const [goalEditor, setGoalEditor] = useState(false);
   const [ruleEditor, setRuleEditor] = useState(false);
+  /** Local midnight of the reviewed day a weigh-in is being added for, while that entry is open. */
+  const [weightDay, setWeightDay] = useState<number | null>(null);
   const [reminder, setReminder] = useState(false);
   const [showAllHistory, setShowAllHistory] = useState(false);
   useEffect(() => {
@@ -186,6 +190,99 @@ export default function CheckinListScreen() {
     !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
   ];
 
+  // One modal at a time: sibling modals break presentation on iOS (see FIXES.md).
+  let modal: ReactNode = null;
+  if (goalEditor && data?.goal) {
+    modal = (
+      <NutritionGoalsModal
+        visible
+        initialGoals={{ ...nutritionGoalToInitialValues(data.goal), ...data.current }}
+        onClose={() => setGoalEditor(false)}
+        onSave={async (goals) => {
+          await NutritionGoalService.saveGoals(nutritionGoalsToInput(goals));
+          setGoalEditor(false);
+          await reload();
+        }}
+      />
+    );
+  } else if (legacyId) {
+    modal = (
+      <CheckinDetailsModal
+        visible
+        checkinId={legacyId}
+        onClose={() => {
+          setLegacyId(null);
+          reload();
+        }}
+      />
+    );
+  } else if (editor) {
+    modal = (
+      <BottomPopUp
+        visible
+        onClose={() => {
+          if (!busy) {
+            setEditor(false);
+          }
+        }}
+        title={t('weeklyReview.edit')}
+        footer={
+          <View className="gap-3">
+            <Button
+              label={t('weeklyReview.applyTomorrow')}
+              disabled={busy}
+              onPress={() => decide('apply', editedTargets())}
+            />
+            <Button
+              label={t('common.cancel')}
+              variant="outline"
+              disabled={busy}
+              onPress={() => setEditor(false)}
+            />
+          </View>
+        }
+      >
+        <View className="gap-3 pb-4">
+          {MACRO_FIELDS.map((field) => (
+            <TextInput
+              key={field}
+              label={t(MACRO_LABEL_KEYS[field])}
+              value={draft[field] ?? ''}
+              onChangeText={(value) => setDraft({ ...draft, [field]: value })}
+              inputMode="decimal"
+              keyboardType="numeric"
+            />
+          ))}
+          {error ? (
+            <Text accessibilityRole="alert" className="text-status-error">
+              {t('weeklyReview.error')}
+            </Text>
+          ) : null}
+        </View>
+      </BottomPopUp>
+    );
+  } else if (weightDay != null) {
+    modal = (
+      <AddUserMetricEntryModal
+        visible
+        initialDate={new Date(weightDay)}
+        onClose={() => setWeightDay(null)}
+        onSave={reload}
+      />
+    );
+  } else if (ruleEditor && data?.training.next) {
+    modal = (
+      <CreateWorkoutModal
+        visible
+        templateId={data.training.next.template.id}
+        onClose={() => {
+          setRuleEditor(false);
+          reload();
+        }}
+      />
+    );
+  }
+
   return (
     <MasterLayout>
       <KeyboardAwareScrollView
@@ -277,8 +374,13 @@ export default function CheckinListScreen() {
                 onEdit={openEditor}
                 onSwitchWeekly={switchWeekly}
                 onEditGoal={() => setGoalEditor(true)}
-                onLogWeight={() => router.push('/app/progress')}
-                onLogFood={() => router.push('/app/nutrition/food')}
+                onLogWeight={setWeightDay}
+                onLogFood={(day) =>
+                  router.push({
+                    pathname: '/app/nutrition/food',
+                    params: { date: formatLocalCalendarDayIso(new Date(day)) },
+                  })
+                }
               />
 
               <View className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4">
@@ -381,79 +483,7 @@ export default function CheckinListScreen() {
           ) : null}
         </View>
       </KeyboardAwareScrollView>
-      {goalEditor && data?.goal ? (
-        <NutritionGoalsModal
-          visible
-          initialGoals={{ ...nutritionGoalToInitialValues(data.goal), ...data.current }}
-          onClose={() => setGoalEditor(false)}
-          onSave={async (goals) => {
-            await NutritionGoalService.saveGoals(nutritionGoalsToInput(goals));
-            setGoalEditor(false);
-            await reload();
-          }}
-        />
-      ) : legacyId ? (
-        <CheckinDetailsModal
-          visible
-          checkinId={legacyId}
-          onClose={() => {
-            setLegacyId(null);
-            reload();
-          }}
-        />
-      ) : editor ? (
-        <BottomPopUp
-          visible
-          onClose={() => {
-            if (!busy) {
-              setEditor(false);
-            }
-          }}
-          title={t('weeklyReview.edit')}
-          footer={
-            <View className="gap-3">
-              <Button
-                label={t('weeklyReview.applyTomorrow')}
-                disabled={busy}
-                onPress={() => decide('apply', editedTargets())}
-              />
-              <Button
-                label={t('common.cancel')}
-                variant="outline"
-                disabled={busy}
-                onPress={() => setEditor(false)}
-              />
-            </View>
-          }
-        >
-          <View className="gap-3 pb-4">
-            {MACRO_FIELDS.map((field) => (
-              <TextInput
-                key={field}
-                label={t(MACRO_LABEL_KEYS[field])}
-                value={draft[field] ?? ''}
-                onChangeText={(value) => setDraft({ ...draft, [field]: value })}
-                inputMode="decimal"
-                keyboardType="numeric"
-              />
-            ))}
-            {error ? (
-              <Text accessibilityRole="alert" className="text-status-error">
-                {t('weeklyReview.error')}
-              </Text>
-            ) : null}
-          </View>
-        </BottomPopUp>
-      ) : ruleEditor && data?.training.next ? (
-        <CreateWorkoutModal
-          visible
-          templateId={data.training.next.template.id}
-          onClose={() => {
-            setRuleEditor(false);
-            reload();
-          }}
-        />
-      ) : null}
+      {modal}
     </MasterLayout>
   );
 }

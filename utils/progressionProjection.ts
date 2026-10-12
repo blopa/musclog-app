@@ -19,6 +19,37 @@ export type ExerciseRecommendation = {
   status: 'rule' | 'suggested' | 'learning' | 'attention';
 };
 
+/** Movements with no load or reps to progress: their sets are timed or done as prescribed. */
+const NON_PROGRESSING_MECHANICS: ReadonlySet<string> = new Set([
+  'cardio',
+  'mobility',
+  'stretching',
+]);
+
+/**
+ * Whether progression may move an exercise's numbers at all. The ONE definition: the session start,
+ * the workout preview and Weekly Review's "Next up" all project through this module, and a check
+ * kept only at the session start let the preview promise "+1 rep" on a stretch the session would
+ * never apply.
+ */
+export const progressesLoad = (mechanicType: string | null | undefined): boolean =>
+  !NON_PROGRESSING_MECHANICS.has(mechanicType ?? '');
+
+const WEIGHT_EPSILON = 0.01;
+
+/** A past session's first working set and its average RATED reps in reserve. */
+function summarize(session: HistorySession) {
+  const rated = session.sets.filter((set) => set.rirRecorded !== false);
+  return {
+    weightKg: session.sets[0].weightKg,
+    reps: session.sets[0].reps,
+    averageRepsInReserve: rated.length
+      ? rated.reduce((sum, set) => sum + set.repsInReserve, 0) / rated.length
+      : 0,
+    rirRecorded: rated.length > 0,
+  };
+}
+
 export function projectExerciseProgression(input: {
   planned: PlannedRuleSet[];
   history: HistorySession[];
@@ -28,27 +59,35 @@ export function projectExerciseProgression(input: {
   progressionMode: ProgressionMode;
   isCompound: boolean;
   isBodyweight: boolean;
+  /** `Exercise.mechanicType`; cardio, mobility and stretching are never progressed. */
+  mechanicType?: string;
+  /**
+   * `planned` was copied from the last session rather than from a plan (an exercise added or
+   * swapped in mid-session), so it says nothing about the reps the lifter is aiming for.
+   */
+  plannedFromHistory?: boolean;
 }): ExerciseRecommendation {
   const { planned, history, rule, step } = input;
   let changes: StartSetChange[] = [];
   let state: ProgressionSessionState | null = null;
-  if (rule) {
+  if (!progressesLoad(input.mechanicType)) {
+    // Nothing to move: the plan stands as written.
+  } else if (rule) {
     ({ changes, state } = planRuleChanges(rule, planned, history, step));
   } else if (input.automatic && history[0]?.sets.length) {
-    const previous = history[0].sets;
-    const rated = previous.filter((set) => set.rirRecorded !== false);
-    const last = {
-      weightKg: previous[0].weightKg,
-      reps: previous[0].reps,
-      averageRepsInReserve: rated.length
-        ? rated.reduce((sum, set) => sum + set.repsInReserve, 0) / rated.length
-        : 0,
-      rirRecorded: rated.length > 0,
-    };
+    const last = summarize(history[0]);
+    const before = history[1]?.sets.length ? summarize(history[1]) : null;
+    const failedBefore =
+      before != null &&
+      before.rirRecorded &&
+      before.averageRepsInReserve === 0 &&
+      Math.abs(before.weightKg - last.weightKg) < WEIGHT_EPSILON;
     changes = planStartChanges(
       planned,
       computeStartTarget({
         last,
+        failedBefore,
+        planReps: input.plannedFromHistory ? undefined : planned[0]?.reps,
         ...step,
         progressionMode:
           input.isBodyweight && last.weightKg === 0 ? 'reps_first' : input.progressionMode,

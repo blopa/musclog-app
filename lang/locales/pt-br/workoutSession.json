@@ -51,11 +51,11 @@
       "startProgressionWeight": "Sobe para {{to}} {{unit}} a partir dos {{last}} {{unit}} da última vez — você tinha cerca de {{rir}} repetições de reserva.",
       "startProgressionWeightReps": "Sobe para {{to}} {{unit}} × {{reps}} a partir de {{last}} {{unit}} × {{lastReps}} da última vez — você tinha cerca de {{rir}} repetições de reserva.",
       "startProgressionReps": "Uma repetição a mais que da última vez ({{to}} em vez de {{last}}) — você tinha cerca de {{rir}} repetições de reserva.",
-      "startDeload": "Desce para {{to}} {{unit}} a partir dos {{last}} {{unit}} da última vez — você não tinha repetições de reserva.",
+      "startDeload": "Desce para {{to}} {{unit}} a partir dos {{last}} {{unit}} da última vez — duas sessões seguidas sem repetições de reserva.",
       "startRepeatWeight": "Você começa com {{to}} {{unit}}, o que usou da última vez, em vez dos {{from}} {{unit}} do plano.",
       "startRepeatReps": "Você começa com {{to}} repetições, o que fez da última vez, em vez das {{from}} do plano.",
       "usePlan": "Usar o do plano",
-      "startDeloadWeightReps": "Desce para {{to}} {{unit}} × {{reps}} a partir de {{last}} {{unit}} × {{lastReps}} da última vez — você não tinha repetições de reserva.",
+      "startDeloadWeightReps": "Desce para {{to}} {{unit}} × {{reps}} a partir de {{last}} {{unit}} × {{lastReps}} da última vez — duas sessões seguidas sem repetições de reserva.",
       "startRepeatWeightReps": "Você começa com {{to}} {{unit}} × {{reps}}, o que fez da última vez, em vez dos {{from}} {{unit}} × {{planReps}} do plano."
     },
     "startRest": "Iniciar descanso ({{seconds}} s)",
@@ -118,7 +118,7 @@
         "add_weight": "Todas as séries atingiram {{repMax}} repetições. Aumente um incremento e volte a {{repMin}}.",
         "add_reps": "Busque uma repetição a mais que a série anterior correspondente, entre {{repMin}}–{{repMax}}.",
         "hold": "Mantenha esta carga e trabalhe entre {{repMin}}–{{repMax}} repetições.",
-        "deload": "Nenhuma série realizada atingiu {{repMin}} repetições. Reduza um incremento."
+        "deload": "Duas sessões seguidas com esta carga não atingiram {{repMin}} repetições. Reduza um incremento."
       },
       "linear": {
         "add_weight": "Todas as repetições foram concluídas. Aumente um incremento para {{reps}} repetições.",
@@ -265,7 +265,7 @@
       "fats": "Gordura (g)",
       "fiber": "Fibra (g)"
     },
-    "collectData": "Mantenha as metas enquanto coleta mais dados. Registre peso e alimentação em pelo menos três dias.",
+    "collectData": "Mantenha as metas enquanto coleta mais dados. Para aplicar uma recomendação, registre a alimentação em pelo menos {{food}} dias e o peso em pelo menos {{weight}} dias desta semana.",
     "empiricalReason": "A recomendação usa ingestão histórica e gasto pela tendência de peso, junto à trajetória da sua meta.",
     "baselineReason": "Estimativa inicial por fórmula. É necessário mais histórico para estimar o gasto pelos seus registros.",
     "switchWeekly": "Mudar para metas semanais",
@@ -275,8 +275,8 @@
     "applied": "Metas aprovadas",
     "kept": "Metas atuais mantidas",
     "effective": "Desde {{date}}",
-    "logWeight": "Registrar peso",
-    "logFood": "Completar registros de alimentação",
+    "logWeightOn": "Registrar peso de {{date}}",
+    "logFoodOn": "Registrar alimentação de {{date}}",
     "editGoal": "Editar meta de peso ou data",
     "noGoal": "O treino está disponível sem meta nutricional. Configure metas no perfil quando quiser.",
     "intuitive": "A alimentação intuitiva está ativada. A revisão do treino continua disponível.",

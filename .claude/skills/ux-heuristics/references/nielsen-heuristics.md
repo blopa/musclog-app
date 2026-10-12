@@ -3,6 +3,7 @@
 Jakob Nielsen's 10 general principles for interaction design, with practical examples and common violations.
 
 ## Table of Contents
+
 1. [1. Visibility of System Status](#1-visibility-of-system-status)
 2. [2. Match Between System and Real World](#2-match-between-system-and-real-world)
 3. [3. User Control and Freedom](#3-user-control-and-freedom)
@@ -22,23 +23,23 @@ Jakob Nielsen's 10 general principles for interaction design, with practical exa
 
 ### Examples of Good Implementation
 
-| Situation | Good Feedback |
-|-----------|---------------|
-| File uploading | Progress bar with percentage |
-| Form submitted | "Your message has been sent" |
-| Action processing | Loading spinner |
-| Background task | "Syncing 3 files..." notification |
-| Successful action | Green checkmark confirmation |
+| Situation         | Good Feedback                     |
+| ----------------- | --------------------------------- |
+| File uploading    | Progress bar with percentage      |
+| Form submitted    | "Your message has been sent"      |
+| Action processing | Loading spinner                   |
+| Background task   | "Syncing 3 files..." notification |
+| Successful action | Green checkmark confirmation      |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| No loading indicator | User thinks it's broken | Add spinner/progress |
-| Silent failures | User thinks action worked | Show error message |
-| Delayed feedback | User clicks again | Immediate visual response |
-| No confirmation | "Did that work?" | Confirm successful actions |
-| Hidden status | User can't find progress | Surface status prominently |
+| Violation            | Problem                   | Fix                        |
+| -------------------- | ------------------------- | -------------------------- |
+| No loading indicator | User thinks it's broken   | Add spinner/progress       |
+| Silent failures      | User thinks action worked | Show error message         |
+| Delayed feedback     | User clicks again         | Immediate visual response  |
+| No confirmation      | "Did that work?"          | Confirm successful actions |
+| Hidden status        | User can't find progress  | Surface status prominently |
 
 ### Severity Examples
 
@@ -54,34 +55,34 @@ Jakob Nielsen's 10 general principles for interaction design, with practical exa
 
 ### Examples of Good Implementation
 
-| System Term | User-Friendly Term |
-|-------------|-------------------|
-| Authenticate | Sign in |
-| Terminate | Cancel / End |
-| Query | Search |
-| Repository | Folder |
-| Navigate to | Go to |
-| Initiate | Start |
+| System Term  | User-Friendly Term |
+| ------------ | ------------------ |
+| Authenticate | Sign in            |
+| Terminate    | Cancel / End       |
+| Query        | Search             |
+| Repository   | Folder             |
+| Navigate to  | Go to              |
+| Initiate     | Start              |
 
 ### Real-World Metaphors
 
-| Digital Element | Real-World Match |
-|-----------------|------------------|
-| Trash/Recycle bin | Waste basket |
-| Folder | File folder |
-| Desktop | Physical desk |
-| Shopping cart | Store cart |
-| Bookmark | Physical bookmark |
+| Digital Element   | Real-World Match  |
+| ----------------- | ----------------- |
+| Trash/Recycle bin | Waste basket      |
+| Folder            | File folder       |
+| Desktop           | Physical desk     |
+| Shopping cart     | Store cart        |
+| Bookmark          | Physical bookmark |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| Technical jargon | Confusion | Use plain language |
-| Internal names | Meaningless to users | User-tested labels |
-| Inconsistent terms | Same thing, different names | One term per concept |
-| Unfamiliar icons | Users guess wrong | Add labels or tooltips |
-| Illogical order | Not matching expectations | Follow real-world sequences |
+| Violation          | Problem                     | Fix                         |
+| ------------------ | --------------------------- | --------------------------- |
+| Technical jargon   | Confusion                   | Use plain language          |
+| Internal names     | Meaningless to users        | User-tested labels          |
+| Inconsistent terms | Same thing, different names | One term per concept        |
+| Unfamiliar icons   | Users guess wrong           | Add labels or tooltips      |
+| Illogical order    | Not matching expectations   | Follow real-world sequences |
 
 ---
 
@@ -91,23 +92,23 @@ Jakob Nielsen's 10 general principles for interaction design, with practical exa
 
 ### Examples of Good Implementation
 
-| Action | Escape Route |
-|--------|--------------|
-| Accidentally deleted email | Undo button (Gmail) |
-| Wrong menu opened | Click outside to close |
-| Filled form incorrectly | Clear form / Reset |
-| Navigated wrong | Back button works |
-| Started wrong workflow | Cancel / Exit anytime |
+| Action                     | Escape Route           |
+| -------------------------- | ---------------------- |
+| Accidentally deleted email | Undo button (Gmail)    |
+| Wrong menu opened          | Click outside to close |
+| Filled form incorrectly    | Clear form / Reset     |
+| Navigated wrong            | Back button works      |
+| Started wrong workflow     | Cancel / Exit anytime  |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| No undo | Users afraid to act | Add undo for all actions |
-| Forced wizards | Can't skip or go back | Allow non-linear navigation |
-| Modal traps | Can't escape | Clear close/cancel buttons |
-| Broken back button | Frustration | Never hijack browser history |
-| Immediate deletion | No recovery | Soft delete + undo option |
+| Violation          | Problem               | Fix                          |
+| ------------------ | --------------------- | ---------------------------- |
+| No undo            | Users afraid to act   | Add undo for all actions     |
+| Forced wizards     | Can't skip or go back | Allow non-linear navigation  |
+| Modal traps        | Can't escape          | Clear close/cancel buttons   |
+| Broken back button | Frustration           | Never hijack browser history |
+| Immediate deletion | No recovery           | Soft delete + undo option    |
 
 ### Key Principle
 
@@ -123,34 +124,34 @@ Users click through "Are you sure?" without reading. Undo lets them act confiden
 
 ### Types of Consistency
 
-| Type | Example |
-|------|---------|
-| **Internal** | Same button style throughout your app |
-| **External** | Same patterns as other apps |
-| **Visual** | Same colors mean same things |
-| **Functional** | Same action = same result |
-| **Linguistic** | Same terms for same concepts |
+| Type           | Example                               |
+| -------------- | ------------------------------------- |
+| **Internal**   | Same button style throughout your app |
+| **External**   | Same patterns as other apps           |
+| **Visual**     | Same colors mean same things          |
+| **Functional** | Same action = same result             |
+| **Linguistic** | Same terms for same concepts          |
 
 ### Platform Conventions
 
-| Element | Convention |
-|---------|------------|
-| Logo | Top left, links to home |
-| Search | Top right, magnifying glass |
-| Cart | Top right, shopping cart icon |
-| Menu (mobile) | Hamburger icon |
-| Primary action | Right side or bottom of form |
-| Cancel | Left of primary action (or text link) |
+| Element        | Convention                            |
+| -------------- | ------------------------------------- |
+| Logo           | Top left, links to home               |
+| Search         | Top right, magnifying glass           |
+| Cart           | Top right, shopping cart icon         |
+| Menu (mobile)  | Hamburger icon                        |
+| Primary action | Right side or bottom of form          |
+| Cancel         | Left of primary action (or text link) |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| Different button styles | Confusion about importance | Consistent button hierarchy |
-| Same word, different meanings | Misunderstanding | One term per concept |
-| Unexpected link behavior | New tab when expecting same tab | Follow conventions |
-| Non-standard icons | Guessing game | Use recognized icons |
-| Inconsistent layouts | Relearning each page | Template-based layouts |
+| Violation                     | Problem                         | Fix                         |
+| ----------------------------- | ------------------------------- | --------------------------- |
+| Different button styles       | Confusion about importance      | Consistent button hierarchy |
+| Same word, different meanings | Misunderstanding                | One term per concept        |
+| Unexpected link behavior      | New tab when expecting same tab | Follow conventions          |
+| Non-standard icons            | Guessing game                   | Use recognized icons        |
+| Inconsistent layouts          | Relearning each page            | Template-based layouts      |
 
 ---
 
@@ -160,32 +161,32 @@ Users click through "Are you sure?" without reading. Undo lets them act confiden
 
 ### Prevention Strategies
 
-| Strategy | Example |
-|----------|---------|
-| **Constraints** | Date picker instead of text field |
-| **Suggestions** | Autocomplete |
-| **Defaults** | Pre-fill common values |
+| Strategy         | Example                                       |
+| ---------------- | --------------------------------------------- |
+| **Constraints**  | Date picker instead of text field             |
+| **Suggestions**  | Autocomplete                                  |
+| **Defaults**     | Pre-fill common values                        |
 | **Confirmation** | "Delete permanently?" for destructive actions |
-| **Warnings** | "Unsaved changes" before leaving |
+| **Warnings**     | "Unsaved changes" before leaving              |
 
 ### Types of Errors to Prevent
 
-| Error Type | Prevention |
-|------------|------------|
-| **Slips** (accidental) | Confirmation, undo, large targets |
+| Error Type                     | Prevention                          |
+| ------------------------------ | ----------------------------------- |
+| **Slips** (accidental)         | Confirmation, undo, large targets   |
 | **Mistakes** (wrong intention) | Clear instructions, better defaults |
-| **Data errors** | Validation, formatting help |
-| **Navigation errors** | Clear labels, undo |
+| **Data errors**                | Validation, formatting help         |
+| **Navigation errors**          | Clear labels, undo                  |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| Free text for constrained data | Invalid entries | Dropdowns, pickers |
-| No save warning | Lost work | "Unsaved changes" prompt |
-| Easy destructive actions | Accidental deletion | Require confirmation |
-| Accepting bad input | Garbage data | Inline validation |
-| Ambiguous choices | Wrong selection | Clear differentiation |
+| Violation                      | Problem             | Fix                      |
+| ------------------------------ | ------------------- | ------------------------ |
+| Free text for constrained data | Invalid entries     | Dropdowns, pickers       |
+| No save warning                | Lost work           | "Unsaved changes" prompt |
+| Easy destructive actions       | Accidental deletion | Require confirmation     |
+| Accepting bad input            | Garbage data        | Inline validation        |
+| Ambiguous choices              | Wrong selection     | Clear differentiation    |
 
 ---
 
@@ -195,33 +196,33 @@ Users click through "Are you sure?" without reading. Undo lets them act confiden
 
 ### Recognition Techniques
 
-| Instead of | Do This |
-|------------|---------|
-| User remembers command | Show menu of options |
-| User types from memory | Dropdown/autocomplete |
+| Instead of                     | Do This                     |
+| ------------------------------ | --------------------------- |
+| User remembers command         | Show menu of options        |
+| User types from memory         | Dropdown/autocomplete       |
 | User remembers where they were | Breadcrumbs, recent history |
-| User remembers codes | Show decoded values |
-| User recalls previous info | Show previous entries |
+| User remembers codes           | Show decoded values         |
+| User recalls previous info     | Show previous entries       |
 
 ### Examples
 
-| Bad (Recall) | Good (Recognition) |
-|--------------|-------------------|
-| "Enter country code" | Dropdown with country names |
-| Command-line interface | Graphical menus |
-| "See page 47 for options" | Options shown in context |
-| "Re-enter your email" | Pre-filled from previous step |
-| Complex keyboard shortcuts | Visible toolbar buttons |
+| Bad (Recall)               | Good (Recognition)            |
+| -------------------------- | ----------------------------- |
+| "Enter country code"       | Dropdown with country names   |
+| Command-line interface     | Graphical menus               |
+| "See page 47 for options"  | Options shown in context      |
+| "Re-enter your email"      | Pre-filled from previous step |
+| Complex keyboard shortcuts | Visible toolbar buttons       |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| Empty form fields | User must remember format | Placeholder examples |
-| Hidden actions | User forgets they exist | Keep visible or in menus |
-| No recent items | User re-searches | Show search history |
-| Unlabeled icons | User guesses meaning | Add text labels |
-| Disconnected workflows | User loses context | Show progress, breadcrumbs |
+| Violation              | Problem                   | Fix                        |
+| ---------------------- | ------------------------- | -------------------------- |
+| Empty form fields      | User must remember format | Placeholder examples       |
+| Hidden actions         | User forgets they exist   | Keep visible or in menus   |
+| No recent items        | User re-searches          | Show search history        |
+| Unlabeled icons        | User guesses meaning      | Add text labels            |
+| Disconnected workflows | User loses context        | Show progress, breadcrumbs |
 
 ---
 
@@ -231,32 +232,32 @@ Users click through "Are you sure?" without reading. Undo lets them act confiden
 
 ### Accelerators for Experts
 
-| Feature | Example |
-|---------|---------|
-| **Keyboard shortcuts** | Ctrl+S to save |
-| **Touch gestures** | Swipe to archive |
-| **Recent/Favorites** | Quick access to common items |
-| **Saved searches** | One-click complex queries |
-| **Customization** | Personalized dashboard |
-| **Bulk actions** | Select all + action |
+| Feature                | Example                      |
+| ---------------------- | ---------------------------- |
+| **Keyboard shortcuts** | Ctrl+S to save               |
+| **Touch gestures**     | Swipe to archive             |
+| **Recent/Favorites**   | Quick access to common items |
+| **Saved searches**     | One-click complex queries    |
+| **Customization**      | Personalized dashboard       |
+| **Bulk actions**       | Select all + action          |
 
 ### Progressive Disclosure
 
-| User Level | What They See |
-|------------|---------------|
-| Novice | Essential features only |
-| Intermediate | Common advanced options |
-| Expert | Full power (shortcuts, customization) |
+| User Level   | What They See                         |
+| ------------ | ------------------------------------- |
+| Novice       | Essential features only               |
+| Intermediate | Common advanced options               |
+| Expert       | Full power (shortcuts, customization) |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| No shortcuts | Experts slowed down | Add keyboard shortcuts |
-| No bulk operations | Tedious repetition | Add multi-select |
-| Required tutorials | Experts frustrated | Allow skipping |
+| Violation             | Problem                 | Fix                        |
+| --------------------- | ----------------------- | -------------------------- |
+| No shortcuts          | Experts slowed down     | Add keyboard shortcuts     |
+| No bulk operations    | Tedious repetition      | Add multi-select           |
+| Required tutorials    | Experts frustrated      | Allow skipping             |
 | Hidden power features | Experts don't find them | Discoverable advanced mode |
-| No customization | Forced workflows | Allow personalization |
+| No customization      | Forced workflows        | Allow personalization      |
 
 ---
 
@@ -266,33 +267,33 @@ Users click through "Are you sure?" without reading. Undo lets them act confiden
 
 ### Principles
 
-| Principle | Application |
-|-----------|-------------|
-| **Signal/Noise** | Increase signal, reduce noise |
-| **Visual hierarchy** | Important things stand out |
-| **Whitespace** | Give elements room to breathe |
-| **Content priority** | Show what matters, hide what doesn't |
-| **Progressive disclosure** | Complexity on demand |
+| Principle                  | Application                          |
+| -------------------------- | ------------------------------------ |
+| **Signal/Noise**           | Increase signal, reduce noise        |
+| **Visual hierarchy**       | Important things stand out           |
+| **Whitespace**             | Give elements room to breathe        |
+| **Content priority**       | Show what matters, hide what doesn't |
+| **Progressive disclosure** | Complexity on demand                 |
 
 ### What to Remove
 
-| Remove | Why |
-|--------|-----|
-| Rarely-used features | Clutter |
-| Decorative elements | Distraction |
-| Redundant text | Noise |
-| Unnecessary options | Decision fatigue |
-| Instructions users skip | Wasted space |
+| Remove                  | Why              |
+| ----------------------- | ---------------- |
+| Rarely-used features    | Clutter          |
+| Decorative elements     | Distraction      |
+| Redundant text          | Noise            |
+| Unnecessary options     | Decision fatigue |
+| Instructions users skip | Wasted space     |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| Cluttered screens | Overwhelming | Remove/hide secondary |
-| Everything is "important" | Nothing stands out | Create hierarchy |
-| Long blocks of text | Nobody reads | Break up, summarize |
-| Too many colors | Visual noise | Limit palette |
-| Dense layouts | Hard to scan | Add whitespace |
+| Violation                 | Problem            | Fix                   |
+| ------------------------- | ------------------ | --------------------- |
+| Cluttered screens         | Overwhelming       | Remove/hide secondary |
+| Everything is "important" | Nothing stands out | Create hierarchy      |
+| Long blocks of text       | Nobody reads       | Break up, summarize   |
+| Too many colors           | Visual noise       | Limit palette         |
+| Dense layouts             | Hard to scan       | Add whitespace        |
 
 ---
 
@@ -308,32 +309,32 @@ Users click through "Are you sure?" without reading. Undo lets them act confiden
 
 ### Examples
 
-| Bad Error | Good Error |
-|-----------|------------|
-| "Error 500" | "Something went wrong. Please try again." |
-| "Invalid input" | "Email must include @" |
-| "Failed" | "Payment declined. Check card number or try different card." |
-| "Null reference exception" | "We couldn't load your data. Refresh the page." |
+| Bad Error                  | Good Error                                                   |
+| -------------------------- | ------------------------------------------------------------ |
+| "Error 500"                | "Something went wrong. Please try again."                    |
+| "Invalid input"            | "Email must include @"                                       |
+| "Failed"                   | "Payment declined. Check card number or try different card." |
+| "Null reference exception" | "We couldn't load your data. Refresh the page."              |
 
 ### Error Message Guidelines
 
-| Guideline | Example |
-|-----------|---------|
-| Use plain language | "Connection failed" not "ECONNREFUSED" |
-| Be specific | "Password too short" not "Invalid password" |
-| Provide action | "Try again" button visible |
-| Don't blame user | "Card declined" not "You entered wrong info" |
-| Maintain context | Keep filled data, highlight error field |
+| Guideline          | Example                                      |
+| ------------------ | -------------------------------------------- |
+| Use plain language | "Connection failed" not "ECONNREFUSED"       |
+| Be specific        | "Password too short" not "Invalid password"  |
+| Provide action     | "Try again" button visible                   |
+| Don't blame user   | "Card declined" not "You entered wrong info" |
+| Maintain context   | Keep filled data, highlight error field      |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| Technical jargon | Confusion | Translate to plain English |
-| No solution | User stuck | Include next steps |
-| Generic messages | Not helpful | Be specific |
-| Blaming language | Defensive users | Neutral, helpful tone |
-| Clearing form on error | Punishment | Preserve user input |
+| Violation              | Problem         | Fix                        |
+| ---------------------- | --------------- | -------------------------- |
+| Technical jargon       | Confusion       | Translate to plain English |
+| No solution            | User stuck      | Include next steps         |
+| Generic messages       | Not helpful     | Be specific                |
+| Blaming language       | Defensive users | Neutral, helpful tone      |
+| Clearing form on error | Punishment      | Preserve user input        |
 
 ---
 
@@ -343,30 +344,30 @@ Users click through "Are you sure?" without reading. Undo lets them act confiden
 
 ### Characteristics of Good Help
 
-| Characteristic | Implementation |
-|----------------|----------------|
-| **Searchable** | Full-text search |
-| **Task-focused** | "How to..." format |
-| **Contextual** | In-page tooltips |
-| **Scannable** | Short paragraphs, lists |
-| **Actionable** | Step-by-step instructions |
+| Characteristic   | Implementation            |
+| ---------------- | ------------------------- |
+| **Searchable**   | Full-text search          |
+| **Task-focused** | "How to..." format        |
+| **Contextual**   | In-page tooltips          |
+| **Scannable**    | Short paragraphs, lists   |
+| **Actionable**   | Step-by-step instructions |
 
 ### Types of Help
 
-| Type | When to Use |
-|------|-------------|
-| **Inline help** | Tooltips, hints | Next to complex fields |
-| **Contextual help** | "?" icons | For non-obvious features |
-| **Searchable docs** | Knowledge base | For detailed questions |
-| **Guided tours** | Onboarding | First-time users |
-| **Chat/Support** | Complex issues | When self-service fails |
+| Type                | When to Use     |
+| ------------------- | --------------- |
+| **Inline help**     | Tooltips, hints | Next to complex fields   |
+| **Contextual help** | "?" icons       | For non-obvious features |
+| **Searchable docs** | Knowledge base  | For detailed questions   |
+| **Guided tours**    | Onboarding      | First-time users         |
+| **Chat/Support**    | Complex issues  | When self-service fails  |
 
 ### Common Violations
 
-| Violation | Problem | Fix |
-|-----------|---------|-----|
-| No search in docs | Can't find answers | Add search |
-| Long documentation | Nobody reads | Concise, task-focused |
-| Generic help | Doesn't answer question | Specific to feature/page |
-| Hidden help | Users can't find it | Visible help links |
-| No contextual help | Users leave page | Inline tooltips |
+| Violation          | Problem                 | Fix                      |
+| ------------------ | ----------------------- | ------------------------ |
+| No search in docs  | Can't find answers      | Add search               |
+| Long documentation | Nobody reads            | Concise, task-focused    |
+| Generic help       | Doesn't answer question | Specific to feature/page |
+| Hidden help        | Users can't find it     | Visible help links       |
+| No contextual help | Users leave page        | Inline tooltips          |

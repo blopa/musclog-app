@@ -9,8 +9,8 @@ Native iOS controls provide built-in haptics, accessibility, and platform-approp
 Use for binary on/off settings. Has built-in haptics.
 
 ```tsx
-import { Switch } from "react-native";
-import { useState } from "react";
+import { Switch } from 'react-native';
+import { useState } from 'react';
 
 const [enabled, setEnabled] = useState(false);
 
@@ -24,13 +24,13 @@ Don't recolor the Switch — native styling adapts to dark mode automatically.
 Use for non-navigational tabs or mode selection. Avoid changing default colors.
 
 ```tsx
-import SegmentedControl from "@react-native-segmented-control/segmented-control";
-import { useState } from "react";
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { useState } from 'react';
 
 const [index, setIndex] = useState(0);
 
 <SegmentedControl
-  values={["All", "Active", "Done"]}
+  values={['All', 'Active', 'Done']}
   selectedIndex={index}
   onChange={({ nativeEvent }) => setIndex(nativeEvent.selectedSegmentIndex)}
 />;
@@ -47,8 +47,8 @@ const [index, setIndex] = useState(0);
 ```tsx
 <SegmentedControl
   values={[
-    { label: "List", icon: "list.bullet" },
-    { label: "Grid", icon: "square.grid.2x2" },
+    { label: 'List', icon: 'list.bullet' },
+    { label: 'Grid', icon: 'square.grid.2x2' },
   ]}
   selectedIndex={index}
   onChange={({ nativeEvent }) => setIndex(nativeEvent.selectedSegmentIndex)}
@@ -60,29 +60,18 @@ const [index, setIndex] = useState(0);
 Continuous value selection.
 
 ```tsx
-import Slider from "@react-native-community/slider";
-import { useState } from "react";
+import Slider from '@react-native-community/slider';
+import { useState } from 'react';
 
 const [value, setValue] = useState(0.5);
 
-<Slider
-  value={value}
-  onValueChange={setValue}
-  minimumValue={0}
-  maximumValue={1}
-/>;
+<Slider value={value} onValueChange={setValue} minimumValue={0} maximumValue={1} />;
 ```
 
 ### Discrete Steps
 
 ```tsx
-<Slider
-  value={value}
-  onValueChange={setValue}
-  minimumValue={0}
-  maximumValue={10}
-  step={1}
-/>
+<Slider value={value} onValueChange={setValue} minimumValue={0} maximumValue={10} step={1} />
 ```
 
 ## Date/Time Picker
@@ -90,8 +79,8 @@ const [value, setValue] = useState(0.5);
 Compact pickers with popovers. Has built-in haptics.
 
 ```tsx
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useState } from 'react';
 
 const [date, setDate] = useState(new Date());
 
@@ -131,11 +120,7 @@ const [date, setDate] = useState(new Date());
 ### Time Intervals
 
 ```tsx
-<DateTimePicker
-  value={date}
-  mode="time"
-  minuteInterval={15}
-/>
+<DateTimePicker value={date} mode="time" minuteInterval={15} />
 ```
 
 ### Min/Max Dates
@@ -154,8 +139,8 @@ const [date, setDate] = useState(new Date());
 Native text input with various keyboard types.
 
 ```tsx
-import { TextInput } from "react-native";
-import { colors } from "@/theme/colors";
+import { TextInput } from 'react-native';
+import { colors } from '@/theme/colors';
 
 <TextInput
   placeholder="Enter text..."
@@ -166,7 +151,7 @@ import { colors } from "@/theme/colors";
     borderRadius: 8,
     backgroundColor: colors.secondarySystemBackground,
   }}
-/>
+/>;
 ```
 
 ### Keyboard Types
@@ -194,12 +179,7 @@ import { colors } from "@/theme/colors";
 ### Multiline
 
 ```tsx
-<TextInput
-  multiline
-  numberOfLines={4}
-  textAlignVertical="top"
-  style={{ minHeight: 100 }}
-/>
+<TextInput multiline numberOfLines={4} textAlignVertical="top" style={{ minHeight: 100 }} />
 ```
 
 ## Picker (Wheel)
@@ -207,10 +187,10 @@ import { colors } from "@/theme/colors";
 For selection from many options (5+ items).
 
 ```tsx
-import { Picker } from "@react-native-picker/picker";
-import { useState } from "react";
+import { Picker } from '@react-native-picker/picker';
+import { useState } from 'react';
 
-const [selected, setSelected] = useState("js");
+const [selected, setSelected] = useState('js');
 
 <Picker selectedValue={selected} onValueChange={setSelected}>
   <Picker.Item label="JavaScript" value="js" />

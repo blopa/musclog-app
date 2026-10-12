@@ -73,11 +73,11 @@ find $SRC -name '*.tsx' -o -name '*.ts' | xargs wc -l | tail -1
 
 For each category: **score = escapes per 100 source lines** (hits ÷ SLOC × 100, one decimal).
 
-| Score per category | Reading |
-|---|---|
-| < 0.5 | Healthy - fix opportunistically |
-| 0.5 - 2.0 | Drifting - schedule cleanup for the worst files |
-| > 2.0 | Systemic - the token or component for this category is missing or unused; fix the system first (see §5) |
+| Score per category | Reading                                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| < 0.5              | Healthy - fix opportunistically                                                                         |
+| 0.5 - 2.0          | Drifting - schedule cleanup for the worst files                                                         |
+| > 2.0              | Systemic - the token or component for this category is missing or unused; fix the system first (see §5) |
 
 Report the per-category scores in the summary. The overall priority order falls out of the scores: the highest-scoring category is usually the first migration target.
 
@@ -85,15 +85,15 @@ Report the per-category scores in the summary. The overall priority order falls 
 
 For each component in the shared components directory (`src/components/`, or `components/` in a root-level layout), check it against the contract in `SKILL.md`:
 
-| Check | Pass condition |
-|---|---|
-| Variants | Visual intent is a `variant` prop, not boolean soup (`isPrimary`, `isGhost`) |
-| Sizes | Sizes map to spacing/typography tokens |
-| Pressed state | Tappable components give pressed feedback via a `Pressable` style function |
-| Disabled / loading | Handled, and disabled blocks `onPress` |
-| Style override | Accepts `style`, merged last |
-| Accessibility | Role and applicable disabled/busy/selected state exposed; label survives loading and identifies icon-only controls; touch target ≥ 44pt (48dp Android) |
-| Tokens only | No literals that duplicate a theme value |
+| Check              | Pass condition                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Variants           | Visual intent is a `variant` prop, not boolean soup (`isPrimary`, `isGhost`)                                                                           |
+| Sizes              | Sizes map to spacing/typography tokens                                                                                                                 |
+| Pressed state      | Tappable components give pressed feedback via a `Pressable` style function                                                                             |
+| Disabled / loading | Handled, and disabled blocks `onPress`                                                                                                                 |
+| Style override     | Accepts `style`, merged last                                                                                                                           |
+| Accessibility      | Role and applicable disabled/busy/selected state exposed; label survives loading and identifies icon-only controls; touch target ≥ 44pt (48dp Android) |
+| Tokens only        | No literals that duplicate a theme value                                                                                                               |
 
 ## 4. Report format
 
@@ -101,26 +101,32 @@ For each component in the shared components directory (`src/components/`, or `co
 ## Design System Audit
 
 ### Summary
+
 Screens reviewed: [X] | Components reviewed: [X] | Issues: [X]
 
 ### Token coverage
-| Category | Tokens defined | Escapes found | Score (per 100 SLOC) | Worst offenders |
-|---|---|---|---|---|
-| Colors | [X] | [X] hardcoded hex | [X.X] | [files] |
-| Spacing | [X] | [X] non-step values | [X.X] | [files] |
-| Typography | [X] | [X] raw fontSize | [X.X] | [files] |
-| Radius / shadows / motion | [X] | [X] | [X.X] | [files] |
+
+| Category                  | Tokens defined | Escapes found       | Score (per 100 SLOC) | Worst offenders |
+| ------------------------- | -------------- | ------------------- | -------------------- | --------------- |
+| Colors                    | [X]            | [X] hardcoded hex   | [X.X]                | [files]         |
+| Spacing                   | [X]            | [X] non-step values | [X.X]                | [files]         |
+| Typography                | [X]            | [X] raw fontSize    | [X.X]                | [files]         |
+| Radius / shadows / motion | [X]            | [X]                 | [X.X]                | [files]         |
 
 ### Component completeness
-| Component | Variants | States | Overrides | Tokens | Notes |
-|---|---|---|---|---|---|
-| Button | OK | missing pressed | OK | OK | ... |
+
+| Component | Variants | States          | Overrides | Tokens | Notes |
+| --------- | -------- | --------------- | --------- | ------ | ----- |
+| Button    | OK       | missing pressed | OK        | OK     | ...   |
 
 ### Extraction candidates
+
 Views repeated across ≥2 screens that are still colocated or duplicated:
+
 1. [view] - appears in [screens] - suggested name: [Component]
 
 ### Priority actions
+
 1. [Highest-leverage fix - usually the most-duplicated escaped value]
 2. ...
 ```
@@ -143,23 +149,28 @@ An app with dozens of escapes is migrated in order, never big-bang. A big-bang c
 [What it is and when to use it - one paragraph.]
 
 ### Variants
-| Variant | Use when |
-|---|---|
+
+| Variant | Use when                        |
+| ------- | ------------------------------- |
 | primary | The screen's single main action |
 
 ### Props
+
 | Prop | Type | Default | Notes |
-|---|---|---|---|
+| ---- | ---- | ------- | ----- |
 
 ### States
+
 default / pressed / disabled / loading - visual + behavior for each.
 
 ### Accessibility
+
 Role, touch target, screen reader label.
 
 ### Do / Don't
-| Do | Don't |
-|---|---|
+
+| Do              | Don't                            |
+| --------------- | -------------------------------- |
 | [best practice] | [anti-pattern seen in this repo] |
 ```
 
@@ -171,19 +182,24 @@ Before designing a new primitive, prove the existing set can't cover it:
 ## Proposed: [Name]
 
 ### Problem
+
 [The repeated need, and the ≥2 screens that have it.]
 
 ### Why existing components aren't enough
+
 | Closest component | What's shared | What's missing |
-|---|---|---|
+| ----------------- | ------------- | -------------- |
 
 ### API
+
 Props table (variant / size / state / style only - content via children).
 
 ### Tokens used
+
 Colors: [...] Spacing: [...] Typography: [...] Radius: [...]
 
 ### Open questions
+
 [Decisions that need a human, e.g. does this need a destructive variant?]
 ```
 

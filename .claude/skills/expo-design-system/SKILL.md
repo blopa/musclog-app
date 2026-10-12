@@ -69,37 +69,37 @@ Build the palette from platform semantic colors: `Color` from `expo-router` wrap
 
 ```tsx
 // theme/colors.ts
-import { Platform } from "react-native";
-import { Color } from "expo-router";
+import { Platform } from 'react-native';
+import { Color } from 'expo-router';
 
 export const colors = {
   label: Platform.select({
     ios: Color.ios.label,
     android: Color.android.dynamic.onSurface,
-    default: "#000000",
+    default: '#000000',
   })!,
   secondaryLabel: Platform.select({
     ios: Color.ios.secondaryLabel,
     android: Color.android.dynamic.onSurfaceVariant,
-    default: "#3c3c43",
+    default: '#3c3c43',
   })!,
   separator: Platform.select({
     ios: Color.ios.separator,
     android: Color.android.dynamic.outlineVariant,
-    default: "#c6c6c8",
+    default: '#c6c6c8',
   })!,
   systemBackground: Platform.select({
     ios: Color.ios.systemBackground,
     android: Color.android.dynamic.surface,
-    default: "#ffffff",
+    default: '#ffffff',
   })!,
   systemBlue: Platform.select({
     ios: Color.ios.systemBlue,
     android: Color.android.dynamic.primary,
-    default: "#007aff",
+    default: '#007aff',
   })!,
   // Deliberately fixed: text on a tinted (accent) surface stays white in both modes.
-  onTint: "#ffffff",
+  onTint: '#ffffff',
 };
 ```
 
@@ -107,16 +107,16 @@ Add brand colors as explicit light/dark pairs only when the brand requires value
 
 ```tsx
 // theme/colors.ts (brand additions)
-import { useColorScheme } from "react-native";
+import { useColorScheme } from 'react-native';
 
 const brandPalette = {
-  light: { accent: "#5B21B6", accentContrast: "#FFFFFF" },
-  dark: { accent: "#A78BFA", accentContrast: "#1E1B4B" },
+  light: { accent: '#5B21B6', accentContrast: '#FFFFFF' },
+  dark: { accent: '#A78BFA', accentContrast: '#1E1B4B' },
 } as const;
 
 export function useBrandColors() {
   const scheme = useColorScheme();
-  return brandPalette[scheme === "dark" ? "dark" : "light"];
+  return brandPalette[scheme === 'dark' ? 'dark' : 'light'];
 }
 ```
 
@@ -155,16 +155,16 @@ Define named text styles, not raw font sizes. Mirror the platform ramp (Apple te
 
 ```tsx
 // theme/typography.ts
-import { TextStyle } from "react-native";
-import { colors } from "./colors";
+import { TextStyle } from 'react-native';
+import { colors } from './colors';
 
 export const type = {
-  largeTitle: { fontSize: 34, fontWeight: "700", color: colors.label },
-  title: { fontSize: 22, fontWeight: "600", color: colors.label },
-  headline: { fontSize: 17, fontWeight: "600", color: colors.label },
-  body: { fontSize: 17, fontWeight: "400", color: colors.label },
-  subhead: { fontSize: 15, fontWeight: "400", color: colors.secondaryLabel },
-  caption: { fontSize: 12, fontWeight: "400", color: colors.secondaryLabel },
+  largeTitle: { fontSize: 34, fontWeight: '700', color: colors.label },
+  title: { fontSize: 22, fontWeight: '600', color: colors.label },
+  headline: { fontSize: 17, fontWeight: '600', color: colors.label },
+  body: { fontSize: 17, fontWeight: '400', color: colors.label },
+  subhead: { fontSize: 15, fontWeight: '400', color: colors.secondaryLabel },
+  caption: { fontSize: 12, fontWeight: '400', color: colors.secondaryLabel },
 } as const satisfies Record<string, TextStyle>;
 ```
 
@@ -178,11 +178,11 @@ Expose them through one component so screens never touch `fontSize`:
 
 ```tsx
 // components/themed-text.tsx
-import { Text, TextProps } from "react-native";
-import { type } from "@/theme";
+import { Text, TextProps } from 'react-native';
+import { type } from '@/theme';
 
 export function ThemedText({
-  variant = "body",
+  variant = 'body',
   style,
   ...props
 }: TextProps & { variant?: keyof typeof type }) {
@@ -215,9 +215,9 @@ Shadows are `boxShadow` strings (never legacy shadow/elevation props - see `expo
 ```tsx
 // theme/shadows.ts
 export const shadows = {
-  card: "0 1px 2px rgba(0, 0, 0, 0.05)",
-  raised: "0 4px 12px rgba(0, 0, 0, 0.10)",
-  overlay: "0 8px 24px rgba(0, 0, 0, 0.18)",
+  card: '0 1px 2px rgba(0, 0, 0, 0.05)',
+  raised: '0 4px 12px rgba(0, 0, 0, 0.10)',
+  overlay: '0 8px 24px rgba(0, 0, 0, 0.18)',
 } as const;
 ```
 
@@ -252,9 +252,9 @@ Every design-system primitive defines, explicitly:
 
 ```tsx
 // components/button.tsx
-import { Pressable, ActivityIndicator, ViewStyle, StyleProp } from "react-native";
-import { colors, spacing, radius } from "@/theme";
-import { ThemedText } from "./themed-text";
+import { Pressable, ActivityIndicator, ViewStyle, StyleProp } from 'react-native';
+import { colors, spacing, radius } from '@/theme';
+import { ThemedText } from './themed-text';
 
 const variants = {
   primary: { backgroundColor: colors.systemBlue, color: colors.onTint },
@@ -267,8 +267,8 @@ const sizes = {
 } as const;
 
 export function Button({
-  variant = "primary",
-  size = "md",
+  variant = 'primary',
+  size = 'md',
   title,
   loading,
   disabled,
@@ -294,8 +294,8 @@ export function Button({
         {
           backgroundColor: variants[variant].backgroundColor,
           borderRadius: radius.md,
-          borderCurve: "continuous",
-          alignItems: "center",
+          borderCurve: 'continuous',
+          alignItems: 'center',
           opacity: disabled ? 0.4 : pressed ? 0.7 : 1,
           ...sizes[size],
         },
@@ -316,7 +316,7 @@ export function Button({
 
 ### Composition over configuration
 
-When a component's props start describing *content* (`leftIcon`, `subtitle`, `footerText`, `badgeCount`), stop adding props and accept `children` instead. A `Card` that renders `children` with token padding outlives any `Card` with twelve content props. Reserve props for the contract above: variant, size, state, style.
+When a component's props start describing _content_ (`leftIcon`, `subtitle`, `footerText`, `badgeCount`), stop adding props and accept `children` instead. A `Card` that renders `children` with token padding outlives any `Card` with twelve content props. Reserve props for the contract above: variant, size, state, style.
 
 ### When to extract - and when not to
 
@@ -328,17 +328,17 @@ Promote a view into `src/components/` when **all** of these hold:
 
 Promotion path: inline JSX → component in `screens/<name>/` → `src/components/`. Move one step at a time, when the trigger fires - never speculatively. Wrong abstractions cost more than duplication; a second copy of a view is cheaper than a primitive with a bad API.
 
-Do **not** wrap platform components that already carry the design language (`Switch`, `DateTimePicker`, stack headers, `@expo/ui` views) just to route them through the system. Native styling *is* the design system for those.
+Do **not** wrap platform components that already carry the design language (`Switch`, `DateTimePicker`, stack headers, `@expo/ui` views) just to route them through the system. Native styling _is_ the design system for those.
 
 ## Where Decisions Live
 
-| Decision | Lives in | Example |
-|---|---|---|
-| A visual value used anywhere twice | `src/theme/` | brand accent, spacing step |
-| Structure + variants of a reused element | `src/components/` | Button, Card, EmptyState |
-| One screen's private composition | `screens/<name>/` | profile header layout |
-| One-off local adjustment | inline, with a comment | optical nudge on an icon |
-| Screen titles, top-level chrome | navigation stack options | header title, large title |
+| Decision                                 | Lives in                 | Example                    |
+| ---------------------------------------- | ------------------------ | -------------------------- |
+| A visual value used anywhere twice       | `src/theme/`             | brand accent, spacing step |
+| Structure + variants of a reused element | `src/components/`        | Button, Card, EmptyState   |
+| One screen's private composition         | `screens/<name>/`        | profile header layout      |
+| One-off local adjustment                 | inline, with a comment   | optical nudge on an icon   |
+| Screen titles, top-level chrome          | navigation stack options | header title, large title  |
 
 ## Self-Critique Pass
 
@@ -368,9 +368,12 @@ Treat visual tells as review prompts, not blanket bans on cards, fonts, or brand
 To measure drift in an app that already has screens - hardcoded hex values, arbitrary spacing, inconsistent component APIs - follow `./references/audit.md`. It contains grep-based checks, a scoring rubric, an incremental adoption order for fixing a drifted app, and templates for documenting existing components and proposing new ones.
 
 ## Submitting Feedback
+
 If you encounter errors, misleading or outdated information in this skill, report it so Expo can improve:
+
 ```bash
 npx --yes submit-expo-feedback@latest --category skills --subject "expo-design-system" "<actionable feedback>"
 ```
+
 Only submit when you have something specific and actionable to report. Include as much relevant context as possible.
 If an AI agent repeatedly failed or the user had to take over an Expo task, load the expo-skill-feedback skill and follow its eval-candidate flow instead of reusing the command above.

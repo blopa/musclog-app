@@ -58,6 +58,7 @@ npx create-react-native-library@latest awesome-library
 ```
 
 Creates ready-to-publish library with:
+
 - iOS (Obj-C/Swift) support
 - Android (Kotlin) support
 - TypeScript definitions
@@ -90,9 +91,9 @@ npx create-react-native-library@latest awesome-library --local
 ```kotlin
 class AwesomeLibraryModule(reactContext: ReactApplicationContext) :
     NativeAwesomeLibrarySpec(reactContext) {
-    
+
     private val moduleScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-    
+
     override fun heavyOperation(input: Double, promise: Promise?) {
         moduleScope.launch {
             // Heavy work on coroutine
@@ -100,7 +101,7 @@ class AwesomeLibraryModule(reactContext: ReactApplicationContext) :
             promise?.resolve(result)
         }
     }
-    
+
     override fun invalidate() {
         super.invalidate()
         moduleScope.cancel()  // Prevent memory leaks!
@@ -125,7 +126,7 @@ namespace facebook::react {
 class MyCppModule : public TurboModule {
 public:
     MyCppModule(std::shared_ptr<CallInvoker> jsInvoker);
-    
+
     double multiply(double a, double b);
 };
 
@@ -136,20 +137,20 @@ Follow the registration mechanism documented for the React Native version you ta
 
 ## Threading Summary
 
-| Method Type | Default Thread | Best Practice |
-|-------------|----------------|---------------|
-| Sync | JS thread | Keep fast (<16ms) |
-| Async | Native modules thread | OK for moderate work |
-| Heavy async | Custom background | Use DispatchQueue/Coroutines |
+| Method Type | Default Thread        | Best Practice                |
+| ----------- | --------------------- | ---------------------------- |
+| Sync        | JS thread             | Keep fast (<16ms)            |
+| Async       | Native modules thread | OK for moderate work         |
+| Heavy async | Custom background     | Use DispatchQueue/Coroutines |
 
 ## Language Interop Costs
 
-| Interface | Overhead | Notes |
-|-----------|----------|-------|
-| Obj-C / Obj-C++ ↔ C++ | Low | Common iOS interop path |
-| Swift ↔ C++ | Version-dependent | Verify supported Swift/Xcode/RN setup |
-| Kotlin ↔ C++ (JNI) | Higher | Batch calls and avoid per-item crossings |
-| C++ Turbo Module | Low | JSI direct access when correctly registered |
+| Interface             | Overhead          | Notes                                       |
+| --------------------- | ----------------- | ------------------------------------------- |
+| Obj-C / Obj-C++ ↔ C++ | Low               | Common iOS interop path                     |
+| Swift ↔ C++           | Version-dependent | Verify supported Swift/Xcode/RN setup       |
+| Kotlin ↔ C++ (JNI)    | Higher            | Batch calls and avoid per-item crossings    |
+| C++ Turbo Module      | Low               | JSI direct access when correctly registered |
 
 **Tip**: C++ Turbo Modules skip JNI at runtime since JS holds direct C++ function references via JSI.
 
@@ -158,8 +159,8 @@ Follow the registration mechanism documented for the React Native version you ta
 ```typescript
 // TypeScript interface
 export interface Spec extends TurboModule {
-    multiply(a: number, b: number): number;  // Sync
-    heavyOperation(input: number): Promise<number>;  // Async
+  multiply(a: number, b: number): number; // Sync
+  heavyOperation(input: number): Promise<number>; // Async
 }
 ```
 
