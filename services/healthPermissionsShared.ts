@@ -19,6 +19,8 @@ export const REQUIRED_HEALTH_PERMISSIONS: readonly HealthPermissionDescriptor[] 
   { accessType: 'read', recordType: 'ActiveCaloriesBurned' },
   { accessType: 'read', recordType: 'BasalMetabolicRate' },
   { accessType: 'write', recordType: 'ExerciseSession' },
+  // A logged walk/run stores its distance as a record of its own (not part of the session).
+  { accessType: 'write', recordType: 'Distance' },
   { accessType: 'read', recordType: 'LeanBodyMass' },
   { accessType: 'write', recordType: 'LeanBodyMass' },
   { accessType: 'read', recordType: 'Steps' },

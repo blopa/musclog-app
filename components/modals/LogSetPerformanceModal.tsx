@@ -7,6 +7,7 @@ import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { Slider } from '@/components/theme/Slider';
+import type { Units } from '@/constants/settings';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { getWeightUnitI18nKey } from '@/utils/units';
@@ -36,6 +37,10 @@ type LogSetPerformanceModalProps = {
     partials: number;
     repsInReserve: number;
   }) => void;
+  /** The +/- step of the weight input, in the displayed unit. Follows the active gym's plates. */
+  weightStep?: number;
+  /** The unit the weight is entered in (the exercise's own, else the account's). */
+  units?: Units;
 };
 
 type StatCardProps = {
@@ -78,10 +83,13 @@ export function LogSetPerformanceModal({
   onConfirm,
   isSaving = false,
   onEditSetDetails,
+  weightStep = 0.5,
+  units: unitsOverride,
 }: LogSetPerformanceModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { units } = useSettings();
+  const { units: accountUnits } = useSettings();
+  const units = unitsOverride ?? accountUnits;
   const weightUnitKey = getWeightUnitI18nKey(units);
   const [rpe, setRpe] = useState(initialRpe);
   const [weight, setWeight] = useState(initialWeight);
@@ -173,7 +181,7 @@ export function LogSetPerformanceModal({
                 value={weight}
                 onChange={setWeight}
                 min={0}
-                step={0.5}
+                step={weightStep}
               />
             </View>
             <View className="flex-1">

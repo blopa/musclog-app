@@ -48,7 +48,37 @@
       "label": "Ajustado",
       "carryOver": "O peso segue sua última série ({{to}} {{unit}}) em vez dos {{from}} {{unit}} planejados.",
       "targetRirWeight": "Peso alterado de {{from}} para {{to}} {{unit}} — sua última série coloca seu 1RM estimado em {{oneRepMax}} {{unit}}, então isso mantém {{rir}} repetições de reserva.",
-      "targetRirReps": "Repetições alteradas de {{from}} para {{to}} — sua última série coloca seu 1RM estimado em {{oneRepMax}} {{unit}}, então isso mantém {{rir}} repetições de reserva no peso atual."
+      "targetRirReps": "Repetições alteradas de {{from}} para {{to}} — sua última série coloca seu 1RM estimado em {{oneRepMax}} {{unit}}, então isso mantém {{rir}} repetições de reserva no peso atual.",
+      "startProgressionWeight": "Sobe para {{to}} {{unit}} a partir dos {{last}} {{unit}} da última vez — você tinha cerca de {{rir}} repetições de reserva.",
+      "startProgressionWeightReps": "Sobe para {{to}} {{unit}} × {{reps}} a partir de {{last}} {{unit}} × {{lastReps}} da última vez — você tinha cerca de {{rir}} repetições de reserva.",
+      "startProgressionReps": "Uma repetição a mais que da última vez ({{to}} em vez de {{last}}) — você tinha cerca de {{rir}} repetições de reserva.",
+      "startDeload": "Desce para {{to}} {{unit}} a partir dos {{last}} {{unit}} da última vez — você não tinha repetições de reserva.",
+      "startRepeatWeight": "Você começa com {{to}} {{unit}}, o que usou da última vez, em vez dos {{from}} {{unit}} do plano.",
+      "startRepeatReps": "Você começa com {{to}} repetições, o que fez da última vez, em vez das {{from}} do plano.",
+      "keepLast": "Manter o da última vez",
+      "usePlan": "Usar o do plano",
+      "startDeloadWeightReps": "Desce para {{to}} {{unit}} × {{reps}} a partir de {{last}} {{unit}} × {{lastReps}} da última vez — você não tinha repetições de reserva.",
+      "startRepeatWeightReps": "Você começa com {{to}} {{unit}} × {{reps}}, o que fez da última vez, em vez dos {{from}} {{unit}} × {{planReps}} do plano."
+    },
+    "startRest": "Iniciar descanso ({{seconds}} s)",
+    "warmup": {
+      "badge": "AQUECIMENTO",
+      "add": "Adicionar séries de aquecimento",
+      "remove": "Remover aquecimento"
+    },
+    "notes": {
+      "title": "Anotações",
+      "add": "Adicionar anotação",
+      "edit": "Editar anotação",
+      "save": "Salvar anotações",
+      "thisWorkout": "Este treino",
+      "thisWorkoutPlaceholder": "Como foi, o que mudar na próxima série",
+      "alsoTemplate": "Salvar também no treino",
+      "alsoTemplateHint": "Na próxima vez que você iniciar este treino, a anotação já estará lá.",
+      "always": "Sempre para este exercício",
+      "alwaysPlaceholder": "Uma dica para todo treino, ex.: cotovelos junto ao corpo",
+      "alwaysHint": "Aparece acima da série sempre que você faz este exercício.",
+      "failed": "Não foi possível salvar as anotações. Tente novamente."
     }
   }
 }

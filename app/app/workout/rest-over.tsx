@@ -8,6 +8,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { RestOverNextExercise } from '@/components/RestOverNextExercise';
 import { RestOverStatusIcon } from '@/components/RestOverStatusIcon';
 import { RestOverTitle } from '@/components/RestOverTitle';
@@ -44,6 +45,7 @@ export default function RestOverScreen() {
 
   const [pulseAnim] = useState(() => new Animated.Value(0.3));
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
+  const [isWorkoutSettingsVisible, setIsWorkoutSettingsVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
@@ -252,9 +254,17 @@ export default function RestOverScreen() {
             setIsOptionsModalVisible(false);
             setIsWorkoutOverviewModalVisible(true);
           }}
-          // TODO: uncomment once we have workout settings
-          // onWorkoutSettings={() => router.navigate('/workout-settings')}
+          onWorkoutSettings={() => {
+            setIsOptionsModalVisible(false);
+            setIsWorkoutSettingsVisible(true);
+          }}
           onEndWorkout={handleEndWorkout}
+        />
+      ) : null}
+      {isWorkoutSettingsVisible ? (
+        <WorkoutSettingsModal
+          visible={isWorkoutSettingsVisible}
+          onClose={() => setIsWorkoutSettingsVisible(false)}
         />
       ) : null}
 

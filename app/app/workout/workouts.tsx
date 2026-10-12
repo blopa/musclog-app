@@ -1,6 +1,15 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from 'expo-router/react-navigation';
-import { Layers3, Pencil, Plus, Repeat, Search, Target, Trash2 } from 'lucide-react-native';
+import {
+  Footprints,
+  Layers3,
+  Pencil,
+  Plus,
+  Repeat,
+  Search,
+  Target,
+  Trash2,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -18,6 +27,7 @@ import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
 import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import { LogCardioModal } from '@/components/modals/LogCardioModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { Button } from '@/components/theme/Button';
@@ -94,6 +104,7 @@ export default function WorkoutsScreen() {
   const [isCreateWorkoutModalVisible, setIsCreateWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewVisible, setIsWorkoutOverviewVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
+  const [isLogCardioVisible, setIsLogCardioVisible] = useState(false);
   const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
@@ -680,6 +691,16 @@ export default function WorkoutsScreen() {
             },
           },
           {
+            icon: Footprints,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: `${theme.colors.accent.primary}20`,
+            title: t('cardio.menuItem'),
+            description: t('cardio.subtitle'),
+            onPress: () => {
+              setIsLogCardioVisible(true);
+            },
+          },
+          {
             icon: Target,
             iconColor: theme.colors.accent.secondary,
             iconBgColor: `${theme.colors.accent.secondary}20`,
@@ -740,6 +761,11 @@ export default function WorkoutsScreen() {
         variant="destructive"
         isLoading={isDeletingPlan}
       />
+
+      {/* Mounted only while open so each open starts from the defaults */}
+      {isLogCardioVisible ? (
+        <LogCardioModal visible={isLogCardioVisible} onClose={() => setIsLogCardioVisible(false)} />
+      ) : null}
 
       <GoalsManagementModal
         visible={isGoalsManagementModalVisible}

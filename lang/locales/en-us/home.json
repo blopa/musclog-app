@@ -11,7 +11,8 @@
       "scanBarcode": "Scan\nBarcode",
       "aiPhoto": "AI\nPhoto",
       "myMeals": "My\nMeals",
-      "addNote": "Add\nNote"
+      "addNote": "Add\nNote",
+      "logCardio": "Log\nWalk/Run"
     },
     "sections": {
       "recentWorkouts": "Recent Workouts",

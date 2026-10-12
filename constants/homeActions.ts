@@ -5,6 +5,7 @@ export const HOME_ACTION_KEYS = [
   'ai_photo',
   'my_meals',
   'add_note',
+  'log_cardio',
 ] as const;
 
 export type HomeActionKey = (typeof HOME_ACTION_KEYS)[number];

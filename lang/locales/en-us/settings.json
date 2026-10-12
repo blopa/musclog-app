@@ -290,7 +290,9 @@
         "toggle": "Use Musclog Free Tier LLM",
         "toggleSubtitle": "Access AI features without an API key. Subject to a daily request limit.",
         "activeNote": "Free tier is active. Your own API keys are not used."
-      }
+      },
+      "testKey": "Test key",
+      "testingKey": "Testing…"
     },
     "visualSettings": {
       "title": "Interface",
@@ -459,6 +461,22 @@
           "description": "Deep violet surfaces with an orange visor accent"
         }
       }
+    },
+    "workoutSettings": {
+      "title": "Workout Settings",
+      "subtitle": "Gyms, plates and exercises to avoid"
+    },
+    "helpAndFeedback": {
+      "title": "Help & feedback",
+      "subtitle": "Report a bug, suggest a feature or get in touch",
+      "reportBug": "Report a bug",
+      "requestFeature": "Request a feature",
+      "githubHint": "Opens GitHub (needs an account). Version and device are pre-filled.",
+      "community": "Join the community",
+      "communityHint": "Chat with other Musclog users",
+      "email": "Email support",
+      "emailHint": "No account needed. Version and device are added to the message.",
+      "openFailed": "Couldn't open that link."
     }
   }
 }

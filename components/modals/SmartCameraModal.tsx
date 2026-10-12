@@ -28,6 +28,7 @@ import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
 import type { SearchResultProduct } from '@/types/openFoodFacts';
+import { describeAiError } from '@/utils/aiErrors';
 import {
   estimateNutritionFromPhoto,
   extractMacrosFromLabelPhoto,
@@ -38,6 +39,7 @@ import {
 } from '@/utils/coachAI';
 import { copyImageToDocumentDirectory, readFileAsStringAsync } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
+import { createPhaseTimer } from '@/utils/phaseTimer';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { AddFoodModal } from './AddFoodModal';
@@ -47,7 +49,7 @@ import CreateCustomFoodModal from './CreateCustomFoodModal';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FoodSearchModal } from './FoodSearchModal';
-import { LogMealModal } from './LogMealModal';
+import { type LogMealData, LogMealModal } from './LogMealModal';
 import { SmartCameraShell } from './SmartCameraShell';
 import { useOpticalStreamOffer } from './useOpticalStreamOffer';
 
@@ -225,6 +227,8 @@ export default function SmartCameraModal({
   const [aiPhotoUri, setAiPhotoUri] = useState<string | undefined>(undefined);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('lunch');
   const [isProcessingAi, setIsProcessingAi] = useState(false);
+  // Aborts the in-flight AI request when the user taps Cancel on the processing overlay.
+  const aiAbortRef = useRef<AbortController | null>(null);
   /** Synthetic product from AI label (OCR or vision) for FoodMealTrackingDetailsModal */
   const [productFromAiLabel, setProductFromAiLabel] = useState<SearchResultProduct | null>(null);
 
@@ -352,6 +356,13 @@ export default function SmartCameraModal({
     async (fileUri: string) => {
       setIsProcessingAi(true);
       setAiPhotoUri(fileUri);
+      const abortController = new AbortController();
+      aiAbortRef.current = abortController;
+      const timer = createPhaseTimer('SmartCamera.aiPhoto');
+      let outcome = 'done';
+      // The same config, plus the cancel signal. `getAiConfig` returns a fresh object per call.
+      const withCancel = <C extends { signal?: AbortSignal }>(config: C | null): C | null =>
+        config ? { ...config, signal: abortController.signal } : null;
       try {
         if (cameraMode === 'ai-label-scan') {
           if (useOcrBeforeAi || !isAIVisionEnabled) {
@@ -362,13 +373,16 @@ export default function SmartCameraModal({
               return;
             }
 
-            const aiConfig = await AiService.getAiConfig();
+            const aiConfig = withCancel(await AiService.getAiConfig());
             if (!aiConfig) {
               showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
               return;
             }
 
             const result = await extractMacrosFromLabelText(aiConfig, text, aiContext ?? undefined);
+            if (abortController.signal.aborted) {
+              return;
+            }
             if (result) {
               showSnackbar(
                 'success',
@@ -389,7 +403,7 @@ export default function SmartCameraModal({
               encoding: 'base64',
             } as { encoding: 'base64' });
 
-            const aiConfig = await AiService.getAiConfig();
+            const aiConfig = withCancel(await AiService.getAiConfig());
             if (!aiConfig) {
               showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
               return;
@@ -400,6 +414,10 @@ export default function SmartCameraModal({
               base64,
               aiContext ?? undefined
             );
+
+            if (abortController.signal.aborted) {
+              return;
+            }
 
             if (result) {
               showSnackbar(
@@ -421,13 +439,19 @@ export default function SmartCameraModal({
           const base64 = await readFileAsStringAsync(fileUri, {
             encoding: 'base64',
           } as { encoding: 'base64' });
-          const aiConfig = await AiService.getAiConfig();
+          timer.mark('image-read');
+          const aiConfig = withCancel(await AiService.getAiConfig());
+          timer.mark('settings-read');
           if (!aiConfig) {
             showSnackbar('error', t('food.aiCamera.aiNotConfigured'));
             return;
           }
 
           const result = await estimateNutritionFromPhoto(aiConfig, base64, aiContext ?? undefined);
+          timer.mark('request');
+          if (abortController.signal.aborted) {
+            return;
+          }
           if (!result) {
             handleError(
               new Error('estimateNutritionFromPhoto errored'),
@@ -474,9 +498,14 @@ export default function SmartCameraModal({
           }
         }
       } catch (error) {
+        outcome = abortController.signal.aborted ? 'cancelled' : 'error';
         console.error('[SmartCamera] Error processing AI photo:', error);
-        showSnackbar('error', t('food.aiCamera.aiAnalysisFailed'));
+        if (!abortController.signal.aborted) {
+          showSnackbar('error', describeAiError(error, t) ?? t('food.aiCamera.aiAnalysisFailed'));
+        }
       } finally {
+        timer.log(outcome);
+        aiAbortRef.current = null;
         setIsProcessingAi(false);
       }
     },
@@ -556,7 +585,7 @@ export default function SmartCameraModal({
   }, []);
 
   const handleLogMeal = useCallback(
-    async (date: Date, mealType: MealType, portionGrams: number) => {
+    async ({ date, time, mealType, portionGrams }: LogMealData) => {
       try {
         if (!selectedMealForLogging) {
           showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
@@ -585,8 +614,12 @@ export default function SmartCameraModal({
           mealType,
           portionGrams,
           isSingleFood
-            ? { loggedMealName: selectedMealForLogging.name }
-            : { groupId: randomUUID(), loggedMealName: selectedMealForLogging.name }
+            ? { loggedMealName: selectedMealForLogging.name, consumedTime: time }
+            : {
+                groupId: randomUUID(),
+                loggedMealName: selectedMealForLogging.name,
+                consumedTime: time,
+              }
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
@@ -677,6 +710,7 @@ export default function SmartCameraModal({
           )
         }
         isLoading={barcode.isSearchingBarcode || isProcessingAi}
+        onCancelLoading={isProcessingAi ? () => aiAbortRef.current?.abort() : undefined}
         cameraMode={cameraMode}
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}

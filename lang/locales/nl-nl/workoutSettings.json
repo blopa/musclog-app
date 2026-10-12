@@ -1,0 +1,95 @@
+{
+  "workoutSettings": {
+    "title": "Trainingsinstellingen",
+    "gyms": {
+      "title": "Mijn sportscholen",
+      "subtitle": "Beschrijf de apparatuur waarmee je traint. De plaatcalculator, gewichtsstappen en oefeningsuggesties volgen je actieve sportschool.",
+      "empty": "Nog geen sportschool ingesteld",
+      "emptyHint": "Voeg er een toe voor plaatberekeningen en gewichtsstappen die bij je apparatuur passen.",
+      "add": "Sportschool toevoegen",
+      "active": "Actief",
+      "makeActive": "Deze sportschool gebruiken",
+      "noGym": "Geen sportschool gebruiken",
+      "summary": "Stang van {{bar}} {{unit}} · {{plates}} plaatgroottes · {{equipment}} soorten apparatuur"
+    },
+    "editGym": {
+      "title": "Sportschool bewerken",
+      "createTitle": "Nieuwe sportschool",
+      "name": "Naam",
+      "namePlaceholder": "bijv. Thuisgym",
+      "bar": "Gewicht van de stang ({{unit}})",
+      "increment": "Kleinste gewichtsstap ({{unit}})",
+      "incrementHint": "Voor dumbbells, machines en kabels.",
+      "plates": "Platen",
+      "platesHint": "Hoeveel platen van elk gewicht je hebt. Platen worden in paren geladen.",
+      "fewerPlates": "Minder platen van {{weight}} {{unit}}",
+      "morePlates": "Meer platen van {{weight}} {{unit}}",
+      "removePlate": "Platen van {{weight}} {{unit}} verwijderen",
+      "plateWeight": "Gewicht nieuwe plaat ({{unit}})",
+      "addPlate": "Plaat toevoegen",
+      "resetPlates": "Standaardplaten",
+      "equipment": "Apparatuur",
+      "equipmentHint": "Oefeningen die andere apparatuur nodig hebben, worden voor deze sportschool niet voorgesteld.",
+      "save": "Sportschool opslaan",
+      "delete": "Sportschool verwijderen",
+      "deleteTitle": "Deze sportschool verwijderen?",
+      "deleteMessage": "Je trainingen en geschiedenis blijven ongewijzigd.",
+      "saveFailed": "De sportschool kon niet worden opgeslagen. Probeer het opnieuw."
+    },
+    "restrictions": {
+      "title": "Oefeningen om te vermijden",
+      "subtitle": "Deze worden niet voorgesteld bij vervangingen of gegenereerde trainingen.",
+      "empty": "Nog niets. Markeer een oefening vanuit het oefeningenscherm of wanneer je hem vervangt.",
+      "clear": "Weer toestaan",
+      "until": "Tot {{date}}",
+      "healed": "Hersteld",
+      "limit": "Je kunt maximaal {{count}} oefeningen vermijden.",
+      "kind": {
+        "never": "Nooit voorstellen",
+        "injury": "Blessure",
+        "dislike": "Vind ik niet leuk"
+      },
+      "badge": {
+        "never": "Nooit voorstellen",
+        "injury": "Blessure",
+        "dislike": "Niet leuk gevonden"
+      },
+      "expiry": {
+        "2w": "2 weken",
+        "4w": "1 maand",
+        "12w": "3 maanden",
+        "open": "Tot ik iets anders zeg"
+      }
+    },
+    "plateCalculator": {
+      "title": "Plaatcalculator",
+      "subtitle": "{{weight}} {{unit}} laden",
+      "belowBar": "Dat is lichter dan de stang van {{bar}} {{unit}}.",
+      "barOnly": "Alleen de stang — geen platen nodig.",
+      "perSide": "Aan elke kant",
+      "plateLine": "{{weight}} {{unit}}",
+      "bar": "Stang",
+      "exact": "Geladen: precies {{weight}} {{unit}}",
+      "closest": "Dichtstbijzijnde belasting: {{weight}} {{unit}} ({{short}} {{unit}} te weinig)",
+      "defaultsHint": "Standaardplaten worden gebruikt. Stel je sportschool in bij Trainingsinstellingen voor exacte resultaten.",
+      "open": "Platen voor {{weight}} {{unit}}"
+    },
+    "restTimer": {
+      "title": "Rusttimer",
+      "subtitle": "Hoe rustperiodes tussen sets werken.",
+      "autoStart": "Automatisch starten",
+      "autoStartHint": "Nadat je een set hebt voltooid. Zet uit om rust zelf te starten met de knop Rust starten.",
+      "haptics": "Trillende aftelling",
+      "hapticsHint": "Een tik bij de laatste drie seconden en een trilling bij nul.",
+      "defaultRest": "Standaardrust",
+      "defaultRestHint": "Gebruikt voor sets die geen eigen rust vermelden.",
+      "seconds": "sec"
+    },
+    "autonomy": {
+      "title": "Als een training start",
+      "subtitle": "Bepaal hoeveel van de cijfers van vandaag de app kiest.",
+      "suggest": "Gewichten en herhalingen voorstellen",
+      "suggestHint": "Elke oefening start op basis van je vorige sessie: meer gewicht, meer herhalingen, een deload of herhalen. Je ziet waarom en kunt het ongedaan maken."
+    }
+  }
+}

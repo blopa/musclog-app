@@ -1,36 +1,94 @@
-import { Dumbbell, Repeat, Search } from 'lucide-react-native';
+import {
+  CalendarDays,
+  Dumbbell,
+  HeartPulse,
+  Repeat,
+  Search,
+  ThumbsDown,
+  TrendingDown,
+  TrendingUp,
+  Users,
+  Wrench,
+} from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { FilterTabs } from '@/components/FilterTabs';
 import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
+import { ToggleInput } from '@/components/theme/ToggleInput';
 import Exercise from '@/database/models/Exercise';
+import {
+  MUSCLE_GROUP_FAMILY,
+  type MuscleGroupFamily,
+  muscleGroupFamily,
+} from '@/database/models/muscleGroupFamily';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestionService';
+import { useActiveGym } from '@/hooks/useActiveGym';
+import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
+import {
+  buildExerciseSearchText,
+  exerciseSearchTerms,
+  matchesExerciseSearch,
+} from '@/utils/exerciseSearch';
+import {
+  activeRestrictionFor,
+  INJURY_EXPIRY_OPTIONS,
+  type InjuryExpiryOption,
+  injuryExpiryTimestamp,
+  isExerciseSuggestible,
+  rankSubstitutes,
+  restrictionKindForReason,
+  SUBSTITUTION_REASONS,
+  type SubstitutionOutcome,
+  type SubstitutionReason,
+} from '@/utils/exerciseSubstitution';
 import {
   getMechanicTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '@/utils/exerciseTranslation';
+import { ALWAYS_AVAILABLE_EQUIPMENT, isEquipmentAvailable } from '@/utils/gym';
 
 /**
  * Exercise data for replacement modal.
  * Uses Pick to extract only needed fields from Exercise model.
  */
-export type ReplaceExerciseData = Pick<Exercise, 'id' | 'name' | 'muscleGroup' | 'mechanicType'> & {
+export type ReplaceExerciseData = Pick<
+  Exercise,
+  'id' | 'name' | 'muscleGroup' | 'mechanicType' | 'equipmentType'
+> & {
   imageUrl?: string;
 };
 
 type ReplaceExerciseModalProps = {
   visible: boolean;
   onClose: () => void;
-  onReplace: (exercise: ReplaceExerciseData) => void;
-  currentExercise?: string;
+  /** Called with the chosen exercise and what the user decided to remember about the swap. */
+  onReplace: (exercise: ReplaceExerciseData, outcome: SubstitutionOutcome) => void;
+  /** The exercise being replaced: drives the suggestions and the default region tab. */
+  currentExerciseId?: string;
   exercises?: ReplaceExerciseData[];
 };
+
+type FamilyTab = 'all' | MuscleGroupFamily;
+const FAMILY_TABS: readonly FamilyTab[] = ['all', 'torso', 'arms', 'legs', 'core', 'other'];
+const SUGGESTION_COUNT = 5;
+
+const REASON_ICONS = {
+  equipment_unavailable: Wrench,
+  pain: HeartPulse,
+  too_hard: TrendingUp,
+  too_easy: TrendingDown,
+  dislike: ThumbsDown,
+  machine_occupied: Users,
+  just_today: CalendarDays,
+} as const satisfies Record<SubstitutionReason, unknown>;
 
 function exerciseToReplaceData(exercise: Exercise): ReplaceExerciseData {
   return {
@@ -38,24 +96,95 @@ function exerciseToReplaceData(exercise: Exercise): ReplaceExerciseData {
     name: exercise.name,
     muscleGroup: exercise.muscleGroup,
     mechanicType: exercise.mechanicType,
+    equipmentType: exercise.equipmentType,
     imageUrl: exercise.imageUrl?.trim() || undefined,
   };
 }
+
+const groupsOfFamily = (family: MuscleGroupFamily): string[] =>
+  Object.entries(MUSCLE_GROUP_FAMILY)
+    .filter(([, candidate]) => candidate === family)
+    .map(([group]) => group);
 
 export function ReplaceExerciseModal({
   visible,
   onClose,
   onReplace,
-  currentExercise,
+  currentExerciseId,
   exercises: exercisesProp,
 }: ReplaceExerciseModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const { gym } = useActiveGym();
+  const { active: restrictions } = useExerciseRestrictions();
 
-  const muscleGroupForHook =
-    selectedFilter === 'All' ? undefined : (selectedFilter.toLowerCase() as string);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [family, setFamily] = useState<FamilyTab>('all');
+  const [current, setCurrent] = useState<Exercise | null>(null);
+  const [suggested, setSuggested] = useState<ReplaceExerciseData[]>([]);
+  const [selectedExercise, setSelectedExercise] = useState<string>('');
+  const [step, setStep] = useState<'pick' | 'reason'>('pick');
+  const [reason, setReason] = useState<SubstitutionReason>('just_today');
+  const [rememberChoice, setRememberChoice] = useState(false);
+  const [injuryExpiry, setInjuryExpiry] = useState<InjuryExpiryOption>('4w');
+  const [removeEquipment, setRemoveEquipment] = useState(false);
+
+  // Start every open on the first step. The previous swap's choices are history, not a default.
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+    const reset = () => {
+      setStep('pick');
+      setSearchQuery('');
+      setReason('just_today');
+      setRememberChoice(false);
+      setRemoveEquipment(false);
+      setInjuryExpiry('4w');
+    };
+    reset();
+  }, [visible]);
+
+  // The exercise being replaced: its body region is the tab the list opens on.
+  useEffect(() => {
+    if (!visible || !currentExerciseId) {
+      return;
+    }
+    let cancelled = false;
+    ExerciseService.getExerciseById(currentExerciseId)
+      .then((exercise) => {
+        if (cancelled) {
+          return;
+        }
+        setCurrent(exercise);
+        setFamily(exercise ? muscleGroupFamily(exercise.muscleGroup) : 'all');
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [visible, currentExerciseId]);
+
+  // What the swap list must leave out: the exercise itself, anything never/injury, and (SQL-side,
+  // so pages stay full) anything the active gym cannot supply.
+  const suggestionContext = useMemo(() => ({ restrictions, gym }), [restrictions, gym]);
+  const excludeIds = useMemo(
+    () => [
+      ...(currentExerciseId ? [currentExerciseId] : []),
+      ...restrictions
+        .filter((restriction) => restriction.kind !== 'dislike')
+        .map((restriction) => restriction.exerciseId),
+    ],
+    [currentExerciseId, restrictions]
+  );
+  const equipmentTypes = useMemo(
+    () => (gym ? [...gym.equipment, ...ALWAYS_AVAILABLE_EQUIPMENT] : undefined),
+    [gym]
+  );
+  const muscleGroups = useMemo(
+    () => (family === 'all' ? undefined : groupsOfFamily(family)),
+    [family]
+  );
 
   const {
     exercises: exercisesFromHook,
@@ -66,194 +195,420 @@ export function ReplaceExerciseModal({
   } = useExercises({
     mode: 'list',
     visible: visible && exercisesProp === undefined,
-    muscleGroup: muscleGroupForHook,
+    muscleGroups,
+    equipmentTypes,
+    excludeIds,
     searchTerm: searchQuery.trim() || undefined,
     initialLimit: 5,
     batchSize: 5,
     enableReactivity: false,
   });
 
+  // Ranked suggestions: same body region, then mechanic and equipment; never a restricted exercise.
+  useEffect(() => {
+    if (!visible || exercisesProp !== undefined || !current) {
+      return;
+    }
+    let cancelled = false;
+    ExerciseSuggestionService.getSuggestibleExercises(undefined, suggestionContext)
+      .then(({ exercises }) => {
+        if (cancelled) {
+          return;
+        }
+        setSuggested(
+          rankSubstitutes(current, exercises, suggestionContext)
+            .filter((candidate) => candidate.sameFamily && !candidate.disliked)
+            .slice(0, SUGGESTION_COUNT)
+            .map((candidate) => exerciseToReplaceData(candidate.exercise))
+        );
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [visible, exercisesProp, current, suggestionContext]);
+
+  const showSuggestions =
+    exercisesProp === undefined && !searchQuery.trim() && suggested.length > 0;
+  const suggestedIds = useMemo(
+    () => new Set(suggested.map((exercise) => exercise.id)),
+    [suggested]
+  );
+
   const displayList: ReplaceExerciseData[] = useMemo(() => {
     if (exercisesProp !== undefined) {
-      return exercisesProp.filter((e) => {
-        const matchesSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesFilter =
-          selectedFilter === 'All' || e.muscleGroup.toLowerCase() === selectedFilter.toLowerCase();
-        return matchesSearch && matchesFilter;
-      });
+      const terms = exerciseSearchTerms(searchQuery);
+      return exercisesProp.filter(
+        (exercise) =>
+          exercise.id !== currentExerciseId &&
+          isExerciseSuggestible(exercise, suggestionContext) &&
+          matchesExerciseSearch(buildExerciseSearchText({ names: [exercise.name] }), terms) &&
+          (family === 'all' || muscleGroupFamily(exercise.muscleGroup) === family)
+      );
     }
-    return exercisesFromHook.map(exerciseToReplaceData);
-  }, [exercisesProp, exercisesFromHook, searchQuery, selectedFilter]);
+    return exercisesFromHook
+      .map(exerciseToReplaceData)
+      .filter((exercise) => !showSuggestions || !suggestedIds.has(exercise.id));
+  }, [
+    exercisesProp,
+    exercisesFromHook,
+    searchQuery,
+    family,
+    currentExerciseId,
+    suggestionContext,
+    showSuggestions,
+    suggestedIds,
+  ]);
 
-  const [selectedExercise, setSelectedExercise] = useState<string>('');
+  const everythingShown = useMemo(
+    () => [...(showSuggestions ? suggested : []), ...displayList],
+    [showSuggestions, suggested, displayList]
+  );
 
   useEffect(() => {
     const syncSelection = () => {
-      if (displayList.length === 0) {
+      if (everythingShown.length === 0) {
         setSelectedExercise('');
         return;
       }
-      const ids = new Set(displayList.map((e) => e.id));
-      if (!ids.has(selectedExercise)) {
-        setSelectedExercise(displayList[0].id);
+      if (!everythingShown.some((exercise) => exercise.id === selectedExercise)) {
+        setSelectedExercise(everythingShown[0].id);
       }
     };
     syncSelection();
-  }, [displayList, selectedExercise]);
+  }, [everythingShown, selectedExercise]);
 
-  const MUSCLE_GROUP_TABS = [
-    { id: 'All', label: t('replaceExercise.muscleGroups.all') },
-    { id: 'Chest', label: t('replaceExercise.muscleGroups.chest') },
-    { id: 'Shoulders', label: t('replaceExercise.muscleGroups.shoulders') },
-    { id: 'Triceps', label: t('replaceExercise.muscleGroups.triceps') },
-  ];
+  const dislikedIds = useMemo(
+    () =>
+      new Set(
+        restrictions
+          .filter(
+            (restriction) =>
+              activeRestrictionFor(restriction.exerciseId, restrictions)?.kind === 'dislike'
+          )
+          .map((restriction) => restriction.exerciseId)
+      ),
+    [restrictions]
+  );
 
-  const handleReplace = () => {
-    const exercise = displayList.find((e) => e.id === selectedExercise);
-    if (exercise) {
-      onReplace(exercise);
-      onClose();
-    }
+  const toOption = (exercise: ReplaceExerciseData): SelectorOption<string> => {
+    const muscleGroupLabel = t(getMuscleGroupTranslationKey(exercise.muscleGroup));
+    const mechanicLabel = t(getMechanicTypeTranslationKey(exercise.mechanicType));
+    return {
+      id: exercise.id,
+      label: exercise.name,
+      description: dislikedIds.has(exercise.id)
+        ? `${muscleGroupLabel} • ${mechanicLabel} • ${t('replaceExercise.disliked')}`
+        : `${muscleGroupLabel} • ${mechanicLabel}`,
+      icon: Dumbbell,
+      iconBgColor: theme.colors.background.iconDark,
+      iconColor: theme.colors.text.primary,
+      imageUrl: exercise.imageUrl,
+    };
   };
+
+  const tabs = FAMILY_TABS.map((id) => ({ id, label: t(`replaceExercise.families.${id}`) }));
+
+  const chosen = everythingShown.find((exercise) => exercise.id === selectedExercise);
+  const removableEquipment =
+    gym && current && !ALWAYS_AVAILABLE_EQUIPMENT.includes(current.equipmentType)
+      ? isEquipmentAvailable(current.equipmentType, gym)
+      : false;
+  const impliedKind = restrictionKindForReason(reason);
+
+  const selectReason = (next: SubstitutionReason) => {
+    setReason(next);
+    // Pain and dislike default to remembering, because the whole point of saying why is that the
+    // app stops offering it. It stays a visible, switchable choice — never applied silently.
+    setRememberChoice(restrictionKindForReason(next) !== null);
+    setRemoveEquipment(false);
+  };
+
+  const handleConfirm = () => {
+    if (!chosen) {
+      return;
+    }
+    const kind = rememberChoice ? impliedKind : null;
+    onReplace(chosen, {
+      reason,
+      ...(kind
+        ? {
+            restriction: {
+              kind,
+              expiresAt: kind === 'injury' ? injuryExpiryTimestamp(injuryExpiry) : null,
+            },
+          }
+        : {}),
+      ...(removeEquipment && reason === 'equipment_unavailable' && removableEquipment
+        ? { removeEquipmentFromGym: true }
+        : {}),
+    });
+    onClose();
+  };
+
+  const reasonOptions: SelectorOption<SubstitutionReason>[] = SUBSTITUTION_REASONS.map((id) => ({
+    id,
+    label: t(`replaceExercise.reason.options.${id}`),
+    description: t(`replaceExercise.reason.descriptions.${id}`),
+    icon: REASON_ICONS[id],
+    iconBgColor: theme.colors.background.iconDark,
+    iconColor: theme.colors.text.primary,
+  }));
+
+  const pickFooter = (
+    <View className="flex-row items-stretch gap-3">
+      <Button
+        label={t('replaceExercise.cancel')}
+        variant="outline"
+        size="sm"
+        width="flex-1"
+        onPress={onClose}
+      />
+      <Button
+        label={t('replaceExercise.continue')}
+        icon={Repeat}
+        size="sm"
+        width="flex-2"
+        onPress={() => setStep('reason')}
+        disabled={!chosen}
+      />
+    </View>
+  );
+
+  const reasonFooter = (
+    <View className="flex-row items-stretch gap-3">
+      <Button
+        label={t('replaceExercise.back')}
+        variant="outline"
+        size="sm"
+        width="flex-1"
+        onPress={() => setStep('pick')}
+      />
+      <Button
+        label={t('replaceExercise.replace')}
+        icon={Repeat}
+        size="sm"
+        width="flex-2"
+        onPress={handleConfirm}
+      />
+    </View>
+  );
 
   return (
     <BottomPopUpMenu
       visible={visible}
       onClose={onClose}
-      title={t('replaceExercise.title')}
+      title={step === 'pick' ? t('replaceExercise.title') : t('replaceExercise.reason.title')}
+      subtitle={
+        step === 'reason' && chosen
+          ? t('replaceExercise.reason.subtitle', { name: chosen.name })
+          : undefined
+      }
       maxHeight="85%"
       scrollable={false}
-      footer={
-        <View className="flex-row items-stretch gap-3">
-          <Button
-            label={t('replaceExercise.cancel')}
-            variant="outline"
-            size="sm"
-            width="flex-1"
-            onPress={onClose}
-          />
-          <Button
-            label={t('replaceExercise.replace')}
-            icon={Repeat}
-            size="sm"
-            width="flex-2"
-            onPress={handleReplace}
-            disabled={!selectedExercise}
-          />
-        </View>
-      }
+      footer={step === 'pick' ? pickFooter : reasonFooter}
     >
-      <View style={{ flex: 1 }}>
-        {/* Sticky: Search and Filters */}
-        <View className="gap-3" style={{ paddingBottom: theme.spacing.padding.sm }}>
-          <View className="relative">
-            <View
-              className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-4"
-              style={{ pointerEvents: 'none' }}
-            >
-              <Search
-                size={theme.iconSize.lg}
-                color={searchQuery ? theme.colors.accent.primary : theme.colors.text.secondary}
+      {step === 'pick' ? (
+        <View style={{ flex: 1 }}>
+          {/* Sticky: Search and Filters */}
+          <View className="gap-3" style={{ paddingBottom: theme.spacing.padding.sm }}>
+            <View className="relative">
+              <View
+                className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-4"
+                style={{ pointerEvents: 'none' }}
+              >
+                <Search
+                  size={theme.iconSize.lg}
+                  color={searchQuery ? theme.colors.accent.primary : theme.colors.text.secondary}
+                />
+              </View>
+              <TextInput
+                placeholder={t('replaceExercise.searchPlaceholder')}
+                placeholderTextColor={theme.colors.text.secondary}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                className="w-full rounded-xl pl-12 pr-4"
+                style={{
+                  backgroundColor: theme.colors.background.secondaryDark,
+                  borderWidth: searchQuery ? theme.borderWidth.medium : 0,
+                  borderColor: searchQuery ? theme.colors.accent.primary : 'transparent',
+                  color: theme.colors.text.primary,
+                  fontSize: theme.typography.fontSize.base,
+                  borderRadius: theme.borderRadius.xl,
+                  paddingVertical: theme.spacing.padding.md,
+                }}
               />
             </View>
-            <TextInput
-              placeholder={t('replaceExercise.searchPlaceholder')}
-              placeholderTextColor={theme.colors.text.secondary}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              className="w-full rounded-xl pl-12 pr-4"
-              style={{
-                backgroundColor: theme.colors.background.secondaryDark,
-                borderWidth: searchQuery ? theme.borderWidth.medium : 0,
-                borderColor: searchQuery ? theme.colors.accent.primary : 'transparent',
-                color: theme.colors.text.primary,
-                fontSize: theme.typography.fontSize.base,
-                borderRadius: theme.borderRadius.xl,
-                paddingVertical: theme.spacing.padding.md,
-              }}
+
+            <FilterTabs
+              tabs={tabs}
+              activeTab={family}
+              onTabChange={(id) => setFamily(id as FamilyTab)}
+              showContainer={false}
+              scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
             />
           </View>
 
-          {/* Filter Tabs */}
-          <FilterTabs
-            tabs={MUSCLE_GROUP_TABS}
-            activeTab={selectedFilter}
-            onTabChange={setSelectedFilter}
-            showContainer={false}
-            scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
-          />
+          {/* Scrollable: Exercise list only */}
+          <KeyboardAwareScrollView
+            style={{ flex: 1 }}
+            showsVerticalScrollIndicator={true}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{
+              paddingBottom: theme.spacing.padding.xl,
+              paddingTop: theme.spacing.padding.sm,
+            }}
+            bottomOffset={16}
+          >
+            {isLoading && everythingShown.length === 0 ? (
+              <View className="items-center justify-center py-8">
+                <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+              </View>
+            ) : everythingShown.length === 0 ? (
+              <Text
+                className="py-8 text-center"
+                style={{
+                  color: theme.colors.text.secondary,
+                  fontSize: theme.typography.fontSize.base,
+                }}
+              >
+                {t('replaceExercise.noExercisesMatch')}
+              </Text>
+            ) : (
+              <>
+                {showSuggestions ? (
+                  <OptionsSelector
+                    title={t('replaceExercise.suggested')}
+                    options={suggested.map(toOption)}
+                    selectedId={selectedExercise}
+                    onSelect={(id) => setSelectedExercise(id)}
+                  />
+                ) : null}
+                {displayList.length > 0 ? (
+                  <OptionsSelector
+                    title={t('replaceExercise.selectExercise')}
+                    options={displayList.map(toOption)}
+                    selectedId={selectedExercise}
+                    onSelect={(id) => setSelectedExercise(id)}
+                  />
+                ) : null}
+                {exercisesProp === undefined && hasMore ? (
+                  <View className="py-4">
+                    <Button
+                      label={
+                        isLoadingMore
+                          ? t('replaceExercise.loadingMore')
+                          : t('replaceExercise.loadMore')
+                      }
+                      onPress={loadMore}
+                      size="sm"
+                      variant="outline"
+                      disabled={isLoadingMore}
+                      loading={isLoadingMore}
+                      width="full"
+                      iconPosition="left"
+                    />
+                  </View>
+                ) : null}
+                {restrictions.length > 0 || gym ? (
+                  <Text
+                    className="pt-2 text-center text-xs"
+                    style={{ color: theme.colors.text.tertiary }}
+                  >
+                    {t('replaceExercise.hiddenHint')}
+                  </Text>
+                ) : null}
+              </>
+            )}
+          </KeyboardAwareScrollView>
         </View>
-
-        {/* Scrollable: Exercise list only */}
+      ) : (
         <KeyboardAwareScrollView
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={true}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{
-            paddingBottom: theme.spacing.padding.xl,
-            paddingTop: theme.spacing.padding.sm,
-          }}
+          contentContainerStyle={{ paddingBottom: theme.spacing.padding.xl }}
           bottomOffset={16}
         >
-          {isLoading && displayList.length === 0 ? (
-            <View className="items-center justify-center py-8">
-              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-            </View>
-          ) : displayList.length === 0 ? (
-            <Text
-              className="py-8 text-center"
-              style={{
-                color: theme.colors.text.secondary,
-                fontSize: theme.typography.fontSize.base,
-              }}
-            >
-              {t('replaceExercise.noExercisesMatch')}
-            </Text>
-          ) : (
-            <>
-              <OptionsSelector
-                title={t('replaceExercise.selectExercise')}
-                options={displayList.map((exercise) => {
-                  const muscleGroupI18nKey = getMuscleGroupTranslationKey(exercise.muscleGroup);
-                  const mechanicTypeI18nKey = getMechanicTypeTranslationKey(exercise.mechanicType);
+          <View className="gap-4" testID="replace-reason-step">
+            <OptionsSelector
+              title={t('replaceExercise.reason.question')}
+              options={reasonOptions}
+              selectedId={reason}
+              onSelect={selectReason}
+            />
 
-                  const option: SelectorOption<string> = {
-                    id: exercise.id,
-                    label: exercise.name,
-                    description: `${t(muscleGroupI18nKey)} • ${t(mechanicTypeI18nKey)}`,
-                    icon: Dumbbell,
-                    iconBgColor: theme.colors.background.iconDark,
-                    iconColor: theme.colors.text.primary,
-                    imageUrl: exercise.imageUrl,
-                  };
+            {impliedKind ? (
+              <View className="gap-3">
+                <ToggleInput
+                  items={[
+                    {
+                      key: 'remember',
+                      label: t(`replaceExercise.reason.remember.${impliedKind}`, {
+                        name: current?.name ?? '',
+                      }),
+                      subtitle: t(`replaceExercise.reason.rememberHint.${impliedKind}`),
+                      value: rememberChoice,
+                      onValueChange: setRememberChoice,
+                    },
+                  ]}
+                />
+                {rememberChoice && impliedKind === 'injury' ? (
+                  <View className="flex-row flex-wrap gap-2">
+                    {INJURY_EXPIRY_OPTIONS.map((option) => {
+                      const selected = injuryExpiry === option;
+                      return (
+                        <Pressable
+                          key={option}
+                          onPress={() => setInjuryExpiry(option)}
+                          accessibilityRole="radio"
+                          accessibilityState={{ selected }}
+                          className="rounded-full border px-4 py-2"
+                          style={{
+                            backgroundColor: selected
+                              ? theme.colors.accent.primary20
+                              : theme.colors.background.card,
+                            borderColor: selected
+                              ? theme.colors.accent.primary
+                              : theme.colors.border.light,
+                          }}
+                        >
+                          <Text
+                            className="font-medium"
+                            style={{
+                              color: selected
+                                ? theme.colors.accent.primary
+                                : theme.colors.text.primary,
+                            }}
+                          >
+                            {t(`workoutSettings.restrictions.expiry.${option}`)}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                ) : null}
+              </View>
+            ) : null}
 
-                  return option;
-                })}
-                selectedId={selectedExercise}
-                onSelect={(id) => setSelectedExercise(id)}
+            {reason === 'equipment_unavailable' && removableEquipment && gym && current ? (
+              <ToggleInput
+                items={[
+                  {
+                    key: 'removeEquipment',
+                    label: t('replaceExercise.reason.removeEquipment', {
+                      equipment: t(`exercises.equipmentTypes.${current.equipmentType}`),
+                      gym: gym.name,
+                    }),
+                    subtitle: t('replaceExercise.reason.removeEquipmentHint'),
+                    value: removeEquipment,
+                    onValueChange: setRemoveEquipment,
+                  },
+                ]}
               />
-              {exercisesProp === undefined && hasMore ? (
-                <View className="py-4">
-                  <Button
-                    label={
-                      isLoadingMore
-                        ? t('replaceExercise.loadingMore')
-                        : t('replaceExercise.loadMore')
-                    }
-                    onPress={loadMore}
-                    size="sm"
-                    variant="outline"
-                    disabled={isLoadingMore}
-                    loading={isLoadingMore}
-                    width="full"
-                    iconPosition="left"
-                  />
-                </View>
-              ) : null}
-            </>
-          )}
+            ) : null}
+          </View>
         </KeyboardAwareScrollView>
-      </View>
+      )}
     </BottomPopUpMenu>
   );
 }

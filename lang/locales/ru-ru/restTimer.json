@@ -9,6 +9,9 @@
     "repsWithCount": "{{count}} повт.",
     "upNext": "СЛЕДУЮЩИЙ",
     "missingWorkoutData": "Данные тренировки отсутствуют",
-    "completedSetNotFound": "Завершённый подход не найден"
+    "completedSetNotFound": "Завершённый подход не найден",
+    "getReady": "Приготовьтесь",
+    "go": "Вперёд!",
+    "a11yRemaining": "Осталось {{time}}"
   }
 }

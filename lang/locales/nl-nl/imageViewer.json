@@ -1,0 +1,9 @@
+{
+  "imageViewer": {
+    "open": "Foto openen",
+    "close": "Sluiten",
+    "save": "Foto opslaan of delen",
+    "shareFailed": "De foto kon niet worden gedeeld.",
+    "shareUnavailable": "Delen is niet beschikbaar op dit apparaat."
+  }
+}

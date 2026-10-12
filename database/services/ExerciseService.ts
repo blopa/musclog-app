@@ -1,12 +1,43 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
+import { exerciseSearchCondition } from '@/database/exerciseSearchCondition';
+import { computeExerciseSearchText } from '@/database/exerciseSearchText';
 import Exercise, {
   type EquipmentType,
   type ExerciseSource,
   type MechanicType,
   type MuscleGroup,
 } from '@/database/models/Exercise';
+import type ExerciseAlias from '@/database/models/ExerciseAlias';
+import { MAX_BATCH_OPERATIONS, MAX_QUERY_IDS } from '@/database/queryByIds';
+
+/**
+ * Filters for the paginated exercise list. The array filters run in SQL so a page is always full:
+ * hiding rows after the fetch would leave short pages and break "load more".
+ */
+export interface ExerciseListFilters {
+  muscleGroup?: string;
+  /** Any of these `muscle_group` values — a body region spans both vocabularies. */
+  muscleGroups?: readonly string[];
+  /** Only these `equipment_type` values. `[]` matches nothing. */
+  equipmentTypes?: readonly string[];
+  /**
+   * Exercises to leave out. Capped at `MAX_QUERY_IDS` by SQLite's bound-parameter limit, which is
+   * why `ExerciseRestrictionService` refuses to hold more restrictions than that.
+   */
+  excludeIds?: readonly string[];
+  searchTerm?: string;
+}
+
+/** The live aliases of one exercise, as plain text. Callable from inside an open writer. */
+async function fetchAliasTexts(exerciseId: string): Promise<string[]> {
+  const aliases = await database
+    .get<ExerciseAlias>('exercise_aliases')
+    .query(Q.where('exercise_id', exerciseId), Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+  return aliases.map(({ alias }) => alias);
+}
 
 export class ExerciseService {
   /**
@@ -77,14 +108,16 @@ export class ExerciseService {
   }
 
   /**
-   * Search exercises by name
+   * Search exercises by name, alias, abbreviation or plural — see `exerciseSearchCondition`.
    */
   static async searchExercises(searchTerm: string): Promise<Exercise[]> {
+    const searchCondition = exerciseSearchCondition(searchTerm);
+
     return await database
       .get<Exercise>('exercises')
       .query(
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('name', Q.like(`%${searchTerm}%`)),
+        ...(searchCondition ? [searchCondition] : []),
         Q.sortBy('source', Q.asc),
         Q.sortBy('order_index', Q.asc),
         Q.sortBy('name', Q.asc)
@@ -129,6 +162,7 @@ export class ExerciseService {
         exercise.mechanicType = mechanicType as MechanicType;
         exercise.source = source;
         exercise.loadMultiplier = loadMultiplier;
+        exercise.searchText = computeExerciseSearchText(exercise, []);
         exercise.createdAt = now;
         exercise.updatedAt = now;
       });
@@ -157,9 +191,13 @@ export class ExerciseService {
         throw new Error('Cannot update deleted exercise');
       }
 
+      // Read inside the writer: the new search text has to include whatever aliases exist now.
+      const aliases = updates.name !== undefined ? await fetchAliasTexts(id) : [];
+
       await exercise.update((record) => {
         if (updates.name !== undefined) {
           record.name = updates.name;
+          record.searchText = computeExerciseSearchText(record, aliases);
         }
         if (updates.description !== undefined) {
           record.description = updates.description;
@@ -223,15 +261,28 @@ export class ExerciseService {
   static async getExercisesPaginatedFiltered(
     limit: number,
     offset: number,
-    filters?: { muscleGroup?: string; searchTerm?: string }
+    filters?: ExerciseListFilters
   ): Promise<Exercise[]> {
     let query = database.get<Exercise>('exercises').query(Q.where('deleted_at', Q.eq(null)));
 
     if (filters?.muscleGroup) {
       query = query.extend(Q.where('muscle_group', filters.muscleGroup));
     }
-    if (filters?.searchTerm?.trim()) {
-      query = query.extend(Q.where('name', Q.like(`%${filters.searchTerm.trim()}%`)));
+    if (filters?.muscleGroups?.length) {
+      query = query.extend(Q.where('muscle_group', Q.oneOf([...filters.muscleGroups])));
+    }
+    if (filters?.equipmentTypes) {
+      // An empty list is a real answer ("no equipment is available"), not "no filter".
+      query = query.extend(Q.where('equipment_type', Q.oneOf([...filters.equipmentTypes])));
+    }
+    if (filters?.excludeIds?.length) {
+      query = query.extend(Q.where('id', Q.notIn(filters.excludeIds.slice(0, MAX_QUERY_IDS))));
+    }
+    const searchCondition = filters?.searchTerm
+      ? exerciseSearchCondition(filters.searchTerm)
+      : null;
+    if (searchCondition) {
+      query = query.extend(searchCondition);
     }
 
     query = query.extend(
@@ -249,6 +300,53 @@ export class ExerciseService {
     }
 
     return await query.fetch();
+  }
+
+  /**
+   * Fills `search_text` for every exercise that does not have it yet — user-created exercises
+   * from before the column existed, restored backups, and clones. Catalogue rows are normally
+   * filled by `AppExerciseCatalogueService.sync` first; this catches whatever is left.
+   *
+   * Derived data, so `updated_at` is left alone: bumping it would only churn list subscriptions.
+   * Bounded batches keep a large library from becoming one huge write; a run interrupted midway
+   * resumes by itself because it only ever selects rows still missing the column.
+   */
+  static async backfillSearchText(): Promise<number> {
+    return await database.write(async () => {
+      const missing = await database
+        .get<Exercise>('exercises')
+        .query(Q.where('search_text', Q.eq(null)))
+        .fetch();
+      if (missing.length === 0) {
+        return 0;
+      }
+
+      const liveAliases = await database
+        .get<ExerciseAlias>('exercise_aliases')
+        .query(Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      const aliasesByExerciseId = new Map<string, string[]>();
+      for (const { exerciseId, alias } of liveAliases) {
+        aliasesByExerciseId.set(exerciseId, [
+          ...(aliasesByExerciseId.get(exerciseId) ?? []),
+          alias,
+        ]);
+      }
+
+      const updates = missing.map((exercise) =>
+        exercise.prepareUpdate((record) => {
+          record.searchText = computeExerciseSearchText(
+            record,
+            aliasesByExerciseId.get(record.id) ?? []
+          );
+        })
+      );
+      for (let start = 0; start < updates.length; start += MAX_BATCH_OPERATIONS) {
+        await database.batch(...updates.slice(start, start + MAX_BATCH_OPERATIONS));
+      }
+
+      return updates.length;
+    });
   }
 
   /**
@@ -293,6 +391,8 @@ export class ExerciseService {
         exercise.mechanicType = originalExercise.mechanicType;
         exercise.source = 'user';
         exercise.loadMultiplier = originalExercise.loadMultiplier;
+        // The copy is a new exercise: it is findable by its own name, not the original's aliases.
+        exercise.searchText = computeExerciseSearchText(exercise, []);
         exercise.createdAt = now;
         exercise.updatedAt = now;
       });

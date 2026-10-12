@@ -24,19 +24,29 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Organize workouts into named plans with weekly weekday assignments or ordered rotating cycles; workouts can belong to multiple plans, while standalone routines remain in an Unplanned section
 - Browse a built-in template library, including a five-session cable superset program
 - Browse 873 built-in exercises with localized names and instructions, muscle-group filters, and two-frame technique photos
+- Forgiving exercise search: find an exercise by abbreviation (DB, RDL, OHP), plural or misspelled plural ("flys"), accent-less spelling, compound spelling ("pullups"), its name in any of the app's languages, or your own "Also known as" names added on the exercise screen
 - Per-exercise estimated-1RM trend chart with a plain-language read of the change across logged sessions
 - Built-in programs and AI-generated routines create complete named workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID
-- Built-in rest timer with customizable duration and haptic alerts
+- Rest timer with a configurable default rest, optional auto-start (or a "Start rest" button), a large countdown that scales with the screen, a distinct "Get ready" state for the last ten seconds that is spoken as well as coloured, a haptic countdown, and the next set's load shown prominently
+- Smart warm-up sets: one tap adds a 40 / 60 / 80% ramp before an exercise's first working set, snapped to weights your gym can actually load. Warm-ups are marked "W" in history and are excluded from volume, personal records, estimated 1RM, progression, goals and the figures the AI coach sees (calories and Health Connect still count them)
+- Workouts started from a template progress each exercise from how its last session went — more load, more reps, a deload, or a repeat of last time — with a one-sentence reason on the set and a one-tap way back ("Keep last time's"). Choose Manual in Workout Settings to copy the plan exactly
+- Per-exercise preferences in the exercise view: a weight unit for just that exercise (kg or lb, whatever the account uses) and a note that is pinned above the set in every workout. In a session, notes can also be written for this workout only (optionally copied onto the workout template) and a note can be added when you finish a workout
+- Log a walk or run in a few taps from the workouts menu or the Home quick action: activity, distance, duration, when it ended, an optional treadmill flag and an optional calorie figure from your watch. It shows pace and estimated calories live, appears in history with distance and pace, and is written to Health Connect / Apple Health as a walk or run with its distance
 - Real-time session stats: elapsed time, calories burned, total volume
 - Between-set weight/rep re-targeting that states what it changed and why (carried-over load, or a recalculation that holds your target reps in reserve), with the marker on the field it actually moved
 - Automatic personal record (PR) detection
 - Review the full planned set list in workout history, with unfinished sets and exercises marked skipped and excluded from volume, records, trends, and other performance calculations
 - Import workouts by pasting text — AI parses it into a session
+- AI errors you can act on say so: a rejected Gemini/OpenAI key names the provider and points to AI settings, a stalled request times out (retried once) instead of spinning forever, and the AI photo scan has a Cancel button. A "Test key" button in AI settings checks a key while you set it up
 - Keep screen awake during active workout sessions
 - End-of-session feedback (difficulty, energy, notes)
 - Add, replace, or skip exercises mid-session
+- Swap an exercise mid-session and say why (equipment unavailable, pain, too hard or too easy, dislike, machine occupied, or just for today): suggestions are ranked for the same body region, and only the session changes — never the plan. A swap's follow-ups (stop suggesting it for a while, remove the equipment from your gym) are choices you switch on, not defaults applied behind your back
+- Exercise restrictions: mark any exercise Dislike, Injury (with an end date) or Never suggest from its screen or when swapping. Injured and never-suggest exercises are hidden from swap suggestions and AI-generated plans; disliked ones are ranked last
+- Named gym profiles (bar weight, plates you own, smallest weight step, available equipment) with one active gym. The active gym drives the plate calculator, the +/- weight steps, the weights the app recomputes between sets, and which exercises can be suggested
+- Plate calculator on barbell lifts: the plates to load on each side for the set's weight, exact even with a limited plate inventory (standard plates are used until you set up a gym)
 - Recover interrupted workouts
 - Archive workout templates to declutter the list
 - Share workout routines via clipboard or native share sheet
@@ -49,7 +59,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Track calories, protein, carbs, fiber, fat, and 40+ vitamins/minerals
 - Search food databases: Open Food Facts, USDA, Musclog barcode DB, local-only
 - Barcode scanner for instant product lookup
-- AI food photo estimation — snap a photo, get macros
+- AI food photo estimation — snap a photo, get macros; when logging an AI-estimated meal (from the camera or the coach) you choose the date and the time of day, not just the day
+- Tap any meal photo (diary, meal groups, coach chat and attachments) to open it full screen: pinch to zoom up to 5×, drag to pan, double-tap to zoom, swipe down to close, and save or share it from the viewer
 - OCR label scanning to extract nutrition info from packaging (optional local pre-processing)
 - Create custom foods manually with full nutrition values
 - Flexible serving sizes (grams, ounces, standard portions)
@@ -160,6 +171,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Profile & Settings
 
+- Help & feedback: report a bug or request a feature (opens the matching GitHub issue form with the app version, platform and language pre-filled) or email support (version and device added to the message). Nothing about you or your data is included
 - Set name, email, gender, date of birth, and avatar
 - Fitness profile: weight, height, body fat %, goal type, activity level, experience level
 - Language selection and full multilingual support for English, Spanish, Dutch, Brazilian Portuguese, and Russian, including the built-in exercise catalogue

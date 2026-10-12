@@ -8,6 +8,8 @@ import Animated, { LinearTransition } from 'react-native-reanimated';
 import { GenericCard } from '@/components/cards/GenericCard';
 import DashedButton from '@/components/theme/DashedButton';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import type { Units } from '@/constants/settings';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
@@ -34,7 +36,9 @@ function SetCard({
   onMoveDown,
   isFirst,
   isLast,
+  units,
 }: {
+  units: Units;
   item: SetItem;
   index: number;
   onChange: (id: string, patch: Partial<SetItem>) => void;
@@ -51,7 +55,6 @@ function SetCard({
   const displayIndex = Number.isFinite(index) ? index + 1 : 1;
 
   const { t } = useTranslation();
-  const { units } = useSettings();
   const weightLabelKey =
     units === 'imperial' ? 'workoutDetail.inputs.weightLbs' : 'workoutDetail.inputs.weightKg';
 
@@ -201,6 +204,8 @@ type EditPastWorkoutDataModalProps = {
   workoutId: string;
   exerciseId: string;
   initialSets: SetItem[];
+  /** The unit this exercise's weights are entered in. Defaults to the account's. */
+  units?: Units;
 };
 
 export default function EditPastWorkoutDataModal({
@@ -208,8 +213,13 @@ export default function EditPastWorkoutDataModal({
   onClose,
   onSave,
   initialSets,
+  exerciseId,
+  units: unitsOverride,
 }: EditPastWorkoutDataModalProps) {
   const theme = useTheme();
+  const { units: accountUnits } = useSettings();
+  const { unitsFor } = useExerciseUserSettings();
+  const units = unitsOverride ?? unitsFor(exerciseId, accountUnits);
   const [sets, setSets] = useState<SetItem[]>(initialSets ?? []);
   const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation();
@@ -333,6 +343,7 @@ export default function EditPastWorkoutDataModal({
               onMoveDown={() => handleMoveDown(index)}
               isFirst={index === 0}
               isLast={index === sets.length - 1}
+              units={units}
             />
           </Animated.View>
         ))}

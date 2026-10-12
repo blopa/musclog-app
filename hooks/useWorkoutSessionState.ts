@@ -13,8 +13,15 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { WorkoutService } from '@/database/services/WorkoutService';
+import { useActiveGym } from '@/hooks/useActiveGym';
+import { roundToLoadable } from '@/utils/plateCalculator';
 import { computeIntraSessionAdjustment } from '@/utils/setAdjustment';
-import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  isResolvedWorkoutSet,
+  isWarmupSet,
+  isWorkingSet,
+} from '@/utils/workoutSetCompletion';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
@@ -71,6 +78,8 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   const [progressionMode, setProgressionMode] = useState<ProgressionMode>('reps_first');
+  // Re-targeted weights snap to what this gym's bar and plates can make.
+  const { gym } = useActiveGym();
 
   useEffect(() => {
     const loadBodyWeight = async () => {
@@ -168,8 +177,12 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             const currentIdx = effectiveOrder.findIndex((s) => s.id === currentActive.id);
             if (currentIdx > 0) {
               const lastSet = effectiveOrder[currentIdx - 1];
+              // Re-target a WORKING set from the working set before it. A warm-up is deliberately
+              // light: using it as "the previous set" would drag the next set's load down, and a
+              // planned warm-up has no target reps in reserve to hold in the first place.
               if (
-                isPerformedWorkoutSet(lastSet) &&
+                isWorkingSet(lastSet) &&
+                !isWarmupSet(currentActive) &&
                 lastSet.exerciseId === currentActive.exerciseId
               ) {
                 // Adjust current set based on lastSet
@@ -181,11 +194,14 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                   progressionMode,
                   isBodyweight: !!equipmentType?.toLowerCase().includes('bodyweight'),
                   bodyWeightKg,
+                  roundLoad: gym ? (kg) => roundToLoadable(kg, equipmentType, gym) : undefined,
                 });
 
                 currentActive.weight = weight;
                 currentActive.reps = reps;
-                currentActive.adjustment = adjustment ?? undefined;
+                // A between-sets change supersedes the start explanation (the number came from it);
+                // when nothing changed between sets, the start explanation still holds.
+                currentActive.adjustment = adjustment ?? currentActive.adjustment;
               }
             }
           }
@@ -279,7 +295,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       });
 
     return () => subscription.unsubscribe();
-  }, [bodyWeightKg, progressionMode, workoutLogId]);
+  }, [bodyWeightKg, gym, progressionMode, workoutLogId]);
 
   const refresh = useCallback(() => {
     if (!workoutLogId) {

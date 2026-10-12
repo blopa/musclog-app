@@ -88,3 +88,28 @@ export function getEnglishExerciseNamesBySlug(): Map<string, string> {
     ])
   );
 }
+
+let allLocaleNamesBySlug: Map<string, string[]> | null = null;
+
+/**
+ * Every bundled language's name for each catalogue exercise, keyed by slug.
+ *
+ * A catalogue row's stored `name` is written once, in whatever language the device used on first
+ * boot, and never re-localized. Search therefore cannot rely on it: this is what lets "squat" find
+ * a row that was created as "Agachamento".
+ */
+export function getAllLocaleExerciseNamesBySlug(): Map<string, string[]> {
+  if (!allLocaleNamesBySlug) {
+    const namesBySlug = new Map<string, Set<string>>();
+    for (const copies of Object.values(EXERCISES_JSON) as ExerciseCatalogueCopy[][]) {
+      for (const { exerciseSlug, name } of copies) {
+        const names = namesBySlug.get(exerciseSlug) ?? new Set<string>();
+        names.add(name);
+        namesBySlug.set(exerciseSlug, names);
+      }
+    }
+    allLocaleNamesBySlug = new Map([...namesBySlug].map(([slug, names]) => [slug, [...names]]));
+  }
+
+  return allLocaleNamesBySlug;
+}

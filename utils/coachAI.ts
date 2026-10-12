@@ -7,7 +7,15 @@ import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { isProduction } from '@/utils/app';
 
-import { configureBasicGenAI } from './gemini';
+import { notifyUserFacingAiError } from './aiErrorNotice';
+import {
+  AiCancelledError,
+  AiInvalidKeyError,
+  AiTimeoutError,
+  rethrowUserFacingAiError,
+  toUserFacingAiError,
+} from './aiErrors';
+import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
 import { sendOnDeviceMessage, sendOnDeviceStructured } from './onDeviceAi';
 import {
@@ -110,7 +118,15 @@ export function isAiConnectionError(error: unknown): boolean {
  */
 function reportAiError(error: unknown, context: string): void {
   handleError(error, context, {
-    sendToSentry: !isAiCreditsError(error) && !isAiConnectionError(error),
+    sendToSentry:
+      !isAiCreditsError(error) &&
+      !isAiConnectionError(error) &&
+      // A rejected key, a timeout and a cancel are the user's configuration or network, not bugs.
+      !(
+        error instanceof AiInvalidKeyError ||
+        error instanceof AiTimeoutError ||
+        error instanceof AiCancelledError
+      ),
   });
 }
 
@@ -163,17 +179,80 @@ async function sleep(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function withLlmRetry<T>(
-  operation: string,
-  provider: CoachAIProvider,
-  request: () => Promise<T>
+/** Image analysis uploads a photo and structured plans can think for a while: 60 s is generous but finite. */
+const LLM_REQUEST_TIMEOUT_MS = 60_000;
+
+/**
+ * Runs one request with a timeout and an optional caller cancel, handing the request an abort
+ * signal. A timeout becomes `AiTimeoutError` and a cancel `AiCancelledError`, whatever the SDK
+ * threw when it was aborted (each throws a different thing).
+ */
+async function runWithAbort<T>(
+  config: CoachAIConfig,
+  request: (signal: AbortSignal) => Promise<T>
 ): Promise<T> {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, config.timeoutMs ?? LLM_REQUEST_TIMEOUT_MS);
+  const onExternalAbort = () => controller.abort();
+  if (config.signal?.aborted) {
+    controller.abort();
+  } else {
+    config.signal?.addEventListener('abort', onExternalAbort);
+  }
+
+  try {
+    return await request(controller.signal);
+  } catch (error) {
+    if (timedOut) {
+      throw new AiTimeoutError();
+    }
+    if (config.signal?.aborted) {
+      throw new AiCancelledError();
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+    config.signal?.removeEventListener('abort', onExternalAbort);
+  }
+}
+
+/** Exported for tests; not part of the module's public surface. */
+export async function withLlmRetry<T>(
+  operation: string,
+  config: CoachAIConfig,
+  request: (signal: AbortSignal) => Promise<T>
+): Promise<T> {
+  const provider = config.provider;
   let attempt = 0;
+  let timeoutRetried = false;
 
   while (true) {
     try {
-      return await request();
+      return await runWithAbort(config, request);
     } catch (error) {
+      if (error instanceof AiCancelledError) {
+        throw error;
+      }
+
+      // A wrong key never gets better by asking again, and is not retried.
+      const userFacing = toUserFacingAiError(error, provider);
+      if (userFacing instanceof AiInvalidKeyError) {
+        throw userFacing;
+      }
+      if (userFacing instanceof AiTimeoutError) {
+        // A stalled request usually stays stalled: one more try, not three.
+        if (timeoutRetried) {
+          throw userFacing;
+        }
+        timeoutRetried = true;
+        console.warn(`[coachAI] ${operation} timed out on ${provider}; retrying once`);
+        continue;
+      }
+
       if (attempt >= LLM_RETRY_DELAYS_MS.length || !shouldRetryLlmError(error)) {
         throw error;
       }
@@ -248,6 +327,10 @@ export type CoachAIConfig = {
   language?: string;
   gatewayByokAlias?: string;
   gatewayUserId?: string;
+  /** Aborts the request when the caller cancels (a Cancel button). */
+  signal?: AbortSignal;
+  /** Overrides the default request timeout, in milliseconds. */
+  timeoutMs?: number;
 };
 
 function buildOpenAIClient(config: CoachAIConfig): OpenAI {
@@ -535,7 +618,14 @@ function truncateHistoryByBudget(
 // --- Helper Functions ---
 
 function extractRawText(response: any): string {
-  return response?.text ?? response?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+  const { text, finishReason, blockReason, thoughtOnly } = extractGeminiText(response);
+  if (!text.trim()) {
+    // An empty answer has several different causes; say which, so "analyzing forever" is debuggable.
+    console.warn(
+      `[coachAI] Gemini returned no answer text (finishReason=${finishReason ?? 'none'}, blockReason=${blockReason ?? 'none'}, thoughtOnly=${thoughtOnly})`
+    );
+  }
+  return text;
 }
 
 function parseCoachResponse(raw: string): CoachResponse {
@@ -649,8 +739,8 @@ async function sendViaGemini(
     config,
   });
 
-  const result = await withLlmRetry('sendViaGemini', config.provider, () =>
-    genModel.generateContent({ contents })
+  const result = await withLlmRetry('sendViaGemini', config, (signal) =>
+    genModel.generateContent({ contents, abortSignal: signal })
   );
 
   await logLlmDebugEvent({
@@ -717,8 +807,8 @@ async function sendViaOpenAI(
       config,
     });
 
-    const completion = await withLlmRetry('sendViaOpenAI', config.provider, () =>
-      client.chat.completions.create(requestPayload)
+    const completion = await withLlmRetry('sendViaOpenAI', config, (signal) =>
+      client.chat.completions.create(requestPayload, { signal })
     );
 
     await logLlmDebugEvent({
@@ -732,6 +822,7 @@ async function sendViaOpenAI(
     const raw = completion.choices[0]?.message?.content ?? '{}';
     return parseCoachResponse(raw);
   } catch (error) {
+    rethrowUserFacingAiError(error);
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
@@ -859,8 +950,8 @@ async function generateText(
     );
 
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    const result = await withLlmRetry('generateText', config.provider, () =>
-      genModel.generateContent({ contents })
+    const result = await withLlmRetry('generateText', config, (signal) =>
+      genModel.generateContent({ contents, abortSignal: signal })
     );
 
     await logLlmDebugEvent({
@@ -892,8 +983,8 @@ async function generateText(
     config,
   });
 
-  const completion = await withLlmRetry('generateText', config.provider, () =>
-    client.chat.completions.create(requestPayload)
+  const completion = await withLlmRetry('generateText', config, (signal) =>
+    client.chat.completions.create(requestPayload, { signal })
   );
 
   await logLlmDebugEvent({
@@ -947,8 +1038,8 @@ async function generateTextWithHistory(
       },
       [{ text: systemPrompt } as Part]
     );
-    const result = await withLlmRetry('generateTextWithHistory', config.provider, () =>
-      genModel.generateContent({ contents })
+    const result = await withLlmRetry('generateTextWithHistory', config, (signal) =>
+      genModel.generateContent({ contents, abortSignal: signal })
     );
 
     await logLlmDebugEvent({
@@ -986,8 +1077,8 @@ async function generateTextWithHistory(
     config,
   });
 
-  const completion = await withLlmRetry('generateTextWithHistory', config.provider, () =>
-    client.chat.completions.create(requestPayload)
+  const completion = await withLlmRetry('generateTextWithHistory', config, (signal) =>
+    client.chat.completions.create(requestPayload, { signal })
   );
 
   await logLlmDebugEvent({
@@ -1092,16 +1183,18 @@ async function generateStructured<T>(
       {
         apiKey: config.apiKey,
         model: config.model,
-        generationConfig: {
-          responseMimeType: 'application/json',
+        // Structured extraction does not need a long chain of thought; the user's thinking-mode
+        // setting is the explicit way to ask for it.
+        generationConfig: buildGeminiGenerationConfig(config.model, {
           responseSchema: schema,
-        },
+          thinking: (await SettingsService.getUseThinkingMode()) ? 'default' : 'low',
+        }),
       },
       [{ text: promptWithLang } as Part]
     );
     const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    const result = await withLlmRetry('generateStructured', config.provider, () =>
-      genModel.generateContent({ contents })
+    const result = await withLlmRetry('generateStructured', config, (signal) =>
+      genModel.generateContent({ contents, abortSignal: signal })
     );
 
     await logLlmDebugEvent({
@@ -1151,8 +1244,8 @@ async function generateStructured<T>(
     config,
   });
 
-  const completion = await withLlmRetry('generateStructured', config.provider, () =>
-    client.chat.completions.create(requestPayload)
+  const completion = await withLlmRetry('generateStructured', config, (signal) =>
+    client.chat.completions.create(requestPayload, { signal })
   );
 
   await logLlmDebugEvent({
@@ -1232,10 +1325,12 @@ async function generateWithImageStructured<T>(
       {
         apiKey: config.apiKey,
         model: config.model,
-        generationConfig: {
-          responseMimeType: 'application/json',
+        // Structured extraction does not need a long chain of thought; the user's thinking-mode
+        // setting is the explicit way to ask for it.
+        generationConfig: buildGeminiGenerationConfig(config.model, {
           responseSchema: schema,
-        },
+          thinking: (await SettingsService.getUseThinkingMode()) ? 'default' : 'low',
+        }),
       },
       [{ text: systemPrompt } as Part]
     );
@@ -1255,8 +1350,8 @@ async function generateWithImageStructured<T>(
       },
     ];
 
-    const result = await withLlmRetry('generateWithImageStructured', config.provider, () =>
-      genModel.generateContent({ contents })
+    const result = await withLlmRetry('generateWithImageStructured', config, (signal) =>
+      genModel.generateContent({ contents, abortSignal: signal })
     );
 
     await logLlmDebugEvent({
@@ -1312,8 +1407,8 @@ async function generateWithImageStructured<T>(
     config,
   });
 
-  const completion = await withLlmRetry('generateWithImageStructured', config.provider, () =>
-    client.chat.completions.create(requestPayload)
+  const completion = await withLlmRetry('generateWithImageStructured', config, (signal) =>
+    client.chat.completions.create(requestPayload, { signal })
   );
 
   await logLlmDebugEvent({
@@ -1527,6 +1622,7 @@ export async function trackMeal(
       'trackMeal'
     );
   } catch (error) {
+    notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.trackMeal');
     return null;
   }
@@ -1607,6 +1703,7 @@ export async function getNutritionInsights(
     const text = await generateText(config, systemPrompt, finalUserMessage);
     return text || null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] getNutritionInsights error:', error);
     return null;
   }
@@ -1650,6 +1747,7 @@ export async function generateMealPlan(
     );
     return parsed ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.generateMealPlan');
     return null;
   }
@@ -1689,6 +1787,7 @@ export async function generateWorkoutPlan(
     );
     return parsed ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.generateWorkoutPlan');
     return null;
   }
@@ -1720,6 +1819,7 @@ export async function calculateNextWorkoutVolume(
     );
     return parsed ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] calculateNextWorkoutVolume error:', error);
     return null;
   }
@@ -1738,6 +1838,7 @@ export async function getWorkoutInsights(
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] getWorkoutInsights error:', error);
     return null;
   }
@@ -1756,6 +1857,7 @@ export async function getRecentWorkoutInsights(
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] getRecentWorkoutInsights error:', error);
     return null;
   }
@@ -1801,6 +1903,7 @@ export async function getRecentWorkoutsInsights(
     const text = await generateText(config, systemPrompt, finalUserMessage);
     return text || null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] getRecentWorkoutsInsights error:', error);
     return null;
   }
@@ -1819,6 +1922,7 @@ export async function getWorkoutVolumeInsights(
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] getWorkoutVolumeInsights error:', error);
     return null;
   }
@@ -1913,6 +2017,7 @@ export async function estimateNutritionFromPhoto(
 
     return parsed ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
     return null;
   }
@@ -1962,6 +2067,7 @@ export async function extractMacrosFromLabelPhoto(
     );
     return parsed ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] extractMacrosFromLabelPhoto error:', error);
     return null;
   }
@@ -2014,6 +2120,7 @@ export async function extractMacrosFromLabelText(
 
     return parsed ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] extractMacrosFromLabelText error:', error);
     return null;
   }
@@ -2041,6 +2148,7 @@ export async function parsePastWorkouts(
     );
     return parsed?.pastWorkouts ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] parsePastWorkouts error:', error);
     return null;
   }
@@ -2067,6 +2175,7 @@ export async function parsePastNutrition(
     );
     return parsed?.pastNutrition ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] parsePastNutrition error:', error);
     return null;
   }
@@ -2095,6 +2204,7 @@ export async function parseRetrospectiveNutrition(
 
     return parsed?.nutritionEntries ?? null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] parseRetrospectiveNutrition error:', error);
     return null;
   }
@@ -2119,6 +2229,7 @@ export async function getMealCritique(
     const text = await generateText(config, systemPrompt, finalUserMessage);
     return text || null;
   } catch (error) {
+    notifyUserFacingAiError(error);
     console.error('[coachAI] getMealCritique error:', error);
     return null;
   }

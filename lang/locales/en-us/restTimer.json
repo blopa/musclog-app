@@ -9,6 +9,9 @@
     "repsWithCount": "{{count}} reps",
     "upNext": "UP NEXT",
     "missingWorkoutData": "Missing workout data",
-    "completedSetNotFound": "Completed set not found"
+    "completedSetNotFound": "Completed set not found",
+    "getReady": "Get ready",
+    "go": "Go!",
+    "a11yRemaining": "{{time}} remaining"
   }
 }

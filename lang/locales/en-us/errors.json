@@ -17,6 +17,11 @@
     "databaseError": {
       "title": "Database Error",
       "description": "A database error occurred. Error reporting has been enabled to help resolve this issue."
-    }
+    },
+    "aiInvalidApiKey": "Your {{provider}} API key was rejected. Check it in AI settings.",
+    "aiTimeout": "This is taking too long. Try again.",
+    "aiKeyTestOk": "Key accepted",
+    "aiKeyTestRejected": "Key rejected. Check it and try again.",
+    "aiKeyTestNetwork": "Couldn't reach the provider. Check your connection."
   }
 }

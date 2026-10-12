@@ -13,6 +13,7 @@ import {
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
+import { DISCORD_INVITE_URL, GITHUB_REPO_URL, SUPPORT_MAILTO_URL } from '@/constants/misc';
 
 interface FormState {
   email: string;
@@ -31,26 +32,31 @@ export default function Contact() {
     setSubmitted(true);
   };
 
-  const mailtoUrl = `mailto:support@musclog.app?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(
+  const mailtoUrl = `${SUPPORT_MAILTO_URL}?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(
     `Name: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`
   )}`;
 
   const connectLinks = [
     {
       description: t('connect.github.description'),
-      href: 'https://github.com/blopa/musclog-app',
+      href: GITHUB_REPO_URL,
       icon: ExternalLink,
       title: t('connect.github.title'),
     },
-    {
-      description: t('connect.discord.description'),
-      href: '#',
-      icon: MessageSquare,
-      title: t('connect.discord.title'),
-    },
+    // No invite exists yet: a card that links to '#' is worse than no card.
+    ...(DISCORD_INVITE_URL
+      ? [
+          {
+            description: t('connect.discord.description'),
+            href: DISCORD_INVITE_URL,
+            icon: MessageSquare,
+            title: t('connect.discord.title'),
+          },
+        ]
+      : []),
     {
       description: t('connect.email.description'),
-      href: 'mailto:support@musclog.app',
+      href: SUPPORT_MAILTO_URL,
       icon: Mail,
       title: t('connect.email.title'),
     },

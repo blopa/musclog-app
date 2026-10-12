@@ -11,6 +11,8 @@ export type SetData = Pick<WorkoutLogSet, 'weight' | 'reps' | 'partials'> & {
   setNumber: number;
   isCurrent?: boolean;
   isSkipped?: boolean;
+  /** A warm-up is shown as "W" and does not take up a number in the working sets' numbering. */
+  isWarmup?: boolean;
 };
 
 type SetRowProps = {
@@ -71,7 +73,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
               textDecorationLine: textDecoration,
             }}
           >
-            {set.setNumber}
+            {set.isWarmup ? 'W' : set.setNumber}
           </Text>
         </View>
       </View>

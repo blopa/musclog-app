@@ -17,6 +17,11 @@
     "databaseError": {
       "title": "Databasefout",
       "description": "Er is een databasefout opgetreden. Foutrapportage is ingeschakeld om dit probleem te helpen oplossen."
-    }
+    },
+    "aiInvalidApiKey": "Je {{provider}}-API-sleutel is geweigerd. Controleer hem in de AI-instellingen.",
+    "aiTimeout": "Dit duurt te lang. Probeer het opnieuw.",
+    "aiKeyTestOk": "Sleutel geaccepteerd",
+    "aiKeyTestRejected": "Sleutel geweigerd. Controleer hem en probeer opnieuw.",
+    "aiKeyTestNetwork": "Kon de provider niet bereiken. Controleer je verbinding."
   }
 }

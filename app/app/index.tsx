@@ -23,6 +23,7 @@ import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import { LogCardioModal } from '@/components/modals/LogCardioModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
 import { NotificationsModal } from '@/components/modals/NotificationsModal';
 import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
@@ -172,6 +173,7 @@ export default function HomeScreen() {
   >('all');
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
+  const [isLogCardioVisible, setIsLogCardioVisible] = useState(false);
   const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [goalsManagementTab, setGoalsManagementTab] = useState<GoalsManagementTab>('nutrition');
@@ -242,6 +244,7 @@ export default function HomeScreen() {
       ai_photo: () => openCamera({ mode: 'ai-meal-photo' }),
       my_meals: () => setIsMyMealsVisible(true),
       add_note: () => router.navigate('/app/notes'),
+      log_cardio: () => setIsLogCardioVisible(true),
     }),
     [router, openCamera]
   );
@@ -766,6 +769,11 @@ export default function HomeScreen() {
         onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         isAiEnabled={isAiConfigured}
       />
+
+      {/* Quick walk/run log: mounted only while open so each open starts from the defaults */}
+      {isLogCardioVisible ? (
+        <LogCardioModal visible={isLogCardioVisible} onClose={() => setIsLogCardioVisible(false)} />
+      ) : null}
 
       {/* My Meals Modal */}
       <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />

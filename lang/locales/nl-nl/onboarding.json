@@ -126,7 +126,8 @@
         "basalMetabolicRate": "Rustmetabolisme",
         "exerciseSession": "Workouts",
         "leanBodyMass": "Vetvrije massa",
-        "steps": "Stappen"
+        "steps": "Stappen",
+        "distance": "Afstand"
       },
       "maybeLater": "Misschien later",
       "privacyStatement": "Musclog hecht veel waarde aan je privacy. Je gegevens worden versleuteld en alleen gebruikt voor je persoonlijke analyses.",

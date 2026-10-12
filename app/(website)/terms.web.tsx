@@ -9,6 +9,7 @@ import {
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
+import { SUPPORT_EMAIL, SUPPORT_MAILTO_URL } from '@/constants/misc';
 
 export default function Terms() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.terms' });
@@ -226,11 +227,11 @@ export default function Terms() {
             <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {t('contact.content')}{' '}
               <a
-                href="mailto:support@musclog.app"
+                href={SUPPORT_MAILTO_URL}
                 className="hover:underline"
                 style={{ color: BRAND_GREEN_BRIGHT }}
               >
-                support@musclog.app
+                {SUPPORT_EMAIL}
               </a>
             </p>
           </div>

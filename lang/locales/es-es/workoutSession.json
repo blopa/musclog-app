@@ -48,7 +48,37 @@
       "label": "Ajustado",
       "carryOver": "El peso sigue tu última serie ({{to}} {{unit}}) en lugar de los {{from}} {{unit}} planificados.",
       "targetRirWeight": "Peso cambiado de {{from}} a {{to}} {{unit}}: tu última serie sitúa tu 1RM estimado en {{oneRepMax}} {{unit}}, así que esto mantiene {{rir}} repeticiones en reserva.",
-      "targetRirReps": "Repeticiones cambiadas de {{from}} a {{to}}: tu última serie sitúa tu 1RM estimado en {{oneRepMax}} {{unit}}, así que esto mantiene {{rir}} repeticiones en reserva con el peso actual."
+      "targetRirReps": "Repeticiones cambiadas de {{from}} a {{to}}: tu última serie sitúa tu 1RM estimado en {{oneRepMax}} {{unit}}, así que esto mantiene {{rir}} repeticiones en reserva con el peso actual.",
+      "startProgressionWeight": "Sube a {{to}} {{unit}} desde los {{last}} {{unit}} de la última vez: te quedaban unas {{rir}} repeticiones en reserva.",
+      "startProgressionWeightReps": "Sube a {{to}} {{unit}} × {{reps}} desde {{last}} {{unit}} × {{lastReps}} de la última vez: te quedaban unas {{rir}} repeticiones en reserva.",
+      "startProgressionReps": "Una repetición más que la última vez ({{to}} en lugar de {{last}}): te quedaban unas {{rir}} repeticiones en reserva.",
+      "startDeload": "Baja a {{to}} {{unit}} desde los {{last}} {{unit}} de la última vez: no te quedaban repeticiones en reserva.",
+      "startRepeatWeight": "Empiezas con {{to}} {{unit}}, lo que usaste la última vez, en lugar de los {{from}} {{unit}} del plan.",
+      "startRepeatReps": "Empiezas con {{to}} repeticiones, lo que hiciste la última vez, en lugar de las {{from}} del plan.",
+      "keepLast": "Mantener lo de la última vez",
+      "usePlan": "Usar lo del plan",
+      "startDeloadWeightReps": "Baja a {{to}} {{unit}} × {{reps}} desde {{last}} {{unit}} × {{lastReps}} de la última vez: no te quedaban repeticiones en reserva.",
+      "startRepeatWeightReps": "Empiezas con {{to}} {{unit}} × {{reps}}, lo que hiciste la última vez, en lugar de los {{from}} {{unit}} × {{planReps}} del plan."
+    },
+    "startRest": "Iniciar descanso ({{seconds}} s)",
+    "warmup": {
+      "badge": "CALENTAMIENTO",
+      "add": "Añadir series de calentamiento",
+      "remove": "Quitar calentamiento"
+    },
+    "notes": {
+      "title": "Notas",
+      "add": "Añadir nota",
+      "edit": "Editar nota",
+      "save": "Guardar notas",
+      "thisWorkout": "Este entrenamiento",
+      "thisWorkoutPlaceholder": "Cómo se sintió, qué cambiar en la próxima serie",
+      "alsoTemplate": "Guardar también en el entrenamiento",
+      "alsoTemplateHint": "La próxima vez que empieces este entrenamiento, la nota ya estará ahí.",
+      "always": "Siempre para este ejercicio",
+      "alwaysPlaceholder": "Una indicación para cada entrenamiento, p. ej. codos pegados",
+      "alwaysHint": "Se muestra sobre la serie cada vez que haces este ejercicio.",
+      "failed": "No se pudieron guardar las notas. Inténtalo de nuevo."
     }
   }
 }

@@ -45,6 +45,7 @@
     "region_shoulders": "Schouders",
     "region_arms": "Armen",
     "region_core": "Core",
-    "region_legs": "Benen"
+    "region_legs": "Benen",
+    "notes": "Notities"
   }
 }

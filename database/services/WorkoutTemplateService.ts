@@ -21,11 +21,17 @@ import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { handleError } from '@/utils/handleError';
+import { incrementFor } from '@/utils/loadIncrement';
+import { roundToLoadable } from '@/utils/plateCalculator';
+import { computeStartTarget } from '@/utils/setProgression';
+import { roundWeightForUnits } from '@/utils/unitConversion';
 import { getWeightUnit } from '@/utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
+import { WARMUP_SET_TYPE } from '@/utils/workoutSetCompletion';
 
 import { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
+import { GymService } from './GymService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
@@ -848,6 +854,9 @@ export class WorkoutTemplateService {
             Q.where('log_exercise_id', logExercises[0].id),
             Q.where('deleted_at', Q.eq(null)),
             Q.where('completion_status', 'performed'),
+            // The next target comes from the last WORKING sets; a warm-up is light on purpose and
+            // `lastSets[0]` would otherwise be one.
+            Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
             Q.sortBy('set_order', Q.asc)
           )
           .fetch();
@@ -855,46 +864,27 @@ export class WorkoutTemplateService {
         if (lastSets.length > 0) {
           const mode = await SettingsService.getProgressionMode();
           const units = await SettingsService.getUnits();
-          const weightUnit = getWeightUnit(units);
 
           const avgRir =
             lastSets.reduce((sum, s) => sum + (s.repsInReserve ?? 0), 0) / lastSets.length;
           const lastWeight = lastSets[0].weight;
           const lastReps = lastSets[0].reps;
 
-          // Increment: 2.5kg or 5lbs
-          let incrementKg = 2.5;
-          if (weightUnit === 'lbs') {
-            incrementKg = convert(5, 'lb').to('kg') as number;
-          }
-
-          if (avgRir >= 3) {
-            if (mode === 'weight_first') {
-              const newWeight = await this.roundWeight(lastWeight + incrementKg);
-              return { weightKg: newWeight, reps: lastReps };
-            } else {
-              // reps_first
-              const isCompound = exercise.mechanicType === 'compound';
-              const baseReps = isCompound ? defaultReps : defaultRepsIsolation;
-              const maxReps = baseReps + 2;
-              const minReps = baseReps - 2;
-
-              if (lastReps < maxReps) {
-                return { weightKg: lastWeight, reps: lastReps + 1 };
-              } else {
-                const newWeight = await this.roundWeight(lastWeight + incrementKg);
-                return { weightKg: newWeight, reps: minReps };
-              }
-            }
-          } else if (avgRir === 0) {
-            const newWeight = await this.roundWeight(Math.max(0, lastWeight - incrementKg));
-            return { weightKg: newWeight, reps: lastReps };
-          }
-
-          return {
-            weightKg: lastWeight,
-            reps: lastReps,
-          };
+          // The step is what this equipment can really move by in the user's gym; without a gym
+          // it is the long-standing 2.5 kg / 5 lb. A failure to read the gym must never stop a
+          // suggestion, so it falls back to that default.
+          const gym = await GymService.getActiveGym().catch(() => null);
+          const { weightKg, reps } = computeStartTarget({
+            last: { weightKg: lastWeight, reps: lastReps, averageRepsInReserve: avgRir },
+            progressionMode: mode,
+            isCompound: exercise.mechanicType === 'compound',
+            incrementKg: incrementFor(exercise.equipmentType, gym, units),
+            roundLoad: (kg) =>
+              gym
+                ? roundToLoadable(kg, exercise.equipmentType, gym)
+                : roundWeightForUnits(kg, units),
+          });
+          return { weightKg, reps };
         }
       }
     } catch (err) {

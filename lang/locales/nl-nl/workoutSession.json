@@ -48,7 +48,37 @@
       "label": "Aangepast",
       "carryOver": "Het gewicht volgt je vorige set ({{to}} {{unit}}) in plaats van de geplande {{from}} {{unit}}.",
       "targetRirWeight": "Gewicht gewijzigd van {{from}} naar {{to}} {{unit}} — je vorige set schat je 1RM op {{oneRepMax}} {{unit}}, dus zo houd je {{rir}} herhalingen in reserve.",
-      "targetRirReps": "Herhalingen gewijzigd van {{from}} naar {{to}} — je vorige set schat je 1RM op {{oneRepMax}} {{unit}}, dus zo houd je {{rir}} herhalingen in reserve bij dit gewicht."
+      "targetRirReps": "Herhalingen gewijzigd van {{from}} naar {{to}} — je vorige set schat je 1RM op {{oneRepMax}} {{unit}}, dus zo houd je {{rir}} herhalingen in reserve bij dit gewicht.",
+      "startProgressionWeight": "Omhoog naar {{to}} {{unit}} vanaf de {{last}} {{unit}} van vorige keer — je had nog ongeveer {{rir}} herhalingen over.",
+      "startProgressionWeightReps": "Omhoog naar {{to}} {{unit}} × {{reps}} vanaf {{last}} {{unit}} × {{lastReps}} van vorige keer — je had nog ongeveer {{rir}} herhalingen over.",
+      "startProgressionReps": "Eén herhaling meer dan vorige keer ({{to}} in plaats van {{last}}) — je had nog ongeveer {{rir}} herhalingen over.",
+      "startDeload": "Omlaag naar {{to}} {{unit}} vanaf de {{last}} {{unit}} van vorige keer — je had geen herhalingen meer over.",
+      "startRepeatWeight": "Je start met {{to}} {{unit}}, wat je vorige keer gebruikte, in plaats van de {{from}} {{unit}} uit het schema.",
+      "startRepeatReps": "Je start met {{to}} herhalingen, wat je vorige keer deed, in plaats van de {{from}} uit het schema.",
+      "keepLast": "Houd het van vorige keer",
+      "usePlan": "Gebruik het schema",
+      "startDeloadWeightReps": "Omlaag naar {{to}} {{unit}} × {{reps}} vanaf {{last}} {{unit}} × {{lastReps}} van vorige keer — je had geen herhalingen meer over.",
+      "startRepeatWeightReps": "Je start met {{to}} {{unit}} × {{reps}}, wat je vorige keer deed, in plaats van de {{from}} {{unit}} × {{planReps}} uit het schema."
+    },
+    "startRest": "Rust starten ({{seconds}} sec)",
+    "warmup": {
+      "badge": "WARM-UP",
+      "add": "Warm-upsets toevoegen",
+      "remove": "Warm-ups verwijderen"
+    },
+    "notes": {
+      "title": "Notities",
+      "add": "Notitie toevoegen",
+      "edit": "Notitie bewerken",
+      "save": "Notities opslaan",
+      "thisWorkout": "Deze training",
+      "thisWorkoutPlaceholder": "Hoe het voelde, wat je de volgende set wilt aanpassen",
+      "alsoTemplate": "Ook opslaan in de training",
+      "alsoTemplateHint": "De volgende keer dat je deze training start, staat de notitie er al.",
+      "always": "Altijd voor deze oefening",
+      "alwaysPlaceholder": "Een aanwijzing voor elke training, bijv. ellebogen dicht bij het lichaam",
+      "alwaysHint": "Boven de set getoond telkens als je deze oefening doet.",
+      "failed": "Notities opslaan is mislukt. Probeer het opnieuw."
     }
   }
 }

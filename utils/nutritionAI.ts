@@ -1,13 +1,8 @@
-import { Q } from '@nozbe/watermelondb';
-
-import { database } from '@/database';
-import Food from '@/database/models/Food';
 import { FoodService } from '@/database/services/FoodService';
 import { MealService } from '@/database/services/MealService';
 import { NutritionService } from '@/database/services/NutritionService';
 
-import { localCalendarDayDate, withCurrentTimeOnDay } from './calendarDate';
-import { aiIngredientMacrosPer100g, totalCarbsForFoodSource } from './carbsConvention';
+import { aiIngredientMacrosPer100g } from './carbsConvention';
 import type { GenerateMealPlanResponse, MacroEstimate, NutritionEntry } from './coachAI';
 import { roundToDecimalPlaces } from './roundDecimal';
 
@@ -31,112 +26,6 @@ export function normalizeMacrosByGrams(macros: MacroEstimate, grams: number): Ma
     grams: 100,
     barcode: macros.barcode,
   };
-}
-
-const mapMealTypeToDb = (
-  mealType: number
-): 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other' => {
-  switch (mealType) {
-    case 1:
-      return 'breakfast';
-    case 2:
-      return 'lunch';
-    case 3:
-      return 'dinner';
-    case 4:
-      return 'snack';
-    case 5:
-      return 'other';
-    default:
-      return 'other';
-  }
-};
-
-/**
- * Process parsed nutrition entries from AI for database storage
- * Maps meal type numbers to database format
- * Creates or finds foods and logs them via NutritionService
- */
-export async function processParsedNutritionEntries(
-  entries: NutritionEntry[],
-  date: Date
-): Promise<
-  {
-    foodTitle: string;
-    calories: number;
-    carbs: number;
-    fat: number;
-    protein: number;
-    mealType: number;
-    date: Date;
-    fiber?: number;
-    sodium?: number;
-    sugar?: number;
-  }[]
-> {
-  // Non-interactive AI logging: stamp the chosen day with the current time.
-  const day = withCurrentTimeOnDay(localCalendarDayDate(date));
-
-  const results = [];
-
-  for (const entry of entries) {
-    try {
-      // Try to find existing food by name (exact match)
-      let food: Food | null = null;
-      try {
-        const existingFoods = await database
-          .get<Food>('foods')
-          .query(Q.where('deleted_at', Q.eq(null)), Q.where('name', entry.productTitle))
-          .fetch();
-        food = existingFoods.length > 0 ? existingFoods[0] : null;
-      } catch (error) {
-        // Food not found, we'll create a new one
-      }
-
-      // Create new food if not found
-      if (!food) {
-        food = await FoodService.createCustomFood(entry.productTitle, {
-          calories: entry.calories,
-          protein: entry.protein,
-          // LLM returns net carbs (see FOOD_SOURCE_CARBS_CONVENTION.ai); store canonical total.
-          carbs: totalCarbsForFoodSource('ai', { carbs: entry.carbs, fiber: entry.fiber ?? 0 }),
-          fat: entry.fat,
-          fiber: entry.fiber,
-          sugar: entry.sugar,
-          sodium: entry.sodium,
-        });
-      }
-
-      // Log the food using NutritionService
-      const mealType = mapMealTypeToDb(entry.mealType);
-      await NutritionService.logFood(
-        food.id,
-        day,
-        mealType,
-        1, // Default amount of 1 serving
-        undefined, // No specific portion
-        undefined // No external ID
-      );
-
-      results.push({
-        foodTitle: entry.productTitle,
-        calories: entry.calories,
-        carbs: entry.carbs,
-        fat: entry.fat,
-        protein: entry.protein,
-        mealType: entry.mealType,
-        date: day,
-        fiber: entry.fiber,
-        sodium: entry.sodium,
-        sugar: entry.sugar,
-      });
-    } catch (error) {
-      console.error('Error processing nutrition entry:', entry, error);
-      // Continue with next entry even if one fails
-    }
-  }
-
-  return results;
 }
 
 /**

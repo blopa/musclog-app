@@ -1,3 +1,5 @@
+import projectLinks from './projectLinks.json';
+
 // Onboarding Keys
 export const ONBOARDING_COMPLETED = 'onboardingCompleted';
 export const ONBOARDING_VERSION = 'onboardingVersion';
@@ -28,3 +30,15 @@ export const MACRO_STREAK_STATE = 'macroStreakState';
 
 /** Public donation page (F-Droid and web “Support the Project” link only). */
 export const SUPPORT_PROJECT_DONATION_URL = 'https://musclog.app/donate';
+
+/**
+ * Project links live in `projectLinks.json` rather than here because `scripts/generate-web-seo-files.js`
+ * runs outside the app bundle and must read the same values (it cannot import TypeScript); every
+ * other copy of the repository URL or the support address reads these constants.
+ */
+export const GITHUB_REPO_URL: string = projectLinks.githubRepoUrl;
+export const GITHUB_LICENSE_URL = `${GITHUB_REPO_URL}/blob/main/LICENSE`;
+export const SUPPORT_EMAIL: string = projectLinks.supportEmail;
+export const SUPPORT_MAILTO_URL = `mailto:${SUPPORT_EMAIL}`;
+/** There is no community server yet. While this is null, nothing links to one. */
+export const DISCORD_INVITE_URL: string | null = projectLinks.discordInviteUrl;

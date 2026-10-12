@@ -1,0 +1,31 @@
+{
+  "cardio": {
+    "title": "Log walk or run",
+    "subtitle": "Add one without starting a workout",
+    "menuItem": "Log walk or run",
+    "activity": "Activity",
+    "walk": "Walk",
+    "run": "Run",
+    "treadmill": "On a treadmill",
+    "distance": "Distance",
+    "distanceInput": "Distance ({{unit}})",
+    "duration": "Duration",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "pace": "Pace",
+    "ended": "Finished",
+    "estimate": "Estimated calories",
+    "estimateValue": "{{kcal}} kcal",
+    "estimateNoWeight": "Add your weight in your profile to estimate calories.",
+    "estimateHint": "Estimated from your speed and body weight on level ground.",
+    "watchCalories": "Calories from my watch (optional)",
+    "watchHint": "Leave at 0 to use the estimate.",
+    "save": "Save",
+    "saved": "{{activity}} logged",
+    "failed": "Couldn't save this. Please try again.",
+    "needsDistanceAndTime": "Enter a distance and a duration to save.",
+    "futureError": "That's in the future. Pick when you finished.",
+    "noPace": "—"
+  }
+}

@@ -75,6 +75,7 @@ interface SetSpec {
   repsInReserve?: number;
   difficultyLevel?: number;
   completionStatus?: 'planned' | 'performed' | 'skipped';
+  setType?: string;
   deleted?: boolean;
 }
 
@@ -146,7 +147,7 @@ function buildFixture(options: {
           completion_status: spec.completionStatus ?? 'performed',
           difficulty_level: spec.difficultyLevel ?? 5,
           is_skipped: false,
-          set_type: 'normal',
+          set_type: spec.setType ?? 'normal',
           set_order: index + 1,
           created_at: Date.now(),
           updated_at: Date.now(),
@@ -537,6 +538,100 @@ describe('WorkoutAnalytics', () => {
       const records = await WorkoutAnalytics.detectPersonalRecords(fixture.workout_logs[0] as any);
 
       expect(records).toHaveLength(0);
+    });
+  });
+
+  describe('warm-up sets', () => {
+    const benchPress = createMockExercise({ id: 'ex-1', name: 'Bench Press' });
+
+    it('does not let a heavy-looking warm-up produce a personal record', async () => {
+      // A warm-up single at a weight above anything the user has ever worked with would, if
+      // counted, be flagged as a weight PR. It is not a working set, so it must be invisible.
+      const fixture = buildFixture({
+        exercises: [benchPress],
+        sets: [
+          {
+            exerciseId: 'ex-1',
+            workoutLogId: 'workout-1',
+            weight: 140,
+            reps: 1,
+            setType: 'warmup',
+          },
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 5 },
+          { exerciseId: 'ex-1', workoutLogId: 'workout-2', weight: 110, reps: 5 },
+        ],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() },
+          { id: 'workout-2', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
+      });
+      installFixture(fixture);
+
+      const records = await WorkoutAnalytics.detectPersonalRecords(fixture.workout_logs[0] as any);
+
+      expect(records.find((r) => r.type === 'weight')).toBeUndefined();
+    });
+
+    it('still detects a real PR when the same session also contains warm-ups', async () => {
+      const fixture = buildFixture({
+        exercises: [benchPress],
+        sets: [
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 40, reps: 8, setType: 'warmup' },
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 120, reps: 5 },
+          { exerciseId: 'ex-1', workoutLogId: 'workout-2', weight: 100, reps: 5 },
+        ],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() },
+          { id: 'workout-2', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
+      });
+      installFixture(fixture);
+
+      const records = await WorkoutAnalytics.detectPersonalRecords(fixture.workout_logs[0] as any);
+
+      expect(records.find((r) => r.type === 'weight')?.newRecord.weight).toBe(120);
+    });
+
+    it("keeps a warm-up out of an exercise's estimated 1RM trend", async () => {
+      const fixture = buildFixture({
+        exercises: [benchPress],
+        sets: [
+          {
+            exerciseId: 'ex-1',
+            workoutLogId: 'workout-1',
+            weight: 200,
+            reps: 1,
+            setType: 'warmup',
+          },
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 10 },
+        ],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
+      });
+      installFixture(fixture);
+
+      const result = await WorkoutAnalytics.getProgressiveOverloadData('ex-1');
+
+      expect(result).toHaveLength(1);
+      expect(result[0].weight).toBe(100);
+    });
+
+    it('does not count a session that only warmed up as a session the exercise was trained', async () => {
+      const fixture = buildFixture({
+        exercises: [benchPress],
+        sets: [
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 40, reps: 8, setType: 'warmup' },
+        ],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
+      });
+      installFixture(fixture);
+
+      const frequency = await WorkoutAnalytics.getAverageFrequencyPerWeek('ex-1');
+
+      expect(frequency.value).toBe(0);
     });
   });
 

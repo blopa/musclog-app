@@ -47,10 +47,16 @@ import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
 import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import {
+  type ExerciseNotesSaveData,
+  ExerciseNotesSheet,
+} from '@/components/workout/ExerciseNotesSheet';
+import { PlateCalculatorSheet } from '@/components/workout/PlateCalculatorSheet';
 import { SetAdjustmentNotice } from '@/components/workout/SetAdjustmentNotice';
 import { WorkoutActionButton } from '@/components/WorkoutActionButton';
 import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
@@ -59,10 +65,20 @@ import { database } from '@/database';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { BleDeviceService } from '@/database/services/BleDeviceService';
+import {
+  ExerciseRestrictionService,
+  MAX_EXERCISE_RESTRICTIONS,
+} from '@/database/services/ExerciseRestrictionService';
+import { ExerciseUserSettingsService } from '@/database/services/ExerciseUserSettingsService';
+import { GymService } from '@/database/services/GymService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
+import { WorkoutService } from '@/database/services/WorkoutService';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
+import { useActiveGym } from '@/hooks/useActiveGym';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
@@ -87,6 +103,7 @@ import {
   saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
 import { localDayHalfOpenRange, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import type { SubstitutionOutcome } from '@/utils/exerciseSubstitution';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -94,11 +111,22 @@ import {
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { formatAppDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { isBarLoadedEquipment } from '@/utils/gym';
 import { handleError } from '@/utils/handleError';
+import { weightInputStep } from '@/utils/loadIncrement';
+import { normalizeNote } from '@/utils/noteText';
+import { resolveRestSeconds } from '@/utils/restTimer';
+import { adjustedFields } from '@/utils/setAdjustment';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { buildWarmupSets, WARMUP_REST_SECONDS } from '@/utils/warmupSets';
 import { formatDuration } from '@/utils/workout';
-import { isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  isPlannedWorkoutSet,
+  isResolvedWorkoutSet,
+  isWarmupSet,
+} from '@/utils/workoutSetCompletion';
 
 // Helper function to get hormonal insight text based on current phase
 const getHormonalInsightText = (
@@ -202,13 +230,19 @@ export default function WorkoutSessionScreen() {
     exerciseId?: string;
     showFeedback?: string;
   }>();
-  const { units, bleGenerateChartPayload } = useSettings();
+  const {
+    units: accountUnits,
+    bleGenerateChartPayload,
+    autoStartRestTimer,
+    defaultRestSeconds,
+  } = useSettings();
+  const { gym } = useActiveGym();
+  const { unitsFor, get: getExerciseSettings } = useExerciseUserSettings();
   const {
     intensityMultiplier,
     currentPhase,
     isActive: isCycleTrackingActive,
   } = useMenstrualCycle();
-  const weightUnitKey = getWeightUnitI18nKey(units);
 
   const formatWeightStatDisplay = useCallback(
     (displayUnit: number) =>
@@ -244,6 +278,18 @@ export default function WorkoutSessionScreen() {
   const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
 
   const currentExerciseImage = useExerciseImageSource(currentSetData?.exercise.imageUrl);
+
+  // Weights are shown and entered in the unit of the exercise in front of the user: its own
+  // override, else the gym's, else the account's. Storage stays metric whichever is shown.
+  const units = unitsFor(currentSetData?.exercise.id, accountUnits, gym?.weightUnit);
+  const weightUnitKey = getWeightUnitI18nKey(units);
+  const exerciseNote = getExerciseSettings(currentSetData?.exercise.id).note;
+  const currentLogExercise = activeLogExercises.find(
+    (logExercise) => logExercise.id === currentSetData?.set.logExerciseId
+  );
+
+  // One tap on +/- moves to the next load this exercise's equipment can really be set to.
+  const weightStep = weightInputStep(currentSetData?.exercise.equipmentType, gym, units);
 
   // Update notification with total time and current exercise
   useEffect(() => {
@@ -295,6 +341,12 @@ export default function WorkoutSessionScreen() {
   const [isEditSetModalVisible, setIsEditSetModalVisible] = useState(false);
   const [isSkipSetModalVisible, setIsSkipSetModalVisible] = useState(false);
   const [isReplaceExerciseModalVisible, setIsReplaceExerciseModalVisible] = useState(false);
+  const [isPlateCalculatorVisible, setIsPlateCalculatorVisible] = useState(false);
+  // With auto-start off, the set just finished waits here for a tap on "Start rest".
+  const [pendingRest, setPendingRest] = useState<{ setOrder: number; seconds: number } | null>(
+    null
+  );
+  const [isWorkoutSettingsVisible, setIsWorkoutSettingsVisible] = useState(false);
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isAddExerciseToSessionModalVisible, setIsAddExerciseToSessionModalVisible] =
@@ -311,7 +363,7 @@ export default function WorkoutSessionScreen() {
   const effectiveCompletedExerciseForModal = isWorkoutComplete() ? completedExerciseForModal : null;
   const hasShownFreeSessionCompleteModalRef = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isNotesExpanded, setIsNotesExpanded] = useState(false);
+  const [isNotesSheetVisible, setIsNotesSheetVisible] = useState(false);
   const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
   const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
 
@@ -741,10 +793,7 @@ export default function WorkoutSessionScreen() {
       // Small delay to allow React to render the loading state before closing
       await new Promise<void>((resolve) => setTimeout(resolve, 1));
 
-      const restTime =
-        currentSetData.set.restTimeAfter && currentSetData.set.restTimeAfter > 0
-          ? currentSetData.set.restTimeAfter
-          : 60;
+      const restTime = resolveRestSeconds(currentSetData.set.restTimeAfter, defaultRestSeconds);
       const completedSetOrder = currentSetData.set.setOrder ?? 0;
 
       const completedSetId = currentSetData.set.id;
@@ -789,9 +838,14 @@ export default function WorkoutSessionScreen() {
         return;
       }
 
-      router.replace(
-        `/app/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
-      );
+      if (autoStartRestTimer) {
+        router.replace(
+          `/app/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${completedSetOrder}`
+        );
+      } else {
+        // The user turned off auto-start: stay here and offer a "Start rest" button instead.
+        setPendingRest({ setOrder: completedSetOrder, seconds: restTime });
+      }
       // Defer closing modal so navigation can run first and we avoid a flash of the session screen
       setTimeout(() => setIsLogSetModalVisible(false), 0);
     } catch (err) {
@@ -835,7 +889,7 @@ export default function WorkoutSessionScreen() {
           setIsFreeSessionCompleteModalVisible(true);
           hasShownFreeSessionCompleteModalRef.current = true;
         }
-      } else {
+      } else if (autoStartRestTimer) {
         router.replace(
           `/app/workout/rest-timer?workoutLogId=${workoutLog.id}&completedSetOrder=${currentSetData.set.setOrder ?? 0}`
         );
@@ -882,10 +936,15 @@ export default function WorkoutSessionScreen() {
     }
   };
 
-  const handleReplaceExercise = async (exercise: ReplaceExerciseData) => {
+  const handleReplaceExercise = async (
+    exercise: ReplaceExerciseData,
+    outcome: SubstitutionOutcome
+  ) => {
     if (!currentSetData || !workoutLog) {
       return;
     }
+
+    const replaced = currentSetData.exercise;
 
     try {
       setIsSaving(true);
@@ -897,21 +956,122 @@ export default function WorkoutSessionScreen() {
         return;
       }
 
-      const logExercise = await database
-        .get<WorkoutLogExercise>('workout_log_exercises')
-        .find(logExerciseId);
-
-      // Update the log exercise's exerciseId (this affects all sets in this block)
-      await database.write(async () => {
-        await logExercise.update((le) => {
-          le.exerciseId = exercise.id;
-          le.updatedAt = Date.now();
-        });
+      // The still-planned sets carry the OLD exercise's load: a planned 80 kg bench is not an
+      // 80 kg dumbbell fly. The suggestion is read before the write, which only touches this log.
+      const { weightKg } = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise(
+        exercise.id
+      );
+      await WorkoutService.replaceLogExercise(logExerciseId, exercise.id, {
+        reason: outcome.reason,
+        plannedWeightKg: weightKg,
       });
 
+      // What the user chose to remember is saved only once the swap itself has succeeded.
+      if (outcome.restriction) {
+        const saved = await ExerciseRestrictionService.set(replaced.id, outcome.restriction.kind, {
+          expiresAt: outcome.restriction.expiresAt,
+        });
+        if (!saved.ok) {
+          showSnackbar(
+            'error',
+            t('workoutSettings.restrictions.limit', { count: MAX_EXERCISE_RESTRICTIONS })
+          );
+        }
+      }
+      if (outcome.removeEquipmentFromGym && gym && replaced.equipmentType) {
+        await GymService.removeEquipment(gym.id, replaced.equipmentType);
+      }
+
       await refresh();
+      showSnackbar(
+        'success',
+        t('replaceExercise.swapped', { from: replaced.name, to: exercise.name })
+      );
     } catch (err) {
       handleError(err, 'workout-session.handleReplaceExercise', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddWarmups = async (warmups: { weightKg: number; reps: number }[]) => {
+    const logExerciseId = currentSetData?.set.logExerciseId;
+    if (!logExerciseId || warmups.length === 0) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await WorkoutService.addWarmupSets(logExerciseId, warmups, {
+        restTimeAfter: WARMUP_REST_SECONDS,
+      });
+      await refresh();
+    } catch (err) {
+      handleError(err, 'workout-session.handleAddWarmups', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Throws on failure: the notes sheet keeps itself open with the draft and says so.
+  const handleSaveNotes = async ({
+    sessionNote,
+    exerciseNote: nextExerciseNote,
+    alsoSaveToTemplate,
+  }: ExerciseNotesSaveData) => {
+    const logExerciseId = currentSetData?.set.logExerciseId;
+    const exerciseId = currentSetData?.exercise.id;
+    if (!logExerciseId || !exerciseId) {
+      return;
+    }
+
+    // Asking for the template copy writes even an unchanged note: it is what keeps it.
+    if (alsoSaveToTemplate || normalizeNote(sessionNote) !== normalizeNote(currentSetData.notes)) {
+      await WorkoutService.saveLogExerciseNote(logExerciseId, sessionNote, { alsoSaveToTemplate });
+    }
+
+    if (normalizeNote(nextExerciseNote) !== normalizeNote(exerciseNote)) {
+      await ExerciseUserSettingsService.setNote(exerciseId, nextExerciseNote);
+    }
+
+    await refresh();
+  };
+
+  const handleRevertStartAdjustment = async () => {
+    const logExerciseId = currentSetData?.set.logExerciseId;
+    if (!logExerciseId) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await WorkoutService.revertStartAdjustment(logExerciseId);
+      await refresh();
+    } catch (err) {
+      handleError(err, 'workout-session.handleRevertStartAdjustment', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleRemoveWarmups = async () => {
+    const logExerciseId = currentSetData?.set.logExerciseId;
+    if (!logExerciseId) {
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await WorkoutService.removePlannedWarmupSets(logExerciseId);
+      await refresh();
+    } catch (err) {
+      handleError(err, 'workout-session.handleRemoveWarmups', {
         snackbarMessage: t('errors.somethingWentWrong'),
       });
     } finally {
@@ -1152,9 +1312,28 @@ export default function WorkoutSessionScreen() {
     // themselves last lifted, so a "we calculated this" marker would misattribute it. The
     // marker goes on the field that actually moved, which in the default reps_first mode is
     // reps, not weight.
-    const isRetargeted = setAdjustment?.cause === 'target_rir';
-    const isWeightRetargeted = isRetargeted && setAdjustment?.field === 'weight';
-    const isRepsRetargeted = isRetargeted && setAdjustment?.field === 'reps';
+    // A number the app calculated carries the marker, on the field it actually changed. A
+    // carry-over is the user's own previous load, so it is deliberately not marked.
+    const { weight: isWeightRetargeted, reps: isRepsRetargeted } = adjustedFields(setAdjustment);
+
+    // Warm-ups: offered before the first working set of an exercise, removable until performed.
+    const exerciseSets = sets.filter((set) => set.exerciseId === currentSetData.exercise.id);
+    const exerciseHasWarmups = exerciseSets.some(isWarmupSet);
+    const exerciseHasPlannedWarmups = exerciseSets.some(
+      (set) => isWarmupSet(set) && isPlannedWorkoutSet(set)
+    );
+    const isCurrentSetWarmup = isWarmupSet(currentSetData.set);
+    const warmupPrescription =
+      isStatsDataLoaded &&
+      !exerciseHasWarmups &&
+      !exerciseSets.some(isPerformedWorkoutSet) &&
+      isPlannedWorkoutSet(currentSetData.set)
+        ? buildWarmupSets(displayToKg(weight, units), {
+            gym,
+            equipmentType: currentSetData.exercise.equipmentType,
+            units,
+          })
+        : [];
     let partialsValue;
 
     if (!isStatsDataLoaded) {
@@ -1256,6 +1435,16 @@ export default function WorkoutSessionScreen() {
                   })}
                 </Text>
               </View>
+              {isCurrentSetWarmup ? (
+                <View
+                  className="rounded-full border px-3 py-1"
+                  style={{ borderColor: theme.colors.accent.primary }}
+                >
+                  <Text className="text-xs font-bold text-accent-primary">
+                    {t('workoutSession.warmup.badge')}
+                  </Text>
+                </View>
+              ) : null}
               {currentSetData.setNumber === currentSetData.totalSetsInExercise ? (
                 <Text className="text-sm font-medium text-accent-primary">
                   {t('workoutSession.lastSetForExercise')}
@@ -1263,21 +1452,54 @@ export default function WorkoutSessionScreen() {
               ) : null}
               <Text className="text-lg text-text-secondary">{exerciseCategory}</Text>
             </View>
+            {exerciseNote ? (
+              <Pressable
+                className="mt-3 rounded-lg p-3"
+                style={{ backgroundColor: theme.colors.background.ink5 }}
+                onPress={() => setIsNotesSheetVisible(true)}
+                accessibilityRole="button"
+                accessibilityLabel={t('workoutSession.notes.edit')}
+                testID="exercise-note-pinned"
+              >
+                <Text
+                  className="text-sm text-text-secondary"
+                  numberOfLines={3}
+                  ellipsizeMode="tail"
+                >
+                  📌 {exerciseNote}
+                </Text>
+              </Pressable>
+            ) : null}
             {currentSetData.notes ? (
               <Pressable
                 className="mt-3 rounded-lg p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
-                onPress={() => setIsNotesExpanded(!isNotesExpanded)}
+                onPress={() => setIsNotesSheetVisible(true)}
+                accessibilityRole="button"
+                accessibilityLabel={t('workoutSession.notes.edit')}
+                testID="session-note"
               >
                 <Text
                   className="text-sm text-text-secondary"
-                  numberOfLines={isNotesExpanded ? undefined : 1}
+                  numberOfLines={3}
                   ellipsizeMode="tail"
                 >
                   📝 {currentSetData.notes}
                 </Text>
               </Pressable>
             ) : null}
+            <Pressable
+              onPress={() => setIsNotesSheetVisible(true)}
+              accessibilityRole="button"
+              className="mt-3 self-start py-1"
+              testID="notes-entry"
+            >
+              <Text className="text-sm font-medium text-accent-primary">
+                {exerciseNote || currentSetData.notes
+                  ? t('workoutSession.notes.edit')
+                  : t('workoutSession.notes.add')}
+              </Text>
+            </Pressable>
           </View>
 
           {/* Stats Cards */}
@@ -1320,10 +1542,81 @@ export default function WorkoutSessionScreen() {
             />
           </View>
 
+          {/* Gym helpers: plate calculator for bar-loaded lifts, warm-up sets before the first working set */}
+          {isStatsDataLoaded ? (
+            <View className="mt-3 flex-row flex-wrap justify-center gap-2 px-6">
+              {weight > 0 && isBarLoadedEquipment(currentSetData.exercise.equipmentType) ? (
+                <Pressable
+                  onPress={() => setIsPlateCalculatorVisible(true)}
+                  accessibilityRole="button"
+                  className="flex-row items-center gap-2 rounded-full px-4 py-2"
+                  style={{ backgroundColor: theme.colors.background.ink5 }}
+                >
+                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+                  <Text className="text-sm font-medium text-text-primary">
+                    {t('workoutSettings.plateCalculator.open', {
+                      weight: formatWeightStatDisplay(weight),
+                      unit: t(weightUnitKey),
+                    })}
+                  </Text>
+                </Pressable>
+              ) : null}
+              {pendingRest ? (
+                <Pressable
+                  onPress={() => {
+                    const { setOrder } = pendingRest;
+                    setPendingRest(null);
+                    router.push(
+                      `/app/workout/rest-timer?workoutLogId=${workoutLog?.id}&completedSetOrder=${setOrder}`
+                    );
+                  }}
+                  accessibilityRole="button"
+                  className="flex-row items-center gap-2 rounded-full px-4 py-2"
+                  style={{ backgroundColor: theme.colors.accent.primary }}
+                >
+                  <Clock size={theme.iconSize.sm} color={theme.colors.text.onAccent} />
+                  <Text className="text-sm font-bold text-text-on-accent">
+                    {t('workoutSession.startRest', { seconds: pendingRest.seconds })}
+                  </Text>
+                </Pressable>
+              ) : null}
+              {warmupPrescription.length > 0 ? (
+                <Pressable
+                  onPress={() => handleAddWarmups(warmupPrescription)}
+                  accessibilityRole="button"
+                  disabled={isSaving}
+                  className="flex-row items-center gap-2 rounded-full px-4 py-2"
+                  style={{ backgroundColor: theme.colors.background.ink5 }}
+                >
+                  <Flame size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+                  <Text className="text-sm font-medium text-text-primary">
+                    {t('workoutSession.warmup.add')}
+                  </Text>
+                </Pressable>
+              ) : null}
+              {exerciseHasPlannedWarmups ? (
+                <Pressable
+                  onPress={handleRemoveWarmups}
+                  accessibilityRole="button"
+                  disabled={isSaving}
+                  className="flex-row items-center gap-2 rounded-full px-4 py-2"
+                  style={{ backgroundColor: theme.colors.background.ink5 }}
+                >
+                  <Text className="text-sm font-medium text-text-secondary">
+                    {t('workoutSession.warmup.remove')}
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
+          ) : null}
+
           {/* Why these numbers differ from the plan */}
           {setAdjustment && isStatsDataLoaded ? (
             <View className="mt-4 px-6">
-              <SetAdjustmentNotice adjustment={setAdjustment} />
+              <SetAdjustmentNotice
+                adjustment={setAdjustment}
+                onRevert={handleRevertStartAdjustment}
+              />
             </View>
           ) : null}
 
@@ -1449,8 +1742,10 @@ export default function WorkoutSessionScreen() {
             visible={isOptionsModalVisible}
             onClose={() => setIsOptionsModalVisible(false)}
             onPreviewWorkout={() => setIsWorkoutOverviewModalVisible(true)}
-            // TODO: uncomment once we have workout settings
-            // onWorkoutSettings={() => router.navigate('/workout-settings')}
+            onWorkoutSettings={() => {
+              setIsOptionsModalVisible(false);
+              setIsWorkoutSettingsVisible(true);
+            }}
             onEndWorkout={() => {
               setIsOptionsModalVisible(false);
               setIsEndWorkoutModalVisible(true);
@@ -1523,6 +1818,8 @@ export default function WorkoutSessionScreen() {
               handleCompleteSet(data);
             }}
             isSaving={isSaving}
+            weightStep={weightStep}
+            units={units}
             onEditSetDetails={(data) => {
               setWeight(data.weight);
               setReps(data.reps);
@@ -1546,6 +1843,21 @@ export default function WorkoutSessionScreen() {
             initialReps={reps}
             initialPartials={partials}
             initialRepsInReserve={repsInReserve}
+            weightStep={weightStep}
+            units={units}
+          />
+        ) : null}
+
+        {/* Notes: this workout, always, and (optionally) the template */}
+        {isNotesSheetVisible && currentSetData ? (
+          <ExerciseNotesSheet
+            visible={isNotesSheetVisible}
+            onClose={() => setIsNotesSheetVisible(false)}
+            exerciseName={currentSetData.exercise.name ?? ''}
+            initialSessionNote={currentSetData.notes ?? ''}
+            initialExerciseNote={exerciseNote ?? ''}
+            canSaveToTemplate={!!currentLogExercise?.templateExerciseId}
+            onSave={handleSaveNotes}
           />
         ) : null}
 
@@ -1570,7 +1882,26 @@ export default function WorkoutSessionScreen() {
             visible={isReplaceExerciseModalVisible}
             onClose={() => setIsReplaceExerciseModalVisible(false)}
             onReplace={handleReplaceExercise}
-            currentExercise={currentSetData.exercise.name}
+            currentExerciseId={currentSetData.exercise.id}
+          />
+        ) : null}
+
+        {/* Plate calculator */}
+        {isPlateCalculatorVisible && currentSetData ? (
+          <PlateCalculatorSheet
+            visible={isPlateCalculatorVisible}
+            onClose={() => setIsPlateCalculatorVisible(false)}
+            targetKg={displayToKg(weight, units)}
+            gym={gym}
+            units={units}
+          />
+        ) : null}
+
+        {/* Workout settings (gyms, avoided exercises) */}
+        {isWorkoutSettingsVisible ? (
+          <WorkoutSettingsModal
+            visible={isWorkoutSettingsVisible}
+            onClose={() => setIsWorkoutSettingsVisible(false)}
           />
         ) : null}
 
@@ -1640,7 +1971,11 @@ export default function WorkoutSessionScreen() {
             exerciseName={effectiveCompletedExerciseForModal.exerciseName}
             sets={sets}
             exerciseId={effectiveCompletedExerciseForModal.exerciseId}
-            units={units}
+            units={unitsFor(
+              effectiveCompletedExerciseForModal.exerciseId,
+              accountUnits,
+              gym?.weightUnit
+            )}
             exerciseImageUrl={effectiveCompletedExerciseForModal.exerciseImageUrl}
             equipmentType={effectiveCompletedExerciseForModal.equipmentType}
             onAddNextExercise={() => {

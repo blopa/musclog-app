@@ -126,7 +126,8 @@
         "basalMetabolicRate": "Basal metabolism",
         "exerciseSession": "Workouts",
         "leanBodyMass": "Lean body mass",
-        "steps": "Steps"
+        "steps": "Steps",
+        "distance": "Distance"
       },
       "maybeLater": "Maybe later",
       "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics.",

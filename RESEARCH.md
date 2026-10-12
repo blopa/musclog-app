@@ -190,6 +190,146 @@ user's pagination state.
 
 Current reference: `NoteService.notesQuery` with `hooks/useNotes.ts`.
 
+## Exercise search
+
+Product research (see `FUTURE_FEATURES.md`) found that logger users lose time to literal search: a
+long-term Strong user could not find "fly" by typing "flys", and gyms call identical movements by
+different names. Musclog's search used to be `LIKE '%term%'` on `exercises.name`, with three
+compounding problems: no plural or abbreviation handling, SQLite `LIKE` folding case for ASCII only
+(Cyrillic and accented names were case-sensitive), and — less obviously — `name` frozen in whichever
+language the device used on first boot, so changing the app language never changed what search saw.
+
+Decision: precompute a normalized word set per exercise (`exercises.search_text`) and match query
+words against it by substring. This keeps pagination and filtering in SQL (every list in the app is
+paged), works unchanged on LokiJS (web), and needs no new dependency. A fuzzy library (Fuse-style)
+would have required loading all 873+ exercises into memory on each keystroke and would not have
+helped the language problem. Edit-distance tolerance is deferred until real queries show a need.
+
+Why the stemmer is crude on purpose: it only has to be consistent, because the same function
+produces the index and the query. Over-stemming therefore costs nothing, while an inconsistent
+"smart" stemmer would silently lose matches.
+
+## Gym profiles, plates and substitutions
+
+The same product research that motivated forgiving exercise search found that "smart" workout apps
+lose trust when personalization ignores real constraints: a user who marks an exercise as painful
+and keeps seeing it, or whose gym has no cable stack and is offered cable work. Two distinctions
+drive the design:
+
+- **Constraint versus preference.** "I can't do overhead pressing because of my shoulder" must
+  outrank "I like dumbbell presses", so the order is fixed: never and injury (hard exclusions), then
+  equipment the gym lacks, then dislike (a demotion, not a removal), then any score. An injury can
+  heal, so it carries an end date; a dislike never expires and a "never" has nothing to end.
+- **Session versus plan.** The cable station being occupied once must not rewrite a program.
+  Swaps therefore only touch the session, and the choices that would outlive it (stop suggesting,
+  remove equipment from the gym) are offered as switches rather than inferred. "Just today" exists
+  precisely so the common case persists nothing.
+
+Plates are loaded in pairs and gyms own finite inventories, which makes "round to a loadable
+weight" a bounded subset-sum, not a greedy fill. The problem is tiny (a few thousand hundredths of a
+kilogram, under ten plate sizes), so an exact table is both correct and instant; there is nothing to
+approximate. Without a configured gym every rounding and step stays exactly what it was, so the
+feature costs nobody anything until they describe their gym.
+
+## Warm-ups and how much the app decides
+
+Two product-research findings shaped this: logging apps accumulate "planning debt" (a template's
+numbers go stale, and the user becomes the programmer), while apps that decide for the user lose
+trust when the user cannot see or override what changed. The compromise is an **autonomy dial**,
+not a separate mode: the same workout model runs Manual (copy the plan), Suggest (start from how
+last time went, say why, one tap back) and, later, Adaptive (update the plan itself). Suggest is
+the default because a suggestion the user can see and undo costs one tap, while a stale plan costs
+the planning work every week.
+
+Warm-ups are excluded from every working-set metric because they are light on purpose: counted,
+they drag averages down, make a warm-up single look like a PR attempt, and — worst — would be read
+as the "previous set" the next working set is re-targeted from. They are NOT excluded from calories
+or Health Connect, because they are real work; the two axes (what happened, what kind of set it
+was) are deliberately kept separate so each reader chooses.
+
+## Per-exercise units, scoped notes and cardio logs
+
+**Units resolve most-specific first**: the exercise's own override, then the active gym's, then the
+account's (`resolveWeightUnits`). Storage stays metric whichever is shown, so changing an override
+never rewrites a weight. The override applies where an exercise's weights are shown or typed — the
+session, its set-history, the past-workout detail and its set editor. Session totals (volume) sum
+exercises with different units and therefore stay in the account's; the template editor also keeps
+the account's unit.
+
+**Three scopes of note, three owners**: the exercise-wide note (`exercise_user_settings.note`) is the
+user's own cue and follows the exercise everywhere; a session note lives on that workout's exercise
+block (`workout_log_exercises.notes`) and can be copied onto the template exercise it was made
+from, in the same batch; the workout note (`workout_logs.notes`) is how the whole session went.
+Keeping user preferences in their own table means a catalogue sync never has to know they exist.
+
+**Cardio energy is gross, from ACSM.** Walking VO2 = 0.1·speed + 3.5, running 0.2·speed + 3.5
+(ml/kg/min, speed in m/min, level ground), × body mass × minutes, 5 kcal per litre of O2. The 3.5
+term is resting metabolism, so the figure includes what the body would spend anyway — the number a
+watch reports and the one Health Connect stores. It is never added to the daily energy balance
+(which is TDEE-based), so nothing is double-counted. A calorie figure typed from a watch wins over
+the estimate. A logged walk/run is a `workout_logs` row with no sets by design: a set is a rep with
+a load, and inventing one would put a fabricated performed set into volume and PRs.
+
+**Health Connect keeps distance as a record of its own** (it is not a field of the exercise
+session) and needs its own `WRITE_DISTANCE` permission, so the distance write is best effort and
+skipped without the grant; the session is still saved. HealthKit takes distance as a total on the
+workout, with no extra authorization.
+
+## Watch companion
+
+Not built; this records the intended sequence. Step one is read-only: a watchOS app over
+WatchConnectivity and a Wear OS tile that show today's workout, the current set and the rest timer
+from a versioned snapshot the phone pushes (never direct database access). Step two adds writes
+from the watch, and only once there is a conflict policy: the phone is authoritative for the plan
+and the in-progress session's structure, the watch may append performed sets and rest events, and
+when both edit the same set the later `updated_at` wins and the loser is kept as a note rather than
+discarded. A watch must keep working with no phone in range, so its writes queue and replay in
+order.
+
+## AI error handling and Gemini thinking
+
+**A wrong Gemini key is HTTP 400, not 401** (`INVALID_ARGUMENT`, reason `API_KEY_INVALID`, "API key
+not valid"), so the key signal is read from the payload and a bare 400 is never blamed on the key.
+OpenAI uses 401 / `invalid_api_key`. Recorded fixtures live in `utils/__tests__/aiErrors.test.ts`.
+`local` always has a key (`'ollama'` is the default) and gateway/on-device keys are not the user's,
+so only `gemini` and `openai` can become `AiInvalidKeyError`.
+
+**Timeouts are 60 s, not the 30/45 s first sketched.** Structured plan generation on a thinking
+model can legitimately run past 40 s, and a timeout that fires on a working request is worse than a
+slow one. A timeout is retried once (a stalled request usually stays stalled); an auth error never.
+
+**Thinking parameters** (checked against https://ai.google.dev/gemini-api/docs/thinking, which now
+documents `thinking_level` for both families and does not mention `thinkingBudget` at all): the table
+in `GEMINI_MODEL_CAPABILITIES` still sends `thinkingBudget` to 2.5 models and `thinkingLevel` to
+Gemini 3, never both, because that is what the installed SDK types and earlier docs specify. If a
+2.5 model starts rejecting the budget, switch that family to `kind: 'level'` — it is one table
+entry. Pro models cannot disable thinking, so structured calls ask them for the lowest allowed
+value (Gemini 3 Pro `LOW`, 2.5 Pro budget 128) rather than zero.
+
+**Cold-start scan latency** has not been measured on a release build. The scan now logs
+`[SmartCamera.aiPhoto] image-read=… settings-read=… request=… total=…` (`adb logcat`), and
+`AiService.getAiConfig` no longer awaits up to a dozen settings reads in sequence. If the log shows a
+slow `settings-read` or `image-read` on the first scan after boot, record the cause in `FIXES.md`.
+
+## Photo viewer, saving and feedback links
+
+**Why "save" is the share sheet.** Saving straight to the gallery needs `expo-media-library`, which
+declares read permissions of its own (`READ_MEDIA_*` on Android) that the committed manifest would
+have to be diffed and stripped of, and an iOS add-only usage string; the app's rule is that photo
+picking needs no media permission at all. The share sheet reaches the same place ("Save image" / "Save
+to Photos") with no permission, so the manual save shipped on it and the automatic save-after-logging
+setting is parked in `FUTURE_FEATURES.md` until someone can run a prebuild and read the manifest.
+
+**Zoom math is focal-point based.** The image point under the focal is `(focal − t) / s`; holding it
+fixed while the scale changes gives `t' = focal − (focal − t) · s'/s`, clamped to the scaled image's
+edge. That single formula serves pinch, double-tap and wheel zoom alike and is why a double-tap
+zooms toward the tapped spot instead of the center.
+
+**Feedback links never carry user data.** A GitHub issue form is pre-filled from query parameters
+named after the form's field ids, so the version, platform and language are in the URL and nothing
+else; the link only opens a page, and the user decides what to submit. The support email's body has
+the same three lines in plain text so the user can read (and delete) them before sending.
+
 ## Encryption and App Store characterization
 
 Musclog uses standard AES through `crypto-js` for selected local fields and optional passphrase

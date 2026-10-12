@@ -25,6 +25,10 @@ import migrationV23 from '@/database/migrations/2026/07/migration-v23';
 import migrationV24 from '@/database/migrations/2026/08/migration-v24';
 import migrationV25 from '@/database/migrations/2026/08/migration-v25';
 import migrationV26 from '@/database/migrations/2026/08/migration-v26';
+import migrationV27 from '@/database/migrations/2026/10/migration-v27';
+import migrationV28 from '@/database/migrations/2026/10/migration-v28';
+import migrationV29 from '@/database/migrations/2026/10/migration-v29';
+import migrationV30 from '@/database/migrations/2026/10/migration-v30';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -123,5 +127,21 @@ export const migrations = schemaMigrations({
 
     // Version 26: Give logged sets an explicit lifecycle status instead of overloading RPE.
     migrationV26,
+
+    // Version 27: Forgiving exercise search. Adds exercises.search_text (derived, backfilled in JS
+    // at boot) and the user-defined exercise_aliases table.
+    migrationV27,
+
+    // Version 28: Gym profiles, exercise restrictions (never / injury / dislike) and the swap
+    // reason recorded on a replaced log exercise.
+    migrationV28,
+
+    // Version 29: Persist why a planned set was started at progressed numbers
+    // (workout_log_sets.adjustment_json), so the session can explain and undo it.
+    migrationV29,
+
+    // Version 30: Per-exercise preferences (exercise_user_settings: weight unit + note) and the
+    // session note / distance / activity columns on workout_logs.
+    migrationV30,
   ],
 });

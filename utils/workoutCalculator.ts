@@ -2,7 +2,11 @@ import type { EquipmentType, Gender } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 
 import { roundToDecimalPlaces } from './roundDecimal';
-import { isPerformedWorkoutSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  isWarmupSet,
+  type WorkoutSetCompletionStatus,
+} from './workoutSetCompletion';
 
 /**
  * Set fields needed for volume calculation (matches WorkoutLogSet subset).
@@ -93,12 +97,15 @@ export function calculateSessionVolumeFromSets(
     reps?: number;
     repsInReserve?: number;
     completionStatus?: WorkoutSetCompletionStatus | null;
+    setType?: string | null;
   }[],
   exerciseById: Map<string, ExerciseVolumeData>,
   bodyWeightKg: number,
   options?: { onlyCompletedSets?: boolean }
 ): number {
-  const list = options?.onlyCompletedSets ? sets.filter(isPerformedWorkoutSet) : sets;
+  // A warm-up never counts toward volume — not even in a preview of sets still to be done.
+  const working = sets.filter((s) => !isWarmupSet(s));
+  const list = options?.onlyCompletedSets ? working.filter(isPerformedWorkoutSet) : working;
   const byExercise = new Map<string, typeof list>();
   for (const s of list) {
     const id = s.exerciseId ?? '';

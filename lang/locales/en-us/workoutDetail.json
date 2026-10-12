@@ -45,6 +45,7 @@
     "region_core": "Core",
     "region_legs": "Legs",
     "region_shoulders": "Shoulders",
-    "repMotion": "Rep Motion"
+    "repMotion": "Rep Motion",
+    "notes": "Notes"
   }
 }

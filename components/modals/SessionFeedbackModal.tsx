@@ -1,12 +1,15 @@
 import { ArrowRight, ThumbsUp } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, ScrollView, Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { Button } from '@/components/theme/Button';
 import { Slider } from '@/components/theme/Slider';
+import { TextInput } from '@/components/theme/TextInput';
 import { useTheme } from '@/hooks/useTheme';
+import { MAX_NOTE_LENGTH } from '@/utils/noteText';
 
 type SessionFeedbackModalProps = {
   visible: boolean;
@@ -15,6 +18,8 @@ type SessionFeedbackModalProps = {
     difficulty: number;
     exhaustion: number;
     enjoyment: number;
+    /** How the session went, in the user's words. Absent when left blank. */
+    notes?: string;
   }) => void | Promise<void>;
 };
 
@@ -86,6 +91,7 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
   const [difficulty, setDifficulty] = useState(7);
   const [exhaustion, setExhaustion] = useState(5);
   const [enjoyment, setEnjoyment] = useState(9);
+  const [notes, setNotes] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -98,7 +104,8 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
     // Small delay to allow React to render the loading state before closing
     await new Promise<void>((resolve) => setTimeout(resolve, 1));
     try {
-      await (onSubmit?.({ difficulty, exhaustion, enjoyment }) ?? Promise.resolve());
+      await (onSubmit?.({ difficulty, exhaustion, enjoyment, notes: notes.trim() || undefined }) ??
+        Promise.resolve());
       // Don't call onClose — parent navigates (router.replace), so the screen unmounts and the modal goes with it; closing first would cause a flash.
     } finally {
       setIsSubmitting(false);
@@ -147,9 +154,10 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
       headerIcon={headerIcon}
       footer={footer}
     >
-      <ScrollView
+      <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         style={webScrollViewStyle}
+        bottomOffset={16}
         contentContainerStyle={{
           paddingBottom: theme.spacing.padding.xl,
         }}
@@ -179,8 +187,18 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
             leftLabel={t('sessionFeedback.disliked')}
             rightLabel={t('sessionFeedback.loved')}
           />
+
+          <TextInput
+            label={t('sessionFeedback.notes')}
+            value={notes}
+            onChangeText={(text) => setNotes(text.slice(0, MAX_NOTE_LENGTH))}
+            placeholder={t('sessionFeedback.notesPlaceholder')}
+            multiline
+            numberOfLines={3}
+            selectTextOnFocus={false}
+          />
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </BottomPopUpMenu>
   );
 }

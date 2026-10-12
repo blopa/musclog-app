@@ -54,11 +54,22 @@ describe('website header navigation', () => {
   });
 });
 
+import { GITHUB_LICENSE_URL, GITHUB_REPO_URL } from '@/constants/misc';
+
+/** The link table names its project URLs by constant; resolve them so the test still reads as URLs. */
+const PROJECT_URLS: Record<string, string> = {
+  GITHUB_REPO_URL,
+  GITHUB_LICENSE_URL,
+};
+const linkOf = (token: string) => PROJECT_URLS[token] ?? token.replace(/^'|'$/g, '');
+
 describe('website mobile menu', () => {
   const mobileMenu = sliceBetween('export function MobileMenu()', 'export function Header()');
 
   it('carries every important destination, so they need not live in the footer', () => {
-    const links = [...mobileMenu.matchAll(/href: '([^']+)'/g)].map((match) => match[1]);
+    const links = [...mobileMenu.matchAll(/href: ('[^']+'|[A-Z_]+)/g)].map((match) =>
+      linkOf(match[1])
+    );
 
     expect(links).toEqual([
       '/home#features',
@@ -69,7 +80,7 @@ describe('website mobile menu', () => {
       '/faq',
       '/gameboy',
       '/alternatives',
-      'https://github.com/blopa/musclog-app',
+      GITHUB_REPO_URL,
     ]);
   });
 
@@ -112,7 +123,7 @@ describe('website footer', () => {
   });
 
   it('still lists the secondary and legal links for every viewport', () => {
-    const links = [...footer.matchAll(/href: '([^']+)'/g)].map((match) => match[1]);
+    const links = [...footer.matchAll(/href: ('[^']+'|[A-Z_]+)/g)].map((match) => linkOf(match[1]));
 
     expect(links).toEqual([
       '/privacy',
@@ -123,8 +134,8 @@ describe('website footer', () => {
       '/faq',
       '/alternatives',
       '/blog',
-      'https://github.com/blopa/musclog-app/blob/main/LICENSE',
-      'https://github.com/blopa/musclog-app',
+      GITHUB_LICENSE_URL,
+      GITHUB_REPO_URL,
     ]);
   });
 });

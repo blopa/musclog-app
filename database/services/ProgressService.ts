@@ -33,7 +33,7 @@ import { prepareProgressWeightHistory } from '@/utils/progressWeightHistory';
 import { TREND_WEIGHT_WARMUP_DAYS } from '@/utils/trendWeight';
 import { cmToDisplay, kgToDisplay, storedWeightToKg } from '@/utils/unitConversion';
 import { calculateExerciseVolume } from '@/utils/workoutCalculator';
-import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isWorkingSet } from '@/utils/workoutSetCompletion';
 
 import { type MenstrualPhase, MenstrualService } from './MenstrualService';
 import { NutritionGoalService } from './NutritionGoalService';
@@ -613,7 +613,7 @@ export class ProgressService {
       .fetch();
 
     const setCountsByLogEx = new Map<string, number>();
-    for (const s of allSets.filter(isPerformedWorkoutSet)) {
+    for (const s of allSets.filter(isWorkingSet)) {
       const count = setCountsByLogEx.get(s.logExerciseId) || 0;
       setCountsByLogEx.set(s.logExerciseId, count + 1);
     }
@@ -1179,7 +1179,7 @@ export class ProgressService {
         : [];
 
     const setsByLogExId = new Map<string, WorkoutLogSet[]>();
-    for (const s of allSets.filter(isPerformedWorkoutSet)) {
+    for (const s of allSets.filter(isWorkingSet)) {
       const existing = setsByLogExId.get(s.logExerciseId) || [];
       existing.push(s);
       setsByLogExId.set(s.logExerciseId, existing);

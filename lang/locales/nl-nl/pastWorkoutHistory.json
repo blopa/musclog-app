@@ -9,7 +9,9 @@
     "stats": {
       "duration": "Duur",
       "volume": "Volume",
-      "calories": "Calorieën"
+      "calories": "Calorieën",
+      "distance": "Afstand",
+      "pace": "Tempo"
     },
     "prBadge": {
       "singular": "{{count}} PR",

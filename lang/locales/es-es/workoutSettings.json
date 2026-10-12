@@ -1,0 +1,95 @@
+{
+  "workoutSettings": {
+    "title": "Ajustes de entrenamiento",
+    "gyms": {
+      "title": "Mis gimnasios",
+      "subtitle": "Describe el equipo con el que entrenas. La calculadora de discos, los saltos de peso y las sugerencias de ejercicios siguen a tu gimnasio activo.",
+      "empty": "Aún no has configurado ningún gimnasio",
+      "emptyHint": "Añade uno para obtener cálculos de discos y saltos de peso acordes a tu equipo.",
+      "add": "Añadir un gimnasio",
+      "active": "Activo",
+      "makeActive": "Usar este gimnasio",
+      "noGym": "No usar ningún gimnasio",
+      "summary": "Barra de {{bar}} {{unit}} · {{plates}} tamaños de disco · {{equipment}} tipos de equipo"
+    },
+    "editGym": {
+      "title": "Editar gimnasio",
+      "createTitle": "Nuevo gimnasio",
+      "name": "Nombre",
+      "namePlaceholder": "p. ej. Gimnasio en casa",
+      "bar": "Peso de la barra ({{unit}})",
+      "increment": "Salto de peso mínimo ({{unit}})",
+      "incrementHint": "Se usa en mancuernas, máquinas y poleas.",
+      "plates": "Discos",
+      "platesHint": "Cuántos discos de cada tipo tienes. Los discos se cargan en pares.",
+      "fewerPlates": "Menos discos de {{weight}} {{unit}}",
+      "morePlates": "Más discos de {{weight}} {{unit}}",
+      "removePlate": "Quitar los discos de {{weight}} {{unit}}",
+      "plateWeight": "Peso del disco nuevo ({{unit}})",
+      "addPlate": "Añadir disco",
+      "resetPlates": "Discos estándar",
+      "equipment": "Equipo",
+      "equipmentHint": "No se sugerirán ejercicios que necesiten otro equipo en este gimnasio.",
+      "save": "Guardar gimnasio",
+      "delete": "Eliminar gimnasio",
+      "deleteTitle": "¿Eliminar este gimnasio?",
+      "deleteMessage": "Tus entrenamientos y tu historial no se ven afectados.",
+      "saveFailed": "No se pudo guardar el gimnasio. Inténtalo de nuevo."
+    },
+    "restrictions": {
+      "title": "Ejercicios que evitar",
+      "subtitle": "No se sugerirán en cambios ni en entrenamientos generados.",
+      "empty": "Nada por aquí. Marca un ejercicio desde su pantalla o al cambiarlo.",
+      "clear": "Permitir de nuevo",
+      "until": "Hasta el {{date}}",
+      "healed": "Recuperado",
+      "limit": "Puedes evitar hasta {{count}} ejercicios.",
+      "kind": {
+        "never": "No sugerir nunca",
+        "injury": "Lesión",
+        "dislike": "No me gusta"
+      },
+      "badge": {
+        "never": "No sugerir nunca",
+        "injury": "Lesión",
+        "dislike": "No me gusta"
+      },
+      "expiry": {
+        "2w": "2 semanas",
+        "4w": "1 mes",
+        "12w": "3 meses",
+        "open": "Hasta que yo diga lo contrario"
+      }
+    },
+    "plateCalculator": {
+      "title": "Calculadora de discos",
+      "subtitle": "Cargando {{weight}} {{unit}}",
+      "belowBar": "Es menos que la barra de {{bar}} {{unit}}.",
+      "barOnly": "Solo la barra: no hacen falta discos.",
+      "perSide": "A cada lado",
+      "plateLine": "{{weight}} {{unit}}",
+      "bar": "Barra",
+      "exact": "Cargado: exactamente {{weight}} {{unit}}",
+      "closest": "Lo más cercano que puedes cargar: {{weight}} {{unit}} (te faltan {{short}} {{unit}})",
+      "defaultsHint": "Se usan discos estándar. Configura tu gimnasio en Ajustes de entrenamiento para obtener resultados exactos.",
+      "open": "Discos para {{weight}} {{unit}}"
+    },
+    "restTimer": {
+      "title": "Temporizador de descanso",
+      "subtitle": "Cómo funcionan los descansos entre series.",
+      "autoStart": "Iniciar automáticamente",
+      "autoStartHint": "Tras completar una serie. Desactívalo para iniciar el descanso tú mismo con el botón Iniciar descanso.",
+      "haptics": "Cuenta atrás con vibración",
+      "hapticsHint": "Un toque en los últimos tres segundos y una vibración al llegar a cero.",
+      "defaultRest": "Descanso por defecto",
+      "defaultRestHint": "Se usa en las series que no indican su propio descanso.",
+      "seconds": "s"
+    },
+    "autonomy": {
+      "title": "Al empezar un entrenamiento",
+      "subtitle": "Decide cuántos de los números de hoy elige la app.",
+      "suggest": "Sugerir pesos y repeticiones",
+      "suggestHint": "Cada ejercicio empieza según cómo fue su última sesión: más carga, más repeticiones, una descarga o repetir. Verás el motivo y podrás deshacerlo."
+    }
+  }
+}

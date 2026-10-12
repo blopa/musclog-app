@@ -1289,9 +1289,10 @@ export class NutritionService {
     date: Date,
     mealType: MealType,
     amount: number = 100, // Default to 100g for custom meals
-    options?: { groupId?: string; loggedMealName?: string }
+    options?: { groupId?: string; loggedMealName?: string; consumedTime?: Date }
   ): Promise<NutritionLog> {
-    const consumed = consumedDateTimeOnDay(date);
+    // `consumedTime` sets the time of day on `date`; leaving it out keeps "that day, right now".
+    const consumed = consumedDateTimeOnDay(date, options?.consumedTime);
 
     if (mealData.foodId) {
       return await NutritionService.logFood(
@@ -1467,9 +1468,15 @@ export class NutritionService {
     }[],
     date: Date,
     mealType: MealType,
-    options?: { groupId?: string; loggedMealName?: string; imageUrl?: string }
+    options?: {
+      groupId?: string;
+      loggedMealName?: string;
+      imageUrl?: string;
+      /** Time of day on `date`; omit for "that day, right now". */
+      consumedTime?: Date;
+    }
   ): Promise<NutritionLog[]> {
-    const consumed = consumedDateTimeOnDay(date);
+    const consumed = consumedDateTimeOnDay(date, options?.consumedTime);
     const now = Date.now();
 
     const logs = await database.write(async () => {

@@ -1,9 +1,11 @@
 import Head from 'expo-router/head';
 
+import { GITHUB_REPO_URL } from '@/constants/misc';
+
 const SITE_ORIGIN = 'https://musclog.app';
 const SITE_NAME = 'Musclog';
 const LOGO_URL = `${SITE_ORIGIN}/images/seo-image.png`;
-const SAME_AS = ['https://github.com/blopa/musclog-app', 'https://instagram.com/musclog.app'];
+const SAME_AS = [GITHUB_REPO_URL, 'https://instagram.com/musclog.app'];
 
 /**
  * Expo Router's Head uses react-helmet-async, which requires script content as

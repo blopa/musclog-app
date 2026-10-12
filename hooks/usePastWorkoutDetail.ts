@@ -13,6 +13,7 @@ import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/
 import { transformWorkoutToDetailData, type WorkoutDetailData } from '@/utils/workoutDetail';
 
 import { useDateFnsLocale } from './useDateFnsLocale';
+import { useExerciseUserSettings } from './useExerciseUserSettings';
 import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';
 
@@ -39,6 +40,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
   const { t, i18n } = useTranslation();
   const appNumberLocale = i18n.resolvedLanguage ?? i18n.language;
   const { units } = useSettings();
+  const { unitsFor } = useExerciseUserSettings();
   const theme = useTheme();
   const dateFnsLocale = useDateFnsLocale();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -138,7 +140,8 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
               dateFnsLocale,
               theme,
               appNumberLocale,
-              logExs.map((le) => le.exerciseId)
+              logExs.map((le) => le.exerciseId),
+              (exerciseId) => unitsFor(exerciseId, units)
             )
           ).pipe(
             map((transformed) => ({
@@ -186,7 +189,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       });
 
     return () => subscription.unsubscribe();
-  }, [visible, workoutId, t, units, dateFnsLocale, appNumberLocale, theme]);
+  }, [visible, workoutId, t, units, unitsFor, dateFnsLocale, appNumberLocale, theme]);
 
   const reload = () => {
     if (!workoutId) {
@@ -211,7 +214,8 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
           dateFnsLocale,
           theme,
           appNumberLocale,
-          logExs.map((le) => le.exerciseId)
+          logExs.map((le) => le.exerciseId),
+          (exerciseId) => unitsFor(exerciseId, units)
         );
       })
       .then(setWorkout)

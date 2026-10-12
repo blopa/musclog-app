@@ -8,6 +8,7 @@ import Food from '@/database/models/Food';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
 import { ExerciseService } from '@/database/services/ExerciseService';
+import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestionService';
 import { FoodService } from '@/database/services/FoodService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
@@ -33,7 +34,8 @@ import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
-import { isPerformedWorkoutSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
+import { buildWorkoutPlanExerciseSection } from './workoutPlanPrompt';
+import { isWorkingSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
@@ -407,7 +409,7 @@ export const getMinimalWorkoutSummary = async (
   try {
     const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
     const { workoutLog, sets } = details;
-    const loggedSets = sets.filter(isPerformedWorkoutSet);
+    const loggedSets = sets.filter(isWorkingSet);
     const exerciseCount = new Set(loggedSets.map((set) => set.exerciseId).filter(Boolean)).size;
     const setCount = loggedSets.length;
 
@@ -492,7 +494,7 @@ function buildWorkoutSummaryFromDetails(
   const { workoutLog, sets, exercises } = details;
   const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
   const exercisesByName = new Map<string, { sets: typeof sets; exercise: (typeof exercises)[0] }>();
-  for (const set of sets.filter(isPerformedWorkoutSet)) {
+  for (const set of sets.filter(isWorkingSet)) {
     const exercise = exerciseMap.get(set.exerciseId ?? '');
     if (!exercise) {
       continue;
@@ -694,11 +696,19 @@ export const createWorkoutPlanPrompt = async (
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
   const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  let exercisesList = '[]';
+  let exerciseSection = buildWorkoutPlanExerciseSection({ exercises: [] });
   try {
-    const exercises = await ExerciseService.getAllExercises();
-    const list = exercises.map((e) => ({ id: e.id, name: e.name ?? '' }));
-    exercisesList = JSON.stringify(list, null, 2);
+    // Only what may be suggested: no exercise the user is avoiding, none the gym cannot supply.
+    const {
+      exercises,
+      disliked,
+      context: suggestionContext,
+    } = await ExerciseSuggestionService.getSuggestibleExercises();
+    exerciseSection = buildWorkoutPlanExerciseSection({
+      exercises,
+      dislikedNames: disliked.map((exercise) => exercise.name),
+      gym: suggestionContext.gym,
+    });
   } catch (error) {
     console.error('Error fetching exercises for workout plan prompt:', error);
   }
@@ -708,11 +718,7 @@ export const createWorkoutPlanPrompt = async (
     "Generate a workout plan with exercises, reps, sets, and percentages of 1 rep max based on the user's fitness goals, activity level, weight, height and available equipment.",
     'Give the plan as a whole a concise planTitle (for example "Push Pull Legs"); do not reuse a single workout title.',
     "If you can't infer what workout the user wants you to generate from the messages, simply generate a basic weekly workout plan, like a 3-day split.",
-    'You MUST only use exercises from the list below. For each exercise in your plan, return the exact "id" from this list (do not invent IDs).',
-    `Available exercises (id, name):`,
-    '```json',
-    exercisesList,
-    '```',
+    ...exerciseSection,
     userDetails,
   ].join('\n');
 };

@@ -12,6 +12,7 @@ import i18n from '@/lang/lang';
 import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
+import { resolveHealthActivity } from '@/utils/healthWorkoutActivity';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -36,13 +37,24 @@ export interface CompletedWorkoutPayload {
   units?: Units;
   /** Per-exercise breakdown for segments and notes */
   segmentItems?: SegmentItem[];
+  /** A quick walk/run log: which activity it was, so it maps to WALKING/RUNNING and not generic cardio. */
+  activity?: 'walk' | 'run';
+  /** Distance covered, in metres. Written as its own record where the platform needs one. */
+  distanceM?: number;
 }
 
 /**
  * Maps app workout type to Health Connect ExerciseType constant.
  */
-function mapWorkoutTypeToHealthConnect(workoutType: string | undefined): number {
-  switch (workoutType) {
+function mapWorkoutTypeToHealthConnect(
+  workoutType: string | undefined,
+  activity?: 'walk' | 'run'
+): number {
+  switch (resolveHealthActivity(workoutType, activity)) {
+    case 'walking':
+      return ExerciseType.WALKING;
+    case 'running':
+      return ExerciseType.RUNNING;
     case 'strength':
       return ExerciseType.STRENGTH_TRAINING;
     case 'cardio':
@@ -51,7 +63,6 @@ function mapWorkoutTypeToHealthConnect(workoutType: string | undefined): number 
       return ExerciseType.STRETCHING;
     case 'calisthenics':
       return ExerciseType.CALISTHENICS;
-    case 'other':
     default:
       return ExerciseType.OTHER_WORKOUT;
   }
@@ -194,7 +205,7 @@ export async function writeWorkoutToHealthConnect(
 
     const record = {
       recordType: 'ExerciseSession' as const,
-      exerciseType: mapWorkoutTypeToHealthConnect(payload.workoutType),
+      exerciseType: mapWorkoutTypeToHealthConnect(payload.workoutType, payload.activity),
       startTime,
       endTime,
       title: `Musclog - ${payload.workoutName}`,
@@ -207,6 +218,31 @@ export async function writeWorkoutToHealthConnect(
     };
 
     const recordIds = await healthConnectService.insertRecords([record]);
+
+    // Distance is not a field of the session: Health Connect keeps it as a record of its own, and
+    // it needs its own permission. It is best effort — the session is already saved, and a user who
+    // has not granted distance still gets the walk or run.
+    if (payload.distanceM != null && payload.distanceM > 0) {
+      try {
+        if (await healthConnectService.hasPermissionForRecordType('Distance', 'write')) {
+          await healthConnectService.insertRecords([
+            {
+              recordType: 'Distance' as const,
+              startTime,
+              endTime,
+              distance: { value: payload.distanceM, unit: 'meters' as const },
+              metadata: {
+                dataOrigin: 'Musclog',
+                recordingMethod: RecordingMethod.RECORDING_METHOD_ACTIVELY_RECORDED,
+              },
+            },
+          ]);
+        }
+      } catch (distanceError) {
+        console.warn('[healthConnectWorkout] Failed to write distance:', distanceError);
+      }
+    }
+
     return recordIds[0];
   } catch (error) {
     handleError(error, 'healthConnectWorkout.android.writeWorkoutToHealthConnect');

@@ -1,6 +1,9 @@
 import {
+  adjustedFields,
   computeIntraSessionAdjustment,
   DEFAULT_TARGET_REPS_IN_RESERVE,
+  isStartAdjustment,
+  type SetAdjustment,
 } from '@/utils/setAdjustment';
 
 describe('computeIntraSessionAdjustment', () => {
@@ -47,6 +50,38 @@ describe('computeIntraSessionAdjustment', () => {
       to: result.weight,
       targetRepsInReserve: DEFAULT_TARGET_REPS_IN_RESERVE,
     });
+  });
+
+  it('rounds a re-targeted weight with the supplied loadable rounding', () => {
+    const input = {
+      ...base,
+      progressionMode: 'weight_first' as const,
+      previousSet: { weight: 60, reps: 10, repsInReserve: 0 },
+      plannedSet: { weight: 60, reps: 5, repsInReserve: 0 },
+    };
+    const whole = computeIntraSessionAdjustment(input);
+    const toTwoAndAHalf = computeIntraSessionAdjustment({
+      ...input,
+      roundLoad: (kg) => Math.round(kg / 2.5) * 2.5,
+    });
+
+    expect(Number.isInteger(whole.weight)).toBe(true);
+    expect(toTwoAndAHalf.weight % 2.5).toBe(0);
+    expect(toTwoAndAHalf.adjustment).toMatchObject({ field: 'weight', to: toTwoAndAHalf.weight });
+  });
+
+  it('never calls the loadable rounding in reps_first mode, where no weight is recomputed', () => {
+    const roundLoad = jest.fn((kg: number) => kg);
+
+    computeIntraSessionAdjustment({
+      ...base,
+      progressionMode: 'reps_first',
+      previousSet: { weight: 60, reps: 10, repsInReserve: 0 },
+      plannedSet: { weight: 60, reps: 5, repsInReserve: 0 },
+      roundLoad,
+    });
+
+    expect(roundLoad).not.toHaveBeenCalled();
   });
 
   it('reports a bare carry-over when the target RIR needs no further change', () => {
@@ -154,5 +189,73 @@ describe('computeIntraSessionAdjustment', () => {
     });
 
     expect(result.adjustment?.targetRepsInReserve).toBe(4);
+  });
+});
+
+describe('which numbers carry the adjusted marker', () => {
+  const start = (overrides: Record<string, unknown>): SetAdjustment =>
+    ({
+      cause: 'progression',
+      field: 'weight',
+      from: 60,
+      to: 65,
+      plan: { weightKg: 60, reps: 8 },
+      last: { weightKg: 62, reps: 8, averageRepsInReserve: 4 },
+      now: { weightKg: 65, reps: 8 },
+      ...overrides,
+    }) as SetAdjustment;
+  const intra = (overrides: Record<string, unknown>): SetAdjustment =>
+    ({
+      cause: 'target_rir',
+      field: 'weight',
+      from: 60,
+      to: 65,
+      estimatedOneRepMaxKg: 100,
+      targetRepsInReserve: 2,
+      ...overrides,
+    }) as SetAdjustment;
+
+  it('marks nothing when there is no adjustment', () => {
+    expect(adjustedFields(null)).toEqual({ weight: false, reps: false });
+    expect(adjustedFields(undefined)).toEqual({ weight: false, reps: false });
+  });
+
+  it("never marks a carry-over: that load is the user's own, not the app's calculation", () => {
+    expect(adjustedFields(intra({ cause: 'carry_over' }))).toEqual({ weight: false, reps: false });
+  });
+
+  it('marks a re-targeted value on the field it moved, and only that one', () => {
+    expect(adjustedFields(intra({ field: 'weight' }))).toEqual({ weight: true, reps: false });
+    expect(adjustedFields(intra({ field: 'reps' }))).toEqual({ weight: false, reps: true });
+  });
+
+  it('marks a start adjustment on whatever the plan and the set now disagree about', () => {
+    expect(adjustedFields(start({}))).toEqual({ weight: true, reps: false });
+    expect(adjustedFields(start({ field: 'reps', now: { weightKg: 60, reps: 9 } }))).toEqual({
+      weight: false,
+      reps: true,
+    });
+    // A progression that reset the reps moved BOTH numbers, and both are the app's.
+    expect(adjustedFields(start({ now: { weightKg: 65, reps: 6 } }))).toEqual({
+      weight: true,
+      reps: true,
+    });
+  });
+
+  it('marks every cause of a start adjustment the same way, so deload and repeat are not hidden', () => {
+    expect(adjustedFields(start({ cause: 'deload', now: { weightKg: 55, reps: 8 } })).weight).toBe(
+      true
+    );
+    expect(adjustedFields(start({ cause: 'repeat', now: { weightKg: 62, reps: 8 } })).weight).toBe(
+      true
+    );
+  });
+
+  it('tells start adjustments from between-sets ones', () => {
+    expect(isStartAdjustment(start({}))).toBe(true);
+    expect(isStartAdjustment(start({ cause: 'deload' }))).toBe(true);
+    expect(isStartAdjustment(start({ cause: 'repeat' }))).toBe(true);
+    expect(isStartAdjustment(intra({}))).toBe(false);
+    expect(isStartAdjustment(intra({ cause: 'carry_over' }))).toBe(false);
   });
 });

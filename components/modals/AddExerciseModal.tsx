@@ -19,7 +19,9 @@ import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
+import { describeExerciseRow } from '@/components/workout/describeExerciseRow';
 import { type EquipmentType, type MechanicType, type MuscleGroup } from '@/database/models';
+import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -151,6 +153,13 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     batchSize: 20,
   });
 
+  // Exercises the user avoids stay selectable — adding one is a deliberate act — but are marked.
+  const { active: restrictions } = useExerciseRestrictions();
+  const restrictionKindById = useMemo(
+    () => new Map(restrictions.map((restriction) => [restriction.exerciseId, restriction.kind])),
+    [restrictions]
+  );
+
   // Group exercises by muscle group
   const exercises = useMemo(() => {
     const groupedExercises: Record<MuscleGroupFilter, ExerciseOption[]> = {
@@ -179,7 +188,11 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       const exerciseOption: ExerciseOption = {
         id: exercise.id,
         label: exercise.name ?? '',
-        description: `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
+        description: describeExerciseRow(
+          `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
+          restrictionKindById.get(exercise.id),
+          t
+        ),
         icon: Icon,
         iconBgColor:
           exerciseType === 'bodyweight'
@@ -205,6 +218,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     theme.colors.accent.primary10,
     theme.colors.background.ink5,
     theme.colors.text.secondary,
+    restrictionKindById,
     t,
   ]);
 

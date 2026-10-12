@@ -11,7 +11,8 @@
       "scanBarcode": "Сканировать\nштрихкод",
       "aiPhoto": "Фото\nИИ",
       "myMeals": "Мои\nблюда",
-      "addNote": "Добавить\nзаметку"
+      "addNote": "Добавить\nзаметку",
+      "logCardio": "Записать\nпрогулку/бег"
     },
     "sections": {
       "recentWorkouts": "Последние тренировки",

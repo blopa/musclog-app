@@ -12,6 +12,12 @@ export interface UseExercisesParams {
   mode?: 'list' | 'search' | 'by-muscle' | 'by-equipment' | 'by-mechanic' | 'frequent'; // Default: 'list'
   searchTerm?: string; // For search mode
   muscleGroup?: string; // For by-muscle mode
+  /** List mode: any of these `muscle_group` values (a body region spans two vocabularies). */
+  muscleGroups?: readonly string[];
+  /** List mode: only these equipment types. An empty array matches nothing. */
+  equipmentTypes?: readonly string[];
+  /** List mode: exercises to leave out, in SQL so pages stay full. */
+  excludeIds?: readonly string[];
   equipmentType?: string; // For by-equipment mode
   mechanicType?: string; // For by-mechanic mode
   initialLimit?: number; // Default: 20
@@ -60,6 +66,9 @@ export function useExercises({
   mode = 'list',
   searchTerm,
   muscleGroup,
+  muscleGroups,
+  equipmentTypes,
+  excludeIds,
   equipmentType,
   mechanicType,
   initialLimit = 20,
@@ -68,6 +77,21 @@ export function useExercises({
   enableReactivity = true,
   visible = true,
 }: UseExercisesParams = {}): UseExercisesResult {
+  // Callers build these arrays inline, so key them by value or every render would reload the list.
+  const listFilterKey = JSON.stringify([
+    muscleGroups ?? null,
+    equipmentTypes ?? null,
+    excludeIds ?? null,
+  ]);
+  const listArrayFilters = useMemo(() => {
+    const [groups, equipment, excluded] = JSON.parse(listFilterKey) as (string[] | null)[];
+    return {
+      muscleGroups: groups ?? undefined,
+      equipmentTypes: equipment ?? undefined,
+      excludeIds: excluded ?? undefined,
+    };
+  }, [listFilterKey]);
+
   // State
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -128,6 +152,7 @@ export function useExercises({
           const filters = {
             muscleGroup: muscleGroup || undefined,
             searchTerm: searchTerm?.trim() || undefined,
+            ...listArrayFilters,
           };
           const page = await ExerciseService.getExercisesPaginatedFiltered(
             initialLimit + 1,
@@ -154,7 +179,17 @@ export function useExercises({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, mode, searchTerm, muscleGroup, equipmentType, mechanicType, initialLimit, getAll]);
+  }, [
+    visible,
+    mode,
+    searchTerm,
+    muscleGroup,
+    listArrayFilters,
+    equipmentType,
+    mechanicType,
+    initialLimit,
+    getAll,
+  ]);
 
   // Load more exercises (pagination)
   const loadMore = useCallback(async () => {
@@ -171,6 +206,7 @@ export function useExercises({
       const filters = {
         muscleGroup: muscleGroup || undefined,
         searchTerm: searchTerm?.trim() || undefined,
+        ...listArrayFilters,
       };
       const page = await ExerciseService.getExercisesPaginatedFiltered(
         batchSize + 1,
@@ -203,6 +239,7 @@ export function useExercises({
     mode,
     getAll,
     muscleGroup,
+    listArrayFilters,
     searchTerm,
   ]);
 

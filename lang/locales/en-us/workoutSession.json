@@ -48,7 +48,37 @@
       "label": "Adjusted",
       "carryOver": "Weight follows your last set ({{to}} {{unit}}) instead of the planned {{from}} {{unit}}.",
       "targetRirWeight": "Weight changed from {{from}} to {{to}} {{unit}} — your last set puts your estimated 1RM at {{oneRepMax}} {{unit}}, so this keeps {{rir}} reps in reserve.",
-      "targetRirReps": "Reps changed from {{from}} to {{to}} — your last set puts your estimated 1RM at {{oneRepMax}} {{unit}}, so this keeps {{rir}} reps in reserve at the current weight."
+      "targetRirReps": "Reps changed from {{from}} to {{to}} — your last set puts your estimated 1RM at {{oneRepMax}} {{unit}}, so this keeps {{rir}} reps in reserve at the current weight.",
+      "startProgressionWeight": "Up to {{to}} {{unit}} from last time's {{last}} {{unit}} — you had about {{rir}} reps in reserve.",
+      "startProgressionWeightReps": "Up to {{to}} {{unit}} × {{reps}} from last time's {{last}} {{unit}} × {{lastReps}} — you had about {{rir}} reps in reserve.",
+      "startProgressionReps": "One more rep than last time ({{to}}, not {{last}}) — you had about {{rir}} reps in reserve.",
+      "startDeload": "Down to {{to}} {{unit}} from last time's {{last}} {{unit}} — you had no reps left in reserve.",
+      "startRepeatWeight": "Starting at {{to}} {{unit}}, what you used last time, instead of the plan's {{from}} {{unit}}.",
+      "startRepeatReps": "Starting at {{to}} reps, what you did last time, instead of the plan's {{from}}.",
+      "keepLast": "Keep last time's",
+      "usePlan": "Use the plan's",
+      "startDeloadWeightReps": "Down to {{to}} {{unit}} × {{reps}} from last time's {{last}} {{unit}} × {{lastReps}} — you had no reps left in reserve.",
+      "startRepeatWeightReps": "Starting at {{to}} {{unit}} × {{reps}}, what you did last time, instead of the plan's {{from}} {{unit}} × {{planReps}}."
+    },
+    "startRest": "Start rest ({{seconds}}s)",
+    "warmup": {
+      "badge": "WARM-UP",
+      "add": "Add warm-up sets",
+      "remove": "Remove warm-ups"
+    },
+    "notes": {
+      "title": "Notes",
+      "add": "Add note",
+      "edit": "Edit note",
+      "save": "Save notes",
+      "thisWorkout": "This workout",
+      "thisWorkoutPlaceholder": "How it felt, what to change next set",
+      "alsoTemplate": "Also save to the workout",
+      "alsoTemplateHint": "Next time you start this workout, the note is already there.",
+      "always": "Always for this exercise",
+      "alwaysPlaceholder": "A cue for every workout, e.g. elbows tucked",
+      "alwaysHint": "Shown above the set whenever you do this exercise.",
+      "failed": "Couldn't save the notes. Please try again."
     }
   }
 }

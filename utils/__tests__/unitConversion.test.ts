@@ -2,21 +2,27 @@ import type { Units } from '@/constants/settings';
 
 import {
   cmToDisplay,
+  displayDistanceToMeters,
   displayToCm,
   displayToGrams,
   displayToKg,
   displayValueToMetric,
+  getDistanceUnitLabel,
   getMassUnitLabel,
   gramsToDisplay,
   isLengthMetricType,
   isWeightMetricType,
   kgToDisplay,
+  metersToDisplayDistance,
   metricDisplayUnit,
   metricValueToDisplay,
+  paceSecondsPerDisplayUnit,
   prepareMetricDataToDisplay,
   prepareMetricDataToSave,
+  resolveWeightUnits,
   storedHeightToCm,
   storedWeightToKg,
+  weightUnitOverrideFor,
 } from '@/utils/unitConversion';
 
 /**
@@ -341,5 +347,78 @@ describe('unitConversion', () => {
       // AGENTS.md example: 75 kg shows as ~165.3 lb.
       expect(shown.weight).toBeCloseTo(165.3, 1);
     });
+  });
+});
+
+describe('resolveWeightUnits', () => {
+  it('uses the account default when nothing more specific is set', () => {
+    expect(resolveWeightUnits({ account: 'metric' })).toBe('metric');
+    expect(resolveWeightUnits({ account: 'imperial' })).toBe('imperial');
+  });
+
+  it('lets a gym override the account', () => {
+    expect(resolveWeightUnits({ account: 'metric', gym: 'lbs' })).toBe('imperial');
+    expect(resolveWeightUnits({ account: 'imperial', gym: 'kg' })).toBe('metric');
+  });
+
+  it('lets an exercise override both the gym and the account', () => {
+    expect(resolveWeightUnits({ account: 'metric', gym: 'kg', exercise: 'lbs' })).toBe('imperial');
+    expect(resolveWeightUnits({ account: 'imperial', gym: 'lbs', exercise: 'kg' })).toBe('metric');
+  });
+
+  it('treats a value that is not exactly kg or lbs as no statement at all', () => {
+    expect(resolveWeightUnits({ account: 'metric', gym: 'stone', exercise: 'lbs ' })).toBe(
+      'metric'
+    );
+    expect(resolveWeightUnits({ account: 'imperial', gym: null, exercise: undefined })).toBe(
+      'imperial'
+    );
+    // A junk exercise value must not hide a valid gym one.
+    expect(resolveWeightUnits({ account: 'metric', gym: 'lbs', exercise: 'oops' })).toBe(
+      'imperial'
+    );
+  });
+
+  it('round-trips a stored weight through the resolved unit without changing it', () => {
+    const units = resolveWeightUnits({ account: 'metric', exercise: 'lbs' });
+    const shown = kgToDisplay(100, units);
+    expect(shown).toBeCloseTo(220.46, 1);
+    expect(displayToKg(shown, units)).toBeCloseTo(100, 6);
+  });
+
+  it('weightUnitOverrideFor is the inverse a picker needs', () => {
+    expect(weightUnitOverrideFor('imperial')).toBe('lbs');
+    expect(weightUnitOverrideFor('metric')).toBe('kg');
+  });
+});
+
+describe('distance and pace', () => {
+  it('stores metres and shows kilometres or miles', () => {
+    expect(metersToDisplayDistance(5000, 'metric')).toBe(5);
+    expect(metersToDisplayDistance(1609.344, 'imperial')).toBeCloseTo(1, 9);
+    expect(getDistanceUnitLabel('metric')).toBe('km');
+    expect(getDistanceUnitLabel('imperial')).toBe('mi');
+  });
+
+  it('round-trips a typed distance', () => {
+    for (const units of ['metric', 'imperial'] as const) {
+      expect(metersToDisplayDistance(displayDistanceToMeters(3.1, units), units)).toBeCloseTo(
+        3.1,
+        9
+      );
+    }
+  });
+
+  it('computes pace per kilometre or per mile', () => {
+    // 5 km in 25 min = 5:00 per km.
+    expect(paceSecondsPerDisplayUnit(5000, 1500, 'metric')).toBeCloseTo(300, 6);
+    // The same run is about 8:03 per mile.
+    expect(paceSecondsPerDisplayUnit(5000, 1500, 'imperial')).toBeCloseTo(482.8, 0);
+  });
+
+  it('has no pace without a distance or a duration', () => {
+    expect(paceSecondsPerDisplayUnit(0, 1500, 'metric')).toBeNull();
+    expect(paceSecondsPerDisplayUnit(5000, 0, 'metric')).toBeNull();
+    expect(paceSecondsPerDisplayUnit(Number.NaN, 1500, 'metric')).toBeNull();
   });
 });

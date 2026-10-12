@@ -69,6 +69,7 @@ export default class Exercise extends Model {
   @field('source') source?: ExerciseSource;
   @field('load_multiplier') declare loadMultiplier: number;
   @field('order_index') orderIndex?: number;
+  @field('search_text') searchText?: string;
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;

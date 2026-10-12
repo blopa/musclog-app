@@ -47,6 +47,7 @@ export const RESTORE_ORDER: string[] = [
   'food_portions',
   'supplements',
   'ble_devices',
+  'gyms',
   'meals',
   'workout_templates',
   'workout_plans',
@@ -61,6 +62,9 @@ export const RESTORE_ORDER: string[] = [
 
   // Exercise junction tables
   'exercise_muscles',
+  'exercise_aliases',
+  'exercise_restrictions',
+  'exercise_user_settings',
 
   // Food/Meal junction tables
   'food_food_portions',

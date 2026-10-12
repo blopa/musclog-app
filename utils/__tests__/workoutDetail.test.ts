@@ -182,6 +182,23 @@ describe('transformWorkoutToDetailData — exercise grouping', () => {
     expect(result.exercises[0].sets.map((s) => s.reps)).toEqual([10, 10, 10]);
   });
 
+  it('flags warm-ups and numbers only the working sets, so a warm-up never takes a number', async () => {
+    const result = await transform(
+      workoutLog(),
+      [
+        logSet({ id: 'w1', setOrder: 1, setType: 'warmup' } as never),
+        logSet({ id: 'w2', setOrder: 2, setType: 'warmup' } as never),
+        logSet({ id: 'a', setOrder: 3, setType: 'normal' } as never),
+        logSet({ id: 'b', setOrder: 4, setType: 'normal' } as never),
+      ],
+      [exercise()]
+    );
+
+    const sets = result.exercises[0].sets;
+    expect(sets.map((set) => set.isWarmup)).toEqual([true, true, false, false]);
+    expect(sets.map((set) => set.setNumber)).toEqual([0, 0, 1, 2]);
+  });
+
   it('keeps first-appearance order of exercises when no explicit order is given', async () => {
     const result = await transform(
       workoutLog(),

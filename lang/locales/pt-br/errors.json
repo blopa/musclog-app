@@ -17,6 +17,11 @@
     "databaseError": {
       "title": "Erro de Banco de Dados",
       "description": "Ocorreu um erro de banco de dados. O relatório de erros foi ativado para ajudar a resolver este problema."
-    }
+    },
+    "aiInvalidApiKey": "Sua chave de API do {{provider}} foi rejeitada. Confira nas configurações de IA.",
+    "aiTimeout": "Está demorando demais. Tente novamente.",
+    "aiKeyTestOk": "Chave aceita",
+    "aiKeyTestRejected": "Chave rejeitada. Confira e tente novamente.",
+    "aiKeyTestNetwork": "Não foi possível contatar o provedor. Verifique sua conexão."
   }
 }

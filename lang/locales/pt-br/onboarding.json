@@ -126,7 +126,8 @@
         "basalMetabolicRate": "Metabolismo basal",
         "exerciseSession": "Treinos",
         "leanBodyMass": "Massa magra",
-        "steps": "Passos"
+        "steps": "Passos",
+        "distance": "Distância"
       },
       "maybeLater": "Talvez depois",
       "privacyStatement": "O Musclog valoriza sua privacidade. Seus dados são criptografados e usados apenas para suas análises pessoais.",

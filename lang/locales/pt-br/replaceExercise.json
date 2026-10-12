@@ -4,15 +4,56 @@
     "cancel": "Cancelar",
     "replace": "Substituir",
     "searchPlaceholder": "Pesquisar exercícios...",
-    "muscleGroups": {
-      "all": "Todos",
-      "chest": "Peito",
-      "shoulders": "Ombros",
-      "triceps": "Tríceps"
-    },
     "selectExercise": "Selecionar Exercício",
     "loadMore": "Carregar Mais",
     "loadingMore": "Carregando…",
-    "noExercisesMatch": "Nenhum exercício corresponde"
+    "noExercisesMatch": "Nenhum exercício corresponde",
+    "families": {
+      "all": "Todos",
+      "torso": "Parte superior",
+      "arms": "Braços",
+      "legs": "Pernas",
+      "core": "Core",
+      "other": "Outros"
+    },
+    "suggested": "Sugeridos para você",
+    "disliked": "Não gosto",
+    "hiddenHint": "Exercícios que você evita ou que a sua academia não oferece ficam ocultos.",
+    "continue": "Continuar",
+    "back": "Voltar",
+    "swapped": "{{from}} trocado por {{to}}",
+    "reason": {
+      "title": "Por que trocar?",
+      "subtitle": "Trocando por {{name}}",
+      "question": "Qual é o motivo?",
+      "options": {
+        "equipment_unavailable": "Equipamento indisponível",
+        "pain": "Dor ou desconforto",
+        "too_hard": "Muito difícil",
+        "too_easy": "Muito fácil",
+        "dislike": "Não gosto",
+        "machine_occupied": "Máquina ocupada",
+        "just_today": "Só hoje"
+      },
+      "descriptions": {
+        "equipment_unavailable": "A máquina ou os pesos não estão lá",
+        "pain": "Algo dói ou não parece certo",
+        "too_hard": "Muito pesado ou exigente",
+        "too_easy": "Não é desafiador o bastante",
+        "dislike": "Simplesmente não é para mim",
+        "machine_occupied": "Outra pessoa está usando",
+        "just_today": "Só nesta sessão"
+      },
+      "remember": {
+        "injury": "Parar de sugerir {{name}} por enquanto",
+        "dislike": "Não sugerir {{name}} novamente"
+      },
+      "rememberHint": {
+        "injury": "Fica fora das trocas e dos treinos gerados até você se recuperar.",
+        "dislike": "Aparece por último, nunca como primeira sugestão."
+      },
+      "removeEquipment": "{{equipment}} não está disponível em {{gym}}",
+      "removeEquipmentHint": "Remova-o desta academia para que exercícios que precisam dele não sejam sugeridos."
+    }
   }
 }

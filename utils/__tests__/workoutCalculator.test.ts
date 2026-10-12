@@ -1,4 +1,7 @@
-import { calculateCaloriesBurnedBySteps } from '@/utils/workoutCalculator';
+import {
+  calculateCaloriesBurnedBySteps,
+  calculateSessionVolumeFromSets,
+} from '@/utils/workoutCalculator';
 
 describe('calculateCaloriesBurnedBySteps', () => {
   it('estimates calories for a typical adult walking day', () => {
@@ -26,5 +29,47 @@ describe('calculateCaloriesBurnedBySteps', () => {
     const heavier = calculateCaloriesBurnedBySteps(10000, 'male', 90, 180);
 
     expect(heavier).toBeGreaterThan(lighter);
+  });
+});
+
+describe('calculateSessionVolumeFromSets and warm-ups', () => {
+  const exercises = new Map([['bench', { equipmentType: 'barbell' }]]) as any;
+  const working = {
+    exerciseId: 'bench',
+    weight: 100,
+    reps: 5,
+    completionStatus: 'performed' as const,
+  };
+  const warmup = { ...working, weight: 40, setType: 'warmup' };
+
+  it('never counts a warm-up toward volume', () => {
+    const withWarmup = calculateSessionVolumeFromSets([warmup, working], exercises, 80, {
+      onlyCompletedSets: true,
+    });
+    const withoutWarmup = calculateSessionVolumeFromSets([working], exercises, 80, {
+      onlyCompletedSets: true,
+    });
+
+    expect(withWarmup).toBe(withoutWarmup);
+    expect(withWarmup).toBeGreaterThan(0);
+  });
+
+  it('also leaves warm-ups out of a preview of sets that are not done yet', () => {
+    const planned = { ...working, completionStatus: 'planned' as const };
+    const plannedWarmup = { ...warmup, completionStatus: 'planned' as const };
+
+    expect(calculateSessionVolumeFromSets([plannedWarmup, planned], exercises, 80)).toBe(
+      calculateSessionVolumeFromSets([planned], exercises, 80)
+    );
+  });
+
+  it('still counts a normal set that merely has no type', () => {
+    const untyped = {
+      exerciseId: 'bench',
+      weight: 100,
+      reps: 5,
+      completionStatus: 'performed' as const,
+    };
+    expect(calculateSessionVolumeFromSets([untyped], exercises, 80)).toBeGreaterThan(0);
   });
 });

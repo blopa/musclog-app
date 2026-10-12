@@ -10,7 +10,11 @@ jest.mock('../onDeviceAi', () => ({
   sendOnDeviceStructured: (...args: unknown[]) => mockSendOnDeviceStructured(...args),
 }));
 
-jest.mock('../gemini', () => ({ configureBasicGenAI: jest.fn() }));
+jest.mock('../gemini', () => ({
+  configureBasicGenAI: jest.fn(),
+  buildGeminiGenerationConfig: jest.fn(() => ({})),
+  extractGeminiText: jest.fn(() => ({ text: '', thoughtOnly: false })),
+}));
 
 jest.mock('../handleError', () => ({ handleError: jest.fn() }));
 

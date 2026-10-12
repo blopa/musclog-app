@@ -98,6 +98,8 @@ export default function HealthConnectScreen() {
             return t('onboarding.healthConnect.permissionTypes.basalMetabolicRate');
           case 'ExerciseSession':
             return t('onboarding.healthConnect.permissionTypes.exerciseSession');
+          case 'Distance':
+            return t('onboarding.healthConnect.permissionTypes.distance');
           case 'LeanBodyMass':
             return t('onboarding.healthConnect.permissionTypes.leanBodyMass');
           case 'Steps':

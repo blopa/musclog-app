@@ -11,6 +11,7 @@ import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
@@ -24,7 +25,11 @@ import {
   calculatePreviewVolumeFromTemplateSets,
   calculateSessionVolumeFromSets,
 } from '@/utils/workoutCalculator';
-import { isPerformedWorkoutSet, isSkippedWorkoutSet } from '@/utils/workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  isSkippedWorkoutSet,
+  isWarmupSet,
+} from '@/utils/workoutSetCompletion';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -67,9 +72,12 @@ export function WorkoutSessionHistoryModal({
 }: WorkoutHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { units } = useSettings();
+  const { units: accountUnits } = useSettings();
+  const { unitsFor } = useExerciseUserSettings();
   const { locale, formatInteger, formatNumber } = useFormatAppNumber();
   const { shareText } = useNativeShareText();
+  // The session's total volume sums exercises with different units, so it stays in the account's.
+  const units = accountUnits;
   const weightUnitKey = getWeightUnitI18nKey(units);
   const [isSharing, setIsSharing] = useState(false);
 
@@ -127,6 +135,7 @@ export function WorkoutSessionHistoryModal({
         }
 
         const exerciseSets = exerciseGroups.get(exerciseId) || [];
+        const exerciseUnits = unitsFor(exerciseId, accountUnits);
 
         // No time in preview mode
         const exerciseTime = '';
@@ -135,7 +144,7 @@ export function WorkoutSessionHistoryModal({
         const transformedSets = exerciseSets.map((set, setIndex) => {
           return {
             setNumber: setIndex + 1,
-            weight: displayWeightKgNumeric(set.targetWeight ?? 0, units),
+            weight: displayWeightKgNumeric(set.targetWeight ?? 0, exerciseUnits),
             reps: set.targetReps ?? 0,
             partials: 0, // Templates don't have partials
             isCurrent: false, // No current set in preview
@@ -152,6 +161,7 @@ export function WorkoutSessionHistoryModal({
           exerciseNumber: index + 1,
           sets: transformedSets,
           setProgress,
+          weightUnitKey: getWeightUnitI18nKey(exerciseUnits),
         });
       });
 
@@ -193,6 +203,7 @@ export function WorkoutSessionHistoryModal({
         }
 
         const exerciseSets = exerciseGroups.get(exerciseId) || [];
+        const exerciseUnits = unitsFor(exerciseId, accountUnits);
 
         // Find the first set's time (use startedAt for first exercise, estimate for others)
         let exerciseTime = '';
@@ -209,11 +220,17 @@ export function WorkoutSessionHistoryModal({
         }
 
         // Transform sets
-        const transformedSets = exerciseSets.map((set, setIndex) => {
+        let workingSetNumber = 0;
+        const transformedSets = exerciseSets.map((set) => {
           const isCurrent = (set.setOrder ?? 0) === currentSetOrder;
+          const isWarmup = isWarmupSet(set);
+          if (!isWarmup) {
+            workingSetNumber += 1;
+          }
           return {
-            setNumber: setIndex + 1,
-            weight: displayWeightKgNumeric(set.weight ?? 0, units),
+            setNumber: workingSetNumber,
+            isWarmup,
+            weight: displayWeightKgNumeric(set.weight ?? 0, exerciseUnits),
             reps: set.reps ?? 0,
             partials: set.partials || 0,
             isCurrent,
@@ -243,6 +260,7 @@ export function WorkoutSessionHistoryModal({
           exerciseNumber: index + 1,
           sets: transformedSets,
           setProgress,
+          weightUnitKey: getWeightUnitI18nKey(exerciseUnits),
         });
       });
 
@@ -258,7 +276,8 @@ export function WorkoutSessionHistoryModal({
     logExercises,
     templateExercises,
     currentSetOrder,
-    units,
+    accountUnits,
+    unitsFor,
   ]);
 
   const totalVolume = useMemo(() => {
@@ -354,7 +373,7 @@ export function WorkoutSessionHistoryModal({
         shareMessageLines.push(
           `  ${t('workoutHistory.set', { number: set.setNumber })}: ${formatNumber(set.weight, {
             maximumFractionDigits: 1,
-          })} ${t(weightUnitKey)} × ${formatInteger(set.reps)}`
+          })} ${t(exercise.weightUnitKey ?? weightUnitKey)} × ${formatInteger(set.reps)}`
         );
       });
       shareMessageLines.push('');
@@ -485,7 +504,7 @@ export function WorkoutSessionHistoryModal({
                 key={exercise.id}
                 exercise={exercise}
                 isLast={index === exerciseDataList.length - 1}
-                weightUnitKey={weightUnitKey}
+                weightUnitKey={exercise.weightUnitKey ?? weightUnitKey}
                 isPreview={isPreview}
               />
             ))

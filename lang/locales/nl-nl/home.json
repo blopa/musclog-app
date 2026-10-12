@@ -11,7 +11,8 @@
       "scanBarcode": "Barcode\nScannen",
       "aiPhoto": "AI-\nFoto",
       "myMeals": "Mijn\nMaaltijden",
-      "addNote": "Notitie\nToevoegen"
+      "addNote": "Notitie\nToevoegen",
+      "logCardio": "Wandeling/\nRun loggen"
     },
     "sections": {
       "recentWorkouts": "Recente workouts",

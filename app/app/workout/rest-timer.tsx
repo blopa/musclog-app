@@ -9,6 +9,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { RestTimer } from '@/components/RestTimer';
 import { RestTimerControls } from '@/components/RestTimerControls';
 import { UpNextLabel } from '@/components/UpNextLabel';
@@ -29,6 +30,8 @@ import {
 } from '@/utils/activeWorkoutStorage';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
+import { hapticBeat, resolveRestSeconds, restPhase } from '@/utils/restTimer';
+import { playRestBeat } from '@/utils/restTimerHaptics';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 export default function RestTimerScreen() {
@@ -92,10 +95,14 @@ export default function RestTimerScreen() {
     return { set: nextSetFromHook, exercise };
   }, [nextSetFromHook, exercises]);
 
-  const [restTime, setRestTime] = useState(90);
-  const [initialRestTime, setInitialRestTime] = useState(90);
+  const { defaultRestSeconds, restTimerHaptics } = useSettings();
+  // The placeholder is the configured default, so the ring is drawn against the right length even
+  // before the set's own rest is read (it used to be a hard-coded 90 against a real 60).
+  const [restTime, setRestTime] = useState(defaultRestSeconds);
+  const [initialRestTime, setInitialRestTime] = useState(defaultRestSeconds);
   const [isTimerReady, setIsTimerReady] = useState(false);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
+  const [isWorkoutSettingsVisible, setIsWorkoutSettingsVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [rotationAnim] = useState(() => new Animated.Value(0));
@@ -183,19 +190,13 @@ export default function RestTimerScreen() {
           return;
         }
 
-        const duration =
-          completedSet.set.restTimeAfter && completedSet.set.restTimeAfter > 0
-            ? completedSet.set.restTimeAfter
-            : 60;
+        const duration = resolveRestSeconds(completedSet.set.restTimeAfter, defaultRestSeconds);
         setInitialRestTime(duration);
         setRestTime(remaining);
         setIsTimerReady(true);
       } else {
         // Fresh timer: compute the end timestamp and persist it.
-        const duration =
-          completedSet.set.restTimeAfter && completedSet.set.restTimeAfter > 0
-            ? completedSet.set.restTimeAfter
-            : 60;
+        const duration = resolveRestSeconds(completedSet.set.restTimeAfter, defaultRestSeconds);
         const endAt = Date.now() + duration * 1000;
         endAtRef.current = endAt;
         setRestTimerEndAt(workoutLogId, endAt);
@@ -252,6 +253,22 @@ export default function RestTimerScreen() {
       }
     };
   }, [isLoading, isTimerReady]); // Start once when timer is ready; endAtRef is a ref so no need to list it
+
+  // Haptic countdown. Driven by the transition onto a value (see `hapticBeat`), so an unrelated
+  // re-render never buzzes twice.
+  const lastRemainingRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!isTimerReady) {
+      return;
+    }
+    const beat = hapticBeat(lastRemainingRef.current, restTime);
+    lastRemainingRef.current = restTime;
+    if (beat && restTimerHaptics) {
+      void playRestBeat(beat);
+    }
+  }, [isTimerReady, restTime, restTimerHaptics]);
+
+  const phase = restPhase(restTime, initialRestTime);
 
   // Navigate when countdown reaches 0
   useEffect(() => {
@@ -390,7 +407,23 @@ export default function RestTimerScreen() {
             restTime={restTime}
             rotationAnim={rotationAnim}
             initialRestTime={initialRestTime}
+            phase={phase}
           />
+
+          {/* What is coming, large enough to read from across the gym */}
+          {nextSet ? (
+            <View className="items-center gap-1" testID="rest-up-next">
+              <Text
+                className="text-xs font-semibold tracking-widest"
+                style={{ color: theme.colors.text.secondary }}
+              >
+                {t('restTimer.upNext')}
+              </Text>
+              <Text className="text-3xl font-bold" style={{ color: theme.colors.text.primary }}>
+                {`${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)} × ${nextSet.set.reps ?? 0}`}
+              </Text>
+            </View>
+          ) : null}
 
           {/* Controls */}
           <RestTimerControls
@@ -459,9 +492,17 @@ export default function RestTimerScreen() {
             setIsOptionsModalVisible(false);
             setIsWorkoutOverviewModalVisible(true);
           }}
-          // TODO: uncomment once we have workout settings
-          // onWorkoutSettings={() => router.navigate('/workout-settings')}
+          onWorkoutSettings={() => {
+            setIsOptionsModalVisible(false);
+            setIsWorkoutSettingsVisible(true);
+          }}
           onEndWorkout={handleEndWorkout}
+        />
+      ) : null}
+      {isWorkoutSettingsVisible ? (
+        <WorkoutSettingsModal
+          visible={isWorkoutSettingsVisible}
+          onClose={() => setIsWorkoutSettingsVisible(false)}
         />
       ) : null}
       {isEndWorkoutModalVisible ? (

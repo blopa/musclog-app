@@ -15,6 +15,7 @@
  * a page the router does not build.
  */
 const fs = require('fs');
+const projectLinks = require('../constants/projectLinks.json');
 const path = require('path');
 const matter = require('gray-matter');
 
@@ -40,7 +41,7 @@ const LLMS_EXTERNAL_LINKS = {
     {
       title: 'GitHub Repository',
       summary: 'Full source code, issues, and license (open-source).',
-      url: 'https://github.com/blopa/musclog-app',
+      url: projectLinks.githubRepoUrl,
     },
   ],
 };

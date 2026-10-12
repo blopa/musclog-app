@@ -9,10 +9,12 @@ import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
+import { describeExerciseRow } from '@/components/workout/describeExerciseRow';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
+import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -95,6 +97,12 @@ export function AddExerciseToSessionModal({
     batchSize: 20,
   });
 
+  const { active: restrictions } = useExerciseRestrictions();
+  const restrictionKindById = useMemo(
+    () => new Map(restrictions.map((restriction) => [restriction.exerciseId, restriction.kind])),
+    [restrictions]
+  );
+
   const exerciseOptions = useMemo(() => {
     const grouped: Record<MuscleGroupFilter, SelectorOption<string>[]> = {
       all: [],
@@ -126,7 +134,11 @@ export function AddExerciseToSessionModal({
       const option: SelectorOption<string> = {
         id: exercise.id,
         label: exercise.name ?? '',
-        description: `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
+        description: describeExerciseRow(
+          `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
+          restrictionKindById.get(exercise.id),
+          t
+        ),
         icon: exerciseType === 'bodyweight' ? User : Dumbbell,
         iconBgColor:
           exerciseType === 'bodyweight'
@@ -142,7 +154,7 @@ export function AddExerciseToSessionModal({
     });
 
     return grouped;
-  }, [allExercises, theme, t]);
+  }, [allExercises, restrictionKindById, theme, t]);
 
   // Search is handled at the DB level via searchTerm in useExercises; here we only filter by muscle tab
   const filteredExercises = useMemo(

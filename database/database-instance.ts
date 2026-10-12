@@ -14,12 +14,16 @@ import BleDevice from './models/BleDevice';
 import ChatMessage from './models/ChatMessage';
 import DebugDump from './models/DebugDump';
 import Exercise from './models/Exercise';
+import ExerciseAlias from './models/ExerciseAlias';
 import ExerciseGoal from './models/ExerciseGoal';
 import ExerciseMuscle from './models/ExerciseMuscle';
+import ExerciseRestriction from './models/ExerciseRestriction';
+import ExerciseUserSettings from './models/ExerciseUserSettings';
 import FastedDay from './models/FastedDay';
 import Food from './models/Food';
 import FoodFoodPortion from './models/FoodFoodPortion';
 import FoodPortion from './models/FoodPortion';
+import Gym from './models/Gym';
 import Meal from './models/Meal';
 import MealFood from './models/MealFood';
 import MealFoodPortion from './models/MealFoodPortion';
@@ -57,8 +61,12 @@ export const database = new Database({
     BleDevice,
     Exercise,
     ExerciseGoal,
+    ExerciseAlias,
     ExerciseMuscle,
+    ExerciseRestriction,
+    ExerciseUserSettings,
     FastedDay,
+    Gym,
     Note,
     UserMetric,
     UserMetricsNote,

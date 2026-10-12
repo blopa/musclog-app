@@ -59,6 +59,9 @@ type LogOverrides = {
   completedAt?: number | null;
   totalVolume?: number | null;
   caloriesBurned?: number | null;
+  type?: string | null;
+  activity?: string | null;
+  distanceM?: number | null;
 };
 
 /** Local-time instants keep the `MMM d • hh:mm a` assertions timezone-independent. */
@@ -175,6 +178,22 @@ describe('getWorkoutIcon', () => {
 
   it('checks cardio before legs, so a name matching both is cardio', () => {
     expect(getWorkoutIcon(theme, 'Leg Cardio Circuit').icon).toBe(Activity);
+  });
+});
+
+describe('classifying a log by its stored type', () => {
+  it('treats type "cardio" as cardio even when the localized name has no "run" in it', () => {
+    // "Caminhada" (pt-BR for walk) matches nothing in the English keyword list.
+    expect(getWorkoutTypeFromName('Caminhada')).toBe('strength');
+    expect(getWorkoutTypeFromName('Caminhada', 'cardio')).toBe('cardio');
+    expect(getWorkoutIcon(theme, 'Caminhada').icon).toBe(Dumbbell);
+    expect(getWorkoutIcon(theme, 'Caminhada', 'cardio').icon).toBe(Activity);
+  });
+
+  it('only cardio is authoritative: other stored types still defer to the name', () => {
+    expect(getWorkoutTypeFromName('HIIT Blast', 'strength')).toBe('hiit');
+    expect(getWorkoutTypeFromName('Push Day', 'free')).toBe('strength');
+    expect(getWorkoutTypeFromName('Push Day', null)).toBe('strength');
   });
 });
 
@@ -343,6 +362,45 @@ describe('processWorkouts', () => {
       theme
     );
     expect(withZeroes.stats).toHaveLength(1);
+  });
+
+  it('shows distance and pace for a logged walk or run, and no volume', async () => {
+    const [item] = await processWorkouts(
+      [
+        workoutLog({
+          workoutName: 'Caminhada',
+          type: 'cardio',
+          activity: 'walk',
+          distanceM: 5000,
+          totalVolume: 0,
+          caloriesBurned: 210,
+          completedAt: STARTED_AT + 50 * 60_000,
+        }),
+      ],
+      ALL_WORKOUTS,
+      t,
+      'metric',
+      theme
+    );
+
+    expect(item.icon).toBe(Activity);
+    expect(item.stats).toEqual([
+      { label: 'pastWorkoutHistory.stats.duration', value: '50 common.min' },
+      { label: 'pastWorkoutHistory.stats.distance', value: '5 km' },
+      { label: 'pastWorkoutHistory.stats.pace', value: '10:00 /km' },
+      { label: 'pastWorkoutHistory.stats.calories', value: '210 common.kcal' },
+    ]);
+  });
+
+  it('files a cardio log under the cardio type filter whatever its name', async () => {
+    const result = await processWorkouts(
+      [workoutLog({ workoutName: 'Caminhada', type: 'cardio', activity: 'walk', distanceM: 3000 })],
+      { ...ALL_WORKOUTS, workoutType: 'cardio' },
+      t,
+      'metric',
+      theme
+    );
+    expect(result).toHaveLength(1);
   });
 
   it('reports the PR count, collapsing "no PRs" to null so the badge can hide', async () => {

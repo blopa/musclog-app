@@ -1,0 +1,95 @@
+{
+  "workoutSettings": {
+    "title": "Workout Settings",
+    "gyms": {
+      "title": "My gyms",
+      "subtitle": "Describe the equipment you train with. The plate calculator, weight steps and exercise suggestions follow your active gym.",
+      "empty": "No gym set up yet",
+      "emptyHint": "Add one to get plate math and weight steps that match your equipment.",
+      "add": "Add a gym",
+      "active": "Active",
+      "makeActive": "Use this gym",
+      "noGym": "Don't use a gym",
+      "summary": "{{bar}} {{unit}} bar · {{plates}} plate sizes · {{equipment}} equipment types"
+    },
+    "editGym": {
+      "title": "Edit gym",
+      "createTitle": "New gym",
+      "name": "Name",
+      "namePlaceholder": "e.g. Home gym",
+      "bar": "Bar weight ({{unit}})",
+      "increment": "Smallest weight step ({{unit}})",
+      "incrementHint": "Used for dumbbells, machines and cables.",
+      "plates": "Plates",
+      "platesHint": "How many of each plate you own. Plates are loaded in pairs.",
+      "fewerPlates": "Fewer {{weight}} {{unit}} plates",
+      "morePlates": "More {{weight}} {{unit}} plates",
+      "removePlate": "Remove {{weight}} {{unit}} plates",
+      "plateWeight": "New plate weight ({{unit}})",
+      "addPlate": "Add plate",
+      "resetPlates": "Standard plates",
+      "equipment": "Equipment",
+      "equipmentHint": "Exercises that need other equipment won't be suggested for this gym.",
+      "save": "Save gym",
+      "delete": "Delete gym",
+      "deleteTitle": "Delete this gym?",
+      "deleteMessage": "Your workouts and history are not affected.",
+      "saveFailed": "Couldn't save the gym. Please try again."
+    },
+    "restrictions": {
+      "title": "Exercises to avoid",
+      "subtitle": "These won't be suggested in swaps or generated workouts.",
+      "empty": "Nothing here. Mark an exercise from its screen or when you swap it.",
+      "clear": "Allow again",
+      "until": "Until {{date}}",
+      "healed": "Healed",
+      "limit": "You can avoid up to {{count}} exercises.",
+      "kind": {
+        "never": "Never suggest",
+        "injury": "Injury",
+        "dislike": "Dislike"
+      },
+      "badge": {
+        "never": "Never suggest",
+        "injury": "Injury",
+        "dislike": "Disliked"
+      },
+      "expiry": {
+        "2w": "2 weeks",
+        "4w": "1 month",
+        "12w": "3 months",
+        "open": "Until I say otherwise"
+      }
+    },
+    "plateCalculator": {
+      "title": "Plate calculator",
+      "subtitle": "Loading {{weight}} {{unit}}",
+      "belowBar": "That's lighter than the {{bar}} {{unit}} bar.",
+      "barOnly": "Just the bar — no plates needed.",
+      "perSide": "On each side",
+      "plateLine": "{{weight}} {{unit}}",
+      "bar": "Bar",
+      "exact": "Loaded: exactly {{weight}} {{unit}}",
+      "closest": "Closest you can load: {{weight}} {{unit}} ({{short}} {{unit}} short)",
+      "defaultsHint": "Using standard plates. Set up your gym in Workout Settings for exact results.",
+      "open": "Plates for {{weight}} {{unit}}"
+    },
+    "restTimer": {
+      "title": "Rest timer",
+      "subtitle": "How rests behave between sets.",
+      "autoStart": "Start automatically",
+      "autoStartHint": "After you complete a set. Turn off to start rests yourself with the Start rest button.",
+      "haptics": "Haptic countdown",
+      "hapticsHint": "A tick for the last three seconds and a buzz at zero.",
+      "defaultRest": "Default rest",
+      "defaultRestHint": "Used for sets that don't name their own rest.",
+      "seconds": "sec"
+    },
+    "autonomy": {
+      "title": "When a workout starts",
+      "subtitle": "Decide how much of today's numbers the app chooses.",
+      "suggest": "Suggest weights and reps",
+      "suggestHint": "Each exercise starts from how its last session went — more load, more reps, a deload, or a repeat. You'll see why, and can undo it."
+    }
+  }
+}

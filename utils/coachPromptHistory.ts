@@ -11,7 +11,7 @@ import {
 } from '@/utils/calendarDate';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnit } from '@/utils/units';
-import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isWorkingSet } from '@/utils/workoutSetCompletion';
 
 /**
  * Hard cap on how many nutrition log entries are sent to the LLM, regardless of
@@ -167,7 +167,7 @@ async function buildWorkoutHistoryEntry(
     const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
 
     const exercisesByName = new Map<string, WorkoutHistorySet[]>();
-    for (const set of sets.filter(isPerformedWorkoutSet)) {
+    for (const set of sets.filter(isWorkingSet)) {
       const exercise = exerciseMap.get(set.exerciseId ?? '');
       if (!exercise) {
         continue;

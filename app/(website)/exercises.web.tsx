@@ -22,6 +22,11 @@ import {
 import { type ExerciseCatalogueEntry, getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import i18n from '@/lang/lang';
 import { buildExerciseImagePath } from '@/utils/exerciseImage';
+import {
+  buildExerciseSearchText,
+  exerciseSearchTerms,
+  matchesExerciseSearch,
+} from '@/utils/exerciseSearch';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 const MUSCLE_GROUPS = [
@@ -241,15 +246,26 @@ export default function ExercisesPage() {
 
   const exercises = useMemo(() => getExerciseCatalogue(locale), [locale]);
 
+  // The same normalization the app uses, so "flys", "DB curl" or an accent-less spelling find
+  // what they find in the app. The index is built once per locale, not per keystroke.
+  const searchIndex = useMemo(
+    () =>
+      new Map(
+        exercises.map((ex) => [ex.exerciseSlug, buildExerciseSearchText({ names: [ex.name] })])
+      ),
+    [exercises]
+  );
+
   const filtered = useMemo(() => {
-    const q = search.toLowerCase();
+    const terms = exerciseSearchTerms(search);
     return exercises.filter((ex) => {
-      const matchesSearch = !q || ex.name.toLowerCase().includes(q);
+      const matchesSearch =
+        terms.length === 0 || matchesExerciseSearch(searchIndex.get(ex.exerciseSlug) ?? '', terms);
       const matchesMuscle = !muscleGroup || ex.muscleGroup === muscleGroup;
       const matchesMechanic = !mechanic || ex.mechanicType === mechanic;
       return matchesSearch && matchesMuscle && matchesMechanic;
     });
-  }, [exercises, search, muscleGroup, mechanic]);
+  }, [exercises, searchIndex, search, muscleGroup, mechanic]);
 
   const hasFilters = Boolean(search || muscleGroup || mechanic);
 

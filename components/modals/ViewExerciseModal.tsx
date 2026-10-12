@@ -4,7 +4,8 @@ import { useRouter } from 'expo-router';
 import { ChevronRight, Copy, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Linking, ScrollView, Text, View } from 'react-native';
+import { Image, Linking, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -12,6 +13,9 @@ import { SettingsCard } from '@/components/cards/SettingsCard';
 import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ExerciseAliasesSection } from '@/components/workout/ExerciseAliasesSection';
+import { ExerciseRestrictionSection } from '@/components/workout/ExerciseRestrictionSection';
+import { ExerciseUserSettingsSection } from '@/components/workout/ExerciseUserSettingsSection';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import type ExerciseModel from '@/database/models/Exercise';
@@ -468,7 +472,11 @@ export default function ViewExerciseModal({
           </Text>
         </View>
       ) : (
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+          bottomOffset={16}
+        >
           <View style={{ height: theme.size['384'], overflow: 'hidden', position: 'relative' }}>
             <Image
               source={backgroundImage}
@@ -626,6 +634,12 @@ export default function ViewExerciseModal({
             </GenericCard>
           </View>
 
+          <ExerciseAliasesSection exerciseId={exercise.id} />
+
+          <ExerciseUserSettingsSection exerciseId={exercise.id} />
+
+          <ExerciseRestrictionSection exerciseId={exercise.id} />
+
           <View className="px-4 pb-2">
             <Text className="mb-4 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('exercises.viewExercise.oneRepMaxTrend')}
@@ -723,7 +737,7 @@ export default function ViewExerciseModal({
             </View>
           </View>
           <View style={{ height: theme.size['100'] }} />
-        </ScrollView>
+        </KeyboardAwareScrollView>
       )}
 
       <BottomPopUpMenu

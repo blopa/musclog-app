@@ -48,6 +48,8 @@ type SmartCameraShellProps = {
   cameraSlot: ReactNode;
   /** Shows the processing overlay when true. */
   isLoading: boolean;
+  /** When given, the processing overlay offers a Cancel button that calls it. */
+  onCancelLoading?: () => void;
   cameraMode: CameraMode;
   flashEnabled: boolean;
   onFlashToggle: () => void;
@@ -80,6 +82,7 @@ function SmartCameraShellBody({
   onRequestPermission,
   cameraSlot,
   isLoading,
+  onCancelLoading,
   cameraMode,
   flashEnabled,
   onFlashToggle,
@@ -193,6 +196,21 @@ function SmartCameraShellBody({
             style={{ backgroundColor: theme.colors.overlay.scrim90 }}
           >
             <CameraProcessingIndicator cameraMode={cameraMode} />
+            {onCancelLoading ? (
+              <View className="absolute bottom-16 left-0 right-0 items-center">
+                <Pressable
+                  onPress={onCancelLoading}
+                  accessibilityRole="button"
+                  className="rounded-full border px-6 py-3"
+                  style={{ borderColor: theme.colors.overlay.alwaysWhite70 }}
+                  testID="camera-cancel-processing"
+                >
+                  <Text className="font-semibold" style={{ color: theme.colors.text.alwaysWhite }}>
+                    {t('common.cancel')}
+                  </Text>
+                </Pressable>
+              </View>
+            ) : null}
           </View>
         ) : null}
 

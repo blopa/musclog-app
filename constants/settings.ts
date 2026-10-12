@@ -303,6 +303,35 @@ export const ENABLE_FASTED_DAY_SETTING_TYPE = 'enable_fasted_day';
 export const PROGRESSION_MODE_SETTING_TYPE = 'progression_mode';
 
 /**
+ * Setting type for the gym profile the user is training in (`gyms.id`), or '' for none.
+ * Drives the plate calculator, the +/- load steps and which exercises may be suggested. Kept as a
+ * primitive string so `SettingsState` stays primitive-only; the profile itself lives in `gyms`.
+ */
+export const ACTIVE_GYM_ID_SETTING_TYPE = 'active_gym_id';
+
+/** Setting type for how much of a started workout's numbers the app decides. value: 'manual' | 'suggest'. */
+export const WORKOUT_AUTONOMY_SETTING_TYPE = 'workout_autonomy';
+
+/**
+ * Setting type: start the rest timer on its own after a set is completed or skipped.
+ * value: 'true' | 'false'. Defaults to true — the long-standing behavior. When off, the session
+ * stays where it is and offers a "Start rest" button instead.
+ */
+export const AUTO_START_REST_TIMER_SETTING_TYPE = 'auto_start_rest_timer';
+
+/**
+ * Setting type: haptic countdown (a tick for the last three seconds and a buzz at zero) on the
+ * rest timer. value: 'true' | 'false'. Defaults to true; a no-op on web.
+ */
+export const REST_TIMER_HAPTICS_SETTING_TYPE = 'rest_timer_haptics';
+
+/**
+ * Setting type: rest, in whole seconds, after a set that names none of its own.
+ * value: stringified integer within `MIN_REST_SECONDS`..`MAX_REST_SECONDS`.
+ */
+export const DEFAULT_REST_SECONDS_SETTING_TYPE = 'default_rest_seconds';
+
+/**
  * Setting type for enabling advanced data management.
  * Gated behind a confirmation + biometric auth to prevent accidental data loss.
  * value: 'true' | 'false'.
@@ -389,6 +418,22 @@ export const THEME_IDS = REGISTRY_THEME_IDS as readonly ThemeId[];
 // Reading and normalizing the stored value lives in `utils/themeSelection`.
 export type ThemeOption = 'system' | ThemeId;
 export type ProgressionMode = 'reps_first' | 'weight_first';
+
+/**
+ * How much of the numbers for a workout the app decides when it starts:
+ *  - `manual`  — the plan's weights and reps are copied exactly, as they always were;
+ *  - `suggest` — each exercise starts from how its last session went (more load, more reps, a
+ *    deload, or a repeat), says so, and offers a one-tap way back.
+ * A later `adaptive` level would rewrite the plan itself; it does not exist yet.
+ */
+export type WorkoutAutonomy = 'manual' | 'suggest';
+
+export const DEFAULT_WORKOUT_AUTONOMY: WorkoutAutonomy = 'suggest';
+
+/** Reads a stored autonomy, treating anything unrecognized (e.g. from a newer build) as the default. */
+export function parseWorkoutAutonomy(raw: string | null | undefined): WorkoutAutonomy {
+  return raw === 'manual' || raw === 'suggest' ? raw : DEFAULT_WORKOUT_AUTONOMY;
+}
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';
 export type ChartTooltipPosition = 'left' | 'right';

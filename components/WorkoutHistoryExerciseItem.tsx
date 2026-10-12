@@ -17,6 +17,8 @@ export type ExerciseData = Pick<Exercise, 'id' | 'name'> & {
   image?: any;
   sets: SetData[];
   setProgress?: number[]; // Progress percentage for each set (0-100)
+  /** The unit this exercise's weights are shown in (its own override, else the account's). */
+  weightUnitKey?: 'workoutSession.kg' | 'workoutSession.lb';
 };
 
 type ExerciseItemProps = {

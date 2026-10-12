@@ -14,7 +14,7 @@ import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { getExerciseIconConfig, isBodyweightExercise } from '@/utils/workout';
 import { calculateExerciseVolume } from '@/utils/workoutCalculator';
-import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isResolvedWorkoutSet, isWorkingSet } from '@/utils/workoutSetCompletion';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -71,7 +71,8 @@ export function FreeSessionExerciseCompleteModal({
   const { setsCompleted, totalVolumeKg } = useMemo(() => {
     const exerciseSets = sets.filter((s) => s.exerciseId === exerciseId);
     const completed = exerciseSets.filter(isResolvedWorkoutSet).length;
-    const performedSets = exerciseSets.filter(isPerformedWorkoutSet);
+    // Volume is a working-set measure: a warm-up is counted in the sets done, not in the load.
+    const performedSets = exerciseSets.filter(isWorkingSet);
 
     const volume = calculateExerciseVolume(
       performedSets.map((s) => ({

@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import { ExternalLink } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,13 +14,13 @@ import DeviceInfo from 'react-native-device-info';
 
 import { SUPPORT_PROJECT_DONATION_URL } from '@/constants/misc';
 import { useTheme } from '@/hooks/useTheme';
-import packageJson from '@/package.json';
+import { getAppBuildInfo } from '@/utils/appBuildInfo';
+import { formatAppVersion } from '@/utils/appVersionLabel';
 import { isSupportProjectListLinkVisible } from '@/utils/supportProjectInstallSource';
 
 import { GenericCard } from './GenericCard';
 
-const buildNumber =
-  Constants.expoConfig?.ios?.buildNumber ?? Constants.expoConfig?.android?.versionCode ?? null;
+const buildInfo = getAppBuildInfo();
 
 interface LegalLinksCardProps {
   containerStyle?: StyleProp<ViewStyle>;
@@ -176,8 +175,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
                 color: theme.colors.text.secondary,
               }}
             >
-              Musclog v{packageJson.version}
-              {buildNumber != null ? ` (Build ${buildNumber})` : ''}
+              Musclog v{formatAppVersion(buildInfo)}
             </Text>
           </View>
         </View>

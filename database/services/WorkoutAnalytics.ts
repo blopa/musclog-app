@@ -15,6 +15,7 @@ import {
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
 import { calculateEstimated1RMForSet, calculateSetVolume } from '@/utils/workoutCalculator';
+import { WARMUP_SET_TYPE } from '@/utils/workoutSetCompletion';
 
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
@@ -73,6 +74,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -118,6 +121,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -333,6 +338,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -453,6 +460,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('reps', 1),
         Q.where('weight', Q.gte(targetWeight)),
         Q.where('deleted_at', Q.eq(null))
@@ -534,6 +543,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -683,6 +694,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
