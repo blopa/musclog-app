@@ -31,6 +31,7 @@
     "generate-exercises-data": "node scripts/generate-exercises-data.js",
     "generate-exercise-locales": "node scripts/generate-exercise-locales.js",
     "generate-exercise-images": "node scripts/generate-exercise-images.js",
+    "generate-theme-icon-backgrounds": "node scripts/generate-theme-icon-backgrounds.js",
     "gb": "flatpak run io.mgba.mGBA gameboy/build/musclog.gbc",
     "gb:gen-foods": "node gameboy/tools/gen-foundation-foods.mjs",
     "gb:gen-exercises": "node gameboy/tools/gen-exercises.mjs",
