@@ -1,4 +1,31 @@
-import { calculateCaloriesBurnedBySteps } from '@/utils/workoutCalculator';
+import { calculateCaloriesBurnedBySteps, calculateSetVolume } from '@/utils/workoutCalculator';
+
+describe('calculateSetVolume', () => {
+  it('calculates volume correctly for normal weight with no equipment', () => {
+    expect(calculateSetVolume(100, 10, 0, 'barbell', 80)).toBeCloseTo(128.26, 2);
+  });
+
+  it('calculates volume correctly taking into account reps in reserve (rir)', () => {
+    expect(calculateSetVolume(100, 10, 2, 'barbell', 80)).toBeCloseTo(134.4, 2);
+  });
+
+  it('adds bodyweight for bodyweight equipment type', () => {
+    expect(calculateSetVolume(0, 10, 0, 'bodyweight', 80)).toBeCloseTo(102.61, 2);
+    expect(calculateSetVolume(20, 10, 0, 'bodyweight', 80)).toBeCloseTo(128.26, 2);
+  });
+
+  it('does not add bodyweight for other equipment types', () => {
+    expect(calculateSetVolume(100, 10, 0, 'machine', 80)).toBeCloseTo(128.26, 2);
+  });
+
+  it('handles missing repsInReserve (defaults to 0)', () => {
+    expect(calculateSetVolume(100, 10, undefined, 'barbell', 80)).toBeCloseTo(128.26, 2);
+  });
+
+  it('handles undefined bodyWeightKg safely (defaults to 0 if not provided)', () => {
+    expect(calculateSetVolume(100, 10, 0, 'bodyweight', 0)).toBeCloseTo(128.26, 2);
+  });
+});
 
 describe('calculateCaloriesBurnedBySteps', () => {
   it('estimates calories for a typical adult walking day', () => {
