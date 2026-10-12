@@ -190,8 +190,9 @@ This repository serves two distinct purposes that share the same Expo Router pro
   `assets/icon-bg-glass-effect.png` and finally `assets/icon-bg-text.png` over it, writing into
   `assets/theme-icons/icon-bg-<theme-id>.png` with `npm run generate-theme-icon-backgrounds`. The
   generator retains the source alpha channels and uses the glass artwork for its shading and
-  highlights, with the wordmark rendered above both. It does not change Expo's configured app icon
-  or overwrite `assets/icon-bg.png`.
+  highlights, with the wordmark rendered above both. Expo's configured app icon and Android adaptive
+  foreground in `app.json` point at the default dark theme's output,
+  `assets/theme-icons/icon-bg-kinetic-depth.png`; the generator does not edit `app.json`.
   A theme carries no component-level presentation flags: anything a component would branch on is
   expressed as palette values instead (a theme wanting a flat summary card sets its gradient stops
   flat). `ThemeProvider` resolves the preference once, and every `useTheme*` hook selects from that
