@@ -97,7 +97,7 @@ function WorkoutSummaryCard({
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
+              className="text-xs font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.totalTime')}
@@ -120,7 +120,7 @@ function WorkoutSummaryCard({
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
+              className="text-xs font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.volume')}
@@ -141,7 +141,7 @@ function WorkoutSummaryCard({
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
+              className="text-xs font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.calories')}
@@ -191,7 +191,7 @@ function VolumeTrendCard({
             className="rounded px-2 py-0.5"
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
-            <Text className="text-[10px] font-bold uppercase text-accent-primary">
+            <Text className="text-xs font-bold uppercase text-accent-primary">
               {t('workoutDetail.volumeTrendPercentage', { percentage })}
             </Text>
           </View>
@@ -301,27 +301,27 @@ function SetsTable({ sets }: SetsTableProps) {
         }}
       >
         <View className="w-12 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.set')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.weight')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.reps')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.partial')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.rir')}
           </Text>
         </View>
@@ -377,7 +377,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
               {exercise.name}
             </Text>
             <Text
-              className="text-[10px] font-medium text-text-tertiary"
+              className="text-xs font-medium text-text-tertiary"
               style={{ marginTop: theme.spacing.gap.xs }}
             >
               {exercise.isSkipped

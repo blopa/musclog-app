@@ -59,9 +59,13 @@ export type PercentageRule = {
   trainingMaxKg?: number;
 };
 
+/** Set when the user restarts a rule's history: sessions run under an older reset are ignored. */
+type ResetMarker = { resetAt?: number };
+
 export type ProgressionRule = (
   DoubleProgressionRule | LinearProgressionRule | TopSetBackoffRule | PercentageRule
-) & { resetAt?: number };
+) &
+  ResetMarker;
 
 type NumericField<R> = {
   [K in keyof R]-?: R[K] extends number | undefined ? K : never;
@@ -400,7 +404,7 @@ const sessionGotEveryRep = (session: HistorySession, reps: number) =>
  * count starts again, instead of the misses that caused it triggering another one straight away.
  */
 function linearTargets(
-  rule: LinearProgressionRule,
+  rule: LinearProgressionRule & ResetMarker,
   planned: readonly PlannedRuleSet[],
   history: readonly HistorySession[],
   step: RuleLoadStep
@@ -424,18 +428,19 @@ function linearTargets(
   } else {
     let failures = 0;
     for (const session of history) {
+      const sessionResetAt = session.rule?.resetAt;
+      const otherResetAt = sessionResetAt !== rule.resetAt;
       if (
-        ((rule as ProgressionRule).resetAt != null &&
-          session.rule?.resetAt !== (rule as ProgressionRule).resetAt) ||
-        (session.rule &&
-          (session.rule.type !== rule.type ||
-            session.rule.resetAt !== (rule as ProgressionRule).resetAt))
+        (rule.resetAt != null && otherResetAt) ||
+        (session.rule && (session.rule.type !== rule.type || otherResetAt))
       ) {
         break;
       }
+
       if (!sameLoad(session.sets[0].weightKg, lastLoad) || sessionGotEveryRep(session, rule.reps)) {
         break;
       }
+
       failures++;
     }
     target =
@@ -498,7 +503,8 @@ function topSetBackoffTargets(
     missedAtSameLoad(before, lastTop.weightKg, rule.repMin, 0)
   );
   const backoffLoad = step.roundLoad((top.weightKg * rule.backoffPercent) / 100);
-  const lastBackoffLoad = last.sets[1]?.weightKg ?? backoffLoad;
+  const lastBackoffLoad =
+    last.sets.find((set, index) => (set.prescribedIndex ?? index) === 1)?.weightKg ?? backoffLoad;
   const backoff: SetTarget = {
     weightKg: backoffLoad,
     reps: rule.backoffReps,
@@ -518,7 +524,7 @@ function topSetBackoffTargets(
  * reps implies a lower 1RM than the lifter has, unless every set was rated for reps in reserve.
  */
 export function resolveTrainingMax(
-  rule: PercentageRule,
+  rule: PercentageRule & ResetMarker,
   history: readonly HistorySession[],
   step: RuleLoadStep
 ): { trainingMaxKg: number; source: 'raised' | 'held' | 'set' | 'estimated' } | null {
@@ -526,8 +532,7 @@ export function resolveTrainingMax(
   const carriedRule = carried?.rule as PercentageRule | undefined;
   const startChanged =
     carriedRule != null &&
-    (carriedRule.trainingMaxKg !== rule.trainingMaxKg ||
-      carried?.rule?.resetAt !== (rule as ProgressionRule).resetAt);
+    (carriedRule.trainingMaxKg !== rule.trainingMaxKg || carried?.rule?.resetAt !== rule.resetAt);
 
   if (carried?.state && !startChanged) {
     const raised = sessionGotEveryRep(carried, rule.reps);
@@ -538,21 +543,26 @@ export function resolveTrainingMax(
       source: raised ? 'raised' : 'held',
     };
   }
+
   if (rule.trainingMaxKg != null) {
     return { trainingMaxKg: rule.trainingMaxKg, source: 'set' };
   }
+
   const last = history[0];
   if (!last) {
     return null;
   }
+
   const estimatedOneRepMaxKg = Math.max(
     ...last.sets.map((set) =>
       calculateAverage1RM(set.weightKg, set.reps, set.rirRecorded === false ? 0 : set.repsInReserve)
     )
   );
+
   if (!(estimatedOneRepMaxKg > 0)) {
     return null;
   }
+
   return {
     trainingMaxKg: (estimatedOneRepMaxKg * rule.trainingMaxPercent) / 100,
     source: 'estimated',
@@ -569,6 +579,7 @@ function percentageTargets(
   if (!trainingMax) {
     return { targets: [], state: null };
   }
+
   const weightKg = step.roundLoad((trainingMax.trainingMaxKg * rule.percentOfTrainingMax) / 100);
   const previousLoad = history[0]?.sets[0].weightKg ?? weightKg;
   const target: SetTarget = {
@@ -582,6 +593,7 @@ function percentageTargets(
       raised: trainingMax.source === 'raised',
     },
   };
+
   return {
     targets: planned.map(() => target),
     state: { trainingMaxKg: trainingMax.trainingMaxKg },
@@ -662,6 +674,7 @@ export function planRuleChanges(
     if (!weightChanged && set.reps === target.reps) {
       return;
     }
+
     const field = weightChanged ? 'weight' : 'reps';
     const counterpart = lastSets.find((set, i) => (set.prescribedIndex ?? i) === index);
     changes.push({

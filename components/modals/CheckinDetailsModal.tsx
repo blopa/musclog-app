@@ -315,7 +315,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         >
           <View className="flex-row justify-between">
             <View>
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.weightTrend')}
               </Text>
               <View className="mt-1 flex-row items-baseline">
@@ -338,7 +338,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </View>
             </View>
             <View className="items-end">
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.target')}
               </Text>
               <Text className="mt-1 text-xl font-bold text-text-primary">
@@ -384,7 +384,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <Text
-              className="text-[10px] font-bold uppercase"
+              className="text-xs font-bold uppercase"
               style={{ color: theme.colors.accent.primary }}
             >
               {t('nutrition.checkin.weekProgress', {
@@ -446,7 +446,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.avgIntake')}
               </Text>
               <Text
@@ -465,7 +465,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.consistency')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">
@@ -486,13 +486,13 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.avgBodyFat')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">
                 {avgBodyFat != null ? formatDecimal(avgBodyFat, 1) : '--'}%
               </Text>
-              <Text className="mt-1 text-[10px] font-medium text-text-tertiary">
+              <Text className="mt-1 text-xs font-medium text-text-tertiary">
                 {checkin.targetBodyFat != null
                   ? t('nutrition.checkin.targetShort', {
                       value: formatDecimal(checkin.targetBodyFat, 1),
@@ -508,7 +508,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.activeMinutes')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">
@@ -516,7 +516,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </Text>
               {activeMinutesTrend !== null ? (
                 <Text
-                  className="mt-1 text-[10px] font-medium"
+                  className="mt-1 text-xs font-medium"
                   style={{
                     color:
                       activeMinutesTrend >= 0

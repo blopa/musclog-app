@@ -35,6 +35,9 @@ export function useWorkoutSessionController(
 ) {
   const [view, setView] = useState<'inline' | 'guided'>('guided');
   const [drafts, setDrafts] = useState<Record<string, Partial<SessionDraft>>>({});
+  // The latest drafts, readable from a handler without going through a state updater: persisting
+  // from inside an updater is a side effect React may run twice.
+  const draftsRef = useRef(drafts);
   const [restEnd, setRestEnd] = useState<number | null>(null);
   // Length of the rest that is running, for the progress bar. Not persisted: after a restart the
   // time still left stands in for it.
@@ -64,14 +67,16 @@ export function useWorkoutSessionController(
         setNow(Date.now());
         setRestEnd(timer);
         setRestTotal(timer ? Math.max(0, Math.ceil((timer - Date.now()) / 1000)) : 0);
-        setDrafts({});
+        let stored: Record<string, Partial<SessionDraft>> = {};
         if (raw) {
           try {
-            setDrafts(JSON.parse(raw));
+            stored = JSON.parse(raw);
           } catch {
-            setDrafts({});
+            stored = {};
           }
         }
+        draftsRef.current = stored;
+        setDrafts(stored);
         setLoadedKey(key);
       })
       .catch((e) => {
@@ -91,6 +96,7 @@ export function useWorkoutSessionController(
     if (restEnd == null) {
       return;
     }
+
     const tick = () => {
       const current = Date.now();
       setNow(current);
@@ -99,6 +105,7 @@ export function useWorkoutSessionController(
         clearInterval(timer);
       }
     };
+
     const timer = setInterval(tick, 1000);
     const subscription = AppState.addEventListener('change', tick);
     return () => {
@@ -106,6 +113,7 @@ export function useWorkoutSessionController(
       subscription.remove();
     };
   }, [restEnd]);
+
   const persist = (next: Record<string, Partial<SessionDraft>>) => {
     if (key) {
       writeQueue.current = writeQueue.current
@@ -113,13 +121,16 @@ export function useWorkoutSessionController(
         .then(() => AsyncStorage.setItem(key, JSON.stringify(next)));
     }
   };
-  const edit = (id: string, draft: SessionDraft) => {
-    setDrafts((previous) => {
-      const next = { ...previous, [id]: draft };
-      persist(next);
-      return next;
-    });
+  /** Replaces the drafts and saves them. */
+  const commitDrafts = (next: Record<string, Partial<SessionDraft>>) => {
+    draftsRef.current = next;
+    setDrafts(next);
+    persist(next);
   };
+  const edit = (id: string, draft: SessionDraft) => {
+    commitDrafts({ ...draftsRef.current, [id]: draft });
+  };
+
   const changeView = async (value: 'inline' | 'guided') => {
     setView(value);
     try {
@@ -128,10 +139,12 @@ export function useWorkoutSessionController(
       setError(e instanceof Error ? e : new Error(String(e)));
     }
   };
+
   const startRest = async (seconds: number) => {
     if (!logId) {
       return;
     }
+
     const end = Date.now() + seconds * 1000;
     await setRestTimerEndAt(logId, end);
     setNow(Date.now());
@@ -140,11 +153,13 @@ export function useWorkoutSessionController(
     setRestId((id) => id + 1);
     await NotificationService.scheduleRestTimerNotification(seconds);
   };
+
   /** Lengthens or shortens the rest that is running; its reminder moves with it. */
   const adjustRest = async (deltaSeconds: number) => {
     if (!logId || !restEnd) {
       return;
     }
+
     const remaining = Math.max(1, Math.ceil((restEnd - Date.now()) / 1000) + deltaSeconds);
     const end = Date.now() + remaining * 1000;
     await setRestTimerEndAt(logId, end);
@@ -154,15 +169,18 @@ export function useWorkoutSessionController(
     await NotificationService.cancelRestTimerNotification();
     await NotificationService.scheduleRestTimerNotification(remaining);
   };
+
   const stopRest = async () => {
     await clearRestTimerEndAt();
     setRestEnd(null);
     await NotificationService.cancelRestTimerNotification();
   };
+
   const run = async (action: () => Promise<void>) => {
     if (lock.current) {
       return;
     }
+
     lock.current = true;
     setBusy(true);
     setError(null);
@@ -177,36 +195,39 @@ export function useWorkoutSessionController(
       setBusy(false);
     }
   };
+
   const complete = async (id: string, values: SessionSetValues) =>
     run(async () => {
       if (!logId) {
         return;
       }
+
       const set = sets.find((s) => s.id === id);
       if (!set) {
         return;
       }
+
       if (isPerformedWorkoutSet(set)) {
         await WorkoutSessionService.saveSet(logId, id, 'planned');
         return;
       }
+
       await WorkoutSessionService.saveSet(logId, id, 'performed', values);
-      setDrafts((previous) => {
-        const next = { ...previous };
-        delete next[id];
-        persist(next);
-        return next;
-      });
+      const next = { ...draftsRef.current };
+      delete next[id];
+      commitDrafts(next);
       if (options.autoRest) {
         await startRest(resolveRestSeconds(set.restTimeAfter, options.defaultRest));
       }
     });
+
   const skip = async (id: string) =>
     run(async () => {
       if (logId) {
         await WorkoutSessionService.saveSet(logId, id, 'skipped');
       }
     });
+
   /** "Use the plan's" for one exercise: only its unfinished sets go back to the prescription. */
   const revert = async (logExerciseId: string) =>
     run(async () => {
@@ -218,24 +239,22 @@ export function useWorkoutSessionController(
           )
           .map((set) => set.id)
       );
-      setDrafts((previous) => {
-        const next = { ...previous };
-        for (const id of affected) {
-          if (!next[id]) {
-            continue;
-          }
-          const effort = { ...next[id] };
-          delete effort.weight;
-          delete effort.reps;
-          if (Object.keys(effort).length) {
-            next[id] = effort;
-          } else {
-            delete next[id];
-          }
+
+      const next = { ...draftsRef.current };
+      for (const id of affected) {
+        if (!next[id]) {
+          continue;
         }
-        persist(next);
-        return next;
-      });
+        const effort = { ...next[id] };
+        delete effort.weight;
+        delete effort.reps;
+        if (Object.keys(effort).length) {
+          next[id] = effort;
+        } else {
+          delete next[id];
+        }
+      }
+      commitDrafts(next);
     });
   const finish = async () =>
     run(async () => {
@@ -248,6 +267,7 @@ export function useWorkoutSessionController(
       if (key) {
         await AsyncStorage.removeItem(key);
       }
+      draftsRef.current = {};
       setDrafts({});
     });
   /**
@@ -270,6 +290,7 @@ export function useWorkoutSessionController(
       if (key) {
         await AsyncStorage.removeItem(key);
       }
+      draftsRef.current = {};
       setDrafts({});
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
@@ -279,6 +300,7 @@ export function useWorkoutSessionController(
       setBusy(false);
     }
   };
+
   return {
     view,
     changeView,

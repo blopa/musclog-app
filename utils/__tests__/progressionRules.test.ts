@@ -165,19 +165,26 @@ describe('explicit progression projections', () => {
         .sets[0].weight
     ).toBe(62.5);
   });
-  it('does not derive an automatic deload from missing RIR', () =>
-    expect(
-      projectExerciseProgression({
-        planned,
-        history: [history([8, 8, 8])],
-        step,
-        automatic: true,
-        rule: null,
-        progressionMode: 'weight_first',
-        isCompound: true,
-        isBodyweight: false,
-      }).sets
-    ).toEqual(planned));
+  it('does not derive an automatic deload from missing RIR, and progresses on reps alone', () => {
+    const projection = projectExerciseProgression({
+      planned,
+      history: [history([8, 8, 8])],
+      step,
+      automatic: true,
+      rule: null,
+      progressionMode: 'weight_first',
+      isCompound: true,
+      isBodyweight: false,
+    });
+    // Unrated effort never lowers the load; the reps themselves earn one more rep, with a reason
+    // that does not claim a reps-in-reserve figure nobody recorded.
+    expect(projection.sets.every((set) => set.weight === 60)).toBe(true);
+    expect(projection.sets.map((set) => set.reps)).toEqual([9, 9, 9]);
+    expect(projection.changes[0].adjustment).toMatchObject({
+      cause: 'progression',
+      rule: { kind: 'range', outcome: 'add_reps' },
+    });
+  });
   it('anchors automatic reps_first on the plan and deloads only after two failed sessions', () => {
     const rated = (weight: number, reps: number, rir: number): HistorySession => ({
       sets: [{ weightKg: weight, reps, repsInReserve: rir, rirRecorded: true }],

@@ -13,6 +13,7 @@ import {
   type SessionExerciseAction,
   useExerciseCategory,
 } from './ExerciseHeader';
+import { ExerciseNotes, type SessionNote } from './ExerciseNotes';
 import { GuidanceSummary } from './GuidanceSummary';
 import { InlineSetRow, SetTableHeader } from './InlineSetRow';
 import type { GuidanceState, SessionBlock } from './sessionModel';
@@ -49,7 +50,7 @@ export function InlineExerciseCard({
   currentSetId?: string;
   drafts: Record<string, Partial<SessionDraft>>;
   valuesFor: (setId: string) => SessionDraft;
-  notes: string[];
+  notes: SessionNote[];
   warmup: 'add' | 'remove' | null;
   busy: boolean;
   onWhy: () => void;
@@ -106,20 +107,7 @@ export function InlineExerciseCard({
         flat
       />
 
-      {notes.length ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('workoutSession.notes.edit')}
-          onPress={() => onAction('notes')}
-          className="gap-1 rounded-lg bg-bg-overlay p-3"
-        >
-          {notes.map((note) => (
-            <Text key={note} className="text-sm text-text-secondary" numberOfLines={3}>
-              {note}
-            </Text>
-          ))}
-        </Pressable>
-      ) : null}
+      <ExerciseNotes notes={notes} onPress={() => onAction('notes')} />
 
       <ExerciseActionChips warmup={warmup} onAction={onAction} disabled={busy} canSwap={!allDone} />
 

@@ -3,6 +3,7 @@ import { type Model, Q } from '@nozbe/watermelondb';
 import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type Exercise from '@/database/models/Exercise';
+import type WorkoutLog from '@/database/models/WorkoutLog';
 import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import type WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
@@ -38,6 +39,13 @@ import {
 import { ExerciseUserSettingsService } from './ExerciseUserSettingsService';
 import { GymService } from './GymService';
 import { SettingsService } from './SettingsService';
+
+/**
+ * How many past log exercises are read before ordering by when their workout happened. Wider than
+ * the sessions a rule looks back over, so a few late-written rows cannot push the real latest
+ * sessions out of the window.
+ */
+const HISTORY_CANDIDATE_WINDOW = PROGRESSION_HISTORY_SESSIONS * 4;
 
 export type TemplateRecommendation = ExerciseRecommendation & {
   templateExerciseId: string;
@@ -311,7 +319,7 @@ export class WorkoutProgressionService {
     excludeId?: string,
     templateExerciseId?: string
   ): Promise<HistorySession[]> {
-    const recent = await database
+    const candidates = await database
       .get<WorkoutLogExercise>('workout_log_exercises')
       .query(
         Q.where('exercise_id', exerciseId),
@@ -323,9 +331,22 @@ export class WorkoutProgressionService {
           Q.where('deleted_at', Q.eq(null)),
         ]),
         Q.sortBy('created_at', Q.desc),
-        Q.take(PROGRESSION_HISTORY_SESSIONS)
+        Q.take(HISTORY_CANDIDATE_WINDOW)
       )
       .fetch();
+    // "Last session" means the last workout, not the last row written: an exercise added to an old
+    // workout afterwards (the past-workout editor) has a fresh `created_at`, and a join cannot be
+    // sorted on in SQL, so the window is read wider and ordered by the parent's completion time.
+    const logs = await fetchMapByIds<WorkoutLog>(
+      'workout_logs',
+      'id',
+      candidates.map((row) => row.workoutLogId)
+    );
+    const happenedAt = (row: WorkoutLogExercise) =>
+      logs.get(row.workoutLogId)?.completedAt ?? row.createdAt ?? 0;
+    const recent = [...candidates]
+      .sort((a, b) => happenedAt(b) - happenedAt(a))
+      .slice(0, PROGRESSION_HISTORY_SESSIONS);
     // One query for every session's sets, not one per session.
     const allSets = await fetchByIds<WorkoutLogSet>(
       'workout_log_sets',

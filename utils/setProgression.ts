@@ -1,6 +1,11 @@
 import type { ProgressionMode } from '@/constants/settings';
 
-import type { StartAdjustmentCause, StartSetAdjustment } from './setAdjustment';
+import {
+  DEFAULT_TARGET_REPS_IN_RESERVE,
+  type StartAdjustmentCause,
+  type StartRuleDetail,
+  type StartSetAdjustment,
+} from './setAdjustment';
 
 /** How the last session of an exercise went, as far as the next one is concerned. */
 export interface LastWorkingSession {
@@ -37,6 +42,11 @@ export interface StartTarget {
   weightKg: number;
   reps: number;
   kind: StartAdjustmentCause;
+  /**
+   * Why, when the reason is not "reps in reserve". An unrated session progresses on reps alone,
+   * and its explanation must not claim a reps-in-reserve figure nobody recorded.
+   */
+  rule?: StartRuleDetail;
 }
 
 /**
@@ -48,8 +58,12 @@ const ISOLATION_BASE_REPS = 14;
 const REP_RANGE_HALF_WIDTH = 2;
 /** With a plan, reps climb this far above the planned reps before the load goes up instead. */
 const PLAN_REP_HEADROOM = 2;
-/** Reps in reserve at or above which last time was clearly too easy. */
-const TOO_EASY_REPS_IN_RESERVE = 3;
+/**
+ * Reps in reserve at or above which last time met its target and the load can move on. This is the
+ * target the live session holds sets at (`DEFAULT_TARGET_REPS_IN_RESERVE`): waiting for 3 meant a
+ * lifter who trained exactly as prescribed, at 1–2 in reserve, was told to repeat forever.
+ */
+const PROGRESS_REPS_IN_RESERVE = DEFAULT_TARGET_REPS_IN_RESERVE;
 
 /** The default reps for an exercise with no history. */
 export const defaultRepsFor = (isCompound: boolean): number =>
@@ -68,32 +82,72 @@ export function repsFirstRange(
 }
 
 /**
- * What the next session of an exercise should start at, from how the last one went — the smart
- * double progression the app has always offered when an exercise is added mid-session, now with the
- * REASON attached so it can be shown.
- *
- *  - Plenty left in the tank (average ≥ 3 reps in reserve): progress. `weight_first` adds one
- *    increment; `reps_first` adds a rep until the top of the range (`repsFirstRange`), then adds
- *    the increment and resets to the bottom.
- *  - Nothing left (average 0) for the second session in a row at this load: deload by one
- *    increment. The first such session repeats — one hard day is noise, not a stall.
- *  - Otherwise: repeat last time.
+ * Progression for a session whose effort was never rated. Reps in reserve is optional, and without
+ * it the only evidence is the reps themselves, so this is double progression: climb the plan's rep
+ * range, then add load. Without a plan to anchor the range (an exercise added mid-session) there is
+ * nothing to judge the reps against, so the load holds.
  */
-export function computeStartTarget({
+function computeUnratedTarget({
   last,
-  failedBefore = false,
   planReps,
-  progressionMode,
   isCompound,
   incrementKg,
   roundLoad,
 }: StartTargetInput): StartTarget {
-  const averageRir = last.averageRepsInReserve;
-  if (last.rirRecorded === false) {
-    return { weightKg: last.weightKg, reps: last.reps, kind: 'repeat' };
+  const hold: StartTarget = { weightKg: last.weightKg, reps: last.reps, kind: 'repeat' };
+  if (planReps == null || planReps <= 0 || last.reps < planReps) {
+    return hold;
   }
 
-  if (averageRir >= TOO_EASY_REPS_IN_RESERVE) {
+  const { minReps, maxReps } = repsFirstRange(isCompound, planReps);
+  const range = { repMin: minReps, repMax: maxReps };
+  if (last.reps < maxReps) {
+    return {
+      weightKg: last.weightKg,
+      reps: last.reps + 1,
+      kind: 'progression',
+      rule: { kind: 'range', outcome: 'add_reps', ...range },
+    };
+  }
+
+  return {
+    weightKg: roundLoad(last.weightKg + incrementKg),
+    reps: minReps,
+    kind: 'progression',
+    rule: { kind: 'range', outcome: 'add_weight', ...range },
+  };
+}
+
+/**
+ * What the next session of an exercise should start at, from how the last one went — the smart
+ * double progression the app has always offered when an exercise is added mid-session, now with the
+ * REASON attached so it can be shown.
+ *
+ *  - Target effort met or beaten (average ≥ the target reps in reserve) and the planned reps hit:
+ *    progress. `weight_first` adds one increment; `reps_first` adds a rep until the top of the range (`repsFirstRange`), then adds
+ *    the increment and resets to the bottom.
+ *  - Nothing left (average 0) for the second session in a row at this load: deload by one
+ *    increment. The first such session repeats — one hard day is noise, not a stall.
+ *  - Otherwise: repeat last time.
+ *  - Effort never rated: double progression on reps alone (`computeUnratedTarget`).
+ */
+export function computeStartTarget(input: StartTargetInput): StartTarget {
+  const {
+    last,
+    failedBefore = false,
+    planReps,
+    progressionMode,
+    isCompound,
+    incrementKg,
+    roundLoad,
+  } = input;
+  const averageRir = last.averageRepsInReserve;
+  if (last.rirRecorded === false) {
+    return computeUnratedTarget(input);
+  }
+
+  const hitPlan = planReps == null || last.reps >= planReps;
+  if (averageRir >= PROGRESS_REPS_IN_RESERVE && hitPlan) {
     if (progressionMode === 'weight_first') {
       return {
         weightKg: roundLoad(last.weightKg + incrementKg),
@@ -106,6 +160,7 @@ export function computeStartTarget({
     if (last.reps < maxReps) {
       return { weightKg: last.weightKg, reps: last.reps + 1, kind: 'progression' };
     }
+
     return { weightKg: roundLoad(last.weightKg + incrementKg), reps: minReps, kind: 'progression' };
   }
 
@@ -181,6 +236,7 @@ export function planStartChanges(
         plan: { weightKg: set.weight, reps: set.reps },
         last: { ...last },
         now: { weightKg: target.weightKg, reps: target.reps },
+        ...(target.rule ? { rule: target.rule } : {}),
       },
     });
   }

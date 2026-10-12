@@ -24,6 +24,7 @@ import {
 } from '@/utils/workoutSupersetOrder';
 
 import type { SessionExerciseAction } from './session/ExerciseHeader';
+import type { SessionNote } from './session/ExerciseNotes';
 import { GuidedCompleteButton, GuidedExerciseView } from './session/GuidedExerciseView';
 import { InlineExerciseCard } from './session/InlineExerciseCard';
 import { RestTimerBar } from './session/RestTimerBar';
@@ -144,13 +145,13 @@ export function WorkoutTrainingView({
     onAction(block.logExerciseId, kind);
   };
   const notesFor = (block: SessionBlock) => {
-    const notes: string[] = [];
+    const notes: SessionNote[] = [];
     const pinned = get(block.exerciseId).note;
     if (pinned) {
-      notes.push(`📌 ${pinned}`);
+      notes.push({ kind: 'pinned', text: pinned });
     }
     if (block.focus.notes) {
-      notes.push(`📝 ${block.focus.notes}`);
+      notes.push({ kind: 'session', text: block.focus.notes });
     }
     return notes;
   };
@@ -367,9 +368,11 @@ export function WorkoutTrainingView({
         onToggleExpanded={() =>
           setTimerChoice({ restId: controller.restId, expanded: !timerExpanded })
         }
-        onStart={() => void controller.startRest(controller.defaultRest)}
-        onStop={() => void controller.stopRest()}
-        onAdjust={(delta) => void controller.adjustRest(delta)}
+        // The countdown is already running by the time the reminder is scheduled, so a failure there
+        // costs only the notification and must not surface as an unhandled rejection.
+        onStart={() => void controller.startRest(controller.defaultRest).catch(() => {})}
+        onStop={() => void controller.stopRest().catch(() => {})}
+        onAdjust={(delta) => void controller.adjustRest(delta).catch(() => {})}
       />
       {detailsSet && detailsRow ? (
         <SetDetailsSheet

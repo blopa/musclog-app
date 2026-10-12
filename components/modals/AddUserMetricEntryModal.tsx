@@ -380,7 +380,7 @@ export default function AddUserMetricEntryModal({
                   borderColor: theme.colors.accent.primary20,
                 }}
               >
-                <Text className="text-[10px] font-bold text-accent-primary">
+                <Text className="text-xs font-bold text-accent-primary">
                   +
                   {increment % 1 === 0
                     ? formatInteger(increment, { useGrouping: false })

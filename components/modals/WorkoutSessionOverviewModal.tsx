@@ -176,7 +176,7 @@ function ExerciseCard({
                 <Text className={`text-lg font-bold leading-tight ${titleClassName}`}>{name}</Text>
                 {isSkipped ? (
                   <View className="rounded bg-bg-secondary px-2 py-1">
-                    <Text className="text-[10px] font-bold text-text-muted">
+                    <Text className="text-xs font-bold text-text-muted">
                       {t('workout.skipped')}
                     </Text>
                   </View>

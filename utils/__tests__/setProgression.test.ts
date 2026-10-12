@@ -43,6 +43,23 @@ describe('computeStartTarget', () => {
       });
     });
 
+    it('progresses a lifter who trained exactly at the target effort', () => {
+      // Two reps in reserve IS the prescription; waiting for three told them to repeat forever.
+      expect(target({ last: last(100, 8, 2) })).toEqual({
+        weightKg: 103,
+        reps: 8,
+        kind: 'progression',
+      });
+    });
+
+    it('does not progress when the planned reps were missed, however easy it felt', () => {
+      expect(target({ planReps: 8, last: last(100, 6, 4) })).toEqual({
+        weightKg: 100,
+        reps: 6,
+        kind: 'repeat',
+      });
+    });
+
     it('rounds the new load with the supplied rounding', () => {
       expect(target({ roundLoad: (kg) => kg })).toMatchObject({ weightKg: 102.5 });
     });
@@ -67,7 +84,7 @@ describe('computeStartTarget', () => {
 
     it('repeats last time in between', () => {
       expect(target({ last: last(100, 8, 1) })).toEqual({ weightKg: 100, reps: 8, kind: 'repeat' });
-      expect(target({ last: last(100, 8, 2.5) })).toEqual({
+      expect(target({ last: last(100, 8, 1.5) })).toEqual({
         weightKg: 100,
         reps: 8,
         kind: 'repeat',
@@ -124,6 +141,62 @@ describe('computeStartTarget', () => {
         target({ progressionMode: 'reps_first', isCompound: false, last: last(20, 16, 4) })
       ).toMatchObject({ weightKg: 23, reps: 12 });
     });
+  });
+});
+
+describe('computeStartTarget without rated effort', () => {
+  const unrated = (
+    reps: number,
+    overrides: Partial<Parameters<typeof computeStartTarget>[0]> = {}
+  ) =>
+    target({
+      last: { weightKg: 100, reps, averageRepsInReserve: 0, rirRecorded: false },
+      planReps: 5,
+      ...overrides,
+    });
+
+  it('climbs the plan rep range one rep at a time, with a reason that names no effort', () => {
+    expect(unrated(5)).toEqual({
+      weightKg: 100,
+      reps: 6,
+      kind: 'progression',
+      rule: { kind: 'range', outcome: 'add_reps', repMin: 5, repMax: 7 },
+    });
+  });
+
+  it('adds load and restarts at the plan reps once the top of the range is reached', () => {
+    expect(unrated(7)).toEqual({
+      weightKg: 103,
+      reps: 5,
+      kind: 'progression',
+      rule: { kind: 'range', outcome: 'add_weight', repMin: 5, repMax: 7 },
+    });
+  });
+
+  it('works the same in either progression mode', () => {
+    expect(unrated(5, { progressionMode: 'reps_first' })).toEqual(unrated(5));
+  });
+
+  it('holds when the plan reps were missed', () => {
+    expect(unrated(4)).toEqual({ weightKg: 100, reps: 4, kind: 'repeat' });
+  });
+
+  it('holds when there is no plan to judge the reps against', () => {
+    expect(unrated(12, { planReps: undefined })).toEqual({
+      weightKg: 100,
+      reps: 12,
+      kind: 'repeat',
+    });
+  });
+
+  it('carries the reason onto the set explanation', () => {
+    const start = unrated(5);
+    const [change] = planStartChanges([{ id: 's1', weight: 100, reps: 5 }], start, {
+      weightKg: 100,
+      reps: 5,
+      averageRepsInReserve: 0,
+    });
+    expect(change.adjustment.rule).toEqual(start.rule);
   });
 });
 

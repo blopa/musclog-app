@@ -262,3 +262,25 @@ it('only runs its clock while a rest is counting down', async () => {
   expect(hook.result.current.restSeconds).toBe(30);
   interval.mockRestore();
 });
+
+it('saves each edit exactly once and keeps back-to-back edits from losing one another', async () => {
+  const setItem = jest.spyOn(AsyncStorage, 'setItem');
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  setItem.mockClear();
+
+  // Two edits in one batch: the second must build on the first, not on a stale render.
+  act(() => {
+    hook.result.current.edit('s1', { weight: '62', reps: '10' });
+    hook.result.current.edit('s2', { weight: '40', reps: '12' });
+  });
+
+  expect(Object.keys(hook.result.current.drafts)).toEqual(['s1', 's2']);
+  await waitFor(() => expect(setItem).toHaveBeenCalledTimes(2));
+  expect(JSON.parse((await AsyncStorage.getItem('workout_drafts_log')) as string)).toMatchObject({
+    s1: { weight: '62' },
+    s2: { weight: '40' },
+  });
+  setItem.mockRestore();
+  hook.unmount();
+});

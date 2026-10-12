@@ -169,8 +169,13 @@ export default function WorkoutSessionScreen() {
       await ble.finishSetRecording();
       await controller.finish();
       setPanel(null);
-    } catch {
-      // The controller keeps the error and the session for a retry.
+    } catch (error) {
+      // The controller keeps the error and the session for a retry. The end-of-workout modal would
+      // hide the inline error behind it, so close it and say what happened where it can be seen.
+      setPanel(null);
+      handleError(error, 'workout-session.finish', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     }
   };
   const selectExercise = (id: string | undefined) => {

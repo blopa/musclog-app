@@ -123,12 +123,26 @@ describe('WorkoutProgressionService', () => {
       exercise?: Record<string, unknown>;
       userSettings?: any[];
       onHistoryRead?: () => void;
+      /** When each history workout was completed. Rows are returned newest-WRITTEN first. */
+      completedAt?: { previous: number; earlier: number };
     }) {
-      const previousLogExercise = { id: 'prev-le' };
-      const earlierLogExercise = { id: 'earlier-le' };
+      const previousLogExercise = { id: 'prev-le', workoutLogId: 'wl-prev', createdAt: 2 };
+      const earlierLogExercise = { id: 'earlier-le', workoutLogId: 'wl-earlier', createdAt: 1 };
       mockDatabase.get.mockImplementation((table: string) => {
         if (table === 'exercise_user_settings') {
           return collection({ fetch: jest.fn().mockResolvedValue(options.userSettings ?? []) });
+        }
+        if (table === 'workout_logs') {
+          return collection({
+            fetch: jest.fn().mockResolvedValue(
+              options.completedAt
+                ? [
+                    { id: 'wl-prev', completedAt: options.completedAt.previous },
+                    { id: 'wl-earlier', completedAt: options.completedAt.earlier },
+                  ]
+                : []
+            ),
+          }) as any;
         }
         if (table === 'workout_log_exercises') {
           // The same collection is read for this workout and for history; history is the one
@@ -340,7 +354,7 @@ describe('WorkoutProgressionService', () => {
 
     it('repeats last time instead of a stale plan when it was about right', async () => {
       const sets = [planned('s1')];
-      installHistory({ sets, previousSets: lastSession(70, 2) });
+      installHistory({ sets, previousSets: lastSession(70, 1) });
 
       await WorkoutProgressionService.applyStartProgression('wl-1');
 
@@ -352,9 +366,25 @@ describe('WorkoutProgressionService', () => {
       });
     });
 
+    it('takes "last time" from the latest workout, not the latest row written', async () => {
+      // The newest-written row belongs to an OLDER workout (an exercise added to it afterwards).
+      const sets = [planned('s1')];
+      installHistory({
+        sets,
+        previousSets: lastSession(62, 4),
+        earlierSets: lastSession(80, 1),
+        completedAt: { previous: 100, earlier: 200 },
+      });
+
+      await WorkoutProgressionService.applyStartProgression('wl-1');
+
+      expect(sets[0].weight).toBe(80);
+      expect(JSON.parse(sets[0].adjustmentJson)).toMatchObject({ cause: 'repeat', to: 80 });
+    });
+
     it('leaves a set alone when the target already equals the plan', async () => {
       const sets = [planned('s1', { weight: 70 })];
-      installHistory({ sets, previousSets: lastSession(70, 2) });
+      installHistory({ sets, previousSets: lastSession(70, 1) });
 
       expect(await WorkoutProgressionService.applyStartProgression('wl-1')).toBe(0);
       expect(sets[0].adjustmentJson).toBeUndefined();

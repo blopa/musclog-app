@@ -29,6 +29,7 @@ import {
   type SessionExerciseAction,
   useExerciseCategory,
 } from './ExerciseHeader';
+import { ExerciseNotes, type SessionNote } from './ExerciseNotes';
 import { GuidanceSummary } from './GuidanceSummary';
 import type { GuidanceState, SessionBlock, SessionSetRowModel } from './sessionModel';
 import { stepInput } from './setDraft';
@@ -162,7 +163,7 @@ export function GuidedExerciseView({
   weightStep: number;
   exerciseIndex: number;
   exerciseCount: number;
-  notes: string[];
+  notes: SessionNote[];
   warmup: 'add' | 'remove' | null;
   busy: boolean;
   /** "Up next" — the set after this one, already resolved through the superset order. */
@@ -269,20 +270,7 @@ export function GuidedExerciseView({
           </View>
         ) : null}
 
-        {notes.length ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('workoutSession.notes.edit')}
-            onPress={() => onAction('notes')}
-            className="gap-1 rounded-lg bg-bg-overlay p-3"
-          >
-            {notes.map((note) => (
-              <Text key={note} className="text-sm text-text-secondary" numberOfLines={3}>
-                {note}
-              </Text>
-            ))}
-          </Pressable>
-        ) : null}
+        <ExerciseNotes notes={notes} onPress={() => onAction('notes')} />
 
         <View className="flex-row gap-3">
           <StepperField

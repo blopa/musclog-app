@@ -248,12 +248,9 @@ export async function resolveDynamicGoalPreview(
 }
 
 /**
- * Resolves effective macros for a dynamic nutrition goal on a given day.
- * Returns null when called on a non-dynamic goal (caller should read goal fields directly).
- *
- * Uses the last 30 days of nutrition logs + weekly weight averages for empirical TDEE when available.
- * If the goal has a target weight and target date in the future, daily calories are adjusted to
- * follow that trajectory while still respecting the chosen eating phase and calorie safety floor.
+ * The macros a Weekly Review recommends for the week ahead. Unlike the daily resolution it always
+ * reads the logged history (even when the goal has an explicit trajectory) and leaves unlogged days
+ * out of the averages, so a forgotten log is not mistaken for a day of eating nothing.
  */
 export async function resolveWeeklyRecommendation(
   goal: NutritionGoal,
@@ -262,6 +259,14 @@ export async function resolveWeeklyRecommendation(
   return resolveDynamicGoalLike(goal, date, true);
 }
 
+/**
+ * Resolves effective macros for a dynamic nutrition goal on a given day.
+ * Returns null when called on a non-dynamic goal (caller should read goal fields directly).
+ *
+ * Uses the last 30 days of nutrition logs + weekly weight averages for empirical TDEE when available.
+ * If the goal has a target weight and target date in the future, daily calories are adjusted to
+ * follow that trajectory while still respecting the chosen eating phase and calorie safety floor.
+ */
 export async function resolveDailyMacros(
   goal: NutritionGoal,
   date: Date
