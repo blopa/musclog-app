@@ -6,21 +6,84 @@ import type { WhatsNewFlow } from '@/utils/whatsNew/flow';
 
 jest.mock('@/database/services/SettingsService', () => ({ SettingsService: {} }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
-jest.mock('@/hooks/useFormatAppNumber', () => ({ useFormatAppNumber: () => ({ formatInteger: String }) }));
+jest.mock('@/hooks/useFormatAppNumber', () => ({
+  useFormatAppNumber: () => ({ formatInteger: String }),
+}));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
-jest.mock('@/hooks/useWhatsNewChoiceValues', () => ({ useWhatsNewChoiceValues: () => ({ values: {}, errors: {}, saving: {} }) }));
-jest.mock('@/components/theme/Button', () => ({ Button: ({ label, onPress, disabled }: any) => require('react').createElement('button', { onClick: onPress, disabled }, label) }));
-jest.mock('@/components/theme/TextButton', () => ({ TextButton: ({ label, onPress, disabled }: any) => require('react').createElement('button', { onClick: onPress, disabled }, label) }));
-jest.mock('@/components/theme/IconButton', () => ({ IconButton: ({ accessibilityLabel, onPress, disabled }: any) => require('react').createElement('button', { onClick: onPress, disabled, 'aria-label': accessibilityLabel }) }));
-jest.mock('@/components/modals/FullScreenModal', () => ({ FullScreenModal: ({ visible, children, onClose, closable }: any) => visible ? require('react').createElement('section', null,
-  require('react').createElement('button', { onClick: onClose, disabled: !closable }, 'System back'), children) : null }));
-jest.mock('@/components/modals/WorkoutSettingsModal', () => ({ WorkoutSettingsModal: ({ onClose }: any) => require('react').createElement('button', { onClick: onClose }, 'Close settings') }));
-jest.mock('@/components/modals/LogCardioModal', () => ({ LogCardioModal: ({ onClose }: any) => require('react').createElement('button', { onClick: onClose }, 'Close cardio') }));
+jest.mock('@/hooks/useWhatsNewChoiceValues', () => ({
+  useWhatsNewChoiceValues: () => ({ values: {}, errors: {}, saving: {} }),
+}));
+jest.mock('@/components/theme/Button', () => ({
+  Button: ({ label, onPress, disabled }: any) =>
+    require('react').createElement('button', { onClick: onPress, disabled }, label),
+}));
+jest.mock('@/components/theme/TextButton', () => ({
+  TextButton: ({ label, onPress, disabled }: any) =>
+    require('react').createElement('button', { onClick: onPress, disabled }, label),
+}));
+jest.mock('@/components/theme/IconButton', () => ({
+  IconButton: ({ accessibilityLabel, onPress, disabled }: any) =>
+    require('react').createElement('button', {
+      onClick: onPress,
+      disabled,
+      'aria-label': accessibilityLabel,
+    }),
+}));
+jest.mock('@/components/modals/FullScreenModal', () => ({
+  FullScreenModal: ({ visible, children, onClose, closable }: any) =>
+    visible
+      ? require('react').createElement(
+          'section',
+          null,
+          require('react').createElement(
+            'button',
+            { onClick: onClose, disabled: !closable },
+            'System back'
+          ),
+          children
+        )
+      : null,
+}));
+jest.mock('@/components/modals/WorkoutSettingsModal', () => ({
+  WorkoutSettingsModal: ({ onClose }: any) =>
+    require('react').createElement('button', { onClick: onClose }, 'Close settings'),
+}));
+jest.mock('@/components/modals/LogCardioModal', () => ({
+  LogCardioModal: ({ onClose }: any) =>
+    require('react').createElement('button', { onClick: onClose }, 'Close cardio'),
+}));
 
-const flow: WhatsNewFlow = { releaseVersions: ['2.13.0'], truncated: false, pages: [
-  { key: 'settings', version: '2.13.0', blocks: [{ id: 'settings', type: 'action', action: 'openWorkoutSettings', labelKey: 'whatsNew.openSettings' }, { id: 'cardio', type: 'action', action: 'openCardioLog', labelKey: 'whatsNew.openCardio' }] },
-  { key: 'review', version: '2.13.0', blocks: [{ id: 'review', type: 'action', action: 'openWeeklyReview', labelKey: 'whatsNew.openReview' }] },
-] };
+const flow: WhatsNewFlow = {
+  releaseVersions: ['2.13.0'],
+  truncated: false,
+  pages: [
+    {
+      key: 'settings',
+      version: '2.13.0',
+      blocks: [
+        {
+          id: 'settings',
+          type: 'action',
+          action: 'openWorkoutSettings',
+          labelKey: 'whatsNew.openSettings',
+        },
+        { id: 'cardio', type: 'action', action: 'openCardioLog', labelKey: 'whatsNew.openCardio' },
+      ],
+    },
+    {
+      key: 'review',
+      version: '2.13.0',
+      blocks: [
+        {
+          id: 'review',
+          type: 'action',
+          action: 'openWeeklyReview',
+          labelKey: 'whatsNew.openReview',
+        },
+      ],
+    },
+  ],
+};
 function setup(onDismiss = jest.fn(async () => undefined)) {
   const onNavigate = jest.fn();
   const props = { visible: true, flow, mode: 'upgrade' as const, onDismiss, onNavigate };
@@ -30,8 +93,11 @@ const click = (name: string) => fireEvent.click(screen.getByRole('button', { nam
 
 test('child modals return to the same page without dismissing and clear when the parent closes', () => {
   const { onDismiss, rerender, props } = setup();
-  click('whatsNew.next'); click('whatsNew.openSettings');
-  expect((screen.getByRole('button', { name: 'System back' }) as HTMLButtonElement).disabled).toBe(true);
+  click('whatsNew.next');
+  click('whatsNew.openSettings');
+  expect((screen.getByRole('button', { name: 'System back' }) as HTMLButtonElement).disabled).toBe(
+    true
+  );
   click('System back');
   expect(onDismiss).not.toHaveBeenCalled();
   click('Close settings');
@@ -45,9 +111,16 @@ test('child modals return to the same page without dismissing and clear when the
 });
 test('route actions wait for dismissal persistence, then navigate exactly once', async () => {
   let resolve!: () => void;
-  const onDismiss = jest.fn(() => new Promise<void>((done) => { resolve = done; }));
+  const onDismiss = jest.fn(
+    () =>
+      new Promise<void>((done) => {
+        resolve = done;
+      })
+  );
   const { onNavigate } = setup(onDismiss);
-  click('whatsNew.next'); click('whatsNew.next'); click('whatsNew.openReview');
+  click('whatsNew.next');
+  click('whatsNew.next');
+  click('whatsNew.openReview');
   expect(onNavigate).not.toHaveBeenCalled();
   click('whatsNew.openReview');
   expect(onDismiss).toHaveBeenCalledTimes(1);
@@ -57,7 +130,9 @@ test('route actions wait for dismissal persistence, then navigate exactly once',
 test('failed route dismissal stays open, reports an error, and permits retry', async () => {
   const onDismiss = jest.fn(async () => undefined).mockRejectedValueOnce(new Error('disk'));
   const { onNavigate } = setup(onDismiss);
-  click('whatsNew.next'); click('whatsNew.next'); click('whatsNew.openReview');
+  click('whatsNew.next');
+  click('whatsNew.next');
+  click('whatsNew.openReview');
   expect(await screen.findByRole('alert')).toHaveProperty('textContent', 'whatsNew.dismissFailed');
   expect(onNavigate).not.toHaveBeenCalled();
   click('whatsNew.openReview');
@@ -65,9 +140,15 @@ test('failed route dismissal stays open, reports an error, and permits retry', a
 });
 test.each(['skip', 'back', 'done'])('%s dismisses the tour', async (method) => {
   const { onDismiss, onNavigate } = setup();
-  if (method === 'skip') { fireEvent.click(screen.getAllByRole('button', { name: 'whatsNew.skip' }).at(-1)!); }
-  else if (method === 'back') { click('System back'); }
-  else { click('whatsNew.next'); click('whatsNew.next'); click('whatsNew.done'); }
+  if (method === 'skip') {
+    fireEvent.click(screen.getAllByRole('button', { name: 'whatsNew.skip' }).at(-1)!);
+  } else if (method === 'back') {
+    click('System back');
+  } else {
+    click('whatsNew.next');
+    click('whatsNew.next');
+    click('whatsNew.done');
+  }
   await waitFor(() => expect(onDismiss).toHaveBeenCalledTimes(1));
   expect(onNavigate).not.toHaveBeenCalled();
 });

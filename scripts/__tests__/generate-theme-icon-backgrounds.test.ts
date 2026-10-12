@@ -8,20 +8,22 @@ const { THEME_DEFINITIONS, THEME_IDS } = require('../../theme.registry') as {
   THEME_DEFINITIONS: Record<string, { palette: Record<string, string> }>;
   THEME_IDS: string[];
 };
-const { generateThemeIconBackgrounds, recolorPixels } = require('../generate-theme-icon-backgrounds') as {
-  generateThemeIconBackgrounds: (options: {
-    glassEffectPath: string;
-    logger: { log: (message: string) => void };
-    outputDirectory: string;
-    sourcePath: string;
-  }) => Promise<string[]>;
-  recolorPixels: (
-    data: Buffer,
-    width: number,
-    height: number,
-    palette: Record<string, string>
-  ) => Buffer;
-};
+const { generateThemeIconBackgrounds, recolorPixels } =
+  require('../generate-theme-icon-backgrounds') as {
+    generateThemeIconBackgrounds: (options: {
+      glassEffectPath: string;
+      logger: { log: (message: string) => void };
+      outputDirectory: string;
+      sourcePath: string;
+      textPath: string;
+    }) => Promise<string[]>;
+    recolorPixels: (
+      data: Buffer,
+      width: number,
+      height: number,
+      palette: Record<string, string>
+    ) => Buffer;
+  };
 
 describe('generate-theme-icon-backgrounds', () => {
   it('recolors the base silhouette without using its grayscale values', () => {
@@ -53,11 +55,13 @@ describe('generate-theme-icon-backgrounds', () => {
     const directory = await mkdtemp(path.join(tmpdir(), 'musclog-icon-gradient-'));
     const sourcePath = path.join(directory, 'source.png');
     const glassEffectPath = path.join(directory, 'glass.png');
+    const textPath = path.join(directory, 'text.png');
     const outputDirectory = path.join(directory, 'output');
     const width = 24;
     const height = 20;
     const pixels = Buffer.alloc(width * height * 4);
     const glassPixels = Buffer.alloc(width * height * 4);
+    const textPixels = Buffer.alloc(width * height * 4);
 
     for (let y = 2; y < height - 2; y += 1) {
       for (let x = 2; x < width - 2; x += 1) {
@@ -69,13 +73,25 @@ describe('generate-theme-icon-backgrounds', () => {
         pixels[offset + 3] = 255;
       }
     }
-    const highlightOffset = (10 * width + 12) * 4;
+    const highlightOffset = (9 * width + 12) * 4;
     glassPixels[highlightOffset] = 255;
     glassPixels[highlightOffset + 1] = 255;
     glassPixels[highlightOffset + 2] = 255;
     glassPixels[highlightOffset + 3] = 160;
-    await sharp(pixels, { raw: { channels: 4, height, width } }).png().toFile(sourcePath);
-    await sharp(glassPixels, { raw: { channels: 4, height, width } }).png().toFile(glassEffectPath);
+    const wordmarkOffset = (11 * width + 12) * 4;
+    textPixels[wordmarkOffset] = 255;
+    textPixels[wordmarkOffset + 1] = 255;
+    textPixels[wordmarkOffset + 2] = 255;
+    textPixels[wordmarkOffset + 3] = 255;
+    await sharp(pixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(sourcePath);
+    await sharp(glassPixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(glassEffectPath);
+    await sharp(textPixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(textPath);
 
     try {
       const [generatedPath] = await generateThemeIconBackgrounds({
@@ -83,13 +99,18 @@ describe('generate-theme-icon-backgrounds', () => {
         logger: { log: () => undefined },
         outputDirectory,
         sourcePath,
+        textPath,
       });
       const { data, info } = await sharp(generatedPath).raw().toBuffer({ resolveWithObject: true });
 
       expect(info).toMatchObject({ channels: 4, height, width });
       expect(data[3]).toBe(0);
-      expect(data[((10 * width + 10) * 4) + 3]).toBe(255);
-      expect(data[highlightOffset]).toBeGreaterThan(data[((10 * width + 11) * 4)]);
+      expect(data[(10 * width + 10) * 4 + 3]).toBe(255);
+      const glassOnlyRed = data[highlightOffset];
+      const baseOnlyRed = data[(9 * width + 11) * 4];
+      expect(glassOnlyRed).toBeGreaterThan(baseOnlyRed);
+      expect(glassOnlyRed).toBeLessThan(255);
+      expect([...data.subarray(wordmarkOffset, wordmarkOffset + 3)]).toEqual([255, 255, 255]);
       const topColor = [...data.subarray((3 * width + 12) * 4, (3 * width + 12) * 4 + 3)];
       const bottomColor = [...data.subarray((16 * width + 12) * 4, (16 * width + 12) * 4 + 3)];
       expect(topColor).not.toEqual(bottomColor);
@@ -118,7 +139,7 @@ describe('generate-theme-icon-backgrounds', () => {
     const topCenterColor = [...pixels.subarray(topCenterOffset, topCenterOffset + 3)];
     const topPaletteColor = toRgb(palette.brandBright);
     expect(topCenterColor).toEqual(topPaletteColor);
-    const bottomOffset = ((height - 1) * width) * 4;
+    const bottomOffset = (height - 1) * width * 4;
     const bottomColor = [...pixels.subarray(bottomOffset, bottomOffset + 3)];
     const bottomPaletteColor = toRgb(palette.statusInfo);
     expect(bottomColor).toEqual(bottomPaletteColor);
@@ -128,11 +149,13 @@ describe('generate-theme-icon-backgrounds', () => {
     const directory = await mkdtemp(path.join(tmpdir(), 'musclog-theme-icon-backgrounds-'));
     const sourcePath = path.join(directory, 'source.png');
     const glassEffectPath = path.join(directory, 'glass.png');
+    const textPath = path.join(directory, 'text.png');
     const outputDirectory = path.join(directory, 'output');
     const width = 12;
     const height = 8;
     const pixels = Buffer.alloc(width * height * 4);
     const glassPixels = Buffer.alloc(width * height * 4);
+    const textPixels = Buffer.alloc(width * height * 4);
 
     for (let y = 0; y < height; y += 1) {
       for (let x = 0; x < width; x += 1) {
@@ -150,6 +173,9 @@ describe('generate-theme-icon-backgrounds', () => {
     await sharp(glassPixels, { raw: { channels: 4, height, width } })
       .png()
       .toFile(glassEffectPath);
+    await sharp(textPixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(textPath);
 
     try {
       const generated = await generateThemeIconBackgrounds({
@@ -157,6 +183,7 @@ describe('generate-theme-icon-backgrounds', () => {
         logger: { log: () => undefined },
         outputDirectory,
         sourcePath,
+        textPath,
       });
 
       expect(generated.map((file) => path.basename(file))).toEqual(

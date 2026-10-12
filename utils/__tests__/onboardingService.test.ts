@@ -244,16 +244,21 @@ describe('utils/onboardingService', () => {
     it('preserves restored records and does not create one for a legacy import', async () => {
       await setOnboardingCompleted(undefined, { markAnnouncementsSeen: false });
       expect(mockAsyncStorage.multiSet).toHaveBeenLastCalledWith([
-        [ONBOARDING_COMPLETED, 'true'], [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+        [ONBOARDING_COMPLETED, 'true'],
+        [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
       ]);
-      mockAsyncStorage.getItem.mockImplementation(async (key: string) => key === WHATS_NEW_SEEN_THROUGH_KEY ? '9.0.0' : null);
+      mockAsyncStorage.getItem.mockImplementation(async (key: string) =>
+        key === WHATS_NEW_SEEN_THROUGH_KEY ? '9.0.0' : null
+      );
       await setOnboardingCompleted(undefined, { markAnnouncementsSeen: false });
       expect(mockAsyncStorage.multiSet).toHaveBeenLastCalledWith([
-        [ONBOARDING_COMPLETED, 'true'], [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+        [ONBOARDING_COMPLETED, 'true'],
+        [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
       ]);
       await setOnboardingCompleted();
       expect(mockAsyncStorage.multiSet).toHaveBeenLastCalledWith([
-        [ONBOARDING_COMPLETED, 'true'], [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+        [ONBOARDING_COMPLETED, 'true'],
+        [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
         [WHATS_NEW_SEEN_THROUGH_KEY, '9.0.0'],
       ]);
     });

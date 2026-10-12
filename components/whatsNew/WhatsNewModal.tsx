@@ -181,7 +181,9 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
         <WorkoutSettingsModal visible={visible} onClose={() => setActiveAction(null)} />
       ) : activeAction === 'openCardioLog' ? (
         <LogCardioModal visible={visible} onClose={() => setActiveAction(null)} />
-      ) : activeAction === null ? null : unhandledModalAction(activeAction)}
+      ) : activeAction === null ? null : (
+        unhandledModalAction(activeAction)
+      )}
     </FullScreenModal>
   );
 }

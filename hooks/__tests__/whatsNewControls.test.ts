@@ -10,7 +10,19 @@ jest.mock('@/database/services/SettingsService', () => ({ SettingsService: {} })
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ i18n: { language: 'en-US' } }) }));
 test('exposes the selected enum choice to web accessibility and blocks disabled taps', () => {
   const onSelect = jest.fn();
-  const props = { title: 'View', options: ['Guided', 'Inline'].map((id) => ({ id, label: id, description: '', icon: () => null, iconColor: '', iconBgColor: '' })), selectedId: 'Guided', onSelect };
+  const props = {
+    title: 'View',
+    options: ['Guided', 'Inline'].map((id) => ({
+      id,
+      label: id,
+      description: '',
+      icon: () => null,
+      iconColor: '',
+      iconBgColor: '',
+    })),
+    selectedId: 'Guided',
+    onSelect,
+  };
   const { rerender } = render(createElement(OptionsSelector, props));
   expect(screen.getByRole('radio', { name: 'Guided' }).getAttribute('aria-checked')).toBe('true');
   expect(screen.getByRole('radio', { name: 'Inline' }).getAttribute('aria-checked')).toBe('false');
@@ -29,7 +41,11 @@ test('weekday chips are labelled by day and communicate checked state', () => {
 });
 test('boolean choices expose a labelled switch', () => {
   const onValueChange = jest.fn();
-  render(createElement(ToggleInput, { items: [{ key: 'rest', label: 'Rest timer', value: true, onValueChange }] }));
+  render(
+    createElement(ToggleInput, {
+      items: [{ key: 'rest', label: 'Rest timer', value: true, onValueChange }],
+    })
+  );
   const control = screen.getByRole('switch', { name: 'Rest timer' });
   fireEvent.click(control);
   expect(onValueChange).toHaveBeenCalledWith(false);

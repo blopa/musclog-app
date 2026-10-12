@@ -74,14 +74,25 @@ it('treats i18next plural variants as satisfying and using their base key', () =
 
 it('finds nested JSON keys, protects them from cleanup, and reports missing ones', () => {
   const filePath = join(fixtureDir, '2.13.0.json');
-  writeFileSync(filePath, JSON.stringify({ pages: [{ blocks: [
-    { titleKey: 'whatsNew.title', options: [{ labelKey: 'whatsNew.missing' }] },
-    { items: [{ descriptionKey: 'whatsNew.description' }], id: 'ignored' },
-  ] }] }));
+  writeFileSync(
+    filePath,
+    JSON.stringify({
+      pages: [
+        {
+          blocks: [
+            { titleKey: 'whatsNew.title', options: [{ labelKey: 'whatsNew.missing' }] },
+            { items: [{ descriptionKey: 'whatsNew.description' }], id: 'ignored' },
+          ],
+        },
+      ],
+    })
+  );
   const scanner = new TranslationScanner();
   scanner.existingKeys = new Set(['whatsNew.title', 'whatsNew.description']);
   scanner.usedKeys = scanner.extractKeysFromFile(filePath);
-  expect(scanner.usedKeys).toEqual(new Set(['whatsNew.title', 'whatsNew.missing', 'whatsNew.description']));
+  expect(scanner.usedKeys).toEqual(
+    new Set(['whatsNew.title', 'whatsNew.missing', 'whatsNew.description'])
+  );
   scanner.findMissingTranslations();
   expect(scanner.missingKeys).toEqual(new Set(['whatsNew.missing']));
   expect(scanner.missingKeyLocations.get('whatsNew.missing')[0].file).toBe(filePath);

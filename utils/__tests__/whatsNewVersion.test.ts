@@ -1,6 +1,21 @@
-import { compareVersions, nextSeenThrough, parseAppVersion, parseVersion } from '../whatsNew/version';
+import {
+  compareVersions,
+  nextSeenThrough,
+  parseAppVersion,
+  parseVersion,
+} from '../whatsNew/version';
 
-test.each(['1.2', 'v1.2.3', '1.2.3-beta', '1.2.3+build', '01.2.3', '-1.0.0', '', '9007199254740992.0.0', null])('rejects invalid strict version %s', (value) => {
+test.each([
+  '1.2',
+  'v1.2.3',
+  '1.2.3-beta',
+  '1.2.3+build',
+  '01.2.3',
+  '-1.0.0',
+  '',
+  '9007199254740992.0.0',
+  null,
+])('rejects invalid strict version %s', (value) => {
   expect(parseVersion(value)).toBeNull();
 });
 test('parses numeric releases and app suffixes', () => {

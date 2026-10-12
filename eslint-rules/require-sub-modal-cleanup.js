@@ -48,7 +48,8 @@ function isUseSubModalVisibilityCall(node) {
 
   const callee = node.callee;
   return (
-    (callee.type === 'Identifier' && ['useSubModalVisibility', 'useSubModalState'].includes(callee.name)) ||
+    (callee.type === 'Identifier' &&
+      ['useSubModalVisibility', 'useSubModalState'].includes(callee.name)) ||
     (callee.type === 'MemberExpression' &&
       callee.property.type === 'Identifier' &&
       ['useSubModalVisibility', 'useSubModalState'].includes(callee.property.name))

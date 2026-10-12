@@ -59,11 +59,7 @@ export function WhatsNewDebugSection() {
         label={t('whatsNew.debug.clear')}
         onPress={() => void editRecord(true)}
       />
-      <TextInput
-        value={version}
-        onChangeText={setVersion}
-        label={t('whatsNew.debug.version')}
-      />
+      <TextInput value={version} onChangeText={setVersion} label={t('whatsNew.debug.version')} />
       <Button
         variant="outline"
         label={t('whatsNew.debug.set')}

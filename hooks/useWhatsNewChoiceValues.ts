@@ -29,7 +29,11 @@ export function useWhatsNewChoiceValues(active: boolean) {
       void WHATS_NEW_SETTING_IO[setting]
         .read()
         .then((value) => {
-          if (generation.current !== run || pending.current.has(setting) || revisions.current[setting] !== revision) {
+          if (
+            generation.current !== run ||
+            pending.current.has(setting) ||
+            revisions.current[setting] !== revision
+          ) {
             return;
           }
           current.current = { ...current.current, [setting]: value };
@@ -48,7 +52,9 @@ export function useWhatsNewChoiceValues(active: boolean) {
   }, [active, reload]);
 
   const write = useCallback(async (setting: WhatsNewSetting, value: unknown) => {
-    if (!isWhatsNewSettingValue(setting, value)) { return; }
+    if (!isWhatsNewSettingValue(setting, value)) {
+      return;
+    }
     const previous = current.current[setting];
     if (previous === undefined || previous === value || pending.current.has(setting)) {
       return;

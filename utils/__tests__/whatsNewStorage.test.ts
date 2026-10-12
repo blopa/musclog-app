@@ -4,9 +4,16 @@ import { WHATS_NEW_SEEN_THROUGH_KEY } from '@/constants/whatsNew';
 import { captureAsyncStorageDump } from '@/database/asyncStorageBackup';
 import { replaceAppAsyncStorage } from '@/database/asyncStorageReset';
 
-import { getWhatsNewSeenThrough, markWhatsNewSeenThrough, whatsNewSeenEntry } from '../whatsNew/storage';
+import {
+  getWhatsNewSeenThrough,
+  markWhatsNewSeenThrough,
+  whatsNewSeenEntry,
+} from '../whatsNew/storage';
 
-beforeEach(async () => { await AsyncStorage.clear(); jest.clearAllMocks(); });
+beforeEach(async () => {
+  await AsyncStorage.clear();
+  jest.clearAllMocks();
+});
 test('validates stored values and normalizes app versions', async () => {
   expect(await getWhatsNewSeenThrough()).toBeNull();
   await AsyncStorage.setItem(WHATS_NEW_SEEN_THROUGH_KEY, 'garbage');

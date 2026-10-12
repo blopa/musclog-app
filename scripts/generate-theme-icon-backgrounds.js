@@ -75,10 +75,10 @@ function recolorPixels(data, width, height, palette) {
 
 async function generateThemeIconBackgrounds(options = {}) {
   const repositoryRoot = path.dirname(require.resolve('../theme.registry'));
-  const sourcePath =
-    options.sourcePath ?? path.join(repositoryRoot, 'assets', 'icon-bg-color.png');
+  const sourcePath = options.sourcePath ?? path.join(repositoryRoot, 'assets', 'icon-bg-color.png');
   const glassEffectPath =
     options.glassEffectPath ?? path.join(repositoryRoot, 'assets', 'icon-bg-glass-effect.png');
+  const textPath = options.textPath ?? path.join(repositoryRoot, 'assets', 'icon-bg-text.png');
   const outputDirectory =
     options.outputDirectory ?? path.join(repositoryRoot, 'assets', 'theme-icons');
   const logger = options.logger ?? console;
@@ -96,6 +96,12 @@ async function generateThemeIconBackgrounds(options = {}) {
       `Glass effect image must be ${info.width}x${info.height}; received ${glassInfo.width}x${glassInfo.height}.`
     );
   }
+  const textInfo = await sharp(textPath).metadata();
+  if (textInfo.width !== info.width || textInfo.height !== info.height) {
+    throw new Error(
+      `Text image must be ${info.width}x${info.height}; received ${textInfo.width}x${textInfo.height}.`
+    );
+  }
 
   await mkdir(outputDirectory, { recursive: true });
   const generated = [];
@@ -104,7 +110,10 @@ async function generateThemeIconBackgrounds(options = {}) {
     const pixels = Buffer.from(data);
     recolorPixels(pixels, info.width, info.height, THEME_DEFINITIONS[themeId].palette);
     await sharp(pixels, { raw: { channels: 4, height: info.height, width: info.width } })
-      .composite([{ input: glassEffectPath, blend: 'over' }])
+      .composite([
+        { input: glassEffectPath, blend: 'over' },
+        { input: textPath, blend: 'over' },
+      ])
       .png()
       .toFile(outputPath);
     generated.push(outputPath);

@@ -3,11 +3,17 @@ import { NotificationService } from '@/services/NotificationService';
 
 import { WHATS_NEW_SETTING_IO, writeWhatsNewSetting } from '../whatsNew/settingIO';
 
-jest.mock('@/database/services/SettingsService', () => ({ SettingsService: {
-  getWorkoutView: jest.fn(async () => 'guided'), setWorkoutView: jest.fn(async () => undefined),
-  getReviewWeekday: jest.fn(async () => 1), setReviewWeekday: jest.fn(async () => undefined),
-} }));
-jest.mock('@/services/NotificationService', () => ({ NotificationService: { scheduleWeeklyReviewNotification: jest.fn(async () => undefined) } }));
+jest.mock('@/database/services/SettingsService', () => ({
+  SettingsService: {
+    getWorkoutView: jest.fn(async () => 'guided'),
+    setWorkoutView: jest.fn(async () => undefined),
+    getReviewWeekday: jest.fn(async () => 1),
+    setReviewWeekday: jest.fn(async () => undefined),
+  },
+}));
+jest.mock('@/services/NotificationService', () => ({
+  NotificationService: { scheduleWeeklyReviewNotification: jest.fn(async () => undefined) },
+}));
 beforeEach(() => jest.clearAllMocks());
 test('reads persisted defaults, writes only valid values', async () => {
   expect(await WHATS_NEW_SETTING_IO.workoutView.read()).toBe('guided');
@@ -28,7 +34,9 @@ test('reschedules only after a successful weekday write', async () => {
 });
 
 test('restores the weekday when rescheduling fails after persistence', async () => {
-  jest.mocked(NotificationService.scheduleWeeklyReviewNotification).mockRejectedValueOnce(new Error('notifications'));
+  jest
+    .mocked(NotificationService.scheduleWeeklyReviewNotification)
+    .mockRejectedValueOnce(new Error('notifications'));
   await expect(writeWhatsNewSetting('reviewWeekday', 5)).rejects.toThrow('notifications');
   expect(SettingsService.setReviewWeekday).toHaveBeenNthCalledWith(1, 5);
   expect(SettingsService.setReviewWeekday).toHaveBeenLastCalledWith(1);
