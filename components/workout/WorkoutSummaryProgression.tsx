@@ -1,9 +1,9 @@
+import { PencilLine, Trophy } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import PastWorkoutDetailModal from '@/components/modals/PastWorkoutDetailModal';
-import { Button } from '@/components/theme/Button';
 import { type PersonalRecord, WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import {
   type TemplateRecommendation,
@@ -11,12 +11,24 @@ import {
 } from '@/database/services/WorkoutProgressionService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { WorkoutRecommendationList } from './WorkoutRecommendationList';
 
+const PR_TYPE_KEYS = {
+  weight: 'weeklyReview.prTypes.weight',
+  reps: 'weeklyReview.prTypes.reps',
+  volume: 'weeklyReview.prTypes.volume',
+} as const;
+
+/** The summary's progression half: records set today, and what the next session will ask for. */
 export function WorkoutSummaryProgression({ logId }: { logId: string }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const { locale, formatInteger } = useFormatAppNumber();
   const { unitsFor } = useExerciseUserSettings();
   const [error, setError] = useState(false);
   const [records, setRecords] = useState<PersonalRecord[]>([]);
@@ -45,29 +57,48 @@ export function WorkoutSummaryProgression({ logId }: { logId: string }) {
           {t('errors.somethingWentWrong')}
         </Text>
       ) : null}
-      {records.map((record, index) => (
-        <Text key={`${record.exerciseId}-${index}`} className="font-semibold text-accent-primary">
-          {record.exerciseName} · {t(`weeklyReview.prTypes.${record.type}`)} ·{' '}
-          {record.newRecord.reps} ×{' '}
-          {formatDisplayWeightKg(
-            i18n.resolvedLanguage ?? i18n.language,
-            unitsFor(record.exerciseId),
-            record.newRecord.weight
-          )}{' '}
-          {unitsFor(record.exerciseId) === 'imperial' ? 'lb' : 'kg'}
-        </Text>
-      ))}
-      <Button
-        label={t('trainingFlow.editPerformed')}
-        variant="outline"
-        onPress={() => setEdit(true)}
-      />
+      {records.length ? (
+        <View className="gap-2">
+          {records.map((record, index) => {
+            const units = unitsFor(record.exerciseId);
+            return (
+              <View
+                key={`${record.exerciseId}-${index}`}
+                className="bg-accent-primary10 flex-row items-center gap-3 rounded-2xl border border-accent-primary p-3"
+              >
+                <Trophy size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+                <View className="min-w-0 flex-1">
+                  <Text className="text-xs font-bold uppercase tracking-wider text-accent-primary">
+                    {t('trainingFlow.newRecord', { type: t(PR_TYPE_KEYS[record.type]) })}
+                  </Text>
+                  <Text className="text-base font-bold text-text-primary" numberOfLines={1}>
+                    {record.exerciseName}
+                  </Text>
+                  <Text className="text-sm text-text-secondary">
+                    {`${formatDisplayWeightKg(locale, units, record.newRecord.weight)} ${t(getWeightUnitI18nKey(units))} × ${formatInteger(record.newRecord.reps)}`}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      ) : null}
       {recommendations.length ? (
-        <>
+        <View className="gap-3">
           <Text className="text-xl font-bold text-text-primary">{t('trainingFlow.nextTime')}</Text>
           <WorkoutRecommendationList recommendations={recommendations} />
-        </>
+        </View>
       ) : null}
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => setEdit(true)}
+        className="min-h-11 flex-row items-center justify-center gap-2"
+      >
+        <PencilLine size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+        <Text className="text-sm font-semibold text-accent-primary">
+          {t('trainingFlow.editPerformed')}
+        </Text>
+      </Pressable>
       {edit ? (
         <PastWorkoutDetailModal
           visible

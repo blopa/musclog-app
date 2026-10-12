@@ -1,0 +1,186 @@
+import { Check, SkipForward } from 'lucide-react-native';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, Text, TextInput, View } from 'react-native';
+
+import type { Units } from '@/constants/settings';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useTheme } from '@/hooks/useTheme';
+import type { SessionDraft } from '@/hooks/useWorkoutSessionController';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { adjustedFields } from '@/utils/setAdjustment';
+import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
+
+import type { SessionSetRowModel } from './sessionModel';
+import { SetDetailsSheet } from './SetDetailsSheet';
+
+/** Column widths shared by the header and every row, so they always line up. */
+export const SET_TABLE_COLUMNS = { set: 36, check: 48 } as const;
+
+export function SetTableHeader({ weightUnit }: { weightUnit: string }) {
+  const { t } = useTranslation();
+  const label = 'text-[11px] font-bold uppercase tracking-wider text-text-tertiary';
+  return (
+    <View className="flex-row items-center gap-2 px-1" accessibilityElementsHidden>
+      <Text className={label} style={{ width: SET_TABLE_COLUMNS.set, textAlign: 'center' }}>
+        {t('trainingFlow.columns.set')}
+      </Text>
+      <Text className={`${label} flex-1`}>{t('trainingFlow.columns.previous')}</Text>
+      <Text className={label} style={{ width: 72, textAlign: 'center' }}>
+        {weightUnit}
+      </Text>
+      <Text className={label} style={{ width: 56, textAlign: 'center' }}>
+        {t('trainingFlow.columns.reps')}
+      </Text>
+      <View style={{ width: SET_TABLE_COLUMNS.check }} />
+    </View>
+  );
+}
+
+export function InlineSetRow({
+  row,
+  draft,
+  values,
+  units,
+  isCurrent,
+  busy,
+  onEdit,
+  onComplete,
+  onSkip,
+}: {
+  row: SessionSetRowModel;
+  draft?: SessionDraft;
+  /** What the inputs show: the draft, else the set's own numbers. */
+  values: SessionDraft;
+  units: Units;
+  isCurrent: boolean;
+  busy: boolean;
+  onEdit: (draft: SessionDraft) => void;
+  onComplete: () => void;
+  onSkip: () => void;
+}) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const { locale, formatInteger } = useFormatAppNumber();
+  const [details, setDetails] = useState(false);
+  const { set, workingNumber, prescription } = row;
+  const done = isPerformedWorkoutSet(set);
+  const skipped = set.completionStatus === 'skipped';
+  // A number the app calculated is marked — underlined as well as tinted, so it reads without
+  // colour — until the user types over it, at which point it is theirs.
+  const appAdjusted = adjustedFields(set.adjustment);
+  const editable = !done && !skipped;
+  const marked = (field: 'weight' | 'reps') => !done && !draft && appAdjusted[field];
+  const previous = prescription?.previous;
+  const setLabel =
+    workingNumber == null
+      ? t('trainingFlow.warmupShort')
+      : formatInteger(workingNumber, { useGrouping: false });
+  const setName =
+    workingNumber == null
+      ? t('workoutSession.warmup.badge')
+      : t('trainingFlow.setLabel', { number: formatInteger(workingNumber) });
+
+  let surface = 'border-transparent';
+  if (done) {
+    surface = 'border-transparent bg-accent-primary10';
+  } else if (isCurrent) {
+    surface = 'border-accent-primary bg-bg-secondary';
+  }
+
+  const input = (field: 'weight' | 'reps', label: string, width: number) => (
+    <TextInput
+      accessibilityLabel={`${setName}, ${label}`}
+      accessibilityHint={marked(field) ? t('trainingFlow.adjustedHint') : undefined}
+      testID={`set-${set.id}-${field}`}
+      value={skipped ? '' : (values[field] ?? '')}
+      placeholder={skipped ? '–' : undefined}
+      placeholderTextColor={theme.colors.text.tertiary}
+      editable={editable}
+      onChangeText={(text) => onEdit({ ...values, [field]: text })}
+      keyboardType={field === 'reps' ? 'number-pad' : 'decimal-pad'}
+      inputMode={field === 'reps' ? 'numeric' : 'decimal'}
+      selectTextOnFocus
+      style={{
+        width,
+        height: 44,
+        borderRadius: theme.borderRadius.md,
+        backgroundColor: done ? 'transparent' : theme.colors.background.cardElevated,
+        color: marked(field) ? theme.colors.accent.primary : theme.colors.text.primary,
+        borderBottomWidth: marked(field) ? 2 : 0,
+        borderBottomColor: theme.colors.accent.primary,
+        fontSize: theme.typography.fontSize.lg,
+        fontWeight: '700',
+        textAlign: 'center',
+      }}
+    />
+  );
+
+  return (
+    <View
+      className={`flex-row items-center gap-2 rounded-xl border px-1 py-1 ${surface}`}
+      testID={`set-${set.id}`}
+    >
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${setName}, ${t('trainingFlow.details')}`}
+        onPress={() => setDetails(true)}
+        className="items-center justify-center rounded-lg"
+        style={{ width: SET_TABLE_COLUMNS.set, height: 44 }}
+      >
+        <Text
+          className={`text-base font-bold ${workingNumber == null ? 'text-status-warning' : 'text-text-primary'}`}
+        >
+          {setLabel}
+        </Text>
+        {values.rir?.trim() ? (
+          <Text className="text-[10px] font-semibold text-text-tertiary">
+            {t('trainingFlow.rir', { value: values.rir })}
+          </Text>
+        ) : null}
+      </Pressable>
+      <Text className="flex-1 text-sm text-text-secondary" numberOfLines={1}>
+        {previous
+          ? `${formatDisplayWeightKg(locale, units, previous.weightKg)} × ${formatInteger(previous.reps, { useGrouping: false })}`
+          : '–'}
+      </Text>
+      {input('weight', t('workoutSession.weight'), 72)}
+      {input('reps', t('workoutSession.reps'), 56)}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={done ? t('trainingFlow.reopen') : t('trainingFlow.complete')}
+        accessibilityState={{ disabled: busy, checked: done }}
+        disabled={busy}
+        onPress={onComplete}
+        testID={`set-${set.id}-complete`}
+        className={`items-center justify-center rounded-xl ${done ? 'bg-accent-primary' : 'border border-border-default bg-bg-cardElevated'}`}
+        style={{ width: SET_TABLE_COLUMNS.check, height: 44 }}
+      >
+        {skipped ? (
+          <SkipForward size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+        ) : (
+          <Check
+            size={theme.iconSize.md}
+            strokeWidth={3}
+            color={done ? theme.colors.text.onAccent : theme.colors.text.tertiary}
+          />
+        )}
+      </Pressable>
+      {details ? (
+        <SetDetailsSheet
+          title={setName}
+          draft={values}
+          editable={!done}
+          canSkip={editable}
+          busy={busy}
+          onChange={onEdit}
+          onSkip={() => {
+            setDetails(false);
+            onSkip();
+          }}
+          onClose={() => setDetails(false)}
+        />
+      ) : null}
+    </View>
+  );
+}

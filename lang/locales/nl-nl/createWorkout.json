@@ -44,6 +44,7 @@
     "saveError": "Opslaan mislukt",
     "validation": {
       "titleRequiredMessage": "Voer een titel in voor de workout"
-    }
+    },
+    "ruleTapHint": "Tik op een oefening om te kiezen hoe de gewichten oplopen."
   }
 }

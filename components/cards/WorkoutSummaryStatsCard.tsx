@@ -4,6 +4,7 @@ import { StyleProp, View, ViewStyle } from 'react-native';
 
 import { WorkoutSummaryStatRow } from '@/components/WorkoutSummaryStatRow';
 import { useTheme } from '@/hooks/useTheme';
+import { splitDurationLabel } from '@/utils/workout';
 
 import { GenericCard } from './GenericCard';
 
@@ -30,8 +31,8 @@ export function WorkoutSummaryStatsCard({
         <WorkoutSummaryStatRow
           icon={Timer}
           label={t('workoutSummary.totalTime')}
-          value={totalTime.replace(/\s*(m|min|minutes?)\s*$/i, '')}
-          valueSuffix={totalTime.match(/\s*(m|min|minutes?)\s*$/i)?.[1] || undefined}
+          value={splitDurationLabel(totalTime).value}
+          valueSuffix={splitDurationLabel(totalTime).suffix}
           iconBgColor={theme.colors.status.info10}
           iconColor={theme.colors.status.info}
         />

@@ -818,6 +818,9 @@ export class WorkoutService {
           exerciseId: le.exerciseId,
           groupId: le.groupId,
           notes: le.notes,
+          // The session's rule copy: without it every refresh after a set read the exercise as
+          // automatic and dropped the rule's badge and between-sets behaviour.
+          progressionJson: le.progressionJson,
         })),
         rawSets
       );

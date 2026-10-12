@@ -3,66 +3,77 @@ import { Text, View } from 'react-native';
 
 import type { TemplateRecommendation } from '@/database/services/WorkoutProgressionService';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { getWeightUnitI18nKey } from '@/utils/units';
 
-import { SetAdjustmentNotice } from './SetAdjustmentNotice';
+import { GuidanceBadgeLine } from './session/GuidanceSummary';
+import { useAdjustmentMessage } from './useAdjustmentMessage';
 
+function RecommendationRow({ row }: { row: TemplateRecommendation }) {
+  const { t } = useTranslation();
+  const { unitsFor } = useExerciseUserSettings();
+  const { locale, formatInteger } = useFormatAppNumber();
+  const units = unitsFor(row.exercise.id);
+  const message = useAdjustmentMessage(row.changes[0]?.adjustment, units);
+  const changed = new Set(row.changes.map((change) => change.setId));
+  const load = (weightKg: number, reps: number) =>
+    `${formatDisplayWeightKg(locale, units, weightKg)} × ${formatInteger(reps, { useGrouping: false })}`;
+  const previous = row.sets
+    .map((_, index) => row.previous?.sets.find((set, i) => (set.prescribedIndex ?? i) === index))
+    .filter((set): set is NonNullable<typeof set> => set != null);
+
+  return (
+    <View className="gap-2.5 rounded-xl border border-border-light bg-bg-secondary p-3">
+      <View className="gap-1.5">
+        <Text className="text-base font-bold text-text-primary" numberOfLines={2}>
+          {row.exercise.name}
+        </Text>
+        <GuidanceBadgeLine state={row.status} rule={row.rule} />
+      </View>
+      <View className="flex-row flex-wrap items-center gap-1.5">
+        {row.sets.map((set) => (
+          <View
+            key={set.id}
+            className={`rounded-lg px-2.5 py-1.5 ${changed.has(set.id) ? 'bg-accent-primary10' : 'bg-bg-overlay'}`}
+          >
+            <Text
+              className={`text-sm font-semibold ${changed.has(set.id) ? 'text-accent-primary' : 'text-text-primary'}`}
+            >
+              {load(set.weight, set.reps)}
+            </Text>
+          </View>
+        ))}
+        <Text className="text-xs text-text-tertiary">{t(getWeightUnitI18nKey(units))}</Text>
+      </View>
+      {previous.length ? (
+        <Text className="text-xs text-text-secondary" numberOfLines={2}>
+          {t('trainingFlow.lastTimeList', {
+            sets: previous.map((set) => load(set.weightKg, set.reps)).join(' · '),
+          })}
+        </Text>
+      ) : null}
+      <Text className="text-sm leading-5 text-text-secondary">
+        {message ?? t(row.rule ? 'progression.followRule' : 'progression.learningHint')}
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * What an exercise's next session will ask for, and why — one read-only projection shared by the
+ * workout preview, "Next time" on the summary and the Weekly Review, so all three agree.
+ */
 export function WorkoutRecommendationList({
   recommendations,
 }: {
   recommendations: TemplateRecommendation[];
 }) {
-  const { t, i18n } = useTranslation();
-  const { unitsFor } = useExerciseUserSettings();
   return (
-    <View className="gap-4" testID="workout-recommendations">
-      {recommendations.map((row) => {
-        const units = unitsFor(row.exercise.id);
-        return (
-          <View key={row.templateExerciseId} className="gap-2 rounded-xl bg-bg-cardElevated p-3">
-            <Text className="font-semibold text-text-primary">{row.exercise.name}</Text>
-            <Text className="text-sm text-accent-primary">
-              {t(`progression.methods.${row.rule?.type ?? 'automatic'}`)} ·{' '}
-              {t(`progression.states.${row.status}`)}
-            </Text>
-            {row.sets.map((set, index) => (
-              <View key={set.id} className="gap-1">
-                <Text className="text-text-primary">
-                  {t('trainingFlow.setLabel', { number: index + 1 })}:{' '}
-                  {formatDisplayWeightKg(i18n.resolvedLanguage ?? i18n.language, units, set.weight)}{' '}
-                  {units === 'imperial' ? 'lb' : 'kg'} × {set.reps}
-                </Text>
-                {row.previous?.sets.find(
-                  (previous, i) => (previous.prescribedIndex ?? i) === index
-                ) ? (
-                  <Text className="text-xs text-text-secondary">
-                    {t('trainingFlow.previous', {
-                      weight: formatDisplayWeightKg(
-                        i18n.resolvedLanguage ?? i18n.language,
-                        units,
-                        row.previous.sets.find(
-                          (previous, i) => (previous.prescribedIndex ?? i) === index
-                        )!.weightKg
-                      ),
-                      reps: row.previous.sets.find(
-                        (previous, i) => (previous.prescribedIndex ?? i) === index
-                      )!.reps,
-                      unit: units === 'imperial' ? 'lb' : 'kg',
-                    })}
-                  </Text>
-                ) : null}
-              </View>
-            ))}
-            {row.changes[0] ? (
-              <SetAdjustmentNotice adjustment={row.changes[0].adjustment} units={units} />
-            ) : (
-              <Text className="text-xs text-text-secondary">
-                {t(row.rule ? 'progression.followRule' : 'progression.learningHint')}
-              </Text>
-            )}
-          </View>
-        );
-      })}
+    <View className="gap-3" testID="workout-recommendations">
+      {recommendations.map((row) => (
+        <RecommendationRow key={row.templateExerciseId} row={row} />
+      ))}
     </View>
   );
 }

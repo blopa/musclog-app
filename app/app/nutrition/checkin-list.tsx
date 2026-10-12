@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { CheckCircle2, ChevronLeft, ChevronRight, Circle } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
@@ -12,31 +13,38 @@ import { NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { WorkoutRecommendationList } from '@/components/workout/WorkoutRecommendationList';
+import {
+  MACRO_FIELDS,
+  MACRO_LABEL_KEYS,
+  NutritionReviewSection,
+} from '@/components/weeklyReview/NutritionReviewSection';
+import { TrainingReviewSection } from '@/components/weeklyReview/TrainingReviewSection';
 import { NutritionCheckinService } from '@/database/services/NutritionCheckinService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import {
-  nutritionTargetMode,
   type NutritionTargets,
   NutritionTargetService,
 } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
-import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 import { NotificationService } from '@/services/NotificationService';
-import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
-const macroFields = ['totalCalories', 'protein', 'carbs', 'fats', 'fiber'] as const;
+
+const historyLabelKey = (decision?: string | null) => {
+  if (decision === 'apply') {
+    return 'weeklyReview.applied';
+  }
+  return decision === 'keep' ? 'weeklyReview.kept' : 'weeklyReview.trainingOnly';
+};
 
 export default function CheckinListScreen() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
-  const { units } = useSettings();
   const router = useRouter();
   const params = useLocalSearchParams<{
     reviewId?: string;
@@ -64,9 +72,7 @@ export default function CheckinListScreen() {
   const [draft, setDraft] = useState<Record<string, string>>({});
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formatDate = (value: number) =>
-    new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(value);
-  const formatNumber = (value: number) =>
-    new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value);
+    new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(value);
   const reload = useCallback(async () => {
     try {
       const [next, old] = await Promise.all([
@@ -131,13 +137,48 @@ export default function CheckinListScreen() {
       setBusy(false);
     }
   };
+  const switchWeekly = async () => {
+    if (!data?.goal || busy) {
+      return;
+    }
+    setBusy(true);
+    setError(false);
+    try {
+      await NutritionTargetService.switchMode(data.goal.id, 'weekly');
+      await reload();
+    } catch {
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const changeWeekday = async (day: number) => {
+    setError(false);
+    try {
+      await SettingsService.setReviewWeekday(day);
+      await NotificationService.scheduleWeeklyReviewNotification();
+      await reload();
+    } catch {
+      setError(true);
+    }
+  };
+  const toggleReminder = async (value: boolean) => {
+    setReminder(value);
+    try {
+      await SettingsService.setNotificationsWeeklyReview(value);
+      await NotificationService.scheduleWeeklyReviewNotification();
+    } catch {
+      setReminder(!value);
+      setError(true);
+    }
+  };
   const openEditor = () => {
     if (!data?.nutrition) {
       return;
     }
     setDraft(
       Object.fromEntries(
-        macroFields.map((field) => [
+        MACRO_FIELDS.map((field) => [
           field,
           new Intl.NumberFormat(locale, { useGrouping: false, maximumFractionDigits: 1 }).format(
             data.nutrition!.targets[field]
@@ -149,64 +190,127 @@ export default function CheckinListScreen() {
   };
   const editedTargets = () =>
     Object.fromEntries(
-      macroFields.map((field) => [
+      MACRO_FIELDS.map((field) => [
         field,
         parseLocalizedDecimalString(draft[field] ?? '', getDecimalSeparator(locale)),
       ])
     ) as NutritionTargets;
+  const progressDone = [
+    !!data?.training.reviewedAt,
+    !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
+  ];
   return (
     <MasterLayout>
       <KeyboardAwareScrollView
         bottomOffset={16}
-        contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
         keyboardShouldPersistTaps="handled"
       >
         <View className="gap-5" testID="weekly-review">
-          <Text className="text-3xl font-bold text-text-primary">{t('weeklyReview.title')}</Text>
+          <View className="gap-1">
+            <Text className="text-3xl font-bold text-text-primary">{t('weeklyReview.title')}</Text>
+            {data ? (
+              <>
+                <Text className="text-base font-semibold text-text-secondary">
+                  {t('weeklyReview.period', {
+                    start: formatDate(data.period.start),
+                    end: formatDate(data.period.end - 1),
+                  })}
+                </Text>
+                <Text className="text-xs text-text-tertiary">{t('weeklyReview.periodHint')}</Text>
+              </>
+            ) : null}
+          </View>
           {selectedReview || requestedDay ? (
-            <Button
-              label={t('weeklyReview.latest')}
-              variant="outline"
+            <Pressable
+              accessibilityRole="button"
               onPress={() => {
                 setSelectedReview(undefined);
                 setRequestedDay(undefined);
                 setData(null);
               }}
-            />
+              className="min-h-11 flex-row items-center gap-1 self-start rounded-full bg-bg-overlay px-4"
+            >
+              <ChevronLeft size={theme.iconSize.sm} color={theme.colors.text.primary} />
+              <Text className="text-sm font-semibold text-text-primary">
+                {t('weeklyReview.latest')}
+              </Text>
+            </Pressable>
           ) : null}
           {!data && !loadError ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
           {error || loadError ? (
-            <View className="gap-2 rounded-xl bg-bg-card p-4">
-              <Text accessibilityRole="alert" className="text-status-error">
+            <View className="gap-3 rounded-2xl border border-status-error bg-bg-card p-4">
+              <Text accessibilityRole="alert" className="text-sm text-status-error">
                 {t(error ? 'weeklyReview.error' : 'errors.somethingWentWrong')}
               </Text>
-              <Button label={t('common.tryAgain')} onPress={reload} />
+              <Button label={t('common.tryAgain')} variant="outline" onPress={reload} />
             </View>
           ) : null}
           {data ? (
             <>
-              <Text className="text-sm text-text-secondary">
-                {t('weeklyReview.period', {
-                  start: formatDate(data.period.start),
-                  end: formatDate(data.period.end - 1),
-                })}
-              </Text>
-              <View className="gap-2">
+              <View className="flex-row gap-2">
+                {[t('weeklyReview.training'), t('weeklyReview.nutrition')].map((label, index) => (
+                  <View
+                    key={label}
+                    className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2 ${progressDone[index] ? 'bg-accent-primary10' : 'bg-bg-overlay'}`}
+                  >
+                    {progressDone[index] ? (
+                      <CheckCircle2 size={theme.iconSize.sm} color={theme.colors.accent.primary} />
+                    ) : (
+                      <Circle size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                    )}
+                    <Text
+                      className={`text-sm font-semibold ${progressDone[index] ? 'text-accent-primary' : 'text-text-secondary'}`}
+                    >
+                      {label}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+
+              <TrainingReviewSection
+                data={data}
+                busy={busy}
+                onAcknowledge={reviewTraining}
+                onPreviewNext={() =>
+                  data.training.next &&
+                  router.push({
+                    pathname: '/app/workout/workouts',
+                    params: { previewTemplateId: data.training.next.template.id },
+                  })
+                }
+                onEditPlan={() => setRuleEditor(true)}
+              />
+
+              <NutritionReviewSection
+                data={data}
+                busy={busy}
+                onApply={() => decide('apply')}
+                onKeep={() => decide('keep')}
+                onEdit={openEditor}
+                onSwitchWeekly={switchWeekly}
+                onEditGoal={() => setGoalEditor(true)}
+                onLogWeight={() => router.push('/app/progress')}
+                onLogFood={() => router.push('/app/nutrition/food')}
+              />
+
+              <View className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4">
+                <Text className="text-base font-bold text-text-primary">
+                  {t('weeklyReview.settings')}
+                </Text>
                 <Text className="text-sm text-text-secondary">{t('weeklyReview.weekday')}</Text>
                 <View className="flex-row flex-wrap gap-2">
-                  {Array.from({ length: 7 }, (_, day) => (
+                  {Array.from({ length: 7 }, (_, offset) => (offset + 1) % 7).map((day) => (
                     <Pressable
                       key={day}
                       accessibilityRole="radio"
                       accessibilityState={{ checked: data.weekday === day }}
-                      onPress={async () => {
-                        await SettingsService.setReviewWeekday(day);
-                        await NotificationService.scheduleWeeklyReviewNotification();
-                        await reload();
-                      }}
-                      className={`min-h-12 justify-center rounded-xl px-3 ${data.weekday === day ? 'bg-accent-primary10' : 'bg-bg-cardElevated'}`}
+                      onPress={() => changeWeekday(day)}
+                      className={`min-h-11 min-w-11 items-center justify-center rounded-full px-3 ${data.weekday === day ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
                     >
-                      <Text className="text-text-primary">
+                      <Text
+                        className={`text-sm font-semibold ${data.weekday === day ? 'text-text-on-accent' : 'text-text-primary'}`}
+                      >
                         {new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(
                           new Date(2024, 0, 7 + day)
                         )}
@@ -214,260 +318,62 @@ export default function CheckinListScreen() {
                     </Pressable>
                   ))}
                 </View>
-              </View>
-              <View className="gap-4 rounded-2xl bg-bg-card p-4" testID="review-training">
-                <Text className="text-xl font-bold text-text-primary">
-                  {t('weeklyReview.training')}
-                </Text>
-                <Text className="text-text-primary">
-                  {t('weeklyReview.trainingSummary', {
-                    workouts: data.training.workouts.length,
-                    sets: data.training.workingSets,
-                    volume: formatNumber(data.training.volume),
-                  })}
-                </Text>
-                {data.training.records.map((record, index) => (
-                  <Text
-                    key={`${record.exerciseId}-${record.type}-${index}`}
-                    className="text-accent-primary"
-                  >
-                    {t('weeklyReview.pr', {
-                      exercise: record.exerciseName,
-                      type: t(`weeklyReview.prTypes.${record.type}`),
-                      weight: formatDisplayWeightKg(locale, units, record.newRecord.weight),
-                      reps: record.newRecord.reps,
-                      unit: units === 'imperial' ? 'lb' : 'kg',
-                    })}
-                  </Text>
-                ))}
-                <Text className="text-sm text-text-secondary">
-                  {t('weeklyReview.trainingHint')}
-                </Text>
-                {data.training.next ? (
-                  <>
-                    <Button
-                      label={t('weeklyReview.nextWorkout', {
-                        name: data.training.next.template.name,
-                      })}
-                      variant="outline"
-                      onPress={() =>
-                        router.push({
-                          pathname: '/app/workout/workouts',
-                          params: { previewTemplateId: data.training.next!.template.id },
-                        })
-                      }
-                    />
-                    <Button
-                      label={t('progression.editPlan')}
-                      variant="outline"
-                      onPress={() => setRuleEditor(true)}
-                    />
-                    <WorkoutRecommendationList recommendations={data.training.targets} />
-                  </>
-                ) : (
-                  <Text className="text-text-secondary">{t('weeklyReview.noWorkout')}</Text>
-                )}
-                <Button
-                  label={t(
-                    data.training.reviewedAt ? 'weeklyReview.reviewed' : 'weeklyReview.acknowledge'
-                  )}
-                  onPress={reviewTraining}
-                  disabled={busy || !!data.training.reviewedAt}
+                <ToggleInput
+                  items={[
+                    {
+                      key: 'weekly-review',
+                      label: t('weeklyReview.reminder'),
+                      value: reminder,
+                      onValueChange: toggleReminder,
+                    },
+                  ]}
                 />
               </View>
-              {!data.intuitive ? (
-                <View className="gap-4 rounded-2xl bg-bg-card p-4" testID="review-nutrition">
-                  <Text className="text-xl font-bold text-text-primary">
-                    {t('weeklyReview.nutrition')}
+
+              {data.reviews.length || legacy.length ? (
+                <View className="gap-2">
+                  <Text className="text-lg font-bold text-text-primary">
+                    {t('weeklyReview.history')}
                   </Text>
-                  {data.goal && data.current ? (
-                    <>
-                      <Text className="text-sm text-accent-primary">
-                        {t(`weeklyReview.modes.${nutritionTargetMode(data.goal)}`)}
-                      </Text>
-                      {data.trendWeight != null ? (
-                        <Text className="text-text-primary">
-                          {t('weeklyReview.trendWeight', {
-                            weight: formatDisplayWeightKg(locale, units, data.trendWeight),
-                            unit: units === 'imperial' ? 'lb' : 'kg',
+                  {data.reviews.map((review) => (
+                    <Pressable
+                      key={review.id}
+                      accessibilityRole="button"
+                      onPress={() => {
+                        setData(null);
+                        setSelectedReview(review.id);
+                      }}
+                      className="min-h-14 flex-row items-center gap-3 rounded-xl border border-border-light bg-bg-card px-4 py-3"
+                    >
+                      <View className="min-w-0 flex-1">
+                        <Text className="font-semibold text-text-primary">
+                          {t('weeklyReview.period', {
+                            start: formatDate(review.periodStart),
+                            end: formatDate(review.periodEnd - 1),
                           })}
                         </Text>
-                      ) : null}
-                      <Text className="text-sm text-text-secondary">
-                        {t('weeklyReview.coverage', {
-                          food: data.nutrition?.foodDays ?? 0,
-                          weight: data.nutrition?.weightDays ?? 0,
-                        })}
-                      </Text>
-                      <View className="flex-row justify-between">
-                        <Text className="text-text-secondary">{t('weeklyReview.current')}</Text>
-                        <Text className="text-text-secondary">{t('weeklyReview.recommended')}</Text>
+                        <Text className="text-sm text-text-secondary">
+                          {t(historyLabelKey(review.nutritionDecision))}
+                        </Text>
                       </View>
-                      {macroFields.map((field) => (
-                        <View key={field} className="flex-row justify-between gap-2">
-                          <Text className="text-text-primary">
-                            {t(`weeklyReview.macros.${field}`)}:{' '}
-                            {formatNumber(data.current![field])}
-                          </Text>
-                          <Text className="font-semibold text-accent-primary">
-                            {formatNumber(data.nutrition?.targets[field] ?? data.current![field])}
-                          </Text>
-                        </View>
-                      ))}
-                      <Text className="text-sm text-text-secondary">
-                        {t(
-                          !data.nutrition?.canApply
-                            ? 'weeklyReview.collectData'
-                            : data.nutrition.usedEmpiricalData
-                              ? 'weeklyReview.empiricalReason'
-                              : 'weeklyReview.baselineReason'
-                        )}
+                      <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                    </Pressable>
+                  ))}
+                  {legacy.map((review) => (
+                    <Pressable
+                      key={review.id}
+                      accessibilityRole="button"
+                      onPress={() => setLegacyId(review.id)}
+                      className="min-h-14 flex-row items-center gap-3 rounded-xl border border-border-light bg-bg-card px-4 py-3"
+                    >
+                      <Text className="flex-1 text-text-primary">
+                        {t('weeklyReview.legacy')} · {formatDate(review.checkinDate)}
                       </Text>
-                      {data.review?.nutritionReviewedAt ? (
-                        <View className="gap-2">
-                          <Text className="font-semibold text-accent-primary">
-                            {t(
-                              data.review.nutritionDecision === 'apply'
-                                ? 'weeklyReview.applied'
-                                : 'weeklyReview.kept'
-                            )}
-                          </Text>
-                          {data.accepted ? (
-                            <Text className="text-text-primary">
-                              {t('weeklyReview.acceptedTargets', {
-                                calories: formatNumber(data.accepted.totalCalories),
-                                protein: formatNumber(data.accepted.protein),
-                                carbs: formatNumber(data.accepted.carbs),
-                                fats: formatNumber(data.accepted.fats),
-                                fiber: formatNumber(data.accepted.fiber),
-                              })}
-                            </Text>
-                          ) : null}
-                        </View>
-                      ) : (
-                        <>
-                          {nutritionTargetMode(data.goal) !== 'weekly' ? (
-                            <Button
-                              label={t('weeklyReview.switchWeekly')}
-                              variant="outline"
-                              disabled={busy}
-                              onPress={async () => {
-                                setBusy(true);
-                                try {
-                                  await NutritionTargetService.switchMode(data.goal!.id, 'weekly');
-                                  await reload();
-                                } catch {
-                                  setError(true);
-                                } finally {
-                                  setBusy(false);
-                                }
-                              }}
-                            />
-                          ) : (
-                            <Button
-                              label={t('weeklyReview.applyTomorrow')}
-                              onPress={() => decide('apply')}
-                              disabled={busy || !data.nutrition?.canApply}
-                            />
-                          )}
-                          <Button
-                            label={t('weeklyReview.keep')}
-                            variant="outline"
-                            onPress={() => decide('keep')}
-                            disabled={busy}
-                          />
-                          <Button
-                            label={t('weeklyReview.edit')}
-                            variant="outline"
-                            onPress={openEditor}
-                            disabled={
-                              busy ||
-                              !data.nutrition?.canApply ||
-                              nutritionTargetMode(data.goal) !== 'weekly'
-                            }
-                          />
-                        </>
-                      )}
-                      {!data.nutrition?.canApply ? (
-                        <View className="gap-2">
-                          <Button
-                            label={t('weeklyReview.logWeight')}
-                            variant="outline"
-                            onPress={() => router.push('/app/progress')}
-                          />
-                          <Button
-                            label={t('weeklyReview.logFood')}
-                            variant="outline"
-                            onPress={() => router.push('/app/nutrition/food')}
-                          />
-                        </View>
-                      ) : null}
-                      <Button
-                        label={t('weeklyReview.editGoal')}
-                        variant="outline"
-                        onPress={() => setGoalEditor(true)}
-                      />
-                    </>
-                  ) : (
-                    <Text className="text-text-secondary">{t('weeklyReview.noGoal')}</Text>
-                  )}
+                      <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                    </Pressable>
+                  ))}
                 </View>
-              ) : (
-                <Text className="text-text-secondary">{t('weeklyReview.intuitive')}</Text>
-              )}
-              <ToggleInput
-                items={[
-                  {
-                    key: 'weekly-review',
-                    label: t('weeklyReview.reminder'),
-                    value: reminder,
-                    onValueChange: async (value) => {
-                      await SettingsService.setNotificationsWeeklyReview(value);
-                      setReminder(value);
-                      await NotificationService.scheduleWeeklyReviewNotification();
-                    },
-                  },
-                ]}
-              />
-              <Text className="text-xl font-bold text-text-primary">
-                {t('weeklyReview.history')}
-              </Text>
-              {data.reviews.map((review) => (
-                <Pressable
-                  key={review.id}
-                  accessibilityRole="button"
-                  onPress={() => {
-                    setData(null);
-                    setSelectedReview(review.id);
-                  }}
-                  className="min-h-16 justify-center rounded-xl bg-bg-card p-4"
-                >
-                  <Text className="font-semibold text-text-primary">
-                    {formatDate(review.periodEnd)}
-                  </Text>
-                  <Text className="text-sm text-text-secondary">
-                    {t(
-                      review.nutritionDecision === 'apply'
-                        ? 'weeklyReview.applied'
-                        : review.nutritionDecision === 'keep'
-                          ? 'weeklyReview.kept'
-                          : 'weeklyReview.training'
-                    )}
-                  </Text>
-                </Pressable>
-              ))}
-              {legacy.map((review) => (
-                <Pressable
-                  key={review.id}
-                  accessibilityRole="button"
-                  onPress={() => setLegacyId(review.id)}
-                  className="min-h-16 justify-center rounded-xl bg-bg-card p-4"
-                >
-                  <Text className="text-text-primary">
-                    {t('weeklyReview.legacy')} · {formatDate(review.checkinDate)}
-                  </Text>
-                </Pressable>
-              ))}
+              ) : null}
             </>
           ) : null}
         </View>
@@ -518,10 +424,10 @@ export default function CheckinListScreen() {
           }
         >
           <View className="gap-3 pb-4">
-            {macroFields.map((field) => (
+            {MACRO_FIELDS.map((field) => (
               <TextInput
                 key={field}
-                label={t(`weeklyReview.macros.${field}`)}
+                label={t(MACRO_LABEL_KEYS[field])}
                 value={draft[field] ?? ''}
                 onChangeText={(value) => setDraft({ ...draft, [field]: value })}
                 inputMode="decimal"

@@ -27,6 +27,9 @@ import { restoreDatabase } from '@/database/importDb';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { parseProgressionRule } from '@/utils/progressionRules';
 import { Q } from '@nozbe/watermelondb';
+import Schedule from '@/database/models/Schedule';
+import { weekHadActivity } from '@/hooks/useWeeklyReviewStatus';
+import { indexToDayName, jsDayToWeekdayIndex } from '@/utils/weekdays';
 
 jest.mock('@/database/adapter', () => {
   const Loki = jest.requireActual('@nozbe/watermelondb/adapters/lokijs').default;
@@ -782,4 +785,59 @@ it('a failed starting projection or undo can be retried without cached prescript
   expect(parseSetPrescription(w.sets[0].prescriptionJson)?.override).toBeUndefined();
   await WorkoutProgressionService.revertStartAdjustment(w.block.id);
   expect(w.sets[0].reps).toBe(10);
+});
+
+it('keeps the exercise rule on sets reloaded after a save, so the session does not fall back to automatic', async () => {
+  const rule = serializeProgressionRule({ type: 'double_progression', repMin: 8, repMax: 12 })!;
+  const w = await workout(rule);
+  await WorkoutSessionService.saveSet(w.log.id, w.sets[0].id, 'performed', {
+    weight: 60,
+    reps: 10,
+  });
+  // `refresh` reloads through this path; it used to drop `progressionJson`, so every set after the
+  // first completion read as rule-free and lost its badge and between-sets behaviour.
+  const { sets } = await WorkoutService.getWorkoutWithDetails(w.log.id);
+  expect(sets).toHaveLength(3);
+  expect(sets.every((set) => set.progressionJson === rule)).toBe(true);
+});
+
+it('shows a scheduled workout already trained today as done, and offers the next one instead', async () => {
+  const w = await workout();
+  const jsToday = new Date().getDay();
+  await database.write(async () => {
+    await database.batch(
+      database.get<Schedule>('schedules').prepareCreate((r) => {
+        r.templateId = w.template.id;
+        r.dayOfWeek = indexToDayName(jsDayToWeekdayIndex(jsToday));
+        r.createdAt = Date.now();
+        r.updatedAt = Date.now();
+      })
+    );
+  });
+  let [row] = await WorkoutTodayRepository.upcoming();
+  expect(row.template.id).toBe(w.template.id);
+  expect(row.completedToday).toBe(false);
+
+  await database.write(() =>
+    w.log.update((r) => {
+      r.completedAt = Date.now();
+    })
+  );
+  [row] = await WorkoutTodayRepository.upcoming();
+  expect(row.completedToday).toBe(true);
+});
+
+it('counts a week as reviewable only when it holds activity', async () => {
+  const period = weeklyReviewPeriod();
+  expect(await weekHadActivity(period.start, period.end)).toBe(false);
+
+  const w = await workout();
+  await database.write(() =>
+    w.log.update((r) => {
+      r.completedAt = period.start + 60 * 60 * 1000;
+    })
+  );
+  expect(await weekHadActivity(period.start, period.end)).toBe(true);
+  // A workout finished after the week ended belongs to the next review, not this one.
+  expect(await weekHadActivity(period.end, period.end + 1)).toBe(false);
 });

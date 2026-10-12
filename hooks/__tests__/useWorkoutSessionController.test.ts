@@ -4,6 +4,8 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController';
 import { WorkoutSessionService } from '@/database/services/WorkoutSessionService';
 import { WorkoutService } from '@/database/services/WorkoutService';
+import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
+import { NotificationService } from '@/services/NotificationService';
 
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
@@ -22,6 +24,9 @@ jest.mock('@/services/NotificationService', () => ({
     scheduleRestTimerNotification: jest.fn(async () => {}),
     cancelRestTimerNotification: jest.fn(async () => {}),
   },
+}));
+jest.mock('@/database/services/WorkoutProgressionService', () => ({
+  WorkoutProgressionService: { revertStartAdjustment: jest.fn(async () => 1) },
 }));
 jest.mock('@/utils/activeWorkoutStorage', () => ({
   getRestTimerEndAt: jest.fn(async () => Date.now() + 90000),
@@ -102,5 +107,37 @@ it('keeps inputs after a failed set save and clears them only after explicit fin
   await act(() => hook.result.current.finish());
   expect(WorkoutService.completeWorkout).toHaveBeenCalledWith('log');
   expect(await AsyncStorage.getItem('workout_drafts_log')).toBeNull();
+  hook.unmount();
+});
+
+it('lengthens a running rest, moves its reminder, and keeps one rest id until a new rest starts', async () => {
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  await act(() => hook.result.current.startRest(60));
+  const id = hook.result.current.restId;
+  expect(hook.result.current.restTotal).toBe(60);
+
+  await act(() => hook.result.current.adjustRest(30));
+  expect(hook.result.current.restSeconds).toBeGreaterThan(85);
+  expect(hook.result.current.restTotal).toBe(90);
+  // Adjusting is the same rest: a panel the user expanded for it stays expanded.
+  expect(hook.result.current.restId).toBe(id);
+  expect(NotificationService.cancelRestTimerNotification).toHaveBeenCalled();
+  expect(NotificationService.scheduleRestTimerNotification).toHaveBeenLastCalledWith(
+    expect.any(Number)
+  );
+
+  await act(() => hook.result.current.startRest(45));
+  expect(hook.result.current.restId).toBe(id + 1);
+  hook.unmount();
+});
+
+it('undoes a start adjustment through the controller and refreshes the session', async () => {
+  const refresh = jest.fn(async () => {});
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], { ...options, refresh }));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  await act(() => hook.result.current.revert('le-1'));
+  expect(WorkoutProgressionService.revertStartAdjustment).toHaveBeenCalledWith('le-1');
+  expect(refresh).toHaveBeenCalled();
   hook.unmount();
 });

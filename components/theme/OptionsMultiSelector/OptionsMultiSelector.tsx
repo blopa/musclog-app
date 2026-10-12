@@ -29,6 +29,8 @@ type OptionsMultiSelectorProps<T extends string | number> = {
   hideCheckboxes?: boolean;
   /** When true, disables the press animation on items. */
   disablePressAnimation?: boolean;
+  /** Tapping a row outside selection mode — e.g. to open that row's own settings. */
+  onOptionPress?: (id: T) => void;
 };
 
 export function OptionsMultiSelector<T extends string | number>({
@@ -42,6 +44,7 @@ export function OptionsMultiSelector<T extends string | number>({
   onDelete,
   hideCheckboxes = false,
   disablePressAnimation = false,
+  onOptionPress,
 }: OptionsMultiSelectorProps<T>) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -305,8 +308,8 @@ export function OptionsMultiSelector<T extends string | number>({
         )}
         <View style={{ flex: 1 }}>
           <Pressable
-            onPress={() => showCheckboxes && toggle(option.id)}
-            disabled={!showCheckboxes}
+            onPress={() => (showCheckboxes ? toggle(option.id) : onOptionPress?.(option.id))}
+            disabled={!showCheckboxes ? !onOptionPress : null}
             style={{ flex: 1 }}
           >
             {({ pressed }) => (

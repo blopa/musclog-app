@@ -5,14 +5,23 @@ import type Schedule from '@/database/models/Schedule';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import type WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
+import { localDayStartMs } from '@/utils/calendarDate';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 
+export type TodayWorkout = {
+  template: WorkoutTemplate;
+  planId?: string;
+  planName?: string;
+  /** Due today by a weekly schedule; false for the next workout of a rotating plan. */
+  scheduled: boolean;
+  /** Already trained today, so the card shows it as done instead of as a to-do. */
+  completedToday: boolean;
+};
+
 export class WorkoutTodayRepository {
-  static async upcoming(
-    date: Date = new Date()
-  ): Promise<{ template: WorkoutTemplate; planId?: string; scheduled: boolean }[]> {
-    const [plans, templates, schedules] = await Promise.all([
+  static async upcoming(date: Date = new Date()): Promise<TodayWorkout[]> {
+    const [plans, templates, schedules, completedToday] = await Promise.all([
       WorkoutPlanService.getPlansWithMemberships(),
       database
         .get<WorkoutTemplate>('workout_templates')
@@ -22,7 +31,16 @@ export class WorkoutTodayRepository {
         .get<Schedule>('schedules')
         .query(Q.where('deleted_at', Q.eq(null)))
         .fetch(),
+      database
+        .get<WorkoutLog>('workout_logs')
+        .query(
+          Q.where('completed_at', Q.gte(localDayStartMs(date))),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetch(),
     ]);
+    const doneToday = new Set(completedToday.map((log) => log.templateId));
+    const planName = new Map(plans.map((item) => [item.plan.id, item.plan.name]));
     const planModels = plans.map((item) => item.plan);
     const memberships = plans.flatMap((item) => item.memberships);
     const resolved = resolveWorkoutSchedules(planModels, memberships, schedules);
@@ -30,7 +48,17 @@ export class WorkoutTodayRepository {
       .filter((row) => row.dayIndex === jsDayToWeekdayIndex(date.getDay()))
       .flatMap((row) => {
         const template = templates.find((item) => item.id === row.templateId);
-        return template ? [{ template, planId: row.planId, scheduled: true }] : [];
+        return template
+          ? [
+              {
+                template,
+                planId: row.planId,
+                planName: row.planId ? planName.get(row.planId) : undefined,
+                scheduled: true,
+                completedToday: doneToday.has(template.id),
+              },
+            ]
+          : [];
       });
     if (scheduled.length) {
       return scheduled;
@@ -62,7 +90,9 @@ export class WorkoutTodayRepository {
           return {
             template: templates.find((row) => row.id === member.templateId)!,
             planId: item.plan.id,
+            planName: item.plan.name,
             scheduled: false,
+            completedToday: false,
           };
         })
     );

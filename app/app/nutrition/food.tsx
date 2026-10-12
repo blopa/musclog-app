@@ -61,6 +61,7 @@ import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TargetModeRow } from '@/components/weeklyReview/TargetModeRow';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSmartCamera } from '@/context/SmartCameraContext';
@@ -88,6 +89,7 @@ import { useMealGroupUi } from '@/hooks/useMealGroupUi';
 import { useMealUi } from '@/hooks/useMealUi';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 import AiService from '@/services/AiService';
 import {
   calendarDateFromRecordDay,
@@ -583,6 +585,11 @@ export default function FoodScreen() {
   // Brand-new users stay on the global empty-diary onboarding card instead of the fasting-day
   // affordance; once there's any food history, empty selected days can offer fasting actions.
   const showTrackedDayContent = !hasNoFood;
+  // Food shows the review card when a week is waiting, and wherever the target line below is not
+  // drawn (empty and fasting days); otherwise that line is the one-tap way in.
+  const reviewStatus = useWeeklyReviewStatus();
+  const showReviewCard =
+    !!reviewStatus?.ready || !resolvedMacros || !showTrackedDayContent || isFastedDayView;
   // Same emptiness signal the fasting prompt uses (this day, not the whole diary). A day
   // already flagged as a fast renders only FastingDayCard, so this never competes with it.
   const showCopyDayPrompt = !isScreenLoading && showTrackedDayContent && logs.length === 0;
@@ -1568,7 +1575,7 @@ export default function FoodScreen() {
               </>
             ) : null}
 
-            <WeeklyReviewCard compact />
+            {showReviewCard ? <WeeklyReviewCard compact /> : null}
 
             {/* Empty State */}
             {!isScreenLoading && hasNoFood ? (
@@ -1598,13 +1605,11 @@ export default function FoodScreen() {
             {!isScreenLoading && showTrackedDayContent && !isFastedDayView ? (
               <AnimatedContent key="tracking" style={{ gap: theme.spacing.gap['xl'] }}>
                 <>
-                  {resolvedMacros ? (
-                    <Text className="text-sm text-text-secondary">
-                      {t(`weeklyReview.modes.${resolvedMacros.mode}`)}
-                      {resolvedMacros.effectiveFrom
-                        ? ` · ${t('weeklyReview.effective', { date: new Intl.DateTimeFormat(appLocale, { dateStyle: 'medium' }).format(resolvedMacros.effectiveFrom) })}`
-                        : ''}
-                    </Text>
+                  {resolvedMacros && !showReviewCard ? (
+                    <TargetModeRow
+                      mode={resolvedMacros.mode}
+                      effectiveFrom={resolvedMacros.effectiveFrom}
+                    />
                   ) : null}
                   {/* Daily Summary Card */}
                   {nutritionGoal?.isDynamic ? (

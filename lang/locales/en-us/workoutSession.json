@@ -45,7 +45,6 @@
     "sensorDisconnected": "Sensor disconnected",
     "disconnect": "Disconnect",
     "adjustment": {
-      "label": "Adjusted",
       "carryOver": "Weight follows your last set ({{to}} {{unit}}) instead of the planned {{from}} {{unit}}.",
       "targetRirWeight": "Weight changed from {{from}} to {{to}} {{unit}} — your last set puts your estimated 1RM at {{oneRepMax}} {{unit}}, so this keeps {{rir}} reps in reserve.",
       "targetRirReps": "Reps changed from {{from}} to {{to}} — your last set puts your estimated 1RM at {{oneRepMax}} {{unit}}, so this keeps {{rir}} reps in reserve at the current weight.",
@@ -55,7 +54,6 @@
       "startDeload": "Down to {{to}} {{unit}} from last time's {{last}} {{unit}} — you had no reps left in reserve.",
       "startRepeatWeight": "Starting at {{to}} {{unit}}, what you used last time, instead of the plan's {{from}} {{unit}}.",
       "startRepeatReps": "Starting at {{to}} reps, what you did last time, instead of the plan's {{from}}.",
-      "keepLast": "Keep last time's",
       "usePlan": "Use the plan's",
       "startDeloadWeightReps": "Down to {{to}} {{unit}} × {{reps}} from last time's {{last}} {{unit}} × {{lastReps}} — you had no reps left in reserve.",
       "startRepeatWeightReps": "Starting at {{to}} {{unit}} × {{reps}}, what you did last time, instead of the plan's {{from}} {{unit}} × {{planReps}}."
@@ -115,7 +113,6 @@
     "learningHint": "Log a workout to build history for future recommendations.",
     "editGym": "Edit gym",
     "editPlan": "Edit workout and rules",
-    "audit": "Plan: {{planWeight}} kg × {{planReps}}. Starting recommendation: {{targetWeight}} kg × {{targetReps}}.",
     "reason": {
       "range": {
         "add_weight": "Every prescribed set reached {{repMax}} reps. Add one load step and restart at {{repMin}}.",
@@ -131,7 +128,34 @@
       "backoff": "Use {{percent}}% of the top set ({{top}} {{unit}}), rounded to available equipment.",
       "percentage": "Use {{percent}}% of the retained training max ({{tm}} {{unit}})."
     },
-    "editTarget": "Edit target"
+    "editTarget": "Edit target",
+    "summary": {
+      "range": "{{min}}–{{max}} reps, then add load",
+      "linear": "{{reps}} reps · −{{percent}}% after {{misses}} misses",
+      "topSet": "Top set {{min}}–{{max}} · back-offs {{percent}}% × {{reps}}",
+      "percentage": "{{percent}}% × {{reps}} of a {{tm}} {{unit}} training max",
+      "percentageNoTm": "Training max is set after your first logged session"
+    },
+    "inputs": {
+      "plan": "Plan",
+      "lastTime": "Last time",
+      "today": "Today"
+    },
+    "attentionHint": "This load cannot be built from your gym’s plates. Edit the target for today, or update your gym’s equipment.",
+    "usingPlan": "You chose the plan’s numbers for this session.",
+    "usingManual": "You edited this set; your numbers win over later suggestions.",
+    "usePlanHint": "Only unfinished sets in this session change.",
+    "editGymHint": "Plates, bar and increments used for rounding",
+    "editPlanHint": "Lasting changes to sets, reps and progression rules",
+    "descriptions": {
+      "automatic": "Musclog suggests each session from how the last one went. You can always undo it.",
+      "double_progression": "Work within a rep range. When every set hits the top, add weight and start again at the bottom.",
+      "linear": "Same reps every time. Add weight after a session where you got them all; deload after repeated misses.",
+      "top_set_backoff": "One heavy top set worked through a rep range, then lighter back-off sets at a share of it.",
+      "percentage": "Every set at a percentage of a training max that goes up after each successful session."
+    },
+    "repsShort": "{{reps}} reps",
+    "tmEstimated": "The training max is estimated from your last session until you set one."
   },
   "trainingFlow": {
     "inline": "Inline",
@@ -140,7 +164,6 @@
     "previous": "Last time: {{weight}} {{unit}} × {{reps}}",
     "noHistory": "No previous set",
     "complete": "Complete set",
-    "completeShort": "Done",
     "reopen": "Reopen set for correction",
     "details": "Effort and details",
     "unrated": "Unrated",
@@ -148,8 +171,6 @@
     "rirLabel": "RIR (optional)",
     "rpe": "RPE (optional)",
     "partials": "Partial reps",
-    "skip": "Skip",
-    "skipped": "Skipped",
     "actions": {
       "guidance": "Why?",
       "warmup": "Warm-up",
@@ -172,27 +193,56 @@
     "noGym": "No gym selected",
     "guidanceOn": "Automatic starting targets on",
     "guidanceOff": "Automatic starting targets off",
-    "resume": "Resume {{name}}",
     "restDay": "No workout scheduled today. Choose one from your library.",
     "editPerformed": "Edit performed sets",
-    "nextTime": "Next time"
+    "nextTime": "Next time",
+    "detailsHint": "Optional. Leave effort empty if you did not rate this set.",
+    "rirHint": "Reps you had left",
+    "skipSet": "Skip this set",
+    "done": "Done",
+    "columns": {
+      "set": "Set",
+      "previous": "Last time",
+      "reps": "Reps"
+    },
+    "warmupShort": "W",
+    "removeWarmups": "Remove warm-ups",
+    "blockProgress": "{{done}}/{{total}}",
+    "setTapHint": "Tap a set number for effort, partial reps or to skip it.",
+    "previousExercise": "Previous exercise",
+    "nextExercise": "Next exercise",
+    "exerciseOf": "Exercise {{current}} of {{total}}",
+    "upNext": "Up next: {{next}}",
+    "getReady": "Get ready",
+    "minus15": "−15 s",
+    "whyTitle": "Why these targets?",
+    "allDone": "Every set is logged",
+    "allDoneHint": "Finish the workout to save it and see what changes next time.",
+    "addExercise": "Add exercise",
+    "saveError": "That change was not saved. Check the values and try again.",
+    "resumeWorkout": "Resume workout",
+    "scheduledIn": "Scheduled today · {{plan}}",
+    "nextIn": "Next in {{plan}}",
+    "scheduledToday": "Scheduled today",
+    "previewAndStart": "Preview and start",
+    "doneToday": "{{name}} · done today",
+    "lastTimeList": "Last time: {{sets}}",
+    "newRecord": "New {{type}} record",
+    "adjustedHint": "Calculated by your progression. Type to change it for this session."
   },
   "weeklyReview": {
     "title": "Weekly Review",
     "ready": "Ready to review",
     "reviewed": "Reviewed",
     "next": "Next review: {{date}}",
-    "period": "{{start}} – {{end}} · seven completed days",
+    "period": "{{start}} – {{end}}",
     "weekday": "Review day",
     "latest": "Back to latest review",
     "error": "Unable to save or load the review. Your decision has not been completed. Try again.",
     "training": "Training",
-    "trainingSummary": "{{workouts}} workouts · {{sets}} working sets · {{volume}} kg volume",
     "trainingHint": "Targets update with your workouts. Reviewing this summary never delays progression.",
     "acknowledge": "Mark training reviewed",
-    "nextWorkout": "Preview {{name}}",
     "noWorkout": "Choose a workout or rotating plan in Workouts.",
-    "pr": "{{exercise}} · {{type}} PR · {{weight}} {{unit}} × {{reps}}",
     "prTypes": {
       "weight": "Weight",
       "reps": "Reps",
@@ -201,12 +251,9 @@
     "nutrition": "Nutrition",
     "modes": {
       "manual": "Manual targets",
-      "daily": "Daily automatic",
-      "weekly": "Weekly review"
+      "daily": "Daily automatic targets",
+      "weekly": "Weekly targets"
     },
-    "trendWeight": "Trend weight: {{weight}} {{unit}}",
-    "coverage": "Food logged on {{food}} / 7 days · weight on {{weight}} / 7 days",
-    "current": "Current targets",
     "recommended": "Recommended",
     "macros": {
       "totalCalories": "Calories (kcal)",
@@ -224,7 +271,7 @@
     "edit": "Edit recommendation",
     "applied": "Targets approved",
     "kept": "Current targets kept",
-    "effective": "Effective from {{date}}",
+    "effective": "Since {{date}}",
     "logWeight": "Log weight",
     "logFood": "Complete food entries",
     "editGoal": "Edit weight goal or date",
@@ -234,6 +281,33 @@
     "legacy": "Previous check-in",
     "reminder": "Optional weekly review reminder",
     "reminderBody": "Your week is ready to review. Check training and nutrition targets.",
-    "acceptedTargets": "Saved targets: {{calories}} kcal · {{protein}} g protein · {{carbs}} g carbs · {{fats}} g fat · {{fiber}} g fiber"
+    "cardWeek": "Week of {{start}} – {{end}}",
+    "upcoming": "Upcoming",
+    "cardHint": "Training recap and next week’s targets",
+    "toReview": "To review",
+    "stats": {
+      "workouts": "Workouts",
+      "workingSets": "Working sets",
+      "volume": "Volume",
+      "trendWeight": "Trend weight",
+      "foodDays": "Food logged",
+      "weighIns": "Weigh-ins"
+    },
+    "noWorkoutsThisWeek": "No workouts logged this week.",
+    "records": "Personal records",
+    "nextUp": "Next up",
+    "previewNext": "Preview workout",
+    "upcomingTargets_one": "Show next targets ({{count}} exercise)",
+    "upcomingTargets_other": "Show next targets ({{count}} exercises)",
+    "target": "Target",
+    "currentShort": "Current",
+    "savedShort": "Saved",
+    "switchWeeklyHint": "Weekly targets stay the same between reviews instead of changing every day.",
+    "keepCollecting": "Keep targets while collecting data",
+    "keepShort": "Keep current",
+    "editShort": "Edit",
+    "settings": "Review settings",
+    "trainingOnly": "Training reviewed",
+    "periodHint": "The seven completed days before your review day"
   }
 }

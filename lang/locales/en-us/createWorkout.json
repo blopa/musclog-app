@@ -44,6 +44,7 @@
     "saveError": "Failed to Save",
     "validation": {
       "titleRequiredMessage": "Please enter a workout title"
-    }
+    },
+    "ruleTapHint": "Tap an exercise to choose how its weights progress."
   }
 }

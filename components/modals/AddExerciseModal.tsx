@@ -19,7 +19,10 @@ import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { describeExerciseRow } from '@/components/workout/describeExerciseRow';
-import { ProgressionRuleEditor } from '@/components/workout/ProgressionRuleEditor';
+import {
+  ProgressionRuleRow,
+  ProgressionRuleSheet,
+} from '@/components/workout/ProgressionRuleEditor';
 import { type EquipmentType, type MechanicType, type MuscleGroup } from '@/database/models';
 import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';
@@ -33,6 +36,7 @@ import {
 } from '@/utils/exerciseTranslation';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
 import type { ProgressionRule } from '@/utils/progressionRules';
+import { displayToKg } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -142,6 +146,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [isSetTypePickerVisible, setIsSetTypePickerVisible] = useState(false);
   const [notes, setNotes] = useState('');
   const [progression, setProgression] = useState<ProgressionRule | null>(null);
+  const [isRuleSheetVisible, setIsRuleSheetVisible] = useState(false);
 
   const {
     exercises: allExercises,
@@ -701,12 +706,22 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           items={setTypeMenuItems}
         />
 
+        {/* How this exercise's numbers move from session to session */}
+        <View className="mt-6">
+          <ProgressionRuleRow value={progression} onPress={() => setIsRuleSheetVisible(true)} />
+        </View>
+        {isRuleSheetVisible ? (
+          <ProgressionRuleSheet
+            exerciseName={selectedExercise?.label}
+            value={progression}
+            onChange={setProgression}
+            units={unitsFor(selectedExerciseId ?? undefined)}
+            plannedWeightKg={displayToKg(parseWeightString(weight), units)}
+            onClose={() => setIsRuleSheetVisible(false)}
+          />
+        ) : null}
+
         {/* Notes Section */}
-        <ProgressionRuleEditor
-          value={progression}
-          onChange={setProgression}
-          units={unitsFor(selectedExerciseId ?? undefined)}
-        />
         <View className="mt-6">
           <TextInput
             label={t('workouts.addExercise.notes')}

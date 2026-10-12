@@ -1,0 +1,142 @@
+import { useTranslation } from 'react-i18next';
+import { Pressable, Text, View } from 'react-native';
+
+import type { Units } from '@/constants/settings';
+import type Exercise from '@/database/models/Exercise';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import type { SessionDraft } from '@/hooks/useWorkoutSessionController';
+import { getWeightUnitI18nKey } from '@/utils/units';
+
+import {
+  ExerciseActionChips,
+  ExerciseThumbnail,
+  type SessionExerciseAction,
+  useExerciseCategory,
+} from './ExerciseHeader';
+import { GuidanceSummary } from './GuidanceSummary';
+import { InlineSetRow, SetTableHeader } from './InlineSetRow';
+import type { GuidanceState, SessionBlock } from './sessionModel';
+
+/**
+ * One exercise of the Inline view: heading, where its targets come from, labelled actions, and a
+ * table of its sets that are edited and completed in place.
+ */
+export function InlineExerciseCard({
+  block,
+  exercise,
+  state,
+  units,
+  isCurrent,
+  currentSetId,
+  drafts,
+  valuesFor,
+  notes,
+  warmup,
+  busy,
+  onWhy,
+  onRevert,
+  onAction,
+  onEdit,
+  onComplete,
+  onSkip,
+}: {
+  block: SessionBlock;
+  exercise: Exercise;
+  state: GuidanceState;
+  units: Units;
+  isCurrent: boolean;
+  currentSetId?: string;
+  drafts: Record<string, SessionDraft>;
+  valuesFor: (setId: string) => SessionDraft;
+  notes: string[];
+  warmup: 'add' | 'remove' | null;
+  busy: boolean;
+  onWhy: () => void;
+  onRevert: () => void;
+  onAction: (action: SessionExerciseAction) => void;
+  onEdit: (setId: string, draft: SessionDraft) => void;
+  onComplete: (setId: string) => void;
+  onSkip: (setId: string) => void;
+}) {
+  const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
+  const category = useExerciseCategory(exercise);
+  const allDone = block.doneCount === block.rows.length;
+  return (
+    <View
+      className={`gap-4 rounded-2xl border bg-bg-card p-4 ${isCurrent ? 'border-accent-primary' : 'border-border-light'}`}
+      testID={`exercise-card-${block.logExerciseId}`}
+    >
+      <View className="flex-row items-center gap-3">
+        <ExerciseThumbnail exercise={exercise} />
+        <View className="min-w-0 flex-1">
+          <Text className="text-lg font-bold text-text-primary" numberOfLines={2}>
+            {exercise.name}
+          </Text>
+          {category ? (
+            <Text className="text-sm text-text-secondary" numberOfLines={1}>
+              {category}
+            </Text>
+          ) : null}
+        </View>
+        <View
+          className={`rounded-full px-2.5 py-1 ${allDone ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
+        >
+          <Text
+            className={`text-xs font-bold ${allDone ? 'text-text-on-accent' : 'text-text-secondary'}`}
+          >
+            {t('trainingFlow.blockProgress', {
+              done: formatInteger(block.doneCount),
+              total: formatInteger(block.rows.length),
+            })}
+          </Text>
+        </View>
+      </View>
+
+      <GuidanceSummary
+        state={state}
+        rule={block.rule}
+        adjustment={block.focus.adjustment}
+        units={units}
+        onWhy={onWhy}
+        onRevert={onRevert}
+      />
+
+      {notes.length ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('workoutSession.notes.edit')}
+          onPress={() => onAction('notes')}
+          className="gap-1 rounded-lg bg-bg-overlay p-3"
+        >
+          {notes.map((note) => (
+            <Text key={note} className="text-sm text-text-secondary" numberOfLines={3}>
+              {note}
+            </Text>
+          ))}
+        </Pressable>
+      ) : null}
+
+      <ExerciseActionChips warmup={warmup} onAction={onAction} disabled={busy} />
+
+      <View className="gap-1.5">
+        <SetTableHeader weightUnit={t(getWeightUnitI18nKey(units))} />
+        {block.rows.map((row) => (
+          <InlineSetRow
+            key={row.set.id}
+            row={row}
+            draft={drafts[row.set.id]}
+            values={valuesFor(row.set.id)}
+            units={units}
+            isCurrent={row.set.id === currentSetId}
+            busy={busy}
+            onEdit={(draft) => onEdit(row.set.id, draft)}
+            onComplete={() => onComplete(row.set.id)}
+            onSkip={() => onSkip(row.set.id)}
+          />
+        ))}
+        <Text className="px-1 pt-1 text-xs text-text-tertiary">{t('trainingFlow.setTapHint')}</Text>
+      </View>
+    </View>
+  );
+}

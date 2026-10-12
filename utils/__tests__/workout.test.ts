@@ -16,6 +16,7 @@ import {
   getExerciseIconConfig,
   getWeekdayLabels,
   isBodyweightExercise,
+  splitDurationLabel,
   transformExercisesToOptions,
   transformScheduleDays,
   updateMetadataWithGroupIds,
@@ -844,5 +845,17 @@ describe('utils/workout', () => {
         expect(result).toEqual({ valid: true });
       });
     });
+  });
+});
+
+describe('splitDurationLabel', () => {
+  it('splits a duration into its number and unit in any language', () => {
+    // The old English-only pattern turned "0 min" into "0in" + "m".
+    expect(splitDurationLabel('0 min')).toEqual({ value: '0', suffix: 'min' });
+    expect(splitDurationLabel('45 мин')).toEqual({ value: '45', suffix: 'мин' });
+  });
+
+  it('keeps an hours:minutes label whole', () => {
+    expect(splitDurationLabel('1:03')).toEqual({ value: '1:03' });
   });
 });

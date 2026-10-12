@@ -519,3 +519,15 @@ The same gap existed in `utils/onDeviceAi.web.ts` (`sendOnDeviceStructured`, rea
 WatermelonDB `prepareUpdate` changes the model cache before the adapter commits a batch. A rejected weekly approval could therefore appear reviewed in memory despite no stored decision. `commitPrepared` snapshots existing raw records/prepared state and restores them on failure; the review and target-period changes use one batch and remain retryable. The same boundary protects set completion and mode switching. Legacy Readjust now acknowledges only after the goal write succeeds, retaining reviewed check-ins across goal changes.
 
 Explicit rule history uses stable template-exercise identity, preventing one routine from borrowing another routine’s carried state for the same movement. Skipped sets preserve their prescribed positions and prevent full-session success. Each session freezes its rule/TM and prescription metadata. Missing new RIR has an explicit false flag, avoiding automatic guidance based on a placeholder zero. Switching to/from weekly nutrition closes target intervals rather than changing the meaning of earlier approved dates.
+
+## Session forgot its progression rule after the first completed set
+
+`WorkoutService.getWorkoutWithDetails` built its enriched sets without each log exercise's `progressionJson`. The live session's `refresh` reloads through that path after every save, so from the second set on an exercise with a rule read as rule-free: its badge fell back to "Suggested · Automatic" while the reason underneath still described the rule. The reactive pipeline (`useWorkoutSessionState`) already passed the field, which is why the first render looked right. The field is now passed on both paths, pinned by "keeps the exercise rule on sets reloaded after a save" in `weeklyProgression.integration.test.ts` (verified to fail without the fix).
+
+## Summary "Total Time" read "0in m"
+
+The web summary split its duration label with `/\s*(m|min|minutes?)/` — unanchored, so "0 min" matched the leading "m" and rendered "0in" + "m"; the pattern could never match a localized unit either. Both summary cards now use `splitDurationLabel` (`utils/workout.ts`), which splits on the last space. The web stats card also needed `flexShrink: 0`: as a flex-column item it shrank, and was clipped, once "Next time" was added below it.
+
+## Large-text Playwright profile skewed every sheet
+
+The progression spec emulated 1.3× text with `document.documentElement.style.zoom`. react-native-web sizes sheets from JS window dimensions, which CSS zoom does not change, so every `BottomPopUp` rendered 1.3× too tall and wide and its footer left the viewport — a failure no device can produce. The `phone-large-text` project now uses the layout that text size really yields: a 318×689 viewport at `deviceScaleFactor: 1.3`.

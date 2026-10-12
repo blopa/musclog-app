@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 
 import { SettingsService } from '@/database/services/SettingsService';
+import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import {
@@ -34,6 +35,12 @@ export function useWorkoutSessionController(
   const [view, setView] = useState<'inline' | 'guided'>('guided');
   const [drafts, setDrafts] = useState<Record<string, SessionDraft>>({});
   const [restEnd, setRestEnd] = useState<number | null>(null);
+  // Length of the rest that is running, for the progress bar. Not persisted: after a restart the
+  // time still left stands in for it.
+  const [restTotal, setRestTotal] = useState(0);
+  // Identifies one rest from its start to its end, so a view can remember a choice made during it
+  // (the expanded timer panel) without an effect resetting it when the next rest begins.
+  const [restId, setRestId] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -54,6 +61,7 @@ export function useWorkoutSessionController(
         }
         setView(value);
         setRestEnd(timer);
+        setRestTotal(timer ? Math.max(0, Math.ceil((timer - Date.now()) / 1000)) : 0);
         setDrafts({});
         if (raw) {
           try {
@@ -112,7 +120,22 @@ export function useWorkoutSessionController(
     const end = Date.now() + seconds * 1000;
     await setRestTimerEndAt(logId, end);
     setRestEnd(end);
+    setRestTotal(seconds);
+    setRestId((id) => id + 1);
     await NotificationService.scheduleRestTimerNotification(seconds);
+  };
+  /** Lengthens or shortens the rest that is running; its reminder moves with it. */
+  const adjustRest = async (deltaSeconds: number) => {
+    if (!logId || !restEnd) {
+      return;
+    }
+    const remaining = Math.max(1, Math.ceil((restEnd - Date.now()) / 1000) + deltaSeconds);
+    const end = Date.now() + remaining * 1000;
+    await setRestTimerEndAt(logId, end);
+    setRestEnd(end);
+    setRestTotal((total) => Math.max(remaining, total + deltaSeconds));
+    await NotificationService.cancelRestTimerNotification();
+    await NotificationService.scheduleRestTimerNotification(remaining);
   };
   const stopRest = async () => {
     await clearRestTimerEndAt();
@@ -167,6 +190,11 @@ export function useWorkoutSessionController(
         await WorkoutSessionService.saveSet(logId, id, 'skipped');
       }
     });
+  /** "Use the plan's" for one exercise: only its unfinished sets go back to the prescription. */
+  const revert = async (logExerciseId: string) =>
+    run(async () => {
+      await WorkoutProgressionService.revertStartAdjustment(logExerciseId);
+    });
   const finish = async () =>
     run(async () => {
       if (!logId) {
@@ -187,9 +215,13 @@ export function useWorkoutSessionController(
     edit,
     complete,
     skip,
+    revert,
     finish,
     startRest,
     stopRest,
+    adjustRest,
+    restTotal,
+    restId,
     busy: busy || loadedKey !== key,
     error,
     defaultRest: options.defaultRest,

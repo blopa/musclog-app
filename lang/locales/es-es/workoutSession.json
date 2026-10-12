@@ -45,7 +45,6 @@
     "sensorDisconnected": "Sensor desconectado",
     "disconnect": "Desconectar",
     "adjustment": {
-      "label": "Ajustado",
       "carryOver": "El peso sigue tu última serie ({{to}} {{unit}}) en lugar de los {{from}} {{unit}} planificados.",
       "targetRirWeight": "Peso cambiado de {{from}} a {{to}} {{unit}}: tu última serie sitúa tu 1RM estimado en {{oneRepMax}} {{unit}}, así que esto mantiene {{rir}} repeticiones en reserva.",
       "targetRirReps": "Repeticiones cambiadas de {{from}} a {{to}}: tu última serie sitúa tu 1RM estimado en {{oneRepMax}} {{unit}}, así que esto mantiene {{rir}} repeticiones en reserva con el peso actual.",
@@ -55,7 +54,6 @@
       "startDeload": "Baja a {{to}} {{unit}} desde los {{last}} {{unit}} de la última vez: no te quedaban repeticiones en reserva.",
       "startRepeatWeight": "Empiezas con {{to}} {{unit}}, lo que usaste la última vez, en lugar de los {{from}} {{unit}} del plan.",
       "startRepeatReps": "Empiezas con {{to}} repeticiones, lo que hiciste la última vez, en lugar de las {{from}} del plan.",
-      "keepLast": "Mantener lo de la última vez",
       "usePlan": "Usar lo del plan",
       "startDeloadWeightReps": "Baja a {{to}} {{unit}} × {{reps}} desde {{last}} {{unit}} × {{lastReps}} de la última vez: no te quedaban repeticiones en reserva.",
       "startRepeatWeightReps": "Empiezas con {{to}} {{unit}} × {{reps}}, lo que hiciste la última vez, en lugar de los {{from}} {{unit}} × {{planReps}} del plan."
@@ -115,7 +113,6 @@
     "learningHint": "Registra un entrenamiento para recibir futuras recomendaciones.",
     "editGym": "Editar gimnasio",
     "editPlan": "Editar entrenamiento y reglas",
-    "audit": "Plan: {{planWeight}} kg × {{planReps}}. Recomendación inicial: {{targetWeight}} kg × {{targetReps}}.",
     "reason": {
       "range": {
         "add_weight": "Todas las series llegaron a {{repMax}} repeticiones. Sube un incremento y vuelve a {{repMin}}.",
@@ -131,7 +128,34 @@
       "backoff": "Usa el {{percent}}% de la serie principal ({{top}} {{unit}}), ajustado al equipo disponible.",
       "percentage": "Usa el {{percent}}% del máximo guardado ({{tm}} {{unit}})."
     },
-    "editTarget": "Editar objetivo"
+    "editTarget": "Editar objetivo",
+    "summary": {
+      "range": "{{min}}–{{max}} reps, luego más carga",
+      "linear": "{{reps}} reps · −{{percent}} % tras {{misses}} fallos",
+      "topSet": "Serie principal {{min}}–{{max}} · descargas al {{percent}} % × {{reps}}",
+      "percentage": "{{percent}} % × {{reps}} de un máximo de entrenamiento de {{tm}} {{unit}}",
+      "percentageNoTm": "El máximo de entrenamiento se fija tras tu primera sesión registrada"
+    },
+    "inputs": {
+      "plan": "Plan",
+      "lastTime": "Última vez",
+      "today": "Hoy"
+    },
+    "attentionHint": "Esta carga no se puede montar con los discos de tu gimnasio. Edita el objetivo de hoy o actualiza el equipamiento del gimnasio.",
+    "usingPlan": "Has elegido los números del plan para esta sesión.",
+    "usingManual": "Has editado esta serie; tus números prevalecen sobre sugerencias posteriores.",
+    "usePlanHint": "Solo cambian las series pendientes de esta sesión.",
+    "editGymHint": "Discos, barra e incrementos usados para redondear",
+    "editPlanHint": "Cambios permanentes en series, repeticiones y reglas de progresión",
+    "descriptions": {
+      "automatic": "Musclog sugiere cada sesión según cómo fue la anterior. Siempre puedes deshacerlo.",
+      "double_progression": "Trabaja en un rango de repeticiones. Cuando todas las series lleguen al máximo, sube el peso y vuelve al mínimo.",
+      "linear": "Mismas repeticiones cada vez. Sube el peso tras completarlas todas; descarga tras fallos repetidos.",
+      "top_set_backoff": "Una serie principal pesada en un rango de repeticiones y luego series de descarga a un porcentaje de ella.",
+      "percentage": "Cada serie a un porcentaje de un máximo de entrenamiento que sube tras cada sesión completada."
+    },
+    "repsShort": "{{reps}} reps",
+    "tmEstimated": "El máximo de entrenamiento se estima con tu última sesión hasta que fijes uno."
   },
   "trainingFlow": {
     "inline": "En línea",
@@ -140,7 +164,6 @@
     "previous": "Anterior: {{weight}} {{unit}} × {{reps}}",
     "noHistory": "Sin serie anterior",
     "complete": "Completar serie",
-    "completeShort": "Listo",
     "reopen": "Reabrir serie para corregir",
     "details": "Esfuerzo y detalles",
     "unrated": "Sin valoración",
@@ -148,8 +171,6 @@
     "rirLabel": "RIR (opcional)",
     "rpe": "RPE (opcional)",
     "partials": "Repeticiones parciales",
-    "skip": "Omitir",
-    "skipped": "Omitida",
     "actions": {
       "guidance": "¿Por qué?",
       "warmup": "Calentamiento",
@@ -172,27 +193,56 @@
     "noGym": "Sin gimnasio seleccionado",
     "guidanceOn": "Objetivos iniciales automáticos activados",
     "guidanceOff": "Objetivos iniciales automáticos desactivados",
-    "resume": "Continuar {{name}}",
     "restDay": "Hoy no hay entrenamientos programados. Elige uno de tu biblioteca.",
     "editPerformed": "Editar series realizadas",
-    "nextTime": "La próxima vez"
+    "nextTime": "La próxima vez",
+    "detailsHint": "Opcional. Deja el esfuerzo vacío si no has valorado esta serie.",
+    "rirHint": "Repeticiones que te quedaban",
+    "skipSet": "Saltar esta serie",
+    "done": "Hecho",
+    "columns": {
+      "set": "Serie",
+      "previous": "Última vez",
+      "reps": "Reps"
+    },
+    "warmupShort": "C",
+    "removeWarmups": "Quitar calentamiento",
+    "blockProgress": "{{done}}/{{total}}",
+    "setTapHint": "Toca el número de una serie para el esfuerzo, las repeticiones parciales o para saltarla.",
+    "previousExercise": "Ejercicio anterior",
+    "nextExercise": "Siguiente ejercicio",
+    "exerciseOf": "Ejercicio {{current}} de {{total}}",
+    "upNext": "A continuación: {{next}}",
+    "getReady": "Prepárate",
+    "minus15": "−15 s",
+    "whyTitle": "¿Por qué estos objetivos?",
+    "allDone": "Todas las series registradas",
+    "allDoneHint": "Termina el entrenamiento para guardarlo y ver qué cambia la próxima vez.",
+    "addExercise": "Añadir ejercicio",
+    "saveError": "Ese cambio no se ha guardado. Revisa los valores e inténtalo de nuevo.",
+    "resumeWorkout": "Reanudar entrenamiento",
+    "scheduledIn": "Programado hoy · {{plan}}",
+    "nextIn": "Siguiente en {{plan}}",
+    "scheduledToday": "Programado hoy",
+    "previewAndStart": "Ver y empezar",
+    "doneToday": "{{name}} · hecho hoy",
+    "lastTimeList": "Última vez: {{sets}}",
+    "newRecord": "Nuevo récord de {{type}}",
+    "adjustedHint": "Calculado por tu progresión. Escribe para cambiarlo en esta sesión."
   },
   "weeklyReview": {
     "title": "Revisión semanal",
     "ready": "Lista para revisar",
     "reviewed": "Revisada",
     "next": "Próxima revisión: {{date}}",
-    "period": "{{start}} – {{end}} · siete días completos",
+    "period": "{{start}} – {{end}}",
     "weekday": "Día de revisión",
     "latest": "Volver a la última revisión",
     "error": "No se pudo guardar o cargar la revisión. Tu decisión no se ha completado. Inténtalo de nuevo.",
     "training": "Entrenamiento",
-    "trainingSummary": "{{workouts}} entrenamientos · {{sets}} series efectivas · {{volume}} kg de volumen",
     "trainingHint": "Los objetivos se actualizan con tus entrenamientos. Revisar este resumen no retrasa la progresión.",
     "acknowledge": "Marcar entrenamiento revisado",
-    "nextWorkout": "Vista previa de {{name}}",
     "noWorkout": "Elige un entrenamiento o plan rotativo en Entrenamientos.",
-    "pr": "{{exercise}} · récord de {{type}} · {{weight}} {{unit}} × {{reps}}",
     "prTypes": {
       "weight": "Peso",
       "reps": "Repeticiones",
@@ -201,12 +251,9 @@
     "nutrition": "Nutrición",
     "modes": {
       "manual": "Objetivos manuales",
-      "daily": "Automáticos diarios",
-      "weekly": "Revisión semanal"
+      "daily": "Objetivos automáticos diarios",
+      "weekly": "Objetivos semanales"
     },
-    "trendWeight": "Peso tendencial: {{weight}} {{unit}}",
-    "coverage": "Comida registrada {{food}} / 7 días · peso {{weight}} / 7 días",
-    "current": "Objetivos actuales",
     "recommended": "Recomendados",
     "macros": {
       "totalCalories": "Calorías (kcal)",
@@ -224,7 +271,7 @@
     "edit": "Editar recomendación",
     "applied": "Objetivos aprobados",
     "kept": "Objetivos actuales mantenidos",
-    "effective": "Vigentes desde {{date}}",
+    "effective": "Desde el {{date}}",
     "logWeight": "Registrar peso",
     "logFood": "Completar registros de comida",
     "editGoal": "Editar objetivo de peso o fecha",
@@ -234,6 +281,33 @@
     "legacy": "Revisión anterior",
     "reminder": "Recordatorio semanal opcional",
     "reminderBody": "Tu semana está lista para revisar. Comprueba los objetivos de entrenamiento y nutrición.",
-    "acceptedTargets": "Objetivos guardados: {{calories}} kcal · {{protein}} g de proteína · {{carbs}} g de carbohidratos · {{fats}} g de grasa · {{fiber}} g de fibra"
+    "cardWeek": "Semana del {{start}} al {{end}}",
+    "upcoming": "Próxima",
+    "cardHint": "Resumen del entrenamiento y objetivos de la próxima semana",
+    "toReview": "Por revisar",
+    "stats": {
+      "workouts": "Entrenos",
+      "workingSets": "Series efectivas",
+      "volume": "Volumen",
+      "trendWeight": "Peso tendencia",
+      "foodDays": "Comida registrada",
+      "weighIns": "Pesajes"
+    },
+    "noWorkoutsThisWeek": "No hay entrenamientos registrados esta semana.",
+    "records": "Récords personales",
+    "nextUp": "A continuación",
+    "previewNext": "Ver entrenamiento",
+    "upcomingTargets_one": "Ver próximos objetivos ({{count}} ejercicio)",
+    "upcomingTargets_other": "Ver próximos objetivos ({{count}} ejercicios)",
+    "target": "Objetivo",
+    "currentShort": "Actual",
+    "savedShort": "Guardado",
+    "switchWeeklyHint": "Los objetivos semanales se mantienen entre revisiones en lugar de cambiar cada día.",
+    "keepCollecting": "Mantener objetivos mientras se reúnen datos",
+    "keepShort": "Mantener",
+    "editShort": "Editar",
+    "settings": "Ajustes de la revisión",
+    "trainingOnly": "Entrenamiento revisado",
+    "periodHint": "Los siete días completos antes de tu día de revisión"
   }
 }

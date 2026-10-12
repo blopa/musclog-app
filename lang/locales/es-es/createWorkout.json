@@ -44,6 +44,7 @@
     "saveError": "Error al Guardar",
     "validation": {
       "titleRequiredMessage": "Por favor, introduce un título para el entrenamiento"
-    }
+    },
+    "ruleTapHint": "Toca un ejercicio para elegir cómo progresan sus pesos."
   }
 }

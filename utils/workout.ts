@@ -34,6 +34,20 @@ export function formatWorkoutDuration(totalMinutes: number): { value: string; su
   return { value: `${hours}:${String(mins).padStart(2, '0')}`, suffix: '' };
 }
 
+/**
+ * Splits a duration label built from {@link formatWorkoutDuration} ("45 min", "1:03") back into its
+ * number and its unit for a stat row. Splitting on the last space works in every language; matching
+ * an English "m|min" pattern turned "0 min" into "0in" + "m" and could never match «мин».
+ */
+export function splitDurationLabel(label: string): { value: string; suffix?: string } {
+  const trimmed = label.trim();
+  const space = trimmed.lastIndexOf(' ');
+  if (space <= 0) {
+    return { value: trimmed };
+  }
+  return { value: trimmed.slice(0, space), suffix: trimmed.slice(space + 1) };
+}
+
 // ============================================================================
 // Day Mapping Utilities
 // ============================================================================

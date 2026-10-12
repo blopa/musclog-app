@@ -16,12 +16,6 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   const copy = comma ? nl : en;
   const locale = comma ? 'nl-NL' : 'en-US';
   const theme = testInfo.project.name === 'phone-light' ? 'light' : 'dark';
-  if (testInfo.project.name === 'phone-large-text')
-    await page.addInitScript(() => {
-      document.addEventListener('DOMContentLoaded', () => {
-        document.documentElement.style.zoom = '1.3';
-      });
-    });
   await page.addInitScript(() => {
     localStorage.setItem('onboardingCompleted', 'true');
     localStorage.setItem('onboardingVersion', '1.0.0');
@@ -59,7 +53,7 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await expect(page.getByTestId('review-training')).toBeVisible();
   await expect(page.getByTestId('review-nutrition')).toBeVisible();
   await page.screenshot({ path: `/tmp/musclog-${testInfo.project.name}-review.png` });
-  await page.getByRole('button', { name: copy.weeklyReview.edit, exact: true }).click();
+  await page.getByRole('button', { name: copy.weeklyReview.editShort, exact: true }).click();
   await page
     .getByRole('button', { name: /Cancel|Annuleren/ })
     .last()
@@ -68,11 +62,11 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
     page.getByRole('button', { name: copy.weeklyReview.applyTomorrow, exact: true })
   ).toBeEnabled();
   await page.getByRole('button', { name: copy.weeklyReview.acknowledge, exact: true }).click();
+  // Acknowledging is final for the week: the button gives way to the section's "Reviewed" badge.
+  await expect(page.getByTestId('review-training')).toContainText(copy.weeklyReview.reviewed);
   await expect(
-    page
-      .getByTestId('review-training')
-      .getByRole('button', { name: copy.weeklyReview.reviewed, exact: true })
-  ).toBeDisabled();
+    page.getByRole('button', { name: copy.weeklyReview.acknowledge, exact: true })
+  ).toHaveCount(0);
   await page.getByRole('button', { name: copy.weeklyReview.applyTomorrow, exact: true }).click();
   await expect(page.getByTestId('review-nutrition')).toContainText(copy.weeklyReview.applied);
   await page.reload();

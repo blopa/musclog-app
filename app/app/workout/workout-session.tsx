@@ -1,9 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Bluetooth } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
-import { BottomPopUp } from '@/components/BottomPopUp';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddExerciseToSessionModal } from '@/components/modals/AddExerciseToSessionModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
@@ -15,9 +15,15 @@ import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { Button } from '@/components/theme/Button';
 import { ExerciseNotesSheet } from '@/components/workout/ExerciseNotesSheet';
 import { PlateCalculatorSheet } from '@/components/workout/PlateCalculatorSheet';
-import { SetAdjustmentNotice } from '@/components/workout/SetAdjustmentNotice';
+import { ProgressionWhySheet } from '@/components/workout/session/ProgressionWhySheet';
+import { buildSessionBlocks, guidanceStateFor } from '@/components/workout/session/sessionModel';
+import { SessionTopBar } from '@/components/workout/session/SessionTopBar';
 import { WorkoutSessionInsights } from '@/components/workout/WorkoutSessionInsights';
-import { WorkoutTrainingView } from '@/components/workout/WorkoutTrainingView';
+import {
+  type TrainingViewAction,
+  WorkoutTrainingView,
+} from '@/components/workout/WorkoutTrainingView';
+import { WorkoutLogExerciseService } from '@/database/services/WorkoutLogExerciseService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { type CurrentSetData, useActiveWorkout } from '@/hooks/useActiveWorkout';
@@ -30,10 +36,11 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController';
 import { NotificationService } from '@/services/NotificationService';
-import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
-import { parseSetPrescription } from '@/utils/setPrescription';
-import { buildWarmupSets } from '@/utils/warmupSets';
+import { isBarLoadedEquipment } from '@/utils/gym';
+import { handleError } from '@/utils/handleError';
+import { WARMUP_REST_SECONDS, type WarmupSetPrescription } from '@/utils/warmupSets';
 import { formatDuration } from '@/utils/workout';
+import { isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 type SessionPanel =
   | 'add'
@@ -49,7 +56,7 @@ type SessionPanel =
   | null;
 
 export default function WorkoutSessionScreen() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
   const params = useLocalSearchParams<{
@@ -74,6 +81,8 @@ export default function WorkoutSessionScreen() {
   });
   const time = useSessionTotalTime({ startTime: workoutLog?.startedAt });
   const duration = formatDuration(time.hours, time.minutes, time.seconds);
+
+  // The exercise an action (notes, swap, why, plates) is about: the one whose button was tapped.
   const actionSet =
     sets.find((set) => set.exerciseId === actionExercise && set.completionStatus === 'planned') ??
     sets.find((set) => set.exerciseId === actionExercise);
@@ -104,6 +113,7 @@ export default function WorkoutSessionScreen() {
     reps: session.currentSetData?.set.reps ?? 0,
     bleGenerateChartPayload,
   });
+
   useEffect(() => {
     if (workoutLog && !workoutLog.completedAt) {
       NotificationService.updateActiveWorkoutNotification(
@@ -128,6 +138,7 @@ export default function WorkoutSessionScreen() {
       router.replace(`/app/workout/workout-summary?workoutLogId=${workoutLog.id}`);
     }
   }, [workoutLog?.completedAt, workoutLog?.id, router]);
+
   const close = () => setPanel(null);
   const finish = async () => {
     try {
@@ -138,47 +149,61 @@ export default function WorkoutSessionScreen() {
         router.replace(`/app/workout/workout-summary?workoutLogId=${workoutLog.id}`);
       }
     } catch {
-      /* The controller keeps the error and session available for retry. */
+      // The controller keeps the error and the session for a retry.
     }
   };
-  const onAction = (
-    exerciseId: string,
-    action: 'guidance' | 'warmup' | 'swap' | 'notes' | 'more'
-  ) => {
+  const selectExercise = (id: string | undefined) => {
+    setSelectedExercise(id);
+    session.setCurrentExercise(id ?? null);
+  };
+  const onAction = (exerciseId: string, action: TrainingViewAction) => {
     setActionExercise(exerciseId);
-    setSelectedExercise(exerciseId);
-    session.setCurrentExercise(exerciseId);
-    if (action === 'warmup') {
-      const set = sets.find(
-        (row) =>
-          row.exerciseId === exerciseId &&
-          row.setType !== 'warmup' &&
-          row.completionStatus === 'planned'
-      );
-      const exercise = exercises.find((row) => row.id === exerciseId);
-      if (set && exercise) {
-        // Select the block before dispatching the contextual action on the next render.
-        setPanel('guidance');
+    if (controller.view === 'guided') {
+      selectExercise(exerciseId);
+    }
+    setPanel(action === 'warmup' ? null : action);
+  };
+  const onWarmups = async (
+    exerciseId: string,
+    warmups: readonly WarmupSetPrescription[] | 'remove'
+  ) => {
+    const block = sets.find((set) => set.exerciseId === exerciseId);
+    if (!block || actionSaving) {
+      return;
+    }
+    setActionSaving(true);
+    try {
+      if (warmups === 'remove') {
+        await WorkoutLogExerciseService.removePlannedWarmupSets(block.logExerciseId);
+      } else {
+        await WorkoutLogExerciseService.addWarmupSets(block.logExerciseId, warmups, {
+          restTimeAfter: WARMUP_REST_SECONDS,
+        });
       }
-    } else {
-      setPanel(action);
+      await refresh();
+    } catch (error) {
+      handleError(error, 'workout-session.warmups', {
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+    } finally {
+      setActionSaving(false);
     }
   };
   const viewController = {
     ...controller,
+    busy: controller.busy || actionSaving,
     skip: async (id: string) => {
       await controller.skip(id);
-      setSelectedExercise(undefined);
-      session.setCurrentExercise(null);
+      selectExercise(undefined);
     },
     complete: async (id: string, values: Parameters<typeof controller.complete>[1]) => {
       await ble.finishSetRecording();
       await controller.complete(id, values);
       ble.attachRecordingToSet(id, values.reps);
-      setSelectedExercise(undefined);
-      session.setCurrentExercise(null);
+      selectExercise(undefined);
     },
   };
+
   let modal = null;
   if (workoutLog) {
     if (panel === 'add') {
@@ -242,8 +267,7 @@ export default function WorkoutSessionScreen() {
           onClose={close}
           workoutLogId={workoutLog.id}
           onSelectExercise={(id) => {
-            setSelectedExercise(id);
-            session.setCurrentExercise(id);
+            selectExercise(id);
             close();
           }}
         />
@@ -271,147 +295,112 @@ export default function WorkoutSessionScreen() {
         />
       );
     } else if (panel === 'guidance' && context) {
-      const prescription = parseSetPrescription(context.set.prescriptionJson);
-      modal = (
-        <BottomPopUp
-          visible
-          onClose={close}
-          title={t('trainingFlow.actions.guidance')}
-          subtitle={context.exercise.name}
-        >
-          <View className="gap-4 pb-6">
-            {context.set.adjustment ? (
-              <SetAdjustmentNotice
-                adjustment={context.set.adjustment}
-                units={unitsFor(context.exercise.id)}
-                onRevert={actions.revertStartAdjustment}
-              />
-            ) : (
-              <Text className="text-text-secondary">{t('progression.learningHint')}</Text>
-            )}
-            {prescription ? (
-              <Text className="text-text-primary">
-                {t('progression.audit', {
-                  planWeight: formatDisplayWeightKg(
-                    i18n.language,
-                    unitsFor(context.exercise.id),
-                    prescription.plan.weightKg
-                  ),
-                  planReps: prescription.plan.reps,
-                  targetWeight: formatDisplayWeightKg(
-                    i18n.language,
-                    unitsFor(context.exercise.id),
-                    prescription.recommendation.weightKg
-                  ),
-                  targetReps: prescription.recommendation.reps,
-                })}
-              </Text>
-            ) : null}
-            <Button
-              label={t('trainingFlow.actions.warmup')}
-              variant="outline"
-              disabled={actionSaving}
-              onPress={() =>
-                actions
-                  .addWarmups(
-                    buildWarmupSets(context.set.weight, {
-                      gym,
-                      equipmentType: context.exercise.equipmentType,
-                      units: unitsFor(context.exercise.id),
-                    })
-                  )
-                  .then(close)
-              }
-            />
-            <Button
-              label={t('workoutSettings.plateCalculator.title')}
-              variant="outline"
-              onPress={() => setPanel('plates')}
-            />
-            <Button label={t('progression.editTarget')} variant="outline" onPress={close} />
-            <Button
-              label={t('progression.editGym')}
-              variant="outline"
-              onPress={() => setPanel('settings')}
-            />
-            {workoutLog.templateId ? (
-              <Button
-                label={t('progression.editPlan')}
-                variant="outline"
-                onPress={() => setPanel('editor')}
-              />
-            ) : null}
-          </View>
-        </BottomPopUp>
+      const block = buildSessionBlocks(sets).find(
+        (candidate) => candidate.logExerciseId === context.set.logExerciseId
       );
+      if (block) {
+        const row = block.rows.find((candidate) => candidate.set.id === block.focus.id);
+        modal = (
+          <ProgressionWhySheet
+            exerciseName={context.exercise.name ?? ''}
+            state={guidanceStateFor(block, {
+              equipmentType: context.exercise.equipmentType,
+              gym,
+            })}
+            rule={block.rule}
+            progressionJson={block.focus.progressionJson}
+            adjustment={block.focus.adjustment}
+            prescription={row?.prescription ?? null}
+            units={unitsFor(context.exercise.id)}
+            isBarLoaded={isBarLoadedEquipment(context.exercise.equipmentType)}
+            canEditPlan={!!workoutLog.templateId}
+            onClose={close}
+            onRevert={() => {
+              close();
+              void controller.revert(block.logExerciseId).catch(() => {});
+            }}
+            onPlates={() => setPanel('plates')}
+            onEditGym={() => setPanel('settings')}
+            onEditPlan={() => setPanel('editor')}
+            onEditTarget={() => {
+              selectExercise(context.exercise.id);
+              close();
+            }}
+          />
+        );
+      }
     }
   }
+
+  const done = sets.filter(isResolvedWorkoutSet).length;
+  let content;
+  if (session.isLoading) {
+    content = (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator color={theme.colors.accent.primary} />
+      </View>
+    );
+  } else if (session.error || !workoutLog) {
+    content = (
+      <View className="gap-4 p-6">
+        <Text className="text-text-primary">{t('workoutSession.notFoundDescription')}</Text>
+        <Button label={t('common.tryAgain')} onPress={refresh} />
+      </View>
+    );
+  } else if (!sets.length) {
+    content = (
+      <View className="gap-4 p-6">
+        <Text className="text-text-secondary">{t('createWorkout.noExercisesPlaceholder')}</Text>
+        <Button label={t('freeTraining.addExercise.title')} onPress={() => setPanel('add')} />
+        <Button
+          label={t('trainingFlow.finish')}
+          variant="outline"
+          onPress={() => setPanel('end')}
+        />
+      </View>
+    );
+  } else {
+    content = (
+      <WorkoutTrainingView
+        sets={sets}
+        exercises={exercises}
+        controller={viewController}
+        selectedExercise={selectedExercise}
+        onSelect={selectExercise}
+        onAction={onAction}
+        onWarmups={onWarmups}
+        onAddExercise={() => setPanel('add')}
+        onFinish={() => setPanel('end')}
+      >
+        {ble.isSensorConnected ? (
+          <View className="pb-3">
+            <Button
+              label={t(ble.isTracking ? 'trainingFlow.stopSensor' : 'trainingFlow.startSensor')}
+              icon={Bluetooth}
+              variant="secondary"
+              width="full"
+              onPress={ble.isTracking ? ble.stopTrackingFromButton : ble.startTracking}
+            />
+          </View>
+        ) : null}
+        <WorkoutSessionInsights logId={workoutLog.id} startedAt={workoutLog.startedAt} />
+      </WorkoutTrainingView>
+    );
+  }
+
   return (
     <MasterLayout showNavigationMenu={false}>
-      <View className="flex-row items-center justify-between gap-3 px-4 py-3">
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => router.push('/app/workout/workouts')}
-          className="min-h-12 justify-center"
-        >
-          <Text className="text-accent-primary">{t('trainingFlow.pause')}</Text>
-        </Pressable>
-        <View className="flex-1">
-          <Text className="text-lg font-bold text-text-primary">
-            {workoutLog?.workoutName || t('freeTraining.title')}
-          </Text>
-          <Text className="text-xs text-text-secondary">
-            {duration} ·{' '}
-            {t('trainingFlow.progress', {
-              done: session.progress.completedSets,
-              total: session.progress.totalSets,
-            })}
-          </Text>
-        </View>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => setPanel('more')}
-          className="min-h-12 justify-center"
-        >
-          <Text className="text-accent-primary">{t('trainingFlow.actions.more')}</Text>
-        </Pressable>
-      </View>
-      {ble.isSensorConnected ? (
-        <Button
-          label={t(ble.isTracking ? 'trainingFlow.stopSensor' : 'trainingFlow.startSensor')}
-          variant="outline"
-          onPress={ble.isTracking ? ble.stopTrackingFromButton : ble.startTracking}
-        />
-      ) : null}
-      {session.isLoading ? (
-        <ActivityIndicator color={theme.colors.accent.primary} />
-      ) : session.error || !workoutLog ? (
-        <View className="gap-4 p-6">
-          <Text className="text-text-primary">{t('workoutSession.notFoundDescription')}</Text>
-          <Button label={t('common.tryAgain')} onPress={refresh} />
-        </View>
-      ) : !sets.length ? (
-        <View className="gap-4 p-6">
-          <Text className="text-text-secondary">{t('createWorkout.noExercisesPlaceholder')}</Text>
-          <Button label={t('freeTraining.addExercise.title')} onPress={() => setPanel('add')} />
-          <Button label={t('trainingFlow.finish')} onPress={() => setPanel('end')} />
-        </View>
-      ) : (
-        <WorkoutTrainingView
-          sets={sets}
-          exercises={exercises}
-          controller={{ ...viewController, busy: controller.busy || actionSaving }}
-          selectedExercise={selectedExercise}
-          onSelect={(id) => {
-            setSelectedExercise(id);
-            session.setCurrentExercise(id);
-          }}
-          onAction={onAction}
-          onFinish={() => setPanel('end')}
-        >
-          <WorkoutSessionInsights logId={workoutLog.id} startedAt={workoutLog.startedAt} />
-        </WorkoutTrainingView>
-      )}
+      <SessionTopBar
+        title={workoutLog?.workoutName || t('freeTraining.title')}
+        duration={duration}
+        done={done}
+        total={sets.length}
+        view={controller.view}
+        onViewChange={(value) => void controller.changeView(value)}
+        onPause={() => router.push('/app/workout/workouts')}
+        onMore={() => setPanel('more')}
+      />
+      {content}
       {modal}
     </MasterLayout>
   );

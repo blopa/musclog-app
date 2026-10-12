@@ -7,7 +7,6 @@
     "newPRs": "Nuevos Récords Personales (PRs)",
     "goHome": "Ir a Inicio",
     "youCrushedIt": "¡Lo Lograste!",
-    "feedbackSubmitted": "Comentarios del entrenamiento enviados con éxito.",
     "shareText": "¡Acabo de terminar un entrenamiento!",
     "sharePersonalRecords_one": "🏆 {{count}} PR",
     "sharePersonalRecords_other": "🏆 {{count}} PRs",
@@ -19,6 +18,7 @@
     "gettingFeedback": "Obteniendo comentarios...",
     "completedMessage": "Has completado el entrenamiento {{workoutName}}",
     "completedSummary": "Entrenamiento completado: {{workoutName}}",
-    "caloriesBurned": "Calorías Quemadas"
+    "caloriesBurned": "Calorías Quemadas",
+    "workoutSaved": "Entrenamiento guardado. Esto es lo que cambia la próxima vez."
   }
 }

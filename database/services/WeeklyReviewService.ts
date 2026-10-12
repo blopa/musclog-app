@@ -103,7 +103,7 @@ export class WeeklyReviewService {
     const records = (
       await Promise.all(workouts.map((workout) => WorkoutAnalytics.detectPersonalRecords(workout)))
     ).flat();
-    const next = upcoming[0];
+    const next = upcoming.find((row) => !row.completedToday) ?? upcoming[0];
     const targets = next ? await WorkoutProgressionService.projectTemplate(next.template.id) : [];
     let nutrition: WeeklyNutritionRecommendation | null = null;
     let trendWeight: number | null = null;
