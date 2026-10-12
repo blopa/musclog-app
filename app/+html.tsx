@@ -8,6 +8,9 @@ import ptBrWebsite from '@/lang/locales/pt-br/website.json';
 import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
 import { DEFAULT_THEME_BY_MODE } from '@/theme.registry';
 import { themeCssVariables } from '@/theme.tokens';
+import QRCode from 'react-qr-code';
+
+import { GOOGLE_PLAY_URL } from '@/components/website/storeLinks';
 import { THEME_MIRROR_STORAGE_KEY, type ThemeMirror } from '@/utils/themeMirror';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
@@ -20,7 +23,6 @@ import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
  * symlink mirror so `/musclog-app/images/...` resolves correctly.
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
-const GOOGLE_PLAY_QR_CODE = '/images/download-qrcode.png';
 const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
 type LandingCopy = {
@@ -336,13 +338,7 @@ export default function Root({ children }: PropsWithChildren) {
             <span className="expo-web-landing-qrcode-title" data-landing-i18n="qrcode_title">
               Download the App
             </span>
-            <img
-              // TODO: instead generate the QRCode programatically
-              src={withExpoBaseUrl(GOOGLE_PLAY_QR_CODE)}
-              alt="Google Play Store QR Code"
-              className="expo-web-landing-qrcode-image"
-              draggable={false}
-            />
+            <QRCode value={GOOGLE_PLAY_URL} className="expo-web-landing-qrcode-image" />
             <span className="expo-web-landing-qrcode-text" data-landing-i18n="qrcode_text">
               Scan to download for Android
             </span>
