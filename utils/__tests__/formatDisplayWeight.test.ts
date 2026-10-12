@@ -23,6 +23,17 @@ describe('formatDisplayWeight', () => {
       expect(displayWeightKgNumeric(100, 'imperial')).toBe(220.5);
     });
 
+    it('stabilizes current and legacy storage drift at a half-step boundary', () => {
+      expect(displayWeightKgNumeric(3.0617485, 'imperial')).toBe(6.8);
+      expect(displayWeightKgNumeric(3.2885447, 'imperial')).toBe(7.3);
+      expect(displayWeightKgNumeric(3.0617, 'imperial')).toBe(6.8);
+      expect(displayWeightKgNumeric(3.2885, 'imperial')).toBe(7.3);
+    });
+
+    it('does not hide a meaningfully lower value behind the drift tolerance', () => {
+      expect(displayWeightKgNumeric(3.0616, 'imperial')).toBe(6.7);
+    });
+
     it('keeps an exactly-whole converted value whole', () => {
       expect(displayWeightKgNumeric(0, 'imperial')).toBe(0);
     });

@@ -23,6 +23,7 @@ import {
   EQUIPMENT_TYPES,
   type GymPlate,
   type GymSnapshot,
+  toStoredGymWeightKg,
 } from '@/utils/gym';
 import {
   displayToKg,
@@ -58,7 +59,7 @@ const PLATE_NUDGE = 0.25;
 /**
  * Create or edit a gym profile. The form works in the gym's display unit — the one the user
  * pinned for it, else the account's — and converts to kilograms once, on save: a lifter in pounds
- * types "45" and the app stores 20.4117.
+ * types "45" and the app stores 20.4116567.
  *
  * The pinned unit is only ever what the user chose in the picker. It must never be copied from the
  * account on save, or switching the account's units later would leave every gym on the old one.
@@ -127,7 +128,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
     );
 
   const addPlate = () => {
-    const weightKg = Math.round(newPlateKg * 10_000) / 10_000;
+    const weightKg = toStoredGymWeightKg(newPlateKg);
     if (!(weightKg > 0)) {
       return;
     }

@@ -73,15 +73,23 @@ const COMMERCIAL_PLATE_COUNT = 20;
 const METRIC_PLATES_KG = [25, 20, 15, 10, 5, 2.5, 1.25] as const;
 const IMPERIAL_PLATES_LB = [45, 35, 25, 10, 5, 2.5] as const;
 
-// 45 lb is 20.4117 kg: a barbell-and-plates program in pounds has to survive the round trip, and
-// the calculator works in 0.01 kg, so keep four decimals rather than rounding to a "nice" number.
-const toStoredKg = (value: number) => Math.round(value * 10_000) / 10_000;
+/**
+ * Gym weights are persisted in kilograms even when the gym uses pound plates. Seven decimals keep
+ * the conversion error below 0.000001 lb across the supported gym range. Keep every gym storage
+ * boundary on this helper: mixing precisions makes an existing plate stop matching the same value
+ * typed into the editor.
+ */
+export const GYM_WEIGHT_STORAGE_DECIMALS = 7;
+export const toStoredGymWeightKg = (value: number): number => {
+  const factor = 10 ** GYM_WEIGHT_STORAGE_DECIMALS;
+  return Math.round(value * factor) / factor;
+};
 
 /** The plates a lifter in this unit system would expect to find in a commercial gym. */
 export function defaultPlates(units: Units): GymPlate[] {
   return units === 'imperial'
     ? IMPERIAL_PLATES_LB.map((lb) => ({
-        weightKg: toStoredKg(displayToKg(lb, 'imperial')),
+        weightKg: toStoredGymWeightKg(displayToKg(lb, 'imperial')),
         count: COMMERCIAL_PLATE_COUNT,
       }))
     : METRIC_PLATES_KG.map((kg) => ({ weightKg: kg, count: COMMERCIAL_PLATE_COUNT }));
@@ -89,13 +97,15 @@ export function defaultPlates(units: Units): GymPlate[] {
 
 /** The bar a lifter in this unit system would expect: 20 kg, or the 45 lb "Olympic" bar. */
 export function defaultBarWeightKg(units: Units): number {
-  return units === 'imperial' ? toStoredKg(displayToKg(45, 'imperial')) : DEFAULT_BAR_WEIGHT_KG;
+  return units === 'imperial'
+    ? toStoredGymWeightKg(displayToKg(45, 'imperial'))
+    : DEFAULT_BAR_WEIGHT_KG;
 }
 
 /** The smallest sensible step on a stack or dumbbell rack: 2.5 kg, or 5 lb. */
 export function defaultWeightIncrementKg(units: Units): number {
   return units === 'imperial'
-    ? toStoredKg(displayToKg(5, 'imperial'))
+    ? toStoredGymWeightKg(displayToKg(5, 'imperial'))
     : DEFAULT_WEIGHT_INCREMENT_KG;
 }
 
@@ -131,7 +141,7 @@ export function parsePlates(raw: string | null | undefined): GymPlate[] {
     if (!Number.isFinite(weightKg) || weightKg <= 0 || !Number.isFinite(count) || count <= 0) {
       continue;
     }
-    const key = Math.round(weightKg * 10_000) / 10_000;
+    const key = toStoredGymWeightKg(weightKg);
     byWeight.set(key, (byWeight.get(key) ?? 0) + count);
   }
 
@@ -149,7 +159,12 @@ export function parseEquipment(raw: string | null | undefined): EquipmentType[] 
 }
 
 export const serializePlates = (plates: readonly GymPlate[]): string =>
-  JSON.stringify(plates.map(({ weightKg, count }) => ({ weightKg, count })));
+  JSON.stringify(
+    plates.map(({ weightKg, count }) => ({
+      weightKg: toStoredGymWeightKg(weightKg),
+      count,
+    }))
+  );
 
 export const serializeEquipment = (equipment: readonly EquipmentType[]): string =>
   JSON.stringify([...new Set(equipment)]);

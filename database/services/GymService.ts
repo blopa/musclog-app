@@ -11,6 +11,7 @@ import {
   serializeEquipment,
   serializePlates,
   snapshotFromGymRow,
+  toStoredGymWeightKg,
 } from '@/utils/gym';
 import type { WeightUnitOverride } from '@/utils/unitConversion';
 
@@ -128,9 +129,11 @@ export class GymService {
 
 function applyInput(gym: Gym, input: GymInput) {
   gym.name = normalizedName(input.name);
-  gym.barWeightKg = Math.max(0, input.barWeightKg);
+  gym.barWeightKg = toStoredGymWeightKg(Math.max(0, input.barWeightKg));
   gym.platesJson = serializePlates(input.plates);
-  gym.weightIncrementKg = input.weightIncrementKg > 0 ? input.weightIncrementKg : 2.5;
+  gym.weightIncrementKg = toStoredGymWeightKg(
+    input.weightIncrementKg > 0 ? input.weightIncrementKg : 2.5
+  );
   gym.equipmentJson = serializeEquipment(input.equipment);
   gym.weightUnit = input.weightUnit ?? undefined;
 }

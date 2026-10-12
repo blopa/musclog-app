@@ -8,8 +8,10 @@ import {
   serializeEquipment,
   serializePlates,
   snapshotFromGymRow,
+  toStoredGymWeightKg,
 } from '../gym';
-import { kgToDisplay } from '../unitConversion';
+import { displayWeightKgNumeric, formatDisplayWeightKg } from '../formatDisplayWeight';
+import { displayToKg, kgToDisplay } from '../unitConversion';
 
 describe('parsePlates', () => {
   it('keeps valid plates, heaviest first', () => {
@@ -51,6 +53,17 @@ describe('parsePlates', () => {
         ])
       )
     ).toEqual([{ weightKg: 10, count: 6 }]);
+  });
+
+  it('uses the shared seven-decimal precision when matching persisted plate weights', () => {
+    expect(
+      parsePlates(
+        JSON.stringify([
+          { weightKg: 3.061746803, count: 2 },
+          { weightKg: 3.061746799, count: 4 },
+        ])
+      )
+    ).toEqual([{ weightKg: 3.0617468, count: 6 }]);
   });
 
   it.each([null, undefined, '', 'not json', '{}', '"x"', '42'])('returns [] for %p', (raw) => {
@@ -147,7 +160,54 @@ describe('defaults', () => {
     expect(kgToDisplay(defaultBarWeightKg('imperial'), 'imperial')).toBeCloseTo(45, 2);
     expect(kgToDisplay(defaultWeightIncrementKg('imperial'), 'imperial')).toBeCloseTo(5, 2);
     expect(
-      defaultPlates('imperial').map((plate) => Math.round(kgToDisplay(plate.weightKg, 'imperial')))
-    ).toEqual([45, 35, 25, 10, 5, 3]);
+      defaultPlates('imperial').map((plate) => displayWeightKgNumeric(plate.weightKg, 'imperial'))
+    ).toEqual([45, 35, 25, 10, 5, 2.5]);
   });
+});
+
+describe('gym weight storage precision', () => {
+  it('stores converted gym weights at seven decimal places', () => {
+    expect(toStoredGymWeightKg(displayToKg(45, 'imperial'))).toBe(20.4116567);
+    expect(toStoredGymWeightKg(12.123456789)).toBe(12.1234568);
+  });
+
+  it('applies the same precision when serializing and parsing plates', () => {
+    const raw = serializePlates([{ weightKg: 3.061746803, count: 2 }]);
+
+    expect(JSON.parse(raw)).toEqual([{ weightKg: 3.0617468, count: 2 }]);
+    expect(parsePlates(raw)).toEqual([{ weightKg: 3.0617468, count: 2 }]);
+  });
+
+  it('round-trips every quarter pound from 0.25 through 1,500 in the two-decimal gym form', () => {
+    for (let quarters = 1; quarters <= 6_000; quarters++) {
+      const enteredLb = quarters / 4;
+      const storedKg = toStoredGymWeightKg(displayToKg(enteredLb, 'imperial'));
+      const shownInGymForm = Math.round(kgToDisplay(storedKg, 'imperial') * 100) / 100;
+
+      expect(shownInGymForm).toBe(enteredLb);
+    }
+  });
+
+  it('round-trips every quarter pound through current and legacy one-decimal labels', () => {
+    for (let quarters = 1; quarters <= 6_000; quarters++) {
+      const enteredLb = quarters / 4;
+      const storedKg = toStoredGymWeightKg(displayToKg(enteredLb, 'imperial'));
+      const legacyStoredKg = Math.round(displayToKg(enteredLb, 'imperial') * 10_000) / 10_000;
+      const expected = Math.round(enteredLb * 10) / 10;
+
+      expect(displayWeightKgNumeric(storedKg, 'imperial')).toBe(expected);
+      expect(formatDisplayWeightKg('en-US', 'imperial', storedKg)).toBe(String(expected));
+      expect(displayWeightKgNumeric(legacyStoredKg, 'imperial')).toBe(expected);
+      expect(formatDisplayWeightKg('en-US', 'imperial', legacyStoredKg)).toBe(String(expected));
+    }
+  });
+
+  it.each([6.75, 7.25, 45, 1_500])(
+    'keeps the known %s lb boundary stable after persistence',
+    (enteredLb) => {
+      const storedKg = toStoredGymWeightKg(displayToKg(enteredLb, 'imperial'));
+
+      expect(displayWeightKgNumeric(storedKg, 'imperial')).toBe(Math.round(enteredLb * 10) / 10);
+    }
+  );
 });

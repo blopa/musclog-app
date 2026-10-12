@@ -89,6 +89,21 @@ describe('GymService.createGym', () => {
     });
   });
 
+  it('normalizes every gym weight at the shared seven-decimal storage boundary', async () => {
+    await GymService.createGym({
+      ...input,
+      barWeightKg: 20.4116566123,
+      plates: [{ weightKg: 3.061746803, count: 2 }],
+      weightIncrementKg: 2.2679618501,
+    });
+
+    expect(mockState.rows[0]).toMatchObject({
+      barWeightKg: 20.4116566,
+      weightIncrementKg: 2.2679619,
+    });
+    expect(JSON.parse(mockState.rows[0].platesJson)).toEqual([{ weightKg: 3.0617468, count: 2 }]);
+  });
+
   it('only makes the new gym active when asked', async () => {
     await GymService.createGym(input);
     expect(settings.setActiveGymId).not.toHaveBeenCalled();
