@@ -219,7 +219,7 @@ export async function transformWorkoutToDetailData(
   appNumberLocale: string,
   /** exercise_order-sorted list of exerciseIds from workout_log_exercises */
   orderedExerciseIds?: string[],
-  /** The unit an exercise's weights are shown in (its override, else `units`). */
+  /** The unit an exercise's weights are shown in (`useExerciseUserSettings().unitsFor`). */
   unitsForExercise?: (exerciseId: string) => Units
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();

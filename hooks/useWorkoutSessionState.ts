@@ -14,7 +14,8 @@ import { UserMetricService } from '@/database/services/UserMetricService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { useActiveGym } from '@/hooks/useActiveGym';
-import { roundToLoadable } from '@/utils/plateCalculator';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
+import { loadStepFor } from '@/utils/loadIncrement';
 import { computeIntraSessionAdjustment } from '@/utils/setAdjustment';
 import {
   isPerformedWorkoutSet,
@@ -78,8 +79,10 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   const [progressionMode, setProgressionMode] = useState<ProgressionMode>('reps_first');
-  // Re-targeted weights snap to what this gym's bar and plates can make.
+  // Re-targeted weights snap to what this gym's bar and plates can make, or — with no gym — to a
+  // whole number in the unit each exercise is shown in.
   const { gym } = useActiveGym();
+  const { unitsFor } = useExerciseUserSettings();
 
   useEffect(() => {
     const loadBodyWeight = async () => {
@@ -194,7 +197,8 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                   progressionMode,
                   isBodyweight: !!equipmentType?.toLowerCase().includes('bodyweight'),
                   bodyWeightKg,
-                  roundLoad: gym ? (kg) => roundToLoadable(kg, equipmentType, gym) : undefined,
+                  roundLoad: loadStepFor(equipmentType, gym, unitsFor(lastSet.exerciseId))
+                    .roundLoad,
                 });
 
                 currentActive.weight = weight;
@@ -295,7 +299,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       });
 
     return () => subscription.unsubscribe();
-  }, [bodyWeightKg, gym, progressionMode, workoutLogId]);
+  }, [bodyWeightKg, gym, progressionMode, unitsFor, workoutLogId]);
 
   const refresh = useCallback(() => {
     if (!workoutLogId) {

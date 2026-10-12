@@ -492,7 +492,7 @@ export default function PastWorkoutDetailModal({
   const [isSavingToHC, setIsSavingToHC] = useState(false);
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
-  const editingUnits = unitsFor(editingExerciseId ?? undefined, units);
+  const editingUnits = unitsFor(editingExerciseId ?? undefined);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isEditMetadataVisible, setIsEditMetadataVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);

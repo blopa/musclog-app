@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
+import { WeightUnitOverridePicker } from '@/components/workout/WeightUnitOverridePicker';
 import { ExerciseUserSettingsService } from '@/database/services/ExerciseUserSettingsService';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -14,9 +15,6 @@ import type { WeightUnitOverride } from '@/utils/unitConversion';
 type ExerciseUserSettingsSectionProps = {
   exerciseId: string;
 };
-
-/** `null` is "follow the app", so the picker has a way back to no override. */
-const UNIT_CHOICES: readonly (WeightUnitOverride | null)[] = [null, 'kg', 'lbs'];
 
 /**
  * The user's own settings for one exercise: the unit its weights are shown in and a note that is
@@ -58,13 +56,6 @@ export function ExerciseUserSettingsSection({ exerciseId }: ExerciseUserSettings
     }
   };
 
-  const unitLabel = (unit: WeightUnitOverride | null) => {
-    if (unit === null) {
-      return t('exercises.viewExercise.preferences.unitDefault');
-    }
-    return t(unit === 'kg' ? 'workoutSession.kg' : 'workoutSession.lb');
-  };
-
   return (
     <View className="px-4 pb-6 pt-2" testID="exercise-user-settings-section">
       <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
@@ -75,43 +66,13 @@ export function ExerciseUserSettingsSection({ exerciseId }: ExerciseUserSettings
       </Text>
       <GenericCard variant="flat">
         <View className="gap-4 p-4">
-          <View className="gap-2">
-            <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-              {t('exercises.viewExercise.preferences.unitLabel')}
-            </Text>
-            <View className="flex-row flex-wrap gap-2">
-              {UNIT_CHOICES.map((unit) => {
-                const selected = (stored.weightUnit ?? null) === unit;
-                return (
-                  <Pressable
-                    key={unit ?? 'default'}
-                    onPress={() => void chooseUnit(unit)}
-                    disabled={isLoading}
-                    accessibilityRole="radio"
-                    accessibilityState={{ selected }}
-                    className="rounded-full border px-4 py-2"
-                    style={{
-                      backgroundColor: selected
-                        ? theme.colors.accent.primary20
-                        : theme.colors.background.card,
-                      borderColor: selected
-                        ? theme.colors.accent.primary
-                        : theme.colors.border.light,
-                    }}
-                  >
-                    <Text
-                      className="font-medium"
-                      style={{
-                        color: selected ? theme.colors.accent.primary : theme.colors.text.primary,
-                      }}
-                    >
-                      {unitLabel(unit)}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </View>
+          <WeightUnitOverridePicker
+            label={t('exercises.viewExercise.preferences.unitLabel')}
+            defaultLabel={t('exercises.viewExercise.preferences.unitDefault')}
+            value={stored.weightUnit ?? null}
+            onChange={(unit) => void chooseUnit(unit)}
+            disabled={isLoading}
+          />
 
           <TextInput
             label={t('exercises.viewExercise.preferences.noteLabel')}

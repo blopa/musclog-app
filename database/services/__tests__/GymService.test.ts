@@ -108,6 +108,24 @@ describe('GymService.createGym', () => {
   });
 });
 
+describe('GymService weight unit', () => {
+  it('stores no unit when the user pinned none, so the gym follows the account', async () => {
+    const snapshot = await GymService.createGym({ ...input, weightUnit: null });
+
+    expect(mockState.rows[0].weightUnit).toBeUndefined();
+    expect(snapshot.weightUnit).toBeUndefined();
+  });
+
+  it('clears a pinned unit when it is set back to the account setting', async () => {
+    const { id } = await GymService.createGym({ ...input, weightUnit: 'lbs' });
+    expect(mockState.rows[0].weightUnit).toBe('lbs');
+
+    await GymService.updateGym(id, { ...input, weightUnit: null });
+
+    expect(mockState.rows[0].weightUnit).toBeUndefined();
+  });
+});
+
 describe('GymService.getActiveGym', () => {
   it('returns the selected gym', async () => {
     const created = await GymService.createGym(input);

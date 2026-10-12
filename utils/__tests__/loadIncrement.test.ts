@@ -1,6 +1,7 @@
 import type { GymSnapshot } from '../gym';
 import { defaultPlates } from '../gym';
-import { incrementFor, weightInputStep } from '../loadIncrement';
+import { incrementFor, loadStepFor, weightInputStep } from '../loadIncrement';
+import { kgToDisplay } from '../unitConversion';
 
 const gym: GymSnapshot = {
   id: 'g',
@@ -67,5 +68,27 @@ describe('weightInputStep', () => {
     };
     expect(weightInputStep('barbell', imperial, 'imperial')).toBe(5); // 2 × 2.5 lb
     expect(weightInputStep('dumbbell', imperial, 'imperial')).toBe(5);
+  });
+});
+
+describe('loadStepFor', () => {
+  it('rounds to whole kilograms for a metric lifter with no gym', () => {
+    const step = loadStepFor('barbell', null, 'metric');
+    expect(step.incrementKg).toBe(2.5);
+    expect(step.roundLoad(102.5)).toBe(103);
+  });
+
+  it('rounds to whole POUNDS for an exercise shown in pounds, whatever the account says', () => {
+    // The caller passes the resolved unit: an exercise pinned to lbs on a metric account.
+    const step = loadStepFor('barbell', null, 'imperial');
+    const rounded = step.roundLoad(65);
+    expect(kgToDisplay(rounded, 'imperial')).toBeCloseTo(143, 6);
+    expect(kgToDisplay(step.incrementKg, 'imperial')).toBeCloseTo(5, 3);
+  });
+
+  it('snaps to what the gym can load when there is a gym, in any unit', () => {
+    expect(loadStepFor('barbell', gym, 'metric').roundLoad(31)).toBe(30);
+    expect(loadStepFor('barbell', gym, 'imperial').roundLoad(31)).toBe(30);
+    expect(loadStepFor('dumbbell', gym, 'imperial').roundLoad(21.2)).toBe(22);
   });
 });

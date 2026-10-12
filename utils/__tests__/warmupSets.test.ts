@@ -2,7 +2,7 @@ import type { GymSnapshot } from '../gym';
 import { defaultBarWeightKg, defaultPlates } from '../gym';
 import { platesPerSide } from '../plateCalculator';
 import { displayToKg } from '../unitConversion';
-import { buildWarmupSets, WARMUP_RAMP } from '../warmupSets';
+import { buildWarmupSets, WARMUP_RAMP, warmupOfferFor } from '../warmupSets';
 
 const gym: GymSnapshot = {
   id: 'g',
@@ -101,5 +101,37 @@ describe('buildWarmupSets', () => {
     for (const set of sets) {
       expect(set.weightKg).toBeGreaterThanOrEqual(defaultBarWeightKg('imperial'));
     }
+  });
+});
+
+describe('warmupOfferFor', () => {
+  const planned = { completionStatus: 'planned' as const, setType: 'normal' };
+  const performed = { completionStatus: 'performed' as const, setType: 'normal' };
+  const plannedWarmup = { completionStatus: 'planned' as const, setType: 'warmup' };
+  const performedWarmup = { completionStatus: 'performed' as const, setType: 'warmup' };
+  const offer = (exerciseSets: any[], currentSet: any = planned) =>
+    warmupOfferFor({
+      exerciseSets,
+      currentSet,
+      workingKg: 100,
+      gym,
+      equipmentType: 'barbell',
+      units: 'metric',
+    });
+
+  it('offers the ramp before the first set of an exercise with no warm-ups', () => {
+    expect(offer([planned, planned])).toEqual({ toAdd: metric('barbell', 100), canRemove: false });
+  });
+
+  it('offers nothing once the exercise has started', () => {
+    expect(offer([performed, planned]).toAdd).toEqual([]);
+  });
+
+  it('does not stack a second ramp, and lets planned warm-ups be removed', () => {
+    expect(offer([plannedWarmup, planned], plannedWarmup)).toEqual({ toAdd: [], canRemove: true });
+  });
+
+  it('keeps performed warm-ups: there is nothing left to remove', () => {
+    expect(offer([performedWarmup, planned])).toEqual({ toAdd: [], canRemove: false });
   });
 });

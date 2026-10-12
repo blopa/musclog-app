@@ -1,16 +1,37 @@
 import { Q, type Query } from '@nozbe/watermelondb';
 
+import type { Units } from '@/constants/settings';
 import { database } from '@/database/database-instance';
 import type ExerciseUserSettings from '@/database/models/ExerciseUserSettings';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
+import type { GymSnapshot } from '@/utils/gym';
 import { normalizeNote } from '@/utils/noteText';
-import { isWeightUnitOverride, type WeightUnitOverride } from '@/utils/unitConversion';
+import {
+  isWeightUnitOverride,
+  resolveWeightUnits,
+  type WeightUnitOverride,
+} from '@/utils/unitConversion';
+
+import { SettingsService } from './SettingsService';
 
 export interface ExerciseUserSettingsPatch {
   /** `null` clears the override; `undefined` leaves it as it is. */
   weightUnit?: WeightUnitOverride | null;
   /** `null` or blank clears the note; `undefined` leaves it as it is. */
   note?: string | null;
+}
+
+/** Every pinned weight unit by exercise id. A value this build does not understand is skipped. */
+export function weightUnitOverridesOf(
+  rows: readonly Pick<ExerciseUserSettings, 'exerciseId' | 'weightUnit'>[]
+): Map<string, WeightUnitOverride> {
+  const map = new Map<string, WeightUnitOverride>();
+  for (const row of rows) {
+    if (isWeightUnitOverride(row.weightUnit)) {
+      map.set(row.exerciseId, row.weightUnit);
+    }
+  }
+  return map;
 }
 
 /**
@@ -25,6 +46,24 @@ export class ExerciseUserSettingsService {
     return database
       .get<ExerciseUserSettings>('exercise_user_settings')
       .query(Q.where('deleted_at', Q.eq(null)));
+  }
+
+  /**
+   * "Which unit are this exercise's weights in?" for code outside React — the service-side twin of
+   * `useExerciseUserSettings().unitsFor`, applying the same exercise → gym → account rule. Reads the
+   * account unit and every override once, so a caller resolving many exercises pays for one read.
+   * The gym is passed in because every caller that needs this has already read it.
+   */
+  static async getWeightUnitsResolver(
+    gym: Pick<GymSnapshot, 'weightUnit'> | null
+  ): Promise<(exerciseId: string) => Units> {
+    const [account, rows] = await Promise.all([
+      SettingsService.getUnits(),
+      ExerciseUserSettingsService.settingsQuery().fetch(),
+    ]);
+    const overrides = weightUnitOverridesOf(rows);
+    return (exerciseId) =>
+      resolveWeightUnits({ account, gym: gym?.weightUnit, exercise: overrides.get(exerciseId) });
   }
 
   static async getFor(exerciseId: string): Promise<ExerciseUserSettings | null> {

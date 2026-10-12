@@ -135,7 +135,7 @@ export function WorkoutSessionHistoryModal({
         }
 
         const exerciseSets = exerciseGroups.get(exerciseId) || [];
-        const exerciseUnits = unitsFor(exerciseId, accountUnits);
+        const exerciseUnits = unitsFor(exerciseId);
 
         // No time in preview mode
         const exerciseTime = '';
@@ -203,7 +203,7 @@ export function WorkoutSessionHistoryModal({
         }
 
         const exerciseSets = exerciseGroups.get(exerciseId) || [];
-        const exerciseUnits = unitsFor(exerciseId, accountUnits);
+        const exerciseUnits = unitsFor(exerciseId);
 
         // Find the first set's time (use startedAt for first exercise, estimate for others)
         let exerciseTime = '';
@@ -276,7 +276,6 @@ export function WorkoutSessionHistoryModal({
     logExercises,
     templateExercises,
     currentSetOrder,
-    accountUnits,
     unitsFor,
   ]);
 

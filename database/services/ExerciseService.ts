@@ -2,7 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import { exerciseSearchCondition } from '@/database/exerciseSearchCondition';
-import { computeExerciseSearchText } from '@/database/exerciseSearchText';
+import { computeExerciseSearchText, missingSearchTextClause } from '@/database/exerciseSearchText';
 import Exercise, {
   type EquipmentType,
   type ExerciseSource,
@@ -315,7 +315,7 @@ export class ExerciseService {
     return await database.write(async () => {
       const missing = await database
         .get<Exercise>('exercises')
-        .query(Q.where('search_text', Q.eq(null)))
+        .query(missingSearchTextClause())
         .fetch();
       if (missing.length === 0) {
         return 0;

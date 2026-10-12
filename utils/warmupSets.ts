@@ -9,6 +9,13 @@ import {
   isBarLoadedEquipment,
 } from './gym';
 import { roundToLoadable } from './plateCalculator';
+import {
+  isPerformedWorkoutSet,
+  isPlannedWorkoutSet,
+  isWarmupSet,
+  type WorkoutSetCompletionState,
+  type WorkoutSetTypeState,
+} from './workoutSetCompletion';
 
 export interface WarmupSetPrescription {
   weightKg: number;
@@ -89,4 +96,40 @@ export function buildWarmupSets(
   }
 
   return sets;
+}
+
+type SessionSet = WorkoutSetCompletionState & WorkoutSetTypeState;
+
+export interface WarmupOffer {
+  /** The ramp the session offers to insert; empty when there is nothing to offer. */
+  toAdd: WarmupSetPrescription[];
+  /** True while the exercise still has warm-ups that have not been done, so they can be removed. */
+  canRemove: boolean;
+}
+
+/**
+ * What the live session offers for warm-ups on the exercise in front of the user. A ramp is offered
+ * only before its first set — no warm-ups yet, nothing performed, and the current set still to do —
+ * so it can never land after work has started. Planned warm-ups stay removable until performed.
+ */
+export function warmupOfferFor({
+  exerciseSets,
+  currentSet,
+  workingKg,
+  ...options
+}: WarmupOptions & {
+  /** Every set of this exercise in the session, in any state. */
+  exerciseSets: readonly SessionSet[];
+  currentSet: SessionSet;
+  workingKg: number;
+}): WarmupOffer {
+  const offersRamp =
+    !exerciseSets.some(isWarmupSet) &&
+    !exerciseSets.some(isPerformedWorkoutSet) &&
+    isPlannedWorkoutSet(currentSet);
+
+  return {
+    toAdd: offersRamp ? buildWarmupSets(workingKg, options) : [],
+    canRemove: exerciseSets.some((set) => isWarmupSet(set) && isPlannedWorkoutSet(set)),
+  };
 }

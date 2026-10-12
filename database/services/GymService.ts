@@ -12,6 +12,7 @@ import {
   serializePlates,
   snapshotFromGymRow,
 } from '@/utils/gym';
+import type { WeightUnitOverride } from '@/utils/unitConversion';
 
 export interface GymInput {
   name: string;
@@ -19,7 +20,12 @@ export interface GymInput {
   plates: readonly GymPlate[];
   weightIncrementKg: number;
   equipment: readonly EquipmentType[];
-  weightUnit?: 'kg' | 'lbs';
+  /**
+   * A unit the user explicitly pinned for this gym, or `null` to follow the account setting. Never
+   * derive it from the account: a copy of the account's unit made at save time is indistinguishable
+   * from a real choice, and would silently keep the old unit after the account is switched.
+   */
+  weightUnit: WeightUnitOverride | null;
 }
 
 const DEFAULT_GYM_NAME = 'Gym';
@@ -126,5 +132,5 @@ function applyInput(gym: Gym, input: GymInput) {
   gym.platesJson = serializePlates(input.plates);
   gym.weightIncrementKg = input.weightIncrementKg > 0 ? input.weightIncrementKg : 2.5;
   gym.equipmentJson = serializeEquipment(input.equipment);
-  gym.weightUnit = input.weightUnit;
+  gym.weightUnit = input.weightUnit ?? undefined;
 }

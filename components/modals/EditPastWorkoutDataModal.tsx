@@ -10,10 +10,8 @@ import DashedButton from '@/components/theme/DashedButton';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import type { Units } from '@/constants/settings';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
-import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
-import { showSnackbar } from '@/utils/snackbarService';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -217,9 +215,8 @@ export default function EditPastWorkoutDataModal({
   units: unitsOverride,
 }: EditPastWorkoutDataModalProps) {
   const theme = useTheme();
-  const { units: accountUnits } = useSettings();
   const { unitsFor } = useExerciseUserSettings();
-  const units = unitsOverride ?? unitsFor(exerciseId, accountUnits);
+  const units = unitsOverride ?? unitsFor(exerciseId);
   const [sets, setSets] = useState<SetItem[]>(initialSets ?? []);
   const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation();

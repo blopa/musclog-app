@@ -8,8 +8,8 @@ import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { CardioLogService } from '@/database/services/CardioLogService';
 import { UserMetricService } from '@/database/services/UserMetricService';
-import { WorkoutService } from '@/database/services/WorkoutService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -118,7 +118,7 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
     setIsSaving(true);
     setError(null);
     try {
-      await WorkoutService.logCardioSession({
+      await CardioLogService.logCardioSession({
         activity,
         distanceM: draft.distanceM,
         durationS: draft.durationS,

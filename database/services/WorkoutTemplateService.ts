@@ -4,6 +4,7 @@ import { Dumbbell, type LucideIcon, User } from 'lucide-react-native';
 import type { ComponentType } from 'react';
 
 import { REPAIR_DESCRIPTORS } from '@/constants/database';
+import type { Units } from '@/constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import type { RawWorkoutTemplate, RawWorkoutTemplateExercise } from '@/data/workoutTemplates';
 import { database } from '@/database/database-instance';
@@ -21,16 +22,15 @@ import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { handleError } from '@/utils/handleError';
-import { incrementFor } from '@/utils/loadIncrement';
-import { roundToLoadable } from '@/utils/plateCalculator';
+import { loadStepFor } from '@/utils/loadIncrement';
 import { computeStartTarget } from '@/utils/setProgression';
 import { roundWeightForUnits } from '@/utils/unitConversion';
-import { getWeightUnit } from '@/utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 import { WARMUP_SET_TYPE } from '@/utils/workoutSetCompletion';
 
 import { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
+import { ExerciseUserSettingsService } from './ExerciseUserSettingsService';
 import { GymService } from './GymService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
@@ -739,16 +739,18 @@ export class WorkoutTemplateService {
    * - Strength Standards: https://exrx.net/WorkoutTools/StrengthStandards
    * - Bodyweight multipliers vary by exercise and experience level
    *
-   * Note: Weight is always stored in kg in the database. If user prefers pounds, we convert to lbs,
-   * round to nearest integer, then convert back to kg to ensure clean integer values in the user's preferred unit.
+   * Note: Weight is always stored in kg in the database. The result is rounded to a whole number
+   * in `units` — the unit this exercise's weights are SHOWN in (`resolveWeightUnits`), so a lifter
+   * in pounds sees a clean 135, not 134.9.
    */
-  private static async calculateSuggestedWeight(
+  private static calculateSuggestedWeight(
     userWeightKg: number,
     loadMultiplier: number,
     liftingExperience: string,
     age: number,
-    isBodyweight: boolean
-  ): Promise<number> {
+    isBodyweight: boolean,
+    units: Units
+  ): number {
     // Bodyweight exercises always return 0
     if (isBodyweight || loadMultiplier === 0) {
       return 0;
@@ -796,23 +798,7 @@ export class WorkoutTemplateService {
     // We then adjust based on experience and age
     const suggestedWeightKg = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
 
-    return await this.roundWeight(suggestedWeightKg);
-  }
-
-  /**
-   * Round weight to nearest integer in the user's preferred unit.
-   */
-  private static async roundWeight(weightKg: number): Promise<number> {
-    const units = await SettingsService.getUnits();
-    const weightUnit = getWeightUnit(units);
-
-    if (weightUnit === 'lbs') {
-      const weightLbs = convert(weightKg, 'kg').to('lb');
-      const roundedWeightLbs = Math.round(weightLbs);
-      return convert(roundedWeightLbs, 'lb').to('kg') as number;
-    } else {
-      return Math.round(weightKg);
-    }
+    return roundWeightForUnits(suggestedWeightKg, units);
   }
 
   /**
@@ -834,6 +820,11 @@ export class WorkoutTemplateService {
     } catch {
       return { weightKg: 0, reps: defaultReps };
     }
+
+    // The step and the rounding follow the gym's equipment and the unit THIS exercise is shown in.
+    // A failure to read the gym must never stop a suggestion, so it falls back to no gym.
+    const gym = await GymService.getActiveGym().catch(() => null);
+    const units = (await ExerciseUserSettingsService.getWeightUnitsResolver(gym))(exerciseId);
 
     // 1. Try to get from history with Smart Double Progression
     try {
@@ -863,26 +854,17 @@ export class WorkoutTemplateService {
 
         if (lastSets.length > 0) {
           const mode = await SettingsService.getProgressionMode();
-          const units = await SettingsService.getUnits();
 
           const avgRir =
             lastSets.reduce((sum, s) => sum + (s.repsInReserve ?? 0), 0) / lastSets.length;
           const lastWeight = lastSets[0].weight;
           const lastReps = lastSets[0].reps;
 
-          // The step is what this equipment can really move by in the user's gym; without a gym
-          // it is the long-standing 2.5 kg / 5 lb. A failure to read the gym must never stop a
-          // suggestion, so it falls back to that default.
-          const gym = await GymService.getActiveGym().catch(() => null);
           const { weightKg, reps } = computeStartTarget({
             last: { weightKg: lastWeight, reps: lastReps, averageRepsInReserve: avgRir },
             progressionMode: mode,
             isCompound: exercise.mechanicType === 'compound',
-            incrementKg: incrementFor(exercise.equipmentType, gym, units),
-            roundLoad: (kg) =>
-              gym
-                ? roundToLoadable(kg, exercise.equipmentType, gym)
-                : roundWeightForUnits(kg, units),
+            ...loadStepFor(exercise.equipmentType, gym, units),
           });
           return { weightKg, reps };
         }
@@ -912,12 +894,13 @@ export class WorkoutTemplateService {
       equipmentType.includes('bodyweight') || equipmentType.includes('body weight');
     const loadMultiplier = exercise.loadMultiplier ?? 1.0;
 
-    const weightKg = await this.calculateSuggestedWeight(
+    const weightKg = this.calculateSuggestedWeight(
       userWeightKg,
       loadMultiplier,
       liftingExperience,
       age,
-      isBodyweight
+      isBodyweight,
+      units
     );
 
     const reps = exercise.mechanicType === 'compound' ? defaultReps : defaultRepsIsolation;
@@ -985,6 +968,9 @@ export class WorkoutTemplateService {
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.asc))
       .fetch();
     const exerciseById = new Map(allExercises.map((exercise) => [exercise.id, exercise]));
+    const unitsFor = await ExerciseUserSettingsService.getWeightUnitsResolver(
+      await GymService.getActiveGym().catch(() => null)
+    );
 
     // Group exercises by day
     const exercisesByDay = new Map<number, typeof exercises>();
@@ -1035,12 +1021,13 @@ export class WorkoutTemplateService {
 
         // Calculate suggested weight based on user profile and exercise characteristics
         const loadMultiplier = dbExercise.loadMultiplier ?? 1.0;
-        const suggestedWeight = await this.calculateSuggestedWeight(
+        const suggestedWeight = this.calculateSuggestedWeight(
           userWeightKg,
           loadMultiplier,
           liftingExperience,
           age,
-          isBodyweight
+          isBodyweight,
+          unitsFor(databaseExerciseId)
         );
 
         exercisesInWorkout.push({

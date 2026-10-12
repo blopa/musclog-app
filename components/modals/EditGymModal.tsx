@@ -1,11 +1,12 @@
 import { Plus, X } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
+import { WeightUnitOverridePicker } from '@/components/workout/WeightUnitOverridePicker';
 import { useSnackbar } from '@/context/SnackbarContext';
 import type { EquipmentType } from '@/database/models/Exercise';
 import { GymService } from '@/database/services/GymService';
@@ -21,7 +22,12 @@ import {
   type GymPlate,
   type GymSnapshot,
 } from '@/utils/gym';
-import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
+import {
+  displayToKg,
+  kgToDisplay,
+  resolveWeightUnits,
+  type WeightUnitOverride,
+} from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { ConfirmationModal } from './ConfirmationModal';
@@ -38,34 +44,50 @@ type EditGymModalProps = {
 
 type PlateRow = { weightKg: number; count: number };
 
-const STEP_DISPLAY_DECIMALS = 2;
-// One decimal is how plates are labelled everywhere (2.5, 1.25 needs two): keep what people type.
+// Plates come in quarters (1.25 kg, 2.5 lb): two decimals keep exactly what people type.
 const DISPLAY_DECIMALS = 2;
 const roundDisplay = (value: number) =>
   Math.round(value * 10 ** DISPLAY_DECIMALS) / 10 ** DISPLAY_DECIMALS;
+/** Fine adjustment of the smallest step: stacks and dumbbells come in odd jumps. */
+const INCREMENT_NUDGE = 0.5;
+/** Fine adjustment of a new plate's weight: change plates go down to a quarter of a unit. */
+const PLATE_NUDGE = 0.25;
 
 /**
- * Create or edit a gym profile. The form works in the user's display unit and converts to
- * kilograms once, on save — so a lifter in pounds types "45" and the app stores 20.4117.
+ * Create or edit a gym profile. The form works in the gym's display unit — the one the user
+ * pinned for it, else the account's — and converts to kilograms once, on save: a lifter in pounds
+ * types "45" and the app stores 20.4117.
+ *
+ * The pinned unit is only ever what the user chose in the picker. It must never be copied from the
+ * account on save, or switching the account's units later would leave every gym on the old one.
  */
 export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: EditGymModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { units } = useSettings();
+  const { units: accountUnits } = useSettings();
   const { locale } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
-  const unit = t(getWeightUnitI18nKey(units));
 
   const [name, setName] = useState('');
-  const [barDisplay, setBarDisplay] = useState(0);
-  const [incrementDisplay, setIncrementDisplay] = useState(0);
+  // Weights are held in kilograms, like the plates: the picked unit only changes how they are
+  // shown and typed, so switching it back and forth can never drift a value.
+  const [barKg, setBarKg] = useState(0);
+  const [incrementKg, setIncrementKg] = useState(0);
   const [plates, setPlates] = useState<PlateRow[]>([]);
-  const [newPlateDisplay, setNewPlateDisplay] = useState(5);
+  const [newPlateKg, setNewPlateKg] = useState(0);
   const [equipment, setEquipment] = useState<EquipmentType[]>([]);
+  const [unitChoice, setUnitChoice] = useState<WeightUnitOverride | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
 
-  const standardPlates = useMemo(() => defaultPlates(units), [units]);
+  const units = resolveWeightUnits({ account: accountUnits, gym: unitChoice });
+  const unit = t(getWeightUnitI18nKey(units));
+  const shown = (kg: number) => roundDisplay(kgToDisplay(kg, units));
+  // A nudge happens on the number the user sees, then goes back to kilograms.
+  const nudged = (kg: number, delta: number, min: number) =>
+    displayToKg(Math.max(min, roundDisplay(shown(kg) + delta)), units);
+  // The bar moves by the default step (2.5 kg / 5 lb); a new plate starts at twice it.
+  const barStep = shown(defaultWeightIncrementKg(units));
 
   // Seed the form each time the modal opens (or switches gym). It is a snapshot on purpose: a
   // subscription would overwrite what the user is typing whenever any gym changes.
@@ -75,23 +97,25 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
       return;
     }
     const seed = () => {
+      const pinned = gym?.weightUnit ?? null;
+      const seedUnits = resolveWeightUnits({ account: accountUnits, gym: pinned });
+      setUnitChoice(pinned);
       setName(gym?.name ?? '');
-      setBarDisplay(
-        roundDisplay(kgToDisplay(gym?.barWeightKg ?? defaultBarWeightKg(units), units))
-      );
-      setIncrementDisplay(
-        roundDisplay(kgToDisplay(gym?.weightIncrementKg ?? defaultWeightIncrementKg(units), units))
-      );
+      setBarKg(gym?.barWeightKg ?? defaultBarWeightKg(seedUnits));
+      setIncrementKg(gym?.weightIncrementKg ?? defaultWeightIncrementKg(seedUnits));
       setPlates(
-        (gym?.plates ?? standardPlates).map(({ weightKg, count }) => ({ weightKg, count }))
+        (gym?.plates ?? defaultPlates(seedUnits)).map(({ weightKg, count }) => ({
+          weightKg,
+          count,
+        }))
       );
       setEquipment(gym?.equipment ?? [...EQUIPMENT_TYPES]);
-      setNewPlateDisplay(units === 'imperial' ? 10 : 5);
+      setNewPlateKg(2 * defaultWeightIncrementKg(seedUnits));
     };
     seed();
     // `gym` is read through its id: the object changes identity on every unrelated gym edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, gymId, units]);
+  }, [visible, gymId, accountUnits]);
 
   const showKg = (kg: number) => formatDisplayWeightKg(locale, units, kg);
 
@@ -101,7 +125,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
     );
 
   const addPlate = () => {
-    const weightKg = Math.round(displayToKg(newPlateDisplay, units) * 10_000) / 10_000;
+    const weightKg = Math.round(newPlateKg * 10_000) / 10_000;
     if (!(weightKg > 0)) {
       return;
     }
@@ -125,11 +149,11 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
     try {
       const input = {
         name,
-        barWeightKg: displayToKg(barDisplay, units),
+        barWeightKg: barKg,
         plates: plates.filter((plate) => plate.count > 0) satisfies GymPlate[],
-        weightIncrementKg: displayToKg(incrementDisplay, units),
+        weightIncrementKg: incrementKg,
         equipment,
-        weightUnit: units === 'imperial' ? ('lbs' as const) : ('kg' as const),
+        weightUnit: unitChoice,
       };
       if (gym) {
         await GymService.updateGym(gym.id, input);
@@ -199,32 +223,39 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
           selectTextOnFocus={false}
         />
 
+        <View className="gap-2">
+          <WeightUnitOverridePicker
+            label={t('workoutSettings.editGym.unit')}
+            defaultLabel={t('workoutSettings.editGym.unitDefault')}
+            value={unitChoice}
+            onChange={setUnitChoice}
+          />
+          <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('workoutSettings.editGym.unitHint')}
+          </Text>
+        </View>
+
         <View className="gap-3">
           <StepperInput
             label={t('workoutSettings.editGym.bar', { unit })}
-            value={barDisplay}
-            maxFractionDigits={STEP_DISPLAY_DECIMALS}
-            step={units === 'imperial' ? 5 : 2.5}
+            value={shown(barKg)}
+            maxFractionDigits={DISPLAY_DECIMALS}
+            step={barStep}
             unit={unit}
-            onChangeValue={(value) => setBarDisplay(Math.max(0, value))}
-            onIncrement={() =>
-              setBarDisplay((value) => roundDisplay(value + (units === 'imperial' ? 5 : 2.5)))
-            }
-            onDecrement={() =>
-              setBarDisplay((value) =>
-                Math.max(0, roundDisplay(value - (units === 'imperial' ? 5 : 2.5)))
-              )
-            }
+            onChangeValue={(value) => setBarKg(displayToKg(Math.max(0, value), units))}
+            onIncrement={() => setBarKg((kg) => nudged(kg, barStep, 0))}
+            onDecrement={() => setBarKg((kg) => nudged(kg, -barStep, 0))}
           />
           <StepperInput
             label={t('workoutSettings.editGym.increment', { unit })}
-            value={incrementDisplay}
-            maxFractionDigits={STEP_DISPLAY_DECIMALS}
+            value={shown(incrementKg)}
+            maxFractionDigits={DISPLAY_DECIMALS}
+            step={INCREMENT_NUDGE}
             unit={unit}
-            onChangeValue={(value) => setIncrementDisplay(Math.max(0, value))}
-            onIncrement={() => setIncrementDisplay((value) => roundDisplay(value + 0.5))}
+            onChangeValue={(value) => setIncrementKg(displayToKg(Math.max(0, value), units))}
+            onIncrement={() => setIncrementKg((kg) => nudged(kg, INCREMENT_NUDGE, INCREMENT_NUDGE))}
             onDecrement={() =>
-              setIncrementDisplay((value) => Math.max(0.5, roundDisplay(value - 0.5)))
+              setIncrementKg((kg) => nudged(kg, -INCREMENT_NUDGE, INCREMENT_NUDGE))
             }
           />
           <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
@@ -300,14 +331,13 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
 
           <StepperInput
             label={t('workoutSettings.editGym.plateWeight', { unit })}
-            value={newPlateDisplay}
-            maxFractionDigits={STEP_DISPLAY_DECIMALS}
+            value={shown(newPlateKg)}
+            maxFractionDigits={DISPLAY_DECIMALS}
+            step={PLATE_NUDGE}
             unit={unit}
-            onChangeValue={(value) => setNewPlateDisplay(Math.max(0, value))}
-            onIncrement={() => setNewPlateDisplay((value) => roundDisplay(value + 0.25))}
-            onDecrement={() =>
-              setNewPlateDisplay((value) => Math.max(0.25, roundDisplay(value - 0.25)))
-            }
+            onChangeValue={(value) => setNewPlateKg(displayToKg(Math.max(0, value), units))}
+            onIncrement={() => setNewPlateKg((kg) => nudged(kg, PLATE_NUDGE, PLATE_NUDGE))}
+            onDecrement={() => setNewPlateKg((kg) => nudged(kg, -PLATE_NUDGE, PLATE_NUDGE))}
           />
           <View className="flex-row gap-3">
             <Button
@@ -323,9 +353,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
               variant="outline"
               size="sm"
               width="flex-1"
-              onPress={() =>
-                setPlates(standardPlates.map(({ weightKg, count }) => ({ weightKg, count })))
-              }
+              onPress={() => setPlates(defaultPlates(units))}
             />
           </View>
         </View>

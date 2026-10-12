@@ -5,6 +5,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
+import { kgToDisplay } from '@/utils/unitConversion';
 import {
   ExerciseInWorkout,
   SaveTemplateData,
@@ -1337,7 +1338,7 @@ describe('WorkoutTemplateService', () => {
 
       jest.spyOn(UserService, 'getCurrentUser').mockResolvedValue(null);
       jest.spyOn(UserMetricService, 'getLatest').mockResolvedValue(null);
-      jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockResolvedValue(40);
+      jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockReturnValue(40);
 
       const createdTemplate = createMockWorkoutTemplate({ id: 'created-template' });
       const createdPlan = {
@@ -2744,6 +2745,22 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
     const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
 
     expect(suggestion.weightKg).toBe(97.5);
+  });
+
+  it('rounds to whole POUNDS for an exercise pinned to lbs on a metric account', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(null);
+    installTables({
+      exercises: { find: jest.fn().mockResolvedValue(barbell) },
+      exercise_user_settings: [{ exerciseId: 'bench', weightUnit: 'lbs' }],
+      workout_log_exercises: [{ id: 'le-1' }],
+      workout_log_sets: [{ weight: 100, reps: 8, repsInReserve: 4 }],
+    });
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    // 100 kg + a 5 lb step is 225.46 lb → 225 lb, not the 103 kg (227.08 lb) a metric
+    // rounding would show this lifter.
+    expect(kgToDisplay(suggestion.weightKg, 'imperial')).toBeCloseTo(225, 6);
   });
 
   it('still suggests something when the gym cannot be read', async () => {

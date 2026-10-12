@@ -1,5 +1,4 @@
 import { Q } from '@nozbe/watermelondb';
-import { randomUUID } from 'expo-crypto';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { TFunction } from 'i18next';
@@ -9,7 +8,6 @@ import {
   CheckCircle,
   ChevronLeft,
   Circle,
-  Clock,
   Dumbbell,
   Edit,
   Flame,
@@ -39,10 +37,7 @@ import { EditSetDetailsModal } from '@/components/modals/EditSetDetailsModal';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import { FreeSessionExerciseCompleteModal } from '@/components/modals/FreeSessionExerciseCompleteModal';
 import { LogSetPerformanceModal } from '@/components/modals/LogSetPerformanceModal';
-import {
-  ReplaceExerciseData,
-  ReplaceExerciseModal,
-} from '@/components/modals/ReplaceExerciseModal';
+import { ReplaceExerciseModal } from '@/components/modals/ReplaceExerciseModal';
 import { SessionFeedbackModal } from '@/components/modals/SessionFeedbackModal';
 import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
@@ -52,29 +47,17 @@ import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
-import {
-  type ExerciseNotesSaveData,
-  ExerciseNotesSheet,
-} from '@/components/workout/ExerciseNotesSheet';
+import { BlankWorkoutStats } from '@/components/workout/BlankWorkoutStats';
+import { ExerciseNotesSheet } from '@/components/workout/ExerciseNotesSheet';
 import { PlateCalculatorSheet } from '@/components/workout/PlateCalculatorSheet';
+import { SessionExerciseNotes } from '@/components/workout/SessionExerciseNotes';
+import { SessionGymHelpers } from '@/components/workout/SessionGymHelpers';
 import { SetAdjustmentNotice } from '@/components/workout/SetAdjustmentNotice';
 import { WorkoutActionButton } from '@/components/WorkoutActionButton';
 import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
-import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { BleDeviceService } from '@/database/services/BleDeviceService';
-import {
-  ExerciseRestrictionService,
-  MAX_EXERCISE_RESTRICTIONS,
-} from '@/database/services/ExerciseRestrictionService';
-import { ExerciseUserSettingsService } from '@/database/services/ExerciseUserSettingsService';
-import { GymService } from '@/database/services/GymService';
-import { UserMetricService } from '@/database/services/UserMetricService';
-import { UserService } from '@/database/services/UserService';
-import { WorkoutService } from '@/database/services/WorkoutService';
-import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
@@ -82,28 +65,21 @@ import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
+import { useSessionBleTracking } from '@/hooks/useSessionBleTracking';
+import { useSessionExerciseActions } from '@/hooks/useSessionExerciseActions';
+import { useSessionSetForm } from '@/hooks/useSessionSetForm';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutFeedback } from '@/hooks/useWorkoutFeedback';
 import { useWorkoutFueling } from '@/hooks/useWorkoutFueling';
 import i18n from '@/lang/lang';
-import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import { NotificationService } from '@/services/NotificationService';
 import {
   clearActiveWorkoutLogId,
   getDismissedInsights,
   setInsightDismissed,
 } from '@/utils/activeWorkoutStorage';
-import {
-  appendBleWorkoutSamplesToNdjsonFile,
-  type BleWorkoutSample,
-  compressRawToDataPoints,
-  createBleWorkoutTrackingTempFile,
-  saveBleWorkoutFile,
-} from '@/utils/bleWorkoutDataStorage';
-import { localDayHalfOpenRange, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
-import type { SubstitutionOutcome } from '@/utils/exerciseSubstitution';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -114,19 +90,13 @@ import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { isBarLoadedEquipment } from '@/utils/gym';
 import { handleError } from '@/utils/handleError';
 import { weightInputStep } from '@/utils/loadIncrement';
-import { normalizeNote } from '@/utils/noteText';
 import { resolveRestSeconds } from '@/utils/restTimer';
 import { adjustedFields } from '@/utils/setAdjustment';
-import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
+import { displayToKg } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
-import { buildWarmupSets, WARMUP_REST_SECONDS } from '@/utils/warmupSets';
+import { warmupOfferFor } from '@/utils/warmupSets';
 import { formatDuration } from '@/utils/workout';
-import {
-  isPerformedWorkoutSet,
-  isPlannedWorkoutSet,
-  isResolvedWorkoutSet,
-  isWarmupSet,
-} from '@/utils/workoutSetCompletion';
+import { isResolvedWorkoutSet, isWarmupSet } from '@/utils/workoutSetCompletion';
 
 // Helper function to get hormonal insight text based on current phase
 const getHormonalInsightText = (
@@ -151,74 +121,6 @@ const getHormonalInsightText = (
   }
 };
 
-function BlankWorkoutStats({
-  startTime,
-  workoutLogId,
-}: {
-  startTime: number;
-  workoutLogId?: string;
-}) {
-  const { t } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
-  const { units } = useSettings();
-  const weightUnitKey = getWeightUnitI18nKey(units);
-  const theme = useTheme();
-  const time = useSessionTotalTime({ startTime });
-  const durationStr = formatDuration(time.hours, time.minutes, time.seconds);
-
-  // Update notification with total time
-  useEffect(() => {
-    NotificationService.updateActiveWorkoutNotification(
-      t('freeTraining.blankWorkout'),
-      durationStr,
-      undefined,
-      workoutLogId
-    );
-  }, [durationStr, t, workoutLogId]);
-
-  return (
-    <View
-      className="mt-10 flex-row justify-around rounded-xl border border-border-default bg-bg-card py-4"
-      style={{ borderColor: theme.colors.background.ink5 }}
-    >
-      <View className="items-center">
-        <Clock size={theme.iconSize.md} color={theme.colors.text.secondary} />
-        <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
-          style={{ fontSize: theme.typography.fontSize.xs }}
-        >
-          {t('freeTraining.duration')}
-        </Text>
-        <Text className="mt-0.5 text-base font-bold text-text-primary">{durationStr}</Text>
-      </View>
-      <View className="items-center">
-        <Flame size={theme.iconSize.md} color={theme.colors.text.secondary} />
-        <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
-          style={{ fontSize: theme.typography.fontSize.xs }}
-        >
-          {t('freeTraining.calories')}
-        </Text>
-        <Text className="mt-0.5 text-base font-bold text-text-primary">
-          {formatInteger(0, { useGrouping: false })} {t('common.kcal')}
-        </Text>
-      </View>
-      <View className="items-center">
-        <BarChart3 size={theme.iconSize.md} color={theme.colors.text.secondary} />
-        <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
-          style={{ fontSize: theme.typography.fontSize.xs }}
-        >
-          {t('freeTraining.volume')}
-        </Text>
-        <Text className="mt-0.5 text-base font-bold text-text-primary">
-          {formatInteger(0, { useGrouping: false })} {t(weightUnitKey)}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
 export default function WorkoutSessionScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -230,12 +132,7 @@ export default function WorkoutSessionScreen() {
     exerciseId?: string;
     showFeedback?: string;
   }>();
-  const {
-    units: accountUnits,
-    bleGenerateChartPayload,
-    autoStartRestTimer,
-    defaultRestSeconds,
-  } = useSettings();
+  const { bleGenerateChartPayload, autoStartRestTimer, defaultRestSeconds } = useSettings();
   const { gym } = useActiveGym();
   const { unitsFor, get: getExerciseSettings } = useExerciseUserSettings();
   const {
@@ -281,7 +178,7 @@ export default function WorkoutSessionScreen() {
 
   // Weights are shown and entered in the unit of the exercise in front of the user: its own
   // override, else the gym's, else the account's. Storage stays metric whichever is shown.
-  const units = unitsFor(currentSetData?.exercise.id, accountUnits, gym?.weightUnit);
+  const units = unitsFor(currentSetData?.exercise.id);
   const weightUnitKey = getWeightUnitI18nKey(units);
   const exerciseNote = getExerciseSettings(currentSetData?.exercise.id).note;
   const currentLogExercise = activeLogExercises.find(
@@ -330,11 +227,17 @@ export default function WorkoutSessionScreen() {
     setIsSessionFeedbackExplicitlyOpen(open);
   };
 
-  const [weight, setWeight] = useState(0);
-  const [reps, setReps] = useState(0);
-  const [partials, setPartials] = useState(0);
-  const [repsInReserve, setRepsInReserve] = useState(0);
-  const [isStatsDataLoaded, setIsStatsDataLoaded] = useState(false);
+  const {
+    weight,
+    setWeight,
+    reps,
+    setReps,
+    partials,
+    setPartials,
+    repsInReserve,
+    setRepsInReserve,
+    isStatsDataLoaded,
+  } = useSessionSetForm(currentSetData, units);
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isLogSetModalVisible, setIsLogSetModalVisible] = useState(false);
@@ -366,40 +269,20 @@ export default function WorkoutSessionScreen() {
   const [isNotesSheetVisible, setIsNotesSheetVisible] = useState(false);
   const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
   const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
-
-  // BLE sensor tracking
-  const wit = useWitMotion();
-  const { showSnackbar } = useSnackbar();
-  const [isTracking, setIsTracking] = useState(false);
-  const [isStopTrackingSaving, setIsStopTrackingSaving] = useState(false);
-  const [blinkState, setBlinkState] = useState(true);
-  // When not tracking the indicator is always solid; when tracking it alternates
-  const isTrackingBlinkOn = !isTracking || blinkState;
-  const isTrackingRef = useRef(false);
-  const trackingTempFileRef = useRef<ReturnType<typeof createBleWorkoutTrackingTempFile> | null>(
-    null
-  );
-  const trackingSampleCountRef = useRef(0);
-  const trackingStartedAtRef = useRef<number | null>(null);
-  const unsubscribeBatchRef = useRef<(() => void) | null>(null);
-  const hasAttemptedAutoConnect = useRef(false);
-  const pendingRawBleFileUriRef = useRef<string | null>(null);
-  // Initialize to current state so remounts while connected don't re-show the snackbar.
-  const wasConnectedRef = useRef(wit.isConnected);
-
-  useEffect(() => {
-    if (!isTracking) {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setBlinkState((current) => !current);
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [isTracking]);
+  const ble = useSessionBleTracking({
+    workoutLogId,
+    workoutLog,
+    currentSetData,
+    reps,
+    bleGenerateChartPayload,
+  });
+  const exerciseActions = useSessionExerciseActions({
+    currentSetData,
+    gym,
+    exerciseNote,
+    refresh,
+    setIsSaving,
+  });
 
   // Load dismissed insights from storage
   useEffect(() => {
@@ -410,23 +293,6 @@ export default function WorkoutSessionScreen() {
       });
     }
   }, [workoutLogId]);
-
-  // Update weight/reps when current set changes (weight in display unit)
-  useEffect(() => {
-    const syncFormInputs = () => {
-      if (currentSetData) {
-        const weightKg = currentSetData.set.weight ?? 0;
-        setWeight(kgToDisplay(weightKg, units));
-        setReps(currentSetData.set.reps ?? 0);
-        setPartials(currentSetData.set.partials || 0);
-        setRepsInReserve(currentSetData.set.repsInReserve ?? 0);
-        setIsStatsDataLoaded(true);
-      } else {
-        setIsStatsDataLoaded(false);
-      }
-    };
-    syncFormInputs();
-  }, [currentSetData, units]);
 
   // Redirect if no active workout
   useEffect(() => {
@@ -532,247 +398,6 @@ export default function WorkoutSessionScreen() {
     return done === logSets.length;
   }, []);
 
-  const clearTrackingTempFile = useCallback(() => {
-    const tempFile = trackingTempFileRef.current;
-    trackingTempFileRef.current = null;
-
-    if (!tempFile) {
-      return;
-    }
-
-    try {
-      tempFile.parentDirectory.delete();
-      return;
-    } catch {
-      // Fall through and try deleting the file itself.
-    }
-
-    try {
-      tempFile.delete();
-    } catch {
-      // Best-effort cleanup only.
-    }
-  }, []);
-
-  // Stop tracking and discard data (used on disconnect and set/workout transitions).
-  const discardTracking = useCallback(() => {
-    if (!isTrackingRef.current) {
-      return;
-    }
-
-    setIsTracking(false);
-    isTrackingRef.current = false;
-    unsubscribeBatchRef.current?.();
-    unsubscribeBatchRef.current = null;
-    trackingSampleCountRef.current = 0;
-    trackingStartedAtRef.current = null;
-    pendingRawBleFileUriRef.current = null;
-    clearTrackingTempFile();
-  }, [clearTrackingTempFile]);
-
-  // Stop tracking and save the collected data to a local JSON file.
-  const stopTrackingAndSave = useCallback(async () => {
-    if (!isTrackingRef.current) {
-      return;
-    }
-
-    const sampleCount = trackingSampleCountRef.current;
-    const tempFile = trackingTempFileRef.current;
-    const startedAt = trackingStartedAtRef.current;
-
-    setIsTracking(false);
-    isTrackingRef.current = false;
-    unsubscribeBatchRef.current?.();
-    unsubscribeBatchRef.current = null;
-    trackingSampleCountRef.current = 0;
-    trackingStartedAtRef.current = null;
-
-    if (sampleCount === 0 || !tempFile || !currentSetData || !workoutLog || !wit.connectedDevice) {
-      clearTrackingTempFile();
-      return;
-    }
-
-    try {
-      const stoppedAt = new Date();
-
-      // Collect user biometrics to enrich the recording.
-      let userHeightCm: number | undefined;
-      let userAgeYears: number | undefined;
-      let userGender: string | undefined;
-      let userWeightKg: number | undefined;
-
-      try {
-        const [heightMetric, user, weightMetric] = await Promise.all([
-          UserMetricService.getLatest('height'),
-          UserService.getCurrentUser(),
-          UserMetricService.getLatest('weight'),
-        ]);
-
-        if (heightMetric) {
-          const { value } = await heightMetric.getDecrypted();
-          userHeightCm = value;
-        }
-
-        if (user?.dateOfBirth) {
-          const ageMsAtStop = stoppedAt.getTime() - user.dateOfBirth;
-          userAgeYears = Math.floor(ageMsAtStop / (365.25 * MS_PER_SOLAR_DAY));
-        }
-
-        if (user?.gender) {
-          userGender = user.gender;
-        }
-
-        if (weightMetric) {
-          const { start, nextStart } = localDayHalfOpenRange(stoppedAt);
-          if (weightMetric.date >= start && weightMetric.date < nextStart) {
-            const { value } = await weightMetric.getDecrypted();
-            userWeightKg = value;
-          }
-        }
-      } catch {
-        // Non-fatal — biometrics are best-effort enrichment.
-      }
-
-      const bleFileUri = await saveBleWorkoutFile({
-        version: 1,
-        workoutLogId: workoutLog.id,
-        exerciseName: currentSetData.exercise.name ?? '',
-        muscleGroup: currentSetData.exercise.muscleGroup ?? '',
-        equipmentType: currentSetData.exercise.equipmentType ?? '',
-        mechanicType: currentSetData.exercise.mechanicType ?? '',
-        setNumber: currentSetData.setNumber,
-        reps,
-        deviceId: wit.connectedDevice.id,
-        deviceDisplayName: wit.connectedDevice.name,
-        startedAt: new Date(startedAt ?? Date.now()).toISOString(),
-        stoppedAt: stoppedAt.toISOString(),
-        sampleCount,
-        userHeightCm,
-        userAgeYears,
-        userGender,
-        userWeightKg,
-        samplesFile: tempFile,
-      });
-      trackingTempFileRef.current = null;
-
-      if (bleGenerateChartPayload && sampleCount >= 20) {
-        pendingRawBleFileUriRef.current = bleFileUri;
-      }
-
-      showSnackbar('success', t('workoutSession.trackingSaved', { count: sampleCount }));
-    } catch (err) {
-      handleError(err, 'workout-session.stopTrackingAndSave');
-    }
-  }, [
-    bleGenerateChartPayload,
-    clearTrackingTempFile,
-    currentSetData,
-    workoutLog,
-    reps,
-    wit.connectedDevice,
-    showSnackbar,
-    t,
-  ]);
-
-  const handleStartTracking = useCallback(() => {
-    if (isTrackingRef.current) {
-      return;
-    }
-
-    try {
-      clearTrackingTempFile();
-      const tempFile = createBleWorkoutTrackingTempFile(randomUUID());
-      trackingTempFileRef.current = tempFile;
-      trackingSampleCountRef.current = 0;
-      pendingRawBleFileUriRef.current = null;
-      trackingStartedAtRef.current = Date.now();
-      setIsTracking(true);
-      isTrackingRef.current = true;
-
-      unsubscribeBatchRef.current?.();
-      unsubscribeBatchRef.current = witMotionClient.onBatch((batch) => {
-        const samples: BleWorkoutSample[] = [];
-
-        for (const packet of batch.packets) {
-          if (packet.kind === 'motion') {
-            samples.push({
-              timestamp: packet.timestamp,
-              accel: { ...packet.accel },
-              gyro: { ...packet.gyro },
-              angle: { ...packet.angle },
-            });
-          }
-        }
-
-        if (samples.length === 0) {
-          return;
-        }
-
-        trackingSampleCountRef.current += samples.length;
-        appendBleWorkoutSamplesToNdjsonFile(tempFile, samples);
-      });
-    } catch (err) {
-      handleError(err, 'workout-session.handleStartTracking');
-    }
-  }, [clearTrackingTempFile]);
-
-  // Auto-connect to the most recently connected saved device when the workout starts.
-  useEffect(() => {
-    if (hasAttemptedAutoConnect.current || wit.isConnected || !workoutLogId) {
-      return;
-    }
-
-    hasAttemptedAutoConnect.current = true;
-    void BleDeviceService.getAll().then((devices) => {
-      const device = devices[0];
-      if (!device) {
-        return;
-      }
-
-      void witMotionClient.connect(device.deviceId).catch(() => {
-        // Sensor not nearby — silently ignore
-      });
-    });
-  }, [workoutLogId, wit.isConnected]);
-
-  // Watch for connection state changes — show snackbar on connect/disconnect.
-  useEffect(() => {
-    if (wit.isConnected && !wasConnectedRef.current) {
-      wasConnectedRef.current = true;
-      const name = wit.connectedDevice?.name ?? '';
-      showSnackbar('success', t('workoutSession.sensorConnected', { name }), {
-        duration: 20_000,
-        secondaryAction: t('workoutSession.disconnect'),
-        onSecondaryAction: () => void wit.disconnect(),
-      });
-    } else if (!wit.isConnected && wasConnectedRef.current) {
-      wasConnectedRef.current = false;
-
-      if (isTrackingRef.current) {
-        discardTracking();
-        showSnackbar('error', t('workoutSession.sensorDisconnectedTracking'), {
-          duration: 0,
-        });
-      } else {
-        showSnackbar('error', t('workoutSession.sensorDisconnected'), {
-          duration: 3_000,
-        });
-      }
-    }
-  }, [wit.isConnected, wit.connectedDevice, showSnackbar, t, wit.disconnect, discardTracking, wit]);
-
-  // Discard tracking when the active set changes (after rest timer / exercise transition).
-  useEffect(() => {
-    discardTracking();
-  }, [currentSetData?.set.id, discardTracking]);
-
-  // Clean up on workout end or unmount.
-  useEffect(() => {
-    return () => {
-      discardTracking();
-    };
-  }, [discardTracking]);
-
   const handleCompleteSet = async (data: {
     rpe: number;
     weight: number;
@@ -784,9 +409,7 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
-    if (isTrackingRef.current) {
-      await stopTrackingAndSave();
-    }
+    await ble.finishSetRecording();
 
     try {
       setIsSaving(true);
@@ -807,11 +430,7 @@ export default function WorkoutSessionScreen() {
         restTimeAfter: restTime,
       });
 
-      const rawBleFileUri = pendingRawBleFileUriRef.current;
-      pendingRawBleFileUriRef.current = null;
-      if (bleGenerateChartPayload && rawBleFileUri && data.reps > 0) {
-        void compressRawToDataPoints(rawBleFileUri, completedSetId, data.reps).catch(() => {});
-      }
+      ble.attachRecordingToSet(completedSetId, data.reps);
 
       // Check from DB if all sets are now done (state from refresh() may not be updated yet)
       const allSetsDone = await checkAllSetsDoneFromDb(workoutLog.id);
@@ -929,149 +548,6 @@ export default function WorkoutSessionScreen() {
       await refresh();
     } catch (err) {
       handleError(err, 'workout-session.handleEditSet', {
-        snackbarMessage: t('errors.somethingWentWrong'),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleReplaceExercise = async (
-    exercise: ReplaceExerciseData,
-    outcome: SubstitutionOutcome
-  ) => {
-    if (!currentSetData || !workoutLog) {
-      return;
-    }
-
-    const replaced = currentSetData.exercise;
-
-    try {
-      setIsSaving(true);
-
-      // Find the log exercise that the current set belongs to and update its exerciseId
-      const logExerciseId = currentSetData.set.logExerciseId;
-      if (!logExerciseId) {
-        console.error('No logExerciseId found for current set');
-        return;
-      }
-
-      // The still-planned sets carry the OLD exercise's load: a planned 80 kg bench is not an
-      // 80 kg dumbbell fly. The suggestion is read before the write, which only touches this log.
-      const { weightKg } = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise(
-        exercise.id
-      );
-      await WorkoutService.replaceLogExercise(logExerciseId, exercise.id, {
-        reason: outcome.reason,
-        plannedWeightKg: weightKg,
-      });
-
-      // What the user chose to remember is saved only once the swap itself has succeeded.
-      if (outcome.restriction) {
-        const saved = await ExerciseRestrictionService.set(replaced.id, outcome.restriction.kind, {
-          expiresAt: outcome.restriction.expiresAt,
-        });
-        if (!saved.ok) {
-          showSnackbar(
-            'error',
-            t('workoutSettings.restrictions.limit', { count: MAX_EXERCISE_RESTRICTIONS })
-          );
-        }
-      }
-      if (outcome.removeEquipmentFromGym && gym && replaced.equipmentType) {
-        await GymService.removeEquipment(gym.id, replaced.equipmentType);
-      }
-
-      await refresh();
-      showSnackbar(
-        'success',
-        t('replaceExercise.swapped', { from: replaced.name, to: exercise.name })
-      );
-    } catch (err) {
-      handleError(err, 'workout-session.handleReplaceExercise', {
-        snackbarMessage: t('errors.somethingWentWrong'),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleAddWarmups = async (warmups: { weightKg: number; reps: number }[]) => {
-    const logExerciseId = currentSetData?.set.logExerciseId;
-    if (!logExerciseId || warmups.length === 0) {
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      await WorkoutService.addWarmupSets(logExerciseId, warmups, {
-        restTimeAfter: WARMUP_REST_SECONDS,
-      });
-      await refresh();
-    } catch (err) {
-      handleError(err, 'workout-session.handleAddWarmups', {
-        snackbarMessage: t('errors.somethingWentWrong'),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Throws on failure: the notes sheet keeps itself open with the draft and says so.
-  const handleSaveNotes = async ({
-    sessionNote,
-    exerciseNote: nextExerciseNote,
-    alsoSaveToTemplate,
-  }: ExerciseNotesSaveData) => {
-    const logExerciseId = currentSetData?.set.logExerciseId;
-    const exerciseId = currentSetData?.exercise.id;
-    if (!logExerciseId || !exerciseId) {
-      return;
-    }
-
-    // Asking for the template copy writes even an unchanged note: it is what keeps it.
-    if (alsoSaveToTemplate || normalizeNote(sessionNote) !== normalizeNote(currentSetData.notes)) {
-      await WorkoutService.saveLogExerciseNote(logExerciseId, sessionNote, { alsoSaveToTemplate });
-    }
-
-    if (normalizeNote(nextExerciseNote) !== normalizeNote(exerciseNote)) {
-      await ExerciseUserSettingsService.setNote(exerciseId, nextExerciseNote);
-    }
-
-    await refresh();
-  };
-
-  const handleRevertStartAdjustment = async () => {
-    const logExerciseId = currentSetData?.set.logExerciseId;
-    if (!logExerciseId) {
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      await WorkoutService.revertStartAdjustment(logExerciseId);
-      await refresh();
-    } catch (err) {
-      handleError(err, 'workout-session.handleRevertStartAdjustment', {
-        snackbarMessage: t('errors.somethingWentWrong'),
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleRemoveWarmups = async () => {
-    const logExerciseId = currentSetData?.set.logExerciseId;
-    if (!logExerciseId) {
-      return;
-    }
-
-    try {
-      setIsSaving(true);
-      await WorkoutService.removePlannedWarmupSets(logExerciseId);
-      await refresh();
-    } catch (err) {
-      handleError(err, 'workout-session.handleRemoveWarmups', {
         snackbarMessage: t('errors.somethingWentWrong'),
       });
     } finally {
@@ -1308,32 +784,19 @@ export default function WorkoutSessionScreen() {
     const exerciseCategory = getExerciseCategory();
     const previousSet = currentSetData.previousSet;
     const setAdjustment = currentSetData.set.adjustment;
-    // Only the target-RIR step badges a stat card: a carry-over shows the weight the user
-    // themselves last lifted, so a "we calculated this" marker would misattribute it. The
-    // marker goes on the field that actually moved, which in the default reps_first mode is
-    // reps, not weight.
     // A number the app calculated carries the marker, on the field it actually changed. A
     // carry-over is the user's own previous load, so it is deliberately not marked.
     const { weight: isWeightRetargeted, reps: isRepsRetargeted } = adjustedFields(setAdjustment);
 
-    // Warm-ups: offered before the first working set of an exercise, removable until performed.
-    const exerciseSets = sets.filter((set) => set.exerciseId === currentSetData.exercise.id);
-    const exerciseHasWarmups = exerciseSets.some(isWarmupSet);
-    const exerciseHasPlannedWarmups = exerciseSets.some(
-      (set) => isWarmupSet(set) && isPlannedWorkoutSet(set)
-    );
     const isCurrentSetWarmup = isWarmupSet(currentSetData.set);
-    const warmupPrescription =
-      isStatsDataLoaded &&
-      !exerciseHasWarmups &&
-      !exerciseSets.some(isPerformedWorkoutSet) &&
-      isPlannedWorkoutSet(currentSetData.set)
-        ? buildWarmupSets(displayToKg(weight, units), {
-            gym,
-            equipmentType: currentSetData.exercise.equipmentType,
-            units,
-          })
-        : [];
+    const warmupOffer = warmupOfferFor({
+      exerciseSets: sets.filter((set) => set.exerciseId === currentSetData.exercise.id),
+      currentSet: currentSetData.set,
+      workingKg: displayToKg(weight, units),
+      gym,
+      equipmentType: currentSetData.exercise.equipmentType,
+      units,
+    });
     let partialsValue;
 
     if (!isStatsDataLoaded) {
@@ -1452,54 +915,11 @@ export default function WorkoutSessionScreen() {
               ) : null}
               <Text className="text-lg text-text-secondary">{exerciseCategory}</Text>
             </View>
-            {exerciseNote ? (
-              <Pressable
-                className="mt-3 rounded-lg p-3"
-                style={{ backgroundColor: theme.colors.background.ink5 }}
-                onPress={() => setIsNotesSheetVisible(true)}
-                accessibilityRole="button"
-                accessibilityLabel={t('workoutSession.notes.edit')}
-                testID="exercise-note-pinned"
-              >
-                <Text
-                  className="text-sm text-text-secondary"
-                  numberOfLines={3}
-                  ellipsizeMode="tail"
-                >
-                  📌 {exerciseNote}
-                </Text>
-              </Pressable>
-            ) : null}
-            {currentSetData.notes ? (
-              <Pressable
-                className="mt-3 rounded-lg p-3"
-                style={{ backgroundColor: theme.colors.background.ink5 }}
-                onPress={() => setIsNotesSheetVisible(true)}
-                accessibilityRole="button"
-                accessibilityLabel={t('workoutSession.notes.edit')}
-                testID="session-note"
-              >
-                <Text
-                  className="text-sm text-text-secondary"
-                  numberOfLines={3}
-                  ellipsizeMode="tail"
-                >
-                  📝 {currentSetData.notes}
-                </Text>
-              </Pressable>
-            ) : null}
-            <Pressable
-              onPress={() => setIsNotesSheetVisible(true)}
-              accessibilityRole="button"
-              className="mt-3 self-start py-1"
-              testID="notes-entry"
-            >
-              <Text className="text-sm font-medium text-accent-primary">
-                {exerciseNote || currentSetData.notes
-                  ? t('workoutSession.notes.edit')
-                  : t('workoutSession.notes.add')}
-              </Text>
-            </Pressable>
+            <SessionExerciseNotes
+              exerciseNote={exerciseNote}
+              sessionNote={currentSetData.notes}
+              onEdit={() => setIsNotesSheetVisible(true)}
+            />
           </View>
 
           {/* Stats Cards */}
@@ -1544,70 +964,29 @@ export default function WorkoutSessionScreen() {
 
           {/* Gym helpers: plate calculator for bar-loaded lifts, warm-up sets before the first working set */}
           {isStatsDataLoaded ? (
-            <View className="mt-3 flex-row flex-wrap justify-center gap-2 px-6">
-              {weight > 0 && isBarLoadedEquipment(currentSetData.exercise.equipmentType) ? (
-                <Pressable
-                  onPress={() => setIsPlateCalculatorVisible(true)}
-                  accessibilityRole="button"
-                  className="flex-row items-center gap-2 rounded-full px-4 py-2"
-                  style={{ backgroundColor: theme.colors.background.ink5 }}
-                >
-                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-                  <Text className="text-sm font-medium text-text-primary">
-                    {t('workoutSettings.plateCalculator.open', {
-                      weight: formatWeightStatDisplay(weight),
-                      unit: t(weightUnitKey),
-                    })}
-                  </Text>
-                </Pressable>
-              ) : null}
-              {pendingRest ? (
-                <Pressable
-                  onPress={() => {
-                    const { setOrder } = pendingRest;
-                    setPendingRest(null);
-                    router.push(
-                      `/app/workout/rest-timer?workoutLogId=${workoutLog?.id}&completedSetOrder=${setOrder}`
-                    );
-                  }}
-                  accessibilityRole="button"
-                  className="flex-row items-center gap-2 rounded-full px-4 py-2"
-                  style={{ backgroundColor: theme.colors.accent.primary }}
-                >
-                  <Clock size={theme.iconSize.sm} color={theme.colors.text.onAccent} />
-                  <Text className="text-sm font-bold text-text-on-accent">
-                    {t('workoutSession.startRest', { seconds: pendingRest.seconds })}
-                  </Text>
-                </Pressable>
-              ) : null}
-              {warmupPrescription.length > 0 ? (
-                <Pressable
-                  onPress={() => handleAddWarmups(warmupPrescription)}
-                  accessibilityRole="button"
-                  disabled={isSaving}
-                  className="flex-row items-center gap-2 rounded-full px-4 py-2"
-                  style={{ backgroundColor: theme.colors.background.ink5 }}
-                >
-                  <Flame size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-                  <Text className="text-sm font-medium text-text-primary">
-                    {t('workoutSession.warmup.add')}
-                  </Text>
-                </Pressable>
-              ) : null}
-              {exerciseHasPlannedWarmups ? (
-                <Pressable
-                  onPress={handleRemoveWarmups}
-                  accessibilityRole="button"
-                  disabled={isSaving}
-                  className="flex-row items-center gap-2 rounded-full px-4 py-2"
-                  style={{ backgroundColor: theme.colors.background.ink5 }}
-                >
-                  <Text className="text-sm font-medium text-text-secondary">
-                    {t('workoutSession.warmup.remove')}
-                  </Text>
-                </Pressable>
-              ) : null}
-            </View>
+            <SessionGymHelpers
+              plateCalculatorLoad={
+                weight > 0 && isBarLoadedEquipment(currentSetData.exercise.equipmentType)
+                  ? { weight: formatWeightStatDisplay(weight), unit: t(weightUnitKey) }
+                  : null
+              }
+              onOpenPlateCalculator={() => setIsPlateCalculatorVisible(true)}
+              pendingRestSeconds={pendingRest?.seconds ?? null}
+              onStartRest={() => {
+                if (!pendingRest) {
+                  return;
+                }
+                setPendingRest(null);
+                router.push(
+                  `/app/workout/rest-timer?workoutLogId=${workoutLog?.id}&completedSetOrder=${pendingRest.setOrder}`
+                );
+              }}
+              canAddWarmups={warmupOffer.toAdd.length > 0}
+              onAddWarmups={() => exerciseActions.addWarmups(warmupOffer.toAdd)}
+              canRemoveWarmups={warmupOffer.canRemove}
+              onRemoveWarmups={exerciseActions.removeWarmups}
+              isSaving={isSaving}
+            />
           ) : null}
 
           {/* Why these numbers differ from the plan */}
@@ -1615,7 +994,7 @@ export default function WorkoutSessionScreen() {
             <View className="mt-4 px-6">
               <SetAdjustmentNotice
                 adjustment={setAdjustment}
-                onRevert={handleRevertStartAdjustment}
+                onRevert={exerciseActions.revertStartAdjustment}
               />
             </View>
           ) : null}
@@ -1674,9 +1053,9 @@ export default function WorkoutSessionScreen() {
             </View>
 
             {/* Sensor tracking row — only visible when a BLE device is connected */}
-            {wit.isConnected ? (
+            {ble.isSensorConnected ? (
               <View className="mb-4 gap-3">
-                {isTracking || isStopTrackingSaving ? (
+                {ble.isTracking || ble.isStopTrackingSaving ? (
                   <Button
                     label={t('workoutSession.stopTracking')}
                     icon={
@@ -1684,22 +1063,15 @@ export default function WorkoutSessionScreen() {
                         size={theme.iconSize.sm}
                         color={theme.colors.rose.brand}
                         fill={theme.colors.rose.brand}
-                        opacity={isTrackingBlinkOn ? 1 : 0.25}
+                        opacity={ble.isTrackingBlinkOn ? 1 : 0.25}
                       />
                     }
                     size="md"
                     width="full"
                     variant="secondary"
-                    loading={isStopTrackingSaving}
-                    disabled={isStopTrackingSaving}
-                    onPress={async () => {
-                      setIsStopTrackingSaving(true);
-                      try {
-                        await stopTrackingAndSave();
-                      } finally {
-                        setIsStopTrackingSaving(false);
-                      }
-                    }}
+                    loading={ble.isStopTrackingSaving}
+                    disabled={ble.isStopTrackingSaving}
+                    onPress={ble.stopTrackingFromButton}
                   />
                 ) : (
                   <Button
@@ -1708,7 +1080,7 @@ export default function WorkoutSessionScreen() {
                     size="md"
                     width="full"
                     variant="secondary"
-                    onPress={handleStartTracking}
+                    onPress={ble.startTracking}
                   />
                 )}
               </View>
@@ -1857,7 +1229,7 @@ export default function WorkoutSessionScreen() {
             initialSessionNote={currentSetData.notes ?? ''}
             initialExerciseNote={exerciseNote ?? ''}
             canSaveToTemplate={!!currentLogExercise?.templateExerciseId}
-            onSave={handleSaveNotes}
+            onSave={exerciseActions.saveNotes}
           />
         ) : null}
 
@@ -1881,7 +1253,7 @@ export default function WorkoutSessionScreen() {
           <ReplaceExerciseModal
             visible={isReplaceExerciseModalVisible}
             onClose={() => setIsReplaceExerciseModalVisible(false)}
-            onReplace={handleReplaceExercise}
+            onReplace={exerciseActions.replaceExercise}
             currentExerciseId={currentSetData.exercise.id}
           />
         ) : null}
@@ -1971,11 +1343,7 @@ export default function WorkoutSessionScreen() {
             exerciseName={effectiveCompletedExerciseForModal.exerciseName}
             sets={sets}
             exerciseId={effectiveCompletedExerciseForModal.exerciseId}
-            units={unitsFor(
-              effectiveCompletedExerciseForModal.exerciseId,
-              accountUnits,
-              gym?.weightUnit
-            )}
+            units={unitsFor(effectiveCompletedExerciseForModal.exerciseId)}
             exerciseImageUrl={effectiveCompletedExerciseForModal.exerciseImageUrl}
             equipmentType={effectiveCompletedExerciseForModal.equipmentType}
             onAddNextExercise={() => {

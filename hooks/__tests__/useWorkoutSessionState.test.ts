@@ -10,6 +10,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { useWorkoutSessionState } from '@/hooks/useWorkoutSessionState';
+import { kgToDisplay } from '@/utils/unitConversion';
 
 // Mock dependencies
 jest.mock('@/database', () => ({
@@ -42,6 +43,14 @@ jest.mock('@/hooks/useActiveGym', () => ({
   useActiveGym: () => ({ gym: mockActiveGym, gyms: [], isLoading: false }),
 }));
 
+// The unit each exercise is shown in. The real `unitsFor` is a stable callback; so is this one, or
+// every render would re-subscribe the session pipeline.
+let mockExerciseUnits: 'metric' | 'imperial' = 'metric';
+const mockUnitsFor = () => mockExerciseUnits;
+jest.mock('@/hooks/useExerciseUserSettings', () => ({
+  useExerciseUserSettings: () => ({ unitsFor: mockUnitsFor }),
+}));
+
 jest.mock('@/utils/workoutSupersetOrder', () => ({
   getEffectiveOrder: jest.fn((sets) => sets),
   getFirstUnloggedInEffectiveOrder: jest.fn(),
@@ -52,6 +61,7 @@ describe('useWorkoutSessionState', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockActiveGym = null;
+    mockExerciseUnits = 'metric';
     (UserMetricService.getUserBodyWeightKgForVolume as jest.Mock).mockResolvedValue(70);
     (SettingsService.getProgressionMode as jest.Mock).mockResolvedValue('reps_first');
   });
@@ -312,6 +322,18 @@ describe('useWorkoutSessionState', () => {
 
       expect(set?.adjustment).toMatchObject({ cause: 'target_rir', field: 'weight' });
       expect(Number.isInteger(set?.weight)).toBe(true);
+    });
+
+    it('rounds to whole POUNDS with no gym when the exercise is shown in pounds', async () => {
+      mockExerciseUnits = 'imperial';
+
+      const set = await renderRetargetedBarbellSet();
+
+      expect(set?.adjustment).toMatchObject({ cause: 'target_rir', field: 'weight' });
+      const shownLb = kgToDisplay(set?.weight ?? 0, 'imperial');
+      expect(shownLb).toBeCloseTo(Math.round(shownLb), 6);
+      // …and not merely whole kilograms that happen to read as a fraction of a pound.
+      expect(Number.isInteger(set?.weight)).toBe(false);
     });
 
     it('snaps a re-targeted weight to a load the bar can actually be set to', async () => {

@@ -1,3 +1,5 @@
+import { Q } from '@nozbe/watermelondb';
+
 import { getAllLocaleExerciseNamesBySlug } from '@/data/exerciseCatalogue';
 import { exerciseSlugFromId } from '@/utils/exerciseImage';
 import { buildExerciseSearchText } from '@/utils/exerciseSearch';
@@ -22,3 +24,10 @@ export function computeExerciseSearchText(
     aliases,
   });
 }
+
+/**
+ * Selects the exercises the boot backfill still has to fill. It must match a row the v27 migration
+ * left empty on BOTH adapters: SQLite adds the column as NULL, and LokiJS (web) rewrites every
+ * existing record with the column set to `null` — pinned by `exerciseSearchTextWebMigration.test.ts`.
+ */
+export const missingSearchTextClause = () => Q.where('search_text', Q.eq(null));

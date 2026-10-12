@@ -45,7 +45,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Add, replace, or skip exercises mid-session
 - Swap an exercise mid-session and say why (equipment unavailable, pain, too hard or too easy, dislike, machine occupied, or just for today): suggestions are ranked for the same body region, and only the session changes — never the plan. A swap's follow-ups (stop suggesting it for a while, remove the equipment from your gym) are choices you switch on, not defaults applied behind your back
 - Exercise restrictions: mark any exercise Dislike, Injury (with an end date) or Never suggest from its screen or when swapping. Injured and never-suggest exercises are hidden from swap suggestions and AI-generated plans; disliked ones are ranked last
-- Named gym profiles (bar weight, plates you own, smallest weight step, available equipment) with one active gym. The active gym drives the plate calculator, the +/- weight steps, the weights the app recomputes between sets, and which exercises can be suggested
+- Named gym profiles (bar weight, plates you own, smallest weight step, available equipment, and optionally a weight unit of its own — e.g. pounds for a gym whose plates are in pounds, otherwise it follows your account setting) with one active gym. The active gym drives the plate calculator, the +/- weight steps, the weights the app recomputes between sets, and which exercises can be suggested
 - Plate calculator on barbell lifts: the plates to load on each side for the set's weight, exact even with a limited plate inventory (standard plates are used until you set up a gym)
 - Recover interrupted workouts
 - Archive workout templates to declutter the list

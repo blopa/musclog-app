@@ -2,7 +2,8 @@ import type { Units } from '@/constants/settings';
 import type { EquipmentType } from '@/database/models/Exercise';
 
 import { defaultWeightIncrementKg, type GymSnapshot, isBarLoadedEquipment } from './gym';
-import { kgToDisplay } from './unitConversion';
+import { roundToLoadable } from './plateCalculator';
+import { kgToDisplay, roundWeightForUnits } from './unitConversion';
 
 /** The numeric input's step with no gym configured: the app's long-standing half-unit nudge. */
 const LEGACY_INPUT_STEP = 0.5;
@@ -49,4 +50,33 @@ export function weightInputStep(
     return LEGACY_INPUT_STEP;
   }
   return Math.round(kgToDisplay(incrementFor(equipmentType, gym, units), units) * 100) / 100;
+}
+
+export interface LoadStep {
+  /** The smallest sensible change in load, in kg (see `incrementFor`). */
+  incrementKg: number;
+  /** Snaps a computed load (kg) to one the lifter can really set and will see as a round number. */
+  roundLoad: (kg: number) => number;
+}
+
+/**
+ * How a computed load may move for one exercise: the step to progress by, and the snap to a load
+ * that can really be set. Every progression path (start of workout, ad-hoc suggestion, between
+ * sets) takes both from here, so they cannot disagree.
+ *
+ * `units` must be the exercise's RESOLVED unit (`resolveWeightUnits`: exercise → gym → account),
+ * never the account's alone. Without a gym it decides the whole step and the rounding: an exercise
+ * pinned to pounds for a metric account must move in 5 lb and land on whole pounds, not on
+ * whole kilograms that read as 143.3 lb.
+ */
+export function loadStepFor(
+  equipmentType: EquipmentType | string | undefined,
+  gym: GymSnapshot | null | undefined,
+  units: Units
+): LoadStep {
+  return {
+    incrementKg: incrementFor(equipmentType, gym, units),
+    roundLoad: (kg) =>
+      gym ? roundToLoadable(kg, equipmentType, gym) : roundWeightForUnits(kg, units),
+  };
 }
