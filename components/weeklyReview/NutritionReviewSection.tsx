@@ -41,6 +41,14 @@ export const MACRO_LABEL_KEYS = {
   fiber: 'weeklyReview.macros.fiber',
 } as const satisfies Record<(typeof MACRO_FIELDS)[number], string>;
 
+const MACRO_UNIT_KEYS = {
+  totalCalories: 'common.kcal',
+  protein: 'common.units.g',
+  carbs: 'common.units.g',
+  fats: 'common.units.g',
+  fiber: 'common.units.g',
+} as const satisfies Record<(typeof MACRO_FIELDS)[number], string>;
+
 const MODE_KEYS = {
   manual: 'weeklyReview.modes.manual',
   daily: 'weeklyReview.modes.daily',
@@ -78,7 +86,7 @@ export function NutritionReviewSection({
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { units } = useSettings();
-  const { formatInteger } = useFormatAppNumber();
+  const { locale, formatInteger, formatNumber } = useFormatAppNumber();
   const locale = i18n.resolvedLanguage ?? i18n.language;
   if (data.intuitive) {
     return (
@@ -103,9 +111,7 @@ export function NutritionReviewSection({
   const recommendation = data.nutrition;
   const decided = !!data.review?.nutritionReviewedAt;
   const signed = (value: number) =>
-    new Intl.NumberFormat(locale, { signDisplay: 'exceptZero', maximumFractionDigits: 0 }).format(
-      value
-    );
+    formatNumber(value, { signDisplay: 'exceptZero', maximumFractionDigits: 0 });
   const date = (value: number) =>
     new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'short', day: 'numeric' }).format(
       value
@@ -117,10 +123,10 @@ export function NutritionReviewSection({
   if ('trendChangeKg' in why) {
     reason = t(why.key, {
       expenditure: formatInteger(why.expenditure),
-      change: `${new Intl.NumberFormat(locale, {
+      change: `${formatNumber(kgToDisplay(why.trendChangeKg, units), {
         signDisplay: 'exceptZero',
         maximumFractionDigits: 1,
-      }).format(kgToDisplay(why.trendChangeKg, units))} ${weightUnit}`,
+      })} ${weightUnit}`,
     });
   } else if ('expenditure' in why) {
     reason = t(why.key, { expenditure: formatInteger(why.expenditure) });
@@ -316,7 +322,10 @@ export function NutritionReviewSection({
               key={field}
               className={`flex-row items-center px-3 py-2.5 ${index ? 'border-t border-border-light' : ''}`}
             >
-              <Text className="flex-1 text-sm text-text-primary">{t(MACRO_LABEL_KEYS[field])}</Text>
+              <Text className="flex-1 text-sm text-text-primary">
+                {t(MACRO_LABEL_KEYS[field])}
+                <Text className="text-xs text-text-tertiary">{` ${t(MACRO_UNIT_KEYS[field])}`}</Text>
+              </Text>
               <Text className="w-20 text-right text-sm text-text-secondary">
                 {formatInteger(Math.round(current))}
               </Text>

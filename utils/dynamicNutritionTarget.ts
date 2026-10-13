@@ -120,7 +120,15 @@ type DynamicGoalLike = {
 async function resolveDynamicGoalLike(
   goal: DynamicGoalLike,
   date: Date,
-  weekly = false
+  {
+    alwaysReadHistory = false,
+    excludeUnloggedDays = false,
+  }: {
+    /** Read the logged history even when the goal has an explicit trajectory target. */
+    alwaysReadHistory?: boolean;
+    /** Leave unlogged days out of the averages, so a forgotten log is not a day of fasting. */
+    excludeUnloggedDays?: boolean;
+  } = {}
 ): Promise<ResolvedMacros | null> {
   const asOfDayMs = localDayStartMs(date);
   const asOfMetricMaxMs = localDayClosedRangeMaxMs(date);
@@ -140,12 +148,12 @@ async function resolveDynamicGoalLike(
     UserMetricService.getLatestOnOrBefore('weight', asOfMetricMaxMs),
     UserMetricService.getLatestOnOrBefore('height', asOfMetricMaxMs),
     UserMetricService.getLatestOnOrBefore('body_fat', asOfMetricMaxMs),
-    hasExplicitTrajectoryTarget && !weekly
+    hasExplicitTrajectoryTarget && !alwaysReadHistory
       ? Promise.resolve(null)
       : getHistoricalNutritionParams({
           asOfDate: date,
           useWeeklyFatAverages: true,
-          excludeUnloggedDays: weekly,
+          excludeUnloggedDays,
         }),
     SettingsService.getDisableMinimumCalories(),
     SettingsService.getUseBfForCalculations(),
@@ -256,7 +264,7 @@ export async function resolveWeeklyRecommendation(
   goal: NutritionGoal,
   date: Date
 ): Promise<ResolvedMacros | null> {
-  return resolveDynamicGoalLike(goal, date, true);
+  return resolveDynamicGoalLike(goal, date, { alwaysReadHistory: true, excludeUnloggedDays: true });
 }
 
 /**

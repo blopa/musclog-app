@@ -113,6 +113,7 @@ export default function WorkoutsScreen() {
   const [isDiscardInterruptedConfirmVisible, setIsDiscardInterruptedConfirmVisible] =
     useState(false);
   const [isDiscardingInterrupted, setIsDiscardingInterrupted] = useState(false);
+  const [todayCardRefreshKey, setTodayCardRefreshKey] = useState(0);
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({});
   const [editingPlanId, setEditingPlanId] = useState<string | undefined>();
   const [isPlanEditorVisible, setIsPlanEditorVisible] = useState(false);
@@ -292,6 +293,7 @@ export default function WorkoutsScreen() {
             <View className="mb-4 gap-3">
               <WorkoutTodayCard
                 onDiscard={() => setIsDiscardInterruptedConfirmVisible(true)}
+                refreshKey={todayCardRefreshKey}
                 onPreview={(templateId, planId) => setPreviewTarget({ templateId, planId })}
               />
               <WeeklyReviewCard compact />
@@ -557,6 +559,7 @@ export default function WorkoutsScreen() {
             await clearActiveWorkoutLogId();
             await WorkoutService.deleteWorkoutLog(interruptedWorkoutLog.id);
             setInterruptedWorkoutLog(null);
+            setTodayCardRefreshKey((key) => key + 1);
           } catch (err) {
             console.error('Error discarding interrupted workout:', err);
             handleError(err, 'workouts.discardInterrupted');

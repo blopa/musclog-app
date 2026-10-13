@@ -31,10 +31,13 @@ export function WorkoutTodayCard({
   activeOnly = false,
   onPreview,
   onDiscard,
+  refreshKey = 0,
 }: {
   activeOnly?: boolean;
   onPreview?: (templateId: string, planId?: string) => void;
   onDiscard?: () => void;
+  /** Bump to reload the card while it stays focused (e.g. after the host discards the session). */
+  refreshKey?: number;
 }) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
@@ -78,7 +81,7 @@ export function WorkoutTodayCard({
       return () => {
         live = false;
       };
-    }, [activeOnly])
+    }, [activeOnly, refreshKey])
   );
   if (activeOnly && !active) {
     return null;

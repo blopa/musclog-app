@@ -154,26 +154,22 @@ export class WorkoutProgressionService {
 
   static async applyStartProgression(workoutLogId: string): Promise<number> {
     const logExercises = await this.liveLogExercises(workoutLogId);
+    const rules = logExercises.map((row) => parseProgressionRule(row.progressionJson));
     const context = await this.context();
-    if (
-      !context.automatic &&
-      !logExercises.some((row) => parseProgressionRule(row.progressionJson))
-    ) {
+    const hasRule = rules.some((rule) => rule != null);
+    if (!context.automatic && !hasRule) {
       return 0;
     }
     const histories = await Promise.all(
-      logExercises.map((row) =>
+      logExercises.map((row, index) =>
         this.history(
           row.exerciseId,
           workoutLogId,
-          parseProgressionRule(row.progressionJson) ? row.templateExerciseId : undefined
+          rules[index] ? row.templateExerciseId : undefined
         )
       )
     );
-    if (
-      !histories.some((history) => history.length) &&
-      !logExercises.some((row) => parseProgressionRule(row.progressionJson))
-    ) {
+    if (!hasRule && !histories.some((history) => history.length)) {
       return 0;
     }
     const exercises = await fetchMapByIds<Exercise>(
@@ -209,7 +205,7 @@ export class WorkoutProgressionService {
           const planned = sets
             .filter((set) => set.logExerciseId === row.id && !isWarmupSet(set))
             .sort((a, b) => a.setOrder - b.setOrder);
-          const rule = parseProgressionRule(row.progressionJson);
+          const rule = rules[index];
           const projection = projectExerciseProgression({
             planned: planned.map((set) => ({ id: set.id, weight: set.weight, reps: set.reps })),
             history: histories[index],

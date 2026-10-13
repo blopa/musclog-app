@@ -1006,20 +1006,30 @@ it('counts flagged fasts as food days and points the review at the days it is mi
     // the reviewed week, never today.
     expect(short.gaps).toEqual({ foodDay: day(4), weightDay: day(6) });
 
-    // Day 4 flagged as a fast, and two weigh-ins: five of seven days is enough to apply.
+    // Day 4 flagged as a fast gives five food days, but two weigh-ins are still not enough: two
+    // noisy readings can fake a trend, so the review asks for another weigh-in on the latest day
+    // that has none.
     (SettingsService.getEnableFastedDay as jest.Mock).mockResolvedValue(true);
     jest
       .spyOn(FastedDayRepository, 'getFastedDayKeysForRange')
       .mockResolvedValue(new Set([utcDayKeyFromLocalDate(new Date(day(4)))]));
-    jest.spyOn(UserMetricService, 'getMetricsHistory').mockResolvedValue(
-      [1, 5].map((offset) => ({
-        date: day(offset) + 8 * 3600_000,
-        timezone: null,
-        getDecrypted: async () => ({ value: 80, unit: 'kg' }),
-      })) as any
-    );
+    const weighIns = (offsets: number[]) =>
+      jest.spyOn(UserMetricService, 'getMetricsHistory').mockResolvedValue(
+        offsets.map((offset) => ({
+          date: day(offset) + 8 * 3600_000,
+          timezone: null,
+          getDecrypted: async () => ({ value: 80, unit: 'kg' }),
+        })) as any
+      );
+    weighIns([1, 5]);
+    const twoWeighIns = await WeeklyReviewService.overview();
+    expect(twoWeighIns.nutrition).toMatchObject({ foodDays: 5, weightDays: 2, canApply: false });
+    expect(twoWeighIns.gaps).toEqual({ foodDay: null, weightDay: day(6) });
+
+    // The third weigh-in makes the week usable.
+    weighIns([1, 3, 5]);
     const enough = await WeeklyReviewService.overview();
-    expect(enough.nutrition).toMatchObject({ foodDays: 5, weightDays: 2, canApply: true });
+    expect(enough.nutrition).toMatchObject({ foodDays: 5, weightDays: 3, canApply: true });
     expect(enough.gaps).toEqual({ foodDay: null, weightDay: null });
   } finally {
     (resolveWeeklyRecommendation as jest.Mock).mockResolvedValue(null);
