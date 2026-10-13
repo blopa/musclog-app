@@ -1249,44 +1249,68 @@ export class WorkoutTemplateService {
   > {
     const templates = await WorkoutTemplateRepository.getArchived().fetch();
 
-    const templatesWithMetadata = await Promise.all(
-      templates.map(async (template) => {
-        const templateExercises = await database
-          .get<WorkoutTemplateExercise>('workout_template_exercises')
-          .query(Q.where('template_id', template.id), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
+    if (!templates.length) {
+      return [];
+    }
 
-        const exerciseCount = templateExercises.length;
+    const templateIds = templates.map((t) => t.id);
 
-        const workoutLogs = await database
-          .get<WorkoutLog>('workout_logs')
-          .query(
-            Q.where('template_id', template.id),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('completed_at', Q.desc)
-          )
-          .fetch();
+    const allExercises = await database
+      .get<WorkoutTemplateExercise>('workout_template_exercises')
+      .query(Q.where('template_id', Q.oneOf(templateIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
 
-        const lastWorkoutLog = workoutLogs[0];
+    const allWorkoutLogs = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(Q.where('template_id', Q.oneOf(templateIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
 
-        let lastCompleted: string | undefined;
-        let lastCompletedTimestamp: number | undefined;
+    const exercisesByTemplateId = new Map<string, WorkoutTemplateExercise[]>();
+    for (const exercise of allExercises) {
+      const arr = exercisesByTemplateId.get(exercise.templateId) || [];
+      arr.push(exercise);
+      exercisesByTemplateId.set(exercise.templateId, arr);
+    }
 
-        if (lastWorkoutLog?.completedAt) {
-          lastCompletedTimestamp = lastWorkoutLog.completedAt;
-          lastCompleted = this.formatRelativeDate(lastCompletedTimestamp);
-        }
+    const logsByTemplateId = new Map<string, WorkoutLog[]>();
+    for (const log of allWorkoutLogs) {
+      const arr = logsByTemplateId.get(log.templateId) || [];
+      arr.push(log);
+      logsByTemplateId.set(log.templateId, arr);
+    }
 
-        return {
-          id: template.id,
-          name: template.name,
-          description: template.description,
-          exerciseCount,
-          lastCompleted,
-          lastCompletedTimestamp,
-        };
-      })
-    );
+    const templatesWithMetadata = templates.map((template) => {
+      const templateExercises = exercisesByTemplateId.get(template.id) || [];
+      const exerciseCount = templateExercises.length;
+
+      const workoutLogs = logsByTemplateId.get(template.id) || [];
+
+      // Sort logs by completed_at desc
+      workoutLogs.sort((a, b) => {
+        const timeA = a.completedAt || 0;
+        const timeB = b.completedAt || 0;
+        return timeB - timeA;
+      });
+
+      const lastWorkoutLog = workoutLogs[0];
+
+      let lastCompleted: string | undefined;
+      let lastCompletedTimestamp: number | undefined;
+
+      if (lastWorkoutLog?.completedAt) {
+        lastCompletedTimestamp = lastWorkoutLog.completedAt;
+        lastCompleted = this.formatRelativeDate(lastCompletedTimestamp);
+      }
+
+      return {
+        id: template.id,
+        name: template.name,
+        description: template.description,
+        exerciseCount,
+        lastCompleted,
+        lastCompletedTimestamp,
+      };
+    });
 
     return templatesWithMetadata;
   }

@@ -507,31 +507,39 @@ export class FoodPortionService {
         .fetch(),
     ]);
 
-    const foods = (
-      await Promise.all(
-        foodLinks.map(async (row) => {
-          try {
-            const food = await database.get<Food>('foods').find(row.foodId);
-            return food.deletedAt ? null : food.name;
-          } catch {
-            return null;
-          }
-        })
-      )
-    ).filter((name): name is string => !!name);
+    const foodIds = Array.from(new Set(foodLinks.map((row) => row.foodId)));
+    let fetchedFoods: Food[] = [];
+    if (foodIds.length > 0) {
+      fetchedFoods = await database
+        .get<Food>('foods')
+        .query(Q.where('id', Q.oneOf(foodIds)))
+        .fetch();
+    }
+    const foodMap = new Map<string, Food>(fetchedFoods.map((f) => [f.id, f]));
 
-    const meals = (
-      await Promise.all(
-        mealLinks.map(async (row) => {
-          try {
-            const meal = await database.get<Meal>('meals').find(row.mealId);
-            return meal.deletedAt ? null : meal.name;
-          } catch {
-            return null;
-          }
-        })
-      )
-    ).filter((name): name is string => !!name);
+    const foods = foodLinks
+      .map((row) => {
+        const food = foodMap.get(row.foodId);
+        return food && !food.deletedAt ? food.name : null;
+      })
+      .filter((name): name is string => !!name);
+
+    const mealIds = Array.from(new Set(mealLinks.map((row) => row.mealId)));
+    let fetchedMeals: Meal[] = [];
+    if (mealIds.length > 0) {
+      fetchedMeals = await database
+        .get<Meal>('meals')
+        .query(Q.where('id', Q.oneOf(mealIds)))
+        .fetch();
+    }
+    const mealMap = new Map<string, Meal>(fetchedMeals.map((m) => [m.id, m]));
+
+    const meals = mealLinks
+      .map((row) => {
+        const meal = mealMap.get(row.mealId);
+        return meal && !meal.deletedAt ? meal.name : null;
+      })
+      .filter((name): name is string => !!name);
 
     return { foods: Array.from(new Set(foods)), meals: Array.from(new Set(meals)) };
   }
