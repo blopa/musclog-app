@@ -30,21 +30,22 @@ import {
 } from '@/database/models/muscleGroupFamily';
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestionService';
+import {
+  EQUIPMENT_LABEL_KEYS,
+  FAMILY_LABEL_KEYS,
+  INJURY_EXPIRY_LABEL_KEYS,
+  REMEMBER_CHOICE_KEYS,
+  SUBSTITUTION_REASON_KEYS,
+} from '@/components/workout/restrictionLabelKeys';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
 import {
-  buildExerciseSearchText,
-  exerciseSearchTerms,
-  matchesExerciseSearch,
-} from '@/utils/exerciseSearch';
-import {
   activeRestrictionFor,
   INJURY_EXPIRY_OPTIONS,
   type InjuryExpiryOption,
   injuryExpiryTimestamp,
-  isExerciseSuggestible,
   rankSubstitutes,
   restrictionKindForReason,
   SUBSTITUTION_REASONS,
@@ -75,7 +76,6 @@ type ReplaceExerciseModalProps = {
   onReplace: (exercise: ReplaceExerciseData, outcome: SubstitutionOutcome) => void;
   /** The exercise being replaced: drives the suggestions and the default region tab. */
   currentExerciseId?: string;
-  exercises?: ReplaceExerciseData[];
 };
 
 type FamilyTab = 'all' | MuscleGroupFamily;
@@ -113,7 +113,6 @@ export function ReplaceExerciseModal({
   onClose,
   onReplace,
   currentExerciseId,
-  exercises: exercisesProp,
 }: ReplaceExerciseModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -196,7 +195,7 @@ export function ReplaceExerciseModal({
     loadMore,
   } = useExercises({
     mode: 'list',
-    visible: visible && exercisesProp === undefined,
+    visible,
     muscleGroups,
     equipmentTypes,
     excludeIds,
@@ -208,7 +207,7 @@ export function ReplaceExerciseModal({
 
   // Ranked suggestions: same body region, then mechanic and equipment; never a restricted exercise.
   useEffect(() => {
-    if (!visible || exercisesProp !== undefined || !current) {
+    if (!visible || !current) {
       return;
     }
     let cancelled = false;
@@ -228,39 +227,21 @@ export function ReplaceExerciseModal({
     return () => {
       cancelled = true;
     };
-  }, [visible, exercisesProp, current, suggestionContext]);
+  }, [visible, current, suggestionContext]);
 
-  const showSuggestions =
-    exercisesProp === undefined && !searchQuery.trim() && suggested.length > 0;
+  const showSuggestions = !searchQuery.trim() && suggested.length > 0;
   const suggestedIds = useMemo(
     () => new Set(suggested.map((exercise) => exercise.id)),
     [suggested]
   );
 
-  const displayList: ReplaceExerciseData[] = useMemo(() => {
-    if (exercisesProp !== undefined) {
-      const terms = exerciseSearchTerms(searchQuery);
-      return exercisesProp.filter(
-        (exercise) =>
-          exercise.id !== currentExerciseId &&
-          isExerciseSuggestible(exercise, suggestionContext) &&
-          matchesExerciseSearch(buildExerciseSearchText({ names: [exercise.name] }), terms) &&
-          (family === 'all' || muscleGroupFamily(exercise.muscleGroup) === family)
-      );
-    }
-    return exercisesFromHook
-      .map(exerciseToReplaceData)
-      .filter((exercise) => !showSuggestions || !suggestedIds.has(exercise.id));
-  }, [
-    exercisesProp,
-    exercisesFromHook,
-    searchQuery,
-    family,
-    currentExerciseId,
-    suggestionContext,
-    showSuggestions,
-    suggestedIds,
-  ]);
+  const displayList: ReplaceExerciseData[] = useMemo(
+    () =>
+      exercisesFromHook
+        .map(exerciseToReplaceData)
+        .filter((exercise) => !showSuggestions || !suggestedIds.has(exercise.id)),
+    [exercisesFromHook, showSuggestions, suggestedIds]
+  );
 
   const everythingShown = useMemo(
     () => [...(showSuggestions ? suggested : []), ...displayList],
@@ -309,7 +290,7 @@ export function ReplaceExerciseModal({
     };
   };
 
-  const tabs = FAMILY_TABS.map((id) => ({ id, label: t(`replaceExercise.families.${id}`) }));
+  const tabs = FAMILY_TABS.map((id) => ({ id, label: t(FAMILY_LABEL_KEYS[id]) }));
 
   const chosen = everythingShown.find((exercise) => exercise.id === selectedExercise);
   const removableEquipment =
@@ -350,8 +331,8 @@ export function ReplaceExerciseModal({
 
   const reasonOptions: SelectorOption<SubstitutionReason>[] = SUBSTITUTION_REASONS.map((id) => ({
     id,
-    label: t(`replaceExercise.reason.options.${id}`),
-    description: t(`replaceExercise.reason.descriptions.${id}`),
+    label: t(SUBSTITUTION_REASON_KEYS[id].label),
+    description: t(SUBSTITUTION_REASON_KEYS[id].description),
     icon: REASON_ICONS[id],
     iconBgColor: theme.colors.background.iconDark,
     iconColor: theme.colors.text.primary,
@@ -487,7 +468,7 @@ export function ReplaceExerciseModal({
                     onSelect={(id) => setSelectedExercise(id)}
                   />
                 ) : null}
-                {exercisesProp === undefined && hasMore ? (
+                {hasMore ? (
                   <View className="py-4">
                     <Button
                       label={
@@ -538,10 +519,10 @@ export function ReplaceExerciseModal({
                   items={[
                     {
                       key: 'remember',
-                      label: t(`replaceExercise.reason.remember.${impliedKind}`, {
+                      label: t(REMEMBER_CHOICE_KEYS[impliedKind].label, {
                         name: current?.name ?? '',
                       }),
-                      subtitle: t(`replaceExercise.reason.rememberHint.${impliedKind}`),
+                      subtitle: t(REMEMBER_CHOICE_KEYS[impliedKind].hint),
                       value: rememberChoice,
                       onValueChange: setRememberChoice,
                     },
@@ -556,7 +537,7 @@ export function ReplaceExerciseModal({
                           key={option}
                           selected={selected}
                           onPress={() => setInjuryExpiry(option)}
-                          label={t(`workoutSettings.restrictions.expiry.${option}`)}
+                          label={t(INJURY_EXPIRY_LABEL_KEYS[option])}
                         />
                       );
                     })}
@@ -571,7 +552,7 @@ export function ReplaceExerciseModal({
                   {
                     key: 'removeEquipment',
                     label: t('replaceExercise.reason.removeEquipment', {
-                      equipment: t(`exercises.equipmentTypes.${current.equipmentType}`),
+                      equipment: t(EQUIPMENT_LABEL_KEYS[current.equipmentType]),
                       gym: gym.name,
                     }),
                     subtitle: t('replaceExercise.reason.removeEquipmentHint'),

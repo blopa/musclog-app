@@ -31,6 +31,12 @@ export interface StartTargetInput {
    */
   failedBefore?: boolean;
   /**
+   * The session before `last` also fell short of the planned reps at the same load. Rated effort
+   * alone cannot see this stall — a lifter missing reps at 1 in reserve never reaches 0 — so two
+   * misses in a row deload just as two sessions at failure do.
+   */
+  missedPlanBefore?: boolean;
+  /**
    * The reps the plan prescribes, when there is a plan. `reps_first` then works upward from them
    * instead of from a generic range, so a 5-rep strength block stays a 5-rep block.
    */
@@ -88,6 +94,16 @@ export const loadStepIsUsable = (loadKg: number, incrementKg: number): boolean =
  * nothing. Matches the linear rule's default deload.
  */
 const DELOAD_SHARE = 0.1;
+
+/**
+ * The load after a deload: a share of the load or one step, whichever is larger. Every deload in
+ * the app (automatic and rule-based) goes through here, so a barbell lift never "deloads" by a
+ * single 2.5 kg step that clears nothing.
+ */
+export const deloadedLoad = (
+  loadKg: number,
+  { incrementKg, roundLoad }: { incrementKg: number; roundLoad: (kg: number) => number }
+): number => roundLoad(Math.max(0, loadKg - Math.max(incrementKg, loadKg * DELOAD_SHARE)));
 
 /** The default reps for an exercise with no history. */
 export const defaultRepsFor = (isCompound: boolean): number =>
@@ -152,8 +168,9 @@ function computeUnratedTarget({
  *  - Target effort met or beaten (average ≥ the target reps in reserve) and the planned reps hit:
  *    progress. `weight_first` adds one increment; `reps_first` adds a rep until the top of the range (`repsFirstRange`), then adds
  *    the increment and resets to the bottom.
- *  - Nothing left (average 0) for the second session in a row at this load: deload by one
- *    increment. The first such session repeats — one hard day is noise, not a stall.
+ *  - Nothing left (average 0), or the planned reps missed, for the second session in a row at
+ *    this load: deload (`deloadedLoad`). The first such session repeats — one hard day is noise,
+ *    not a stall.
  *  - Otherwise: repeat last time.
  *  - Effort never rated: double progression on reps alone (`computeUnratedTarget`).
  */
@@ -161,6 +178,7 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
   const {
     last,
     failedBefore = false,
+    missedPlanBefore = false,
     planReps,
     progressionMode,
     isCompound,
@@ -199,11 +217,9 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
     return { weightKg: roundLoad(last.weightKg + incrementKg), reps: minReps, kind: 'progression' };
   }
 
-  if (averageRir === 0 && failedBefore) {
+  if ((averageRir === 0 && failedBefore) || (!hitPlan && missedPlanBefore)) {
     return {
-      weightKg: roundLoad(
-        Math.max(0, last.weightKg - Math.max(incrementKg, last.weightKg * DELOAD_SHARE))
-      ),
+      weightKg: deloadedLoad(last.weightKg, { incrementKg, roundLoad }),
       reps: last.reps,
       kind: 'deload',
     };

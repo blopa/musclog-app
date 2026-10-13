@@ -33,6 +33,11 @@ export const WARMUP_RAMP: readonly { fraction: number; reps: number }[] = [
   { fraction: 0.8, reps: 2 },
 ];
 
+/** Reps of the empty-bar set that opens a barbell ramp: grooves the pattern before any load. */
+export const EMPTY_BAR_REPS = 10;
+/** The empty bar is only worth a set when the first ramp set is at least this much heavier. */
+const EMPTY_BAR_MIN_RAMP_RATIO = 1.5;
+
 /** A warm-up this close to the working weight is not a warm-up, it is the first working set. */
 const MAX_WARMUP_FRACTION_OF_WORKING = 0.9;
 /** Rest after a warm-up set. Shorter than between working sets: nothing here needs recovering from. */
@@ -45,7 +50,8 @@ interface WarmupOptions {
 }
 
 /**
- * Warm-up sets for a working weight, lightest first. Empty when there is nothing sensible to ramp:
+ * Warm-up sets for a working weight, lightest first (a barbell lift opens with the empty bar when
+ * the ramp's first set is well above it). Empty when there is nothing sensible to ramp:
  * a bodyweight or unloaded exercise, or a bar-loaded lift whose working weight is little more than
  * the empty bar (the bar IS the warm-up).
  *
@@ -93,6 +99,12 @@ export function buildWarmupSets(
     }
     seen.add(snapped);
     sets.push({ weightKg: snapped, reps });
+  }
+
+  // A barbell lift opens with the empty bar — unless the lightest ramp set already is (or is barely
+  // above) it, when a separate bar set would be a duplicate.
+  if (barLoaded && sets.length > 0 && sets[0].weightKg >= barKg * EMPTY_BAR_MIN_RAMP_RATIO) {
+    sets.unshift({ weightKg: barKg, reps: EMPTY_BAR_REPS });
   }
 
   return sets;

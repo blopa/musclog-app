@@ -15,6 +15,7 @@ import { TextButton } from '@/components/theme/TextButton';
 import { nutritionTargetMode } from '@/database/services/NutritionTargetService';
 import {
   MIN_WEEKLY_FOOD_DAYS,
+  MIN_WEEKLY_WEIGHT_ENTRIES,
   type WeeklyReviewService,
 } from '@/database/services/WeeklyReviewService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -22,7 +23,6 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
-import { MIN_WEIGHT_ENTRIES } from '@/utils/historicalNutritionParams';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -128,7 +128,7 @@ export function NutritionReviewSection({
     // `collectData` states the thresholds `canApply` checks, so the copy cannot drift from them.
     reason = t(why.key, {
       food: formatInteger(MIN_WEEKLY_FOOD_DAYS),
-      weight: formatInteger(MIN_WEIGHT_ENTRIES),
+      weight: formatInteger(MIN_WEEKLY_WEIGHT_ENTRIES),
     });
   }
   const largeChange =

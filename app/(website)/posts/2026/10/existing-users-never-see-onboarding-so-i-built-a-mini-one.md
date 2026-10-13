@@ -35,15 +35,15 @@ Tapping a choice saves it immediately. There's no Save button and no "apply at t
 
 ## A release is a JSON file
 
-The tour content is not React. For each app version there's a file, `data/whatsNew/2.13.0.json`, with ordered pages and blocks:
+The tour content is not React. For each app version there's a file, `data/whatsNew/2.13.1.json`, with ordered pages and blocks:
 
 ```json
 {
   "id": "workoutAutonomy",
   "type": "choice",
   "setting": "workoutAutonomy",
-  "titleKey": "whatsNew.releases.v2_13_0.workoutAutonomy.title",
-  "descriptionKey": "whatsNew.releases.v2_13_0.workoutAutonomy.description",
+  "titleKey": "whatsNew.releases.v2_13_1.workoutAutonomy.title",
+  "descriptionKey": "whatsNew.releases.v2_13_1.workoutAutonomy.description",
   "options": [
     { "value": "suggest", "labelKey": "…suggest.label", "icon": "sparkles" },
     { "value": "manual", "labelKey": "…manual.label", "icon": "list" }
@@ -83,7 +83,7 @@ At startup each file is parsed by a validator that fails at the smallest usable 
 
 My first instinct for tracking this was a stored value: the version of the last announcement the user saw. That breaks down quickly. The question the app really needs to answer is _which versions has this person already been told about_, and that has nothing to do with whether a given release had an announcement.
 
-So the stored value means **seen through this app version**. Open the app on 2.13.0 and the record becomes 2.13.0, whether or not there was anything to show. Two properties fall out of that:
+So the stored value means **seen through this app version**. Open the app on 2.13.1 and the record becomes 2.13.1, whether or not there was anything to show. Two properties fall out of that:
 
 - It only moves forward, including when an update has no announcement and when somebody downgrades. A downgrade never makes an old tour reappear.
 - The tour is just a filter: every release newer than what you've seen and no newer than the version you're running.

@@ -43,7 +43,7 @@ function summarize(session: HistorySession) {
     weightKg: session.sets[0].weightKg,
     reps: session.sets[0].reps,
     lowestReps: Math.min(...session.sets.map((set) => set.reps)),
-    complete: session.allPrescribedSetsPerformed !== false,
+    complete: session.allPrescribedSetsPerformed,
     averageRepsInReserve: rated.length
       ? rated.reduce((sum, set) => sum + set.repsInReserve, 0) / rated.length
       : 0,
@@ -83,12 +83,19 @@ export function projectExerciseProgression(input: {
       before.rirRecorded &&
       before.averageRepsInReserve === 0 &&
       sameLoad(before.weightKg, last.weightKg);
+    const planReps = input.plannedFromHistory ? undefined : planned[0]?.reps;
+    const missedPlanBefore =
+      before != null &&
+      planReps != null &&
+      before.lowestReps < planReps &&
+      sameLoad(before.weightKg, last.weightKg);
     changes = planStartChanges(
       planned,
       computeStartTarget({
         last,
         failedBefore,
-        planReps: input.plannedFromHistory ? undefined : planned[0]?.reps,
+        missedPlanBefore,
+        planReps,
         ...step,
         progressionMode:
           input.isBodyweight && last.weightKg === 0 ? 'reps_first' : input.progressionMode,

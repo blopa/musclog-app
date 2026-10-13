@@ -2,7 +2,7 @@ import type { GymSnapshot } from '../gym';
 import { defaultBarWeightKg, defaultPlates } from '../gym';
 import { platesPerSide } from '../plateCalculator';
 import { displayToKg } from '../unitConversion';
-import { buildWarmupSets, WARMUP_RAMP, warmupOfferFor } from '../warmupSets';
+import { buildWarmupSets, EMPTY_BAR_REPS, WARMUP_RAMP, warmupOfferFor } from '../warmupSets';
 
 const gym: GymSnapshot = {
   id: 'g',
@@ -17,12 +17,19 @@ const metric = (equipmentType: string, workingKg: number, withGym: GymSnapshot |
   buildWarmupSets(workingKg, { gym: withGym, equipmentType, units: 'metric' });
 
 describe('buildWarmupSets', () => {
-  it('ramps a barbell lift: 40%, 60% and 80% of the working weight, getting lighter in reps', () => {
+  it('opens a heavy barbell lift with the empty bar, then ramps 40%, 60% and 80% of the working weight', () => {
     expect(metric('barbell', 100)).toEqual([
+      { weightKg: 20, reps: EMPTY_BAR_REPS },
       { weightKg: 40, reps: 5 },
       { weightKg: 60, reps: 3 },
       { weightKg: 80, reps: 2 },
     ]);
+  });
+
+  it('skips the empty-bar set when the first ramp set is already about the bar', () => {
+    // 40% of 60 kg snaps to 25 kg: a separate 20 kg set would be a duplicate of it.
+    expect(metric('barbell', 60)[0]).toEqual({ weightKg: 25, reps: 5 });
+    expect(metric('dumbbell', 100).some((set) => set.reps === EMPTY_BAR_REPS)).toBe(false);
   });
 
   it('snaps every weight to something the bar can be loaded to', () => {
@@ -73,7 +80,7 @@ describe('buildWarmupSets', () => {
   });
 
   it('is always strictly ascending, below 90% of the working weight, in the ramp reps, and loadable', () => {
-    const repsInRamp = WARMUP_RAMP.map((step) => step.reps);
+    const repsInRamp = [...WARMUP_RAMP.map((step) => step.reps), EMPTY_BAR_REPS];
 
     for (let working = 30; working <= 260; working += 7.5) {
       const sets = metric('barbell', working);

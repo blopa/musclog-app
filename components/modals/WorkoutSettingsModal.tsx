@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
+import { RESTRICTION_KIND_LABEL_KEYS } from '@/components/workout/restrictionLabelKeys';
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextButton } from '@/components/theme/TextButton';
@@ -90,7 +91,7 @@ function RestrictionRow({ row }: { row: ExerciseRestriction }) {
           {name || t('exercises.manageExerciseData.unknownExercise')}
         </Text>
         <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-          {t(`workoutSettings.restrictions.kind.${row.kind}`)}
+          {t(RESTRICTION_KIND_LABEL_KEYS[row.kind])}
           {detail ? ` · ${detail}` : ''}
         </Text>
       </View>

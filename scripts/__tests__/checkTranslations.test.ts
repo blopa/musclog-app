@@ -73,7 +73,7 @@ it('treats i18next plural variants as satisfying and using their base key', () =
 });
 
 it('finds nested JSON keys, protects them from cleanup, and reports missing ones', () => {
-  const filePath = join(fixtureDir, '2.13.0.json');
+  const filePath = join(fixtureDir, '2.13.1.json');
   writeFileSync(
     filePath,
     JSON.stringify({
@@ -96,11 +96,11 @@ it('finds nested JSON keys, protects them from cleanup, and reports missing ones
   scanner.findMissingTranslations();
   expect(scanner.missingKeys).toEqual(new Set(['whatsNew.missing']));
   expect(scanner.missingKeyLocations.get('whatsNew.missing')[0].file).toBe(filePath);
-  expect(scanner.findFilesToScan()).toContain(join(__dirname, '../../data/whatsNew/2.13.0.json'));
+  expect(scanner.findFilesToScan()).toContain(join(__dirname, '../../data/whatsNew/2.13.1.json'));
 });
 
 it('reports malformed release JSON as a scan error', () => {
-  const filePath = join(fixtureDir, '2.13.0.json');
+  const filePath = join(fixtureDir, '2.13.1.json');
   writeFileSync(filePath, '{bad');
   const scanner = new TranslationScanner();
   const log = jest.spyOn(console, 'error').mockImplementation(() => undefined);

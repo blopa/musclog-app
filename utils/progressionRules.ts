@@ -1,6 +1,6 @@
 import { sameLoad } from './sameLoad';
 import type { StartAdjustmentCause, StartRuleDetail } from './setAdjustment';
-import type { StartSetChange } from './setProgression';
+import { deloadedLoad, type StartSetChange } from './setProgression';
 import { calculateAverage1RM } from './workoutCalculator';
 
 /**
@@ -236,7 +236,8 @@ export type HistorySet = {
 
 /** A past session of the exercise, as far as a rule is concerned. */
 export type HistorySession = {
-  allPrescribedSetsPerformed?: boolean;
+  /** Every prescribed working set of that session was performed. */
+  allPrescribedSetsPerformed: boolean;
   /** Its performed working sets in set order; never empty. */
   sets: HistorySet[];
   /** The rule that session ran under, and what it remembered. Absent for an unruled session. */
@@ -269,6 +270,10 @@ type SetTarget = {
   cause: StartAdjustmentCause;
   rule: StartRuleDetail;
 };
+
+/** The performed set that stood at prescription position `index` last time, if any. */
+const counterpartAt = (sets: readonly HistorySet[], index: number): HistorySet | undefined =>
+  sets.find((set, i) => (set.prescribedIndex ?? i) === index);
 
 const causeFromLoad = (next: number, previous: number): StartAdjustmentCause =>
   sameLoad(next, previous) ? 'repeat' : next > previous ? 'progression' : 'deload';
@@ -304,7 +309,7 @@ function rangeTarget(
   if (bestReps < repMin && last.weightKg > 0) {
     return missedBefore
       ? {
-          weightKg: step.roundLoad(Math.max(0, last.weightKg - step.incrementKg)),
+          weightKg: deloadedLoad(last.weightKg, step),
           reps: repMin,
           cause: 'deload',
           rule: { kind: 'range', outcome: 'deload', ...range },
@@ -342,7 +347,7 @@ function missedAtSameLoad(
   const sets =
     setIndex == null
       ? before.sets
-      : before.sets.filter((set, i) => (set.prescribedIndex ?? i) === setIndex);
+      : [counterpartAt(before.sets, setIndex)].filter((set): set is HistorySet => !!set);
   return (
     sets.length > 0 &&
     sameLoad(sets[0].weightKg, lastLoadKg) &&
@@ -359,7 +364,7 @@ function doubleProgressionTargets(
   step: RuleLoadStep
 ): SetTarget[] {
   const allReachedTop =
-    last.allPrescribedSetsPerformed !== false &&
+    last.allPrescribedSetsPerformed &&
     last.sets.length >= planned.length &&
     last.sets.every((set) => set.reps >= rule.repMax);
   const bestReps = Math.max(...last.sets.map((set) => set.reps));
@@ -377,7 +382,7 @@ function doubleProgressionTargets(
     return planned.map(() => lead);
   }
   return planned.map((_, index) => {
-    const counterpart = last.sets.find((set, i) => (set.prescribedIndex ?? i) === index) ?? {
+    const counterpart = counterpartAt(last.sets, index) ?? {
       weightKg: planned[index].weight,
       reps: rule.repMin - 1,
       repsInReserve: 0,
@@ -393,9 +398,16 @@ function doubleProgressionTargets(
 }
 
 const sessionGotEveryRep = (session: HistorySession, reps: number) =>
-  session.allPrescribedSetsPerformed !== false &&
+  session.allPrescribedSetsPerformed &&
   session.sets.length > 0 &&
   session.sets.every((set) => set.reps >= reps);
+
+const linearDetail = (rule: LinearProgressionRule) => ({
+  kind: 'linear' as const,
+  reps: rule.reps,
+  failuresBeforeDeload: rule.failuresBeforeDeload,
+  deloadPercent: rule.deloadPercent,
+});
 
 /**
  * Linear progression. Misses are counted only at the load of the last session: after a deload the
@@ -408,12 +420,7 @@ function linearTargets(
   step: RuleLoadStep
 ): SetTarget[] {
   const lastLoad = history[0].sets[0].weightKg;
-  const detail = {
-    kind: 'linear' as const,
-    reps: rule.reps,
-    failuresBeforeDeload: rule.failuresBeforeDeload,
-    deloadPercent: rule.deloadPercent,
-  };
+  const detail = linearDetail(rule);
 
   let target: SetTarget;
   if (sessionGotEveryRep(history[0], rule.reps)) {
@@ -497,7 +504,7 @@ function topSetBackoffTargets(
   before: HistorySession | undefined,
   step: RuleLoadStep
 ): SetTarget[] {
-  const lastTop = last.sets.find((set, index) => (set.prescribedIndex ?? index) === 0);
+  const lastTop = counterpartAt(last.sets, 0);
   if (!lastTop) {
     return topSetBackoffWithoutHistory(rule, planned, step);
   }
@@ -514,7 +521,7 @@ function topSetBackoffTargets(
   );
   const backoffLoad = step.roundLoad((top.weightKg * rule.backoffPercent) / 100);
   const lastBackoffLoad =
-    last.sets.find((set, index) => (set.prescribedIndex ?? index) === 1)?.weightKg ?? backoffLoad;
+    counterpartAt(last.sets, 1)?.weightKg ?? backoffLoad;
   const backoff: SetTarget = {
     weightKg: backoffLoad,
     reps: rule.backoffReps,
@@ -610,6 +617,55 @@ function percentageTargets(
   };
 }
 
+/** What a rule prescribes for an exercise with no history: the plan, held, in the rule's terms. */
+function targetsWithoutHistory(
+  rule: Exclude<ProgressionRule, PercentageRule>,
+  planned: readonly PlannedRuleSet[],
+  step: RuleLoadStep
+): SetTarget[] {
+  switch (rule.type) {
+    case 'top_set_backoff':
+      return topSetBackoffWithoutHistory(rule, planned, step);
+    case 'linear':
+      return planned.map((set) => ({
+        weightKg: set.weight,
+        reps: rule.reps,
+        cause: 'repeat',
+        rule: { ...linearDetail(rule), outcome: 'hold', failures: 0 },
+      }));
+    case 'double_progression':
+      return planned.map((set) => ({
+        weightKg: set.weight,
+        reps: rule.repMin,
+        cause: 'repeat',
+        rule: { kind: 'range', repMin: rule.repMin, repMax: rule.repMax, outcome: 'hold' },
+      }));
+  }
+}
+
+function ruleTargets(
+  rule: ProgressionRule,
+  planned: readonly PlannedRuleSet[],
+  history: readonly HistorySession[],
+  step: RuleLoadStep
+): { targets: SetTarget[]; state: ProgressionSessionState | null } {
+  if (rule.type === 'percentage') {
+    return percentageTargets(rule, planned, history, step);
+  }
+  if (history.length === 0) {
+    return { targets: targetsWithoutHistory(rule, planned, step), state: null };
+  }
+  const [last, before] = history;
+  switch (rule.type) {
+    case 'double_progression':
+      return { targets: doubleProgressionTargets(rule, planned, last, before, step), state: null };
+    case 'linear':
+      return { targets: linearTargets(rule, planned, history, step), state: null };
+    case 'top_set_backoff':
+      return { targets: topSetBackoffTargets(rule, planned, last, before, step), state: null };
+  }
+}
+
 /**
  * The start-of-workout changes a rule makes to an exercise's planned working sets (warm-ups
  * excluded, in set order), each with the explanation it carries.
@@ -629,38 +685,7 @@ export function planRuleChanges(
     return { changes: [], state: null };
   }
 
-  let targets: SetTarget[];
-  let state: ProgressionSessionState | null = null;
-  if (rule.type === 'percentage') {
-    ({ targets, state } = percentageTargets(rule, planned, history, step));
-  } else if (history.length === 0) {
-    if (rule.type === 'top_set_backoff') {
-      targets = topSetBackoffWithoutHistory(rule, planned, step);
-    } else {
-      targets = planned.map((set) => ({
-        weightKg: set.weight,
-        reps: rule.type === 'linear' ? rule.reps : rule.repMin,
-        cause: 'repeat',
-        rule:
-          rule.type === 'linear'
-            ? {
-                kind: 'linear',
-                reps: rule.reps,
-                failuresBeforeDeload: rule.failuresBeforeDeload,
-                deloadPercent: rule.deloadPercent,
-                outcome: 'hold',
-                failures: 0,
-              }
-            : { kind: 'range', repMin: rule.repMin, repMax: rule.repMax, outcome: 'hold' },
-      }));
-    }
-  } else if (rule.type === 'double_progression') {
-    targets = doubleProgressionTargets(rule, planned, history[0], history[1], step);
-  } else if (rule.type === 'linear') {
-    targets = linearTargets(rule, planned, history, step);
-  } else {
-    targets = topSetBackoffTargets(rule, planned, history[0], history[1], step);
-  }
+  const { targets, state } = ruleTargets(rule, planned, history, step);
 
   const lastSets = history[0]?.sets ?? [];
   const changes: StartSetChange[] = [];
@@ -672,7 +697,7 @@ export function planRuleChanges(
     }
 
     const field = weightChanged ? 'weight' : 'reps';
-    const counterpart = lastSets.find((set, i) => (set.prescribedIndex ?? i) === index);
+    const counterpart = counterpartAt(lastSets, index);
     changes.push({
       setId: set.id,
       weightKg: target.weightKg,

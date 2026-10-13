@@ -8,6 +8,10 @@ import {
   ExerciseRestrictionService,
   MAX_EXERCISE_RESTRICTIONS,
 } from '@/database/services/ExerciseRestrictionService';
+import {
+  INJURY_EXPIRY_LABEL_KEYS,
+  RESTRICTION_CHOICE_KEYS,
+} from '@/components/workout/restrictionLabelKeys';
 import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -39,6 +43,7 @@ export function ExerciseRestrictionSection({ exerciseId }: ExerciseRestrictionSe
 
   const row = rows.find((candidate) => candidate.exerciseId === exerciseId);
   const choice: Choice = row?.kind ?? 'allow';
+  const explainKey = RESTRICTION_CHOICE_KEYS[choice].explain;
   // An existing injury shows the option closest to its stored end date.
   const expiry: InjuryExpiryOption =
     row?.kind === 'injury' ? injuryExpiryOptionFor(row.expiresAt) : pendingExpiry;
@@ -79,7 +84,7 @@ export function ExerciseRestrictionSection({ exerciseId }: ExerciseRestrictionSe
             {CHOICES.map((option) =>
               chip(
                 choice === option,
-                t(`exercises.viewExercise.restriction.${option}`),
+                t(RESTRICTION_CHOICE_KEYS[option].label),
                 () => void apply(option),
                 option
               )
@@ -95,7 +100,7 @@ export function ExerciseRestrictionSection({ exerciseId }: ExerciseRestrictionSe
                 {INJURY_EXPIRY_OPTIONS.map((option) =>
                   chip(
                     expiry === option,
-                    t(`workoutSettings.restrictions.expiry.${option}`),
+                    t(INJURY_EXPIRY_LABEL_KEYS[option]),
                     () => {
                       setPendingExpiry(option);
                       void apply('injury', option);
@@ -107,11 +112,11 @@ export function ExerciseRestrictionSection({ exerciseId }: ExerciseRestrictionSe
             </View>
           ) : null}
 
-          {choice === 'allow' ? null : (
+          {explainKey ? (
             <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
-              {t(`exercises.viewExercise.restriction.explain.${choice}`)}
+              {t(explainKey)}
             </Text>
-          )}
+          ) : null}
           {error ? (
             <Text className="text-sm" style={{ color: theme.colors.status.error }}>
               {error}

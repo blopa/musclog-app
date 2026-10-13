@@ -16,7 +16,6 @@ import {
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
-import { MIN_WEIGHT_ENTRIES } from '@/utils/historicalNutritionParams';
 import {
   calculateTrendWeightSeries,
   TREND_WEIGHT_WARMUP_DAYS,
@@ -64,6 +63,14 @@ export type WeeklyNutritionRecommendation = {
 export const MIN_WEEKLY_FOOD_DAYS = 5;
 
 /**
+ * Days of the reviewed week with a weigh-in before its recommendation can be applied. The weekly
+ * trend moves a target, and two noisy readings (water, sodium, a full gut) can fake a gain or a
+ * loss large enough to swing calories — three days give the smoothed trend something to average.
+ * Stricter than the 30-day history's own `MIN_WEIGHT_ENTRIES`, which only needs two points to fit.
+ */
+export const MIN_WEEKLY_WEIGHT_ENTRIES = 3;
+
+/**
  * The days of a reviewed week the user could still fill in, as local midnights, so the review can
  * open the diary or the weight entry ON one of them. Logging today never counts toward a week that
  * has already closed, which is why "Log food" used to be a dead end.
@@ -74,6 +81,14 @@ export type WeeklyEvidenceGaps = {
   /** The latest day with no weigh-in, when the week is short of weigh-ins. */
   weightDay: number | null;
 };
+
+/**
+ * When the training half of a period was acknowledged. Training is acknowledged once per period,
+ * while nutrition decisions are recorded per goal — so the stamp is read from whichever of the
+ * period's rows carries it, rather than from the row of the goal being looked at.
+ */
+const trainingReviewedAtFor = (reviews: readonly WeeklyReview[], periodEnd: number) =>
+  reviews.find((row) => row.periodEnd === periodEnd && row.trainingReviewedAt)?.trainingReviewedAt;
 
 export class WeeklyReviewService {
   static history(): Promise<WeeklyReview[]> {
@@ -134,95 +149,13 @@ export class WeeklyReviewService {
     ).flat();
     const next = upcoming.find((row) => !row.completedToday);
     const targets = next ? await WorkoutProgressionService.projectTemplate(next.template.id) : [];
-    let nutrition: WeeklyNutritionRecommendation | null = null;
-    let trendWeight: number | null = null;
-    let gaps: WeeklyEvidenceGaps = { foodDay: null, weightDay: null };
     const current = goal
       ? await NutritionTargetService.resolve(goal, saved ? new Date(saved.periodEnd) : new Date())
       : null;
-    if (goal && !intuitive) {
-      const lastDay = new Date(localDayKeyPlusCalendarDays(period.end, -1));
-      const [logs, weights, proposed] = await Promise.all([
-        NutritionService.getNutritionLogsForDateRange(new Date(period.start), lastDay),
-        UserMetricService.getMetricsHistory('weight', {
-          startDate: localDayKeyPlusCalendarDays(period.start, -TREND_WEIGHT_WARMUP_DAYS),
-          endDate: period.end - 1,
-        }),
-        resolveWeeklyRecommendation(goal, lastDay),
-      ]);
-      const startKey = utcDayKeyFromLocalDate(new Date(period.start));
-      const endKey = utcDayKeyFromLocalDate(new Date(period.end));
-      const points = await Promise.all(
-        weights.map(async (weight) => {
-          const data = await weight.getDecrypted();
-          return {
-            date: utcNormalizedDayKey(weight.date, weight.timezone),
-            value: storedWeightToKg(data.value, data.unit),
-          };
-        })
-      );
-      const weightDayKeys = new Set(
-        points
-          .filter((point) => point.date >= startKey && point.date < endKey)
-          .map((point) => point.date)
-      );
-      const weightDays = weightDayKeys.size;
-      // A flagged fast is a real 0-kcal day, exactly as every other average treats it.
-      const { effectiveDayKeys: foodDayKeys } = await getNutritionDayCoverage(logs, {
-        range: dayKeyRange(startKey, utcDayKeyFromLocalDate(lastDay)),
-      });
-      const foodDays = foodDayKeys.size;
-      const days = Array.from({ length: 7 }, (_, offset) =>
-        localDayKeyPlusCalendarDays(period.start, offset)
-      ).filter((day) => day < period.end);
-      const keyOf = (day: number) => utcDayKeyFromLocalDate(new Date(day));
-      gaps = {
-        foodDay:
-          foodDays < MIN_WEEKLY_FOOD_DAYS
-            ? (days.find((day) => !foodDayKeys.has(keyOf(day))) ?? null)
-            : null,
-        weightDay:
-          weightDays < MIN_WEIGHT_ENTRIES
-            ? ([...days].reverse().find((day) => !weightDayKeys.has(keyOf(day))) ?? null)
-            : null,
-      };
-      const series = calculateTrendWeightSeries(points);
-      trendWeight = trendWeightAtOrBefore(series, utcDayKeyFromLocalDate(lastDay))?.value ?? null;
-      const weekStartTrend = trendWeightAtOrBefore(series, startKey - 1)?.value ?? null;
-      if (proposed && current) {
-        nutrition = {
-          targets: proposed,
-          usedEmpiricalData: proposed.usedEmpiricalData,
-          expenditure: proposed.tdee,
-          trendChangeKg:
-            trendWeight != null && weekStartTrend != null
-              ? trendWeight - weekStartTrend
-              : undefined,
-          foodDays,
-          weightDays,
-          canApply:
-            foodDays >= MIN_WEEKLY_FOOD_DAYS &&
-            weightDays >= MIN_WEIGHT_ENTRIES &&
-            trendWeight != null,
-        };
-      }
-      if (review?.recommendationJson) {
-        try {
-          const snapshot = JSON.parse(review.recommendationJson) as WeeklyNutritionRecommendation;
-          NutritionTargetService.validateTargets(snapshot.targets);
-          if (
-            typeof snapshot.canApply === 'boolean' &&
-            typeof snapshot.usedEmpiricalData === 'boolean' &&
-            Number.isFinite(snapshot.foodDays) &&
-            Number.isFinite(snapshot.weightDays)
-          ) {
-            nutrition = snapshot;
-          }
-        } catch {
-          /* Older invalid snapshots remain visible in history without being applied. */
-        }
-      }
-    }
+    const { nutrition, trendWeight, gaps } =
+      goal && !intuitive
+        ? await this.nutritionEvidence(goal, period, review)
+        : { nutrition: null, trendWeight: null, gaps: { foodDay: null, weightDay: null } };
     let accepted: NutritionTargets | null = null;
     if (review?.acceptedJson) {
       try {
@@ -246,8 +179,7 @@ export class WeeklyReviewService {
       trendWeight,
       intuitive,
       training: {
-        reviewedAt: reviews.find((row) => row.periodEnd === period.end && row.trainingReviewedAt)
-          ?.trainingReviewedAt,
+        reviewedAt: trainingReviewedAtFor(reviews, period.end),
         workouts,
         workingSets: workingSets.length,
         volume: workouts.reduce((sum, workout) => sum + (workout.totalVolume ?? 0), 0),
@@ -256,9 +188,108 @@ export class WeeklyReviewService {
         next,
       },
       ready:
-        !reviews.some((row) => row.periodEnd === period.end && row.trainingReviewedAt) ||
+        trainingReviewedAtFor(reviews, period.end) == null ||
         (!!goal && !intuitive && !review?.nutritionReviewedAt),
     };
+  }
+
+  /**
+   * The nutrition half of the overview: the week's trend weight, how much of it is logged, which
+   * days are still missing, and the recommendation (a stored snapshot wins once the review is
+   * decided). Needs a goal, so the caller skips it for intuitive eating.
+   */
+  private static async nutritionEvidence(
+    goal: NutritionGoal,
+    period: ReturnType<typeof weeklyReviewPeriod>,
+    review: WeeklyReview | null
+  ): Promise<{
+    nutrition: WeeklyNutritionRecommendation | null;
+    trendWeight: number | null;
+    gaps: WeeklyEvidenceGaps;
+  }> {
+    let nutrition: WeeklyNutritionRecommendation | null = null;
+    let trendWeight: number | null = null;
+    let gaps: WeeklyEvidenceGaps = { foodDay: null, weightDay: null };
+    const lastDay = new Date(localDayKeyPlusCalendarDays(period.end, -1));
+    const [logs, weights, proposed] = await Promise.all([
+      NutritionService.getNutritionLogsForDateRange(new Date(period.start), lastDay),
+      UserMetricService.getMetricsHistory('weight', {
+        startDate: localDayKeyPlusCalendarDays(period.start, -TREND_WEIGHT_WARMUP_DAYS),
+        endDate: period.end - 1,
+      }),
+      resolveWeeklyRecommendation(goal, lastDay),
+    ]);
+    const startKey = utcDayKeyFromLocalDate(new Date(period.start));
+    const endKey = utcDayKeyFromLocalDate(new Date(period.end));
+    const points = await Promise.all(
+      weights.map(async (weight) => {
+        const data = await weight.getDecrypted();
+        return {
+          date: utcNormalizedDayKey(weight.date, weight.timezone),
+          value: storedWeightToKg(data.value, data.unit),
+        };
+      })
+    );
+    const weightDayKeys = new Set(
+      points
+        .filter((point) => point.date >= startKey && point.date < endKey)
+        .map((point) => point.date)
+    );
+    const weightDays = weightDayKeys.size;
+    // A flagged fast is a real 0-kcal day, exactly as every other average treats it.
+    const { effectiveDayKeys: foodDayKeys } = await getNutritionDayCoverage(logs, {
+      range: dayKeyRange(startKey, utcDayKeyFromLocalDate(lastDay)),
+    });
+    const foodDays = foodDayKeys.size;
+    const days = Array.from({ length: 7 }, (_, offset) =>
+      localDayKeyPlusCalendarDays(period.start, offset)
+    ).filter((day) => day < period.end);
+    const keyOf = (day: number) => utcDayKeyFromLocalDate(new Date(day));
+    gaps = {
+      foodDay:
+        foodDays < MIN_WEEKLY_FOOD_DAYS
+          ? (days.find((day) => !foodDayKeys.has(keyOf(day))) ?? null)
+          : null,
+      weightDay:
+        weightDays < MIN_WEEKLY_WEIGHT_ENTRIES
+          ? ([...days].reverse().find((day) => !weightDayKeys.has(keyOf(day))) ?? null)
+          : null,
+    };
+    const series = calculateTrendWeightSeries(points);
+    trendWeight = trendWeightAtOrBefore(series, utcDayKeyFromLocalDate(lastDay))?.value ?? null;
+    const weekStartTrend = trendWeightAtOrBefore(series, startKey - 1)?.value ?? null;
+    if (proposed) {
+      nutrition = {
+        targets: proposed,
+        usedEmpiricalData: proposed.usedEmpiricalData,
+        expenditure: proposed.tdee,
+        trendChangeKg:
+          trendWeight != null && weekStartTrend != null ? trendWeight - weekStartTrend : undefined,
+        foodDays,
+        weightDays,
+        canApply:
+          foodDays >= MIN_WEEKLY_FOOD_DAYS &&
+          weightDays >= MIN_WEEKLY_WEIGHT_ENTRIES &&
+          trendWeight != null,
+      };
+    }
+    if (review?.recommendationJson) {
+      try {
+        const snapshot = JSON.parse(review.recommendationJson) as WeeklyNutritionRecommendation;
+        NutritionTargetService.validateTargets(snapshot.targets);
+        if (
+          typeof snapshot.canApply === 'boolean' &&
+          typeof snapshot.usedEmpiricalData === 'boolean' &&
+          Number.isFinite(snapshot.foodDays) &&
+          Number.isFinite(snapshot.weightDays)
+        ) {
+          nutrition = snapshot;
+        }
+      } catch {
+        /* Older invalid snapshots remain visible in history without being applied. */
+      }
+    }
+    return { nutrition, trendWeight, gaps };
   }
 
   static async decide(input: {
@@ -311,9 +342,7 @@ export class WeeklyReviewService {
       const now = Date.now();
       const populate = (record: WeeklyReview) => {
         if (!existing) {
-          record.trainingReviewedAt = reviews.find(
-            (row) => row.periodEnd === input.period.end && row.trainingReviewedAt
-          )?.trainingReviewedAt;
+          record.trainingReviewedAt = trainingReviewedAtFor(reviews, input.period.end);
         }
         record.periodStart = input.period.start;
         record.periodEnd = input.period.end;

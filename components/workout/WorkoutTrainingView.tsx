@@ -19,6 +19,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { weightInputStep } from '@/utils/loadIncrement';
+import { resolveRestSeconds } from '@/utils/restTimer';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { warmupOfferFor, type WarmupSetPrescription } from '@/utils/warmupSets';
 import {
@@ -116,33 +117,22 @@ export function WorkoutTrainingView({
       locale,
       controller.drafts[setId]?.weight !== undefined || controller.drafts[setId]?.reps !== undefined
     );
-    void controller
-      .complete(
-        setId,
-        valuesFromDraft(
-          valuesFor(setId),
-          unitsFor(set.exerciseId),
-          locale,
-          controller.drafts[setId]?.weight !== undefined ||
-            controller.drafts[setId]?.reps !== undefined
-        )
-      )
-      .then(() => {
-        if (!reopening) {
-          return;
-        }
-        // Reopening is one stray tap away from un-logging a set: say so, and offer the way back.
-        showSnackbar('success', t('trainingFlow.setReopened'), {
-          action: t('trainingFlow.undo'),
-          duration: 5000,
-          onAction: () =>
-            void controller.complete(setId, { ...loggedValues, manual: true }).catch(() => {}),
-        });
-      })
-      .catch(() => {});
+    void controller.complete(setId, loggedValues).then((completed) => {
+      if (!completed || !reopening) {
+        return;
+      }
+      // Reopening is one stray tap away from un-logging a set: say so, and offer the way back.
+      // Putting it back is not a fresh set, so it must not start another rest.
+      showSnackbar('success', t('trainingFlow.setReopened'), {
+        action: t('trainingFlow.undo'),
+        duration: 5000,
+        onAction: () =>
+          void controller.complete(setId, { ...loggedValues, manual: true }, { autoRest: false }),
+      });
+    });
   };
   const skip = (setId: string) => {
-    void controller.skip(setId).catch(() => {});
+    void controller.skip(setId);
   };
   const warmupOfferForBlock = (block: SessionBlock) =>
     warmupOfferFor({
@@ -253,14 +243,6 @@ export function WorkoutTrainingView({
     </View>
   );
 
-  // A failed save is reported where the user is looking, not at the bottom of a long scroll.
-  const saveError = controller.error;
-  useEffect(() => {
-    if (saveError != null) {
-      showSnackbar('error', t('trainingFlow.saveError'));
-    }
-  }, [saveError, showSnackbar, t]);
-
   let body: ReactNode;
   let pinnedAction: ReactNode = null;
   if (controller.view === 'guided' && currentBlock) {
@@ -309,7 +291,7 @@ export function WorkoutTrainingView({
             index < blocks.length - 1 ? () => onSelect(blocks[index + 1].logExerciseId) : undefined
           }
           onWhy={() => onAction(currentBlock.logExerciseId, 'guidance')}
-          onRevert={() => void controller.revert(currentBlock.logExerciseId).catch(() => {})}
+          onRevert={() => void controller.revert(currentBlock.logExerciseId)}
           onAction={(kind) => action(currentBlock, kind)}
           onEdit={(draft) => controller.edit(row.set.id, draft)}
           onDetails={() => setDetailsSetId(row.set.id)}
@@ -353,7 +335,7 @@ export function WorkoutTrainingView({
                 warmup={warmupFor(block)}
                 busy={controller.busy}
                 onWhy={() => onAction(block.logExerciseId, 'guidance')}
-                onRevert={() => void controller.revert(block.logExerciseId).catch(() => {})}
+                onRevert={() => void controller.revert(block.logExerciseId)}
                 onAction={(kind) => action(block, kind)}
                 onEdit={controller.edit}
                 onComplete={complete}
@@ -411,11 +393,14 @@ export function WorkoutTrainingView({
         onToggleExpanded={() =>
           setTimerChoice({ restId: controller.restId, expanded: !timerExpanded })
         }
-        // The countdown is already running by the time the reminder is scheduled, so a failure there
-        // costs only the notification and must not surface as an unhandled rejection.
-        onStart={() => void controller.startRest(controller.defaultRest).catch(() => {})}
-        onStop={() => void controller.stopRest().catch(() => {})}
-        onAdjust={(delta) => void controller.adjustRest(delta).catch(() => {})}
+        // Starting by hand rests as long as finishing the set would have: the set's own rest.
+        onStart={() =>
+          void controller.startRest(
+            resolveRestSeconds(currentBlock?.focus.restTimeAfter, controller.defaultRest)
+          )
+        }
+        onStop={() => void controller.stopRest()}
+        onAdjust={(delta) => void controller.adjustRest(delta)}
       />
       {detailsSet && detailsRow ? (
         <SetDetailsSheet

@@ -8,6 +8,7 @@ import { Chip } from '@/components/theme/Chip';
 import { IconButton } from '@/components/theme/IconButton';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
+import { EQUIPMENT_LABEL_KEYS } from '@/components/workout/restrictionLabelKeys';
 import { WeightUnitOverridePicker } from '@/components/workout/WeightUnitOverridePicker';
 import { useSnackbar } from '@/context/SnackbarContext';
 import type { EquipmentType } from '@/database/models/Exercise';
@@ -369,7 +370,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
                   role="checkbox"
                   selected={selected}
                   onPress={() => toggleEquipment(type)}
-                  label={t(`exercises.equipmentTypes.${type}`)}
+                  label={t(EQUIPMENT_LABEL_KEYS[type])}
                 />
               );
             })}

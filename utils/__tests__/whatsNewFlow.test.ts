@@ -70,3 +70,34 @@ test('replays the newest live release, regardless of history, capped', () => {
   expect(selectReplayFlow({ releases, currentVersion: '1.0.0' }).pages).toEqual([]);
   expect(selectReplayFlow({ releases, currentVersion: 'bad' }).pages).toEqual([]);
 });
+
+describe('first production release with the tour (2.13.1)', () => {
+  // The real registry, not a fixture: this is the promise made to every user who updates.
+  const { whatsNewReleases } = jest.requireActual('@/data/whatsNew/releases') as {
+    whatsNewReleases: WhatsNewRelease[];
+  };
+
+  test.each([
+    ['no record at all (every release before the tour existed)', null],
+    ['a garbage record', 'not-a-version'],
+    ['the 2.13.0 test build that already marked itself seen', '2.13.0'],
+    ['an older seen version', '2.12.9'],
+  ])('shows the tour to a user updating with %s', (_label, seenThrough) => {
+    const flow = selectWhatsNewFlow({
+      releases: whatsNewReleases,
+      seenThrough,
+      currentVersion: '2.13.1',
+    });
+    expect(flow.releaseVersions).toEqual(['2.13.1']);
+    expect(flow.pages.length).toBeGreaterThan(0);
+  });
+
+  test('does not show it again once the user is on 2.13.1 or later', () => {
+    for (const seenThrough of ['2.13.1', '2.14.0']) {
+      expect(
+        selectWhatsNewFlow({ releases: whatsNewReleases, seenThrough, currentVersion: '2.13.1' })
+          .pages
+      ).toEqual([]);
+    }
+  });
+});

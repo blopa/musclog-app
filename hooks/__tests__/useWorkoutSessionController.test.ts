@@ -110,8 +110,11 @@ it('keeps inputs after a failed set save and clears them only after explicit fin
   act(() => hook.result.current.edit('s1', { weight: '62.5', reps: '10' }));
   jest.mocked(WorkoutSessionService.saveSet).mockRejectedValueOnce(new Error('disk full'));
   await act(async () => {
-    await expect(hook.result.current.complete('s1', { weight: 62.5, reps: 10 })).rejects.toThrow();
+    await expect(hook.result.current.complete('s1', { weight: 62.5, reps: 10 })).resolves.toBe(
+      false
+    );
   });
+  expect(hook.result.current.error?.message).toBe('disk full');
   expect(hook.result.current.drafts.s1.weight).toBe('62.5');
   await act(() => hook.result.current.finish());
   expect(WorkoutService.completeWorkout).toHaveBeenCalledWith('log');
@@ -188,7 +191,7 @@ it('a failed undo preserves drafts for retry', async () => {
     .mocked(WorkoutProgressionService.revertStartAdjustment)
     .mockRejectedValueOnce(new Error('disk full'));
   await act(async () => {
-    await expect(hook.result.current.revert('bench')).rejects.toThrow('disk full');
+    await expect(hook.result.current.revert('bench')).resolves.toBe(false);
   });
   expect(hook.result.current.drafts.s1.weight).toBe('72');
   hook.unmount();
@@ -240,7 +243,7 @@ it('a failed discard keeps the session and its drafts', async () => {
   act(() => hook.result.current.edit('s1', { weight: '70', reps: '8' }));
 
   await act(async () => {
-    await expect(hook.result.current.discard()).rejects.toThrow('disk');
+    await expect(hook.result.current.discard()).resolves.toBe(false);
   });
 
   expect(clearActiveWorkoutLogId).not.toHaveBeenCalled();
@@ -303,4 +306,52 @@ it('writes a pending edit straight away when the screen is left', async () => {
   expect(setItem.mock.calls[0][0]).toBe('workout_drafts_log');
   expect(JSON.parse(setItem.mock.calls[0][1])).toMatchObject({ s1: { weight: '70', reps: '5' } });
   setItem.mockRestore();
+});
+
+it('reports whether an action happened, and refuses to overlap two of them', async () => {
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+
+  let results: boolean[] = [];
+  await act(async () => {
+    results = await Promise.all([
+      hook.result.current.skip('s1'),
+      hook.result.current.skip('s1'),
+    ]);
+  });
+
+  expect(results).toEqual([true, false]);
+  expect(WorkoutSessionService.saveSet).toHaveBeenCalledTimes(1);
+  hook.unmount();
+});
+
+it('can complete a set without starting a rest, as when undoing a reopen', async () => {
+  (getRestTimerEndAt as jest.Mock).mockResolvedValueOnce(null);
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+
+  await act(() => hook.result.current.complete('s1', { weight: 60, reps: 10 }, { autoRest: false }));
+
+  expect(WorkoutSessionService.saveSet).toHaveBeenCalledWith('log', 's1', 'performed', {
+    weight: 60,
+    reps: 10,
+  });
+  expect(NotificationService.scheduleRestTimerNotification).not.toHaveBeenCalled();
+  expect(hook.result.current.restSeconds).toBe(0);
+  hook.unmount();
+});
+
+it('keeps the countdown when the reminder cannot be scheduled', async () => {
+  (getRestTimerEndAt as jest.Mock).mockResolvedValueOnce(null);
+  jest
+    .mocked(NotificationService.scheduleRestTimerNotification)
+    .mockRejectedValueOnce(new Error('no permission'));
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+
+  await act(() => hook.result.current.startRest(30));
+
+  expect(hook.result.current.restSeconds).toBe(30);
+  expect(hook.result.current.error).toBeNull();
+  hook.unmount();
 });

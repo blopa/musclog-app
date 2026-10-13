@@ -23,13 +23,17 @@ import {
   type TrainingViewAction,
   WorkoutTrainingView,
 } from '@/components/workout/WorkoutTrainingView';
+import { useSnackbar } from '@/context/SnackbarContext';
 import { WorkoutLogExerciseService } from '@/database/services/WorkoutLogExerciseService';
 import { useActiveGym } from '@/hooks/useActiveGym';
-import { type CurrentSetData, useActiveWorkout } from '@/hooks/useActiveWorkout';
+import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSessionBleTracking } from '@/hooks/useSessionBleTracking';
-import { useSessionExerciseActions } from '@/hooks/useSessionExerciseActions';
+import {
+  type SessionExerciseTarget,
+  useSessionExerciseActions,
+} from '@/hooks/useSessionExerciseActions';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -39,7 +43,7 @@ import { isBarLoadedEquipment } from '@/utils/gym';
 import { handleError } from '@/utils/handleError';
 import { WARMUP_REST_SECONDS, type WarmupSetPrescription } from '@/utils/warmupSets';
 import { formatDuration } from '@/utils/workout';
-import { isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 type SessionPanel =
   | 'add'
@@ -58,6 +62,7 @@ export default function WorkoutSessionScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
+  const { showSnackbar } = useSnackbar();
   const params = useLocalSearchParams<{
     workoutLogId?: string;
     exerciseId?: string;
@@ -93,6 +98,13 @@ export default function WorkoutSessionScreen() {
     defaultRest: defaultRestSeconds,
     refresh,
   });
+  // A failed save is reported where the user is looking, whichever view or panel is up.
+  const saveError = controller.error;
+  useEffect(() => {
+    if (saveError != null) {
+      showSnackbar('error', t('trainingFlow.saveError'));
+    }
+  }, [saveError, showSnackbar, t]);
   const time = useSessionTotalTime({ startTime: workoutLog?.startedAt });
   const duration = formatDuration(time.hours, time.minutes, time.seconds);
 
@@ -102,22 +114,17 @@ export default function WorkoutSessionScreen() {
       (set) => set.logExerciseId === actionLogExerciseId && set.completionStatus === 'planned'
     ) ?? sets.find((set) => set.logExerciseId === actionLogExerciseId);
   const actionExerciseModel = exercises.find((exercise) => exercise.id === actionSet?.exerciseId);
-  const context: CurrentSetData | null =
-    actionSet && actionExerciseModel
-      ? {
-          set: actionSet,
-          exercise: actionExerciseModel,
-          setNumber: 1,
-          totalSetsInExercise: sets.filter((set) => set.logExerciseId === actionSet.logExerciseId)
-            .length,
-          exerciseNumber: 1,
-          notes: actionSet.notes,
-        }
-      : session.currentSetData;
+  const current = session.currentSetData;
+  let target: SessionExerciseTarget | null = null;
+  if (actionSet && actionExerciseModel) {
+    target = { set: actionSet, exercise: actionExerciseModel };
+  } else if (current) {
+    target = { set: current.set, exercise: current.exercise };
+  }
   const actions = useSessionExerciseActions({
-    currentSetData: context,
+    target,
     gym,
-    exerciseNote: get(context?.exercise.id).note,
+    exerciseNote: get(target?.exercise.id).note,
     refresh,
     setIsSaving: setActionSaving,
   });
@@ -165,18 +172,16 @@ export default function WorkoutSessionScreen() {
   // Navigation to the summary is the `completedAt` effect's job alone: it fires when the refreshed
   // log comes back completed. Replacing here as well navigated twice, once without the feedback flag.
   const finish = async () => {
+    // Sensor trouble must not keep the workout from ending: the recording is best effort.
     try {
       await ble.finishSetRecording();
-      await controller.finish();
-      setPanel(null);
     } catch (error) {
-      // The controller keeps the error and the session for a retry. The end-of-workout modal would
-      // hide the inline error behind it, so close it and say what happened where it can be seen.
-      setPanel(null);
-      handleError(error, 'workout-session.finish', {
-        snackbarMessage: t('errors.somethingWentWrong'),
-      });
+      void handleError(error, 'workout-session.finishSensor', { showSnackbar: false });
     }
+    // A failure leaves the session open for a retry and surfaces through `controller.error`. The
+    // end-of-workout modal would hide that snackbar, so it closes either way.
+    await controller.finish();
+    setPanel(null);
   };
   const selectExercise = (id: string | undefined) => {
     setSelectedLogExerciseId(id);
@@ -215,18 +220,36 @@ export default function WorkoutSessionScreen() {
       setActionSaving(false);
     }
   };
+  // The training view's controller: the session's own, with the sensor recording and the
+  // selection reset around each set. Reopening a performed set is not a new recording.
   const viewController = {
     ...controller,
     busy: controller.busy || actionSaving,
     skip: async (id: string) => {
-      await controller.skip(id);
-      selectExercise(undefined);
+      const skipped = await controller.skip(id);
+      if (skipped) {
+        selectExercise(undefined);
+      }
+      return skipped;
     },
-    complete: async (id: string, values: Parameters<typeof controller.complete>[1]) => {
-      await ble.finishSetRecording(id, values.reps);
-      await controller.complete(id, values);
-      ble.attachRecordingToSet(id, values.reps);
-      selectExercise(undefined);
+    complete: async (
+      id: string,
+      values: Parameters<typeof controller.complete>[1],
+      completeOptions?: Parameters<typeof controller.complete>[2]
+    ) => {
+      const existing = sets.find((set) => set.id === id);
+      const reopening = !!existing && isPerformedWorkoutSet(existing);
+      if (!reopening) {
+        await ble.finishSetRecording(id, values.reps);
+      }
+      const completed = await controller.complete(id, values, completeOptions);
+      if (completed) {
+        if (!reopening) {
+          ble.attachRecordingToSet(id, values.reps);
+        }
+        selectExercise(undefined);
+      }
+      return completed;
     },
   };
 
@@ -249,7 +272,7 @@ export default function WorkoutSessionScreen() {
         <ReplaceExerciseModal
           visible
           onClose={close}
-          currentExerciseId={context?.exercise.id}
+          currentExerciseId={target?.exercise.id}
           onReplace={async (exercise, outcome) => {
             await actions.replaceExercise(exercise, outcome);
             selectExercise(undefined);
@@ -257,17 +280,17 @@ export default function WorkoutSessionScreen() {
           }}
         />
       );
-    } else if (panel === 'notes' && context) {
+    } else if (panel === 'notes' && target) {
       modal = (
         <ExerciseNotesSheet
-          key={context.set.logExerciseId}
+          key={target.set.logExerciseId}
           visible
           onClose={close}
-          exerciseName={context.exercise.name}
-          initialSessionNote={context.notes ?? ''}
-          initialExerciseNote={get(context.exercise.id).note ?? ''}
+          exerciseName={target.exercise.name}
+          initialSessionNote={target.set.notes ?? ''}
+          initialExerciseNote={get(target.exercise.id).note ?? ''}
           canSaveToTemplate={
-            !!logExercises.find((row) => row.id === context.set.logExerciseId)?.templateExerciseId
+            !!logExercises.find((row) => row.id === target.set.logExerciseId)?.templateExerciseId
           }
           onSave={actions.saveNotes}
         />
@@ -306,57 +329,52 @@ export default function WorkoutSessionScreen() {
           onClose={close}
           onFinishAndSave={finish}
           onFinishAndDiscard={async () => {
-            try {
-              await controller.discard();
+            if (await controller.discard()) {
               router.replace('/app/workout/workouts');
-            } catch (error) {
-              handleError(error, 'workout-session.discard', {
-                snackbarMessage: t('errors.somethingWentWrong'),
-              });
             }
           }}
         />
       );
-    } else if (panel === 'plates' && context) {
+    } else if (panel === 'plates' && target) {
       modal = (
         <PlateCalculatorSheet
           visible
           onClose={close}
-          targetKg={context.set.weight}
+          targetKg={target.set.weight}
           gym={gym}
-          units={unitsFor(context.exercise.id)}
+          units={unitsFor(target.exercise.id)}
         />
       );
-    } else if (panel === 'guidance' && context) {
+    } else if (panel === 'guidance' && target) {
       const block = buildSessionBlocks(sets).find(
-        (candidate) => candidate.logExerciseId === context.set.logExerciseId
+        (candidate) => candidate.logExerciseId === target.set.logExerciseId
       );
       if (block) {
         const row = block.rows.find((candidate) => candidate.set.id === block.focus.id);
         modal = (
           <ProgressionWhySheet
-            exerciseName={context.exercise.name ?? ''}
+            exerciseName={target.exercise.name ?? ''}
             state={guidanceStateFor(block, {
-              equipmentType: context.exercise.equipmentType,
+              equipmentType: target.exercise.equipmentType,
               gym,
             })}
             rule={block.rule}
             progressionJson={block.focus.progressionJson}
             adjustment={block.focus.adjustment}
             prescription={row?.prescription ?? null}
-            units={unitsFor(context.exercise.id)}
-            isBarLoaded={isBarLoadedEquipment(context.exercise.equipmentType)}
+            units={unitsFor(target.exercise.id)}
+            isBarLoaded={isBarLoadedEquipment(target.exercise.equipmentType)}
             canEditPlan={!!workoutLog.templateId}
             onClose={close}
             onRevert={() => {
               close();
-              void controller.revert(block.logExerciseId).catch(() => {});
+              void controller.revert(block.logExerciseId);
             }}
             onPlates={() => setPanel('plates')}
             onEditGym={() => setPanel('settings')}
             onEditPlan={() => setPanel('editor')}
             onEditTarget={() => {
-              selectExercise(context.set.logExerciseId);
+              selectExercise(target.set.logExerciseId);
               close();
             }}
           />

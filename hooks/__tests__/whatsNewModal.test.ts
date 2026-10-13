@@ -54,12 +54,12 @@ jest.mock('@/components/modals/LogCardioModal', () => ({
 }));
 
 const flow: WhatsNewFlow = {
-  releaseVersions: ['2.13.0'],
+  releaseVersions: ['2.13.1'],
   truncated: false,
   pages: [
     {
       key: 'settings',
-      version: '2.13.0',
+      version: '2.13.1',
       blocks: [
         {
           id: 'settings',
@@ -72,7 +72,7 @@ const flow: WhatsNewFlow = {
     },
     {
       key: 'review',
-      version: '2.13.0',
+      version: '2.13.1',
       blocks: [
         {
           id: 'review',

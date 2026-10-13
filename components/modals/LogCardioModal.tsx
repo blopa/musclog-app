@@ -7,6 +7,7 @@ import { FilterTabs } from '@/components/FilterTabs';
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import { CARDIO_ACTIVITY_LABEL_KEYS } from '@/components/workout/restrictionLabelKeys';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { CardioLogService } from '@/database/services/CardioLogService';
 import { UserMetricService } from '@/database/services/UserMetricService';
@@ -123,11 +124,11 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
         distanceM: draft.distanceM,
         durationS: draft.durationS,
         endedAt,
-        workoutName: t(`cardio.${activity}`),
+        workoutName: t(CARDIO_ACTIVITY_LABEL_KEYS[activity]),
         treadmill,
         caloriesOverride: watchCalories > 0 ? watchCalories : undefined,
       });
-      showSnackbar('success', t('cardio.saved', { activity: t(`cardio.${activity}`) }));
+      showSnackbar('success', t('cardio.saved', { activity: t(CARDIO_ACTIVITY_LABEL_KEYS[activity]) }));
       onLogged?.();
       onClose();
     } catch (err) {

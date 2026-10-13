@@ -12,15 +12,19 @@ import { GymService } from '@/database/services/GymService';
 import { WorkoutLogExerciseService } from '@/database/services/WorkoutLogExerciseService';
 import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
-import type { CurrentSetData } from '@/hooks/useActiveWorkout';
+import type Exercise from '@/database/models/Exercise';
+import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import type { SubstitutionOutcome } from '@/utils/exerciseSubstitution';
 import type { GymSnapshot } from '@/utils/gym';
 import { handleError } from '@/utils/handleError';
 import { normalizeNote } from '@/utils/noteText';
 import { WARMUP_REST_SECONDS, type WarmupSetPrescription } from '@/utils/warmupSets';
 
+/** The exercise an action is about, through one of its sets (which names its log block). */
+export type SessionExerciseTarget = { set: EnrichedWorkoutLogSet; exercise: Exercise };
+
 type SessionExerciseActionsInput = {
-  currentSetData: CurrentSetData | null;
+  target: SessionExerciseTarget | null;
   gym: GymSnapshot | null;
   /** The exercise-wide note as stored, to tell whether the sheet changed it. */
   exerciseNote: string | undefined;
@@ -34,7 +38,7 @@ type SessionExerciseActionsInput = {
  * Kept out of the session screen so the screen stays about presenting the set.
  */
 export function useSessionExerciseActions({
-  currentSetData,
+  target,
   gym,
   exerciseNote,
   refresh,
@@ -42,7 +46,7 @@ export function useSessionExerciseActions({
 }: SessionExerciseActionsInput) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
-  const logExerciseId = currentSetData?.set.logExerciseId;
+  const logExerciseId = target?.set.logExerciseId;
 
   /** Runs one write with the saving spinner up, refreshes, and reports a failure in a snackbar. */
   const runSaving = async (label: string, work: (logExerciseId: string) => Promise<unknown>) => {
@@ -63,10 +67,10 @@ export function useSessionExerciseActions({
   };
 
   const replaceExercise = async (exercise: ReplaceExerciseData, outcome: SubstitutionOutcome) => {
-    if (!currentSetData) {
+    if (!target) {
       return;
     }
-    const replaced = currentSetData.exercise;
+    const replaced = target.exercise;
 
     await runSaving('handleReplaceExercise', async (id) => {
       // The still-planned sets carry the OLD exercise's load: a planned 80 kg bench is not an
@@ -125,13 +129,13 @@ export function useSessionExerciseActions({
     exerciseNote: nextExerciseNote,
     alsoSaveToTemplate,
   }: ExerciseNotesSaveData) => {
-    const exerciseId = currentSetData?.exercise.id;
-    if (!logExerciseId || !exerciseId) {
+    const exerciseId = target?.exercise.id;
+    if (!target || !logExerciseId || !exerciseId) {
       return;
     }
 
     // Asking for the template copy writes even an unchanged note: it is what keeps it.
-    if (alsoSaveToTemplate || normalizeNote(sessionNote) !== normalizeNote(currentSetData.notes)) {
+    if (alsoSaveToTemplate || normalizeNote(sessionNote) !== normalizeNote(target.set.notes)) {
       await WorkoutLogExerciseService.saveLogExerciseNote(logExerciseId, sessionNote, {
         alsoSaveToTemplate,
       });

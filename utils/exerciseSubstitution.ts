@@ -182,7 +182,9 @@ export interface SubstitutionOutcome {
 }
 
 /** The restriction a reason most plausibly implies, offered as the default choice (never applied silently). */
-export function restrictionKindForReason(reason: SubstitutionReason): RestrictionKind | null {
+export function restrictionKindForReason(
+  reason: SubstitutionReason
+): Exclude<RestrictionKind, 'never'> | null {
   if (reason === 'pain') {
     return 'injury';
   }

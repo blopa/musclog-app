@@ -7,6 +7,7 @@ import {
 import {
   computeStartTarget,
   defaultRepsFor,
+  deloadedLoad,
   repsFirstRange,
   type LastWorkingSession,
   planStartChanges,
@@ -397,5 +398,44 @@ describe('session completeness and the weakest set', () => {
         last: { weightKg: 120, reps: 5, averageRepsInReserve: 0, rirRecorded: true },
       }).weightKg
     ).toBe(108);
+  });
+});
+
+describe('deloadedLoad', () => {
+  const step = { incrementKg: 2.5, roundLoad: (kg: number) => Math.round(kg / 2.5) * 2.5 };
+
+  it('takes a tenth of a heavy load, not one step that clears nothing', () => {
+    expect(deloadedLoad(120, step)).toBe(107.5);
+  });
+
+  it('takes at least one step off a light load', () => {
+    expect(deloadedLoad(10, step)).toBe(7.5);
+  });
+
+  it('never goes below zero', () => {
+    expect(deloadedLoad(2.5, step)).toBe(0);
+  });
+});
+
+describe('deload after repeated misses at moderate effort', () => {
+  it('holds after the first session that missed the planned reps', () => {
+    expect(target({ planReps: 8, last: last(100, 6, 1) })).toMatchObject({
+      weightKg: 100,
+      kind: 'repeat',
+    });
+  });
+
+  it('deloads when the session before also missed the planned reps at this load', () => {
+    // At 1 rep in reserve the average never reaches 0, so effort alone would repeat forever.
+    expect(target({ planReps: 8, last: last(100, 6, 1), missedPlanBefore: true })).toMatchObject({
+      weightKg: 90,
+      kind: 'deload',
+    });
+  });
+
+  it('does not deload a session that hit the plan, whatever came before', () => {
+    expect(target({ planReps: 8, last: last(100, 8, 3), missedPlanBefore: true })).toMatchObject({
+      kind: 'progression',
+    });
   });
 });

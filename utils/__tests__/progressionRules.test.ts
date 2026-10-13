@@ -56,13 +56,15 @@ describe('explicit progression projections', () => {
     // The plan already is the hold target, so nothing is rewritten — and nothing deloaded.
     expect(projection.changes).toEqual([]);
   });
-  it('drops one step when two sessions in a row at this load missed the bottom', () => {
+  it('deloads by a tenth of the load when two sessions in a row missed the bottom', () => {
     expect(
       project(defaultProgressionRule('double_progression'), [
         history([6, 7, 5]),
         history([7, 6, 6]),
       ]).sets[0]
-    ).toMatchObject({ weight: 57.5, reps: 8 });
+      // 60 kg - max(2.5 kg step, 10% = 6 kg) = 54 kg, snapped to the 2.5 kg step. A single 2.5 kg
+      // step clears nothing on a barbell.
+    ).toMatchObject({ weight: 55, reps: 8 });
     // A miss at a different load does not count towards the stall.
     expect(
       project(defaultProgressionRule('double_progression'), [
@@ -75,7 +77,7 @@ describe('explicit progression projections', () => {
     const rule = defaultProgressionRule('top_set_backoff');
     expect(project(rule, [history([3, 8, 8])]).sets[0]).toMatchObject({ weight: 60, reps: 4 });
     expect(project(rule, [history([3, 8, 8]), history([3, 8, 8])]).sets[0]).toMatchObject({
-      weight: 57.5,
+      weight: 55,
       reps: 4,
     });
   });
@@ -276,4 +278,45 @@ it('automatic progression does not move up after a session with unperformed pres
   expect(projection.changes.every((change) => change.adjustment.cause !== 'progression')).toBe(
     true
   );
+});
+
+describe('automatic progression stall detection', () => {
+  const rated = (reps: number[], weight = 60): HistorySession => ({
+    sets: reps.map((rep) => ({
+      weightKg: weight,
+      reps: rep,
+      repsInReserve: 1,
+      rirRecorded: true,
+    })),
+    allPrescribedSetsPerformed: true,
+    rule: null,
+    state: null,
+  });
+  const automatic = (sessions: HistorySession[]) =>
+    projectExerciseProgression({
+      planned,
+      rule: null,
+      history: sessions,
+      step,
+      automatic: true,
+      progressionMode: 'weight_first',
+      isCompound: true,
+      isBodyweight: false,
+    });
+
+  it('repeats the load after one session that missed the planned reps', () => {
+    expect(automatic([rated([6, 6, 6])]).sets[0]).toMatchObject({ weight: 60 });
+  });
+
+  it('deloads once the session before also missed the planned reps at the same load', () => {
+    expect(automatic([rated([6, 6, 6]), rated([7, 6, 6])]).changes[0]?.adjustment.cause).toBe(
+      'deload'
+    );
+  });
+
+  it('does not count a miss at a different load as a stall', () => {
+    expect(automatic([rated([6, 6, 6]), rated([6, 6, 6], 65)]).changes[0]?.adjustment.cause).not.toBe(
+      'deload'
+    );
+  });
 });

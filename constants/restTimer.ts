@@ -1,5 +1,10 @@
-/** Rest after a set that names no rest of its own, until the user picks a different default. */
-export const DEFAULT_REST_SECONDS = 60;
+/**
+ * Rest after a set that names no rest of its own, until the user picks a different default.
+ * Ninety seconds is the middle of the evidence: rest of two minutes or more beats one minute for
+ * strength and hypertrophy on compound lifts (Schoenfeld et al., 2016), while isolation work
+ * recovers sooner.
+ */
+export const DEFAULT_REST_SECONDS = 90;
 
 export const MIN_REST_SECONDS = 15;
 export const MAX_REST_SECONDS = 600;

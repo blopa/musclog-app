@@ -17,6 +17,7 @@ import {
   getRestTimerEndAt,
   setRestTimerEndAt,
 } from '@/utils/activeWorkoutStorage';
+import { handleError } from '@/utils/handleError';
 import { resolveRestSeconds } from '@/utils/restTimer';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
@@ -177,45 +178,82 @@ export function useWorkoutSessionController(
     }
   };
 
-  const startRest = async (seconds: number) => {
-    if (!logId) {
-      return;
+  /**
+   * A rest timer is a convenience: when storing it or scheduling its reminder fails, the countdown
+   * on screen is still right, so the failure is reported and the caller carries on.
+   */
+  const safely = async (context: string, action: () => Promise<void>) => {
+    try {
+      await action();
+    } catch (e) {
+      void handleError(e, `workout-session.${context}`, { showSnackbar: false });
     }
-
-    const end = Date.now() + seconds * 1000;
-    await setRestTimerEndAt(logId, end);
-    setNow(Date.now());
-    setRestEnd(end);
-    setRestTotal(seconds);
-    setRestId((id) => id + 1);
-    await NotificationService.scheduleRestTimerNotification(seconds);
   };
+
+  const startRest = (seconds: number) =>
+    safely('startRest', async () => {
+      if (!logId) {
+        return;
+      }
+
+      const end = Date.now() + seconds * 1000;
+      setNow(Date.now());
+      setRestEnd(end);
+      setRestTotal(seconds);
+      setRestId((id) => id + 1);
+      await setRestTimerEndAt(logId, end);
+      await NotificationService.scheduleRestTimerNotification(seconds);
+    });
 
   /** Lengthens or shortens the rest that is running; its reminder moves with it. */
-  const adjustRest = async (deltaSeconds: number) => {
-    if (!logId || !restEnd) {
-      return;
+  const adjustRest = (deltaSeconds: number) =>
+    safely('adjustRest', async () => {
+      if (!logId || !restEnd) {
+        return;
+      }
+
+      const remaining = Math.max(1, Math.ceil((restEnd - Date.now()) / 1000) + deltaSeconds);
+      const end = Date.now() + remaining * 1000;
+      setNow(Date.now());
+      setRestEnd(end);
+      setRestTotal((total) => Math.max(remaining, total + deltaSeconds));
+      await setRestTimerEndAt(logId, end);
+      await NotificationService.cancelRestTimerNotification();
+      await NotificationService.scheduleRestTimerNotification(remaining);
+    });
+
+  const stopRest = () =>
+    safely('stopRest', async () => {
+      setRestEnd(null);
+      await clearRestTimerEndAt();
+      await NotificationService.cancelRestTimerNotification();
+    });
+
+  /** Drops the typed-but-unsaved drafts and their stored copy, once pending writes have landed. */
+  const clearPersistedDrafts = async () => {
+    if (persistTimer.current) {
+      clearTimeout(persistTimer.current);
+      persistTimer.current = null;
     }
-
-    const remaining = Math.max(1, Math.ceil((restEnd - Date.now()) / 1000) + deltaSeconds);
-    const end = Date.now() + remaining * 1000;
-    await setRestTimerEndAt(logId, end);
-    setNow(Date.now());
-    setRestEnd(end);
-    setRestTotal((total) => Math.max(remaining, total + deltaSeconds));
-    await NotificationService.cancelRestTimerNotification();
-    await NotificationService.scheduleRestTimerNotification(remaining);
+    await writeQueue.current;
+    if (key) {
+      await AsyncStorage.removeItem(key);
+    }
+    draftsRef.current = {};
+    setDrafts({});
   };
 
-  const stopRest = async () => {
-    await clearRestTimerEndAt();
-    setRestEnd(null);
-    await NotificationService.cancelRestTimerNotification();
-  };
-
-  const run = async (action: () => Promise<void>) => {
-    if (lock.current) {
-      return;
+  /**
+   * Runs one session action exclusively and reports whether it happened: `false` means it was
+   * refused (another action is running, or there is no log) or it failed. A failure is recorded in
+   * `error` for the screen to show and reported once here, so callers never need a catch.
+   */
+  const run = async (
+    action: () => Promise<void>,
+    { refresh = true }: { refresh?: boolean } = {}
+  ): Promise<boolean> => {
+    if (!logId || lock.current) {
+      return false;
     }
 
     lock.current = true;
@@ -223,50 +261,52 @@ export function useWorkoutSessionController(
     setError(null);
     try {
       await action();
-      await options.refresh();
+      if (refresh) {
+        await options.refresh();
+      }
+      return true;
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
-      throw e;
+      void handleError(e, 'workout-session.action', { showSnackbar: false });
+      return false;
     } finally {
       lock.current = false;
       setBusy(false);
     }
   };
 
-  const complete = async (id: string, values: SessionSetValues) =>
+  const complete = (
+    id: string,
+    values: SessionSetValues,
+    { autoRest = options.autoRest }: { autoRest?: boolean } = {}
+  ) =>
     run(async () => {
-      if (!logId) {
-        return;
-      }
-
       const set = sets.find((s) => s.id === id);
       if (!set) {
         return;
       }
 
       if (isPerformedWorkoutSet(set)) {
-        await WorkoutSessionService.saveSet(logId, id, 'planned');
+        await WorkoutSessionService.saveSet(logId!, id, 'planned');
         return;
       }
 
-      await WorkoutSessionService.saveSet(logId, id, 'performed', values);
+      await WorkoutSessionService.saveSet(logId!, id, 'performed', values);
       const next = { ...draftsRef.current };
       delete next[id];
       commitDrafts(next);
-      if (options.autoRest) {
+      if (autoRest) {
         await startRest(resolveRestSeconds(set.restTimeAfter, options.defaultRest));
       }
     });
 
-  const skip = async (id: string) =>
+  const skip = (id: string) =>
     run(async () => {
-      if (logId) {
-        await WorkoutSessionService.saveSet(logId, id, 'skipped');
-      }
+      await WorkoutSessionService.saveSet(logId!, id, 'skipped');
     });
 
   /** "Use the plan's" for one exercise: only its unfinished sets go back to the prescription. */
-  const revert = async (logExerciseId: string) =>
+  const revert = (logExerciseId: string) =>
     run(async () => {
       await WorkoutProgressionService.revertStartAdjustment(logExerciseId);
       const affected = new Set(
@@ -293,58 +333,29 @@ export function useWorkoutSessionController(
       }
       commitDrafts(next);
     });
-  const finish = async () =>
+
+  const finish = () =>
     run(async () => {
-      if (!logId) {
-        return;
-      }
-      await WorkoutService.completeWorkout(logId);
+      await WorkoutService.completeWorkout(logId!);
       await stopRest();
-      if (persistTimer.current) {
-        clearTimeout(persistTimer.current);
-        persistTimer.current = null;
-      }
-      await writeQueue.current;
-      if (key) {
-        await AsyncStorage.removeItem(key);
-      }
-      draftsRef.current = {};
-      setDrafts({});
+      await clearPersistedDrafts();
     });
+
   /**
    * Throws the session away. Everything that outlives the screen goes with it: the stored active
    * workout (or Home keeps offering to resume a deleted log), a scheduled "rest over" reminder,
-   * and the persisted drafts. It does not go through `run`, whose refresh would reload a log that no
-   * longer exists.
+   * and the persisted drafts. It skips `run`'s refresh, which would reload a log that no longer
+   * exists.
    */
-  const discard = async () => {
-    if (!logId || lock.current) {
-      return;
-    }
-    lock.current = true;
-    setBusy(true);
-    setError(null);
-    try {
-      await WorkoutService.deleteWorkoutLog(logId);
-      await Promise.all([stopRest(), clearActiveWorkoutLogId()]);
-      if (persistTimer.current) {
-        clearTimeout(persistTimer.current);
-        persistTimer.current = null;
-      }
-      await writeQueue.current;
-      if (key) {
-        await AsyncStorage.removeItem(key);
-      }
-      draftsRef.current = {};
-      setDrafts({});
-    } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
-      throw e;
-    } finally {
-      lock.current = false;
-      setBusy(false);
-    }
-  };
+  const discard = () =>
+    run(
+      async () => {
+        await WorkoutService.deleteWorkoutLog(logId!);
+        await Promise.all([stopRest(), clearActiveWorkoutLogId()]);
+        await clearPersistedDrafts();
+      },
+      { refresh: false }
+    );
 
   return {
     view,
