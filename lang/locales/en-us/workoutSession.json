@@ -185,7 +185,6 @@
     "restReady": "Rest timer",
     "skipRest": "Skip rest",
     "startRest": "Start rest",
-    "addRest": "Add 30 seconds",
     "progress": "{{done}} / {{total}} sets",
     "startSensor": "Record sensor",
     "stopSensor": "Stop recording",
@@ -231,7 +230,13 @@
     "newRecord": "New {{type}} record",
     "adjustedHint": "Calculated by your progression. Type to change it for this session.",
     "usePrevious": "Repeat last time",
-    "rotationNext": "Longest since you trained it · last done {{date}}"
+    "rotationNext": "Longest since you trained it · last done {{date}}",
+    "rirQuickLabel": "Reps left in the tank?",
+    "setReopened": "Set reopened",
+    "undo": "Undo",
+    "plus15": "+15 s",
+    "allDoneSets": "Sets logged: {{sets}}",
+    "allDoneSummary": "Sets logged: {{sets}} · {{volume}} {{unit}} lifted"
   },
   "weeklyReview": {
     "title": "Weekly Review",

@@ -42,6 +42,31 @@ new payload and index entry are durable.
 Key coverage: database durability, pre-migration capture, backup conversion, and migration-safety
 tests under `database/**/__tests__` and `utils/__tests__`.
 
+## Automatic progression judged a session by its first set (and by 63 kg)
+
+### Symptom
+
+A lifter who did set 1 of 3 and skipped the rest was moved up next session; unrated sets of
+10 / 6 / 5 against a plan of 10 became 11 on every set; a metric lifter with no gym progressed
+60 → 63 → 66 kg, loads no plate set can make. The "why" sentence claimed checks nobody ran.
+
+### Cause
+
+`summarize()` (`utils/progressionProjection.ts`) read only the first working set and ignored
+`allPrescribedSetsPerformed`; `loadStepFor` rounded to whole kilograms after a 2.5 kg step.
+
+### Rules now
+
+- `LastWorkingSession` carries `complete` and `lowestReps`: an incomplete session holds, and the
+  session is judged by its weakest set. The explicit rules already did this.
+- With no gym, metric loads land on a 2.5 kg multiple (imperial keeps whole pounds).
+- A deload is 10% of the load (never less than one step), matching the linear rule.
+- A load step above 25% of the load (`MAX_LOAD_STEP_SHARE`) is not used: the exercise keeps adding
+  reps. Light lateral raises no longer jump 40%.
+- `utils/sameLoad.ts` is the one epsilon for "same load".
+- Draft edits in the live session are written after 400 ms of quiet and flushed on backgrounding,
+  completion, discard and unmount.
+
 ## Exercise catalogue cutover safety
 
 The 256-entry legacy catalogue was replaced with 873 free-exercise-db entries and 1,746 images.

@@ -8,6 +8,7 @@ import {
   type ProgressionSessionState,
   type RuleLoadStep,
 } from './progressionRules';
+import { sameLoad } from './sameLoad';
 import { computeStartTarget, planStartChanges, type StartSetChange } from './setProgression';
 
 export type ExerciseRecommendation = {
@@ -35,14 +36,14 @@ const NON_PROGRESSING_MECHANICS: ReadonlySet<string> = new Set([
 export const progressesLoad = (mechanicType: string | null | undefined): boolean =>
   !NON_PROGRESSING_MECHANICS.has(mechanicType ?? '');
 
-const WEIGHT_EPSILON = 0.01;
-
 /** A past session's first working set and its average RATED reps in reserve. */
 function summarize(session: HistorySession) {
   const rated = session.sets.filter((set) => set.rirRecorded !== false);
   return {
     weightKg: session.sets[0].weightKg,
     reps: session.sets[0].reps,
+    lowestReps: Math.min(...session.sets.map((set) => set.reps)),
+    complete: session.allPrescribedSetsPerformed !== false,
     averageRepsInReserve: rated.length
       ? rated.reduce((sum, set) => sum + set.repsInReserve, 0) / rated.length
       : 0,
@@ -81,7 +82,7 @@ export function projectExerciseProgression(input: {
       before != null &&
       before.rirRecorded &&
       before.averageRepsInReserve === 0 &&
-      Math.abs(before.weightKg - last.weightKg) < WEIGHT_EPSILON;
+      sameLoad(before.weightKg, last.weightKg);
     changes = planStartChanges(
       planned,
       computeStartTarget({

@@ -105,11 +105,8 @@ export class WorkoutProgressionService {
           if (!exercise) {
             return null;
           }
-          const history = await this.history(
-            row.exerciseId,
-            undefined,
-            parseProgressionRule(row.progressionJson) ? row.id : undefined
-          );
+          const rule = parseProgressionRule(row.progressionJson);
+          const history = await this.history(row.exerciseId, undefined, rule ? row.id : undefined);
           const planned = sets
             .filter((set) => set.templateExerciseId === row.id && !isWarmupSet(set))
             .sort((a, b) => a.setOrder - b.setOrder)
@@ -117,7 +114,7 @@ export class WorkoutProgressionService {
           const projection = projectExerciseProgression({
             planned,
             history,
-            rule: parseProgressionRule(row.progressionJson),
+            rule,
             step: loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id)),
             automatic: context.automatic,
             progressionMode: context.mode,

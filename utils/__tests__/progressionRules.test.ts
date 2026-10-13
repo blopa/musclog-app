@@ -214,7 +214,7 @@ describe('explicit progression projections', () => {
     expect(auto([rated(100, 5, 0)])).toEqual({ id: '1', weight: 100, reps: 5 });
     expect(auto([rated(100, 5, 0), rated(100, 5, 0)])).toEqual({
       id: '1',
-      weight: 97.5,
+      weight: 90,
       reps: 5,
     });
   });
@@ -251,4 +251,29 @@ describe('explicit progression projections', () => {
       planRuleChanges(defaultProgressionRule('percentage'), planned, [], step).state
     ).toBeNull();
   });
+});
+
+it('automatic progression does not move up after a session with unperformed prescribed sets', () => {
+  const planned3 = [0, 1, 2].map((i) => ({ id: String(i), weight: 60, reps: 8 }));
+  const projection = projectExerciseProgression({
+    planned: planned3,
+    history: [
+      {
+        sets: [{ weightKg: 60, reps: 8, repsInReserve: 3, rirRecorded: true, prescribedIndex: 0 }],
+        allPrescribedSetsPerformed: false,
+        rule: null,
+        state: null,
+      },
+    ],
+    step,
+    automatic: true,
+    rule: null,
+    progressionMode: 'reps_first',
+    isCompound: true,
+    isBodyweight: false,
+  });
+  expect(projection.sets.map((set) => set.reps)).toEqual([8, 8, 8]);
+  expect(projection.changes.every((change) => change.adjustment.cause !== 'progression')).toBe(
+    true
+  );
 });

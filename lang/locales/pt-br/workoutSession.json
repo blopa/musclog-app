@@ -185,7 +185,6 @@
     "restReady": "Cronômetro de descanso",
     "skipRest": "Pular descanso",
     "startRest": "Iniciar descanso",
-    "addRest": "Adicionar 30 segundos",
     "progress": "{{done}} / {{total}} séries",
     "startSensor": "Gravar sensor",
     "stopSensor": "Parar gravação",
@@ -231,7 +230,13 @@
     "newRecord": "Novo recorde de {{type}}",
     "adjustedHint": "Calculado pela sua progressão. Digite para alterar nesta sessão.",
     "usePrevious": "Repetir a última vez",
-    "rotationNext": "O que você está há mais tempo sem treinar · última vez em {{date}}"
+    "rotationNext": "O que você está há mais tempo sem treinar · última vez em {{date}}",
+    "rirQuickLabel": "Repetições que sobraram?",
+    "setReopened": "Série reaberta",
+    "undo": "Desfazer",
+    "plus15": "+15 s",
+    "allDoneSets": "Séries registradas: {{sets}}",
+    "allDoneSummary": "Séries registradas: {{sets}} · {{volume}} {{unit}} levantados"
   },
   "weeklyReview": {
     "title": "Revisão semanal",

@@ -2700,13 +2700,13 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
     jest.spyOn(SettingsService, 'getUnits').mockResolvedValue('metric');
   });
 
-  it('keeps the legacy 2.5 kg step and whole-kilogram rounding without a gym', async () => {
+  it('keeps the 2.5 kg step and lands on a plate-loadable weight without a gym', async () => {
     jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(null);
     lastSession(barbell, 100, 4);
 
     const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
 
-    expect(suggestion).toEqual({ weightKg: 103, reps: 8 }); // 102.5 rounded to a whole kg
+    expect(suggestion).toEqual({ weightKg: 102.5, reps: 8 }); // a 2.5 kg multiple, not 103
   });
 
   it('steps a barbell by its smallest plate pair and lands on a loadable weight', async () => {
@@ -2751,7 +2751,7 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
     expect(suggestion.weightKg).toBe(100);
   });
 
-  it('deloads by the same step after two sessions in a row with nothing in reserve', async () => {
+  it('deloads by 10% after two sessions in a row with nothing in reserve', async () => {
     jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(commercialGym);
     const failed = (logExerciseId: string) => ({
       logExerciseId,
@@ -2768,7 +2768,7 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
 
     const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
 
-    expect(suggestion.weightKg).toBe(97.5);
+    expect(suggestion.weightKg).toBe(90); // 100 − 10%, not a token 2.5 kg
   });
 
   it('rounds to whole POUNDS for an exercise pinned to lbs on a metric account', async () => {
@@ -2823,6 +2823,6 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
 
     const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
 
-    expect(suggestion.weightKg).toBe(103);
+    expect(suggestion.weightKg).toBe(102.5);
   });
 });

@@ -19,7 +19,6 @@
     "suggested": "Sugeridos para você",
     "disliked": "Não gosto",
     "hiddenHint": "Exercícios que você evita ou que a sua academia não oferece ficam ocultos.",
-    "continue": "Continuar",
     "back": "Voltar",
     "swapped": "{{from}} trocado por {{to}}",
     "reason": {
@@ -54,6 +53,7 @@
       },
       "removeEquipment": "{{equipment}} não está disponível em {{gym}}",
       "removeEquipmentHint": "Remova-o desta academia para que exercícios que precisam dele não sejam sugeridos."
-    }
+    },
+    "addReason": "Adicionar motivo"
   }
 }

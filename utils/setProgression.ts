@@ -1,5 +1,6 @@
 import type { ProgressionMode } from '@/constants/settings';
 
+import { sameLoad } from './sameLoad';
 import {
   DEFAULT_TARGET_REPS_IN_RESERVE,
   type StartAdjustmentCause,
@@ -13,6 +14,10 @@ export interface LastWorkingSession {
   weightKg: number;
   /** The first working set's reps. */
   reps: number;
+  /** The fewest reps any performed working set got: the set the whole session is judged by. */
+  lowestReps?: number;
+  /** Every prescribed working set was performed. Absent means "assume so". */
+  complete?: boolean;
   /** Average reps in reserve across ALL its working sets. */
   averageRepsInReserve: number;
   rirRecorded?: boolean;
@@ -65,6 +70,25 @@ const PLAN_REP_HEADROOM = 2;
  */
 const PROGRESS_REPS_IN_RESERVE = DEFAULT_TARGET_REPS_IN_RESERVE;
 
+/**
+ * A load step bigger than this share of the current load is too coarse to progress by: +2.5 kg on a
+ * 6 kg lateral raise is a 40% jump. Such an exercise keeps climbing reps instead.
+ */
+const MAX_LOAD_STEP_SHARE = 0.25;
+
+/**
+ * Whether adding `incrementKg` to `loadKg` is a sensible progression step. An unloaded exercise
+ * (bodyweight) has no share to measure, so the step stands.
+ */
+export const loadStepIsUsable = (loadKg: number, incrementKg: number): boolean =>
+  loadKg <= 0 || incrementKg <= loadKg * MAX_LOAD_STEP_SHARE;
+
+/**
+ * The deload is a share of the load, not one step: 2.5 kg is about 2% of a 120 kg squat and clears
+ * nothing. Matches the linear rule's default deload.
+ */
+const DELOAD_SHARE = 0.1;
+
 /** The default reps for an exercise with no history. */
 export const defaultRepsFor = (isCompound: boolean): number =>
   isCompound ? COMPOUND_BASE_REPS : ISOLATION_BASE_REPS;
@@ -95,16 +119,18 @@ function computeUnratedTarget({
   roundLoad,
 }: StartTargetInput): StartTarget {
   const hold: StartTarget = { weightKg: last.weightKg, reps: last.reps, kind: 'repeat' };
-  if (planReps == null || planReps <= 0 || last.reps < planReps) {
+  // The session is judged by its weakest set: one strong first set says nothing about the rest.
+  const worstReps = last.lowestReps ?? last.reps;
+  if (planReps == null || planReps <= 0 || worstReps < planReps) {
     return hold;
   }
 
   const { minReps, maxReps } = repsFirstRange(isCompound, planReps);
   const range = { repMin: minReps, repMax: maxReps };
-  if (last.reps < maxReps) {
+  if (worstReps < maxReps || !loadStepIsUsable(last.weightKg, incrementKg)) {
     return {
       weightKg: last.weightKg,
-      reps: last.reps + 1,
+      reps: worstReps + 1,
       kind: 'progression',
       rule: { kind: 'range', outcome: 'add_reps', ...range },
     };
@@ -142,13 +168,17 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
     roundLoad,
   } = input;
   const averageRir = last.averageRepsInReserve;
+  // Unfinished work never counts as success: hold until the whole prescription was done.
+  if (last.complete === false) {
+    return { weightKg: last.weightKg, reps: last.reps, kind: 'repeat' };
+  }
   if (last.rirRecorded === false) {
     return computeUnratedTarget(input);
   }
 
-  const hitPlan = planReps == null || last.reps >= planReps;
+  const hitPlan = planReps == null || (last.lowestReps ?? last.reps) >= planReps;
   if (averageRir >= PROGRESS_REPS_IN_RESERVE && hitPlan) {
-    if (progressionMode === 'weight_first') {
+    if (progressionMode === 'weight_first' && loadStepIsUsable(last.weightKg, incrementKg)) {
       return {
         weightKg: roundLoad(last.weightKg + incrementKg),
         reps: last.reps,
@@ -161,12 +191,19 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
       return { weightKg: last.weightKg, reps: last.reps + 1, kind: 'progression' };
     }
 
+    if (!loadStepIsUsable(last.weightKg, incrementKg)) {
+      // No sensible load step for this load: keep adding reps past the range.
+      return { weightKg: last.weightKg, reps: last.reps + 1, kind: 'progression' };
+    }
+
     return { weightKg: roundLoad(last.weightKg + incrementKg), reps: minReps, kind: 'progression' };
   }
 
   if (averageRir === 0 && failedBefore) {
     return {
-      weightKg: roundLoad(Math.max(0, last.weightKg - incrementKg)),
+      weightKg: roundLoad(
+        Math.max(0, last.weightKg - Math.max(incrementKg, last.weightKg * DELOAD_SHARE))
+      ),
       reps: last.reps,
       kind: 'deload',
     };
@@ -187,10 +224,6 @@ export interface StartSetChange {
   reps: number;
   adjustment: StartSetAdjustment;
 }
-
-/** Smallest change in kg that counts as a different load (SQLite floats are not exact). */
-const WEIGHT_EPSILON = 0.01;
-const sameLoad = (a: number, b: number) => Math.abs(a - b) < WEIGHT_EPSILON;
 
 /**
  * Which planned sets of an exercise get the new start target, and the explanation each carries.
@@ -234,7 +267,11 @@ export function planStartChanges(
         from: field === 'weight' ? set.weight : set.reps,
         to: field === 'weight' ? target.weightKg : target.reps,
         plan: { weightKg: set.weight, reps: set.reps },
-        last: { ...last },
+        last: {
+          weightKg: last.weightKg,
+          reps: last.reps,
+          averageRepsInReserve: last.averageRepsInReserve,
+        },
         now: { weightKg: target.weightKg, reps: target.reps },
         ...(target.rule ? { rule: target.rule } : {}),
       },

@@ -357,6 +357,9 @@ export function ReplaceExerciseModal({
     iconColor: theme.colors.text.primary,
   }));
 
+  const showSpinner = isLoading && everythingShown.length === 0;
+  const showEmpty = !isLoading && everythingShown.length === 0;
+
   const pickFooter = (
     <View className="flex-row items-stretch gap-3">
       <Button
@@ -367,12 +370,22 @@ export function ReplaceExerciseModal({
         onPress={onClose}
       />
       <Button
-        label={t('replaceExercise.continue')}
+        label={t('replaceExercise.addReason')}
+        variant="outline"
+        size="sm"
+        width="flex-1"
+        onPress={() => setStep('reason')}
+        disabled={!chosen}
+      />
+      {/* The reason is optional: Replace alone swaps for today, which is the default reason. */}
+      <Button
+        label={t('replaceExercise.replace')}
         icon={Repeat}
         size="sm"
         width="flex-2"
-        onPress={() => setStep('reason')}
+        onPress={handleConfirm}
         disabled={!chosen}
+        testID="replace-now"
       />
     </View>
   );
@@ -447,11 +460,12 @@ export function ReplaceExerciseModal({
             }}
             bottomOffset={16}
           >
-            {isLoading && everythingShown.length === 0 ? (
+            {showSpinner ? (
               <View className="items-center justify-center py-8">
                 <ActivityIndicator size="large" color={theme.colors.accent.primary} />
               </View>
-            ) : everythingShown.length === 0 ? (
+            ) : null}
+            {showEmpty ? (
               <Text
                 className="py-8 text-center"
                 style={{
@@ -461,7 +475,8 @@ export function ReplaceExerciseModal({
               >
                 {t('replaceExercise.noExercisesMatch')}
               </Text>
-            ) : (
+            ) : null}
+            {everythingShown.length > 0 ? (
               <>
                 {showSuggestions ? (
                   <OptionsSelector
@@ -506,7 +521,7 @@ export function ReplaceExerciseModal({
                   </Text>
                 ) : null}
               </>
-            )}
+            ) : null}
           </KeyboardAwareScrollView>
         </View>
       ) : (

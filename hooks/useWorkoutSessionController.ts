@@ -20,6 +20,9 @@ import {
 import { resolveRestSeconds } from '@/utils/restTimer';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
+/** How long typing may sit unsaved before a draft is written. */
+const DRAFT_PERSIST_DEBOUNCE_MS = 400;
+
 export type SessionDraft = {
   weight: string;
   reps: string;
@@ -114,13 +117,41 @@ export function useWorkoutSessionController(
     };
   }, [restEnd]);
 
+  const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const persist = (next: Record<string, Partial<SessionDraft>>) => {
+    if (persistTimer.current) {
+      clearTimeout(persistTimer.current);
+      persistTimer.current = null;
+    }
     if (key) {
       writeQueue.current = writeQueue.current
         .catch(() => {})
         .then(() => AsyncStorage.setItem(key, JSON.stringify(next)));
     }
   };
+  /** Writes any keystroke still waiting out its debounce. */
+  const flushPersist = () => {
+    if (persistTimer.current) {
+      persist(draftsRef.current);
+    }
+  };
+  // Typing a weight would otherwise serialize and write every draft on every keystroke. Anything
+  // that must not be lost (completing a set, backgrounding, leaving the screen) flushes at once.
+  const flushRef = useRef(flushPersist);
+  useEffect(() => {
+    flushRef.current = flushPersist;
+  });
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') {
+        flushRef.current();
+      }
+    });
+    return () => {
+      subscription.remove();
+      flushRef.current();
+    };
+  }, []);
   /** Replaces the drafts and saves them. */
   const commitDrafts = (next: Record<string, Partial<SessionDraft>>) => {
     draftsRef.current = next;
@@ -128,7 +159,13 @@ export function useWorkoutSessionController(
     persist(next);
   };
   const edit = (id: string, draft: SessionDraft) => {
-    commitDrafts({ ...draftsRef.current, [id]: draft });
+    const next = { ...draftsRef.current, [id]: draft };
+    draftsRef.current = next;
+    setDrafts(next);
+    if (persistTimer.current) {
+      clearTimeout(persistTimer.current);
+    }
+    persistTimer.current = setTimeout(() => persist(draftsRef.current), DRAFT_PERSIST_DEBOUNCE_MS);
   };
 
   const changeView = async (value: 'inline' | 'guided') => {
@@ -263,6 +300,10 @@ export function useWorkoutSessionController(
       }
       await WorkoutService.completeWorkout(logId);
       await stopRest();
+      if (persistTimer.current) {
+        clearTimeout(persistTimer.current);
+        persistTimer.current = null;
+      }
       await writeQueue.current;
       if (key) {
         await AsyncStorage.removeItem(key);
@@ -286,6 +327,10 @@ export function useWorkoutSessionController(
     try {
       await WorkoutService.deleteWorkoutLog(logId);
       await Promise.all([stopRest(), clearActiveWorkoutLogId()]);
+      if (persistTimer.current) {
+        clearTimeout(persistTimer.current);
+        persistTimer.current = null;
+      }
       await writeQueue.current;
       if (key) {
         await AsyncStorage.removeItem(key);

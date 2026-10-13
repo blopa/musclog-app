@@ -263,7 +263,7 @@ it('only runs its clock while a rest is counting down', async () => {
   interval.mockRestore();
 });
 
-it('saves each edit exactly once and keeps back-to-back edits from losing one another', async () => {
+it('coalesces back-to-back edits into one write that keeps every one of them', async () => {
   const setItem = jest.spyOn(AsyncStorage, 'setItem');
   const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
   await waitFor(() => expect(hook.result.current.busy).toBe(false));
@@ -276,11 +276,31 @@ it('saves each edit exactly once and keeps back-to-back edits from losing one an
   });
 
   expect(Object.keys(hook.result.current.drafts)).toEqual(['s1', 's2']);
-  await waitFor(() => expect(setItem).toHaveBeenCalledTimes(2));
+  // Typing is debounced: nothing is written per keystroke...
+  expect(setItem).not.toHaveBeenCalled();
+  // ...and the single write that lands carries both edits.
+  await waitFor(() => expect(setItem).toHaveBeenCalledTimes(1));
   expect(JSON.parse((await AsyncStorage.getItem('workout_drafts_log')) as string)).toMatchObject({
     s1: { weight: '62' },
     s2: { weight: '40' },
   });
   setItem.mockRestore();
   hook.unmount();
+});
+
+it('writes a pending edit straight away when the screen is left', async () => {
+  const setItem = jest.spyOn(AsyncStorage, 'setItem');
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  setItem.mockClear();
+
+  act(() => {
+    hook.result.current.edit('s1', { weight: '70', reps: '5' });
+  });
+  hook.unmount();
+
+  await waitFor(() => expect(setItem).toHaveBeenCalledTimes(1));
+  expect(setItem.mock.calls[0][0]).toBe('workout_drafts_log');
+  expect(JSON.parse(setItem.mock.calls[0][1])).toMatchObject({ s1: { weight: '70', reps: '5' } });
+  setItem.mockRestore();
 });

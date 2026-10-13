@@ -185,7 +185,6 @@
     "restReady": "Rusttimer",
     "skipRest": "Rust overslaan",
     "startRest": "Rust starten",
-    "addRest": "30 seconden toevoegen",
     "progress": "{{done}} / {{total}} sets",
     "startSensor": "Sensor opnemen",
     "stopSensor": "Opname stoppen",
@@ -231,7 +230,13 @@
     "newRecord": "Nieuw record: {{type}}",
     "adjustedHint": "Berekend door je progressie. Typ om het voor deze training te wijzigen.",
     "usePrevious": "Vorige keer herhalen",
-    "rotationNext": "Langst niet getraind · laatst op {{date}}"
+    "rotationNext": "Langst niet getraind · laatst op {{date}}",
+    "rirQuickLabel": "Herhalingen over?",
+    "setReopened": "Set heropend",
+    "undo": "Ongedaan maken",
+    "plus15": "+15 s",
+    "allDoneSets": "Sets gelogd: {{sets}}",
+    "allDoneSummary": "Sets gelogd: {{sets}} · {{volume}} {{unit}} getild"
   },
   "weeklyReview": {
     "title": "Weekoverzicht",

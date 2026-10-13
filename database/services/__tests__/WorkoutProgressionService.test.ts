@@ -336,18 +336,18 @@ describe('WorkoutProgressionService', () => {
       expect(JSON.parse(sets[0].adjustmentJson)).toMatchObject({ cause: 'repeat', to: 70 });
     });
 
-    it('deloads by one step after two sessions in a row with nothing left in reserve', async () => {
+    it('deloads by 10% after two sessions in a row with nothing left in reserve', async () => {
       const sets = [planned('s1')];
       installHistory({ sets, previousSets: lastSession(70, 0), earlierSets: lastSession(70, 0) });
 
       await WorkoutProgressionService.applyStartProgression('wl-1');
 
-      expect(sets[0].weight).toBe(68); // 70 − 2.5, to a whole kilogram
+      expect(sets[0].weight).toBe(62.5); // 70 − 10%, on a 2.5 kg multiple
       expect(JSON.parse(sets[0].adjustmentJson)).toMatchObject({
         cause: 'deload',
         field: 'weight',
         from: 60,
-        to: 68,
+        to: 62.5,
         last: { weightKg: 70, averageRepsInReserve: 0 },
       });
     });

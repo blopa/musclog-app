@@ -439,7 +439,7 @@ it('updates back-offs from the actual top set and respects a manually overridden
   });
   expect(w.sets[1].weight).toBe(75);
   expect(w.sets[1].rirRecorded).toBe(true);
-  expect(w.sets[2].weight).toBe(88);
+  expect(w.sets[2].weight).toBe(87.5);
 });
 it('persists an entered training max in the session independently from template edits', async () => {
   const w = await workout(
@@ -500,7 +500,7 @@ it('scopes explicit evidence to the stable exercise row in its own template', as
     )
   );
   const preview = await WorkoutProgressionService.projectTemplate(own.template.id);
-  expect(preview[0].sets[0].weight).toBe(63);
+  expect(preview[0].sets[0].weight).toBe(62.5);
 });
 it('skipped sets prevent full-success progression and preserve corresponding set evidence', async () => {
   const w = await workout();

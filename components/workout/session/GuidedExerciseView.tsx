@@ -34,6 +34,7 @@ import {
 } from './ExerciseHeader';
 import { ExerciseNotes, type SessionNote } from './ExerciseNotes';
 import { GuidanceSummary } from './GuidanceSummary';
+import { RirQuickPick } from './RirQuickPick';
 import type { GuidanceState, SessionBlock, SessionSetRowModel } from './sessionModel';
 import { stepInput } from './setDraft';
 
@@ -199,7 +200,9 @@ export function GuidedExerciseView({
           <Text
             className="font-bold text-text-primary"
             style={{ fontSize: theme.typography.fontSize['4xl'], lineHeight: 42 }}
-            numberOfLines={3}
+            numberOfLines={2}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
           >
             {exercise.name}
           </Text>
@@ -273,6 +276,13 @@ export function GuidedExerciseView({
             onChange={(reps) => onEdit({ ...values, reps })}
           />
         </View>
+
+        <RirQuickPick
+          value={values.rir}
+          disabled={done}
+          onChange={(rir) => onEdit({ ...values, rir })}
+          testID={`set-${set.id}-rir-quick`}
+        />
 
         <Text className="text-center text-sm text-text-secondary">
           {previous

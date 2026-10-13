@@ -1,3 +1,4 @@
+import { sameLoad } from './sameLoad';
 import type { StartAdjustmentCause, StartRuleDetail } from './setAdjustment';
 import type { StartSetChange } from './setProgression';
 import { calculateAverage1RM } from './workoutCalculator';
@@ -269,9 +270,6 @@ type SetTarget = {
   rule: StartRuleDetail;
 };
 
-const WEIGHT_EPSILON = 0.01;
-const sameLoad = (a: number, b: number) => Math.abs(a - b) < WEIGHT_EPSILON;
-
 const causeFromLoad = (next: number, previous: number): StartAdjustmentCause =>
   sameLoad(next, previous) ? 'repeat' : next > previous ? 'progression' : 'deload';
 
@@ -462,6 +460,32 @@ function linearTargets(
 }
 
 /**
+ * The top set + back-off targets when there is no top set to follow from: the plan's first set
+ * stands as the top set, and every later one is loaded at `backoffPercent` of it.
+ */
+function topSetBackoffWithoutHistory(
+  rule: TopSetBackoffRule,
+  planned: readonly PlannedRuleSet[],
+  step: RuleLoadStep
+): SetTarget[] {
+  return planned.map((set, index) =>
+    index === 0
+      ? {
+          weightKg: set.weight,
+          reps: rule.repMin,
+          cause: 'repeat',
+          rule: { kind: 'range', outcome: 'hold', repMin: rule.repMin, repMax: rule.repMax },
+        }
+      : {
+          weightKg: step.roundLoad((planned[0].weight * rule.backoffPercent) / 100),
+          reps: rule.backoffReps,
+          cause: 'repeat',
+          rule: { kind: 'backoff', topSetKg: planned[0].weight, percent: rule.backoffPercent },
+        }
+  );
+}
+
+/**
  * Top set + back-offs: the first working set is the top set, every later one a back-off at
  * `backoffPercent` of the top set's load. Back-offs are recomputed from the top set actually
  * performed once the session is under way (`computeIntraSessionAdjustment`).
@@ -475,21 +499,7 @@ function topSetBackoffTargets(
 ): SetTarget[] {
   const lastTop = last.sets.find((set, index) => (set.prescribedIndex ?? index) === 0);
   if (!lastTop) {
-    return planned.map((set, index) => ({
-      weightKg:
-        index === 0 ? set.weight : step.roundLoad((planned[0].weight * rule.backoffPercent) / 100),
-      reps: index === 0 ? rule.repMin : rule.backoffReps,
-      cause: 'repeat' as const,
-      rule:
-        index === 0
-          ? {
-              kind: 'range' as const,
-              outcome: 'hold' as const,
-              repMin: rule.repMin,
-              repMax: rule.repMax,
-            }
-          : { kind: 'backoff' as const, topSetKg: planned[0].weight, percent: rule.backoffPercent },
-    }));
+    return topSetBackoffWithoutHistory(rule, planned, step);
   }
   if (lastTop.weightKg <= 0) {
     return [];
@@ -625,21 +635,7 @@ export function planRuleChanges(
     ({ targets, state } = percentageTargets(rule, planned, history, step));
   } else if (history.length === 0) {
     if (rule.type === 'top_set_backoff') {
-      targets = planned.map((set, index) =>
-        index === 0
-          ? {
-              weightKg: set.weight,
-              reps: rule.repMin,
-              cause: 'repeat',
-              rule: { kind: 'range', repMin: rule.repMin, repMax: rule.repMax, outcome: 'hold' },
-            }
-          : {
-              weightKg: step.roundLoad((planned[0].weight * rule.backoffPercent) / 100),
-              reps: rule.backoffReps,
-              cause: 'repeat',
-              rule: { kind: 'backoff', topSetKg: planned[0].weight, percent: rule.backoffPercent },
-            }
-      );
+      targets = topSetBackoffWithoutHistory(rule, planned, step);
     } else {
       targets = planned.map((set) => ({
         weightKg: set.weight,

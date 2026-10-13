@@ -12,6 +12,7 @@ import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { adjustedFields } from '@/utils/setAdjustment';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
+import { RirQuickPick } from './RirQuickPick';
 import type { SessionSetRowModel } from './sessionModel';
 import { SetDetailsSheet } from './SetDetailsSheet';
 import { draftFromPrevious } from './setDraft';
@@ -31,7 +32,7 @@ function useCompactSetTable() {
 export function SetTableHeader({ weightUnit }: { weightUnit: string }) {
   const { t } = useTranslation();
   const compact = useCompactSetTable();
-  const label = 'text-[11px] font-bold uppercase tracking-wider text-text-tertiary';
+  const label = 'text-xs font-bold uppercase tracking-wider text-text-tertiary';
   return (
     <View className="flex-row items-center gap-2 px-1" accessibilityElementsHidden>
       <Text className={label} style={{ width: SET_TABLE_COLUMNS.set, textAlign: 'center' }}>
@@ -166,7 +167,7 @@ export function InlineSetRow({
             {setLabel}
           </Text>
           {values.rir?.trim() ? (
-            <Text className="text-[10px] font-semibold text-text-tertiary">
+            <Text className="text-xs font-semibold text-text-tertiary">
               {t('trainingFlow.rir', { value: values.rir })}
             </Text>
           ) : null}
@@ -196,6 +197,15 @@ export function InlineSetRow({
         </Pressable>
       </View>
       {compact ? previousCell : null}
+      {isCurrent && editable ? (
+        <View className="px-1 pb-2 pt-1">
+          <RirQuickPick
+            value={values.rir}
+            onChange={(rir) => onEdit({ ...values, rir })}
+            testID={`set-${set.id}-rir-quick`}
+          />
+        </View>
+      ) : null}
       {details ? (
         <SetDetailsSheet
           title={setName}

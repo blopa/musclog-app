@@ -8,16 +8,24 @@ import {
 } from 'react-native-keyboard-controller';
 
 import { Button } from '@/components/theme/Button';
+import { useSnackbar } from '@/context/SnackbarContext';
 import type Exercise from '@/database/models/Exercise';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController';
+import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { weightInputStep } from '@/utils/loadIncrement';
+import { getWeightUnitI18nKey } from '@/utils/units';
 import { warmupOfferFor, type WarmupSetPrescription } from '@/utils/warmupSets';
-import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  isResolvedWorkoutSet,
+  isWorkingSet,
+} from '@/utils/workoutSetCompletion';
 import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
@@ -69,6 +77,8 @@ export function WorkoutTrainingView({
   const { t } = useTranslation();
   const theme = useTheme();
   const { locale, formatInteger } = useFormatAppNumber();
+  const { showSnackbar } = useSnackbar();
+  const { units: accountUnits } = useSettings();
   const { gym } = useActiveGym();
   const { unitsFor, get } = useExerciseUserSettings();
   // The user's own choice for the rest panel, remembered for one rest only.
@@ -99,6 +109,13 @@ export function WorkoutTrainingView({
     if (!set) {
       return;
     }
+    const reopening = isPerformedWorkoutSet(set);
+    const loggedValues = valuesFromDraft(
+      valuesFor(setId),
+      unitsFor(set.exerciseId),
+      locale,
+      controller.drafts[setId]?.weight !== undefined || controller.drafts[setId]?.reps !== undefined
+    );
     void controller
       .complete(
         setId,
@@ -110,13 +127,25 @@ export function WorkoutTrainingView({
             controller.drafts[setId]?.reps !== undefined
         )
       )
+      .then(() => {
+        if (!reopening) {
+          return;
+        }
+        // Reopening is one stray tap away from un-logging a set: say so, and offer the way back.
+        showSnackbar('success', t('trainingFlow.setReopened'), {
+          action: t('trainingFlow.undo'),
+          duration: 5000,
+          onAction: () =>
+            void controller.complete(setId, { ...loggedValues, manual: true }).catch(() => {}),
+        });
+      })
       .catch(() => {});
   };
   const skip = (setId: string) => {
     void controller.skip(setId).catch(() => {});
   };
-  const warmupFor = (block: SessionBlock): 'add' | 'remove' | null => {
-    const offer = warmupOfferFor({
+  const warmupOfferForBlock = (block: SessionBlock) =>
+    warmupOfferFor({
       exerciseSets: block.rows.map((row) => row.set),
       currentSet: block.focus,
       workingKg: block.focus.weight,
@@ -124,6 +153,8 @@ export function WorkoutTrainingView({
       equipmentType: exerciseById.get(block.exerciseId)?.equipmentType,
       units: unitsFor(block.exerciseId),
     });
+  const warmupFor = (block: SessionBlock): 'add' | 'remove' | null => {
+    const offer = warmupOfferForBlock(block);
     if (offer.toAdd.length) {
       return 'add';
     }
@@ -131,14 +162,7 @@ export function WorkoutTrainingView({
   };
   const action = (block: SessionBlock, kind: SessionExerciseAction) => {
     if (kind === 'warmup') {
-      const offer = warmupOfferFor({
-        exerciseSets: block.rows.map((row) => row.set),
-        currentSet: block.focus,
-        workingKg: block.focus.weight,
-        gym,
-        equipmentType: exerciseById.get(block.exerciseId)?.equipmentType,
-        units: unitsFor(block.exerciseId),
-      });
+      const offer = warmupOfferForBlock(block);
       onWarmups(block.logExerciseId, offer.toAdd.length ? offer.toAdd : 'remove');
       return;
     }
@@ -178,12 +202,31 @@ export function WorkoutTrainingView({
       ? timerChoice.expanded
       : resting && controller.view === 'guided';
 
+  const workingDone = sets.filter(isWorkingSet);
+  const volumeKg = workingDone.reduce((sum, set) => sum + set.weight * set.reps, 0);
+  let summaryText: string | null = null;
+  if (allResolved && workingDone.length > 0) {
+    summaryText =
+      volumeKg > 0
+        ? t('trainingFlow.allDoneSummary', {
+            sets: formatInteger(workingDone.length),
+            volume: formatDisplayWeightKg(locale, accountUnits, volumeKg),
+            unit: t(getWeightUnitI18nKey(accountUnits)),
+          })
+        : t('trainingFlow.allDoneSets', { sets: formatInteger(workingDone.length) });
+  }
+
   const finishButton = (
     <View className="gap-3 pt-2">
       {allResolved ? (
         <View className="items-center gap-1 rounded-2xl bg-accent-primary/10 p-4">
           <Flag size={theme.iconSize.lg} color={theme.colors.accent.primary} />
           <Text className="text-lg font-bold text-text-primary">{t('trainingFlow.allDone')}</Text>
+          {summaryText ? (
+            <Text className="text-center text-base font-semibold text-accent-primary">
+              {summaryText}
+            </Text>
+          ) : null}
           <Text className="text-center text-sm text-text-secondary">
             {t('trainingFlow.allDoneHint')}
           </Text>
@@ -210,12 +253,13 @@ export function WorkoutTrainingView({
     </View>
   );
 
-  const errorText =
-    controller.error != null ? (
-      <Text accessibilityRole="alert" className="py-3 text-center text-status-error">
-        {t('trainingFlow.saveError')}
-      </Text>
-    ) : null;
+  // A failed save is reported where the user is looking, not at the bottom of a long scroll.
+  const saveError = controller.error;
+  useEffect(() => {
+    if (saveError != null) {
+      showSnackbar('error', t('trainingFlow.saveError'));
+    }
+  }, [saveError, showSnackbar, t]);
 
   let body: ReactNode;
   let pinnedAction: ReactNode = null;
@@ -356,7 +400,6 @@ export function WorkoutTrainingView({
         </View>
         {body}
         {controller.view === 'guided' ? <View className="pt-4">{children}</View> : null}
-        {errorText}
         {finishButton}
       </KeyboardAwareScrollView>
       {pinnedAction}

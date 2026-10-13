@@ -19,7 +19,6 @@
     "suggested": "Sugeridos para ti",
     "disliked": "No me gusta",
     "hiddenHint": "Se ocultan los ejercicios que evitas o que tu gimnasio no puede ofrecer.",
-    "continue": "Continuar",
     "back": "Atrás",
     "swapped": "Cambiado {{from}} por {{to}}",
     "reason": {
@@ -54,6 +53,7 @@
       },
       "removeEquipment": "{{equipment}} no está disponible en {{gym}}",
       "removeEquipmentHint": "Quítalo de este gimnasio para que no se sugieran ejercicios que lo necesiten."
-    }
+    },
+    "addReason": "Añadir motivo"
   }
 }

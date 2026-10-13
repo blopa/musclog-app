@@ -185,7 +185,6 @@
     "restReady": "Temporizador de descanso",
     "skipRest": "Omitir descanso",
     "startRest": "Iniciar descanso",
-    "addRest": "Añadir 30 segundos",
     "progress": "{{done}} / {{total}} series",
     "startSensor": "Grabar sensor",
     "stopSensor": "Detener grabación",
@@ -231,7 +230,13 @@
     "newRecord": "Nuevo récord de {{type}}",
     "adjustedHint": "Calculado por tu progresión. Escribe para cambiarlo en esta sesión.",
     "usePrevious": "Repetir la última vez",
-    "rotationNext": "La que más tiempo llevas sin hacer · última vez el {{date}}"
+    "rotationNext": "La que más tiempo llevas sin hacer · última vez el {{date}}",
+    "rirQuickLabel": "¿Repeticiones que te quedaban?",
+    "setReopened": "Serie reabierta",
+    "undo": "Deshacer",
+    "plus15": "+15 s",
+    "allDoneSets": "Series registradas: {{sets}}",
+    "allDoneSummary": "Series registradas: {{sets}} · {{volume}} {{unit}} levantados"
   },
   "weeklyReview": {
     "title": "Revisión semanal",

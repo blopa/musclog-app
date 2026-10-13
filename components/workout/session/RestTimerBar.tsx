@@ -130,8 +130,8 @@ export function RestTimerBar({
                 <Chip
                   variant="solid"
                   role="button"
-                  label={t('trainingFlow.addRest')}
-                  onPress={() => onAdjust(30)}
+                  label={t('trainingFlow.plus15')}
+                  onPress={() => onAdjust(15)}
                 />
                 <Chip
                   variant="solid"

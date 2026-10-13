@@ -1,6 +1,7 @@
 import type { ProgressionMode } from '@/constants/settings';
 
 import type { ProgressionRule } from './progressionRules';
+import { sameLoad, WEIGHT_EPSILON } from './sameLoad';
 import {
   calculateAverage1RM,
   calculateRepsForTargetRIR,
@@ -21,9 +22,6 @@ const WEIGHT_CARRY_OVER_EPSILON = 0.1;
 
 /** Smallest change worth rewriting a planned value for. */
 const ADJUSTMENT_EPSILON = 1;
-
-/** A back-off load is exact arithmetic on the top set, so any real difference is worth showing. */
-const BACKOFF_EPSILON = 0.01;
 
 export type SetAdjustmentField = 'reps' | 'weight';
 
@@ -152,7 +150,7 @@ export function adjustedFields(adjustment: SetAdjustment | null | undefined): {
   }
   if (isStartAdjustment(adjustment)) {
     return {
-      weight: Math.abs(adjustment.plan.weightKg - adjustment.now.weightKg) >= 0.01,
+      weight: !sameLoad(adjustment.plan.weightKg, adjustment.now.weightKg),
       reps: adjustment.plan.reps !== adjustment.now.reps,
     };
   }
@@ -309,7 +307,7 @@ export function computeIntraSessionAdjustment({
       weight: backoffWeight,
       reps: plannedReps,
       adjustment:
-        Math.abs(backoffWeight - plannedWeight) >= BACKOFF_EPSILON
+        Math.abs(backoffWeight - plannedWeight) >= WEIGHT_EPSILON
           ? {
               cause: 'backoff',
               field: 'weight',

@@ -72,10 +72,22 @@ describe('weightInputStep', () => {
 });
 
 describe('loadStepFor', () => {
-  it('rounds to whole kilograms for a metric lifter with no gym', () => {
+  it('rounds to a loadable 2.5 kg multiple for a metric lifter with no gym', () => {
     const step = loadStepFor('barbell', null, 'metric');
     expect(step.incrementKg).toBe(2.5);
-    expect(step.roundLoad(102.5)).toBe(103);
+    expect(step.roundLoad(102.5)).toBe(102.5);
+    expect(step.roundLoad(103.4)).toBe(102.5);
+  });
+
+  it('progresses in steps a plate set can load, never 60 → 63', () => {
+    const step = loadStepFor('barbell', null, 'metric');
+    let load = 60;
+    const seen = [load];
+    for (let i = 0; i < 4; i++) {
+      load = step.roundLoad(load + step.incrementKg);
+      seen.push(load);
+    }
+    expect(seen).toEqual([60, 62.5, 65, 67.5, 70]);
   });
 
   it('rounds to whole POUNDS for an exercise shown in pounds, whatever the account says', () => {

@@ -68,9 +68,9 @@ describe('computeStartTarget', () => {
       expect(target({ last: last(100, 8, 0) })).toEqual({ weightKg: 100, reps: 8, kind: 'repeat' });
     });
 
-    it('deloads by one increment when the session before also had nothing left', () => {
+    it('deloads by 10% of the load when the session before also had nothing left', () => {
       expect(target({ last: last(100, 8, 0), failedBefore: true })).toEqual({
-        weightKg: 98,
+        weightKg: 90,
         reps: 8,
         kind: 'deload',
       });
@@ -326,5 +326,76 @@ describe('start adjustment persistence', () => {
 
   it("reverts a repeat — which already is last time — to the plan's own numbers", () => {
     expect(revertTargetFor({ ...adjustment, cause: 'repeat' })).toEqual({ weightKg: 60, reps: 8 });
+  });
+});
+
+describe('session completeness and the weakest set', () => {
+  const base = {
+    progressionMode: 'reps_first' as const,
+    isCompound: true,
+    incrementKg: 2.5,
+    roundLoad: (kg: number) => kg,
+  };
+
+  it('holds when the last session left prescribed sets undone, however well the done ones went', () => {
+    expect(
+      computeStartTarget({
+        ...base,
+        planReps: 8,
+        last: {
+          weightKg: 60,
+          reps: 8,
+          averageRepsInReserve: 3,
+          rirRecorded: true,
+          complete: false,
+        },
+      })
+    ).toEqual({ weightKg: 60, reps: 8, kind: 'repeat' });
+  });
+
+  it('judges an unrated session by its weakest set, not the first', () => {
+    // Sets of 10 / 6 / 5 against a plan of 10: the first set alone said "go up".
+    expect(
+      computeStartTarget({
+        ...base,
+        planReps: 10,
+        last: {
+          weightKg: 60,
+          reps: 10,
+          lowestReps: 5,
+          averageRepsInReserve: 0,
+          rirRecorded: false,
+        },
+      })
+    ).toEqual({ weightKg: 60, reps: 10, kind: 'repeat' });
+  });
+
+  it('adds weight only when every unrated set reached the top of the range', () => {
+    const result = computeStartTarget({
+      ...base,
+      planReps: 10,
+      last: { weightKg: 60, reps: 12, lowestReps: 12, averageRepsInReserve: 0, rirRecorded: false },
+    });
+    expect(result).toMatchObject({ weightKg: 62.5, reps: 10, kind: 'progression' });
+  });
+
+  it('keeps adding reps instead of a step that is a large share of a light load', () => {
+    const result = computeStartTarget({
+      ...base,
+      progressionMode: 'weight_first',
+      isCompound: false,
+      last: { weightKg: 6, reps: 14, averageRepsInReserve: 3, rirRecorded: true },
+    });
+    expect(result).toEqual({ weightKg: 6, reps: 15, kind: 'progression' });
+  });
+
+  it('deloads by 10% of the load once that exceeds one step', () => {
+    expect(
+      computeStartTarget({
+        ...base,
+        failedBefore: true,
+        last: { weightKg: 120, reps: 5, averageRepsInReserve: 0, rirRecorded: true },
+      }).weightKg
+    ).toBe(108);
   });
 });

@@ -19,7 +19,6 @@
     "suggested": "Voor jou voorgesteld",
     "disliked": "Niet leuk gevonden",
     "hiddenHint": "Oefeningen die je vermijdt of die je sportschool niet kan bieden, zijn verborgen.",
-    "continue": "Doorgaan",
     "back": "Terug",
     "swapped": "{{from}} vervangen door {{to}}",
     "reason": {
@@ -54,6 +53,7 @@
       },
       "removeEquipment": "{{equipment}} is niet beschikbaar bij {{gym}}",
       "removeEquipmentHint": "Verwijder het uit deze sportschool zodat oefeningen die het nodig hebben niet worden voorgesteld."
-    }
+    },
+    "addReason": "Reden toevoegen"
   }
 }
