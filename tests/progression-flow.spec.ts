@@ -60,6 +60,12 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await expect(weights.nth(1)).toHaveValue('60');
   await expect(weights.nth(2)).toHaveValue('60');
   await page.goto(`${app}/weekly-review`);
+  // The fixture has activity in the reviewed week and nobody has dismissed the one-time welcome
+  // sheet, so it opens over the review and intercepts every tap until it is closed.
+  const gotIt = page.getByRole('button', { name: copy.weeklyReview.welcome.cta, exact: true });
+  await expect(gotIt).toBeVisible();
+  await gotIt.click();
+  await expect(gotIt).toHaveCount(0);
   await expect(page.getByTestId('review-training')).toBeVisible();
   await expect(page.getByTestId('review-nutrition')).toBeVisible();
   await page.screenshot({ path: `/tmp/musclog-${testInfo.project.name}-review.png` });

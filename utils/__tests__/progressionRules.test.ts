@@ -507,3 +507,25 @@ describe('automatic progression of bodyweight exercises', () => {
   it('progresses the load once the lifter has loaded it (a vest or a belt)', () =>
     expect(projectPushUps(done(10, 10)).sets[0].weight).toBe(12.5));
 });
+
+describe('editing a rule’s reps does not rewrite history', () => {
+  const old = {
+    ...defaultProgressionRule('percentage'),
+    type: 'percentage' as const,
+    reps: 5,
+    trainingMaxKg: 120,
+  };
+  const session = (): HistorySession => ({
+    ...history([5, 5, 5], 96),
+    rule: old,
+    state: { trainingMaxKg: 120 },
+  });
+
+  it('judges each past session against the reps it prescribed', () => {
+    // Raised from 5 to 8 reps: two successful 5-rep sessions are not failures at 8.
+    expect(resolveTrainingMax({ ...old, reps: 8 }, [session(), session()], step)).toMatchObject({
+      trainingMaxKg: 122.5,
+      source: 'raised',
+    });
+  });
+});

@@ -456,10 +456,20 @@ function doubleProgressionTargets(
   });
 }
 
-const sessionGotEveryRep = (session: HistorySession, reps: number) =>
-  session.allPrescribedSetsPerformed &&
-  session.sets.length > 0 &&
-  session.sets.every((set) => set.reps >= reps);
+/**
+ * Whether a past session got every rep it PRESCRIBED. A session is judged against the reps its own
+ * copy of the rule asked for, not the rule as edited since: raising a rule from 5 to 8 reps must not
+ * turn two successful 5-rep sessions into failures (and lower the training max). `currentReps` is
+ * only the fallback for a session that ran no rep-based rule.
+ */
+const sessionGotEveryRep = (session: HistorySession, currentReps: number) => {
+  const reps = session.rule && 'reps' in session.rule ? session.rule.reps : currentReps;
+  return (
+    session.allPrescribedSetsPerformed &&
+    session.sets.length > 0 &&
+    session.sets.every((set) => set.reps >= reps)
+  );
+};
 
 const linearDetail = (rule: LinearProgressionRule) => ({
   kind: 'linear' as const,

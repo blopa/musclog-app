@@ -74,7 +74,7 @@ type ReplaceExerciseModalProps = {
   visible: boolean;
   onClose: () => void;
   /** Called with the chosen exercise and what the user decided to remember about the swap. */
-  onReplace: (exercise: ReplaceExerciseData, outcome: SubstitutionOutcome) => void;
+  onReplace: (exercise: ReplaceExerciseData, outcome: SubstitutionOutcome) => void | Promise<void>;
   /** The exercise being replaced: drives the suggestions and the default region tab. */
   currentExerciseId?: string;
 };
@@ -300,12 +300,13 @@ export function ReplaceExerciseModal({
     setRemoveEquipment(false);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!chosen) {
       return;
     }
     const kind = rememberChoice ? impliedKind : null;
-    onReplace(chosen, {
+    // The host closes the sheet once the swap succeeded; a failed swap leaves it open to retry.
+    await onReplace(chosen, {
       reason,
       ...(kind
         ? {
@@ -319,7 +320,6 @@ export function ReplaceExerciseModal({
         ? { removeEquipmentFromGym: true }
         : {}),
     });
-    onClose();
   };
 
   const reasonOptions: SelectorOption<SubstitutionReason>[] = SUBSTITUTION_REASONS.map((id) => ({
