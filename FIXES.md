@@ -649,7 +649,14 @@ On web every `MaterialIcons` glyph rendered as a tofu box showing its private-us
 `@react-native-vector-icons` config plugin only bundles it for native builds. `utils/webIconFonts.web.ts`
 now loads `MaterialIcons.ttf` through `expo-font` under the family name `MaterialIcons-Regular` (the
 icon set's `postScriptName`, which the library uses as the web `font-family`); `app/_layout.tsx` calls
-it once. The native sibling is a no-op. A new icon set needs its own entry there.
+it during rendering. The native sibling is a no-op. A new icon set needs its own entry there.
+
+The initial module-scope registration broke SDK 57 static web export with
+`expo-font server context accessed outside of withServerContext()`: Expo imports routes while
+building the manifest, before entering the font collection context. Keep registration inside
+`RootLayout`'s render, where each exported page collects its own font resources; moving it to an
+effect would omit the font from server-rendered HTML. Browser font loads are deduplicated by
+`expo-font`. `utils/__tests__/webIconFonts.test.ts` covers import safety and per-page registration.
 
 ## Progression stalls hidden by rounding, bodyweight load, and protein that fell in a cut
 
