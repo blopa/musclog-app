@@ -55,7 +55,7 @@ export default function QuickBodyStatsScreen() {
   const [birthday, setBirthday] = useState<Date>(localCalendarDayDate(new Date(1990, 0, 1)));
   const [isBirthdayPickerVisible, setIsBirthdayPickerVisible] = useState(false);
   const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
-  const [bodyFat, setBodyFat] = useState<number | null>(25);
+  const [bodyFat, setBodyFat] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const units = setupData.units ?? 'metric';
