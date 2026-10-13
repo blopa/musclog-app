@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 
 import { database } from '@/database';
@@ -385,7 +385,9 @@ describe('useWorkoutSessionState', () => {
         expect(result.current.isLoading).toBe(false);
       });
       // Let the asynchronously loaded progression mode re-run the pipeline before reading.
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      });
       return result.current;
     }
 
