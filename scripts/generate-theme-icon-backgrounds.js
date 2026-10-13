@@ -5,12 +5,18 @@ const { Buffer } = require('node:buffer');
 const path = require('node:path');
 const sharp = require('sharp');
 
+const { themeIconBackgroundColor } = require('../constants/themeAppIcons');
 const { THEME_DEFINITIONS, THEME_IDS } = require('../theme.registry');
 
 const RECOLOR_STOPS = [
   { at: 0, token: 'brandBright' },
   { at: 1, token: 'statusInfo' },
 ];
+const PALETTE_THEME_ID_OVERRIDES = {
+  'kinetic-depth': 'kinetic-light',
+  'kinetic-light': 'kinetic-depth',
+};
+
 function parseHexColor(hex) {
   const value = hex.replace('#', '');
   return [0, 2, 4].map((offset) => Number.parseInt(value.slice(offset, offset + 2), 16));
@@ -103,12 +109,14 @@ async function generateThemeIconBackgrounds(options = {}) {
     );
   }
 
-  await mkdir(outputDirectory, { recursive: true });
+  const opaqueDirectory = path.join(outputDirectory, 'opaque');
+  await mkdir(opaqueDirectory, { recursive: true });
   const generated = [];
   for (const themeId of THEME_IDS) {
     const outputPath = path.join(outputDirectory, `icon-bg-${themeId}.png`);
     const pixels = Buffer.from(data);
-    recolorPixels(pixels, info.width, info.height, THEME_DEFINITIONS[themeId].palette);
+    const paletteThemeId = PALETTE_THEME_ID_OVERRIDES[themeId] ?? themeId;
+    recolorPixels(pixels, info.width, info.height, THEME_DEFINITIONS[paletteThemeId].palette);
     await sharp(pixels, { raw: { channels: 4, height: info.height, width: info.width } })
       .composite([
         { input: glassEffectPath, blend: 'over' },
@@ -116,10 +124,18 @@ async function generateThemeIconBackgrounds(options = {}) {
       ])
       .png()
       .toFile(outputPath);
+    // iOS rejects transparent app icons, so the alternate-icon set ships this copy
+    // flattened onto the theme's own surface (the Android adaptive background too).
+    await sharp(outputPath)
+      .flatten({ background: themeIconBackgroundColor(themeId) })
+      .png()
+      .toFile(path.join(opaqueDirectory, `icon-bg-${themeId}.png`));
     generated.push(outputPath);
   }
 
-  logger.log(`Generated ${generated.length} theme icon backgrounds in ${outputDirectory}.`);
+  logger.log(
+    `Generated ${generated.length} theme icon backgrounds in ${outputDirectory} (opaque copies in ${opaqueDirectory}).`
+  );
   return generated;
 }
 
