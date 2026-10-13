@@ -96,3 +96,22 @@ export function pageHeadlineKey(page: WhatsNewFlow['pages'][number]): WhatsNewKe
 
   return null;
 }
+
+/**
+ * Supporting copy for the same block that supplies the intro headline. Feature lists use
+ * their item labels to explain broad headings like "Also new"; other blocks use their description.
+ */
+export function pageHeadlineDetailKeys(page: WhatsNewFlow['pages'][number]): WhatsNewKey[] {
+  for (const block of page.blocks) {
+    const key = block.type === 'action' ? block.labelKey : block.titleKey;
+    if (key) {
+      if (block.type === 'featureList') {
+        return block.items.map((item) => item.labelKey);
+      }
+
+      return block.descriptionKey ? [block.descriptionKey] : [];
+    }
+  }
+
+  return [];
+}

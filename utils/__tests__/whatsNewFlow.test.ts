@@ -1,5 +1,10 @@
-import { pageHeadlineKey, selectReplayFlow, selectWhatsNewFlow } from '../whatsNew/flow';
-import type { WhatsNewRelease } from '../whatsNew/schema';
+import {
+  pageHeadlineDetailKeys,
+  pageHeadlineKey,
+  selectReplayFlow,
+  selectWhatsNewFlow,
+} from '../whatsNew/flow';
+import type { WhatsNewBlock, WhatsNewRelease } from '../whatsNew/schema';
 
 function release(version: string, count = 2): WhatsNewRelease {
   return {
@@ -129,5 +134,92 @@ describe('pageHeadlineKey', () => {
 
   it('returns null for a page with nothing to name it', () => {
     expect(pageHeadlineKey(page([{ id: 'list', type: 'featureList', items: [] }]))).toBeNull();
+  });
+});
+
+describe('pageHeadlineDetailKeys', () => {
+  const page = (blocks: WhatsNewBlock[]) => ({ key: 'p', version: '2.13.1', blocks });
+
+  it('lists the item labels under a feature list headline', () => {
+    expect(
+      pageHeadlineDetailKeys(
+        page([
+          {
+            id: 'list',
+            type: 'featureList',
+            titleKey: 'whatsNew.also',
+            items: [
+              { id: 'a', icon: 'heart', labelKey: 'whatsNew.a', descriptionKey: 'whatsNew.ad' },
+              { id: 'b', icon: 'heart', labelKey: 'whatsNew.b', descriptionKey: 'whatsNew.bd' },
+            ],
+          },
+        ])
+      )
+    ).toEqual(['whatsNew.a', 'whatsNew.b']);
+  });
+
+  it.each<WhatsNewBlock>([
+    { id: 'info', type: 'info', titleKey: 'whatsNew.first', descriptionKey: 'whatsNew.detail' },
+    {
+      id: 'choice',
+      type: 'choice',
+      setting: 'workoutView',
+      titleKey: 'whatsNew.first',
+      descriptionKey: 'whatsNew.detail',
+    },
+    {
+      id: 'action',
+      type: 'action',
+      action: 'openWorkoutSettings',
+      labelKey: 'whatsNew.first',
+      descriptionKey: 'whatsNew.detail',
+    },
+  ])('uses the description of a $type headline', (block) => {
+    expect(pageHeadlineDetailKeys(page([block]))).toEqual(['whatsNew.detail']);
+  });
+
+  it('does not borrow another block’s description when the headline has none', () => {
+    expect(
+      pageHeadlineDetailKeys(
+        page([
+          { id: 'a', type: 'info', titleKey: 'whatsNew.first' },
+          { id: 'b', type: 'info', titleKey: 'whatsNew.second', descriptionKey: 'whatsNew.detail' },
+        ])
+      )
+    ).toEqual([]);
+  });
+
+  it('skips untitled blocks and returns no detail for a page without a headline', () => {
+    const untitled: WhatsNewBlock = { id: 'list', type: 'featureList', items: [] };
+    expect(pageHeadlineDetailKeys(page([untitled]))).toEqual([]);
+    expect(
+      pageHeadlineDetailKeys(
+        page([
+          untitled,
+          { id: 'a', type: 'info', titleKey: 'whatsNew.first', descriptionKey: 'whatsNew.detail' },
+        ])
+      )
+    ).toEqual(['whatsNew.detail']);
+  });
+
+  it('explains all six pages in the published tour, including the Also new features', () => {
+    const { whatsNewReleases } = jest.requireActual('@/data/whatsNew/releases') as {
+      whatsNewReleases: WhatsNewRelease[];
+    };
+    const flow = selectReplayFlow({ releases: whatsNewReleases, currentVersion: '2.13.1' });
+    expect(flow.pages.map(pageHeadlineDetailKeys)).toEqual([
+      ['whatsNew.releases.v2_13_1.view.description'],
+      ['whatsNew.releases.v2_13_1.targets.description'],
+      ['whatsNew.releases.v2_13_1.rest.description'],
+      ['whatsNew.releases.v2_13_1.gyms.description'],
+      ['whatsNew.releases.v2_13_1.review.description'],
+      [
+        'whatsNew.releases.v2_13_1.also.plans.label',
+        'whatsNew.releases.v2_13_1.also.cardio.label',
+        'whatsNew.releases.v2_13_1.also.swaps.label',
+        'whatsNew.releases.v2_13_1.also.restrictions.label',
+        'whatsNew.releases.v2_13_1.also.warmups.label',
+      ],
+    ]);
   });
 });

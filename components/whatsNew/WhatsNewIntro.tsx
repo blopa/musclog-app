@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { pageHeadlineKey, type WhatsNewFlow } from '@/utils/whatsNew/flow';
+import { pageHeadlineDetailKeys, pageHeadlineKey, type WhatsNewFlow } from '@/utils/whatsNew/flow';
 
 import { WhatsNewIconBadge } from './WhatsNewIconBadge';
 
@@ -26,7 +26,7 @@ export function WhatsNewIntro({
   const headlines = showHighlights
     ? flow.pages.flatMap((page) => {
         const key = pageHeadlineKey(page);
-        return key ? [{ id: page.key, key }] : [];
+        return key ? [{ id: page.key, key, detailKeys: pageHeadlineDetailKeys(page) }] : [];
       })
     : [];
 
@@ -56,7 +56,7 @@ export function WhatsNewIntro({
             {t('whatsNew.intro.inside')}
           </Text>
           {headlines.map((headline, index) => (
-            <View key={headline.id} className="flex-row items-center gap-3">
+            <View key={headline.id} className="flex-row items-start gap-3">
               <View
                 className="items-center justify-center rounded-full bg-accent-primary/15"
                 style={{ width: theme.iconSize['2xl'], height: theme.iconSize['2xl'] }}
@@ -65,9 +65,14 @@ export function WhatsNewIntro({
                   {formatInteger(index + 1)}
                 </Text>
               </View>
-              <Text className="flex-1 text-base font-semibold text-text-primary">
-                {t(headline.key)}
-              </Text>
+              <View className="flex-1 gap-1">
+                <Text className="text-base font-semibold text-text-primary">{t(headline.key)}</Text>
+                {headline.detailKeys.length > 0 ? (
+                  <Text className="text-sm text-text-secondary">
+                    {headline.detailKeys.map((key) => t(key)).join(' · ')}
+                  </Text>
+                ) : null}
+              </View>
             </View>
           ))}
         </View>
