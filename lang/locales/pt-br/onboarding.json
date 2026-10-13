@@ -329,10 +329,17 @@
       "editHint": "Mude exercícios, séries ou regras quando quiser.",
       "emptyTitle": "Comece com um treino vazio",
       "emptyDescription": "Os planos da biblioteca são feitos para equipamentos de academia, então vamos pulá-los. Adicione exercícios durante o treino ou veja planos depois.",
-      "startNow": "Iniciar primeiro treino",
-      "addPlan": "Adicionar plano, começar depois",
+      "startNow": "Adicionar plano e iniciar primeiro treino",
       "startEmpty": "Iniciar treino vazio",
-      "notNow": "Agora não"
+      "notNow": "Agora não",
+      "howTitle": "Como funciona",
+      "stepAddTitle": "Adicione exercícios",
+      "stepAddBody": "Pesquise na biblioteca e adicione movimentos durante o treino.",
+      "stepLogTitle": "Registre suas séries",
+      "stepLogBody": "Informe carga e repetições e o cronômetro de descanso inicia sozinho.",
+      "stepNextTitle": "Mais inteligente da próxima vez",
+      "stepNextBody": "Lembramos seus números e sugerimos a próxima carga.",
+      "planHint": "Ao aceitar, este plano é adicionado à sua biblioteca e seu primeiro treino é aberto na hora."
     }
   }
 }

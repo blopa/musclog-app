@@ -622,3 +622,10 @@ progression, top set); it now holds once and deloads on the second consecutive m
 Automatic `reps_first` used a fixed 8–12 / 12–16 range whatever the plan said, walking a 5×5 up to
 12 reps; it now climbs from the planned reps. Cardio, mobility and stretching were excluded from
 progression only at session start, so previews could promise changes the session never made.
+
+On web every `MaterialIcons` glyph rendered as a tofu box showing its private-use code point (e.g.
+"EA 0B" for `bolt`): nothing registered a `@font-face` for the icon font, and the
+`@react-native-vector-icons` config plugin only bundles it for native builds. `utils/webIconFonts.web.ts`
+now loads `MaterialIcons.ttf` through `expo-font` under the family name `MaterialIcons-Regular` (the
+icon set's `postScriptName`, which the library uses as the web `font-family`); `app/_layout.tsx` calls
+it once. The native sibling is a no-op. A new icon set needs its own entry there.

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { Clock, Dumbbell, Layers } from 'lucide-react-native';
+import { Clock, Dumbbell, Layers, ListPlus, PenLine, TrendingUp } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
@@ -26,6 +26,24 @@ import {
   pickStarterTemplateIndex,
   type TrainingSetupData,
 } from '@/utils/onboardingTraining';
+
+const HOW_IT_WORKS_STEPS = [
+  {
+    Icon: ListPlus,
+    titleKey: 'onboarding.firstWorkout.stepAddTitle',
+    bodyKey: 'onboarding.firstWorkout.stepAddBody',
+  },
+  {
+    Icon: PenLine,
+    titleKey: 'onboarding.firstWorkout.stepLogTitle',
+    bodyKey: 'onboarding.firstWorkout.stepLogBody',
+  },
+  {
+    Icon: TrendingUp,
+    titleKey: 'onboarding.firstWorkout.stepNextTitle',
+    bodyKey: 'onboarding.firstWorkout.stepNextBody',
+  },
+] as const;
 
 const isExperience = (value: unknown): value is LiftingExperience =>
   value === 'beginner' || value === 'intermediate' || value === 'advanced';
@@ -264,6 +282,14 @@ export default function FirstWorkoutScreen() {
                 >
                   {t('onboarding.firstWorkout.editHint')}
                 </Text>
+                <Text
+                  style={{
+                    color: theme.colors.text.secondary,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}
+                >
+                  {t('onboarding.firstWorkout.planHint')}
+                </Text>
               </View>
             ) : (
               <View
@@ -292,31 +318,69 @@ export default function FirstWorkoutScreen() {
                 </Text>
               </View>
             )}
+            {!template ? (
+              <View className="mt-8 gap-3">
+                <Text
+                  className="font-bold uppercase tracking-wider"
+                  style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.typography.fontSize.xs,
+                  }}
+                >
+                  {t('onboarding.firstWorkout.howTitle')}
+                </Text>
+                {HOW_IT_WORKS_STEPS.map(({ Icon, titleKey, bodyKey }) => (
+                  <View
+                    key={titleKey}
+                    className="flex-row items-center gap-4 p-4"
+                    style={{
+                      backgroundColor: theme.colors.background.card,
+                      borderRadius: theme.borderRadius.xl,
+                    }}
+                  >
+                    <View
+                      className="h-12 w-12 items-center justify-center rounded-full"
+                      style={{ backgroundColor: theme.colors.background.cardElevated }}
+                    >
+                      <Icon size={22} color={theme.colors.accent.primary} />
+                    </View>
+                    <View className="flex-1 gap-0.5">
+                      <Text
+                        className="font-bold"
+                        style={{
+                          color: theme.colors.text.primary,
+                          fontSize: theme.typography.fontSize.base,
+                        }}
+                      >
+                        {t(titleKey)}
+                      </Text>
+                      <Text
+                        style={{
+                          color: theme.colors.text.secondary,
+                          fontSize: theme.typography.fontSize.sm,
+                        }}
+                      >
+                        {t(bodyKey)}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : null}
           </View>
         </ScrollView>
 
         <BottomButtonWrapper>
           {template ? (
-            <>
-              <Button
-                label={t('onboarding.firstWorkout.startNow')}
-                onPress={() => handleStartPlan(true)}
-                variant="gradientCta"
-                size="md"
-                width="full"
-                disabled={isBusy}
-                loading={isBusy}
-              />
-              <View style={{ height: theme.spacing.margin.sm }} />
-              <Button
-                label={t('onboarding.firstWorkout.addPlan')}
-                onPress={() => handleStartPlan(false)}
-                variant="outline"
-                size="sm"
-                width="full"
-                disabled={isBusy}
-              />
-            </>
+            <Button
+              label={t('onboarding.firstWorkout.startNow')}
+              onPress={() => handleStartPlan(true)}
+              variant="gradientCta"
+              size="md"
+              width="full"
+              disabled={isBusy}
+              loading={isBusy}
+            />
           ) : (
             <Button
               label={t('onboarding.firstWorkout.startEmpty')}

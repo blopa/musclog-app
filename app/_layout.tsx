@@ -6,6 +6,9 @@ import { View } from 'react-native';
 import { DeferredAppBoot } from '@/components/DeferredAppBoot';
 import { useBootColors } from '@/hooks/useBootColors';
 import { captureBootException } from '@/utils/bootErrorReporting';
+import { registerWebIconFonts } from '@/utils/webIconFonts';
+
+registerWebIconFonts();
 
 SplashScreen.setOptions({
   duration: 180,

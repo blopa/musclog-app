@@ -329,10 +329,17 @@
       "editHint": "Pas oefeningen, sets of regels aan wanneer je wilt.",
       "emptyTitle": "Begin met een lege training",
       "emptyDescription": "De schema's in de bibliotheek zijn gebouwd voor sportschoolapparatuur, dus die slaan we over. Voeg onderweg oefeningen toe of bekijk later schema's.",
-      "startNow": "Eerste training starten",
-      "addPlan": "Schema toevoegen, later starten",
+      "startNow": "Schema toevoegen en eerste training starten",
       "startEmpty": "Lege training starten",
-      "notNow": "Niet nu"
+      "notNow": "Niet nu",
+      "howTitle": "Zo werkt het",
+      "stepAddTitle": "Voeg oefeningen toe",
+      "stepAddBody": "Zoek in de bibliotheek en voeg oefeningen toe tijdens je training.",
+      "stepLogTitle": "Log je sets",
+      "stepLogBody": "Voer gewicht en herhalingen in en de rusttimer start vanzelf.",
+      "stepNextTitle": "Slimmer de volgende keer",
+      "stepNextBody": "We onthouden je cijfers en stellen je volgende gewicht voor.",
+      "planHint": "Als je accepteert, wordt dit schema aan je bibliotheek toegevoegd en start je eerste training meteen."
     }
   }
 }

@@ -260,6 +260,8 @@ export default function QuickBodyStatsScreen() {
                     label={t('onboarding.quickBodyStats.height')}
                     totalInches={parseFloat(height) || 67}
                     onPress={() => setIsHeightPickerVisible(true)}
+                    unset={!height}
+                    unsetPlaceholder={t('heightPicker.selectHeight')}
                   />
                 ) : (
                   <TextInput
