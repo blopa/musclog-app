@@ -77,6 +77,13 @@
       "alwaysPlaceholder": "Een aanwijzing voor elke training, bijv. ellebogen dicht bij het lichaam",
       "alwaysHint": "Boven de set getoond telkens als je deze oefening doet.",
       "failed": "Notities opslaan is mislukt. Probeer het opnieuw."
+    },
+    "firstTip": {
+      "title": "Zo werkt een training",
+      "inline": "Typ je gewicht en herhalingen en tik op ✓ om de set te loggen. Tik op “Vorige keer” om die cijfers te herhalen.",
+      "guided": "Pas gewicht en herhalingen aan met − en +, en tik op Set voltooien.",
+      "common": "De rusttimer start na elke set. Opwarmsets zijn gemarkeerd met W en tellen niet mee voor je volume of records.",
+      "dismiss": "Begrepen"
     }
   },
   "progression": {

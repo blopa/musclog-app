@@ -44,7 +44,13 @@
       "noWorkoutId": "Geen workout-ID",
       "unableToLoad": "Niet in staat om te laden",
       "feedbackReceived": "Workout-feedback succesvol ingediend.",
-      "failedToGetFeedback": "Kon geen feedback ophalen. Probeer het opnieuw."
+      "failedToGetFeedback": "Kon geen feedback ophalen. Probeer het opnieuw.",
+      "healthPrompt": {
+        "title": "Gezondheidsgegevens koppelen?",
+        "message": "Nu je een training hebt afgerond, kan Musclog gezondheidsgegevens zoals stappen, gewicht en trainingen lezen en schrijven.",
+        "confirm": "Koppelen",
+        "later": "Misschien later"
+      }
     },
     "muscleGroups": {
       "chest": "Borst",

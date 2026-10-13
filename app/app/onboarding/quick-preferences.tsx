@@ -42,9 +42,7 @@ export default function QuickPreferencesScreen() {
       const current = existing ? JSON.parse(existing) : {};
       await AsyncStorage.setItem(QUICK_SETUP_DATA, JSON.stringify({ ...current, gender, units }));
 
-      router.navigate(
-        `/app/onboarding/health-connect?nextRoute=/app/onboarding/quick-goals&quickStep=2&quickTotal=6`
-      );
+      router.navigate(`/app/onboarding/training-setup?mode=quick&quickStep=2&quickTotal=6`);
     } catch (e) {
       console.error('Error saving quick preferences:', e);
     } finally {

@@ -208,7 +208,9 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Quick or detailed guided setup flow
 - Restore a full profile either from a JSON backup or directly from another device via optical QR transfer on the first screen
 - Personalized nutrition goal calculation based on age, weight, height, activity level, and weight goal
-- Optional Health Connect / HealthKit setup during onboarding
+- Training branch in both the quick and the personalized setup (one shared screen, skippable for nutrition-only users): where you train (gym / home / minimal), experience (quick setup only), days per week and whether the app suggests loads. It creates your first active gym profile and sets the load-suggestion preference, and the setup ends on a first workout: a matching bundled plan (gym trainers) to start now or add for later, or an empty workout (home/minimal, since every bundled plan needs gym equipment)
+- A one-time "how a session works" tip at the top of the first workout (what ✓ logs, the rest timer, warm-ups not counting toward volume), shown only to people who have never finished a workout and gone for good once dismissed
+- Optional Health Connect / HealthKit setup is offered once, after the first finished workout, instead of in the middle of the setup (users who skip the training questions get it at the end of the setup)
 - AI provider configuration during setup
 
 ## Musclog GB Gimmick

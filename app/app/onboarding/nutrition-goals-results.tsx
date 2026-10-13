@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -13,7 +13,11 @@ import { LineChart } from '@/components/charts/LineChart';
 import { MasterLayout } from '@/components/MasterLayout';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { CURRENT_ONBOARDING_VERSION, TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import {
+  CURRENT_ONBOARDING_VERSION,
+  TEMP_NUTRITION_PLAN,
+  TRAINING_SETUP_DATA,
+} from '@/constants/misc';
 import {
   CALORIES_FOR_CARBS,
   CALORIES_FOR_FAT,
@@ -29,6 +33,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
+import { applyTrainingSetup } from '@/utils/applyTrainingSetup';
 import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 import {
   fiberFromCalories,
@@ -37,6 +42,7 @@ import {
   NutritionPlan,
 } from '@/utils/nutritionCalculator';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
+import { parseTrainingSetup } from '@/utils/onboardingTraining';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { showSnackbar } from '@/utils/snackbarService';
 import { kgToDisplay } from '@/utils/unitConversion';
@@ -379,8 +385,21 @@ export default function NutritionGoalsResults() {
         // TEMP_NUTRITION_PLAN is cleared when onboarding completes (onboardingService.setOnboardingCompleted)
       }
 
+      // Anyone who answered the training questions ends on a concrete first workout. The rest keep
+      // the old ending, with the Health prompt that used to sit at the start of the setup.
+      const training = parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
+      if (training) {
+        await applyTrainingSetup(training);
+      }
+
       await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
-      router.replace('/app');
+      if (training) {
+        router.replace('/app/onboarding/first-workout');
+      } else if (Platform.OS === 'web') {
+        router.replace('/app');
+      } else {
+        router.replace('/app/onboarding/health-connect?nextRoute=/app');
+      }
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       showSnackbar('error', t('nutritionGoals.errorSaving'));

@@ -42,3 +42,14 @@ export const SUPPORT_EMAIL: string = projectLinks.supportEmail;
 export const SUPPORT_MAILTO_URL = `mailto:${SUPPORT_EMAIL}`;
 /** There is no community server yet. While this is null, nothing links to one. */
 export const DISCORD_INVITE_URL: string | null = projectLinks.discordInviteUrl;
+
+// Training answers collected during onboarding (see `utils/onboardingTraining.ts`). Cleared once
+// the first-workout screen has been dealt with.
+export const TRAINING_SETUP_DATA = 'trainingSetupData';
+
+// Set when onboarding finishes for someone who chose training: the Health Connect / Health prompt
+// is held back until their first finished workout instead of interrupting the setup.
+export const HEALTH_CONNECT_PROMPT_PENDING = 'healthConnectPromptPending';
+
+// The one-time "how a set works" tip in the live workout session; set once it is dismissed.
+export const WORKOUT_FIRST_TIP_SEEN = 'workoutFirstTipSeen';

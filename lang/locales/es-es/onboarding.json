@@ -282,6 +282,57 @@
       "no": "No",
       "noDesc": "Omitir seguimiento del ciclo",
       "continue": "Continuar"
+    },
+    "trainingSetup": {
+      "title": "¿Cómo entrenas?",
+      "subtitle": "Unas respuestas rápidas preparan tu gimnasio y tu primer entrenamiento.",
+      "locationLabel": "DÓNDE ENTRENAS",
+      "location": {
+        "gym": "Gimnasio",
+        "gymDesc": "Barras, máquinas y poleas",
+        "home": "Casa",
+        "homeDesc": "Mancuernas, bandas y peso corporal",
+        "minimal": "Mínimo",
+        "minimalDesc": "Solo tu cuerpo y quizá una banda"
+      },
+      "experienceLabel": "EXPERIENCIA",
+      "experience": {
+        "beginner": "Principiante",
+        "intermediate": "Intermedio",
+        "advanced": "Avanzado"
+      },
+      "daysLabel": "DÍAS POR SEMANA",
+      "daysMax": "{{count}}+",
+      "helpLabel": "SUGERENCIAS DE CARGA",
+      "help": {
+        "suggest": "Sugerir mis pesos",
+        "suggestDesc": "Los objetivos suben cuando completas tus repeticiones y la app te explica por qué",
+        "manual": "Decido yo",
+        "manualDesc": "Tu plan se copia tal cual, sin cambios automáticos"
+      },
+      "changeLater": "Puedes cambiar todo esto después en los ajustes de entrenamiento.",
+      "continue": "Continuar",
+      "skip": "Omitir, solo quiero nutrición",
+      "gymNames": {
+        "gym": "Mi gimnasio",
+        "home": "Gimnasio en casa",
+        "minimal": "Peso corporal"
+      }
+    },
+    "firstWorkout": {
+      "title": "Tu primer entrenamiento",
+      "subtitlePlan": "Según tus respuestas, este plan es un buen punto de partida. Puedes editarlo cuando quieras.",
+      "subtitleEmpty": "Puedes empezar con un entrenamiento vacío y añadir ejercicios sobre la marcha.",
+      "days": "Días por semana: {{count}}",
+      "exercises": "Ejercicios: {{count}}",
+      "minutes": "Unos {{count}} min",
+      "editHint": "Cambia ejercicios, series o reglas cuando quieras.",
+      "emptyTitle": "Empieza con un entrenamiento vacío",
+      "emptyDescription": "Los planes de la biblioteca están pensados para equipo de gimnasio, así que los omitimos. Añade ejercicios sobre la marcha o explora planes más tarde.",
+      "startNow": "Empezar primer entrenamiento",
+      "addPlan": "Añadir plan, empezar luego",
+      "startEmpty": "Empezar entrenamiento vacío",
+      "notNow": "Ahora no"
     }
   }
 }

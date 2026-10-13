@@ -77,6 +77,13 @@
       "alwaysPlaceholder": "Una indicación para cada entrenamiento, p. ej. codos pegados",
       "alwaysHint": "Se muestra sobre la serie cada vez que haces este ejercicio.",
       "failed": "No se pudieron guardar las notas. Inténtalo de nuevo."
+    },
+    "firstTip": {
+      "title": "Cómo funciona una sesión",
+      "inline": "Escribe peso y repeticiones y toca ✓ para registrar la serie. Toca «La última vez» para repetir esos números.",
+      "guided": "Ajusta peso y repeticiones con − y +, y toca Completar serie.",
+      "common": "El temporizador de descanso empieza tras cada serie. Las series de calentamiento llevan una W y no cuentan para tu volumen ni tus récords.",
+      "dismiss": "Entendido"
     }
   },
   "progression": {

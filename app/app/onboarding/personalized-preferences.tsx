@@ -51,9 +51,7 @@ export default function PersonalizedPreferencesScreen() {
 
       await setCurrentOnboardingStep('/app/onboarding/personalized-preferences');
 
-      router.navigate(
-        `/app/onboarding/health-connect?nextRoute=/app/onboarding/personalized-experience&quickStep=2&quickTotal=9`
-      );
+      router.navigate(`/app/onboarding/training-setup?mode=personalized&quickStep=2&quickTotal=9`);
     } catch (e) {
       console.error('Error saving personalized preferences:', e);
     } finally {

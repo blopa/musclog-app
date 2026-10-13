@@ -77,6 +77,13 @@
       "alwaysPlaceholder": "Uma dica para todo treino, ex.: cotovelos junto ao corpo",
       "alwaysHint": "Aparece acima da série sempre que você faz este exercício.",
       "failed": "Não foi possível salvar as anotações. Tente novamente."
+    },
+    "firstTip": {
+      "title": "Como funciona uma sessão",
+      "inline": "Digite peso e repetições e toque em ✓ para registrar a série. Toque em “Da última vez” para repetir esses números.",
+      "guided": "Ajuste peso e repetições com − e +, e toque em Concluir série.",
+      "common": "O timer de descanso começa após cada série. Séries de aquecimento são marcadas com W e não contam para seu volume nem recordes.",
+      "dismiss": "Entendi"
     }
   },
   "progression": {

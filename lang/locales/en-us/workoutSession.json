@@ -77,6 +77,13 @@
       "alwaysPlaceholder": "A cue for every workout, e.g. elbows tucked",
       "alwaysHint": "Shown above the set whenever you do this exercise.",
       "failed": "Couldn't save the notes. Please try again."
+    },
+    "firstTip": {
+      "title": "How a session works",
+      "inline": "Type your weight and reps, then tap ✓ to log the set. Tap “Last time” to repeat those numbers.",
+      "guided": "Adjust weight and reps with − and +, then tap Complete set.",
+      "common": "The rest timer starts after each set. Warm-up sets are marked W and don’t count toward your volume or records.",
+      "dismiss": "Got it"
     }
   },
   "progression": {

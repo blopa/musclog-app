@@ -282,6 +282,57 @@
       "no": "Nee",
       "noDesc": "Cyclus bijhouden overslaan",
       "continue": "Doorgaan"
+    },
+    "trainingSetup": {
+      "title": "Hoe train je?",
+      "subtitle": "Een paar snelle antwoorden stellen je sportschool en eerste training in.",
+      "locationLabel": "WAAR JE TRAINT",
+      "location": {
+        "gym": "Sportschool",
+        "gymDesc": "Halters, machines en kabels",
+        "home": "Thuis",
+        "homeDesc": "Dumbbells, banden en lichaamsgewicht",
+        "minimal": "Minimaal",
+        "minimalDesc": "Alleen je lichaam en misschien een band"
+      },
+      "experienceLabel": "ERVARING",
+      "experience": {
+        "beginner": "Beginner",
+        "intermediate": "Gemiddeld",
+        "advanced": "Gevorderd"
+      },
+      "daysLabel": "DAGEN PER WEEK",
+      "daysMax": "{{count}}+",
+      "helpLabel": "GEWICHTSSUGGESTIES",
+      "help": {
+        "suggest": "Stel mijn gewichten voor",
+        "suggestDesc": "Doelen gaan omhoog als je je herhalingen haalt en de app legt uit waarom",
+        "manual": "Ik beslis zelf",
+        "manualDesc": "Je schema wordt gekopieerd zoals het is, zonder automatische wijzigingen"
+      },
+      "changeLater": "Je kunt dit allemaal later wijzigen in de trainingsinstellingen.",
+      "continue": "Doorgaan",
+      "skip": "Overslaan, ik wil alleen voeding",
+      "gymNames": {
+        "gym": "Mijn sportschool",
+        "home": "Thuisgym",
+        "minimal": "Lichaamsgewicht"
+      }
+    },
+    "firstWorkout": {
+      "title": "Je eerste training",
+      "subtitlePlan": "Op basis van je antwoorden is dit schema een goed begin. Je kunt het altijd aanpassen.",
+      "subtitleEmpty": "Je kunt beginnen met een lege training en onderweg oefeningen toevoegen.",
+      "days": "Dagen per week: {{count}}",
+      "exercises": "Oefeningen: {{count}}",
+      "minutes": "Ongeveer {{count}} min",
+      "editHint": "Pas oefeningen, sets of regels aan wanneer je wilt.",
+      "emptyTitle": "Begin met een lege training",
+      "emptyDescription": "De schema's in de bibliotheek zijn gebouwd voor sportschoolapparatuur, dus die slaan we over. Voeg onderweg oefeningen toe of bekijk later schema's.",
+      "startNow": "Eerste training starten",
+      "addPlan": "Schema toevoegen, later starten",
+      "startEmpty": "Lege training starten",
+      "notNow": "Niet nu"
     }
   }
 }

@@ -44,7 +44,13 @@
       "noWorkoutId": "Nenhum ID de treino",
       "unableToLoad": "Não foi possível carregar",
       "feedbackReceived": "Feedback do treino enviado com sucesso.",
-      "failedToGetFeedback": "Não foi possível obter feedback. Por favor, tente novamente."
+      "failedToGetFeedback": "Não foi possível obter feedback. Por favor, tente novamente.",
+      "healthPrompt": {
+        "title": "Conectar seus dados de saúde?",
+        "message": "Agora que você terminou um treino, o Musclog pode ler e gravar dados de saúde como passos, peso e treinos.",
+        "confirm": "Conectar",
+        "later": "Talvez depois"
+      }
     },
     "muscleGroups": {
       "chest": "Peito",

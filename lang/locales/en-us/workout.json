@@ -44,7 +44,13 @@
       "noWorkoutId": "No workout ID",
       "unableToLoad": "Unable to load",
       "feedbackReceived": "Workout feedback submitted successfully.",
-      "failedToGetFeedback": "Could not get feedback. Please try again."
+      "failedToGetFeedback": "Could not get feedback. Please try again.",
+      "healthPrompt": {
+        "title": "Connect your health data?",
+        "message": "Now that you've finished a workout, Musclog can read and write health data such as steps, weight and workouts.",
+        "confirm": "Connect",
+        "later": "Maybe later"
+      }
     },
     "muscleGroups": {
       "chest": "Chest",

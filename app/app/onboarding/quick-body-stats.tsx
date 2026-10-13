@@ -16,8 +16,13 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
-import { QUICK_SETUP_DATA, TEMP_NUTRITION_PLAN } from '@/constants/misc';
-import { type FitnessGoal, type Gender, type WeightGoal } from '@/database/models/User';
+import { QUICK_SETUP_DATA, TEMP_NUTRITION_PLAN, TRAINING_SETUP_DATA } from '@/constants/misc';
+import {
+  type FitnessGoal,
+  type Gender,
+  type LiftingExperience,
+  type WeightGoal,
+} from '@/database/models/User';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
@@ -25,6 +30,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
+import { parseTrainingSetup } from '@/utils/onboardingTraining';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
@@ -56,6 +62,8 @@ export default function QuickBodyStatsScreen() {
   const weightUnit = getWeightUnit(units);
   const heightUnit = getHeightUnit(units);
 
+  const [liftingExperience, setLiftingExperience] = useState<LiftingExperience>('beginner');
+
   useEffect(() => {
     async function load() {
       let resolvedUnits: 'metric' | 'imperial' = 'metric';
@@ -68,6 +76,15 @@ export default function QuickBodyStatsScreen() {
         }
       } catch {
         // ignore
+      }
+
+      try {
+        const training = parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
+        if (training?.experience) {
+          setLiftingExperience(training.experience);
+        }
+      } catch {
+        // keep the beginner default
       }
 
       const prefill = await getHealthBodyMetricsPrefill(resolvedUnits);
@@ -149,7 +166,7 @@ export default function QuickBodyStatsScreen() {
           fitnessGoal,
           weightGoal,
           activityLevel: 2,
-          liftingExperience: 'beginner',
+          liftingExperience,
           dateOfBirth: dob,
         });
       } else {
@@ -160,7 +177,7 @@ export default function QuickBodyStatsScreen() {
           fitnessGoal,
           weightGoal,
           activityLevel: 2,
-          liftingExperience: 'beginner',
+          liftingExperience,
         });
       }
 
@@ -173,7 +190,7 @@ export default function QuickBodyStatsScreen() {
         activityLevel: 2,
         weightGoal,
         fitnessGoal,
-        liftingExperience: 'beginner',
+        liftingExperience,
         bodyFatPercent: useBfForCalculations ? (bodyFat ?? undefined) : undefined,
       });
 

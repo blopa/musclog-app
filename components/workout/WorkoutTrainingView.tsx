@@ -34,6 +34,7 @@ import {
 
 import type { SessionExerciseAction } from './session/ExerciseHeader';
 import type { SessionNote } from './session/ExerciseNotes';
+import { FirstSessionTip } from './session/FirstSessionTip';
 import { GuidedCompleteButton, GuidedExerciseView } from './session/GuidedExerciseView';
 import { InlineExerciseCard } from './session/InlineExerciseCard';
 import { RestTimerBar } from './session/RestTimerBar';
@@ -371,6 +372,9 @@ export function WorkoutTrainingView({
           alignSelf: 'center',
         }}
       >
+        <View className="pt-3">
+          <FirstSessionTip view={controller.view} />
+        </View>
         {/* Guided leads with the set; context cards follow it instead of pushing the hero down. */}
         <View
           onLayout={(event) => {
