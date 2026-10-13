@@ -196,7 +196,7 @@ export default function QuickBodyStatsScreen() {
 
       await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
       router.navigate(
-        `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true')}&quickStep=5&quickTotal=6`
+        `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true')}&quickStep=5&quickTotal=7`
       );
     } catch (e) {
       console.error('Error in quick body stats:', e);
@@ -210,7 +210,7 @@ export default function QuickBodyStatsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={4} total={6} />
+        <QuickSetupProgressBar current={4} total={7} />
 
         <KeyboardAwareScrollView
           className="flex-1"

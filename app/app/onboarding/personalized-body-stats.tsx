@@ -198,7 +198,7 @@ export default function PersonalizedBodyStatsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={5} total={9} />
+        <QuickSetupProgressBar current={5} total={10} />
 
         <KeyboardAwareScrollView
           className="flex-1"

@@ -394,7 +394,9 @@ export default function NutritionGoalsResults() {
 
       await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
       if (training) {
-        router.replace('/app/onboarding/first-workout');
+        router.replace(
+          `/app/onboarding/first-workout?mode=${isPersonalizedSetup ? 'personalized' : 'quick'}`
+        );
       } else if (Platform.OS === 'web') {
         router.replace('/app');
       } else {
@@ -450,8 +452,8 @@ export default function NutritionGoalsResults() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      {isQuickSetup ? <QuickSetupProgressBar current={6} total={6} /> : null}
-      {isPersonalizedSetup ? <QuickSetupProgressBar current={9} total={9} /> : null}
+      {isQuickSetup ? <QuickSetupProgressBar current={6} total={7} /> : null}
+      {isPersonalizedSetup ? <QuickSetupProgressBar current={9} total={10} /> : null}
       <ScrollView
         ref={scrollViewRef}
         className="flex-1"

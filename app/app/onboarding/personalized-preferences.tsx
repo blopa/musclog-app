@@ -51,7 +51,7 @@ export default function PersonalizedPreferencesScreen() {
 
       await setCurrentOnboardingStep('/app/onboarding/personalized-preferences');
 
-      router.navigate(`/app/onboarding/training-setup?mode=personalized&quickStep=2&quickTotal=9`);
+      router.navigate(`/app/onboarding/training-setup?mode=personalized&quickStep=2&quickTotal=10`);
     } catch (e) {
       console.error('Error saving personalized preferences:', e);
     } finally {
@@ -62,7 +62,7 @@ export default function PersonalizedPreferencesScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={1} total={9} />
+        <QuickSetupProgressBar current={1} total={10} />
 
         <KeyboardAwareScrollView
           className="flex-1"

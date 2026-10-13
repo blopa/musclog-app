@@ -14,8 +14,8 @@ import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 const NUTRITION_RESULTS_ROUTE =
   '/app/onboarding/nutrition-goals-results?aiGenerated=true&personalizedSetup=true';
-const MUSCLOG_API_DIRECT_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=8&quickTotal=9`;
-const MUSCLOG_API_AFTER_CYCLE_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=9&quickTotal=9`;
+const MUSCLOG_API_DIRECT_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=8&quickTotal=10`;
+const MUSCLOG_API_AFTER_CYCLE_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=9&quickTotal=10`;
 
 export default function PersonalizedCycleScreen() {
   const theme = useTheme();
@@ -37,7 +37,7 @@ export default function PersonalizedCycleScreen() {
       if (menstruates) {
         const nextRoute = encodeURIComponent(MUSCLOG_API_AFTER_CYCLE_ROUTE);
         router.navigate(
-          `/app/onboarding/cycle-setup?nextRoute=${nextRoute}&quickStep=8&quickTotal=9`
+          `/app/onboarding/cycle-setup?nextRoute=${nextRoute}&quickStep=8&quickTotal=10`
         );
       } else {
         router.navigate(MUSCLOG_API_DIRECT_ROUTE);
@@ -67,7 +67,7 @@ export default function PersonalizedCycleScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={7} total={9} />
+        <QuickSetupProgressBar current={7} total={10} />
 
         <ScrollView
           className="flex-1"

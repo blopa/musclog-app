@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Clock, Dumbbell, Layers, ListPlus, PenLine, TrendingUp } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
+import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import {
   HEALTH_CONNECT_PROMPT_PENDING,
@@ -57,6 +58,9 @@ export default function FirstWorkoutScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const { mode } = useLocalSearchParams<{ mode?: string }>();
+  // The last step of the quick (7) or personalized (10) setup; absent when opened directly.
+  const totalSteps = mode === 'personalized' ? 10 : mode === 'quick' ? 7 : null;
 
   const [setup, setSetup] = useState<TrainingSetupData | null>(null);
   const [experience, setExperience] = useState<LiftingExperience>('beginner');
@@ -208,6 +212,9 @@ export default function FirstWorkoutScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+        {totalSteps !== null ? (
+          <QuickSetupProgressBar current={totalSteps} total={totalSteps} />
+        ) : null}
         <ScrollView
           className="flex-1"
           contentContainerStyle={{ paddingBottom: 160 }}

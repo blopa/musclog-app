@@ -25,6 +25,14 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     };
   }
 
+  // VisionCamera throws on import under web. See vision-camera-web-stub.js.
+  if (platform === 'web' && moduleName === 'react-native-vision-camera') {
+    return {
+      filePath: path.resolve(__dirname, 'vision-camera-web-stub.js'),
+      type: 'sourceFile',
+    };
+  }
+
   return context.resolveRequest(context, moduleName, platform);
 };
 

@@ -91,7 +91,7 @@ export default function TrainingSetupScreen() {
     mode === 'quick' ? '/app/onboarding/quick-goals' : '/app/onboarding/personalized-experience';
   const nextRoute = params.nextRoute ? decodeURIComponent(params.nextRoute) : defaultNextRoute;
   const step = params.quickStep ? Number(params.quickStep) : 2;
-  const defaultTotal = mode === 'quick' ? 6 : 9;
+  const defaultTotal = mode === 'quick' ? 7 : 10;
   const total = params.quickTotal ? Number(params.quickTotal) : defaultTotal;
 
   const [location, setLocation] = useState<TrainingLocation>('gym');
