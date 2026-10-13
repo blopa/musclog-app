@@ -282,14 +282,6 @@ export default function FirstWorkoutScreen() {
                 >
                   {t('onboarding.firstWorkout.editHint')}
                 </Text>
-                <Text
-                  style={{
-                    color: theme.colors.text.secondary,
-                    fontSize: theme.typography.fontSize.sm,
-                  }}
-                >
-                  {t('onboarding.firstWorkout.planHint')}
-                </Text>
               </View>
             ) : (
               <View
@@ -318,6 +310,21 @@ export default function FirstWorkoutScreen() {
                 </Text>
               </View>
             )}
+            {template ? (
+              <Text
+                className="mt-6"
+                style={{
+                  color: theme.colors.text.secondary,
+                  fontSize: theme.typography.fontSize.sm,
+                  lineHeight: theme.typography.fontSize.sm * 1.5,
+                }}
+              >
+                {t('onboarding.firstWorkout.planHint', {
+                  action: t('onboarding.firstWorkout.startNow'),
+                  later: t('onboarding.firstWorkout.notNow'),
+                })}
+              </Text>
+            ) : null}
             {!template ? (
               <View className="mt-8 gap-3">
                 <Text
