@@ -10,7 +10,7 @@ import {
   RotateCcw,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { ImageBackground, Text, View } from 'react-native';
+import { ImageBackground, Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { IconButton } from '@/components/theme/IconButton';
@@ -36,7 +36,7 @@ import { ExerciseNotes, type SessionNote } from './ExerciseNotes';
 import { GuidanceSummary } from './GuidanceSummary';
 import { RirQuickPick } from './RirQuickPick';
 import type { GuidanceState, SessionBlock, SessionSetRowModel } from './sessionModel';
-import { stepInput } from './setDraft';
+import { draftFromPrevious, stepInput } from './setDraft';
 
 const HERO_HEIGHT = 260;
 
@@ -253,6 +253,30 @@ export function GuidedExerciseView({
 
         <ExerciseNotes notes={notes} onPress={() => onAction('notes')} />
 
+        {/* Last time sits above the numbers it informs; one tap repeats it. */}
+        {previous ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('trainingFlow.usePrevious')}
+            disabled={done}
+            onPress={() => onEdit(draftFromPrevious(values, previous, units, locale))}
+            className="min-h-11 items-center justify-center"
+            testID={`set-${set.id}-previous`}
+          >
+            <Text className="text-center text-sm text-text-secondary">
+              {t('trainingFlow.previous', {
+                weight: formatDisplayWeightKg(locale, units, previous.weightKg),
+                reps: formatInteger(previous.reps, { useGrouping: false }),
+                unit: weightUnit,
+              })}
+            </Text>
+          </Pressable>
+        ) : (
+          <Text className="text-center text-sm text-text-secondary">
+            {t('trainingFlow.noHistory')}
+          </Text>
+        )}
+
         <View className="flex-row gap-3">
           <StepperField
             label={t('workoutSession.weight')}
@@ -283,16 +307,6 @@ export function GuidedExerciseView({
           onChange={(rir) => onEdit({ ...values, rir })}
           testID={`set-${set.id}-rir-quick`}
         />
-
-        <Text className="text-center text-sm text-text-secondary">
-          {previous
-            ? t('trainingFlow.previous', {
-                weight: formatDisplayWeightKg(locale, units, previous.weightKg),
-                reps: formatInteger(previous.reps, { useGrouping: false }),
-                unit: weightUnit,
-              })
-            : t('trainingFlow.noHistory')}
-        </Text>
 
         <GuidanceSummary
           state={state}

@@ -43,7 +43,9 @@ export function RirQuickPick({
               variant="solid"
               role="radio"
               label={isLast ? `${number}+` : number}
-              accessibilityLabel={t('trainingFlow.rir', { value: number })}
+              accessibilityLabel={t(isLast ? 'trainingFlow.rirOrMore' : 'trainingFlow.rir', {
+                value: number,
+              })}
               selected={selected === rir}
               disabled={disabled}
               testID={`rir-quick-${rir}`}

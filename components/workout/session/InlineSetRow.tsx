@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
 import { NumericTextField } from '@/components/theme/NumericTextField';
+import { TextButton } from '@/components/theme/TextButton';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -162,7 +163,7 @@ export function InlineSetRow({
           style={{ width: SET_TABLE_COLUMNS.set, height: 44 }}
         >
           <Text
-            className={`text-base font-bold ${workingNumber == null ? 'text-status-warning' : 'text-text-primary'}`}
+            className={`text-base font-bold ${workingNumber == null ? 'text-text-secondary' : 'text-text-primary'}`}
           >
             {setLabel}
           </Text>
@@ -198,11 +199,19 @@ export function InlineSetRow({
       </View>
       {compact ? previousCell : null}
       {isCurrent && editable ? (
-        <View className="px-1 pb-2 pt-1">
+        <View className="gap-1 px-1 pb-2 pt-1">
           <RirQuickPick
             value={values.rir}
             onChange={(rir) => onEdit({ ...values, rir })}
             testID={`set-${set.id}-rir-quick`}
+          />
+          {/* Skipping is a decision the lifter makes in the middle of a set, not a detail. */}
+          <TextButton
+            label={t('trainingFlow.skipSet')}
+            tone="muted"
+            disabled={busy}
+            onPress={onSkip}
+            testID={`set-${set.id}-skip`}
           />
         </View>
       ) : null}

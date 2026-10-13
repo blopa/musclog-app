@@ -169,6 +169,7 @@
     "details": "Усилие и детали",
     "unrated": "Без оценки",
     "rir": "{{value}} RIR",
+    "rirOrMore": "{{value}} или больше RIR",
     "rirLabel": "RIR (необязательно)",
     "rpe": "RPE (необязательно)",
     "partials": "Частичные повторения",

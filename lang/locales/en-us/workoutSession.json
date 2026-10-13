@@ -169,6 +169,7 @@
     "details": "Effort and details",
     "unrated": "Unrated",
     "rir": "{{value}} RIR",
+    "rirOrMore": "{{value}} or more RIR",
     "rirLabel": "RIR (optional)",
     "rpe": "RPE (optional)",
     "partials": "Partial reps",

@@ -520,8 +520,7 @@ function topSetBackoffTargets(
     missedAtSameLoad(before, lastTop.weightKg, rule.repMin, 0)
   );
   const backoffLoad = step.roundLoad((top.weightKg * rule.backoffPercent) / 100);
-  const lastBackoffLoad =
-    counterpartAt(last.sets, 1)?.weightKg ?? backoffLoad;
+  const lastBackoffLoad = counterpartAt(last.sets, 1)?.weightKg ?? backoffLoad;
   const backoff: SetTarget = {
     weightKg: backoffLoad,
     reps: rule.backoffReps,

@@ -169,6 +169,7 @@
     "details": "Inspanning en details",
     "unrated": "Niet beoordeeld",
     "rir": "{{value}} RIR",
+    "rirOrMore": "{{value}} of meer RIR",
     "rirLabel": "RIR (optioneel)",
     "rpe": "RPE (optioneel)",
     "partials": "Gedeeltelijke herhalingen",

@@ -92,7 +92,12 @@ export function RestTimerBar({
           <Text className={`text-sm font-semibold ${resting ? tone : 'text-text-secondary'}`}>
             {label}
           </Text>
-          <Text className={`text-xl font-bold ${tone}`}>
+          {/* Idle, the clock is the length a rest will have — it must not read as a countdown. */}
+          <Text
+            className={
+              resting ? `text-xl font-bold ${tone}` : 'text-base font-medium text-text-tertiary'
+            }
+          >
             {resting ? clock(remaining) : clock(defaultRest)}
           </Text>
           {expanded ? (

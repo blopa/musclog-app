@@ -169,6 +169,7 @@
     "details": "Esforço e detalhes",
     "unrated": "Sem avaliação",
     "rir": "{{value}} RIR",
+    "rirOrMore": "{{value}} ou mais RIR",
     "rirLabel": "RIR (opcional)",
     "rpe": "RPE (opcional)",
     "partials": "Repetições parciais",

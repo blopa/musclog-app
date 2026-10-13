@@ -83,11 +83,10 @@ export function NutritionReviewSection({
   /** Opens the food diary on `day` (local midnight), a day of the reviewed week with no food. */
   onLogFood: (day: number) => void;
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const theme = useTheme();
   const { units } = useSettings();
   const { locale, formatInteger, formatNumber } = useFormatAppNumber();
-  const locale = i18n.resolvedLanguage ?? i18n.language;
   if (data.intuitive) {
     return (
       <View className="rounded-2xl border border-border-light bg-bg-card p-4">
