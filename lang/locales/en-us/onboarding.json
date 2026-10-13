@@ -329,7 +329,9 @@
       "editHint": "Change exercises, sets or rules whenever you like.",
       "emptyTitle": "Start with an empty workout",
       "emptyDescription": "Plans in the library are built around gym equipment, so we'll skip those. Add exercises as you go, or browse plans later.",
-      "startNow": "Add plan & start",
+      "addPlan": "Add plan",
+      "dayLabel": "Day {{day}}",
+      "dayExercises": "{{count}} exercises",
       "startEmpty": "Start empty workout",
       "notNow": "Not now",
       "howTitle": "How it works",
@@ -339,7 +341,7 @@
       "stepLogBody": "Enter weight and reps, and the rest timer starts for you.",
       "stepNextTitle": "Get smarter next time",
       "stepNextBody": "We remember your numbers and suggest your next load.",
-      "planHint": "Ready to start? Tap \"{{action}}\" to add this plan to your profile and begin your first workout right away, or tap \"{{later}}\" to do it later."
+      "planHint": "Tap \"{{action}}\" to add this plan to your profile, or \"{{later}}\" to pick a workout yourself later."
     }
   }
 }

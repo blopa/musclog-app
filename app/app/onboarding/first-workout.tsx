@@ -18,7 +18,7 @@ import {
 } from '@/constants/misc';
 import { getWorkoutTemplates, type RawWorkoutTemplate } from '@/data/workoutTemplates';
 import type { LiftingExperience } from '@/database/models/User';
-import { ActiveWorkoutExistsError, WorkoutService } from '@/database/services/WorkoutService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
@@ -127,9 +127,15 @@ export default function FirstWorkoutScreen() {
 
   const stats = useMemo(() => {
     const exercises = Array.isArray(template?.exercises) ? template.exercises : [];
+    const perDay = new Map<number, number>();
+    exercises.forEach((exercise) => {
+      const day = exercise.day ?? 1;
+      perDay.set(day, (perDay.get(day) ?? 0) + 1);
+    });
     return {
       exerciseCount: exercises.length,
-      dayCount: new Set(exercises.map((exercise) => exercise.day)).size,
+      dayCount: perDay.size,
+      days: [...perDay.entries()].sort((a, b) => a[0] - b[0]),
     };
   }, [template]);
 
@@ -147,32 +153,17 @@ export default function FirstWorkoutScreen() {
     router.replace(destination as never);
   };
 
-  const handleStartPlan = async (startNow: boolean) => {
+  const handleAddPlan = async () => {
     if (!template) {
       return;
     }
 
     setIsBusy(true);
     try {
-      const created = await WorkoutTemplateService.createWorkoutsFromJsonTemplate(template);
-      const first = created.templates[0];
-      if (startNow && first) {
-        const workoutLog = await WorkoutService.startWorkoutFromTemplate(
-          first.id,
-          created.plan?.id
-        );
-        await finish(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`, true);
-        return;
-      }
-
+      await WorkoutTemplateService.createWorkoutsFromJsonTemplate(template);
       await finish('/app', true);
     } catch (error) {
-      if (error instanceof ActiveWorkoutExistsError) {
-        await finish('/app', true);
-        return;
-      }
-
-      handleError(error, 'firstWorkout.startPlan', {
+      handleError(error, 'firstWorkout.addPlan', {
         snackbarMessage: t('errors.somethingWentWrong'),
       });
     } finally {
@@ -288,6 +279,36 @@ export default function FirstWorkoutScreen() {
                       )
                     : null}
                 </View>
+                <View className="gap-2">
+                  {stats.days.map(([day, count]) => (
+                    <View
+                      key={day}
+                      className="flex-row items-center justify-between px-4 py-3"
+                      style={{
+                        backgroundColor: theme.colors.background.card,
+                        borderRadius: theme.borderRadius.lg,
+                      }}
+                    >
+                      <Text
+                        className="font-semibold"
+                        style={{
+                          color: theme.colors.text.primary,
+                          fontSize: theme.typography.fontSize.base,
+                        }}
+                      >
+                        {t('onboarding.firstWorkout.dayLabel', { day })}
+                      </Text>
+                      <Text
+                        style={{
+                          color: theme.colors.text.secondary,
+                          fontSize: theme.typography.fontSize.sm,
+                        }}
+                      >
+                        {t('onboarding.firstWorkout.dayExercises', { count })}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
                 <Text
                   style={{
                     color: theme.colors.text.tertiary,
@@ -334,7 +355,7 @@ export default function FirstWorkoutScreen() {
                 }}
               >
                 {t('onboarding.firstWorkout.planHint', {
-                  action: t('onboarding.firstWorkout.startNow'),
+                  action: t('onboarding.firstWorkout.addPlan'),
                   later: t('onboarding.firstWorkout.notNow'),
                 })}
               </Text>
@@ -394,8 +415,8 @@ export default function FirstWorkoutScreen() {
         <BottomButtonWrapper>
           {template ? (
             <Button
-              label={t('onboarding.firstWorkout.startNow')}
-              onPress={() => handleStartPlan(true)}
+              label={t('onboarding.firstWorkout.addPlan')}
+              onPress={handleAddPlan}
               variant="gradientCta"
               size="md"
               width="full"
