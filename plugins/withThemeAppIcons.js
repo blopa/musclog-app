@@ -132,6 +132,7 @@ function applyLauncherAliases(application) {
       })
     ),
   ];
+
   const ownNames = new Set(aliases.map((alias) => alias.$['android:name']));
   application['activity-alias'] = [
     ...(application['activity-alias'] ?? []).filter(
@@ -141,6 +142,7 @@ function applyLauncherAliases(application) {
     ),
     ...aliases,
   ];
+
   return application;
 }
 
