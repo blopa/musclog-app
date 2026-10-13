@@ -8,7 +8,9 @@ import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import type WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import type WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
+import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
+import { TrainingWeekRepository } from '@/database/repositories/TrainingWeekRepository';
 import { isBarLoadedEquipment } from '@/utils/gym';
 import { loadStepFor } from '@/utils/loadIncrement';
 import { platesPerSide } from '@/utils/plateCalculator';
@@ -30,6 +32,7 @@ import {
   serializeStartAdjustment,
 } from '@/utils/setAdjustment';
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
+import { planWeekOverride } from '@/utils/trainingWeekOverride';
 import {
   isPerformedWorkoutSet,
   isPlannedWorkoutSet,
@@ -55,7 +58,8 @@ export type TemplateRecommendation = ExerciseRecommendation & {
 export class WorkoutProgressionService {
   /** Add/Swap use the same completed history and projection as previews and session starts. */
   static async projectAdHocExercise(exercise: Exercise): Promise<ExerciseRecommendation | null> {
-    const [history, context] = await Promise.all([this.history(exercise.id), this.context()]);
+    const context = await this.context();
+    const history = await this.history(exercise.id, undefined, undefined, context.lighterWindows);
     if (!history[0]?.sets.length) {
       return null;
     }
@@ -106,7 +110,12 @@ export class WorkoutProgressionService {
             return null;
           }
           const rule = parseProgressionRule(row.progressionJson);
-          const history = await this.history(row.exerciseId, undefined, rule ? row.id : undefined);
+          const history = await this.history(
+            row.exerciseId,
+            undefined,
+            rule ? row.id : undefined,
+            context.lighterWindows
+          );
           const planned = sets
             .filter((set) => set.templateExerciseId === row.id && !isWarmupSet(set))
             .sort((a, b) => a.setOrder - b.setOrder)
@@ -139,15 +148,18 @@ export class WorkoutProgressionService {
   }
 
   private static async context() {
-    const [autonomy, mode, gym] = await Promise.all([
+    const [autonomy, mode, gym, lighterWindows] = await Promise.all([
       SettingsService.getWorkoutAutonomy(),
       SettingsService.getProgressionMode(),
       GymService.getActiveGym().catch(() => null),
+      TrainingWeekRepository.lighterWeekWindows(),
     ]);
     return {
       automatic: autonomy === 'suggest',
       mode,
       gym,
+      /** Training done in a lighter week is deliberately below capacity, so it is no baseline. */
+      lighterWindows,
       unitsFor: await ExerciseUserSettingsService.getWeightUnitsResolver(gym),
     };
   }
@@ -155,9 +167,14 @@ export class WorkoutProgressionService {
   static async applyStartProgression(workoutLogId: string): Promise<number> {
     const logExercises = await this.liveLogExercises(workoutLogId);
     const rules = logExercises.map((row) => parseProgressionRule(row.progressionJson));
-    const context = await this.context();
+    const [context, week] = await Promise.all([
+      this.context(),
+      TrainingWeekRepository.activeTrainingWeek(),
+    ]);
     const hasRule = rules.some((rule) => rule != null);
-    if (!context.automatic && !hasRule) {
+    // A repeat or lighter week the user chose in the Weekly Review applies even when autonomy is
+    // `manual`: manual means the app does not change numbers on its own, and this is not on its own.
+    if (!context.automatic && !hasRule && !week) {
       return 0;
     }
     const histories = await Promise.all(
@@ -165,11 +182,12 @@ export class WorkoutProgressionService {
         this.history(
           row.exerciseId,
           workoutLogId,
-          rules[index] ? row.templateExerciseId : undefined
+          rules[index] ? row.templateExerciseId : undefined,
+          context.lighterWindows
         )
       )
     );
-    if (!hasRule && !histories.some((history) => history.length)) {
+    if (!hasRule && !week && !histories.some((history) => history.length)) {
       return 0;
     }
     const exercises = await fetchMapByIds<Exercise>(
@@ -206,6 +224,62 @@ export class WorkoutProgressionService {
             .filter((set) => set.logExerciseId === row.id && !isWarmupSet(set))
             .sort((a, b) => a.setOrder - b.setOrder);
           const rule = rules[index];
+          if (week) {
+            const step = loadStepFor(
+              exercise.equipmentType,
+              context.gym,
+              context.unitsFor(exercise.id)
+            );
+            const plan = planWeekOverride({
+              kind: week.decision,
+              planned: planned.map((set) => ({ id: set.id, weight: set.weight, reps: set.reps })),
+              last: histories[index][0]?.sets ?? [],
+              step,
+            });
+            const changes = new Map(plan.changes.map((change) => [change.setId, change]));
+            const dropped = new Set(plan.dropSetIds);
+            const now = Date.now();
+            for (const [setIndex, set] of planned.entries()) {
+              if (dropped.has(set.id)) {
+                operations.push(prepareSoftDelete(set, now));
+                changed += 1;
+                continue;
+              }
+              const change = changes.get(set.id);
+              const original = { weightKg: set.weight, reps: set.reps };
+              operations.push(
+                set.prepareUpdate((record) => {
+                  record.prescriptionJson = serializeSetPrescription({
+                    established: true,
+                    workingSetCount: plan.workingSetCount,
+                    plan: original,
+                    recommendation: change?.adjustment?.now ?? original,
+                    explanation: change?.adjustment ?? undefined,
+                    previous: histories[index][0]?.sets.find(
+                      (entry, i) => (entry.prescribedIndex ?? i) === setIndex
+                    ),
+                  });
+                  if (change) {
+                    record.weight = change.weightKg;
+                    record.reps = change.reps;
+                    if (change.repsInReserve != null) {
+                      record.repsInReserve = change.repsInReserve;
+                    }
+                    record.adjustmentJson = change.adjustment
+                      ? serializeStartAdjustment(change.adjustment)
+                      : undefined;
+                  }
+                  record.updatedAt = now;
+                })
+              );
+              if (change?.adjustment) {
+                changed += 1;
+              }
+            }
+            // The rule's remembered state is left alone: a week the review overrode is not a
+            // session the rule can learn from.
+            continue;
+          }
           const projection = projectExerciseProgression({
             planned: planned.map((set) => ({ id: set.id, weight: set.weight, reps: set.reps })),
             history: histories[index],
@@ -310,7 +384,8 @@ export class WorkoutProgressionService {
   private static async history(
     exerciseId: string,
     excludeId?: string,
-    templateExerciseId?: string
+    templateExerciseId?: string,
+    excludeWindows: readonly { from: number; until: number }[] = []
   ): Promise<HistorySession[]> {
     const candidates = await database
       .get<WorkoutLogExercise>('workout_log_exercises')
@@ -337,7 +412,12 @@ export class WorkoutProgressionService {
     );
     const happenedAt = (row: WorkoutLogExercise) =>
       logs.get(row.workoutLogId)?.completedAt ?? row.createdAt ?? 0;
-    const recent = [...candidates]
+    const inLighterWeek = (row: WorkoutLogExercise) => {
+      const at = happenedAt(row);
+      return excludeWindows.some((window) => at >= window.from && at < window.until);
+    };
+    const recent = candidates
+      .filter((row) => !inLighterWeek(row))
       .sort((a, b) => happenedAt(b) - happenedAt(a))
       .slice(0, PROGRESSION_HISTORY_SESSIONS);
     // One query for every session's sets, not one per session.

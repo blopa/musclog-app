@@ -3,7 +3,10 @@ import {
   computeIntraSessionAdjustment,
   DEFAULT_TARGET_REPS_IN_RESERVE,
   isStartAdjustment,
+  parseStartAdjustment,
+  revertTargetFor,
   type SetAdjustment,
+  type StartSetAdjustment,
 } from '@/utils/setAdjustment';
 
 describe('computeIntraSessionAdjustment', () => {
@@ -257,5 +260,38 @@ describe('which numbers carry the adjusted marker', () => {
     expect(isStartAdjustment(start({ cause: 'repeat' }))).toBe(true);
     expect(isStartAdjustment(intra({}))).toBe(false);
     expect(isStartAdjustment(intra({ cause: 'carry_over' }))).toBe(false);
+  });
+});
+
+describe('a start adjustment sourced from the Weekly Review', () => {
+  const adjustment: StartSetAdjustment = {
+    cause: 'deload',
+    field: 'weight',
+    from: 60,
+    to: 55,
+    plan: { weightKg: 60, reps: 8 },
+    last: { weightKg: 62, reps: 8, averageRepsInReserve: 1 },
+    now: { weightKg: 55, reps: 8 },
+    source: 'weekly_review',
+  };
+
+  it('round-trips its source', () => {
+    expect(parseStartAdjustment(JSON.stringify(adjustment))?.source).toBe('weekly_review');
+  });
+
+  it('drops an unknown source but keeps the explanation', () => {
+    const parsed = parseStartAdjustment(
+      JSON.stringify({ ...adjustment, source: 'from-the-future' })
+    );
+    expect(parsed).not.toBeNull();
+    expect(parsed?.source).toBeUndefined();
+  });
+
+  it('reverts to the plan, not to last session', () => {
+    expect(revertTargetFor(adjustment)).toEqual({ weightKg: 60, reps: 8 });
+    expect(revertTargetFor({ ...adjustment, source: undefined })).toEqual({
+      weightKg: 62,
+      reps: 8,
+    });
   });
 });

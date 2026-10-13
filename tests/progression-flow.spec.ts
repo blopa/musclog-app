@@ -71,12 +71,11 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await expect(
     page.getByRole('button', { name: copy.weeklyReview.applyTomorrow, exact: true })
   ).toBeEnabled();
-  await page.getByRole('button', { name: copy.weeklyReview.acknowledge, exact: true }).click();
-  // Acknowledging is final for the week: the button gives way to the section's "Reviewed" badge.
+  // Nobody in this fixture has finished a workout yet, so training asks nothing of them: the
+  // section counts as reviewed and offers no decision. (The decision itself is pinned by the
+  // weekly-review integration tests, which can finish a workout.)
   await expect(page.getByTestId('review-training')).toContainText(copy.weeklyReview.reviewed);
-  await expect(
-    page.getByRole('button', { name: copy.weeklyReview.acknowledge, exact: true })
-  ).toHaveCount(0);
+  await expect(page.getByTestId('review-training-decision')).toHaveCount(0);
   await page.getByRole('button', { name: copy.weeklyReview.applyTomorrow, exact: true }).click();
   await expect(page.getByTestId('review-nutrition')).toContainText(copy.weeklyReview.applied);
   await page.reload();

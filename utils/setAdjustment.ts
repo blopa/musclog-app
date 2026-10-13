@@ -121,6 +121,11 @@ export type StartSetAdjustment = {
   now: { weightKg: number; reps: number };
   /** Present when the exercise's own progression rule set the numbers, not the automatic one. */
   rule?: StartRuleDetail;
+  /**
+   * Present when the user's Weekly Review decision set the numbers (a repeated or lighter week),
+   * not how last session went. The explanation then credits the review instead of the last session.
+   */
+  source?: 'weekly_review';
 };
 
 export type SetAdjustment = IntraSessionSetAdjustment | StartSetAdjustment;
@@ -217,7 +222,14 @@ export function parseStartAdjustment(raw: string | null | undefined): StartSetAd
     finite(parsed.now?.weightKg) &&
     finite(parsed.now?.reps) &&
     (parsed.rule === undefined || isStartRuleDetail(parsed.rule));
-  return valid ? (parsed as StartSetAdjustment) : null;
+  if (!valid) {
+    return null;
+  }
+  // A source this build does not know is dropped, not the whole explanation: it only credits.
+  if (parsed.source !== undefined && parsed.source !== 'weekly_review') {
+    delete parsed.source;
+  }
+  return parsed as StartSetAdjustment;
 }
 
 export const serializeStartAdjustment = (adjustment: StartSetAdjustment): string =>
@@ -225,7 +237,9 @@ export const serializeStartAdjustment = (adjustment: StartSetAdjustment): string
 
 /** Whether undoing a start adjustment restores the plan's numbers rather than last time's. */
 export const revertsToPlan = (adjustment: StartSetAdjustment): boolean =>
-  adjustment.cause === 'repeat' || adjustment.rule !== undefined;
+  adjustment.cause === 'repeat' ||
+  adjustment.rule !== undefined ||
+  adjustment.source === 'weekly_review';
 
 /**
  * What "undo" means for a start adjustment: the OTHER number the user could have started with.

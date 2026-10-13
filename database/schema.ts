@@ -2,13 +2,13 @@ import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 
-import { weeklyReviewTables } from './weeklyReviewSchema';
+import { weeklyReviewSchemaTables } from './weeklyReviewSchema';
 
 export const schema = appSchema({
   // when updating database schema, also update export version in exportImport.ts
   version: CURRENT_DATABASE_VERSION,
   tables: [
-    ...weeklyReviewTables.map(tableSchema),
+    ...weeklyReviewSchemaTables.map(tableSchema),
     // 1. Master List of Exercises
     tableSchema({
       name: 'exercises',

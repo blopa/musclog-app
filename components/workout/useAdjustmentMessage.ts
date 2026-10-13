@@ -75,6 +75,7 @@ export function useAdjustmentMessage(adjustment: SetAdjustment | null | undefine
       to: formatValue(adjustment.to),
       from: formatValue(adjustment.from),
       last: isWeight ? formatWeight(adjustment.last.weightKg) : formatReps(adjustment.last.reps),
+      weight: formatWeight(adjustment.now.weightKg),
       reps: formatReps(adjustment.now.reps),
       lastReps: formatReps(adjustment.last.reps),
       planReps: formatReps(adjustment.plan.reps),

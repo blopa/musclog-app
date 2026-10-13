@@ -56,7 +56,9 @@
       "startRepeatReps": "Empiezas con {{to}} repeticiones, lo que hiciste la última vez, en lugar de las {{from}} del plan.",
       "usePlan": "Usar lo del plan",
       "startDeloadWeightReps": "Baja a {{to}} {{unit}} × {{reps}} desde {{last}} {{unit}} × {{lastReps}} de la última vez: dos sesiones seguidas sin repeticiones en reserva.",
-      "startRepeatWeightReps": "Empiezas con {{to}} {{unit}} × {{reps}}, lo que hiciste la última vez, en lugar de los {{from}} {{unit}} × {{planReps}} del plan."
+      "startRepeatWeightReps": "Empiezas con {{to}} {{unit}} × {{reps}}, lo que hiciste la última vez, en lugar de los {{from}} {{unit}} × {{planReps}} del plan.",
+      "startReviewLighter": "Semana ligera de tu Revisión semanal: {{weight}} {{unit}} × {{reps}}.",
+      "startReviewRepeat": "Repites la última sesión, por tu Revisión semanal: {{weight}} {{unit}} × {{reps}}."
     },
     "startRest": "Iniciar descanso ({{seconds}} s)",
     "warmup": {
@@ -256,8 +258,7 @@
     "latest": "Volver a la última revisión",
     "error": "No se pudo guardar o cargar la revisión. Tu decisión no se ha completado. Inténtalo de nuevo.",
     "training": "Entrenamiento",
-    "trainingHint": "Los objetivos se actualizan con tus entrenamientos. Revisar este resumen no retrasa la progresión.",
-    "acknowledge": "Marcar entrenamiento revisado",
+    "trainingHint": "Revisar nunca retrasa la progresión. Elige cómo empiezan tus entrenamientos la próxima semana; aun así puedes ajustar cualquier ejercicio en la sesión.",
     "noWorkout": "Elige un entrenamiento o plan rotativo en Entrenamientos.",
     "prTypes": {
       "weight": "Mayor peso",
@@ -349,6 +350,59 @@
       "noFoodThisWeek": "No has registrado comida esta semana.",
       "currentTargets": "Tus objetivos diarios",
       "firstReviewOn": "Tu primera revisión estará lista el {{date}}."
+    },
+    "trainingDecision": {
+      "title": "Próxima semana",
+      "recommended": "Recomendado",
+      "progress": {
+        "title": "Seguir progresando",
+        "description": "Cada ejercicio empieza donde indica tu última sesión.",
+        "confirm": "Seguir progresando",
+        "chosen": "Próxima semana: seguir progresando"
+      },
+      "repeat": {
+        "title": "Repetir la última sesión",
+        "description": "Cada ejercicio empieza con el peso y las repeticiones de la última vez.",
+        "confirm": "Repetir la próxima semana",
+        "chosen": "Próxima semana: repetir la última sesión"
+      },
+      "lighter": {
+        "title": "Semana ligera",
+        "description": "Cargas un 10 % más ligeras y un tercio menos de series, para recuperar.",
+        "confirm": "Empezar una semana ligera",
+        "chosen": "Próxima semana: semana ligera"
+      },
+      "until": "Se aplica a los entrenamientos que empieces hasta el {{date}}."
+    },
+    "goals": {
+      "title": "Tus objetivos",
+      "consistency": "Entrenamientos esta semana: {{done}} de {{target}}",
+      "status": {
+        "met": "Objetivo cumplido",
+        "missed": "Por debajo del objetivo",
+        "exceeded": "Por encima del objetivo"
+      },
+      "oneRm": {
+        "reached": "Conseguido",
+        "onPace": "En buen ritmo",
+        "behind": "Por detrás del ritmo",
+        "stalling": "Estancado",
+        "declining": "En descenso",
+        "notEnoughData": "Aún faltan datos"
+      },
+      "projected": "Previsto: {{date}}",
+      "none": "Define un objetivo de fitness para ver cómo va cada semana.",
+      "setGoal": "Definir objetivo",
+      "lowerTo": "Bajar el objetivo a {{count}} por semana",
+      "raiseTo": "Subir el objetivo a {{count}} por semana"
+    },
+    "reasons": {
+      "noWorkouts": "No hubo entrenamientos esta semana, así que la próxima retomas donde lo dejaste.",
+      "missedConsistency": "Entrenaste mucho menos que tu objetivo semanal; repetir evita un salto brusco.",
+      "repeatedDeloads": "{{count}} ejercicios necesitaron una descarga por sí solos esta semana.",
+      "lowReserveStalled": "Tus series no dejaron nada en reserva y un levantamiento que sigues se ha estancado.",
+      "dueForLighter": "Han pasado {{count}} semanas desde la última semana ligera.",
+      "onTrack": "El entrenamiento va por buen camino."
     }
   }
 }

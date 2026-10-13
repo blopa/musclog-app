@@ -56,7 +56,9 @@
       "startRepeatReps": "Você começa com {{to}} repetições, o que fez da última vez, em vez das {{from}} do plano.",
       "usePlan": "Usar o do plano",
       "startDeloadWeightReps": "Desce para {{to}} {{unit}} × {{reps}} a partir de {{last}} {{unit}} × {{lastReps}} da última vez — duas sessões seguidas sem repetições de reserva.",
-      "startRepeatWeightReps": "Você começa com {{to}} {{unit}} × {{reps}}, o que fez da última vez, em vez dos {{from}} {{unit}} × {{planReps}} do plano."
+      "startRepeatWeightReps": "Você começa com {{to}} {{unit}} × {{reps}}, o que fez da última vez, em vez dos {{from}} {{unit}} × {{planReps}} do plano.",
+      "startReviewLighter": "Semana leve da sua Revisão semanal: {{weight}} {{unit}} × {{reps}}.",
+      "startReviewRepeat": "Repetindo a última sessão, pela sua Revisão semanal: {{weight}} {{unit}} × {{reps}}."
     },
     "startRest": "Iniciar descanso ({{seconds}} s)",
     "warmup": {
@@ -256,8 +258,7 @@
     "latest": "Voltar à revisão mais recente",
     "error": "Não foi possível salvar ou carregar a revisão. Sua decisão não foi concluída. Tente novamente.",
     "training": "Treino",
-    "trainingHint": "As metas são atualizadas com seus treinos. Revisar este resumo nunca atrasa a progressão.",
-    "acknowledge": "Marcar treino como revisado",
+    "trainingHint": "Revisar nunca atrasa a progressão. Escolha como seus treinos começam na próxima semana; você ainda pode ajustar qualquer exercício na sessão.",
     "noWorkout": "Escolha um treino ou plano rotativo em Treinos.",
     "prTypes": {
       "weight": "Maior carga",
@@ -349,6 +350,59 @@
       "noFoodThisWeek": "Nenhuma refeição registrada nesta semana.",
       "currentTargets": "Suas metas diárias",
       "firstReviewOn": "Sua primeira revisão estará pronta em {{date}}."
+    },
+    "trainingDecision": {
+      "title": "Próxima semana",
+      "recommended": "Recomendado",
+      "progress": {
+        "title": "Continuar progredindo",
+        "description": "Cada exercício começa de onde sua última sessão indica.",
+        "confirm": "Continuar progredindo",
+        "chosen": "Próxima semana: continuar progredindo"
+      },
+      "repeat": {
+        "title": "Repetir a última sessão",
+        "description": "Cada exercício começa com a carga e as repetições da última vez.",
+        "confirm": "Repetir na próxima semana",
+        "chosen": "Próxima semana: repetir a última sessão"
+      },
+      "lighter": {
+        "title": "Semana leve",
+        "description": "Cargas cerca de 10% mais leves e um terço menos de séries, para recuperar.",
+        "confirm": "Começar uma semana leve",
+        "chosen": "Próxima semana: semana leve"
+      },
+      "until": "Vale para treinos iniciados até {{date}}."
+    },
+    "goals": {
+      "title": "Suas metas",
+      "consistency": "Treinos nesta semana: {{done}} de {{target}}",
+      "status": {
+        "met": "Meta atingida",
+        "missed": "Abaixo da meta",
+        "exceeded": "Acima da meta"
+      },
+      "oneRm": {
+        "reached": "Alcançada",
+        "onPace": "No ritmo",
+        "behind": "Atrás do ritmo",
+        "stalling": "Estagnado",
+        "declining": "Em queda",
+        "notEnoughData": "Ainda faltam dados"
+      },
+      "projected": "Previsto: {{date}}",
+      "none": "Defina uma meta de fitness para ver como cada semana se sai.",
+      "setGoal": "Definir meta",
+      "lowerTo": "Reduzir a meta para {{count}} por semana",
+      "raiseTo": "Aumentar a meta para {{count}} por semana"
+    },
+    "reasons": {
+      "noWorkouts": "Nenhum treino nesta semana, então a próxima retoma de onde você parou.",
+      "missedConsistency": "Você treinou bem menos que sua meta semanal; repetir evita um salto brusco.",
+      "repeatedDeloads": "{{count}} exercícios precisaram de uma redução de carga por conta própria nesta semana.",
+      "lowReserveStalled": "Suas séries não deixaram nada de reserva e um exercício que você acompanha estagnou.",
+      "dueForLighter": "Já se passaram {{count}} semanas desde a última semana leve.",
+      "onTrack": "O treino está no caminho certo."
     }
   }
 }

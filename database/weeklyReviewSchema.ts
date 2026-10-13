@@ -1,5 +1,10 @@
-import type { TableSchemaSpec } from '@nozbe/watermelondb/Schema';
+import type { ColumnSchema, TableSchemaSpec } from '@nozbe/watermelondb/Schema';
 
+/**
+ * The tables exactly as migration v32 created them. Never add a column here: v32's `createTable`
+ * is built from this array, so a later column would be created by v32 and then fail its own
+ * `addColumns` on an upgrade. Later columns live in the lists below.
+ */
 export const weeklyReviewTables: TableSchemaSpec[] = [
   {
     name: 'nutrition_target_periods',
@@ -36,3 +41,16 @@ export const weeklyReviewTables: TableSchemaSpec[] = [
     ],
   },
 ];
+
+/** Added to `weekly_reviews` by migration v34: the training half's decision and its snapshot. */
+export const weeklyReviewTrainingColumns: ColumnSchema[] = [
+  { name: 'training_decision', type: 'string', isOptional: true },
+  { name: 'training_json', type: 'string', isOptional: true },
+];
+
+/** The current shape of the weekly-review tables: v32's tables plus every later column. */
+export const weeklyReviewSchemaTables: TableSchemaSpec[] = weeklyReviewTables.map((table) =>
+  table.name === 'weekly_reviews'
+    ? { ...table, columns: [...table.columns, ...weeklyReviewTrainingColumns] }
+    : table
+);

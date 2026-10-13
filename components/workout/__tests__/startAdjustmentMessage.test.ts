@@ -101,3 +101,21 @@ describe('startAdjustmentMessageKey', () => {
     }
   });
 });
+
+describe('an adjustment sourced from the Weekly Review', () => {
+  it('credits the review instead of last session, whatever moved', () => {
+    expect(
+      startAdjustmentMessageKey(adjustment({ cause: 'deload', source: 'weekly_review' }))
+    ).toBe(START_ADJUSTMENT_MESSAGE_KEYS.reviewLighter);
+    expect(
+      startAdjustmentMessageKey(
+        adjustment({
+          cause: 'repeat',
+          source: 'weekly_review',
+          field: 'reps',
+          now: { weightKg: 60, reps: 10 },
+        })
+      )
+    ).toBe(START_ADJUSTMENT_MESSAGE_KEYS.reviewRepeat);
+  });
+});

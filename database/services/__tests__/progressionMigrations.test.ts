@@ -2,6 +2,8 @@ import { schema } from '@/database/schema';
 import migration31 from '@/database/migrations/2026/10/migration-v31';
 import migration32 from '@/database/migrations/2026/10/migration-v32';
 import migration33 from '@/database/migrations/2026/10/migration-v33';
+import migration34 from '@/database/migrations/2026/10/migration-v34';
+import { weeklyReviewTrainingColumns } from '@/database/weeklyReviewSchema';
 import { RESTORE_ORDER } from '@/constants/exportImport';
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 
@@ -21,9 +23,18 @@ it('keeps v31 purely additive and includes all new optional columns in the schem
   expect(schema.tables.nutrition_goals.columns.target_mode.isOptional).toBe(true);
 });
 it('uses identical target/review table definitions for native migration and Loki schema with restore dependencies', () => {
-  expect(CURRENT_DATABASE_VERSION).toBe(33);
+  expect(CURRENT_DATABASE_VERSION).toBe(34);
+  const laterColumns = new Set(weeklyReviewTrainingColumns.map((column) => column.name));
   for (const step of migration32.steps.filter((step) => step.type === 'create_table')) {
-    expect(schema.tables[step.schema.name]).toEqual(step.schema);
+    // v32 created the table; v34 added the training columns on top of it.
+    const current = schema.tables[step.schema.name];
+    expect({
+      ...current,
+      columns: Object.fromEntries(
+        Object.entries(current.columns).filter(([name]) => !laterColumns.has(name))
+      ),
+      columnArray: current.columnArray.filter((column) => !laterColumns.has(column.name)),
+    }).toEqual(step.schema);
     expect(RESTORE_ORDER).toContain(step.schema.name);
   }
   expect(RESTORE_ORDER.indexOf('nutrition_goals')).toBeLessThan(
@@ -53,7 +64,7 @@ function schemaBeforeProgression() {
   );
   return { ...schema, version: 30, tables };
 }
-it('migrates existing SQLite records through v31, v32 and v33 without changing legacy values', () => {
+it('migrates existing SQLite records through v31 through v34 without changing legacy values', () => {
   const { DatabaseSync } = require('node:sqlite');
   const {
     encodeSchema,
@@ -69,7 +80,12 @@ it('migrates existing SQLite records through v31, v32 and v33 without changing l
       "INSERT INTO workout_log_exercises (id, workout_log_id, exercise_id, exercise_order, group_id) VALUES ('block', 'workout', 'bench', 1, 'superset')"
     );
     sqlite.exec(
-      encodeMigrationSteps([...migration31.steps, ...migration32.steps, ...migration33.steps])
+      encodeMigrationSteps([
+        ...migration31.steps,
+        ...migration32.steps,
+        ...migration33.steps,
+        ...migration34.steps,
+      ])
     );
     expect({
       ...sqlite

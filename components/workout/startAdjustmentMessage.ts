@@ -13,6 +13,8 @@ export const START_ADJUSTMENT_MESSAGE_KEYS = {
   repeatWeight: 'workoutSession.adjustment.startRepeatWeight',
   repeatWeightReps: 'workoutSession.adjustment.startRepeatWeightReps',
   repeatReps: 'workoutSession.adjustment.startRepeatReps',
+  reviewLighter: 'workoutSession.adjustment.startReviewLighter',
+  reviewRepeat: 'workoutSession.adjustment.startReviewRepeat',
 } as const;
 
 export type StartAdjustmentMessageKey =
@@ -29,6 +31,13 @@ export type StartAdjustmentMessageKey =
 export function startAdjustmentMessageKey(
   adjustment: StartSetAdjustment
 ): StartAdjustmentMessageKey {
+  // A repeated or lighter week the user chose in the Weekly Review credits the review, not how the
+  // last session went — the sentence must not claim a reps-in-reserve figure that was not the cause.
+  if (adjustment.source === 'weekly_review') {
+    return adjustment.cause === 'deload'
+      ? START_ADJUSTMENT_MESSAGE_KEYS.reviewLighter
+      : START_ADJUSTMENT_MESSAGE_KEYS.reviewRepeat;
+  }
   const repsMoved = adjustment.now.reps !== adjustment.plan.reps;
 
   switch (adjustment.cause) {

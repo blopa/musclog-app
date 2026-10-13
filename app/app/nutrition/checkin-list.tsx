@@ -10,6 +10,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
 import { CheckinDetailsModal } from '@/components/modals/CheckinDetailsModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
+import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
@@ -23,8 +24,10 @@ import {
   MACRO_LABEL_KEYS,
   NutritionReviewSection,
 } from '@/components/weeklyReview/NutritionReviewSection';
+import { historyLabelKeys } from '@/components/weeklyReview/trainingDecisionCopy';
 import { TrainingReviewSection } from '@/components/weeklyReview/TrainingReviewSection';
 import { WeeklyReviewWelcome } from '@/components/weeklyReview/WeeklyReviewWelcome';
+import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { type NutritionTargets } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -36,17 +39,11 @@ import { NotificationService } from '@/services/NotificationService';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
+import type { TrainingDecision } from '@/utils/trainingWeekDecision';
 import { hasWeeklyActivity, shouldShowWeeklyReviewWelcome } from '@/utils/weeklyReviewEmptyState';
 
 /** Old check-ins shown before "Show all": the history should not bury everything above it. */
 const LEGACY_HISTORY_PREVIEW = 4;
-
-const historyLabelKey = (decision?: string | null) => {
-  if (decision === 'apply') {
-    return 'weeklyReview.applied';
-  }
-  return decision === 'keep' ? 'weeklyReview.kept' : 'weeklyReview.trainingOnly';
-};
 
 export default function CheckinListScreen() {
   const { t, i18n } = useTranslation();
@@ -67,6 +64,7 @@ export default function CheckinListScreen() {
   const [editor, setEditor] = useState(false);
   const [goalEditor, setGoalEditor] = useState(false);
   const [ruleEditor, setRuleEditor] = useState(false);
+  const [goalsManager, setGoalsManager] = useState(false);
   /** Local midnight of the reviewed day a weigh-in is being added for, while that entry is open. */
   const [weightDay, setWeightDay] = useState<number | null>(null);
   const [reminder, setReminder] = useState(false);
@@ -110,7 +108,7 @@ export default function CheckinListScreen() {
     }
   };
 
-  const reviewTraining = async () => {
+  const reviewTraining = async (decision: TrainingDecision) => {
     if (!data || busy) {
       return;
     }
@@ -121,6 +119,26 @@ export default function CheckinListScreen() {
         period: data.period,
         goalId: data.goal?.id,
         section: 'training',
+        training: { decision, ...data.training.proposal },
+      });
+      await reload();
+    } catch {
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const changeConsistencyGoal = async (sessionsPerWeek: number) => {
+    if (busy) {
+      return;
+    }
+    setBusy(true);
+    setError(false);
+    try {
+      await ExerciseGoalService.saveGoal({
+        goalType: 'consistency',
+        targetSessionsPerWeek: sessionsPerWeek,
       });
       await reload();
     } catch {
@@ -194,7 +212,7 @@ export default function CheckinListScreen() {
     ) as NutritionTargets;
 
   const progressDone = [
-    !!data?.training.reviewedAt,
+    !!data?.training.reviewedAt || !data?.activity.everWorkout,
     !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
   ];
 
@@ -296,6 +314,17 @@ export default function CheckinListScreen() {
         onSave={reload}
       />
     );
+  } else if (goalsManager) {
+    modal = (
+      <GoalsManagementModal
+        visible
+        tab="fitness"
+        onClose={() => {
+          setGoalsManager(false);
+          reload();
+        }}
+      />
+    );
   } else if (ruleEditor && data?.training.next) {
     modal = (
       <CreateWorkoutModal
@@ -394,7 +423,9 @@ export default function CheckinListScreen() {
               <TrainingReviewSection
                 data={data}
                 busy={busy}
-                onAcknowledge={reviewTraining}
+                onDecide={reviewTraining}
+                onChangeConsistencyGoal={changeConsistencyGoal}
+                onOpenGoals={() => setGoalsManager(true)}
                 onPreviewNext={() =>
                   data.training.next &&
                   router.push({
@@ -455,7 +486,9 @@ export default function CheckinListScreen() {
                         start: formatDate(review.periodStart),
                         end: formatDate(review.periodEnd - 1),
                       })}
-                      subtitle={t(historyLabelKey(review.nutritionDecision))}
+                      subtitle={historyLabelKeys(review)
+                        .map((key) => t(key))
+                        .join(' · ')}
                       onPress={() => setSelectedReview(review.id)}
                     />
                   ))}

@@ -7,6 +7,7 @@ import type NutritionTargetPeriod from '@/database/models/NutritionTargetPeriod'
 import type WeeklyReview from '@/database/models/WeeklyReview';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import { getNutritionDayCoverage } from '@/database/nutritionDayCoverage';
+import { TrainingWeekRepository } from '@/database/repositories/TrainingWeekRepository';
 import { WorkoutTodayRepository } from '@/database/repositories/WorkoutTodayRepository';
 import {
   dayKeyRange,
@@ -16,6 +17,14 @@ import {
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
+import { parseSetPrescription } from '@/utils/setPrescription';
+import {
+  parseTrainingDecisionSnapshot,
+  serializeTrainingDecisionSnapshot,
+  TRAINING_DECISIONS,
+  type TrainingDecision,
+  type TrainingDecisionSnapshot,
+} from '@/utils/trainingWeekDecision';
 import {
   calculateTrendWeightSeries,
   TREND_WEIGHT_WARMUP_DAYS,
@@ -23,9 +32,15 @@ import {
 } from '@/utils/trendWeight';
 import { storedWeightToKg } from '@/utils/unitConversion';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
+import {
+  consistencySuggestion,
+  goalVerdicts,
+  recommendTrainingWeek,
+} from '@/utils/weeklyTrainingRecommendation';
 import { widgetEvents } from '@/utils/widgetEvents';
 import { isPerformedWorkoutSet, isWarmupSet } from '@/utils/workoutSetCompletion';
 
+import { ExerciseGoalService } from './ExerciseGoalService';
 import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
 import {
@@ -91,6 +106,24 @@ const trainingReviewedAtFor = (reviews: readonly WeeklyReview[], periodEnd: numb
   reviews.find((row) => row.periodEnd === periodEnd && row.trainingReviewedAt)?.trainingReviewedAt;
 
 /**
+ * Weeks with a training decision since the last lighter week (all of them if there never was
+ * one): the "you are due" signal. Newest first in, one count per reviewed period.
+ */
+const decidedWeeksSinceLighter = (reviews: readonly WeeklyReview[]): number => {
+  const seen = new Set<number>();
+  for (const row of reviews) {
+    if (!row.trainingDecision || seen.has(row.periodEnd)) {
+      continue;
+    }
+    if (row.trainingDecision === 'lighter') {
+      break;
+    }
+    seen.add(row.periodEnd);
+  }
+  return seen.size;
+};
+
+/**
  * What the reviewed week holds, counted from the records themselves rather than the account's age
  * (restores and imports rewrite that), plus whether the user has EVER logged a workout or a meal —
  * which is what tells a first week apart from a week off.
@@ -134,11 +167,7 @@ export class WeeklyReviewService {
         .fetchCount(),
       database
         .get('workout_logs')
-        .query(
-          Q.where('completed_at', Q.notEq(null)),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.take(1)
-        )
+        .query(Q.where('completed_at', Q.notEq(null)), Q.where('deleted_at', Q.eq(null)), Q.take(1))
         .fetchCount(),
       database
         .get('nutrition_logs')
@@ -211,8 +240,29 @@ export class WeeklyReviewService {
     const records = (
       await Promise.all(workouts.map((workout) => WorkoutAnalytics.detectPersonalRecords(workout)))
     ).flat();
+    // A user who has never finished a workout is not asked a training question.
+    const hasTrainedBefore = activity.everWorkout;
     const next = upcoming.find((row) => !row.completedToday);
-    const targets = next ? await WorkoutProgressionService.projectTemplate(next.template.id) : [];
+    // Training is decided once per period while nutrition is decided per goal, so the decision is
+    // read from whichever of the period's rows carries it (see `trainingReviewedAtFor`).
+    const trainingRow = reviews.find((row) => row.periodEnd === period.end && row.trainingDecision);
+    const trainingDecision = trainingRow
+      ? parseTrainingDecisionSnapshot(trainingRow.trainingJson)
+      : null;
+    const trainingEvidence = await this.trainingEvidence({
+      period,
+      workouts,
+      details,
+      workingSets,
+      activity,
+      reviews,
+    });
+    // Once a repeat or lighter week is chosen, the session will not follow the plain progression
+    // these targets project, so showing them would promise numbers the session never uses.
+    const targets =
+      next && (trainingDecision?.decision ?? 'progress') === 'progress'
+        ? await WorkoutProgressionService.projectTemplate(next.template.id)
+        : [];
     const current = goal
       ? await NutritionTargetService.resolve(goal, saved ? new Date(saved.periodEnd) : new Date())
       : null;
@@ -251,10 +301,99 @@ export class WeeklyReviewService {
         records,
         targets,
         next,
+        decision: trainingDecision,
+        proposal: trainingEvidence.proposal,
+        consistencySuggestion: trainingEvidence.suggestion,
+        // Only the latest review can still shape a week, and only until the next review is due.
+        canDecide:
+          !saved &&
+          trainingReviewedAtFor(reviews, period.end) == null &&
+          Date.now() < period.next &&
+          hasTrainedBefore,
       },
       ready:
-        trainingReviewedAtFor(reviews, period.end) == null ||
+        (hasTrainedBefore && trainingReviewedAtFor(reviews, period.end) == null) ||
         (!!goal && !intuitive && !review?.nutritionReviewedAt),
+    };
+  }
+
+  /**
+   * What the training half judges the week on, and what it proposes for the next one: each active
+   * fitness goal against the reviewed week, then `recommendTrainingWeek` over the lot. The 1RM
+   * projections leave lighter weeks out — deliberately light training would read as "declining".
+   */
+  private static async trainingEvidence(input: {
+    period: ReturnType<typeof weeklyReviewPeriod>;
+    workouts: WorkoutLog[];
+    details: Awaited<ReturnType<typeof WorkoutService.getWorkoutWithDetails>>[];
+    workingSets: { repsInReserve: number; rirRecorded?: boolean }[];
+    activity: WeeklyActivity;
+    reviews: readonly WeeklyReview[];
+  }): Promise<{
+    proposal: Pick<TrainingDecisionSnapshot, 'recommended' | 'reasons' | 'goals'>;
+    suggestion: ReturnType<typeof consistencySuggestion>;
+  }> {
+    const { period, workouts, details, workingSets, activity, reviews } = input;
+    const [goals, windows, previousWeek] = await Promise.all([
+      ExerciseGoalService.getActiveGoals(),
+      TrainingWeekRepository.lighterWeekWindows(),
+      this.weekActivity(localDayKeyPlusCalendarDays(period.start, -7), period.start),
+    ]);
+    const consistencyGoal = goals.find(
+      (goal) => goal.goalType === 'consistency' && goal.targetSessionsPerWeek != null
+    );
+    const oneRm = await Promise.all(
+      goals
+        .filter((goal) => goal.goalType === '1rm' && goal.exerciseId)
+        .map(async (goal) => ({
+          goalId: goal.id,
+          exerciseId: goal.exerciseId!,
+          exerciseName: goal.exerciseNameSnapshot ?? '',
+          targetDate: goal.targetDate,
+          projection: await ExerciseGoalService.evaluate1rmGoal(goal, {
+            excludeWindows: windows,
+          }).catch(() => null),
+        }))
+    );
+    const verdicts = goalVerdicts({
+      workoutsThisWeek: workouts.length,
+      consistency: consistencyGoal
+        ? { goalId: consistencyGoal.id, target: consistencyGoal.targetSessionsPerWeek! }
+        : null,
+      oneRm,
+    });
+    // Exercises the automatic path deloaded on its own this week. A deload the REVIEW chose does
+    // not count: it would recommend a lighter week for having had one.
+    const deloaded = new Set<string>();
+    for (const detail of details) {
+      for (const set of detail.sets) {
+        const explanation = parseSetPrescription(set.prescriptionJson)?.explanation;
+        if (explanation?.cause === 'deload' && explanation.source !== 'weekly_review') {
+          deloaded.add(set.exerciseId);
+        }
+      }
+    }
+    const rated = workingSets.filter((set) => set.rirRecorded);
+    const { decision, reasons } = recommendTrainingWeek({
+      workoutsThisWeek: workouts.length,
+      everWorkout: activity.everWorkout,
+      deloadedExercises: deloaded.size,
+      ratedSets: rated.length,
+      averageRir: rated.length
+        ? rated.reduce((sum, set) => sum + set.repsInReserve, 0) / rated.length
+        : null,
+      goals: verdicts,
+      decidedWeeksSinceLighter: decidedWeeksSinceLighter(reviews),
+    });
+    return {
+      proposal: { recommended: decision, reasons, goals: verdicts },
+      suggestion: consistencyGoal
+        ? consistencySuggestion(
+            workouts.length,
+            previousWeek.workouts,
+            consistencyGoal.targetSessionsPerWeek!
+          )
+        : null,
     };
   }
 
@@ -362,11 +501,24 @@ export class WeeklyReviewService {
     goalId?: string;
     section: 'training' | 'nutrition';
     decision?: 'apply' | 'keep';
+    /** The training half's choice, with the evidence the review showed when it was made. */
+    training?: {
+      decision: TrainingDecision;
+    } & Pick<TrainingDecisionSnapshot, 'recommended' | 'reasons' | 'goals'>;
     recommendation?: WeeklyNutritionRecommendation;
     accepted?: NutritionTargets;
   }): Promise<string> {
     if (input.section === 'nutrition' && (!input.goalId || !input.decision)) {
       throw new Error('A nutrition decision requires a goal');
+    }
+    if (
+      input.section === 'training' &&
+      (!input.training || !TRAINING_DECISIONS.includes(input.training.decision))
+    ) {
+      throw new Error('A training decision is required');
+    }
+    if (input.section === 'training' && Date.now() >= input.period.next) {
+      throw new Error('This review has ended; refresh the review');
     }
     if (input.decision === 'apply' && (!input.recommendation?.canApply || !input.accepted)) {
       throw new Error('More logged data is required');
@@ -415,6 +567,12 @@ export class WeeklyReviewService {
         record.nutritionGoalId = input.goalId;
         if (input.section === 'training') {
           record.trainingReviewedAt = now;
+          record.trainingDecision = input.training!.decision;
+          record.trainingJson = serializeTrainingDecisionSnapshot({
+            ...input.training!,
+            // The decision shapes workouts from now until the next review is due.
+            window: { from: now, until: input.period.next },
+          });
         } else {
           record.nutritionReviewedAt = now;
           record.nutritionDecision = input.decision;

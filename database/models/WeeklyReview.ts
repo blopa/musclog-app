@@ -10,6 +10,8 @@ export default class WeeklyReview extends Model {
   @field('training_reviewed_at') trainingReviewedAt?: number;
   @field('nutrition_reviewed_at') nutritionReviewedAt?: number;
   @field('nutrition_decision') nutritionDecision?: 'apply' | 'keep';
+  @field('training_decision') trainingDecision?: 'progress' | 'repeat' | 'lighter';
+  @field('training_json') trainingJson?: string;
   @field('recommendation_json') recommendationJson?: string;
   @field('accepted_json') acceptedJson?: string;
   @field('created_at') declare createdAt: number;

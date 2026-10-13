@@ -56,7 +56,9 @@
       "startRepeatReps": "Je start met {{to}} herhalingen, wat je vorige keer deed, in plaats van de {{from}} uit het schema.",
       "usePlan": "Gebruik het schema",
       "startDeloadWeightReps": "Omlaag naar {{to}} {{unit}} × {{reps}} vanaf {{last}} {{unit}} × {{lastReps}} van vorige keer — twee sessies op rij zonder herhalingen over.",
-      "startRepeatWeightReps": "Je start met {{to}} {{unit}} × {{reps}}, wat je vorige keer deed, in plaats van de {{from}} {{unit}} × {{planReps}} uit het schema."
+      "startRepeatWeightReps": "Je start met {{to}} {{unit}} × {{reps}}, wat je vorige keer deed, in plaats van de {{from}} {{unit}} × {{planReps}} uit het schema.",
+      "startReviewLighter": "Lichtere week uit je Weekoverzicht: {{weight}} {{unit}} × {{reps}}.",
+      "startReviewRepeat": "Laatste sessie herhaald, uit je Weekoverzicht: {{weight}} {{unit}} × {{reps}}."
     },
     "startRest": "Rust starten ({{seconds}} sec)",
     "warmup": {
@@ -256,8 +258,7 @@
     "latest": "Terug naar nieuwste overzicht",
     "error": "Het overzicht kon niet worden opgeslagen of geladen. Je besluit is niet afgerond. Probeer opnieuw.",
     "training": "Training",
-    "trainingHint": "Doelen worden bijgewerkt na je trainingen. Dit overzicht bekijken vertraagt je progressie nooit.",
-    "acknowledge": "Training als bekeken markeren",
+    "trainingHint": "Terugblikken vertraagt je progressie nooit. Kies hoe je trainingen volgende week beginnen; je kunt elke oefening nog aanpassen tijdens een sessie.",
     "noWorkout": "Kies een training of roterend schema bij Trainingen.",
     "prTypes": {
       "weight": "Zwaarste gewicht",
@@ -349,6 +350,59 @@
       "noFoodThisWeek": "Deze week geen voeding gelogd.",
       "currentTargets": "Je dagelijkse doelen",
       "firstReviewOn": "Je eerste overzicht staat klaar op {{date}}."
+    },
+    "trainingDecision": {
+      "title": "Volgende week",
+      "recommended": "Aanbevolen",
+      "progress": {
+        "title": "Blijf progressie maken",
+        "description": "Elke oefening begint waar je laatste sessie zegt dat je klaar voor bent.",
+        "confirm": "Blijf progressie maken",
+        "chosen": "Volgende week: blijf progressie maken"
+      },
+      "repeat": {
+        "title": "Laatste sessie herhalen",
+        "description": "Elke oefening begint met het gewicht en de herhalingen van de vorige keer.",
+        "confirm": "Volgende week herhalen",
+        "chosen": "Volgende week: laatste sessie herhalen"
+      },
+      "lighter": {
+        "title": "Lichtere week",
+        "description": "Ongeveer 10% lichtere gewichten en een derde minder sets, om te herstellen.",
+        "confirm": "Begin een lichtere week",
+        "chosen": "Volgende week: lichtere week"
+      },
+      "until": "Geldt voor trainingen die je start tot {{date}}."
+    },
+    "goals": {
+      "title": "Je doelen",
+      "consistency": "Trainingen deze week: {{done}} van {{target}}",
+      "status": {
+        "met": "Doel gehaald",
+        "missed": "Onder het doel",
+        "exceeded": "Boven het doel"
+      },
+      "oneRm": {
+        "reached": "Bereikt",
+        "onPace": "Op schema",
+        "behind": "Achter op schema",
+        "stalling": "Stagneert",
+        "declining": "Gaat achteruit",
+        "notEnoughData": "Nog te weinig gegevens"
+      },
+      "projected": "Verwacht: {{date}}",
+      "none": "Stel een fitnessdoel in om te zien hoe elke week verloopt.",
+      "setGoal": "Doel instellen",
+      "lowerTo": "Doel verlagen naar {{count}} per week",
+      "raiseTo": "Doel verhogen naar {{count}} per week"
+    },
+    "reasons": {
+      "noWorkouts": "Geen trainingen deze week, dus volgende week pak je op waar je was gebleven.",
+      "missedConsistency": "Je trainde veel minder dan je weekdoel; herhalen voorkomt een plotselinge sprong.",
+      "repeatedDeloads": "{{count}} oefeningen hadden deze week zelf een deload nodig.",
+      "lowReserveStalled": "Je sets lieten niets in reserve en een lift die je volgt stagneert.",
+      "dueForLighter": "Het is {{count}} weken geleden sinds een lichtere week.",
+      "onTrack": "De training loopt goed."
     }
   }
 }

@@ -171,7 +171,11 @@ describe('WorkoutProgressionService', () => {
               fetch: jest.fn(async () => {
                 const ids: unknown[] =
                   clauses.find((c) => c?.field === 'log_exercise_id')?.condition ?? [];
-                if (![ids].flat().includes(previousLogExercise.id)) {
+                if (
+                  ![ids]
+                    .flat()
+                    .some((id) => id === previousLogExercise.id || id === earlierLogExercise.id)
+                ) {
                   return options.sets;
                 }
                 const tag = (rows: any[] | undefined, logExerciseId: string) =>
@@ -462,6 +466,157 @@ describe('WorkoutProgressionService', () => {
 
       expect(await WorkoutProgressionService.revertStartAdjustment('le-bench')).toBe(0);
       expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    describe('a repeat or lighter week chosen in the Weekly Review', () => {
+      /** Layers a `weekly_reviews` row over whatever `installHistory` set up. */
+      function installWeek(
+        decision: 'repeat' | 'lighter',
+        window = { from: Date.now() - 1000, until: Date.now() + 10_000_000 }
+      ) {
+        const base = mockDatabase.get.getMockImplementation()!;
+        mockDatabase.get.mockImplementation((table: string) =>
+          table === 'weekly_reviews'
+            ? (collection({
+                fetch: jest.fn().mockResolvedValue([
+                  {
+                    id: 'review-1',
+                    trainingDecision: decision,
+                    trainingJson: JSON.stringify({
+                      decision,
+                      recommended: 'progress',
+                      reasons: [],
+                      goals: [],
+                      window,
+                    }),
+                  },
+                ]),
+              }) as any)
+            : base(table)
+        );
+      }
+      const four = () => [1, 2, 3, 4].map((n) => planned(`s${n}`, { setOrder: n }));
+
+      it('lightens loads, drops the trailing third of the sets and aims for plenty in reserve', async () => {
+        const sets = four();
+        installHistory({ sets, previousSets: lastSession(62, 1) });
+        installWeek('lighter');
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        const live = sets.filter((set) => !set.deletedAt);
+        expect(live.map((set) => set.id)).toEqual(['s1', 's2', 's3']);
+        expect(sets[3].deletedAt).toEqual(expect.any(Number));
+        for (const set of live) {
+          // 62 kg less 10% (6.2 kg beats the 2.5 kg step) = 55.8, snapped to a loadable 55.
+          expect(set.weight).toBe(55);
+          expect(set.reps).toBe(8);
+          expect(set.repsInReserve).toBe(4);
+          expect(JSON.parse(set.adjustmentJson)).toMatchObject({
+            cause: 'deload',
+            source: 'weekly_review',
+            plan: { weightKg: 60, reps: 8 },
+            now: { weightKg: 55, reps: 8 },
+          });
+          expect(JSON.parse(set.prescriptionJson)).toMatchObject({ workingSetCount: 3 });
+        }
+        expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+      });
+
+      it('applies in manual mode, because the user chose it', async () => {
+        jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('manual');
+        const sets = four();
+        installHistory({ sets, previousSets: lastSession(62, 1) });
+        installWeek('lighter');
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(sets[0].weight).toBe(55);
+        expect(sets[3].deletedAt).toEqual(expect.any(Number));
+      });
+
+      it('lightens an exercise with no history from its own plan', async () => {
+        const sets = four();
+        installHistory({ sets });
+        installWeek('lighter');
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(sets[0].weight).toBeLessThan(60);
+        expect(sets.filter((set) => !set.deletedAt)).toHaveLength(3);
+      });
+
+      it('repeats last session instead of progressing, and keeps every set', async () => {
+        const sets = [planned('s1'), planned('s2', { setOrder: 2 })];
+        // Left four in reserve: the automatic path would add a step; a repeat must not.
+        installHistory({ sets, previousSets: lastSession(62, 4) });
+        installWeek('repeat');
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        for (const set of sets) {
+          expect(set).toMatchObject({ weight: 62, reps: 8 });
+          expect(set.deletedAt).toBeNull();
+          expect(JSON.parse(set.adjustmentJson)).toMatchObject({
+            cause: 'repeat',
+            source: 'weekly_review',
+          });
+        }
+      });
+
+      it('leaves an exercise with no history alone when repeating', async () => {
+        const sets = [planned('s1')];
+        installHistory({ sets });
+        installWeek('repeat');
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(sets[0]).toMatchObject({ weight: 60, reps: 8 });
+        expect(sets[0].adjustmentJson).toBeUndefined();
+      });
+
+      it('does nothing once the window is over', async () => {
+        const sets = four();
+        installHistory({ sets, previousSets: lastSession(62, 1) });
+        installWeek('lighter', { from: Date.now() - 2000, until: Date.now() - 1000 });
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        // Back to the ordinary automatic path: nothing was dropped.
+        expect(sets.every((set) => !set.deletedAt)).toBe(true);
+      });
+
+      it('does not touch warm-ups', async () => {
+        const warm = planned('warm', { setType: 'warmup', weight: 30, reps: 5, setOrder: 0 });
+        const sets = [warm, ...four()];
+        installHistory({ sets, previousSets: lastSession(62, 1) });
+        installWeek('lighter');
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(warm).toMatchObject({ weight: 30, reps: 5 });
+        expect(warm.deletedAt).toBeNull();
+      });
+
+      it('leaves a lighter week out of the history the next progression is built from', async () => {
+        const lighterWindow = { from: 1000, until: 9000 };
+        const sets = [planned('s1')];
+        installHistory({
+          sets,
+          previousSets: lastSession(56, 4),
+          earlierSets: lastSession(62, 2),
+          // The most recent session happened inside the lighter week.
+          completedAt: { previous: 5000, earlier: 500 },
+        });
+        installWeek('lighter', lighterWindow);
+        // The decision's window is over by the time this workout starts, so only history applies.
+        jest.spyOn(Date, 'now').mockReturnValue(20_000);
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        // Built from the 62 kg session (2 in reserve → hold at the target), not the 56 kg one.
+        expect(sets[0].weight).toBeGreaterThanOrEqual(62);
+      });
     });
   });
 });

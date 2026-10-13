@@ -1,8 +1,31 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
+import type Exercise from '@/database/models/Exercise';
 import ExerciseGoal, { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
 import { getCurrentTimezone } from '@/utils/timezone';
+
+import { UserMetricService } from './UserMetricService';
+import { UserService } from './UserService';
+import { type ProgressiveOverloadDataPoint, WorkoutAnalytics } from './WorkoutAnalytics';
+
+/** Everything `projectGoal` needs about a 1RM goal that has to be read from the database. */
+export interface OneRmGoalInputs {
+  dataPoints: ProgressiveOverloadDataPoint[];
+  hasPerformed1RMDate: number | null;
+  recentAverage1RM: number | null;
+  bodyWeight: number;
+  loadMultiplier: number;
+  userGender: 'male' | 'female' | 'other';
+}
+
+/** A span of time whose training should not count as evidence (a deliberately lighter week). */
+export type ExcludedWindow = { from: number; until: number };
+
+/** How far back `getRecentFirstSetAverage1RM` looks. Keep in step with its default. */
+const RECENT_AVERAGE_WEEKS = 2;
 
 /**
  * Input for creating or updating an ExerciseGoal.
@@ -25,6 +48,84 @@ export interface ExerciseGoalInput {
 }
 
 export class ExerciseGoalService {
+  /**
+   * Reads what the projection of a 1RM goal is built from. Shared by the goal screens and the
+   * Weekly Review so the two cannot disagree about whether a lift is on pace.
+   *
+   * `excludeWindows` leaves deliberately light training out: its data points are dropped, and the
+   * "recent average" shortcut is skipped when it would span one (it cannot be filtered by date).
+   */
+  static async load1rmGoalInputs(
+    goal: ExerciseGoal,
+    options: { excludeWindows?: readonly ExcludedWindow[] } = {}
+  ): Promise<OneRmGoalInputs | null> {
+    if (goal.goalType !== '1rm' || !goal.exerciseId) {
+      return null;
+    }
+    const windows = options.excludeWindows ?? [];
+    const [dataPoints, performed1RMDate, recentAverage, bodyWeight, exercise, user] =
+      await Promise.all([
+        WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
+          startDate: goal.createdAt,
+          endDate: Date.now(),
+        }),
+        goal.targetWeight != null
+          ? WorkoutAnalytics.getPerformed1RMDate(goal.exerciseId, goal.targetWeight, goal.createdAt)
+          : Promise.resolve(null),
+        WorkoutAnalytics.getRecentFirstSetAverage1RM(goal.exerciseId, RECENT_AVERAGE_WEEKS),
+        UserMetricService.getUserBodyWeightKgForVolume(),
+        database.get<Exercise>('exercises').find(goal.exerciseId),
+        UserService.getCurrentUser(),
+      ]);
+    const recentSince = Date.now() - RECENT_AVERAGE_WEEKS * 7 * MS_PER_SOLAR_DAY;
+    const recentSpansExcluded = windows.some((window) => window.until > recentSince);
+    return {
+      dataPoints: dataPoints.filter(
+        (point) => !windows.some((window) => point.date >= window.from && point.date < window.until)
+      ),
+      hasPerformed1RMDate: performed1RMDate,
+      recentAverage1RM: recentSpansExcluded ? null : (recentAverage?.average1RM ?? null),
+      bodyWeight,
+      loadMultiplier: exercise.loadMultiplier ?? 1.0,
+      userGender: user?.gender ?? 'other',
+    };
+  }
+
+  /** The projection of a 1RM goal, or null when it has no target or no baseline to measure from. */
+  static project1rmGoal(
+    goal: ExerciseGoal,
+    inputs: OneRmGoalInputs,
+    baseline1rm: number | null = goal.baseline1rm
+  ): ProjectionResult | null {
+    if (goal.goalType !== '1rm' || goal.targetWeight === null) {
+      return null;
+    }
+    const effectiveBaseline =
+      baseline1rm ?? (inputs.dataPoints.length > 0 ? inputs.dataPoints[0].estimated1RM : null);
+    if (effectiveBaseline === null) {
+      return null;
+    }
+    return projectGoal({
+      dataPoints: inputs.dataPoints,
+      baseline1rm: effectiveBaseline,
+      targetWeight: goal.targetWeight,
+      bodyWeight: inputs.bodyWeight,
+      loadMultiplier: inputs.loadMultiplier,
+      userGender: inputs.userGender,
+      hasPerformed1RMDate: inputs.hasPerformed1RMDate,
+      currentEstimated1RM: inputs.recentAverage1RM ?? undefined,
+    });
+  }
+
+  /** Reads and projects in one go, for callers that have no use for the inputs themselves. */
+  static async evaluate1rmGoal(
+    goal: ExerciseGoal,
+    options: { excludeWindows?: readonly ExcludedWindow[] } = {}
+  ): Promise<ProjectionResult | null> {
+    const inputs = await this.load1rmGoalInputs(goal, options);
+    return inputs ? this.project1rmGoal(goal, inputs) : null;
+  }
+
   /**
    * Get all active goals (effective_until IS NULL and not deleted)
    */

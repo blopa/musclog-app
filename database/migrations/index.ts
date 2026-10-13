@@ -32,6 +32,7 @@ import migrationV30 from '@/database/migrations/2026/10/migration-v30';
 import migrationV31 from '@/database/migrations/2026/10/migration-v31';
 import migrationV32 from '@/database/migrations/2026/10/migration-v32';
 import migrationV33 from '@/database/migrations/2026/10/migration-v33';
+import migrationV34 from '@/database/migrations/2026/10/migration-v34';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -152,5 +153,6 @@ export const migrations = schemaMigrations({
     migrationV32,
     // Preserve a superset's exercise slot when a partially logged block is split by a swap.
     migrationV33,
+    migrationV34,
   ],
 });

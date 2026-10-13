@@ -56,7 +56,9 @@
       "startRepeatReps": "Starting at {{to}} reps, what you did last time, instead of the plan's {{from}}.",
       "usePlan": "Use the plan's",
       "startDeloadWeightReps": "Down to {{to}} {{unit}} × {{reps}} from last time's {{last}} {{unit}} × {{lastReps}} — two sessions in a row with no reps left in reserve.",
-      "startRepeatWeightReps": "Starting at {{to}} {{unit}} × {{reps}}, what you did last time, instead of the plan's {{from}} {{unit}} × {{planReps}}."
+      "startRepeatWeightReps": "Starting at {{to}} {{unit}} × {{reps}}, what you did last time, instead of the plan's {{from}} {{unit}} × {{planReps}}.",
+      "startReviewLighter": "Lighter week from your Weekly Review: {{weight}} {{unit}} × {{reps}}.",
+      "startReviewRepeat": "Repeating last session, from your Weekly Review: {{weight}} {{unit}} × {{reps}}."
     },
     "startRest": "Start rest ({{seconds}}s)",
     "warmup": {
@@ -256,8 +258,7 @@
     "latest": "Back to latest review",
     "error": "Unable to save or load the review. Your decision has not been completed. Try again.",
     "training": "Training",
-    "trainingHint": "Targets update with your workouts. Reviewing this summary never delays progression.",
-    "acknowledge": "Mark training reviewed",
+    "trainingHint": "Reviewing never delays progression. Pick how your workouts start next week; you can still adjust any exercise in a session.",
     "noWorkout": "Choose a workout or rotating plan in Workouts.",
     "prTypes": {
       "weight": "Heaviest weight",
@@ -349,6 +350,59 @@
       "noFoodThisWeek": "No food logged this week.",
       "currentTargets": "Your daily targets",
       "firstReviewOn": "Your first review will be ready on {{date}}."
+    },
+    "trainingDecision": {
+      "title": "Next week",
+      "recommended": "Recommended",
+      "progress": {
+        "title": "Keep progressing",
+        "description": "Each exercise starts where your last session says you're ready for.",
+        "confirm": "Keep progressing",
+        "chosen": "Next week: keep progressing"
+      },
+      "repeat": {
+        "title": "Repeat last session",
+        "description": "Each exercise starts with the weight and reps you did last time.",
+        "confirm": "Repeat next week",
+        "chosen": "Next week: repeat last session"
+      },
+      "lighter": {
+        "title": "Lighter week",
+        "description": "About 10% lighter loads and a third fewer sets, to recover.",
+        "confirm": "Start a lighter week",
+        "chosen": "Next week: lighter week"
+      },
+      "until": "Applies to workouts started until {{date}}."
+    },
+    "goals": {
+      "title": "Your goals",
+      "consistency": "Workouts this week: {{done}} of {{target}}",
+      "status": {
+        "met": "Goal met",
+        "missed": "Below goal",
+        "exceeded": "Above goal"
+      },
+      "oneRm": {
+        "reached": "Reached",
+        "onPace": "On pace",
+        "behind": "Behind pace",
+        "stalling": "Stalling",
+        "declining": "Declining",
+        "notEnoughData": "Not enough data yet"
+      },
+      "projected": "Projected {{date}}",
+      "none": "Set a fitness goal to see how each week measures up.",
+      "setGoal": "Set a goal",
+      "lowerTo": "Lower goal to {{count}} a week",
+      "raiseTo": "Raise goal to {{count}} a week"
+    },
+    "reasons": {
+      "noWorkouts": "No workouts this week, so next week picks up where you left off.",
+      "missedConsistency": "You trained far less than your weekly goal; repeating avoids a sudden jump.",
+      "repeatedDeloads": "{{count}} exercises needed a deload on their own this week.",
+      "lowReserveStalled": "Your sets left nothing in reserve and a lift you're tracking has stalled.",
+      "dueForLighter": "It has been {{count}} weeks since a lighter week.",
+      "onTrack": "Training is on track."
     }
   }
 }

@@ -41,13 +41,16 @@ export function useWeeklyReviewStatus() {
       WeeklyReviewService.history(),
     ]);
     const period = weeklyReviewPeriod(new Date(), weekday);
-    const hadWeek = await weekHadActivity(period.start, period.end);
+    const activity = await WeeklyReviewService.weekActivity(period.start, period.end);
+    const hadWeek = hasWeeklyActivity(activity);
     const review = reviews.find(
       (row) => row.periodEnd === period.end && (row.nutritionGoalId ?? null) === (goal?.id ?? null)
     );
-    const reviewed =
-      reviews.some((row) => row.periodEnd === period.end && !!row.trainingReviewedAt) &&
-      (!goal || intuitive || !!review?.nutritionReviewedAt);
+    // Someone who has never finished a workout is not asked to decide on training.
+    const trainingDone =
+      !activity.everWorkout ||
+      reviews.some((row) => row.periodEnd === period.end && !!row.trainingReviewedAt);
+    const reviewed = trainingDone && (!goal || intuitive || !!review?.nutritionReviewedAt);
     setStatus({
       ready: hadWeek && !reviewed,
       reviewed: hadWeek && reviewed,
