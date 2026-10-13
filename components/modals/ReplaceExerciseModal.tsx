@@ -17,6 +17,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { FilterTabs } from '@/components/FilterTabs';
+import { suggestionsBelongOnTab } from '@/components/modals/replaceSuggestionTab';
 import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
@@ -225,7 +226,10 @@ export function ReplaceExerciseModal({
     };
   }, [visible, current, suggestionContext]);
 
-  const showSuggestions = !searchQuery.trim() && suggested.length > 0;
+  const showSuggestions =
+    !searchQuery.trim() &&
+    suggested.length > 0 &&
+    suggestionsBelongOnTab(family, current ? muscleGroupFamily(current.muscleGroup) : null);
   const suggestedIds = useMemo(
     () => new Set(suggested.map((exercise) => exercise.id)),
     [suggested]

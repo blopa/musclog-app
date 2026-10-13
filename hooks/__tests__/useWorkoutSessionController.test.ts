@@ -372,3 +372,14 @@ it('clearValueDrafts drops a swapped exercise’s typed numbers without touching
   expect(WorkoutProgressionService.revertStartAdjustment).not.toHaveBeenCalled();
   hook.unmount();
 });
+
+it('an effort edit stores only the effort, so untouched weight and reps stay re-targetable', async () => {
+  const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  act(() => hook.result.current.edit('s1', { rir: '2' }));
+  act(() => hook.result.current.edit('s1', { partials: '1' }));
+  expect(hook.result.current.drafts.s1).toEqual({ rir: '2', partials: '1' });
+  expect(hook.result.current.drafts.s1.weight).toBeUndefined();
+  expect(hook.result.current.drafts.s1.reps).toBeUndefined();
+  hook.unmount();
+});

@@ -326,6 +326,7 @@
     "currentShort": "Current",
     "savedShort": "Saved",
     "switchWeeklyHint": "Weekly targets stay the same between reviews instead of changing every day.",
+    "endedHint": "This review has ended. Targets can only be changed from the current review.",
     "keepCollecting": "Keep targets while collecting data",
     "keepShort": "Keep current",
     "editShort": "Edit",

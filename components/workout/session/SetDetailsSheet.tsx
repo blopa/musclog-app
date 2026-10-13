@@ -26,7 +26,7 @@ export function SetDetailsSheet({
   editable: boolean;
   canSkip: boolean;
   busy: boolean;
-  onChange: (draft: SessionDraft) => void;
+  onChange: (patch: Partial<SessionDraft>) => void;
   onSkip: () => void;
   onClose: () => void;
 }) {
@@ -38,7 +38,7 @@ export function SetDetailsSheet({
         accessibilityLabel={label}
         value={draft[key] ?? ''}
         editable={editable}
-        onChangeText={(text) => onChange({ ...draft, [key]: text })}
+        onChangeText={(text) => onChange({ [key]: text })}
         integer={key === 'partials'}
         placeholder="–"
       />

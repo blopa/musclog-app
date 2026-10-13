@@ -3,27 +3,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { ProgressionMode } from '@/constants/settings';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { SettingsService } from '@/database/services/SettingsService';
-import { UserMetricService } from '@/database/services/UserMetricService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { WorkoutService } from '@/database/services/WorkoutService';
-import { useActiveGym } from '@/hooks/useActiveGym';
-import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
-import { loadStepFor } from '@/utils/loadIncrement';
-import { parseProgressionRule } from '@/utils/progressionRules';
-import { computeIntraSessionAdjustment } from '@/utils/setAdjustment';
-import { parseSetPrescription } from '@/utils/setPrescription';
 import {
   isPerformedWorkoutSet,
   isResolvedWorkoutSet,
-  isWarmupSet,
-  isWorkingSet,
 } from '@/utils/workoutSetCompletion';
 import {
   getEffectiveOrder,
@@ -82,27 +71,6 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [bodyWeightKg, setBodyWeightKg] = useState(0);
-  const [progressionMode, setProgressionMode] = useState<ProgressionMode>('reps_first');
-  // Re-targeted weights snap to what this gym's bar and plates can make, or — with no gym — to a
-  // whole number in the unit each exercise is shown in.
-  const { gym } = useActiveGym();
-  const { unitsFor } = useExerciseUserSettings();
-
-  useEffect(() => {
-    const loadBodyWeight = async () => {
-      const weight = await UserMetricService.getUserBodyWeightKgForVolume();
-      setBodyWeightKg(weight);
-    };
-
-    const loadProgressionMode = async () => {
-      const mode = await SettingsService.getProgressionMode();
-      setProgressionMode(mode);
-    };
-
-    loadBodyWeight();
-    loadProgressionMode();
-  }, []);
 
   useEffect(() => {
     if (!workoutLogId) {
@@ -183,57 +151,10 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             progressionJson: le.progressionJson,
           }));
 
-          let enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
-
-          // Intra-session RIR adjustment
+          // Between-sets re-targeting is decided and persisted by `WorkoutSessionService.saveSet`
+          // (see `selectRetargets`); the sets are read exactly as stored, never recomputed here.
+          const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
           const currentActive = getFirstUnloggedInEffectiveOrder(enrichedSets);
-          if (currentActive && !parseSetPrescription(currentActive.prescriptionJson)?.established) {
-            const effectiveOrder = getEffectiveOrder(enrichedSets);
-            const currentIdx = effectiveOrder.findIndex((s) => s.id === currentActive.id);
-            if (currentIdx > 0) {
-              const rule = parseProgressionRule(currentActive.progressionJson);
-              const previousWorking = effectiveOrder
-                .slice(0, currentIdx)
-                .filter(
-                  (set) =>
-                    set.logExerciseId === currentActive.logExerciseId &&
-                    isPerformedWorkoutSet(set) &&
-                    isWorkingSet(set)
-                );
-              const lastSet =
-                rule?.type === 'top_set_backoff' ? previousWorking[0] : previousWorking.at(-1);
-              // Re-target a WORKING set from the working set before it. A warm-up is deliberately
-              // light: using it as "the previous set" would drag the next set's load down, and a
-              // planned warm-up has no target reps in reserve to hold in the first place.
-              if (
-                lastSet &&
-                isWorkingSet(lastSet) &&
-                !isWarmupSet(currentActive) &&
-                lastSet.logExerciseId === currentActive.logExerciseId
-              ) {
-                // Adjust current set based on lastSet
-                const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
-                const equipmentType = exercise?.equipmentType;
-                const { weight, reps, adjustment } = computeIntraSessionAdjustment({
-                  previousSet: lastSet,
-                  rule,
-                  previousIsTopSet: rule?.type === 'top_set_backoff',
-                  plannedSet: currentActive,
-                  progressionMode,
-                  isBodyweight: !!equipmentType?.toLowerCase().includes('bodyweight'),
-                  bodyWeightKg,
-                  roundLoad: loadStepFor(equipmentType, gym, unitsFor(lastSet.exerciseId))
-                    .roundLoad,
-                });
-
-                currentActive.weight = weight;
-                currentActive.reps = reps;
-                // A between-sets change supersedes the start explanation (the number came from it);
-                // when nothing changed between sets, the start explanation still holds.
-                currentActive.adjustment = adjustment ?? currentActive.adjustment;
-              }
-            }
-          }
 
           const totalSets = enrichedSets.length;
           const completedSets = enrichedSets.filter(isResolvedWorkoutSet).length;
@@ -324,7 +245,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       });
 
     return () => subscription.unsubscribe();
-  }, [bodyWeightKg, gym, progressionMode, unitsFor, workoutLogId]);
+  }, [workoutLogId]);
 
   const refresh = useCallback(async () => {
     if (!workoutLogId) {

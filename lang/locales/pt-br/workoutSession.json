@@ -326,6 +326,7 @@
     "currentShort": "Atual",
     "savedShort": "Salvo",
     "switchWeeklyHint": "Metas semanais ficam iguais entre revisões em vez de mudar todo dia.",
+    "endedHint": "Esta revisão terminou. As metas só podem ser alteradas na revisão atual.",
     "keepCollecting": "Manter metas enquanto coleta dados",
     "keepShort": "Manter",
     "editShort": "Editar",

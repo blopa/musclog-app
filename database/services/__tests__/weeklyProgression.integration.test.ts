@@ -216,6 +216,34 @@ it('applies tomorrow in one batch, stays stable, resolves history, and deduplica
   expect(JSON.parse(review.acceptedJson!)).toEqual(accepted);
   expect(review.trainingReviewedAt).toBeNull();
 });
+it('refuses to approve an expired review, but still lets it be acknowledged', async () => {
+  const g = await goal();
+  const old = weeklyReviewPeriod(new Date(Date.now() - 21 * 24 * 60 * 60 * 1000));
+  expect(old.next).toBeLessThan(Date.now());
+  await expect(
+    WeeklyReviewService.decide({
+      period: old,
+      goalId: g.id,
+      section: 'nutrition',
+      decision: 'apply',
+      recommendation,
+      accepted,
+    })
+  ).rejects.toThrow('This review has ended');
+  expect(
+    (await database.get<NutritionTargetPeriod>('nutrition_target_periods').query().fetch()).length
+  ).toBe(1);
+  await expect(
+    WeeklyReviewService.decide({
+      period: old,
+      goalId: g.id,
+      section: 'nutrition',
+      decision: 'keep',
+      recommendation,
+      accepted: targets,
+    })
+  ).resolves.toEqual(expect.any(String));
+});
 it('keeps targets without changing their schedule and acknowledges training independently', async () => {
   const g = await goal();
   const period = weeklyReviewPeriod();

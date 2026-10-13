@@ -288,6 +288,8 @@ export class WeeklyReviewService {
     }
     return {
       period,
+      /** Past its next-review date: it can still be acknowledged but no longer approved. */
+      periodEnded: Date.now() >= period.next,
       weekday,
       review,
       reviews,
@@ -525,7 +527,13 @@ export class WeeklyReviewService {
     ) {
       throw new Error('A training decision is required');
     }
-    if (input.section === 'training' && Date.now() >= input.period.next) {
+    // A review shapes the days until the next one is due. Once that has passed, training decisions
+    // and approved targets would describe a week that is no longer the one being lived, so both are
+    // refused; acknowledging ("keep") a past nutrition review changes nothing and stays possible.
+    if (
+      (input.section === 'training' || input.decision === 'apply') &&
+      Date.now() >= input.period.next
+    ) {
       throw new Error('This review has ended; refresh the review');
     }
     if (input.decision === 'apply' && (!input.recommendation?.canApply || !input.accepted)) {

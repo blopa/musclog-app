@@ -5,6 +5,10 @@ export type SetPrescription = {
   /** Original working-set count, retained when a mid-session swap splits the block. */
   workingSetCount?: number;
   plan: { weightKg: number; reps: number };
+  /** The reps in reserve the set carried before a Weekly Review lighter week overwrote them. */
+  planRepsInReserve?: number;
+  /** Working sets a Weekly Review lighter week removed from this block, so undo can bring them back. */
+  droppedSetIds?: string[];
   recommendation: { weightKg: number; reps: number };
   explanation?: StartSetAdjustment;
   intraAdjustment?: SetAdjustment;

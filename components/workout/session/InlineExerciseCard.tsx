@@ -59,7 +59,7 @@ export function InlineExerciseCard({
   onWhy: () => void;
   onRevert: () => void;
   onAction: (action: SessionExerciseAction) => void;
-  onEdit: (setId: string, draft: SessionDraft) => void;
+  onEdit: (setId: string, patch: Partial<SessionDraft>) => void;
   onComplete: (setId: string) => void;
   onSkip: (setId: string) => void;
   /** The table hint is shown once per workout (on the first card), not under every exercise. */

@@ -326,6 +326,7 @@
     "currentShort": "Actual",
     "savedShort": "Guardado",
     "switchWeeklyHint": "Los objetivos semanales se mantienen entre revisiones en lugar de cambiar cada día.",
+    "endedHint": "Esta revisión ha terminado. Los objetivos solo se pueden cambiar desde la revisión actual.",
     "keepCollecting": "Mantener objetivos mientras se reúnen datos",
     "keepShort": "Mantener",
     "editShort": "Editar",

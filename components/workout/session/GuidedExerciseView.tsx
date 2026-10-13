@@ -166,7 +166,7 @@ export function GuidedExerciseView({
   onWhy: () => void;
   onRevert: () => void;
   onAction: (action: SessionExerciseAction) => void;
-  onEdit: (draft: SessionDraft) => void;
+  onEdit: (patch: Partial<SessionDraft>) => void;
   onDetails: () => void;
 }) {
   const { t } = useTranslation();
@@ -286,7 +286,7 @@ export function GuidedExerciseView({
             editable={!done}
             adjusted={weightAdjusted}
             testID={`set-${set.id}-weight`}
-            onChange={(weight) => onEdit({ ...values, weight })}
+            onChange={(weight) => onEdit({ weight })}
           />
           <StepperField
             label={t('workoutSession.reps')}
@@ -296,14 +296,14 @@ export function GuidedExerciseView({
             editable={!done}
             adjusted={repsAdjusted}
             testID={`set-${set.id}-reps`}
-            onChange={(reps) => onEdit({ ...values, reps })}
+            onChange={(reps) => onEdit({ reps })}
           />
         </View>
 
         <RirQuickPick
           value={values.rir}
           disabled={done}
-          onChange={(rir) => onEdit({ ...values, rir })}
+          onChange={(rir) => onEdit({ rir })}
           testID={`set-${set.id}-rir-quick`}
         />
 

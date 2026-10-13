@@ -3403,14 +3403,40 @@ describe('protein without body fat is anchored on bodyweight, not on calories', 
     ).toBe(160);
   });
 
-  it('caps a heavy user at a BMI-25 reference weight for their height', () => {
-    // 25 × 1.80² = 81 kg, so 140 kg asks for 162 g rather than 280 g.
-    expect(proteinReferenceWeightKg(140, { heightCm: 180 })).toBe(81);
-    expect(calculateMacros(2200, 'weight_loss', { weightKg: 140, heightCm: 180 }).protein).toBe(
-      162
+  it('caps a heavy user at a BMI-30 reference weight for their height', () => {
+    // 30 × 1.80² = 97.2 kg, so 140 kg asks for 194 g rather than 280 g.
+    expect(proteinReferenceWeightKg(140, { heightCm: 180 })).toBeCloseTo(97.2, 5);
+    expect(calculateMacros(2600, 'weight_loss', { weightKg: 140, heightCm: 180 }).protein).toBe(
+      194
     );
     // A user below the reference keeps their own weight.
     expect(proteinReferenceWeightKg(60, { heightCm: 180 })).toBe(60);
+  });
+
+  it('does not cut a muscular lifter down to a BMI-25 weight', () => {
+    // 100 kg at 180 cm is BMI 30.9 but not overweight in any useful sense; capping at BMI 25 (81 kg)
+    // would have asked for 146 g instead of the 1.8 g/kg × 97 kg = 175 g the guidance implies.
+    expect(proteinReferenceWeightKg(95, { heightCm: 180 })).toBe(95);
+    expect(calculateMacros(3000, 'hypertrophy', { weightKg: 95, heightCm: 180 }).protein).toBe(171);
+  });
+
+  it('never returns macros that add up to more than the calorie target', () => {
+    // 200 kg × 2.0 g/kg = 400 g = 1600 kcal against a 1500 kcal target.
+    const split = calculateMacros(1500, 'weight_loss', { weightKg: 200, goalWeightKg: 200 });
+
+    expect(split.proteinLimited).toBe(true);
+    expect(split.protein * 4 + split.carbs * 4 + split.fats * 9).toBeLessThanOrEqual(1500 + 12);
+    expect(split.protein).toBe(Math.floor((1500 * 0.75) / 4));
+    expect(split.carbs + split.fats).toBeGreaterThan(0);
+    expect(split.proteinPct + split.carbsPct + split.fatsPct).toBe(100);
+  });
+
+  it('leaves an ordinary target untouched and unflagged', () => {
+    // 53% of calories as protein is high but feasible, and is exactly what a small deficit needs.
+    const split = calculateMacros(1200, 'weight_loss', { weightKg: 80, weightGoal: 'lose' });
+
+    expect(split.protein).toBe(160);
+    expect(split.proteinLimited).toBeUndefined();
   });
 
   it('still uses the FFM target when body fat is opted into', () => {

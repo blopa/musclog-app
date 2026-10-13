@@ -1058,6 +1058,11 @@ export interface MacroSplit {
   proteinPct: number;
   carbsPct: number;
   fatsPct: number;
+  /**
+   * True when the protein anchor would not fit the calorie budget and was reduced to
+   * {@link MAX_PROTEIN_CALORIE_SHARE} of it, so the target is not the g/kg figure the user's weight implies.
+   */
+  proteinLimited?: boolean;
 }
 
 export interface MacroOptions {
@@ -1065,7 +1070,7 @@ export interface MacroOptions {
   weightKg?: number;
   /** Body fat percentage (0–100); required for FFM-based protein calculation. */
   bodyFatPercent?: number;
-  /** Height (cm); caps the bodyweight protein anchor at a BMI-25 reference weight. */
+  /** Height (cm); caps the bodyweight protein anchor at a BMI-30 reference weight. */
   heightCm?: number;
   /** The goal's target weight (kg); when set it anchors bodyweight-based protein instead. */
   goalWeightKg?: number;
@@ -1100,12 +1105,19 @@ export const PROTEIN_G_PER_KG_BODYWEIGHT: Record<FitnessGoal, number> = {
 };
 /** Any goal eating in a deficit gets at least this. */
 export const PROTEIN_G_PER_KG_BODYWEIGHT_IN_DEFICIT = 2.0;
-/** The BMI the bodyweight anchor is capped at, so 140 kg does not ask for 280 g of protein. */
-const PROTEIN_REFERENCE_BMI = 25;
+/**
+ * The BMI the bodyweight anchor is capped at, so 140 kg does not ask for 280 g of protein. It is the
+ * obesity threshold rather than the overweight one: without body fat on file BMI cannot tell a
+ * muscular lifter from an obese one, and ISSN's recommendations are per kg of bodyweight, so only a
+ * weight no lean build reaches is treated as carrying non-protein-demanding mass.
+ */
+const PROTEIN_REFERENCE_BMI = 30;
+/** The most of a calorie budget protein may take; the rest stays for fat and carbs. */
+export const MAX_PROTEIN_CALORIE_SHARE = 0.75;
 
 /**
  * The weight bodyweight-based protein is computed from: the goal weight when one is set, otherwise
- * the current weight capped at a BMI-25 reference weight for the user's height.
+ * the current weight capped at a BMI-30 reference weight for the user's height.
  */
 export function proteinReferenceWeightKg(
   weightKg: number,
@@ -1182,6 +1194,15 @@ function splitAroundProtein(
   carbsShare: number,
   fatsShare: number
 ): MacroSplit {
+  // Protein is fixed, so a budget too small for it would otherwise yield macros that add up to more
+  // than the target (400 g protein in 1500 kcal, with zero carbs and fat). Cap it and say so.
+  const proteinLimit = Math.floor(
+    (targetCalories * MAX_PROTEIN_CALORIE_SHARE) / CALORIES_FOR_PROTEIN
+  );
+  const proteinLimited = protein > proteinLimit;
+  if (proteinLimited) {
+    protein = Math.max(0, proteinLimit);
+  }
   const remaining = Math.max(0, targetCalories - protein * CALORIES_FOR_PROTEIN);
   const carbsFatSum = carbsShare + fatsShare;
   const carbs = Math.round((remaining * (carbsShare / carbsFatSum)) / CALORIES_FOR_CARBS);
@@ -1196,6 +1217,7 @@ function splitAroundProtein(
     proteinPct,
     carbsPct,
     fatsPct: Math.max(0, 100 - proteinPct - carbsPct),
+    ...(proteinLimited ? { proteinLimited } : {}),
   };
 }
 

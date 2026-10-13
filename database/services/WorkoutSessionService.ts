@@ -6,6 +6,7 @@ import type Exercise from '@/database/models/Exercise';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { selectRetargets } from '@/utils/intraSessionRetarget';
 import { loadStepFor } from '@/utils/loadIncrement';
 import { parseProgressionRule } from '@/utils/progressionRules';
 import { computeIntraSessionAdjustment, parseStartAdjustment } from '@/utils/setAdjustment';
@@ -13,8 +14,6 @@ import { writeSetEffort } from '@/utils/setEffort';
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
 import {
   assertValidWorkoutSetDifficultyLevel,
-  isPerformedWorkoutSet,
-  isPlannedWorkoutSet,
   isWarmupSet,
   type WorkoutSetCompletionStatus,
 } from '@/utils/workoutSetCompletion';
@@ -68,9 +67,10 @@ export class WorkoutSessionService {
     if (values?.difficultyLevel != null) {
       assertValidWorkoutSetDifficultyLevel(values.difficultyLevel);
     }
-    const [gym, mode, bodyWeightKg] = await Promise.all([
+    const [gym, mode, autonomy, bodyWeightKg] = await Promise.all([
       GymService.getActiveGym().catch(() => null),
       SettingsService.getProgressionMode(),
+      SettingsService.getWorkoutAutonomy(),
       UserMetricService.getUserBodyWeightKgForVolume(),
     ]);
     const unitsFor = await ExerciseUserSettingsService.getWeightUnitsResolver(gym);
@@ -124,44 +124,34 @@ export class WorkoutSessionService {
             record.updatedAt = Date.now();
           }),
         ];
-        if (status === 'performed' && !isWarmupSet(set)) {
-          const unfinished = siblings.filter(
-            (row) => row.id !== set.id && row.setOrder > set.setOrder && isPlannedWorkoutSet(row)
+        const retarget = selectRetargets({ set, status, siblings, rule, autonomy });
+        for (const target of retarget?.targets ?? []) {
+          const adjusted = computeIntraSessionAdjustment({
+            previousSet: retarget!.previous,
+            plannedSet: target,
+            rule,
+            previousIsTopSet: retarget!.previousIsTopSet,
+            progressionMode: mode,
+            isBodyweight: exercise.equipmentType === 'bodyweight',
+            bodyWeightKg,
+            roundLoad: loadStepFor(exercise.equipmentType, gym, unitsFor(exercise.id)).roundLoad,
+          });
+          const original = parseSetPrescription(target.prescriptionJson) ?? {
+            plan: { weightKg: target.weight, reps: target.reps },
+            recommendation: { weightKg: target.weight, reps: target.reps },
+          };
+          operations.push(
+            target.prepareUpdate((record) => {
+              record.weight = adjusted.weight;
+              record.reps = adjusted.reps;
+              record.prescriptionJson = serializeSetPrescription({
+                ...original,
+                established: true,
+                intraAdjustment: adjusted.adjustment ?? undefined,
+              });
+              record.updatedAt = Date.now();
+            })
           );
-          const top = siblings[0];
-          const useTop = rule?.type === 'top_set_backoff' && isPerformedWorkoutSet(top);
-          const targets = useTop ? unfinished : unfinished.slice(0, 1);
-          for (const target of targets) {
-            if (parseSetPrescription(target.prescriptionJson)?.override) {
-              continue;
-            }
-            const adjusted = computeIntraSessionAdjustment({
-              previousSet: useTop ? top : set,
-              plannedSet: target,
-              rule,
-              previousIsTopSet: useTop,
-              progressionMode: mode,
-              isBodyweight: exercise.equipmentType === 'bodyweight',
-              bodyWeightKg,
-              roundLoad: loadStepFor(exercise.equipmentType, gym, unitsFor(exercise.id)).roundLoad,
-            });
-            const original = parseSetPrescription(target.prescriptionJson) ?? {
-              plan: { weightKg: target.weight, reps: target.reps },
-              recommendation: { weightKg: target.weight, reps: target.reps },
-            };
-            operations.push(
-              target.prepareUpdate((record) => {
-                record.weight = adjusted.weight;
-                record.reps = adjusted.reps;
-                record.prescriptionJson = serializeSetPrescription({
-                  ...original,
-                  established: true,
-                  intraAdjustment: adjusted.adjustment ?? undefined,
-                });
-                record.updatedAt = Date.now();
-              })
-            );
-          }
         }
         return operations;
       });

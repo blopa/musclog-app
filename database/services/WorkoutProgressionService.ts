@@ -268,12 +268,17 @@ export class WorkoutProgressionService {
             }
             const change = changes.get(set.id);
             const original = { weightKg: set.weight, reps: set.reps };
+            const originalRir = set.repsInReserve;
             operations.push(
               set.prepareUpdate((record) => {
                 record.prescriptionJson = serializeSetPrescription({
                   established: true,
                   workingSetCount: plan.workingSetCount,
                   plan: original,
+                  // A lighter week overwrites the reps in reserve and drops sets; keep what undo
+                  // needs to put the whole plan back.
+                  ...(change?.repsInReserve != null ? { planRepsInReserve: originalRir } : {}),
+                  ...(plan.dropSetIds.length ? { droppedSetIds: plan.dropSetIds } : {}),
                   recommendation: change?.adjustment?.now ?? original,
                   explanation: change?.adjustment ?? undefined,
                   previous: counterpartAt(lastSets, setIndex),
@@ -374,12 +379,22 @@ export class WorkoutProgressionService {
 
   static async revertStartAdjustment(logExerciseId: string): Promise<number> {
     return database.write(async () => {
-      const sets = await database
+      // Soft-deleted sets are read too: a lighter week removes trailing sets, and undo brings back
+      // exactly the ones it recorded (never a set the user deleted themselves).
+      const rows = await database
         .get<WorkoutLogSet>('workout_log_sets')
-        .query(Q.where('log_exercise_id', logExerciseId), Q.where('deleted_at', Q.eq(null)))
+        .query(Q.where('log_exercise_id', logExerciseId))
         .fetch();
+      const sets = rows.filter((set) => !set.deletedAt);
+      const droppedIds = new Set(
+        sets.flatMap((set) => parseSetPrescription(set.prescriptionJson)?.droppedSetIds ?? [])
+      );
+      const dropped = rows.filter(
+        (set) => !!set.deletedAt && droppedIds.has(set.id) && isPlannedWorkoutSet(set)
+      );
       const operations: Model[] = [];
-      await commitPrepared(database, sets, () => {
+      await commitPrepared(database, [...sets, ...dropped], () => {
+        const now = Date.now();
         for (const set of sets) {
           if (!isPlannedWorkoutSet(set)) {
             continue;
@@ -390,21 +405,36 @@ export class WorkoutProgressionService {
             continue;
           }
           const target = prescription?.plan ?? revertTargetFor(adjustment!);
+          const { planRepsInReserve, droppedSetIds, ...rest } = prescription ?? {
+            plan: adjustment!.plan,
+            recommendation: adjustment!.now,
+            explanation: adjustment!,
+          };
           operations.push(
             set.prepareUpdate((record) => {
               record.weight = target.weightKg;
               record.reps = target.reps;
+              if (planRepsInReserve != null) {
+                record.repsInReserve = planRepsInReserve;
+              }
               record.adjustmentJson = undefined;
               record.prescriptionJson = serializeSetPrescription({
-                ...(prescription ?? {
-                  plan: adjustment!.plan,
-                  recommendation: adjustment!.now,
-                  explanation: adjustment!,
-                }),
+                ...rest,
+                ...(droppedSetIds?.length && rest.workingSetCount
+                  ? { workingSetCount: rest.workingSetCount + droppedSetIds.length }
+                  : {}),
                 established: true,
                 override: 'plan',
               });
-              record.updatedAt = Date.now();
+              record.updatedAt = now;
+            })
+          );
+        }
+        for (const set of dropped) {
+          operations.push(
+            set.prepareUpdate((record) => {
+              record.deletedAt = undefined;
+              record.updatedAt = now;
             })
           );
         }

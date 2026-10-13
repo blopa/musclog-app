@@ -225,6 +225,21 @@ export function NutritionReviewSection({
         />
       </View>
     );
+  } else if (data.periodEnded) {
+    // A past review can be acknowledged but never approved: its targets describe a week that is no
+    // longer the one being lived, and approving would replace tomorrow's targets with them.
+    decision = (
+      <View className="gap-3">
+        <Text className="text-sm text-text-secondary">{t('weeklyReview.endedHint')}</Text>
+        <Button
+          label={t('weeklyReview.keep')}
+          variant="outline"
+          width="full"
+          disabled={busy}
+          onPress={onKeep}
+        />
+      </View>
+    );
   } else if (!recommendation?.canApply) {
     const { foodDay, weightDay } = data.gaps;
     decision = (

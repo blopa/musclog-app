@@ -73,7 +73,7 @@ export function InlineSetRow({
   units: Units;
   isCurrent: boolean;
   busy: boolean;
-  onEdit: (draft: SessionDraft) => void;
+  onEdit: (patch: Partial<SessionDraft>) => void;
   onComplete: () => void;
   onSkip: () => void;
 }) {
@@ -118,7 +118,7 @@ export function InlineSetRow({
       value={skipped ? '' : (values[field] ?? '')}
       placeholder={skipped ? '–' : undefined}
       editable={editable}
-      onChangeText={(text) => onEdit({ ...values, [field]: text })}
+      onChangeText={(text) => onEdit({ [field]: text })}
       integer={field === 'reps'}
       marked={marked(field)}
       surface={!done}
@@ -202,7 +202,7 @@ export function InlineSetRow({
         <View className="gap-1 px-1 pb-2 pt-1">
           <RirQuickPick
             value={values.rir}
-            onChange={(rir) => onEdit({ ...values, rir })}
+            onChange={(rir) => onEdit({ rir })}
             testID={`set-${set.id}-rir-quick`}
           />
           {/* Skipping is a decision the lifter makes in the middle of a set, not a detail. */}

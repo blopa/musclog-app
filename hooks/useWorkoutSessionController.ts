@@ -159,8 +159,13 @@ export function useWorkoutSessionController(
     setDrafts(next);
     persist(next);
   };
-  const edit = (id: string, draft: SessionDraft) => {
-    const next = { ...draftsRef.current, [id]: draft };
+  /**
+   * Records what the user typed. `patch` carries ONLY the fields they changed: the draft is merged
+   * over whatever was already typed, never over the displayed values, because a weight or reps
+   * entry marks the number as the user's own and stops the app re-targeting it.
+   */
+  const edit = (id: string, patch: Partial<SessionDraft>) => {
+    const next = { ...draftsRef.current, [id]: { ...draftsRef.current[id], ...patch } };
     draftsRef.current = next;
     setDrafts(next);
     if (persistTimer.current) {

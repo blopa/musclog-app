@@ -526,6 +526,41 @@ describe('WorkoutProgressionService', () => {
         expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
       });
 
+      it('undo restores the whole plan: dropped sets, loads and the planned reps in reserve', async () => {
+        const sets = four().map((set) => Object.assign(set, { repsInReserve: 1 }));
+        installHistory({ sets, previousSets: lastSession(62, 1) });
+        installWeek('lighter');
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+        expect(sets.filter((set) => !set.deletedAt)).toHaveLength(3);
+
+        await WorkoutProgressionService.revertStartAdjustment('le-bench');
+
+        expect(sets.every((set) => !set.deletedAt)).toBe(true);
+        for (const set of sets) {
+          expect(set).toMatchObject({ weight: 60, reps: 8, repsInReserve: 1 });
+        }
+        // The block is a four-set plan again, not a three-set one.
+        expect(JSON.parse(sets[0].prescriptionJson)).toMatchObject({
+          workingSetCount: 4,
+          override: 'plan',
+        });
+        expect(JSON.parse(sets[0].prescriptionJson).droppedSetIds).toBeUndefined();
+      });
+
+      it('undo does not resurrect a set the user deleted themselves', async () => {
+        const sets = four();
+        installHistory({ sets, previousSets: lastSession(62, 1) });
+        installWeek('lighter');
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+        const deletedByUser = planned('user-deleted', { setOrder: 5, deletedAt: 123 });
+        sets.push(deletedByUser);
+
+        await WorkoutProgressionService.revertStartAdjustment('le-bench');
+
+        expect(deletedByUser.deletedAt).toBe(123);
+        expect(sets[3].deletedAt).toBeUndefined();
+      });
+
       it('applies in manual mode, because the user chose it', async () => {
         jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('manual');
         const sets = four();
