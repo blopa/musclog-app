@@ -1494,6 +1494,57 @@ describe('WorkoutTemplateService', () => {
     });
   });
 
+  describe('getArchivedTemplatesWithMetadata', () => {
+    it('counts exercises and finds the latest completion with one query per table', async () => {
+      const day = 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const rowsByTable: Record<string, any[]> = {
+        workout_template_exercises: [
+          createMockWorkoutTemplateExercise({ id: 'te-1', templateId: 't1' }),
+          createMockWorkoutTemplateExercise({ id: 'te-2', templateId: 't1' }),
+          createMockWorkoutTemplateExercise({ id: 'te-3', templateId: 't2' }),
+        ],
+        workout_logs: [
+          createMockWorkoutLog({ id: 'l1', templateId: 't1', completedAt: now - 5 * day }),
+          createMockWorkoutLog({ id: 'l2', templateId: 't1', completedAt: now - 2 * day }),
+          createMockWorkoutLog({ id: 'l3', templateId: 't1', completedAt: undefined }),
+        ],
+      };
+      const queried: string[] = [];
+      mockDatabase.get.mockImplementation(((table: string) => ({
+        query: jest.fn(() => {
+          queried.push(table);
+          return { fetch: jest.fn().mockResolvedValue(rowsByTable[table] ?? []) };
+        }),
+      })) as any);
+      (mockWorkoutTemplateRepository as any).getArchived = jest.fn().mockReturnValue({
+        fetch: jest
+          .fn()
+          .mockResolvedValue([
+            createMockWorkoutTemplate({ id: 't1', name: 'One' }),
+            createMockWorkoutTemplate({ id: 't2', name: 'Two' }),
+          ]),
+      });
+
+      const result = await WorkoutTemplateService.getArchivedTemplatesWithMetadata();
+
+      expect(queried.sort()).toEqual(['workout_logs', 'workout_template_exercises']);
+      expect(result).toMatchObject([
+        { id: 't1', exerciseCount: 2, lastCompletedTimestamp: now - 2 * day },
+        { id: 't2', exerciseCount: 1, lastCompleted: undefined, lastCompletedTimestamp: undefined },
+      ]);
+    });
+
+    it('returns an empty list without querying when nothing is archived', async () => {
+      (mockWorkoutTemplateRepository as any).getArchived = jest
+        .fn()
+        .mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) });
+
+      await expect(WorkoutTemplateService.getArchivedTemplatesWithMetadata()).resolves.toEqual([]);
+      expect(mockDatabase.get).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getAllTemplatesWithMetadata', () => {
     it('should return templates with exercise counts', async () => {
       const template = createMockWorkoutTemplate({

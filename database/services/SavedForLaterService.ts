@@ -6,6 +6,7 @@ import { encryptOptionalString } from '@/database/encryptionHelpers';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import SavedForLaterGroup from '@/database/models/SavedForLaterGroup';
 import SavedForLaterItem from '@/database/models/SavedForLaterItem';
+import { fetchByIds } from '@/database/queryByIds';
 import { consumedDateTimeOnDay } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { widgetEvents } from '@/utils/widgetEvents';
@@ -160,6 +161,34 @@ export class SavedForLaterService {
       }
       throw error;
     }
+  }
+
+  /**
+   * Get every saved group together with its live items, in one items query
+   * (instead of one `group.items.fetch()` per group).
+   */
+  static async getAllGroupsWithItems(): Promise<
+    { group: SavedForLaterGroup; items: SavedForLaterItem[] }[]
+  > {
+    const groups = await this.getAllGroups();
+    const items = await fetchByIds<SavedForLaterItem>(
+      'saved_for_later_items',
+      'group_id',
+      groups.map((group) => group.id),
+      Q.where('deleted_at', Q.eq(null))
+    );
+
+    const itemsByGroupId = new Map<string, SavedForLaterItem[]>();
+    for (const item of items) {
+      const groupItems = itemsByGroupId.get(item.groupId);
+      if (groupItems) {
+        groupItems.push(item);
+      } else {
+        itemsByGroupId.set(item.groupId, [item]);
+      }
+    }
+
+    return groups.map((group) => ({ group, items: itemsByGroupId.get(group.id) ?? [] }));
   }
 
   /**

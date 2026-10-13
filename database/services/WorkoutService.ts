@@ -1348,17 +1348,19 @@ export class WorkoutService {
         .query(Q.where('workout_log_id', id), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
+      const sets = await fetchByIds<WorkoutLogSet>(
+        'workout_log_sets',
+        'log_exercise_id',
+        logExercises.map((logExercise) => logExercise.id),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+      for (const set of sets) {
+        deletedSetIds.push(set.id);
+        await writer.callWriter(() => set.markAsDeleted());
+      }
+
       for (const logExercise of logExercises) {
-        const sets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
-          .query(Q.where('log_exercise_id', logExercise.id), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
-
-        for (const set of sets) {
-          deletedSetIds.push(set.id);
-          await writer.callWriter(() => set.markAsDeleted());
-        }
-
         await writer.callWriter(() => logExercise.markAsDeleted());
       }
     });
@@ -1391,18 +1393,23 @@ export class WorkoutService {
 
       // Create new workout log with "(Copy)" suffix
       const operations: Model[] = [];
-      const setsByExercise = await Promise.all(
-        originalLogExercises.map((row) =>
-          database
-            .get<WorkoutLogSet>('workout_log_sets')
-            .query(
-              Q.where('log_exercise_id', row.id),
-              Q.where('deleted_at', Q.eq(null)),
-              Q.sortBy('set_order', Q.asc)
-            )
-            .fetch()
-        )
+      const originalSets = await fetchByIds<WorkoutLogSet>(
+        'workout_log_sets',
+        'log_exercise_id',
+        originalLogExercises.map((row) => row.id),
+        Q.where('deleted_at', Q.eq(null))
       );
+      // fetchByIds chunks its queries, so order across the whole result here.
+      originalSets.sort((a, b) => a.setOrder - b.setOrder);
+      const setsByLogExerciseId = new Map<string, WorkoutLogSet[]>();
+      for (const originalSet of originalSets) {
+        const sets = setsByLogExerciseId.get(originalSet.logExerciseId);
+        if (sets) {
+          sets.push(originalSet);
+        } else {
+          setsByLogExerciseId.set(originalSet.logExerciseId, [originalSet]);
+        }
+      }
       const newLog = database.get<WorkoutLog>('workout_logs').prepareCreate((log) => {
         log.templateId = originalLog.templateId;
         log.workoutName = `${originalLog.workoutName} (Copy)`;
@@ -1436,9 +1443,8 @@ export class WorkoutService {
           });
 
         operations.push(newLogExercise);
-        const originalSets = setsByExercise[originalLogExercises.indexOf(originalLogExercise)];
 
-        for (const originalSet of originalSets) {
+        for (const originalSet of setsByLogExerciseId.get(originalLogExercise.id) ?? []) {
           operations.push(
             database.get<WorkoutLogSet>('workout_log_sets').prepareCreate((set) => {
               set.logExerciseId = newLogExercise.id;

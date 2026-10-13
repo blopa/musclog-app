@@ -1,4 +1,9 @@
-import { calculateCaloriesBurnedBySteps, calculateSessionVolumeFromSets, calculateSetVolume } from '@/utils/workoutCalculator';
+import {
+  calculateCaloriesBurnedBySteps,
+  calculateExerciseVolume,
+  calculateSessionVolumeFromSets,
+  calculateSetVolume,
+} from '@/utils/workoutCalculator';
 
 describe('calculateSetVolume', () => {
   it('calculates volume correctly for normal weight with no equipment', () => {
@@ -24,6 +29,57 @@ describe('calculateSetVolume', () => {
 
   it('treats a zero bodyWeightKg as no added bodyweight', () => {
     expect(calculateSetVolume(100, 10, 0, 'bodyweight', 0)).toBeCloseTo(128.26, 2);
+  });
+});
+
+describe('calculateExerciseVolume', () => {
+  it('returns 0 for an exercise with no sets', () => {
+    expect(calculateExerciseVolume([], { equipmentType: 'barbell' }, 80)).toBe(0);
+  });
+
+  it("sums the per-set volumes, honouring each set's reps in reserve", () => {
+    const sets = [
+      { weight: 100, reps: 10, repsInReserve: 0 },
+      { weight: 100, reps: 10, repsInReserve: 2 },
+    ];
+
+    // 128.26 + 134.4, the same per-set values pinned in the calculateSetVolume tests.
+    expect(calculateExerciseVolume(sets, { equipmentType: 'barbell' }, 80)).toBeCloseTo(262.66, 2);
+  });
+
+  it('adds bodyweight to every set of a bodyweight exercise', () => {
+    const sets = [
+      { weight: 20, reps: 10, repsInReserve: 0 },
+      { weight: 20, reps: 10, repsInReserve: 0 },
+    ];
+
+    // 20 kg + 80 kg bodyweight = 100 kg per set.
+    expect(calculateExerciseVolume(sets, { equipmentType: 'bodyweight' }, 80)).toBeCloseTo(
+      256.52,
+      2
+    );
+  });
+
+  it('does not add bodyweight for other equipment, or when it is unknown', () => {
+    const sets = [{ weight: 100, reps: 10, repsInReserve: 0 }];
+
+    expect(calculateExerciseVolume(sets, { equipmentType: 'machine' }, 80)).toBeCloseTo(128.26, 2);
+    expect(calculateExerciseVolume(sets, { equipmentType: 'bodyweight' }, 0)).toBeCloseTo(
+      128.26,
+      2
+    );
+  });
+
+  it('treats a missing repsInReserve as 0', () => {
+    expect(
+      calculateExerciseVolume([{ weight: 100, reps: 10 }], { equipmentType: 'barbell' }, 80)
+    ).toBe(
+      calculateExerciseVolume(
+        [{ weight: 100, reps: 10, repsInReserve: 0 }],
+        { equipmentType: 'barbell' },
+        80
+      )
+    );
   });
 });
 

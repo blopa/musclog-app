@@ -15,6 +15,7 @@ import type WorkoutPlan from '@/database/models/WorkoutPlan';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
+import { fetchByIds } from '@/database/queryByIds';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
@@ -1242,44 +1243,52 @@ export class WorkoutTemplateService {
   > {
     const templates = await WorkoutTemplateRepository.getArchived().fetch();
 
-    const templatesWithMetadata = await Promise.all(
-      templates.map(async (template) => {
-        const templateExercises = await database
-          .get<WorkoutTemplateExercise>('workout_template_exercises')
-          .query(Q.where('template_id', template.id), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
+    const templateIds = templates.map((template) => template.id);
+    const liveOnly = Q.where('deleted_at', Q.eq(null));
+    const [templateExercises, workoutLogs] = await Promise.all([
+      fetchByIds<WorkoutTemplateExercise>(
+        'workout_template_exercises',
+        'template_id',
+        templateIds,
+        liveOnly
+      ),
+      fetchByIds<WorkoutLog>('workout_logs', 'template_id', templateIds, liveOnly),
+    ]);
 
-        const exerciseCount = templateExercises.length;
+    const exerciseCountByTemplateId = new Map<string, number>();
+    for (const exercise of templateExercises) {
+      exerciseCountByTemplateId.set(
+        exercise.templateId,
+        (exerciseCountByTemplateId.get(exercise.templateId) ?? 0) + 1
+      );
+    }
 
-        const workoutLogs = await database
-          .get<WorkoutLog>('workout_logs')
-          .query(
-            Q.where('template_id', template.id),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('completed_at', Q.desc)
-          )
-          .fetch();
+    const lastCompletedAtByTemplateId = new Map<string, number>();
+    for (const { templateId, completedAt } of workoutLogs) {
+      if (
+        templateId &&
+        completedAt &&
+        completedAt > (lastCompletedAtByTemplateId.get(templateId) ?? 0)
+      ) {
+        lastCompletedAtByTemplateId.set(templateId, completedAt);
+      }
+    }
 
-        const lastWorkoutLog = workoutLogs[0];
+    const templatesWithMetadata = templates.map((template) => {
+      const lastCompletedTimestamp = lastCompletedAtByTemplateId.get(template.id);
 
-        let lastCompleted: string | undefined;
-        let lastCompletedTimestamp: number | undefined;
-
-        if (lastWorkoutLog?.completedAt) {
-          lastCompletedTimestamp = lastWorkoutLog.completedAt;
-          lastCompleted = this.formatRelativeDate(lastCompletedTimestamp);
-        }
-
-        return {
-          id: template.id,
-          name: template.name,
-          description: template.description,
-          exerciseCount,
-          lastCompleted,
-          lastCompletedTimestamp,
-        };
-      })
-    );
+      return {
+        id: template.id,
+        name: template.name,
+        description: template.description,
+        exerciseCount: exerciseCountByTemplateId.get(template.id) ?? 0,
+        lastCompleted:
+          lastCompletedTimestamp === undefined
+            ? undefined
+            : this.formatRelativeDate(lastCompletedTimestamp),
+        lastCompletedTimestamp,
+      };
+    });
 
     return templatesWithMetadata;
   }

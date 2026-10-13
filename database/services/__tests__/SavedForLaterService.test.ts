@@ -3,6 +3,7 @@ import { Q } from '@nozbe/watermelondb';
 import { database } from '@/database';
 import { decryptOptionalString } from '@/database/encryptionHelpers';
 import type NutritionLog from '@/database/models/NutritionLog';
+import { fetchByIds } from '@/database/queryByIds';
 import { SavedForLaterService } from '@/database/services/SavedForLaterService';
 import { utcDayKeyFromLocalDate, utcNormalizedDayKey } from '@/utils/calendarDate';
 import { widgetEvents } from '@/utils/widgetEvents';
@@ -24,6 +25,8 @@ jest.mock('@/database', () => ({
     batch: jest.fn(async () => undefined),
   },
 }));
+
+jest.mock('@/database/queryByIds', () => ({ fetchByIds: jest.fn() }));
 
 jest.mock('@/utils/widgetEvents', () => ({
   widgetEvents: { emitNutritionWidgetUpdate: jest.fn() },
@@ -349,6 +352,28 @@ describe('SavedForLaterService', () => {
       expect(map.saved_for_later_items.queryClauses[0]).toEqual([
         { field: 'group_id', condition: 'group-1' },
         { field: 'deleted_at', condition: IS_NULL },
+      ]);
+    });
+
+    it('loads every group with its live items in one items query', async () => {
+      const groupA = stubGroup({ id: 'g-a' });
+      const groupB = stubGroup({ id: 'g-b' });
+      wireDatabase({ saved_for_later_groups: makeCollection('g', { rows: [groupA, groupB] }) });
+      (fetchByIds as jest.Mock).mockResolvedValue([
+        stubItem({ id: 'i1', groupId: 'g-a' }),
+        stubItem({ id: 'i2', groupId: 'g-a' }),
+      ]);
+
+      const result = await SavedForLaterService.getAllGroupsWithItems();
+
+      expect(fetchByIds).toHaveBeenCalledTimes(1);
+      expect(fetchByIds).toHaveBeenCalledWith('saved_for_later_items', 'group_id', ['g-a', 'g-b'], {
+        field: 'deleted_at',
+        condition: IS_NULL,
+      });
+      expect(result.map(({ group, items }) => [group.id, items.map((item) => item.id)])).toEqual([
+        ['g-a', ['i1', 'i2']],
+        ['g-b', []],
       ]);
     });
 

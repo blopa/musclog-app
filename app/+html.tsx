@@ -1,6 +1,8 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
+import { qrCodeSvgData } from '@/components/website/qrCodeSvg';
+import { GOOGLE_PLAY_URL } from '@/components/website/storeLinks';
 import enUsWebsite from '@/lang/locales/en-us/website.json';
 import esEsWebsite from '@/lang/locales/es-es/website.json';
 import nlNlWebsite from '@/lang/locales/nl-nl/website.json';
@@ -20,7 +22,8 @@ import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
  * symlink mirror so `/musclog-app/images/...` resolves correctly.
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
-const GOOGLE_PLAY_QR_CODE = '/images/download-qrcode.png';
+// Rendered at static-export time, so the code can never drift from the store URL.
+const googlePlayQr = qrCodeSvgData(GOOGLE_PLAY_URL);
 const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
 type LandingCopy = {
@@ -336,13 +339,16 @@ export default function Root({ children }: PropsWithChildren) {
             <span className="expo-web-landing-qrcode-title" data-landing-i18n="qrcode_title">
               Download the App
             </span>
-            <img
-              // TODO: instead generate the QRCode programatically
-              src={withExpoBaseUrl(GOOGLE_PLAY_QR_CODE)}
-              alt="Google Play Store QR Code"
+            <svg
+              viewBox={`0 0 ${googlePlayQr.size} ${googlePlayQr.size}`}
+              role="img"
+              aria-label="Google Play Store QR Code"
               className="expo-web-landing-qrcode-image"
-              draggable={false}
-            />
+              fill="#000"
+              shapeRendering="crispEdges"
+            >
+              <path d={googlePlayQr.path} />
+            </svg>
             <span className="expo-web-landing-qrcode-text" data-landing-i18n="qrcode_text">
               Scan to download for Android
             </span>
