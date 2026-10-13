@@ -74,6 +74,14 @@ const THEMED_FILES = [
 const RAW_TEXT_INPUT = /import\s*\{[^}]*\bTextInput\b[^}]*\}\s*from\s*'react-native'/;
 
 describe('theme controls', () => {
+  it('pairs segmented labels with the ink for their actual background', () => {
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source).toContain('colors={theme.colors.gradients.cta}');
+    expect(source).toContain('text-center text-xs font-bold text-text-on-accent');
+    expect(source).toContain("isSelected ? 'text-text-primary' : 'text-text-secondary'");
+    expect(source).not.toContain('text-text-tertiary');
+  });
+
   it.each(THEMED_FILES)('%s builds its controls from components/theme', (path) => {
     const source = code(path);
     expect(source).not.toContain('<Pressable');

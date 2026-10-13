@@ -187,6 +187,9 @@ clipped by the parent; see `FIXES.md`.
 - Primary: emerald or the approved emerald-to-teal gradient, with high-contrast text. The
   `gradientCta` button variant draws `gradients.cta`, which is that emerald-to-teal gradient (the
   same stops as `gradients.accent`); it was indigo-to-green, which this rule does not allow.
+  Both gradients keep `text.onAccent` at least 4.5:1 across their sweep: the token generator
+  blends an unsafe deep stop towards the vivid stop. Segmented controls use this same gradient
+  with `text.onAccent` for the selected label and `text.secondary` for unselected options.
 - One primary action per screen. When a screen has a hero (the Workouts screen's Today card), the
   cards below it use their standard, secondary treatment rather than a second filled button.
 - Secondary: low-emphasis surface or outline treatment.

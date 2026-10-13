@@ -139,7 +139,7 @@ export function SegmentedControl({
                 {renderIcon(option, isSelected)}
                 <Text
                   className={`text-center ${variant === 'gradient' ? 'text-xs' : 'text-sm'} font-bold ${
-                    isSelected ? 'text-text-primary' : 'text-text-tertiary'
+                    isSelected ? 'text-text-primary' : 'text-text-secondary'
                   }`}
                 >
                   {option.label}

@@ -68,6 +68,18 @@ function contrastRatio(hexA, hexB) {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
+/** Keep accent ink readable across the sweep, moving only an unsafe end towards the start. */
+function readableAccentEnd(palette) {
+  for (let percent = 0; percent <= 100; percent += 1) {
+    const end = mixHex(palette.brandDeep, palette.brandVivid, percent / 100);
+    if (contrastRatio(end, palette.inkOnAccent) >= 4.5) {
+      return end;
+    }
+  }
+
+  return palette.brandVivid;
+}
+
 /**
  * Expand a palette into the full flat colour set: the primaries plus every
  * translucent wash, scrim and tinted surface derived from them.
@@ -87,6 +99,7 @@ function createColors(palette) {
 
   return {
     ...palette,
+    accentGradientEnd: readableAccentEnd(palette),
 
     // --- Scrims, backdrops and overlays. Derived from `scrimBase`, which is dark
     // in every theme: a backdrop's job is to darken what is behind it. ---
@@ -512,14 +525,14 @@ function createThemeColors(colors) {
     // Gradient colors — every entry has a live consumer; utils/__tests__/themeSelection.test.ts
     // asserts the retired tokens below stay gone.
     gradients: {
-      accent: [colors.brandVivid, colors.brandDeep],
+      accent: [colors.brandVivid, colors.accentGradientEnd],
       button: [colors.surfaceTint, colors.surfaceCard],
       progress: [colors.statusIndigo, colors.brandDeep, colors.brandVivid],
       colorfulCard: [colors.colorfulCardStart, colors.colorfulCardMiddle, colors.colorfulCardEnd],
       workoutsTitle: [colors.statusPurple, colors.statusInfo, colors.brandVivid],
       // DESIGN.md: a primary action is emerald or the approved emerald-to-teal gradient. It was
       // indigo-to-green, which DESIGN.md does not allow, so it now uses the accent stops.
-      cta: [colors.brandVivid, colors.brandDeep],
+      cta: [colors.brandVivid, colors.accentGradientEnd],
       userBubble: [colors.brandPrimary, colors.brandVivid], // User message bubble gradient
       // GradientText: these stops ARE the text colour, so every stop stays on the
       // readable side of the theme's ground (>= 3:1 as large display type).
