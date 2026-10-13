@@ -61,6 +61,7 @@ export function useSessionExerciseActions({
     if (!logExerciseId) {
       return false;
     }
+
     try {
       setIsSaving(true);
       await work(logExerciseId);
@@ -83,6 +84,7 @@ export function useSessionExerciseActions({
     if (!target) {
       return false;
     }
+
     const replaced = target.exercise;
 
     return runSaving('handleReplaceExercise', async (id) => {
@@ -112,6 +114,7 @@ export function useSessionExerciseActions({
             );
           }
         }
+
         if (outcome.removeEquipmentFromGym && gym && replaced.equipmentType) {
           await GymService.removeEquipment(gym.id, replaced.equipmentType);
         }

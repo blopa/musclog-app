@@ -46,29 +46,35 @@ export function drawChart(
     if (!visibleChannels[key]) {
       continue;
     }
+
     for (const v of series[key]) {
       if (v < yMin) {
         yMin = v;
       }
+
       if (v > yMax) {
         yMax = v;
       }
     }
   }
+
   if (!Number.isFinite(yMin) || !Number.isFinite(yMax)) {
     yMin = -1;
     yMax = 1;
   }
+
   if (yMin === yMax) {
     yMin -= 1;
     yMax += 1;
   }
+
   const yRange = yMax - yMin;
 
   const xForMs = (ms: number) => {
     const x = pL + ((ms - domainMinMs) / span) * chartW;
     return Math.max(pL, Math.min(pL + chartW, x));
   };
+
   const yForVal = (v: number) => pT + chartH - ((v - yMin) / yRange) * chartH;
 
   // Grid lines
@@ -113,6 +119,7 @@ export function drawChart(
     if (!visibleChannels[key] || !arr.length) {
       continue;
     }
+
     ctx.strokeStyle = CHART_COLORS[key];
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -125,6 +132,7 @@ export function drawChart(
         ctx.lineTo(x, y);
       }
     }
+
     ctx.stroke();
   }
 

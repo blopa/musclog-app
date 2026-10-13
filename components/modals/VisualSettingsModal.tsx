@@ -137,6 +137,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     if (!visible) {
       return;
     }
+
     SettingsService.getNutritionDisplay().then((binary) => {
       setSelectedMacros(binaryToSelected(binary));
     });
@@ -181,6 +182,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     if (selectedMacros.length === MACRO_KEYS.length) {
       return t('settings.nutritionDisplay.allSelected');
     }
+
     return t('settings.nutritionDisplay.selected', { count: selectedMacros.length });
   };
 
@@ -190,6 +192,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     if (keys === selectedHomeActions) {
       return;
     }
+
     setSelectedHomeActions(keys);
     await SettingsService.setHomeActions(keys);
   };
@@ -199,6 +202,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     if (selectedHomeActions.length === 0) {
       return t('settings.homeActions.editActions');
     }
+
     return selectedHomeActions
       .map((key) => homeActionListLabel(t(HOME_ACTIONS[key].labelKey)))
       .join(', ');
@@ -221,6 +225,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     if (inSlot) {
       return t('settings.visualSettings.currentlyInSlot', { slot: inSlot });
     }
+
     return '';
   };
 

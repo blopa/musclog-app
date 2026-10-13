@@ -152,12 +152,15 @@ export function getWorkoutTypeFromName(
   if (workoutType === 'cardio' || nameLower.includes('run') || nameLower.includes('cardio')) {
     return 'cardio';
   }
+
   if (nameLower.includes('hiit') || nameLower.includes('interval')) {
     return 'hiit';
   }
+
   if (nameLower.includes('yoga') || nameLower.includes('stretch')) {
     return 'yoga';
   }
+
   // Default to strength for weightlifting workouts
   return 'strength';
 }
@@ -229,6 +232,7 @@ export function normalizeMuscleGroup(group: string): string {
   if (normalized.includes('full') || normalized.includes('body')) {
     return 'full-body';
   }
+
   return normalized;
 }
 
@@ -243,11 +247,13 @@ export function calculateDateRange(dateRange: '30' | '90' | 'custom'): DateRange
     const startDate = localDayKeyPlusCalendarDaysFromNow(-30);
     return { startDate, endDate };
   }
+
   if (dateRange === '90') {
     const endDate = Date.now();
     const startDate = localDayKeyPlusCalendarDaysFromNow(-90);
     return { startDate, endDate };
   }
+
   // 'custom' date range would need a date picker, skip for now
   return undefined;
 }
@@ -384,6 +390,7 @@ export function groupWorkoutsByMonth(workouts: WorkoutHistoryItem[]): WorkoutHis
     if (!groupedByMonth.has(monthKey)) {
       groupedByMonth.set(monthKey, []);
     }
+
     groupedByMonth.get(monthKey)!.push(workout);
   });
 
@@ -428,6 +435,7 @@ export function mergeWorkoutSections(
     if (!sectionMap.has(monthKey)) {
       sectionMap.set(monthKey, []);
     }
+
     sectionMap.get(monthKey)!.push(workout);
     existingWorkoutIds.add(workout.id);
   });

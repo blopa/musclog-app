@@ -77,9 +77,11 @@ export function progressionRuleSummary(
   if (rule && 'repMin' in rule) {
     return `${method} · ${formatInteger(rule.repMin)}\u2060–\u2060${formatInteger(rule.repMax)}`;
   }
+
   if (rule?.type === 'linear' || rule?.type === 'percentage') {
     return `${method} · ${t('progression.repsShort', { reps: formatInteger(rule.reps) })}`;
   }
+
   return method;
 }
 
@@ -109,6 +111,7 @@ export function ProgressionRuleFields({
     if (!value) {
       return;
     }
+
     const rule = { ...value, [field]: Math.min(bounds.max, Math.max(bounds.min, n)) };
     if ('repMin' in rule && rule.repMin > rule.repMax) {
       if (field === 'repMin') {
@@ -117,22 +120,28 @@ export function ProgressionRuleFields({
         rule.repMin = rule.repMax;
       }
     }
+
     onChange(rule);
   };
+
   const choose = (type: MethodType) => {
     if (type === 'automatic') {
       onChange(null);
       return;
     }
+
     if (value?.type === type) {
       return;
     }
+
     onChange(freshRule(type));
   };
+
   const suggestedTrainingMax = () => {
     if (value?.type !== 'percentage' || !plannedWeightKg) {
       return 100;
     }
+
     const fromPlan = plannedWeightKg / (value.percentOfTrainingMax / 100);
     return Math.max(1, Math.round(fromPlan / 2.5) * 2.5);
   };
@@ -156,6 +165,7 @@ export function ProgressionRuleFields({
             </View>
           );
         }
+
         const stored = (value as unknown as Record<string, number>)[field];
         const isWeight = field === 'trainingMaxKg';
         const number = isWeight ? kgToDisplay(stored, units) : stored;

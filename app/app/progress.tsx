@@ -77,6 +77,7 @@ export default function ProgressScreen() {
     if (prevIsLoadingRef.current === isLoading) {
       return;
     }
+
     prevIsLoadingRef.current = isLoading;
 
     phaseTimersRef.current.forEach(clearTimeout);

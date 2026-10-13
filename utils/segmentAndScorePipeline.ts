@@ -522,6 +522,7 @@ function extractFeatures(
         rightMin = signal1d[j];
       }
     }
+
     prominence = Math.max(0, signal1d[ti] - Math.max(leftMin, rightMin));
   } else {
     // Turning point is a trough

@@ -56,6 +56,7 @@ export function OptionsMultiSelector<T extends string | number>({
     const sync = () => {
       setOrderedOptions(normalizeGroups(options));
     };
+
     sync();
   }, [options]);
 
@@ -86,10 +87,12 @@ export function OptionsMultiSelector<T extends string | number>({
     if (selectedItems.length < 2) {
       return false;
     }
+
     const firstGroupId = selectedItems[0]?.groupId;
     if (!firstGroupId) {
       return false;
     }
+
     return selectedItems.every((item) => item.groupId === firstGroupId);
   }, [selectedItems]);
 
@@ -117,6 +120,7 @@ export function OptionsMultiSelector<T extends string | number>({
           return { ...option, groupId: newGroupId };
         }
       }
+
       return option;
     });
 
@@ -146,6 +150,7 @@ export function OptionsMultiSelector<T extends string | number>({
     if (!groupId) {
       return [index];
     }
+
     return orderedOptions.map((o, i) => (o.groupId === groupId ? i : -1)).filter((i) => i !== -1);
   };
 
@@ -463,6 +468,7 @@ export function OptionsMultiSelector<T extends string | number>({
                 } catch (e) {
                   // ignore
                 }
+
                 setSelectionEnabled(false);
               }}
               style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}

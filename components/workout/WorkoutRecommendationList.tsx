@@ -24,6 +24,7 @@ function fallbackHintKey(row: TemplateRecommendation) {
   if (row.rule) {
     return 'progression.followRule';
   }
+
   return row.status === 'learning' ? 'progression.learningHint' : null;
 }
 

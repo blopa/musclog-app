@@ -53,6 +53,7 @@ const stepFractionDigits = (step: number) => {
       return digits;
     }
   }
+
   return 3;
 };
 

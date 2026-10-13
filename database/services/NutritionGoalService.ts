@@ -241,6 +241,7 @@ export class NutritionGoalService {
     if (limit != null) {
       query = query.extend(Q.take(limit));
     }
+
     return await query.fetch();
   }
 
@@ -307,9 +308,11 @@ export class NutritionGoalService {
           targets[key] = updates[key];
         }
       }
+
       if (changesTargets || targetKeys.some((key) => updates[key] !== undefined)) {
         NutritionTargetService.validateTargets(targets);
       }
+
       const periods = changesTargets
         ? await database
             .get<NutritionTargetPeriod>('nutrition_target_periods')
@@ -328,30 +331,38 @@ export class NutritionGoalService {
         if (changesTargets && mode === 'weekly') {
           operations.push(NutritionTargetService.preparePeriod(id, targets, from, now));
         }
+
         operations.push(
           goal.prepareUpdate((record) => {
             Object.assign(record, targets);
             if (updates.eatingPhase !== undefined) {
               record.eatingPhase = updates.eatingPhase;
             }
+
             if (updates.targetWeight !== undefined) {
               record.targetWeight = normalizeNutritionGoalTargetWeight(updates.targetWeight) ?? 0;
             }
+
             if (updates.targetBodyFat !== undefined) {
               record.targetBodyFat = updates.targetBodyFat;
             }
+
             if (updates.targetBMI !== undefined) {
               record.targetBmi = updates.targetBMI;
             }
+
             if (updates.targetFFMI !== undefined) {
               record.targetFfmi = updates.targetFFMI;
             }
+
             if (updates.targetDate !== undefined) {
               record.targetDate = updates.targetDate ?? null;
             }
+
             if (updates.timezone !== undefined) {
               record.timezone = updates.timezone;
             }
+
             record.targetMode = mode;
             record.isDynamic = mode === 'daily';
             record.updatedAt = now;
@@ -552,6 +563,7 @@ export class NutritionGoalService {
       if (period && newEffectiveUntil != null) {
         period.effectiveUntil = localDayStartFromUtcMs(newEffectiveUntil);
       }
+
       await database.batch(...(superseded ? [superseded] : []), goal, ...(period ? [period] : []));
       return goal;
     });

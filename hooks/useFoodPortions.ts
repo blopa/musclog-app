@@ -267,6 +267,7 @@ export function useFoodPortions({
     const run = () => {
       void loadInitialPortions();
     };
+
     run();
   }, [mode, enableReactivity, loadInitialPortions]);
 

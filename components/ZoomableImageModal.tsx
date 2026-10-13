@@ -145,6 +145,7 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
         dismissProgress.set(Math.min(1, ty.value / 400));
         return;
       }
+
       const next = clampTranslation(
         { x: savedTx.value + event.translationX, y: savedTy.value + event.translationY },
         scale.value,
@@ -159,6 +160,7 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
         runOnJS(handleClose)();
         return;
       }
+
       if (isAtRest(scale.value)) {
         ty.set(withSpring(0, SPRING));
         dismissProgress.set(withTiming(0));

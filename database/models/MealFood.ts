@@ -93,6 +93,7 @@ export default class MealFood extends Model {
             // Fall back to the food default portion grams.
           }
         }
+
         return this.amount * baseGrams;
       }
     } catch {

@@ -99,6 +99,7 @@ export default function WeeklyReviewScreen() {
     if (busy) {
       return;
     }
+
     setBusy(true);
     setError(false);
     try {
@@ -179,6 +180,7 @@ export default function WeeklyReviewScreen() {
     if (!data?.nutrition) {
       return;
     }
+
     setDraft(
       Object.fromEntries(
         MACRO_FIELDS.map((field) => [

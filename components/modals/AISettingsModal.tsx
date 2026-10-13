@@ -95,6 +95,7 @@ function AIIntegrationCard({
     if (!onTestKey) {
       return;
     }
+
     setTestResult('testing');
     setTestResult(await onTestKey());
   };
@@ -323,6 +324,7 @@ export function AISettingsModal({
     if (Platform.OS !== 'ios') {
       return;
     }
+
     try {
       const capable = await isOnDeviceAiCapable();
       setIsOnDeviceCapable(capable);
@@ -330,6 +332,7 @@ export function AISettingsModal({
         setIsOnDeviceReady(false);
         return;
       }
+
       const ready = await isOnDeviceAiAvailable();
       setIsOnDeviceReady(ready);
     } catch {
@@ -342,9 +345,11 @@ export function AISettingsModal({
     if (!visible || Platform.OS !== 'ios') {
       return;
     }
+
     const reload = () => {
       void reloadOnDeviceAiState();
     };
+
     reload();
   }, [visible, reloadOnDeviceAiState]);
 
@@ -354,6 +359,7 @@ export function AISettingsModal({
       const flush = () => {
         flushAllPendingChanges();
       };
+
       flush();
     }
   }, [visible, flushAllPendingChanges]);
@@ -397,6 +403,7 @@ export function AISettingsModal({
       setLocalStateLlmModel(localLlmModel);
       setLocalStateLlmBaseUrl(localLlmBaseUrl);
     };
+
     sync();
   }, [googleGeminiApiKey, openAiApiKey, localLlmApiKey, localLlmModel, localLlmBaseUrl]);
 

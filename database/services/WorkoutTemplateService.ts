@@ -145,6 +145,7 @@ export class WorkoutTemplateService {
           return repaired;
         }
       }
+
       throw error;
     }
   }
@@ -192,6 +193,7 @@ export class WorkoutTemplateService {
       if (!setsByTemplateExercise.has(teId)) {
         setsByTemplateExercise.set(teId, []);
       }
+
       setsByTemplateExercise.get(teId)!.push(set);
     });
 
@@ -282,6 +284,7 @@ export class WorkoutTemplateService {
       if (existing) {
         retained.add(existing.id);
       }
+
       const updateExercise = (te: WorkoutTemplateExercise) => {
         te.templateId = templateId;
         te.exerciseId = exercise.id;
@@ -303,8 +306,10 @@ export class WorkoutTemplateService {
         if (!existing) {
           te.createdAt = now;
         }
+
         te.updatedAt = now;
       };
+
       const templateExercise = existing
         ? existing.prepareUpdate(updateExercise)
         : exerciseCollection.prepareCreate(updateExercise);
@@ -326,8 +331,10 @@ export class WorkoutTemplateService {
           if (!oldSet) {
             ts.createdAt = now;
           }
+
           ts.updatedAt = now;
         };
+
         records.push(
           oldSet ? oldSet.prepareUpdate(updateSet) : setCollection.prepareCreate(updateSet)
         );
@@ -587,13 +594,16 @@ export class WorkoutTemplateService {
       if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) {
         return -1;
       }
+
       if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return 1;
       }
+
       // If both have lastCompleted, sort by timestamp (most recent first)
       if (a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return b.lastCompletedTimestamp - a.lastCompletedTimestamp;
       }
+
       // If neither has lastCompleted, maintain original order (by created_at desc)
       return 0;
     });
@@ -710,6 +720,7 @@ export class WorkoutTemplateService {
         query = query.extend(Q.take(limit));
       }
     }
+
     return await query.fetch();
   }
 
@@ -762,13 +773,16 @@ export class WorkoutTemplateService {
       if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) {
         return -1;
       }
+
       if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return 1;
       }
+
       // If both have lastCompleted, sort by timestamp (most recent first)
       if (a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return b.lastCompletedTimestamp - a.lastCompletedTimestamp;
       }
+
       // If neither has lastCompleted, maintain original order (by created_at desc)
       return 0;
     });
@@ -994,6 +1008,7 @@ export class WorkoutTemplateService {
       if (!exercisesByDay.has(day)) {
         exercisesByDay.set(day, []);
       }
+
       exercisesByDay.get(day)!.push(exercise);
     });
 
@@ -1416,6 +1431,7 @@ export class WorkoutTemplateService {
           return this.deleteTemplateInternal(id, true);
         }
       }
+
       throw error;
     }
   }

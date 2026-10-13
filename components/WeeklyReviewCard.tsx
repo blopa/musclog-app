@@ -34,12 +34,14 @@ export function WeeklyReviewCard({ compact = false }: { compact?: boolean }) {
           }).format(status.next),
         });
   }
+
   let statusLabel = t('weeklyReview.upcoming');
   if (ready) {
     statusLabel = t('weeklyReview.ready');
   } else if (status?.reviewed) {
     statusLabel = t('weeklyReview.reviewed');
   }
+
   const Icon = ready ? CalendarCheck : CalendarClock;
 
   return (

@@ -256,8 +256,10 @@ export function useExercises({
         const run = () => {
           void loadInitialExercises();
         };
+
         run();
       }
+
       return;
     }
 
@@ -293,6 +295,7 @@ export function useExercises({
     const runInit = () => {
       void loadInitialExercises();
     };
+
     runInit();
 
     return () => subscription.unsubscribe();

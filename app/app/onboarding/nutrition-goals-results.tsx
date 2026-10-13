@@ -79,6 +79,7 @@ export default function NutritionGoalsResults() {
         return null;
       }
     }
+
     return null;
   }, [params.plan]);
 
@@ -95,6 +96,7 @@ export default function NutritionGoalsResults() {
               if (isMounted) {
                 setStoredPlan(parsed);
               }
+
               return;
             } catch {
               // ignore parse errors and fall back to params

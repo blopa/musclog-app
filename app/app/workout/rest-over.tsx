@@ -95,6 +95,7 @@ export default function RestOverScreen() {
         if (log.deletedAt) {
           throw new Error(t('restOver.workoutDeleted'));
         }
+
         setWorkoutLog(log);
 
         // Load next set

@@ -51,6 +51,7 @@ function textOf(error: any): string {
       // A circular detail is not worth failing a classification over.
     }
   }
+
   return parts
     .filter((part): part is string => typeof part === 'string')
     .join(' ')
@@ -74,15 +75,19 @@ export function isInvalidApiKeyError(error: unknown): boolean {
   if (code === 'invalid_api_key') {
     return true;
   }
+
   if (status === 401) {
     return true;
   }
+
   if (status === 403) {
     return PERMISSION_SIGNALS.some((signal) => text.includes(signal));
   }
+
   if (status === 400) {
     return KEY_SIGNALS.some((signal) => text.includes(signal));
   }
+
   return false;
 }
 
@@ -91,11 +96,13 @@ export function isAiTimeoutError(error: unknown): boolean {
   if (error instanceof AiTimeoutError) {
     return true;
   }
+
   const e = error as any;
   const name = String(e?.name ?? '');
   if (name === 'APIConnectionTimeoutError' || name === 'TimeoutError') {
     return true;
   }
+
   const message = String(e?.message ?? '').toLowerCase();
   return message.includes('request timed out') || message.includes('timed out');
 }
@@ -112,12 +119,15 @@ export function toUserFacingAiError(
   if (error instanceof AiInvalidKeyError || error instanceof AiTimeoutError) {
     return error;
   }
+
   if (USER_KEY_PROVIDERS.has(provider) && isInvalidApiKeyError(error)) {
     return new AiInvalidKeyError(provider);
   }
+
   if (isAiTimeoutError(error)) {
     return new AiTimeoutError();
   }
+
   return null;
 }
 
@@ -151,9 +161,11 @@ export function describeAiError(
   if (error instanceof AiInvalidKeyError) {
     return t('errors.aiInvalidApiKey', { provider: PROVIDER_LABELS[error.provider] });
   }
+
   if (error instanceof AiTimeoutError) {
     return t('errors.aiTimeout');
   }
+
   return null;
 }
 

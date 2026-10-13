@@ -46,9 +46,11 @@ export function HomeActionsPicker({ selected, available, onChange }: HomeActions
     if (atMax) {
       return t('settings.homeActions.hintAtMax', { max: MAX_HOME_ACTIONS });
     }
+
     if (atMin) {
       return t('settings.homeActions.hintAtMin', { min: MIN_HOME_ACTIONS });
     }
+
     return t('settings.homeActions.hintOrder');
   };
 

@@ -140,17 +140,20 @@ export function useOpticalReceiver(options: { active: boolean }) {
       if (!isCurrent()) {
         return;
       }
+
       setState((previous) => ({ ...previous, meta: headerMeta, phase: 'unpacking' }));
       const { json, meta } = await unpackOpticalContainer(container, { passphrase });
       if (!isCurrent()) {
         return;
       }
+
       jsonRef.current = json;
       setState((previous) => ({ ...previous, meta, phase: 'verified' }));
     } catch (error) {
       if (!isCurrent()) {
         return;
       }
+
       const code =
         error instanceof OpticalContainerError
           ? error.code

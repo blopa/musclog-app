@@ -87,6 +87,7 @@ export function WebsitePreferences() {
         setIsOpen(false);
         return;
       }
+
       const panel = panelRef.current!;
       setPosition({
         top: computePopoverTop({
@@ -100,6 +101,7 @@ export function WebsitePreferences() {
         ),
       });
     };
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.stopImmediatePropagation();
@@ -107,12 +109,14 @@ export function WebsitePreferences() {
         triggerRef.current?.focus();
       }
     };
+
     const handlePointerDown = (event: PointerEvent) => {
       const target = event.target as Node;
       if (!triggerRef.current?.contains(target) && !panelRef.current?.contains(target)) {
         setIsOpen(false);
       }
     };
+
     placePanel();
     panelRef.current
       ?.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="true"]')

@@ -82,6 +82,7 @@ export function useActiveWorkout(workoutLogId?: string) {
           setNoActiveError(err instanceof Error ? err.message : 'Failed to get active workout');
         });
     };
+
     doResolve();
   }, [workoutLogId]);
 
@@ -103,6 +104,7 @@ export function useActiveWorkout(workoutLogId?: string) {
           (s) => s.logExerciseId === targetLogExerciseId && isPlannedWorkoutSet(s)
         ) ?? null;
     }
+
     if (!currentSet) {
       currentSet = getFirstUnloggedInEffectiveOrder(sets);
     }
@@ -124,6 +126,7 @@ export function useActiveWorkout(workoutLogId?: string) {
       if (!exerciseGroups.has(eid)) {
         exerciseGroups.set(eid, []);
       }
+
       exerciseGroups.get(eid)!.push(s);
     });
     exerciseGroups.forEach((exerciseSets) => {

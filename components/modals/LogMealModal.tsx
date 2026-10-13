@@ -68,6 +68,7 @@ function clampPortionGrams(g: number): number {
   if (Number.isNaN(g) || !Number.isFinite(g)) {
     return MIN_PORTION_G;
   }
+
   return Math.min(MAX_PORTION_G, Math.max(MIN_PORTION_G, g));
 }
 
@@ -102,6 +103,7 @@ export function LogMealModal({
       const syncGrams = () => {
         setPortionGrams(referenceGrams);
       };
+
       syncGrams();
     }
   }, [visible, referenceGrams]);
@@ -113,6 +115,7 @@ export function LogMealModal({
         setSelectedTime(new Date());
         setSelectedMealType(initialMealType ?? 'lunch');
       };
+
       syncDateTime();
     }
   }, [visible, initialDate, initialMealType]);
@@ -123,6 +126,7 @@ export function LogMealModal({
         setShowDatePicker(false);
         setShowTimePicker(false);
       };
+
       reset();
     }
   }, [visible]);

@@ -49,6 +49,7 @@ export function weightInputStep(
   if (!gym) {
     return LEGACY_INPUT_STEP;
   }
+
   return Math.round(kgToDisplay(incrementFor(equipmentType, gym, units), units) * 100) / 100;
 }
 
@@ -80,9 +81,11 @@ export function loadStepFor(
       if (gym) {
         return roundToLoadable(kg, equipmentType, gym);
       }
+
       if (units === 'imperial') {
         return roundWeightForUnits(kg, units);
       }
+
       // Metric with no gym: the standard plates load in 2.5 kg pairs, so land on a multiple of the
       // step. Rounding to a whole kilogram produced 60 → 63 → 66, which no plate set can load.
       const step = defaultWeightIncrementKg(units);

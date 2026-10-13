@@ -62,6 +62,7 @@ export class ExerciseGoalService {
     if (goal.goalType !== '1rm' || !goal.exerciseId) {
       return null;
     }
+
     const windows = options.excludeWindows ?? [];
     const [dataPoints, performed1RMDate, recentAverage, bodyWeight, exercise, user] =
       await Promise.all([
@@ -100,11 +101,13 @@ export class ExerciseGoalService {
     if (goal.goalType !== '1rm' || goal.targetWeight === null) {
       return null;
     }
+
     const effectiveBaseline =
       baseline1rm ?? (inputs.dataPoints.length > 0 ? inputs.dataPoints[0].estimated1RM : null);
     if (effectiveBaseline === null) {
       return null;
     }
+
     return projectGoal({
       dataPoints: inputs.dataPoints,
       baseline1rm: effectiveBaseline,
@@ -193,6 +196,7 @@ export class ExerciseGoalService {
     if (offset) {
       query = query.extend(Q.skip(offset));
     }
+
     if (limit) {
       query = query.extend(Q.take(limit));
     }
@@ -279,15 +283,19 @@ export class ExerciseGoalService {
         if (updates.targetWeight !== undefined) {
           record.targetWeight = updates.targetWeight;
         }
+
         if (updates.targetSessionsPerWeek !== undefined) {
           record.targetSessionsPerWeek = updates.targetSessionsPerWeek;
         }
+
         if (updates.targetDate !== undefined) {
           record.targetDate = updates.targetDate ?? null;
         }
+
         if (updates.notes !== undefined) {
           record.notes = updates.notes ?? null;
         }
+
         record.updatedAt = Date.now();
       });
 
@@ -318,6 +326,7 @@ export class ExerciseGoalService {
       if (goal.deletedAt) {
         throw new Error('Cannot update deleted goal');
       }
+
       await goal.update((record) => {
         record.baseline1rm = baseline1rm;
         record.updatedAt = Date.now();

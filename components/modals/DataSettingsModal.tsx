@@ -107,6 +107,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
       showSnackbar('error', t('settings.advancedSettings.encryptionPhraseRequired'));
       return;
     }
+
     setLoading(true);
     try {
       await exportDatabase(encryptionPhrase || undefined, { includeDeletedRecords });
@@ -225,6 +226,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
         if (result.success) {
           handleAdvancedDataManagementChange(true);
         }
+
         // If cancelled or failed, do nothing — setting stays disabled
         return;
       }

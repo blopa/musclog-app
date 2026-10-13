@@ -54,6 +54,7 @@ export default function CreateWorkoutModal({
       const reset = () => {
         setAddExerciseVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -598,6 +599,7 @@ export default function CreateWorkoutModal({
               if (existing) {
                 next.set(ruleExercise.id, { ...existing, progression });
               }
+
               return next;
             })
           }

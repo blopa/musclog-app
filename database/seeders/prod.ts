@@ -244,6 +244,7 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
           if (retries >= maxRetries) {
             throw verifyError; // Re-throw if all retries failed
           }
+
           // Wait before retrying
           await new Promise((resolve) => setTimeout(resolve, 200));
         }

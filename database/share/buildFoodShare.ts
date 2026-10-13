@@ -56,6 +56,7 @@ export async function buildFoodShareEnvelope(
       if (!isActive(link)) {
         return undefined;
       }
+
       try {
         const portion = await link.foodPortion;
         return isActive(portion) && isCarriablePortion(portion, food.id)
@@ -75,6 +76,7 @@ export async function buildFoodShareEnvelope(
     if (!entry) {
       continue;
     }
+
     portionLinks.push(entry.link);
     portions.set(entry.portion.id, entry.portion);
     summaryPortions.push({

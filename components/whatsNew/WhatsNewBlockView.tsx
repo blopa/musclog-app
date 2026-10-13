@@ -43,6 +43,7 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
         </View>
       );
     }
+
     case 'choice':
       return (
         <ChoiceBlock

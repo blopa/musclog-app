@@ -92,5 +92,6 @@ export function useCoach() {
   if (context === undefined) {
     throw new Error('useCoach must be used within a CoachProvider');
   }
+
   return context;
 }

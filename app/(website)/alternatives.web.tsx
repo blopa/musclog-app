@@ -337,9 +337,11 @@ function StatusIcon({ status }: { status: Status }) {
   if (status === 'full') {
     return <Check size={16} color={BRAND_GREEN_BRIGHT} strokeWidth={2.5} />;
   }
+
   if (status === 'partial') {
     return <Contrast size={15} color={AMBER} />;
   }
+
   return <Minus size={15} color={MUTED} />;
 }
 

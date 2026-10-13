@@ -114,6 +114,7 @@ export function WeightTrendChart({
             if (!selection) {
               return '';
             }
+
             const date = formatUtcNormalizedDayIntl(
               selection.date,
               i18n.resolvedLanguage ?? i18n.language

@@ -136,6 +136,7 @@ export function AreaChart({
     if (w === 0) {
       return;
     }
+
     const domainX = xDomainFinal[0] + (touchX / w) * (xDomainFinal[1] - xDomainFinal[0]);
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
@@ -240,6 +241,7 @@ export function AreaChart({
                   if (!pts || pts.length === 0) {
                     return null;
                   }
+
                   const fillColor = withAlpha(s.color, areaOpacity);
                   const pointsArray = toPointsArray(pts);
                   return (

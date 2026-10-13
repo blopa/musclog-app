@@ -54,6 +54,7 @@ export async function testApiKey(
       const client = new OpenAI({ apiKey: key, dangerouslyAllowBrowser: true, maxRetries: 0 });
       await withTimeout(client.models.list());
     }
+
     return 'ok';
   } catch (error) {
     return isInvalidApiKeyError(error) ? 'rejected' : 'network';

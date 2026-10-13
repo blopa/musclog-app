@@ -95,6 +95,7 @@ function extractQuantity(objects: readonly unknown[], id: string): number {
     if (!o || typeof o !== 'object') {
       continue;
     }
+
     const sample = o as QuantitySample;
     const qt = sample.quantityType;
     const ident = typeof qt === 'string' ? qt : (qt as { identifier?: string })?.identifier;
@@ -102,6 +103,7 @@ function extractQuantity(objects: readonly unknown[], id: string): number {
       return sample.quantity ?? 0;
     }
   }
+
   return 0;
 }
 
@@ -458,6 +460,7 @@ async function syncNutritionOnce(timeRange: {
           if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
             continue;
           }
+
           await localLog.update((log) => {
             log.deletedAt = now;
             log.updatedAt = now;

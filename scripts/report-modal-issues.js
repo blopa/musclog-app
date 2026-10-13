@@ -32,6 +32,7 @@ if (error) {
   if (stderr) {
     process.stderr.write(stderr);
   }
+
   process.exit(1);
 }
 
@@ -43,6 +44,7 @@ try {
   if (stderr) {
     process.stderr.write(stderr);
   }
+
   process.exit(1);
 }
 

@@ -187,6 +187,7 @@ export default function DynamicMealCreatorModal({
     if (preparedWeightGrams === undefined && totalRawWeightGrams > 0) {
       setPreparedWeightGrams(totalRawWeightGrams);
     }
+
     setStep('save');
   }, [preparedWeightGrams, totalRawWeightGrams]);
 
@@ -272,6 +273,7 @@ export default function DynamicMealCreatorModal({
     if (food.resolvedNutritionBasis === 'per_serving') {
       return `${formatRoundedDecimal(amount, 2)} ${t('food.foodDetails.serving')}`;
     }
+
     return `${formatRoundedDecimal(amount, 0)} g`;
   };
 

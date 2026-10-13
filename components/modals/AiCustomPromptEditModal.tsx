@@ -46,6 +46,7 @@ export function AiCustomPromptEditModal({
         setIsActive(true);
       }
     };
+
     syncFromPrompt();
   }, [prompt, visible]);
 
@@ -55,6 +56,7 @@ export function AiCustomPromptEditModal({
     } else {
       await createPrompt(name, content, isActive, context);
     }
+
     onClose();
   };
 

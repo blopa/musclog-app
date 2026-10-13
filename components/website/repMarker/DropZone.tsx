@@ -51,9 +51,11 @@ export function DropZone({
     if (error) {
       return ACCENT_RED;
     }
+
     if (isLoaded) {
       return BRAND_GREEN;
     }
+
     return dragging ? BRAND_GREEN_BRIGHT : INPUT_BORDER;
   })();
 

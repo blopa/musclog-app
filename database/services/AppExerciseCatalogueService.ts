@@ -90,6 +90,7 @@ function fieldMatches<TKey extends keyof CatalogueExerciseFields>(
   if (key === 'loadMultiplier') {
     return Math.abs((stored as number) - (desired as number)) <= 0.001;
   }
+
   return stored === desired;
 }
 
@@ -137,6 +138,7 @@ function operationBatches(groups: Model[][]): Model[][] {
   if (batch.length > 0) {
     batches.push(batch);
   }
+
   return batches;
 }
 
@@ -179,6 +181,7 @@ async function liveAliasesByExerciseId(): Promise<Map<string, string[]>> {
   for (const { exerciseId, alias } of aliases) {
     byExerciseId.set(exerciseId, [...(byExerciseId.get(exerciseId) ?? []), alias]);
   }
+
   return byExerciseId;
 }
 
@@ -254,6 +257,7 @@ export class AppExerciseCatalogueService {
           if (existing.searchText !== searchText) {
             changes.searchText = searchText;
           }
+
           if (Object.keys(changes).length > 0) {
             operations.push(
               existing.prepareUpdate((exercise) => {
@@ -293,6 +297,7 @@ export class AppExerciseCatalogueService {
           if (retainedMuscleIds.has(muscleId)) {
             continue;
           }
+
           operations.push(
             database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
               link.exerciseId = exerciseId;

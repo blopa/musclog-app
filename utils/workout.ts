@@ -45,6 +45,7 @@ export function splitDurationLabel(label: string): { value: string; suffix?: str
   if (space <= 0) {
     return { value: trimmed };
   }
+
   return { value: trimmed.slice(0, space), suffix: trimmed.slice(space + 1) };
 }
 
@@ -363,6 +364,7 @@ export function validateWorkoutTitle(title: string): { valid: boolean; error?: s
       error: 'titleRequired', // Translation key
     };
   }
+
   return { valid: true };
 }
 

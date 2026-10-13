@@ -50,6 +50,7 @@ export function useYesterdayMealData({ visible, mealType, logDate }: UseYesterda
     const startLoading = () => {
       setIsLoadingYesterday(true);
     };
+
     startLoading();
     const baseDay = localCalendarDayDate(logDate ?? new Date());
     const yesterdayDay = localCalendarDayDateFromDayKeyMs(
@@ -71,6 +72,7 @@ export function useYesterdayMealData({ visible, mealType, logDate }: UseYesterda
           if (mounted) {
             setYesterdayMealData(null);
           }
+
           return;
         }
 

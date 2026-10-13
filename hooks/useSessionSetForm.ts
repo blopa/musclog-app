@@ -36,16 +36,19 @@ export function useSessionSetForm(currentSetData: CurrentSetData | null, units: 
         setIsStatsDataLoaded(false);
         return;
       }
+
       if (synced && synced.key === key && synced.units !== units) {
         setWeight((shown) => kgToDisplay(displayToKg(shown, synced.units), units));
         return;
       }
+
       setWeight(kgToDisplay(currentSetData.set.weight ?? 0, units));
       setReps(currentSetData.set.reps ?? 0);
       setPartials(currentSetData.set.partials || 0);
       setRepsInReserve(currentSetData.set.repsInReserve ?? 0);
       setIsStatsDataLoaded(true);
     };
+
     syncFormInputs();
   }, [currentSetData, units]);
 

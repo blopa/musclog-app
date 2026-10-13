@@ -36,6 +36,7 @@ export function ChartPanel({
     for (const key of channelKeys) {
       initial[key] = defaultVisible.includes(key);
     }
+
     return initial;
   });
 
@@ -44,10 +45,12 @@ export function ChartPanel({
     if (!canvas) {
       return;
     }
+
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       return;
     }
+
     const cursorMs = (videoRef.current?.currentTime ?? 0) * 1000;
     drawChart(
       ctx,
@@ -72,17 +75,21 @@ export function ChartPanel({
     if (!video) {
       return;
     }
+
     const startLoop = () => {
       const loop = () => {
         redraw();
         rafRef.current = requestAnimationFrame(loop);
       };
+
       rafRef.current = requestAnimationFrame(loop);
     };
+
     const stopLoop = () => {
       cancelAnimationFrame(rafRef.current);
       redraw();
     };
+
     video.addEventListener('play', startLoop);
     video.addEventListener('pause', stopLoop);
     video.addEventListener('ended', stopLoop);
@@ -102,6 +109,7 @@ export function ChartPanel({
     if (!canvas) {
       return;
     }
+
     const observer = new ResizeObserver(() => {
       const dpr = window.devicePixelRatio;
       canvas.width = canvas.offsetWidth * dpr;
@@ -110,6 +118,7 @@ export function ChartPanel({
       if (ctx) {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
+
       redraw();
     });
     observer.observe(canvas);
@@ -122,6 +131,7 @@ export function ChartPanel({
     if (!canvas || !video) {
       return;
     }
+
     const rect = canvas.getBoundingClientRect();
     const fraction =
       (e.clientX - rect.left - PADDING.left) / (rect.width - PADDING.left - PADDING.right);

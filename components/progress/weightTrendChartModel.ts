@@ -37,6 +37,7 @@ export function trailingSevenDayTrendChange(
   if (trend.length === 0 || raw.length === 0) {
     return null;
   }
+
   const latest = trend[trend.length - 1];
   // `raw` arrives ascending from ProgressService, so the first entry is the earliest observation.
   // Reading it directly avoids spreading the whole history through `Math.min`.
@@ -44,6 +45,7 @@ export function trailingSevenDayTrendChange(
   if (latest.date - earliestObservation < 7 * MS_PER_SOLAR_DAY) {
     return null;
   }
+
   const previous = trendWeightAtOrBefore(trend, latest.date - 7 * MS_PER_SOLAR_DAY);
   return previous ? latest.value - previous.value : null;
 }

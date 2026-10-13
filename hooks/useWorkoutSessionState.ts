@@ -10,10 +10,7 @@ import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { WorkoutService } from '@/database/services/WorkoutService';
-import {
-  isPerformedWorkoutSet,
-  isResolvedWorkoutSet,
-} from '@/utils/workoutSetCompletion';
+import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
@@ -82,6 +79,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       setError(null);
       setIsLoading(true);
     };
+
     initState();
 
     const logQuery = database
@@ -109,6 +107,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
         if (ids.length === 0) {
           return of([]);
         }
+
         return database
           .get<WorkoutLogSet>('workout_log_sets')
           .query(
@@ -126,6 +125,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
         if (ids.length === 0) {
           return of([]);
         }
+
         return database
           .get<Exercise>('exercises')
           .query(Q.where('id', Q.oneOf(ids)), Q.where('deleted_at', Q.eq(null)))
@@ -139,9 +139,11 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           if (!log) {
             return null;
           }
+
           if (log.deletedAt) {
             return { error: 'Workout has been deleted' as const };
           }
+
           const leMap = logExs.map((le) => ({
             id: le.id,
             exerciseId: le.exerciseId,
@@ -251,6 +253,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
     if (!workoutLogId) {
       return;
     }
+
     await WorkoutService.getWorkoutWithDetails(workoutLogId).then(
       ({ workoutLog: log, sets: s, exercises: ex, logExercises: le }) => {
         setWorkoutLog(log);
@@ -280,6 +283,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             }
           }
         }
+
         setCurrentSet(current);
         setNextSet(next);
         setPreviousSet(prev);

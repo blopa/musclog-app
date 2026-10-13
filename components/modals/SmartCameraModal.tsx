@@ -327,6 +327,7 @@ export default function SmartCameraModal({
         const safeMode = getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled);
         setCameraMode(safeMode);
       };
+
       syncMode();
     }
   }, [mode, isAiEnabled, isAIVisionEnabled]);
@@ -343,6 +344,7 @@ export default function SmartCameraModal({
         setProductFromAiLabel(null);
         isSearchingBarcodeRef.current = false;
       };
+
       reset();
     }
   }, [visible, isSearchingBarcodeRef]);
@@ -383,6 +385,7 @@ export default function SmartCameraModal({
             if (abortController.signal.aborted) {
               return;
             }
+
             if (result) {
               showSnackbar(
                 'success',
@@ -452,6 +455,7 @@ export default function SmartCameraModal({
           if (abortController.signal.aborted) {
             return;
           }
+
           if (!result) {
             handleError(
               new Error('estimateNutritionFromPhoto errored'),

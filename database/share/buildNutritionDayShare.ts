@@ -78,11 +78,13 @@ async function carriablePortion(log: NutritionLog, food: Food): Promise<FoodPort
   if (!log.portionId) {
     return undefined;
   }
+
   try {
     const portion = await log.portion;
     if (!isActive(portion) || !portion) {
       return undefined;
     }
+
     const owner = portion.ownerType;
     return !owner || (owner === 'food' && portion.ownerId === food.id) ? portion : undefined;
   } catch {

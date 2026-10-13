@@ -56,10 +56,12 @@ function recolorPixels(data, width, height, palette) {
   if (firstVisibleRow === -1) {
     firstVisibleRow = 0;
   }
+
   let lastVisibleRow = height - 1;
   while (lastVisibleRow > firstVisibleRow && visibleRows[lastVisibleRow] === 0) {
     lastVisibleRow -= 1;
   }
+
   const visibleHeight = Math.max(1, lastVisibleRow - firstVisibleRow);
   for (let y = 0; y < height; y += 1) {
     const position = visibleHeight > 0 ? (y - firstVisibleRow) / visibleHeight : 0;
@@ -96,12 +98,14 @@ async function generateThemeIconBackgrounds(options = {}) {
   if (info.channels !== 4) {
     throw new Error(`Expected RGBA source pixels, received ${info.channels} channels.`);
   }
+
   const glassInfo = await sharp(glassEffectPath).metadata();
   if (glassInfo.width !== info.width || glassInfo.height !== info.height) {
     throw new Error(
       `Glass effect image must be ${info.width}x${info.height}; received ${glassInfo.width}x${glassInfo.height}.`
     );
   }
+
   const textInfo = await sharp(textPath).metadata();
   if (textInfo.width !== info.width || textInfo.height !== info.height) {
     throw new Error(

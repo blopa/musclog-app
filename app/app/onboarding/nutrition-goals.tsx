@@ -70,6 +70,7 @@ export default function NutritionGoalsScreen() {
         if (!raw || !isMounted) {
           return;
         }
+
         const parsed = JSON.parse(raw) as NutritionPlan;
         if (isMounted && parsed?.targetCalories != null) {
           setStoredPlanGoals(planToInitialGoals(parsed));

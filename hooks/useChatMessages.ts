@@ -311,6 +311,7 @@ export function useChatMessages(
         if (cancelled) {
           return;
         }
+
         // records are DESC (newest first) — right for GiftedChat
         setMessages(records.map(toGiftedMessage));
         // Store ASC copy for AI history building
@@ -404,6 +405,7 @@ export function useChatMessages(
       if (!messages.some((m) => String(m._id) === id)) {
         return;
       }
+
       await ChatService.deleteMessage(id);
       rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== id);
       setMessages((prev) => prev.filter((m) => String(m._id) !== id));
@@ -466,6 +468,7 @@ export function useChatMessages(
         setEphemeralErrorMessage(t('coach.errors.rateLimited'));
         return;
       }
+
       lastSendTimeRef.current = now;
 
       setEphemeralErrorMessage(null); // Clear any previous error when user sends again
@@ -508,6 +511,7 @@ export function useChatMessages(
             rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
             setMessages((prev) => prev.filter((m) => m._id !== recordId));
           }
+
           setFailedMessageText(text.trim());
           setEphemeralErrorMessage(t('coach.errors.aiNotConfigured'));
           return;
@@ -549,6 +553,7 @@ export function useChatMessages(
               // ignore malformed payload
             }
           }
+
           return { role, content };
         };
 
@@ -652,6 +657,7 @@ export function useChatMessages(
               rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
+
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(
               aiConfig.provider === 'on-device'
@@ -706,6 +712,7 @@ export function useChatMessages(
               rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
+
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(
               aiConfig.provider === 'on-device'
@@ -735,6 +742,7 @@ export function useChatMessages(
               rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
+
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(t('coach.errors.progressInsightFailed'));
             return;
@@ -985,6 +993,7 @@ export function useChatMessages(
           if (msg._id !== messageId || !msg.meal) {
             return msg;
           }
+
           return {
             ...msg,
             meal: {

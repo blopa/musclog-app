@@ -34,6 +34,7 @@ export function weightUnitOverridesOf(
       map.set(row.exerciseId, row.weightUnit);
     }
   }
+
   return map;
 }
 

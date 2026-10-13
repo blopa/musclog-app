@@ -76,6 +76,7 @@ export const getActiveCustomPrompts = async (
     if (activePrompts.length === 0) {
       return '';
     }
+
     return activePrompts.map((p) => p.content).join('\n\n');
   } catch (error) {
     console.error('[prompts] Error fetching active custom prompts:', error);
@@ -145,6 +146,7 @@ Error Handling:
   if (customPrompts) {
     finalPrompt += `\n\n${customPrompts}`;
   }
+
   if (memories) {
     finalPrompt += `\n\n${memories}`;
   }
@@ -200,15 +202,19 @@ export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
       if (exercise.sets) {
         markdown += `   Sets: ${exercise.sets}\n`;
       }
+
       if (exercise.reps) {
         markdown += `   Reps: ${exercise.reps}\n`;
       }
+
       if (exercise.weight) {
         markdown += `   Weight: ${exercise.weight}\n`;
       }
+
       if (exercise.notes) {
         markdown += `   Notes: ${exercise.notes}\n`;
       }
+
       markdown += '\n';
     });
   }
@@ -238,6 +244,7 @@ export const getAppleIntelligenceContext = async (
         summaries.push(`- ${summary}`);
       }
     }
+
     context += summaries.join('\n');
   } else {
     context += 'No recent workout history found.';
@@ -619,6 +626,7 @@ export const getChatMessagePromptContent = async (
           workoutMarkdowns.push(workoutSummary);
         }
       }
+
       workoutData = workoutMarkdowns.join('\n\n');
     } else {
       // Use JSON for large models
@@ -629,6 +637,7 @@ export const getChatMessagePromptContent = async (
           summaries.push(json);
         }
       }
+
       workoutData = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
     }
   } catch (error) {
@@ -813,12 +822,14 @@ export const getNutritionInsightsPrompt = async (
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, weight: value });
     }
+
     for (const m of bodyFatMetrics) {
       const { value } = await m.getDecrypted();
       const dateKey = formatLocalCalendarDayIso(new Date(localDayStartFromUtcMs(m.date)));
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, fatPercentage: value });
     }
+
     const metricsArray = Array.from(byDate.entries())
       .map(([date, v]) => ({ date, ...v }))
       .sort((a, b) => a.date.localeCompare(b.date));
@@ -941,6 +952,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
         summaries.push(json);
       }
     }
+
     workoutsJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching recent workouts for insights prompt:', error);
@@ -989,6 +1001,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
         summaries.push(json);
       }
     }
+
     pastOccurrencesJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching past occurrences for volume prompt:', error);
@@ -1043,8 +1056,10 @@ export const getWorkoutInsightsPrompt = async (
         if (!setsByTe.has(s.templateExerciseId)) {
           setsByTe.set(s.templateExerciseId, []);
         }
+
         setsByTe.get(s.templateExerciseId)!.push(s);
       }
+
       const exercisesForJson = templateExercises.map((te) => {
         const exercise = exerciseMap.get(te.exerciseId);
         const setList = setsByTe.get(te.id) ?? [];
@@ -1152,6 +1167,7 @@ export const getWorkoutVolumeInsightsPrompt = async (
         summaries.push(json);
       }
     }
+
     historyJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching workout volume history for prompt:', error);

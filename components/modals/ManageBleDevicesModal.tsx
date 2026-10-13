@@ -51,6 +51,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
       const run = () => {
         void refreshSaved();
       };
+
       run();
     }
   }, [visible, refreshSaved]);

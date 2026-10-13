@@ -77,6 +77,7 @@ function characterCountBits(version: number): number {
   if (version <= 9) {
     return 9;
   }
+
   return version <= 26 ? 11 : 13;
 }
 

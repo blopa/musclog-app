@@ -68,6 +68,7 @@ export class FastedDayRepository {
             )
           );
         }
+
         shouldBustCache = true;
         return;
       }

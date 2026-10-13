@@ -97,6 +97,7 @@ export function buildWarmupSets(
     if (snapped >= workingKg * MAX_WARMUP_FRACTION_OF_WORKING || seen.has(snapped)) {
       continue;
     }
+
     seen.add(snapped);
     sets.push({ weightKg: snapped, reps });
   }

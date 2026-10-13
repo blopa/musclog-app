@@ -33,12 +33,14 @@ export function WhatsNewDebugSection() {
       setError('whatsNew.debug.invalid');
       return;
     }
+
     try {
       if (clear) {
         await AsyncStorage.removeItem(WHATS_NEW_SEEN_THROUGH_KEY);
       } else {
         await AsyncStorage.setItem(...whatsNewSeenEntry(version));
       }
+
       resetWhatsNewAutoFlowSession();
       setSeen(await getWhatsNewSeenThrough());
       setError(null);
@@ -46,6 +48,7 @@ export function WhatsNewDebugSection() {
       setError('whatsNew.saveFailed');
     }
   };
+
   return (
     <View className="gap-3 rounded-xl border border-border-light bg-bg-card p-4">
       <Text accessibilityRole="header" className="text-xl font-bold text-text-primary">

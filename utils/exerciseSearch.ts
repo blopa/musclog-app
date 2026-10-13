@@ -54,21 +54,27 @@ export function stemToken(token: string): string {
   if (token.length <= 3) {
     return token;
   }
+
   if (token.endsWith('ies') && token.length > 4) {
     return `${token.slice(0, -3)}y`;
   }
+
   if (/[^aeiou]yes$/.test(token)) {
     return `${token.slice(0, -3)}y`;
   }
+
   if (/(ss|sh|ch|x|z)es$/.test(token)) {
     return token.slice(0, -2);
   }
+
   if (token.endsWith('ss') || token.endsWith('us') || token.endsWith('is')) {
     return token;
   }
+
   if (token.endsWith('s')) {
     return token.slice(0, -1);
   }
+
   return token;
 }
 
@@ -131,6 +137,7 @@ export function exerciseSearchTerms(query: string): ExerciseSearchTerm[] {
       for (const expansion of expansions) {
         alternatives.push(expansion.map(stemToken));
       }
+
       return alternatives;
     });
 }
@@ -157,6 +164,7 @@ export function buildExerciseSearchText({ names, aliases = [] }: SearchTextSourc
     for (const token of tokens) {
       words.add(token);
     }
+
     if (tokens.length > 1) {
       words.add(tokens.join(''));
     }

@@ -227,6 +227,7 @@ function ExerciseList({
     if (selectedExercise) {
       onSelectExercise?.(selectedExercise.id);
     }
+
     setShowConfirmation(false);
     setSelectedExercise(null);
   };
@@ -305,6 +306,7 @@ export default function WorkoutSessionOverviewModal({
       const reset = () => {
         setIsMenuVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -333,6 +335,7 @@ export default function WorkoutSessionOverviewModal({
       if (!exerciseGroups.has(blockId)) {
         exerciseGroups.set(blockId, []);
       }
+
       exerciseGroups.get(blockId)!.push(set);
     });
 
@@ -413,6 +416,7 @@ export default function WorkoutSessionOverviewModal({
         onPress: onStartWorkout,
       };
     }
+
     return {
       label: t('workout.resumeSession'),
       onPress: onResumeSession,

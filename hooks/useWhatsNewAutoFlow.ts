@@ -25,6 +25,7 @@ async function evaluate(): Promise<WhatsNewFlow | null> {
     evaluation = undefined; // Fresh onboarding may complete later in this JS session.
     return null;
   }
+
   const currentVersion = getAppVersion();
   const flow = selectWhatsNewFlow({
     releases: whatsNewReleases,
@@ -36,6 +37,7 @@ async function evaluate(): Promise<WhatsNewFlow | null> {
     handled = true;
     return null;
   }
+
   return flow;
 }
 
@@ -47,19 +49,23 @@ export function useWhatsNewAutoFlow({ suppressed = false }: { suppressed?: boole
     if (isStaticExport || !focused) {
       return;
     }
+
     if (suppressed) {
       handled = true;
       return;
     }
+
     if (handled) {
       return;
     }
+
     let cancelled = false;
     evaluation ??= evaluate().catch((error) => {
       evaluation = undefined;
       if (__DEV__) {
         console.warn('[WhatsNew] Could not check announcements', error);
       }
+
       return null;
     });
     void evaluation.then((selected) => {

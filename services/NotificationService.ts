@@ -406,10 +406,12 @@ export class NotificationService {
     if (currentGoal?.targetMode === 'weekly') {
       return;
     }
+
     for (const checkin of checkins) {
       if (currentGoal && checkin.nutritionGoalId !== currentGoal.id) {
         continue;
       }
+
       const date = new Date(checkin.checkinDate);
       // Set to 8 AM local time on the check-in day
       date.setHours(8, 0, 0, 0);
@@ -436,6 +438,7 @@ export class NotificationService {
     if (Platform.OS === 'web') {
       return;
     }
+
     const [enabled, allowed, weekday, scheduled, goal, intuitive] = await Promise.all([
       SettingsService.getNotifications(),
       SettingsService.getNotificationsWeeklyReview(),
@@ -461,6 +464,7 @@ export class NotificationService {
       date = new Date(period.next);
       date.setHours(8, 0, 0, 0);
     }
+
     const identifier = `weekly-review-${localDayStartMs(date)}`;
     for (const notification of scheduled) {
       if (
@@ -470,6 +474,7 @@ export class NotificationService {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
       }
     }
+
     if (
       !enabled ||
       !allowed ||
@@ -477,6 +482,7 @@ export class NotificationService {
     ) {
       return;
     }
+
     await Notifications.scheduleNotificationAsync({
       identifier,
       content: {

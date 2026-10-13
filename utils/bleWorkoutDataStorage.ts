@@ -103,6 +103,7 @@ function buildMetadataHeader(data: Omit<BleWorkoutFile, 'samples'>): string {
   if (data.reps != null) {
     lines.push(`  "reps": ${data.reps},`);
   }
+
   if (data.setId) {
     lines.push(`  "setId": ${JSON.stringify(data.setId)},`);
   }
@@ -251,6 +252,7 @@ function appendNdjsonFileToJsonArray(sourceFile: File, destinationFile: File): v
         destinationFile.write(`${wroteAnySample ? ',\n' : ''}  ${finalLine}`, { append: true });
         wroteAnySample = true;
       }
+
       buffer = '';
     }
   };

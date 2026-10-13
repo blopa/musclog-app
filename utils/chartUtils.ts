@@ -50,6 +50,7 @@ export function getXAxisLabels<T extends { x: number }>(
   if (data.length === 0) {
     return [];
   }
+
   if (data.length === 1) {
     return [
       {

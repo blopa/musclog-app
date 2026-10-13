@@ -86,6 +86,7 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
     if (closingRef.current || busy || activeAction !== null) {
       return;
     }
+
     closingRef.current = true;
     setClosing(true);
     setCloseFailed(false);
@@ -101,6 +102,7 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
       setClosing(false);
     }
   };
+
   const action = (key: WhatsNewAction) => {
     const spec = WHATS_NEW_ACTION_CATALOG[key];
     if (spec.kind === 'route') {
@@ -109,6 +111,7 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
       setActiveAction(key as WhatsNewModalAction);
     }
   };
+
   const page = flow.pages[pageIndex - 1];
   const pageBlocks = page
     ? page.blocks.map((block) => (

@@ -44,6 +44,7 @@ export function SaveForLaterPortionModal({
         setIsSubmitting(false);
       }
     };
+
     syncOrReset();
   }, [visible]);
 
@@ -51,6 +52,7 @@ export function SaveForLaterPortionModal({
     if (isBusy) {
       return;
     }
+
     setIsSubmitting(true);
     await flushLoadingPaint();
     try {

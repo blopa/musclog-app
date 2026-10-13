@@ -55,6 +55,7 @@ export function ExerciseRestrictionSection({ exerciseId }: ExerciseRestrictionSe
         await ExerciseRestrictionService.clear(exerciseId);
         return;
       }
+
       const result = await ExerciseRestrictionService.set(exerciseId, next, {
         expiresAt: next === 'injury' ? injuryExpiryTimestamp(nextExpiry) : null,
       });

@@ -137,6 +137,7 @@ export function ReplaceExerciseModal({
     if (!visible) {
       return;
     }
+
     const reset = () => {
       setStep('pick');
       setSearchQuery('');
@@ -145,6 +146,7 @@ export function ReplaceExerciseModal({
       setRemoveEquipment(false);
       setInjuryExpiry('4w');
     };
+
     reset();
   }, [visible]);
 
@@ -153,12 +155,14 @@ export function ReplaceExerciseModal({
     if (!visible || !currentExerciseId) {
       return;
     }
+
     let cancelled = false;
     ExerciseService.getExerciseById(currentExerciseId)
       .then((exercise) => {
         if (cancelled) {
           return;
         }
+
         setCurrent(exercise);
         setFamily(exercise ? muscleGroupFamily(exercise.muscleGroup) : 'all');
       })
@@ -207,12 +211,14 @@ export function ReplaceExerciseModal({
     if (!visible || !current) {
       return;
     }
+
     let cancelled = false;
     ExerciseSuggestionService.getSuggestibleExercises(undefined, suggestionContext)
       .then(({ exercises }) => {
         if (cancelled) {
           return;
         }
+
         setSuggested(
           rankSubstitutes(current, exercises, suggestionContext)
             .filter((candidate) => candidate.sameFamily && !candidate.disliked)
@@ -254,10 +260,12 @@ export function ReplaceExerciseModal({
         setSelectedExercise('');
         return;
       }
+
       if (!everythingShown.some((exercise) => exercise.id === selectedExercise)) {
         setSelectedExercise(everythingShown[0].id);
       }
     };
+
     syncSelection();
   }, [everythingShown, selectedExercise]);
 
@@ -308,6 +316,7 @@ export function ReplaceExerciseModal({
     if (!chosen) {
       return;
     }
+
     const kind = rememberChoice ? impliedKind : null;
     // The host closes the sheet once the swap succeeded; a failed swap leaves it open to retry.
     await onReplace(chosen, {

@@ -22,6 +22,7 @@ export function nutritionReason(
   if (!recommendation?.canApply) {
     return { key: 'weeklyReview.collectData' };
   }
+
   const { expenditure, trendChangeKg, usedEmpiricalData } = recommendation;
   if (expenditure == null || !Number.isFinite(expenditure)) {
     // A snapshot saved before the numbers were recorded.
@@ -29,9 +30,11 @@ export function nutritionReason(
       key: usedEmpiricalData ? 'weeklyReview.empiricalReason' : 'weeklyReview.baselineReason',
     };
   }
+
   if (!usedEmpiricalData) {
     return { key: 'weeklyReview.reasonBaseline', expenditure };
   }
+
   return trendChangeKg != null && Number.isFinite(trendChangeKg)
     ? { key: 'weeklyReview.reasonEmpirical', expenditure, trendChangeKg }
     : { key: 'weeklyReview.reasonEmpiricalNoTrend', expenditure };

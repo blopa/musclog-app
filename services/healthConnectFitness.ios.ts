@@ -160,6 +160,7 @@ export async function writeUserMetricToHealthConnect(
       if (!(await canWriteQuantity('HKQuantityTypeIdentifierBodyMass'))) {
         return undefined;
       }
+
       const s = await saveQuantitySample(
         'HKQuantityTypeIdentifierBodyMass',
         'kg',
@@ -170,10 +171,12 @@ export async function writeUserMetricToHealthConnect(
       );
       return s?.uuid;
     }
+
     if (params.type === 'height') {
       if (!(await canWriteQuantity('HKQuantityTypeIdentifierHeight'))) {
         return undefined;
       }
+
       const s = await saveQuantitySample(
         'HKQuantityTypeIdentifierHeight',
         'm',
@@ -184,10 +187,12 @@ export async function writeUserMetricToHealthConnect(
       );
       return s?.uuid;
     }
+
     if (params.type === 'body_fat') {
       if (!(await canWriteQuantity('HKQuantityTypeIdentifierBodyFatPercentage'))) {
         return undefined;
       }
+
       const s = await saveQuantitySample(
         'HKQuantityTypeIdentifierBodyFatPercentage',
         '%',
@@ -198,10 +203,12 @@ export async function writeUserMetricToHealthConnect(
       );
       return s?.uuid;
     }
+
     if (params.type === 'lean_body_mass') {
       if (!(await canWriteQuantity('HKQuantityTypeIdentifierLeanBodyMass'))) {
         return undefined;
       }
+
       const s = await saveQuantitySample(
         'HKQuantityTypeIdentifierLeanBodyMass',
         'kg',
@@ -216,6 +223,7 @@ export async function writeUserMetricToHealthConnect(
     handleError(e, 'healthConnectFitness.ios.writeUserMetricToHealthConnect');
     console.warn('[healthConnectFitness.iOS] writeUserMetricToHealthConnect failed:', e);
   }
+
   return undefined;
 }
 
@@ -388,6 +396,7 @@ async function syncMetricTypeWithRetry(
       }
     }
   }
+
   throw lastError;
 }
 
@@ -433,6 +442,7 @@ async function syncOneMetricType(
         DataValidator.validateMetricValue(transformed.type, transformed.value);
         DataValidator.validateTimestamp(transformed.date);
       }
+
       const externalId = sample.uuid;
       hkMap.set(externalId, { ...transformed, externalId });
     } catch {
@@ -508,6 +518,7 @@ async function syncOneMetricType(
           if (now - (localMetric.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
             continue;
           }
+
           await localMetric.update((m) => {
             m.deletedAt = now;
             m.updatedAt = now;

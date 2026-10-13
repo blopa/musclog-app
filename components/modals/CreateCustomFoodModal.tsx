@@ -157,6 +157,7 @@ export default function CreateCustomFoodModal({
         setIsFoodDetailsVisible(false);
         setShowPortionPicker(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -280,6 +281,7 @@ export default function CreateCustomFoodModal({
     if (onSave) {
       onSave({ ...foodData, nutritionBasis, servingName, selectedPortionIds });
     }
+
     onClose();
   };
 
@@ -314,6 +316,7 @@ export default function CreateCustomFoodModal({
     if (imageUrl) {
       await deleteFoodImage(imageUrl);
     }
+
     setImageUrl('');
   };
 

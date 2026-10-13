@@ -74,6 +74,7 @@ export default function RepMarkerPage() {
     if (videoUrl) {
       URL.revokeObjectURL(videoUrl);
     }
+
     const url = URL.createObjectURL(file);
     setVideoUrl(url);
     setVideoName(file.name);
@@ -92,6 +93,7 @@ export default function RepMarkerPage() {
           setJsonError(t('invalidJson'));
           return;
         }
+
         const cd = buildChartData(parsed);
         setJsonData(parsed);
         setJsonName(file.name);
@@ -109,6 +111,7 @@ export default function RepMarkerPage() {
         setJsonError(t('invalidJson'));
       }
     };
+
     reader.readAsText(file);
   };
 
@@ -119,6 +122,7 @@ export default function RepMarkerPage() {
     if (!video) {
       return;
     }
+
     setPendingStartMs(video.currentTime * 1000);
     setMarkState('waitingEnd');
   }, []);
@@ -128,6 +132,7 @@ export default function RepMarkerPage() {
     if (!video || markState !== 'waitingEnd' || pendingStartMs === null) {
       return;
     }
+
     const endRel = video.currentTime * 1000;
     const startRel = pendingStartMs;
     const lo = Math.min(startRel, endRel);
@@ -155,11 +160,13 @@ export default function RepMarkerPage() {
     if (phase !== 'editor') {
       return;
     }
+
     const handleKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') {
         return;
       }
+
       if (e.key === 's' || e.key === 'S') {
         e.preventDefault();
         triggerMarkStart();
@@ -178,6 +185,7 @@ export default function RepMarkerPage() {
         }
       }
     };
+
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [phase, triggerMarkStart, triggerMarkEnd]);
@@ -188,6 +196,7 @@ export default function RepMarkerPage() {
     if (!jsonData) {
       return;
     }
+
     const output: RecordingJson = {
       ...jsonData,
       repMarkers: [...markers].sort((a, b) => a.startMs - b.startMs),

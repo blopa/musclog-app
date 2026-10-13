@@ -41,6 +41,7 @@ export function averageSpeedMetersPerMinute(distanceM: number, durationS: number
   if (!(distanceM > 0) || !(durationS > 0)) {
     return 0;
   }
+
   return distanceM / (durationS / 60);
 }
 

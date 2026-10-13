@@ -137,6 +137,7 @@ export function paceSecondsPerDisplayUnit(
   ) {
     return null;
   }
+
   return durationS / metersToDisplayDistance(distanceM, units);
 }
 
@@ -173,9 +174,11 @@ export function resolveWeightUnits({
   } else if (isWeightUnitOverride(gym)) {
     pinned = gym;
   }
+
   if (pinned === null) {
     return account;
   }
+
   return pinned === 'lbs' ? 'imperial' : 'metric';
 }
 
@@ -192,6 +195,7 @@ export function kgToDisplay(kg: number, units: Units): number {
   if (units === 'imperial') {
     return convert(kg, 'kg').to('lb') as number;
   }
+
   return kg;
 }
 
@@ -204,6 +208,7 @@ export function roundWeightForUnits(kg: number, units: Units): number {
   if (units === 'imperial') {
     return displayToKg(Math.round(kgToDisplay(kg, units)), units);
   }
+
   return Math.round(kg);
 }
 
@@ -215,6 +220,7 @@ export function displayToKg(value: number, units: Units): number {
   if (units === 'imperial') {
     return convert(value, 'lb').to('kg') as number;
   }
+
   return value;
 }
 
@@ -226,6 +232,7 @@ export function cmToDisplay(cm: number, units: Units): number {
   if (units === 'imperial') {
     return convert(cm, 'cm').to('in') as number;
   }
+
   return cm;
 }
 
@@ -237,6 +244,7 @@ export function displayToCm(value: number, units: Units): number {
   if (units === 'imperial') {
     return convert(value, 'in').to('cm') as number;
   }
+
   return value;
 }
 
@@ -279,6 +287,7 @@ export function storedWeightToKg(value: number, storedUnit?: string | null): num
   if (storedUnit === 'lbs') {
     return convert(value, 'lb').to('kg') as number;
   }
+
   return value;
 }
 
@@ -289,6 +298,7 @@ export function storedHeightToCm(value: number, storedUnit?: string | null): num
   if (storedUnit === 'in') {
     return convert(value, 'in').to('cm') as number;
   }
+
   return value;
 }
 
@@ -334,6 +344,7 @@ export function prepareMetricDataToSave<T extends Record<string, unknown>>(
       }
     }
   }
+
   return result;
 }
 
@@ -379,5 +390,6 @@ export function prepareMetricDataToDisplay<T extends Record<string, unknown>>(
       }
     }
   }
+
   return result;
 }

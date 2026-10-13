@@ -167,6 +167,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         setSendMealId(null);
         setImportVisible(false);
       };
+
       reset();
     }
   }, [visible]);

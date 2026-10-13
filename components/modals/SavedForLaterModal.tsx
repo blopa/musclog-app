@@ -96,6 +96,7 @@ export function SavedForLaterModal({
         setIsTrackModalVisible(false);
       }
     };
+
     syncOrReset();
   }, [visible]);
 

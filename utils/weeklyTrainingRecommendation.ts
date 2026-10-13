@@ -27,6 +27,7 @@ export function consistencyStatus(done: number, target: number): ConsistencyStat
   if (done > target) {
     return 'exceeded';
   }
+
   return done === target ? 'met' : 'missed';
 }
 
@@ -93,6 +94,7 @@ export function goalVerdicts(input: {
       status: consistencyStatus(input.workoutsThisWeek, input.consistency.target),
     });
   }
+
   for (const goal of input.oneRm) {
     verdicts.push({
       kind: '1rm',
@@ -103,6 +105,7 @@ export function goalVerdicts(input: {
       projectedDate: goal.projection?.projectedDate?.getTime() ?? null,
     });
   }
+
   return verdicts;
 }
 
@@ -132,6 +135,7 @@ export function recommendTrainingWeek(evidence: TrainingEvidence): {
   if (evidence.deloadedExercises >= MIN_DELOADED_EXERCISES) {
     reasons.push({ code: 'repeatedDeloads', count: evidence.deloadedExercises });
   }
+
   if (
     evidence.ratedSets >= MIN_RATED_SETS &&
     evidence.averageRir != null &&
@@ -140,9 +144,11 @@ export function recommendTrainingWeek(evidence: TrainingEvidence): {
   ) {
     reasons.push({ code: 'lowReserveStalled' });
   }
+
   if (evidence.decidedWeeksSinceLighter >= LIGHTER_WEEK_INTERVAL) {
     reasons.push({ code: 'dueForLighter', count: evidence.decidedWeeksSinceLighter });
   }
+
   if (reasons.length) {
     return { decision: 'lighter', reasons };
   }
@@ -150,6 +156,7 @@ export function recommendTrainingWeek(evidence: TrainingEvidence): {
   if (evidence.everWorkout && evidence.workoutsThisWeek === 0) {
     return { decision: 'repeat', reasons: [{ code: 'noWorkouts' }] };
   }
+
   const consistency = evidence.goals.find((goal) => goal.kind === 'consistency');
   if (
     consistency?.kind === 'consistency' &&
@@ -158,6 +165,7 @@ export function recommendTrainingWeek(evidence: TrainingEvidence): {
   ) {
     return { decision: 'repeat', reasons: [{ code: 'missedConsistency' }] };
   }
+
   return { decision: 'progress', reasons: [{ code: 'onTrack' }] };
 }
 
@@ -176,9 +184,11 @@ export function consistencySuggestion(
     const to = Math.max(1, Math.max(thisWeek, previousWeek));
     return to < target ? { kind: 'lower', to } : null;
   }
+
   if (thisWeek > target && previousWeek > target) {
     const to = Math.min(7, target + 1);
     return to > target ? { kind: 'raise', to } : null;
   }
+
   return null;
 }

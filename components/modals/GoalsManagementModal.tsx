@@ -81,6 +81,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         setSelectedGoal(null);
       }
     };
+
     syncTabOrReset();
   }, [visible, tab]);
 
@@ -96,6 +97,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
     if (!currentNutritionGoal) {
       return undefined;
     }
+
     return nutritionGoalToInitialValues(currentNutritionGoal);
   }, [currentNutritionGoal]);
 

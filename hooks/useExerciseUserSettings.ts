@@ -96,6 +96,7 @@ export function useExerciseUserSettings(): UseExerciseUserSettingsResult {
         repCeiling: resolveRepCeiling(row.repCeiling),
       });
     }
+
     return {
       get: (exerciseId: string | undefined) =>
         (exerciseId ? byExercise.get(exerciseId) : undefined) ?? NO_SETTINGS,

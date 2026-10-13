@@ -57,6 +57,7 @@ export function GenericEditModal({
       const syncValues = () => {
         setFormValues(initialValues);
       };
+
       syncValues();
     }
   }, [visible, initialValues]);
@@ -67,6 +68,7 @@ export function GenericEditModal({
         setDatePickerVisible(false);
         setSelectMenuVisible(false);
       };
+
       reset();
     }
   }, [visible]);

@@ -202,6 +202,7 @@ export function CreateMealModal({
       setDefaultPortionName(meal?.defaultPortionName ?? '');
       setServingGrams(meal?.servingGrams ?? 100);
     };
+
     syncFromMeal();
   }, [meal]);
 
@@ -211,6 +212,7 @@ export function CreateMealModal({
         setMealOptionsMenuVisible(false);
         setDeleteMealConfirmVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -252,6 +254,7 @@ export function CreateMealModal({
       const syncDate = () => {
         setSelectedDate(localCalendarDayDate(logDate));
       };
+
       syncDate();
     }
   }, [visible, isQuickTrack, logDate]);
@@ -315,6 +318,7 @@ export function CreateMealModal({
         setMealAmountGrams(1);
       }
     };
+
     syncAmount();
   }, [isQuickTrack, nutritionBasis, referenceMealGrams]);
 
@@ -414,6 +418,7 @@ export function CreateMealModal({
       if (meal.imageUrl) {
         await deleteMealImage(meal.imageUrl);
       }
+
       await MealService.deleteMeal(meal.id);
       onSave?.();
       onClose();
@@ -441,6 +446,7 @@ export function CreateMealModal({
       showSnackbar('error', t('food.quickTrackMeal.addOneIngredient'));
       return;
     }
+
     if (saveToMyMeals && !mealName.trim()) {
       showSnackbar('error', t('food.quickTrackMeal.mealNameRequired'));
       return;
@@ -478,11 +484,13 @@ export function CreateMealModal({
           undefined
         );
       }
+
       onTracked?.();
       onFirstNutritionLog?.();
       if (saveToMyMeals) {
         onFirstMealCreated?.();
       }
+
       onClose();
       showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
@@ -515,6 +523,7 @@ export function CreateMealModal({
     if (imageUrl) {
       await deleteMealImage(imageUrl);
     }
+
     setImageUrl(undefined);
   };
 
@@ -548,6 +557,7 @@ export function CreateMealModal({
         for (const mealFoodId of removedMealFoodIdsRef.current) {
           await MealService.removeFoodFromMeal(mealFoodId);
         }
+
         const newIngredients = ingredients.filter((ing) => !ing.mealFoodId);
         for (const ing of newIngredients) {
           await MealService.addFoodToMeal(meal.id, ing.foodId, ing.amount);
@@ -615,12 +625,15 @@ export function CreateMealModal({
     if (isSaving) {
       return t('common.saving');
     }
+
     if (isQuickTrack) {
       return t('food.quickTrackMeal.trackMeal');
     }
+
     if (meal) {
       return t('common.save');
     }
+
     return t('food.createMeal.saveMeal');
   };
 

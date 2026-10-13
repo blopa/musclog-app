@@ -50,6 +50,7 @@ export function ExerciseGoalDetailModal({
     if (!dataPoints || dataPoints.length === 0) {
       return [];
     }
+
     return dataPoints.map((dp) => ({
       x: dp.date,
       y: dp.estimated1RM,

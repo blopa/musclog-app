@@ -27,6 +27,7 @@ export async function getFoodServingDisplay(
   } catch (error) {
     console.error('Error getting serving display:', error);
   }
+
   const unit = getMassUnitLabel(units);
   return `${formatDisplayGrams(locale, units, 100)} ${unit}`;
 }

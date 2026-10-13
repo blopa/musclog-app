@@ -123,6 +123,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
     // a re-render.
     const [previewReady] = useState(() => {
       let resolve = () => {};
+
       const promise = new Promise<void>((res) => {
         resolve = res;
       });
@@ -138,6 +139,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
       if (!cameraRef.current) {
         throw new Error('Camera is not ready');
       }
+
       const photo = await cameraRef.current.takePhoto({
         enableShutterSound: options?.shutterSound ?? true,
       });
@@ -174,6 +176,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
           if (!cameraRef.current) {
             throw new Error('Camera is not ready');
           }
+
           // The snapshot ladder (preview wait → snapshot → bounded takePhoto fallback) and its
           // telemetry live in cameraShutter.ts; here we just wire in the session-bound
           // primitives. The snapshot primitive re-checks the ref because the camera can unmount
@@ -184,6 +187,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
               if (!cameraRef.current) {
                 throw new Error('Camera is not ready');
               }
+
               const snapshot = await cameraRef.current.takeSnapshot({ quality: 90 });
               return { uri: toFileUri(snapshot.path) };
             },

@@ -51,6 +51,7 @@ export function selectRetargets<S extends RetargetableSet>({
   if (status === 'planned' || isWarmupSet(set) || (autonomy === 'manual' && !rule)) {
     return null;
   }
+
   // `set` may already carry its new status or not yet; the explicit `status` is authoritative.
   const resolvedAs = (row: S) => (row.id === set.id ? status : row.completionStatus);
   const performedBefore = siblings.filter(
@@ -60,14 +61,12 @@ export function selectRetargets<S extends RetargetableSet>({
   if (!previous) {
     return null;
   }
+
   const top = siblings[0];
   const previousIsTopSet =
     rule?.type === 'top_set_backoff' && !!top && resolvedAs(top) === 'performed';
   const unfinished = siblings.filter(
-    (row) =>
-      row.id !== set.id &&
-      row.setOrder > set.setOrder &&
-      isPlannedWorkoutSet(row)
+    (row) => row.id !== set.id && row.setOrder > set.setOrder && isPlannedWorkoutSet(row)
   );
   // Only the next set follows a straight block; a set the user typed over is left exactly as typed.
   const targets = (previousIsTopSet ? unfinished : unfinished.slice(0, 1)).filter(
@@ -76,5 +75,6 @@ export function selectRetargets<S extends RetargetableSet>({
   if (targets.length === 0) {
     return null;
   }
+
   return { previous: previousIsTopSet ? top : previous, previousIsTopSet, targets };
 }

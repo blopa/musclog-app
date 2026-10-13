@@ -14,6 +14,7 @@ function parseBumpType(argv) {
   if (hasMajor && hasMinor) {
     throw new Error('Use only one of --major or --minor at a time');
   }
+
   return hasMajor ? 'major' : hasMinor ? 'minor' : 'patch';
 }
 
@@ -22,6 +23,7 @@ function bumpVersion(version, bumpType) {
   if (parts.length !== 3 || parts.some(Number.isNaN)) {
     throw new Error(`Invalid version format: ${version}`);
   }
+
   if (bumpType === 'major') {
     parts[0] += 1;
   } else if (bumpType === 'minor') {
@@ -29,6 +31,7 @@ function bumpVersion(version, bumpType) {
   } else {
     parts[2] += 1;
   }
+
   return parts.join('.');
 }
 
@@ -41,6 +44,7 @@ function readRequiredMatch(content, pattern, label) {
   if (!match) {
     throw new Error(`Could not read ${label}`);
   }
+
   return match[1];
 }
 
@@ -48,6 +52,7 @@ function replaceRequired(content, pattern, replacement, label) {
   if (!pattern.test(content)) {
     throw new Error(`Could not update ${label}`);
   }
+
   pattern.lastIndex = 0;
   return content.replace(pattern, replacement);
 }
@@ -107,9 +112,11 @@ function assertReleaseVersionsMatch(projectDir) {
   if (versionValues.some((version) => version !== versions.appVersion)) {
     throw new Error(`Release version mismatch: ${JSON.stringify(versions)}`);
   }
+
   if (buildValues.some((build) => build !== String(versions.appBuild))) {
     throw new Error(`Release build-number mismatch: ${JSON.stringify(versions)}`);
   }
+
   return versions;
 }
 
@@ -166,6 +173,7 @@ function bumpProjectVersions(projectDir, bumpType) {
   if (packageLock) {
     fs.writeFileSync(files.lock, `${JSON.stringify(packageLock, null, 2)}\n`);
   }
+
   fs.writeFileSync(files.android, android);
   fs.writeFileSync(files.ios, ios);
   assertReleaseVersionsMatch(projectDir);

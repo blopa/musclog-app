@@ -114,6 +114,7 @@ export async function getHistoricalNutritionParams(options: {
   if (!firstTrendInWindow || !finalTrend || firstTrendInWindow.date >= finalTrend.date) {
     return null;
   }
+
   const initialWeight = firstTrendInWindow.value;
   const finalWeight = finalTrend.value;
 
@@ -135,6 +136,7 @@ export async function getHistoricalNutritionParams(options: {
   if (loggedDayKeys.size < minNutritionDays || rangeNutrients.calories <= 0) {
     return null;
   }
+
   // Coverage controls average intake. Tissue energy always uses elapsed anchor days, including
   // days without food logs; intentional fasting contributes a zero to the intake average only.
   const historicalTotalDays =

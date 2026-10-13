@@ -71,6 +71,7 @@ function capitalizeLanguageLabel(label) {
   if (!s) {
     return s;
   }
+
   return s[0].toLocaleUpperCase() + s.slice(1);
 }
 
@@ -229,6 +230,7 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
           dateFnsLocaleName = candidate;
           break;
         }
+
         // Also try uppercase region: pt-BR
         const upperCandidate = dirToLanguageTag(dir);
         if (dateFnsLocales[upperCandidate]) {

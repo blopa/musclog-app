@@ -105,12 +105,15 @@ export function ProgressionWhySheet({
   if (ruleLine) {
     inputs.push({ label: t(PROGRESSION_METHOD_KEYS[rule!.type]), value: ruleLine });
   }
+
   if (prescription) {
     inputs.push({ label: t('progression.inputs.plan'), value: load(prescription.plan) });
   }
+
   if (prescription?.previous) {
     inputs.push({ label: t('progression.inputs.lastTime'), value: load(prescription.previous) });
   }
+
   if (prescription) {
     inputs.push({
       label: t('progression.inputs.today'),

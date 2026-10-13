@@ -109,6 +109,7 @@ export function useExerciseGoals({
       const stopLoading = () => {
         setIsLoading(false);
       };
+
       stopLoading();
       return;
     }
@@ -116,6 +117,7 @@ export function useExerciseGoals({
     const run = () => {
       void loadInitial();
     };
+
     run();
 
     // Subscribe to exercise_goals table changes

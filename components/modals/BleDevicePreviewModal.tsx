@@ -39,9 +39,11 @@ export function BleDevicePreviewModal({ visible, onClose }: BleDevicePreviewModa
     if (visible) {
       return;
     }
+
     const reset = () => {
       setBuffer([]);
     };
+
     reset();
     counterRef.current = 0;
     lastRenderRef.current = 0;
@@ -51,6 +53,7 @@ export function BleDevicePreviewModal({ visible, onClose }: BleDevicePreviewModa
     const reset = () => {
       setBuffer([]);
     };
+
     reset();
     counterRef.current = 0;
     lastRenderRef.current = 0;
@@ -60,10 +63,12 @@ export function BleDevicePreviewModal({ visible, onClose }: BleDevicePreviewModa
     if (!visible || !liveData.updatedAt) {
       return;
     }
+
     const now = Date.now();
     if (now - lastRenderRef.current < MIN_RENDER_INTERVAL_MS) {
       return;
     }
+
     lastRenderRef.current = now;
 
     const vec =
@@ -84,6 +89,7 @@ export function BleDevicePreviewModal({ visible, onClose }: BleDevicePreviewModa
     if (buffer.length < 2) {
       return [0, MAX_POINTS];
     }
+
     return [buffer[0].x, buffer[buffer.length - 1].x];
   }, [buffer]);
 
@@ -91,6 +97,7 @@ export function BleDevicePreviewModal({ visible, onClose }: BleDevicePreviewModa
     if (buffer.length === 0) {
       return [-1, 1];
     }
+
     const all = buffer.flatMap((p) => [p.a, p.b, p.c]);
     const min = Math.min(...all);
     const max = Math.max(...all);

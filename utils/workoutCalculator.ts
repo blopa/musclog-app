@@ -112,6 +112,7 @@ export function calculateSessionVolumeFromSets(
     if (!byExercise.has(id)) {
       byExercise.set(id, []);
     }
+
     byExercise.get(id)!.push(s);
   }
 
@@ -149,6 +150,7 @@ export function calculatePreviewVolumeFromTemplateSets(
     if (!byExercise.has(id)) {
       byExercise.set(id, []);
     }
+
     byExercise.get(id)!.push(s);
   }
 
@@ -240,30 +242,37 @@ export function calculate1RM(
         // Brzycki formula: 1RM = weight / (1.0278 - 0.0278 × reps)
         return weight / (1.0278 - 0.0278 * adjustedReps);
       }
+
       case 'Epley': {
         // Epley formula: 1RM = weight × (1 + reps/30)
         return weight * (1 + adjustedReps / 30);
       }
+
       case 'Lander': {
         // Lander formula: 1RM = weight / (1.013 - 0.0267123 × reps)
         return weight / (1.013 - 0.0267123 * adjustedReps);
       }
+
       case 'Lombardi': {
         // Lombardi formula: 1RM = weight × reps^0.1
         return weight * Math.pow(adjustedReps, 0.1);
       }
+
       case 'Mayhew': {
         // Mayhew formula: 1RM = weight / (0.522 + 0.419 × e^(-0.055 × reps))
         return weight / (0.522 + 0.419 * Math.exp(-0.055 * adjustedReps));
       }
+
       case 'OConner': {
         // O'Connor formula: 1RM = weight × (1 + 0.025 × reps)
         return weight * (1 + 0.025 * adjustedReps);
       }
+
       case 'Wathen': {
         // Wathen formula: 1RM = weight / (0.488 + 0.539 × e^(-0.035 × reps))
         return weight / (0.488 + 0.539 * Math.exp(-0.035 * adjustedReps));
       }
+
       default: {
         return null;
       }
@@ -302,6 +311,7 @@ export function calculateWeightForTargetRIR(
   if (multiplier === 0) {
     return 0;
   }
+
   return oneRM / multiplier;
 }
 

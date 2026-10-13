@@ -120,6 +120,7 @@ export function ScannedFoodDetailsModal({
     const syncEdit = () => {
       setLocalCanEdit(alwaysAllowFoodEditing);
     };
+
     syncEdit();
   }, [alwaysAllowFoodEditing]);
 
@@ -189,6 +190,7 @@ export function ScannedFoodDetailsModal({
         resetAlternateSource();
         setLocalCanEdit(alwaysAllowFoodEditing);
       };
+
       reset();
     }
   }, [visible, alwaysAllowFoodEditing, resetEditForm, resetAlternateSource]);

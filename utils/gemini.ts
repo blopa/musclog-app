@@ -189,18 +189,23 @@ export function geminiModelFamily(model: string | undefined): GeminiModelFamily 
   if (name.startsWith('gemini-3') && name.includes('pro')) {
     return 'gemini-3-pro';
   }
+
   if (name.startsWith('gemini-3')) {
     return 'gemini-3-flash';
   }
+
   if (name.startsWith('gemini-2.5-flash-lite')) {
     return 'gemini-2.5-flash-lite';
   }
+
   if (name.startsWith('gemini-2.5-flash')) {
     return 'gemini-2.5-flash';
   }
+
   if (name.startsWith('gemini-2.5-pro')) {
     return 'gemini-2.5-pro';
   }
+
   return 'other';
 }
 
@@ -218,6 +223,7 @@ export function buildGeminiGenerationConfig(
   if (options.json !== false) {
     config.responseMimeType = 'application/json';
   }
+
   if (options.responseSchema) {
     config.responseSchema = options.responseSchema;
   }

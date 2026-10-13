@@ -35,6 +35,7 @@ export function useExerciseImageSource(imageUrl: string | null | undefined): Ima
           if (cancelled) {
             return;
           }
+
           setSource(cachedUri ? { uri: cachedUri } : FALLBACK_EXERCISE_IMAGE);
         });
         return () => {

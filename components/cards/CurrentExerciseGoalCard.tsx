@@ -51,6 +51,7 @@ export function CurrentExerciseGoalCard({
     if (isLoading) {
       return;
     }
+
     setMenuVisible(false);
     if (recentAverage1RM != null) {
       setConfirmRecalculateVisible(true);

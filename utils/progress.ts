@@ -108,6 +108,7 @@ export function calculateEmpiricalTDEEWindow(
     if (!average) {
       return end === 'start' ? [commonDays[0]] : [commonDays[commonDays.length - 1]];
     }
+
     return end === 'start'
       ? commonDays.slice(0, ENDPOINT_WINDOW_DAYS)
       : commonDays.slice(-ENDPOINT_WINDOW_DAYS);

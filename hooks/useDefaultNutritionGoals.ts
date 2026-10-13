@@ -66,6 +66,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
     const startLoading = () => {
       setIsLoading(true);
     };
+
     startLoading();
 
     const compute = async () => {
@@ -75,6 +76,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
           setPlanData(null);
           setIsLoading(false);
         }
+
         return;
       }
 
@@ -94,6 +96,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
           setPlanData(null);
           setIsLoading(false);
         }
+
         return;
       }
 

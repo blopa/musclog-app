@@ -38,6 +38,7 @@ export function startAdjustmentMessageKey(
       ? START_ADJUSTMENT_MESSAGE_KEYS.reviewLighter
       : START_ADJUSTMENT_MESSAGE_KEYS.reviewRepeat;
   }
+
   const repsMoved = adjustment.now.reps !== adjustment.plan.reps;
 
   switch (adjustment.cause) {
@@ -45,6 +46,7 @@ export function startAdjustmentMessageKey(
       if (adjustment.field === 'reps') {
         return START_ADJUSTMENT_MESSAGE_KEYS.progressionReps;
       }
+
       return repsMoved
         ? START_ADJUSTMENT_MESSAGE_KEYS.progressionWeightReps
         : START_ADJUSTMENT_MESSAGE_KEYS.progressionWeight;
@@ -53,6 +55,7 @@ export function startAdjustmentMessageKey(
       if (adjustment.field === 'reps') {
         return START_ADJUSTMENT_MESSAGE_KEYS.repeatReps;
       }
+
       return repsMoved
         ? START_ADJUSTMENT_MESSAGE_KEYS.deloadWeightReps
         : START_ADJUSTMENT_MESSAGE_KEYS.deload;
@@ -60,6 +63,7 @@ export function startAdjustmentMessageKey(
       if (adjustment.field === 'reps') {
         return START_ADJUSTMENT_MESSAGE_KEYS.repeatReps;
       }
+
       return repsMoved
         ? START_ADJUSTMENT_MESSAGE_KEYS.repeatWeightReps
         : START_ADJUSTMENT_MESSAGE_KEYS.repeatWeight;

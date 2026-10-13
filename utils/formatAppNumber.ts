@@ -107,6 +107,7 @@ export function getAppNumberFormatter(
     fmt = new Intl.NumberFormat(locale, options);
     formatterCache.set(key, fmt);
   }
+
   return fmt;
 }
 

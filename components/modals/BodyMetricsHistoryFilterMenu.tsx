@@ -49,6 +49,7 @@ export function BodyMetricsHistoryFilterMenu({
         setSortOrder(initialFilters.sortOrder);
         setTrend(initialFilters.trend);
       };
+
       syncFilters();
     }
   }, [visible, initialFilters]);

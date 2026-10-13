@@ -34,5 +34,6 @@ export function formatPace(
   if (seconds === null) {
     return null;
   }
+
   return `${formatMinutesSeconds(locale, seconds)} /${getDistanceUnitLabel(units)}`;
 }

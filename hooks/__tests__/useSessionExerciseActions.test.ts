@@ -6,7 +6,9 @@ import { WorkoutLogExerciseService } from '@/database/services/WorkoutLogExercis
 
 const mockShowSnackbar = jest.fn();
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
-jest.mock('@/context/SnackbarContext', () => ({ useSnackbar: () => ({ showSnackbar: mockShowSnackbar }) }));
+jest.mock('@/context/SnackbarContext', () => ({
+  useSnackbar: () => ({ showSnackbar: mockShowSnackbar }),
+}));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 jest.mock('@/database/services/WorkoutLogExerciseService', () => ({
   WorkoutLogExerciseService: { replaceLogExercise: jest.fn(async () => {}) },

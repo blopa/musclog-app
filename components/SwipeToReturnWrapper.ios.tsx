@@ -54,6 +54,7 @@ export function SwipeToReturnWrapper({
       } else {
         translateX.value = withSpring(0, { damping: 20, stiffness: 200 });
       }
+
       isEdgeGesture.value = false;
     });
 

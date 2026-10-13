@@ -198,6 +198,7 @@ export function useCurrentNutritionGoal({
     const startLoading = () => {
       setIsLoadingCurrent(true);
     };
+
     startLoading();
     fetchGoalForDate();
 
@@ -314,6 +315,7 @@ export function useCurrentNutritionGoal({
       const clearMacros = () => {
         setResolvedNutritionTargets(null);
       };
+
       clearMacros();
       return;
     }
@@ -340,6 +342,7 @@ export function useCurrentNutritionGoal({
     if (!enableReactivity || !visible) {
       return;
     }
+
     const subscription = database
       .get('nutrition_target_periods')
       .query(Q.where('deleted_at', Q.eq(null)))
@@ -373,8 +376,10 @@ export function useCurrentNutritionGoal({
         const run = () => {
           void loadInitialGoals();
         };
+
         run();
       }
+
       return;
     }
 
@@ -399,6 +404,7 @@ export function useCurrentNutritionGoal({
     const runInit = () => {
       void loadInitialGoals();
     };
+
     runInit();
 
     return () => subscription.unsubscribe();
@@ -491,6 +497,7 @@ export function useCurrentNutritionGoal({
       const clearMacros = () => {
         setCurrentGoalResolvedNutritionTargets(null);
       };
+
       clearMacros();
       return;
     }

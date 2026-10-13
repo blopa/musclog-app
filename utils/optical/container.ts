@@ -258,6 +258,7 @@ export function parseOpticalContainerHeader(bytes: Uint8Array): OpticalContainer
   if (bytes.length < OPTICAL_CONTAINER_HEADER_LEN) {
     throw new OpticalContainerError('bad-length', 'Container is shorter than its header');
   }
+
   if (MAGIC.some((byte, index) => bytes[index] !== byte)) {
     throw new OpticalContainerError('bad-magic', 'Not a Musclog optical container');
   }
@@ -292,6 +293,7 @@ export function parseOpticalContainerHeader(bytes: Uint8Array): OpticalContainer
   if (bytes.length !== OPTICAL_CONTAINER_HEADER_LEN + meta.bodyLen) {
     throw new OpticalContainerError('bad-length', 'Container length does not match its header');
   }
+
   return meta;
 }
 
@@ -305,9 +307,11 @@ export async function unpackOpticalContainer(
   if (meta.plainLen > maxPlainBytes) {
     throw new OpticalContainerError('too-large', 'Container declares an implausible payload size');
   }
+
   if (meta.encrypted && !passphrase) {
     throw new OpticalContainerError('needs-passphrase', 'This transfer is passphrase-protected');
   }
+
   if (!meta.encrypted && passphrase) {
     throw new OpticalContainerError(
       'unexpected-passphrase',
@@ -327,6 +331,7 @@ export async function unpackOpticalContainer(
       // The ~1-in-256 wrong key that unpads cleanly is caught by the SHA-256 check below.
       throw new OpticalContainerError('bad-passphrase', 'Wrong passphrase');
     }
+
     onProgress?.('encrypting', 1);
   }
 
@@ -354,6 +359,7 @@ export async function unpackOpticalContainer(
       'Payload failed its checksum'
     );
   }
+
   onProgress?.('hashing', 1);
 
   onProgress?.('encoding', 0);
@@ -367,10 +373,12 @@ function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) {
     return false;
   }
+
   for (let i = 0; i < a.length; i++) {
     if (a[i] !== b[i]) {
       return false;
     }
   }
+
   return true;
 }

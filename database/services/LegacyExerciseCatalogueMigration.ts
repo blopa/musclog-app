@@ -63,6 +63,7 @@ export class LegacyExerciseCatalogueMigration {
     if (!preCheck.some(isRetiredCatalogueExercise)) {
       return null;
     }
+
     if (!(await AppExerciseCatalogueService.isComplete())) {
       return null;
     }
@@ -81,6 +82,7 @@ export class LegacyExerciseCatalogueMigration {
       if (retired.length === 0 || !(await AppExerciseCatalogueService.isComplete())) {
         return;
       }
+
       migrated = true;
 
       const retiredIds = retired.map((exercise) => exercise.id);
@@ -128,6 +130,7 @@ export class LegacyExerciseCatalogueMigration {
           if (!row.exerciseId || !referencedIds.has(row.exerciseId)) {
             return [];
           }
+
           const cloneId = cloneIdFor(row.exerciseId);
           report.repointed += 1;
           return [

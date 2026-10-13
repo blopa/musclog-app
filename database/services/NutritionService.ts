@@ -92,9 +92,11 @@ export async function scaleMealNutritionLogsToTotalGrams(
   if (totalGrams <= 0) {
     throw new Error('Meal has no weight');
   }
+
   if (newTotalGrams <= 0) {
     throw new Error('Invalid target weight');
   }
+
   const ratio = newTotalGrams / totalGrams;
 
   const prepared = await Promise.all(
@@ -189,6 +191,7 @@ export class NutritionService {
           const defaultPortion = await food.getDefaultPortionAsync();
           resolvedPortionId = defaultPortion?.id;
         }
+
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: food.name ?? undefined,
           loggedCalories: food.calories ?? 0,
@@ -289,6 +292,7 @@ export class NutritionService {
           );
         }
       }
+
       throw error;
     }
   }
@@ -325,6 +329,7 @@ export class NutritionService {
           return repaired;
         }
       }
+
       throw error;
     }
   }
@@ -621,6 +626,7 @@ export class NutritionService {
           return this.deleteNutritionLogInternal(id, true);
         }
       }
+
       throw error;
     }
   }

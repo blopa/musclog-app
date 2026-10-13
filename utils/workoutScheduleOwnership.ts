@@ -32,6 +32,7 @@ export function resolveWorkoutLogPlanId(
   if (explicitPlanId) {
     return explicitPlanId;
   }
+
   const activeMemberships = memberships.filter((membership) => !membership.deletedAt);
   return activeMemberships.length === 1 ? activeMemberships[0].planId : undefined;
 }
@@ -62,6 +63,7 @@ export function resolveWorkoutSchedules(
     if (plan?.cycleType !== 'weekly') {
       continue;
     }
+
     for (const dayIndex of membership.weekDays ?? []) {
       resolved.push({
         templateId: membership.templateId,
@@ -76,6 +78,7 @@ export function resolveWorkoutSchedules(
     if (plannedTemplateIds.has(schedule.templateId)) {
       continue;
     }
+
     const dayIndex = dayNameToIndex(schedule.dayOfWeek);
     if (dayIndex >= 0) {
       resolved.push({
@@ -93,5 +96,6 @@ export function resolveWorkoutSchedules(
       unique.set(key, schedule);
     }
   }
+
   return [...unique.values()];
 }

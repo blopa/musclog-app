@@ -122,6 +122,7 @@ export async function captureWithSnapshotLadder({
       clearTimeout(timer);
       resolve();
     };
+
     previewReady.then(settle, settle);
   });
   const previewWaitMs = Date.now() - startedAt;

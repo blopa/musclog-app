@@ -129,6 +129,7 @@ export function SpiderChart({
     } else if (angle > 150 || angle < -150) {
       anchor = 'end';
     }
+
     const horizontalPadding = size * 0.09;
     const verticalPadding = size * 0.07;
     return {

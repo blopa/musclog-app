@@ -247,6 +247,7 @@ export default function DebugTestScreen() {
           if (retries >= maxRetries) {
             throw verifyError; // Re-throw if all retries failed
           }
+
           // Wait before retrying
           await new Promise((resolve) => setTimeout(resolve, 200));
         }
@@ -321,6 +322,7 @@ export default function DebugTestScreen() {
     } else {
       newExpanded.add(tableName);
     }
+
     setExpandedTables(newExpanded);
   };
 
@@ -555,6 +557,7 @@ export default function DebugTestScreen() {
       if (!acc[screen.category]) {
         acc[screen.category] = [];
       }
+
       acc[screen.category].push(screen);
       return acc;
     },

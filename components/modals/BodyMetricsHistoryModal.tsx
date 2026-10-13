@@ -60,12 +60,15 @@ function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): st
   if (isToday(date)) {
     return `${t('bodyMetrics.dateFormats.today')}, ${timeStr}`;
   }
+
   if (isYesterday(date)) {
     return `${t('bodyMetrics.dateFormats.yesterday')}, ${timeStr}`;
   }
+
   if (isThisWeek(date)) {
     return `${format(date, 'EEE', { locale })}, ${timeStr}`;
   }
+
   return format(date, 'MMM d, hh:mm a', { locale });
 }
 
@@ -96,6 +99,7 @@ export default function BodyMetricsHistoryModal({
         setIsAddMetricVisible(false);
         setIsFilterMenuVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -256,6 +260,7 @@ export default function BodyMetricsHistoryModal({
         const fatFreeMassKg = weightKg * (1 - latestBodyFatPct / 100);
         return fatFreeMassKg / (heightM * heightM);
       }
+
       return value;
     },
     [selectedMetric, units, latestHeightCm, latestBodyFatPct]
@@ -341,6 +346,7 @@ export default function BodyMetricsHistoryModal({
     if (!paginatedMetrics || paginatedMetrics.length === 0) {
       return [];
     }
+
     const unit = getMetricUnit(selectedMetric);
     const entries = processMetricsToEntries(paginatedMetrics, unit);
 
@@ -352,9 +358,11 @@ export default function BodyMetricsHistoryModal({
             if (activeFilters.trend === 'increased') {
               return e.changeType === 'up';
             }
+
             if (activeFilters.trend === 'decreased') {
               return e.changeType === 'down';
             }
+
             // noChange
             return e.changeType === null;
           });
@@ -363,6 +371,7 @@ export default function BodyMetricsHistoryModal({
     if (activeFilters.sortOrder === 'oldestFirst') {
       return [...trendFiltered].reverse();
     }
+
     return trendFiltered;
   }, [paginatedMetrics, selectedMetric, getMetricUnit, processMetricsToEntries, activeFilters]);
 
@@ -371,6 +380,7 @@ export default function BodyMetricsHistoryModal({
     if (!paginatedMetrics || paginatedMetrics.length === 0) {
       return null;
     }
+
     const latest = paginatedMetrics[0];
     const d = latest.decrypted;
     const displayVal = getDisplayValue(d.value, d.unit);
@@ -473,6 +483,7 @@ export default function BodyMetricsHistoryModal({
     if (!allMetricsForChart || allMetricsForChart.length === 0) {
       return [];
     }
+
     const sorted = [...allMetricsForChart].sort((a, b) => a.decrypted.date - b.decrypted.date);
     return getXAxisLabels(
       sorted.map((m) => ({ x: m.decrypted.date })),

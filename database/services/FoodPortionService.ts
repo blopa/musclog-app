@@ -71,6 +71,7 @@ export class FoodPortionService {
         if (icon) {
           portion.icon = icon;
         }
+
         portion.source = source;
         portion.kind = kind;
         portion.scope = scope;
@@ -166,6 +167,7 @@ export class FoodPortionService {
       query =
         offset > 0 ? query.extend(Q.skip(offset), Q.take(limit)) : query.extend(Q.take(limit));
     }
+
     return await query.fetch();
   }
 
@@ -231,6 +233,7 @@ export class FoodPortionService {
         if (updates.scope !== undefined) {
           record.scope = updates.scope;
         }
+
         record.updatedAt = Date.now();
       });
 
@@ -243,6 +246,7 @@ export class FoodPortionService {
     if (portion.resolvedSource === 'basic') {
       throw new Error('Cannot delete a built-in app food portion.');
     }
+
     await portion.markAsDeleted();
   }
 

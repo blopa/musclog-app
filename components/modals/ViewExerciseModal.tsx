@@ -112,6 +112,7 @@ export default function ViewExerciseModal({
       setIsLoadingData(false);
       return;
     }
+
     try {
       const fetched = await ExerciseService.getExerciseById(resolvedId);
       setExercise(fetched ?? exerciseProp ?? null);
@@ -131,6 +132,7 @@ export default function ViewExerciseModal({
         setWorkouts([]);
         return;
       }
+
       try {
         const [pb, freq, overload] = await Promise.all([
           WorkoutAnalytics.getPersonalBestForExercise(ex.id),
@@ -186,6 +188,7 @@ export default function ViewExerciseModal({
       setIsLoadingData(true);
       loadExercise();
     };
+
     startLoad();
   }, [visible, resolvedId, loadExercise]);
 
@@ -197,6 +200,7 @@ export default function ViewExerciseModal({
     const runLoad = () => {
       loadStatsAndWorkouts(exercise);
     };
+
     runLoad();
   }, [exercise, exercise?.id, loadStatsAndWorkouts]);
 
@@ -280,14 +284,17 @@ export default function ViewExerciseModal({
             t('exercises.manageExerciseData.usedInTemplates', { count: templateSets.length })
           );
         }
+
         if (logSets.length > 0) {
           parts.push(t('exercises.manageExerciseData.usedInLogs', { count: logSets.length }));
         }
+
         return parts.join('. ');
       }
     } catch {
       // ignore
     }
+
     return null;
   };
 
@@ -310,6 +317,7 @@ export default function ViewExerciseModal({
       const updated = await ExerciseService.getExerciseById(exercise.id);
       setExercise(updated ?? exercise);
     }
+
     onExerciseUpdated?.();
   };
 
@@ -327,6 +335,7 @@ export default function ViewExerciseModal({
     if (!exercise?.id) {
       return;
     }
+
     try {
       await ExerciseService.duplicateExercise(exercise.id);
       showSnackbar('success', t('exercises.viewExercise.duplicateSuccess'));
@@ -341,6 +350,7 @@ export default function ViewExerciseModal({
     if (!exercise?.id) {
       return;
     }
+
     checkExerciseDependencies(exercise.id).then((warning) => {
       setDependencyWarning(warning);
       setDeleteConfirmVisible(true);
@@ -351,6 +361,7 @@ export default function ViewExerciseModal({
     if (!exercise?.id) {
       return;
     }
+
     setIsDeleting(true);
     try {
       await ExerciseService.deleteExercise(exercise.id);

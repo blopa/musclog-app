@@ -36,6 +36,7 @@ export function useWeeklyReviewOverview(reviewId?: string, day?: string) {
       if (request.current !== id) {
         return;
       }
+
       setLoaded({ key, overview });
       setLegacy(history);
       setFailedKey(null);

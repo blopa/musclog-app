@@ -72,6 +72,7 @@ export function useWeeklyReviewStatus() {
         if (!live) {
           return;
         }
+
         for (const [table, columns] of [
           ['weekly_reviews', ['training_reviewed_at', 'nutrition_reviewed_at']],
           ['nutrition_goals', ['target_mode', 'effective_until']],

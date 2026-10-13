@@ -24,6 +24,7 @@ export async function seedProgressionFlow(locale = 'en-US', theme: 'light' | 'da
   if (isProduction()) {
     throw new Error('Development fixture');
   }
+
   await SettingsService.setLanguage(locale);
   await SettingsService.setTheme(DEFAULT_THEME_BY_MODE[theme]);
   await SettingsService.setUnits('metric');
@@ -57,6 +58,7 @@ export async function seedProgressionFlow(locale = 'en-US', theme: 'light' | 'da
       })
     );
   }
+
   await UserMetricService.createMetric({
     type: 'height',
     value: 175,
@@ -86,6 +88,7 @@ export async function seedProgressionFlow(locale = 'en-US', theme: 'light' | 'da
       'lunch'
     );
   }
+
   const goal = await NutritionGoalService.saveGoals({
     totalCalories: 2100,
     protein: 140,

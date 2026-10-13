@@ -114,6 +114,7 @@ function applyLauncherAliases(application) {
   if (!mainActivity) {
     throw new Error(`withThemeAppIcons: ${MAIN_ACTIVITY} was not found in AndroidManifest.xml.`);
   }
+
   mainActivity['intent-filter'] = (mainActivity['intent-filter'] ?? []).filter(
     (filter) => !isLauncherIntentFilter(filter)
   );
@@ -189,6 +190,7 @@ const withAndroidIconColors = (config) =>
         value: themeIconBackgroundColor(themeId),
       });
     }
+
     return config;
   });
 
@@ -214,10 +216,12 @@ const withAndroidIconResources = (config) =>
             .png()
             .toFile(path.join(directory, `${resource}_foreground.png`));
         }
+
         const xml = adaptiveIconXml(themeId);
         await fs.promises.writeFile(path.join(anydpiDirectory, `${resource}.xml`), xml);
         await fs.promises.writeFile(path.join(anydpiDirectory, `${resource}_round.xml`), xml);
       }
+
       return config;
     },
   ]);
@@ -240,6 +244,7 @@ const withIosIconSets = (config) =>
           .toFile(path.join(directory, IOS_ICON_FILENAME));
         await fs.promises.writeFile(path.join(directory, 'Contents.json'), iosIconSetContents());
       }
+
       return config;
     },
   ]);

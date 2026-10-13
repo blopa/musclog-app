@@ -45,6 +45,11 @@ module.exports = defineConfig([
       'react/jsx-closing-bracket-location': ['warn', 'line-aligned'],
       // Enforce curly braces for all control statements (fixable)
       curly: ['warn', 'all'],
+      // Separate blocks/functions (including block-bodied arrow functions) from the next statement.
+      'padding-line-between-statements': [
+        'warn',
+        { blankLine: 'always', prev: ['block-like', 'if', 'function'], next: '*' },
+      ],
       // Disallow nested ternary expressions
       'no-nested-ternary': 'warn',
       // Disallow using `&&` inside JSX expression containers (fixable)

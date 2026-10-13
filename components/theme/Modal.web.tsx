@@ -37,6 +37,7 @@ export function Modal({
     if (!useShellPortal || !visible || !onShow) {
       return;
     }
+
     onShow();
   }, [useShellPortal, visible, onShow]);
 
@@ -50,6 +51,7 @@ export function Modal({
         onRequestClose();
       }
     };
+
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [useShellPortal, visible, onRequestClose]);

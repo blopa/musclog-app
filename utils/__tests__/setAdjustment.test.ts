@@ -310,9 +310,7 @@ describe('explanations added for the rep ceiling and the training max reset', ()
   it('reads back a rep-ceiling explanation', () => {
     const raw = JSON.stringify({ ...base, rule: { kind: 'ceiling', ceiling: 25 } });
     expect(parseStartAdjustment(raw)?.rule).toEqual({ kind: 'ceiling', ceiling: 25 });
-    expect(
-      parseStartAdjustment(JSON.stringify({ ...base, rule: { kind: 'ceiling' } }))
-    ).toBeNull();
+    expect(parseStartAdjustment(JSON.stringify({ ...base, rule: { kind: 'ceiling' } }))).toBeNull();
   });
 
   it('reads a percentage explanation with or without a reset', () => {

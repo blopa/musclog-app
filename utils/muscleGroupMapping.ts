@@ -95,10 +95,12 @@ export function buildSlugIntensityMap(
     if (!group) {
       continue;
     }
+
     const slugs = MUSCLE_TO_SLUGS[group.toLowerCase()] ?? [];
     for (const slug of slugs) {
       countMap.set(slug, (countMap.get(slug) ?? 0) + 1);
     }
   }
+
   return countMap;
 }

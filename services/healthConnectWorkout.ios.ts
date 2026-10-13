@@ -122,6 +122,7 @@ export async function writeWorkoutToHealthConnect(
         i18n.t('healthConnect.workoutCaloriesNote', { calories: payload.caloriesBurned })
       );
     }
+
     if (payload.totalVolume != null && payload.totalVolume > 0) {
       const locale = i18n.resolvedLanguage ?? i18n.language;
       noteParts.push(
@@ -131,6 +132,7 @@ export async function writeWorkoutToHealthConnect(
         })
       );
     }
+
     if (payload.segmentItems && payload.segmentItems.length > 0) {
       const breakdown = formatSegmentBreakdown(payload.segmentItems, unitLabel, units);
       if (breakdown) {

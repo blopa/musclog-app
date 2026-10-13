@@ -301,9 +301,11 @@ export function getRealisticWeeklyRateCapPercent(normalizedRS: number): number {
   if (normalizedRS < 1.0) {
     return 1.5;
   } // Novice
+
   if (normalizedRS < 1.8) {
     return 0.5;
   } // Intermediate
+
   return 0.15; // Advanced
 }
 

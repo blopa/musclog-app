@@ -63,6 +63,7 @@ export function localCalendarDayFromParam(param: string | string[] | undefined):
       return localCalendarDayDate(parsed);
     }
   }
+
   return localCalendarDayDate(new Date());
 }
 

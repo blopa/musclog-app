@@ -10,6 +10,7 @@ function getDesktopFrameMql(): MediaQueryList | null {
   if (Platform.OS !== 'web' || typeof window === 'undefined') {
     return null;
   }
+
   return window.matchMedia(`(min-width: ${WEB_DESKTOP_PHONE_FRAME_MIN_WIDTH}px)`);
 }
 

@@ -109,6 +109,7 @@ async function run() {
       console.error('Tests failed:', e.message);
       process.exit(1);
     }
+
     return;
   }
 
@@ -127,6 +128,7 @@ async function run() {
       if (await isServerUp()) {
         break;
       }
+
       await new Promise((r) => setTimeout(r, 1000));
       retries++;
     }

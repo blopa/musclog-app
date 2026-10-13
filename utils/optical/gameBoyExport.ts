@@ -201,6 +201,7 @@ function assertUniqueIndexes(
     if (seen.has(index)) {
       throw new GameBoyExportError('malformed', `Duplicate ${label} index ${index}`);
     }
+
     seen.add(index);
   }
 }

@@ -195,6 +195,7 @@ function collectPeakClusterCandidate(
       if (currentCluster.length > bestCluster.length) {
         bestCluster = currentCluster;
       }
+
       currentCluster = [peaks[i]];
     }
   }

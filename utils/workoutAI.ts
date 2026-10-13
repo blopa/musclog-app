@@ -251,10 +251,12 @@ export async function buildWorkoutCompletedSummaryForLLM(
       if (!ex) {
         continue;
       }
+
       const name = ex.name ?? 'Exercise';
       if (!byExercise.has(name)) {
         byExercise.set(name, []);
       }
+
       byExercise.get(name)!.push({ reps: set.reps ?? 0, weight: toDisplay(set.weight ?? 0) });
     }
 
@@ -325,6 +327,7 @@ export async function prepareWorkoutDataForAI(workoutLogId: string): Promise<str
       if (!exercisesByName.has(exerciseName)) {
         exercisesByName.set(exerciseName, { sets: [], exercise });
       }
+
       exercisesByName.get(exerciseName)!.sets.push(set);
     }
 

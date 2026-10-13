@@ -20,10 +20,12 @@ async function applyAppIcon(name: string | null): Promise<void> {
   if (!themeAppIconModule) {
     return;
   }
+
   // iOS shows a system alert on every change, so never "change" to the icon already shown.
   if ((await themeAppIconModule.getAppIcon()) === name) {
     return;
   }
+
   await themeAppIconModule.setAppIcon(name);
 }
 
@@ -35,10 +37,12 @@ function ensureBackgroundSubscription(): void {
   if (backgroundSubscription) {
     return;
   }
+
   backgroundSubscription = AppState.addEventListener('change', (state) => {
     if (state !== 'background' || pendingAndroidIcon === undefined) {
       return;
     }
+
     const name = pendingAndroidIcon;
     pendingAndroidIcon = undefined;
     applyAppIcon(name).catch(reportFailure);
@@ -55,11 +59,13 @@ export async function syncAppIconWithTheme(preference: ThemeOption): Promise<voi
   if (!themeAppIconModule) {
     return;
   }
+
   const name = appIconNameForPreference(preference);
   if (Platform.OS === 'android') {
     pendingAndroidIcon = name;
     ensureBackgroundSubscription();
     return;
   }
+
   await applyAppIcon(name).catch(reportFailure);
 }

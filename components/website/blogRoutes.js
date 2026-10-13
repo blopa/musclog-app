@@ -34,6 +34,7 @@ function totalBlogPages(postCount, postsPerPage = BLOG_POSTS_PER_PAGE) {
   if (!Number.isInteger(postsPerPage) || postsPerPage < 1) {
     throw new Error('Blog posts per page must be a positive integer');
   }
+
   if (!Number.isInteger(postCount) || postCount < 0) {
     throw new Error('Blog post count must be a non-negative integer');
   }

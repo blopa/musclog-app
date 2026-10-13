@@ -37,6 +37,7 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
         setIsAddModalVisible(false);
         setPromptToDelete(null);
       };
+
       reset();
     }
   }, [visible]);

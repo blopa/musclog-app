@@ -18,6 +18,7 @@ function samplesToChartPoints(samples: BleWorkoutSample[]): LineChartDataPoint[]
   if (!samples.length) {
     return [];
   }
+
   const t0 = samples[0].timestamp;
   return samples.map((s) => ({
     x: (s.timestamp - t0) / 1000,

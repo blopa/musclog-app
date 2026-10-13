@@ -20,6 +20,7 @@ export function parseSetPrescription(raw?: string | null): SetPrescription | nul
   if (!raw) {
     return null;
   }
+
   try {
     const value = JSON.parse(raw) as SetPrescription;
     if (
@@ -32,12 +33,14 @@ export function parseSetPrescription(raw?: string | null): SetPrescription | nul
     ) {
       return null;
     }
+
     if (
       value.workingSetCount !== undefined &&
       (!Number.isInteger(value.workingSetCount) || value.workingSetCount <= 0)
     ) {
       return null;
     }
+
     return value;
   } catch {
     return null;

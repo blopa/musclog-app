@@ -217,6 +217,7 @@ export function StackedBarChart({
                     nearest = d;
                   }
                 }
+
                 const total =
                   (nearest.segments[0] ?? 0) +
                   (nearest.segments[1] ?? 0) +

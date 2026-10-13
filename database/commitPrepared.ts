@@ -21,6 +21,7 @@ export async function commitPrepared(
       record._raw = raw;
       record._preparedState = state;
     }
+
     throw error;
   }
 }

@@ -773,6 +773,7 @@ export function calculateBMR(
   if (gender === 'male') {
     return Math.round(base + 5);
   }
+
   if (gender === 'female') {
     return Math.round(base - 161);
   }
@@ -1132,10 +1133,12 @@ export function proteinReferenceWeightKg(
   if (goalWeightKg != null && Number.isFinite(goalWeightKg) && goalWeightKg > 0) {
     return goalWeightKg;
   }
+
   if (heightCm != null && Number.isFinite(heightCm) && heightCm > 0) {
     const referenceKg = PROTEIN_REFERENCE_BMI * (heightCm / 100) ** 2;
     return Math.min(weightKg, referenceKg);
   }
+
   return weightKg;
 }
 
@@ -1209,6 +1212,7 @@ function splitAroundProtein(
   if (proteinLimited) {
     protein = Math.max(0, proteinLimit);
   }
+
   const remaining = Math.max(0, targetCalories - protein * CALORIES_FOR_PROTEIN);
   const carbsFatSum = carbsShare + fatsShare;
   const fatKcal = Math.min(
@@ -1418,15 +1422,19 @@ export function normalizeFitnessGoal(raw: string): FitnessGoal {
   if (lower.includes('hypertrophy') || lower.includes('build muscle')) {
     return 'hypertrophy';
   }
+
   if (lower.includes('strength') || lower.includes('lift heavier')) {
     return 'strength';
   }
+
   if (lower.includes('endurance') || lower.includes('stamina')) {
     return 'endurance';
   }
+
   if (lower.includes('weight loss') || lower.includes('burn fat')) {
     return 'weight_loss';
   }
+
   if (lower.includes('general') || lower.includes('fitness')) {
     return 'general';
   }

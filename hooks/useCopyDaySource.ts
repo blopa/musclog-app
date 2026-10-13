@@ -82,6 +82,7 @@ export function useCopyDaySource({
         if (!cancelled) {
           setRecentDays([]);
         }
+
         handleError(error, 'copyDay.loadRecentDays', { showSnackbar: false });
       })
       .finally(() => {
@@ -131,6 +132,7 @@ export function useCopyDaySource({
             } catch {
               // Food may be deleted; the snapshot still carries name and nutrients.
             }
+
             const [nutrients, gramWeight, displayName] = await Promise.all([
               log.getNutrients(),
               log.getGramWeight(),
@@ -147,6 +149,7 @@ export function useCopyDaySource({
         if (!cancelled) {
           setSections([]);
         }
+
         handleError(error, 'copyDay.loadSourceDay', { showSnackbar: false });
       } finally {
         if (!cancelled) {

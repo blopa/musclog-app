@@ -40,6 +40,7 @@ export class WorkoutLogExerciseService {
       if (original.exerciseId === newExerciseId) {
         return original.id;
       }
+
       const sets = await database
         .get<WorkoutLogSet>('workout_log_sets')
         .query(Q.where('log_exercise_id', logExerciseId), Q.where('deleted_at', Q.eq(null)))
@@ -49,6 +50,7 @@ export class WorkoutLogExerciseService {
       if (hasHistory && !planned.length) {
         return original.id;
       }
+
       const siblings = hasHistory
         ? await collection
             .query(
@@ -69,6 +71,7 @@ export class WorkoutLogExerciseService {
           record.progressionJson = undefined;
           record.updatedAt = now;
         };
+
         if (hasHistory) {
           const workingSetCount = sets.filter((set) => !isWarmupSet(set)).length;
           for (const set of sets.filter((row) => !isPlannedWorkoutSet(row) && !isWarmupSet(row))) {
@@ -76,6 +79,7 @@ export class WorkoutLogExerciseService {
             if ((prescription?.workingSetCount ?? 0) >= workingSetCount) {
               continue;
             }
+
             operations.push(
               set.prepareUpdate((record) => {
                 record.prescriptionJson = serializeSetPrescription({
@@ -90,6 +94,7 @@ export class WorkoutLogExerciseService {
               })
             );
           }
+
           const replacement = collection.prepareCreate((record) => {
             record.workoutLogId = original.workoutLogId;
             record.templateExerciseId = original.templateExerciseId;
@@ -120,6 +125,7 @@ export class WorkoutLogExerciseService {
             })
           );
         }
+
         operations.push(
           ...planned.map((set) =>
             set.prepareUpdate((record) => {
@@ -127,6 +133,7 @@ export class WorkoutLogExerciseService {
               if (options.plannedWeightKg !== undefined) {
                 record.weight = Math.max(0, options.plannedWeightKg);
               }
+
               record.prescriptionJson = undefined;
               record.adjustmentJson = undefined;
               record.updatedAt = now;
@@ -229,6 +236,7 @@ export class WorkoutLogExerciseService {
       if (own.some(isWarmupSet)) {
         return 0;
       }
+
       const anchor = own
         .filter((set) => isPlannedWorkoutSet(set) && !isWarmupSet(set))
         .sort((a, b) => a.setOrder - b.setOrder)[0];
@@ -273,6 +281,7 @@ export class WorkoutLogExerciseService {
       for (let start = 0; start < operations.length; start += MAX_BATCH_OPERATIONS) {
         await database.batch(...operations.slice(start, start + MAX_BATCH_OPERATIONS));
       }
+
       return count;
     });
   }

@@ -117,19 +117,26 @@ type LoadSnap = { incrementKg: number; roundLoad: (kg: number) => number };
  * does (an empty bar, the lightest dumbbell), `currentKg` comes back unchanged and the caller must
  * not claim a deload.
  */
-export function loadBelow(currentKg: number, targetKg: number, { incrementKg, roundLoad }: LoadSnap) {
+export function loadBelow(
+  currentKg: number,
+  targetKg: number,
+  { incrementKg, roundLoad }: LoadSnap
+) {
   const ceiling = Math.min(targetKg, currentKg);
   let load = roundLoad(Math.max(0, ceiling));
   for (let i = 0; i < MAX_LOAD_STEPS_DOWN && load > 0; i++) {
     if (load <= ceiling + WEIGHT_EPSILON && !sameLoad(load, currentKg)) {
       return load;
     }
+
     const next = roundLoad(Math.max(0, load - incrementKg));
     if (next >= load) {
       break;
     }
+
     load = next;
   }
+
   return load < currentKg && !sameLoad(load, currentKg) ? load : currentKg;
 }
 
@@ -154,6 +161,7 @@ export function repsFirstRange(
   if (planReps != null && planReps > 0) {
     return { minReps: planReps, maxReps: planReps + PLAN_REP_HEADROOM };
   }
+
   const baseReps = defaultRepsFor(isCompound);
   return { minReps: baseReps - REP_RANGE_HALF_WIDTH, maxReps: baseReps + REP_RANGE_HALF_WIDTH };
 }
@@ -168,7 +176,11 @@ export function repsFirstRange(
  * The next reps for an unloaded bodyweight exercise that earned a progression: one more rep, up to
  * its ceiling. At the ceiling the reps hold and the explanation says how to keep progressing.
  */
-function bodyweightRepTarget(last: LastWorkingSession, fromReps: number, ceiling: number): StartTarget {
+function bodyweightRepTarget(
+  last: LastWorkingSession,
+  fromReps: number,
+  ceiling: number
+): StartTarget {
   if (fromReps >= ceiling) {
     return {
       weightKg: last.weightKg,
@@ -177,6 +189,7 @@ function bodyweightRepTarget(last: LastWorkingSession, fromReps: number, ceiling
       rule: { kind: 'ceiling', ceiling },
     };
   }
+
   return { weightKg: last.weightKg, reps: fromReps + 1, kind: 'progression' };
 }
 
@@ -203,6 +216,7 @@ function computeUnratedTarget({
       ? target
       : { ...target, rule: { kind: 'range', outcome: 'add_reps', ...range } };
   }
+
   if (worstReps < maxReps || !loadStepIsUsable(last.weightKg, incrementKg)) {
     return {
       weightKg: last.weightKg,
@@ -252,6 +266,7 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
   if (last.complete === false) {
     return { weightKg: last.weightKg, reps: last.reps, kind: 'repeat' };
   }
+
   if (last.rirRecorded === false) {
     return computeUnratedTarget(input);
   }
@@ -261,6 +276,7 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
     if (repCeiling != null) {
       return bodyweightRepTarget(last, last.reps, repCeiling);
     }
+
     if (progressionMode === 'weight_first' && loadStepIsUsable(last.weightKg, incrementKg)) {
       return {
         weightKg: roundLoad(last.weightKg + incrementKg),

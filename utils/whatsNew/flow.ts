@@ -37,6 +37,7 @@ export function selectWhatsNewFlow({
   if (!parseAppVersion(currentVersion)) {
     return empty;
   }
+
   const seen = parseVersion(seenThrough) ? seenThrough! : '0.0.0';
   const eligible = releases
     .filter(
@@ -76,6 +77,7 @@ export function selectReplayFlow(input: FlowInput): WhatsNewFlow {
       return selectWhatsNewFlow({ ...input, releases: [newest], seenThrough: null });
     }
   }
+
   return { pages: [], releaseVersions: [], truncated: false };
 }
 
@@ -91,5 +93,6 @@ export function pageHeadlineKey(page: WhatsNewFlow['pages'][number]): WhatsNewKe
       return key;
     }
   }
+
   return null;
 }

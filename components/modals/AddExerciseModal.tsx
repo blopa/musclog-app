@@ -67,9 +67,11 @@ const normalizeMuscleGroup = (muscleGroup: MuscleGroup | string): MuscleGroupFil
   if (normalized.includes('chest')) {
     return 'chest';
   }
+
   if (normalized.includes('back') || normalized.includes('lat')) {
     return 'back';
   }
+
   if (
     normalized.includes('leg') ||
     normalized.includes('quad') ||
@@ -79,6 +81,7 @@ const normalizeMuscleGroup = (muscleGroup: MuscleGroup | string): MuscleGroupFil
   ) {
     return 'legs';
   }
+
   if (
     normalized.includes('arm') ||
     normalized.includes('bicep') ||
@@ -88,6 +91,7 @@ const normalizeMuscleGroup = (muscleGroup: MuscleGroup | string): MuscleGroupFil
   ) {
     return 'arms';
   }
+
   return null;
 };
 
@@ -102,12 +106,15 @@ const getExerciseType = (
   if (equipment.includes('bodyweight') || equipment.includes('body weight')) {
     return 'bodyweight' as EquipmentType;
   }
+
   if (mechanic.includes('compound')) {
     return 'compound' as MechanicType;
   }
+
   if (equipment.includes('machine')) {
     return 'machine' as EquipmentType;
   }
+
   return 'isolation' as MechanicType;
 };
 
@@ -116,6 +123,7 @@ const getExerciseIcon = (type: string) => {
   if (type === 'bodyweight') {
     return User;
   }
+
   return Dumbbell;
 };
 
@@ -325,6 +333,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     if (!selectedExerciseId) {
       return null;
     }
+
     const allExercises = Object.values(exercises).flat();
     return allExercises.find((ex) => ex.id === selectedExerciseId) || null;
   }, [selectedExerciseId, exercises]);
@@ -472,6 +481,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     if (!selectedExerciseId) {
       return;
     }
+
     onAddExercise?.({
       exerciseId: selectedExerciseId,
       sets: parseInt(sets, 10),

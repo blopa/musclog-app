@@ -57,6 +57,7 @@ export function ListRow({
   if (isChoice) {
     choiceBorder = selected ? 'border-2 border-accent-primary' : 'border-2 border-transparent';
   }
+
   let defaultTrailing: ReactNode = (
     <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
   );

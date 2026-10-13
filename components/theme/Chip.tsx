@@ -60,6 +60,7 @@ export function Chip({
     ink = selected ? theme.colors.text.onAccent : theme.colors.text.primary;
     textClass = selected ? 'text-text-on-accent' : 'text-text-primary';
   }
+
   if (disabled) {
     ink = theme.colors.text.tertiary;
     textClass = 'text-text-tertiary';

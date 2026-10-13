@@ -26,11 +26,13 @@ export function FirstSessionTip({ view }: { view: 'inline' | 'guided' }) {
         if ((await AsyncStorage.getItem(WORKOUT_FIRST_TIP_SEEN)) === 'true') {
           return;
         }
+
         if ((await WorkoutService.getCompletedWorkoutCount()) > 0) {
           // An existing lifter never needs it; remember that so the count is not re-read.
           await AsyncStorage.setItem(WORKOUT_FIRST_TIP_SEEN, 'true');
           return;
         }
+
         if (!cancelled) {
           setVisible(true);
         }

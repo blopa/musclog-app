@@ -76,6 +76,7 @@ function loadScriptOnce(src: string, id: string) {
       script.dataset.loaded = 'true';
       resolve();
     };
+
     script.onerror = () => reject(new Error(`Failed to load ${src}`));
     document.head.appendChild(script);
   });

@@ -32,6 +32,7 @@ function normalizeMuscleGroup(muscleGroup: string): MuscleGroupFilter | null {
   if (normalized.includes('chest')) {
     return 'chest';
   }
+
   if (normalized.includes('back') || normalized.includes('lat')) {
     return 'back';
   }
@@ -183,6 +184,7 @@ export function AddExerciseToSessionModal({
     if (!selectedExerciseId || !workoutLogId) {
       return;
     }
+
     try {
       setIsSubmitting(true);
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));

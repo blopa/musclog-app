@@ -69,6 +69,7 @@ async function generateCatalogueImages(sourceRepo) {
         missing.push(`${slug}/${frame}.jpg`);
         continue;
       }
+
       bytes += await encode(sourcePath, path.join(outputRoot, slug, `${frame}.webp`));
       written += 1;
     }

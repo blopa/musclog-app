@@ -19,6 +19,7 @@ export function resolveHealthActivity(
   if (activity === 'walk') {
     return 'walking';
   }
+
   if (activity === 'run') {
     return 'running';
   }
@@ -43,8 +44,10 @@ export function workoutTotals(payload: {
   if (payload.caloriesBurned != null && payload.caloriesBurned > 0) {
     totals.energyBurned = payload.caloriesBurned;
   }
+
   if (payload.distanceM != null && payload.distanceM > 0) {
     totals.distance = payload.distanceM;
   }
+
   return Object.keys(totals).length > 0 ? totals : undefined;
 }

@@ -79,6 +79,7 @@ function toCardioDetail(workoutLog: WorkoutLog): WorkoutDetailData['cardio'] {
   if (!isCardioActivity(activity) || !distanceM || distanceM <= 0) {
     return undefined;
   }
+
   const durationS = completedAt && startedAt ? Math.max(0, (completedAt - startedAt) / 1000) : 0;
   return { distanceM, durationS, activity };
 }
@@ -102,6 +103,7 @@ function formatWeight(
   if (isBodyweight) {
     return weight > 0 ? `+${weightStr} ${t(unitKey)}` : t('workoutSession.bodyweight');
   }
+
   return `${weightStr} ${t(unitKey)}`;
 }
 
@@ -233,6 +235,7 @@ export async function transformWorkoutToDetailData(
     if (!setsByExercise.has(exerciseId)) {
       setsByExercise.set(exerciseId, []);
     }
+
     setsByExercise.get(exerciseId)!.push(set);
   });
 
@@ -294,6 +297,7 @@ export async function transformWorkoutToDetailData(
       if (!isWarmup) {
         workingSetNumber += 1;
       }
+
       return {
         setNumber: workingSetNumber,
         isWarmup,

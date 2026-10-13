@@ -160,12 +160,14 @@ export function adjustedFields(adjustment: SetAdjustment | null | undefined): {
   if (!adjustment || adjustment.cause === 'carry_over') {
     return { weight: false, reps: false };
   }
+
   if (isStartAdjustment(adjustment)) {
     return {
       weight: !sameLoad(adjustment.plan.weightKg, adjustment.now.weightKg),
       reps: adjustment.plan.reps !== adjustment.now.reps,
     };
   }
+
   return { weight: adjustment.field === 'weight', reps: adjustment.field === 'reps' };
 }
 
@@ -215,12 +217,14 @@ export function parseStartAdjustment(raw: string | null | undefined): StartSetAd
   if (!raw) {
     return null;
   }
+
   let parsed: any;
   try {
     parsed = JSON.parse(raw);
   } catch {
     return null;
   }
+
   const valid =
     parsed &&
     START_CAUSES.includes(parsed.cause) &&
@@ -238,10 +242,12 @@ export function parseStartAdjustment(raw: string | null | undefined): StartSetAd
   if (!valid) {
     return null;
   }
+
   // A source this build does not know is dropped, not the whole explanation: it only credits.
   if (parsed.source !== undefined && parsed.source !== 'weekly_review') {
     delete parsed.source;
   }
+
   return parsed as StartSetAdjustment;
 }
 
@@ -346,6 +352,7 @@ export function computeIntraSessionAdjustment({
           : null,
     };
   }
+
   const targetRepsInReserve =
     plannedSet.repsInReserve > 0 ? plannedSet.repsInReserve : DEFAULT_TARGET_REPS_IN_RESERVE;
 

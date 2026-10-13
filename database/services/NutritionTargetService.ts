@@ -60,6 +60,7 @@ export class NutritionTargetService {
         sourceReviewId: period.sourceReviewId,
       };
     }
+
     if (mode === 'daily') {
       const calculated = await resolveDailyMacros(goal, date);
       return {
@@ -71,6 +72,7 @@ export class NutritionTargetService {
         tdee: calculated?.tdee ?? 0,
       };
     }
+
     return {
       ...storedNutritionTargets(goal),
       mode,

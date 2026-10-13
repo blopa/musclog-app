@@ -91,6 +91,7 @@ export default function WorkoutSessionScreen() {
     if (initialSelectionApplied.current || !sets.length) {
       return;
     }
+
     initialSelectionApplied.current = true;
     const id =
       params.logExerciseId ??
@@ -128,6 +129,7 @@ export default function WorkoutSessionScreen() {
   } else if (current) {
     target = { set: current.set, exercise: current.exercise };
   }
+
   const actions = useSessionExerciseActions({
     target,
     gym,
@@ -162,6 +164,7 @@ export default function WorkoutSessionScreen() {
     if (workoutLog?.id && !workoutLog.completedAt) {
       NotificationService.scheduleWorkoutDurationWarning(workoutLog.startedAt);
     }
+
     return () => {
       NotificationService.dismissActiveWorkoutNotification();
       NotificationService.cancelWorkoutDurationWarning();
@@ -185,22 +188,27 @@ export default function WorkoutSessionScreen() {
     } catch (error) {
       void handleError(error, 'workout-session.finishSensor', { showSnackbar: false });
     }
+
     // A failure leaves the session open for a retry and surfaces through `controller.error`. The
     // end-of-workout modal would hide that snackbar, so it closes either way.
     await controller.finish();
     setPanel(null);
   };
+
   const selectExercise = (id: string | undefined) => {
     setSelectedLogExerciseId(id);
     setCurrentLogExercise(id ?? null);
   };
+
   const onAction = (logExerciseId: string, action: TrainingViewAction) => {
     setActionLogExerciseId(logExerciseId);
     if (controller.view === 'guided') {
       selectExercise(logExerciseId);
     }
+
     setPanel(action === 'warmup' ? null : action);
   };
+
   const onWarmups = async (
     logExerciseId: string,
     warmups: readonly WarmupSetPrescription[] | 'remove'
@@ -209,6 +217,7 @@ export default function WorkoutSessionScreen() {
     if (!block || actionSaving) {
       return;
     }
+
     setActionSaving(true);
     try {
       if (warmups === 'remove') {
@@ -218,6 +227,7 @@ export default function WorkoutSessionScreen() {
           restTimeAfter: WARMUP_REST_SECONDS,
         });
       }
+
       await refresh();
     } catch (error) {
       handleError(error, 'workout-session.warmups', {
@@ -227,6 +237,7 @@ export default function WorkoutSessionScreen() {
       setActionSaving(false);
     }
   };
+
   // The training view's controller: the session's own, with the sensor recording and the
   // selection reset around each set. Reopening a performed set is not a new recording.
   const viewController = {
@@ -237,6 +248,7 @@ export default function WorkoutSessionScreen() {
       if (skipped) {
         selectExercise(undefined);
       }
+
       return skipped;
     },
     complete: async (
@@ -249,13 +261,16 @@ export default function WorkoutSessionScreen() {
       if (!reopening) {
         await ble.finishSetRecording(id, values.reps);
       }
+
       const completed = await controller.complete(id, values, completeOptions);
       if (completed) {
         if (!reopening) {
           ble.attachRecordingToSet(id, values.reps);
         }
+
         selectExercise(undefined);
       }
+
       return completed;
     },
   };
@@ -287,10 +302,12 @@ export default function WorkoutSessionScreen() {
             if (!(await actions.replaceExercise(exercise, outcome))) {
               return;
             }
+
             // Typed numbers belong to the old movement; the replacement has its own suggestion.
             if (swappedLogExerciseId) {
               controller.clearValueDrafts(swappedLogExerciseId);
             }
+
             selectExercise(undefined);
             close();
           }}

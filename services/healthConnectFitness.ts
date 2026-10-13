@@ -452,11 +452,13 @@ async function syncOneMetricType(
         DataValidator.validateMetricValue(transformed.type, transformed.value);
         DataValidator.validateTimestamp(transformed.date);
       }
+
       const externalId: string | undefined = hcRecord.metadata?.id;
       if (!externalId) {
         counts.skipped++;
         continue;
       }
+
       hcMap.set(externalId, { ...transformed, externalId });
     } catch {
       counts.skipped++;
@@ -547,6 +549,7 @@ async function syncOneMetricType(
           if (now - (localMetric.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
             continue;
           }
+
           await localMetric.update((m) => {
             m.deletedAt = now;
             m.updatedAt = now;

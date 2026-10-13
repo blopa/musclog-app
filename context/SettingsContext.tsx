@@ -265,10 +265,12 @@ function buildSettingsMap(settings: Setting[]): Map<string, string> {
       best.set(s.type, { value: s.value, updatedAt: s.updatedAt });
     }
   }
+
   const result = new Map<string, string>();
   for (const [type, { value }] of best) {
     result.set(type, value);
   }
+
   return result;
 }
 
@@ -281,6 +283,7 @@ function getBoolean(map: Map<string, string>, type: string, defaultVal = false):
   if (v === undefined) {
     return defaultVal;
   }
+
   return v === 'true';
 }
 
@@ -479,6 +482,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const markLoaded = () => {
         setState((prev) => ({ ...prev, isLoading: false }));
       };
+
       markLoaded();
       return;
     }
@@ -637,5 +641,6 @@ export function useSettingsContext(): SettingsContextType {
   if (context === undefined) {
     throw new Error('useSettingsContext must be used within a SettingsProvider');
   }
+
   return context;
 }

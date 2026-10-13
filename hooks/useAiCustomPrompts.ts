@@ -70,6 +70,7 @@ export function useAiCustomPrompts({
       if (!enableReactivity) {
         await loadPrompts();
       }
+
       return newPrompt;
     },
     [enableReactivity, loadPrompts]
@@ -89,6 +90,7 @@ export function useAiCustomPrompts({
       if (!enableReactivity) {
         await loadPrompts();
       }
+
       return updated;
     },
     [enableReactivity, loadPrompts]
@@ -110,6 +112,7 @@ export function useAiCustomPrompts({
       if (!enableReactivity) {
         await loadPrompts();
       }
+
       return toggled;
     },
     [enableReactivity, loadPrompts]
@@ -120,6 +123,7 @@ export function useAiCustomPrompts({
       const run = () => {
         void loadPrompts();
       };
+
       run();
       return;
     }
@@ -135,6 +139,7 @@ export function useAiCustomPrompts({
         } else {
           setPrompts(data);
         }
+
         setIsLoading(false);
       },
       error: (err) => {

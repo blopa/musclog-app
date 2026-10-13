@@ -58,5 +58,6 @@ export async function writeWhatsNewSetting<K extends WhatsNewSetting>(
   if (!isWhatsNewSettingValue(setting, value)) {
     throw new Error(`Invalid value for ${setting}`);
   }
+
   await (WHATS_NEW_SETTING_IO[setting] as SettingIO[K]).write(value);
 }

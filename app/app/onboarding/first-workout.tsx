@@ -79,6 +79,7 @@ export default function FirstWorkoutScreen() {
         if (cancelled) {
           return;
         }
+
         if (!parsed) {
           router.replace('/app');
           return;
@@ -92,6 +93,7 @@ export default function FirstWorkoutScreen() {
         } catch {
           personalizedExperience = undefined;
         }
+
         setExperience(
           parsed.experience ??
             (isExperience(personalizedExperience) ? personalizedExperience : 'beginner')
@@ -116,6 +118,7 @@ export default function FirstWorkoutScreen() {
     if (!setup) {
       return null;
     }
+
     const index = pickStarterTemplateIndex(setup.location, experience, setup.daysPerWeek);
     return index === null
       ? null
@@ -140,6 +143,7 @@ export default function FirstWorkoutScreen() {
     } catch (error) {
       handleError(error, 'firstWorkout.finish');
     }
+
     router.replace(destination as never);
   };
 
@@ -147,6 +151,7 @@ export default function FirstWorkoutScreen() {
     if (!template) {
       return;
     }
+
     setIsBusy(true);
     try {
       const created = await WorkoutTemplateService.createWorkoutsFromJsonTemplate(template);
@@ -159,12 +164,14 @@ export default function FirstWorkoutScreen() {
         await finish(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`, true);
         return;
       }
+
       await finish('/app', true);
     } catch (error) {
       if (error instanceof ActiveWorkoutExistsError) {
         await finish('/app', true);
         return;
       }
+
       handleError(error, 'firstWorkout.startPlan', {
         snackbarMessage: t('errors.somethingWentWrong'),
       });

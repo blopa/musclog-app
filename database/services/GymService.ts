@@ -83,6 +83,7 @@ export class GymService {
     if (options.makeActive) {
       await SettingsService.setActiveGymId(created.id);
     }
+
     return snapshotFromGymRow(created);
   }
 
@@ -92,6 +93,7 @@ export class GymService {
       if (gym.deletedAt) {
         throw new Error('Cannot update a deleted gym');
       }
+
       await gym.update((record) => {
         applyInput(record, input);
         record.updatedAt = Date.now();

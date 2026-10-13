@@ -57,9 +57,11 @@ function formatBytes(bytes) {
   if (bytes < 1024) {
     return `${bytes} B`;
   }
+
   if (bytes < 1024 * 1024) {
     return `${(bytes / 1024).toFixed(1)} KiB`;
   }
+
   return `${(bytes / 1024 / 1024).toFixed(2)} MiB`;
 }
 
@@ -93,6 +95,7 @@ async function compressBlogImages({
     if (existingOwner) {
       throw new Error(`${existingOwner} and ${imageUrl} would both produce ${outputUrl}`);
     }
+
     if (fs.existsSync(outputPath)) {
       throw new Error(`Refusing to overwrite existing blog image: ${outputUrl}`);
     }
@@ -133,6 +136,7 @@ async function compressBlogImages({
     for (const conversion of conversions) {
       updatedMarkdown = updatedMarkdown.replaceAll(conversion.imageUrl, conversion.outputUrl);
     }
+
     if (updatedMarkdown !== post.markdown) {
       fs.writeFileSync(post.filePath, updatedMarkdown);
     }

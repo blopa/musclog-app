@@ -66,6 +66,7 @@ export function NutritionGoalsModal({
       const reset = () => {
         setIsSaving(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -78,6 +79,7 @@ export function NutritionGoalsModal({
     const syncGoals = () => {
       setCurrentGoals(buildNutritionGoalsFromInitialValues(initialGoals));
     };
+
     syncGoals();
   }, [initialGoals, visible]);
 

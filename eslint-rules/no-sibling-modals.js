@@ -52,12 +52,15 @@ function getJSXName(nameNode) {
   if (!nameNode) {
     return null;
   }
+
   if (nameNode.type === 'JSXIdentifier') {
     return nameNode.name;
   }
+
   if (nameNode.type === 'JSXMemberExpression') {
     return nameNode.property.name;
   }
+
   return null;
 }
 
@@ -67,6 +70,7 @@ function isModalLike(nameNode) {
   if (!name) {
     return false;
   }
+
   return name.endsWith('Modal') || EXTRA_MODAL_LIKE.has(name);
 }
 

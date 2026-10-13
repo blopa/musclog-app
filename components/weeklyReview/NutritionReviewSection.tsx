@@ -96,6 +96,7 @@ export function NutritionReviewSection({
       </View>
     );
   }
+
   if (!data.goal || !data.current) {
     return (
       <View
@@ -142,6 +143,7 @@ export function NutritionReviewSection({
       weight: formatInteger(MIN_WEEKLY_WEIGHT_ENTRIES),
     });
   }
+
   const largeChange =
     !decided &&
     !!recommendation &&
@@ -497,6 +499,7 @@ function NutritionEmptyState({
       />
     );
   }
+
   return (
     <View
       className="gap-4 rounded-2xl border border-border-light bg-bg-card p-4"

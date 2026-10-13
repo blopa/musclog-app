@@ -69,6 +69,7 @@ export function StepperInlineInput({
       const sync = () => {
         setInputValue(formatValue(value));
       };
+
       sync();
     }
   }, [value, editing, formatValue]);
@@ -101,10 +102,12 @@ export function StepperInlineInput({
       if (sanitized === '') {
         return;
       }
+
       const num = parseInt(sanitized, 10);
       if (!Number.isNaN(num) && onChangeValue) {
         onChangeValue(num);
       }
+
       return;
     }
 
@@ -117,6 +120,7 @@ export function StepperInlineInput({
     if (sanitized === '' || sanitized === '-') {
       return;
     }
+
     const num = parseLocalizedDecimalString(sanitized, decimalSeparator, maxFractionDigits);
     if (onChangeValue) {
       onChangeValue(num);
@@ -132,8 +136,10 @@ export function StepperInlineInput({
       } else {
         setInputValue(formatValue(value));
       }
+
       return;
     }
+
     if (inputValue.trim() !== '' && inputValue.trim() !== '-' && onChangeValue) {
       const num = parseLocalizedDecimalString(inputValue, decimalSeparator, maxFractionDigits);
       onChangeValue(num);
@@ -190,6 +196,7 @@ export function StepperInlineInput({
             if (editing) {
               setInputValue((prev) => formatValue(parseCurrent(prev) - step));
             }
+
             onDecrement();
           }}
         >
@@ -252,6 +259,7 @@ export function StepperInlineInput({
             if (editing) {
               setInputValue((prev) => formatValue(parseCurrent(prev) + step));
             }
+
             onIncrement();
           }}
         >

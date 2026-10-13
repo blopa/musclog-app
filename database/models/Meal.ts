@@ -36,6 +36,7 @@ export default class Meal extends Model {
     if (this.nutritionBasis === 'per_gram') {
       return 'per_gram';
     }
+
     return 'per_recipe';
   }
 

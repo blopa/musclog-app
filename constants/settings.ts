@@ -434,6 +434,7 @@ export const DEFAULT_WORKOUT_AUTONOMY: WorkoutAutonomy = 'suggest';
 export function parseWorkoutAutonomy(raw: string | null | undefined): WorkoutAutonomy {
   return raw === 'manual' || raw === 'suggest' ? raw : DEFAULT_WORKOUT_AUTONOMY;
 }
+
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';
 export type ChartTooltipPosition = 'left' | 'right';

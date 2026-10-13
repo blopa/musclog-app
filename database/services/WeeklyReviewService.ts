@@ -121,11 +121,14 @@ const decidedWeeksSinceLighter = (reviews: readonly WeeklyReview[]): number => {
     if (!row.trainingDecision || seen.has(row.periodEnd)) {
       continue;
     }
+
     if (row.trainingDecision === 'lighter') {
       break;
     }
+
     seen.add(row.periodEnd);
   }
+
   return seen.size;
 };
 
@@ -286,6 +289,7 @@ export class WeeklyReviewService {
         // Older invalid snapshots cannot become target values.
       }
     }
+
     return {
       period,
       /** Past its next-review date: it can still be acknowledged but no longer approved. */
@@ -381,6 +385,7 @@ export class WeeklyReviewService {
         }
       }
     }
+
     const rated = workingSets.filter((set) => set.rirRecorded);
     const { decision, reasons } = recommendTrainingWeek({
       workoutsThisWeek: workouts.length,
@@ -487,6 +492,7 @@ export class WeeklyReviewService {
           trendWeight != null,
       };
     }
+
     if (review?.recommendationJson) {
       try {
         const snapshot = JSON.parse(review.recommendationJson) as WeeklyNutritionRecommendation;
@@ -503,6 +509,7 @@ export class WeeklyReviewService {
         /* Older invalid snapshots remain visible in history without being applied. */
       }
     }
+
     return { nutrition, trendWeight, gaps };
   }
 
@@ -521,12 +528,14 @@ export class WeeklyReviewService {
     if (input.section === 'nutrition' && (!input.goalId || !input.decision)) {
       throw new Error('A nutrition decision requires a goal');
     }
+
     if (
       input.section === 'training' &&
       (!input.training || !TRAINING_DECISIONS.includes(input.training.decision))
     ) {
       throw new Error('A training decision is required');
     }
+
     // A review shapes the days until the next one is due. Once that has passed, training decisions
     // and approved targets would describe a week that is no longer the one being lived, so both are
     // refused; acknowledging ("keep") a past nutrition review changes nothing and stays possible.
@@ -536,12 +545,15 @@ export class WeeklyReviewService {
     ) {
       throw new Error('This review has ended; refresh the review');
     }
+
     if (input.decision === 'apply' && (!input.recommendation?.canApply || !input.accepted)) {
       throw new Error('More logged data is required');
     }
+
     if (input.accepted) {
       NutritionTargetService.validateTargets(input.accepted);
     }
+
     const id = await database.write(async () => {
       const reviews = await this.history();
       const existing = reviews.find(
@@ -554,6 +566,7 @@ export class WeeklyReviewService {
       ) {
         return existing!.id;
       }
+
       const goal =
         input.section === 'nutrition'
           ? await database.get<NutritionGoal>('nutrition_goals').find(input.goalId!)
@@ -561,9 +574,11 @@ export class WeeklyReviewService {
       if (goal && (goal.deletedAt || goal.effectiveUntil != null)) {
         throw new Error('Goal has changed; refresh the review');
       }
+
       if (input.decision === 'apply' && goal && nutritionTargetMode(goal) !== 'weekly') {
         throw new Error('Switch to weekly targets before applying');
       }
+
       const from = localDayKeyPlusCalendarDays(localDayStartMs(new Date()), 1);
       const periods =
         input.decision === 'apply' && goal
@@ -577,6 +592,7 @@ export class WeeklyReviewService {
         if (!existing) {
           record.trainingReviewedAt = trainingReviewedAtFor(reviews, input.period.end);
         }
+
         record.periodStart = input.period.start;
         record.periodEnd = input.period.end;
         record.timezone = input.period.timezone;
@@ -597,11 +613,13 @@ export class WeeklyReviewService {
             : undefined;
           record.acceptedJson = input.accepted ? JSON.stringify(input.accepted) : undefined;
         }
+
         record.updatedAt = now;
         if (!existing) {
           record.createdAt = now;
         }
       };
+
       let reviewId = '';
       await commitPrepared(database, [...(existing ? [existing] : []), ...periods], () => {
         const review = existing
@@ -621,6 +639,7 @@ export class WeeklyReviewService {
             NutritionTargetService.preparePeriod(goal.id, input.accepted!, from, now, review.id)
           );
         }
+
         reviewId = review.id;
         return operations;
       });

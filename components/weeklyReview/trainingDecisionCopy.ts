@@ -67,11 +67,13 @@ export function historyLabelKeys(review: {
   if (review.trainingDecision) {
     keys.push(DECISION_COPY[review.trainingDecision].title);
   }
+
   if (review.nutritionDecision === 'apply') {
     keys.push('weeklyReview.applied');
   } else if (review.nutritionDecision === 'keep') {
     keys.push('weeklyReview.kept');
   }
+
   // A legacy row: training was only acknowledged, and nutrition may be undecided.
   return keys.length ? keys : ['weeklyReview.trainingOnly'];
 }

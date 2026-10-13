@@ -83,12 +83,15 @@ export function exerciseExclusionReason(
   if (restriction?.kind === 'never') {
     return 'never';
   }
+
   if (restriction?.kind === 'injury') {
     return 'injury';
   }
+
   if (!isEquipmentAvailable(exercise.equipmentType, ctx.gym)) {
     return 'equipment';
   }
+
   return null;
 }
 
@@ -149,18 +152,23 @@ export function rankSubstitutes<T extends SubstitutionExercise>(
       if (sameFamily) {
         score += SAME_FAMILY;
       }
+
       if (candidate.muscleGroup === current.muscleGroup) {
         score += SAME_MUSCLE_GROUP;
       }
+
       if (candidate.mechanicType === current.mechanicType) {
         score += SAME_MECHANIC;
       }
+
       if (candidate.equipmentType === current.equipmentType) {
         score += SAME_EQUIPMENT;
       }
+
       if (ctx.recentExerciseIds?.has(candidate.id)) {
         score += RECENTLY_USED;
       }
+
       if (disliked) {
         score += DISLIKED;
       }
@@ -212,9 +220,11 @@ export function restrictionKindForReason(
   if (reason === 'pain') {
     return 'injury';
   }
+
   if (reason === 'dislike') {
     return 'dislike';
   }
+
   return null;
 }
 
@@ -246,9 +256,11 @@ export function injuryExpiryOptionFor(
   if (expiresAt == null) {
     return 'open';
   }
+
   const days = (expiresAt - now) / MS_PER_DAY;
   if (days <= 21) {
     return '2w';
   }
+
   return days <= 56 ? '4w' : '12w';
 }

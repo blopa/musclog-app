@@ -201,6 +201,7 @@ export class WorkoutService {
       if (error instanceof Error) {
         throw new Error(`Failed to start workout: ${error.message}`);
       }
+
       throw new Error('Failed to start workout: Unknown error');
     }
   }
@@ -281,6 +282,7 @@ export class WorkoutService {
       if (error instanceof Error) {
         throw new Error(`Failed to start free workout: ${error.message}`);
       }
+
       throw new Error('Failed to start free workout: Unknown error');
     }
   }
@@ -613,6 +615,7 @@ export class WorkoutService {
 
           byExercise.get(eid)!.push(set);
         }
+
         const segmentItems = Array.from(byExercise.entries()).map(([exerciseId, exerciseSets]) => {
           const exercise = exerciseMap.get(exerciseId);
           const totalReps = exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0), 0);
@@ -668,6 +671,7 @@ export class WorkoutService {
       if (error instanceof Error) {
         throw new Error(`Failed to complete workout: ${error.message}`);
       }
+
       throw new Error('Failed to complete workout: Unknown error');
     }
   }
@@ -899,6 +903,7 @@ export class WorkoutService {
           if (existingUpdateIds.has(update.setId)) {
             throw new Error(`Workout set ${update.setId} appears more than once`);
           }
+
           existingUpdateIds.add(update.setId);
         } else if (update.groupId !== undefined) {
           const previousGroupId = desiredGroupIdByExerciseId.get(update.exerciseId);
@@ -908,6 +913,7 @@ export class WorkoutService {
           ) {
             throw new Error(`Conflicting group ids for exercise ${update.exerciseId}`);
           }
+
           desiredGroupIdByExerciseId.set(update.exerciseId, update.groupId);
         }
       }
@@ -952,6 +958,7 @@ export class WorkoutService {
           if (!set) {
             throw new Error(`Workout set ${setId} not found`);
           }
+
           if (!logExerciseIds.has(set.logExerciseId)) {
             throw new Error(`Workout set ${setId} does not belong to workout ${workoutLogId}`);
           }
@@ -1319,6 +1326,7 @@ export class WorkoutService {
       if (!exerciseGrouping.has(exerciseId)) {
         exerciseGrouping.set(exerciseId, []);
       }
+
       exerciseGrouping.get(exerciseId)!.push(set.setOrder ?? 0);
     });
 
@@ -1409,6 +1417,7 @@ export class WorkoutService {
           setsByLogExerciseId.set(originalSet.logExerciseId, [originalSet]);
         }
       }
+
       const newLog = database.get<WorkoutLog>('workout_logs').prepareCreate((log) => {
         log.templateId = originalLog.templateId;
         log.workoutName = `${originalLog.workoutName} (Copy)`;

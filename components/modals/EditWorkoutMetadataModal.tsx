@@ -87,6 +87,7 @@ export default function EditWorkoutMetadataModal({
         const setOptions = () => {
           setExerciseOptions(options);
         };
+
         setOptions();
       }
     }
@@ -108,6 +109,7 @@ export default function EditWorkoutMetadataModal({
       const reset = () => {
         setPickerConfig((prev) => ({ ...prev, visible: false }));
       };
+
       reset();
     }
   }, [visible]);
@@ -127,6 +129,7 @@ export default function EditWorkoutMetadataModal({
     } else {
       setCompletedAt(newDate);
     }
+
     setPickerConfig((prev) => ({ ...prev, visible: false }));
   };
 
@@ -142,6 +145,7 @@ export default function EditWorkoutMetadataModal({
     } else {
       setCompletedAt(newTime);
     }
+
     setPickerConfig((prev) => ({ ...prev, visible: false }));
   };
 

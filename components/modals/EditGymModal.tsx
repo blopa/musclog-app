@@ -100,6 +100,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
     if (!visible) {
       return;
     }
+
     const seed = () => {
       const pinned = gym?.weightUnit ?? null;
       const seedUnits = resolveWeightUnits({ account: accountUnits, gym: pinned });
@@ -116,6 +117,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
       setEquipment(gym?.equipment ?? [...EQUIPMENT_TYPES]);
       setNewPlateKg(2 * defaultWeightIncrementKg(seedUnits));
     };
+
     seed();
     // `gym` is read through its id: the object changes identity on every unrelated gym edit.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,6 +135,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
     if (!(weightKg > 0)) {
       return;
     }
+
     setPlates((current) =>
       current.some((plate) => plate.weightKg === weightKg)
         ? current
@@ -149,6 +152,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
     if (isSaving) {
       return;
     }
+
     setIsSaving(true);
     try {
       const input = {
@@ -164,6 +168,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
       } else {
         await GymService.createGym(input, { makeActive: isFirstGym });
       }
+
       onClose();
     } catch {
       showSnackbar('error', t('workoutSettings.editGym.saveFailed'));
@@ -176,6 +181,7 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
     if (!gym) {
       return;
     }
+
     setIsDeleteConfirmVisible(false);
     try {
       await GymService.deleteGym(gym.id);

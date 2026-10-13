@@ -11,6 +11,7 @@ function walk(dir, cb) {
       if (f === 'node_modules' || f === 'coverage' || f === '.git') {
         continue;
       }
+
       walk(fp, cb);
     } else {
       cb(fp);
@@ -26,6 +27,7 @@ function report(file, items) {
   if (items.length === 0) {
     return;
   }
+
   console.log('\nFILE: ' + file);
   for (const it of items) {
     console.log(`  L${it.line}: "${it.text.trim()}"`);
@@ -42,6 +44,7 @@ function findJsxText(sourceFile, sourceText) {
         results.push({ line: line + 1, text: txt.replace(/\n/g, ' ').trim() });
       }
     }
+
     if (ts.isJsxAttribute(node)) {
       if (node.initializer && ts.isStringLiteral(node.initializer)) {
         const txt = node.initializer.text;
@@ -51,8 +54,10 @@ function findJsxText(sourceFile, sourceText) {
         }
       }
     }
+
     ts.forEachChild(node, visit);
   }
+
   visit(sourceFile);
   return results;
 }
@@ -65,9 +70,11 @@ walk(root, (fp) => {
   if (!isTsx(fp)) {
     return;
   }
+
   if (fp.includes(skipPattern)) {
     return;
   }
+
   files.push(fp);
 });
 
@@ -88,28 +95,35 @@ for (const file of files) {
       if (!s) {
         return false;
       }
+
       if (/^[-–—\u2026]+$/.test(s)) {
         return false;
       }
+
       if (/^[0-9:]+$/.test(s)) {
         return false;
       }
+
       // ignore single characters like \u00A0
       if (s.length <= 1) {
         return false;
       }
+
       // ignore tailwind/class-like strings (mostly lowercase tokens with - and :)
       const classLike = /^[A-Za-z0-9_\-:\/\[\].#%]+(\s+[A-Za-z0-9_\-:\/\[\].#%]+)*$/;
       if (classLike.test(s)) {
         return false;
       }
+
       // ignore long svg/path or color strings
       if (/^#[0-9A-Fa-f]+$/.test(s)) {
         return false;
       }
+
       if (file.includes(skipIconPattern)) {
         return false;
       }
+
       return true;
     });
     if (items.length > 0) {

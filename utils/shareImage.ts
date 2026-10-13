@@ -35,6 +35,7 @@ export async function shareImage(uri: string): Promise<ShareImageResult> {
       if (!cacheDirectory) {
         return 'failed';
       }
+
       // The share sheet needs a file on this device, so a remote photo is fetched first.
       const downloaded = await downloadAsync(
         uri,

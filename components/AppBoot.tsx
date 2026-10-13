@@ -190,15 +190,19 @@ export function AppBoot() {
         if (nutritionLogs.length > 0) {
           done.add(ConfettiActivity.FIRST_NUTRITION_LOG);
         }
+
         if (nutritionGoals.length > 0) {
           done.add(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
         }
+
         if (exerciseGoals.length > 0) {
           done.add(ConfettiActivity.FIRST_FITNESS_GOAL);
         }
+
         if (workoutHistory.length > 0) {
           done.add(ConfettiActivity.FIRST_WORKOUT_CREATED);
         }
+
         if (meals.length > 0) {
           done.add(ConfettiActivity.FIRST_MEAL_CREATED);
         }

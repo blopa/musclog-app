@@ -53,6 +53,7 @@ function appIconNameForPreference(preference) {
   if (!ALTERNATE_APP_ICON_THEME_IDS.includes(preference)) {
     return null;
   }
+
   return appIconName(preference);
 }
 

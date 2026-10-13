@@ -124,6 +124,7 @@ export default function TrainingSetupScreen() {
     } catch (e) {
       console.error('Error clearing training setup:', e);
     }
+
     router.navigate(nextRoute as never);
   };
 

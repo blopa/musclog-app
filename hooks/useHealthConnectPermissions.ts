@@ -207,6 +207,7 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
       const run = () => {
         void initialize();
       };
+
       run();
     }
   }, [initialize]);
@@ -217,6 +218,7 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
       const run = () => {
         void checkPermissions();
       };
+
       run();
     }
   }, [isInitialized, checkPermissions]);

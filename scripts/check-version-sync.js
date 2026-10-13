@@ -17,8 +17,10 @@ const compare = (a, b) => {
       return left[i] - right[i];
     }
   }
+
   return 0;
 };
+
 const newest = fs.existsSync(releaseDir)
   ? fs
       .readdirSync(releaseDir)

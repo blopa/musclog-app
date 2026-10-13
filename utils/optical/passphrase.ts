@@ -45,6 +45,7 @@ export function wordArrayFromBytes(bytes: Uint8Array): WordArray {
   for (let i = 0; i < bytes.length; i++) {
     words[i >>> 2] |= bytes[i] << (24 - (i % 4) * 8);
   }
+
   return CryptoJS.lib.WordArray.create(words, bytes.length);
 }
 
@@ -54,6 +55,7 @@ export function bytesFromWordArray(wordArray: WordArray): Uint8Array {
   for (let i = 0; i < sigBytes; i++) {
     out[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
   }
+
   return out;
 }
 
@@ -104,5 +106,6 @@ export function decryptOpticalBody(body: Uint8Array, key: WordArray, iv: Uint8Ar
   if (decrypted.sigBytes <= 0) {
     throw new Error('Decryption produced no output');
   }
+
   return bytesFromWordArray(decrypted);
 }

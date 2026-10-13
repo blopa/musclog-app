@@ -151,6 +151,7 @@ class WitMotionClient implements WitMotionActionApi {
         for (const cb of this.batchCallbacks) {
           cb(batch);
         }
+
         this.replaceState({
           ...this.state,
           liveData: {

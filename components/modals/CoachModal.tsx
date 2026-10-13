@@ -393,6 +393,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme, locale: string) => {
   if (!props.currentMessage?.createdAt) {
     return null;
   }
+
   const date = new Date(props.currentMessage.createdAt);
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
@@ -410,6 +411,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme, locale: string) => {
       </View>
     );
   }
+
   return null;
 };
 
@@ -504,6 +506,7 @@ function SeededComposer({
     if (seedText !== null) {
       clearSeedText();
     }
+
     propsWithText.onTextChanged?.(newText);
   };
 
@@ -726,6 +729,7 @@ export function CoachModal({
       const clearImage = () => {
         setAttachedImage(null);
       };
+
       clearImage();
     }
   }, [pendingIntention, attachedImage]);
@@ -745,6 +749,7 @@ export function CoachModal({
         setIsDeleteMessageModalVisible(false);
         setMessageToDelete(null);
       };
+
       reset();
     }
   }, [visible]);

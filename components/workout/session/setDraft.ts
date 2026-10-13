@@ -62,6 +62,7 @@ export function liveWeightKg(
   if (typed === undefined || !typed.trim()) {
     return set.weight;
   }
+
   const parsed = parseLocalizedDecimalString(typed, getDecimalSeparator(locale));
   return Number.isFinite(parsed) ? displayToKg(parsed, units) : set.weight;
 }
@@ -94,10 +95,12 @@ export function reconcileWeightDraft(
   ) {
     return null;
   }
+
   const parsed = parseLocalizedDecimalString(draft.weight, getDecimalSeparator(draft.weightLocale));
   if (!Number.isFinite(parsed)) {
     return { weight: '', weightUnits: units, weightLocale: locale };
   }
+
   const kg = displayToKg(parsed, draft.weightUnits);
   return {
     weight: formatInput(displayWeightKgNumeric(kg, units), locale, 2),

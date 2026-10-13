@@ -116,6 +116,7 @@ function safeParse(raw: string | null | undefined): unknown {
   if (!raw) {
     return null;
   }
+
   try {
     return JSON.parse(raw);
   } catch {
@@ -141,6 +142,7 @@ export function parsePlates(raw: string | null | undefined): GymPlate[] {
     if (!Number.isFinite(weightKg) || weightKg <= 0 || !Number.isFinite(count) || count <= 0) {
       continue;
     }
+
     const key = toStoredGymWeightKg(weightKg);
     byWeight.set(key, (byWeight.get(key) ?? 0) + count);
   }
@@ -155,6 +157,7 @@ export function parseEquipment(raw: string | null | undefined): EquipmentType[] 
   if (!Array.isArray(parsed)) {
     return [];
   }
+
   return [...new Set(parsed.filter(isEquipmentType))];
 }
 
@@ -200,8 +203,10 @@ export function isEquipmentAvailable(
   if (!gym || !equipmentType) {
     return true;
   }
+
   if ((ALWAYS_AVAILABLE_EQUIPMENT as readonly string[]).includes(equipmentType)) {
     return true;
   }
+
   return (gym.equipment as readonly string[]).includes(equipmentType);
 }

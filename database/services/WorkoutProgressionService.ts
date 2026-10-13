@@ -89,6 +89,7 @@ export class WorkoutProgressionService {
     if (!history[0]?.sets.length) {
       return null;
     }
+
     const step = loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id));
     const planned = history[0].sets.map((set, index) => ({
       id: String(index),
@@ -111,6 +112,7 @@ export class WorkoutProgressionService {
     if (!week) {
       return projection;
     }
+
     const override = planWeekOverride({
       kind: week.decision,
       planned,
@@ -160,6 +162,7 @@ export class WorkoutProgressionService {
           if (!exercise) {
             return null;
           }
+
           const rule = parseProgressionRule(row.progressionJson);
           const history = await this.history(
             row.exerciseId,
@@ -192,6 +195,7 @@ export class WorkoutProgressionService {
           ) {
             projection.status = 'attention';
           }
+
           return { ...projection, templateExerciseId: row.id, exercise };
         })
       )
@@ -229,6 +233,7 @@ export class WorkoutProgressionService {
     if (!context.automatic && !hasRule && !week) {
       return 0;
     }
+
     const histories = await Promise.all(
       logExercises.map((row, index) =>
         this.history(
@@ -242,6 +247,7 @@ export class WorkoutProgressionService {
     if (!hasRule && !week && !histories.some((history) => history.length)) {
       return 0;
     }
+
     const exercises = await fetchMapByIds<Exercise>(
       'exercises',
       'id',
@@ -264,6 +270,7 @@ export class WorkoutProgressionService {
       ) {
         return 0;
       }
+
       const operations: Model[] = [];
       let changed = 0;
       await commitPrepared(database, [...sets, ...logExercises], () => {
@@ -273,6 +280,7 @@ export class WorkoutProgressionService {
           if (!exercise || !progressesLoad(exercise.mechanicType)) {
             continue;
           }
+
           const planned = sets
             .filter((set) => set.logExerciseId === row.id && !isWarmupSet(set))
             .sort((a, b) => a.setOrder - b.setOrder);
@@ -295,6 +303,7 @@ export class WorkoutProgressionService {
               changed += 1;
               continue;
             }
+
             const change = changes.get(set.id);
             const original = { weightKg: set.weight, reps: set.reps };
             const originalRir = set.repsInReserve;
@@ -318,10 +327,12 @@ export class WorkoutProgressionService {
                   if (change.repsInReserve != null) {
                     record.repsInReserve = change.repsInReserve;
                   }
+
                   record.adjustmentJson = change.adjustment
                     ? serializeStartAdjustment(change.adjustment)
                     : undefined;
                 }
+
                 record.updatedAt = now;
               })
             );
@@ -329,6 +340,7 @@ export class WorkoutProgressionService {
               changed += 1;
             }
           }
+
           if (rule && plan.state) {
             operations.push(
               row.prepareUpdate((record) => {
@@ -338,6 +350,7 @@ export class WorkoutProgressionService {
             );
           }
         }
+
         return operations;
       });
       return changed;
@@ -374,6 +387,7 @@ export class WorkoutProgressionService {
         state: carriedSessionState(rule, history[0]),
       };
     }
+
     const projection = projectExerciseProgression({
       ...this.projectionInput(exercise, context, step),
       planned,
@@ -428,11 +442,13 @@ export class WorkoutProgressionService {
           if (!isPlannedWorkoutSet(set)) {
             continue;
           }
+
           const prescription = parseSetPrescription(set.prescriptionJson);
           const adjustment = parseStartAdjustment(set.adjustmentJson);
           if (!prescription && !adjustment) {
             continue;
           }
+
           const target = prescription?.plan ?? revertTargetFor(adjustment!);
           const { planRepsInReserve, droppedSetIds, ...rest } = prescription ?? {
             plan: adjustment!.plan,
@@ -446,6 +462,7 @@ export class WorkoutProgressionService {
               if (planRepsInReserve != null) {
                 record.repsInReserve = planRepsInReserve;
               }
+
               record.adjustmentJson = undefined;
               record.prescriptionJson = serializeSetPrescription({
                 ...rest,
@@ -459,6 +476,7 @@ export class WorkoutProgressionService {
             })
           );
         }
+
         for (const set of dropped) {
           operations.push(
             set.prepareUpdate((record) => {
@@ -467,6 +485,7 @@ export class WorkoutProgressionService {
             })
           );
         }
+
         return operations;
       });
       return operations.length;
@@ -515,6 +534,7 @@ export class WorkoutProgressionService {
       const at = happenedAt(row);
       return excludeWindows.some((window) => at >= window.from && at < window.until);
     };
+
     const recent = candidates
       .filter((row) => !inLighterWeek(row))
       .sort((a, b) => happenedAt(b) - happenedAt(a))

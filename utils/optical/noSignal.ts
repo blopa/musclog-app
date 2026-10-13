@@ -49,6 +49,7 @@ export class NoSignalHintTimer {
     if (this.sawFrame) {
       return;
     }
+
     this.armed = true;
     this.armedAt = now;
     this.delayMs = this.firstDelayMs;
@@ -64,9 +65,11 @@ export class NoSignalHintTimer {
     if (!this.armed || this.visible || this.sawFrame) {
       return false;
     }
+
     if (now - this.armedAt <= this.delayMs) {
       return false;
     }
+
     this.visible = true;
     return true;
   }

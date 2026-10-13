@@ -80,6 +80,7 @@ function buildSegments(
   if (segmentItems.length === 0) {
     return [];
   }
+
   const durationMs = completedAt - startedAt;
   const segmentDurationMs = durationMs / segmentItems.length;
   return segmentItems.map((item, index) => {
@@ -190,12 +191,14 @@ export async function writeWorkoutToHealthConnect(
         })
       );
     }
+
     if (payload.segmentItems && payload.segmentItems.length > 0) {
       const breakdown = formatSegmentBreakdown(payload.segmentItems, unitLabel, units);
       if (breakdown) {
         noteParts.push(breakdown);
       }
     }
+
     const notes = noteParts.length > 0 ? noteParts.join('\n') : undefined;
 
     const segments =

@@ -35,6 +35,7 @@ export function WeightUnitOverridePicker({
     if (unit === null) {
       return defaultLabel;
     }
+
     return t(unit === 'kg' ? 'workoutSession.kg' : 'workoutSession.lb');
   };
 

@@ -61,6 +61,7 @@ export function buildSessionBlocks(sets: readonly EnrichedWorkoutLogSet[]): Sess
     rows.push(set);
     byBlock.set(set.logExerciseId, rows);
   }
+
   return [...byBlock.entries()].map(([logExerciseId, blockSets]) => {
     let working = 0;
     const rows = blockSets.map((set) => ({
@@ -96,6 +97,7 @@ export function guidanceStateFor(
       return 'attention';
     }
   }
+
   if (block.rule) {
     if (
       block.rule.type === 'percentage' &&
@@ -103,11 +105,14 @@ export function guidanceStateFor(
     ) {
       return 'learning';
     }
+
     return 'rule';
   }
+
   if (!block.rows.some((row) => row.prescription?.previous)) {
     return 'learning';
   }
+
   // History, but a recommendation that IS the plan: last time's targets, not a suggestion — the
   // same `holding` the preview shows for this exercise before the session starts.
   return block.rows.some(({ prescription }) => prescription && recommendsChange(prescription))
@@ -128,9 +133,11 @@ export function canRevertStartAdjustment(block: SessionBlock): boolean {
     if (prescription?.droppedSetIds?.length) {
       return true;
     }
+
     if (!isPlannedWorkoutSet(set)) {
       return false;
     }
+
     return (
       prescription?.planRepsInReserve != null ||
       (!!set.adjustment && isStartAdjustment(set.adjustment))

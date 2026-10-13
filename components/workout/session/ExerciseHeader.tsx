@@ -27,13 +27,16 @@ export function useExerciseCategory(exercise: Exercise | undefined) {
   if (!exercise) {
     return '';
   }
+
   const parts: string[] = [];
   if (exercise.muscleGroup) {
     parts.push(t(getMuscleGroupTranslationKey(exercise.muscleGroup)));
   }
+
   if (exercise.equipmentType) {
     parts.push(t(getExerciseTypeTranslationKey(exercise.equipmentType)));
   }
+
   return parts.join(' • ');
 }
 

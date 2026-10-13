@@ -92,12 +92,14 @@ export function micronutrientFormStringsFromMicros(
   if (!micros) {
     return next;
   }
+
   for (const key of MICRONUTRIENT_FORM_KEYS) {
     const v = micros[key];
     if (typeof v === 'number' && Number.isFinite(v)) {
       next[key] = formatAppRoundedDecimal(locale, v, 2);
     }
   }
+
   return next;
 }
 
@@ -112,11 +114,13 @@ export function parseMicronutrientFormStringsToPartial(
     if (trimmed === '') {
       continue;
     }
+
     const n = parseLocalizedDecimalString(trimmed, decimalSeparator);
     if (Number.isFinite(n)) {
       out[key] = n;
     }
   }
+
   return out;
 }
 

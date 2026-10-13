@@ -199,24 +199,31 @@ export class ExerciseService {
           record.name = updates.name;
           record.searchText = computeExerciseSearchText(record, aliases);
         }
+
         if (updates.description !== undefined) {
           record.description = updates.description;
         }
+
         if (updates.imageUrl !== undefined) {
           record.imageUrl = updates.imageUrl;
         }
+
         if (updates.muscleGroup !== undefined) {
           record.muscleGroup = updates.muscleGroup as MuscleGroup;
         }
+
         if (updates.equipmentType !== undefined) {
           record.equipmentType = updates.equipmentType as EquipmentType;
         }
+
         if (updates.mechanicType !== undefined) {
           record.mechanicType = updates.mechanicType as MechanicType;
         }
+
         if (updates.loadMultiplier !== undefined) {
           record.loadMultiplier = updates.loadMultiplier;
         }
+
         record.updatedAt = Date.now();
       });
 
@@ -268,16 +275,20 @@ export class ExerciseService {
     if (filters?.muscleGroup) {
       query = query.extend(Q.where('muscle_group', filters.muscleGroup));
     }
+
     if (filters?.muscleGroups?.length) {
       query = query.extend(Q.where('muscle_group', Q.oneOf([...filters.muscleGroups])));
     }
+
     if (filters?.equipmentTypes) {
       // An empty list is a real answer ("no equipment is available"), not "no filter".
       query = query.extend(Q.where('equipment_type', Q.oneOf([...filters.equipmentTypes])));
     }
+
     if (filters?.excludeIds?.length) {
       query = query.extend(Q.where('id', Q.notIn(filters.excludeIds.slice(0, MAX_QUERY_IDS))));
     }
+
     const searchCondition = filters?.searchTerm
       ? exerciseSearchCondition(filters.searchTerm)
       : null;

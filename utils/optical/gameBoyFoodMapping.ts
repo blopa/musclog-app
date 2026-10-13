@@ -59,6 +59,7 @@ function seedIndex(): Map<string, FoundationFoodSeed> {
       }
     }
   }
+
   return seedsByExternalId;
 }
 

@@ -414,9 +414,10 @@ describe('percentage training max reset', () => {
 
   it('starts counting again after a reset instead of resetting twice in a row', () => {
     // The last session ran at the lowered 90 kg max; the misses before it were at 100 kg.
-    expect(resolveTrainingMax(rule, [session(3, 90), session(3), session(3)], step)).toMatchObject(
-      { trainingMaxKg: 90, source: 'held' }
-    );
+    expect(resolveTrainingMax(rule, [session(3, 90), session(3), session(3)], step)).toMatchObject({
+      trainingMaxKg: 90,
+      source: 'held',
+    });
   });
 
   it('honours a custom streak and share', () => {

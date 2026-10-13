@@ -256,6 +256,7 @@ export class NutritionCheckinService {
       if (w.completedAt && w.startedAt) {
         return sum + Math.round((w.completedAt - w.startedAt) / 60000);
       }
+
       return sum;
     }, 0);
 
@@ -272,6 +273,7 @@ export class NutritionCheckinService {
       if (w.completedAt && w.startedAt) {
         return sum + Math.round((w.completedAt - w.startedAt) / 60000);
       }
+
       return sum;
     }, 0);
 
@@ -456,6 +458,7 @@ export class NutritionCheckinService {
         if (pendingOnly && checkin.status !== 'pending') {
           continue;
         }
+
         await writer.callWriter(() => checkin.markAsDeleted());
       }
     });

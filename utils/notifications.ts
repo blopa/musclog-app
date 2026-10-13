@@ -37,6 +37,7 @@ export async function handleNotificationResponse(response: Notifications.Notific
       } else {
         router.navigate('/app/workout/workouts');
       }
+
       break;
 
     case 'nutrition-overview':

@@ -183,6 +183,7 @@ export default function WorkoutSummaryScreen() {
             }
           }
         }
+
         setGoalProgress(progress);
 
         // Build rich summary for the LLM (as if the user said "I just completed...")

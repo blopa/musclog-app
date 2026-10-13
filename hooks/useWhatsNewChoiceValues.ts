@@ -24,6 +24,7 @@ export function useWhatsNewChoiceValues(active: boolean) {
     if (!active) {
       return;
     }
+
     for (const setting of WHATS_NEW_SETTINGS) {
       const revision = revisions.current[setting];
       void WHATS_NEW_SETTING_IO[setting]
@@ -36,6 +37,7 @@ export function useWhatsNewChoiceValues(active: boolean) {
           ) {
             return;
           }
+
           current.current = { ...current.current, [setting]: value };
           setValues(current.current);
           setErrors((previous) => ({ ...previous, [setting]: false }));
@@ -46,6 +48,7 @@ export function useWhatsNewChoiceValues(active: boolean) {
           }
         });
     }
+
     return () => {
       generation.current = run + 1;
     };
@@ -55,10 +58,12 @@ export function useWhatsNewChoiceValues(active: boolean) {
     if (!isWhatsNewSettingValue(setting, value)) {
       return;
     }
+
     const previous = current.current[setting];
     if (previous === undefined || previous === value || pending.current.has(setting)) {
       return;
     }
+
     const run = generation.current;
     pending.current.add(setting);
     revisions.current[setting] = (revisions.current[setting] ?? 0) + 1;

@@ -118,6 +118,7 @@ function phoneFrameScaler(naturalH: number) {
       if (window.innerWidth < 1024) {
         return;
       }
+
       const s = Math.min((window.innerHeight * 0.9) / naturalH, 1);
       document.documentElement.style.setProperty('--phone-scale', s.toFixed(4));
     }

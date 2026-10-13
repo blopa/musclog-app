@@ -431,6 +431,7 @@ export function NutritionGoalsBody({
       isManualCalorieUpdate.current = false;
       syncMacroRatios();
     };
+
     syncInitialGoals();
   }, [
     defaultGoalStartDate,
@@ -468,6 +469,7 @@ export function NutritionGoalsBody({
         didAutofillDynamicTargetWeight.current = false;
       }
     };
+
     syncWeight();
   }, [isDynamic, targetWeight, latestWeightKg, units]);
 
@@ -477,10 +479,12 @@ export function NutritionGoalsBody({
       if (!metric) {
         return;
       }
+
       metric.getDecrypted().then((dec) => {
         if (dec == null) {
           return;
         }
+
         const cm = storedHeightToCm(dec.value, dec.unit);
         setUserHeightM(convert(cm, 'cm').to('m') as number);
       });
@@ -493,6 +497,7 @@ export function NutritionGoalsBody({
       if (!metric) {
         return;
       }
+
       metric.getDecrypted().then((dec) => {
         if (dec != null) {
           setLatestWeightKg(storedWeightToKg(dec.value, dec.unit));
@@ -503,6 +508,7 @@ export function NutritionGoalsBody({
       if (!metric) {
         return;
       }
+
       metric.getDecrypted().then((dec) => {
         if (dec != null) {
           setLatestBodyFatPercent(dec.value);
@@ -519,11 +525,13 @@ export function NutritionGoalsBody({
     if (eatingPhase === previousEatingPhase.current) {
       return;
     }
+
     previousEatingPhase.current = eatingPhase;
 
     if (!macrosArePristine.current) {
       return;
     }
+
     if (!user || latestWeightKg == null || userHeightM == null) {
       return;
     }
@@ -605,6 +613,7 @@ export function NutritionGoalsBody({
         setCalorieInputValue(finalCalories.toString());
         syncMacroRatios();
       };
+
       applyMacros();
     } catch {
       // ignore
@@ -730,6 +739,7 @@ export function NutritionGoalsBody({
       const sync = () => {
         setCalorieInputValue(totalCalories.toString());
       };
+
       sync();
     }
   }, [totalCalories, isCalorieEditing]);
@@ -760,15 +770,18 @@ export function NutritionGoalsBody({
     if (userHeightM === null || targetWeight === null) {
       return;
     }
+
     const recalcBmi = () => {
       setTargetBMI((prev) => {
         if (prev === null) {
           return prev;
         }
+
         const weightKg = displayToKg(targetWeight, units);
         return bmiFromWeightAndHeightM(weightKg, userHeightM);
       });
     };
+
     recalcBmi();
   }, [targetWeight, userHeightM, units]);
 
@@ -777,15 +790,18 @@ export function NutritionGoalsBody({
     if (userHeightM === null || targetWeight === null || !targetBodyFat) {
       return;
     }
+
     const recalcFfmi = () => {
       setTargetFFMI((prev) => {
         if (prev === null) {
           return prev;
         }
+
         const weightKg = displayToKg(targetWeight, units);
         return ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat);
       });
     };
+
     recalcFfmi();
   }, [targetWeight, targetBodyFat, userHeightM, units]);
 
@@ -815,6 +831,7 @@ export function NutritionGoalsBody({
       });
       syncMacroRatios();
     };
+
     clampMacros();
   }, [macroMax.protein, macroMax.carbs, macroMax.fats, macroMax.fiber, syncMacroRatios]);
 
@@ -830,6 +847,7 @@ export function NutritionGoalsBody({
         setDynamicPreview(null);
         setIsResolvingDynamicPreview(false);
       };
+
       clear();
       return;
     }
@@ -838,6 +856,7 @@ export function NutritionGoalsBody({
     const startResolving = () => {
       setIsResolvingDynamicPreview(true);
     };
+
     startResolving();
 
     resolveDynamicGoalPreview(
@@ -957,6 +976,7 @@ export function NutritionGoalsBody({
       isInitialMount.current = false;
       return;
     }
+
     isInitialMount.current = false;
 
     if (isManualCalorieUpdate.current) {

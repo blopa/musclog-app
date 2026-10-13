@@ -234,6 +234,7 @@ export function OpticalScannerCamera({
       ) {
         videoElement.cancelVideoFrameCallback(frameHandleRef.current);
       }
+
       frameHandleRef.current = null;
 
       if (timerRef.current) {

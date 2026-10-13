@@ -45,9 +45,11 @@ export function MacroCard({
     if (lowerName === t('food.macros.protein').toLowerCase()) {
       return t('food.macros.proteinShort');
     }
+
     if (lowerName === t('food.macros.carbs').toLowerCase()) {
       return t('food.macros.carbsShort');
     }
+
     if (lowerName === t('food.macros.fat').toLowerCase()) {
       return t('food.macros.fatShort');
     }

@@ -55,6 +55,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
       const run = () => {
         void loadSupplements();
       };
+
       run();
     }
   }, [visible, loadSupplements]);
@@ -67,6 +68,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
         setEditingSupplement(null);
         setIsSaving(false);
       };
+
       reset();
       return;
     }
@@ -80,6 +82,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
         setHasReminder(true);
       }
     };
+
     syncEditor();
   }, [editingSupplement, isEditorVisible]);
 

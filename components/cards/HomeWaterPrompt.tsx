@@ -111,6 +111,7 @@ export function HomeWaterPrompt({
       const show = () => {
         setIsActuallyVisible(true);
       };
+
       show();
       opacity.value = withTiming(1, { duration: 400 });
       height.value = withSpring(220, { damping: 20, stiffness: 90 });

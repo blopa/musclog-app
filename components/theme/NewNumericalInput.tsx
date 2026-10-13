@@ -30,6 +30,7 @@ export default function NewNumericalInput({
     const sync = () => {
       setInputValue(value.toString());
     };
+
     sync();
   }, [value]);
 

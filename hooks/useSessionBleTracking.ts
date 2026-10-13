@@ -160,6 +160,7 @@ export function useSessionBleTracking({
         if (currentSetData?.set.id === owner.setId) {
           recordedReps = reps;
         }
+
         if (logged?.setId === owner.setId) {
           recordedReps = logged.reps;
         }
@@ -316,6 +317,7 @@ export function useSessionBleTracking({
         setId && loggedReps !== undefined ? { setId, reps: loggedReps } : undefined
       );
     }
+
     return pendingRecordingRef.current;
   };
 
@@ -325,6 +327,7 @@ export function useSessionBleTracking({
     if (!recording || recording.setId !== setId) {
       return;
     }
+
     pendingRecordingRef.current = null;
     if (bleGenerateChartPayload && loggedReps > 0) {
       void compressRawToDataPoints(recording.uri, recording.setId, loggedReps).catch(() => {});

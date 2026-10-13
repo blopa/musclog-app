@@ -69,6 +69,7 @@ export class WorkoutTodayRepository {
     if (scheduled.length) {
       return scheduled;
     }
+
     const rotating = await Promise.all(
       plans
         .filter((item) => item.plan.cycleType === 'rotating')
@@ -79,6 +80,7 @@ export class WorkoutTodayRepository {
           if (!members.length) {
             return null;
           }
+
           const logs = await database
             .get<WorkoutLog>('workout_logs')
             .query(
@@ -106,6 +108,7 @@ export class WorkoutTodayRepository {
     if (fromPlans.length) {
       return fromPlans;
     }
+
     return WorkoutTodayRepository.fromHistory(templates, completedToday, date);
   }
 
@@ -123,6 +126,7 @@ export class WorkoutTodayRepository {
     if (doneToday.length) {
       return doneToday;
     }
+
     const todayStart = localDayStartMs(date);
     const recent = await database
       .get<WorkoutLog>('workout_logs')

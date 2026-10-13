@@ -137,11 +137,13 @@ export function WorkoutTrainingView({
     const set = sets.find((row) => row.id === setId)!;
     return { ...draftFromSet(set, unitsFor(set.exerciseId), locale), ...controller.drafts[setId] };
   };
+
   const complete = (setId: string) => {
     const set = sets.find((row) => row.id === setId);
     if (!set) {
       return;
     }
+
     const reopening = isPerformedWorkoutSet(set);
     const loggedValues = valuesFromDraft(
       valuesFor(setId),
@@ -153,6 +155,7 @@ export function WorkoutTrainingView({
       if (!completed || !reopening) {
         return;
       }
+
       // Reopening is one stray tap away from un-logging a set: say so, and offer the way back.
       // Putting it back is not a fresh set, so it must not start another rest.
       showSnackbar('success', t('trainingFlow.setReopened'), {
@@ -163,9 +166,11 @@ export function WorkoutTrainingView({
       });
     });
   };
+
   const skip = (setId: string) => {
     void controller.skip(setId);
   };
+
   const warmupOfferForBlock = (block: SessionBlock) =>
     warmupOfferFor({
       exerciseSets: block.rows.map((row) => row.set),
@@ -180,25 +185,31 @@ export function WorkoutTrainingView({
     if (offer.toAdd.length) {
       return 'add';
     }
+
     return offer.canRemove ? 'remove' : null;
   };
+
   const action = (block: SessionBlock, kind: SessionExerciseAction) => {
     if (kind === 'warmup') {
       const offer = warmupOfferForBlock(block);
       onWarmups(block.logExerciseId, offer.toAdd.length ? offer.toAdd : 'remove');
       return;
     }
+
     onAction(block.logExerciseId, kind);
   };
+
   const notesFor = (block: SessionBlock) => {
     const notes: SessionNote[] = [];
     const pinned = get(block.exerciseId).note;
     if (pinned) {
       notes.push({ kind: 'pinned', text: pinned });
     }
+
     if (block.focus.notes) {
       notes.push({ kind: 'session', text: block.focus.notes });
     }
+
     return notes;
   };
 
@@ -210,6 +221,7 @@ export function WorkoutTrainingView({
     if (controller.view !== 'inline' || !currentBlockId || !nextSetId) {
       return;
     }
+
     const y = cardPositions.current.get(currentBlockId);
     if (y != null) {
       scroll.current?.scrollTo({ y: Math.max(0, insightsHeight.current + y - 8), animated: true });
@@ -347,6 +359,7 @@ export function WorkoutTrainingView({
           if (!exercise) {
             return null;
           }
+
           return (
             <View
               key={block.logExerciseId}

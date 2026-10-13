@@ -210,9 +210,11 @@ async function runWithAbort<T>(
     if (timedOut) {
       throw new AiTimeoutError();
     }
+
     if (config.signal?.aborted) {
       throw new AiCancelledError();
     }
+
     throw error;
   } finally {
     clearTimeout(timer);
@@ -243,11 +245,13 @@ export async function withLlmRetry<T>(
       if (userFacing instanceof AiInvalidKeyError) {
         throw userFacing;
       }
+
       if (userFacing instanceof AiTimeoutError) {
         // A stalled request usually stays stalled: one more try, not three.
         if (timeoutRetried) {
           throw userFacing;
         }
+
         timeoutRetried = true;
         console.warn(`[coachAI] ${operation} timed out on ${provider}; retrying once`);
         continue;
@@ -584,6 +588,7 @@ function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
       result.push({ ...entry });
     }
   }
+
   return result;
 }
 
@@ -625,6 +630,7 @@ function extractRawText(response: any): string {
       `[coachAI] Gemini returned no answer text (finishReason=${finishReason ?? 'none'}, blockReason=${blockReason ?? 'none'}, thoughtOnly=${thoughtOnly})`
     );
   }
+
   return text;
 }
 
@@ -1374,6 +1380,7 @@ async function generateWithImageStructured<T>(
       return null;
     }
   }
+
   const client = buildOpenAIClient(config);
   const strictSchema = makeSchemaStrict(schema);
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
@@ -1993,6 +2000,7 @@ export async function estimateNutritionFromPhoto(
       if (context.tags.length > 0) {
         parts.push(`Tags: ${context.tags.join(', ')}`);
       }
+
       userMessageSuffix = parts.join('\n');
     }
 

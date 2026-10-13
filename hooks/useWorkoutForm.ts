@@ -123,6 +123,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
       const runLoad = () => {
         void loadTemplate();
       };
+
       runLoad();
     }
   }, [isEditMode, loadTemplate]);
@@ -258,6 +259,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         if (existing) {
           updated.set(exerciseId, { ...existing, notes });
         }
+
         return updated;
       });
 
@@ -280,6 +282,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
                 trailingHighlight: row.trailingHighlight,
               };
             }
+
             const baseDescription = ex.description.replace(' • 📝', '');
             return {
               ...ex,
@@ -287,6 +290,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
               trailingHighlight: undefined,
             };
           }
+
           return ex;
         })
       );

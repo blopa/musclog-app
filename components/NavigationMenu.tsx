@@ -128,6 +128,7 @@ export const NavigationMenu = memo(function NavigationMenu({
       if (path === '/') {
         return pathname === '/app';
       }
+
       return pathname.startsWith(path);
     },
     [pathname]

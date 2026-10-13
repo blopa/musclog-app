@@ -102,6 +102,7 @@ export default class WorkoutLog extends Model {
       if (!setsByLogExId.has(id)) {
         setsByLogExId.set(id, []);
       }
+
       setsByLogExId.get(id)!.push(set);
     }
 
@@ -152,33 +153,42 @@ export default class WorkoutLog extends Model {
       if (data.reps !== undefined) {
         updatedSet.reps = data.reps;
       }
+
       if (data.weight !== undefined) {
         updatedSet.weight = data.weight;
       }
+
       // The numbers are now the user's own (an edit, or the set being performed), so the app's
       // account of where they came from no longer applies.
       if (data.reps !== undefined || data.weight !== undefined) {
         updatedSet.adjustmentJson = undefined;
       }
+
       if (data.partials !== undefined) {
         updatedSet.partials = data.partials;
       }
+
       if (data.restTimeAfter !== undefined) {
         updatedSet.restTimeAfter = data.restTimeAfter;
       }
+
       if (data.repsInReserve !== undefined) {
         writeSetEffort(updatedSet, data.repsInReserve);
       }
+
       if (data.difficultyLevel !== undefined) {
         assertValidWorkoutSetDifficultyLevel(data.difficultyLevel);
         updatedSet.difficultyLevel = data.difficultyLevel ?? undefined;
       }
+
       if (data.completionStatus !== undefined) {
         updatedSet.completionStatus = data.completionStatus;
       }
+
       if (data.setType !== undefined) {
         updatedSet.setType = data.setType;
       }
+
       updatedSet.updatedAt = now;
     });
 

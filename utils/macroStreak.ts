@@ -22,6 +22,7 @@ async function readState(): Promise<MacroStreakState | null> {
     if (!raw) {
       return null;
     }
+
     const parsed = JSON.parse(raw) as Partial<MacroStreakState>;
     if (
       typeof parsed.computedDayKey !== 'number' ||
@@ -30,6 +31,7 @@ async function readState(): Promise<MacroStreakState | null> {
     ) {
       return null;
     }
+
     return parsed as MacroStreakState;
   } catch {
     return null;

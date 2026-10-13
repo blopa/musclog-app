@@ -103,6 +103,7 @@ export function WorkoutSessionHistoryModal({
           }
         });
     }
+
     return () => {
       live = false;
     };
@@ -118,6 +119,7 @@ export function WorkoutSessionHistoryModal({
     if (isPreview && workoutTemplate) {
       return workoutTemplate.name || 'Workout';
     }
+
     return workoutLog?.workoutName || 'Workout';
   }, [isPreview, workoutTemplate, workoutLog]);
 
@@ -139,6 +141,7 @@ export function WorkoutSessionHistoryModal({
         if (!exerciseGroups.has(exerciseId)) {
           exerciseGroups.set(exerciseId, []);
         }
+
         exerciseGroups.get(exerciseId)!.push(set);
       });
 
@@ -207,6 +210,7 @@ export function WorkoutSessionHistoryModal({
         if (!exerciseGroups.has(exerciseId)) {
           exerciseGroups.set(exerciseId, []);
         }
+
         exerciseGroups.get(exerciseId)!.push(set);
       });
 
@@ -252,6 +256,7 @@ export function WorkoutSessionHistoryModal({
           if (!isWarmup) {
             workingSetNumber += 1;
           }
+
           return {
             setNumber: workingSetNumber,
             isWarmup,
@@ -309,6 +314,7 @@ export function WorkoutSessionHistoryModal({
     if (isPreview) {
       return calculatePreviewVolumeFromTemplateSets(templateSets, exerciseById, bodyWeightKg);
     }
+
     return calculateSessionVolumeFromSets(sets, exerciseById, bodyWeightKg, {
       onlyCompletedSets: true,
     });
@@ -324,6 +330,7 @@ export function WorkoutSessionHistoryModal({
     if (isPreview) {
       return 0; // No completed sets in preview
     }
+
     return sets.filter(isPerformedWorkoutSet).length;
   }, [isPreview, sets]);
 
@@ -435,6 +442,7 @@ export function WorkoutSessionHistoryModal({
         />
       );
     }
+
     return null;
   }, [isPreview, onStartWorkout, t]);
 

@@ -45,6 +45,7 @@ export const PagerView = forwardRef<PagerViewRef, PagerViewProps>(
         if (onPageSelected && currentPage !== previousPageRef.current) {
           onPageSelected({ nativeEvent: { position: currentPage } });
         }
+
         previousPageRef.current = currentPage;
       },
     }));

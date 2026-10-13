@@ -28,6 +28,7 @@ export function AnalyticsConsent() {
       const hide = () => {
         setVisible(false);
       };
+
       hide();
       return;
     }

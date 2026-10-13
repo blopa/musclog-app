@@ -230,6 +230,7 @@ export default function EditPastWorkoutDataModal({
     const syncSets = () => {
       setSets(initialSets ?? []);
     };
+
     syncSets();
   }, [initialSets, visible]);
 
@@ -266,6 +267,7 @@ export default function EditPastWorkoutDataModal({
     if (index === 0) {
       return;
     }
+
     setSets((s) => {
       const next = [...s];
       [next[index - 1], next[index]] = [next[index], next[index - 1]];
@@ -278,6 +280,7 @@ export default function EditPastWorkoutDataModal({
       if (index === s.length - 1) {
         return s;
       }
+
       const next = [...s];
       [next[index], next[index + 1]] = [next[index + 1], next[index]];
       return next;

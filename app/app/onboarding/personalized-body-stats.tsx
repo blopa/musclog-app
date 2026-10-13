@@ -259,6 +259,7 @@ export default function PersonalizedBodyStatsScreen() {
                       if (dotIndex !== -1 && text.length - dotIndex > 3) {
                         return;
                       }
+
                       setHeight(text);
                     }}
                     placeholder="0"

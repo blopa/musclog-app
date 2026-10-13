@@ -56,6 +56,7 @@ export function useAdjustmentMessage(adjustment: SetAdjustment | null | undefine
   if (!adjustment) {
     return null;
   }
+
   const weightUnit = t(getWeightUnitI18nKey(units));
   const formatWeight = (kg: number) => formatDisplayWeightKg(locale, units, kg);
   const formatReps = (reps: number) => formatInteger(reps, { useGrouping: false });
@@ -75,6 +76,7 @@ export function useAdjustmentMessage(adjustment: SetAdjustment | null | undefine
         ...('lowered' in rule && rule.lowered ? rule.lowered : {}),
       });
     }
+
     const isWeight = adjustment.field === 'weight';
     return t(startAdjustmentMessageKey(adjustment), {
       to: formatValue(adjustment.to),
@@ -88,6 +90,7 @@ export function useAdjustmentMessage(adjustment: SetAdjustment | null | undefine
       unit: weightUnit,
     });
   }
+
   if (adjustment.cause === 'carry_over') {
     return t('workoutSession.adjustment.carryOver', {
       from: formatValue(adjustment.from),
@@ -95,6 +98,7 @@ export function useAdjustmentMessage(adjustment: SetAdjustment | null | undefine
       unit: weightUnit,
     });
   }
+
   if (adjustment.cause === 'backoff') {
     return t(RULE_REASON_KEYS.backoff, {
       percent: adjustment.percent,
@@ -103,6 +107,7 @@ export function useAdjustmentMessage(adjustment: SetAdjustment | null | undefine
       unit: weightUnit,
     });
   }
+
   return t(
     adjustment.field === 'weight'
       ? 'workoutSession.adjustment.targetRirWeight'

@@ -99,6 +99,7 @@ export function PortionSizesPickerModal({
       const reset = () => {
         setCreateModalVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -124,6 +125,7 @@ export function PortionSizesPickerModal({
     const sync = () => {
       setLocalSelectedIds(selectedIds);
     };
+
     sync();
   }, [selectedIds]);
 
@@ -168,6 +170,7 @@ export function PortionSizesPickerModal({
         if (cancelled) {
           return;
         }
+
         const usage = await FoodPortionService.getPortionUsageSummary(portion.id);
         if (cancelled) {
           return;
@@ -206,12 +209,15 @@ export function PortionSizesPickerModal({
       if (!portion) {
         return false;
       }
+
       if (activeTab === 'basic') {
         return portion.resolvedSource === 'basic';
       }
+
       if (activeTab === 'other') {
         return portion.resolvedSource === 'custom' && !selectedIdSet.has(option.id);
       }
+
       return selectedIdSet.has(option.id);
     });
 

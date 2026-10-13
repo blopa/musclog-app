@@ -22,6 +22,7 @@ export function WhatsNewCard() {
   if (!flow.pages.length) {
     return null;
   }
+
   return (
     <>
       <SettingsCard

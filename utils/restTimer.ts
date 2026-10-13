@@ -22,6 +22,7 @@ export function clampRestSeconds(seconds: number): number {
   if (!Number.isFinite(seconds)) {
     return DEFAULT_REST_SECONDS;
   }
+
   return Math.min(MAX_REST_SECONDS, Math.max(MIN_REST_SECONDS, Math.round(seconds)));
 }
 
@@ -36,6 +37,7 @@ export function restPhase(remainingSeconds: number, totalSeconds: number): RestP
   if (remainingSeconds <= 0) {
     return 'done';
   }
+
   return totalSeconds > GET_READY_SECONDS && remainingSeconds <= GET_READY_SECONDS
     ? 'getReady'
     : 'resting';
@@ -58,8 +60,10 @@ export function hapticBeat(previous: number | null, remaining: number): HapticBe
   if (previous === null || previous === remaining) {
     return null;
   }
+
   if (remaining === 0) {
     return 'done';
   }
+
   return HAPTIC_TICK_SECONDS.includes(remaining) ? 'tick' : null;
 }

@@ -70,6 +70,7 @@ function reachableWithin(denominations: Denomination[], capUnits: number): Reach
         if (before === NOT_REACHABLE) {
           continue;
         }
+
         if (before + k < next[u]) {
           next[u] = before + k;
           choice[u] = k;
@@ -94,6 +95,7 @@ function platesFor(table: ReachableTable, units: number): GymPlate[] {
       remaining -= count * table.denominations[d].units;
     }
   }
+
   return result.sort((a, b) => b.weightKg - a.weightKg);
 }
 
@@ -158,6 +160,7 @@ export function nearestLoadableKg(targetKg: number, gym: LoadingGym): number {
     if (table.fewestPlates[u] === NOT_REACHABLE) {
       continue;
     }
+
     const distance = Math.abs(u - targetUnits);
     if (distance < bestDistance) {
       best = u;
@@ -183,6 +186,7 @@ export function roundToLoadable(
   if (!gym) {
     return Math.round(kg);
   }
+
   if (!Number.isFinite(kg) || kg <= 0) {
     return 0;
   }

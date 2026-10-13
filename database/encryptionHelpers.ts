@@ -178,6 +178,7 @@ export async function decryptNumber(cipher: string | undefined | null): Promise<
   if (!cipher || String(cipher).trim() === '') {
     return 0;
   }
+
   const trimmed = String(cipher).trim();
   let decrypted: string | undefined;
   try {
@@ -185,6 +186,7 @@ export async function decryptNumber(cipher: string | undefined | null): Promise<
   } catch {
     // Pre-encryption rows are not valid ciphertext and some byte sequences make CryptoJS throw.
   }
+
   if (decrypted && decrypted.trim()) {
     const n = parseFloat(decrypted);
     if (!Number.isNaN(n)) {
@@ -234,6 +236,7 @@ export async function decryptJson(
       if (typeof parsed !== 'object' || parsed === null) {
         return undefined;
       }
+
       const out: Record<string, number> = {};
       for (const k of Object.keys(parsed)) {
         const v = parsed[k];
@@ -241,6 +244,7 @@ export async function decryptJson(
           out[k] = v;
         }
       }
+
       return out;
     } catch {
       return undefined;
@@ -253,6 +257,7 @@ export async function decryptJson(
   } catch {
     // Legacy JSON is plaintext, so feeding it to the cipher can fail before fallback parsing.
   }
+
   if (decrypted && decrypted.trim()) {
     const parsed = tryParse(decrypted);
     if (parsed) {

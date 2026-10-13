@@ -98,6 +98,7 @@ function metricToDisplayItem(
   if (type === 'weight') {
     valueInMetric = storedWeightToKg(decrypted.value, decrypted.unit);
   }
+
   const displayValue = metricValueToDisplay(valueInMetric, type, units);
   const displayUnit = metricDisplayUnit(type, units, decrypted.unit);
 
@@ -123,6 +124,7 @@ function groupMetricsByDate(
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -153,11 +155,13 @@ function mergeIntoDayGroups(
     if (existingIds.has(item.id)) {
       return;
     }
+
     existingIds.add(item.id);
 
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -334,6 +338,7 @@ export function useUserMetricDataLogs({
     if (isLoading) {
       return;
     }
+
     await loadInitial();
   }, [loadInitial, isLoading]);
 
@@ -341,9 +346,11 @@ export function useUserMetricDataLogs({
     if (!visible) {
       return;
     }
+
     const run = () => {
       void loadInitial();
     };
+
     run();
   }, [visible, loadInitial]);
 

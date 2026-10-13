@@ -163,6 +163,7 @@ export function TimePickerModal({
         setAmPm(toPeriod(selectedTime));
         setPickerKey((k) => k + 1);
       };
+
       syncTime();
     }
   }, [visible, selectedTime]);

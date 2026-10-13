@@ -126,6 +126,7 @@ async function seedWorkoutTemplatesAndHistory(shouldSeedWorkoutHistory = false):
             ex.updatedAt = now;
           });
         }
+
         return exercise;
       };
 
@@ -868,6 +869,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
             ex.updatedAt = now;
           });
         }
+
         return exercise;
       };
 
@@ -2240,6 +2242,7 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
           if (retries >= maxRetries) {
             throw verifyError; // Re-throw if all retries failed
           }
+
           // Wait before retrying
           await new Promise((resolve) => setTimeout(resolve, 200));
         }

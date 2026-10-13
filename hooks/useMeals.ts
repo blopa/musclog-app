@@ -93,6 +93,7 @@ export function useMeals({
       if (mode !== 'with-foods') {
         setIsLoading(false);
       }
+
       return;
     }
 
@@ -150,6 +151,7 @@ export function useMeals({
       if (mode === 'with-foods' && !mealId) {
         setIsLoading(false);
       }
+
       return;
     }
 
@@ -254,8 +256,10 @@ export function useMeals({
             void loadInitialMeals();
           }
         };
+
         run();
       }
+
       return;
     }
 
@@ -285,6 +289,7 @@ export function useMeals({
     const runInit = () => {
       void refresh();
     };
+
     runInit();
 
     return () => subscription.unsubscribe();

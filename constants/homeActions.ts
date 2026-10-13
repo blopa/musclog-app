@@ -69,6 +69,7 @@ export function toggleHomeAction(
     if (selected.length <= MIN_HOME_ACTIONS) {
       return selected;
     }
+
     return selected.filter((k) => k !== key);
   }
 

@@ -21,6 +21,7 @@ function scaleMicros(micros: MicrosData, scale: number): MicrosData {
       scaled[key] = Math.max(0, value) * scale;
     }
   }
+
   return scaled;
 }
 
@@ -286,6 +287,7 @@ export default class NutritionLog extends Model {
       if (!food) {
         throw new Error('Food not found for nutrition log');
       }
+
       if (food.resolvedNutritionBasis === 'per_serving') {
         const nutrients = food.getNutrientsForServingCount(this.amount);
         return {
@@ -347,6 +349,7 @@ export default class NutritionLog extends Model {
       if (!food) {
         return {};
       }
+
       const scale =
         food.resolvedNutritionBasis === 'per_serving'
           ? this.amount
@@ -364,6 +367,7 @@ export default class NutritionLog extends Model {
     if (s.loggedFoodName?.trim()) {
       return s.loggedFoodName.trim();
     }
+
     try {
       const food = await this.food;
       return food?.name ?? i18n.t('meals.unknownFood');

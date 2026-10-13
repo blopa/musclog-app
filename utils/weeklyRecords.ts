@@ -30,9 +30,11 @@ export function summarizeWeeklyRecords(records: PersonalRecord[]): WeeklyRecordR
       });
       continue;
     }
+
     if (!row.types.includes(record.type)) {
       row.types.push(record.type);
     }
+
     const better =
       record.newRecord.weight > row.best.weight ||
       (record.newRecord.weight === row.best.weight && record.newRecord.reps > row.best.reps);
@@ -40,6 +42,7 @@ export function summarizeWeeklyRecords(records: PersonalRecord[]): WeeklyRecordR
       row.best = record.newRecord;
     }
   }
+
   return [...rows.values()].map((row) => ({
     ...row,
     types: TYPE_ORDER.filter((type) => row.types.includes(type)),

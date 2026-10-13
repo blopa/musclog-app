@@ -121,6 +121,7 @@ export function projectExerciseProgression(input: {
       last
     );
   }
+
   const byId = new Map(changes.map((change) => [change.setId, change]));
   return {
     sets: planned.map((set) => {
@@ -159,8 +160,10 @@ function recommendationStatus({
     // A percentage rule with no training max yet is still learning one.
     return rule.type === 'percentage' && !state ? 'learning' : 'rule';
   }
+
   if (!hasHistory || !automatic) {
     return 'learning';
   }
+
   return changed ? 'suggested' : 'holding';
 }

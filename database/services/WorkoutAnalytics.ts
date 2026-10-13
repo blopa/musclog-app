@@ -159,6 +159,7 @@ export class WorkoutAnalytics {
       if (!exerciseSets.has(exerciseId)) {
         exerciseSets.set(exerciseId, []);
       }
+
       exerciseSets.get(exerciseId)!.push(set);
     }
 
@@ -561,9 +562,11 @@ export class WorkoutAnalytics {
       if (!workoutId) {
         continue;
       }
+
       if (!setsByWorkout.has(workoutId)) {
         setsByWorkout.set(workoutId, []);
       }
+
       setsByWorkout.get(workoutId)!.push(set);
     }
 
@@ -573,9 +576,11 @@ export class WorkoutAnalytics {
         if ((current.setOrder ?? 0) < (earliest.setOrder ?? 0)) {
           return current;
         }
+
         if ((current.setOrder ?? 0) > (earliest.setOrder ?? 0)) {
           return earliest;
         }
+
         return (current.createdAt ?? 0) < (earliest.createdAt ?? 0) ? current : earliest;
       });
 
@@ -712,6 +717,7 @@ export class WorkoutAnalytics {
     if (workoutLogIds.length === 0) {
       return { value: 0, unit: 'perWeek' };
     }
+
     const rangeStartDayMs = localDayKeyPlusCalendarDaysFromNow(-weeks * 7);
 
     const completedLogs = await database
@@ -730,6 +736,7 @@ export class WorkoutAnalytics {
       if (!uniqueWorkoutsPerWeek.has(weekIndex)) {
         uniqueWorkoutsPerWeek.set(weekIndex, new Set());
       }
+
       uniqueWorkoutsPerWeek.get(weekIndex)!.add(log.id);
     }
 

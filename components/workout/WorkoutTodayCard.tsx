@@ -62,8 +62,10 @@ export function WorkoutTodayCard({
           const { sets } = await WorkoutService.getWorkoutWithDetails(log.id);
           session = { log, done: sets.filter(isResolvedWorkoutSet).length, total: sets.length };
         }
+
         return { session, next, autonomy };
       };
+
       load()
         .then(({ session, next, autonomy }) => {
           if (live) {
@@ -172,13 +174,16 @@ export function WorkoutTodayCard({
         }).format(row.lastCompletedAt),
       });
     }
+
     if (row.planName) {
       return t(row.scheduled ? 'trainingFlow.scheduledIn' : 'trainingFlow.nextIn', {
         plan: row.planName,
       });
     }
+
     return t('trainingFlow.scheduledToday');
   };
+
   const [primary, ...others] = upcoming.filter((row) => !row.completedToday);
   const finished = upcoming.filter((row) => row.completedToday);
   return (

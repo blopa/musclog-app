@@ -28,6 +28,7 @@ export function HelpAndFeedbackCard() {
       showSnackbar('error', t('settings.helpAndFeedback.openFailed'))
     );
   };
+
   const environment = (): FeedbackEnvironment => ({
     ...getAppBuildInfo(),
     locale: i18n.resolvedLanguage ?? i18n.language,

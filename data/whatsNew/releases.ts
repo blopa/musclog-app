@@ -11,6 +11,7 @@ export const whatsNewReleases = Object.entries(WHATS_NEW_RELEASE_FILES)
     if (__DEV__ && issues.length) {
       console.warn('[WhatsNew]', issues.join('\n'));
     }
+
     return release ? [release] : [];
   })
   .sort((a, b) => compareVersions(a.version, b.version));

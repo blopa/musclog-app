@@ -118,6 +118,7 @@ function mealHasUngroupedDuplicateFoods(mealFoods: { log: NutritionLog }[]): boo
     if (!entry.log.foodId) {
       continue;
     }
+
     const existing = groupedByFood.get(entry.log.foodId) || [];
     existing.push(entry);
     groupedByFood.set(entry.log.foodId, existing);
@@ -399,6 +400,7 @@ export default function FoodScreen() {
             } catch {
               // Food may be deleted; we still show the log using snapshot name and nutrients
             }
+
             const [nutrients, gramWeight, displayName] = await Promise.all([
               log.getNutrients(),
               log.getGramWeight(),
@@ -509,6 +511,7 @@ export default function FoodScreen() {
         if (!groupMap[type][gid]) {
           groupMap[type][gid] = [];
         }
+
         groupMap[type][gid].push(entry);
       }
     });
@@ -566,6 +569,7 @@ export default function FoodScreen() {
           map[id] = url;
         }
       }
+
       setMealGroupImageUrls(map);
     }
 
@@ -613,6 +617,7 @@ export default function FoodScreen() {
     if (!selectedMealGroup) {
       return;
     }
+
     if (newTotalGrams < 1) {
       showSnackbar('error', t('food.actions.scaleMealPortionInvalid'));
       return;
@@ -672,6 +677,7 @@ export default function FoodScreen() {
     if (!selectedMealGroup) {
       return;
     }
+
     setGroupActionLoading(true);
     await flushLoadingPaint();
     try {
@@ -988,6 +994,7 @@ export default function FoodScreen() {
     if (!selectedMealForMenu) {
       return;
     }
+
     setDeleteAllMealLoading(true);
     await flushLoadingPaint();
     try {
@@ -2119,6 +2126,7 @@ export default function FoodScreen() {
               note
             );
           }
+
           screenModals.savedForLater.closePortionSelector();
           screenModals.savedForLater.clearPending();
         }}

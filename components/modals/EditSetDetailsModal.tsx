@@ -57,6 +57,7 @@ export function EditSetDetailsModal({
         setPartials(initialPartials);
         setRepsInReserve(showRir ? initialRepsInReserve : 0);
       };
+
       syncValues();
     }
   }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve, showRir]);

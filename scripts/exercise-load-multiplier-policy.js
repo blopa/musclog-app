@@ -340,6 +340,7 @@ function resolveLoadMultiplier(entry, equipmentType, mechanicType, anchorMultipl
     if (value === undefined) {
       throw new Error(`Anchor "${anchor}" for "${entry.name}" is not in exercisesData.json`);
     }
+
     stats.anchored += 1;
     return value;
   }
@@ -372,6 +373,7 @@ function resolveLoadMultiplier(entry, equipmentType, mechanicType, anchorMultipl
   if (equipmentType === 'bodyweight' || equipmentType === 'other') {
     return 0;
   }
+
   return mechanicType === 'isolation' ? 0.2 : 0.5;
 }
 

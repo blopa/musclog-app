@@ -46,6 +46,7 @@ export function dlog(x: number): number {
     m /= 2;
     e++;
   }
+
   while (m < 0.75) {
     m *= 2;
     e--;
@@ -59,6 +60,7 @@ export function dlog(x: number): number {
     sum += term / n;
     term *= z2;
   }
+
   return e * LN2 + 2 * sum;
 }
 
@@ -87,12 +89,15 @@ export function solitonCdf(k: number): Float64Array {
     } else if (d === spike) {
       tau = (R * Math.max(0, dlog(R / SOLITON_DELTA))) / k;
     }
+
     total += rho + tau;
     cdf[d - 1] = total;
   }
+
   for (let i = 0; i < k; i++) {
     cdf[i] = cdf[i] / total;
   }
+
   cdf[k - 1] = 1;
   return cdf;
 }
@@ -141,6 +146,7 @@ export function frameIndices(
     for (let i = 0; i < k; i++) {
       scratch[i] = i;
     }
+
     const out: number[] = new Array<number>(d);
     for (let i = 0; i < d; i++) {
       const j = i + (rnd() % (k - i));
@@ -149,6 +155,7 @@ export function frameIndices(
       scratch[j] = t;
       out[i] = scratch[i];
     }
+
     return out;
   }
 
@@ -156,6 +163,7 @@ export function frameIndices(
   while (set.size < d) {
     set.add(rnd() % k);
   }
+
   return [...set];
 }
 
@@ -184,6 +192,7 @@ export class LTEncoder {
       const src = payload.subarray(b * blockLen, Math.min((b + 1) * blockLen, payload.length));
       bytes.set(src, b * this.words * 4);
     }
+
     this.cdf = solitonCdf(this.k);
   }
 
@@ -196,6 +205,7 @@ export class LTEncoder {
         out[w] = (out[w] ^ this.blocks[off + w]) >>> 0;
       }
     }
+
     return new Uint8Array(out.buffer, 0, this.blockLen);
   }
 }
@@ -235,6 +245,7 @@ export class LTDecoder {
       this.framesDup++;
       return;
     }
+
     this.seen.add(seq);
     this.framesNew++;
     if (this.isComplete) {
@@ -255,6 +266,7 @@ export class LTDecoder {
     if (idx.size === 0) {
       return; // fully redundant
     }
+
     if (idx.size === 1) {
       this.resolve(idx.values().next().value as number, words);
       return;
@@ -267,6 +279,7 @@ export class LTDecoder {
         set = new Set();
         this.byBlock.set(b, set);
       }
+
       set.add(pf);
     }
   }
@@ -286,6 +299,7 @@ export class LTDecoder {
       if (this.solved[b]) {
         continue;
       }
+
       this.solved[b] = w;
       this.solvedCount++;
 
@@ -293,6 +307,7 @@ export class LTDecoder {
       if (!waiting) {
         continue;
       }
+
       this.byBlock.delete(b);
       for (const pf of waiting) {
         xorInto(pf.words, w);
@@ -312,6 +327,7 @@ export class LTDecoder {
     if (!this.isComplete) {
       return null;
     }
+
     const out = new Uint8Array(this.totalLen);
     for (let b = 0; b < this.k; b++) {
       const start = b * this.blockLen;
@@ -320,6 +336,7 @@ export class LTDecoder {
         out.set(new Uint8Array((this.solved[b] as Uint32Array).buffer, 0, len), start);
       }
     }
+
     return out;
   }
 }

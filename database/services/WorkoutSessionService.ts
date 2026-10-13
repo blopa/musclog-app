@@ -51,12 +51,14 @@ export class WorkoutSessionService {
     ) {
       throw new Error('Invalid set values');
     }
+
     if (
       values?.partials != null &&
       (!Number.isInteger(values.partials) || values.partials < 0 || values.partials > 999)
     ) {
       throw new Error('Invalid partial reps');
     }
+
     if (
       values?.repsInReserve != null &&
       (!Number.isFinite(values.repsInReserve) ||
@@ -65,9 +67,11 @@ export class WorkoutSessionService {
     ) {
       throw new Error('Invalid effort');
     }
+
     if (values?.difficultyLevel != null) {
       assertValidWorkoutSetDifficultyLevel(values.difficultyLevel);
     }
+
     const [gym, mode, autonomy, bodyWeightKg] = await Promise.all([
       GymService.getActiveGym().catch(() => null),
       SettingsService.getProgressionMode(),
@@ -84,6 +88,7 @@ export class WorkoutSessionService {
       if (log.completedAt || log.deletedAt || set.deletedAt || block.workoutLogId !== logId) {
         throw new Error('Session is no longer editable');
       }
+
       const siblings = (
         await database
           .get<WorkoutLogSet>('workout_log_sets')
@@ -117,6 +122,7 @@ export class WorkoutSessionService {
                 prescription.override = 'manual';
               }
             }
+
             record.prescriptionJson = serializeSetPrescription(prescription);
             record.completionStatus = status;
             record.updatedAt = Date.now();
@@ -158,6 +164,7 @@ export class WorkoutSessionService {
             })
           );
         }
+
         return operations;
       });
     });

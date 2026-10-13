@@ -34,12 +34,15 @@ function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): st
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
     return format(date, 'EEEE', { locale });
   }
+
   return format(date, 'MMM d', { locale });
 }
 
@@ -47,6 +50,7 @@ function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) {
     return text;
   }
+
   return text.slice(0, maxLength) + '…';
 }
 
@@ -61,6 +65,7 @@ function groupByDate(
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -91,10 +96,12 @@ function mergeIntoDayGroups(
     if (existingIds.has(item.id)) {
       return;
     }
+
     existingIds.add(item.id);
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -114,6 +121,7 @@ function filterBySearch(
   if (!searchQuery.trim()) {
     return groups;
   }
+
   const q = searchQuery.toLowerCase().trim();
   return groups
     .map((g) => ({
@@ -241,6 +249,7 @@ export function useChatMessageDataLogs({
     if (isLoading) {
       return;
     }
+
     await loadInitial();
   }, [loadInitial, isLoading]);
 
@@ -248,9 +257,11 @@ export function useChatMessageDataLogs({
     if (!visible) {
       return;
     }
+
     const run = () => {
       void loadInitial();
     };
+
     run();
   }, [visible, loadInitial]);
 

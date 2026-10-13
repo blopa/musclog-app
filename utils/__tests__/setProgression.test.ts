@@ -497,7 +497,11 @@ describe('bodyweight rep ceiling', () => {
       planReps: 10,
       repCeiling: 25,
     });
-    expect(unrated).toMatchObject({ weightKg: 0, reps: 25, rule: { kind: 'ceiling', ceiling: 25 } });
+    expect(unrated).toMatchObject({
+      weightKg: 0,
+      reps: 25,
+      rule: { kind: 'ceiling', ceiling: 25 },
+    });
   });
 
   it('a deload with nothing to take off is a repeat, not a phantom deload', () => {

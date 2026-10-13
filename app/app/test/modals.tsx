@@ -835,6 +835,7 @@ export default function ModalsTestScreen() {
                     exercises: data.exercises,
                   });
                 }
+
                 setIsWorkoutHistoryVisible(true);
               }}
             />

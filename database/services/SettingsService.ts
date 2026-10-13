@@ -114,6 +114,7 @@ export class SettingsService {
     if (settings.length === 0) {
       return getDefaultUnits();
     }
+
     return settings[0].value === '1' ? 'imperial' : 'metric';
   }
 
@@ -1005,6 +1006,7 @@ export class SettingsService {
     if (!Number.isInteger(value) || value < 0 || value > 6) {
       throw new Error('Invalid weekday');
     }
+
     await this.setStringSetting('review_weekday', String(value));
   }
 
@@ -1065,6 +1067,7 @@ export class SettingsService {
     } else if (slot === 2) {
       type = NAV_SLOT_2_SETTING_TYPE;
     }
+
     const value = await SettingsService.getStringSetting(type, defaults[slot]);
     return value as NavItemKey;
   }
@@ -1079,6 +1082,7 @@ export class SettingsService {
     } else if (slot === 2) {
       type = NAV_SLOT_2_SETTING_TYPE;
     }
+
     await SettingsService.setStringSetting(type, item);
   }
 
@@ -1098,6 +1102,7 @@ export class SettingsService {
     } else if (slotA === 2) {
       typeA = NAV_SLOT_2_SETTING_TYPE;
     }
+
     let typeB = NAV_SLOT_3_SETTING_TYPE;
     if (slotB === 1) {
       typeB = NAV_SLOT_1_SETTING_TYPE;
@@ -1165,11 +1170,13 @@ export class SettingsService {
     if (!raw) {
       return;
     }
+
     const decrypted = await decryptDatabaseValue(raw);
     if (decrypted) {
       // Non-empty decryption result → already encrypted, nothing to do.
       return;
     }
+
     // Decryption returned empty → value is legacy plaintext → encrypt and re-save.
     await SettingsService.setEncryptedStringSetting(type, raw);
   }
@@ -1183,6 +1190,7 @@ export class SettingsService {
     if (!raw) {
       return '';
     }
+
     const decrypted = await decryptDatabaseValue(raw);
     // If AES decryption produced a non-empty result, it was an encrypted value.
     // Otherwise fall back to the raw value (legacy plaintext stored before encryption was added).
@@ -1271,6 +1279,7 @@ export class SettingsService {
               }
             }
           }
+
           continue;
         }
 

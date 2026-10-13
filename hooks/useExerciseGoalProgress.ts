@@ -38,6 +38,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     const syncBaseline = () => {
       setCurrentBaseline1rm(goal.baseline1rm ?? null);
     };
+
     syncBaseline();
   }, [goal.id, goal.baseline1rm]);
 
@@ -71,6 +72,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     const run = () => {
       void loadData();
     };
+
     run();
   }, [loadData]);
 
@@ -89,6 +91,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
           if (debounceTimer) {
             clearTimeout(debounceTimer);
           }
+
           debounceTimer = setTimeout(() => {
             loadData();
           }, 500);
@@ -105,6 +108,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
           if (debounceTimer) {
             clearTimeout(debounceTimer);
           }
+
           debounceTimer = setTimeout(() => {
             loadData();
           }, 500);
@@ -117,6 +121,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
       if (subscription) {
         subscription.unsubscribe();
       }
+
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
@@ -151,6 +156,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     if (goal.goalType !== '1rm' || !goal.exerciseId) {
       return;
     }
+
     setIsLoading(true);
     try {
       const recentAverage = await WorkoutAnalytics.getRecentFirstSetAverage1RM(goal.exerciseId);
@@ -158,6 +164,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
         await ExerciseGoalService.updateBaseline1rm(goal.id, recentAverage.average1RM);
         setCurrentBaseline1rm(recentAverage.average1RM);
       }
+
       await loadData();
     } catch (err) {
       console.error('Error recalculating baseline:', err);

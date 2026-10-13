@@ -43,6 +43,7 @@ const DIGITS = (() => {
   for (let i = 0; i < BASE44_ALPHABET.length; i++) {
     table[BASE44_ALPHABET.charCodeAt(i)] = i;
   }
+
   return table;
 })();
 
@@ -95,11 +96,13 @@ export function base44Decode(text: string): Uint8Array | null {
     if (d0 < 0 || d1 < 0 || d2 < 0) {
       return null;
     }
+
     const v = d0 * RADIX_SQ + d1 * RADIX + d2;
     // 44³ overshoots 2¹⁶, so the top of the digit space is not a valid byte pair.
     if (v > 0xffff) {
       return null;
     }
+
     out[o++] = v >> 8;
     out[o++] = v & 0xff;
   }
@@ -110,10 +113,12 @@ export function base44Decode(text: string): Uint8Array | null {
     if (d0 < 0 || d1 < 0) {
       return null;
     }
+
     const v = d0 * RADIX + d1;
     if (v > 0xff) {
       return null;
     }
+
     out[o] = v;
   }
 

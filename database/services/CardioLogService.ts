@@ -53,9 +53,11 @@ export class CardioLogService {
     if (!isCardioActivity(activity)) {
       throw new Error(`Unsupported cardio activity: ${String(activity)}`);
     }
+
     if (!Number.isFinite(distanceM) || distanceM <= 0) {
       throw new Error('A cardio log needs a distance greater than zero');
     }
+
     if (!Number.isFinite(durationS) || durationS <= 0 || durationS > MAX_CARDIO_DURATION_S) {
       throw new Error('A cardio log needs a duration between a second and 24 hours');
     }

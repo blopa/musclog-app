@@ -182,6 +182,7 @@ export function CreateEditPlanModal({
         if (from < 0 || to < 0) {
           return current;
         }
+
         const next = [...current];
         [next[from], next[to]] = [next[to], next[from]];
         return next;
@@ -195,6 +196,7 @@ export function CreateEditPlanModal({
       showSnackbar('error', t('workouts.plans.validation.nameRequired'));
       return;
     }
+
     setIsSaving(true);
     try {
       const planMemberships = members.map((member, position) => ({
@@ -222,6 +224,7 @@ export function CreateEditPlanModal({
         });
         onSaved?.(created.id);
       }
+
       showSnackbar('success', t('workouts.plans.saveSuccess'));
       onClose();
     } catch (error) {
@@ -240,6 +243,7 @@ export function CreateEditPlanModal({
       setIsCycleConfirmationVisible(true);
       return;
     }
+
     void performSave();
   }, [savedCycleType, cycleType, members, performSave]);
 

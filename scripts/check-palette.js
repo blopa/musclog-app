@@ -20,12 +20,15 @@ for (const themeId of THEME_IDS) {
   if (!quiet || problems.length) {
     console.log(`\n${themeId}`);
   }
+
   for (const problem of problems) {
     console.log(`  ${problem}`);
   }
+
   if (!problems.length && !quiet) {
     console.log('  ok  every seam visible, all ink at AA, no confusable pair in a shared legend');
   }
+
   failures += problems.length;
 }
 
@@ -33,12 +36,15 @@ const hueNames = [...checkHueNames(), ...checkStaleHueKeys()];
 if (hueNames.length || !quiet) {
   console.log('\nnaming (compared across all themes)');
 }
+
 for (const problem of hueNames) {
   console.log(`  ${problem}`);
 }
+
 if (!hueNames.length && !quiet) {
   console.log(`  ok  every hue-named token keeps its hue in all ${THEME_IDS.length} themes`);
 }
+
 failures += hueNames.length;
 
 if (failures) {

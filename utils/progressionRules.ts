@@ -170,6 +170,7 @@ function toProgressionRule(value: unknown): ProgressionRule | null {
   if (!value || typeof value !== 'object') {
     return null;
   }
+
   const candidate = value as Record<string, unknown>;
   const type = candidate.type;
   if (!PROGRESSION_RULE_TYPES.includes(type as ProgressionRuleType)) {
@@ -181,6 +182,7 @@ function toProgressionRule(value: unknown): ProgressionRule | null {
   if (isFiniteNumber(candidate.resetAt) && candidate.resetAt > 0) {
     rule.resetAt = candidate.resetAt;
   }
+
   const addedLater = FIELDS_ADDED_LATER[type as ProgressionRuleType] ?? {};
   for (const [field, fieldBounds] of Object.entries(bounds)) {
     const fieldValue = candidate[field] ?? addedLater[field];
@@ -188,15 +190,18 @@ function toProgressionRule(value: unknown): ProgressionRule | null {
     if (field === 'trainingMaxKg' && fieldValue == null) {
       continue;
     }
+
     if (!inBounds(fieldValue, fieldBounds)) {
       return null;
     }
+
     rule[field] = fieldValue;
   }
 
   if ('repMin' in rule && (rule.repMin as number) > (rule.repMax as number)) {
     return null;
   }
+
   return rule as ProgressionRule;
 }
 
@@ -204,6 +209,7 @@ function parseJson(raw: string | null | undefined): unknown {
   if (!raw) {
     return null;
   }
+
   try {
     return JSON.parse(raw);
   } catch {
@@ -240,6 +246,7 @@ export function serializeSessionProgression(
   if (!serialized || !state) {
     return serialized;
   }
+
   return JSON.stringify({ ...JSON.parse(serialized), state });
 }
 
@@ -293,6 +300,7 @@ export function carriedSessionState(
   ) {
     return null;
   }
+
   return last?.state ?? null;
 }
 
@@ -327,10 +335,8 @@ type SetTarget = {
  * definition of "the same set last time", shared by the rules, a review's week override and the
  * prescription the session start records.
  */
-export const counterpartAt = (
-  sets: readonly HistorySet[],
-  index: number
-): HistorySet | undefined => sets.find((set, i) => (set.prescribedIndex ?? i) === index);
+export const counterpartAt = (sets: readonly HistorySet[], index: number): HistorySet | undefined =>
+  sets.find((set, i) => (set.prescribedIndex ?? i) === index);
 
 const causeFromLoad = (next: number, previous: number): StartAdjustmentCause =>
   sameLoad(next, previous) ? 'repeat' : next > previous ? 'progression' : 'deload';
@@ -363,6 +369,7 @@ function rangeTarget(
       rule: { kind: 'range', outcome: 'add_weight', ...range },
     };
   }
+
   const deloaded = deloadedLoad(last.weightKg, step);
   if (bestReps < repMin && last.weightKg > 0) {
     // With nothing lighter to load, a second miss can only hold.
@@ -380,6 +387,7 @@ function rangeTarget(
           rule: { kind: 'range', outcome: 'hold', ...range },
         };
   }
+
   const reps = clamp(last.reps + 1, repMin, repMax);
   const addsReps = reps > last.reps;
   return {
@@ -403,6 +411,7 @@ function missedAtSameLoad(
   if (!before?.sets.length) {
     return false;
   }
+
   const sets =
     setIndex == null
       ? before.sets
@@ -440,6 +449,7 @@ function doubleProgressionTargets(
   if (!sameLoad(lead.weightKg, last.sets[0].weightKg)) {
     return planned.map(() => lead);
   }
+
   return planned.map((_, index) => {
     const counterpart = counterpartAt(last.sets, index) ?? {
       weightKg: planned[index].weight,
@@ -517,6 +527,7 @@ function linearTargets(
 
       failures++;
     }
+
     // The rule's own percentage, snapped DOWN to a load that is really lighter: rounding to the
     // nearest load could land back on the load being failed and hold the lifter there forever.
     const deloaded = loadBelow(lastLoad, lastLoad * (1 - rule.deloadPercent / 100), step);
@@ -535,6 +546,7 @@ function linearTargets(
             rule: { ...detail, outcome: 'hold', failures },
           };
   }
+
   return planned.map(() => target);
 }
 
@@ -580,9 +592,11 @@ function topSetBackoffTargets(
   if (!lastTop) {
     return topSetBackoffWithoutHistory(rule, planned, step);
   }
+
   if (lastTop.weightKg <= 0) {
     return [];
   }
+
   const top = rangeTarget(
     lastTop,
     lastTop.reps >= rule.repMax,
@@ -633,6 +647,7 @@ export function resolveTrainingMax(
     if (sessionGotEveryRep(carried, rule.reps)) {
       return { trainingMaxKg: carriedMax + step.incrementKg, source: 'raised' };
     }
+
     const failures = consecutiveMissesAtTrainingMax(rule, history, carriedMax);
     if (failures >= rule.failuresBeforeReset) {
       return {
@@ -641,6 +656,7 @@ export function resolveTrainingMax(
         failures,
       };
     }
+
     return { trainingMaxKg: carriedMax, source: 'held' };
   }
 
@@ -692,8 +708,10 @@ function consecutiveMissesAtTrainingMax(
     ) {
       break;
     }
+
     failures++;
   }
+
   return failures;
 }
 
@@ -772,9 +790,11 @@ function ruleTargets(
   if (rule.type === 'percentage') {
     return percentageTargets(rule, planned, history, step);
   }
+
   if (history.length === 0) {
     return { targets: targetsWithoutHistory(rule, planned, step), state: null };
   }
+
   const [last, before] = history;
   switch (rule.type) {
     case 'double_progression':

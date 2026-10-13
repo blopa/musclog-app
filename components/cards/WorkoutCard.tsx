@@ -69,6 +69,7 @@ export function WorkoutCard({
         return t('common.monthsAgo', { count: months });
       }
     }
+
     // Fallback to provided string if no timestamp
     return lastCompleted;
   };

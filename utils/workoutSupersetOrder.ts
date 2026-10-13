@@ -83,11 +83,13 @@ export function getEffectiveOrder<T extends SetLike>(sets: T[]): T[] {
       result.push(block.sets[0]);
       continue;
     }
+
     if (block.sets.length === 1) {
       // Single set in a group (only one exercise in group)
       result.push(block.sets[0]);
       continue;
     }
+
     // Group: order exercises by min set_order, then round-major
     const byExercise = new Map<string, T[]>();
     block.sets.forEach((s) => {
@@ -95,6 +97,7 @@ export function getEffectiveOrder<T extends SetLike>(sets: T[]): T[] {
       if (!byExercise.has(eid)) {
         byExercise.set(eid, []);
       }
+
       byExercise.get(eid)!.push(s);
     });
     byExercise.forEach((exerciseSets) => {
@@ -141,11 +144,13 @@ export function getNextSetInEffectiveOrder<T extends SetLike>(
   if (idx < 0) {
     return null;
   }
+
   for (let i = idx + 1; i < ordered.length; i++) {
     if (isUnlogged(ordered[i])) {
       return ordered[i];
     }
   }
+
   return null;
 }
 
@@ -158,6 +163,7 @@ export function getRoundIndexWithinGroup<T extends SetLike>(set: T, sets: T[]): 
   if (gid == null || gid === '') {
     return 0;
   }
+
   const groupSets = sets.filter((s) => s.groupId === gid);
   const byExercise = new Map<string, T[]>();
   groupSets.forEach((s) => {
@@ -165,6 +171,7 @@ export function getRoundIndexWithinGroup<T extends SetLike>(set: T, sets: T[]): 
     if (!byExercise.has(eid)) {
       byExercise.set(eid, []);
     }
+
     byExercise.get(eid)!.push(s);
   });
   byExercise.forEach((exerciseSets) => {
@@ -187,10 +194,12 @@ export function isNextInSameSupersetRound<T extends SetLike>(
   if (nextSet == null) {
     return false;
   }
+
   const gid = completedSet.groupId;
   if (gid == null || gid === '' || nextSet.groupId !== gid) {
     return false;
   }
+
   const roundCompleted = getRoundIndexWithinGroup(completedSet, sets);
   const roundNext = getRoundIndexWithinGroup(nextSet, sets);
   return roundCompleted === roundNext;

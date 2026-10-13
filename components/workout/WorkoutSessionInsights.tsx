@@ -28,6 +28,7 @@ export function WorkoutSessionInsights({ logId, startedAt }: { logId: string; st
     await setInsightDismissed(logId, key);
     setDismissed((previous) => ({ ...previous, [key]: true }));
   };
+
   const message =
     cycle.currentPhase === 'ovulatory'
       ? t('workoutSession.ovulationInsight')

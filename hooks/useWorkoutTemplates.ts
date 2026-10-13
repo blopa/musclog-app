@@ -259,8 +259,10 @@ export function useWorkoutTemplates({
         const run = () => {
           void loadInitialTemplates();
         };
+
         run();
       }
+
       return;
     }
 
@@ -286,6 +288,7 @@ export function useWorkoutTemplates({
     const runInit = () => {
       void loadInitialTemplates();
     };
+
     runInit();
 
     return () => subscription.unsubscribe();

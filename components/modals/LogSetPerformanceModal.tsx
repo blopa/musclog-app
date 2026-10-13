@@ -109,6 +109,7 @@ export function LogSetPerformanceModal({
         setRepsInReserve(initialRepsInReserve);
         setRpe(initialRpe);
       };
+
       syncValues();
     }
   }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve, initialRpe]);

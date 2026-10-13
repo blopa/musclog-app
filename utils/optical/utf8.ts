@@ -41,6 +41,7 @@ export function utf8Decode(bytes: Uint8Array): string {
     parts.push(String.fromCharCode.apply(null, units.slice(0, unitCount)));
     unitCount = 0;
   };
+
   const continuation = () => (index < length ? bytes[index++] & 0x3f : 0);
 
   while (index < length) {
@@ -65,6 +66,7 @@ export function utf8Decode(bytes: Uint8Array): string {
       if (unitCount === DECODE_CHUNK) {
         flush();
       }
+
       units[unitCount++] = 0xdc00 + (offset & 0x3ff);
     } else {
       units[unitCount++] = codePoint;

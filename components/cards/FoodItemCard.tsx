@@ -141,6 +141,7 @@ export const FoodItemCard = memo(function FoodItemCard({
       const reset = () => {
         setImageError(false);
       };
+
       reset();
     }
   }, [image]);

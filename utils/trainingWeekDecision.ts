@@ -69,10 +69,12 @@ function parseVerdict(value: unknown): GoalVerdict | null {
   if (!value || typeof value !== 'object') {
     return null;
   }
+
   const v = value as Record<string, unknown>;
   if (typeof v.goalId !== 'string') {
     return null;
   }
+
   if (
     v.kind === 'consistency' &&
     isFiniteNumber(v.target) &&
@@ -87,6 +89,7 @@ function parseVerdict(value: unknown): GoalVerdict | null {
       status: v.status,
     };
   }
+
   if (
     v.kind === '1rm' &&
     typeof v.exerciseId === 'string' &&
@@ -103,6 +106,7 @@ function parseVerdict(value: unknown): GoalVerdict | null {
       projectedDate: v.projectedDate as number | null,
     };
   }
+
   return null;
 }
 
@@ -110,10 +114,12 @@ function parseReason(value: unknown): TrainingReason | null {
   if (!value || typeof value !== 'object') {
     return null;
   }
+
   const v = value as Record<string, unknown>;
   if (!(TRAINING_REASON_CODES as readonly unknown[]).includes(v.code)) {
     return null;
   }
+
   return {
     code: v.code as TrainingReasonCode,
     ...(isFiniteNumber(v.count) ? { count: v.count } : {}),
@@ -131,6 +137,7 @@ export function parseTrainingDecisionSnapshot(
   if (!raw) {
     return null;
   }
+
   try {
     const value = JSON.parse(raw) as Record<string, unknown>;
     const window = value.window as Record<string, unknown> | undefined;
@@ -145,6 +152,7 @@ export function parseTrainingDecisionSnapshot(
     ) {
       return null;
     }
+
     return {
       decision: value.decision,
       recommended: value.recommended,

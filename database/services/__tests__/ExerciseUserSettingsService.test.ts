@@ -186,7 +186,10 @@ describe('bodyweight rep ceiling', () => {
   });
 
   it('resolves every exercise’s ceiling in one read, defaulting to 25', async () => {
-    mockState.rows = [row({ exerciseId: 'dips', repCeiling: 30 }), row({ exerciseId: 'odd', repCeiling: 99 })];
+    mockState.rows = [
+      row({ exerciseId: 'dips', repCeiling: 30 }),
+      row({ exerciseId: 'odd', repCeiling: 99 }),
+    ];
     jest
       .spyOn(require('@/database/services/SettingsService').SettingsService, 'getUnits')
       .mockResolvedValue('metric');

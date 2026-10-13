@@ -251,6 +251,7 @@ export default function WorkoutsScreen() {
       if (!selectedWorkoutId) {
         return false;
       }
+
       try {
         await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, planIds);
         return true;
@@ -410,6 +411,7 @@ export default function WorkoutsScreen() {
           if (!selectedWorkoutId) {
             return;
           }
+
           setIsMenuVisible(false);
           planAssignment.openPicker(
             memberships
@@ -686,6 +688,7 @@ export default function WorkoutsScreen() {
           if (!selectedPlanId) {
             return;
           }
+
           setIsDeletingPlan(true);
           try {
             await WorkoutPlanService.deletePlan(selectedPlanId);

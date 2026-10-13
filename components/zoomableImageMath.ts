@@ -29,6 +29,7 @@ export function clampScale(scale: number): number {
   if (!Number.isFinite(scale)) {
     return MIN_SCALE;
   }
+
   return clamp(scale, MIN_SCALE, MAX_SCALE);
 }
 
@@ -105,6 +106,7 @@ export function fitContain(image: Size, viewport: Size): Size {
   if (!(image.width > 0) || !(image.height > 0)) {
     return viewport;
   }
+
   const ratio = Math.min(viewport.width / image.width, viewport.height / image.height);
   return { width: image.width * ratio, height: image.height * ratio };
 }

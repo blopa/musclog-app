@@ -177,6 +177,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
         setTargetDate(null);
         setHasManuallySetTargetDate(false);
       };
+
       reset();
       return;
     }
@@ -184,6 +185,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
     const startLoad = () => {
       setIsLoadingWeight(true);
     };
+
     startLoad();
     Promise.all([
       UserMetricService.getUserBodyWeightKgForVolume(),
@@ -197,6 +199,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
           setCurrentWeightKg(null);
           setGoalWeightDisplay(defaultWeightDisplay);
         }
+
         setHasBodyFatData(bodyFatMetric !== null);
       })
       .catch(() => {
@@ -213,6 +216,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
     if (goalType && goalType !== 'maintain') {
       s.push('goal_weight');
     }
+
     s.push('target_date');
     return s;
   }, [goalType]);
@@ -274,6 +278,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
           setTargetDate(estimated);
         }
       }
+
       setCurrentStepIndex((i) => i + 1);
     }
   };

@@ -214,6 +214,7 @@ export default class Food extends Model {
     } catch (error) {
       console.warn('Error getting default portion:', error);
     }
+
     return null;
   }
 

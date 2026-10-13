@@ -56,6 +56,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       const reset = () => {
         setIsNutritionGoalsModalVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -100,6 +101,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       if (!checkinId) {
         return;
       }
+
       setIsLoading(true);
       try {
         const c = await NutritionCheckinService.getById(checkinId);
@@ -114,6 +116,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         setIsLoading(false);
       }
     }
+
     loadData();
   }, [checkinId]);
 
@@ -121,6 +124,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     if (!checkin || !metrics) {
       return;
     }
+
     setIsNutritionGoalsModalVisible(true);
   };
 
@@ -160,6 +164,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       if (checkin && metrics) {
         await NutritionCheckinService.update(checkin.id, { status: metrics.status });
       }
+
       triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
       onClose();
     } catch (e) {

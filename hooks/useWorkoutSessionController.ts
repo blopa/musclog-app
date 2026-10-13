@@ -74,6 +74,7 @@ export function useWorkoutSessionController(
         if (!live) {
           return;
         }
+
         setView(value);
         setNow(Date.now());
         setRestEnd(timer);
@@ -86,6 +87,7 @@ export function useWorkoutSessionController(
             stored = {};
           }
         }
+
         draftsRef.current = stored;
         setDrafts(stored);
         setLoadedKey(key);
@@ -131,18 +133,21 @@ export function useWorkoutSessionController(
       clearTimeout(persistTimer.current);
       persistTimer.current = null;
     }
+
     if (key) {
       writeQueue.current = writeQueue.current
         .catch(() => {})
         .then(() => AsyncStorage.setItem(key, JSON.stringify(next)));
     }
   };
+
   /** Writes any keystroke still waiting out its debounce. */
   const flushPersist = () => {
     if (persistTimer.current) {
       persist(draftsRef.current);
     }
   };
+
   // Typing a weight would otherwise serialize and write every draft on every keystroke. Anything
   // that must not be lost (completing a set, backgrounding, leaving the screen) flushes at once.
   const flushRef = useRef(flushPersist);
@@ -166,6 +171,7 @@ export function useWorkoutSessionController(
     setDrafts(next);
     persist(next);
   };
+
   /**
    * Records what the user typed. `patch` carries ONLY the fields they changed: the draft is merged
    * over whatever was already typed, never over the displayed values, because a weight or reps
@@ -178,6 +184,7 @@ export function useWorkoutSessionController(
     if (persistTimer.current) {
       clearTimeout(persistTimer.current);
     }
+
     persistTimer.current = setTimeout(() => persist(draftsRef.current), DRAFT_PERSIST_DEBOUNCE_MS);
   };
 
@@ -247,10 +254,12 @@ export function useWorkoutSessionController(
       clearTimeout(persistTimer.current);
       persistTimer.current = null;
     }
+
     await writeQueue.current;
     if (key) {
       await AsyncStorage.removeItem(key);
     }
+
     draftsRef.current = {};
     setDrafts({});
   };
@@ -276,6 +285,7 @@ export function useWorkoutSessionController(
       if (refresh) {
         await options.refresh();
       }
+
       return true;
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
@@ -333,6 +343,7 @@ export function useWorkoutSessionController(
       if (!next[id]) {
         continue;
       }
+
       const effort = { ...next[id] };
       delete effort.weight;
       delete effort.reps;
@@ -342,6 +353,7 @@ export function useWorkoutSessionController(
         delete next[id];
       }
     }
+
     commitDrafts(next);
   };
 

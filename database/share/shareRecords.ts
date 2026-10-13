@@ -123,6 +123,7 @@ export async function defaultPortionLink(
   } catch {
     return undefined;
   }
+
   return undefined;
 }
 

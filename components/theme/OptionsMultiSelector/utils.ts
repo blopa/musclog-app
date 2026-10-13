@@ -64,12 +64,15 @@ export function getGroupPosition<T extends string | number>(
   if (!hasPrevInGroup && !hasNextInGroup) {
     return 'only';
   }
+
   if (!hasPrevInGroup && hasNextInGroup) {
     return 'first';
   }
+
   if (hasPrevInGroup && !hasNextInGroup) {
     return 'last';
   }
+
   return 'middle';
 }
 

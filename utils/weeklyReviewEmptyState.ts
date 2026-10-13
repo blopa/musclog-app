@@ -16,6 +16,7 @@ export function trainingHalfState(activity: WeeklyActivity): ReviewHalfState {
   if (activity.workouts > 0) {
     return 'data';
   }
+
   return activity.everWorkout ? 'weekOff' : 'first';
 }
 
@@ -24,6 +25,7 @@ export function nutritionHalfState(activity: WeeklyActivity): ReviewHalfState {
   if (activity.foodLogs > 0) {
     return 'data';
   }
+
   return activity.everFood ? 'weekOff' : 'first';
 }
 

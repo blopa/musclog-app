@@ -300,9 +300,11 @@ export default function Test() {
       reader.onload = () => {
         handleParsedFile(file.name, String(reader.result ?? ''));
       };
+
       reader.onerror = () => {
         setErrorMessage('Unable to read that file.');
       };
+
       reader.readAsText(file);
     },
     [handleParsedFile]

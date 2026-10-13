@@ -143,6 +143,7 @@ export function useFavoriteFoods({
     const run = () => {
       void loadInitialFoods();
     };
+
     run();
   }, [loadInitialFoods]);
 

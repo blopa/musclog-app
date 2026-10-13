@@ -131,6 +131,7 @@ export default function AddUserMetricEntryModal({
         setHeight(units === 'imperial' ? cmToDisplay(DEFAULT_HEIGHT_CM, units) : DEFAULT_HEIGHT_CM);
         setNote('');
       };
+
       syncDefaults();
     }
   }, [visible, units]);
@@ -141,6 +142,7 @@ export default function AddUserMetricEntryModal({
         setIsDatePickerVisible(false);
         setIsTimePickerVisible(false);
       };
+
       reset();
     }
   }, [visible]);

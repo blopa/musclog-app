@@ -230,6 +230,7 @@ export default function RestTimerScreen() {
     if (isStaticExport || isLoading || !isTimerReady) {
       return;
     }
+
     if (countdownIntervalRef.current) {
       return;
     } // Already running
@@ -261,6 +262,7 @@ export default function RestTimerScreen() {
     if (!isTimerReady) {
       return;
     }
+
     const beat = hapticBeat(lastRemainingRef.current, restTime);
     lastRemainingRef.current = restTime;
     if (beat && restTimerHaptics) {

@@ -61,6 +61,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
     const startLoading = () => {
       setIsLoading(true);
     };
+
     startLoading();
 
     const logQuery = database
@@ -101,6 +102,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
         if (ids.length === 0) {
           return of([]);
         }
+
         return database
           .get<Exercise>('exercises')
           .query(Q.where('id', Q.oneOf(ids)), Q.where('deleted_at', Q.eq(null)))

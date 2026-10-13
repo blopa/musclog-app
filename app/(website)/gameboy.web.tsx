@@ -80,6 +80,7 @@ export default function GameBoy() {
       if (joypadRef.current[button] === pressed) {
         return;
       }
+
       joypadRef.current[button] = pressed;
       flushJoypad();
     },
@@ -128,6 +129,7 @@ export default function GameBoy() {
       delete pressedAtRef.current[button];
       joypadRef.current[button] = false;
     }
+
     flushJoypad();
   }, [clearReleaseTimer, flushJoypad]);
 
@@ -160,6 +162,7 @@ export default function GameBoy() {
       if (!response.ok) {
         throw new Error(`Failed to fetch ROM: ${response.status}`);
       }
+
       const rom = new Uint8Array(await response.arrayBuffer());
 
       // Hand the ROM save data before it boots. Normal mode only seeds today's
@@ -265,6 +268,7 @@ export default function GameBoy() {
       if (button == null) {
         return;
       }
+
       event.preventDefault();
       setButton(button, pressed);
     };
@@ -483,9 +487,11 @@ function useButtonHandlers(
     if (disabled) {
       return;
     }
+
     if (event.pointerType === 'mouse' && event.button !== 0) {
       return;
     }
+
     if (activePointerIdRef.current != null) {
       return;
     }
@@ -500,6 +506,7 @@ function useButtonHandlers(
     if (disabled) {
       return;
     }
+
     if (activePointerIdRef.current == null || activePointerIdRef.current !== event.pointerId) {
       return;
     }
@@ -508,6 +515,7 @@ function useButtonHandlers(
     if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
       event.currentTarget.releasePointerCapture?.(event.pointerId);
     }
+
     activePointerIdRef.current = null;
     onPress(button, false);
   };
@@ -516,6 +524,7 @@ function useButtonHandlers(
     if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
       return;
     }
+
     release(event);
   };
 

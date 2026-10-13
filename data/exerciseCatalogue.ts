@@ -108,6 +108,7 @@ export function getAllLocaleExerciseNamesBySlug(): Map<string, string[]> {
         namesBySlug.set(exerciseSlug, names);
       }
     }
+
     allLocaleNamesBySlug = new Map([...namesBySlug].map(([slug, names]) => [slug, [...names]]));
   }
 

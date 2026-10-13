@@ -37,6 +37,7 @@ export function useOnboardingFitnessData() {
         if (!loaded.dob?.trim()) {
           loaded.dob = defaultDobFallback();
         }
+
         setInitialData(loaded);
       } catch (error) {
         console.error('Error loading fitness data:', error);

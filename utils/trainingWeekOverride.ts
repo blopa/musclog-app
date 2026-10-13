@@ -54,11 +54,13 @@ export function planWeekOverride(input: {
     if (kind === 'repeat' && !before) {
       continue;
     }
+
     const baseWeight = before?.weightKg ?? set.weight;
     let weightKg = baseWeight;
     if (kind === 'lighter') {
       weightKg = baseWeight > 0 ? deloadedLoad(baseWeight, step) : 0;
     }
+
     const reps = kind === 'lighter' ? set.reps : (before?.reps ?? set.reps);
     const moved = !sameLoad(weightKg, set.weight) || reps !== set.reps;
     changes.push({
@@ -84,6 +86,7 @@ export function planWeekOverride(input: {
         : null,
     });
   }
+
   return {
     changes,
     dropSetIds: planned.slice(keep).map((set) => set.id),

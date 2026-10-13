@@ -128,6 +128,7 @@ function checkLadder(palette) {
       found.push(`invisible seam  ${ratio.toFixed(2)}x  ${LADDER[step - 1]} -> ${LADDER[step]}`);
     }
   }
+
   return found;
 }
 
@@ -145,9 +146,11 @@ function checkInk(palette) {
       below(ink, ground);
     }
   }
+
   for (const ink of ACCENT_GROUND_INKS) {
     below(ink, 'surfaceAccent');
   }
+
   below('inkOnAccent', 'brandPrimary');
 
   return found;
@@ -218,6 +221,7 @@ function checkLegends(themeColors) {
       }
     }
   }
+
   return found;
 }
 
@@ -231,6 +235,7 @@ function hueNamedTokens(themeColors) {
       if (ENUM_KEYED.has(here)) {
         continue;
       }
+
       if (value && typeof value === 'object' && !Array.isArray(value)) {
         walk(value, here);
       } else if (typeof value === 'string' && chroma.valid(value)) {
@@ -262,6 +267,7 @@ function checkStaleHueKeys() {
     if (ENUM_KEYED.has(group) || typeof tokens !== 'object' || Array.isArray(tokens)) {
       continue;
     }
+
     for (const key of Object.keys(tokens)) {
       if (STALE_HUE_KEY.test(key)) {
         found.push(`stale hue name    ${group}.${key} is named after a Tailwind hue and step`);
@@ -294,6 +300,7 @@ function checkHueNames() {
         found.push(`stale hue name    ${path} is named "${word}" but has no hue on ${themeId}`);
         break;
       }
+
       const drift = hueDistance(referenceHue, themeHue);
       if (drift > MAX_HUE_DRIFT) {
         found.push(

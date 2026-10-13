@@ -618,6 +618,7 @@ export function DataLogModal({
         setCreateWorkoutOptionsModalVisible(false);
         setCreateGenericModalVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -657,6 +658,7 @@ export function DataLogModal({
           count: mealFoods.length,
         });
       }
+
       return null;
     } catch (error) {
       console.error('Error checking meal dependencies:', error);
@@ -687,6 +689,7 @@ export function DataLogModal({
             })
           );
         }
+
         if (nutritionLogs.length > 0) {
           parts.push(
             t('food.manageFoodLibrary.usedInLogs', {
@@ -694,10 +697,12 @@ export function DataLogModal({
             })
           );
         }
+
         return t('food.manageFoodLibrary.deleteFoodWarning', {
           usage: parts.join(', '),
         });
       }
+
       return null;
     } catch (error) {
       console.error('Error checking food dependencies:', error);
@@ -765,6 +770,7 @@ export function DataLogModal({
           usage: parts.join(', '),
         });
       }
+
       return null;
     } catch (error) {
       console.error('Error checking food portion dependencies:', error);
@@ -819,6 +825,7 @@ export function DataLogModal({
             })
           );
         }
+
         if (logSets.length > 0) {
           parts.push(
             t('exercises.manageExerciseData.usedInLogs', {
@@ -826,10 +833,12 @@ export function DataLogModal({
             })
           );
         }
+
         return t('exercises.manageExerciseData.deleteExerciseWarning', {
           usage: parts.join(', '),
         });
       }
+
       return null;
     } catch (error) {
       console.error('Error checking exercise dependencies:', error);
@@ -850,6 +859,7 @@ export function DataLogModal({
           count: schedules.length,
         });
       }
+
       return null;
     } catch (error) {
       console.error('Error checking workout template dependencies:', error);
@@ -892,6 +902,7 @@ export function DataLogModal({
     if (!selectedItem) {
       return;
     }
+
     setShowMenu(false);
 
     try {
@@ -900,6 +911,7 @@ export function DataLogModal({
       } else if (variant === 'food') {
         await FoodService.toggleFavorite(selectedItem.id);
       }
+
       await refresh();
     } catch (error) {
       handleError(error, 'DataLogModal.handleToggleFavorite', {
@@ -929,6 +941,7 @@ export function DataLogModal({
     if (!selectedItem) {
       return;
     }
+
     setIsRegenerating(true);
 
     // Use setTimeout to ensure the UI has time to update the loading state
@@ -951,6 +964,7 @@ export function DataLogModal({
     if (!selectedItem) {
       return;
     }
+
     setShowMenu(false);
     setIsDuplicating(true);
 
@@ -983,6 +997,7 @@ export function DataLogModal({
           // These variants don't support duplicate
           break;
       }
+
       await refresh();
     } catch (error) {
       handleError(error, 'DataLogModal.handleDuplicate', {
@@ -997,6 +1012,7 @@ export function DataLogModal({
     if (!selectedItem) {
       return;
     }
+
     setShowMenu(false);
 
     // Check dependencies based on variant
@@ -1033,6 +1049,7 @@ export function DataLogModal({
     if (!selectedItem) {
       return;
     }
+
     setIsDeleting(true);
 
     try {
@@ -1071,6 +1088,7 @@ export function DataLogModal({
           await ChatService.deleteMessage(selectedItem.id);
           break;
       }
+
       await refresh();
       setDeleteModalVisible(false);
     } catch (error) {

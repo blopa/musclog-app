@@ -48,6 +48,7 @@ export function useEditMealIngredients(meal: Meal | undefined) {
       const clearIngredients = () => {
         setIngredients([]);
       };
+
       clearIngredients();
       return;
     }

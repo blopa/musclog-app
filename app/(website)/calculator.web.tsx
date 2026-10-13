@@ -190,6 +190,7 @@ export default function Calculator() {
     if (!form.age || !form.weightKg || !form.heightCm) {
       return null;
     }
+
     return calculateNutritionPlan({
       activityLevel: form.activityLevel,
       age: form.age,

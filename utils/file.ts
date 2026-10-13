@@ -233,6 +233,7 @@ export async function deleteExerciseImage(imageUri: string): Promise<void> {
     if (!imageUri.startsWith('file://')) {
       return;
     }
+
     const file = new File(imageUri);
     if (file.exists) {
       file.delete();
@@ -250,6 +251,7 @@ export async function deleteMealImage(imageUri: string): Promise<void> {
     if (!imageUri.startsWith('file://')) {
       return;
     }
+
     const file = new File(imageUri);
     if (file.exists) {
       file.delete();
@@ -267,6 +269,7 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
     if (!imageUri.startsWith('file://')) {
       return;
     }
+
     const file = new File(imageUri);
     if (file.exists) {
       file.delete();

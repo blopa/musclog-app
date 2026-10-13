@@ -546,6 +546,7 @@ export default function PastWorkoutDetailModal({
         setEditingExerciseId(null);
         setIsMenuVisible(false);
       };
+
       reset();
     }
   }, [visible, setIsMenuVisible]);
@@ -797,6 +798,7 @@ export default function PastWorkoutDetailModal({
               console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
               setMusclesModalGroups([]);
             }
+
             const sets = (rawSets ?? [])
               .filter((s) => s.exerciseId === exerciseId)
               .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
@@ -851,6 +853,7 @@ export default function PastWorkoutDetailModal({
               if (data.reorderedExercises && data.reorderedExercises.length > 0) {
                 await WorkoutService.reorderWorkoutLogExercises(workoutId, data.reorderedExercises);
               }
+
               await reload();
             } catch (err) {
               console.error('Failed to save workout metadata:', err);

@@ -51,6 +51,7 @@ export class ExerciseAliasService {
       } catch {
         return { ok: false, reason: 'notFound' };
       }
+
       if (exercise.deletedAt) {
         return { ok: false, reason: 'notFound' };
       }
@@ -59,6 +60,7 @@ export class ExerciseAliasService {
       if (existing.length >= MAX_EXERCISE_ALIASES) {
         return { ok: false, reason: 'limit' };
       }
+
       // "BP" and "bp" are the same alias, and so are "Push-up" and "push up".
       if (existing.some((row) => normalizeExerciseText(row.alias) === normalized)) {
         return { ok: false, reason: 'duplicate' };
@@ -94,6 +96,7 @@ export class ExerciseAliasService {
       } catch {
         return;
       }
+
       if (alias.deletedAt) {
         return;
       }

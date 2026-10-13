@@ -387,6 +387,7 @@ class HealthConnectService {
       if (error instanceof HealthConnectError) {
         throw error;
       }
+
       console.error(`Error reading ${recordType} records:`, error);
       throw HealthConnectErrorFactory.readFailed(recordType, error as Error);
     }

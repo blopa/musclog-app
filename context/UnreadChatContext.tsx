@@ -156,5 +156,6 @@ export function useUnreadChat(): UnreadChatContextType {
   if (context === undefined) {
     throw new Error('useUnreadChat must be used within an UnreadChatProvider');
   }
+
   return context;
 }

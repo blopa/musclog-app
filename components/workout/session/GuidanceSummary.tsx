@@ -88,6 +88,7 @@ export function GuidanceSummary({
   } else if (!hint && state === 'learning') {
     hint = t('progression.learningHint');
   }
+
   return (
     <View
       className={flat ? 'gap-1' : 'gap-2 rounded-xl border border-border-light bg-bg-secondary p-3'}

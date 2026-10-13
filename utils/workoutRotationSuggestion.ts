@@ -31,19 +31,24 @@ export function pickRotationSuggestion(
     if (!log.templateId || log.completedAt == null || !templateIds.has(log.templateId)) {
       continue;
     }
+
     if (log.completedAt < since) {
       continue;
     }
+
     if (log.completedAt >= todayStartMs) {
       return null;
     }
+
     latest.set(log.templateId, Math.max(latest.get(log.templateId) ?? 0, log.completedAt));
   }
+
   let best: RotationSuggestion | null = null;
   for (const [templateId, lastCompletedAt] of latest) {
     if (!best || lastCompletedAt < best.lastCompletedAt) {
       best = { templateId, lastCompletedAt };
     }
   }
+
   return best;
 }
