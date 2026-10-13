@@ -1,6 +1,9 @@
+import ErrorCorrectionLevel from '@zxing/library/cjs/core/qrcode/decoder/ErrorCorrectionLevel';
+import QRCodeEncoder from '@zxing/library/cjs/core/qrcode/encoder/Encoder';
 import { ScrollViewStyleReset } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
+import { GOOGLE_PLAY_URL } from '@/components/website/storeLinks';
 import enUsWebsite from '@/lang/locales/en-us/website.json';
 import esEsWebsite from '@/lang/locales/es-es/website.json';
 import nlNlWebsite from '@/lang/locales/nl-nl/website.json';
@@ -11,6 +14,46 @@ import { themeCssVariables } from '@/theme.tokens';
 import { THEME_MIRROR_STORAGE_KEY, type ThemeMirror } from '@/utils/themeMirror';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
+function renderQRCodeSvg(url: string) {
+  try {
+    const qrCode = QRCodeEncoder.encode(url, ErrorCorrectionLevel.L);
+    const matrix = qrCode.getMatrix();
+    const size = matrix.getWidth();
+
+    let pathD = '';
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        if (matrix.get(x, y)) {
+          pathD += `M${x},${y}h1v1h-1z `;
+        }
+      }
+    }
+
+    return (
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        className="expo-web-landing-qrcode-image"
+        fill="currentColor"
+        aria-hidden="true"
+        style={{
+          display: 'block',
+          width: '132px',
+          height: '132px',
+          color: 'var(--c-ink-DEFAULT)',
+          backgroundColor: '#fff',
+          padding: '8px',
+          borderRadius: '12px',
+        }}
+      >
+        <path d={pathD} />
+      </svg>
+    );
+  } catch (error) {
+    console.error('Failed to generate QR Code SVG:', error);
+    return null;
+  }
+}
+
 /**
  * Root HTML runs only in Node (static render). Use `public/` static files
  * (https://docs.expo.dev/router/web/static-rendering/#static-files). Avoid `public/assets/`.
@@ -20,7 +63,6 @@ import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
  * symlink mirror so `/musclog-app/images/...` resolves correctly.
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
-const GOOGLE_PLAY_QR_CODE = '/images/download-qrcode.png';
 const LANDING_LANGUAGE_STORAGE_KEY = 'musclog_lang';
 
 type LandingCopy = {
@@ -336,13 +378,7 @@ export default function Root({ children }: PropsWithChildren) {
             <span className="expo-web-landing-qrcode-title" data-landing-i18n="qrcode_title">
               Download the App
             </span>
-            <img
-              // TODO: instead generate the QRCode programatically
-              src={withExpoBaseUrl(GOOGLE_PLAY_QR_CODE)}
-              alt="Google Play Store QR Code"
-              className="expo-web-landing-qrcode-image"
-              draggable={false}
-            />
+            {renderQRCodeSvg(GOOGLE_PLAY_URL)}
             <span className="expo-web-landing-qrcode-text" data-landing-i18n="qrcode_text">
               Scan to download for Android
             </span>
