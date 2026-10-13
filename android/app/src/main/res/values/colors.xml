@@ -1,6 +1,11 @@
 <resources>
   <color name="splashscreen_background">#0c1a13</color>
-  <color name="iconBackground">#0c1a13</color>
+  <color name="iconBackground">#091310</color>
   <color name="colorPrimary">#023c69</color>
   <color name="notification_icon_color">#ffffff</color>
+  <color name="iconBackgroundKineticLight">#fafcfb</color>
+  <color name="iconBackgroundKineticShock">#160b14</color>
+  <color name="iconBackgroundKineticVolt">#151208</color>
+  <color name="iconBackgroundKineticBlush">#fff7fa</color>
+  <color name="iconBackgroundKineticVaria">#0d0a12</color>
 </resources>

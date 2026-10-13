@@ -208,4 +208,108 @@ describe('generate-theme-icon-backgrounds', () => {
       await rm(directory, { force: true, recursive: true });
     }
   });
+
+  it('swaps the Kinetic Depth and Light palettes without changing their filenames', async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'musclog-swapped-theme-icons-'));
+    const sourcePath = path.join(directory, 'source.png');
+    const glassEffectPath = path.join(directory, 'glass.png');
+    const textPath = path.join(directory, 'text.png');
+    const outputDirectory = path.join(directory, 'output');
+    const width = 4;
+    const height = 4;
+    const sourcePixels = Buffer.alloc(width * height * 4);
+    const transparentPixels = Buffer.alloc(width * height * 4);
+    for (let index = 0; index < width * height; index += 1) {
+      sourcePixels[index * 4 + 3] = 255;
+    }
+    await sharp(sourcePixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(sourcePath);
+    await sharp(transparentPixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(glassEffectPath);
+    await sharp(transparentPixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(textPath);
+
+    try {
+      const generated = await generateThemeIconBackgrounds({
+        glassEffectPath,
+        logger: { log: () => undefined },
+        outputDirectory,
+        sourcePath,
+        textPath,
+      });
+      const outputs = new Map<string, Buffer>();
+      for (const file of generated) {
+        outputs.set(path.basename(file), await sharp(file).raw().toBuffer());
+      }
+
+      const rgb = (hex: string) =>
+        [1, 3, 5].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16));
+      const depthPalette = THEME_DEFINITIONS['kinetic-depth'].palette;
+      const lightPalette = THEME_DEFINITIONS['kinetic-light'].palette;
+      const depthOutput = outputs.get('icon-bg-kinetic-depth.png')!;
+      const lightOutput = outputs.get('icon-bg-kinetic-light.png')!;
+      expect([...depthOutput.subarray(0, 3)]).toEqual(rgb(lightPalette.brandBright));
+      expect([
+        ...depthOutput.subarray((height - 1) * width * 4, (height - 1) * width * 4 + 3),
+      ]).toEqual(rgb(lightPalette.statusInfo));
+      expect([...lightOutput.subarray(0, 3)]).toEqual(rgb(depthPalette.brandBright));
+      expect([
+        ...lightOutput.subarray((height - 1) * width * 4, (height - 1) * width * 4 + 3),
+      ]).toEqual(rgb(depthPalette.statusInfo));
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
+
+  it('writes an opaque copy flattened onto the theme surface, because iOS rejects transparent icons', async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'musclog-opaque-theme-icons-'));
+    const sourcePath = path.join(directory, 'source.png');
+    const glassEffectPath = path.join(directory, 'glass.png');
+    const textPath = path.join(directory, 'text.png');
+    const outputDirectory = path.join(directory, 'output');
+    const width = 4;
+    const height = 4;
+    const sourcePixels = Buffer.alloc(width * height * 4);
+    const transparentPixels = Buffer.alloc(width * height * 4);
+    // Only the last pixel is artwork; the rest is transparent margin.
+    sourcePixels[(width * height - 1) * 4 + 3] = 255;
+    await sharp(sourcePixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(sourcePath);
+    await sharp(transparentPixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(glassEffectPath);
+    await sharp(transparentPixels, { raw: { channels: 4, height, width } })
+      .png()
+      .toFile(textPath);
+
+    try {
+      await generateThemeIconBackgrounds({
+        glassEffectPath,
+        logger: { log: () => undefined },
+        outputDirectory,
+        sourcePath,
+        textPath,
+      });
+      const rgb = (hex: string) =>
+        [1, 3, 5].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16));
+
+      for (const themeId of THEME_IDS) {
+        const { data, info } = await sharp(
+          path.join(outputDirectory, 'opaque', `icon-bg-${themeId}.png`)
+        )
+          .raw()
+          .toBuffer({ resolveWithObject: true });
+        expect(info.channels).toBe(3);
+        expect([...data.subarray(0, 3)]).toEqual(
+          rgb(THEME_DEFINITIONS[themeId].palette.surfaceBase)
+        );
+      }
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
+  });
 });

@@ -187,6 +187,9 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Metric or imperial units applied consistently throughout the app
 - Named theme selection: Kinetic Depth, Kinetic Light, Kinetic Shock, Kinetic Volt, or Kinetic Blush,
   plus a System option that follows the device's light/dark appearance
+- Theme-matched app icon on Android and iOS: picking a named theme switches the home-screen icon to
+  that theme's colors (on Android once you leave the app; iOS shows its own confirmation alert).
+  The System option and Kinetic Depth use the default icon
 - Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary's gradient is chosen
   by the active theme — a flat card surface in Kinetic Light, a contrast-matched colorful sweep in
   the dark themes and in Kinetic Blush

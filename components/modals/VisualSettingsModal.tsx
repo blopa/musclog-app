@@ -49,6 +49,7 @@ import { useAvailableHomeActions } from '@/hooks/useAvailableHomeActions';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { syncAppIconWithTheme } from '@/services/themeAppIcon';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -158,6 +159,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     // No local state: SettingsProvider observes the settings table, so writing the
     // row is what re-themes the app.
     await SettingsService.setTheme(option);
+    // Only a manual pick moves the launcher icon (see services/themeAppIcon.ts).
+    await syncAppIconWithTheme(option);
   };
 
   const handleHomeSummaryCardChange = async (card: HomeSummaryCard) => {

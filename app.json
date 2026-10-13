@@ -23,6 +23,7 @@
       ],
       "./plugins/withGradleJvmArgs",
       "./plugins/withIosSimulatorBuildFix",
+      "./plugins/withThemeAppIcons",
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
@@ -151,6 +152,7 @@
     "icon": "./assets/theme-icons/icon-bg-kinetic-depth.png",
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "icon": "./assets/theme-icons/opaque/icon-bg-kinetic-depth.png",
       "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
@@ -169,7 +171,7 @@
       "versionCode": 310,
       "adaptiveIcon": {
         "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
-        "backgroundColor": "#0c1a13"
+        "backgroundColor": "#091310"
       },
       "permissions": [
         "android.permission.INTERNET",

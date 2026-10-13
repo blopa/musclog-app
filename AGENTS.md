@@ -22,7 +22,7 @@
 - `npm run check-translations`: Validate translation keys used by the app
 - `npm run check-locale-consistency`: Validate translation-key parity across locales
 - `npm run compress-blog-images`: Convert worthwhile blog PNG/JPEG assets to resized WebP files and update their Markdown references
-- `npm run generate-theme-icon-backgrounds`: Generate theme-colored app icon background PNGs from the palette registry
+- `npm run generate-theme-icon-backgrounds`: Generate theme-colored app icon PNGs (transparent, plus opaque copies for iOS) from the palette registry
 - `npm run generate-exercises-data`: Regenerate structural and English exercise data from free-exercise-db
 - `npm run generate-exercise-locales`: Regenerate localized exercise names and descriptions from the English catalogue
 - `npm run check-version-sync`: Verify Expo, package, Android, and iOS release versions match
@@ -190,9 +190,31 @@ This repository serves two distinct purposes that share the same Expo Router pro
   `assets/icon-bg-glass-effect.png` and finally `assets/icon-bg-text.png` over it, writing into
   `assets/theme-icons/icon-bg-<theme-id>.png` with `npm run generate-theme-icon-backgrounds`. The
   generator retains the source alpha channels and uses the glass artwork for its shading and
-  highlights, with the wordmark rendered above both. Expo's configured app icon and Android adaptive
-  foreground in `app.json` point at the default dark theme's output,
-  `assets/theme-icons/icon-bg-kinetic-depth.png`; the generator does not edit `app.json`.
+  highlights, with the wordmark rendered above both. It also writes an opaque copy of each to
+  `assets/theme-icons/opaque/`, flattened onto the theme's `surfaceBase`, because iOS rejects
+  transparent app icons. Expo's configured app icon (`icon`, `ios.icon`, Android adaptive foreground
+  and background color) is the default dark theme's output; the generator does not edit `app.json`.
+  **Picking a theme in the app also switches the launcher icon**, and every rule for that lives in
+  `constants/themeAppIcons.js` (plain CommonJS, because the config plugin reads it during prebuild):
+  the default dark theme is the default icon, every other theme is an alternate named by its
+  PascalCase id, and `system` deliberately keeps the default icon — the OS can flip light/dark while
+  the app is not running, so the icon could never follow it. `plugins/withThemeAppIcons.js` compiles
+  the alternates in (iOS `AppIcon<Name>.appiconset`s plus `ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES`;
+  Android adaptive icons plus one `.LauncherIcon<Name>` `activity-alias` each, with
+  `.LauncherIconDefault` as the only one enabled in the manifest), and the local module
+  `modules/theme-app-icon` switches between them. `services/themeAppIcon.ts`
+  (`syncAppIconWithTheme`) is called ONLY from the manual theme pick in `VisualSettingsModal`: iOS
+  shows a system alert on every switch, so it never fires on boot, restore or a no-op change. Three
+  constraints: **MainActivity is never disabled and has no MAIN/LAUNCHER filter** — it owns the
+  `com.werules.logger://` filter both widgets open through and the Health Connect rationale filter,
+  which is exactly why `expo-alternate-app-icons` was not used (its Android module disables
+  whichever component launched the task, MainActivity included); only the `.LauncherIcon*` aliases
+  are toggled, the new one enabled before the old one is disabled. **Android applies the switch when
+  the app is next backgrounded**, never in the foreground, because launchers such as Pixel's close
+  the task or drop its home-screen shortcut when the alias that launched it is disabled. And
+  **adding a theme needs a native rebuild** (`npm run prebuild`) for its icon to exist; until then
+  `setAppIcon` rejects and the old icon stays. Pinned by `constants/__tests__/themeAppIcons.test.ts`,
+  `plugins/__tests__/withThemeAppIcons.test.ts` and `services/__tests__/themeAppIcon.test.ts`.
   A theme carries no component-level presentation flags: anything a component would branch on is
   expressed as palette values instead (a theme wanting a flat summary card sets its gradient stops
   flat). `ThemeProvider` resolves the preference once, and every `useTheme*` hook selects from that
