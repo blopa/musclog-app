@@ -1,0 +1,161 @@
+{
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "product-updates",
+      "date": "2026-10-19",
+      "excerpt": "Swapping an exercise mid-workout sounds like one feature. In Musclog it turned into three: a swap that only touches today, restrictions that remember what hurts, and a single answer to \"what is the app allowed to suggest?\" that even an AI-generated plan has to obey.",
+      "slug": "2026/10/a-busy-cable-machine-should-not-rewrite-your-program",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "TypeScript",
+        "Fitness",
+        "UX",
+        "AI"
+      ],
+      "title": "A busy cable machine shouldn't rewrite your program"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-18",
+      "excerpt": "Musclog now changes your calorie targets once a week, after you look at the evidence and say yes. Building it meant dated target periods, an honest definition of \"enough data\", and fixing two buttons that pointed at the one day that could never help.",
+      "slug": "2026/10/my-weekly-review-had-buttons-that-could-never-work",
+      "tags": [
+        "Musclog",
+        "Nutrition",
+        "React Native",
+        "WatermelonDB",
+        "TypeScript",
+        "UX"
+      ],
+      "title": "My weekly review had buttons that could never work"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-17",
+      "excerpt": "The live workout screen in Musclog had grown into a single 1,662-line file. Rebuilding it as two views (one set at a time, or the whole workout as a table) over one shared controller fixed bugs I did not know I had, starting with the second exercise calling its first set \"Set 4\".",
+      "slug": "2026/10/one-workout-screen-two-views-and-1662-lines-i-deleted",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "TypeScript",
+        "Refactoring",
+        "UX"
+      ],
+      "title": "One workout screen, two views, and 1,662 lines I got to delete"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-16",
+      "excerpt": "Progressive overload that silently rewrites your weights is a bug you can't see. Here is how Musclog turned every automatic change into data with a reason attached, and the three coaching bugs the explanations helped me find before release.",
+      "slug": "2026/10/my-app-now-explains-every-number-it-changes",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "TypeScript",
+        "Progressive Overload",
+        "Fitness",
+        "UX"
+      ],
+      "title": "My workout app now explains every number it changes"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-15",
+      "excerpt": "Putting the heaviest plate that fits on the bar works until your gym only owns one pair of each. Musclog now models your gym and solves plate loading as a small bounded knapsack, so the weights it suggests are weights you can actually load.",
+      "slug": "2026/10/greedy-plate-math-is-wrong-the-moment-your-gym-runs-out-of-plates",
+      "tags": [
+        "Musclog",
+        "TypeScript",
+        "Algorithms",
+        "Fitness",
+        "Dynamic Programming"
+      ],
+      "title": "Greedy plate math is wrong the moment your gym runs out of plates"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-14",
+      "excerpt": "Musclog 2.13 adds settings that change how a workout feels, and nobody who already has the app would ever find them. So I built a \"what's new\" tour that is just JSON per release, with real controls on the pages, and a lot of rules about when it is allowed to appear.",
+      "slug": "2026/10/existing-users-never-see-onboarding-so-i-built-a-mini-one",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Onboarding",
+        "UX",
+        "TypeScript"
+      ],
+      "title": "Existing users never see onboarding, so I built a mini one"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-13",
+      "excerpt": "I made the Musclog icon once, by hand, and kept nothing. When the app grew six themes I rebuilt it as three layers and a script, then made the launcher icon follow the theme on Android and iOS without breaking deep links.",
+      "slug": "2026/10/i-lost-my-app-icon-so-a-script-draws-six-of-them",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Android",
+        "iOS",
+        "sharp",
+        "App Icons",
+        "Design"
+      ],
+      "title": "I lost my app icon, so now a script draws six of them"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-09-03",
+      "excerpt": "Musclog already had a theme file. Then I added five selectable palettes and discovered that colors, NativeWind variables, system mode, camera overlays, and component decisions were all separate systems pretending to be one.",
+      "slug": "2026/09/adding-light-mode-exposed-my-fake-theme-system",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "NativeWind",
+        "TypeScript",
+        "Design Systems"
+      ],
+      "title": "Adding light mode exposed my fake theme system"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-08-24",
+      "excerpt": "A shutter stall that only existed in release builds, survived eight versions and four wrong root causes, and turned out to be one background thread shared by every Expo module in the app.",
+      "slug": "2026/08/my-camera-took-25-seconds-to-take-a-photo",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Android",
+        "CameraX",
+        "Kotlin",
+        "Performance",
+        "Debugging"
+      ],
+      "title": "My camera took 25 seconds to take a photo"
+    },
+    {
+      "category": "retro",
+      "date": "2026-08-17",
+      "excerpt": "I logged a few weeks of food on a 1998 cartridge and then realised it was stuck in there for life. So the Game Boy now beams its save into my phone as a stream of fountain-coded QR codes — no cable, no network, no handshake.",
+      "slug": "2026/08/breaking-my-data-out-of-a-game-boy-cartridge",
+      "tags": [
+        "Game Boy",
+        "GBDK",
+        "C",
+        "QR Codes",
+        "Retro",
+        "Homebrew",
+        "Optical Transfer"
+      ],
+      "title": "Breaking my data out of a Game Boy cartridge"
+    }
+  ],
+  "totalPages": 2,
+  "totalPosts": 15
+}

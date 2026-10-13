@@ -1,0 +1,52 @@
+{
+  "category": "product-updates",
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "product-updates",
+      "date": "2026-10-19",
+      "excerpt": "Swapping an exercise mid-workout sounds like one feature. In Musclog it turned into three: a swap that only touches today, restrictions that remember what hurts, and a single answer to \"what is the app allowed to suggest?\" that even an AI-generated plan has to obey.",
+      "slug": "2026/10/a-busy-cable-machine-should-not-rewrite-your-program",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "TypeScript",
+        "Fitness",
+        "UX",
+        "AI"
+      ],
+      "title": "A busy cable machine shouldn't rewrite your program"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-14",
+      "excerpt": "Musclog 2.13 adds settings that change how a workout feels, and nobody who already has the app would ever find them. So I built a \"what's new\" tour that is just JSON per release, with real controls on the pages, and a lot of rules about when it is allowed to appear.",
+      "slug": "2026/10/existing-users-never-see-onboarding-so-i-built-a-mini-one",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Onboarding",
+        "UX",
+        "TypeScript"
+      ],
+      "title": "Existing users never see onboarding, so I built a mini one"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-03-19",
+      "excerpt": "Musclog started in 2024 as an app I built for myself. Version 2 is a full rewrite — new UI layer, one database instead of two, and a much clearer answer to the question of where your data lives.",
+      "slug": "2026/03/musclog-version-2-is-out",
+      "tags": [
+        "Release",
+        "React Native",
+        "Rewrite",
+        "Privacy",
+        "TypeScript"
+      ],
+      "title": "Musclog version 2 is out!"
+    }
+  ],
+  "totalPages": 1,
+  "totalPosts": 3
+}
