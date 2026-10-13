@@ -8,8 +8,9 @@ import {
   type ProgressionRule,
 } from '@/utils/progressionRules';
 import { sameLoad } from '@/utils/sameLoad';
+import { isStartAdjustment } from '@/utils/setAdjustment';
 import { parseSetPrescription, type SetPrescription } from '@/utils/setPrescription';
-import { isWarmupSet } from '@/utils/workoutSetCompletion';
+import { isPlannedWorkoutSet, isWarmupSet } from '@/utils/workoutSetCompletion';
 
 /** How a target came about, as the badge beside it names it. */
 /** Whole translation keys (never completed at the call site — see `check-translations`). */
@@ -116,3 +117,23 @@ export function guidanceStateFor(
 
 const recommendsChange = ({ plan, recommendation }: SetPrescription): boolean =>
   !sameLoad(plan.weightKg, recommendation.weightKg) || plan.reps !== recommendation.reps;
+
+/**
+ * Whether "Use plan" has anything to restore in this exercise. Derived from the persisted
+ * prescription, not from a numeric adjustment: a bodyweight lighter week changes no number, it
+ * removes sets and lowers the reps-in-reserve target, and it must stay undoable.
+ */
+export function canRevertStartAdjustment(block: SessionBlock): boolean {
+  return block.rows.some(({ set, prescription }) => {
+    if (prescription?.droppedSetIds?.length) {
+      return true;
+    }
+    if (!isPlannedWorkoutSet(set)) {
+      return false;
+    }
+    return (
+      prescription?.planRepsInReserve != null ||
+      (!!set.adjustment && isStartAdjustment(set.adjustment))
+    );
+  });
+}

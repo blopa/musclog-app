@@ -8,6 +8,7 @@ import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { selectRetargets } from '@/utils/intraSessionRetarget';
 import { loadStepFor } from '@/utils/loadIncrement';
+import { progressesLoad } from '@/utils/progressionProjection';
 import { parseProgressionRule } from '@/utils/progressionRules';
 import { computeIntraSessionAdjustment, parseStartAdjustment } from '@/utils/setAdjustment';
 import { writeSetEffort } from '@/utils/setEffort';
@@ -124,7 +125,11 @@ export class WorkoutSessionService {
             record.updatedAt = Date.now();
           }),
         ];
-        const retarget = selectRetargets({ set, status, siblings, rule, autonomy });
+        // The same eligibility as the session start: stretching, mobility and cardio are done as
+        // prescribed, so a performed set never moves the next one.
+        const retarget = progressesLoad(exercise.mechanicType)
+          ? selectRetargets({ set, status, siblings, rule, autonomy })
+          : null;
         for (const target of retarget?.targets ?? []) {
           const adjusted = computeIntraSessionAdjustment({
             previousSet: retarget!.previous,

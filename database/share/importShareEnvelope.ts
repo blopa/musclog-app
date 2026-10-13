@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
 import {
@@ -502,9 +503,11 @@ export async function importShareEnvelope(request: ShareImportRequest): Promise<
         ? await existingRowsOnSharedDays(replaceTable, records[replaceTable] ?? [])
         : [];
 
-      const operations = [
-        // Soft delete, stamped the way every model's own `markAsDeleted` stamps it. Prepared
-        // rather than called, because a `@writer` cannot be invoked from inside an open writer.
+      // Soft delete, stamped the way every model's own `markAsDeleted` stamps it. Prepared rather
+      // than called, because a `@writer` cannot be invoked from inside an open writer. Preparing
+      // mutates the cached records at once, so `commitPrepared` restores them if the batch rejects:
+      // otherwise the cache would keep the day's logs deleted while the database still has them.
+      await commitPrepared(database, replacing, () => [
         ...replacing.map((log) => prepareSoftDelete(log, now)),
         ...plan.creates.map(({ row, table }) =>
           // `row` contains raw schema column names and reached here through `spec.columns`. The
@@ -512,9 +515,7 @@ export async function importShareEnvelope(request: ShareImportRequest): Promise<
           // collection schema without assigning attacker-controlled properties onto a model.
           prepareLocalCreateFromRaw(database.get(table), row)
         ),
-      ];
-
-      await database.batch(...operations);
+      ]);
       const usedAssetUris = new Set<string>();
       for (const { row, table } of plan.creates) {
         for (const column of spec.assetColumns[table] ?? []) {

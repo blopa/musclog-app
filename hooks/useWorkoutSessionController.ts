@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 
+import type { Units } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
@@ -30,6 +31,12 @@ export type SessionDraft = {
   rir?: string;
   rpe?: string;
   partials?: string;
+  /**
+   * The unit and locale `weight` was typed in. A draft is a display string, so without these a
+   * unit switch mid-session re-reads "105" as pounds and logs 47.63 kg.
+   */
+  weightUnits?: Units;
+  weightLocale?: string;
 };
 
 export function useWorkoutSessionController(

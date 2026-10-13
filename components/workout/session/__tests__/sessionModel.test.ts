@@ -2,7 +2,7 @@ import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { serializeProgressionRule, serializeSessionProgression } from '@/utils/progressionRules';
 import { serializeSetPrescription } from '@/utils/setPrescription';
 
-import { buildSessionBlocks, guidanceStateFor } from '../sessionModel';
+import { buildSessionBlocks, canRevertStartAdjustment, guidanceStateFor } from '../sessionModel';
 
 const set = (fields: Partial<EnrichedWorkoutLogSet>): EnrichedWorkoutLogSet =>
   ({
@@ -110,5 +110,26 @@ describe('guidanceStateFor', () => {
     });
     const [holding] = buildSessionBlocks([set({ prescriptionJson: unchanged })]);
     expect(guidanceStateFor(holding, { gym: null })).toBe('holding');
+  });
+});
+
+describe('canRevertStartAdjustment', () => {
+  const lighterWeek = serializeSetPrescription({
+    established: true,
+    plan: { weightKg: 0, reps: 10 },
+    recommendation: { weightKg: 0, reps: 10 },
+    planRepsInReserve: 1,
+    droppedSetIds: ['gone'],
+  });
+
+  it('offers undo for a bodyweight lighter week that only removed a set', () => {
+    const [block] = buildSessionBlocks([set({ id: 'a1', prescriptionJson: lighterWeek })]);
+    expect(block.focus.adjustment).toBeUndefined();
+    expect(canRevertStartAdjustment(block)).toBe(true);
+  });
+
+  it('offers nothing when no adjustment was made', () => {
+    const [block] = buildSessionBlocks([set({ id: 'a1' })]);
+    expect(canRevertStartAdjustment(block)).toBe(false);
   });
 });

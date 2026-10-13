@@ -17,7 +17,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import type { GuidanceState } from '@/utils/progressionProjection';
 import { parseSessionProgressionState, type ProgressionRule } from '@/utils/progressionRules';
-import { isStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
+import type { SetAdjustment } from '@/utils/setAdjustment';
 import type { SetPrescription } from '@/utils/setPrescription';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -40,6 +40,7 @@ export function ProgressionWhySheet({
   isBarLoaded,
   canEditPlan,
   onClose,
+  canRevert,
   onRevert,
   onPlates,
   onEditGym,
@@ -56,6 +57,7 @@ export function ProgressionWhySheet({
   isBarLoaded: boolean;
   canEditPlan: boolean;
   onClose: () => void;
+  canRevert: boolean;
   onRevert: () => void;
   onPlates: () => void;
   onEditGym: () => void;
@@ -116,7 +118,6 @@ export function ProgressionWhySheet({
     });
   }
 
-  const canRevert = !!adjustment && isStartAdjustment(adjustment);
   let lead = message;
   if (state === 'attention') {
     lead = t('progression.attentionHint');

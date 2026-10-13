@@ -16,7 +16,11 @@ import { Button } from '@/components/theme/Button';
 import { ExerciseNotesSheet } from '@/components/workout/ExerciseNotesSheet';
 import { PlateCalculatorSheet } from '@/components/workout/PlateCalculatorSheet';
 import { ProgressionWhySheet } from '@/components/workout/session/ProgressionWhySheet';
-import { buildSessionBlocks, guidanceStateFor } from '@/components/workout/session/sessionModel';
+import {
+  buildSessionBlocks,
+  canRevertStartAdjustment,
+  guidanceStateFor,
+} from '@/components/workout/session/sessionModel';
 import { SessionTopBar } from '@/components/workout/session/SessionTopBar';
 import { liveWeightKg } from '@/components/workout/session/setDraft';
 import { WorkoutSessionInsights } from '@/components/workout/WorkoutSessionInsights';
@@ -383,6 +387,7 @@ export default function WorkoutSessionScreen() {
             isBarLoaded={isBarLoadedEquipment(target.exercise.equipmentType)}
             canEditPlan={!!workoutLog.templateId}
             onClose={close}
+            canRevert={canRevertStartAdjustment(block)}
             onRevert={() => {
               close();
               void controller.revert(block.logExerciseId);
@@ -439,18 +444,20 @@ export default function WorkoutSessionScreen() {
         onWarmups={onWarmups}
         onAddExercise={() => setPanel('add')}
         onFinish={() => setPanel('end')}
+        controls={
+          ble.isSensorConnected ? (
+            <View className="pb-3">
+              <Button
+                label={t(ble.isTracking ? 'trainingFlow.stopSensor' : 'trainingFlow.startSensor')}
+                icon={Bluetooth}
+                variant="secondary"
+                width="full"
+                onPress={ble.isTracking ? ble.stopTrackingFromButton : ble.startTracking}
+              />
+            </View>
+          ) : null
+        }
       >
-        {ble.isSensorConnected ? (
-          <View className="pb-3">
-            <Button
-              label={t(ble.isTracking ? 'trainingFlow.stopSensor' : 'trainingFlow.startSensor')}
-              icon={Bluetooth}
-              variant="secondary"
-              width="full"
-              onPress={ble.isTracking ? ble.stopTrackingFromButton : ble.startTracking}
-            />
-          </View>
-        ) : null}
         <WorkoutSessionInsights logId={workoutLog.id} startedAt={workoutLog.startedAt} />
       </WorkoutTrainingView>
     );

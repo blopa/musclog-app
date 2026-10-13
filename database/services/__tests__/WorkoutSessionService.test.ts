@@ -63,7 +63,7 @@ const row = (id: string, setOrder: number, status: string, extra: Record<string,
   return record;
 };
 
-function install(sets: any[], equipmentType = 'barbell') {
+function install(sets: any[], equipmentType = 'barbell', mechanicType?: string) {
   mockSiblings = sets;
   for (const key of Object.keys(mockRecords)) {
     delete mockRecords[key];
@@ -86,7 +86,7 @@ function install(sets: any[], equipmentType = 'barbell') {
     workoutLogId: 'log-1',
     progressionJson: undefined,
   };
-  mockRecords['exercises:ex-1'] = { id: 'ex-1', equipmentType };
+  mockRecords['exercises:ex-1'] = { id: 'ex-1', equipmentType, mechanicType };
 }
 
 const performed = { weight: 77, reps: 10, repsInReserve: 0 };
@@ -111,6 +111,27 @@ describe('WorkoutSessionService.saveSet re-targeting', () => {
       intraAdjustment: { cause: 'target_rir', field: 'weight' },
     });
   });
+
+  it.each(['stretching', 'mobility', 'cardio'])(
+    'does not re-target the next set of a %s exercise',
+    async (mechanicType) => {
+      const [first, second] = [
+        row('s1', 1, 'planned', { weight: 0, reps: 10 }),
+        row('s2', 2, 'planned', { weight: 0, reps: 10 }),
+      ];
+      install([first, second], 'bodyweight', mechanicType);
+
+      await WorkoutSessionService.saveSet('log-1', 's1', 'performed', {
+        weight: 0,
+        reps: 10,
+        repsInReserve: 0,
+      });
+
+      expect(first.completionStatus).toBe('performed');
+      expect(second).toMatchObject({ weight: 0, reps: 10 });
+      expect(second.prescriptionJson).toBeUndefined();
+    }
+  );
 
   it('changes nothing on the next set in manual mode', async () => {
     mockAutonomy.mockResolvedValue('manual');

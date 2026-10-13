@@ -90,17 +90,46 @@ export class WorkoutProgressionService {
       return null;
     }
     const step = loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id));
-    return projectExerciseProgression({
+    const planned = history[0].sets.map((set, index) => ({
+      id: String(index),
+      weight: set.weightKg,
+      reps: set.reps,
+    }));
+    const projection = projectExerciseProgression({
       ...this.projectionInput(exercise, context, step),
-      planned: history[0].sets.map((set, index) => ({
-        id: String(index),
-        weight: set.weightKg,
-        reps: set.reps,
-      })),
+      planned,
       history,
       rule: null,
       plannedFromHistory: true,
     });
+    // A repeat or lighter week the user chose in the Weekly Review governs an exercise added or
+    // swapped in mid-session exactly as it governs the rest of the workout, or a replacement during
+    // a lighter week would start at a normal (or progressed) load.
+    const week = progressesLoad(exercise.mechanicType)
+      ? await TrainingWeekRepository.activeTrainingWeek()
+      : null;
+    if (!week) {
+      return projection;
+    }
+    const override = planWeekOverride({
+      kind: week.decision,
+      planned,
+      last: history[0].sets,
+      step,
+    });
+    const changes = new Map(override.changes.map((change) => [change.setId, change]));
+    const dropped = new Set(override.dropSetIds);
+    return {
+      ...projection,
+      sets: planned
+        .filter((set) => !dropped.has(set.id))
+        .map((set) => {
+          const change = changes.get(set.id);
+          return change ? { ...set, weight: change.weightKg, reps: change.reps } : set;
+        }),
+      changes: [],
+      state: null,
+    };
   }
 
   static async projectTemplate(templateId: string): Promise<TemplateRecommendation[]> {

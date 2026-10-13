@@ -1,6 +1,13 @@
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 
-import { draftFromSet, liveWeightKg, stepInput, valuesFromDraft } from '../setDraft';
+import {
+  draftFromSet,
+  liveWeightKg,
+  reconcileWeightDraft,
+  stampWeightPatch,
+  stepInput,
+  valuesFromDraft,
+} from '../setDraft';
 
 const set = (fields: Partial<EnrichedWorkoutLogSet> = {}) =>
   ({
@@ -83,5 +90,53 @@ describe('liveWeightKg', () => {
     expect(liveWeightKg(set({ weight: 62.5 }), undefined, 'metric', 'en-US')).toBe(62.5);
     expect(liveWeightKg(set({ weight: 62.5 }), { reps: '5' }, 'metric', 'en-US')).toBe(62.5);
     expect(liveWeightKg(set({ weight: 62.5 }), { weight: '' }, 'metric', 'en-US')).toBe(62.5);
+  });
+});
+
+describe('typed weights across a unit switch', () => {
+  it('stamps only patches that carry a weight', () => {
+    expect(stampWeightPatch({ reps: '8' }, 'metric', 'en-US')).toEqual({ reps: '8' });
+    expect(stampWeightPatch({ weight: '105' }, 'metric', 'en-US')).toEqual({
+      weight: '105',
+      weightUnits: 'metric',
+      weightLocale: 'en-US',
+    });
+  });
+
+  it('keeps a typed 105 kg at 105 kg after switching to imperial', () => {
+    const draft = {
+      weight: '105',
+      reps: '5',
+      weightUnits: 'metric',
+      weightLocale: 'en-US',
+    } as const;
+    const patch = reconcileWeightDraft(draft, 'imperial', 'en-US')!;
+
+    expect(patch.weight).toBe('231.5');
+    expect(valuesFromDraft({ ...draft, ...patch }, 'imperial', 'en-US', true).weight).toBeCloseTo(
+      105,
+      0
+    );
+  });
+
+  it('re-reads the decimal separator when only the locale changes', () => {
+    const draft = {
+      weight: '62,5',
+      reps: '5',
+      weightUnits: 'metric',
+      weightLocale: 'nl-NL',
+    } as const;
+    expect(reconcileWeightDraft(draft, 'metric', 'en-US')?.weight).toBe('62.5');
+  });
+
+  it('leaves current and unstamped drafts alone', () => {
+    expect(
+      reconcileWeightDraft(
+        { weight: '60', weightUnits: 'metric', weightLocale: 'en-US' },
+        'metric',
+        'en-US'
+      )
+    ).toBeNull();
+    expect(reconcileWeightDraft({ weight: '60' }, 'imperial', 'en-US')).toBeNull();
   });
 });

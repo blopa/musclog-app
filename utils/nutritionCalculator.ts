@@ -1114,6 +1114,12 @@ export const PROTEIN_G_PER_KG_BODYWEIGHT_IN_DEFICIT = 2.0;
 const PROTEIN_REFERENCE_BMI = 30;
 /** The most of a calorie budget protein may take; the rest stays for fat and carbs. */
 export const MAX_PROTEIN_CALORIE_SHARE = 0.75;
+/**
+ * Fat is reserved before the rest is shared out, so a protein-heavy budget cannot squeeze it to a
+ * sliver. Contest-preparation guidance puts fat at 15–30% of calories for lean, hard-training
+ * populations (Helms et al., 2014, https://pubmed.ncbi.nlm.nih.gov/24864135/); the low end is the floor.
+ */
+export const MIN_FAT_CALORIE_SHARE = 0.15;
 
 /**
  * The weight bodyweight-based protein is computed from: the goal weight when one is set, otherwise
@@ -1205,8 +1211,12 @@ function splitAroundProtein(
   }
   const remaining = Math.max(0, targetCalories - protein * CALORIES_FOR_PROTEIN);
   const carbsFatSum = carbsShare + fatsShare;
-  const carbs = Math.round((remaining * (carbsShare / carbsFatSum)) / CALORIES_FOR_CARBS);
-  const fats = Math.round((remaining * (fatsShare / carbsFatSum)) / CALORIES_FOR_FAT);
+  const fatKcal = Math.min(
+    remaining,
+    Math.max((remaining * fatsShare) / carbsFatSum, targetCalories * MIN_FAT_CALORIE_SHARE)
+  );
+  const carbs = Math.round((remaining - fatKcal) / CALORIES_FOR_CARBS);
+  const fats = Math.round(fatKcal / CALORIES_FOR_FAT);
   const proteinPct = Math.round((protein * CALORIES_FOR_PROTEIN * 100) / targetCalories);
   const carbsPct = Math.round((carbs * CALORIES_FOR_CARBS * 100) / targetCalories);
   // Fats take the remainder, so the three shares always add up to 100 despite independent rounding.

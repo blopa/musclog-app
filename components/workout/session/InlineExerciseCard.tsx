@@ -19,7 +19,7 @@ import {
 import { ExerciseNotes, type SessionNote } from './ExerciseNotes';
 import { GuidanceSummary } from './GuidanceSummary';
 import { InlineSetRow, SetTableHeader } from './InlineSetRow';
-import type { SessionBlock } from './sessionModel';
+import { canRevertStartAdjustment, type SessionBlock } from './sessionModel';
 
 /**
  * One exercise of the Inline view: heading, where its targets come from, labelled actions, and a
@@ -110,6 +110,7 @@ export function InlineExerciseCard({
           adjustment={block.focus.adjustment}
           units={units}
           onWhy={onWhy}
+          canRevert={canRevertStartAdjustment(block)}
           onRevert={onRevert}
           flat
         />

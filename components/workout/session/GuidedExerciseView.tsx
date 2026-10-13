@@ -37,7 +37,11 @@ import {
 import { ExerciseNotes, type SessionNote } from './ExerciseNotes';
 import { GuidanceSummary } from './GuidanceSummary';
 import { RirQuickPick } from './RirQuickPick';
-import type { SessionBlock, SessionSetRowModel } from './sessionModel';
+import {
+  canRevertStartAdjustment,
+  type SessionBlock,
+  type SessionSetRowModel,
+} from './sessionModel';
 import { draftFromPrevious, stepInput } from './setDraft';
 
 const HERO_HEIGHT = 260;
@@ -313,6 +317,7 @@ export function GuidedExerciseView({
           adjustment={set.adjustment}
           units={units}
           onWhy={onWhy}
+          canRevert={canRevertStartAdjustment(block)}
           onRevert={onRevert}
         />
 

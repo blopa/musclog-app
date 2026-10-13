@@ -526,6 +526,21 @@ describe('WorkoutProgressionService', () => {
         expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
       });
 
+      it('lightens an exercise added or swapped in mid-session, instead of progressing it', async () => {
+        installHistory({ sets: four(), previousSets: lastSession(62, 4) });
+        installWeek('lighter');
+        const exercise = { ...bench, id: 'bench' } as any;
+
+        const projection = await WorkoutProgressionService.projectAdHocExercise(exercise);
+
+        // Last session was easy (4 in reserve), which would normally add load. The chosen lighter
+        // week wins: 62 kg less 10%, snapped down, and no heavier than last time.
+        expect(projection?.sets.length).toBeGreaterThan(0);
+        for (const set of projection!.sets) {
+          expect(set.weight).toBeLessThan(62);
+        }
+      });
+
       it('undo restores the whole plan: dropped sets, loads and the planned reps in reserve', async () => {
         const sets = four().map((set) => Object.assign(set, { repsInReserve: 1 }));
         installHistory({ sets, previousSets: lastSession(62, 1) });

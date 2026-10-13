@@ -9,7 +9,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { GuidanceState } from '@/utils/progressionProjection';
 import type { ProgressionRule } from '@/utils/progressionRules';
-import { isStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
+import type { SetAdjustment } from '@/utils/setAdjustment';
 
 import { GUIDANCE_STATE_KEYS, PROGRESSION_METHOD_KEYS } from './sessionModel';
 
@@ -62,6 +62,7 @@ export function GuidanceSummary({
   units,
   onWhy,
   onRevert,
+  canRevert = false,
   flat = false,
 }: {
   state: GuidanceState;
@@ -70,6 +71,8 @@ export function GuidanceSummary({
   units: Units;
   onWhy: () => void;
   onRevert?: () => void;
+  /** Whether there is a start adjustment to undo; see `canRevertStartAdjustment`. */
+  canRevert?: boolean;
   /** Inside an exercise card already: no second box, so the card does not nest a card. */
   flat?: boolean;
 }) {
@@ -85,7 +88,6 @@ export function GuidanceSummary({
   } else if (!hint && state === 'learning') {
     hint = t('progression.learningHint');
   }
-  const canRevert = !!onRevert && !!adjustment && isStartAdjustment(adjustment);
   return (
     <View
       className={flat ? 'gap-1' : 'gap-2 rounded-xl border border-border-light bg-bg-secondary p-3'}
@@ -110,7 +112,7 @@ export function GuidanceSummary({
           {hint}
         </Text>
       ) : null}
-      {canRevert ? (
+      {canRevert && onRevert ? (
         <TextButton
           label={t('workoutSession.adjustment.usePlan')}
           onPress={onRevert}

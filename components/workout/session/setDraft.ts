@@ -66,6 +66,46 @@ export function liveWeightKg(
   return Number.isFinite(parsed) ? displayToKg(parsed, units) : set.weight;
 }
 
+/** Tags a patch that types a weight with the unit and locale it was typed in. */
+export function stampWeightPatch(
+  patch: Partial<SessionDraft>,
+  units: Units,
+  locale: string
+): Partial<SessionDraft> {
+  return patch.weight === undefined
+    ? patch
+    : { ...patch, weightUnits: units, weightLocale: locale };
+}
+
+/**
+ * Re-expresses a typed weight in the unit and locale now in effect. Returns the patch to apply, or
+ * `null` when the draft is already current (or has no typed weight / predates the stamp).
+ */
+export function reconcileWeightDraft(
+  draft: Partial<SessionDraft> | undefined,
+  units: Units,
+  locale: string
+): Partial<SessionDraft> | null {
+  if (
+    !draft?.weight?.trim() ||
+    !draft.weightUnits ||
+    !draft.weightLocale ||
+    (draft.weightUnits === units && draft.weightLocale === locale)
+  ) {
+    return null;
+  }
+  const parsed = parseLocalizedDecimalString(draft.weight, getDecimalSeparator(draft.weightLocale));
+  if (!Number.isFinite(parsed)) {
+    return { weight: '', weightUnits: units, weightLocale: locale };
+  }
+  const kg = displayToKg(parsed, draft.weightUnits);
+  return {
+    weight: formatInput(displayWeightKgNumeric(kg, units), locale, 2),
+    weightUnits: units,
+    weightLocale: locale,
+  };
+}
+
 /** The values a completion saves, converted back to kilograms. */
 export function valuesFromDraft(
   draft: SessionDraft,

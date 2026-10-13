@@ -6,6 +6,7 @@ import {
   calculateBMR,
   calculateBMRKatchMcArdle,
   calculateMacros,
+  MIN_FAT_CALORIE_SHARE,
   proteinReferenceWeightKg,
   calculateNutritionPlan,
   calculateTargetCalories,
@@ -3429,6 +3430,19 @@ describe('protein without body fat is anchored on bodyweight, not on calories', 
     expect(split.protein).toBe(Math.floor((1500 * 0.75) / 4));
     expect(split.carbs + split.fats).toBeGreaterThan(0);
     expect(split.proteinPct + split.carbsPct + split.fatsPct).toBe(100);
+  });
+
+  it('reserves a fat floor when protein takes most of a small budget', () => {
+    // 140 kg aiming for 135 kg at 1500 kcal: protein alone is ~72% of calories, which used to
+    // leave 20 g of fat (12%).
+    const split = calculateMacros(1500, 'weight_loss', {
+      weightKg: 140,
+      goalWeightKg: 135,
+      weightGoal: 'lose',
+    });
+
+    expect(split.fats * 9).toBeGreaterThanOrEqual(1500 * MIN_FAT_CALORIE_SHARE - 5);
+    expect(split.protein * 4 + split.carbs * 4 + split.fats * 9).toBeLessThanOrEqual(1500 + 12);
   });
 
   it('leaves an ordinary target untouched and unflagged', () => {

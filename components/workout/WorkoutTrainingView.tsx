@@ -16,6 +16,7 @@ import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import type { SessionDraft } from '@/hooks/useWorkoutSessionController';
 import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { weightInputStep } from '@/utils/loadIncrement';
@@ -40,7 +41,12 @@ import { InlineExerciseCard } from './session/InlineExerciseCard';
 import { RestTimerBar } from './session/RestTimerBar';
 import { buildSessionBlocks, guidanceStateFor, type SessionBlock } from './session/sessionModel';
 import { SetDetailsSheet } from './session/SetDetailsSheet';
-import { draftFromSet, valuesFromDraft } from './session/setDraft';
+import {
+  draftFromSet,
+  reconcileWeightDraft,
+  stampWeightPatch,
+  valuesFromDraft,
+} from './session/setDraft';
 
 type Controller = ReturnType<typeof useWorkoutSessionController>;
 
@@ -63,6 +69,7 @@ export function WorkoutTrainingView({
   onWarmups,
   onAddExercise,
   onFinish,
+  controls,
   children,
 }: {
   sets: EnrichedWorkoutLogSet[];
@@ -74,6 +81,8 @@ export function WorkoutTrainingView({
   onWarmups: (logExerciseId: string, warmups: readonly WarmupSetPrescription[] | 'remove') => void;
   onAddExercise: () => void;
   onFinish: () => void;
+  /** Recording controls (sensor start/stop) that must stay reachable in both views. */
+  controls?: ReactNode;
   /** Context cards above the sets; shown in the Inline view only (Guided is the focus mode). */
   children?: ReactNode;
 }) {
@@ -101,6 +110,27 @@ export function WorkoutTrainingView({
     blocks.find((block) => block.logExerciseId === selectedLogExerciseId) ??
     blocks.find((block) => block.logExerciseId === next?.logExerciseId) ??
     blocks[0];
+
+  const editDraft = (setId: string, patch: Partial<SessionDraft>) => {
+    const set = sets.find((row) => row.id === setId);
+    controller.edit(setId, set ? stampWeightPatch(patch, unitsFor(set.exerciseId), locale) : patch);
+  };
+
+  // A typed weight is a display string: when the unit or locale changes under it, convert it so the
+  // number the user typed keeps meaning the same load.
+  useEffect(() => {
+    for (const set of sets) {
+      const patch = reconcileWeightDraft(
+        controller.drafts[set.id],
+        unitsFor(set.exerciseId),
+        locale
+      );
+      if (patch) {
+        controller.edit(set.id, patch);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sets, controller.drafts, locale, accountUnits, unitsFor]);
 
   const isCurrentBlock = (block: SessionBlock) => block === currentBlock && !allResolved;
   const valuesFor = (setId: string) => {
@@ -295,7 +325,7 @@ export function WorkoutTrainingView({
           onWhy={() => onAction(currentBlock.logExerciseId, 'guidance')}
           onRevert={() => void controller.revert(currentBlock.logExerciseId)}
           onAction={(kind) => action(currentBlock, kind)}
-          onEdit={(draft) => controller.edit(row.set.id, draft)}
+          onEdit={(draft) => editDraft(row.set.id, draft)}
           onDetails={() => setDetailsSetId(row.set.id)}
         />
       ) : null;
@@ -339,7 +369,7 @@ export function WorkoutTrainingView({
                 onWhy={() => onAction(block.logExerciseId, 'guidance')}
                 onRevert={() => void controller.revert(block.logExerciseId)}
                 onAction={(kind) => action(block, kind)}
-                onEdit={controller.edit}
+                onEdit={editDraft}
                 onComplete={complete}
                 onSkip={skip}
                 showHint={index === 0}
@@ -376,14 +406,15 @@ export function WorkoutTrainingView({
         <View className="pt-3">
           <FirstSessionTip view={controller.view} />
         </View>
-        {/* Context cards (fueling, cycle insights) belong to Inline's full picture. Guided is the
-            focus mode — one set, read from across the room — so it leaves them out entirely. */}
+        {/* Recording controls show in both views. Context cards (fueling, cycle insights) belong to
+            Inline's full picture; Guided is the focus mode, so it leaves those out. */}
         <View
           onLayout={(event) => {
             insightsHeight.current = event.nativeEvent.layout.height;
           }}
           className="pt-3"
         >
+          {controls}
           {controller.view === 'inline' ? children : null}
         </View>
         {body}
@@ -418,7 +449,7 @@ export function WorkoutTrainingView({
           editable={detailsSet.completionStatus !== 'performed'}
           canSkip={detailsSet.completionStatus === 'planned'}
           busy={controller.busy}
-          onChange={(draft) => controller.edit(detailsSet.id, draft)}
+          onChange={(draft) => editDraft(detailsSet.id, draft)}
           onSkip={() => {
             setDetailsSetId(null);
             skip(detailsSet.id);
