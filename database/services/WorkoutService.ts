@@ -1304,17 +1304,20 @@ export class WorkoutService {
         .query(Q.where('workout_log_id', id), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
+      const logExerciseIds = logExercises.map((e) => e.id);
+      const sets = await fetchByIds<WorkoutLogSet>(
+        'workout_log_sets',
+        'log_exercise_id',
+        logExerciseIds,
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+      for (const set of sets) {
+        deletedSetIds.push(set.id);
+        await writer.callWriter(() => set.markAsDeleted());
+      }
+
       for (const logExercise of logExercises) {
-        const sets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
-          .query(Q.where('log_exercise_id', logExercise.id), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
-
-        for (const set of sets) {
-          deletedSetIds.push(set.id);
-          await writer.callWriter(() => set.markAsDeleted());
-        }
-
         await writer.callWriter(() => logExercise.markAsDeleted());
       }
     });
