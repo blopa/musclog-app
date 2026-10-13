@@ -1,5 +1,6 @@
 import { Link, useLoaderData } from 'expo-router';
 import { createStaticLoader } from 'expo-router/server';
+import DOMPurify from 'isomorphic-dompurify';
 import { ArrowLeft, CalendarDays, Folder, Languages, Tags } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -142,7 +143,10 @@ export default function BlogPostPage() {
             </p>
           ) : null}
 
-          <div className="blog-prose py-10" dangerouslySetInnerHTML={{ __html: post.html }} />
+          <div
+            className="blog-prose py-10"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.html) }}
+          />
 
           <footer className="border-t border-ink/10 pt-8">
             <BlogPostShare
