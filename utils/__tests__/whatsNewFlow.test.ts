@@ -1,4 +1,4 @@
-import { selectReplayFlow, selectWhatsNewFlow } from '../whatsNew/flow';
+import { pageHeadlineKey, selectReplayFlow, selectWhatsNewFlow } from '../whatsNew/flow';
 import type { WhatsNewRelease } from '../whatsNew/schema';
 
 function release(version: string, count = 2): WhatsNewRelease {
@@ -99,5 +99,35 @@ describe('first production release with the tour (2.13.1)', () => {
           .pages
       ).toEqual([]);
     }
+  });
+});
+
+describe('pageHeadlineKey', () => {
+  const page = (blocks: any[]) => ({ key: 'p', version: '2.13.1', blocks });
+
+  it('names a page by its first heading', () => {
+    expect(
+      pageHeadlineKey(
+        page([
+          { id: 'a', type: 'info', titleKey: 'whatsNew.first' },
+          { id: 'b', type: 'info', titleKey: 'whatsNew.second' },
+        ])
+      )
+    ).toBe('whatsNew.first');
+  });
+
+  it('uses an action label when the page has no heading, and skips an untitled list', () => {
+    expect(
+      pageHeadlineKey(
+        page([
+          { id: 'list', type: 'featureList', items: [] },
+          { id: 'go', type: 'action', action: 'openWorkoutSettings', labelKey: 'whatsNew.go' },
+        ])
+      )
+    ).toBe('whatsNew.go');
+  });
+
+  it('returns null for a page with nothing to name it', () => {
+    expect(pageHeadlineKey(page([{ id: 'list', type: 'featureList', items: [] }]))).toBeNull();
   });
 });

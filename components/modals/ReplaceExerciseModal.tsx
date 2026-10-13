@@ -22,6 +22,13 @@ import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import {
+  EQUIPMENT_LABEL_KEYS,
+  FAMILY_LABEL_KEYS,
+  INJURY_EXPIRY_LABEL_KEYS,
+  REMEMBER_CHOICE_KEYS,
+  SUBSTITUTION_REASON_KEYS,
+} from '@/components/workout/restrictionLabelKeys';
 import Exercise from '@/database/models/Exercise';
 import {
   MUSCLE_GROUP_FAMILY,
@@ -30,13 +37,6 @@ import {
 } from '@/database/models/muscleGroupFamily';
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestionService';
-import {
-  EQUIPMENT_LABEL_KEYS,
-  FAMILY_LABEL_KEYS,
-  INJURY_EXPIRY_LABEL_KEYS,
-  REMEMBER_CHOICE_KEYS,
-  SUBSTITUTION_REASON_KEYS,
-} from '@/components/workout/restrictionLabelKeys';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';

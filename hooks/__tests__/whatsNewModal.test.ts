@@ -152,3 +152,27 @@ test.each(['skip', 'back', 'done'])('%s dismisses the tour', async (method) => {
   await waitFor(() => expect(onDismiss).toHaveBeenCalledTimes(1));
   expect(onNavigate).not.toHaveBeenCalled();
 });
+
+test('the intro offers Skip and Next side by side, and Skip dismisses without paging', async () => {
+  const { onDismiss } = setup();
+  expect(screen.getByRole('button', { name: 'whatsNew.next' })).toBeTruthy();
+  expect(screen.queryByRole('button', { name: 'whatsNew.back' })).toBeNull();
+  // The header's close button and the footer's Skip both read "skip"; the footer's is the last.
+  const skips = screen.getAllByRole('button', { name: 'whatsNew.skip' });
+  expect(skips).toHaveLength(2);
+  fireEvent.click(skips[skips.length - 1]);
+  await waitFor(() => expect(onDismiss).toHaveBeenCalledTimes(1));
+});
+
+test('Skip becomes Back after the intro, and the intro lists what the tour covers', () => {
+  setup();
+  // One numbered line per page that has a heading of its own (an action's label stands in).
+  expect(screen.getByText('whatsNew.intro.inside')).toBeTruthy();
+  expect(screen.getByText('whatsNew.openSettings')).toBeTruthy();
+  expect(screen.getByText('whatsNew.openReview')).toBeTruthy();
+  click('whatsNew.next');
+  // Only the header's close button is left: the footer's Skip has become Back.
+  expect(screen.getAllByRole('button', { name: 'whatsNew.skip' })).toHaveLength(1);
+  click('whatsNew.back');
+  expect(screen.getByRole('heading', { name: 'whatsNew.intro.title' })).toBeTruthy();
+});

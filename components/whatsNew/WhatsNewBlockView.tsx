@@ -13,6 +13,7 @@ import type { useWhatsNewChoiceValues } from '@/hooks/useWhatsNewChoiceValues';
 import type { WhatsNewAction } from '@/utils/whatsNew/catalog';
 import type { WhatsNewBlock } from '@/utils/whatsNew/schema';
 
+import { WhatsNewIconBadge } from './WhatsNewIconBadge';
 import { whatsNewIcons } from './whatsNewIcons';
 
 type Props = {
@@ -31,13 +32,13 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
     case 'info': {
       const Icon = block.icon ? whatsNewIcons[block.icon] : null;
       return (
-        <View className="gap-3">
-          {Icon ? <Icon size={theme.iconSize['2xl']} color={theme.colors.accent.primary} /> : null}
-          <Text accessibilityRole="header" className="text-2xl font-bold text-text-primary">
+        <View className="gap-4">
+          {Icon ? <WhatsNewIconBadge icon={Icon} size="page" /> : null}
+          <Text accessibilityRole="header" className="text-3xl font-bold text-text-primary">
             {t(block.titleKey)}
           </Text>
           {description ? (
-            <Text className="text-base leading-6 text-text-secondary">{description}</Text>
+            <Text className="text-lg leading-7 text-text-secondary">{description}</Text>
           ) : null}
         </View>
       );

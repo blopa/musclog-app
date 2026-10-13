@@ -1,6 +1,6 @@
 import { WHATS_NEW_MAX_PAGES } from '@/constants/whatsNew';
 
-import type { WhatsNewBlock, WhatsNewRelease } from './schema';
+import type { WhatsNewBlock, WhatsNewKey, WhatsNewRelease } from './schema';
 import { compareVersions, parseAppVersion, parseVersion } from './version';
 
 export type WhatsNewFlow = {
@@ -77,4 +77,19 @@ export function selectReplayFlow(input: FlowInput): WhatsNewFlow {
     }
   }
   return { pages: [], releaseVersions: [], truncated: false };
+}
+
+/**
+ * The line that names a page in the intro's "what's in this tour" list: the first block that has a
+ * heading of its own (an action block's label stands in for one). `null` when a page has none, in
+ * which case the page simply is not listed.
+ */
+export function pageHeadlineKey(page: WhatsNewFlow['pages'][number]): WhatsNewKey | null {
+  for (const block of page.blocks) {
+    const key = block.type === 'action' ? block.labelKey : block.titleKey;
+    if (key) {
+      return key;
+    }
+  }
+  return null;
 }

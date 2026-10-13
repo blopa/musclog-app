@@ -128,7 +128,10 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
         treadmill,
         caloriesOverride: watchCalories > 0 ? watchCalories : undefined,
       });
-      showSnackbar('success', t('cardio.saved', { activity: t(CARDIO_ACTIVITY_LABEL_KEYS[activity]) }));
+      showSnackbar(
+        'success',
+        t('cardio.saved', { activity: t(CARDIO_ACTIVITY_LABEL_KEYS[activity]) })
+      );
       onLogged?.();
       onClose();
     } catch (err) {

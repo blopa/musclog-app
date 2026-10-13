@@ -5,13 +5,13 @@ import { Text, View } from 'react-native';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Chip } from '@/components/theme/Chip';
 import {
-  ExerciseRestrictionService,
-  MAX_EXERCISE_RESTRICTIONS,
-} from '@/database/services/ExerciseRestrictionService';
-import {
   INJURY_EXPIRY_LABEL_KEYS,
   RESTRICTION_CHOICE_KEYS,
 } from '@/components/workout/restrictionLabelKeys';
+import {
+  ExerciseRestrictionService,
+  MAX_EXERCISE_RESTRICTIONS,
+} from '@/database/services/ExerciseRestrictionService';
 import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useTheme } from '@/hooks/useTheme';
 import {

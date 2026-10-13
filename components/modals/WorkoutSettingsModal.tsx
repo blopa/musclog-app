@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
-import { RESTRICTION_KIND_LABEL_KEYS } from '@/components/workout/restrictionLabelKeys';
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import { RESTRICTION_KIND_LABEL_KEYS } from '@/components/workout/restrictionLabelKeys';
 import {
   DEFAULT_REST_SECONDS,
   MAX_REST_SECONDS,

@@ -10,12 +10,13 @@ import {
   RotateCcw,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { ImageBackground, Pressable, Text, View } from 'react-native';
+import { ImageBackground, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { IconButton } from '@/components/theme/IconButton';
 import { ListRow } from '@/components/theme/ListRow';
 import { NumericTextField } from '@/components/theme/NumericTextField';
+import { TextButton } from '@/components/theme/TextButton';
 import type { Units } from '@/constants/settings';
 import type Exercise from '@/database/models/Exercise';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
@@ -255,22 +256,19 @@ export function GuidedExerciseView({
 
         {/* Last time sits above the numbers it informs; one tap repeats it. */}
         {previous ? (
-          <Pressable
-            accessibilityRole="button"
+          <TextButton
+            label={t('trainingFlow.previous', {
+              weight: formatDisplayWeightKg(locale, units, previous.weightKg),
+              reps: formatInteger(previous.reps, { useGrouping: false }),
+              unit: weightUnit,
+            })}
             accessibilityLabel={t('trainingFlow.usePrevious')}
+            tone="muted"
+            align="center"
             disabled={done}
             onPress={() => onEdit(draftFromPrevious(values, previous, units, locale))}
-            className="min-h-11 items-center justify-center"
             testID={`set-${set.id}-previous`}
-          >
-            <Text className="text-center text-sm text-text-secondary">
-              {t('trainingFlow.previous', {
-                weight: formatDisplayWeightKg(locale, units, previous.weightKg),
-                reps: formatInteger(previous.reps, { useGrouping: false }),
-                unit: weightUnit,
-              })}
-            </Text>
-          </Pressable>
+          />
         ) : (
           <Text className="text-center text-sm text-text-secondary">
             {t('trainingFlow.noHistory')}

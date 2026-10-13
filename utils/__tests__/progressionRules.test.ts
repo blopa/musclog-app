@@ -315,8 +315,8 @@ describe('automatic progression stall detection', () => {
   });
 
   it('does not count a miss at a different load as a stall', () => {
-    expect(automatic([rated([6, 6, 6]), rated([6, 6, 6], 65)]).changes[0]?.adjustment.cause).not.toBe(
-      'deload'
-    );
+    expect(
+      automatic([rated([6, 6, 6]), rated([6, 6, 6], 65)]).changes[0]?.adjustment.cause
+    ).not.toBe('deload');
   });
 });

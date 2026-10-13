@@ -314,10 +314,7 @@ it('reports whether an action happened, and refuses to overlap two of them', asy
 
   let results: boolean[] = [];
   await act(async () => {
-    results = await Promise.all([
-      hook.result.current.skip('s1'),
-      hook.result.current.skip('s1'),
-    ]);
+    results = await Promise.all([hook.result.current.skip('s1'), hook.result.current.skip('s1')]);
   });
 
   expect(results).toEqual([true, false]);
@@ -330,7 +327,9 @@ it('can complete a set without starting a rest, as when undoing a reopen', async
   const hook = renderHook(() => useWorkoutSessionController('log', [set], options));
   await waitFor(() => expect(hook.result.current.busy).toBe(false));
 
-  await act(() => hook.result.current.complete('s1', { weight: 60, reps: 10 }, { autoRest: false }));
+  await act(() =>
+    hook.result.current.complete('s1', { weight: 60, reps: 10 }, { autoRest: false })
+  );
 
   expect(WorkoutSessionService.saveSet).toHaveBeenCalledWith('log', 's1', 'performed', {
     weight: 60,

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { ReplaceExerciseData } from '@/components/modals/ReplaceExerciseModal';
 import type { ExerciseNotesSaveData } from '@/components/workout/ExerciseNotesSheet';
 import { useSnackbar } from '@/context/SnackbarContext';
+import type Exercise from '@/database/models/Exercise';
 import {
   ExerciseRestrictionService,
   MAX_EXERCISE_RESTRICTIONS,
@@ -11,9 +12,8 @@ import { ExerciseUserSettingsService } from '@/database/services/ExerciseUserSet
 import { GymService } from '@/database/services/GymService';
 import { WorkoutLogExerciseService } from '@/database/services/WorkoutLogExerciseService';
 import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
-import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
-import type Exercise from '@/database/models/Exercise';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import type { SubstitutionOutcome } from '@/utils/exerciseSubstitution';
 import type { GymSnapshot } from '@/utils/gym';
 import { handleError } from '@/utils/handleError';

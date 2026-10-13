@@ -1,3 +1,4 @@
+import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   clampRestSeconds,
   HAPTIC_TICK_SECONDS,
@@ -20,7 +21,7 @@ describe('resolveRestSeconds', () => {
   });
 
   it('defaults to 60 seconds when nothing else is configured', () => {
-    expect(resolveRestSeconds(undefined)).toBe(60);
+    expect(resolveRestSeconds(undefined)).toBe(DEFAULT_REST_SECONDS);
   });
 });
 
@@ -37,8 +38,8 @@ describe('clampRestSeconds', () => {
   });
 
   it('falls back to the default for anything that is not a number', () => {
-    expect(clampRestSeconds(Number.NaN)).toBe(60);
-    expect(clampRestSeconds(Infinity)).toBe(60);
+    expect(clampRestSeconds(Number.NaN)).toBe(DEFAULT_REST_SECONDS);
+    expect(clampRestSeconds(Infinity)).toBe(DEFAULT_REST_SECONDS);
   });
 });
 

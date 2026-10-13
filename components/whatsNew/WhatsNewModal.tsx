@@ -1,4 +1,4 @@
-import { Sparkles, X } from 'lucide-react-native';
+import { X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AccessibilityInfo, ScrollView, Text, View } from 'react-native';
@@ -9,7 +9,6 @@ import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { Button } from '@/components/theme/Button';
 import { IconButton } from '@/components/theme/IconButton';
 import { PageIndicators } from '@/components/theme/PageIndicators';
-import { TextButton } from '@/components/theme/TextButton';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
@@ -23,6 +22,7 @@ import {
 import type { WhatsNewFlow } from '@/utils/whatsNew/flow';
 
 import { WhatsNewBlockView } from './WhatsNewBlockView';
+import { WhatsNewIntro } from './WhatsNewIntro';
 
 type Props = {
   visible: boolean;
@@ -146,21 +146,14 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
       <ScrollView
         ref={scrollRef}
         className="flex-1"
-        contentContainerStyle={{ padding: theme.spacing.padding.lg, gap: theme.spacing.gap.xl }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          padding: theme.spacing.padding.lg,
+          gap: theme.spacing.gap.xl,
+        }}
       >
         {pageIndex === 0 ? (
-          <View className="gap-6 py-6">
-            <Sparkles size={theme.iconSize['2xl']} color={theme.colors.accent.primary} />
-            <Text accessibilityRole="header" className="text-2xl font-bold text-text-primary">
-              {t('whatsNew.intro.title')}
-            </Text>
-            <Text className="text-base leading-6 text-text-secondary">
-              {t('whatsNew.intro.description')}
-            </Text>
-            {mode === 'upgrade' && flow.truncated ? (
-              <Text className="text-sm text-text-secondary">{t('whatsNew.intro.truncated')}</Text>
-            ) : null}
-          </View>
+          <WhatsNewIntro flow={flow} showHighlights={mode === 'upgrade'} />
         ) : (
           pageBlocks
         )}
@@ -175,15 +168,14 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
           <PageIndicators totalPages={total} currentPage={pageIndex} />
         </View>
         <View className="flex-row gap-3">
-          {pageIndex > 0 ? (
-            <Button
-              width="flex-1"
-              variant="outline"
-              label={t('whatsNew.back')}
-              disabled={busy}
-              onPress={() => setPageIndex((index) => index - 1)}
-            />
-          ) : null}
+          {/* Skip sits where Back does on every later page, so the footer never changes shape. */}
+          <Button
+            width="flex-1"
+            variant="outline"
+            label={t(pageIndex > 0 ? 'whatsNew.back' : 'whatsNew.skip')}
+            disabled={busy}
+            onPress={() => (pageIndex > 0 ? setPageIndex((index) => index - 1) : void dismiss())}
+          />
           <Button
             width="flex-1"
             label={t(pageIndex === total - 1 ? 'whatsNew.done' : 'whatsNew.next')}
@@ -194,9 +186,6 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
             }
           />
         </View>
-        {pageIndex === 0 ? (
-          <TextButton label={t('whatsNew.skip')} disabled={busy} onPress={() => void dismiss()} />
-        ) : null}
       </View>
       {renderActionModal(activeAction, visible, () => setActiveAction(null))}
     </FullScreenModal>
