@@ -39,6 +39,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
       if (maxVal <= 0) {
         return [formatInteger(0)];
       }
+
       const magnitude = Math.pow(10, Math.floor(Math.log10(maxVal)));
       const niceStep = Math.ceil(maxVal / 4 / magnitude) * magnitude;
       const labels: string[] = [];
@@ -47,6 +48,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
         if (v > maxVal * 1.2) {
           break;
         }
+
         if (v >= 1000) {
           const kCompact = Math.round(v / 100) / 10;
           labels.push(`${formatDecimal(kCompact, 1)}k`);
@@ -54,6 +56,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           labels.push(formatInteger(Math.round(v)));
         }
       }
+
       return labels;
     },
     [formatDecimal, formatInteger]
@@ -176,6 +179,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           />
         );
       }
+
       case 'macros': {
         return (
           <StackedBarChart
@@ -194,6 +198,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           />
         );
       }
+
       case 'combined': {
         const maxCal = Math.max(...combinedData.map((d) => d.calories));
         const calDomain: [number, number] = [0, maxCal * 1.2];
@@ -224,6 +229,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           />
         );
       }
+
       case 'macrosCombined': {
         return (
           <StackedBarLineChart

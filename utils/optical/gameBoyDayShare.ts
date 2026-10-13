@@ -82,6 +82,7 @@ export function parseGameBoyDayShare(value: unknown): CompactGameBoyDayShare {
   if (foodIndexes.size !== compact.foods.length) {
     throw new GameBoyExportError('malformed', 'Day share repeats a food index');
   }
+
   for (const [foodIndex] of compact.logs) {
     if (!foodIndexes.has(foodIndex)) {
       throw new GameBoyExportError('malformed', `Day share references missing food ${foodIndex}`);

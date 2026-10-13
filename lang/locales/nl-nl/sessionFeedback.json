@@ -11,6 +11,8 @@
     "drained": "Uitgeput",
     "disliked": "Niet leuk",
     "loved": "Geweldig",
-    "submit": "FEEDBACK VERZENDEN"
+    "submit": "FEEDBACK VERZENDEN",
+    "notes": "Notities",
+    "notesPlaceholder": "Hoe ging het? Iets om de volgende keer te onthouden?"
   }
 }

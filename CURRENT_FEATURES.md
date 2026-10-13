@@ -12,6 +12,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Time-based personalized greetings (Good Morning / Afternoon / Evening)
 - Quick-access action row, configurable in Interface settings: pick two to four of Start Workout, Track Food, Scan Barcode, AI Photo, My Meals and Add Note, and they appear in the order you pick them
 - Recent foods and recent workouts previews
+- Permanent Weekly Review entry below Home actions, plus a prominent Resume card while a workout is active
 - Android home screen widgets: Nutrition Progress + Smart Camera
 
 ---
@@ -24,19 +25,35 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Organize workouts into named plans with weekly weekday assignments or ordered rotating cycles; workouts can belong to multiple plans, while standalone routines remain in an Unplanned section
 - Browse a built-in template library, including a five-session cable superset program
 - Browse 873 built-in exercises with localized names and instructions, muscle-group filters, and two-frame technique photos
+- Forgiving exercise search: find an exercise by abbreviation (DB, RDL, OHP), plural or misspelled plural ("flys"), accent-less spelling, compound spelling ("pullups"), its name in any of the app's languages, or your own "Also known as" names added on the exercise screen
 - Per-exercise estimated-1RM trend chart with a plain-language read of the change across logged sessions
 - Built-in programs and AI-generated routines create complete named workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID
-- Built-in rest timer with customizable duration and haptic alerts
+- Rest timer with a configurable default rest, optional auto-start (or a "Start rest" button), a large countdown that scales with the screen, a distinct "Get ready" state for the last ten seconds that is spoken as well as coloured, a haptic countdown, and the next set's load shown prominently
+- Smart warm-up sets: one tap adds a ramp (an empty-bar set on heavy barbell lifts, then 40 / 60 / 80%) before an exercise's first working set, snapped to weights your gym can actually load. Warm-ups are marked "W" in history and are excluded from volume, personal records, estimated 1RM, progression, goals and the figures the AI coach sees (calories and Health Connect still count them)
+- Inline and Guided workout views share direct numeric entry, one-tap set completion/reopening, optional effort details, persistent rest timers, superset order, and explicit Finish Workout. Inline is a per-exercise set table (set, last time, weight, reps, ✓) where tapping "Last time" repeats those numbers; Guided is one set at a time over the exercise photo with large −/+ steppers and Complete set pinned above the rest timer, so it never needs a scroll. New installs use Inline; existing users keep Guided until switching. Pending inputs survive switching and restart. On narrow screens or with larger text, Last time stays fully visible below the row.
+- A pinned rest timer under the session with progress, −15 s / +30 s, a "get ready" phase, haptic countdown, and a large panel (automatic in Guided)
+- Per-exercise Automatic, Double progression, Linear, Top set + back-offs, and Percentage of training max rules, chosen from a sheet that explains each method; tap an exercise in the workout editor (or use the Progression row when adding one). Explicit rules work with automatic suggestions disabled; warm-ups, skipped sets, and missing effort are handled separately. One bad session never deloads: the load drops only after two sessions in a row at the same load ended at failure (or short of the rep range); the first one holds. Reps-first progression climbs from the reps the workout plans, so a 5-rep strength block stays a 5-rep block. Cardio, mobility and stretching are never progressed. A deload always lands on a lighter load the equipment can really be set to (it never rounds back up to the weight being failed). Bodyweight exercises done without added weight only ever add reps, up to a rep ceiling you pick per exercise (25, 30 … 50; default 25) — at the ceiling the app suggests a weighted vest or belt, a harder variation or a slower tempo instead of inventing extra kilograms. The percentage-of-training-max rule lowers the training max (by 10% after two sessions in a row that missed reps, both adjustable) as well as raising it.
+- "Why?" beside every target: the method, the reason in a sentence, the plan / last time / today numbers, and actions (Use the plan's, plate calculator, edit gym, edit workout and rules). Numbers the app calculated are marked until you type over them.
+- Read-only upcoming targets in previews, Next time in summaries, and Weekly Review. Targets show their source and reason; Use the plan’s restores unfinished prescriptions and removes pending load/rep overrides while retaining entered effort. Template edits preserve exercise identity and active-session rule snapshots.
+- Today in Workouts shows the workout in progress (progress bar, Resume), or today's scheduled workout / the next rotating-plan workout with Preview and start, workouts already trained today as done, and the active gym and starting-target setting. With no schedule and no rotating plan it suggests the recently trained workout rested longest ("last done Thu, Oct 8"), so the card always offers something to start
+- Start Workout on a library card opens the session immediately; tapping the card's heading previews its targets first
+- Per-exercise preferences in the exercise view: a weight unit for just that exercise (kg or lb, whatever the account uses) and a note that is pinned above the set in every workout. In a session, notes can also be written for this workout only (optionally copied onto the workout template) and a note can be added when you finish a workout
+- Log a walk or run in a few taps from the workouts menu or the Home quick action: activity, distance, duration, when it ended, an optional treadmill flag and an optional calorie figure from your watch. It shows pace and estimated calories live, appears in history with distance and pace, and is written to Health Connect / Apple Health as a walk or run with its distance
 - Real-time session stats: elapsed time, calories burned, total volume
 - Between-set weight/rep re-targeting that states what it changed and why (carried-over load, or a recalculation that holds your target reps in reserve), with the marker on the field it actually moved
 - Automatic personal record (PR) detection
 - Review the full planned set list in workout history, with unfinished sets and exercises marked skipped and excluded from volume, records, trends, and other performance calculations
 - Import workouts by pasting text — AI parses it into a session
+- AI errors you can act on say so: a rejected Gemini/OpenAI key names the provider and points to AI settings, a stalled request times out (retried once) instead of spinning forever, and the AI photo scan has a Cancel button. A "Test key" button in AI settings checks a key while you set it up
 - Keep screen awake during active workout sessions
-- End-of-session feedback (difficulty, energy, notes)
+- Optional session feedback from the workout summary: difficulty, exhaustion, enjoyment, and notes; a failed save keeps the form open for retry.
 - Add, replace, or skip exercises mid-session
+- Swap an exercise mid-session and say why (equipment unavailable, pain, too hard or too easy, dislike, machine occupied, or just for today): suggestions are ranked for the same body region, and only the session changes — never the plan. Sets already logged keep their original movement; remaining sets move to a replacement block while retaining their superset rounds and rest boundaries. Swap is disabled once all sets in a block are done. A swap's follow-ups (stop suggesting it for a while, remove the equipment from your gym) are choices you switch on, not defaults applied behind your back
+- Exercise restrictions: mark any exercise Dislike, Injury (with an end date) or Never suggest from its screen or when swapping. Injured and never-suggest exercises are hidden from swap suggestions and AI-generated plans; disliked ones are ranked last
+- Named gym profiles (bar weight, plates you own, smallest weight step, available equipment, and optionally a weight unit of its own — e.g. pounds for a gym whose plates are in pounds, otherwise it follows your account setting) with one active gym. The active gym drives the plate calculator, the +/- weight steps, the weights the app recomputes between sets, and which exercises can be suggested
+- Plate calculator on barbell lifts: the plates to load on each side for the set's weight, exact even with a limited plate inventory (standard plates are used until you set up a gym)
 - Recover interrupted workouts
 - Archive workout templates to declutter the list
 - Share workout routines via clipboard or native share sheet
@@ -49,7 +66,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Track calories, protein, carbs, fiber, fat, and 40+ vitamins/minerals
 - Search food databases: Open Food Facts, USDA, Musclog barcode DB, local-only
 - Barcode scanner for instant product lookup
-- AI food photo estimation — snap a photo, get macros
+- AI food photo estimation — snap a photo, get macros; when logging an AI-estimated meal (from the camera or the coach) you choose the date and the time of day, not just the day
+- Tap any meal photo (diary, meal groups, coach chat and attachments) to open it full screen: pinch to zoom up to 5×, drag to pan, double-tap to zoom, swipe down to close, and save or share it from the viewer
 - OCR label scanning to extract nutrition info from packaging (optional local pre-processing)
 - Create custom foods manually with full nutrition values
 - Flexible serving sizes (grams, ounces, standard portions)
@@ -72,8 +90,10 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Support for multiple goals with easy switching
 - Empirical TDEE calculation derived from actual logged intake and smoothed trend-weight endpoints
 - Auto-calculated goal templates based on activity level, weight goal, and experience
-- Weekly nutrition check-ins: "On Track / Ahead / Behind" status based on trend weight, with raw seven-day weigh-in bars
-- Dynamic goal recalculation based on real-world progress trends
+- Weekly Review is reachable from Home, Workouts, and Food (a review card while a week is waiting; otherwise Food's "Weekly targets · since …" line). A week counts as ready only when it holds a workout, food log or weigh-in. The training half is a real decision too: the week is judged against your fitness goals (workouts per week, 1RM goals on pace or not), the review recommends Keep progressing, Repeat last session or a Lighter week (about 10% lighter loads and a third fewer sets) with its reasons, and your choice shapes how next week's workouts start — even with workout suggestions set to manual, because you chose it. After two weeks above or below your weekly workout goal it offers a one-tap change to the goal. Someone who has never finished a workout is not asked. Training and nutrition decisions are independent; workout progression never waits for a review. Personal records show one row per exercise (three, then Show all). The nutrition recommendation states the expenditure and the week's trend-weight change it is based on, and a calorie change of 15% or more is flagged as aggressive and not recommended, with a prompt to check the week's food log — even before the recommendation can be applied. With the minimum-calorie floor turned off in Advanced settings, a recommendation below your minimum gets its own warning. Until the week has enough data the recommended column is shown as a dimmed estimate. A recommendation can be applied once the week has food logged (or a flagged fasting day) on at least 5 of its 7 days and three weigh-ins; until then the review says so and offers buttons that open the food diary or weight entry on the exact day of that week still missing data. Review history retains earlier reviews (legacy check-ins) and decisions across goal changes. The review lives at its own route, so opening it no longer highlights the Food tab; an old saved link still forwards to it for now. A half with nothing in the reviewed week shows an empty state instead of a summary of zeros: training points a first-timer at "Log your first workout"; nutrition shrinks to one strip of the current daily targets with "Log your first meal" (today's diary) or, after a week off, "Log food for …" on the reviewed week. A week with nothing in it at all hides the progress chips, the review badges and the acknowledge/keep buttons, and says when the first review will be ready. The first time a review has anything in it (either half), a one-time welcome sheet explains what the review covers; it is not shown again once dismissed.
+- Protein targets stay anchored to bodyweight when body fat is not tracked (body fat is opt-in): 1.6–2.0 g per kg depending on your goal, at least 2.0 g/kg while cutting, from your goal weight when one is set (or a healthy-BMI reference weight for your height), so protein no longer drops when calories drop.
+- Manual, Daily automatic, and Weekly review target modes. Existing daily goals retain their behavior; new guided setup defaults to Weekly review. Approved calories and net-carb macros begin tomorrow and stay stable until replaced, with historical target periods.
+- Weekly nutrition decisions show current/recommended targets, trend weight and logged-day coverage, with Apply tomorrow, Keep, and a focused recommendation editor. Missing evidence keeps targets while more data is collected. Optional review weekday and reminder. Legacy comparisons account for gain/loss goals.
 
 ---
 
@@ -160,12 +180,17 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Profile & Settings
 
+- What's new: replay the newest release tour from Settings, including choices that save real preferences. The card appears when this app version has a published announcement.
+- Help & feedback: report a bug or request a feature (opens the matching GitHub issue form with the app version, platform and language pre-filled) or email support (version and device added to the message). Nothing about you or your data is included
 - Set name, email, gender, date of birth, and avatar
 - Fitness profile: weight, height, body fat %, goal type, activity level, experience level
 - Language selection and full multilingual support for English, Spanish, Dutch, Brazilian Portuguese, and Russian, including the built-in exercise catalogue
 - Metric or imperial units applied consistently throughout the app
 - Named theme selection: Kinetic Depth, Kinetic Light, Kinetic Shock, Kinetic Volt, or Kinetic Blush,
   plus a System option that follows the device's light/dark appearance
+- Theme-matched app icon on Android and iOS: picking a named theme switches the home-screen icon to
+  that theme's colors (on Android once you leave the app; iOS shows its own confirmation alert).
+  The System option and Kinetic Depth use the default icon
 - Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary's gradient is chosen
   by the active theme — a flat card surface in Kinetic Light, a contrast-matched colorful sweep in
   the dark themes and in Kinetic Blush
@@ -180,10 +205,13 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Onboarding
 
+- Returning users get a short, skippable post-update tour on home, merging missed announcements into at most six pages plus an intro. Fresh installs skip it; restored backups retain their seen version (older backups without one may show the tour again). The first announcement targets 2.13.1, the first production release with the tour: every update from an earlier version (including a 2.13.0 test build) shows it. It introduces Guided/Inline views, progression preferences, rest controls, gyms and plates, Weekly Review, plans, cardio, swaps, restrictions and warm-ups.
 - Quick or detailed guided setup flow
 - Restore a full profile either from a JSON backup or directly from another device via optical QR transfer on the first screen
 - Personalized nutrition goal calculation based on age, weight, height, activity level, and weight goal
-- Optional Health Connect / HealthKit setup during onboarding
+- Training branch in both the quick and the personalized setup (one shared screen, skippable for nutrition-only users): where you train (gym / home / minimal), experience (quick setup only), days per week and whether the app suggests loads. It creates your first active gym profile and sets the load-suggestion preference, and the setup ends on a first workout: a matching bundled plan (gym trainers) to start now or add for later, or an empty workout (home/minimal, since every bundled plan needs gym equipment)
+- A one-time "how a session works" tip at the top of the first workout (what ✓ logs, the rest timer, warm-ups not counting toward volume), shown only to people who have never finished a workout and gone for good once dismissed
+- Optional Health Connect / HealthKit setup is offered once, after the first finished workout, instead of in the middle of the setup (users who skip the training questions get it at the end of the setup)
 - AI provider configuration during setup
 
 ## Musclog GB Gimmick

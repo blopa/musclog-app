@@ -76,6 +76,7 @@ export function useMealUi() {
       if (mealType != null) {
         setSelectedMealType(mealType);
       }
+
       setDialog('addFood');
     },
     closeAddFoodModal: () => setDialog(null),

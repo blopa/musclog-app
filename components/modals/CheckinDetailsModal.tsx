@@ -56,6 +56,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       const reset = () => {
         setIsNutritionGoalsModalVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -91,6 +92,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       targetFFMI: currentGoal.targetFfmi,
       targetDate: currentGoal.targetDate ?? null,
       isDynamic: currentGoal.isDynamic,
+      targetMode: currentGoal.targetMode ?? (currentGoal.isDynamic ? 'daily' : 'manual'),
     };
   }, [currentGoal, computedDefaults]);
 
@@ -99,6 +101,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       if (!checkinId) {
         return;
       }
+
       setIsLoading(true);
       try {
         const c = await NutritionCheckinService.getById(checkinId);
@@ -113,6 +116,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         setIsLoading(false);
       }
     }
+
     loadData();
   }, [checkinId]);
 
@@ -120,8 +124,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     if (!checkin || !metrics) {
       return;
     }
-    // Mark check-in as reviewed first
-    await NutritionCheckinService.update(checkin.id, { status: metrics.status });
+
     setIsNutritionGoalsModalVisible(true);
   };
 
@@ -139,21 +142,29 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     }
 
     try {
-      const newGoal = await NutritionGoalService.saveGoals({
-        totalCalories: goals.totalCalories,
-        protein: goals.protein,
-        carbs: goals.carbs,
-        fats: goals.fats,
-        fiber: goals.fiber,
-        eatingPhase: goals.eatingPhase,
-        targetWeight: goals.targetWeight ?? undefined,
-        targetBodyFat: goals.targetBodyFat ?? undefined,
-        targetBMI: goals.targetBMI ?? undefined,
-        targetFFMI: goals.targetFFMI ?? undefined,
-        targetDate: goals.targetDate ?? null,
-        isDynamic: goals.isDynamic ?? false,
-      });
+      const newGoal = await NutritionGoalService.saveGoals(
+        {
+          totalCalories: goals.totalCalories,
+          protein: goals.protein,
+          carbs: goals.carbs,
+          fats: goals.fats,
+          fiber: goals.fiber,
+          eatingPhase: goals.eatingPhase,
+          targetWeight: goals.targetWeight ?? undefined,
+          targetBodyFat: goals.targetBodyFat ?? undefined,
+          targetBMI: goals.targetBMI ?? undefined,
+          targetFFMI: goals.targetFFMI ?? undefined,
+          targetDate: goals.targetDate ?? null,
+          isDynamic: goals.isDynamic ?? false,
+          targetMode: goals.targetMode,
+        },
+        false
+      );
       await NutritionGoalService.regenerateCheckins(newGoal.id);
+      if (checkin && metrics) {
+        await NutritionCheckinService.update(checkin.id, { status: metrics.status });
+      }
+
       triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
       onClose();
     } catch (e) {
@@ -309,7 +320,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         >
           <View className="flex-row justify-between">
             <View>
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.weightTrend')}
               </Text>
               <View className="mt-1 flex-row items-baseline">
@@ -332,7 +343,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </View>
             </View>
             <View className="items-end">
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.target')}
               </Text>
               <Text className="mt-1 text-xl font-bold text-text-primary">
@@ -378,7 +389,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <Text
-              className="text-[10px] font-bold uppercase"
+              className="text-xs font-bold uppercase"
               style={{ color: theme.colors.accent.primary }}
             >
               {t('nutrition.checkin.weekProgress', {
@@ -440,7 +451,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.avgIntake')}
               </Text>
               <Text
@@ -459,7 +470,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.consistency')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">
@@ -480,13 +491,13 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.avgBodyFat')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">
                 {avgBodyFat != null ? formatDecimal(avgBodyFat, 1) : '--'}%
               </Text>
-              <Text className="mt-1 text-[10px] font-medium text-text-tertiary">
+              <Text className="mt-1 text-xs font-medium text-text-tertiary">
                 {checkin.targetBodyFat != null
                   ? t('nutrition.checkin.targetShort', {
                       value: formatDecimal(checkin.targetBodyFat, 1),
@@ -502,7 +513,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.activeMinutes')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">
@@ -510,7 +521,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </Text>
               {activeMinutesTrend !== null ? (
                 <Text
-                  className="mt-1 text-[10px] font-medium"
+                  className="mt-1 text-xs font-medium"
                   style={{
                     color:
                       activeMinutesTrend >= 0

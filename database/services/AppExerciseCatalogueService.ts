@@ -2,11 +2,13 @@ import { type Model, Q } from '@nozbe/watermelondb';
 
 import { type ExerciseCatalogueEntry, getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import { database } from '@/database/database-instance';
+import { computeExerciseSearchText } from '@/database/exerciseSearchText';
 import Exercise, {
   type EquipmentType,
   type MechanicType,
   type MuscleGroup,
 } from '@/database/models/Exercise';
+import type ExerciseAlias from '@/database/models/ExerciseAlias';
 import ExerciseMuscle from '@/database/models/ExerciseMuscle';
 import Muscle from '@/database/models/Muscle';
 import { fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
@@ -28,7 +30,12 @@ interface CatalogueExerciseFields {
   imageUrl: string;
 }
 
-type CatalogueExerciseChanges = Partial<CatalogueExerciseFields>;
+/**
+ * `searchText` is derived from the catalogue entry AND the user's aliases, so it is reconciled
+ * beside the catalogue fields but is deliberately not one of them: `exerciseMatchesCatalogue`
+ * (and so `isComplete`, which gates retiring the legacy catalogue) must not care about it.
+ */
+type CatalogueExerciseChanges = Partial<CatalogueExerciseFields> & { searchText?: string };
 
 function catalogueExerciseFields(entry: ExerciseCatalogueEntry): CatalogueExerciseFields {
   return {
@@ -83,6 +90,7 @@ function fieldMatches<TKey extends keyof CatalogueExerciseFields>(
   if (key === 'loadMultiplier') {
     return Math.abs((stored as number) - (desired as number)) <= 0.001;
   }
+
   return stored === desired;
 }
 
@@ -130,6 +138,7 @@ function operationBatches(groups: Model[][]): Model[][] {
   if (batch.length > 0) {
     batches.push(batch);
   }
+
   return batches;
 }
 
@@ -162,6 +171,20 @@ async function loadCatalogueDatabaseState(catalogueIds: string[]): Promise<Catal
   };
 }
 
+async function liveAliasesByExerciseId(): Promise<Map<string, string[]>> {
+  const aliases = await database
+    .get<ExerciseAlias>('exercise_aliases')
+    .query(Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+
+  const byExerciseId = new Map<string, string[]>();
+  for (const { exerciseId, alias } of aliases) {
+    byExerciseId.set(exerciseId, [...(byExerciseId.get(exerciseId) ?? []), alias]);
+  }
+
+  return byExerciseId;
+}
+
 async function activeMuscleIdsByName(): Promise<Map<string, string>> {
   const muscles = await database
     .get<Muscle>('muscles')
@@ -189,6 +212,7 @@ export class AppExerciseCatalogueService {
     await database.write(async () => {
       const catalogueIds = catalogue.map(({ exerciseSlug }) => appExerciseId(exerciseSlug));
       const { exerciseById, linksByExerciseId } = await loadCatalogueDatabaseState(catalogueIds);
+      const aliasesByExerciseId = await liveAliasesByExerciseId();
 
       const now = Date.now();
       const groups: Model[][] = [];
@@ -207,6 +231,11 @@ export class AppExerciseCatalogueService {
           continue;
         }
 
+        const searchText = computeExerciseSearchText(
+          { id: exerciseId, name: existing?.name ?? entry.name },
+          aliasesByExerciseId.get(exerciseId) ?? []
+        );
+
         const operations: Model[] = [];
         if (!existing) {
           operations.push(
@@ -216,6 +245,7 @@ export class AppExerciseCatalogueService {
               exercise.description = entry.description;
               exercise.source = 'app';
               Object.assign(exercise, catalogueExerciseFields(entry));
+              exercise.searchText = searchText;
               exercise.createdAt = now;
               exercise.updatedAt = now;
               exercise.deletedAt = undefined;
@@ -223,7 +253,11 @@ export class AppExerciseCatalogueService {
           );
           report.exercisesCreated += 1;
         } else {
-          const changes = exerciseChanges(existing, entry);
+          const changes: CatalogueExerciseChanges = exerciseChanges(existing, entry);
+          if (existing.searchText !== searchText) {
+            changes.searchText = searchText;
+          }
+
           if (Object.keys(changes).length > 0) {
             operations.push(
               existing.prepareUpdate((exercise) => {
@@ -263,6 +297,7 @@ export class AppExerciseCatalogueService {
           if (retainedMuscleIds.has(muscleId)) {
             continue;
           }
+
           operations.push(
             database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
               link.exerciseId = exerciseId;

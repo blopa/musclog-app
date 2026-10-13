@@ -7,7 +7,6 @@
     "newPRs": "New PRs",
     "goHome": "Go Home",
     "youCrushedIt": "You Crushed It!",
-    "feedbackSubmitted": "Workout feedback submitted successfully.",
     "shareText": "I just crushed a workout!",
     "sharePersonalRecords_one": "🏆 {{count}} PR",
     "sharePersonalRecords_other": "🏆 {{count}} PRs",
@@ -19,6 +18,7 @@
     "gettingFeedback": "Getting feedback...",
     "completedMessage": "You have completed the {{workoutName}} workout",
     "completedSummary": "Workout completed: {{workoutName}}",
-    "caloriesBurned": "Calories Burned"
+    "caloriesBurned": "Calories Burned",
+    "workoutSaved": "Workout saved. Here is what changes next time."
   }
 }

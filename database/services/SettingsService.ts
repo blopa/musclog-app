@@ -1,15 +1,19 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { type HomeActionKey, MAX_HOME_ACTIONS } from '@/constants/homeActions';
+import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
+  ACTIVE_GYM_ID_SETTING_TYPE,
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
+  AUTO_START_REST_TIMER_SETTING_TYPE,
   BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
+  DEFAULT_REST_SECONDS_SETTING_TYPE,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   DUMP_LLM_REQUESTS_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
@@ -48,10 +52,12 @@ import {
   type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
+  parseWorkoutAutonomy,
   PROGRESSION_MODE_SETTING_TYPE,
   type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
+  REST_TIMER_HAPTICS_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
@@ -66,8 +72,10 @@ import {
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
+  WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
+  type WorkoutAutonomy,
   type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
@@ -76,6 +84,7 @@ import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { decryptDatabaseValue } from '@/utils/encryption';
+import { clampRestSeconds } from '@/utils/restTimer';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits } from '@/utils/units';
 
@@ -105,6 +114,7 @@ export class SettingsService {
     if (settings.length === 0) {
       return getDefaultUnits();
     }
+
     return settings[0].value === '1' ? 'imperial' : 'metric';
   }
 
@@ -800,6 +810,66 @@ export class SettingsService {
     await SettingsService.setStringSetting(PROGRESSION_MODE_SETTING_TYPE, mode);
   }
 
+  static async getWorkoutAutonomy(): Promise<WorkoutAutonomy> {
+    return parseWorkoutAutonomy(
+      await SettingsService.getStringSetting(WORKOUT_AUTONOMY_SETTING_TYPE, '')
+    );
+  }
+
+  static async setWorkoutAutonomy(value: WorkoutAutonomy) {
+    await SettingsService.setStringSetting(WORKOUT_AUTONOMY_SETTING_TYPE, value);
+  }
+
+  static async getAutoStartRestTimer(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(AUTO_START_REST_TIMER_SETTING_TYPE, true);
+  }
+
+  static async setAutoStartRestTimer(value: boolean) {
+    await SettingsService.setBooleanSetting(AUTO_START_REST_TIMER_SETTING_TYPE, value);
+  }
+
+  static async getRestTimerHaptics(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(REST_TIMER_HAPTICS_SETTING_TYPE, true);
+  }
+
+  static async setRestTimerHaptics(value: boolean) {
+    await SettingsService.setBooleanSetting(REST_TIMER_HAPTICS_SETTING_TYPE, value);
+  }
+
+  static async getDefaultRestSeconds(): Promise<number> {
+    return clampRestSeconds(
+      Number(
+        await SettingsService.getStringSetting(
+          DEFAULT_REST_SECONDS_SETTING_TYPE,
+          String(DEFAULT_REST_SECONDS)
+        )
+      )
+    );
+  }
+
+  static async setDefaultRestSeconds(seconds: number) {
+    await SettingsService.setStringSetting(
+      DEFAULT_REST_SECONDS_SETTING_TYPE,
+      String(clampRestSeconds(seconds))
+    );
+  }
+
+  /**
+   * The id of the gym profile the user is training in, or null for none.
+   */
+  static async getActiveGymId(): Promise<string | null> {
+    const id = await SettingsService.getStringSetting(ACTIVE_GYM_ID_SETTING_TYPE, '');
+    return id || null;
+  }
+
+  /**
+   * Select the gym profile to train in, or pass null for none. An empty string is stored for
+   * "none": the settings table has no delete-by-type, and `getActiveGymId` reads '' as null.
+   */
+  static async setActiveGymId(gymId: string | null) {
+    await SettingsService.setStringSetting(ACTIVE_GYM_ID_SETTING_TYPE, gymId ?? '');
+  }
+
   /**
    * Get which summary card to show on the home screen ('daily_summary' | 'weekly_streak').
    * Defaults to 'daily_summary'.
@@ -901,6 +971,45 @@ export class SettingsService {
 
   // --- Private helpers ---
 
+  static async getWorkoutView(): Promise<'inline' | 'guided'> {
+    const value = await this.getStringSetting('workout_view', 'guided');
+    return value === 'inline' ? 'inline' : 'guided';
+  }
+
+  static async setWorkoutView(value: 'inline' | 'guided'): Promise<void> {
+    await this.setStringSetting('workout_view', value);
+  }
+
+  static async getReviewWeekday(): Promise<number> {
+    const value = Number(await this.getStringSetting('review_weekday', '1'));
+    return Number.isInteger(value) && value >= 0 && value <= 6 ? value : 1;
+  }
+
+  static async getNotificationsWeeklyReview(): Promise<boolean> {
+    return this.getBooleanSetting('notifications_weekly_review', false);
+  }
+
+  static async setNotificationsWeeklyReview(value: boolean): Promise<void> {
+    await this.setBooleanSetting('notifications_weekly_review', value);
+  }
+
+  /** Whether the one-time Weekly Review welcome has been dismissed. Settings ride along in backups. */
+  static async getWeeklyReviewWelcomeSeen(): Promise<boolean> {
+    return this.getBooleanSetting('weekly_review_welcome_seen', false);
+  }
+
+  static async setWeeklyReviewWelcomeSeen(value: boolean): Promise<void> {
+    await this.setBooleanSetting('weekly_review_welcome_seen', value);
+  }
+
+  static async setReviewWeekday(value: number): Promise<void> {
+    if (!Number.isInteger(value) || value < 0 || value > 6) {
+      throw new Error('Invalid weekday');
+    }
+
+    await this.setStringSetting('review_weekday', String(value));
+  }
+
   private static async getStringSetting(type: string, defaultValue: string): Promise<string> {
     const settings = await database
       .get<Setting>('settings')
@@ -958,6 +1067,7 @@ export class SettingsService {
     } else if (slot === 2) {
       type = NAV_SLOT_2_SETTING_TYPE;
     }
+
     const value = await SettingsService.getStringSetting(type, defaults[slot]);
     return value as NavItemKey;
   }
@@ -972,6 +1082,7 @@ export class SettingsService {
     } else if (slot === 2) {
       type = NAV_SLOT_2_SETTING_TYPE;
     }
+
     await SettingsService.setStringSetting(type, item);
   }
 
@@ -991,6 +1102,7 @@ export class SettingsService {
     } else if (slotA === 2) {
       typeA = NAV_SLOT_2_SETTING_TYPE;
     }
+
     let typeB = NAV_SLOT_3_SETTING_TYPE;
     if (slotB === 1) {
       typeB = NAV_SLOT_1_SETTING_TYPE;
@@ -1058,11 +1170,13 @@ export class SettingsService {
     if (!raw) {
       return;
     }
+
     const decrypted = await decryptDatabaseValue(raw);
     if (decrypted) {
       // Non-empty decryption result → already encrypted, nothing to do.
       return;
     }
+
     // Decryption returned empty → value is legacy plaintext → encrypt and re-save.
     await SettingsService.setEncryptedStringSetting(type, raw);
   }
@@ -1076,6 +1190,7 @@ export class SettingsService {
     if (!raw) {
       return '';
     }
+
     const decrypted = await decryptDatabaseValue(raw);
     // If AES decryption produced a non-empty result, it was an encrypted value.
     // Otherwise fall back to the raw value (legacy plaintext stored before encryption was added).
@@ -1164,6 +1279,7 @@ export class SettingsService {
               }
             }
           }
+
           continue;
         }
 

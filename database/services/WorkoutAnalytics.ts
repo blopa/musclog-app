@@ -15,6 +15,7 @@ import {
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
 import { calculateEstimated1RMForSet, calculateSetVolume } from '@/utils/workoutCalculator';
+import { WARMUP_SET_TYPE } from '@/utils/workoutSetCompletion';
 
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
@@ -73,6 +74,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -118,6 +121,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -154,6 +159,7 @@ export class WorkoutAnalytics {
       if (!exerciseSets.has(exerciseId)) {
         exerciseSets.set(exerciseId, []);
       }
+
       exerciseSets.get(exerciseId)!.push(set);
     }
 
@@ -190,6 +196,7 @@ export class WorkoutAnalytics {
                 .get<WorkoutLog>('workout_logs')
                 .query(
                   Q.where('completed_at', Q.notEq(null)),
+                  Q.where('started_at', Q.lt(workoutLog.startedAt)),
                   Q.where('id', Q.oneOf(uniqueWorkoutIds))
                 )
                 .fetch()
@@ -333,6 +340,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -453,6 +462,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('reps', 1),
         Q.where('weight', Q.gte(targetWeight)),
         Q.where('deleted_at', Q.eq(null))
@@ -534,6 +545,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -549,9 +562,11 @@ export class WorkoutAnalytics {
       if (!workoutId) {
         continue;
       }
+
       if (!setsByWorkout.has(workoutId)) {
         setsByWorkout.set(workoutId, []);
       }
+
       setsByWorkout.get(workoutId)!.push(set);
     }
 
@@ -561,9 +576,11 @@ export class WorkoutAnalytics {
         if ((current.setOrder ?? 0) < (earliest.setOrder ?? 0)) {
           return current;
         }
+
         if ((current.setOrder ?? 0) > (earliest.setOrder ?? 0)) {
           return earliest;
         }
+
         return (current.createdAt ?? 0) < (earliest.createdAt ?? 0) ? current : earliest;
       });
 
@@ -683,6 +700,8 @@ export class WorkoutAnalytics {
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
         Q.where('completion_status', 'performed'),
+        // Warm-ups are real work but not working sets: see `isWorkingSet`.
+        Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -698,6 +717,7 @@ export class WorkoutAnalytics {
     if (workoutLogIds.length === 0) {
       return { value: 0, unit: 'perWeek' };
     }
+
     const rangeStartDayMs = localDayKeyPlusCalendarDaysFromNow(-weeks * 7);
 
     const completedLogs = await database
@@ -716,6 +736,7 @@ export class WorkoutAnalytics {
       if (!uniqueWorkoutsPerWeek.has(weekIndex)) {
         uniqueWorkoutsPerWeek.set(weekIndex, new Set());
       }
+
       uniqueWorkoutsPerWeek.get(weekIndex)!.add(log.id);
     }
 

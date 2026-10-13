@@ -1,18 +1,58 @@
 {
   "replaceExercise": {
     "title": "Replace Exercise",
-    "cancel": "Cancel",
     "replace": "Replace",
     "searchPlaceholder": "Search exercises...",
-    "muscleGroups": {
-      "all": "All",
-      "chest": "Chest",
-      "shoulders": "Shoulders",
-      "triceps": "Triceps"
-    },
     "selectExercise": "Select Exercise",
     "loadMore": "Load More",
     "loadingMore": "Loading…",
-    "noExercisesMatch": "No exercises match"
+    "noExercisesMatch": "No exercises match",
+    "families": {
+      "all": "All",
+      "torso": "Upper body",
+      "arms": "Arms",
+      "legs": "Legs",
+      "core": "Core",
+      "other": "Other"
+    },
+    "suggested": "Suggested for you",
+    "disliked": "Disliked",
+    "hiddenHint": "Exercises you avoid, or that your gym can't supply, are hidden.",
+    "back": "Back",
+    "swapped": "Swapped {{from}} for {{to}}",
+    "reason": {
+      "title": "Why swap?",
+      "subtitle": "Replacing with {{name}}",
+      "question": "What's the reason?",
+      "options": {
+        "equipment_unavailable": "Equipment unavailable",
+        "pain": "Pain or discomfort",
+        "too_hard": "Too difficult",
+        "too_easy": "Too easy",
+        "dislike": "Don't like it",
+        "machine_occupied": "Machine occupied",
+        "just_today": "Just for today"
+      },
+      "descriptions": {
+        "equipment_unavailable": "The machine or weights aren't there",
+        "pain": "Something hurts or feels wrong",
+        "too_hard": "Too heavy or too demanding",
+        "too_easy": "Not challenging enough",
+        "dislike": "Just not for me",
+        "machine_occupied": "Someone else is using it",
+        "just_today": "Only this session"
+      },
+      "remember": {
+        "injury": "Stop suggesting {{name}} for now",
+        "dislike": "Don't suggest {{name}} again"
+      },
+      "rememberHint": {
+        "injury": "It stays out of swaps and generated workouts until it heals.",
+        "dislike": "It will be ranked last, never the first suggestion."
+      },
+      "removeEquipment": "{{equipment}} isn't available at {{gym}}",
+      "removeEquipmentHint": "Remove it from this gym so exercises needing it aren't suggested."
+    },
+    "addReason": "Add reason"
   }
 }

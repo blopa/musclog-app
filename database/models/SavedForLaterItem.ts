@@ -81,6 +81,7 @@ export default class SavedForLaterItem extends Model {
         // Fallback
       }
     }
+
     return this.amount;
   }
 

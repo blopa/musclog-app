@@ -23,7 +23,9 @@ import {
 } from '@/utils/activeWorkoutStorage';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
-import type { SetAdjustment } from '@/utils/setAdjustment';
+import { parseStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
+import { writeSetEffort } from '@/utils/setEffort';
+import { parseSetPrescription } from '@/utils/setPrescription';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
@@ -31,6 +33,7 @@ import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalcu
 import {
   assertValidWorkoutSetDifficultyLevel,
   isPerformedWorkoutSet,
+  isPlannedWorkoutSet,
   isWorkoutSetCompletionStatus,
   type WorkoutSetCompletionStatus,
 } from '@/utils/workoutSetCompletion';
@@ -44,8 +47,11 @@ import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
+import { WorkoutProgressionService } from './WorkoutProgressionService';
 
 export type EnrichedWorkoutLogSet = WorkoutLogSetSnapshot & {
+  supersetSlotId?: string;
+  progressionJson?: string;
   exerciseId: string;
   groupId?: string;
   notes?: string;
@@ -60,7 +66,8 @@ type WorkoutSetUpdateFields = {
   weight?: number;
   partials?: number;
   restTimeAfter?: number;
-  repsInReserve?: number;
+  /** A number rates the set's effort; `null` clears the rating (unrated). */
+  repsInReserve?: number | null;
   difficultyLevel?: number | null;
   completionStatus?: WorkoutSetCompletionStatus;
   setType?: string;
@@ -163,6 +170,15 @@ export class WorkoutService {
 
       const workoutLog = await template.startWorkout(planId);
 
+      // Progress the numbers from the last session when the user asked for suggestions. Best
+      // effort: a failure here must never stop a workout from starting — it just keeps the plan's
+      // own numbers.
+      try {
+        await WorkoutProgressionService.applyStartProgression(workoutLog.id);
+      } catch (progressionError) {
+        handleError(progressionError, 'WorkoutProgressionService.applyStartProgression');
+      }
+
       // Store the active workout log ID in AsyncStorage
       await setActiveWorkoutLogId(workoutLog.id);
 
@@ -185,6 +201,7 @@ export class WorkoutService {
       if (error instanceof Error) {
         throw new Error(`Failed to start workout: ${error.message}`);
       }
+
       throw new Error('Failed to start workout: Unknown error');
     }
   }
@@ -265,6 +282,7 @@ export class WorkoutService {
       if (error instanceof Error) {
         throw new Error(`Failed to start free workout: ${error.message}`);
       }
+
       throw new Error('Failed to start free workout: Unknown error');
     }
   }
@@ -597,6 +615,7 @@ export class WorkoutService {
 
           byExercise.get(eid)!.push(set);
         }
+
         const segmentItems = Array.from(byExercise.entries()).map(([exerciseId, exerciseSets]) => {
           const exercise = exerciseMap.get(exerciseId);
           const totalReps = exerciseSets.reduce((sum, s) => sum + (s.reps ?? 0), 0);
@@ -652,16 +671,17 @@ export class WorkoutService {
       if (error instanceof Error) {
         throw new Error(`Failed to complete workout: ${error.message}`);
       }
+
       throw new Error('Failed to complete workout: Unknown error');
     }
   }
 
   /**
-   * Update workout log feedback (exhaustion level and workout score). Call after user submits session feedback.
+   * Update workout log feedback (exhaustion level, workout score and the session note). Call after user submits session feedback.
    */
   static async updateWorkoutLogFeedback(
     workoutLogId: string,
-    feedback: { exhaustionLevel?: number; workoutScore?: number }
+    feedback: { exhaustionLevel?: number; workoutScore?: number; notes?: string | null }
   ): Promise<void> {
     const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
     await workoutLog.updateFeedback(feedback);
@@ -703,19 +723,34 @@ export class WorkoutService {
    * Shared by getWorkoutWithDetails and reactive observable pipelines.
    */
   static buildEnrichedSetsFromRecords(
-    logExercises: { id: string; exerciseId: string; groupId?: string; notes?: string }[],
+    logExercises: {
+      id: string;
+      exerciseId: string;
+      supersetSlotId?: string;
+      groupId?: string;
+      notes?: string;
+      progressionJson?: string;
+    }[],
     rawSets: WorkoutLogSet[]
   ): EnrichedWorkoutLogSet[] {
     const logExerciseMap = new Map<
       string,
-      { exerciseId: string; groupId?: string; notes?: string }
+      {
+        exerciseId: string;
+        supersetSlotId?: string;
+        groupId?: string;
+        notes?: string;
+        progressionJson?: string;
+      }
     >();
 
     logExercises.forEach((le) => {
       logExerciseMap.set(le.id, {
         exerciseId: le.exerciseId,
+        supersetSlotId: le.supersetSlotId,
         groupId: le.groupId,
         notes: le.notes,
+        progressionJson: le.progressionJson,
       });
     });
 
@@ -727,8 +762,16 @@ export class WorkoutService {
         ...snapshot,
         isSkipped: snapshot.completionStatus === 'skipped',
         exerciseId: logExercise?.exerciseId ?? '',
+        supersetSlotId: logExercise?.supersetSlotId,
         groupId: logExercise?.groupId,
         notes: logExercise?.notes,
+        progressionJson: logExercise?.progressionJson,
+        // Only a set still to be done carries its start explanation; once performed it is history.
+        adjustment:
+          (isPlannedWorkoutSet(snapshot)
+            ? (parseSetPrescription(snapshot.prescriptionJson)?.intraAdjustment ??
+              parseStartAdjustment(snapshot.adjustmentJson))
+            : null) ?? undefined,
       };
     });
   }
@@ -788,8 +831,12 @@ export class WorkoutService {
         logExercises.map((le) => ({
           id: le.id,
           exerciseId: le.exerciseId,
+          supersetSlotId: le.supersetSlotId,
           groupId: le.groupId,
           notes: le.notes,
+          // The session's rule copy: without it every refresh after a set read the exercise as
+          // automatic and dropped the rule's badge and between-sets behaviour.
+          progressionJson: le.progressionJson,
         })),
         rawSets
       );
@@ -856,6 +903,7 @@ export class WorkoutService {
           if (existingUpdateIds.has(update.setId)) {
             throw new Error(`Workout set ${update.setId} appears more than once`);
           }
+
           existingUpdateIds.add(update.setId);
         } else if (update.groupId !== undefined) {
           const previousGroupId = desiredGroupIdByExerciseId.get(update.exerciseId);
@@ -865,6 +913,7 @@ export class WorkoutService {
           ) {
             throw new Error(`Conflicting group ids for exercise ${update.exerciseId}`);
           }
+
           desiredGroupIdByExerciseId.set(update.exerciseId, update.groupId);
         }
       }
@@ -909,6 +958,7 @@ export class WorkoutService {
           if (!set) {
             throw new Error(`Workout set ${setId} not found`);
           }
+
           if (!logExerciseIds.has(set.logExerciseId)) {
             throw new Error(`Workout set ${setId} does not belong to workout ${workoutLogId}`);
           }
@@ -972,7 +1022,7 @@ export class WorkoutService {
                 record.weight = update.weight ?? 0;
                 record.partials = update.partials ?? 0;
                 record.restTimeAfter = update.restTimeAfter ?? 0;
-                record.repsInReserve = update.repsInReserve ?? 0;
+                writeSetEffort(record, update.repsInReserve);
                 record.difficultyLevel = update.difficultyLevel ?? undefined;
                 record.completionStatus = update.completionStatus ?? 'performed';
                 record.setType = update.setType ?? 'normal';
@@ -1004,7 +1054,7 @@ export class WorkoutService {
               }
 
               if (update.repsInReserve !== undefined) {
-                record.repsInReserve = update.repsInReserve;
+                writeSetEffort(record, update.repsInReserve);
               }
 
               if (update.difficultyLevel !== undefined) {
@@ -1276,6 +1326,7 @@ export class WorkoutService {
       if (!exerciseGrouping.has(exerciseId)) {
         exerciseGrouping.set(exerciseId, []);
       }
+
       exerciseGrouping.get(exerciseId)!.push(set.setOrder ?? 0);
     });
 
@@ -1304,17 +1355,19 @@ export class WorkoutService {
         .query(Q.where('workout_log_id', id), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
+      const sets = await fetchByIds<WorkoutLogSet>(
+        'workout_log_sets',
+        'log_exercise_id',
+        logExercises.map((logExercise) => logExercise.id),
+        Q.where('deleted_at', Q.eq(null))
+      );
+
+      for (const set of sets) {
+        deletedSetIds.push(set.id);
+        await writer.callWriter(() => set.markAsDeleted());
+      }
+
       for (const logExercise of logExercises) {
-        const sets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
-          .query(Q.where('log_exercise_id', logExercise.id), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
-
-        for (const set of sets) {
-          deletedSetIds.push(set.id);
-          await writer.callWriter(() => set.markAsDeleted());
-        }
-
         await writer.callWriter(() => logExercise.markAsDeleted());
       }
     });
@@ -1346,7 +1399,26 @@ export class WorkoutService {
         .fetch();
 
       // Create new workout log with "(Copy)" suffix
-      const newLog = await database.get<WorkoutLog>('workout_logs').create((log) => {
+      const operations: Model[] = [];
+      const originalSets = await fetchByIds<WorkoutLogSet>(
+        'workout_log_sets',
+        'log_exercise_id',
+        originalLogExercises.map((row) => row.id),
+        Q.where('deleted_at', Q.eq(null))
+      );
+      // fetchByIds chunks its queries, so order across the whole result here.
+      originalSets.sort((a, b) => a.setOrder - b.setOrder);
+      const setsByLogExerciseId = new Map<string, WorkoutLogSet[]>();
+      for (const originalSet of originalSets) {
+        const sets = setsByLogExerciseId.get(originalSet.logExerciseId);
+        if (sets) {
+          sets.push(originalSet);
+        } else {
+          setsByLogExerciseId.set(originalSet.logExerciseId, [originalSet]);
+        }
+      }
+
+      const newLog = database.get<WorkoutLog>('workout_logs').prepareCreate((log) => {
         log.templateId = originalLog.templateId;
         log.workoutName = `${originalLog.workoutName} (Copy)`;
         log.type = originalLog.type;
@@ -1361,48 +1433,46 @@ export class WorkoutService {
         log.updatedAt = now;
       });
 
+      operations.push(newLog);
       // Copy all log exercises and their sets
       for (const originalLogExercise of originalLogExercises) {
-        const newLogExercise = await database
+        const newLogExercise = database
           .get<WorkoutLogExercise>('workout_log_exercises')
-          .create((le) => {
+          .prepareCreate((le) => {
             le.workoutLogId = newLog.id;
             le.exerciseId = originalLogExercise.exerciseId;
             le.exerciseOrder = originalLogExercise.exerciseOrder;
             le.groupId = originalLogExercise.groupId;
             le.notes = originalLogExercise.notes;
+            le.templateExerciseId = originalLogExercise.templateExerciseId;
+            le.progressionJson = originalLogExercise.progressionJson;
             le.createdAt = now;
             le.updatedAt = now;
           });
 
-        // Get and copy all sets for this log exercise
-        const originalSets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
-          .query(
-            Q.where('log_exercise_id', originalLogExercise.id),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('set_order', Q.asc)
-          )
-          .fetch();
+        operations.push(newLogExercise);
 
-        for (const originalSet of originalSets) {
-          await database.get<WorkoutLogSet>('workout_log_sets').create((set) => {
-            set.logExerciseId = newLogExercise.id;
-            set.setOrder = originalSet.setOrder;
-            set.reps = 0; // Reset actual values
-            set.weight = 0;
-            set.partials = 0;
-            set.restTimeAfter = originalSet.restTimeAfter;
-            set.repsInReserve = 0;
-            set.difficultyLevel = undefined;
-            set.completionStatus = 'planned';
-            set.setType = originalSet.setType ?? 'normal';
-            set.createdAt = now;
-            set.updatedAt = now;
-          });
+        for (const originalSet of setsByLogExerciseId.get(originalLogExercise.id) ?? []) {
+          operations.push(
+            database.get<WorkoutLogSet>('workout_log_sets').prepareCreate((set) => {
+              set.logExerciseId = newLogExercise.id;
+              set.setOrder = originalSet.setOrder;
+              set.reps = originalSet.reps;
+              set.weight = originalSet.weight;
+              set.partials = 0;
+              set.restTimeAfter = originalSet.restTimeAfter;
+              writeSetEffort(set, null);
+              set.difficultyLevel = undefined;
+              set.completionStatus = 'planned';
+              set.setType = originalSet.setType ?? 'normal';
+              set.createdAt = now;
+              set.updatedAt = now;
+            })
+          );
         }
       }
 
+      await database.batch(...operations);
       return newLog;
     });
   }

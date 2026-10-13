@@ -5,8 +5,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import { HelpAndFeedbackCard } from '@/components/cards/HelpAndFeedbackCard';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
+import { WhatsNewCard } from '@/components/cards/WhatsNewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
@@ -15,6 +17,7 @@ import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { ManageBleDevicesModal } from '@/components/modals/ManageBleDevicesModal';
 import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
 import { VisualSettingsModal } from '@/components/modals/VisualSettingsModal';
+import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
@@ -40,6 +43,7 @@ export default function SettingsScreen() {
   const [isVisualSettingsVisible, setVisualSettingsVisible] = useState(false);
   const [isNotificationsSettingsVisible, setNotificationsSettingsVisible] = useState(false);
   const [isBleDevicesVisible, setBleDevicesVisible] = useState(false);
+  const [isWorkoutSettingsVisible, setWorkoutSettingsVisible] = useState(false);
 
   const handleGoogleGeminiApiKeyChange = async (value: string) => {
     await SettingsService.setGoogleGeminiApiKey(value);
@@ -197,6 +201,26 @@ export default function SettingsScreen() {
           <SettingsCard
             icon={
               <MaterialIcons
+                name="fitness-center"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('settings.workoutSettings.title')}
+            subtitle={t('settings.workoutSettings.subtitle')}
+            onPress={() => setWorkoutSettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
+
+          <SettingsCard
+            icon={
+              <MaterialIcons
                 name="smart-toy"
                 size={theme.iconSize['2xl']}
                 color={theme.colors.accent.primary}
@@ -254,6 +278,9 @@ export default function SettingsScreen() {
             }
           />
 
+          <WhatsNewCard />
+          <HelpAndFeedbackCard />
+
           <LegalLinksCard />
           <View style={{ height: theme.size['8'] }} />
         </AnimatedContent>
@@ -292,6 +319,10 @@ export default function SettingsScreen() {
       <VisualSettingsModal
         visible={isVisualSettingsVisible}
         onClose={() => setVisualSettingsVisible(false)}
+      />
+      <WorkoutSettingsModal
+        visible={isWorkoutSettingsVisible}
+        onClose={() => setWorkoutSettingsVisible(false)}
       />
       <NotificationsSettingsModal
         visible={isNotificationsSettingsVisible}

@@ -10,9 +10,15 @@ import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/Op
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
 import { WeekdayPicker } from '@/components/theme/WeekdayPicker';
+import {
+  ProgressionRuleSheet,
+  progressionRuleSummary,
+} from '@/components/workout/ProgressionRuleEditor';
 import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import type { WorkoutType } from '@/constants/workoutTypes';
 import { WORKOUT_TYPES } from '@/constants/workoutTypes';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutForm } from '@/hooks/useWorkoutForm';
@@ -35,16 +41,20 @@ export default function CreateWorkoutModal({
   templateId,
 }: CreateWorkoutModalProps) {
   const theme = useTheme();
+  const { unitsFor } = useExerciseUserSettings();
   const { t } = useTranslation();
   const { isAiConfigured } = useSettings();
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
+  const [ruleExerciseId, setRuleExerciseId] = useState<string | null>(null);
+  const { formatInteger } = useFormatAppNumber();
 
   useEffect(() => {
     if (!visible) {
       const reset = () => {
         setAddExerciseVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -62,6 +72,8 @@ export default function CreateWorkoutModal({
     isSaving,
     selectedExercises,
     exercises,
+    exerciseMetadata,
+    setExerciseMetadata,
     isEditMode,
     setWorkoutTitle,
     setDescription,
@@ -78,6 +90,9 @@ export default function CreateWorkoutModal({
     handleDeleteExercises,
     showConfetti,
   } = useWorkoutForm({ templateId, onSaveSuccess: onClose });
+  const ruleExercise = ruleExerciseId
+    ? exercises.find((exercise) => exercise.id === ruleExerciseId)
+    : undefined;
 
   // Membership is written by this form's own Save, so confirming the picker only closes it.
   const planAssignment = usePlanAssignment({
@@ -517,13 +532,25 @@ export default function CreateWorkoutModal({
               <>
                 <OptionsMultiSelector
                   title={t('createWorkout.exercisesInWorkout')}
-                  options={exercises}
+                  options={exercises.map((exercise) => ({
+                    ...exercise,
+                    // The row names its rule, and tapping it opens the rule sheet.
+                    description: `${exercise.description.replace(/\s*@\s*$/, '')} · ${progressionRuleSummary(
+                      t,
+                      exerciseMetadata.get(exercise.id)?.progression,
+                      (n) => formatInteger(n, { useGrouping: false })
+                    )}`,
+                  }))}
                   selectedIds={selectedExercises}
                   onChange={((ids: any) => setSelectedExercises(ids)) as any}
                   onOrderChange={handleExerciseOrderChange as any}
                   onDelete={handleDeleteExercises as any}
+                  onOptionPress={(id) => setRuleExerciseId(String(id))}
                   isEditable={true}
                 />
+                <Text className="mt-2 text-xs text-text-tertiary">
+                  {t('createWorkout.ruleTapHint')}
+                </Text>
                 <View style={{ marginTop: theme.spacing.margin.md }}>
                   <DashedButton
                     label={t('workouts.addExercise.title')}
@@ -559,6 +586,26 @@ export default function CreateWorkoutModal({
         />
       ) : null}
       {planAssignment.modals}
+      {ruleExercise ? (
+        <ProgressionRuleSheet
+          exerciseName={ruleExercise.label}
+          units={unitsFor(ruleExercise.id)}
+          plannedWeightKg={exerciseMetadata.get(ruleExercise.id)?.weight}
+          value={exerciseMetadata.get(ruleExercise.id)?.progression}
+          onChange={(progression) =>
+            setExerciseMetadata((previous) => {
+              const next = new Map(previous);
+              const existing = next.get(ruleExercise.id);
+              if (existing) {
+                next.set(ruleExercise.id, { ...existing, progression });
+              }
+
+              return next;
+            })
+          }
+          onClose={() => setRuleExerciseId(null)}
+        />
+      ) : null}
     </FullScreenModal>
   );
 }

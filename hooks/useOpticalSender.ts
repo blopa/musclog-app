@@ -228,6 +228,7 @@ export function useOpticalSender(options: {
           if (!alive()) {
             return;
           }
+
           calibrationRef.current = calibration;
         }
 

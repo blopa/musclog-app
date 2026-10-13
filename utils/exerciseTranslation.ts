@@ -15,6 +15,7 @@ export function getMuscleGroupTranslationKey(muscleGroup?: string | null): strin
   if (normalized.includes('chest')) {
     return 'workout.muscleGroups.chest';
   }
+
   if (
     normalized.includes('leg') ||
     normalized.includes('quad') ||
@@ -25,6 +26,7 @@ export function getMuscleGroupTranslationKey(muscleGroup?: string | null): strin
   ) {
     return 'workout.muscleGroups.legs';
   }
+
   if (
     normalized.includes('arm') ||
     normalized.includes('bicep') ||
@@ -34,6 +36,7 @@ export function getMuscleGroupTranslationKey(muscleGroup?: string | null): strin
   ) {
     return 'workout.muscleGroups.arms';
   }
+
   if (normalized.includes('back') || normalized.includes('lat')) {
     return 'workout.muscleGroups.back';
   }

@@ -300,6 +300,7 @@ export function AreaChart({
                     nearest = d;
                   }
                 }
+
                 const label = tooltipFormatter
                   ? tooltipFormatter(nearest)
                   : series

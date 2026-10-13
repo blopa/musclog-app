@@ -79,6 +79,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
         setShowVideoInput(false);
         setIsCreating(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -88,6 +89,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       showSnackbar('error', t('exercises.createExercise.nameRequired'));
       return;
     }
+
     if (!primaryMuscle) {
       showSnackbar('error', t('exercises.createExercise.primaryMuscleRequired'));
       return;

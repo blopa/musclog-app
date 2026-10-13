@@ -69,14 +69,17 @@ export async function runDlogSweep(
     for (let i = k; i < end; i++) {
       values[n++] = dlog(2 * i);
     }
+
     onProgress?.((n / values.length) * 0.5);
     await yieldToUi();
   }
+
   for (let i = 64; i < rMax; i += CHUNK) {
     const end = Math.min(i + CHUNK, rMax);
     for (let j = i; j < end; j++) {
       values[n++] = dlog(j / 64);
     }
+
     onProgress?.((n / values.length) * 0.5 + 0.5);
     await yieldToUi();
   }
@@ -120,8 +123,10 @@ function benchTexts(chars: number, count: number): string[] {
     for (let j = 0; j < chars; j++) {
       text += BASE44_ALPHABET[(i * 7 + j * 17 + (j >> 5) * 3) % BASE44_ALPHABET.length];
     }
+
     texts.push(text);
   }
+
   return texts;
 }
 
@@ -146,6 +151,7 @@ export async function benchQrEncode(
     const matrix = encodeQrAlphanumericFixed(texts[i], qrVersion, 'L');
     rasterizeQr(matrix.moduleCount, matrix.modules, quietZone);
   }
+
   await yieldToUi();
 
   const encodeTimes: number[] = [];
@@ -210,6 +216,7 @@ export function suggestedFpsForFrameCost(frameMs: number): number {
   if (frameMs <= 0) {
     return OPTICAL_MAX_DISPLAY_FPS;
   }
+
   return Math.max(1, Math.min(OPTICAL_MAX_DISPLAY_FPS, Math.floor(1000 / (frameMs * 1.15))));
 }
 

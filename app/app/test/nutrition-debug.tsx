@@ -35,6 +35,7 @@ function inclusiveDayCount(start: Date, end: Date): number {
   if (endMs < startMs) {
     return 0;
   }
+
   return Math.round((endMs - startMs) / 86_400_000) + 1;
 }
 

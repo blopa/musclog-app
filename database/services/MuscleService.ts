@@ -209,6 +209,7 @@ export class MuscleService {
       if (!muscle) {
         continue;
       }
+
       const list = result.get(link.exerciseId) ?? [];
       list.push(muscle);
       result.set(link.exerciseId, list);

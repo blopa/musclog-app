@@ -2,15 +2,12 @@ import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { database } from '@/database';
-import Exercise from '@/database/models/Exercise';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
-import { UserMetricService } from '@/database/services/UserMetricService';
-import { UserService } from '@/database/services/UserService';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
-import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
+import type { ProjectionResult } from '@/utils/exerciseGoalProjection';
 
 interface UseExerciseGoalProgressResult {
   projection: ProjectionResult | null;
@@ -41,6 +38,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     const syncBaseline = () => {
       setCurrentBaseline1rm(goal.baseline1rm ?? null);
     };
+
     syncBaseline();
   }, [goal.id, goal.baseline1rm]);
 
@@ -49,32 +47,15 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
 
     try {
       if (goal.goalType === '1rm' && goal.exerciseId) {
-        const goalCreatedAt = goal.createdAt;
-        const [filteredData, performed1RMDate, recentAverage, bw, exercise, user] =
-          await Promise.all([
-            WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {
-              startDate: goalCreatedAt,
-              endDate: Date.now(),
-            }),
-            goal.targetWeight != null
-              ? WorkoutAnalytics.getPerformed1RMDate(
-                  goal.exerciseId,
-                  goal.targetWeight,
-                  goalCreatedAt
-                )
-              : Promise.resolve(null),
-            WorkoutAnalytics.getRecentFirstSetAverage1RM(goal.exerciseId),
-            UserMetricService.getUserBodyWeightKgForVolume(),
-            database.get<Exercise>('exercises').find(goal.exerciseId),
-            UserService.getCurrentUser(),
-          ]);
-
-        setDataPoints(filteredData);
-        setHasPerformed1RMDate(performed1RMDate);
-        setRecentAverage1RM(recentAverage?.average1RM ?? null);
-        setBodyWeight(bw);
-        setLoadMultiplier(exercise.loadMultiplier ?? 1.0);
-        setUserGender(user?.gender ?? 'other');
+        const inputs = await ExerciseGoalService.load1rmGoalInputs(goal);
+        if (inputs) {
+          setDataPoints(inputs.dataPoints);
+          setHasPerformed1RMDate(inputs.hasPerformed1RMDate);
+          setRecentAverage1RM(inputs.recentAverage1RM);
+          setBodyWeight(inputs.bodyWeight);
+          setLoadMultiplier(inputs.loadMultiplier);
+          setUserGender(inputs.userGender);
+        }
       } else if (goal.goalType === 'consistency') {
         const count = await WorkoutService.getRollingWeeklyCompletedWorkoutCount();
         setSessionsThisWeek(count);
@@ -84,13 +65,14 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     } finally {
       setIsLoading(false);
     }
-  }, [goal.exerciseId, goal.goalType, goal.createdAt, goal.targetWeight]);
+  }, [goal]);
 
   // Initial load
   useEffect(() => {
     const run = () => {
       void loadData();
     };
+
     run();
   }, [loadData]);
 
@@ -109,6 +91,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
           if (debounceTimer) {
             clearTimeout(debounceTimer);
           }
+
           debounceTimer = setTimeout(() => {
             loadData();
           }, 500);
@@ -125,6 +108,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
           if (debounceTimer) {
             clearTimeout(debounceTimer);
           }
+
           debounceTimer = setTimeout(() => {
             loadData();
           }, 500);
@@ -137,6 +121,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
       if (subscription) {
         subscription.unsubscribe();
       }
+
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
@@ -144,34 +129,21 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   }, [goal.exerciseId, goal.goalType, loadData]);
 
   const projection = useMemo<ProjectionResult | null>(() => {
-    if (goal.goalType !== '1rm') {
-      return null;
-    }
-    if (goal.targetWeight === null) {
-      return null;
-    }
-
-    const effectiveBaseline =
-      currentBaseline1rm ?? (dataPoints.length > 0 ? dataPoints[0].estimated1RM : null);
-
-    if (effectiveBaseline === null) {
-      return null;
-    }
-
-    return projectGoal({
-      dataPoints,
-      baseline1rm: effectiveBaseline,
-      targetWeight: goal.targetWeight,
-      bodyWeight,
-      loadMultiplier,
-      userGender,
-      hasPerformed1RMDate,
-      currentEstimated1RM: recentAverage1RM ?? undefined,
-    });
+    return ExerciseGoalService.project1rmGoal(
+      goal,
+      {
+        dataPoints,
+        hasPerformed1RMDate,
+        recentAverage1RM,
+        bodyWeight,
+        loadMultiplier,
+        userGender,
+      },
+      currentBaseline1rm
+    );
   }, [
     dataPoints,
-    goal.goalType,
-    goal.targetWeight,
+    goal,
     currentBaseline1rm,
     bodyWeight,
     loadMultiplier,
@@ -184,6 +156,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     if (goal.goalType !== '1rm' || !goal.exerciseId) {
       return;
     }
+
     setIsLoading(true);
     try {
       const recentAverage = await WorkoutAnalytics.getRecentFirstSetAverage1RM(goal.exerciseId);
@@ -191,6 +164,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
         await ExerciseGoalService.updateBaseline1rm(goal.id, recentAverage.average1RM);
         setCurrentBaseline1rm(recentAverage.average1RM);
       }
+
       await loadData();
     } catch (err) {
       console.error('Error recalculating baseline:', err);

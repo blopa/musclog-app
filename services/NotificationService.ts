@@ -5,19 +5,22 @@ import { Platform } from 'react-native';
 import { database } from '@/database';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
+import type WeeklyReview from '@/database/models/WeeklyReview';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { MenstrualService } from '@/database/services/MenstrualService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
-import { getTheme } from '@/theme';
+import { darkTheme } from '@/theme';
 import {
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
 import { toExpoWeekday } from '@/utils/weekdays';
+import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
 
 export class NotificationService {
   private static isConfigured = false;
@@ -26,8 +29,6 @@ export class NotificationService {
     if (this.isConfigured || Platform.OS === 'web') {
       return;
     }
-
-    const theme = await getTheme();
 
     Notifications.setNotificationHandler({
       handleNotification: async (notification) => {
@@ -43,13 +44,14 @@ export class NotificationService {
     });
 
     if (Platform.OS === 'android') {
-      // Use dark theme colors for notification channels as per requirements.
-      // this will not dynamically update if the theme is changed.
+      // Always the dark theme's color: Android fixes a channel's lightColor at creation, so
+      // it can never follow the theme, and reading the preference here would touch the
+      // database before it is ready (configure() runs ahead of waitForDbReady()).
       await Notifications.setNotificationChannelAsync('default', {
         name: i18n.t('notifications.channels.default'),
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: theme.colors.status.error,
+        lightColor: darkTheme.colors.status.error,
       });
 
       await Notifications.setNotificationChannelAsync('workout-active', {
@@ -372,6 +374,8 @@ export class NotificationService {
 
     const isNotificationsEnabled = await SettingsService.getNotifications();
 
+    await this.scheduleWeeklyReviewNotification();
+
     // Clear existing check-in notifications
     const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
     for (const notification of scheduledNotifications) {
@@ -398,21 +402,22 @@ export class NotificationService {
       )
       .fetch();
 
+    const currentGoal = await NutritionGoalService.getCurrent();
+    if (currentGoal?.targetMode === 'weekly') {
+      return;
+    }
+
     for (const checkin of checkins) {
+      if (currentGoal && checkin.nutritionGoalId !== currentGoal.id) {
+        continue;
+      }
+
       const date = new Date(checkin.checkinDate);
       // Set to 8 AM local time on the check-in day
       date.setHours(8, 0, 0, 0);
 
       if (date.getTime() <= Date.now()) {
-        // If it's already past 8 AM on the day or the day has passed, show immediately
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: i18n.t('notifications.types.nutritionCheckin.title'),
-            body: i18n.t('notifications.types.nutritionCheckin.body'),
-            data: { type: 'nutrition-checkin', checkinId: checkin.id },
-          },
-          trigger: null,
-        });
+        continue;
       } else {
         await Notifications.scheduleNotificationAsync({
           content: {
@@ -427,6 +432,66 @@ export class NotificationService {
         });
       }
     }
+  }
+
+  static async scheduleWeeklyReviewNotification(): Promise<void> {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const [enabled, allowed, weekday, scheduled, goal, intuitive] = await Promise.all([
+      SettingsService.getNotifications(),
+      SettingsService.getNotificationsWeeklyReview(),
+      SettingsService.getReviewWeekday(),
+      Notifications.getAllScheduledNotificationsAsync(),
+      NutritionGoalService.getCurrent(),
+      SettingsService.getIntuitiveEatingMode(),
+    ]);
+    const period = weeklyReviewPeriod(new Date(), weekday);
+    const reviews = await database
+      .get<WeeklyReview>('weekly_reviews')
+      .query(Q.where('period_end', period.end), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    const reviewed = reviews.some(
+      (row) =>
+        (row.nutritionGoalId ?? null) === (goal?.id ?? null) &&
+        row.trainingReviewedAt &&
+        (!goal || intuitive || row.nutritionReviewedAt)
+    );
+    let date = new Date(reviewed ? period.next : period.end);
+    date.setHours(8, 0, 0, 0);
+    if (date.getTime() <= Date.now()) {
+      date = new Date(period.next);
+      date.setHours(8, 0, 0, 0);
+    }
+
+    const identifier = `weekly-review-${localDayStartMs(date)}`;
+    for (const notification of scheduled) {
+      if (
+        notification.content.data?.type === 'weekly-review' &&
+        (!enabled || !allowed || notification.identifier !== identifier)
+      ) {
+        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+      }
+    }
+
+    if (
+      !enabled ||
+      !allowed ||
+      scheduled.some((notification) => notification.identifier === identifier)
+    ) {
+      return;
+    }
+
+    await Notifications.scheduleNotificationAsync({
+      identifier,
+      content: {
+        title: i18n.t('weeklyReview.title'),
+        body: i18n.t('weeklyReview.reminderBody'),
+        data: { type: 'weekly-review', reviewDay: localDayStartMs(date) },
+      },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
+    });
   }
 
   // Menstrual Cycle Notifications

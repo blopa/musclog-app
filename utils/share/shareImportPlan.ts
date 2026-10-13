@@ -50,6 +50,7 @@ function resolveTargetTable(target: ShareForeignKeyTarget, row: ShareRow): strin
   if (typeof target === 'string') {
     return target;
   }
+
   const type = row[target.polymorphic.typeColumn];
   return typeof type === 'string' ? target.polymorphic.typeToTable[type] : undefined;
 }
@@ -96,12 +97,14 @@ function referencedKeys(spec: ShareKindSpec, rows: WorkingRow[]): Set<string> {
       if (!isPresentForeignKey(value)) {
         continue;
       }
+
       const targetTable = resolveTargetTable(target, candidate.row);
       if (targetTable) {
         referenced.add(referenceKey(targetTable, value));
       }
     }
   }
+
   return referenced;
 }
 
@@ -124,6 +127,7 @@ export function planShareImport(
     while (!localId || usedLocalIds.has(localId)) {
       localId = generateId();
     }
+
     usedLocalIds.add(localId);
     return localId;
   };
@@ -137,6 +141,7 @@ export function planShareImport(
     if (existing) {
       return existing;
     }
+
     const minted = mintId();
     regeneratedValues.set(key, minted);
     return minted;
@@ -151,6 +156,7 @@ export function planShareImport(
       if (!sanitized) {
         continue;
       }
+
       const sourceId = sanitized.id;
       if (typeof sourceId !== 'string' || !sourceId) {
         throw new Error(`Share row in ${table} has no id`);
@@ -203,6 +209,7 @@ export function planShareImport(
         pruned = true;
         return false;
       }
+
       return true;
     });
   }
@@ -225,6 +232,7 @@ export function planShareImport(
       if (!isPresentForeignKey(sourceTargetId)) {
         continue;
       }
+
       const targetTable = resolveTargetTable(target, rewritten);
       const localTargetId = targetTable ? idMap[targetTable]?.[sourceTargetId] : undefined;
       if (!targetTable || !localTargetId) {
@@ -232,6 +240,7 @@ export function planShareImport(
           `Share row ${working.table}:${working.sourceId} references missing ${column}:${sourceTargetId}`
         );
       }
+
       rewritten[column] = localTargetId;
     }
 
@@ -247,6 +256,7 @@ export function planShareImport(
       if (typeof value !== 'string' || !value.startsWith(SHARE_ASSET_REF_PREFIX)) {
         continue;
       }
+
       const assetId = value.slice(SHARE_ASSET_REF_PREFIX.length);
       const localUri = assets[assetId];
       if (localUri) {

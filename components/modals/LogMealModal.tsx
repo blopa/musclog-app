@@ -15,6 +15,8 @@ import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
+import { TimePickerInput } from './TimePickerInput';
+import { TimePickerModal } from './TimePickerModal';
 
 type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
 
@@ -44,7 +46,19 @@ type LogMealModalProps = {
   ingredients?: Ingredient[];
   initialMealType?: MealType;
   initialDate?: Date;
-  onLogMeal: (date: Date, mealType: MealType, portionGrams: number) => void;
+  /**
+   * Awaited: the modal stays open (and says nothing) until the save finishes, and stays open when it
+   * throws, so a failed save does not look like a logged meal. `date` is the calendar day and `time`
+   * the time of day on it; combine them with `combineLocalDateAndTime`.
+   */
+  onLogMeal: (data: LogMealData) => void | Promise<void>;
+};
+
+export type LogMealData = {
+  date: Date;
+  time: Date;
+  mealType: MealType;
+  portionGrams: number;
 };
 
 const MIN_PORTION_G = 1;
@@ -54,6 +68,7 @@ function clampPortionGrams(g: number): number {
   if (Number.isNaN(g) || !Number.isFinite(g)) {
     return MIN_PORTION_G;
   }
+
   return Math.min(MAX_PORTION_G, Math.max(MIN_PORTION_G, g));
 }
 
@@ -73,6 +88,9 @@ export function LogMealModal({
     localCalendarDayDate(initialDate ?? new Date())
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
+  // Read once: render must be pure, and a meal logged "now" is the common case.
+  const [selectedTime, setSelectedTime] = useState(() => new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(initialMealType ?? 'lunch');
   const [isLogging, setIsLogging] = useState(false);
 
@@ -85,6 +103,7 @@ export function LogMealModal({
       const syncGrams = () => {
         setPortionGrams(referenceGrams);
       };
+
       syncGrams();
     }
   }, [visible, referenceGrams]);
@@ -93,8 +112,10 @@ export function LogMealModal({
     if (visible) {
       const syncDateTime = () => {
         setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
+        setSelectedTime(new Date());
         setSelectedMealType(initialMealType ?? 'lunch');
       };
+
       syncDateTime();
     }
   }, [visible, initialDate, initialMealType]);
@@ -103,7 +124,9 @@ export function LogMealModal({
     if (!visible) {
       const reset = () => {
         setShowDatePicker(false);
+        setShowTimePicker(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -142,12 +165,20 @@ export function LogMealModal({
     await flushLoadingPaint();
 
     try {
-      onLogMeal(selectedDate, selectedMealType, clampPortionGrams(portionGrams));
+      await onLogMeal({
+        date: selectedDate,
+        time: selectedTime,
+        mealType: selectedMealType,
+        portionGrams: clampPortionGrams(portionGrams),
+      });
       onClose();
+    } catch (error) {
+      // The host reports its own failure; staying open lets the user retry without redoing the form.
+      console.error('[LogMealModal] logging failed:', error);
     } finally {
       setIsLogging(false);
     }
-  }, [onClose, onLogMeal, portionGrams, selectedDate, selectedMealType]);
+  }, [onClose, onLogMeal, portionGrams, selectedDate, selectedMealType, selectedTime]);
 
   const footer = (
     <Button
@@ -200,6 +231,12 @@ export function LogMealModal({
           variant="default"
         />
 
+        <TimePickerInput
+          selectedTime={selectedTime}
+          onPress={() => setShowTimePicker(true)}
+          variant="default"
+        />
+
         {/* Meal Type Selector */}
         <View>
           <Text
@@ -232,6 +269,13 @@ export function LogMealModal({
           setSelectedDate(localCalendarDayDate(date));
           setShowDatePicker(false);
         }}
+      />
+      <TimePickerModal
+        visible={showTimePicker}
+        onClose={() => setShowTimePicker(false)}
+        selectedTime={selectedTime}
+        title={t('timePicker.selectTime')}
+        onTimeSelect={setSelectedTime}
       />
     </FullScreenModal>
   );

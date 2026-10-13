@@ -1,16 +1,22 @@
 import { Dumbbell, Share2, Weight } from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { WorkoutRecommendationList } from '@/components/workout/WorkoutRecommendationList';
 import { ExerciseData, ExerciseItem } from '@/components/WorkoutHistoryExerciseItem';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { UserMetricService } from '@/database/services/UserMetricService';
+import {
+  type TemplateRecommendation,
+  WorkoutProgressionService,
+} from '@/database/services/WorkoutProgressionService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
@@ -24,7 +30,11 @@ import {
   calculatePreviewVolumeFromTemplateSets,
   calculateSessionVolumeFromSets,
 } from '@/utils/workoutCalculator';
-import { isPerformedWorkoutSet, isSkippedWorkoutSet } from '@/utils/workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  isSkippedWorkoutSet,
+  isWarmupSet,
+} from '@/utils/workoutSetCompletion';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -67,13 +77,37 @@ export function WorkoutSessionHistoryModal({
 }: WorkoutHistoryModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { units } = useSettings();
+  const { units: accountUnits } = useSettings();
+  const { unitsFor } = useExerciseUserSettings();
   const { locale, formatInteger, formatNumber } = useFormatAppNumber();
   const { shareText } = useNativeShareText();
+  // The session's total volume sums exercises with different units, so it stays in the account's.
+  const units = accountUnits;
   const weightUnitKey = getWeightUnitI18nKey(units);
   const [isSharing, setIsSharing] = useState(false);
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
+  const [recommendations, setRecommendations] = useState<TemplateRecommendation[]>([]);
+  useEffect(() => {
+    let live = true;
+    if (visible && isPreview && workoutTemplate) {
+      WorkoutProgressionService.projectTemplate(workoutTemplate.id)
+        .then((rows) => {
+          if (live) {
+            setRecommendations(rows);
+          }
+        })
+        .catch(() => {
+          if (live) {
+            setRecommendations([]);
+          }
+        });
+    }
+
+    return () => {
+      live = false;
+    };
+  }, [visible, isPreview, workoutTemplate]);
   useEffect(() => {
     void UserMetricService.getUserBodyWeightKgForVolume().then(setBodyWeightKg);
   }, []);
@@ -85,6 +119,7 @@ export function WorkoutSessionHistoryModal({
     if (isPreview && workoutTemplate) {
       return workoutTemplate.name || 'Workout';
     }
+
     return workoutLog?.workoutName || 'Workout';
   }, [isPreview, workoutTemplate, workoutLog]);
 
@@ -106,6 +141,7 @@ export function WorkoutSessionHistoryModal({
         if (!exerciseGroups.has(exerciseId)) {
           exerciseGroups.set(exerciseId, []);
         }
+
         exerciseGroups.get(exerciseId)!.push(set);
       });
 
@@ -127,6 +163,7 @@ export function WorkoutSessionHistoryModal({
         }
 
         const exerciseSets = exerciseGroups.get(exerciseId) || [];
+        const exerciseUnits = unitsFor(exerciseId);
 
         // No time in preview mode
         const exerciseTime = '';
@@ -135,7 +172,7 @@ export function WorkoutSessionHistoryModal({
         const transformedSets = exerciseSets.map((set, setIndex) => {
           return {
             setNumber: setIndex + 1,
-            weight: displayWeightKgNumeric(set.targetWeight ?? 0, units),
+            weight: displayWeightKgNumeric(set.targetWeight ?? 0, exerciseUnits),
             reps: set.targetReps ?? 0,
             partials: 0, // Templates don't have partials
             isCurrent: false, // No current set in preview
@@ -152,6 +189,7 @@ export function WorkoutSessionHistoryModal({
           exerciseNumber: index + 1,
           sets: transformedSets,
           setProgress,
+          weightUnitKey: getWeightUnitI18nKey(exerciseUnits),
         });
       });
 
@@ -172,6 +210,7 @@ export function WorkoutSessionHistoryModal({
         if (!exerciseGroups.has(exerciseId)) {
           exerciseGroups.set(exerciseId, []);
         }
+
         exerciseGroups.get(exerciseId)!.push(set);
       });
 
@@ -193,6 +232,7 @@ export function WorkoutSessionHistoryModal({
         }
 
         const exerciseSets = exerciseGroups.get(exerciseId) || [];
+        const exerciseUnits = unitsFor(exerciseId);
 
         // Find the first set's time (use startedAt for first exercise, estimate for others)
         let exerciseTime = '';
@@ -209,11 +249,18 @@ export function WorkoutSessionHistoryModal({
         }
 
         // Transform sets
-        const transformedSets = exerciseSets.map((set, setIndex) => {
+        let workingSetNumber = 0;
+        const transformedSets = exerciseSets.map((set) => {
           const isCurrent = (set.setOrder ?? 0) === currentSetOrder;
+          const isWarmup = isWarmupSet(set);
+          if (!isWarmup) {
+            workingSetNumber += 1;
+          }
+
           return {
-            setNumber: setIndex + 1,
-            weight: displayWeightKgNumeric(set.weight ?? 0, units),
+            setNumber: workingSetNumber,
+            isWarmup,
+            weight: displayWeightKgNumeric(set.weight ?? 0, exerciseUnits),
             reps: set.reps ?? 0,
             partials: set.partials || 0,
             isCurrent,
@@ -243,6 +290,7 @@ export function WorkoutSessionHistoryModal({
           exerciseNumber: index + 1,
           sets: transformedSets,
           setProgress,
+          weightUnitKey: getWeightUnitI18nKey(exerciseUnits),
         });
       });
 
@@ -258,7 +306,7 @@ export function WorkoutSessionHistoryModal({
     logExercises,
     templateExercises,
     currentSetOrder,
-    units,
+    unitsFor,
   ]);
 
   const totalVolume = useMemo(() => {
@@ -266,6 +314,7 @@ export function WorkoutSessionHistoryModal({
     if (isPreview) {
       return calculatePreviewVolumeFromTemplateSets(templateSets, exerciseById, bodyWeightKg);
     }
+
     return calculateSessionVolumeFromSets(sets, exerciseById, bodyWeightKg, {
       onlyCompletedSets: true,
     });
@@ -281,6 +330,7 @@ export function WorkoutSessionHistoryModal({
     if (isPreview) {
       return 0; // No completed sets in preview
     }
+
     return sets.filter(isPerformedWorkoutSet).length;
   }, [isPreview, sets]);
 
@@ -354,7 +404,7 @@ export function WorkoutSessionHistoryModal({
         shareMessageLines.push(
           `  ${t('workoutHistory.set', { number: set.setNumber })}: ${formatNumber(set.weight, {
             maximumFractionDigits: 1,
-          })} ${t(weightUnitKey)} × ${formatInteger(set.reps)}`
+          })} ${t(exercise.weightUnitKey ?? weightUnitKey)} × ${formatInteger(set.reps)}`
         );
       });
       shareMessageLines.push('');
@@ -392,8 +442,28 @@ export function WorkoutSessionHistoryModal({
         />
       );
     }
+
     return null;
   }, [isPreview, onStartWorkout, t]);
+
+  let exercisesList: ReactNode;
+  if (isPreview) {
+    exercisesList = <WorkoutRecommendationList recommendations={recommendations} />;
+  } else if (exerciseDataList.length > 0) {
+    exercisesList = exerciseDataList.map((exercise, index) => (
+      <ExerciseItem
+        key={exercise.id}
+        exercise={exercise}
+        isLast={index === exerciseDataList.length - 1}
+        weightUnitKey={exercise.weightUnitKey ?? weightUnitKey}
+        isPreview={isPreview}
+      />
+    ));
+  } else {
+    exercisesList = (
+      <Text className="text-text-secondary">{t('workoutHistory.noExercisesYet')}</Text>
+    );
+  }
 
   return (
     <FullScreenModal
@@ -416,7 +486,7 @@ export function WorkoutSessionHistoryModal({
       footer={footerContent}
     >
       <View className="gap-6 px-4 pb-8 pt-4">
-        {/* Workout Summary */}
+        {/* Workout Summary: the workout's name leads, then what each exercise will start at. */}
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
@@ -477,22 +547,8 @@ export function WorkoutSessionHistoryModal({
         {/* Divider */}
         <View className="h-px" style={{ backgroundColor: theme.colors.border.light }} />
 
-        {/* Exercises List */}
-        <View className="flex-col gap-3">
-          {exerciseDataList.length > 0 ? (
-            exerciseDataList.map((exercise, index) => (
-              <ExerciseItem
-                key={exercise.id}
-                exercise={exercise}
-                isLast={index === exerciseDataList.length - 1}
-                weightUnitKey={weightUnitKey}
-                isPreview={isPreview}
-              />
-            ))
-          ) : (
-            <Text className="text-text-secondary">{t('workoutHistory.noExercisesYet')}</Text>
-          )}
-        </View>
+        {/* Exercises List: in a preview, each exercise with the targets it will start at. */}
+        <View className="flex-col gap-3">{exercisesList}</View>
         {/* Bottom spacing */}
         <View className="h-8" />
       </View>

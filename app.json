@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.12.3",
+    "version": "2.13.1",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android", "web"],
@@ -23,6 +23,7 @@
       ],
       "./plugins/withGradleJvmArgs",
       "./plugins/withIosSimulatorBuildFix",
+      "./plugins/withThemeAppIcons",
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
@@ -148,13 +149,14 @@
       "@react-native-vector-icons/material-icons"
     ],
     "orientation": "default",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/theme-icons/icon-bg-kinetic-depth.png",
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "icon": "./assets/theme-icons/opaque/icon-bg-kinetic-depth.png",
       "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "307",
+      "buildNumber": "311",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
@@ -166,10 +168,10 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 307,
+      "versionCode": 311,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0c1a13"
+        "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
+        "backgroundColor": "#091310"
       },
       "permissions": [
         "android.permission.INTERNET",
@@ -191,6 +193,7 @@
         "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
         "android.permission.health.READ_BASAL_METABOLIC_RATE",
         "android.permission.health.WRITE_EXERCISE",
+        "android.permission.health.WRITE_DISTANCE",
         "android.permission.health.READ_LEAN_BODY_MASS",
         "android.permission.health.WRITE_LEAN_BODY_MASS",
         "android.permission.health.READ_HEALTH_DATA_HISTORY"

@@ -290,7 +290,9 @@
         "toggle": "Usar LLM Gratuito do Musclog",
         "toggleSubtitle": "Acesse recursos de IA sem uma chave de API. Sujeito a um limite diário de solicitações.",
         "activeNote": "Nível gratuito ativo. Suas próprias chaves de API não são usadas."
-      }
+      },
+      "testKey": "Testar chave",
+      "testingKey": "Testando…"
     },
     "visualSettings": {
       "title": "Interface",
@@ -459,6 +461,22 @@
           "description": "Superfícies violeta profundo com detalhes em laranja"
         }
       }
+    },
+    "workoutSettings": {
+      "title": "Configurações de treino",
+      "subtitle": "Academias, anilhas e exercícios a evitar"
+    },
+    "helpAndFeedback": {
+      "title": "Ajuda e feedback",
+      "subtitle": "Relate um erro, sugira um recurso ou fale com a gente",
+      "reportBug": "Relatar um erro",
+      "requestFeature": "Sugerir um recurso",
+      "githubHint": "Abre o GitHub (precisa de conta). Versão e dispositivo já vêm preenchidos.",
+      "community": "Entrar na comunidade",
+      "communityHint": "Converse com outros usuários do Musclog",
+      "email": "Enviar e-mail ao suporte",
+      "emailHint": "Não precisa de conta. Versão e dispositivo são adicionados à mensagem.",
+      "openFailed": "Não foi possível abrir esse link."
     }
   }
 }

@@ -139,6 +139,7 @@ export class MealService {
           return repaired;
         }
       }
+
       throw error;
     }
   }
@@ -228,6 +229,7 @@ export class MealService {
           return repaired;
         }
       }
+
       await handleError(error, 'MealService.getMealWithFoods', {
         showSnackbar: false,
       });

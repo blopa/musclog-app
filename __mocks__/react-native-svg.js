@@ -46,6 +46,7 @@ const mock = { __esModule: true };
 for (const name of ELEMENTS) {
   mock[name] = svgComponent(name);
 }
+
 mock.default = mock.Svg;
 mock.SvgXml = svgComponent('SvgXml');
 mock.SvgUri = svgComponent('SvgUri');

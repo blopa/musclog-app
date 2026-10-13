@@ -53,6 +53,7 @@ function flattenKeys(obj, prefix = '') {
       keys.add(full);
     }
   }
+
   return keys;
 }
 
@@ -86,6 +87,7 @@ for (const filePath of EXERCISE_DATA_FILES) {
       if (!mgSources.has(ex.muscleGroup)) {
         mgSources.set(ex.muscleGroup, new Set());
       }
+
       mgSources.get(ex.muscleGroup).add(filename);
     }
 
@@ -95,6 +97,7 @@ for (const filePath of EXERCISE_DATA_FILES) {
         if (!tmSources.has(tm)) {
           tmSources.set(tm, new Set());
         }
+
         tmSources.get(tm).add(filename);
       }
     }
@@ -159,11 +162,13 @@ if (missingMg.length > 0) {
     const sources = [...(mgSources.get(mg) ?? [])].join(', ');
     console.log(`     • "${mg}"  (from: ${sources})`);
   }
+
   console.log('\n  💡 Add these under exercises.muscleGroups in exercises.json:');
   console.log('  {');
   for (const mg of missingMg) {
     console.log(`    "${mg}": "TODO",`);
   }
+
   console.log('  }');
 } else {
   console.log('\n  ✅ All muscleGroup values are covered.');
@@ -182,11 +187,13 @@ if (missingTm.length > 0) {
     const sources = [...(tmSources.get(tm) ?? [])].join(', ');
     console.log(`     • "${tm}"  (from: ${sources})`);
   }
+
   console.log('\n  💡 Add these under exercises.muscleGroups in exercises.json:');
   console.log('  {');
   for (const tm of missingTm) {
     console.log(`    "${tm}": "TODO",`);
   }
+
   console.log('  }');
 } else {
   console.log('\n  ✅ All targetMuscles values are covered.');

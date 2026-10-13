@@ -60,10 +60,12 @@ module.exports = {
             isConditional = true;
             break;
           }
+
           // Stop if we hit something that breaks the chain
           if (parent.type === 'FunctionDeclaration' || parent.type === 'ArrowFunctionExpression') {
             break;
           }
+
           parent = parent.parent;
         }
 

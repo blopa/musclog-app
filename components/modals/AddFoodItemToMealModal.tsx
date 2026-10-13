@@ -276,6 +276,7 @@ export function AddFoodItemToMealModal({
         setShowScannedFoodDetails(false);
         setScannedBarcode(null);
       };
+
       reset();
     }
   }, [visible]);

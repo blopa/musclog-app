@@ -51,6 +51,7 @@ function normalizeWeekDays(
   if (cycleType === 'rotating' || !weekDays || weekDays.length === 0) {
     return undefined;
   }
+
   return [...new Set(weekDays)]
     .filter((day) => Number.isInteger(day) && day >= 0 && day <= 6)
     .sort((a, b) => a - b);
@@ -62,6 +63,7 @@ function uniqueMembershipInputs(inputs: PlanMembershipInput[]): PlanMembershipIn
     if (!input.templateId || seen.has(input.templateId)) {
       return false;
     }
+
     seen.add(input.templateId);
     return true;
   });
@@ -188,18 +190,23 @@ export class WorkoutPlanService {
       if (patch.name !== undefined) {
         record.name = patch.name.trim();
       }
+
       if (patch.description !== undefined) {
         record.description = patch.description?.trim() || undefined;
       }
+
       if (patch.cycleType !== undefined) {
         record.cycleType = patch.cycleType;
       }
+
       if (patch.icon !== undefined) {
         record.icon = patch.icon || undefined;
       }
+
       if (patch.difficulty !== undefined) {
         record.difficulty = patch.difficulty || undefined;
       }
+
       record.updatedAt = now;
     });
   }

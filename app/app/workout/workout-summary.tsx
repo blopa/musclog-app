@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { WifiOff } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
@@ -5,8 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
 import ConfettiOverlay from '@/components/ConfettiOverlay';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { WorkoutSessionFeedback } from '@/components/workout/WorkoutSessionFeedback';
+import { WorkoutSummaryProgression } from '@/components/workout/WorkoutSummaryProgression';
 import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
+import { HEALTH_CONNECT_PROMPT_PENDING } from '@/constants/misc';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
 import { ChatService } from '@/database/services/ChatService';
@@ -31,7 +36,7 @@ export default function WorkoutSummaryScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ workoutLogId?: string }>();
+  const params = useLocalSearchParams<{ workoutLogId?: string; showSessionFeedback?: string }>();
   const workoutLogId = params.workoutLogId;
   const { setUnreadCount } = useUnreadChat();
   const { units } = useSettings();
@@ -49,8 +54,31 @@ export default function WorkoutSummaryScreen() {
   const [error, setError] = useState<string | null>(null);
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showHealthPrompt, setShowHealthPrompt] = useState(false);
 
   useKeepScreenAwake('workout-feedback', isFeedbackLoading);
+
+  // Onboarding holds the Health Connect / Health prompt back until a first workout is finished.
+  // Consumed on read, so it is offered exactly once.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        if ((await AsyncStorage.getItem(HEALTH_CONNECT_PROMPT_PENDING)) === 'true') {
+          await AsyncStorage.removeItem(HEALTH_CONNECT_PROMPT_PENDING);
+          if (!cancelled) {
+            setShowHealthPrompt(true);
+          }
+        }
+      } catch (e) {
+        handleError(e, 'workout-summary.healthPrompt');
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const loadWorkoutData = async () => {
@@ -155,6 +183,7 @@ export default function WorkoutSummaryScreen() {
             }
           }
         }
+
         setGoalProgress(progress);
 
         // Build rich summary for the LLM (as if the user said "I just completed...")
@@ -302,8 +331,26 @@ export default function WorkoutSummaryScreen() {
         personalRecords={personalRecords}
         caloriesBurned={caloriesBurned}
         goalProgress={goalProgress}
-      />
+      >
+        {workoutLogId ? <WorkoutSummaryProgression logId={workoutLogId} /> : null}
+        {workoutLogId ? (
+          <WorkoutSessionFeedback
+            logId={workoutLogId}
+            initiallyOpen={params.showSessionFeedback === '1'}
+          />
+        ) : null}
+      </WorkoutSummaryCelebration>
       {showConfetti ? <ConfettiOverlay /> : null}
+      <ConfirmationModal
+        visible={showHealthPrompt}
+        onClose={() => setShowHealthPrompt(false)}
+        onConfirm={() => router.navigate('/app/onboarding/health-connect?nextRoute=/app')}
+        title={t('workout.summary.healthPrompt.title')}
+        message={t('workout.summary.healthPrompt.message')}
+        confirmLabel={t('workout.summary.healthPrompt.confirm')}
+        cancelLabel={t('workout.summary.healthPrompt.later')}
+        variant="primary"
+      />
     </>
   );
 }

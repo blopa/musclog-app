@@ -19,6 +19,7 @@ type OptionsSelectorProps<T extends string | number> = {
   options: SelectorOption<T>[];
   selectedId?: T;
   onSelect: (id: T) => void;
+  disabled?: boolean;
 };
 
 const OptionItem = memo(
@@ -26,10 +27,12 @@ const OptionItem = memo(
     option,
     isSelected,
     onSelect,
+    disabled,
   }: {
     option: SelectorOption<T>;
     isSelected: boolean;
     onSelect: (id: T) => void;
+    disabled?: boolean;
   }) => {
     const theme = useTheme();
     const Icon = option.icon as any;
@@ -38,7 +41,16 @@ const OptionItem = memo(
     }, [option.id, onSelect]);
 
     return (
-      <Pressable key={option.id} onPress={handlePress}>
+      <Pressable
+        key={option.id}
+        onPress={handlePress}
+        disabled={disabled}
+        accessibilityRole="radio"
+        accessibilityLabel={option.label}
+        accessibilityState={{ checked: isSelected, disabled }}
+        aria-checked={isSelected}
+        aria-disabled={disabled}
+      >
         {({ pressed }) => (
           <View
             style={{
@@ -137,6 +149,7 @@ const OptionItem = memo(
   option: SelectorOption<T>;
   isSelected: boolean;
   onSelect: (id: T) => void;
+  disabled?: boolean;
 }) => ReactElement;
 
 export function OptionsSelector<T extends string | number>({
@@ -144,6 +157,7 @@ export function OptionsSelector<T extends string | number>({
   options,
   selectedId,
   onSelect,
+  disabled,
 }: OptionsSelectorProps<T>) {
   const theme = useTheme();
   // Memoize the onSelect callback to prevent OptionItem re-renders
@@ -163,14 +177,16 @@ export function OptionsSelector<T extends string | number>({
           option={option}
           isSelected={selectedId === option.id}
           onSelect={stableOnSelect}
+          disabled={disabled}
         />
       )),
-    [options, selectedId, stableOnSelect]
+    [options, selectedId, stableOnSelect, disabled]
   );
 
   return (
-    <View>
+    <View accessibilityRole="radiogroup">
       <Text
+        accessibilityRole="header"
         style={{
           fontSize: theme.typography.fontSize.xs,
           fontWeight: theme.typography.fontWeight.bold,

@@ -1,4 +1,5 @@
 import { Home, MessageCircle, Trophy } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -13,6 +14,7 @@ import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
 import { WorkoutSummaryTrophy } from './WorkoutSummaryTrophy';
 
 type WorkoutSummaryCelebrationProps = {
+  children?: ReactNode;
   onGoHome: () => void;
   onShareSummary?: () => void;
   onGetFeedback?: () => void;
@@ -26,6 +28,7 @@ type WorkoutSummaryCelebrationProps = {
 
 // TODO: UI issue here
 export function WorkoutSummaryCelebration({
+  children,
   onGoHome,
   onShareSummary,
   onGetFeedback,
@@ -192,6 +195,7 @@ export function WorkoutSummaryCelebration({
           {/* Spacer */}
           <View className="flex-1" />
 
+          {children}
           {/* Get Feedback Button */}
           {onGetFeedback ? (
             <Button

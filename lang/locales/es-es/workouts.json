@@ -232,6 +232,7 @@
       "discardCancel": "Mantenerlo",
       "alreadyActive": "Ya tienes un entrenamiento en curso. Reanúdalo o descártalo primero."
     },
-    "unnamed": "Sin nombre"
+    "unnamed": "Sin nombre",
+    "previewWorkout": "Vista previa de {{name}}"
   }
 }

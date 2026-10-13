@@ -348,6 +348,7 @@ async function syncNutritionOnce(timeRange: {
       counts.skipped++;
       continue;
     }
+
     hcMap.set(externalId, {
       externalId,
       date: new Date(rec.startTime).getTime(),
@@ -472,6 +473,7 @@ async function syncNutritionOnce(timeRange: {
           if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
             continue;
           }
+
           await localLog.update((log) => {
             log.deletedAt = now;
             log.updatedAt = now;

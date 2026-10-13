@@ -54,6 +54,7 @@ export const useCameraPermissions = (): [
         if (cancelled) {
           return;
         }
+
         permissionStatus = status;
         setPermission(toPermissionResponse(status.state === 'granted'));
         status.onchange = () => {

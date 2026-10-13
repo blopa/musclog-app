@@ -368,6 +368,7 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
         setIsFilterMenuVisible(false);
         setSelectedWorkoutId(null);
       };
+
       reset();
     }
   }, [visible]);

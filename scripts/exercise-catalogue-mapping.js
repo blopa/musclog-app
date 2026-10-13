@@ -27,6 +27,7 @@ function descriptionFor(entry) {
   if (!fallback) {
     throw new Error(`Exercise "${entry.name}" has no English description`);
   }
+
   return fallback;
 }
 
@@ -88,12 +89,15 @@ function resolveEquipment(entry) {
   if (EQUIPMENT_OVERRIDES[entry.name]) {
     return EQUIPMENT_OVERRIDES[entry.name];
   }
+
   if (entry.category === 'cardio') {
     return 'cardio';
   }
+
   if (/\bSmith\b/.test(entry.name)) {
     return 'smith_machine';
   }
+
   return EQUIPMENT_BY_SOURCE[String(entry.equipment)] ?? 'other';
 }
 
@@ -121,12 +125,15 @@ function resolveMechanic(entry) {
   if (MECHANIC_OVERRIDES[entry.name]) {
     return MECHANIC_OVERRIDES[entry.name];
   }
+
   if (MECHANIC_BY_CATEGORY[entry.category]) {
     return MECHANIC_BY_CATEGORY[entry.category];
   }
+
   if (entry.mechanic === 'compound' || entry.mechanic === 'isolation') {
     return entry.mechanic;
   }
+
   return 'other';
 }
 
@@ -176,9 +183,11 @@ function isRegionalMovement(entry) {
   if (entry.mechanic === 'isolation') {
     return true;
   }
+
   if (REGIONAL_VETO.test(entry.name)) {
     return true;
   }
+
   return SQUAT_VETO.test(entry.name) && !SQUAT_KEEP.test(entry.name);
 }
 
@@ -206,12 +215,15 @@ function resolveMuscleGroup(entry, equipmentType) {
   if (isWholeBodyLift && !isRegionalMovement(entry)) {
     return 'full_body';
   }
+
   if (primary === 'abdominals' && CORE_PATTERNS.test(entry.name)) {
     return 'core';
   }
+
   if (primary === 'abdominals' && entry.force === 'static') {
     return 'core';
   }
+
   if (primary === 'glutes' || /\bglute kickback\b/i.test(entry.name)) {
     return 'glutes';
   }
@@ -272,8 +284,10 @@ function resolveTargetMuscles(entry) {
       } else {
         push('shoulders');
       }
+
       continue;
     }
+
     push(MUSCLE_BY_SOURCE[source]);
   }
 
@@ -281,6 +295,7 @@ function resolveTargetMuscles(entry) {
     if (OBLIQUES.test(entry.name)) {
       push('external_obliques');
     }
+
     if (DEEP_CORE.test(entry.name)) {
       push('transverse_abdominis');
     }
@@ -291,6 +306,7 @@ function resolveTargetMuscles(entry) {
       push(POSTERIOR_DELT.test(entry.name) ? 'posterior_deltoid' : 'anterior_deltoid');
       continue;
     }
+
     push(MUSCLE_BY_SOURCE[source]);
   }
 

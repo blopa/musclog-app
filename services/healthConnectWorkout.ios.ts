@@ -17,6 +17,7 @@ import i18n from '@/lang/lang';
 import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
+import { resolveHealthActivity, workoutTotals } from '@/utils/healthWorkoutActivity';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -35,10 +36,21 @@ export interface CompletedWorkoutPayload {
   workoutType?: string;
   units?: Units;
   segmentItems?: SegmentItem[];
+  /** A quick walk/run log: which activity it was, so it maps to WALKING/RUNNING and not generic cardio. */
+  activity?: 'walk' | 'run';
+  /** Distance covered, in metres. Written as its own record where the platform needs one. */
+  distanceM?: number;
 }
 
-function mapWorkoutTypeToActivity(workoutType: string | undefined): WorkoutActivityType {
-  switch (workoutType) {
+function mapWorkoutTypeToActivity(
+  workoutType: string | undefined,
+  activity?: 'walk' | 'run'
+): WorkoutActivityType {
+  switch (resolveHealthActivity(workoutType, activity)) {
+    case 'walking':
+      return WorkoutActivityType.walking;
+    case 'running':
+      return WorkoutActivityType.running;
     case 'strength':
       return WorkoutActivityType.traditionalStrengthTraining;
     case 'cardio':
@@ -47,7 +59,6 @@ function mapWorkoutTypeToActivity(workoutType: string | undefined): WorkoutActiv
       return WorkoutActivityType.flexibility;
     case 'calisthenics':
       return WorkoutActivityType.functionalStrengthTraining;
-    case 'other':
     default:
       return WorkoutActivityType.other;
   }
@@ -111,6 +122,7 @@ export async function writeWorkoutToHealthConnect(
         i18n.t('healthConnect.workoutCaloriesNote', { calories: payload.caloriesBurned })
       );
     }
+
     if (payload.totalVolume != null && payload.totalVolume > 0) {
       const locale = i18n.resolvedLanguage ?? i18n.language;
       noteParts.push(
@@ -120,6 +132,7 @@ export async function writeWorkoutToHealthConnect(
         })
       );
     }
+
     if (payload.segmentItems && payload.segmentItems.length > 0) {
       const breakdown = formatSegmentBreakdown(payload.segmentItems, unitLabel, units);
       if (breakdown) {
@@ -127,15 +140,13 @@ export async function writeWorkoutToHealthConnect(
       }
     }
 
-    const activity = mapWorkoutTypeToActivity(payload.workoutType);
+    const activity = mapWorkoutTypeToActivity(payload.workoutType, payload.activity);
     const workout = await saveWorkoutSample(
       activity,
       [],
       startDate,
       endDate,
-      payload.caloriesBurned != null && payload.caloriesBurned > 0
-        ? { energyBurned: payload.caloriesBurned }
-        : undefined,
+      workoutTotals(payload),
       noteParts.length > 0 ? ({ HKWorkoutBrandName: noteParts.join('\n') } as any) : undefined
     );
 

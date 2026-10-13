@@ -9,7 +9,9 @@
     "stats": {
       "duration": "Duração",
       "volume": "Volume",
-      "calories": "Calorias"
+      "calories": "Calorias",
+      "distance": "Distância",
+      "pace": "Ritmo"
     },
     "prBadge": {
       "singular": "{{count}} PR",

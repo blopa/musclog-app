@@ -46,6 +46,7 @@ export function HomeMoodPrompt({ onVisibilityChange }: HomeMoodPromptProps) {
       const show = () => {
         setIsActuallyVisible(true);
       };
+
       show();
       opacity.value = withTiming(1, { duration: 400 });
       height.value = withSpring(MAX_HEIGHT, { damping: 20, stiffness: 90 });
@@ -106,6 +107,7 @@ export function HomeMoodPrompt({ onVisibilityChange }: HomeMoodPromptProps) {
     if (mood === null) {
       return;
     }
+
     setIsSaving(true);
     setIsDismissed(true); // Trigger animation immediately
     // Use setTimeout hack to ensure loading state is rendered before blocking DB write

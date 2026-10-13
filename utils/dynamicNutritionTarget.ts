@@ -28,6 +28,10 @@ export interface ResolvedMacros {
   isDynamic: true;
   usedEmpiricalData: boolean;
   tdee: number;
+  /** The minimum-calorie floor for this user (`getMinCalories`), whether or not it is enforced. */
+  minimumCalories: number;
+  /** The user turned the floor off, so `totalCalories` may sit below `minimumCalories`. */
+  minimumCaloriesDisabled: boolean;
 }
 
 export interface DynamicGoalTrajectoryInput {
@@ -119,7 +123,16 @@ type DynamicGoalLike = {
 
 async function resolveDynamicGoalLike(
   goal: DynamicGoalLike,
-  date: Date
+  date: Date,
+  {
+    alwaysReadHistory = false,
+    excludeUnloggedDays = false,
+  }: {
+    /** Read the logged history even when the goal has an explicit trajectory target. */
+    alwaysReadHistory?: boolean;
+    /** Leave unlogged days out of the averages, so a forgotten log is not a day of fasting. */
+    excludeUnloggedDays?: boolean;
+  } = {}
 ): Promise<ResolvedMacros | null> {
   const asOfDayMs = localDayStartMs(date);
   const asOfMetricMaxMs = localDayClosedRangeMaxMs(date);
@@ -139,9 +152,13 @@ async function resolveDynamicGoalLike(
     UserMetricService.getLatestOnOrBefore('weight', asOfMetricMaxMs),
     UserMetricService.getLatestOnOrBefore('height', asOfMetricMaxMs),
     UserMetricService.getLatestOnOrBefore('body_fat', asOfMetricMaxMs),
-    hasExplicitTrajectoryTarget
+    hasExplicitTrajectoryTarget && !alwaysReadHistory
       ? Promise.resolve(null)
-      : getHistoricalNutritionParams({ asOfDate: date, useWeeklyFatAverages: true }),
+      : getHistoricalNutritionParams({
+          asOfDate: date,
+          useWeeklyFatAverages: true,
+          excludeUnloggedDays,
+        }),
     SettingsService.getDisableMinimumCalories(),
     SettingsService.getUseBfForCalculations(),
   ]);
@@ -221,6 +238,9 @@ async function resolveDynamicGoalLike(
   const macros = calculateMacros(targetCalories, fitnessGoal, {
     weightKg,
     bodyFatPercent,
+    heightCm,
+    goalWeightKg: normalizedTargetWeight ?? undefined,
+    weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
   });
 
   return {
@@ -232,6 +252,8 @@ async function resolveDynamicGoalLike(
     isDynamic: true as const,
     usedEmpiricalData: historicalParams !== null,
     tdee: Math.round(basePlan.tdee),
+    minimumCalories: getMinCalories(gender, basePlan.bmr),
+    minimumCaloriesDisabled: disableMinimumCalories,
   };
 }
 
@@ -240,6 +262,18 @@ export async function resolveDynamicGoalPreview(
   date: Date
 ): Promise<ResolvedMacros | null> {
   return resolveDynamicGoalLike(goal, date);
+}
+
+/**
+ * The macros a Weekly Review recommends for the week ahead. Unlike the daily resolution it always
+ * reads the logged history (even when the goal has an explicit trajectory) and leaves unlogged days
+ * out of the averages, so a forgotten log is not mistaken for a day of eating nothing.
+ */
+export async function resolveWeeklyRecommendation(
+  goal: NutritionGoal,
+  date: Date
+): Promise<ResolvedMacros | null> {
+  return resolveDynamicGoalLike(goal, date, { alwaysReadHistory: true, excludeUnloggedDays: true });
 }
 
 /**

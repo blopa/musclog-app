@@ -120,5 +120,6 @@ export function normalizeTimezoneToOffset(value: string, atDate: Date): string {
   if (!value || isTimezoneOffset(value)) {
     return value;
   }
+
   return ianaZoneToTimezoneAt(value, atDate) ?? value;
 }

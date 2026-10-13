@@ -23,6 +23,7 @@ type ThemeButtonProps = {
   loading?: boolean;
   className?: string;
   style?: React.CSSProperties;
+  testID?: string;
 };
 
 const getSizeConfig = (theme: Theme) => ({
@@ -246,6 +247,7 @@ export function Button({
   disabled = false,
   loading = false,
   style,
+  testID,
 }: ThemeButtonProps) {
   const theme = useTheme();
   const config = getSizeConfig(theme)[size];
@@ -290,7 +292,12 @@ export function Button({
   };
 
   return (
-    <button onClick={isDisabled ? undefined : onPress} disabled={isDisabled} style={buttonStyle}>
+    <button
+      onClick={isDisabled ? undefined : onPress}
+      disabled={isDisabled}
+      style={buttonStyle}
+      data-testid={testID}
+    >
       {iconPosition === 'left' ? iconEl : null}
       <span style={{ flexShrink: 1, minWidth: 0, textAlign: 'center' }}>
         {loading ? '…' : label}

@@ -18,55 +18,74 @@ export class AiService {
    */
   static async getAiConfig(): Promise<CoachAIConfig | null> {
     try {
+      // Every setting is read in parallel: they used to be awaited one after another, so the first
+      // AI call of a session paid for up to twelve sequential reads before it could even start.
+      // The priority below is unchanged — it only decides which of the already-read values wins.
+      const [
+        useGateway,
+        useOnDeviceAi,
+        enableLocalLlm,
+        localLlmBaseUrlRaw,
+        enableGemini,
+        geminiKeyRaw,
+        enableOpenAi,
+        openAiKeyRaw,
+        language,
+      ] = await Promise.all([
+        SettingsService.getUseMusclogFreeTier(),
+        SettingsService.getUseOnDeviceAi(),
+        SettingsService.getEnableLocalLlm(),
+        SettingsService.getLocalLlmBaseUrl(),
+        SettingsService.getEnableGoogleGemini(),
+        SettingsService.getGoogleGeminiApiKey(),
+        SettingsService.getEnableOpenAi(),
+        SettingsService.getOpenAiApiKey(),
+        SettingsService.getLanguage(),
+      ]);
+
       // On web production builds, CORS blocks browser→Cloudflare direct calls.
       // In development the client uses a CORS proxy (see buildOpenAIClient).
-      const useGateway = await SettingsService.getUseMusclogFreeTier();
       if (effectiveUseMusclogGateway(useGateway)) {
-        const language = await SettingsService.getLanguage();
         return GatewayService.buildGatewayConfig(language);
       }
 
-      const useOnDeviceAi = await SettingsService.getUseOnDeviceAi();
       if (useOnDeviceAi && (await isOnDeviceAiAvailable())) {
-        return {
-          provider: 'on-device',
-          model: 'on-device',
-          language: await SettingsService.getLanguage(),
-        };
+        return { provider: 'on-device', model: 'on-device', language };
       }
 
-      const enableLocalLlm = await SettingsService.getEnableLocalLlm();
-      const localLlmBaseUrl = (await SettingsService.getLocalLlmBaseUrl()).trim();
+      const localLlmBaseUrl = localLlmBaseUrlRaw.trim();
       if (enableLocalLlm && localLlmBaseUrl) {
+        const [localKey, localModel] = await Promise.all([
+          SettingsService.getLocalLlmApiKey(),
+          SettingsService.getLocalLlmModel(),
+        ]);
         return {
           provider: 'local',
-          apiKey: (await SettingsService.getLocalLlmApiKey()).trim() || 'ollama',
-          model: (await SettingsService.getLocalLlmModel()) || 'llama3',
+          apiKey: localKey.trim() || 'ollama',
+          model: localModel || 'llama3',
           baseUrl: localLlmBaseUrl,
-          language: await SettingsService.getLanguage(),
+          language,
         };
       }
 
-      const enableGemini = await SettingsService.getEnableGoogleGemini();
-      const geminiKey = (await SettingsService.getGoogleGeminiApiKey()).trim();
+      const geminiKey = geminiKeyRaw.trim();
       if (enableGemini && geminiKey) {
         return {
           provider: 'gemini',
           apiKey: geminiKey,
           model:
             (await SettingsService.getGoogleGeminiModel()) || GEMINI_MODELS.GEMINI_2_5_FLASH.value,
-          language: await SettingsService.getLanguage(),
+          language,
         };
       }
 
-      const enableOpenAi = await SettingsService.getEnableOpenAi();
-      const openAiKey = (await SettingsService.getOpenAiApiKey()).trim();
+      const openAiKey = openAiKeyRaw.trim();
       if (enableOpenAi && openAiKey) {
         return {
           provider: 'openai',
           apiKey: openAiKey,
           model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
-          language: await SettingsService.getLanguage(),
+          language,
         };
       }
     } catch (error) {

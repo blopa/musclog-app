@@ -346,6 +346,7 @@ export function useNutritionLogs({
             throw error;
           }
         }
+
         setTotalCount(allLogsCount);
       } else if (mode === 'range' && startDate && endDate) {
         // Range mode
@@ -520,6 +521,7 @@ export function useNutritionLogs({
         loadInitialLogs();
         hasLoadedInitial.current = true;
       }
+
       return;
     }
 
@@ -575,6 +577,7 @@ export function useNutritionLogs({
     const runInitial = () => {
       void loadInitialLogs();
     };
+
     runInitial();
     hasLoadedInitial.current = true;
 

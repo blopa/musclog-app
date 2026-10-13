@@ -4,16 +4,21 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { GEMINI_MODELS } from '@/constants/ai';
 import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
+import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
+  ACTIVE_GYM_ID_SETTING_TYPE,
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
+  AUTO_START_REST_TIMER_SETTING_TYPE,
   BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   type ChartTooltipPosition,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
+  DEFAULT_REST_SECONDS_SETTING_TYPE,
+  DEFAULT_WORKOUT_AUTONOMY,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
@@ -49,10 +54,12 @@ import {
   type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
+  parseWorkoutAutonomy,
   PROGRESSION_MODE_SETTING_TYPE,
   type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
+  REST_TIMER_HAPTICS_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
@@ -69,8 +76,10 @@ import {
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
   type UseSettingsResult,
+  WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
+  type WorkoutAutonomy,
   type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
@@ -80,6 +89,7 @@ import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
+import { clampRestSeconds } from '@/utils/restTimer';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
@@ -134,6 +144,16 @@ type SettingsState = {
   enableFastedDay: boolean;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
+  /** `gyms.id` of the profile being trained in, '' for none. */
+  activeGymId: string;
+  /** How much of a started workout's numbers the app decides. */
+  workoutAutonomy: WorkoutAutonomy;
+  /** Start the rest timer on its own after a set. */
+  autoStartRestTimer: boolean;
+  /** Haptic countdown on the rest timer. */
+  restTimerHaptics: boolean;
+  /** Rest, in seconds, after a set that names none of its own. */
+  defaultRestSeconds: number;
   nutritionDisplay: string;
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
@@ -221,6 +241,11 @@ const DEFAULT_STATE: SettingsState = {
   enableFastedDay: false,
   includeFiberInCarbs: true,
   progressionMode: 'reps_first',
+  activeGymId: '',
+  workoutAutonomy: DEFAULT_WORKOUT_AUTONOMY,
+  autoStartRestTimer: true,
+  restTimerHaptics: true,
+  defaultRestSeconds: DEFAULT_REST_SECONDS,
   nutritionDisplay: '11111',
   advancedDataManagement: false,
   bleGenerateChartPayload: false,
@@ -240,10 +265,12 @@ function buildSettingsMap(settings: Setting[]): Map<string, string> {
       best.set(s.type, { value: s.value, updatedAt: s.updatedAt });
     }
   }
+
   const result = new Map<string, string>();
   for (const [type, { value }] of best) {
     result.set(type, value);
   }
+
   return result;
 }
 
@@ -256,6 +283,7 @@ function getBoolean(map: Map<string, string>, type: string, defaultVal = false):
   if (v === undefined) {
     return defaultVal;
   }
+
   return v === 'true';
 }
 
@@ -355,6 +383,13 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     enableFastedDay: getBoolean(map, ENABLE_FASTED_DAY_SETTING_TYPE, false),
     includeFiberInCarbs: getBoolean(map, INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, true),
     progressionMode,
+    activeGymId: getString(map, ACTIVE_GYM_ID_SETTING_TYPE, ''),
+    workoutAutonomy: parseWorkoutAutonomy(getString(map, WORKOUT_AUTONOMY_SETTING_TYPE)),
+    autoStartRestTimer: getBoolean(map, AUTO_START_REST_TIMER_SETTING_TYPE, true),
+    restTimerHaptics: getBoolean(map, REST_TIMER_HAPTICS_SETTING_TYPE, true),
+    defaultRestSeconds: clampRestSeconds(
+      getNumber(map, DEFAULT_REST_SECONDS_SETTING_TYPE, DEFAULT_REST_SECONDS)
+    ),
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
     bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
@@ -418,6 +453,11 @@ export type SettingsContextType = UseSettingsResult & {
   enableFastedDay: boolean;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
+  activeGymId: string;
+  workoutAutonomy: WorkoutAutonomy;
+  autoStartRestTimer: boolean;
+  restTimerHaptics: boolean;
+  defaultRestSeconds: number;
   nutritionDisplay: string;
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
@@ -442,6 +482,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const markLoaded = () => {
         setState((prev) => ({ ...prev, isLoading: false }));
       };
+
       markLoaded();
       return;
     }
@@ -600,5 +641,6 @@ export function useSettingsContext(): SettingsContextType {
   if (context === undefined) {
     throw new Error('useSettingsContext must be used within a SettingsProvider');
   }
+
   return context;
 }

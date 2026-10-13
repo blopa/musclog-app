@@ -170,8 +170,10 @@ export function useFoods({
         const run = () => {
           void loadInitialFoods();
         };
+
         run();
       }
+
       return;
     }
 
@@ -209,6 +211,7 @@ export function useFoods({
     const runInit = () => {
       void loadInitialFoods();
     };
+
     runInit();
 
     return () => subscription.unsubscribe();

@@ -9,6 +9,9 @@
     "repsWithCount": "{{count}} herh",
     "upNext": "VOLGENDE",
     "missingWorkoutData": "Workoutgegevens ontbreken",
-    "completedSetNotFound": "Voltooide set niet gevonden"
+    "completedSetNotFound": "Voltooide set niet gevonden",
+    "getReady": "Maak je klaar",
+    "go": "Start!",
+    "a11yRemaining": "Nog {{time}}"
   }
 }

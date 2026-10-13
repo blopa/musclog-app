@@ -46,6 +46,7 @@ export function FitnessGoalsTabContent({ visible, onNewGoal }: FitnessGoalsTabCo
     if (!goalToDelete) {
       return;
     }
+
     setIsDeletingGoal(true);
     try {
       await ExerciseGoalService.deleteGoal(goalToDelete);

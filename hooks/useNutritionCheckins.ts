@@ -65,6 +65,7 @@ export function useNutritionCheckins({
         setIsLoading(false);
       }
     };
+
     void loadInitial();
 
     const query = database

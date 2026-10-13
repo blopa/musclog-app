@@ -67,6 +67,7 @@ export default function CycleScreen() {
     if (key) {
       return t(key);
     }
+
     return `${formatInteger(value)}/5`;
   };
 
@@ -74,8 +75,10 @@ export default function CycleScreen() {
     if (metric.type === 'period_flow') {
       return formatFlowMetric(metric.value);
     }
+
     return metric.note || '--';
   };
+
   const {
     currentPhase,
     energyLevel,

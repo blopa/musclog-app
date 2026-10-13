@@ -73,6 +73,7 @@ export function CopyDayFromHistoryModal({
         setIsSubmitting(false);
       }
     };
+
     reset();
   }, [visible]);
 
@@ -90,6 +91,7 @@ export function CopyDayFromHistoryModal({
       } else {
         next.add(itemId);
       }
+
       return next;
     });
   };

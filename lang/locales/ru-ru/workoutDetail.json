@@ -45,6 +45,7 @@
     "region_shoulders": "Плечи",
     "region_arms": "Руки",
     "region_core": "Корпус",
-    "region_legs": "Ноги"
+    "region_legs": "Ноги",
+    "notes": "Заметки"
   }
 }

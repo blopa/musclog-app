@@ -120,6 +120,14 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () => LegacyExerciseCatalogueMigration.run(),
   },
   {
+    tag: 'ExerciseService.backfillSearchText',
+    // `exercises.search_text` is derived in JS (it needs the same normalization the queries use,
+    // and LokiJS cannot run SQL), so the v27 migration adds the column empty. Catalogue rows are
+    // filled by the sync above; this fills user exercises and the clones the legacy migration
+    // just made. Idempotent by data: it only selects rows still missing the column.
+    run: () => ExerciseService.backfillSearchText(),
+  },
+  {
     tag: 'WorkoutSetStatusMigration.run',
     // Native rows are rewritten by migration-v26. LokiJS ignores unsafe SQL, so web performs
     // the same rewrite in bounded batches once; an interrupted run resumes from null statuses.

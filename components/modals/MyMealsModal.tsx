@@ -1,6 +1,5 @@
 import { Pencil, QrCode, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Q } from '@nozbe/watermelondb';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
@@ -12,9 +11,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
-import { database } from '@/database';
 import type { MealType } from '@/database/models';
-import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
 import { FoodService } from '@/database/services/FoodService';
 import { MealService } from '@/database/services/MealService';
@@ -170,6 +167,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         setSendMealId(null);
         setImportVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -231,7 +229,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
                   value: formatRoundedDecimal(nutrients.fat, 2),
                 }),
               },
-              image: meal.imageUrl ? { uri: meal.imageUrl } : require('../../assets/icon.png'),
+              image: meal.imageUrl
+                ? { uri: meal.imageUrl }
+                : require('../../assets/musclog-icon-fallback.png'),
             };
           })
         );
@@ -327,35 +327,12 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         const allIngredients = result.meals.flatMap((m) => m.ingredients);
         const normalized = await NutritionService.normalizeAiMealIngredients(allIngredients);
 
-        // Pre-fetch all matched foods to avoid N+1 query problem
-        const matchedFoodIds = normalized
-          .map((ingredient) => ingredient.foodId)
-          .filter((id): id is string => Boolean(id));
-
-        const existingFoodsMap = new Map<string, Food>();
-        if (matchedFoodIds.length > 0) {
-          const existingFoods = await database
-            .get<Food>('foods')
-            .query(Q.where('id', Q.oneOf(matchedFoodIds)))
-            .fetch();
-          existingFoods.forEach((food) => existingFoodsMap.set(food.id, food));
-        }
-
         const foodItems = await Promise.all(
           normalized.map(async (ingredient) => {
-            // Reuse the existing food when the LLM matched one; create custom otherwise
+            // normalizeAiMealIngredients strips the foodId of any ingredient whose food is
+            // missing or deleted, so a remaining foodId always points at a live food.
             if (ingredient.foodId) {
-              try {
-                const existingFood = existingFoodsMap.get(ingredient.foodId);
-                if (existingFood) {
-                  return { foodId: ingredient.foodId, amount: ingredient.grams };
-                } else {
-                  // Fallback for missing food record, mimicking original .find() throw behavior
-                  throw new Error(`Record ${ingredient.foodId} not found`);
-                }
-              } catch (error) {
-                handleError(error, 'MyMealsModal.handleGenerateMealAIWithContext');
-              }
+              return { foodId: ingredient.foodId, amount: ingredient.grams };
             }
 
             // aiIngredientMacrosPer100g normalizes carbs from the LLM's net convention to total.

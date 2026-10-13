@@ -64,6 +64,7 @@ export function parseFrame(bytes: Uint8Array): { header: FrameHeader; block: Uin
   if (bytes.length <= HEADER_LEN) {
     return null;
   }
+
   if (bytes[0] !== MAGIC0 || bytes[1] !== MAGIC1) {
     return null;
   }
@@ -81,6 +82,7 @@ export function parseFrame(bytes: Uint8Array): { header: FrameHeader; block: Uin
   if (header.k === 0 || header.blockLen === 0 || header.totalLen === 0) {
     return null;
   }
+
   if (bytes.length !== HEADER_LEN + header.blockLen) {
     return null;
   }
@@ -109,6 +111,7 @@ export function fnv1a(bytes: Uint8Array): number {
     h ^= bytes[i];
     h = Math.imul(h, 0x01000193);
   }
+
   return h >>> 0;
 }
 

@@ -130,6 +130,7 @@ export function useQrFrameLoop(options: QrFrameLoopOptions): QrFrameLoop {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
+
     streamRef.current = null;
     cacheRef.current = [];
     cacheTargetRef.current = 0;

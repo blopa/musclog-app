@@ -86,6 +86,7 @@ function groupPortionsByDate(
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -116,11 +117,13 @@ function mergeIntoDayGroups(
     if (existingIds.has(item.id)) {
       return;
     }
+
     existingIds.add(item.id);
 
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -256,6 +259,7 @@ export function useFoodPortionDataLogs({
     if (isLoading) {
       return;
     }
+
     await loadInitial();
   }, [loadInitial, isLoading]);
 
@@ -263,9 +267,11 @@ export function useFoodPortionDataLogs({
     if (!visible) {
       return;
     }
+
     const run = () => {
       void loadInitial();
     };
+
     run();
   }, [visible, loadInitial]);
 

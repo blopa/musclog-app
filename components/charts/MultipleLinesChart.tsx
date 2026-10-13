@@ -134,6 +134,7 @@ export function MultipleLinesChart({
     if (w === 0) {
       return;
     }
+
     const domainX = xDomainFinal[0] + (touchX / w) * (xDomainFinal[1] - xDomainFinal[0]);
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev
@@ -238,6 +239,7 @@ export function MultipleLinesChart({
                     if (!pts || pts.length === 0) {
                       return null;
                     }
+
                     return (
                       <Line
                         key={s.key}
@@ -305,10 +307,12 @@ export function MultipleLinesChart({
           if (!datum) {
             return null;
           }
+
           const yVal = (datum as Record<string, number>)[callout.seriesKey];
           if (yVal == null) {
             return null;
           }
+
           const dataX = datum.x;
           const pixelX =
             32 +

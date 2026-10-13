@@ -127,6 +127,7 @@ function smoothEma(values: number[], alpha: number): number[] {
   for (let i = 1; i < values.length; i++) {
     out[i] = alpha * values[i] + (1 - alpha) * out[i - 1];
   }
+
   return out;
 }
 
@@ -146,6 +147,7 @@ function findPeaks(signal: number[], minHeight: number, minDistance: number): nu
       }
     }
   }
+
   return peaks;
 }
 
@@ -178,12 +180,14 @@ function dominantFrequencyHz(
     if (freq < fMin || freq > fMax) {
       continue;
     }
+
     const mag = Math.sqrt(re[k] ** 2 + im[k] ** 2);
     if (mag > bestMag) {
       bestMag = mag;
       bestFreq = freq;
     }
   }
+
   return bestFreq;
 }
 

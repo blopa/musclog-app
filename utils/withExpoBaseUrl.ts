@@ -9,6 +9,7 @@ export function withExpoBaseUrl(path: string, base = process.env.EXPO_BASE_URL):
   if (!basePath) {
     return normalized;
   }
+
   if (normalized === `/${basePath}` || normalized.startsWith(`/${basePath}/`)) {
     return normalized;
   }

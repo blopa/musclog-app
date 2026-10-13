@@ -59,6 +59,7 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
         setNutritionLogHistoryDays(settings.nutritionLogHistoryDays);
         setWorkoutHistoryDays(settings.workoutHistoryDays);
       };
+
       snapshot();
     }
     // Intentionally only re-run when visibility changes — we want a snapshot at open.

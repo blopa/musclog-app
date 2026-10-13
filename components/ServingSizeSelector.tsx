@@ -171,6 +171,7 @@ export function ServingSizeSelector({
     if (productServingQuickSize) {
       apiPortions.push(productServingQuickSize);
     }
+
     for (const m of productMeasureQuickSizes) {
       if (!apiPortions.some((s) => s.value === m.value)) {
         apiPortions.push(m);
@@ -210,6 +211,7 @@ export function ServingSizeSelector({
         if (candidates.length === 0) {
           break;
         }
+
         // Prefer the candidate closest to any already-shown gram weight
         candidates.sort((a, b) => {
           const dA = Math.min(...existingGrams.map((g) => Math.abs(a.value - g)));
@@ -218,6 +220,7 @@ export function ServingSizeSelector({
         });
         picked.push(candidates[0]);
       }
+
       supplement = picked;
     } else if (apiCount === 3) {
       // Rule 3: add 100g only if no API portion is already 100g
@@ -267,10 +270,12 @@ export function ServingSizeSelector({
     if (first) {
       return { name: first.name, gramWeight: first.gramWeight };
     }
+
     const firstQuick = effectiveQuickSizes[0];
     if (firstQuick) {
       return { name: firstQuick.label, gramWeight: firstQuick.value };
     }
+
     return null;
   }, [portions, effectiveQuickSizes]);
 
@@ -281,6 +286,7 @@ export function ServingSizeSelector({
     if (!defaultPortionForMode || defaultPortionForMode.gramWeight <= 0) {
       return 1;
     }
+
     return Math.round((value / defaultPortionForMode.gramWeight) * 100) / 100;
   }, [value, defaultPortionForMode]);
 

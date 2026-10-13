@@ -174,6 +174,7 @@ export function HeightPickerModal({
         setInchesIndex(idx.inchesIndex);
         setPickerKey((k) => k + 1);
       };
+
       syncPicker();
     }
   }, [visible, totalInches]);

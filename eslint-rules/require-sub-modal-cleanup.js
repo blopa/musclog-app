@@ -9,7 +9,7 @@
  * This rule enforces that any *Modal.tsx file which renders <*Modal sub-components
  * must implement the cleanup pattern via one of:
  *
- *   1. `useSubModalVisibility(visible)` — the dedicated hook that auto-resets on
+ *   1. `useSubModalVisibility(visible)` / `useSubModalState(visible, initial)` — hooks that auto-reset on
  *      parent close.
  *
  *   2. A cleanup useEffect:
@@ -40,7 +40,7 @@ function isSubModalComponent(name) {
   );
 }
 
-/** Returns true if a CallExpression node is a call to `useSubModalVisibility`. */
+/** Both helpers reset child state synchronously when the parent closes. */
 function isUseSubModalVisibilityCall(node) {
   if (node.type !== 'CallExpression') {
     return false;
@@ -48,10 +48,11 @@ function isUseSubModalVisibilityCall(node) {
 
   const callee = node.callee;
   return (
-    (callee.type === 'Identifier' && callee.name === 'useSubModalVisibility') ||
+    (callee.type === 'Identifier' &&
+      ['useSubModalVisibility', 'useSubModalState'].includes(callee.name)) ||
     (callee.type === 'MemberExpression' &&
       callee.property.type === 'Identifier' &&
-      callee.property.name === 'useSubModalVisibility')
+      ['useSubModalVisibility', 'useSubModalState'].includes(callee.property.name))
   );
 }
 

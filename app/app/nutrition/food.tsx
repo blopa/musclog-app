@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ArrowRight,
   Copy,
@@ -61,6 +61,8 @@ import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TargetModeRow } from '@/components/weeklyReview/TargetModeRow';
+import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -87,12 +89,13 @@ import { useMealGroupUi } from '@/hooks/useMealGroupUi';
 import { useMealUi } from '@/hooks/useMealUi';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 import AiService from '@/services/AiService';
 import {
   calendarDateFromRecordDay,
   formatLocalCalendarDayIso,
   formatLocalCalendarDayNumericIntl,
-  localCalendarDayDate,
+  localCalendarDayFromParam,
 } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { getMealCritique } from '@/utils/coachAI';
@@ -115,6 +118,7 @@ function mealHasUngroupedDuplicateFoods(mealFoods: { log: NutritionLog }[]): boo
     if (!entry.log.foodId) {
       continue;
     }
+
     const existing = groupedByFood.get(entry.log.foodId) || [];
     existing.push(entry);
     groupedByFood.set(entry.log.foodId, existing);
@@ -296,7 +300,17 @@ export default function FoodScreen() {
   } = useMealGroupUi();
 
   const screenModals = useFoodScreenModals();
-  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
+  // `date` (yyyy-MM-dd) opens the diary on a specific day, e.g. a day the Weekly Review is missing.
+  const { date: dateParam } = useLocalSearchParams<{ date?: string }>();
+  const [selectedDate, setSelectedDate] = useState(() => localCalendarDayFromParam(dateParam));
+  // A screen that is already mounted receives a new `date` without remounting; follow it once.
+  const [appliedDateParam, setAppliedDateParam] = useState(dateParam);
+  if (dateParam !== appliedDateParam) {
+    setAppliedDateParam(dateParam);
+    if (dateParam) {
+      setSelectedDate(localCalendarDayFromParam(dateParam));
+    }
+  }
 
   // The optical send target is captured before each share handler clears its menu selection, so the
   // screen-level sender can outlive the menu that launched it. One slot, not one per kind: only
@@ -386,6 +400,7 @@ export default function FoodScreen() {
             } catch {
               // Food may be deleted; we still show the log using snapshot name and nutrients
             }
+
             const [nutrients, gramWeight, displayName] = await Promise.all([
               log.getNutrients(),
               log.getGramWeight(),
@@ -496,6 +511,7 @@ export default function FoodScreen() {
         if (!groupMap[type][gid]) {
           groupMap[type][gid] = [];
         }
+
         groupMap[type][gid].push(entry);
       }
     });
@@ -553,6 +569,7 @@ export default function FoodScreen() {
           map[id] = url;
         }
       }
+
       setMealGroupImageUrls(map);
     }
 
@@ -582,6 +599,11 @@ export default function FoodScreen() {
   // Brand-new users stay on the global empty-diary onboarding card instead of the fasting-day
   // affordance; once there's any food history, empty selected days can offer fasting actions.
   const showTrackedDayContent = !hasNoFood;
+  // Food shows the review card when a week is waiting, and wherever the target line below is not
+  // drawn (empty and fasting days); otherwise that line is the one-tap way in.
+  const reviewStatus = useWeeklyReviewStatus();
+  const showReviewCard =
+    !!reviewStatus?.ready || !resolvedMacros || !showTrackedDayContent || isFastedDayView;
   // Same emptiness signal the fasting prompt uses (this day, not the whole diary). A day
   // already flagged as a fast renders only FastingDayCard, so this never competes with it.
   const showCopyDayPrompt = !isScreenLoading && showTrackedDayContent && logs.length === 0;
@@ -595,6 +617,7 @@ export default function FoodScreen() {
     if (!selectedMealGroup) {
       return;
     }
+
     if (newTotalGrams < 1) {
       showSnackbar('error', t('food.actions.scaleMealPortionInvalid'));
       return;
@@ -654,6 +677,7 @@ export default function FoodScreen() {
     if (!selectedMealGroup) {
       return;
     }
+
     setGroupActionLoading(true);
     await flushLoadingPaint();
     try {
@@ -970,6 +994,7 @@ export default function FoodScreen() {
     if (!selectedMealForMenu) {
       return;
     }
+
     setDeleteAllMealLoading(true);
     await flushLoadingPaint();
     try {
@@ -1567,6 +1592,8 @@ export default function FoodScreen() {
               </>
             ) : null}
 
+            {showReviewCard ? <WeeklyReviewCard compact /> : null}
+
             {/* Empty State */}
             {!isScreenLoading && hasNoFood ? (
               <EmptyStateCard
@@ -1595,6 +1622,12 @@ export default function FoodScreen() {
             {!isScreenLoading && showTrackedDayContent && !isFastedDayView ? (
               <AnimatedContent key="tracking" style={{ gap: theme.spacing.gap['xl'] }}>
                 <>
+                  {resolvedMacros && !showReviewCard ? (
+                    <TargetModeRow
+                      mode={resolvedMacros.mode}
+                      effectiveFrom={resolvedMacros.effectiveFrom}
+                    />
+                  ) : null}
                   {/* Daily Summary Card */}
                   {nutritionGoal?.isDynamic ? (
                     <View
@@ -2093,6 +2126,7 @@ export default function FoodScreen() {
               note
             );
           }
+
           screenModals.savedForLater.closePortionSelector();
           screenModals.savedForLater.clearPending();
         }}

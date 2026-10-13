@@ -32,12 +32,15 @@ function getOpacityForDistance(distance: number): number {
   if (distance === 0) {
     return 1;
   }
+
   if (distance === 1) {
     return 0.55;
   }
+
   if (distance === 2) {
     return 0.3;
   }
+
   return 0.15;
 }
 

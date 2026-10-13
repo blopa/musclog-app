@@ -10,9 +10,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MigrationSection } from '@/components/MigrationSection';
 import { Button } from '@/components/theme/Button';
+import { WhatsNewDebugSection } from '@/components/whatsNew/WhatsNewDebugSection';
 import { CONVERSATION_CONTEXTS, type ConversationContext } from '@/constants/chat';
 import { ENCRYPTION_KEY } from '@/constants/database';
 import { UNITS_SETTING_TYPE } from '@/constants/settings';
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import { database, Exercise, Setting, User, UserMetric } from '@/database';
 import type { MuscleGroup } from '@/database/models';
@@ -39,7 +41,7 @@ const APP_SCREENS = [
   { name: 'Food', route: '/app/nutrition/food', category: 'Nutrition' },
   {
     name: 'Nutrition Check-in List',
-    route: '/app/nutrition/checkin-list',
+    route: WEEKLY_REVIEW_ROUTE,
     category: 'Nutrition',
   },
   { name: 'Workouts', route: '/app/workout/workouts', category: 'Workout' },
@@ -245,6 +247,7 @@ export default function DebugTestScreen() {
           if (retries >= maxRetries) {
             throw verifyError; // Re-throw if all retries failed
           }
+
           // Wait before retrying
           await new Promise((resolve) => setTimeout(resolve, 200));
         }
@@ -319,6 +322,7 @@ export default function DebugTestScreen() {
     } else {
       newExpanded.add(tableName);
     }
+
     setExpandedTables(newExpanded);
   };
 
@@ -553,6 +557,7 @@ export default function DebugTestScreen() {
       if (!acc[screen.category]) {
         acc[screen.category] = [];
       }
+
       acc[screen.category].push(screen);
       return acc;
     },
@@ -861,6 +866,7 @@ export default function DebugTestScreen() {
 
           {/* Migration Section */}
           <MigrationSection />
+          <WhatsNewDebugSection />
 
           {/* Form */}
           <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">

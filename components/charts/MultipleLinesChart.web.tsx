@@ -252,6 +252,7 @@ export function MultipleLinesChart({
                       nearest = d;
                     }
                   }
+
                   const label = tooltipFormatter
                     ? tooltipFormatter(nearest)
                     : series

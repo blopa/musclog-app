@@ -11,6 +11,8 @@
     "drained": "Esgotado",
     "disliked": "Não gostei",
     "loved": "Adorei",
-    "submit": "ENVIAR FEEDBACK"
+    "submit": "ENVIAR FEEDBACK",
+    "notes": "Anotações",
+    "notesPlaceholder": "Como foi? Algo para lembrar da próxima vez?"
   }
 }

@@ -51,6 +51,7 @@ export function parseMmDdYyyyDateOfBirthToLocalDayStartMs(dob: string): number {
   if (parts.length !== 3) {
     throw new Error('Invalid date format. Please use MM/DD/YYYY');
   }
+
   const month = parseInt(parts[0], 10) - 1;
   const day = parseInt(parts[1], 10);
   const year = parseInt(parts[2], 10);
@@ -78,15 +79,18 @@ export function parseDobDisplayStringToPickerDate(dobString: string): Date {
   if (!s) {
     return localCalendarDayDate(new Date());
   }
+
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
     return localCalendarDayDate(parseLocalCalendarDate(s));
   }
+
   const parts = s.split('/');
   if (parts.length === 3) {
     return localCalendarDayDate(
       new Date(parseInt(parts[2], 10), parseInt(parts[0], 10) - 1, parseInt(parts[1], 10))
     );
   }
+
   return localCalendarDayDate(new Date());
 }
 

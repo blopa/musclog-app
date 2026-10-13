@@ -90,6 +90,7 @@ export class UserMetricService {
           return repaired;
         }
       }
+
       throw error;
     }
   }
@@ -235,6 +236,7 @@ export class UserMetricService {
           return repaired;
         }
       }
+
       throw error;
     }
   }
@@ -328,6 +330,7 @@ export class UserMetricService {
           return repaired;
         }
       }
+
       throw error;
     }
   }
@@ -431,6 +434,7 @@ export class UserMetricService {
         if (!current || isTimezoneOffset(current)) {
           return null;
         }
+
         const offset = ianaZoneToTimezoneAt(current, new Date(metric.date));
         return offset && offset !== current ? { metric, offset } : null;
       })

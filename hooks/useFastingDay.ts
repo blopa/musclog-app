@@ -54,6 +54,7 @@ export function useFastingDay({
         if (!cancelled) {
           setResolved({ dayKey: selectedDayKey, fasted: false });
         }
+
         handleError(error, 'food.loadFastedDay');
       });
 

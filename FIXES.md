@@ -42,6 +42,52 @@ new payload and index entry are durable.
 Key coverage: database durability, pre-migration capture, backup conversion, and migration-safety
 tests under `database/**/__tests__` and `utils/__tests__`.
 
+## Automatic progression judged a session by its first set (and by 63 kg)
+
+### Symptom
+
+A lifter who did set 1 of 3 and skipped the rest was moved up next session; unrated sets of
+10 / 6 / 5 against a plan of 10 became 11 on every set; a metric lifter with no gym progressed
+60 → 63 → 66 kg, loads no plate set can make. The "why" sentence claimed checks nobody ran.
+
+### Cause
+
+`summarize()` (`utils/progressionProjection.ts`) read only the first working set and ignored
+`allPrescribedSetsPerformed`; `loadStepFor` rounded to whole kilograms after a 2.5 kg step.
+
+### Rules now
+
+- `LastWorkingSession` carries `complete` and `lowestReps`: an incomplete session holds, and the
+  session is judged by its weakest set. The explicit rules already did this.
+- With no gym, metric loads land on a 2.5 kg multiple (imperial keeps whole pounds).
+- A deload is 10% of the load (never less than one step), matching the linear rule.
+- A load step above 25% of the load (`MAX_LOAD_STEP_SHARE`) is not used: the exercise keeps adding
+  reps. Light lateral raises no longer jump 40%.
+- `utils/sameLoad.ts` is the one epsilon for "same load".
+- Draft edits in the live session are written after 400 ms of quiet and flushed on backgrounding,
+  completion, discard and unmount.
+
+## Weekly Review spun forever after re-opening the same history row
+
+### Symptom
+
+On a new account, marking training reviewed puts the current week in Review history. Tapping that
+row, then tapping it again, left an empty page under "Back to latest review" with a spinner that
+never stopped.
+
+### Cause
+
+The screen emptied the overview itself (`clear()` from `useWeeklyReviewOverview`) and then set the
+selected review, relying on the selection change to trigger a reload. Re-selecting the review
+already open is not a change, so nothing reloaded and `data` stayed `null`.
+
+### Rules now
+
+- `useWeeklyReviewOverview` stores each result with the selection it was loaded for and returns it
+  only while that selection is current. There is no `clear()`: switching reviews shows the spinner
+  by itself, and re-selecting the open review keeps it. A load error is scoped the same way.
+- Pinned by `hooks/__tests__/useWeeklyReviewOverview.test.ts`.
+
 ## Exercise catalogue cutover safety
 
 The 256-entry legacy catalogue was replaced with 873 free-exercise-db entries and 1,746 images.
@@ -224,10 +270,12 @@ Accepted false positives must explain that the host closes first.
 
 ## Expo Router blog route patch
 
-Expo Router 57.0.18 misparses platform extensions on catch-all names such as
-`[...slug].web.tsx`, leaves the extension in loader context keys, and uses the wrong development
-loader path for route groups. `patches/expo-router+57.0.18.patch` fixes all three behaviors and
-`utils/__tests__/expoRouterLoaderPatch.test.ts` pins them.
+Expo Router 57.0.18 misparsed platform extensions on catch-all names such as
+`[...slug].web.tsx`, left the extension in loader context keys, and used the wrong development
+loader path for route groups. 57.0.26 fixed the first two upstream; only the development loader
+path remains patched, in `patches/expo-router+57.0.26.patch`. The old 57.0.18 patch failed
+`patch-package` in CI (`npm ci` postinstall) once the dependency moved to 57.0.26.
+`utils/__tests__/expoRouterLoaderPatch.test.ts` pins all three behaviors.
 
 Keep blog indexes inside their route directory (`blog/index.web.tsx`) when the index and catch-all
 both use loaders; a `blog.web.tsx` file collides with the `blog/` loader directory during export.
@@ -248,6 +296,19 @@ In `react-native-css-interop` 0.2.6, `parseDeclaration` fell through from a full
 (`return parseBoxShadow(...)`), at which point the patch was removed. The behavioral test
 `utils/__tests__/nativewindBoxShadowPatch.test.ts` still pins it against the installed package, so
 a downgrade below 0.2.7 fails the suite rather than silently reintroducing the crash.
+
+## Invisible alpha-tinted backgrounds
+
+`theme.tokens.js` gives JavaScript 10%-opacity colours such as `accent.primary10` and
+`status.warning10`, but the Tailwind palette only contains the base colours. A class spelled
+`bg-accent-primary10` compiles to nothing: no build error, no type error, a transparent
+background. About thirty such classes shipped (done set rows, guidance badges, the ready Weekly
+Review card, goal and cycle modals). Use Tailwind's opacity modifier, `bg-accent-primary/10`.
+`utils/__tests__/tailwindAlphaClasses.test.ts` fails the suite on the broken spelling.
+
+A long-running web dev server can also serve a stale stylesheet that lacks classes added since it
+started (seen with `px-3.5` and `gap-x-2`), which looks like the same bug. Restart it with
+`--clear` before chasing a missing utility.
 
 ## Health Connect duplicate classes
 
@@ -513,3 +574,99 @@ The same gap existed in `utils/onDeviceAi.web.ts` (`sendOnDeviceStructured`, rea
   a new one cannot be introduced silently.
 - Route and component files are out of scope: their contract is the default export, and their named
   exports are file-local helpers.
+
+## Review writes, prepared model cache, and session prescriptions
+
+WatermelonDB `prepareUpdate` changes the model cache before the adapter commits a batch. A rejected weekly approval could therefore appear reviewed in memory despite no stored decision. `commitPrepared` snapshots existing raw records/prepared state and restores them on failure; the review and target-period changes use one batch and remain retryable. The same boundary protects set completion and mode switching. Legacy Readjust now acknowledges only after the goal write succeeds, retaining reviewed check-ins across goal changes.
+
+Explicit rule history uses stable template-exercise identity, preventing one routine from borrowing another routine’s carried state for the same movement. Skipped sets preserve their prescribed positions and prevent full-session success. Each session freezes its rule/TM and prescription metadata. Missing new RIR has an explicit false flag, avoiding automatic guidance based on a placeholder zero. Switching to/from weekly nutrition closes target intervals rather than changing the meaning of earlier approved dates.
+
+## Session forgot its progression rule after the first completed set
+
+`WorkoutService.getWorkoutWithDetails` built its enriched sets without each log exercise's `progressionJson`. The live session's `refresh` reloads through that path after every save, so from the second set on an exercise with a rule read as rule-free: its badge fell back to "Suggested · Automatic" while the reason underneath still described the rule. The reactive pipeline (`useWorkoutSessionState`) already passed the field, which is why the first render looked right. The field is now passed on both paths, pinned by "keeps the exercise rule on sets reloaded after a save" in `weeklyProgression.integration.test.ts` (verified to fail without the fix).
+
+## Summary "Total Time" read "0in m"
+
+The web summary split its duration label with `/\s*(m|min|minutes?)/` — unanchored, so "0 min" matched the leading "m" and rendered "0in" + "m"; the pattern could never match a localized unit either. Both summary cards now use `splitDurationLabel` (`utils/workout.ts`), which splits on the last space. The web stats card also needed `flexShrink: 0`: as a flex-column item it shrank, and was clipped, once "Next time" was added below it.
+
+## Large-text Playwright profile skewed every sheet
+
+The progression spec emulated 1.3× text with `document.documentElement.style.zoom`. react-native-web sizes sheets from JS window dimensions, which CSS zoom does not change, so every `BottomPopUp` rendered 1.3× too tall and wide and its footer left the viewport — a failure no device can produce. The `phone-large-text` project now uses the layout that text size really yields: a 318×689 viewport at `deviceScaleFactor: 1.3`.
+
+## Progression and Weekly Review: state ownership regressions
+
+Goal editors changed mode/macros without closing dated weekly periods, which continued to outrank
+edited goals. All mode changes now use `NutritionGoalService.updateGoal`; goal and period writes
+share one rollback-safe batch, preserving earlier days. Empirical expenditure formerly divided the
+whole weight change by food-logging coverage. Intake is now bounded to the weight-anchor interval,
+and the calculator divides intake by coverage days and tissue energy by elapsed anchor days.
+
+Add/Swap used a separate history reader that treated unrecorded RIR as zero. Both now use the same
+completed-history projection as preview/start. AI substitutions look up the chosen movement's load,
+not the rejected movement's. A swap after logging splits pending sets into a new block; performed
+sets keep their movement and rule, and the original prescription's working-set count prevents a
+partial block from being interpreted as complete. Split replacements retain an explicit superset slot
+(v33), so the movement change does not reorder rounds or change rest boundaries. Swap is disabled
+when no planned sets remain. Session and overview actions identify log blocks,
+so two instances of the same exercise remain independent. BLE files retain their captured owner
+set, movement and device, and cannot be attached to a different Inline row.
+
+Use the plan clears only pending weight/rep overrides, preserving effort and persisting the result.
+Weekly Review refreshes evidence when focused after logging, and never offers completed-only
+candidates as Next up. Optional subjective ratings and notes are available on the summary; failed
+saves retain the form. Narrow session rows place Last time below the inputs rather than truncating
+it. Photo gestures clamp the fitted image, rather than its letterboxed container.
+
+Regression coverage includes Loki integration tests for goal transitions and historical movement
+identity, controller restart/undo tests, focus/recording-owner tests, gesture-bound tests, and browser
+checks of complete previous values, edited-draft undo and summary feedback across four layouts.
+
+## Weekly Review dead ends and leftovers from a discarded workout
+
+Weekly Review evidence is counted over the week that has already closed, yet its "Log weight" and
+"Complete food entries" buttons opened today's progress screen and food diary, and applying needed
+food on all seven days with flagged fasting days ignored — so the buttons could never unlock the
+week, and anyone using the fasting-day feature could never apply. The copy promised "at least three
+days". Applying now needs food (or a flagged fast) on 5 of 7 days and two weigh-ins, the sentence
+interpolates those constants, and each button opens the diary or a dated weight entry on the exact
+day still missing (`overview().gaps`).
+
+Discarding a live workout deleted only the log: the stored active workout survived (Home offered to
+resume a deleted log), a scheduled "rest over" reminder still fired, and the drafts stayed in storage
+and in every backup. `useWorkoutSessionController().discard` now clears all of them. Finishing used
+to navigate twice (once without the feedback flag); the `completedAt` effect is now the only
+navigation. The controller's once-a-second clock ran for the whole session and re-rendered every set
+row; it now runs only during a rest.
+
+Progression deloaded after a single session at failure (automatic) or below the rep range (double
+progression, top set); it now holds once and deloads on the second consecutive miss at that load.
+Automatic `reps_first` used a fixed 8–12 / 12–16 range whatever the plan said, walking a 5×5 up to
+12 reps; it now climbs from the planned reps. Cardio, mobility and stretching were excluded from
+progression only at session start, so previews could promise changes the session never made.
+
+On web every `MaterialIcons` glyph rendered as a tofu box showing its private-use code point (e.g.
+"EA 0B" for `bolt`): nothing registered a `@font-face` for the icon font, and the
+`@react-native-vector-icons` config plugin only bundles it for native builds. `utils/webIconFonts.web.ts`
+now loads `MaterialIcons.ttf` through `expo-font` under the family name `MaterialIcons-Regular` (the
+icon set's `postScriptName`, which the library uses as the web `font-family`); `app/_layout.tsx` calls
+it once. The native sibling is a no-op. A new icon set needs its own entry there.
+
+## Progression stalls hidden by rounding, bodyweight load, and protein that fell in a cut
+
+A deload rounded its target to the NEAREST loadable weight, so a 10% cut of a 10 kg dumbbell (9 kg)
+landed back on 10 kg: the linear rule then counted another miss at an unchanged load, forever. Every
+deload now goes through `loadBelow` (`utils/setProgression.ts`), which snaps down and guarantees a
+strictly lighter load whenever one exists. The percentage rule's training max could only go up or
+hold, so a lifter who outgrew it was held there indefinitely; it now resets after repeated misses.
+The automatic progression treated an unloaded bodyweight exercise like any other at the top of its
+range and prescribed "2.5 kg × 10" push-ups; it now climbs reps to a per-exercise ceiling
+(`exercise_user_settings.rep_ceiling`, v35) and says how to progress beyond it. A Weekly Review
+repeat/lighter week handed the previous session's training max on next to the CURRENT rule, so a
+starting max the user had just changed was silently ignored (`carriedSessionState`).
+
+Without body fat — which became opt-in — `calculateMacros` set protein as a percentage of calories,
+so the Weekly Review recommended cutting protein from 180 g to 113 g alongside a calorie cut. Protein
+is now g/kg of a reference bodyweight whenever a weight is known.
+
+A failed exercise swap cleared the values the user had typed, because `runSaving` swallowed the error
+and the caller carried on as if the swap had worked; it now returns whether it succeeded.

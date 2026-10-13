@@ -2,6 +2,8 @@ import { Dumbbell } from 'lucide-react-native';
 
 import { ChatService } from '@/database/services/ChatService';
 import { ExerciseService } from '@/database/services/ExerciseService';
+import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestionService';
+import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import {
@@ -16,7 +18,11 @@ import type {
   GenerateWorkoutPlanResponse,
   ParsedWorkout,
 } from './coachAI';
-import { isPerformedWorkoutSet } from './workoutSetCompletion';
+import { findExerciseByName } from './exerciseSearch';
+import { isExerciseSuggestible, rankSubstitutes } from './exerciseSubstitution';
+import { roundToDecimalPlaces } from './roundDecimal';
+import { kgToDisplay } from './unitConversion';
+import { isWorkingSet } from './workoutSetCompletion';
 
 /**
  * Process workout volume calculation response from AI
@@ -91,11 +97,19 @@ export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanRe
     // Get all exercises to look up by id (AI returns exerciseId)
     const allExercises = await ExerciseService.getAllExercises();
     const exercisesById = new Map(allExercises.map((ex) => [ex.id, ex]));
+    // The prompt only offered suggestible exercises, but a model can ignore its list.
+    const { exercises: suggestible, context: suggestionContext } =
+      await ExerciseSuggestionService.getSuggestibleExercises(allExercises);
 
     // Create a template for each workout plan
     for (const plan of response.workoutPlan) {
       // Map AI exercises to ExerciseInWorkout format
       const exercises: ExerciseInWorkout[] = [];
+      // A substitute must not collide with anything else this workout asks for, or the same
+      // exercise would appear twice.
+      const requestedInWorkout = new Set(
+        plan.exercises.map((aiExercise) => String(aiExercise.exerciseId))
+      );
 
       for (const aiExercise of plan.exercises) {
         const exerciseId =
@@ -103,15 +117,31 @@ export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanRe
             ? aiExercise.exerciseId
             : String(aiExercise.exerciseId);
 
-        const matchedExercise = exercisesById.get(exerciseId);
-        if (!matchedExercise) {
+        const requestedExercise = exercisesById.get(exerciseId);
+        if (!requestedExercise) {
           console.warn(`[workoutAI] Exercise not found for id: ${exerciseId}`);
+          continue;
+        }
+
+        // Something the user is avoiding, or the gym cannot supply, never reaches a plan: it is
+        // swapped for the closest allowed exercise in the same region, or dropped.
+        const matchedExercise = isExerciseSuggestible(requestedExercise, suggestionContext)
+          ? requestedExercise
+          : rankSubstitutes(requestedExercise, suggestible, suggestionContext).find(
+              (candidate) =>
+                candidate.sameFamily &&
+                !candidate.disliked &&
+                !requestedInWorkout.has(candidate.exercise.id) &&
+                !exercises.some((chosen) => chosen.id === candidate.exercise.id)
+            )?.exercise;
+        if (!matchedExercise) {
+          console.warn(`[workoutAI] No allowed substitute for restricted exercise: ${exerciseId}`);
           continue;
         }
 
         let weight = 0;
         if (aiExercise.oneRepMaxPercentage > 0 && matchedExercise.equipmentType !== 'bodyweight') {
-          const dataPoints = await WorkoutAnalytics.getProgressiveOverloadData(exerciseId);
+          const dataPoints = await WorkoutAnalytics.getProgressiveOverloadData(matchedExercise.id);
           if (dataPoints.length > 0) {
             const max1RM = Math.max(...dataPoints.map((dp) => dp.estimated1RM));
             weight = Math.round((max1RM * aiExercise.oneRepMaxPercentage) / 100);
@@ -207,22 +237,27 @@ export async function buildWorkoutCompletedSummaryForLLM(
   }
 ): Promise<string> {
   const unit = options.weightUnit ?? 'kg';
+  // Set weights are stored in kg; the LLM is told they are in the user's unit, so convert them.
+  const units = await SettingsService.getUnits();
+  const toDisplay = (kg: number) => roundToDecimalPlaces(kgToDisplay(kg, units), 1);
   const format = options.format ?? 'json';
   try {
     const { workoutLog, sets, exercises } =
       await WorkoutService.getWorkoutWithDetails(workoutLogId);
     const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
     const byExercise = new Map<string, { reps: number; weight: number }[]>();
-    for (const set of sets.filter(isPerformedWorkoutSet)) {
+    for (const set of sets.filter(isWorkingSet)) {
       const ex = exerciseMap.get(set.exerciseId ?? '');
       if (!ex) {
         continue;
       }
+
       const name = ex.name ?? 'Exercise';
       if (!byExercise.has(name)) {
         byExercise.set(name, []);
       }
-      byExercise.get(name)!.push({ reps: set.reps ?? 0, weight: set.weight ?? 0 });
+
+      byExercise.get(name)!.push({ reps: set.reps ?? 0, weight: toDisplay(set.weight ?? 0) });
     }
 
     if (format === 'json') {
@@ -282,7 +317,7 @@ export async function prepareWorkoutDataForAI(workoutLogId: string): Promise<str
       { sets: typeof sets; exercise: (typeof exercises)[0] }
     >();
 
-    for (const set of sets.filter(isPerformedWorkoutSet)) {
+    for (const set of sets.filter(isWorkingSet)) {
       const exercise = exerciseMap.get(set.exerciseId);
       if (!exercise) {
         continue;
@@ -292,6 +327,7 @@ export async function prepareWorkoutDataForAI(workoutLogId: string): Promise<str
       if (!exercisesByName.has(exerciseName)) {
         exercisesByName.set(exerciseName, { sets: [], exercise });
       }
+
       exercisesByName.get(exerciseName)!.sets.push(set);
     }
 
@@ -346,11 +382,10 @@ export async function processParsedWorkouts(
       let setCount = 0;
 
       for (const exercise of parsedWorkout.exercises) {
-        // Find exercise by name
+        // Find exercise by name — tolerant of case, accents, plurals, abbreviations and aliases,
+        // but it never guesses between several equally plausible exercises.
         const allExercises = await ExerciseService.getAllExercises();
-        const matchedExercise = allExercises.find(
-          (ex) => ex.name.toLowerCase() === exercise.name.toLowerCase()
-        );
+        const matchedExercise = findExerciseByName(allExercises, exercise.name);
 
         if (!matchedExercise) {
           console.warn(`[workoutAI] Exercise not found during import: ${exercise.name}`);

@@ -97,10 +97,13 @@ function uniformFilter1d(arr: number[], win: number): number[] {
       } else if (j >= n) {
         j = n - 1;
       }
+
       sum += arr[j];
     }
+
     out[i] = sum / win;
   }
+
   return out;
 }
 
@@ -114,14 +117,17 @@ function runsOfTrue(mask: boolean[], minLen: number): [number, number][] {
       while (j + 1 < mask.length && mask[j + 1]) {
         j++;
       }
+
       if (j - i + 1 >= minLen) {
         segments.push([i, j]);
       }
+
       i = j + 1;
     } else {
       i++;
     }
   }
+
   return segments;
 }
 
@@ -135,10 +141,12 @@ function interp(xq: number[], xp: number[], fp: number[]): number[] {
       out[i] = fp[0];
       continue;
     }
+
     if (x >= xp[last]) {
       out[i] = fp[last];
       continue;
     }
+
     let lo = 0;
     let hi = last;
     while (hi - lo > 1) {
@@ -149,9 +157,11 @@ function interp(xq: number[], xp: number[], fp: number[]): number[] {
         hi = mid;
       }
     }
+
     const t = (x - xp[lo]) / (xp[hi] - xp[lo]);
     out[i] = fp[lo] + t * (fp[hi] - fp[lo]);
   }
+
   return out;
 }
 
@@ -164,6 +174,7 @@ function cumtrapz(y: number[], t: number[]): number[] {
     acc += 0.5 * (y[i] + y[i - 1]) * (t[i] - t[i - 1]);
     out[i] = acc;
   }
+
   return out;
 }
 
@@ -264,6 +275,7 @@ export function computePosition(
         for (let k = s; k <= e; k++) {
           sum += linG[axis][k];
         }
+
         return sum / (e - s + 1);
       });
       bias.push(interp(allIdx, anchorIdx, anchorVal));
@@ -274,6 +286,7 @@ export function computePosition(
       for (let i = 0; i < n; i++) {
         mean += linG[axis][i];
       }
+
       mean /= n;
       bias.push(new Array<number>(n).fill(mean));
     }
@@ -289,6 +302,7 @@ export function computePosition(
         velocity[i] = 0;
       }
     }
+
     // Linear-ramp residual correction across each motion segment (kept for
     // fidelity with the Python reference; velocity[b] is already zeroed there).
     for (let k = 0; k < statSegments.length - 1; k++) {
@@ -302,6 +316,7 @@ export function computePosition(
         }
       }
     }
+
     // ── 6. Position = ∫ velocity dt ──
     position.push(cumtrapz(velocity, tSec));
   }

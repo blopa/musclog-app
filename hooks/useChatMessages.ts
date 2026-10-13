@@ -33,11 +33,13 @@ import { AiCustomPromptService } from '@/database/services/AiCustomPromptService
 import { ChatService } from '@/database/services/ChatService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
+import { NutritionTargetService } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import AiService from '@/services/AiService';
+import { describeAiError } from '@/utils/aiErrors';
 import {
   formatLocalCalendarDayIso,
   localCalendarDayDate,
@@ -56,7 +58,6 @@ import {
   trackMeal,
   type TrackMealIngredient,
 } from '@/utils/coachAI';
-import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
 import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
@@ -226,7 +227,9 @@ export type UseChatMessagesResult = {
     date: Date,
     logMealType: MealType,
     portionGrams: number,
-    mealName?: string
+    mealName?: string,
+    /** Time of day on `date`; omit for "that day, right now". */
+    consumedTime?: Date
   ) => Promise<void>;
   /**
    * Arms an intention: persists it under `CHAT_INTENTION_KEY` and mirrors it into state. Paired
@@ -308,6 +311,7 @@ export function useChatMessages(
         if (cancelled) {
           return;
         }
+
         // records are DESC (newest first) — right for GiftedChat
         setMessages(records.map(toGiftedMessage));
         // Store ASC copy for AI history building
@@ -401,6 +405,7 @@ export function useChatMessages(
       if (!messages.some((m) => String(m._id) === id)) {
         return;
       }
+
       await ChatService.deleteMessage(id);
       rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== id);
       setMessages((prev) => prev.filter((m) => String(m._id) !== id));
@@ -463,6 +468,7 @@ export function useChatMessages(
         setEphemeralErrorMessage(t('coach.errors.rateLimited'));
         return;
       }
+
       lastSendTimeRef.current = now;
 
       setEphemeralErrorMessage(null); // Clear any previous error when user sends again
@@ -505,6 +511,7 @@ export function useChatMessages(
             rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
             setMessages((prev) => prev.filter((m) => m._id !== recordId));
           }
+
           setFailedMessageText(text.trim());
           setEphemeralErrorMessage(t('coach.errors.aiNotConfigured'));
           return;
@@ -546,6 +553,7 @@ export function useChatMessages(
               // ignore malformed payload
             }
           }
+
           return { role, content };
         };
 
@@ -568,9 +576,7 @@ export function useChatMessages(
           let macroTargets;
           const currentGoal = await NutritionGoalService.getCurrent();
           if (currentGoal) {
-            const resolved = currentGoal.isDynamic
-              ? await resolveDailyMacros(currentGoal, new Date())
-              : null;
+            const resolved = await NutritionTargetService.resolve(currentGoal, new Date());
 
             macroTargets = {
               calories: resolved?.totalCalories ?? currentGoal.totalCalories,
@@ -651,6 +657,7 @@ export function useChatMessages(
               rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
+
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(
               aiConfig.provider === 'on-device'
@@ -705,6 +712,7 @@ export function useChatMessages(
               rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
+
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(
               aiConfig.provider === 'on-device'
@@ -734,6 +742,7 @@ export function useChatMessages(
               rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
               setMessages((prev) => prev.filter((m) => m._id !== recordId));
             }
+
             setFailedMessageText(text.trim());
             setEphemeralErrorMessage(t('coach.errors.progressInsightFailed'));
             return;
@@ -880,9 +889,13 @@ export function useChatMessages(
           rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
           setMessages((prev) => prev.filter((m) => m._id !== recordId));
           setFailedMessageText(text.trim());
+          // A rejected key or a timeout is something the user can act on, so say which.
+          const actionable = describeAiError(error, t);
           if (error instanceof AiCreditsError || isAiCreditsError(error)) {
             setEphemeralCreditsError(true);
             setEphemeralErrorMessage(t('coach.errors.creditsExhausted'));
+          } else if (actionable) {
+            setEphemeralErrorMessage(actionable);
           } else {
             setEphemeralErrorMessage(t('coach.errors.generalError'));
           }
@@ -902,7 +915,8 @@ export function useChatMessages(
       date: Date,
       logMealType: MealType,
       portionGrams: number,
-      mealName?: string
+      mealName?: string,
+      consumedTime?: Date
     ) => {
       const baseTotalGrams = ingredients.reduce((sum, i) => sum + i.grams, 0);
       const safeBase = baseTotalGrams > 0 ? baseTotalGrams : 1;
@@ -950,13 +964,15 @@ export function useChatMessages(
           },
           date,
           logMealType,
-          ing.grams
+          ing.grams,
+          { consumedTime }
         );
       } else {
         await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
           groupId: randomUUID(),
           loggedMealName: mealName,
           imageUrl: savedImageUri,
+          consumedTime,
         });
       }
 
@@ -977,6 +993,7 @@ export function useChatMessages(
           if (msg._id !== messageId || !msg.meal) {
             return msg;
           }
+
           return {
             ...msg,
             meal: {

@@ -232,6 +232,7 @@
       "discardCancel": "Keep It",
       "alreadyActive": "You already have a workout in progress. Resume or discard it first."
     },
-    "unnamed": "Unnamed"
+    "unnamed": "Unnamed",
+    "previewWorkout": "Preview {{name}}"
   }
 }

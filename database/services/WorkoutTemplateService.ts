@@ -4,32 +4,39 @@ import { Dumbbell, type LucideIcon, User } from 'lucide-react-native';
 import type { ComponentType } from 'react';
 
 import { REPAIR_DESCRIPTORS } from '@/constants/database';
+import type { Units } from '@/constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import type { RawWorkoutTemplate, RawWorkoutTemplateExercise } from '@/data/workoutTemplates';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
-import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import type WorkoutPlan from '@/database/models/WorkoutPlan';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
+import { fetchByIds } from '@/database/queryByIds';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { handleError } from '@/utils/handleError';
-import { getWeightUnit } from '@/utils/units';
+import {
+  parseProgressionRule,
+  type ProgressionRule,
+  serializeProgressionRule,
+} from '@/utils/progressionRules';
+import { roundWeightForUnits } from '@/utils/unitConversion';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
-import { SettingsService } from './SettingsService';
+import { ExerciseUserSettingsService } from './ExerciseUserSettingsService';
+import { GymService } from './GymService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 import { type CreateWorkoutPlanData, WorkoutPlanService } from './WorkoutPlanService';
+import { WorkoutProgressionService } from './WorkoutProgressionService';
 
 /**
  * Exercise data for workout template creation/editing.
@@ -49,6 +56,8 @@ export type ExerciseInWorkout = Pick<Exercise, 'id'> & {
   isBodyweight: boolean;
   restTimeAfter?: number;
   setType?: string;
+  /** The exercise's progression rule; null/undefined keeps the automatic progression. */
+  progression?: ProgressionRule | null;
 };
 
 export interface SaveTemplateData {
@@ -136,6 +145,7 @@ export class WorkoutTemplateService {
           return repaired;
         }
       }
+
       throw error;
     }
   }
@@ -183,6 +193,7 @@ export class WorkoutTemplateService {
       if (!setsByTemplateExercise.has(teId)) {
         setsByTemplateExercise.set(teId, []);
       }
+
       setsByTemplateExercise.get(teId)!.push(set);
     });
 
@@ -231,6 +242,7 @@ export class WorkoutTemplateService {
         isBodyweight,
         restTimeAfter: firstSet?.restTimeAfter,
         setType: exerciseSets[0]?.setType ?? 'normal',
+        progression: parseProgressionRule(templateExercise.progressionJson),
       });
     }
 
@@ -255,42 +267,91 @@ export class WorkoutTemplateService {
   private static prepareTemplateExerciseGraph(
     templateId: string,
     exercises: ExerciseInWorkout[],
-    now: number
+    now: number,
+    existingExercises: WorkoutTemplateExercise[] = [],
+    existingSets: WorkoutTemplateSet[] = []
   ): Model[] {
     const exerciseCollection = database.get<WorkoutTemplateExercise>('workout_template_exercises');
     const setCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
     const records: Model[] = [];
     let setOrder = 0;
+    const retained = new Set<string>();
 
     exercises.forEach((exercise, exerciseIndex) => {
-      const templateExercise = exerciseCollection.prepareCreate((te) => {
+      const existing = existingExercises.find(
+        (te) => te.exerciseId === exercise.id && !retained.has(te.id)
+      );
+      if (existing) {
+        retained.add(existing.id);
+      }
+
+      const updateExercise = (te: WorkoutTemplateExercise) => {
         te.templateId = templateId;
         te.exerciseId = exercise.id;
         te.notes = exercise.notes;
         te.exerciseOrder = exerciseIndex + 1;
         te.groupId = exercise.groupId;
-        te.createdAt = now;
+        const previousRule = parseProgressionRule(existing?.progressionJson);
+        const nextRule = exercise.progression;
+        const resets =
+          previousRule?.type !== nextRule?.type ||
+          (previousRule?.type === 'percentage' &&
+            nextRule?.type === 'percentage' &&
+            previousRule.trainingMaxKg !== nextRule.trainingMaxKg);
+        te.progressionJson = serializeProgressionRule(
+          nextRule
+            ? { ...nextRule, resetAt: nextRule.resetAt ?? (resets ? now : previousRule?.resetAt) }
+            : null
+        );
+        if (!existing) {
+          te.createdAt = now;
+        }
+
         te.updatedAt = now;
-      });
+      };
+
+      const templateExercise = existing
+        ? existing.prepareUpdate(updateExercise)
+        : exerciseCollection.prepareCreate(updateExercise);
       records.push(templateExercise);
 
       for (let setNumber = 1; setNumber <= exercise.sets; setNumber++) {
         setOrder++;
         const currentSetOrder = setOrder;
-        records.push(
-          setCollection.prepareCreate((ts) => {
-            ts.templateExerciseId = templateExercise.id;
-            ts.targetReps = exercise.reps;
-            ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
-            ts.restTimeAfter = exercise.restTimeAfter ?? 60;
-            ts.setOrder = currentSetOrder;
-            ts.setType = exercise.setType ?? 'normal';
+        const oldSet = existingSets
+          .filter((s) => s.templateExerciseId === templateExercise.id)
+          .sort((a, b) => a.setOrder - b.setOrder)[setNumber - 1];
+        const updateSet = (ts: WorkoutTemplateSet) => {
+          ts.templateExerciseId = templateExercise.id;
+          ts.targetReps = exercise.reps;
+          ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
+          ts.restTimeAfter = exercise.restTimeAfter ?? 60;
+          ts.setOrder = currentSetOrder;
+          ts.setType = exercise.setType ?? 'normal';
+          if (!oldSet) {
             ts.createdAt = now;
-            ts.updatedAt = now;
-          })
+          }
+
+          ts.updatedAt = now;
+        };
+
+        records.push(
+          oldSet ? oldSet.prepareUpdate(updateSet) : setCollection.prepareCreate(updateSet)
         );
       }
     });
+
+    const touched = new Set(records.map((record) => record.id));
+    for (const record of [...existingSets, ...existingExercises]) {
+      if (!touched.has(record.id)) {
+        records.push(
+          record.prepareUpdate((draft) => {
+            draft.deletedAt = now;
+            draft.updatedAt = now;
+          })
+        );
+      }
+    }
 
     return records;
   }
@@ -438,10 +499,14 @@ export class WorkoutTemplateService {
           t.weekDaysJson = undefined;
           t.updatedAt = now;
         }),
-        ...existingSets.map(softDelete),
-        ...existingExercises.map(softDelete),
         ...existingSchedules.map(softDelete),
-        ...this.prepareTemplateExerciseGraph(templateId, data.exercises, now),
+        ...this.prepareTemplateExerciseGraph(
+          templateId,
+          data.exercises,
+          now,
+          existingExercises,
+          existingSets
+        ),
         ...membershipRecords,
         ...(activePlanIds.length === 0
           ? this.prepareSchedules(templateId, data.selectedDays, now)
@@ -529,13 +594,16 @@ export class WorkoutTemplateService {
       if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) {
         return -1;
       }
+
       if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return 1;
       }
+
       // If both have lastCompleted, sort by timestamp (most recent first)
       if (a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return b.lastCompletedTimestamp - a.lastCompletedTimestamp;
       }
+
       // If neither has lastCompleted, maintain original order (by created_at desc)
       return 0;
     });
@@ -632,7 +700,7 @@ export class WorkoutTemplateService {
       lastCompleted,
       lastCompletedTimestamp,
       duration,
-      image: require('../../assets/icon.png'), // Default image for now
+      image: require('../../assets/musclog-icon-fallback.png'), // Default image for now
     };
   }
 
@@ -652,6 +720,7 @@ export class WorkoutTemplateService {
         query = query.extend(Q.take(limit));
       }
     }
+
     return await query.fetch();
   }
 
@@ -704,13 +773,16 @@ export class WorkoutTemplateService {
       if (a.lastCompletedTimestamp && !b.lastCompletedTimestamp) {
         return -1;
       }
+
       if (!a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return 1;
       }
+
       // If both have lastCompleted, sort by timestamp (most recent first)
       if (a.lastCompletedTimestamp && b.lastCompletedTimestamp) {
         return b.lastCompletedTimestamp - a.lastCompletedTimestamp;
       }
+
       // If neither has lastCompleted, maintain original order (by created_at desc)
       return 0;
     });
@@ -733,16 +805,18 @@ export class WorkoutTemplateService {
    * - Strength Standards: https://exrx.net/WorkoutTools/StrengthStandards
    * - Bodyweight multipliers vary by exercise and experience level
    *
-   * Note: Weight is always stored in kg in the database. If user prefers pounds, we convert to lbs,
-   * round to nearest integer, then convert back to kg to ensure clean integer values in the user's preferred unit.
+   * Note: Weight is always stored in kg in the database. The result is rounded to a whole number
+   * in `units` — the unit this exercise's weights are SHOWN in (`resolveWeightUnits`), so a lifter
+   * in pounds sees a clean 135, not 134.9.
    */
-  private static async calculateSuggestedWeight(
+  private static calculateSuggestedWeight(
     userWeightKg: number,
     loadMultiplier: number,
     liftingExperience: string,
     age: number,
-    isBodyweight: boolean
-  ): Promise<number> {
+    isBodyweight: boolean,
+    units: Units
+  ): number {
     // Bodyweight exercises always return 0
     if (isBodyweight || loadMultiplier === 0) {
       return 0;
@@ -790,23 +864,7 @@ export class WorkoutTemplateService {
     // We then adjust based on experience and age
     const suggestedWeightKg = userWeightKg * loadMultiplier * experienceFactor * ageFactor;
 
-    return await this.roundWeight(suggestedWeightKg);
-  }
-
-  /**
-   * Round weight to nearest integer in the user's preferred unit.
-   */
-  private static async roundWeight(weightKg: number): Promise<number> {
-    const units = await SettingsService.getUnits();
-    const weightUnit = getWeightUnit(units);
-
-    if (weightUnit === 'lbs') {
-      const weightLbs = convert(weightKg, 'kg').to('lb');
-      const roundedWeightLbs = Math.round(weightLbs);
-      return convert(roundedWeightLbs, 'lb').to('kg') as number;
-    } else {
-      return Math.round(weightKg);
-    }
+    return roundWeightForUnits(suggestedWeightKg, units);
   }
 
   /**
@@ -829,73 +887,16 @@ export class WorkoutTemplateService {
       return { weightKg: 0, reps: defaultReps };
     }
 
+    // The step and the rounding follow the gym's equipment and the unit THIS exercise is shown in.
+    // A failure to read the gym must never stop a suggestion, so it falls back to no gym.
+    const gym = await GymService.getActiveGym().catch(() => null);
+    const units = (await ExerciseUserSettingsService.getWeightUnitsResolver(gym))(exerciseId);
+
     // 1. Try to get from history with Smart Double Progression
     try {
-      const logExercises = await database
-        .get<WorkoutLogExercise>('workout_log_exercises')
-        .query(
-          Q.where('exercise_id', exerciseId),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('created_at', Q.desc),
-          Q.take(1)
-        )
-        .fetch();
-
-      if (logExercises.length > 0) {
-        const lastSets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
-          .query(
-            Q.where('log_exercise_id', logExercises[0].id),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.where('completion_status', 'performed'),
-            Q.sortBy('set_order', Q.asc)
-          )
-          .fetch();
-
-        if (lastSets.length > 0) {
-          const mode = await SettingsService.getProgressionMode();
-          const units = await SettingsService.getUnits();
-          const weightUnit = getWeightUnit(units);
-
-          const avgRir =
-            lastSets.reduce((sum, s) => sum + (s.repsInReserve ?? 0), 0) / lastSets.length;
-          const lastWeight = lastSets[0].weight;
-          const lastReps = lastSets[0].reps;
-
-          // Increment: 2.5kg or 5lbs
-          let incrementKg = 2.5;
-          if (weightUnit === 'lbs') {
-            incrementKg = convert(5, 'lb').to('kg') as number;
-          }
-
-          if (avgRir >= 3) {
-            if (mode === 'weight_first') {
-              const newWeight = await this.roundWeight(lastWeight + incrementKg);
-              return { weightKg: newWeight, reps: lastReps };
-            } else {
-              // reps_first
-              const isCompound = exercise.mechanicType === 'compound';
-              const baseReps = isCompound ? defaultReps : defaultRepsIsolation;
-              const maxReps = baseReps + 2;
-              const minReps = baseReps - 2;
-
-              if (lastReps < maxReps) {
-                return { weightKg: lastWeight, reps: lastReps + 1 };
-              } else {
-                const newWeight = await this.roundWeight(lastWeight + incrementKg);
-                return { weightKg: newWeight, reps: minReps };
-              }
-            }
-          } else if (avgRir === 0) {
-            const newWeight = await this.roundWeight(Math.max(0, lastWeight - incrementKg));
-            return { weightKg: newWeight, reps: lastReps };
-          }
-
-          return {
-            weightKg: lastWeight,
-            reps: lastReps,
-          };
-        }
+      const projection = await WorkoutProgressionService.projectAdHocExercise(exercise);
+      if (projection?.sets[0]) {
+        return { weightKg: projection.sets[0].weight, reps: projection.sets[0].reps };
       }
     } catch (err) {
       console.warn('Failed to fetch suggested weight from history:', err);
@@ -922,12 +923,13 @@ export class WorkoutTemplateService {
       equipmentType.includes('bodyweight') || equipmentType.includes('body weight');
     const loadMultiplier = exercise.loadMultiplier ?? 1.0;
 
-    const weightKg = await this.calculateSuggestedWeight(
+    const weightKg = this.calculateSuggestedWeight(
       userWeightKg,
       loadMultiplier,
       liftingExperience,
       age,
-      isBodyweight
+      isBodyweight,
+      units
     );
 
     const reps = exercise.mechanicType === 'compound' ? defaultReps : defaultRepsIsolation;
@@ -995,6 +997,9 @@ export class WorkoutTemplateService {
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.asc))
       .fetch();
     const exerciseById = new Map(allExercises.map((exercise) => [exercise.id, exercise]));
+    const unitsFor = await ExerciseUserSettingsService.getWeightUnitsResolver(
+      await GymService.getActiveGym().catch(() => null)
+    );
 
     // Group exercises by day
     const exercisesByDay = new Map<number, typeof exercises>();
@@ -1003,6 +1008,7 @@ export class WorkoutTemplateService {
       if (!exercisesByDay.has(day)) {
         exercisesByDay.set(day, []);
       }
+
       exercisesByDay.get(day)!.push(exercise);
     });
 
@@ -1045,12 +1051,13 @@ export class WorkoutTemplateService {
 
         // Calculate suggested weight based on user profile and exercise characteristics
         const loadMultiplier = dbExercise.loadMultiplier ?? 1.0;
-        const suggestedWeight = await this.calculateSuggestedWeight(
+        const suggestedWeight = this.calculateSuggestedWeight(
           userWeightKg,
           loadMultiplier,
           liftingExperience,
           age,
-          isBodyweight
+          isBodyweight,
+          unitsFor(databaseExerciseId)
         );
 
         exercisesInWorkout.push({
@@ -1078,6 +1085,7 @@ export class WorkoutTemplateService {
           weight: suggestedWeight,
           isBodyweight,
           restTimeAfter: exerciseData.restTimeAfter,
+          progression: parseProgressionRule(JSON.stringify(exerciseData.progression)),
         });
       }
 
@@ -1178,6 +1186,7 @@ export class WorkoutTemplateService {
           newTe.notes = te.notes;
           newTe.exerciseOrder = te.exerciseOrder;
           newTe.groupId = te.groupId;
+          newTe.progressionJson = te.progressionJson;
           newTe.createdAt = now;
           newTe.updatedAt = now;
         });
@@ -1249,44 +1258,52 @@ export class WorkoutTemplateService {
   > {
     const templates = await WorkoutTemplateRepository.getArchived().fetch();
 
-    const templatesWithMetadata = await Promise.all(
-      templates.map(async (template) => {
-        const templateExercises = await database
-          .get<WorkoutTemplateExercise>('workout_template_exercises')
-          .query(Q.where('template_id', template.id), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
+    const templateIds = templates.map((template) => template.id);
+    const liveOnly = Q.where('deleted_at', Q.eq(null));
+    const [templateExercises, workoutLogs] = await Promise.all([
+      fetchByIds<WorkoutTemplateExercise>(
+        'workout_template_exercises',
+        'template_id',
+        templateIds,
+        liveOnly
+      ),
+      fetchByIds<WorkoutLog>('workout_logs', 'template_id', templateIds, liveOnly),
+    ]);
 
-        const exerciseCount = templateExercises.length;
+    const exerciseCountByTemplateId = new Map<string, number>();
+    for (const exercise of templateExercises) {
+      exerciseCountByTemplateId.set(
+        exercise.templateId,
+        (exerciseCountByTemplateId.get(exercise.templateId) ?? 0) + 1
+      );
+    }
 
-        const workoutLogs = await database
-          .get<WorkoutLog>('workout_logs')
-          .query(
-            Q.where('template_id', template.id),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('completed_at', Q.desc)
-          )
-          .fetch();
+    const lastCompletedAtByTemplateId = new Map<string, number>();
+    for (const { templateId, completedAt } of workoutLogs) {
+      if (
+        templateId &&
+        completedAt &&
+        completedAt > (lastCompletedAtByTemplateId.get(templateId) ?? 0)
+      ) {
+        lastCompletedAtByTemplateId.set(templateId, completedAt);
+      }
+    }
 
-        const lastWorkoutLog = workoutLogs[0];
+    const templatesWithMetadata = templates.map((template) => {
+      const lastCompletedTimestamp = lastCompletedAtByTemplateId.get(template.id);
 
-        let lastCompleted: string | undefined;
-        let lastCompletedTimestamp: number | undefined;
-
-        if (lastWorkoutLog?.completedAt) {
-          lastCompletedTimestamp = lastWorkoutLog.completedAt;
-          lastCompleted = this.formatRelativeDate(lastCompletedTimestamp);
-        }
-
-        return {
-          id: template.id,
-          name: template.name,
-          description: template.description,
-          exerciseCount,
-          lastCompleted,
-          lastCompletedTimestamp,
-        };
-      })
-    );
+      return {
+        id: template.id,
+        name: template.name,
+        description: template.description,
+        exerciseCount: exerciseCountByTemplateId.get(template.id) ?? 0,
+        lastCompleted:
+          lastCompletedTimestamp === undefined
+            ? undefined
+            : this.formatRelativeDate(lastCompletedTimestamp),
+        lastCompletedTimestamp,
+      };
+    });
 
     return templatesWithMetadata;
   }
@@ -1414,6 +1431,7 @@ export class WorkoutTemplateService {
           return this.deleteTemplateInternal(id, true);
         }
       }
+
       throw error;
     }
   }

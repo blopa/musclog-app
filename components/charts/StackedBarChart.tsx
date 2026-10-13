@@ -142,6 +142,7 @@ export function StackedBarChart({
     if (w === 0) {
       return;
     }
+
     const domainX = xMin + (touchX / w) * (xMax - xMin);
     const nearest = data.reduce((prev, curr) =>
       Math.abs(curr.x - domainX) < Math.abs(prev.x - domainX) ? curr : prev

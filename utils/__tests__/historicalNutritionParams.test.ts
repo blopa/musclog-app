@@ -259,7 +259,9 @@ describe('getHistoricalNutritionParams', () => {
     expect(result!.historicalInitialWeightKg).toBe(72);
     expect(result!.historicalFinalWeightKg).toBeCloseTo(70.297477, 5);
     expect(result!.historicalTotalCalories).toBe(52500);
-    expect(result!.historicalTotalDays).toBe(30);
+    expect(result!.historicalTotalDays).toBe(24);
+    expect(result!.historicalWeightChangeDays).toBe(24);
+    expect(mockGetRangeNutrients).toHaveBeenCalledWith(new Date(2025, 1, 7), new Date(2025, 2, 2));
   });
 
   it('fetches a 28-day weight warm-up before the empirical window', async () => {
@@ -354,4 +356,19 @@ describe('getHistoricalNutritionParams', () => {
       expect(result!.historicalTotalDays).toBe(10);
     });
   });
+});
+
+it('separates seven food-logging days from a thirty-day trend interval', async () => {
+  mockGetMetricsHistory.mockImplementation(async (type: string) =>
+    type === 'weight'
+      ? [makeWeightMetric(startTs, 83), makeWeightMetric(fixedEndDate.getTime(), 80)]
+      : []
+  );
+  mockGetRangeNutrients.mockResolvedValue({ calories: 14000 });
+  mockGetNutritionLogsForDateRange.mockResolvedValue(
+    Array.from({ length: 7 }, (_, i) => makeNutritionLog(startTs + i * 86400000))
+  );
+  expect(
+    await getHistoricalNutritionParams({ asOfDate: fixedEndDate, excludeUnloggedDays: true })
+  ).toMatchObject({ historicalTotalDays: 7, historicalWeightChangeDays: 30 });
 });

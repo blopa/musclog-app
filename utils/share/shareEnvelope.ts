@@ -173,6 +173,7 @@ function readOptional(container: Record<string, unknown>, key: string): unknown 
   if (container[key] === null) {
     delete container[key];
   }
+
   return container[key];
 }
 
@@ -302,6 +303,7 @@ const KIND_VALIDATORS: Record<MusclogShareKind, (parsed: Record<string, unknown>
     if (!Array.isArray(mealFoods) || mealFoods.length === 0) {
       malformed('Meal share has no ingredients');
     }
+
     validateMealSummary(parsed.summary);
   },
   nutritionDay: (parsed) => {
@@ -309,6 +311,7 @@ const KIND_VALIDATORS: Record<MusclogShareKind, (parsed: Record<string, unknown>
     if (!Array.isArray(logs) || logs.length === 0) {
       malformed('Day share has no entries');
     }
+
     validateNutritionDaySummary(parsed.summary);
   },
 };
@@ -318,6 +321,7 @@ function decodedBase64Bytes(base64: string): number {
   if (!compact || compact.length % 4 !== 0 || !/^[A-Za-z0-9+/]*={0,2}$/.test(compact)) {
     malformed('Share asset contains invalid base64');
   }
+
   const padding = compact.endsWith('==') ? 2 : compact.endsWith('=') ? 1 : 0;
   return (compact.length / 4) * 3 - padding;
 }
@@ -326,6 +330,7 @@ function validateAssets(value: unknown): asserts value is Record<string, ShareAs
   if (value === undefined) {
     return;
   }
+
   if (!isRecord(value)) {
     malformed('Share assets must be an object');
   }
@@ -341,6 +346,7 @@ function validateAssets(value: unknown): asserts value is Record<string, ShareAs
     ) {
       malformed('Share asset has an invalid shape');
     }
+
     totalBytes += decodedBase64Bytes(asset.base64);
     if (totalBytes > MAX_SHARE_ASSET_BYTES) {
       throw new MusclogShareError('too-large', 'Share assets exceed the 4 MB limit');
@@ -365,9 +371,11 @@ export function validateShareEnvelope(parsed: unknown): MusclogShareEnvelope {
   if (!Number.isInteger(parsed._musclogShare) || Number(parsed._musclogShare) < 1) {
     throw new MusclogShareError('not-a-share', 'Payload is not a Musclog share envelope');
   }
+
   if (Number(parsed._musclogShare) > MUSCLOG_SHARE_ENVELOPE_VERSION) {
     throw new MusclogShareError('unsupported-envelope', 'Share envelope is from a newer app');
   }
+
   if (Object.hasOwn(parsed, '_exportVersion')) {
     malformed('A share envelope cannot also be a database export');
   }
@@ -375,13 +383,16 @@ export function validateShareEnvelope(parsed: unknown): MusclogShareEnvelope {
   if (typeof parsed.kind !== 'string') {
     malformed('Share kind is missing');
   }
+
   const spec = getShareKindSpec(parsed.kind);
   if (!spec) {
     throw new MusclogShareError('unsupported-kind', 'Share kind is not supported');
   }
+
   if (!Number.isInteger(parsed.kindVersion) || Number(parsed.kindVersion) < 1) {
     malformed('Share kind version is invalid');
   }
+
   if (Number(parsed.kindVersion) > spec.kindVersion) {
     throw new MusclogShareError('unsupported-kind', 'Share kind is from a newer app');
   }
@@ -413,11 +424,13 @@ export function validateShareEnvelope(parsed: unknown): MusclogShareEnvelope {
     if (!spec.tables.includes(table) || !Array.isArray(rows)) {
       malformed(`Share records contain an unsupported table: ${table}`);
     }
+
     const ids = new Set<string>();
     for (const row of rows) {
       if (!isRecord(row) || typeof row.id !== 'string' || !row.id || ids.has(row.id)) {
         malformed(`Share records contain an invalid ${table} row`);
       }
+
       ids.add(row.id);
       rowCount++;
       if (rowCount > MAX_SHARE_ROWS) {

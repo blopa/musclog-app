@@ -2,6 +2,7 @@ import {
   BookOpen,
   Camera,
   Dumbbell,
+  Footprints,
   LucideIcon,
   NotebookPen,
   ScanLine,
@@ -70,6 +71,14 @@ export const HOME_ACTIONS: Record<HomeActionKey, HomeActionConfig> = {
   add_note: {
     labelKey: 'home.actions.addNote',
     icon: NotebookPen,
+    tone: 'muted',
+    isAvailable: ALWAYS,
+  },
+  // Opens the quick walk/run log. It needs nothing from the device: the health write is best
+  // effort and silently skipped where there is no health store (web).
+  log_cardio: {
+    labelKey: 'home.actions.logCardio',
+    icon: Footprints,
     tone: 'muted',
     isAvailable: ALWAYS,
   },

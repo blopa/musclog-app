@@ -26,6 +26,7 @@ export type PlanData = {
   tdee: number;
   bmr: number;
   currentWeightKg: number;
+  heightCm: number;
   bodyFatPercent?: number;
   gender: Gender;
   fitnessGoal: FitnessGoal;
@@ -65,6 +66,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
     const startLoading = () => {
       setIsLoading(true);
     };
+
     startLoading();
 
     const compute = async () => {
@@ -74,6 +76,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
           setPlanData(null);
           setIsLoading(false);
         }
+
         return;
       }
 
@@ -93,6 +96,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
           setPlanData(null);
           setIsLoading(false);
         }
+
         return;
       }
 
@@ -140,6 +144,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
             tdee: plan.tdee,
             bmr: plan.bmr,
             currentWeightKg: weightKg,
+            heightCm,
             bodyFatPercent,
             gender,
             fitnessGoal,

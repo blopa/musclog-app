@@ -108,6 +108,7 @@ export class TimezoneMigrationService {
             if (newDate !== null) {
               record.date = newDate;
             }
+
             record.updatedAt = now;
           })
         )

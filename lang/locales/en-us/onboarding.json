@@ -126,7 +126,8 @@
         "basalMetabolicRate": "Basal metabolism",
         "exerciseSession": "Workouts",
         "leanBodyMass": "Lean body mass",
-        "steps": "Steps"
+        "steps": "Steps",
+        "distance": "Distance"
       },
       "maybeLater": "Maybe later",
       "privacyStatement": "Musclog values your privacy. Your data is encrypted and used only for your personal analytics.",
@@ -281,6 +282,64 @@
       "calculateForMe": "Calculate for Me",
       "setThemMyself": "I'll Set Them Myself",
       "missingData": "Please complete your fitness details first so we can calculate your plan."
+    },
+    "trainingSetup": {
+      "title": "How do you train?",
+      "subtitle": "A few quick answers set up your gym and your first workout.",
+      "locationLabel": "WHERE YOU TRAIN",
+      "location": {
+        "gym": "Gym",
+        "gymDesc": "Barbells, machines and cables",
+        "home": "Home",
+        "homeDesc": "Dumbbells, bands and bodyweight",
+        "minimal": "Minimal",
+        "minimalDesc": "Just your body and maybe a band"
+      },
+      "experienceLabel": "EXPERIENCE",
+      "experience": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "daysLabel": "DAYS PER WEEK",
+      "daysMax": "{{count}}+",
+      "helpLabel": "LOAD SUGGESTIONS",
+      "help": {
+        "suggest": "Suggest my weights",
+        "suggestDesc": "Targets move up when you hit your reps, and the app explains why",
+        "manual": "I'll decide",
+        "manualDesc": "Your plan is copied as written, nothing is changed for you"
+      },
+      "changeLater": "You can change all of this later in workout settings.",
+      "continue": "Continue",
+      "skip": "Skip, I only want nutrition",
+      "gymNames": {
+        "gym": "My gym",
+        "home": "Home gym",
+        "minimal": "Bodyweight"
+      }
+    },
+    "firstWorkout": {
+      "title": "Your first workout",
+      "subtitlePlan": "Based on your answers, this plan is a good place to start. You can edit it any time.",
+      "subtitleEmpty": "You can start with an empty workout and add exercises as you go.",
+      "days": "Days per week: {{count}}",
+      "exercises": "Exercises: {{count}}",
+      "minutes": "About {{count}} min",
+      "editHint": "Change exercises, sets or rules whenever you like.",
+      "emptyTitle": "Start with an empty workout",
+      "emptyDescription": "Plans in the library are built around gym equipment, so we'll skip those. Add exercises as you go, or browse plans later.",
+      "startNow": "Add plan & start",
+      "startEmpty": "Start empty workout",
+      "notNow": "Not now",
+      "howTitle": "How it works",
+      "stepAddTitle": "Add exercises",
+      "stepAddBody": "Search the library and add movements as you train.",
+      "stepLogTitle": "Log your sets",
+      "stepLogBody": "Enter weight and reps, and the rest timer starts for you.",
+      "stepNextTitle": "Get smarter next time",
+      "stepNextBody": "We remember your numbers and suggest your next load.",
+      "planHint": "Ready to start? Tap \"{{action}}\" to add this plan to your profile and begin your first workout right away, or tap \"{{later}}\" to do it later."
     }
   }
 }

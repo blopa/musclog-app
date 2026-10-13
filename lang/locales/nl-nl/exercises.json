@@ -143,7 +143,45 @@
       "oneRepMaxTrendEmpty": "Log deze oefening in twee workouts om te zien hoe je geschatte 1RM zich ontwikkelt.",
       "oneRepMaxTrendUp": "{{change}} {{unit}} omhoog over {{sessions}} sessies.",
       "oneRepMaxTrendDown": "{{change}} {{unit}} omlaag over {{sessions}} sessies.",
-      "oneRepMaxTrendSteady": "Blijft gelijk over {{sessions}} sessies."
+      "oneRepMaxTrendSteady": "Blijft gelijk over {{sessions}} sessies.",
+      "aliasesTitle": "Ook bekend als",
+      "aliasesHint": "Zoeken vindt deze oefening ook onder deze namen.",
+      "aliasPlaceholder": "Voeg een naam toe, bijv. BP",
+      "aliasInputLabel": "Nieuwe naam",
+      "aliasAdd": "Toevoegen",
+      "aliasRemove": "{{alias}} verwijderen",
+      "aliasDuplicate": "Je hebt die naam al toegevoegd.",
+      "aliasLimit": "Je kunt maximaal {{count}} namen toevoegen.",
+      "aliasEmpty": "Gebruik minstens één letter of cijfer.",
+      "aliasFailed": "Kon die naam niet opslaan. Probeer het opnieuw.",
+      "restriction": {
+        "title": "Suggesties",
+        "hint": "Kies of deze oefening mag worden voorgesteld bij vervangingen en gegenereerde trainingen.",
+        "allow": "Normaal voorstellen",
+        "dislike": "Niet leuk",
+        "injury": "Blessure",
+        "never": "Nooit voorstellen",
+        "expiryLabel": "Vermijden gedurende",
+        "explain": {
+          "dislike": "Komt als laatste in vervangingssuggesties.",
+          "injury": "Verborgen bij vervangingen en gegenereerde trainingen terwijl je herstelt.",
+          "never": "Verborgen bij vervangingen en gegenereerde trainingen."
+        },
+        "failed": "Opslaan mislukt. Probeer het opnieuw."
+      },
+      "preferences": {
+        "title": "Jouw voorkeuren",
+        "hint": "Alleen jij ziet deze. Ze gaan met deze oefening mee naar elke training.",
+        "unitLabel": "Gewichtseenheid",
+        "unitDefault": "Standaard van de app",
+        "noteLabel": "Notitie",
+        "notePlaceholder": "Een aanwijzing voor elke set, bijv. ellebogen dicht bij het lichaam",
+        "noteSave": "Notitie opslaan",
+        "failed": "Opslaan is mislukt. Probeer het opnieuw.",
+        "repCeilingLabel": "Maximum aantal herhalingen (zonder extra gewicht)",
+        "repCeilingOption": "{{reps}} herhalingen",
+        "repCeilingHint": "Musclog voegt elke sessie een herhaling toe tot dit aantal. Daarna ga je vooruit met een gewichtsvest of dipriem, een zwaardere variant of een langzamer tempo."
+      }
     },
     "manageExerciseData": {
       "deleteExerciseWarning": "Weet je zeker dat je deze oefening wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",

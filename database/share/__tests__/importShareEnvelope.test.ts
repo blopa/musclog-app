@@ -937,6 +937,28 @@ describe('importShareEnvelope — nutritionDay', () => {
     expect(record.updatedAt).toEqual(expect.any(Number));
   });
 
+  it('puts the cached rows back when the replacement batch is rejected', async () => {
+    const existing: any = storedLog();
+    existing._raw = { id: 'local-log', deleted_at: null };
+    existing._preparedState = null;
+    // WatermelonDB mutates the cached record the moment an update is prepared.
+    existing.prepareUpdate.mockImplementation((mutator: (record: any) => void) => {
+      existing._raw = { ...existing._raw, deleted_at: 123 };
+      existing._preparedState = 'update';
+      mutator({});
+      return { table: 'nutrition_logs' };
+    });
+    wire({ foods: [storedFood()], nutrition_logs: [existing] });
+    (mockDatabase.batch as jest.Mock).mockRejectedValueOnce(new Error('batch failed'));
+
+    await expect(
+      importShareEnvelope({ dayMode: 'replace', envelope: dayEnvelope() })
+    ).rejects.toThrow('batch failed');
+
+    expect(existing._raw.deleted_at).toBeNull();
+    expect(existing._preparedState).toBeNull();
+  });
+
   it("rewrites a meal group id instead of pointing at the sender's", async () => {
     const { created } = wire({ foods: [storedFood()] });
 

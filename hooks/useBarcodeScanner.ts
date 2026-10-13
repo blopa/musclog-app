@@ -33,6 +33,7 @@ export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBar
         setIsFoodNotFoundModalVisible(false);
         setIsOpticalStreamDetected(false);
       };
+
       reset();
       isSearchingBarcodeRef.current = false;
       opticalProbeRef.current.reset();
@@ -58,6 +59,7 @@ export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBar
         if (probed === 'detected') {
           setIsOpticalStreamDetected(true);
         }
+
         return;
       }
 

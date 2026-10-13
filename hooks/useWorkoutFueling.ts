@@ -60,6 +60,7 @@ export function useWorkoutFueling(workoutStartTime?: number) {
             const nutrients = await log.getNutrients();
             calculatedCarbs += nutrients.carbs;
           }
+
           window = 14; // Approx 12-16 hour window covering dinner to morning
         } else {
           // Afternoon/Evening workout (>= 11 AM):
@@ -68,6 +69,7 @@ export function useWorkoutFueling(workoutStartTime?: number) {
             const nutrients = await log.getNutrients();
             calculatedCarbs += nutrients.carbs;
           }
+
           window = hour; // Carbs since midnight
         }
 

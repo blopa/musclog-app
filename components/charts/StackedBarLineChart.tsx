@@ -139,10 +139,12 @@ export function StackedBarLineChart({
     if (w === 0) {
       return;
     }
+
     const chartWidth = w - 64;
     if (chartWidth <= 0) {
       return;
     }
+
     const t = Math.max(0, Math.min(1, touchX / chartWidth));
     const index = Math.round(t * (data.length - 1));
     const idx = Math.min(index, data.length - 1);

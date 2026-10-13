@@ -36,6 +36,7 @@ function concat(chunks: Uint8Array[], total: number): Uint8Array {
     out.set(chunk, offset);
     offset += chunk.length;
   }
+
   return out;
 }
 
@@ -65,6 +66,7 @@ export async function gzipChunked(bytes: Uint8Array, options: GzipOptions = {}) 
       failure = error;
       break;
     }
+
     onProgress?.(end / bytes.length);
     await yieldToUi();
   }
@@ -72,6 +74,7 @@ export async function gzipChunked(bytes: Uint8Array, options: GzipOptions = {}) 
   if (bytes.length === 0) {
     gzip.push(new Uint8Array(0), true);
   }
+
   if (failure) {
     throw failure;
   }
@@ -103,11 +106,13 @@ export async function gunzipChunked(
     if (overflow) {
       return;
     }
+
     total += chunk.length;
     if (total > maxBytes) {
       overflow = true;
       return;
     }
+
     chunks.push(chunk);
   });
 
@@ -117,6 +122,7 @@ export async function gunzipChunked(
     if (overflow) {
       throw new OpticalInflateTooLargeError(maxBytes);
     }
+
     onProgress?.(total);
     await yieldToUi();
   }

@@ -39,9 +39,11 @@ function fastedDayKeysFor(options: {
   if (options.includeAllFastedDays) {
     return FastedDayRepository.getAllFastedDayKeys();
   }
+
   if (options.range) {
     return FastedDayRepository.getFastedDayKeysForRange(options.range);
   }
+
   return Promise.resolve(new Set());
 }
 

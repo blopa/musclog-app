@@ -17,6 +17,10 @@ export type WorkoutLogSetSnapshot = {
   difficultyLevel?: number;
   setType: string;
   setOrder: number;
+  /** Raw JSON of a start adjustment; read it through `parseStartAdjustment`. */
+  adjustmentJson?: string;
+  prescriptionJson?: string;
+  rirRecorded?: boolean;
   createdAt: number;
   updatedAt: number;
   deletedAt?: number;
@@ -66,6 +70,13 @@ export function toWorkoutLogSetSnapshot(set: WorkoutLogSet): WorkoutLogSetSnapsh
     difficultyLevel: optionalNumberValue(raw, 'difficulty_level', set.difficultyLevel),
     setType: typeof raw.set_type === 'string' ? raw.set_type : (set.setType ?? 'normal'),
     setOrder: numberValue(raw.set_order, set.setOrder, 0),
+    adjustmentJson:
+      typeof raw.adjustment_json === 'string'
+        ? raw.adjustment_json
+        : (set.adjustmentJson ?? undefined),
+    prescriptionJson:
+      typeof raw.prescription_json === 'string' ? raw.prescription_json : set.prescriptionJson,
+    rirRecorded: typeof raw.rir_recorded === 'boolean' ? raw.rir_recorded : set.rirRecorded,
     createdAt: numberValue(raw.created_at, set.createdAt, 0),
     updatedAt: numberValue(raw.updated_at, set.updatedAt, 0),
     deletedAt: optionalNumberValue(raw, 'deleted_at', set.deletedAt),

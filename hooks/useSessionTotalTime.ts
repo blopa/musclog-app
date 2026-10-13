@@ -65,6 +65,7 @@ export function useSessionTotalTime({
       });
       elapsed += 1;
     };
+
     tick(); // set initial time immediately
 
     const interval = setInterval(tick, 1000);

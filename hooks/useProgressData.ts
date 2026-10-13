@@ -92,6 +92,7 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
     const run = () => {
       void fetchData();
     };
+
     run();
   }, [fetchData]);
 
@@ -112,6 +113,7 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
       if (!allAggregationData.daily || !allAggregationData.weekly || !allAggregationData.monthly) {
         return false;
       }
+
       return (
         getData(allAggregationData.daily).length > 0 ||
         getData(allAggregationData.weekly).length > 0 ||

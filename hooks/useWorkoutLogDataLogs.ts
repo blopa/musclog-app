@@ -71,6 +71,7 @@ function groupWorkoutLogsByDate(
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -101,11 +102,13 @@ function mergeIntoDayGroups(
     if (existingIds.has(item.id)) {
       return;
     }
+
     existingIds.add(item.id);
 
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -232,6 +235,7 @@ export function useWorkoutLogDataLogs({
     if (isLoading) {
       return;
     }
+
     await loadInitial();
   }, [loadInitial, isLoading]);
 
@@ -239,9 +243,11 @@ export function useWorkoutLogDataLogs({
     if (!visible) {
       return;
     }
+
     const run = () => {
       void loadInitial();
     };
+
     run();
   }, [visible, loadInitial]);
 

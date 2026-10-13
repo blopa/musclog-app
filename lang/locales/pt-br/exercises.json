@@ -143,7 +143,45 @@
       "oneRepMaxTrendEmpty": "Registre este exercício em dois treinos para ver como seu 1RM estimado está evoluindo.",
       "oneRepMaxTrendUp": "Subiu {{change}} {{unit}} em {{sessions}} sessões.",
       "oneRepMaxTrendDown": "Caiu {{change}} {{unit}} em {{sessions}} sessões.",
-      "oneRepMaxTrendSteady": "Estável em {{sessions}} sessões."
+      "oneRepMaxTrendSteady": "Estável em {{sessions}} sessões.",
+      "aliasesTitle": "Também conhecido como",
+      "aliasesHint": "A busca também encontra este exercício por estes nomes.",
+      "aliasPlaceholder": "Adicione um nome, ex.: SR",
+      "aliasInputLabel": "Novo nome",
+      "aliasAdd": "Adicionar",
+      "aliasRemove": "Remover {{alias}}",
+      "aliasDuplicate": "Você já adicionou esse nome.",
+      "aliasLimit": "Você pode adicionar até {{count}} nomes.",
+      "aliasEmpty": "Use pelo menos uma letra ou um número.",
+      "aliasFailed": "Não foi possível salvar esse nome. Tente novamente.",
+      "restriction": {
+        "title": "Sugestões",
+        "hint": "Escolha se este exercício pode ser sugerido em trocas e treinos gerados.",
+        "allow": "Sugerir normalmente",
+        "dislike": "Não gosto",
+        "injury": "Lesão",
+        "never": "Nunca sugerir",
+        "expiryLabel": "Evitar por",
+        "explain": {
+          "dislike": "Aparece por último nas sugestões de troca.",
+          "injury": "Oculto nas trocas e nos treinos gerados enquanto você se recupera.",
+          "never": "Oculto nas trocas e nos treinos gerados."
+        },
+        "failed": "Não foi possível salvar. Tente novamente."
+      },
+      "preferences": {
+        "title": "Suas preferências",
+        "hint": "Só você vê isto. Acompanham este exercício em todo treino.",
+        "unitLabel": "Unidade de peso",
+        "unitDefault": "Padrão do app",
+        "noteLabel": "Anotação",
+        "notePlaceholder": "Uma dica para ler antes de cada série, ex.: cotovelos junto ao corpo",
+        "noteSave": "Salvar anotação",
+        "failed": "Não foi possível salvar. Tente novamente.",
+        "repCeilingLabel": "Limite de repetições (sem peso adicional)",
+        "repCeilingOption": "{{reps}} repetições",
+        "repCeilingHint": "O Musclog adiciona uma repetição por sessão até esse número. Depois disso, evolua com um colete ou cinto com peso, uma variação mais difícil ou um ritmo mais lento."
+      }
     },
     "manageExerciseData": {
       "deleteExerciseWarning": "Tem certeza de que deseja excluir este exercício? Esta ação não pode ser desfeita.",

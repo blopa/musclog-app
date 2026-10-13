@@ -36,12 +36,15 @@ function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): st
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
     return format(date, 'EEEE', { locale });
   }
+
   return format(date, 'MMM d', { locale });
 }
 
@@ -109,6 +112,7 @@ function groupLogsByDate(
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -139,11 +143,13 @@ function mergeIntoDayGroups(
     if (existingIds.has(item.id)) {
       return;
     }
+
     existingIds.add(item.id);
 
     if (!groupMap.has(dateTimestamp)) {
       groupMap.set(dateTimestamp, []);
     }
+
     groupMap.get(dateTimestamp)!.push(item);
   });
 
@@ -297,6 +303,7 @@ export function useFoodDataLogs({
     if (isLoading) {
       return;
     }
+
     await loadInitial();
   }, [loadInitial, isLoading]);
 
@@ -304,9 +311,11 @@ export function useFoodDataLogs({
     if (!visible) {
       return;
     }
+
     const run = () => {
       void loadInitial();
     };
+
     run();
   }, [visible, loadInitial]);
 

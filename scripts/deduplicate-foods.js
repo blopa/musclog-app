@@ -135,6 +135,7 @@ class FoodDeduplicator {
         if (!foodsByBarcode.has(food.barcode)) {
           foodsByBarcode.set(food.barcode, []);
         }
+
         foodsByBarcode.get(food.barcode).push(food);
       }
     }
@@ -161,6 +162,7 @@ class FoodDeduplicator {
       if (!foodsByProfile.has(profileKey)) {
         foodsByProfile.set(profileKey, []);
       }
+
       foodsByProfile.get(profileKey).push(food);
     }
 
@@ -236,6 +238,7 @@ class FoodDeduplicator {
       if (a.is_ai_generated && !b.is_ai_generated) {
         return -1;
       }
+
       if (!a.is_ai_generated && b.is_ai_generated) {
         return 1;
       }
@@ -265,15 +268,19 @@ class FoodDeduplicator {
     if (food.brand) {
       score += 2;
     }
+
     if (food.barcode) {
       score += 3;
     }
+
     if (food.micros_json && food.micros_json !== '{}' && food.micros_json !== '') {
       score += 2;
     }
+
     if (food.fiber > 0) {
       score += 1;
     }
+
     if (food.source === 'user') {
       score += 1;
     } // Prefer user-entered over unknown

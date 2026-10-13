@@ -353,8 +353,10 @@ export function useUserMetrics({
         const run = () => {
           void loadInitialMetrics();
         };
+
         run();
       }
+
       return;
     }
 
@@ -388,6 +390,7 @@ export function useUserMetrics({
     const runInit = () => {
       void loadInitialMetrics();
     };
+
     runInit();
 
     return () => subscription.unsubscribe();

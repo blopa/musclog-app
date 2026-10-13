@@ -9,7 +9,9 @@
     "stats": {
       "duration": "Длительность",
       "volume": "Объём",
-      "calories": "Калории"
+      "calories": "Калории",
+      "distance": "Дистанция",
+      "pace": "Темп"
     },
     "prBadge": {
       "singular": "{{count}} ЛР",

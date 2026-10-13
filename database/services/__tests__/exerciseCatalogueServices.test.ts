@@ -13,6 +13,10 @@ jest.mock('@/lang/lang', () => ({
   },
   EN_US: 'en-US',
   EXERCISES_JSON: {
+    'pt-BR': [
+      { exerciseSlug: 'Bench_Press', name: 'Supino Reto', description: 'supino' },
+      { exerciseSlug: 'Squat', name: 'Agachamento', description: 'agachamento' },
+    ],
     'en-US': [
       {
         exerciseSlug: 'Bench_Press',
@@ -345,6 +349,65 @@ describe('AppExerciseCatalogueService', () => {
       'fx-Squat: id is occupied by a non-catalogue exercise'
     );
     expect(mockDb.preparedExercises.map(({ id }) => id)).not.toContain('fx-Squat');
+  });
+});
+
+describe('AppExerciseCatalogueService search_text', () => {
+  beforeEach(() => mockDb.reset());
+
+  const words = (exercise: { searchText?: string }) => (exercise.searchText ?? '').split(' ');
+
+  it('indexes a new row under its name in every bundled language', async () => {
+    await AppExerciseCatalogueService.sync();
+
+    const squat = mockDb.preparedExercises.find(({ id }) => id === 'fx-Squat');
+    expect(words(squat)).toEqual(expect.arrayContaining(['squat', 'agachamento']));
+    const bench = mockDb.preparedExercises.find(({ id }) => id === 'fx-Bench_Press');
+    expect(words(bench)).toEqual(expect.arrayContaining(['bench', 'press', 'supino', 'reto']));
+  });
+
+  it('backfills an existing row that predates the column', async () => {
+    mockDb.setTables({
+      exercises: currentCatalogue(),
+      exercise_muscles: currentCatalogueLinks(),
+    });
+
+    const report = await AppExerciseCatalogueService.sync();
+
+    expect(report.exercisesUpdated).toBe(4);
+    const squat = mockDb.getTable('exercises').find(({ id }) => id === 'fx-Squat');
+    expect(words(squat)).toEqual(expect.arrayContaining(['squat', 'agachamento']));
+  });
+
+  it('is a no-op once every row is indexed', async () => {
+    await AppExerciseCatalogueService.sync();
+
+    const second = await AppExerciseCatalogueService.sync();
+
+    expect(second).toMatchObject({ exercisesCreated: 0, exercisesUpdated: 0 });
+  });
+
+  it('keeps the user aliases of a catalogue exercise in its search text', async () => {
+    mockDb.setTables({
+      exercises: currentCatalogue(),
+      exercise_muscles: currentCatalogueLinks(),
+      exercise_aliases: [{ exerciseId: 'fx-Squat', alias: 'Quad Day', deletedAt: null }],
+    });
+
+    await AppExerciseCatalogueService.sync();
+
+    const squat = mockDb.getTable('exercises').find(({ id }) => id === 'fx-Squat');
+    expect(words(squat)).toEqual(expect.arrayContaining(['quad', 'day', 'squat']));
+  });
+
+  it('does not let a missing search_text make the catalogue look incomplete', async () => {
+    // isComplete gates retiring the legacy catalogue; derived search data must not block that.
+    mockDb.setTables({
+      exercises: currentCatalogue(),
+      exercise_muscles: currentCatalogueLinks(),
+    });
+
+    expect(await AppExerciseCatalogueService.isComplete()).toBe(true);
   });
 });
 

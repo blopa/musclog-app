@@ -49,6 +49,7 @@ import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
 import { COACH_INTENTIONS } from '@/components/coach/coachIntentions';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
 import {
   CHAT_INTENTIONS,
   type ChatIntention,
@@ -177,17 +178,19 @@ const MessageImage = ({ props, theme }: { props: any; theme: Theme }) => {
   }
 
   return (
-    <Image
-      source={{ uri: props.currentMessage.image }}
-      style={{
-        width: 150,
-        height: 100,
-        borderRadius: 8,
-        margin: 3,
-      }}
-      resizeMode="cover"
-      onError={() => setHasError(true)}
-    />
+    <ZoomableThumbnail uri={props.currentMessage.image}>
+      <Image
+        source={{ uri: props.currentMessage.image }}
+        style={{
+          width: 150,
+          height: 100,
+          borderRadius: 8,
+          margin: 3,
+        }}
+        resizeMode="cover"
+        onError={() => setHasError(true)}
+      />
+    </ZoomableThumbnail>
   );
 };
 
@@ -390,6 +393,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme, locale: string) => {
   if (!props.currentMessage?.createdAt) {
     return null;
   }
+
   const date = new Date(props.currentMessage.createdAt);
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
@@ -407,6 +411,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme, locale: string) => {
       </View>
     );
   }
+
   return null;
 };
 
@@ -501,6 +506,7 @@ function SeededComposer({
     if (seedText !== null) {
       clearSeedText();
     }
+
     propsWithText.onTextChanged?.(newText);
   };
 
@@ -573,11 +579,13 @@ const renderInputToolbar = (
             className="relative h-20 w-20 rounded-lg"
             style={{ backgroundColor: theme.colors.background.card }}
           >
-            <Image
-              source={{ uri: attachedImage.uri }}
-              style={{ width: '100%', height: '100%', borderRadius: 8 }}
-              resizeMode="cover"
-            />
+            <ZoomableThumbnail uri={attachedImage.uri}>
+              <Image
+                source={{ uri: attachedImage.uri }}
+                style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                resizeMode="cover"
+              />
+            </ZoomableThumbnail>
             <Pressable
               onPress={onRemoveImage}
               className="absolute -right-2 -top-2 rounded-full p-1 shadow-sm"
@@ -721,6 +729,7 @@ export function CoachModal({
       const clearImage = () => {
         setAttachedImage(null);
       };
+
       clearImage();
     }
   }, [pendingIntention, attachedImage]);
@@ -740,6 +749,7 @@ export function CoachModal({
         setIsDeleteMessageModalVisible(false);
         setMessageToDelete(null);
       };
+
       reset();
     }
   }, [visible]);
@@ -1574,7 +1584,7 @@ export function CoachModal({
           meal={mealForLogMealModal}
           ingredients={selectedMealForTracking.ingredients}
           initialMealType={selectedMealForTracking.mealTypeIdentifier}
-          onLogMeal={async (date, logMealType, portionGrams) => {
+          onLogMeal={async ({ date, time, mealType: logMealType, portionGrams }) => {
             await markMealAsTracked(
               selectedMealForTracking.messageId,
               selectedMealForTracking.mealIndex,
@@ -1583,7 +1593,8 @@ export function CoachModal({
               logMealType,
               portionGrams,
               selectedMealForTracking.mealName ??
-                t(`food.meals.${selectedMealForTracking.mealTypeIdentifier}`)
+                t(`food.meals.${selectedMealForTracking.mealTypeIdentifier}`),
+              time
             );
             setSelectedMealForTracking(null);
           }}

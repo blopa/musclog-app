@@ -58,6 +58,7 @@ function redactUrl(url) {
   if (parsedUrl.searchParams.has('api_key')) {
     parsedUrl.searchParams.set('api_key', USDA_API_KEY ? '<redacted>' : '');
   }
+
   return parsedUrl.toString();
 }
 

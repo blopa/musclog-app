@@ -4,6 +4,7 @@ import { View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import type { Units } from '@/constants/settings';
 import { useSettings } from '@/hooks/useSettings';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -19,6 +20,10 @@ type EditSetDetailsModalProps = {
   initialPartials: number;
   initialRepsInReserve: number;
   showRir?: boolean;
+  /** The +/- step of the weight input, in the displayed unit. Follows the active gym's plates. */
+  weightStep?: number;
+  /** The unit the weight is entered in (the exercise's own, else the account's). */
+  units?: Units;
 };
 
 export function EditSetDetailsModal({
@@ -31,9 +36,12 @@ export function EditSetDetailsModal({
   initialPartials,
   initialRepsInReserve,
   showRir = false,
+  weightStep = 0.5,
+  units: unitsOverride,
 }: EditSetDetailsModalProps) {
   const { t } = useTranslation();
-  const { units } = useSettings();
+  const { units: accountUnits } = useSettings();
+  const units = unitsOverride ?? accountUnits;
   const weightUnitKey = getWeightUnitI18nKey(units);
   const [weight, setWeight] = useState(initialWeight);
   const [reps, setReps] = useState(initialReps);
@@ -49,6 +57,7 @@ export function EditSetDetailsModal({
         setPartials(initialPartials);
         setRepsInReserve(showRir ? initialRepsInReserve : 0);
       };
+
       syncValues();
     }
   }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve, showRir]);
@@ -90,7 +99,7 @@ export function EditSetDetailsModal({
           value={weight}
           onChange={setWeight}
           min={0}
-          step={0.5}
+          step={weightStep}
         />
 
         {/* Reps */}

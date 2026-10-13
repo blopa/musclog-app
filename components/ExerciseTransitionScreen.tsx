@@ -25,7 +25,7 @@ type ExerciseTransitionScreenProps = {
   onStartNextExercise?: () => void;
 };
 
-const defaultPlaceholderImage = require('../assets/icon.png');
+const defaultPlaceholderImage = require('../assets/musclog-icon-fallback.png');
 
 export function ExerciseTransitionScreen({
   totalTime = '00:00:00',

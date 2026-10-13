@@ -8,9 +8,11 @@ import Food from '@/database/models/Food';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
 import { ExerciseService } from '@/database/services/ExerciseService';
+import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestionService';
 import { FoodService } from '@/database/services/FoodService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
+import { NutritionTargetService } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
@@ -27,13 +29,14 @@ import {
   parseLocalCalendarDate,
 } from './calendarDate';
 import { getNutritionLogHistoryPrompt, getWorkoutLogHistoryPrompt } from './coachPromptHistory';
-import { resolveDailyMacros } from './dynamicNutritionTarget';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
+import { roundToDecimalPlaces } from './roundDecimal';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
-import { isPerformedWorkoutSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
+import { buildWorkoutPlanExerciseSection } from './workoutPlanPrompt';
+import { isWorkingSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
@@ -73,6 +76,7 @@ export const getActiveCustomPrompts = async (
     if (activePrompts.length === 0) {
       return '';
     }
+
     return activePrompts.map((p) => p.content).join('\n\n');
   } catch (error) {
     console.error('[prompts] Error fetching active custom prompts:', error);
@@ -142,6 +146,7 @@ Error Handling:
   if (customPrompts) {
     finalPrompt += `\n\n${customPrompts}`;
   }
+
   if (memories) {
     finalPrompt += `\n\n${memories}`;
   }
@@ -197,15 +202,19 @@ export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
       if (exercise.sets) {
         markdown += `   Sets: ${exercise.sets}\n`;
       }
+
       if (exercise.reps) {
         markdown += `   Reps: ${exercise.reps}\n`;
       }
+
       if (exercise.weight) {
         markdown += `   Weight: ${exercise.weight}\n`;
       }
+
       if (exercise.notes) {
         markdown += `   Notes: ${exercise.notes}\n`;
       }
+
       markdown += '\n';
     });
   }
@@ -235,6 +244,7 @@ export const getAppleIntelligenceContext = async (
         summaries.push(`- ${summary}`);
       }
     }
+
     context += summaries.join('\n');
   } else {
     context += 'No recent workout history found.';
@@ -407,7 +417,7 @@ export const getMinimalWorkoutSummary = async (
   try {
     const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
     const { workoutLog, sets } = details;
-    const loggedSets = sets.filter(isPerformedWorkoutSet);
+    const loggedSets = sets.filter(isWorkingSet);
     const exerciseCount = new Set(loggedSets.map((set) => set.exerciseId).filter(Boolean)).size;
     const setCount = loggedSets.length;
 
@@ -492,7 +502,7 @@ function buildWorkoutSummaryFromDetails(
   const { workoutLog, sets, exercises } = details;
   const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
   const exercisesByName = new Map<string, { sets: typeof sets; exercise: (typeof exercises)[0] }>();
-  for (const set of sets.filter(isPerformedWorkoutSet)) {
+  for (const set of sets.filter(isWorkingSet)) {
     const exercise = exerciseMap.get(set.exerciseId ?? '');
     if (!exercise) {
       continue;
@@ -526,7 +536,11 @@ function buildWorkoutSummaryFromDetails(
         name,
         sets: data.sets.map((set) => ({
           reps: set.reps,
-          weight: set.weight,
+          // The prompt tells the model weights are in the user's unit, so convert the stored kg.
+          weight:
+            units !== undefined && set.weight != null
+              ? roundToDecimalPlaces(kgToDisplay(set.weight, units), 1)
+              : set.weight,
           partials: set.partials ?? 0,
           repsInReserve: set.repsInReserve ?? 0,
         })),
@@ -612,6 +626,7 @@ export const getChatMessagePromptContent = async (
           workoutMarkdowns.push(workoutSummary);
         }
       }
+
       workoutData = workoutMarkdowns.join('\n\n');
     } else {
       // Use JSON for large models
@@ -622,6 +637,7 @@ export const getChatMessagePromptContent = async (
           summaries.push(json);
         }
       }
+
       workoutData = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
     }
   } catch (error) {
@@ -694,11 +710,19 @@ export const createWorkoutPlanPrompt = async (
     eatingPhase ?? (await NutritionGoalService.getCurrent())?.eatingPhase ?? undefined;
   const userDetails = await getUserDetailsPrompt(user, eatingPhaseResolved);
 
-  let exercisesList = '[]';
+  let exerciseSection = buildWorkoutPlanExerciseSection({ exercises: [] });
   try {
-    const exercises = await ExerciseService.getAllExercises();
-    const list = exercises.map((e) => ({ id: e.id, name: e.name ?? '' }));
-    exercisesList = JSON.stringify(list, null, 2);
+    // Only what may be suggested: no exercise the user is avoiding, none the gym cannot supply.
+    const {
+      exercises,
+      disliked,
+      context: suggestionContext,
+    } = await ExerciseSuggestionService.getSuggestibleExercises();
+    exerciseSection = buildWorkoutPlanExerciseSection({
+      exercises,
+      dislikedNames: disliked.map((exercise) => exercise.name),
+      gym: suggestionContext.gym,
+    });
   } catch (error) {
     console.error('Error fetching exercises for workout plan prompt:', error);
   }
@@ -708,11 +732,7 @@ export const createWorkoutPlanPrompt = async (
     "Generate a workout plan with exercises, reps, sets, and percentages of 1 rep max based on the user's fitness goals, activity level, weight, height and available equipment.",
     'Give the plan as a whole a concise planTitle (for example "Push Pull Legs"); do not reuse a single workout title.',
     "If you can't infer what workout the user wants you to generate from the messages, simply generate a basic weekly workout plan, like a 3-day split.",
-    'You MUST only use exercises from the list below. For each exercise in your plan, return the exact "id" from this list (do not invent IDs).',
-    `Available exercises (id, name):`,
-    '```json',
-    exercisesList,
-    '```',
+    ...exerciseSection,
     userDetails,
   ].join('\n');
 };
@@ -802,12 +822,14 @@ export const getNutritionInsightsPrompt = async (
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, weight: value });
     }
+
     for (const m of bodyFatMetrics) {
       const { value } = await m.getDecrypted();
       const dateKey = formatLocalCalendarDayIso(new Date(localDayStartFromUtcMs(m.date)));
       const existing = byDate.get(dateKey) ?? {};
       byDate.set(dateKey, { ...existing, fatPercentage: value });
     }
+
     const metricsArray = Array.from(byDate.entries())
       .map(([date, v]) => ({ date, ...v }))
       .sort((a, b) => a.date.localeCompare(b.date));
@@ -864,7 +886,8 @@ export const getMealCritiquePrompt = async (
 
   let nutritionGoalInfo = '';
   if (nutritionGoal) {
-    const macros = (await resolveDailyMacros(nutritionGoal, new Date())) ?? nutritionGoal;
+    const macros =
+      (await NutritionTargetService.resolve(nutritionGoal, new Date())) ?? nutritionGoal;
     nutritionGoalInfo = [
       'Daily nutrition targets:',
       `- Calories: ${formatAppInteger(language, Math.round(macros.totalCalories))} kcal`,
@@ -929,6 +952,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
         summaries.push(json);
       }
     }
+
     workoutsJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching recent workouts for insights prompt:', error);
@@ -977,6 +1001,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
         summaries.push(json);
       }
     }
+
     pastOccurrencesJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching past occurrences for volume prompt:', error);
@@ -1031,8 +1056,10 @@ export const getWorkoutInsightsPrompt = async (
         if (!setsByTe.has(s.templateExerciseId)) {
           setsByTe.set(s.templateExerciseId, []);
         }
+
         setsByTe.get(s.templateExerciseId)!.push(s);
       }
+
       const exercisesForJson = templateExercises.map((te) => {
         const exercise = exerciseMap.get(te.exerciseId);
         const setList = setsByTe.get(te.id) ?? [];
@@ -1140,6 +1167,7 @@ export const getWorkoutVolumeInsightsPrompt = async (
         summaries.push(json);
       }
     }
+
     historyJson = summaries.length > 0 ? '[' + summaries.join(',\n') + ']' : '[]';
   } catch (error) {
     console.error('Error fetching workout volume history for prompt:', error);
@@ -1170,6 +1198,7 @@ export const getParsePastWorkoutsPrompt = async (
   return [
     await getBaseSystemPrompt(language),
     "Parse past workouts from the user's text description. Try to match exercise names to the provided list.",
+    'Report every set weight in kilograms: convert from pounds (lbs) when the text uses them.',
     `If too long, only parse the first 20 workouts. Available exercises: ${exerciseNames.join(', ')}`,
     sanitizedUserMessage,
   ].join('\n');
@@ -1668,7 +1697,7 @@ export const getParsePastWorkoutsFunctions = ():
                           type: 'object',
                           properties: {
                             reps: { type: 'number' },
-                            weight: { type: 'number' },
+                            weight: { type: 'number', description: 'Weight in kilograms' },
                           },
                           required: ['reps', 'weight'],
                         },

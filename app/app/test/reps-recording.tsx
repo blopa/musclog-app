@@ -212,6 +212,7 @@ export default function RepsRecordingScreen() {
     if (!isRecording) {
       return;
     }
+
     const id = setInterval(() => {
       if (startedAtRef.current !== null) {
         setElapsedMs(Date.now() - startedAtRef.current);
@@ -233,6 +234,7 @@ export default function RepsRecordingScreen() {
     if (!hasMicPermission && !(await requestMicPermission())) {
       return;
     }
+
     setIsCameraEnabled(true);
   }, [hasCameraPermission, hasMicPermission, requestCameraPermission, requestMicPermission]);
 
@@ -290,6 +292,7 @@ export default function RepsRecordingScreen() {
       if (zipUri) {
         void deleteBleWorkoutArchiveFile(zipUri);
       }
+
       setIsSharing(false);
     }
   }, [recordings]);
@@ -310,6 +313,7 @@ export default function RepsRecordingScreen() {
           console.warn('[reps-recording] failed to delete file', uri, err);
         }
       }
+
       setRecordings((prev) => prev.filter((r) => r.id !== target.id));
       setRecordingPendingDelete(null);
     } finally {
@@ -322,6 +326,7 @@ export default function RepsRecordingScreen() {
     if (!wit.isConnected || !selectedExercise || !camera) {
       return;
     }
+
     if (recordingRef.current) {
       return;
     }
@@ -566,9 +571,11 @@ export default function RepsRecordingScreen() {
     if (wit.status === 'connected') {
       return theme.colors.status.success;
     }
+
     if (wit.status === 'error') {
       return theme.colors.status.error;
     }
+
     return theme.colors.status.warning;
   }, [wit.status, theme]);
 

@@ -143,7 +143,45 @@
       "oneRepMaxTrendEmpty": "Registra este ejercicio en dos entrenamientos para ver cómo evoluciona tu 1RM estimado.",
       "oneRepMaxTrendUp": "Sube {{change}} {{unit}} en {{sessions}} sesiones.",
       "oneRepMaxTrendDown": "Baja {{change}} {{unit}} en {{sessions}} sesiones.",
-      "oneRepMaxTrendSteady": "Se mantiene estable en {{sessions}} sesiones."
+      "oneRepMaxTrendSteady": "Se mantiene estable en {{sessions}} sesiones.",
+      "aliasesTitle": "También conocido como",
+      "aliasesHint": "La búsqueda también encuentra este ejercicio por estos nombres.",
+      "aliasPlaceholder": "Añade un nombre, p. ej. PB",
+      "aliasInputLabel": "Nombre nuevo",
+      "aliasAdd": "Añadir",
+      "aliasRemove": "Quitar {{alias}}",
+      "aliasDuplicate": "Ya has añadido ese nombre.",
+      "aliasLimit": "Puedes añadir hasta {{count}} nombres.",
+      "aliasEmpty": "Usa al menos una letra o un número.",
+      "aliasFailed": "No se pudo guardar ese nombre. Inténtalo de nuevo.",
+      "restriction": {
+        "title": "Sugerencias",
+        "hint": "Elige si este ejercicio puede sugerirse en cambios y entrenamientos generados.",
+        "allow": "Sugerir con normalidad",
+        "dislike": "No me gusta",
+        "injury": "Lesión",
+        "never": "No sugerir nunca",
+        "expiryLabel": "Evitar durante",
+        "explain": {
+          "dislike": "Aparece el último en las sugerencias de cambio.",
+          "injury": "Oculto en cambios y entrenamientos generados mientras te recuperas.",
+          "never": "Oculto en cambios y entrenamientos generados."
+        },
+        "failed": "No se pudo guardar. Inténtalo de nuevo."
+      },
+      "preferences": {
+        "title": "Tus preferencias",
+        "hint": "Solo tú las ves. Acompañan a este ejercicio en cada entrenamiento.",
+        "unitLabel": "Unidad de peso",
+        "unitDefault": "Predeterminada de la app",
+        "noteLabel": "Nota",
+        "notePlaceholder": "Una indicación para leer antes de cada serie, p. ej. codos pegados",
+        "noteSave": "Guardar nota",
+        "failed": "No se pudo guardar. Inténtalo de nuevo.",
+        "repCeilingLabel": "Límite de repeticiones (sin peso añadido)",
+        "repCeilingOption": "{{reps}} repeticiones",
+        "repCeilingHint": "Musclog añade una repetición por sesión hasta este número. Después, progresa con un chaleco o cinturón lastrado, una variante más difícil o un tempo más lento."
+      }
     },
     "manageExerciseData": {
       "deleteExerciseWarning": "¿Estás seguro de que deseas eliminar este ejercicio? Esta acción no se puede deshacer.",

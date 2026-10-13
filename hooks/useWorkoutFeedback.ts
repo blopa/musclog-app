@@ -6,6 +6,7 @@ export type SessionFeedbackData = {
   difficulty: number;
   exhaustion: number;
   enjoyment: number;
+  notes?: string;
 };
 
 export function useWorkoutFeedback() {
@@ -33,6 +34,7 @@ export function useWorkoutFeedback() {
       await WorkoutService.updateWorkoutLogFeedback(workoutLogId, {
         exhaustionLevel: data.exhaustion,
         workoutScore: Math.round((data.difficulty + data.exhaustion + data.enjoyment) / 3),
+        notes: data.notes,
       });
     } catch (err) {
       const e = err instanceof Error ? err : new Error(String(err));

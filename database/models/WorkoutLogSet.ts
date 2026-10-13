@@ -38,6 +38,9 @@ export default class WorkoutLogSet extends Model {
   @field('is_skipped') legacyIsSkipped?: boolean;
   @field('set_type') declare setType: string;
   @field('set_order') declare setOrder: number;
+  @field('adjustment_json') adjustmentJson?: string;
+  @field('prescription_json') prescriptionJson?: string;
+  @field('rir_recorded') rirRecorded?: boolean;
   @json('rep_data_json', (val) => val ?? null) declare repDataJson: RepPhaseData[] | null;
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;

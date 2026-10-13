@@ -37,6 +37,18 @@ describe('HOME_ACTIONS', () => {
   });
 });
 
+describe('log_cardio', () => {
+  it('is offered on every device, because logging a walk needs nothing from the device', () => {
+    for (const context of [
+      { isAiConfigured: true, isWeb: false },
+      { isAiConfigured: false, isWeb: false },
+      { isAiConfigured: false, isWeb: true },
+    ]) {
+      expect(HOME_ACTIONS.log_cardio.isAvailable(context)).toBe(true);
+    }
+  });
+});
+
 describe('homeActionListLabel', () => {
   // The tile label is two lines to fit the square button; a list row is one line, and
   // no locale carries a second copy of the words just for that.

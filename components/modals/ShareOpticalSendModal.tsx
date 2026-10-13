@@ -137,11 +137,13 @@ export function ShareOpticalSendModal({ visible, onClose, target }: ShareOptical
         if (buildGeneration.current === generation) {
           setPhoto(payload.photo);
         }
+
         return payload;
       } catch (error) {
         if (error instanceof MusclogShareError && error.code === 'no-ingredients') {
           throw new Error(t('opticalTransfer.share.noIngredients'));
         }
+
         throw error;
       }
     },

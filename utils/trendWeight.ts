@@ -33,6 +33,7 @@ export function averagePointsByDay(
     ) {
       continue;
     }
+
     const values = valuesByDay.get(point.date) ?? [];
     values.push(point.value);
     valuesByDay.set(point.date, values);
@@ -73,6 +74,7 @@ export function calculateTrendWeightSeries(
       });
     }
   }
+
   daily.push(observed[observed.length - 1]);
 
   let previousTrend = daily[0].value;
@@ -80,6 +82,7 @@ export function calculateTrendWeightSeries(
     if (index > 0) {
       previousTrend = alpha * point.value + (1 - alpha) * previousTrend;
     }
+
     return { date: point.date, value: previousTrend };
   });
 }

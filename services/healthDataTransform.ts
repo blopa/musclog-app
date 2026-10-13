@@ -543,6 +543,7 @@ export class HealthDataTransformer {
       if (seen.has(record.date)) {
         return false;
       }
+
       seen.add(record.date);
       return true;
     });

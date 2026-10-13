@@ -1,212 +1,61 @@
-import { format, getWeek } from 'date-fns';
-import { Calendar, ChevronRight, History } from 'lucide-react-native';
-import React, { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Redirect, useLocalSearchParams } from 'expo-router';
 
-import { MasterLayout } from '@/components/MasterLayout';
-import { CheckinDetailsModal } from '@/components/modals/CheckinDetailsModal';
-import { SelectModal } from '@/components/modals/SelectModal';
-import { AnimatedContent } from '@/components/theme/AnimatedContent';
-import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
-import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
-import { useNutritionCheckins } from '@/hooks/useNutritionCheckins';
-import { useTheme } from '@/hooks/useTheme';
-import { getLocalCalendarYear } from '@/utils/calendarDate';
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 
-export default function CheckinListScreen() {
-  const theme = useTheme();
-  const { t } = useTranslation();
-  const dateFnsLocale = useDateFnsLocale();
-  const { goal: currentGoal } = useCurrentNutritionGoal();
-  const { checkins } = useNutritionCheckins({
-    nutritionGoalId: currentGoal?.id,
-  });
-
-  const [selectedCheckinId, setSelectedCheckinId] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState(getLocalCalendarYear(new Date()).toString());
-  const [isYearModalVisible, setIsYearModalVisible] = useState(false);
-
-  const years = useMemo(() => {
-    const currentYear = getLocalCalendarYear(new Date());
-    const startYear = currentYear - 100;
-    const list = [];
-    for (let y = currentYear; y >= startYear; y--) {
-      list.push({ label: y.toString(), value: y.toString() });
-    }
-
-    return list;
-  }, []);
-
-  const { milestones, history } = useMemo(() => {
-    const m: typeof checkins = [];
-    const h: typeof checkins = [];
-
-    checkins.forEach((c) => {
-      if (c.status === 'pending') {
-        m.push(c);
-      } else {
-        const year = getLocalCalendarYear(new Date(c.checkinDate)).toString();
-        if (year === selectedYear) {
-          h.push(c);
-        }
-      }
-    });
-
-    return { milestones: m.slice(0, 1), history: h.sort((a, b) => b.checkinDate - a.checkinDate) };
-  }, [checkins, selectedYear]);
-
-  const renderStatusBadge = (status: string) => {
-    let color = theme.colors.text.tertiary;
-    let label = t('nutrition.checkin.status.pending');
-
-    switch (status) {
-      case 'ahead':
-        color = theme.colors.status.info;
-        label = t('nutrition.checkin.status.ahead');
-        break;
-      case 'onTrack':
-        color = theme.colors.status.brandVivid;
-        label = t('nutrition.checkin.status.onTrack');
-        break;
-      case 'behind':
-        color = theme.colors.status.warning;
-        label = t('nutrition.checkin.status.behind');
-        break;
-    }
-
-    return (
-      <View className="rounded-full px-2 py-0.5" style={{ backgroundColor: `${color}20` }}>
-        <Text className="text-[10px] font-bold uppercase" style={{ color }}>
-          {label}
-        </Text>
-      </View>
-    );
-  };
-
-  return (
-    <MasterLayout>
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: theme.spacing.margin.lg }}>
-        <AnimatedContent>
-          <Text className="mb-6 text-3xl font-bold text-text-primary">
-            {t('nutrition.checkin.title')}
-          </Text>
-
-          {/* Next Milestones */}
-          <View className="mb-8">
-            <View className="mb-4 flex-row items-center gap-2">
-              <Calendar size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
-                {t('nutrition.checkin.nextMilestones')}
-              </Text>
-            </View>
-
-            {milestones.length > 0 ? (
-              milestones.map((c) => (
-                <Pressable
-                  key={c.id}
-                  onPress={() => setSelectedCheckinId(c.id)}
-                  className="overflow-hidden rounded-2xl bg-bg-card shadow-sm"
-                >
-                  <View className="flex-row items-center justify-between p-4">
-                    <View className="min-w-0 flex-1">
-                      <Text className="mb-1 text-lg font-bold text-text-primary">
-                        {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
-                      </Text>
-                      <Text className="text-sm text-text-secondary">
-                        {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
-                      </Text>
-                    </View>
-                    <View className="shrink-0 flex-row items-center gap-3 pl-2">
-                      <View className="rounded-full bg-accent-primary px-4 py-2">
-                        <Text className="text-sm font-bold text-bg-primary">
-                          {t('nutrition.checkin.prepareNow')}
-                        </Text>
-                      </View>
-                      <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                    </View>
-                  </View>
-                </Pressable>
-              ))
-            ) : (
-              <View className="items-center justify-center rounded-2xl border border-dashed border-border-dark bg-bg-card p-8">
-                <Text className="text-center text-text-secondary">
-                  {t('nutrition.checkin.noMilestones')}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          {/* History */}
-          <View>
-            <View className="mb-4 flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <History size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-                <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
-                  {t('nutrition.checkin.history')}
-                </Text>
-              </View>
-              <Pressable
-                onPress={() => setIsYearModalVisible(true)}
-                className="rounded-full bg-bg-overlay px-3 py-1"
-              >
-                <Text className="text-xs font-bold text-text-primary">{selectedYear}</Text>
-              </Pressable>
-            </View>
-
-            <View className="gap-3">
-              {history.length > 0 ? (
-                history.map((c) => (
-                  <Pressable
-                    key={c.id}
-                    onPress={() => setSelectedCheckinId(c.id)}
-                    className="overflow-hidden rounded-2xl bg-bg-card"
-                  >
-                    <View className="flex-row items-center justify-between p-4">
-                      <View className="min-w-0 flex-1">
-                        <Text className="mb-1 font-bold text-text-primary">
-                          {t('nutrition.checkin.weekTitle', { number: getWeek(c.checkinDate) })}
-                        </Text>
-                        <Text className="text-xs text-text-secondary">
-                          {format(c.checkinDate, 'MMM d, yyyy', { locale: dateFnsLocale })}
-                        </Text>
-                      </View>
-                      <View className="shrink-0 flex-row items-center gap-2 pl-2">
-                        {renderStatusBadge(c.status ?? 'pending')}
-                        <ChevronRight size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
-                      </View>
-                    </View>
-                  </Pressable>
-                ))
-              ) : (
-                <View className="items-center justify-center py-8">
-                  <Text className="text-text-tertiary">{t('nutrition.checkin.noHistory')}</Text>
-                </View>
-              )}
-            </View>
-          </View>
-
-          <View className="h-20" />
-        </AnimatedContent>
-      </ScrollView>
-
-      <CheckinDetailsModal
-        checkinId={selectedCheckinId}
-        visible={!!selectedCheckinId}
-        onClose={() => setSelectedCheckinId(null)}
-      />
-
-      <SelectModal
-        visible={isYearModalVisible}
-        onClose={() => setIsYearModalVisible(false)}
-        title={t('nutrition.checkin.selectYear')}
-        options={years}
-        selectedValue={selectedYear}
-        onSelect={(val: string) => {
-          setSelectedYear(val);
-          setIsYearModalVisible(false);
-        }}
-      />
-    </MasterLayout>
-  );
+/**
+ * @deprecated The Weekly Review lives at {@link WEEKLY_REVIEW_ROUTE} (`/app/weekly-review`,
+ * `app/app/weekly-review.tsx`). This route exists ONLY to forward the old address and is slated
+ * for deletion. Do not link to it, add features to it, or build a new URL from it.
+ *
+ * ## Why it exists
+ *
+ * The screen used to live at `/app/nutrition/checkin-list`. It reviews training AND nutrition, so it
+ * moved out of `/nutrition` (where it highlighted the Food tab even when opened from Workouts).
+ * This file keeps anything that still holds the OLD URL from landing on a not-found screen.
+ *
+ * ## What actually still points here (as of the move)
+ *
+ * - NOT queued notifications. A scheduled notification stores only `{ type, reviewId | reviewDay |
+ *   checkinId }` in its payload (see `NotificationService.scheduleWeeklyReviewNotification`); the URL
+ *   is built at TAP time by `handleNotificationNavigation` in `utils/notifications.ts`, which already
+ *   uses `WEEKLY_REVIEW_ROUTE`. Notifications scheduled before the move therefore open the new route
+ *   directly and never touch this file.
+ * - Nothing in the app: every in-app link goes through `WEEKLY_REVIEW_ROUTE`.
+ * - Only outside holders of the literal URL: a web bookmark, or a link someone saved or shared.
+ *   That is a small, low-value audience, which is why this is safe to remove soon.
+ *
+ * ## Forwarding behaviour
+ *
+ * Passes `reviewId`, `reviewDay` and `checkinId` through unchanged so a saved link keeps selecting
+ * the same review, day or legacy check-in.
+ *
+ * ## HOW TO REMOVE IT (do this once a release or two has shipped since the move)
+ *
+ * Delete, in the same change:
+ *   1. THIS FILE: `app/app/nutrition/checkin-list.tsx`.
+ *   2. `LEGACY_CHECKIN_ROUTE` in `constants/weeklyReviewRoute.ts`, and the sentence in that file's
+ *      doc block that says the old route "survives only as a redirect". (The constant is documentation
+ *      only: nothing imports it.)
+ *   3. The "Weekly Review screen is `app/app/weekly-review.tsx`..." paragraph in `AGENTS.md` that says
+ *      `checkin-list.tsx` is "only a `<Redirect>`... keep it". It then becomes false.
+ *   4. The "old links and notifications still open it" clause in `CURRENT_FEATURES.md`.
+ *
+ * Then check, in this order, that removal is safe:
+ *   - `grep -rn "checkin-list" --include=*.ts --include=*.tsx --include=*.md .` finds nothing outside
+ *     this file's own history. A hit means something still builds the old URL: fix it to use
+ *     `WEEKLY_REVIEW_ROUTE`, do not keep the redirect for it.
+ *   - `utils/__tests__/weeklyReviewNotifications.test.ts` still expects `/app/weekly-review...`
+ *     (it must not mention the old path).
+ *   - Expo Router has no stale route reference (restart Metro; no "unmatched route" warning).
+ *
+ * Nothing else needs a data migration: no stored setting, database row or AsyncStorage key holds
+ * this path.
+ */
+export default function LegacyCheckinListRedirect() {
+  const params = useLocalSearchParams<{
+    reviewId?: string;
+    reviewDay?: string;
+    checkinId?: string;
+  }>();
+  return <Redirect href={{ pathname: WEEKLY_REVIEW_ROUTE, params }} />;
 }

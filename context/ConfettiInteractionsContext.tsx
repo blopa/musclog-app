@@ -36,6 +36,7 @@ export const useConfettiInteractions = () => {
   if (!context) {
     throw new Error('useConfettiInteractions must be used within a ConfettiInteractionsProvider');
   }
+
   return context;
 };
 
@@ -77,6 +78,7 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
             // seeder will do that once it finishes seeding.
             pendingRef.current = new Set(ALL_CONFETTI_ACTIVITIES);
           }
+
           // Existing user upgrading (onboarding done, key absent): AppBoot.tsx runs the DB
           // migration and writes the key. Keep pendingRef empty for this boot.
           return;

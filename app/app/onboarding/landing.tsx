@@ -103,7 +103,7 @@ export default function LandingScreen() {
     setLoading(true);
     try {
       await importDatabase(decryptionPhrase || undefined);
-      await setOnboardingCompleted();
+      await setOnboardingCompleted(undefined, { markAnnouncementsSeen: false });
       setImportModalVisible(false);
       setDecryptionPhrase('');
       showSnackbar('success', t('settings.advancedSettings.importSuccessMessage'));

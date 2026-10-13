@@ -221,6 +221,7 @@ export function LineChart({
                     nearest = d;
                   }
                 }
+
                 const label = tooltipFormatter
                   ? tooltipFormatter(nearest)
                   : formatRoundedDecimal(nearest.y, 1);

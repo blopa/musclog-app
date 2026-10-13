@@ -1,18 +1,58 @@
 {
   "replaceExercise": {
     "title": "Oefening vervangen",
-    "cancel": "Annuleren",
     "replace": "Vervangen",
     "searchPlaceholder": "Oefeningen zoeken...",
-    "muscleGroups": {
-      "all": "Alle",
-      "chest": "Borst",
-      "shoulders": "Schouders",
-      "triceps": "Triceps"
-    },
     "selectExercise": "Oefening selecteren",
     "loadMore": "Meer laden",
     "loadingMore": "Laden…",
-    "noExercisesMatch": "Geen overeenkomende oefeningen"
+    "noExercisesMatch": "Geen overeenkomende oefeningen",
+    "families": {
+      "all": "Alles",
+      "torso": "Bovenlichaam",
+      "arms": "Armen",
+      "legs": "Benen",
+      "core": "Core",
+      "other": "Overig"
+    },
+    "suggested": "Voor jou voorgesteld",
+    "disliked": "Niet leuk gevonden",
+    "hiddenHint": "Oefeningen die je vermijdt of die je sportschool niet kan bieden, zijn verborgen.",
+    "back": "Terug",
+    "swapped": "{{from}} vervangen door {{to}}",
+    "reason": {
+      "title": "Waarom vervangen?",
+      "subtitle": "Vervangen door {{name}}",
+      "question": "Wat is de reden?",
+      "options": {
+        "equipment_unavailable": "Apparatuur niet beschikbaar",
+        "pain": "Pijn of ongemak",
+        "too_hard": "Te zwaar",
+        "too_easy": "Te makkelijk",
+        "dislike": "Vind ik niet leuk",
+        "machine_occupied": "Machine bezet",
+        "just_today": "Alleen vandaag"
+      },
+      "descriptions": {
+        "equipment_unavailable": "De machine of gewichten zijn er niet",
+        "pain": "Er doet iets pijn of voelt niet goed",
+        "too_hard": "Te zwaar of te veeleisend",
+        "too_easy": "Niet uitdagend genoeg",
+        "dislike": "Gewoon niets voor mij",
+        "machine_occupied": "Iemand anders gebruikt hem",
+        "just_today": "Alleen deze training"
+      },
+      "remember": {
+        "injury": "{{name}} voorlopig niet meer voorstellen",
+        "dislike": "{{name}} niet meer voorstellen"
+      },
+      "rememberHint": {
+        "injury": "Blijft uit vervangingen en gegenereerde trainingen tot je hersteld bent.",
+        "dislike": "Komt als laatste, nooit als eerste suggestie."
+      },
+      "removeEquipment": "{{equipment}} is niet beschikbaar bij {{gym}}",
+      "removeEquipmentHint": "Verwijder het uit deze sportschool zodat oefeningen die het nodig hebben niet worden voorgesteld."
+    },
+    "addReason": "Reden toevoegen"
   }
 }

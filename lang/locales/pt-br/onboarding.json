@@ -126,7 +126,8 @@
         "basalMetabolicRate": "Metabolismo basal",
         "exerciseSession": "Treinos",
         "leanBodyMass": "Massa magra",
-        "steps": "Passos"
+        "steps": "Passos",
+        "distance": "Distância"
       },
       "maybeLater": "Talvez depois",
       "privacyStatement": "O Musclog valoriza sua privacidade. Seus dados são criptografados e usados apenas para suas análises pessoais.",
@@ -281,6 +282,64 @@
       "no": "Não",
       "noDesc": "Pular rastreamento do ciclo",
       "continue": "Continuar"
+    },
+    "trainingSetup": {
+      "title": "Como você treina?",
+      "subtitle": "Algumas respostas rápidas preparam sua academia e seu primeiro treino.",
+      "locationLabel": "ONDE VOCÊ TREINA",
+      "location": {
+        "gym": "Academia",
+        "gymDesc": "Barras, máquinas e polias",
+        "home": "Casa",
+        "homeDesc": "Halteres, elásticos e peso corporal",
+        "minimal": "Mínimo",
+        "minimalDesc": "Só o seu corpo e talvez um elástico"
+      },
+      "experienceLabel": "EXPERIÊNCIA",
+      "experience": {
+        "beginner": "Iniciante",
+        "intermediate": "Intermediário",
+        "advanced": "Avançado"
+      },
+      "daysLabel": "DIAS POR SEMANA",
+      "daysMax": "{{count}}+",
+      "helpLabel": "SUGESTÕES DE CARGA",
+      "help": {
+        "suggest": "Sugerir meus pesos",
+        "suggestDesc": "As metas sobem quando você bate suas repetições e o app explica o motivo",
+        "manual": "Eu decido",
+        "manualDesc": "Seu plano é copiado como está, sem mudanças automáticas"
+      },
+      "changeLater": "Você pode mudar tudo isso depois nas configurações de treino.",
+      "continue": "Continuar",
+      "skip": "Pular, só quero nutrição",
+      "gymNames": {
+        "gym": "Minha academia",
+        "home": "Academia em casa",
+        "minimal": "Peso corporal"
+      }
+    },
+    "firstWorkout": {
+      "title": "Seu primeiro treino",
+      "subtitlePlan": "Com base nas suas respostas, este plano é um bom ponto de partida. Você pode editá-lo quando quiser.",
+      "subtitleEmpty": "Você pode começar com um treino vazio e adicionar exercícios durante o treino.",
+      "days": "Dias por semana: {{count}}",
+      "exercises": "Exercícios: {{count}}",
+      "minutes": "Cerca de {{count}} min",
+      "editHint": "Mude exercícios, séries ou regras quando quiser.",
+      "emptyTitle": "Comece com um treino vazio",
+      "emptyDescription": "Os planos da biblioteca são feitos para equipamentos de academia, então vamos pulá-los. Adicione exercícios durante o treino ou veja planos depois.",
+      "startNow": "Adicionar e começar",
+      "startEmpty": "Iniciar treino vazio",
+      "notNow": "Agora não",
+      "howTitle": "Como funciona",
+      "stepAddTitle": "Adicione exercícios",
+      "stepAddBody": "Pesquise na biblioteca e adicione movimentos durante o treino.",
+      "stepLogTitle": "Registre suas séries",
+      "stepLogBody": "Informe carga e repetições e o cronômetro de descanso inicia sozinho.",
+      "stepNextTitle": "Mais inteligente da próxima vez",
+      "stepNextBody": "Lembramos seus números e sugerimos a próxima carga.",
+      "planHint": "Pronto para começar? Toque em \"{{action}}\" para adicionar este plano ao seu perfil e iniciar seu primeiro treino agora mesmo, ou toque em \"{{later}}\" para fazer isso depois."
     }
   }
 }

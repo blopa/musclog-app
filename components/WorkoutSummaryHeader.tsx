@@ -25,7 +25,7 @@ export function WorkoutSummaryHeader() {
 
       {/* Subtitle */}
       <Text className="mb-10 text-center text-sm font-medium text-text-secondary">
-        {t('workoutSummary.feedbackSubmitted')}
+        {t('workoutSummary.workoutSaved')}
       </Text>
     </>
   );

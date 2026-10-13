@@ -1,0 +1,47 @@
+name: Bug report
+description: Something in Musclog is not working as it should
+title: '[Bug] '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. The details below are pre-filled when you open this form from the app (Settings → Help & feedback). Nothing about you or your data is included automatically.
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. Tap …
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Settings → bottom of the page, e.g. 2.12.3 (Build 123)
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and OS version
+      placeholder: Android 15, iOS 18, Web (Chrome)
+    validations:
+      required: true
+  - type: input
+    id: locale
+    attributes:
+      label: App language
+      placeholder: en-US
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or anything else
+      description: Please do not paste API keys or personal health data.

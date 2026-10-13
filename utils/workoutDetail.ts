@@ -14,24 +14,32 @@ import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/WorkoutService';
 import { type Theme } from '@/theme';
 
+import { isCardioActivity } from './cardioEnergy';
 import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { displayWeightKgNumeric } from './formatDisplayWeight';
 import { getWeightUnitI18nKey } from './units';
 import { calculateSetVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
-import { isPerformedWorkoutSet, isSkippedWorkoutSet } from './workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  isSkippedWorkoutSet,
+  isWarmupSet,
+  isWorkingSet,
+} from './workoutSetCompletion';
 
 /**
  * Set data for workout detail display.
  * Extends WorkoutLogSet model fields with UI-specific formatting and display properties.
  */
-export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve'> & {
+export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve' | 'rirRecorded'> & {
   setNumber: number;
   weight: string; // Formatted weight string
   partial: string; // Formatted partial reps count
   isHighlighted: boolean;
   isSkipped: boolean;
+  /** Shown as "W"; warm-ups do not take a number in the working sets' numbering. */
+  isWarmup: boolean;
 };
 
 /**
@@ -54,6 +62,10 @@ export type WorkoutDetailData = {
   totalTime: number;
   volume: number;
   calories: number;
+  /** How the whole session went, as the user wrote it after finishing. */
+  notes?: string;
+  /** A quick walk/run log: distance in metres and which activity it was. */
+  cardio?: { distanceM: number; durationS: number; activity: 'walk' | 'run' };
   volumeTrend: {
     percentage: number;
     data: LineChartDataPoint[];
@@ -61,6 +73,16 @@ export type WorkoutDetailData = {
   };
   exercises: WorkoutExercise[];
 };
+
+function toCardioDetail(workoutLog: WorkoutLog): WorkoutDetailData['cardio'] {
+  const { activity, distanceM, startedAt, completedAt } = workoutLog;
+  if (!isCardioActivity(activity) || !distanceM || distanceM <= 0) {
+    return undefined;
+  }
+
+  const durationS = completedAt && startedAt ? Math.max(0, (completedAt - startedAt) / 1000) : 0;
+  return { distanceM, durationS, activity };
+}
 
 /**
  * Format weight for display (input in kg, output in user unit)
@@ -81,6 +103,7 @@ function formatWeight(
   if (isBodyweight) {
     return weight > 0 ? `+${weightStr} ${t(unitKey)}` : t('workoutSession.bodyweight');
   }
+
   return `${weightStr} ${t(unitKey)}`;
 }
 
@@ -197,7 +220,9 @@ export async function transformWorkoutToDetailData(
   /** `Intl` / `formatApp*` locale string (e.g. i18n.resolvedLanguage), not date-fns Locale */
   appNumberLocale: string,
   /** exercise_order-sorted list of exerciseIds from workout_log_exercises */
-  orderedExerciseIds?: string[]
+  orderedExerciseIds?: string[],
+  /** The unit an exercise's weights are shown in (`useExerciseUserSettings().unitsFor`). */
+  unitsForExercise?: (exerciseId: string) => Units
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -210,13 +235,14 @@ export async function transformWorkoutToDetailData(
     if (!setsByExercise.has(exerciseId)) {
       setsByExercise.set(exerciseId, []);
     }
+
     setsByExercise.get(exerciseId)!.push(set);
   });
 
   const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog, bodyWeightKg);
   const prSetIds = new Set<string>();
   personalRecords.forEach((pr) => {
-    sets.filter(isPerformedWorkoutSet).forEach((set) => {
+    sets.filter(isWorkingSet).forEach((set) => {
       if (set.exerciseId === pr.exerciseId) {
         const exercise = exerciseMap.get(pr.exerciseId);
         const setVol = calculateSetVolume(
@@ -258,19 +284,28 @@ export async function transformWorkoutToDetailData(
     }
 
     const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
+    const exerciseUnits = unitsForExercise?.(exerciseId) ?? units;
 
     const iconData = getWorkoutIcon(theme, exercise.name ?? '');
     const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
 
-    const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
+    let workingSetNumber = 0;
+    const workoutSets: WorkoutSet[] = sortedSets.map((set) => {
       const isSkipped = isSkippedWorkoutSet(set);
       const isHighlighted = !isSkipped && prSetIds.has(set.id);
+      const isWarmup = isWarmupSet(set);
+      if (!isWarmup) {
+        workingSetNumber += 1;
+      }
+
       return {
-        setNumber: index + 1,
-        weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
+        setNumber: workingSetNumber,
+        isWarmup,
+        weight: formatWeight(set.weight ?? 0, isBodyweight, t, exerciseUnits, appNumberLocale),
         reps: set.reps ?? 0,
         partial: (set.partials ?? 0) > 0 ? (set.partials ?? 0).toString() : '-',
         repsInReserve: set.repsInReserve ?? 0,
+        rirRecorded: set.rirRecorded,
         isHighlighted,
         isSkipped,
       };
@@ -307,6 +342,8 @@ export async function transformWorkoutToDetailData(
     totalTime: durationMinutes,
     volume: workoutLog.totalVolume || 0,
     calories: workoutLog.caloriesBurned || 0,
+    notes: workoutLog.notes ?? undefined,
+    cardio: toCardioDetail(workoutLog),
     volumeTrend,
     exercises: workoutExercises,
   };

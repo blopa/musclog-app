@@ -20,7 +20,11 @@ import {
 } from '@/utils/dynamicNutritionTarget';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
-import { calculateMacros, fiberFromCalories } from '@/utils/nutritionCalculator';
+import {
+  calculateMacros,
+  eatingPhaseToWeightGoal,
+  fiberFromCalories,
+} from '@/utils/nutritionCalculator';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -77,6 +81,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         setSelectedGoal(null);
       }
     };
+
     syncTabOrReset();
   }, [visible, tab]);
 
@@ -92,6 +97,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
     if (!currentNutritionGoal) {
       return undefined;
     }
+
     return nutritionGoalToInitialValues(currentNutritionGoal);
   }, [currentNutritionGoal]);
 
@@ -293,6 +299,9 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
           const macros = calculateMacros(dateAwareCalories, planData.fitnessGoal, {
             weightKg: planData.currentWeightKg,
             bodyFatPercent: useBfForCalculations ? planData.bodyFatPercent : undefined,
+            heightCm: planData.heightCm,
+            goalWeightKg: targetWeight,
+            weightGoal: eatingPhaseToWeightGoal(eatingPhase),
           });
           return {
             ...base,

@@ -45,6 +45,7 @@ export function parseIncomingShareJson(json: string): MusclogShareEnvelope {
         error.message
       );
     }
+
     throw error;
   }
 }

@@ -82,6 +82,7 @@ export function usePlanDraft(planId?: string, initialTemplateIds?: string[]): Pl
       );
       setIsLoading(false);
     };
+
     const markLoading = () => {
       setLoadError(undefined);
       setIsLoading(true);
@@ -99,6 +100,7 @@ export function usePlanDraft(planId?: string, initialTemplateIds?: string[]): Pl
         if (cancelled) {
           return;
         }
+
         setName(snapshot?.plan.name ?? '');
         setDescription(snapshot?.plan.description ?? '');
         setCycleType(snapshot?.plan.cycleType ?? 'weekly');
@@ -118,6 +120,7 @@ export function usePlanDraft(planId?: string, initialTemplateIds?: string[]): Pl
         if (cancelled) {
           return;
         }
+
         setLoadError(error);
         setIsLoading(false);
       });

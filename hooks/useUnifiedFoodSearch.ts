@@ -107,6 +107,7 @@ export function useUnifiedFoodSearch({
         setAccumulatedApiResults([]);
         setAccumulatedUsdaResults([]);
       };
+
       resetSearch();
       return;
     }
@@ -282,6 +283,7 @@ export function useUnifiedFoodSearch({
         if (error instanceof Error && error.name === 'AbortError') {
           return [];
         }
+
         throw error;
       } finally {
         // Clean up abort controller if this is the current request
@@ -345,6 +347,7 @@ export function useUnifiedFoodSearch({
           // Additional pages - append to accumulated results
           setAccumulatedApiResults((prev) => [...prev, ...apiPageResults]);
         }
+
         setIsLoadingMoreAPI(false);
       }
 
@@ -353,6 +356,7 @@ export function useUnifiedFoodSearch({
         setApiCompleted(true);
       }
     };
+
     updateApiResults();
   }, [isApiSuccess, apiError, apiPageResults, apiOffset, isLoadingAPI]);
 
@@ -366,6 +370,7 @@ export function useUnifiedFoodSearch({
         } else {
           setAccumulatedUsdaResults((prev) => [...prev, ...usdaPageResults]);
         }
+
         setIsLoadingMoreUSDA(false);
       }
 
@@ -373,6 +378,7 @@ export function useUnifiedFoodSearch({
         setUsdaCompleted(true);
       }
     };
+
     updateUsdaResults();
   }, [isUsdaSuccess, usdaError, usdaPageResults, usdaOffset, isLoadingUSDA]);
 
@@ -439,6 +445,7 @@ export function useUnifiedFoodSearch({
     if (!includeAPI || !includeUSDA) {
       return [];
     }
+
     return accumulatedUsdaResults.map((food) => mapUSDAFoodToUnified(food, units));
   }, [accumulatedUsdaResults, includeAPI, includeUSDA, units]);
 
@@ -496,6 +503,7 @@ export function useUnifiedFoodSearch({
     if (isLoadingMoreFoods) {
       return;
     }
+
     await loadMoreFoods();
   }, [isLoadingMoreFoods, loadMoreFoods]);
 
@@ -512,6 +520,7 @@ export function useUnifiedFoodSearch({
     if (isLoadingMoreUSDA) {
       return;
     }
+
     setIsLoadingMoreUSDA(true);
     setUsdaOffset((prev) => prev + usdaLimit);
   }, [isLoadingMoreUSDA, usdaLimit]);

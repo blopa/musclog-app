@@ -70,6 +70,7 @@ export function PastWorkoutsHistoryFilterMenu({
         setSelectedMuscleGroups(initialFilters.muscleGroups || []);
         setMinDuration(initialFilters.minDuration || 0);
       };
+
       syncFilters();
     }
   }, [visible, initialFilters]);
@@ -158,6 +159,7 @@ export function PastWorkoutsHistoryFilterMenu({
     if (minutes >= 120) {
       return t('pastWorkoutHistory.filters.durationFormats.max');
     }
+
     return t('pastWorkoutHistory.filters.durationFormats.minutes', { minutes });
   };
 
@@ -165,9 +167,11 @@ export function PastWorkoutsHistoryFilterMenu({
     if (minutes === 0) {
       return t('pastWorkoutHistory.filters.durationFormats.zero');
     }
+
     if (minutes >= 120) {
       return t('pastWorkoutHistory.filters.durationFormats.max');
     }
+
     return t('pastWorkoutHistory.filters.durationFormats.minutesPlus', { minutes });
   };
 

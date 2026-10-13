@@ -1,0 +1,31 @@
+{
+  "cardio": {
+    "title": "Registrar caminhada ou corrida",
+    "subtitle": "Adicione uma sem iniciar um treino",
+    "menuItem": "Registrar caminhada ou corrida",
+    "activity": "Atividade",
+    "walk": "Caminhada",
+    "run": "Corrida",
+    "treadmill": "Na esteira",
+    "distance": "Distância",
+    "distanceInput": "Distância ({{unit}})",
+    "duration": "Duração",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "seconds": "Segundos",
+    "pace": "Ritmo",
+    "ended": "Terminou",
+    "estimate": "Calorias estimadas",
+    "estimateValue": "{{kcal}} kcal",
+    "estimateNoWeight": "Adicione seu peso no perfil para estimar as calorias.",
+    "estimateHint": "Estimado a partir da sua velocidade e peso corporal em terreno plano.",
+    "watchCalories": "Calorias do meu relógio (opcional)",
+    "watchHint": "Deixe em 0 para usar a estimativa.",
+    "save": "Salvar",
+    "saved": "{{activity}} registrada",
+    "failed": "Não foi possível salvar. Tente novamente.",
+    "needsDistanceAndTime": "Informe uma distância e uma duração para salvar.",
+    "futureError": "Isso está no futuro. Escolha quando você terminou.",
+    "noPace": "—"
+  }
+}

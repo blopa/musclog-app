@@ -1,0 +1,132 @@
+{
+  "whatsNew": {
+    "title": "Wat is er nieuw?",
+    "intro": {
+      "inside": "Wat zit er in deze rondleiding",
+      "title": "Maak Musclog jouw app",
+      "description": "Er zijn een paar dingen veranderd. Bekijk ze en kies wat bij je past. Wijzigingen worden meteen opgeslagen; je kunt deze rondleiding opnieuw openen in Instellingen.",
+      "truncated": "Deze rondleiding bevat alleen de nieuwste hoogtepunten."
+    },
+    "next": "Volgende",
+    "back": "Terug",
+    "done": "Klaar",
+    "skip": "Nu overslaan",
+    "pageOf": "Pagina {{current}} van {{total}}",
+    "saveFailed": "Deze keuze kon niet worden opgeslagen. Probeer het opnieuw.",
+    "loadFailed": "Deze keuze kon niet worden geladen.",
+    "dismissFailed": "Je voortgang kon niet worden opgeslagen. Probeer het opnieuw.",
+    "retry": "Opnieuw proberen",
+    "settingsCard": {
+      "title": "Wat is er nieuw?",
+      "subtitle": "Bekijk de nieuwste functies en voorkeuren opnieuw"
+    },
+    "debug": {
+      "title": "Wat is er nieuw?",
+      "record": "Gezien tot: {{version}}",
+      "none": "Geen registratie",
+      "clear": "Registratie wissen (update simuleren)",
+      "set": "Geziene versie instellen",
+      "preview": "Versie {{version}} bekijken",
+      "invalid": "Voer een versie in zoals 2.13.0.",
+      "version": "Versie (x.y.z)"
+    },
+    "releases": {
+      "v2_13_1": {
+        "view": {
+          "title": "Jouw training, jouw weergave",
+          "description": "De begeleide weergave helpt je om op één set tegelijk te focussen. Liever het overzicht? De lijstweergave blijft beschikbaar."
+        },
+        "workoutView": {
+          "title": "Kies je trainingsweergave",
+          "description": "Je kunt dit later wijzigen in de weergave-instellingen.",
+          "guided": {
+            "label": "Begeleid",
+            "description": "Focus op je huidige set met grotere bedieningselementen."
+          },
+          "inline": {
+            "label": "In een lijst",
+            "description": "Bekijk en bewerk je sets samen in een lijst."
+          }
+        },
+        "targets": {
+          "title": "Hulp bij je volgende set",
+          "description": "Musclog stelt startdoelen voor op basis van je geschiedenis. Gewijzigde getallen worden gemarkeerd en je kunt ze altijd aanpassen."
+        },
+        "workoutAutonomy": {
+          "title": "Startdoelen",
+          "description": "Hoe je geschiedenis je volgende training vormt.",
+          "suggest": {
+            "label": "Doelen voorstellen",
+            "description": "Gebruik progressievoorstellen bij het starten van een training."
+          },
+          "manual": {
+            "label": "Mijn plan behouden",
+            "description": "Begin met de doelen die in mijn training zijn opgeslagen."
+          }
+        },
+        "progressionMode": {
+          "title": "Progressievoorkeur",
+          "description": "Wat eerst omhoog gaat als doelen veranderen.",
+          "reps_first": {
+            "label": "Eerst herhalingen",
+            "description": "Bouw herhalingen op voordat je gewicht toevoegt."
+          },
+          "weight_first": {
+            "label": "Eerst gewicht",
+            "description": "Geef gewicht voorrang bij het aanpassen van doelen."
+          }
+        },
+        "rest": {
+          "title": "Rust zonder op de klok te kijken",
+          "description": "Je rusttimer kan automatisch starten na een set. Kies of je ook trillingen wilt."
+        },
+        "autoStartRestTimer": {
+          "title": "Rust automatisch starten",
+          "description": "Start de rusttimer zodra je een set voltooit."
+        },
+        "restTimerHaptics": {
+          "title": "Trillingen van de rusttimer",
+          "description": "Gebruik haptische feedback voor de rusttimer."
+        },
+        "openSettings": "Trainingsinstellingen openen",
+        "gyms": {
+          "title": "Doelen die bij je sportschool passen",
+          "description": "Voeg de apparatuur, het stanggewicht en de beschikbare schijven toe. Musclog kan ze gebruiken voor haalbare gewichten en schijfberekeningen."
+        },
+        "setupGym": "Sportscholen en schijven instellen",
+        "review": {
+          "title": "Elke week even terugkijken",
+          "description": "Het weekoverzicht brengt voeding en training samen, met voorstellen die je zelf kunt toepassen."
+        },
+        "reviewWeekday": {
+          "title": "Je dag voor het weekoverzicht",
+          "description": "Kies een dag die bij je ritme past. Je bestaande herinneringsvoorkeuren blijven behouden."
+        },
+        "openReview": "Weekoverzicht openen",
+        "also": {
+          "title": "Ook nieuw",
+          "plans": {
+            "label": "Trainingsplannen",
+            "description": "Organiseer trainingen in wekelijkse of roterende plannen."
+          },
+          "cardio": {
+            "label": "Cardiologboek",
+            "description": "Leg cardiosessies vast naast je krachttraining."
+          },
+          "swaps": {
+            "label": "Oefeningen wisselen",
+            "description": "Wissel een oefening tijdens je training zonder het oorspronkelijke plan te wijzigen."
+          },
+          "restrictions": {
+            "label": "Oefeningsbeperkingen",
+            "description": "Bewaar te vermijden oefeningen en tijdelijke blessures in de trainingsinstellingen."
+          },
+          "warmups": {
+            "label": "Opwarmsets",
+            "description": "Houd opwarmsets gescheiden van je werksets."
+          }
+        }
+      }
+    }
+  }
+}

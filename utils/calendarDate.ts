@@ -50,6 +50,23 @@ export function parseLocalCalendarDate(isoDateOnly: string): Date {
   return parseISO(isoDateOnly);
 }
 
+/**
+ * The calendar day a screen should open on from a `yyyy-MM-dd` route parameter, or today when the
+ * parameter is absent or not a real date. Deep links (a Weekly Review asking for a missing day) can
+ * come from a notification or a stale URL, so a malformed value must never become an Invalid Date.
+ */
+export function localCalendarDayFromParam(param: string | string[] | undefined): Date {
+  const value = Array.isArray(param) ? param[0] : param;
+  if (value && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const parsed = parseLocalCalendarDate(value);
+    if (!Number.isNaN(parsed.getTime()) && formatLocalCalendarDayIso(parsed) === value) {
+      return localCalendarDayDate(parsed);
+    }
+  }
+
+  return localCalendarDayDate(new Date());
+}
+
 /** Local day start ms from a yyyy-MM-dd string (see {@link parseLocalCalendarDate}). */
 export function localDayStartMsFromIsoDateOnly(isoDateOnly: string): number {
   return localDayStartMs(parseLocalCalendarDate(isoDateOnly));

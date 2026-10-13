@@ -17,6 +17,11 @@
     "databaseError": {
       "title": "Error de Base de Datos",
       "description": "Ocurrió un error en la base de datos. Se ha activado el informe de errores para ayudar a resolver este problema."
-    }
+    },
+    "aiInvalidApiKey": "Tu clave de API de {{provider}} fue rechazada. Revísala en los ajustes de IA.",
+    "aiTimeout": "Está tardando demasiado. Inténtalo de nuevo.",
+    "aiKeyTestOk": "Clave aceptada",
+    "aiKeyTestRejected": "Clave rechazada. Revísala e inténtalo de nuevo.",
+    "aiKeyTestNetwork": "No se pudo contactar con el proveedor. Revisa tu conexión."
   }
 }

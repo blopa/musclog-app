@@ -148,9 +148,11 @@ function getMealsTabLabel(options: {
   if (searchQuery.trim()) {
     return `${base} (${filteredCount})`;
   }
+
   if (totalCount !== undefined) {
     return `${base} (${totalCount})`;
   }
+
   return base;
 }
 
@@ -396,6 +398,7 @@ export function FoodSearchModal({
         setIsMealDetailsVisible(false);
         setSelectedMeal(null);
       };
+
       reset();
     }
   }, [visible]);
@@ -405,6 +408,7 @@ export function FoodSearchModal({
     if (!visible) {
       return;
     }
+
     let mounted = true;
     FoodPortionService.get100gPortion().then((portion) => {
       if (mounted) {
@@ -422,6 +426,7 @@ export function FoodSearchModal({
       const randomize = () => {
         setSearchSessionIcon(pickRandomFoodIcon());
       };
+
       randomize();
     }
   }, [searchQuery]);
@@ -536,6 +541,7 @@ export function FoodSearchModal({
     const reset = () => {
       setShowCancelSearch(false);
     };
+
     reset();
 
     if (!searchQuery.trim() || (!isLoadingAPI && !isInitialLoad) || hasApiResults) {
@@ -596,6 +602,7 @@ export function FoodSearchModal({
         if (mounted) {
           setSuggestedFoods(null);
         }
+
         return;
       }
 
@@ -812,6 +819,7 @@ export function FoodSearchModal({
     if (!searchQuery.trim()) {
       return mealCardsData;
     }
+
     const q = searchQuery.trim().toLowerCase();
     return mealCardsData.filter(
       (m) =>
@@ -893,6 +901,7 @@ export function FoodSearchModal({
     const update = () => {
       setActiveFilter(initialTab);
     };
+
     update();
   }, [initialTab, visible]);
 
@@ -902,10 +911,12 @@ export function FoodSearchModal({
       if (activeFilter === 'openfood' && resultsBySource.api.length === 0) {
         setActiveFilter('all');
       }
+
       if (activeFilter === 'usda' && resultsBySource.usda.length === 0) {
         setActiveFilter('all');
       }
     };
+
     syncFilter();
   }, [activeFilter, resultsBySource.api.length, resultsBySource.usda.length]);
 
@@ -957,6 +968,7 @@ export function FoodSearchModal({
           log.portionId
         );
       }
+
       onFoodSelect?.({} as FoodItem);
       onFirstNutritionLog?.();
       onFoodTracked?.();

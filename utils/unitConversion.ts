@@ -103,6 +103,90 @@ export function metricDisplayUnit(
   return storedUnit;
 }
 
+const METERS_PER_KILOMETER = 1000;
+const METERS_PER_MILE = 1609.344;
+
+/** Distance is stored in metres; a metric user sees kilometres, an imperial one miles. */
+export function getDistanceUnitLabel(units: Units): 'km' | 'mi' {
+  return units === 'imperial' ? 'mi' : 'km';
+}
+
+export function metersToDisplayDistance(meters: number, units: Units): number {
+  return meters / (units === 'imperial' ? METERS_PER_MILE : METERS_PER_KILOMETER);
+}
+
+export function displayDistanceToMeters(value: number, units: Units): number {
+  return value * (units === 'imperial' ? METERS_PER_MILE : METERS_PER_KILOMETER);
+}
+
+/**
+ * Seconds to cover one display unit (a kilometre or a mile) at the average pace of a session, or
+ * `null` when there is no distance or no time to divide by — a pace of "0:00" or "Infinity" would
+ * read as a result rather than as missing data.
+ */
+export function paceSecondsPerDisplayUnit(
+  distanceM: number,
+  durationS: number,
+  units: Units
+): number | null {
+  if (
+    !Number.isFinite(distanceM) ||
+    !Number.isFinite(durationS) ||
+    distanceM <= 0 ||
+    durationS <= 0
+  ) {
+    return null;
+  }
+
+  return durationS / metersToDisplayDistance(distanceM, units);
+}
+
+/** A weight unit a gym or an exercise can pin, as stored. */
+export type WeightUnitOverride = 'kg' | 'lbs';
+
+export function isWeightUnitOverride(value: unknown): value is WeightUnitOverride {
+  return value === 'kg' || value === 'lbs';
+}
+
+/**
+ * The unit system an exercise's weights are shown and entered in.
+ *
+ * The most specific statement wins: the exercise's own override, then the gym being trained in
+ * (a gym whose plates are pounds is lifted in pounds whatever the account says), then the account
+ * default. Anything that is not exactly 'kg' or 'lbs' — an absent override, a value written by a
+ * newer build — is "no statement" rather than an error, so a bad row can never blank a weight.
+ *
+ * The result feeds the ordinary weight helpers (`kgToDisplay`, `displayToKg`,
+ * `getWeightUnitI18nKey`). The database stays metric whichever unit is shown.
+ */
+export function resolveWeightUnits({
+  account,
+  gym,
+  exercise,
+}: {
+  account: Units;
+  gym?: unknown;
+  exercise?: unknown;
+}): Units {
+  let pinned: WeightUnitOverride | null = null;
+  if (isWeightUnitOverride(exercise)) {
+    pinned = exercise;
+  } else if (isWeightUnitOverride(gym)) {
+    pinned = gym;
+  }
+
+  if (pinned === null) {
+    return account;
+  }
+
+  return pinned === 'lbs' ? 'imperial' : 'metric';
+}
+
+/** The storable override that selects `units`, for a picker that edits one. */
+export function weightUnitOverrideFor(units: Units): WeightUnitOverride {
+  return units === 'imperial' ? 'lbs' : 'kg';
+}
+
 /**
  * Convert weight from storage (kg) to display value.
  * Returns value in kg when metric, in lb when imperial.
@@ -111,7 +195,21 @@ export function kgToDisplay(kg: number, units: Units): number {
   if (units === 'imperial') {
     return convert(kg, 'kg').to('lb') as number;
   }
+
   return kg;
+}
+
+/**
+ * Rounds a weight to a whole number in the unit the user sees, returned in kg: 102.5 kg is 103 kg
+ * for a metric user and 226 lb (102.5 kg) for an imperial one. This is the app's long-standing
+ * rounding of a computed load when no gym describes the equipment.
+ */
+export function roundWeightForUnits(kg: number, units: Units): number {
+  if (units === 'imperial') {
+    return displayToKg(Math.round(kgToDisplay(kg, units)), units);
+  }
+
+  return Math.round(kg);
 }
 
 /**
@@ -122,6 +220,7 @@ export function displayToKg(value: number, units: Units): number {
   if (units === 'imperial') {
     return convert(value, 'lb').to('kg') as number;
   }
+
   return value;
 }
 
@@ -133,6 +232,7 @@ export function cmToDisplay(cm: number, units: Units): number {
   if (units === 'imperial') {
     return convert(cm, 'cm').to('in') as number;
   }
+
   return cm;
 }
 
@@ -144,6 +244,7 @@ export function displayToCm(value: number, units: Units): number {
   if (units === 'imperial') {
     return convert(value, 'in').to('cm') as number;
   }
+
   return value;
 }
 
@@ -186,6 +287,7 @@ export function storedWeightToKg(value: number, storedUnit?: string | null): num
   if (storedUnit === 'lbs') {
     return convert(value, 'lb').to('kg') as number;
   }
+
   return value;
 }
 
@@ -196,6 +298,7 @@ export function storedHeightToCm(value: number, storedUnit?: string | null): num
   if (storedUnit === 'in') {
     return convert(value, 'in').to('cm') as number;
   }
+
   return value;
 }
 
@@ -241,6 +344,7 @@ export function prepareMetricDataToSave<T extends Record<string, unknown>>(
       }
     }
   }
+
   return result;
 }
 
@@ -286,5 +390,6 @@ export function prepareMetricDataToDisplay<T extends Record<string, unknown>>(
       }
     }
   }
+
   return result;
 }

@@ -35,6 +35,7 @@ import enUsBleWorkoutData from './locales/en-us/bleWorkoutData.json';
 import enUsBodyFat from './locales/en-us/body_fat.json';
 import enUsBodyMetrics from './locales/en-us/bodyMetrics.json';
 import enUsCamera from './locales/en-us/camera.json';
+import enUsCardio from './locales/en-us/cardio.json';
 import enUsCoach from './locales/en-us/coach.json';
 import enUsCommon from './locales/en-us/common.json';
 import enUsCreateWorkout from './locales/en-us/createWorkout.json';
@@ -64,6 +65,7 @@ import enUsGoalsManagement from './locales/en-us/goalsManagement.json';
 import enUsHealthConnect from './locales/en-us/healthConnect.json';
 import enUsHeightPicker from './locales/en-us/heightPicker.json';
 import enUsHome from './locales/en-us/home.json';
+import enUsImageViewer from './locales/en-us/imageViewer.json';
 import enUsLogSetPerformance from './locales/en-us/logSetPerformance.json';
 import enUsMealFoods from './locales/en-us/meal_foods.json';
 import enUsMeals from './locales/en-us/meals.json';
@@ -92,6 +94,7 @@ import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWebsite from './locales/en-us/website.json';
 import enUsWeeklyStreakCard from './locales/en-us/weeklyStreakCard.json';
+import enUsWhatsNew from './locales/en-us/whatsNew.json';
 import enUsWorkout from './locales/en-us/workout.json';
 import enUsWorkoutLogSets from './locales/en-us/workout_log_sets.json';
 import enUsWorkoutLogs from './locales/en-us/workout_logs.json';
@@ -103,6 +106,7 @@ import enUsWorkoutLog from './locales/en-us/workoutLog.json';
 import enUsWorkoutOptions from './locales/en-us/workoutOptions.json';
 import enUsWorkouts from './locales/en-us/workouts.json';
 import enUsWorkoutSession from './locales/en-us/workoutSession.json';
+import enUsWorkoutSettings from './locales/en-us/workoutSettings.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
 // es-es
 import esEsAccessToken from './locales/es-es/access_token.json';
@@ -112,6 +116,7 @@ import esEsBleWorkoutData from './locales/es-es/bleWorkoutData.json';
 import esEsBodyFat from './locales/es-es/body_fat.json';
 import esEsBodyMetrics from './locales/es-es/bodyMetrics.json';
 import esEsCamera from './locales/es-es/camera.json';
+import esEsCardio from './locales/es-es/cardio.json';
 import esEsCoach from './locales/es-es/coach.json';
 import esEsCommon from './locales/es-es/common.json';
 import esEsCreateWorkout from './locales/es-es/createWorkout.json';
@@ -141,6 +146,7 @@ import esEsGoalsManagement from './locales/es-es/goalsManagement.json';
 import esEsHealthConnect from './locales/es-es/healthConnect.json';
 import esEsHeightPicker from './locales/es-es/heightPicker.json';
 import esEsHome from './locales/es-es/home.json';
+import esEsImageViewer from './locales/es-es/imageViewer.json';
 import esEsLogSetPerformance from './locales/es-es/logSetPerformance.json';
 import esEsMealFoods from './locales/es-es/meal_foods.json';
 import esEsMeals from './locales/es-es/meals.json';
@@ -169,6 +175,7 @@ import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
 import esEsWebsite from './locales/es-es/website.json';
 import esEsWeeklyStreakCard from './locales/es-es/weeklyStreakCard.json';
+import esEsWhatsNew from './locales/es-es/whatsNew.json';
 import esEsWorkout from './locales/es-es/workout.json';
 import esEsWorkoutLogSets from './locales/es-es/workout_log_sets.json';
 import esEsWorkoutLogs from './locales/es-es/workout_logs.json';
@@ -180,6 +187,7 @@ import esEsWorkoutLog from './locales/es-es/workoutLog.json';
 import esEsWorkoutOptions from './locales/es-es/workoutOptions.json';
 import esEsWorkouts from './locales/es-es/workouts.json';
 import esEsWorkoutSession from './locales/es-es/workoutSession.json';
+import esEsWorkoutSettings from './locales/es-es/workoutSettings.json';
 import esEsWorkoutSummary from './locales/es-es/workoutSummary.json';
 // nl-nl
 import nlNlAccessToken from './locales/nl-nl/access_token.json';
@@ -189,6 +197,7 @@ import nlNlBleWorkoutData from './locales/nl-nl/bleWorkoutData.json';
 import nlNlBodyFat from './locales/nl-nl/body_fat.json';
 import nlNlBodyMetrics from './locales/nl-nl/bodyMetrics.json';
 import nlNlCamera from './locales/nl-nl/camera.json';
+import nlNlCardio from './locales/nl-nl/cardio.json';
 import nlNlCoach from './locales/nl-nl/coach.json';
 import nlNlCommon from './locales/nl-nl/common.json';
 import nlNlCreateWorkout from './locales/nl-nl/createWorkout.json';
@@ -218,6 +227,7 @@ import nlNlGoalsManagement from './locales/nl-nl/goalsManagement.json';
 import nlNlHealthConnect from './locales/nl-nl/healthConnect.json';
 import nlNlHeightPicker from './locales/nl-nl/heightPicker.json';
 import nlNlHome from './locales/nl-nl/home.json';
+import nlNlImageViewer from './locales/nl-nl/imageViewer.json';
 import nlNlLogSetPerformance from './locales/nl-nl/logSetPerformance.json';
 import nlNlMealFoods from './locales/nl-nl/meal_foods.json';
 import nlNlMeals from './locales/nl-nl/meals.json';
@@ -246,6 +256,7 @@ import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
 import nlNlWebsite from './locales/nl-nl/website.json';
 import nlNlWeeklyStreakCard from './locales/nl-nl/weeklyStreakCard.json';
+import nlNlWhatsNew from './locales/nl-nl/whatsNew.json';
 import nlNlWorkout from './locales/nl-nl/workout.json';
 import nlNlWorkoutLogSets from './locales/nl-nl/workout_log_sets.json';
 import nlNlWorkoutLogs from './locales/nl-nl/workout_logs.json';
@@ -257,6 +268,7 @@ import nlNlWorkoutLog from './locales/nl-nl/workoutLog.json';
 import nlNlWorkoutOptions from './locales/nl-nl/workoutOptions.json';
 import nlNlWorkouts from './locales/nl-nl/workouts.json';
 import nlNlWorkoutSession from './locales/nl-nl/workoutSession.json';
+import nlNlWorkoutSettings from './locales/nl-nl/workoutSettings.json';
 import nlNlWorkoutSummary from './locales/nl-nl/workoutSummary.json';
 // pt-br
 import ptBrAccessToken from './locales/pt-br/access_token.json';
@@ -266,6 +278,7 @@ import ptBrBleWorkoutData from './locales/pt-br/bleWorkoutData.json';
 import ptBrBodyFat from './locales/pt-br/body_fat.json';
 import ptBrBodyMetrics from './locales/pt-br/bodyMetrics.json';
 import ptBrCamera from './locales/pt-br/camera.json';
+import ptBrCardio from './locales/pt-br/cardio.json';
 import ptBrCoach from './locales/pt-br/coach.json';
 import ptBrCommon from './locales/pt-br/common.json';
 import ptBrCreateWorkout from './locales/pt-br/createWorkout.json';
@@ -295,6 +308,7 @@ import ptBrGoalsManagement from './locales/pt-br/goalsManagement.json';
 import ptBrHealthConnect from './locales/pt-br/healthConnect.json';
 import ptBrHeightPicker from './locales/pt-br/heightPicker.json';
 import ptBrHome from './locales/pt-br/home.json';
+import ptBrImageViewer from './locales/pt-br/imageViewer.json';
 import ptBrLogSetPerformance from './locales/pt-br/logSetPerformance.json';
 import ptBrMealFoods from './locales/pt-br/meal_foods.json';
 import ptBrMeals from './locales/pt-br/meals.json';
@@ -323,6 +337,7 @@ import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
 import ptBrWebsite from './locales/pt-br/website.json';
 import ptBrWeeklyStreakCard from './locales/pt-br/weeklyStreakCard.json';
+import ptBrWhatsNew from './locales/pt-br/whatsNew.json';
 import ptBrWorkout from './locales/pt-br/workout.json';
 import ptBrWorkoutLogSets from './locales/pt-br/workout_log_sets.json';
 import ptBrWorkoutLogs from './locales/pt-br/workout_logs.json';
@@ -334,6 +349,7 @@ import ptBrWorkoutLog from './locales/pt-br/workoutLog.json';
 import ptBrWorkoutOptions from './locales/pt-br/workoutOptions.json';
 import ptBrWorkouts from './locales/pt-br/workouts.json';
 import ptBrWorkoutSession from './locales/pt-br/workoutSession.json';
+import ptBrWorkoutSettings from './locales/pt-br/workoutSettings.json';
 import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
 // ru-ru
 import ruRuAccessToken from './locales/ru-ru/access_token.json';
@@ -343,6 +359,7 @@ import ruRuBleWorkoutData from './locales/ru-ru/bleWorkoutData.json';
 import ruRuBodyFat from './locales/ru-ru/body_fat.json';
 import ruRuBodyMetrics from './locales/ru-ru/bodyMetrics.json';
 import ruRuCamera from './locales/ru-ru/camera.json';
+import ruRuCardio from './locales/ru-ru/cardio.json';
 import ruRuCoach from './locales/ru-ru/coach.json';
 import ruRuCommon from './locales/ru-ru/common.json';
 import ruRuCreateWorkout from './locales/ru-ru/createWorkout.json';
@@ -372,6 +389,7 @@ import ruRuGoalsManagement from './locales/ru-ru/goalsManagement.json';
 import ruRuHealthConnect from './locales/ru-ru/healthConnect.json';
 import ruRuHeightPicker from './locales/ru-ru/heightPicker.json';
 import ruRuHome from './locales/ru-ru/home.json';
+import ruRuImageViewer from './locales/ru-ru/imageViewer.json';
 import ruRuLogSetPerformance from './locales/ru-ru/logSetPerformance.json';
 import ruRuMealFoods from './locales/ru-ru/meal_foods.json';
 import ruRuMeals from './locales/ru-ru/meals.json';
@@ -400,6 +418,7 @@ import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
 import ruRuWebsite from './locales/ru-ru/website.json';
 import ruRuWeeklyStreakCard from './locales/ru-ru/weeklyStreakCard.json';
+import ruRuWhatsNew from './locales/ru-ru/whatsNew.json';
 import ruRuWorkout from './locales/ru-ru/workout.json';
 import ruRuWorkoutLogSets from './locales/ru-ru/workout_log_sets.json';
 import ruRuWorkoutLogs from './locales/ru-ru/workout_logs.json';
@@ -411,6 +430,7 @@ import ruRuWorkoutLog from './locales/ru-ru/workoutLog.json';
 import ruRuWorkoutOptions from './locales/ru-ru/workoutOptions.json';
 import ruRuWorkouts from './locales/ru-ru/workouts.json';
 import ruRuWorkoutSession from './locales/ru-ru/workoutSession.json';
+import ruRuWorkoutSettings from './locales/ru-ru/workoutSettings.json';
 import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
 // untranslated
 import untranslated from './locales/untranslated.json';
@@ -451,6 +471,7 @@ const resources = {
       ...enUsBodyMetrics,
       ...enUsBodyFat,
       ...enUsCamera,
+      ...enUsCardio,
       ...enUsCoach,
       ...enUsCommon,
       ...enUsCreateWorkout,
@@ -480,6 +501,7 @@ const resources = {
       ...enUsHealthConnect,
       ...enUsHeightPicker,
       ...enUsHome,
+      ...enUsImageViewer,
       ...enUsLogSetPerformance,
       ...enUsMealFoods,
       ...enUsMeals,
@@ -508,6 +530,7 @@ const resources = {
       ...enUsUserMenu,
       ...enUsWebsite,
       ...enUsWeeklyStreakCard,
+      ...enUsWhatsNew,
       ...enUsWorkout,
       ...enUsWorkoutDetail,
       ...enUsWorkoutDetails,
@@ -515,6 +538,7 @@ const resources = {
       ...enUsWorkoutLog,
       ...enUsWorkoutOptions,
       ...enUsWorkoutSession,
+      ...enUsWorkoutSettings,
       ...enUsWorkoutSummary,
       ...enUsWorkoutLogSets,
       ...enUsWorkoutLogs,
@@ -532,6 +556,7 @@ const resources = {
       ...esEsBodyMetrics,
       ...esEsBodyFat,
       ...esEsCamera,
+      ...esEsCardio,
       ...esEsCoach,
       ...esEsCommon,
       ...esEsCreateWorkout,
@@ -561,6 +586,7 @@ const resources = {
       ...esEsHealthConnect,
       ...esEsHeightPicker,
       ...esEsHome,
+      ...esEsImageViewer,
       ...esEsLogSetPerformance,
       ...esEsMealFoods,
       ...esEsMeals,
@@ -589,6 +615,7 @@ const resources = {
       ...esEsUserMenu,
       ...esEsWebsite,
       ...esEsWeeklyStreakCard,
+      ...esEsWhatsNew,
       ...esEsWorkout,
       ...esEsWorkoutDetail,
       ...esEsWorkoutDetails,
@@ -596,6 +623,7 @@ const resources = {
       ...esEsWorkoutLog,
       ...esEsWorkoutOptions,
       ...esEsWorkoutSession,
+      ...esEsWorkoutSettings,
       ...esEsWorkoutSummary,
       ...esEsWorkoutLogSets,
       ...esEsWorkoutLogs,
@@ -613,6 +641,7 @@ const resources = {
       ...nlNlBodyMetrics,
       ...nlNlBodyFat,
       ...nlNlCamera,
+      ...nlNlCardio,
       ...nlNlCoach,
       ...nlNlCommon,
       ...nlNlCreateWorkout,
@@ -642,6 +671,7 @@ const resources = {
       ...nlNlHealthConnect,
       ...nlNlHeightPicker,
       ...nlNlHome,
+      ...nlNlImageViewer,
       ...nlNlLogSetPerformance,
       ...nlNlMealFoods,
       ...nlNlMeals,
@@ -670,6 +700,7 @@ const resources = {
       ...nlNlUserMenu,
       ...nlNlWebsite,
       ...nlNlWeeklyStreakCard,
+      ...nlNlWhatsNew,
       ...nlNlWorkout,
       ...nlNlWorkoutDetail,
       ...nlNlWorkoutDetails,
@@ -677,6 +708,7 @@ const resources = {
       ...nlNlWorkoutLog,
       ...nlNlWorkoutOptions,
       ...nlNlWorkoutSession,
+      ...nlNlWorkoutSettings,
       ...nlNlWorkoutSummary,
       ...nlNlWorkoutLogSets,
       ...nlNlWorkoutLogs,
@@ -694,6 +726,7 @@ const resources = {
       ...ptBrBodyMetrics,
       ...ptBrBodyFat,
       ...ptBrCamera,
+      ...ptBrCardio,
       ...ptBrCoach,
       ...ptBrCommon,
       ...ptBrCreateWorkout,
@@ -723,6 +756,7 @@ const resources = {
       ...ptBrHealthConnect,
       ...ptBrHeightPicker,
       ...ptBrHome,
+      ...ptBrImageViewer,
       ...ptBrLogSetPerformance,
       ...ptBrMealFoods,
       ...ptBrMeals,
@@ -751,6 +785,7 @@ const resources = {
       ...ptBrUserMenu,
       ...ptBrWebsite,
       ...ptBrWeeklyStreakCard,
+      ...ptBrWhatsNew,
       ...ptBrWorkout,
       ...ptBrWorkoutDetail,
       ...ptBrWorkoutDetails,
@@ -758,6 +793,7 @@ const resources = {
       ...ptBrWorkoutLog,
       ...ptBrWorkoutOptions,
       ...ptBrWorkoutSession,
+      ...ptBrWorkoutSettings,
       ...ptBrWorkoutSummary,
       ...ptBrWorkoutLogSets,
       ...ptBrWorkoutLogs,
@@ -775,6 +811,7 @@ const resources = {
       ...ruRuBodyMetrics,
       ...ruRuBodyFat,
       ...ruRuCamera,
+      ...ruRuCardio,
       ...ruRuCoach,
       ...ruRuCommon,
       ...ruRuCreateWorkout,
@@ -804,6 +841,7 @@ const resources = {
       ...ruRuHealthConnect,
       ...ruRuHeightPicker,
       ...ruRuHome,
+      ...ruRuImageViewer,
       ...ruRuLogSetPerformance,
       ...ruRuMealFoods,
       ...ruRuMeals,
@@ -832,6 +870,7 @@ const resources = {
       ...ruRuUserMenu,
       ...ruRuWebsite,
       ...ruRuWeeklyStreakCard,
+      ...ruRuWhatsNew,
       ...ruRuWorkout,
       ...ruRuWorkoutDetail,
       ...ruRuWorkoutDetails,
@@ -839,6 +878,7 @@ const resources = {
       ...ruRuWorkoutLog,
       ...ruRuWorkoutOptions,
       ...ruRuWorkoutSession,
+      ...ruRuWorkoutSettings,
       ...ruRuWorkoutSummary,
       ...ruRuWorkoutLogSets,
       ...ruRuWorkoutLogs,

@@ -75,6 +75,7 @@ const markdownRenderer = new MarkdownIt({
         language: normalizedLanguage,
       }).value;
     }
+
     const languageClass = normalizedLanguage
       ? ` class="language-${escapeHtml(normalizedLanguage)}"`
       : '';

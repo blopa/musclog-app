@@ -140,12 +140,14 @@ export class MigrationService {
     if (!onProgress) {
       return () => {};
     }
+
     let lastPercent = -1;
     return (current: number, total: number) => {
       if (total <= 0) {
         onProgress({ step, current: 0, total: 0 });
         return;
       }
+
       const percent = Math.floor((current / total) * 100);
       if (current === 0 || current === total || percent !== lastPercent) {
         lastPercent = percent;
@@ -266,6 +268,7 @@ export class MigrationService {
         // If parsing fails, use current time
         return Date.now();
       }
+
       return date.getTime();
     } catch (error) {
       console.warn('Failed to parse timestamp:', textTimestamp);
@@ -440,6 +443,7 @@ export class MigrationService {
           }
         }
       }
+
       processedRows++;
       reportProgress?.(processedRows, total);
     }
@@ -654,6 +658,7 @@ export class MigrationService {
         if (food.calories <= 0) {
           continue;
         }
+
         const foodCalFromProtein = food.protein * CALORIES_FOR_PROTEIN;
         const foodCalFromCarbs =
           digestibleCarbs(food.carbs, food.fiber) * CALORIES_FOR_CARBS +
@@ -911,6 +916,7 @@ export class MigrationService {
         handleError(error, 'MigrationService.migrateNutritionLog');
         // Continue with other logs instead of failing completely
       }
+
       processedRows++;
       reportProgress?.(processedRows, total);
     }
@@ -1379,6 +1385,7 @@ export class MigrationService {
           setsByExercise.set(newExerciseId, []);
           exerciseOrder.push(newExerciseId);
         }
+
         setsByExercise.get(newExerciseId)!.push(oldSet);
       }
 
@@ -1494,6 +1501,7 @@ export class MigrationService {
           setsByExercise.set(newExerciseId, []);
           exerciseOrder.push(newExerciseId);
         }
+
         setsByExercise.get(newExerciseId)!.push(oldSet);
       }
 

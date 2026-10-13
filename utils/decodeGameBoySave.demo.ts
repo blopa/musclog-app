@@ -77,6 +77,7 @@ export function buildDemoWeighIns(today: GameBoyCalDate): DemoWeighInRecord[] {
     const weightKgTenths = 849 - dayIndex + ((dayIndex % 5) - 2) * 2;
     records.push({ dayNumber: recentDayNumber(today, daysAgo), weightKgTenths });
   }
+
   return records;
 }
 
@@ -96,6 +97,7 @@ export function buildDemoFoodLog(today: GameBoyCalDate): DemoFoodLogRecord[] {
       entries.push({ dayNumber, foodIdx: entry.foodIdx, grams: entry.grams });
     }
   }
+
   return entries;
 }
 
@@ -203,5 +205,6 @@ export function buildDemoWorkouts(today: GameBoyCalDate): DemoWorkoutRecord[] {
       })),
     });
   }
+
   return workouts;
 }

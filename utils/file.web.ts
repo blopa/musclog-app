@@ -40,6 +40,7 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
     } else if (meta?.reason === 'pre-restore') {
       reason = 'pre-restore';
     }
+
     const resolvedFileName =
       fileName && fileName !== hash ? fileName : `${ts}-${reason}${versionStr}.json`;
 
@@ -59,6 +60,7 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
   if (fileName) {
     a.download = fileName;
   }
+
   a.click();
 }
 
@@ -102,6 +104,7 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
         reject(error);
       }
     };
+
     input.click();
   });
 }
@@ -261,6 +264,7 @@ export async function readFileAsStringAsync(fileUri: string, options: { encoding
           const base64Data = result.split(',')[1];
           resolve(base64Data);
         };
+
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });

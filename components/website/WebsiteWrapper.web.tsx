@@ -20,6 +20,7 @@ import {
   surfaceCard,
 } from '@/components/website/websiteColors';
 import { WebsitePreferences } from '@/components/website/WebsitePreferences';
+import { GITHUB_LICENSE_URL, GITHUB_REPO_URL } from '@/constants/misc';
 import packageJson from '@/package.json';
 import { resetAnalyticsConsent } from '@/utils/websiteAnalytics';
 
@@ -246,7 +247,7 @@ export function MobileMenu() {
     { text: 'FAQ', href: '/faq' },
     { text: t('gameboy'), href: '/gameboy' },
     { text: t('alternatives'), href: '/alternatives' },
-    { text: t('github'), href: 'https://github.com/blopa/musclog-app' },
+    { text: t('github'), href: GITHUB_REPO_URL },
   ];
   const linkClasses =
     'rounded-xl px-4 py-3 text-base font-semibold transition-colors hover:bg-ink/10';
@@ -434,8 +435,8 @@ export function Footer() {
     { text: 'FAQ', href: '/faq' },
     { text: navT('alternatives'), href: '/alternatives' },
     { text: navT('blog'), href: '/blog' },
-    { text: t('license'), href: 'https://github.com/blopa/musclog-app/blob/main/LICENSE' },
-    { text: t('github'), href: 'https://github.com/blopa/musclog-app' },
+    { text: t('license'), href: GITHUB_LICENSE_URL },
+    { text: t('github'), href: GITHUB_REPO_URL },
   ];
 
   return (

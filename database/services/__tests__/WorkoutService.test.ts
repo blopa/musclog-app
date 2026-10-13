@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
 import { ActiveWorkoutExistsError, WorkoutService } from '@/database/services/WorkoutService';
 import {
   clearActiveWorkoutLogId,
@@ -97,6 +98,10 @@ jest.mock('../UserMetricService', () => ({
     getLatest: jest.fn().mockResolvedValue(null),
     getUserBodyWeightKgForVolume: jest.fn().mockResolvedValue(0),
   },
+}));
+
+jest.mock('@/services/healthConnectWorkout', () => ({
+  writeWorkoutToHealthConnect: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('../UserService', () => ({
@@ -1479,6 +1484,26 @@ describe('WorkoutService', () => {
       expect(set.markAsDeleted).toHaveBeenCalledTimes(1);
       // Every one of them is a `@writer`, so every one has to join the open transaction.
       expect(mockCallWriter).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('start-of-workout progression', () => {
+    afterEach(() => jest.restoreAllMocks());
+
+    it('starting a workout still succeeds when progression fails', async () => {
+      const mockTemplate = createMockWorkoutTemplate({
+        id: 'template-1',
+        deletedAt: null,
+        startWorkout: jest.fn().mockResolvedValue(createMockWorkoutLog({ id: 'wl-1' })),
+      });
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(mockTemplate) }) as any
+      );
+      jest
+        .spyOn(WorkoutProgressionService, 'applyStartProgression')
+        .mockRejectedValue(new Error('boom'));
+
+      await expect(WorkoutService.startWorkoutFromTemplate('template-1')).resolves.toBeDefined();
     });
   });
 });

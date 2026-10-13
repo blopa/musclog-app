@@ -23,6 +23,7 @@ import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import { LogCardioModal } from '@/components/modals/LogCardioModal';
 import MyMealsModal from '@/components/modals/MyMealsModal';
 import { NotificationsModal } from '@/components/modals/NotificationsModal';
 import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
@@ -33,6 +34,9 @@ import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
+import { WhatsNewAutoPrompt } from '@/components/whatsNew/WhatsNewAutoPrompt';
+import { WorkoutTodayCard } from '@/components/workout/WorkoutTodayCard';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { HomeActionKey } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
@@ -88,6 +92,7 @@ const GOALS_MANAGEMENT_TAB = {
 type GoalsManagementTab = (typeof GOALS_MANAGEMENT_TAB)[keyof typeof GOALS_MANAGEMENT_TAB];
 
 export default function HomeScreen() {
+  const [widgetCameraLaunch] = useState(() => global.__PENDING_WIDGET_ACTION === 'open-camera');
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -172,6 +177,7 @@ export default function HomeScreen() {
   >('all');
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
+  const [isLogCardioVisible, setIsLogCardioVisible] = useState(false);
   const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [goalsManagementTab, setGoalsManagementTab] = useState<GoalsManagementTab>('nutrition');
@@ -242,6 +248,7 @@ export default function HomeScreen() {
       ai_photo: () => openCamera({ mode: 'ai-meal-photo' }),
       my_meals: () => setIsMyMealsVisible(true),
       add_note: () => router.navigate('/app/notes'),
+      log_cardio: () => setIsLogCardioVisible(true),
     }),
     [router, openCamera]
   );
@@ -376,6 +383,7 @@ export default function HomeScreen() {
 
   return (
     <MasterLayout>
+      <WhatsNewAutoPrompt suppressed={widgetCameraLaunch} />
       {showConfetti ? <ConfettiOverlay /> : null}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
@@ -465,6 +473,9 @@ export default function HomeScreen() {
           </View>
         </View>
 
+        <View className="mx-4 mb-4">
+          <WorkoutTodayCard activeOnly />
+        </View>
         {/* Daily Summary Card */}
         <View className="mb-6 px-4">
           {homeSummaryCard === 'weekly_streak' ? (
@@ -510,6 +521,9 @@ export default function HomeScreen() {
 
         {/* Action Buttons */}
         <HomeActionsRow selected={homeActions} onActionPress={(key) => homeActionHandlers[key]()} />
+        <View className="mx-4 mb-6">
+          <WeeklyReviewCard />
+        </View>
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-text-primary">
@@ -766,6 +780,11 @@ export default function HomeScreen() {
         onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         isAiEnabled={isAiConfigured}
       />
+
+      {/* Quick walk/run log: mounted only while open so each open starts from the defaults */}
+      {isLogCardioVisible ? (
+        <LogCardioModal visible={isLogCardioVisible} onClose={() => setIsLogCardioVisible(false)} />
+      ) : null}
 
       {/* My Meals Modal */}
       <MyMealsModal visible={isMyMealsVisible} onClose={handleCloseMyMeals} />

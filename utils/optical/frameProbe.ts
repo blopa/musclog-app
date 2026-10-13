@@ -66,6 +66,7 @@ export class OpticalFrameProbe {
       this.identity = identity;
       this.frames = 0;
     }
+
     this.frames++;
 
     // A dismissal is per stream, so a sender that restarts on a different payload gets to ask

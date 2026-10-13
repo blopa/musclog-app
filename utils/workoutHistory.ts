@@ -17,6 +17,8 @@ import {
   formatLocalMonthYearLongFromMonthKey,
   localDayKeyPlusCalendarDaysFromNow,
 } from './calendarDate';
+import { isCardioActivity } from './cardioEnergy';
+import { formatDistance, formatPace } from './cardioFormat';
 import { getDateFnsLocale } from './dateFnsLocale';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { getWeightUnitI18nKey } from './units';
@@ -108,9 +110,14 @@ export function formatVolume(
 /**
  * Get icon and colors based on workout type
  */
-export function getWorkoutIcon(theme: Theme, workoutName: string): IconData {
+export function getWorkoutIcon(
+  theme: Theme,
+  workoutName: string,
+  /** The log's stored type. `cardio` is authoritative: a localized "Caminhada" has no "run" in it. */
+  workoutType?: string | null
+): IconData {
   const nameLower = workoutName.toLowerCase();
-  if (nameLower.includes('run') || nameLower.includes('cardio')) {
+  if (workoutType === 'cardio' || nameLower.includes('run') || nameLower.includes('cardio')) {
     return {
       icon: Activity,
       iconBgColor: theme.colors.status.brandVivid,
@@ -136,17 +143,24 @@ export function getWorkoutIcon(theme: Theme, workoutName: string): IconData {
 /**
  * Determine workout type from name
  */
-export function getWorkoutTypeFromName(name: string): WorkoutType | null {
+export function getWorkoutTypeFromName(
+  name: string,
+  /** The log's stored type. `cardio` is authoritative; every other value falls back to the name. */
+  workoutType?: string | null
+): WorkoutType | null {
   const nameLower = name.toLowerCase();
-  if (nameLower.includes('run') || nameLower.includes('cardio')) {
+  if (workoutType === 'cardio' || nameLower.includes('run') || nameLower.includes('cardio')) {
     return 'cardio';
   }
+
   if (nameLower.includes('hiit') || nameLower.includes('interval')) {
     return 'hiit';
   }
+
   if (nameLower.includes('yoga') || nameLower.includes('stretch')) {
     return 'yoga';
   }
+
   // Default to strength for weightlifting workouts
   return 'strength';
 }
@@ -218,6 +232,7 @@ export function normalizeMuscleGroup(group: string): string {
   if (normalized.includes('full') || normalized.includes('body')) {
     return 'full-body';
   }
+
   return normalized;
 }
 
@@ -232,11 +247,13 @@ export function calculateDateRange(dateRange: '30' | '90' | 'custom'): DateRange
     const startDate = localDayKeyPlusCalendarDaysFromNow(-30);
     return { startDate, endDate };
   }
+
   if (dateRange === '90') {
     const endDate = Date.now();
     const startDate = localDayKeyPlusCalendarDaysFromNow(-90);
     return { startDate, endDate };
   }
+
   // 'custom' date range would need a date picker, skip for now
   return undefined;
 }
@@ -268,7 +285,7 @@ export async function processWorkouts(
 
       // Get workout type and apply filter
       if (filters.workoutType !== 'all') {
-        const workoutType = getWorkoutTypeFromName(workout.workoutName ?? '');
+        const workoutType = getWorkoutTypeFromName(workout.workoutName ?? '', workout.type);
         if (workoutType !== filters.workoutType) {
           return null;
         }
@@ -302,7 +319,7 @@ export async function processWorkouts(
       const dateStr = format(workoutDate, 'MMM d • hh:mm a', { locale });
 
       // Get icon and colors
-      const iconData = getWorkoutIcon(theme, workout.workoutName ?? '');
+      const iconData = getWorkoutIcon(theme, workout.workoutName ?? '', workout.type);
 
       // Format stats
       const stats: { label: string; value: string }[] = [
@@ -311,6 +328,19 @@ export async function processWorkouts(
           value: formatDuration(durationMinutes, t, appLocale),
         },
       ];
+
+      // A walk or run logged without sets shows what it is about: distance and pace.
+      const hasCardioDistance = isCardioActivity(workout.activity) && (workout.distanceM ?? 0) > 0;
+      if (hasCardioDistance) {
+        stats.push({
+          label: t('pastWorkoutHistory.stats.distance'),
+          value: formatDistance(appLocale, workout.distanceM ?? 0, units),
+        });
+        const pace = formatPace(appLocale, workout.distanceM ?? 0, durationMinutes * 60, units);
+        if (pace) {
+          stats.push({ label: t('pastWorkoutHistory.stats.pace'), value: pace });
+        }
+      }
 
       // Add volume if available
       if (workout.totalVolume && workout.totalVolume > 0) {
@@ -360,6 +390,7 @@ export function groupWorkoutsByMonth(workouts: WorkoutHistoryItem[]): WorkoutHis
     if (!groupedByMonth.has(monthKey)) {
       groupedByMonth.set(monthKey, []);
     }
+
     groupedByMonth.get(monthKey)!.push(workout);
   });
 
@@ -404,6 +435,7 @@ export function mergeWorkoutSections(
     if (!sectionMap.has(monthKey)) {
       sectionMap.set(monthKey, []);
     }
+
     sectionMap.get(monthKey)!.push(workout);
     existingWorkoutIds.add(workout.id);
   });

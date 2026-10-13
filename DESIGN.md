@@ -184,7 +184,11 @@ clipped by the parent; see `FIXES.md`.
 
 ### Buttons
 
-- Primary: emerald or the approved emerald-to-teal gradient, with high-contrast text.
+- Primary: emerald or the approved emerald-to-teal gradient, with high-contrast text. The
+  `gradientCta` button variant draws `gradients.cta`, which is that emerald-to-teal gradient (the
+  same stops as `gradients.accent`); it was indigo-to-green, which this rule does not allow.
+- One primary action per screen. When a screen has a hero (the Workouts screen's Today card), the
+  cards below it use their standard, secondary treatment rather than a second filled button.
 - Secondary: low-emphasis surface or outline treatment.
 - Destructive: red/rose and explicit action copy.
 - Disabled: visually subdued and non-interactive; never communicate disabled state by opacity alone
@@ -192,7 +196,30 @@ clipped by the parent; see `FIXES.md`.
 
 Use the shared components under `components/theme/` before adding a local button or input style.
 Every pressable should cover its visible surface and provide feedback through state, haptics where
-appropriate, or both.
+appropriate, or both. Pick by what the control is, not by how it looks today:
+
+| Control                                                                 | Component                                                                  |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Labeled action (primary, secondary, outline, destructive)               | `Button`                                                                   |
+| Text-only secondary action ("Show all", "Edit goal", a quiet "Discard") | `TextButton` (`tone`: `accent` / `danger` / `muted`)                       |
+| Icon-only action (steppers, prev/next, back, more, remove ×)            | `IconButton` (`filled` / `elevated` / `ghost`; `media` over a photo)       |
+| One choice among several, or a compact action pill                      | `Chip` (`outline` for choices, `solid` for actions and the weekday picker) |
+| A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`)                                              |
+| Two or three mutually exclusive views                                   | `SegmentedControl` (`pill` when it sits inline beside other content)       |
+| A number the user types, kept as their own text                         | `NumericTextField` (`hero` / `field` / `cell`)                             |
+| A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
+| A search box or any labeled text field                                  | `TextInput` (`label=""` + a `Search` icon for search); never a raw input   |
+
+A raw `Pressable` is right only for a composite surface that is itself the control — a card, a table
+cell (the set table's number, previous and check cells), a thumbnail, a radio card that hosts its own
+fields (`ProgressionRuleEditor`), a row whose whole surface toggles a panel (`RestTimerBar`,
+`GuidanceSummary`) — never for something one of these already draws. `components/__tests__/themeControls.test.ts`
+lists the screens that have been moved onto them.
+
+Radio controls (`OptionsSelector` and `Chip`) expose `aria-checked` explicitly as well as native
+accessibility state; React Native Web does not translate `accessibilityState.checked` by itself.
+Switches need an accessible label. The shared `WeekdayChoiceChips` uses abbreviated day labels
+visually and full weekday names for assistive technology.
 
 ### Cards and modals
 
@@ -238,6 +265,9 @@ pattern across eight files and added nothing over the surface color.
 ### Inputs
 
 - Numeric controls use the shared steppers/pickers and locale-aware parsing.
+- A centered input never gets a native `placeholder`: on Android it put the caret at the far edge
+  of an empty field on first focus. `NumericTextField` draws its placeholder as an overlay and hides
+  it while focused; reuse it rather than re-centering a raw `TextInput`.
 - Store metric values and convert only at the display/input boundary.
 - Keep units next to values and use the unit helpers; never hardcode `kg`, `lb`, `g`, or `oz`.
 - Error text should explain how to recover, not just state that input is invalid.
@@ -281,3 +311,15 @@ belongs in both the desktop nav bar and the burger menu.
 - Works in all themes: check Kinetic Light, Kinetic Shock, Kinetic Volt and Kinetic Blush, and confirm nothing
   relies on a literal `text-white` or an emerald-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.
+
+## Everyday progression and Weekly Review
+
+Keep plan, targets, previous performance, editable actual values, source labels, explanation and undo together. Inline cards and Guided presentation use the same controller; switching changes presentation only. Completing a set saves immediately, while effort/partials live in an optional sheet. Keep the rest timer visible during editing and browsing. Finish Workout is explicit even when every set is resolved. Keep Guidance, Warm-up, Swap, Notes and More labeled. Lasting changes use the explicitly labeled workout editor.
+
+The session follows a set table, not a form. **Inline**: one card per exercise — thumbnail, name, muscle · equipment, a done/total pill — then the guidance block (badge, method, one-sentence reason, "Why?", "Use the plan's"), labeled action chips in one horizontal scrolling row, and rows of `Set · Last time · weight · reps · ✓` sharing one set of column widths with their header. Below 400 effective points (viewport width divided by font scale), show Last time as a labeled full-width line beneath each row; never truncate the previous load and reps. Set numbers count within the exercise; a warm-up is a "W". A numeric value the app calculated is accent-tinted **and** underlined until the user types over it. **Guided**: the exercise photo as a hero under a gradient, the name at 4xl, a "Set 2 of 3" pill, two large stepper fields (direct entry plus −/+ by the load step), and one gradient "Complete set"; context cards (fueling, cycle) follow the set instead of pushing it down. Both views share `SessionTopBar` (back, title, elapsed time and progress, a two-option view toggle on its own row under the progress bar) and the pinned `RestTimerBar`, which expands to a large panel automatically in Guided and on tap in Inline. Content is capped at 720 px so tablets keep the table legible. Session feedback is an optional action on the summary, with ratings and notes retained in the form when saving fails.
+
+"Why?" is a sheet, not a stack of buttons: method and reason first, then a small inputs table (rule, plan, last time, today), then action rows with icons and one-line hints (Use the plan's, Plate calculator, Edit gym, Edit workout and rules; Edit target only when the equipment cannot build the load). The rule editor is the same pattern: radio cards that each explain their method in a sentence, with the chosen card expanding to its settings. An exercise row in the workout editor names its rule and opens that sheet on tap.
+
+Home shows a compact permanent Weekly Review card below actions, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due and otherwise the "Weekly targets · since …" line, which is itself the way in. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
+
+Weekly Review leads with the week and a Training / Nutrition progress pair, then the two sections. Training: a `StatStrip` (workouts, working sets, volume in the user's unit), the week's workouts, records as trophy rows, and "Next up" with preview and editor actions; upcoming targets are collapsed by default. Nutrition: a `StatStrip` of the evidence (trend weight, food days, weigh-ins), a Current / Recommended table with signed deltas, the reason, then one gradient "Apply targets starting tomorrow" over "Keep current" and "Edit". Missing evidence makes "Keep targets while collecting data" the primary action with shortcuts to log. Review day and reminder live in a settings card below, history last. Opening or canceling a sheet never acknowledges a review. Training acknowledgement never gates progression. Respect themes, exercise units, local decimal separators, safe areas and keyboard clearance.

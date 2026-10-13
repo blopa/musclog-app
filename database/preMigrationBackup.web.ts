@@ -141,6 +141,7 @@ async function storeBackupContentWithRecovery(
         break;
       }
     }
+
     if (victimIndex === -1) {
       throw new Error('Web backup quota exceeded while preserving the latest recovery point');
     }
@@ -195,8 +196,10 @@ async function executeLiveBackup(reason: BackupFileMeta['reason']): Promise<stri
     if (!hadExistingPayload) {
       await deleteWebBackupPayload(backupPayloadKey(uri));
     }
+
     throw error;
   }
+
   return hash;
 }
 
@@ -297,6 +300,7 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
       if (!hadExistingPayload) {
         await deleteWebBackupPayload(backupPayloadKey(uri));
       }
+
       throw error;
     }
 

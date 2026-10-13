@@ -517,7 +517,9 @@ function createThemeColors(colors) {
       progress: [colors.statusIndigo, colors.brandDeep, colors.brandVivid],
       colorfulCard: [colors.colorfulCardStart, colors.colorfulCardMiddle, colors.colorfulCardEnd],
       workoutsTitle: [colors.statusPurple, colors.statusInfo, colors.brandVivid],
-      cta: [colors.statusIndigo, colors.brandBright], // Indigo to primary green gradient
+      // DESIGN.md: a primary action is emerald or the approved emerald-to-teal gradient. It was
+      // indigo-to-green, which DESIGN.md does not allow, so it now uses the accent stops.
+      cta: [colors.brandVivid, colors.brandDeep],
       userBubble: [colors.brandPrimary, colors.brandVivid], // User message bubble gradient
       // GradientText: these stops ARE the text colour, so every stop stays on the
       // readable side of the theme's ground (>= 3:1 as large display type).

@@ -67,4 +67,11 @@ describe('blog-posts-server-stub surface', () => {
       expect(() => (stub[key] as () => unknown)()).toThrow(/web-only/);
     }
   });
+
+  it('stubs react-native-vision-camera on web only, where it throws on import', () => {
+    const visionStub = path.resolve(__dirname, '../../vision-camera-web-stub.js');
+    expect(resolve('react-native-vision-camera', 'web')).toBe(visionStub);
+    expect(resolve('react-native-vision-camera', 'android')).toBe(PASSTHROUGH);
+    expect(resolve('react-native-vision-camera', 'ios')).toBe(PASSTHROUGH);
+  });
 });

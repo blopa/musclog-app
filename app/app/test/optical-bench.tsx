@@ -65,9 +65,11 @@ function fmtBytes(n: number): string {
   if (n < 1024) {
     return `${n} B`;
   }
+
   if (n < 1024 * 1024) {
     return `${(n / 1024).toFixed(1)} KB`;
   }
+
   return `${(n / 1048576).toFixed(2)} MB`;
 }
 
@@ -252,6 +254,7 @@ function BenchPanel() {
       collected.push(row);
       setRows([...collected]);
     }
+
     setEncodeRunning(false);
   }, []);
 
@@ -303,6 +306,7 @@ function BenchPanel() {
     } catch (error) {
       setPayloadReport([`FAILED: ${error instanceof Error ? error.message : String(error)}`]);
     }
+
     setPayloadRunning(false);
   }, []);
 
@@ -482,6 +486,7 @@ function SendPanel() {
     } catch (error) {
       setInfo([`FAILED: ${error instanceof Error ? error.message : String(error)}`]);
     }
+
     setPreparing(false);
   }, [loop, payloadSource, presetId]);
 
@@ -506,6 +511,7 @@ function SendPanel() {
     } catch (error) {
       setInfo([`Calibration failed: ${error instanceof Error ? error.message : String(error)}`]);
     }
+
     setCalibrating(false);
   }, []);
 
@@ -516,6 +522,7 @@ function SendPanel() {
     if (!isStreaming) {
       return;
     }
+
     const id = setInterval(() => {
       const times = [...encodeTimesRef.current].sort((a, b) => a - b);
       const stats = loop.readStats();
@@ -689,14 +696,17 @@ function ReceivePanel() {
         if (!code.value) {
           continue;
         }
+
         codesRef.current++;
         if (startedAtRef.current === 0) {
           startedAtRef.current = monotonicNowMs();
         }
+
         const result = receiverRef.current.accept(code.value, Date.now());
         if (result === 'accepted' || result === 'reset' || result === 'complete') {
           distinctRef.current++;
         }
+
         if (result === 'complete' || result === 'checksum-failed') {
           outcomeRef.current = result;
         }

@@ -6,6 +6,9 @@ import {
   isResolvedWorkoutSet,
   isSkippedWorkoutSet,
   isValidWorkoutSetDifficultyLevel,
+  isWarmupSet,
+  isWorkingSet,
+  WARMUP_SET_TYPE,
 } from '@/utils/workoutSetCompletion';
 
 describe('workout set completion state', () => {
@@ -72,5 +75,30 @@ describe('workout set completion state', () => {
     expect(() => assertValidWorkoutSetDifficultyLevel(0)).toThrow(
       'Difficulty level must be between 1 and 10'
     );
+  });
+});
+
+describe('warm-up sets', () => {
+  it('recognises a warm-up by set type alone', () => {
+    expect(WARMUP_SET_TYPE).toBe('warmup');
+    expect(isWarmupSet({ setType: 'warmup' })).toBe(true);
+    expect(isWarmupSet({ setType: 'normal' })).toBe(false);
+    expect(isWarmupSet({ setType: 'drop_set' })).toBe(false);
+    expect(isWarmupSet({})).toBe(false);
+    expect(isWarmupSet({ setType: null })).toBe(false);
+  });
+
+  it('counts a set as working only when it is performed AND not a warm-up', () => {
+    expect(isWorkingSet({ completionStatus: 'performed', setType: 'normal' })).toBe(true);
+    expect(isWorkingSet({ completionStatus: 'performed', setType: 'drop_set' })).toBe(true);
+    expect(isWorkingSet({ completionStatus: 'performed' })).toBe(true);
+    expect(isWorkingSet({ completionStatus: 'performed', setType: 'warmup' })).toBe(false);
+  });
+
+  it('keeps lifecycle and kind independent: a planned or skipped set is never working', () => {
+    expect(isWorkingSet({ completionStatus: 'planned', setType: 'normal' })).toBe(false);
+    expect(isWorkingSet({ completionStatus: 'skipped', setType: 'normal' })).toBe(false);
+    // …and a performed warm-up is still performed: history, calories and Health Connect keep it.
+    expect(isPerformedWorkoutSet({ completionStatus: 'performed', setType: 'warmup' })).toBe(true);
   });
 });

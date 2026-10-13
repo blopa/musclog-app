@@ -143,7 +143,45 @@
       "oneRepMaxTrendEmpty": "Log this exercise in two workouts to see how your estimated 1RM is trending.",
       "oneRepMaxTrendUp": "Up {{change}} {{unit}} across {{sessions}} sessions.",
       "oneRepMaxTrendDown": "Down {{change}} {{unit}} across {{sessions}} sessions.",
-      "oneRepMaxTrendSteady": "Holding steady across {{sessions}} sessions."
+      "oneRepMaxTrendSteady": "Holding steady across {{sessions}} sessions.",
+      "aliasesTitle": "Also known as",
+      "aliasesHint": "Search also finds this exercise by these names.",
+      "aliasPlaceholder": "Add a name, e.g. BP",
+      "aliasInputLabel": "New name",
+      "aliasAdd": "Add",
+      "aliasRemove": "Remove {{alias}}",
+      "aliasDuplicate": "You already added that name.",
+      "aliasLimit": "You can add up to {{count}} names.",
+      "aliasEmpty": "Use at least one letter or number.",
+      "aliasFailed": "Could not save that name. Try again.",
+      "restriction": {
+        "title": "Suggestions",
+        "hint": "Choose whether this exercise can be suggested in swaps and generated workouts.",
+        "allow": "Suggest normally",
+        "dislike": "Dislike",
+        "injury": "Injury",
+        "never": "Never suggest",
+        "expiryLabel": "Avoid for",
+        "explain": {
+          "dislike": "Ranked last in swap suggestions.",
+          "injury": "Hidden from swaps and generated workouts while it heals.",
+          "never": "Hidden from swaps and generated workouts."
+        },
+        "failed": "Couldn't save that. Please try again."
+      },
+      "preferences": {
+        "title": "Your preferences",
+        "hint": "Only you see these. They follow this exercise into every workout.",
+        "unitLabel": "Weight unit",
+        "unitDefault": "App default",
+        "noteLabel": "Note",
+        "notePlaceholder": "A cue to read before every set, e.g. elbows tucked",
+        "noteSave": "Save note",
+        "failed": "Couldn't save that. Please try again.",
+        "repCeilingLabel": "Rep ceiling (no added weight)",
+        "repCeilingOption": "{{reps}} reps",
+        "repCeilingHint": "Musclog adds a rep each session up to this number. After that, progress with a weighted vest or belt, a harder variation or a slower tempo."
+      }
     },
     "manageExerciseData": {
       "deleteExerciseWarning": "Are you sure you want to delete this exercise? This action cannot be undone.",

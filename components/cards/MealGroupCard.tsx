@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
 import { type MealType } from '@/database/models';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -148,7 +149,9 @@ export const MealGroupCard = memo(function MealGroupCard({
           style={{ backgroundColor: imageUrl ? undefined : bgColor }}
         >
           {imageUrl ? (
-            <Image source={{ uri: imageUrl }} className="h-16 w-16" resizeMode="cover" />
+            <ZoomableThumbnail uri={imageUrl}>
+              <Image source={{ uri: imageUrl }} className="h-16 w-16" resizeMode="cover" />
+            </ZoomableThumbnail>
           ) : (
             <Icon size={theme.iconSize.lg} color={iconColor} />
           )}

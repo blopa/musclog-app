@@ -121,6 +121,7 @@ function run() {
     const files = getJsonFiles(locale);
     files.forEach((file) => allJsonFiles.add(file));
   }
+
   const sortedJsonFiles = [...allJsonFiles].sort();
 
   console.log(`📄 Found ${sortedJsonFiles.length} unique JSON files:\n`);
@@ -157,6 +158,7 @@ function run() {
     for (const keys of Object.values(localeKeys)) {
       keys.forEach((key) => allKeys.add(key));
     }
+
     const sortedAllKeys = [...allKeys].sort();
 
     // Check each locale for missing/extra keys
@@ -171,6 +173,7 @@ function run() {
       if (missing.length > 0) {
         fileMissingKeys.push({ locale, missing });
       }
+
       if (extra.length > 0) {
         fileExtraKeys.push({ locale, extra });
       }
@@ -189,6 +192,7 @@ function run() {
           for (const key of missing) {
             console.log(`         - ${key}`);
           }
+
           missingKeysReport.push({ file: jsonFile, locale, keys: missing });
         }
       }
@@ -200,6 +204,7 @@ function run() {
           for (const key of extra) {
             console.log(`         + ${key}`);
           }
+
           extraKeysReport.push({ file: jsonFile, locale, keys: extra });
         }
       }

@@ -44,6 +44,7 @@
     "saveError": "Falha ao Salvar",
     "validation": {
       "titleRequiredMessage": "Por favor, digite um título para o treino"
-    }
+    },
+    "ruleTapHint": "Toque num exercício para escolher como as cargas progridem."
   }
 }

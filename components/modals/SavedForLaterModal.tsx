@@ -60,20 +60,21 @@ export function SavedForLaterModal({
   const fetchGroups = async () => {
     setIsLoading(true);
     try {
-      const allGroups = await SavedForLaterService.getAllGroups();
+      const groupsWithItems = await SavedForLaterService.getAllGroupsWithItems();
       const resolvedGroups = await Promise.all(
-        allGroups.map(async (group) => {
-          const items: SavedForLaterItem[] = await group.items.fetch();
+        groupsWithItems.map(async ({ group, items }) => {
+          const [itemNutrients, note] = await Promise.all([
+            Promise.all(items.map((item) => item.getNutrients())),
+            group.getNote(),
+          ]);
           const nutrients = { calories: 0, protein: 0, carbs: 0, fat: 0 };
-          for (const item of items) {
-            const itemNutrients = await item.getNutrients();
-            nutrients.calories += itemNutrients.calories;
-            nutrients.protein += itemNutrients.protein;
-            nutrients.carbs += itemNutrients.carbs;
-            nutrients.fat += itemNutrients.fat;
+          for (const itemNutrient of itemNutrients) {
+            nutrients.calories += itemNutrient.calories;
+            nutrients.protein += itemNutrient.protein;
+            nutrients.carbs += itemNutrient.carbs;
+            nutrients.fat += itemNutrient.fat;
           }
 
-          const note = await group.getNote();
           return { group, note, nutrients };
         })
       );
@@ -95,6 +96,7 @@ export function SavedForLaterModal({
         setIsTrackModalVisible(false);
       }
     };
+
     syncOrReset();
   }, [visible]);
 

@@ -17,6 +17,7 @@ export type RawWorkoutTemplate = {
 };
 
 export type RawWorkoutTemplateExercise = {
+  progression?: import('@/utils/progressionRules').ProgressionRule | null;
   exerciseSlug?: string;
   day?: number;
   sets?: number;

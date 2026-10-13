@@ -11,6 +11,7 @@ import {
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
+import { SUPPORT_EMAIL, SUPPORT_MAILTO_URL } from '@/constants/misc';
 
 const DEFINITION_KEYS = [
   'account',
@@ -584,11 +585,11 @@ export default function Privacy() {
             <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {t('contact.content')}{' '}
               <a
-                href="mailto:support@musclog.app"
+                href={SUPPORT_MAILTO_URL}
                 className="hover:underline"
                 style={{ color: BRAND_GREEN_BRIGHT }}
               >
-                support@musclog.app
+                {SUPPORT_EMAIL}
               </a>
             </p>
           </div>

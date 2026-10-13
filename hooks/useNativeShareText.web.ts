@@ -21,12 +21,15 @@ function buildDownloadBody(message: string, extras?: NativeShareTextContentExtra
   if (extras?.title?.trim()) {
     parts.push(extras.title.trim());
   }
+
   if (message.trim()) {
     parts.push(message.trim());
   }
+
   if (extras?.url?.trim()) {
     parts.push(extras.url.trim());
   }
+
   return parts.join('\n\n');
 }
 

@@ -38,6 +38,8 @@ export async function verifyDatabaseTables(): Promise<{
     'debug_dump',
     'users',
     'nutrition_goals',
+    'weekly_reviews',
+    'nutrition_target_periods',
     'nutrition_checkins',
     'menstrual_cycles',
     'chat_messages',

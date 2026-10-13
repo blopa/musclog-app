@@ -11,6 +11,8 @@
     "drained": "Drained",
     "disliked": "Disliked",
     "loved": "Loved",
-    "submit": "SUBMIT FEEDBACK"
+    "submit": "SUBMIT FEEDBACK",
+    "notes": "Notes",
+    "notesPlaceholder": "How did it go? Anything to remember next time?"
   }
 }

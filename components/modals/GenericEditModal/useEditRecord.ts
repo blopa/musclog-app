@@ -55,6 +55,7 @@ export function useEditRecord(
         setInitialValues({});
         setError(null);
       };
+
       reset();
       return;
     }

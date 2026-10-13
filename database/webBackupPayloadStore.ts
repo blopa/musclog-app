@@ -55,6 +55,7 @@ function openDatabase(): Promise<IDBDatabase> {
         request.result.createObjectStore(IDB_STORE);
       }
     };
+
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error ?? new Error('Failed to open web backup store'));
     request.onblocked = () => reject(new Error('Web backup store is blocked by another tab'));

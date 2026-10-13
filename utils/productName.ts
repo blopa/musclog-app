@@ -159,6 +159,7 @@ export function getProductName(data: unknown): ProductNameResult {
     const name = extractOFFName(rawNested as Record<string, unknown>);
     return name ? foundResult(name) : unknownResult();
   }
+
   if (Array.isArray(d.products) && d.products.length > 0) {
     return getProductName(d.products[0]);
   }

@@ -2,10 +2,13 @@ import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 
+import { weeklyReviewSchemaTables } from './weeklyReviewSchema';
+
 export const schema = appSchema({
   // when updating database schema, also update export version in exportImport.ts
   version: CURRENT_DATABASE_VERSION,
   tables: [
+    ...weeklyReviewSchemaTables.map(tableSchema),
     // 1. Master List of Exercises
     tableSchema({
       name: 'exercises',
@@ -19,6 +22,9 @@ export const schema = appSchema({
         { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
         { name: 'load_multiplier', type: 'number' }, // Load multiplier for volume calculations
         { name: 'order_index', type: 'number', isOptional: true }, // JSON order for app exercises
+        // Precomputed, normalized words every name/alias is searched through
+        // (utils/exerciseSearch.ts). Null until the boot backfill reaches the row.
+        { name: 'search_text', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -136,6 +142,8 @@ export const schema = appSchema({
         { name: 'notes', type: 'string', isOptional: true },
         { name: 'exercise_order', type: 'number' },
         { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
+        // The exercise's progression rule (utils/progressionRules.ts); null = automatic.
+        { name: 'progression_json', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -175,6 +183,9 @@ export const schema = appSchema({
         { name: 'type', type: 'string', isOptional: true },
         { name: 'exhaustion_level', type: 'number' },
         { name: 'workout_score', type: 'number' },
+        { name: 'notes', type: 'string', isOptional: true }, // how the whole session went
+        { name: 'distance_m', type: 'number', isOptional: true }, // a logged walk/run, in metres
+        { name: 'activity', type: 'string', isOptional: true }, // 'walk' | 'run' for a quick cardio log
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -191,6 +202,12 @@ export const schema = appSchema({
         { name: 'notes', type: 'string', isOptional: true },
         { name: 'exercise_order', type: 'number' },
         { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
+        // Set when this block was swapped mid-session: what the template/plan called for, and why.
+        { name: 'replaced_exercise_id', type: 'string', isOptional: true },
+        { name: 'substitution_reason', type: 'string', isOptional: true },
+        { name: 'superset_slot_id', type: 'string', isOptional: true },
+        // The rule this session ran under, copied at start, plus its carried state.
+        { name: 'progression_json', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -217,6 +234,12 @@ export const schema = appSchema({
         { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'set_order', type: 'number' },
         { name: 'rep_data_json', type: 'string', isOptional: true },
+        // Why the app started this planned set at numbers other than the plan's (progression,
+        // deload or repeat of last time): a StartSetAdjustment, parsed by `parseStartAdjustment`.
+        // Cleared the moment the user edits or performs the set — their number is then theirs.
+        { name: 'adjustment_json', type: 'string', isOptional: true },
+        { name: 'prescription_json', type: 'string', isOptional: true },
+        { name: 'rir_recorded', type: 'boolean', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -558,6 +581,7 @@ export const schema = appSchema({
         { name: 'timezone', type: 'string', isOptional: true },
         { name: 'effective_until', type: 'number', isOptional: true },
         { name: 'is_dynamic', type: 'boolean', isOptional: true },
+        { name: 'target_mode', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -673,6 +697,70 @@ export const schema = appSchema({
         { name: 'muscle_id', type: 'string', isIndexed: true },
         // 'primary' | 'secondary' — defaults to 'primary' until the JSON distinguishes them
         { name: 'role', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // User-defined alternative names for an exercise ("BP" for bench press). Searched through
+    // exercises.search_text, which is rewritten in the same write as any alias change.
+    tableSchema({
+      name: 'exercise_aliases',
+      columns: [
+        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'alias', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Named gym profiles: the bar, plates and equipment a lifter really has. They drive the plate
+    // calculator, the +/- load steps and which exercises may be suggested. Loads are kilograms like
+    // every other weight; the two JSON lists are parsed in one place (utils/gym.ts).
+    tableSchema({
+      name: 'gyms',
+      columns: [
+        { name: 'name', type: 'string' },
+        { name: 'bar_weight_kg', type: 'number' },
+        { name: 'plates_json', type: 'string' }, // [{ weightKg, count }]
+        { name: 'weight_increment_kg', type: 'number' },
+        { name: 'equipment_json', type: 'string' }, // EquipmentType[]
+        { name: 'weight_unit', type: 'string', isOptional: true }, // 'kg' | 'lbs' display override
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Exercises the user does not want suggested: never / injury (may expire) / dislike. One live
+    // row per exercise; ExerciseRestrictionService replaces rather than stacks.
+    tableSchema({
+      name: 'exercise_restrictions',
+      columns: [
+        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'kind', type: 'string' }, // 'never' | 'injury' | 'dislike'
+        { name: 'note', type: 'string', isOptional: true },
+        { name: 'expires_at', type: 'number', isOptional: true }, // when an injury should have healed
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // What the user has said about an exercise itself, as opposed to a catalogue field: the unit its
+    // weights are shown in and a note that follows it into every session. Kept apart from
+    // `exercises` so a catalogue sync never has to know the user's preferences exist. One live row
+    // per exercise; ExerciseUserSettingsService replaces rather than stacks.
+    tableSchema({
+      name: 'exercise_user_settings',
+      columns: [
+        { name: 'exercise_id', type: 'string', isIndexed: true },
+        { name: 'weight_unit', type: 'string', isOptional: true }, // 'kg' | 'lbs' display override
+        { name: 'note', type: 'string', isOptional: true },
+        // Bodyweight rep ceiling (25–50); absent = the default (utils/bodyweightRepCeiling.ts)
+        { name: 'rep_ceiling', type: 'number', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

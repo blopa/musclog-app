@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Image, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AddExerciseModal } from '@/components/modals/AddExerciseModal';
@@ -89,6 +89,7 @@ import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { Button } from '@/components/theme/Button';
+import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
@@ -834,6 +835,7 @@ export default function ModalsTestScreen() {
                     exercises: data.exercises,
                   });
                 }
+
                 setIsWorkoutHistoryVisible(true);
               }}
             />
@@ -974,6 +976,17 @@ export default function ModalsTestScreen() {
               width="full"
               onPress={() => setIsExercisesModalVisible(true)}
             />
+          </View>
+
+          {/* Zoomable Image Thumbnail: tap to open the full-screen viewer */}
+          <View className="mb-6">
+            <Text className="mb-2 text-lg font-bold text-text-primary">Zoomable Image</Text>
+            <ZoomableThumbnail uri="https://picsum.photos/seed/musclog/1200/800">
+              <Image
+                source={{ uri: 'https://picsum.photos/seed/musclog/1200/800' }}
+                style={{ width: 160, height: 107, borderRadius: 12 }}
+              />
+            </ZoomableThumbnail>
           </View>
 
           {/* View Exercise Modal */}
@@ -1917,10 +1930,9 @@ export default function ModalsTestScreen() {
       <ReplaceExerciseModal
         visible={isReplaceExerciseVisible}
         onClose={() => setIsReplaceExerciseVisible(false)}
-        onReplace={(exercise) => {
-          console.log('Exercise replaced:', exercise);
+        onReplace={(exercise, outcome) => {
+          console.log('Exercise replaced:', exercise, outcome);
         }}
-        currentExercise="Bench Press"
       />
 
       <WorkoutSessionHistoryModal
@@ -2040,6 +2052,7 @@ export default function ModalsTestScreen() {
       <ViewExerciseModal
         visible={isViewExerciseVisible}
         onClose={() => setIsViewExerciseVisible(false)}
+        exerciseId={viewExerciseId}
       />
 
       <CreateExerciseModal
@@ -2166,8 +2179,8 @@ export default function ModalsTestScreen() {
           carbs: 60,
           fat: 18,
         }}
-        onLogMeal={(date, mealType, portionGrams) => {
-          console.log('Meal logged:', { date, mealType, portionGrams });
+        onLogMeal={(data) => {
+          console.log('Meal logged:', data);
         }}
       />
 

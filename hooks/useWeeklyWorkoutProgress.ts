@@ -73,6 +73,7 @@ export function useWeeklyWorkoutProgress({
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
+
       debounceTimer = setTimeout(() => {
         void loadProgress();
       }, 250);
@@ -101,6 +102,7 @@ export function useWeeklyWorkoutProgress({
       for (const subscription of subscriptions) {
         subscription.unsubscribe();
       }
+
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }

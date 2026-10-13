@@ -45,6 +45,7 @@
     "region_shoulders": "Ombros",
     "region_arms": "Braços",
     "region_core": "Core",
-    "region_legs": "Pernas"
+    "region_legs": "Pernas",
+    "notes": "Anotações"
   }
 }

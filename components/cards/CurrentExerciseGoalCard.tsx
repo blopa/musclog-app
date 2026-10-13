@@ -51,6 +51,7 @@ export function CurrentExerciseGoalCard({
     if (isLoading) {
       return;
     }
+
     setMenuVisible(false);
     if (recentAverage1RM != null) {
       setConfirmRecalculateVisible(true);
@@ -71,7 +72,7 @@ export function CurrentExerciseGoalCard({
 
     if (projection.status === 'achieved') {
       return (
-        <View className="bg-status-success10 rounded-lg p-3">
+        <View className="rounded-lg bg-status-success/10 p-3">
           <Text className="text-center font-bold" style={{ color: theme.colors.status.success }}>
             {projection.achievedDate
               ? t('exerciseGoals.card.achieved', {
@@ -89,7 +90,7 @@ export function CurrentExerciseGoalCard({
 
     if (projection.status === 'ready_to_achieve') {
       return (
-        <View className="bg-accent-primary10 rounded-lg p-3">
+        <View className="rounded-lg bg-accent-primary/10 p-3">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.accent.primary }}
@@ -102,7 +103,7 @@ export function CurrentExerciseGoalCard({
 
     if (projection.status === 'stalling') {
       return (
-        <View className="bg-status-warning10 rounded-lg p-3">
+        <View className="rounded-lg bg-status-warning/10 p-3">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.status.warning }}
@@ -115,7 +116,7 @@ export function CurrentExerciseGoalCard({
 
     if (projection.status === 'declining') {
       return (
-        <View className="bg-status-error10 rounded-lg p-3">
+        <View className="rounded-lg bg-status-error/10 p-3">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.status.error }}

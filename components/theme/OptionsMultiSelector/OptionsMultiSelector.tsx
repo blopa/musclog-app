@@ -29,6 +29,8 @@ type OptionsMultiSelectorProps<T extends string | number> = {
   hideCheckboxes?: boolean;
   /** When true, disables the press animation on items. */
   disablePressAnimation?: boolean;
+  /** Tapping a row outside selection mode — e.g. to open that row's own settings. */
+  onOptionPress?: (id: T) => void;
 };
 
 export function OptionsMultiSelector<T extends string | number>({
@@ -42,6 +44,7 @@ export function OptionsMultiSelector<T extends string | number>({
   onDelete,
   hideCheckboxes = false,
   disablePressAnimation = false,
+  onOptionPress,
 }: OptionsMultiSelectorProps<T>) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -53,6 +56,7 @@ export function OptionsMultiSelector<T extends string | number>({
     const sync = () => {
       setOrderedOptions(normalizeGroups(options));
     };
+
     sync();
   }, [options]);
 
@@ -83,10 +87,12 @@ export function OptionsMultiSelector<T extends string | number>({
     if (selectedItems.length < 2) {
       return false;
     }
+
     const firstGroupId = selectedItems[0]?.groupId;
     if (!firstGroupId) {
       return false;
     }
+
     return selectedItems.every((item) => item.groupId === firstGroupId);
   }, [selectedItems]);
 
@@ -114,6 +120,7 @@ export function OptionsMultiSelector<T extends string | number>({
           return { ...option, groupId: newGroupId };
         }
       }
+
       return option;
     });
 
@@ -143,6 +150,7 @@ export function OptionsMultiSelector<T extends string | number>({
     if (!groupId) {
       return [index];
     }
+
     return orderedOptions.map((o, i) => (o.groupId === groupId ? i : -1)).filter((i) => i !== -1);
   };
 
@@ -305,8 +313,8 @@ export function OptionsMultiSelector<T extends string | number>({
         )}
         <View style={{ flex: 1 }}>
           <Pressable
-            onPress={() => showCheckboxes && toggle(option.id)}
-            disabled={!showCheckboxes}
+            onPress={() => (showCheckboxes ? toggle(option.id) : onOptionPress?.(option.id))}
+            disabled={!showCheckboxes ? !onOptionPress : null}
             style={{ flex: 1 }}
           >
             {({ pressed }) => (
@@ -460,6 +468,7 @@ export function OptionsMultiSelector<T extends string | number>({
                 } catch (e) {
                   // ignore
                 }
+
                 setSelectionEnabled(false);
               }}
               style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}

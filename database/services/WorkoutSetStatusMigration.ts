@@ -63,6 +63,7 @@ export class WorkoutSetStatusMigration {
             if (record.difficultyLevel === 0) {
               record.difficultyLevel = undefined;
             }
+
             record.updatedAt = now;
           });
         });

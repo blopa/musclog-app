@@ -32,6 +32,7 @@ describe('nutritionGoalToInitialValues', () => {
       targetDate: 1_700_000_000_000,
       goalStartDate: 1_690_000_000_000,
       isDynamic: true,
+      targetMode: 'daily',
     });
   });
 

@@ -17,7 +17,8 @@ describe('homeActions', () => {
       expect(HOME_ACTION_KEYS).toContain('ai_photo');
       expect(HOME_ACTION_KEYS).toContain('my_meals');
       expect(HOME_ACTION_KEYS).toContain('add_note');
-      expect(HOME_ACTION_KEYS).toHaveLength(6);
+      expect(HOME_ACTION_KEYS).toContain('log_cardio');
+      expect(HOME_ACTION_KEYS).toHaveLength(7);
     });
   });
 
@@ -51,7 +52,7 @@ describe('homeActions', () => {
       expect(parseHomeActions('["my_meals", "unknown_key"]')).toEqual(DEFAULT);
       expect(parseHomeActions('["my_meals", "my_meals"]')).toEqual(DEFAULT);
       // A key an older build wrote that no longer exists is dropped, not honoured.
-      expect(parseHomeActions('["log_weight", "log_cardio"]')).toEqual(DEFAULT);
+      expect(parseHomeActions('["log_weight", "retired_action"]')).toEqual(DEFAULT);
       expect(DEFAULT_HOME_ACTIONS.length).toBeGreaterThanOrEqual(MIN_HOME_ACTIONS);
     });
 

@@ -3,9 +3,11 @@ import { UserMetricService } from '@/database/services/UserMetricService';
 
 import {
   bucketPointsByUtcWeek,
+  calendarDateFromRecordDay,
   localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
+  MS_PER_SOLAR_DAY,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from './calendarDate';
@@ -17,7 +19,8 @@ import {
 import { storedWeightToKg } from './unitConversion';
 
 export const HISTORICAL_NUTRITION_LOOKBACK_DAYS = 30;
-const MIN_DAYS_WITH_NUTRITION = 7;
+export const MIN_DAYS_WITH_NUTRITION = 7;
+export const MIN_WEIGHT_ENTRIES = 2;
 
 function average(values: number[]): number {
   if (values.length === 0) {
@@ -30,6 +33,8 @@ function average(values: number[]): number {
 export interface HistoricalNutritionParams {
   historicalTotalCalories: number;
   historicalTotalDays: number;
+  /** Calendar days elapsed between the weight anchors, independent of food-log coverage. */
+  historicalWeightChangeDays: number;
   /** Trend weight at the beginning of the empirical window. */
   historicalInitialWeightKg: number;
   /** Trend weight at the end of the empirical window. */
@@ -59,6 +64,7 @@ export async function getHistoricalNutritionParams(options: {
   lookbackDays?: number;
   /** Minimum distinct days with nutrition logs required. Defaults to 7. */
   minNutritionDays?: number;
+  excludeUnloggedDays?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
   const {
     asOfDate = new Date(),
@@ -70,10 +76,7 @@ export async function getHistoricalNutritionParams(options: {
   /** Inclusive calendar-day end for the lookback window (local midnight of `asOfDate`). */
   const endDayStartTs = localDayStartMs(asOfDate);
   const endMetricTs = localDayClosedRangeMaxMs(asOfDate);
-  /** `Date` at local start of `asOfDate` — {@link NutritionService.getRangeNutrients} uses calendar components. */
-  const inclusiveRangeEndDate = new Date(endDayStartTs);
   const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -lookbackDays);
-  const startOfRange = new Date(startTs);
 
   const utcStartKey = utcDayKeyFromLocalDate(new Date(startTs));
 
@@ -83,29 +86,10 @@ export async function getHistoricalNutritionParams(options: {
     endDate: endMetricTs,
   };
 
-  const [weightMetrics, bodyFatMetrics, rangeNutrients, nutritionLogs] = await Promise.all([
+  const [weightMetrics, bodyFatMetrics] = await Promise.all([
     UserMetricService.getMetricsHistory('weight', weightDateRange),
     UserMetricService.getMetricsHistory('body_fat', dateRange),
-    NutritionService.getRangeNutrients(startOfRange, inclusiveRangeEndDate),
-    NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
-
-  const loggedDayKeys = new Set(
-    nutritionLogs.map((log) => utcNormalizedDayKey(log.date, log.timezone))
-  );
-  const distinctDaysWithNutrition = loggedDayKeys.size;
-  // Gate on days with *actual* intake (fasted days excluded) so empirical TDEE is only
-  // estimated once there's enough real logging to trust the calorie total.
-  if (distinctDaysWithNutrition < minNutritionDays || rangeNutrients.calories <= 0) {
-    return null;
-  }
-
-  // Empirical TDEE denominator. By default this is the full lookback window (every unlogged
-  // day treated as 0 kcal). With the fasting-day feature on, getRangeNutrients sets
-  // effectiveDayCount (days that had food plus flagged fasted days), so a forgotten log no
-  // longer deflates TDEE while an intentional fast still lowers it as a real 0-kcal day;
-  // with the feature off it is undefined and the legacy window applies.
-  const historicalTotalDays = rangeNutrients.effectiveDayCount ?? lookbackDays;
 
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
@@ -120,7 +104,7 @@ export async function getHistoricalNutritionParams(options: {
 
   // Normalize by the calendar day each record was experienced in (its own timezone), not by raw
   // stored instant. The trend utility handles sorting and same-day averaging.
-  if (weightWithDecrypted.length < 2) {
+  if (weightWithDecrypted.length < MIN_WEIGHT_ENTRIES) {
     return null;
   }
 
@@ -130,8 +114,34 @@ export async function getHistoricalNutritionParams(options: {
   if (!firstTrendInWindow || !finalTrend || firstTrendInWindow.date >= finalTrend.date) {
     return null;
   }
+
   const initialWeight = firstTrendInWindow.value;
   const finalWeight = finalTrend.value;
+
+  const historicalWeightChangeDays = (finalTrend.date - firstTrendInWindow.date) / MS_PER_SOLAR_DAY;
+  // Intake belongs to the same half-open calendar interval as the weight change. A sparse weight
+  // history must not combine a short trend with food from the entire lookback window.
+  const firstDay = calendarDateFromRecordDay(firstTrendInWindow.date, '+00:00');
+  const lastDay = calendarDateFromRecordDay(finalTrend.date, '+00:00');
+  const lastIntakeDay = new Date(localDayKeyPlusCalendarDays(lastDay.getTime(), -1));
+  const [rangeNutrients, nutritionLogs] = await Promise.all([
+    NutritionService.getRangeNutrients(firstDay, lastIntakeDay),
+    NutritionService.getNutritionLogsForDateRange(firstDay, lastIntakeDay),
+  ]);
+  const loggedDayKeys = new Set(
+    nutritionLogs
+      .map((log) => utcNormalizedDayKey(log.date, log.timezone))
+      .filter((day) => day >= firstTrendInWindow.date && day < finalTrend.date)
+  );
+  if (loggedDayKeys.size < minNutritionDays || rangeNutrients.calories <= 0) {
+    return null;
+  }
+
+  // Coverage controls average intake. Tissue energy always uses elapsed anchor days, including
+  // days without food logs; intentional fasting contributes a zero to the intake average only.
+  const historicalTotalDays =
+    rangeNutrients.effectiveDayCount ??
+    (options.excludeUnloggedDays ? loggedDayKeys.size : historicalWeightChangeDays);
 
   let initialFatPercent: number | undefined;
   let finalFatPercent: number | undefined;
@@ -144,11 +154,15 @@ export async function getHistoricalNutritionParams(options: {
       })
     );
 
-    bodyFatWithDecrypted.sort(
+    const anchoredBodyFat = bodyFatWithDecrypted.filter((metric) => {
+      const day = utcNormalizedDayKey(metric.date, metric.timezone);
+      return day >= firstTrendInWindow.date && day <= finalTrend.date;
+    });
+    anchoredBodyFat.sort(
       (a, b) => utcNormalizedDayKey(a.date, a.timezone) - utcNormalizedDayKey(b.date, b.timezone)
     );
-    if (useWeeklyFatAverages) {
-      const bodyFatByWeek = bucketPointsByUtcWeek(bodyFatWithDecrypted, utcStartKey);
+    if (anchoredBodyFat.length && useWeeklyFatAverages) {
+      const bodyFatByWeek = bucketPointsByUtcWeek(anchoredBodyFat, firstTrendInWindow.date);
       const weekIndices = Array.from(bodyFatByWeek.keys()).sort((a, b) => a - b);
       if (weekIndices.length >= 2) {
         initialFatPercent = average(bodyFatByWeek.get(weekIndices[0])!.map((x) => x.value));
@@ -156,18 +170,19 @@ export async function getHistoricalNutritionParams(options: {
           bodyFatByWeek.get(weekIndices[weekIndices.length - 1])!.map((x) => x.value)
         );
       } else {
-        initialFatPercent = bodyFatWithDecrypted[0].value;
-        finalFatPercent = bodyFatWithDecrypted[bodyFatWithDecrypted.length - 1].value;
+        initialFatPercent = anchoredBodyFat[0].value;
+        finalFatPercent = anchoredBodyFat[anchoredBodyFat.length - 1].value;
       }
-    } else {
-      initialFatPercent = bodyFatWithDecrypted[0].value;
-      finalFatPercent = bodyFatWithDecrypted[bodyFatWithDecrypted.length - 1].value;
+    } else if (anchoredBodyFat.length) {
+      initialFatPercent = anchoredBodyFat[0].value;
+      finalFatPercent = anchoredBodyFat[anchoredBodyFat.length - 1].value;
     }
   }
 
   return {
     historicalTotalCalories: Math.round(rangeNutrients.calories),
     historicalTotalDays,
+    historicalWeightChangeDays,
     historicalInitialWeightKg: initialWeight,
     historicalFinalWeightKg: finalWeight,
     ...(initialFatPercent !== undefined && { historicalInitialFatPercent: initialFatPercent }),

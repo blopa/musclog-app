@@ -127,6 +127,7 @@ class BankReader {
     for (let i = 0; i < len; i++) {
       sum = this.hashByte(sum, this.u8(off + i));
     }
+
     return sum;
   }
 
@@ -280,6 +281,7 @@ function decodeWeighIns(ram: Ram): GameBoySave['weighIns'] {
     const dayNumber = r.u16(off);
     entries.push({ date: dayNumberToISODate(dayNumber), dayNumber, weightKg: r.u16(off + 2) / 10 });
   }
+
   return {
     checksumValid: r.u16(METRICS_CHECKSUM) === sum && r.u16(METRICS_BASE) === METRICS_MAGIC,
     count,
@@ -308,6 +310,7 @@ function decodeFoodLog(ram: Ram): GameBoySave['foodLog'] {
         : { ...common, bundledFoodIdx: foodIdx }
     );
   }
+
   return {
     checksumValid: r.u16(FOODLOG_CHECKSUM) === sum && r.u16(0x00) === FOODLOG_MAGIC,
     count,
@@ -337,6 +340,7 @@ function decodeWorkouts(ram: Ram): GameBoySave['workouts'] {
         weightKg: r.u16(setOff + 2) / 10,
       });
     }
+
     entries.push({
       date: dayNumberToISODate(dayNumber),
       dayNumber,
@@ -348,6 +352,7 @@ function decodeWorkouts(ram: Ram): GameBoySave['workouts'] {
     });
     off += WORKOUT_RECORD_HEADER_SIZE + setCount * WORKOUT_SET_SIZE;
   }
+
   return {
     checksumValid: r.u16(WORKOUT_CHECKSUM) === sum && r.u16(0x00) === WORKOUT_MAGIC,
     count,
@@ -563,6 +568,7 @@ function writeFreshProfileBlock(ram: Uint8Array, date: GameBoyCalDate): void {
   for (let i = 0; i < SRAM_SAVE_SIZE; i++) {
     ram[i] = 0;
   }
+
   ram[0x00] = SAVE_MAGIC & 0xff;
   ram[0x01] = (SAVE_MAGIC >> 8) & 0xff;
   ram[SRAM_VERSION_OFF] = SAVE_VERSION;
@@ -613,6 +619,7 @@ export function stampGameBoyTodayDate(
   } else {
     writeFreshProfileBlock(ram, today);
   }
+
   writeSeedTime(ram, today);
   return ram;
 }
@@ -743,6 +750,7 @@ function writeCustomFoodsStore(
     for (let i = 0; i < CUSTOM_FOOD_NAME_BYTES; i++) {
       ram[off + i] = i < upperName.length ? upperName.charCodeAt(i) & 0x7f : 0;
     }
+
     writeU16(ram, off + CUSTOM_FOOD_KCAL_OFF, clampInt(food.kcal, 0, 65535));
     writeU16(
       ram,
@@ -793,6 +801,7 @@ function cartridgeHeaderKey(rom: Ram): Uint8Array<ArrayBuffer> {
   for (let i = 0; i < CARTRIDGE_HEADER_LENGTH; i++) {
     header[i] = rom[CARTRIDGE_HEADER_OFFSET + i] ?? 0;
   }
+
   return header;
 }
 
@@ -820,6 +829,7 @@ function openWasmBoyKeyvalRaw(): Promise<IDBDatabase> {
         request.result.createObjectStore(WASMBOY_STORE_NAME);
       }
     };
+
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
   });
@@ -851,6 +861,7 @@ async function openWasmBoyKeyval(): Promise<IDBDatabase> {
   if (db.objectStoreNames.contains(WASMBOY_STORE_NAME)) {
     return db;
   }
+
   db.close();
   await deleteWasmBoyDb();
   db = await openWasmBoyKeyvalRaw();

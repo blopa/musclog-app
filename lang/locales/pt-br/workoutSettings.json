@@ -1,0 +1,98 @@
+{
+  "workoutSettings": {
+    "title": "Configurações de treino",
+    "gyms": {
+      "title": "Minhas academias",
+      "subtitle": "Descreva o equipamento com que você treina. A calculadora de anilhas, os incrementos de peso e as sugestões de exercícios seguem a sua academia ativa.",
+      "empty": "Nenhuma academia configurada ainda",
+      "emptyHint": "Adicione uma para ter contas de anilhas e incrementos de peso que combinam com o seu equipamento.",
+      "add": "Adicionar academia",
+      "active": "Ativa",
+      "makeActive": "Usar esta academia",
+      "noGym": "Não usar academia",
+      "summary": "Barra de {{bar}} {{unit}} · {{plates}} tamanhos de anilha · {{equipment}} tipos de equipamento"
+    },
+    "editGym": {
+      "title": "Editar academia",
+      "createTitle": "Nova academia",
+      "name": "Nome",
+      "namePlaceholder": "ex.: Academia em casa",
+      "unit": "Unidade de peso",
+      "unitDefault": "Configuração da conta",
+      "unitHint": "Fixe libras ou quilos só para esta academia, por exemplo se as anilhas forem em libras. Exercícios com unidade própria a mantêm.",
+      "bar": "Peso da barra ({{unit}})",
+      "increment": "Menor incremento de peso ({{unit}})",
+      "incrementHint": "Usado em halteres, máquinas e polias.",
+      "plates": "Anilhas",
+      "platesHint": "Quantas anilhas de cada peso você tem. As anilhas são colocadas em pares.",
+      "fewerPlates": "Menos anilhas de {{weight}} {{unit}}",
+      "morePlates": "Mais anilhas de {{weight}} {{unit}}",
+      "removePlate": "Remover anilhas de {{weight}} {{unit}}",
+      "plateWeight": "Peso da nova anilha ({{unit}})",
+      "addPlate": "Adicionar anilha",
+      "resetPlates": "Anilhas padrão",
+      "equipment": "Equipamento",
+      "equipmentHint": "Exercícios que precisam de outro equipamento não serão sugeridos para esta academia.",
+      "save": "Salvar academia",
+      "delete": "Excluir academia",
+      "deleteTitle": "Excluir esta academia?",
+      "deleteMessage": "Seus treinos e seu histórico não são afetados.",
+      "saveFailed": "Não foi possível salvar a academia. Tente novamente."
+    },
+    "restrictions": {
+      "title": "Exercícios a evitar",
+      "subtitle": "Eles não serão sugeridos em trocas nem em treinos gerados.",
+      "empty": "Nada por aqui. Marque um exercício na tela dele ou ao trocá-lo.",
+      "clear": "Permitir novamente",
+      "until": "Até {{date}}",
+      "healed": "Recuperada",
+      "limit": "Você pode evitar até {{count}} exercícios.",
+      "kind": {
+        "never": "Nunca sugerir",
+        "injury": "Lesão",
+        "dislike": "Não gosto"
+      },
+      "badge": {
+        "never": "Nunca sugerir",
+        "injury": "Lesão",
+        "dislike": "Não gosto"
+      },
+      "expiry": {
+        "2w": "2 semanas",
+        "4w": "1 mês",
+        "12w": "3 meses",
+        "open": "Até eu dizer o contrário"
+      }
+    },
+    "plateCalculator": {
+      "title": "Calculadora de anilhas",
+      "subtitle": "Carregando {{weight}} {{unit}}",
+      "belowBar": "Isso é menos que a barra de {{bar}} {{unit}}.",
+      "barOnly": "Só a barra — sem anilhas.",
+      "perSide": "Em cada lado",
+      "plateLine": "{{weight}} {{unit}}",
+      "bar": "Barra",
+      "exact": "Carregado: exatamente {{weight}} {{unit}}",
+      "closest": "O mais próximo que dá para carregar: {{weight}} {{unit}} (faltam {{short}} {{unit}})",
+      "defaultsHint": "Usando anilhas padrão. Configure sua academia em Configurações de treino para resultados exatos.",
+      "open": "Anilhas para {{weight}} {{unit}}"
+    },
+    "restTimer": {
+      "title": "Cronômetro de descanso",
+      "subtitle": "Como os descansos entre as séries funcionam.",
+      "autoStart": "Iniciar automaticamente",
+      "autoStartHint": "Depois de concluir uma série. Desative para iniciar o descanso você mesmo com o botão Iniciar descanso.",
+      "haptics": "Contagem regressiva com vibração",
+      "hapticsHint": "Um toque nos últimos três segundos e uma vibração ao chegar a zero.",
+      "defaultRest": "Descanso padrão",
+      "defaultRestHint": "Usado nas séries que não indicam o próprio descanso.",
+      "seconds": "s"
+    },
+    "autonomy": {
+      "title": "Quando um treino começa",
+      "subtitle": "Decida quantos dos números de hoje o app escolhe.",
+      "suggest": "Sugerir cargas e repetições",
+      "suggestHint": "Cada exercício começa conforme foi a última sessão: mais carga, mais repetições, uma redução ou repetir. Você vê o motivo e pode desfazer."
+    }
+  }
+}

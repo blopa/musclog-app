@@ -11,7 +11,8 @@
       "scanBarcode": "Escanear\nCódigo",
       "aiPhoto": "Foto\nIA",
       "myMeals": "Minhas\nRefeições",
-      "addNote": "Adicionar\nNota"
+      "addNote": "Adicionar\nNota",
+      "logCardio": "Registrar\nCaminhada/Corrida"
     },
     "sections": {
       "recentWorkouts": "Treinos Recentes",
@@ -32,7 +33,7 @@
       "coach": "Chat",
       "focus": "Foco",
       "cycle": "Ciclo",
-      "checkin": "Check-ins"
+      "checkin": "Revisão semanal"
     },
     "dailyStats": {
       "steps": "Passos",

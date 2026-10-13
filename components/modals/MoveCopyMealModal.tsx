@@ -61,6 +61,7 @@ export function MoveCopyMealModal({
         setIsSubmitting(false);
       }
     };
+
     syncOrReset();
   }, [visible, sourceDate, sourceMealType]);
 
@@ -69,6 +70,7 @@ export function MoveCopyMealModal({
       const reset = () => {
         setIsDatePickerVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -96,6 +98,7 @@ export function MoveCopyMealModal({
     if (isBusy) {
       return;
     }
+
     setIsSubmitting(true);
     await flushLoadingPaint();
     try {

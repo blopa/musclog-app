@@ -4,7 +4,7 @@ import {
   getHistoricalNutritionParams,
   type HistoricalNutritionParams,
 } from '@/utils/historicalNutritionParams';
-import { calculateTDEE } from '@/utils/nutritionCalculator';
+import { calculateTDEE, type TDEEParams } from '@/utils/nutritionCalculator';
 
 import { useSettings } from './useSettings';
 import { useUser } from './useUser';
@@ -96,7 +96,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
 
     try {
       // Build TDEE parameters
-      const tdeeParams: any = {
+      const tdeeParams: TDEEParams = {
         activityLevel: user.activityLevel,
         liftingExperience: user.liftingExperience,
       };
@@ -105,6 +105,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
       if (historicalData) {
         tdeeParams.totalCalories = historicalData.historicalTotalCalories;
         tdeeParams.totalDays = historicalData.historicalTotalDays;
+        tdeeParams.weightChangeDays = historicalData.historicalWeightChangeDays;
         tdeeParams.initialWeight = historicalData.historicalInitialWeightKg;
         tdeeParams.finalWeight = historicalData.historicalFinalWeightKg;
 

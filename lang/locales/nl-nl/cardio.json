@@ -1,0 +1,31 @@
+{
+  "cardio": {
+    "title": "Wandeling of run loggen",
+    "subtitle": "Voeg er een toe zonder een training te starten",
+    "menuItem": "Wandeling of run loggen",
+    "activity": "Activiteit",
+    "walk": "Wandeling",
+    "run": "Run",
+    "treadmill": "Op een loopband",
+    "distance": "Afstand",
+    "distanceInput": "Afstand ({{unit}})",
+    "duration": "Duur",
+    "hours": "Uren",
+    "minutes": "Minuten",
+    "seconds": "Seconden",
+    "pace": "Tempo",
+    "ended": "Afgerond",
+    "estimate": "Geschatte calorieën",
+    "estimateValue": "{{kcal}} kcal",
+    "estimateNoWeight": "Voeg je gewicht toe in je profiel om calorieën te schatten.",
+    "estimateHint": "Geschat op basis van je snelheid en lichaamsgewicht op vlak terrein.",
+    "watchCalories": "Calorieën van mijn horloge (optioneel)",
+    "watchHint": "Laat op 0 staan om de schatting te gebruiken.",
+    "save": "Opslaan",
+    "saved": "{{activity}} gelogd",
+    "failed": "Opslaan is mislukt. Probeer het opnieuw.",
+    "needsDistanceAndTime": "Vul een afstand en een duur in om op te slaan.",
+    "futureError": "Dat ligt in de toekomst. Kies wanneer je klaar was.",
+    "noPace": "—"
+  }
+}

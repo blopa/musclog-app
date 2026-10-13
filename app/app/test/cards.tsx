@@ -319,7 +319,7 @@ export default function CardsTestScreen() {
               itemOne: { value: 80, icon: Dumbbell },
               itemTwo: { value: 10, icon: Repeat },
               itemThree: { value: '3x8', icon: ChevronRight },
-              media: require('../../../assets/icon.png'),
+              media: require('../../../assets/musclog-icon-fallback.png'),
             }}
             onPress={() => console.log('Exercise pressed')}
             ctaLabel={<UpNextLabel />}

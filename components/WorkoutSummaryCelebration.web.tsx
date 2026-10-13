@@ -8,11 +8,14 @@ import {
   TrendingUp,
   Trophy,
 } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '@/hooks/useTheme';
+import { splitDurationLabel } from '@/utils/workout';
 
 type WorkoutSummaryCelebrationProps = {
+  children?: ReactNode;
   onGoHome: () => void;
   onShareSummary?: () => void;
   onGetFeedback?: () => void;
@@ -97,6 +100,7 @@ function StatRow({
 }
 
 export function WorkoutSummaryCelebration({
+  children,
   onGoHome,
   onShareSummary,
   onGetFeedback,
@@ -113,8 +117,7 @@ export function WorkoutSummaryCelebration({
   const celebrationGlowStr = `linear-gradient(90deg, ${theme.colors.gradients.celebrationGlow[0]}, ${theme.colors.gradients.celebrationGlow[1]})`;
   const workoutStatsStr = `linear-gradient(90deg, ${theme.colors.gradients.workoutStats[0]}, ${theme.colors.gradients.workoutStats[1]})`;
 
-  const timeValue = totalTime.replace(/\s*(m|min|minutes?)/i, '');
-  const timeSuffix = totalTime.match(/\s*(m|min|minutes?)/i)?.[1] ?? t('common.min');
+  const { value: timeValue, suffix: timeSuffix } = splitDurationLabel(totalTime);
   const volumeValue = volume.replace(/\s*(kg|g|lbs?)/i, '').trim();
   const volumeSuffix = volume.match(/\s*(kg|g|lbs?)/i)?.[1] ?? 'kg';
 
@@ -237,7 +240,7 @@ export function WorkoutSummaryCelebration({
           marginBottom: theme.spacing.padding['2xl'],
         }}
       >
-        {t('workoutSummary.feedbackSubmitted')}
+        {t('workoutSummary.workoutSaved')}
       </span>
 
       {/* Stats card */}
@@ -252,6 +255,8 @@ export function WorkoutSummaryCelebration({
           marginBottom: theme.spacing.padding.xl,
           position: 'relative',
           overflow: 'hidden',
+          // A flex column item shrinks on the web; with Next time below it, it was clipped.
+          flexShrink: 0,
         }}
       >
         <div
@@ -315,6 +320,7 @@ export function WorkoutSummaryCelebration({
       <div style={{ flex: 1 }} />
 
       {/* Get Feedback Button */}
+      {children}
       {onGetFeedback ? (
         <button
           onClick={onGetFeedback}

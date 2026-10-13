@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { Image, ImageSourcePropType, Text, useWindowDimensions, View } from 'react-native';
 
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -114,6 +115,11 @@ export const FoodItemCard = memo(function FoodItemCard({
   const { t } = useTranslation();
   const { units } = useSettings();
   const [imageError, setImageError] = useState(false);
+  // Only a remote or file photo can be opened full screen; a bundled asset has no uri.
+  const imageUri =
+    image && typeof image === 'object' && !Array.isArray(image) && 'uri' in image
+      ? image.uri
+      : undefined;
   const MealIcon = mealType ? (MEAL_ICON_MAP[mealType] ?? UtensilsCrossed) : UtensilsCrossed;
 
   const p = protein ?? 0;
@@ -121,6 +127,9 @@ export const FoodItemCard = memo(function FoodItemCard({
   const f = fat ?? 0;
   const g = gramsToDisplay(portion ?? 0, units);
   const massUnit = getMassUnitLabel(units);
+  // Macros are grams in both unit systems (see AGENTS.md); only the serving weight converts.
+  // Labelling them with `massUnit` printed "62oz Protein" for a chicken breast on imperial.
+  const macroUnit = t('common.units.g');
 
   const handleImageError = () => {
     setImageError(true);
@@ -132,6 +141,7 @@ export const FoodItemCard = memo(function FoodItemCard({
       const reset = () => {
         setImageError(false);
       };
+
       reset();
     }
   }, [image]);
@@ -150,12 +160,14 @@ export const FoodItemCard = memo(function FoodItemCard({
               <MealIcon size={theme.iconSize.lg} color={theme.colors.text.secondary} />
             </View>
           ) : (
-            <Image
-              source={image}
-              className="h-full w-full"
-              resizeMode="cover"
-              onError={handleImageError}
-            />
+            <ZoomableThumbnail uri={imageUri} style={{ width: '100%', height: '100%' }}>
+              <Image
+                source={image}
+                className="h-full w-full"
+                resizeMode="cover"
+                onError={handleImageError}
+              />
+            </ZoomableThumbnail>
           )}
         </View>
         <View className="min-w-0 flex-1">
@@ -185,7 +197,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 value={p}
                 label={t('food.macros.protein')}
                 shortLabel={t('food.macros.proteinShort')}
-                unit={massUnit}
+                unit={macroUnit}
                 intuitiveMode={intuitiveMode}
               />
               <MacroItem
@@ -193,7 +205,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 value={c}
                 label={t('food.macros.carbs')}
                 shortLabel={t('food.macros.carbsShort')}
-                unit={massUnit}
+                unit={macroUnit}
                 intuitiveMode={intuitiveMode}
               />
               <MacroItem
@@ -201,7 +213,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 value={f}
                 label={t('food.macros.fat')}
                 shortLabel={t('food.macros.fatShort')}
-                unit={massUnit}
+                unit={macroUnit}
                 intuitiveMode={intuitiveMode}
               />
             </View>

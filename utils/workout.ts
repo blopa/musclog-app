@@ -10,6 +10,7 @@ import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { Theme } from '@/theme';
 
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
+import type { ProgressionRule } from './progressionRules';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 import { dayNameToIndex } from './weekdays';
@@ -31,6 +32,21 @@ export function formatWorkoutDuration(totalMinutes: number): { value: string; su
   const hours = Math.floor(totalMinutes / 60);
   const mins = totalMinutes % 60;
   return { value: `${hours}:${String(mins).padStart(2, '0')}`, suffix: '' };
+}
+
+/**
+ * Splits a duration label built from {@link formatWorkoutDuration} ("45 min", "1:03") back into its
+ * number and its unit for a stat row. Splitting on the last space works in every language; matching
+ * an English "m|min" pattern turned "0 min" into "0in" + "m" and could never match «мин».
+ */
+export function splitDurationLabel(label: string): { value: string; suffix?: string } {
+  const trimmed = label.trim();
+  const space = trimmed.lastIndexOf(' ');
+  if (space <= 0) {
+    return { value: trimmed };
+  }
+
+  return { value: trimmed.slice(0, space), suffix: trimmed.slice(space + 1) };
 }
 
 // ============================================================================
@@ -163,6 +179,8 @@ export interface ExerciseMetadata {
   groupId?: string;
   setType?: string;
   notes?: string;
+  /** The exercise's progression rule; absent keeps the automatic progression. */
+  progression?: ProgressionRule | null;
 }
 
 export interface CreateExerciseOptionParams {
@@ -225,6 +243,7 @@ export function extractExerciseMetadata(exercise: ExerciseInWorkout): ExerciseMe
     groupId: exercise.groupId,
     setType: exercise.setType,
     notes: exercise.notes,
+    progression: exercise.progression,
   };
 }
 
@@ -292,6 +311,7 @@ export function exercisesToWorkoutFormat(
       isBodyweight: meta.isBodyweight,
       restTimeAfter: meta.restTimeAfter,
       setType: meta.setType,
+      progression: meta.progression,
     };
   });
 }
@@ -344,6 +364,7 @@ export function validateWorkoutTitle(title: string): { valid: boolean; error?: s
       error: 'titleRequired', // Translation key
     };
   }
+
   return { valid: true };
 }
 

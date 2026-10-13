@@ -37,6 +37,7 @@ function findColorsInFile(filePath) {
   if (matches) {
     return { file: filePath, colors: [...new Set(matches)] }; // unique colors
   }
+
   return null;
 }
 

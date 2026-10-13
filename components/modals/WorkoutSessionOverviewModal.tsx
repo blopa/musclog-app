@@ -176,7 +176,7 @@ function ExerciseCard({
                 <Text className={`text-lg font-bold leading-tight ${titleClassName}`}>{name}</Text>
                 {isSkipped ? (
                   <View className="rounded bg-bg-secondary px-2 py-1">
-                    <Text className="text-[10px] font-bold text-text-muted">
+                    <Text className="text-xs font-bold text-text-muted">
                       {t('workout.skipped')}
                     </Text>
                   </View>
@@ -227,6 +227,7 @@ function ExerciseList({
     if (selectedExercise) {
       onSelectExercise?.(selectedExercise.id);
     }
+
     setShowConfirmation(false);
     setSelectedExercise(null);
   };
@@ -305,6 +306,7 @@ export default function WorkoutSessionOverviewModal({
       const reset = () => {
         setIsMenuVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -329,17 +331,18 @@ export default function WorkoutSessionOverviewModal({
     // Group sets by exercise
     const exerciseGroups = new Map<string, EnrichedWorkoutLogSet[]>();
     sets.forEach((set) => {
-      const exerciseId = set.exerciseId ?? '';
-      if (!exerciseGroups.has(exerciseId)) {
-        exerciseGroups.set(exerciseId, []);
+      const blockId = set.logExerciseId;
+      if (!exerciseGroups.has(blockId)) {
+        exerciseGroups.set(blockId, []);
       }
-      exerciseGroups.get(exerciseId)!.push(set);
+
+      exerciseGroups.get(blockId)!.push(set);
     });
 
     // Transform to UI format
     const exerciseList: ExerciseUIData[] = [];
-    exerciseGroups.forEach((exerciseSets, exerciseId) => {
-      const exercise = dbExercises.find((ex) => ex.id === exerciseId);
+    exerciseGroups.forEach((exerciseSets, blockId) => {
+      const exercise = dbExercises.find((ex) => ex.id === exerciseSets[0].exerciseId);
       if (!exercise) {
         return;
       }
@@ -361,7 +364,7 @@ export default function WorkoutSessionOverviewModal({
       }
 
       exerciseList.push({
-        id: exercise.id,
+        id: blockId,
         name: exercise.name ?? '',
         imageUrl: exercise.imageUrl || '',
         status,
@@ -370,7 +373,7 @@ export default function WorkoutSessionOverviewModal({
       });
     });
 
-    const orderedIds = logExercises.map((le) => le.exerciseId);
+    const orderedIds = logExercises.map((le) => le.id);
     return exerciseList.sort(
       (a, b) =>
         (orderedIds.indexOf(a.id) + 1 || Infinity) - (orderedIds.indexOf(b.id) + 1 || Infinity)
@@ -413,6 +416,7 @@ export default function WorkoutSessionOverviewModal({
         onPress: onStartWorkout,
       };
     }
+
     return {
       label: t('workout.resumeSession'),
       onPress: onResumeSession,

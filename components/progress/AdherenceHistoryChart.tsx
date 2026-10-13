@@ -93,9 +93,11 @@ export function AdherenceHistoryChart({
           if (point.y >= 0.999) {
             return positiveLabel;
           }
+
           if (point.y <= 0.001) {
             return negativeLabel;
           }
+
           return `${formatInteger(Math.round(point.y * 100))}%`;
         }}
       />

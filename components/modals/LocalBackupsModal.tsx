@@ -77,6 +77,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
       const run = () => {
         void fetchBackups();
       };
+
       run();
     }
   }, [visible, fetchBackups]);
@@ -90,6 +91,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     if (!selectedBackup) {
       return;
     }
+
     setShowMenu(false);
     try {
       // Raw `.db` snapshots are converted to portable JSON on download so the
@@ -117,6 +119,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     if (!selectedBackup) {
       return;
     }
+
     setIsProcessing(true);
     try {
       // A `.db` snapshot is converted to the JSON export format on the fly, then
@@ -152,6 +155,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     if (!selectedBackup) {
       return;
     }
+
     setIsProcessing(true);
     try {
       await deleteBackup(selectedBackup.uri);
@@ -172,15 +176,18 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     if (backup.reason === 'exercise-catalogue') {
       return t('settings.advancedSettings.localBackups.exerciseCatalogueBackup');
     }
+
     if (backup.reason === 'pre-restore') {
       return t('settings.advancedSettings.localBackups.preRestoreBackup');
     }
+
     if (backup.fromVersion !== null && backup.toVersion !== null) {
       return t('settings.advancedSettings.localBackups.backupFromTo', {
         from: backup.fromVersion,
         to: backup.toVersion,
       });
     }
+
     return t('settings.advancedSettings.localBackups.automaticBackup');
   };
 

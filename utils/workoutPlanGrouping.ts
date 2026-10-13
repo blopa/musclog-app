@@ -68,6 +68,7 @@ export function groupTemplatesByPlan<T extends WorkoutTemplateSummary>(
     if (!templatesById.has(membership.templateId) || !validPlanIds.has(membership.planId)) {
       continue;
     }
+
     plannedTemplateIds.add(membership.templateId);
     const current = membershipsByPlan.get(membership.planId) ?? [];
     current.push(membership);
@@ -81,6 +82,7 @@ export function groupTemplatesByPlan<T extends WorkoutTemplateSummary>(
       if (plan.cycleType === 'rotating') {
         return left.position - right.position;
       }
+
       const leftDay = left.weekDays?.length ? Math.min(...left.weekDays) : Number.MAX_SAFE_INTEGER;
       const rightDay = right.weekDays?.length
         ? Math.min(...right.weekDays)
@@ -95,6 +97,7 @@ export function groupTemplatesByPlan<T extends WorkoutTemplateSummary>(
       ) {
         return [];
       }
+
       return [{ template, membership }];
     });
     return workouts.length > 0 ? [{ plan, workouts }] : [];

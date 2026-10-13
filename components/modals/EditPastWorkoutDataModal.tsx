@@ -8,10 +8,10 @@ import Animated, { LinearTransition } from 'react-native-reanimated';
 import { GenericCard } from '@/components/cards/GenericCard';
 import DashedButton from '@/components/theme/DashedButton';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
-import { useSettings } from '@/hooks/useSettings';
+import type { Units } from '@/constants/settings';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
-import { showSnackbar } from '@/utils/snackbarService';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -22,6 +22,7 @@ type SetItem = {
   partialReps: number;
   rest: number;
   repsInReserve: number;
+  rirRecorded?: boolean;
   isPR?: boolean;
 };
 
@@ -34,7 +35,9 @@ function SetCard({
   onMoveDown,
   isFirst,
   isLast,
+  units,
 }: {
+  units: Units;
   item: SetItem;
   index: number;
   onChange: (id: string, patch: Partial<SetItem>) => void;
@@ -51,7 +54,6 @@ function SetCard({
   const displayIndex = Number.isFinite(index) ? index + 1 : 1;
 
   const { t } = useTranslation();
-  const { units } = useSettings();
   const weightLabelKey =
     units === 'imperial' ? 'workoutDetail.inputs.weightLbs' : 'workoutDetail.inputs.weightKg';
 
@@ -180,9 +182,13 @@ function SetCard({
 
           <View className="mt-4">
             <NewNumericalInput
-              label={t('workoutDetail.rir')}
+              label={
+                item.rirRecorded === false
+                  ? `${t('workoutDetail.rir')} · ${t('trainingFlow.unrated')}`
+                  : t('workoutDetail.rir')
+              }
               value={item.repsInReserve}
-              onChange={(v) => onChange(item.id, { repsInReserve: v })}
+              onChange={(v) => onChange(item.id, { repsInReserve: v, rirRecorded: true })}
               min={0}
               step={1}
               variant="compact"
@@ -201,6 +207,8 @@ type EditPastWorkoutDataModalProps = {
   workoutId: string;
   exerciseId: string;
   initialSets: SetItem[];
+  /** The unit this exercise's weights are entered in. Defaults to the account's. */
+  units?: Units;
 };
 
 export default function EditPastWorkoutDataModal({
@@ -208,8 +216,12 @@ export default function EditPastWorkoutDataModal({
   onClose,
   onSave,
   initialSets,
+  exerciseId,
+  units: unitsOverride,
 }: EditPastWorkoutDataModalProps) {
   const theme = useTheme();
+  const { unitsFor } = useExerciseUserSettings();
+  const units = unitsOverride ?? unitsFor(exerciseId);
   const [sets, setSets] = useState<SetItem[]>(initialSets ?? []);
   const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation();
@@ -218,6 +230,7 @@ export default function EditPastWorkoutDataModal({
     const syncSets = () => {
       setSets(initialSets ?? []);
     };
+
     syncSets();
   }, [initialSets, visible]);
 
@@ -244,6 +257,7 @@ export default function EditPastWorkoutDataModal({
             partialReps: 0,
             rest: 0,
             repsInReserve: 0,
+            rirRecorded: false,
           };
       return [...s, next];
     });
@@ -253,6 +267,7 @@ export default function EditPastWorkoutDataModal({
     if (index === 0) {
       return;
     }
+
     setSets((s) => {
       const next = [...s];
       [next[index - 1], next[index]] = [next[index], next[index - 1]];
@@ -265,6 +280,7 @@ export default function EditPastWorkoutDataModal({
       if (index === s.length - 1) {
         return s;
       }
+
       const next = [...s];
       [next[index], next[index + 1]] = [next[index + 1], next[index]];
       return next;
@@ -333,6 +349,7 @@ export default function EditPastWorkoutDataModal({
               onMoveDown={() => handleMoveDown(index)}
               isFirst={index === 0}
               isLast={index === sets.length - 1}
+              units={units}
             />
           </Animated.View>
         ))}

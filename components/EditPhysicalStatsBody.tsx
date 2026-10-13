@@ -67,6 +67,7 @@ export function EditPhysicalStatsBody({
     if (prevUnits === units) {
       return;
     }
+
     prevUnitsRef.current = units;
 
     const weightNum = parseFloat(weight) || 0;
@@ -202,6 +203,7 @@ export function EditPhysicalStatsBody({
                     if (dotIndex !== -1 && text.length - dotIndex > 3) {
                       return;
                     }
+
                     setHeight(text);
                   }}
                   placeholder="0"

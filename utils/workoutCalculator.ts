@@ -2,7 +2,11 @@ import type { EquipmentType, Gender } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 
 import { roundToDecimalPlaces } from './roundDecimal';
-import { isPerformedWorkoutSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  isWarmupSet,
+  type WorkoutSetCompletionStatus,
+} from './workoutSetCompletion';
 
 /**
  * Set fields needed for volume calculation (matches WorkoutLogSet subset).
@@ -93,18 +97,22 @@ export function calculateSessionVolumeFromSets(
     reps?: number;
     repsInReserve?: number;
     completionStatus?: WorkoutSetCompletionStatus | null;
+    setType?: string | null;
   }[],
   exerciseById: Map<string, ExerciseVolumeData>,
   bodyWeightKg: number,
   options?: { onlyCompletedSets?: boolean }
 ): number {
-  const list = options?.onlyCompletedSets ? sets.filter(isPerformedWorkoutSet) : sets;
+  // A warm-up never counts toward volume — not even in a preview of sets still to be done.
+  const working = sets.filter((s) => !isWarmupSet(s));
+  const list = options?.onlyCompletedSets ? working.filter(isPerformedWorkoutSet) : working;
   const byExercise = new Map<string, typeof list>();
   for (const s of list) {
     const id = s.exerciseId ?? '';
     if (!byExercise.has(id)) {
       byExercise.set(id, []);
     }
+
     byExercise.get(id)!.push(s);
   }
 
@@ -142,6 +150,7 @@ export function calculatePreviewVolumeFromTemplateSets(
     if (!byExercise.has(id)) {
       byExercise.set(id, []);
     }
+
     byExercise.get(id)!.push(s);
   }
 
@@ -233,30 +242,37 @@ export function calculate1RM(
         // Brzycki formula: 1RM = weight / (1.0278 - 0.0278 × reps)
         return weight / (1.0278 - 0.0278 * adjustedReps);
       }
+
       case 'Epley': {
         // Epley formula: 1RM = weight × (1 + reps/30)
         return weight * (1 + adjustedReps / 30);
       }
+
       case 'Lander': {
         // Lander formula: 1RM = weight / (1.013 - 0.0267123 × reps)
         return weight / (1.013 - 0.0267123 * adjustedReps);
       }
+
       case 'Lombardi': {
         // Lombardi formula: 1RM = weight × reps^0.1
         return weight * Math.pow(adjustedReps, 0.1);
       }
+
       case 'Mayhew': {
         // Mayhew formula: 1RM = weight / (0.522 + 0.419 × e^(-0.055 × reps))
         return weight / (0.522 + 0.419 * Math.exp(-0.055 * adjustedReps));
       }
+
       case 'OConner': {
         // O'Connor formula: 1RM = weight × (1 + 0.025 × reps)
         return weight * (1 + 0.025 * adjustedReps);
       }
+
       case 'Wathen': {
         // Wathen formula: 1RM = weight / (0.488 + 0.539 × e^(-0.035 × reps))
         return weight / (0.488 + 0.539 * Math.exp(-0.035 * adjustedReps));
       }
+
       default: {
         return null;
       }
@@ -295,6 +311,7 @@ export function calculateWeightForTargetRIR(
   if (multiplier === 0) {
     return 0;
   }
+
   return oneRM / multiplier;
 }
 

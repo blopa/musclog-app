@@ -75,6 +75,7 @@ export function TrackSavedForLaterFoodMealModal({
         setIsSubmitting(false);
       }
     };
+
     syncOrReset();
   }, [visible, sourceDate, sourceMealType]);
 
@@ -83,6 +84,7 @@ export function TrackSavedForLaterFoodMealModal({
       const reset = () => {
         setIsDatePickerVisible(false);
       };
+
       reset();
     }
   }, [visible]);
@@ -110,6 +112,7 @@ export function TrackSavedForLaterFoodMealModal({
     if (isBusy) {
       return;
     }
+
     setIsSubmitting(true);
     await flushLoadingPaint();
     try {

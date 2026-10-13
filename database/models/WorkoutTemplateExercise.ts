@@ -19,6 +19,8 @@ export default class WorkoutTemplateExercise extends Model {
   @field('notes') notes?: string;
   @field('exercise_order') declare exerciseOrder: number;
   @field('group_id') groupId?: string;
+  /** The exercise's progression rule — read through `parseProgressionRule`; absent = automatic. */
+  @field('progression_json') progressionJson?: string;
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;

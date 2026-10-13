@@ -30,6 +30,7 @@
   <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
   <uses-permission android:name="android.permission.health.READ_WEIGHT"/>
   <uses-permission android:name="android.permission.health.WRITE_BODY_FAT"/>
+  <uses-permission android:name="android.permission.health.WRITE_DISTANCE"/>
   <uses-permission android:name="android.permission.health.WRITE_EXERCISE"/>
   <uses-permission android:name="android.permission.health.WRITE_HEIGHT"/>
   <uses-permission android:name="android.permission.health.WRITE_LEAN_BODY_MASS"/>
@@ -54,10 +55,6 @@
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
     <service android:name="com.reactnativeandroidwidget.RNWidgetCollectionService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths|locale|layoutDirection" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="unspecified">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -86,6 +83,42 @@
       <intent-filter>
         <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>
         <category android:name="android.intent.category.HEALTH_PERMISSIONS"/>
+      </intent-filter>
+    </activity-alias>
+    <activity-alias android:name=".LauncherIconDefault" android:enabled="true" android:exported="true" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity-alias>
+    <activity-alias android:name=".LauncherIconKineticLight" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_kinetic_light" android:roundIcon="@mipmap/ic_launcher_kinetic_light_round" android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity-alias>
+    <activity-alias android:name=".LauncherIconKineticShock" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_kinetic_shock" android:roundIcon="@mipmap/ic_launcher_kinetic_shock_round" android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity-alias>
+    <activity-alias android:name=".LauncherIconKineticVolt" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_kinetic_volt" android:roundIcon="@mipmap/ic_launcher_kinetic_volt_round" android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity-alias>
+    <activity-alias android:name=".LauncherIconKineticBlush" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_kinetic_blush" android:roundIcon="@mipmap/ic_launcher_kinetic_blush_round" android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity-alias>
+    <activity-alias android:name=".LauncherIconKineticVaria" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_kinetic_varia" android:roundIcon="@mipmap/ic_launcher_kinetic_varia_round" android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity-alias>
   </application>

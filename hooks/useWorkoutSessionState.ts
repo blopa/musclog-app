@@ -3,17 +3,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { combineLatest, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
-import { ProgressionMode } from '@/constants/settings';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { SettingsService } from '@/database/services/SettingsService';
-import { UserMetricService } from '@/database/services/UserMetricService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { WorkoutService } from '@/database/services/WorkoutService';
-import { computeIntraSessionAdjustment } from '@/utils/setAdjustment';
 import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {
   getEffectiveOrder,
@@ -33,6 +29,9 @@ const WORKOUT_LOG_SET_COLUMNS = [
   'set_order',
   'deleted_at',
   'rep_data_json',
+  'adjustment_json',
+  'prescription_json',
+  'rir_recorded',
 ] as const;
 
 export type WorkoutSessionProgress = {
@@ -69,23 +68,6 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [bodyWeightKg, setBodyWeightKg] = useState(0);
-  const [progressionMode, setProgressionMode] = useState<ProgressionMode>('reps_first');
-
-  useEffect(() => {
-    const loadBodyWeight = async () => {
-      const weight = await UserMetricService.getUserBodyWeightKgForVolume();
-      setBodyWeightKg(weight);
-    };
-
-    const loadProgressionMode = async () => {
-      const mode = await SettingsService.getProgressionMode();
-      setProgressionMode(mode);
-    };
-
-    loadBodyWeight();
-    loadProgressionMode();
-  }, []);
 
   useEffect(() => {
     if (!workoutLogId) {
@@ -97,6 +79,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       setError(null);
       setIsLoading(true);
     };
+
     initState();
 
     const logQuery = database
@@ -112,13 +95,19 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       );
 
     const logObs = logQuery.observe().pipe(map((rows) => (rows.length > 0 ? rows[0] : null)));
-    const logExercisesObs = logExercisesQuery.observe();
+    const logExercisesObs = logExercisesQuery.observeWithColumns([
+      'exercise_id',
+      'progression_json',
+      'group_id',
+      'notes',
+    ]);
     const setsObs = logExercisesObs.pipe(
       switchMap((les) => {
         const ids = les.map((le) => le.id);
         if (ids.length === 0) {
           return of([]);
         }
+
         return database
           .get<WorkoutLogSet>('workout_log_sets')
           .query(
@@ -136,6 +125,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
         if (ids.length === 0) {
           return of([]);
         }
+
         return database
           .get<Exercise>('exercises')
           .query(Q.where('id', Q.oneOf(ids)), Q.where('deleted_at', Q.eq(null)))
@@ -149,46 +139,24 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           if (!log) {
             return null;
           }
+
           if (log.deletedAt) {
             return { error: 'Workout has been deleted' as const };
           }
+
           const leMap = logExs.map((le) => ({
             id: le.id,
             exerciseId: le.exerciseId,
+            supersetSlotId: le.supersetSlotId,
             groupId: le.groupId,
             notes: le.notes,
+            progressionJson: le.progressionJson,
           }));
 
-          let enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
-
-          // Intra-session RIR adjustment
+          // Between-sets re-targeting is decided and persisted by `WorkoutSessionService.saveSet`
+          // (see `selectRetargets`); the sets are read exactly as stored, never recomputed here.
+          const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
           const currentActive = getFirstUnloggedInEffectiveOrder(enrichedSets);
-          if (currentActive) {
-            const effectiveOrder = getEffectiveOrder(enrichedSets);
-            const currentIdx = effectiveOrder.findIndex((s) => s.id === currentActive.id);
-            if (currentIdx > 0) {
-              const lastSet = effectiveOrder[currentIdx - 1];
-              if (
-                isPerformedWorkoutSet(lastSet) &&
-                lastSet.exerciseId === currentActive.exerciseId
-              ) {
-                // Adjust current set based on lastSet
-                const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
-                const equipmentType = exercise?.equipmentType;
-                const { weight, reps, adjustment } = computeIntraSessionAdjustment({
-                  previousSet: lastSet,
-                  plannedSet: currentActive,
-                  progressionMode,
-                  isBodyweight: !!equipmentType?.toLowerCase().includes('bodyweight'),
-                  bodyWeightKg,
-                });
-
-                currentActive.weight = weight;
-                currentActive.reps = reps;
-                currentActive.adjustment = adjustment ?? undefined;
-              }
-            }
-          }
 
           const totalSets = enrichedSets.length;
           const completedSets = enrichedSets.filter(isResolvedWorkoutSet).length;
@@ -205,7 +173,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             if (currentIdx > 0) {
               for (let i = currentIdx - 1; i >= 0; i--) {
                 const s = effectiveOrder[i];
-                if (isPerformedWorkoutSet(s)) {
+                if (isPerformedWorkoutSet(s) && s.logExerciseId === current.logExerciseId) {
                   prev = {
                     weight: s.weight ?? 0,
                     reps: s.reps ?? 0,
@@ -279,13 +247,14 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       });
 
     return () => subscription.unsubscribe();
-  }, [bodyWeightKg, progressionMode, workoutLogId]);
+  }, [workoutLogId]);
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     if (!workoutLogId) {
       return;
     }
-    WorkoutService.getWorkoutWithDetails(workoutLogId).then(
+
+    await WorkoutService.getWorkoutWithDetails(workoutLogId).then(
       ({ workoutLog: log, sets: s, exercises: ex, logExercises: le }) => {
         setWorkoutLog(log);
         setLogExercises(le);
@@ -303,7 +272,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           if (currentIdx > 0) {
             for (let i = currentIdx - 1; i >= 0; i--) {
               const set = effectiveOrder[i];
-              if (isPerformedWorkoutSet(set)) {
+              if (isPerformedWorkoutSet(set) && set.logExerciseId === current.logExerciseId) {
                 prev = {
                   weight: set.weight ?? 0,
                   reps: set.reps ?? 0,
@@ -314,6 +283,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             }
           }
         }
+
         setCurrentSet(current);
         setNextSet(next);
         setPreviousSet(prev);

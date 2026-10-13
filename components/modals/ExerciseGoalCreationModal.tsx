@@ -61,9 +61,11 @@ function normalizeMuscleGroup(muscleGroup: string): MuscleGroupFilter | null {
   if (normalized.includes('chest')) {
     return 'chest';
   }
+
   if (normalized.includes('back') || normalized.includes('lat')) {
     return 'back';
   }
+
   if (
     normalized.includes('leg') ||
     normalized.includes('quad') ||
@@ -73,6 +75,7 @@ function normalizeMuscleGroup(muscleGroup: string): MuscleGroupFilter | null {
   ) {
     return 'legs';
   }
+
   if (
     normalized.includes('arm') ||
     normalized.includes('bicep') ||
@@ -82,6 +85,7 @@ function normalizeMuscleGroup(muscleGroup: string): MuscleGroupFilter | null {
   ) {
     return 'arms';
   }
+
   return null;
 }
 
@@ -91,12 +95,15 @@ function getExerciseType(mechanicType: string, equipmentType: string): string {
   if (equipment.includes('bodyweight') || equipment.includes('body weight')) {
     return 'bodyweight';
   }
+
   if (mechanic.includes('compound')) {
     return 'compound';
   }
+
   if (equipment.includes('machine')) {
     return 'machine';
   }
+
   return 'isolation';
 }
 
@@ -104,6 +111,7 @@ function getExerciseIcon(type: string) {
   if (type === 'bodyweight') {
     return User;
   }
+
   return Dumbbell;
 }
 
@@ -170,6 +178,7 @@ export default function ExerciseGoalCreationModal({
         setActiveMuscle('all');
         setSearchQuery('');
       };
+
       reset();
       return;
     }
@@ -182,6 +191,7 @@ export default function ExerciseGoalCreationModal({
         setTargetDate(null);
         setHasManuallySetTargetDate(false);
       };
+
       initLoading();
       Promise.all([
         WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
@@ -267,6 +277,7 @@ export default function ExerciseGoalCreationModal({
         );
       }
     };
+
     setDate();
   }, [
     targetWeightDisplay,
@@ -599,7 +610,7 @@ export default function ExerciseGoalCreationModal({
           />
 
           {projection?.projectedWeeks ? (
-            <View className="bg-accent-primary10 mt-4 rounded-xl p-4">
+            <View className="mt-4 rounded-xl bg-accent-primary/10 p-4">
               <Text className="text-sm font-bold text-accent-primary">
                 {t('exerciseGoals.creation.projectionPreview', {
                   weeks: Math.ceil(projection.projectedWeeks),

@@ -157,6 +157,7 @@ export default function GraphsTestScreen() {
         y: Math.random() * 60 + 20,
       });
     }
+
     setLineChartData(newData);
   };
 
@@ -169,6 +170,7 @@ export default function GraphsTestScreen() {
         y: Math.floor(Math.random() * 60) + 20,
       });
     }
+
     setBarChartData(newData);
   };
 

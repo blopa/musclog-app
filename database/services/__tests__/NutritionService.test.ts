@@ -321,18 +321,23 @@ describe('NutritionService.getRecentLoggedDays', () => {
   });
 
   it('buckets an instant by each log stored timezone rather than the device timezone', async () => {
-    const instant = Date.UTC(2026, 7, 2, 0, 30);
-    withLogs([
-      mockLog({ id: 'east', date: instant, timezone: '+02:00', calories: 100 }),
-      mockLog({ id: 'west', date: instant, timezone: '-02:00', calories: 200 }),
-    ]);
+    jest.useFakeTimers({ now: Date.UTC(2026, 7, 3) });
+    try {
+      const instant = Date.UTC(2026, 7, 2, 0, 30);
+      withLogs([
+        mockLog({ id: 'east', date: instant, timezone: '+02:00', calories: 100 }),
+        mockLog({ id: 'west', date: instant, timezone: '-02:00', calories: 200 }),
+      ]);
 
-    const days = await NutritionService.getRecentLoggedDays();
+      const days = await NutritionService.getRecentLoggedDays();
 
-    expect(days).toEqual([
-      { dayKey: Date.UTC(2026, 7, 2), itemCount: 1, calories: 100 },
-      { dayKey: Date.UTC(2026, 7, 1), itemCount: 1, calories: 200 },
-    ]);
+      expect(days).toEqual([
+        { dayKey: Date.UTC(2026, 7, 2), itemCount: 1, calories: 100 },
+        { dayKey: Date.UTC(2026, 7, 1), itemCount: 1, calories: 200 },
+      ]);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('respects the limit', async () => {
@@ -469,5 +474,41 @@ describe('NutritionService.normalizeAiMealIngredients', () => {
 
     expect(query).not.toHaveBeenCalled();
     expect(result).toEqual([ingredient(undefined)]);
+  });
+});
+
+describe('NutritionService.logCustomMeal consumedTime', () => {
+  const meal = { name: 'Oats', calories: 300, protein: 10, carbs: 50, fat: 5, foodId: 'food-1' };
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('logs the chosen time of day on the chosen day', async () => {
+    const logFood = jest.spyOn(NutritionService, 'logFood').mockResolvedValue({} as NutritionLog);
+
+    await NutritionService.logCustomMeal(
+      meal,
+      new Date(2026, 2, 10, 23, 59), // the day picked; its own time-of-day must not leak through
+      'breakfast',
+      100,
+      { consumedTime: new Date(2020, 0, 1, 8, 30) } // only the wall-clock time matters
+    );
+
+    const consumed = logFood.mock.calls[0][1] as Date;
+    expect([consumed.getFullYear(), consumed.getMonth(), consumed.getDate()]).toEqual([
+      2026, 2, 10,
+    ]);
+    expect([consumed.getHours(), consumed.getMinutes()]).toEqual([8, 30]);
+  });
+
+  it('keeps "that day, right now" when no time is given', async () => {
+    jest.useFakeTimers().setSystemTime(new Date(2026, 5, 1, 14, 5));
+    const logFood = jest.spyOn(NutritionService, 'logFood').mockResolvedValue({} as NutritionLog);
+
+    await NutritionService.logCustomMeal(meal, new Date(2026, 2, 10), 'lunch', 100);
+
+    const consumed = logFood.mock.calls[0][1] as Date;
+    expect([consumed.getMonth(), consumed.getDate()]).toEqual([2, 10]);
+    expect([consumed.getHours(), consumed.getMinutes()]).toEqual([14, 5]);
+    jest.useRealTimers();
   });
 });

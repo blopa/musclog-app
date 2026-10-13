@@ -28,6 +28,26 @@ jest.mock('@/database/database-instance', () => ({
   },
 }));
 
+// Reading a 1RM goal's inputs pulls in analytics and the user services; their models need the real
+// WatermelonDB, which this file replaces with a `Q`-only stub, so they are stubbed at the seam.
+jest.mock('@/database/services/WorkoutAnalytics', () => ({
+  WorkoutAnalytics: {
+    getProgressiveOverloadData: jest.fn(),
+    getPerformed1RMDate: jest.fn(),
+    getRecentFirstSetAverage1RM: jest.fn(),
+  },
+}));
+jest.mock('@/database/services/UserMetricService', () => ({
+  UserMetricService: { getUserBodyWeightKgForVolume: jest.fn() },
+}));
+jest.mock('@/database/services/UserService', () => ({
+  UserService: { getCurrentUser: jest.fn() },
+}));
+
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+
 const mockDatabase = database as jest.Mocked<typeof database>;
 
 const IS_NULL = { kind: 'eq', value: null };
@@ -355,5 +375,109 @@ describe('ExerciseGoalService', () => {
       await expect(ExerciseGoalService.deleteGoal('goal-1')).resolves.toBeUndefined();
       expect(goal.markAsDeleted).toHaveBeenCalledTimes(1);
     });
+  });
+});
+
+describe('1RM goal evaluation', () => {
+  const DAY = 24 * 60 * 60 * 1000;
+  const point = (daysAgo: number, estimated1RM: number) => ({
+    date: Date.now() - daysAgo * DAY,
+    weight: estimated1RM,
+    reps: 1,
+    volume: estimated1RM,
+    estimated1RM,
+  });
+  const goal = (overrides: Record<string, unknown> = {}) =>
+    stubGoal({
+      goalType: '1rm',
+      exerciseId: 'ex-1',
+      targetWeight: 120,
+      baseline1rm: 100,
+      createdAt: Date.now() - 60 * DAY,
+      ...overrides,
+    });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockDatabase.get.mockReturnValue({
+      find: jest.fn().mockResolvedValue({ loadMultiplier: 1 }),
+    } as never);
+    (WorkoutAnalytics.getPerformed1RMDate as jest.Mock).mockResolvedValue(null);
+    (WorkoutAnalytics.getRecentFirstSetAverage1RM as jest.Mock).mockResolvedValue({
+      average1RM: 105,
+      setCount: 4,
+    });
+    (UserMetricService.getUserBodyWeightKgForVolume as jest.Mock).mockResolvedValue(80);
+    (UserService.getCurrentUser as jest.Mock).mockResolvedValue({ gender: 'male' });
+  });
+
+  it('reads only 1RM goals', async () => {
+    expect(
+      await ExerciseGoalService.load1rmGoalInputs(goal({ goalType: 'consistency' }))
+    ).toBeNull();
+    expect(await ExerciseGoalService.evaluate1rmGoal(goal({ exerciseId: null }))).toBeNull();
+  });
+
+  it('gathers what the projection needs', async () => {
+    (WorkoutAnalytics.getProgressiveOverloadData as jest.Mock).mockResolvedValue([point(30, 100)]);
+    const inputs = await ExerciseGoalService.load1rmGoalInputs(goal());
+    expect(inputs).toMatchObject({
+      recentAverage1RM: 105,
+      bodyWeight: 80,
+      loadMultiplier: 1,
+      userGender: 'male',
+      hasPerformed1RMDate: null,
+    });
+    expect(inputs?.dataPoints).toHaveLength(1);
+  });
+
+  it('leaves excluded windows out of the data and skips the recent-average shortcut', async () => {
+    (WorkoutAnalytics.getProgressiveOverloadData as jest.Mock).mockResolvedValue([
+      point(30, 100),
+      point(5, 80),
+    ]);
+    const inputs = await ExerciseGoalService.load1rmGoalInputs(goal(), {
+      excludeWindows: [{ from: Date.now() - 10 * DAY, until: Date.now() }],
+    });
+    expect(inputs?.dataPoints.map((p) => p.estimated1RM)).toEqual([100]);
+    // The recent average spans the last two weeks and cannot be filtered by date.
+    expect(inputs?.recentAverage1RM).toBeNull();
+  });
+
+  it('keeps the recent average when the excluded week is long past', async () => {
+    (WorkoutAnalytics.getProgressiveOverloadData as jest.Mock).mockResolvedValue([point(30, 100)]);
+    const inputs = await ExerciseGoalService.load1rmGoalInputs(goal(), {
+      excludeWindows: [{ from: Date.now() - 40 * DAY, until: Date.now() - 33 * DAY }],
+    });
+    expect(inputs?.recentAverage1RM).toBe(105);
+  });
+
+  it('projects a goal, and has nothing to project without a target or baseline', async () => {
+    (WorkoutAnalytics.getProgressiveOverloadData as jest.Mock).mockResolvedValue([
+      point(40, 100),
+      point(20, 105),
+      point(1, 110),
+    ]);
+    const projection = await ExerciseGoalService.evaluate1rmGoal(goal());
+    expect(projection?.status).toBe('on_track');
+    expect(projection?.currentEstimated1RM).toBe(105);
+
+    const inputs = await ExerciseGoalService.load1rmGoalInputs(goal());
+    expect(ExerciseGoalService.project1rmGoal(goal({ targetWeight: null }), inputs!)).toBeNull();
+    expect(
+      ExerciseGoalService.project1rmGoal(goal({ baseline1rm: null }), {
+        ...inputs!,
+        dataPoints: [],
+      })
+    ).toBeNull();
+  });
+
+  it('measures from an explicit baseline when given one', async () => {
+    (WorkoutAnalytics.getProgressiveOverloadData as jest.Mock).mockResolvedValue([point(1, 110)]);
+    const inputs = await ExerciseGoalService.load1rmGoalInputs(goal());
+    const fromGoal = ExerciseGoalService.project1rmGoal(goal(), inputs!);
+    const fromOverride = ExerciseGoalService.project1rmGoal(goal(), inputs!, 90);
+    expect(fromGoal?.deltaFromBaseline).toBe(5);
+    expect(fromOverride?.deltaFromBaseline).toBe(15);
   });
 });

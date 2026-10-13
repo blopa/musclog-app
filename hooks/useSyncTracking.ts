@@ -112,6 +112,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
         if (shouldShowFeedback) {
           showSnackbar('error', hcError.getUserMessage());
         }
+
         if (trigger === 'manual' && !isHealthPermissionError(hcError)) {
           setError(hcError);
         }
@@ -203,6 +204,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
     const loadStatus = () => {
       void refreshSyncStatus();
     };
+
     loadStatus();
   }, [refreshSyncStatus]);
 

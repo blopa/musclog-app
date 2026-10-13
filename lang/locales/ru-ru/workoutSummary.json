@@ -7,7 +7,6 @@
     "newPRs": "Новые ЛР",
     "goHome": "На главную",
     "youCrushedIt": "Отличная работа!",
-    "feedbackSubmitted": "Отзыв о тренировке успешно отправлен.",
     "shareText": "Я только что отлично потренировался!",
     "sharePersonalRecords_one": "🏆 {{count}} ЛР",
     "sharePersonalRecords_other": "🏆 {{count}} ЛР",
@@ -19,6 +18,7 @@
     "gettingFeedback": "Получение отзыва...",
     "completedMessage": "Вы завершили тренировку {{workoutName}}",
     "completedSummary": "Тренировка завершена: {{workoutName}}",
-    "caloriesBurned": "Сожжённые калории"
+    "caloriesBurned": "Сожжённые калории",
+    "workoutSaved": "Тренировка сохранена. Вот что изменится в следующий раз."
   }
 }

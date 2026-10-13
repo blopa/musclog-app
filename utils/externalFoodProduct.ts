@@ -241,6 +241,7 @@ function parseUSDANutritionPer100g(product: USDAFood): ProductNutritionPer100g {
 
     return 0;
   };
+
   const macro = (...numbers: string[]) => toFiniteMacro(pick(...numbers) * normFactor);
   // Minerals are reported in MG by USDA; convert to grams for storage.
   const mineralGrams = (...numbers: string[]) =>

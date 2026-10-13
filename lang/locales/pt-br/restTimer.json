@@ -9,6 +9,9 @@
     "repsWithCount": "{{count}} repetições",
     "upNext": "PRÓXIMO",
     "missingWorkoutData": "Dados do treino ausentes",
-    "completedSetNotFound": "Série completada não encontrada"
+    "completedSetNotFound": "Série completada não encontrada",
+    "getReady": "Prepare-se",
+    "go": "Vai!",
+    "a11yRemaining": "Faltam {{time}}"
   }
 }

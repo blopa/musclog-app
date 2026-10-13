@@ -133,5 +133,6 @@ export function useSnackbar() {
   if (context === undefined) {
     throw new Error('useSnackbar must be used within a SnackbarProvider');
   }
+
   return context;
 }

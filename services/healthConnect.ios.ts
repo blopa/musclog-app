@@ -163,6 +163,7 @@ class HealthKitBridgeService {
       this.status = HealthConnectStatus.NOT_SUPPORTED;
       return this.status;
     }
+
     try {
       const ok = await isHealthDataAvailableAsync();
       this.status = ok ? HealthConnectStatus.AVAILABLE : HealthConnectStatus.NOT_INSTALLED;
@@ -177,6 +178,7 @@ class HealthKitBridgeService {
     if (this.initializationPromise) {
       return this.initializationPromise;
     }
+
     if (this.status === HealthConnectStatus.AVAILABLE) {
       return Promise.resolve();
     }
@@ -192,6 +194,7 @@ class HealthKitBridgeService {
             { retryable: false }
           );
         }
+
         this.status = HealthConnectStatus.AVAILABLE;
       } catch (error) {
         this.status = HealthConnectStatus.ERROR;

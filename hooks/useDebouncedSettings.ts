@@ -102,6 +102,7 @@ export function useDebouncedSettings(debounceMs = 200) {
           initial[k] = actualSettings[k] as SettingValue;
         }
       }
+
       setLocalSettings(initial);
     }
   }, [actualSettings]);
@@ -114,6 +115,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     if (actualSettings.isLoading) {
       return;
     }
+
     setLocalSettings((prev) => {
       const next = { ...prev };
       let changed = false;
@@ -121,12 +123,14 @@ export function useDebouncedSettings(debounceMs = 200) {
         if (pendingKeysRef.current.has(key)) {
           continue; // user has a pending change for this key — leave it alone
         }
+
         const dbVal = actualSettings[key as keyof typeof actualSettings] as SettingValue;
         if (dbVal !== undefined && prev[key] !== dbVal) {
           next[key] = dbVal;
           changed = true;
         }
       }
+
       return changed ? next : prev;
     });
   }, [actualSettings]);
@@ -385,6 +389,7 @@ export function useDebouncedSettings(debounceMs = 200) {
         clearTimeout(timeoutRefs.current[settingKey]);
         delete timeoutRefs.current[settingKey];
       }
+
       delete pendingValuesRef.current[settingKey];
 
       try {
@@ -534,6 +539,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     for (const t of Object.values(timeoutRefs.current)) {
       clearTimeout(t);
     }
+
     timeoutRefs.current = {};
   }, []);
 

@@ -92,9 +92,11 @@ export async function scaleMealNutritionLogsToTotalGrams(
   if (totalGrams <= 0) {
     throw new Error('Meal has no weight');
   }
+
   if (newTotalGrams <= 0) {
     throw new Error('Invalid target weight');
   }
+
   const ratio = newTotalGrams / totalGrams;
 
   const prepared = await Promise.all(
@@ -189,6 +191,7 @@ export class NutritionService {
           const defaultPortion = await food.getDefaultPortionAsync();
           resolvedPortionId = defaultPortion?.id;
         }
+
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: food.name ?? undefined,
           loggedCalories: food.calories ?? 0,
@@ -289,6 +292,7 @@ export class NutritionService {
           );
         }
       }
+
       throw error;
     }
   }
@@ -325,6 +329,7 @@ export class NutritionService {
           return repaired;
         }
       }
+
       throw error;
     }
   }
@@ -621,6 +626,7 @@ export class NutritionService {
           return this.deleteNutritionLogInternal(id, true);
         }
       }
+
       throw error;
     }
   }
@@ -1289,9 +1295,10 @@ export class NutritionService {
     date: Date,
     mealType: MealType,
     amount: number = 100, // Default to 100g for custom meals
-    options?: { groupId?: string; loggedMealName?: string }
+    options?: { groupId?: string; loggedMealName?: string; consumedTime?: Date }
   ): Promise<NutritionLog> {
-    const consumed = consumedDateTimeOnDay(date);
+    // `consumedTime` sets the time of day on `date`; leaving it out keeps "that day, right now".
+    const consumed = consumedDateTimeOnDay(date, options?.consumedTime);
 
     if (mealData.foodId) {
       return await NutritionService.logFood(
@@ -1467,9 +1474,15 @@ export class NutritionService {
     }[],
     date: Date,
     mealType: MealType,
-    options?: { groupId?: string; loggedMealName?: string; imageUrl?: string }
+    options?: {
+      groupId?: string;
+      loggedMealName?: string;
+      imageUrl?: string;
+      /** Time of day on `date`; omit for "that day, right now". */
+      consumedTime?: Date;
+    }
   ): Promise<NutritionLog[]> {
-    const consumed = consumedDateTimeOnDay(date);
+    const consumed = consumedDateTimeOnDay(date, options?.consumedTime);
     const now = Date.now();
 
     const logs = await database.write(async () => {

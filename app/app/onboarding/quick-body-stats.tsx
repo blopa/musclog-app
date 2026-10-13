@@ -16,8 +16,13 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
-import { QUICK_SETUP_DATA, TEMP_NUTRITION_PLAN } from '@/constants/misc';
-import { type FitnessGoal, type Gender, type WeightGoal } from '@/database/models/User';
+import { QUICK_SETUP_DATA, TEMP_NUTRITION_PLAN, TRAINING_SETUP_DATA } from '@/constants/misc';
+import {
+  type FitnessGoal,
+  type Gender,
+  type LiftingExperience,
+  type WeightGoal,
+} from '@/database/models/User';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
@@ -25,6 +30,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
+import { parseTrainingSetup } from '@/utils/onboardingTraining';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
@@ -49,12 +55,14 @@ export default function QuickBodyStatsScreen() {
   const [birthday, setBirthday] = useState<Date>(localCalendarDayDate(new Date(1990, 0, 1)));
   const [isBirthdayPickerVisible, setIsBirthdayPickerVisible] = useState(false);
   const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
-  const [bodyFat, setBodyFat] = useState<number | null>(25);
+  const [bodyFat, setBodyFat] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const units = setupData.units ?? 'metric';
   const weightUnit = getWeightUnit(units);
   const heightUnit = getHeightUnit(units);
+
+  const [liftingExperience, setLiftingExperience] = useState<LiftingExperience>('beginner');
 
   useEffect(() => {
     async function load() {
@@ -68,6 +76,15 @@ export default function QuickBodyStatsScreen() {
         }
       } catch {
         // ignore
+      }
+
+      try {
+        const training = parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
+        if (training?.experience) {
+          setLiftingExperience(training.experience);
+        }
+      } catch {
+        // keep the beginner default
       }
 
       const prefill = await getHealthBodyMetricsPrefill(resolvedUnits);
@@ -149,7 +166,7 @@ export default function QuickBodyStatsScreen() {
           fitnessGoal,
           weightGoal,
           activityLevel: 2,
-          liftingExperience: 'beginner',
+          liftingExperience,
           dateOfBirth: dob,
         });
       } else {
@@ -160,7 +177,7 @@ export default function QuickBodyStatsScreen() {
           fitnessGoal,
           weightGoal,
           activityLevel: 2,
-          liftingExperience: 'beginner',
+          liftingExperience,
         });
       }
 
@@ -173,13 +190,13 @@ export default function QuickBodyStatsScreen() {
         activityLevel: 2,
         weightGoal,
         fitnessGoal,
-        liftingExperience: 'beginner',
+        liftingExperience,
         bodyFatPercent: useBfForCalculations ? (bodyFat ?? undefined) : undefined,
       });
 
       await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
       router.navigate(
-        `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true')}&quickStep=5&quickTotal=6`
+        `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent('/app/onboarding/nutrition-goals-results?aiGenerated=true&quickSetup=true')}&quickStep=5&quickTotal=7`
       );
     } catch (e) {
       console.error('Error in quick body stats:', e);
@@ -193,7 +210,7 @@ export default function QuickBodyStatsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={4} total={6} />
+        <QuickSetupProgressBar current={4} total={7} />
 
         <KeyboardAwareScrollView
           className="flex-1"
@@ -243,6 +260,8 @@ export default function QuickBodyStatsScreen() {
                     label={t('onboarding.quickBodyStats.height')}
                     totalInches={parseFloat(height) || 67}
                     onPress={() => setIsHeightPickerVisible(true)}
+                    unset={!height}
+                    unsetPlaceholder={t('heightPicker.selectHeight')}
                   />
                 ) : (
                   <TextInput
@@ -253,6 +272,7 @@ export default function QuickBodyStatsScreen() {
                       if (dotIndex !== -1 && text.length - dotIndex > 3) {
                         return;
                       }
+
                       setHeight(text);
                     }}
                     placeholder="0"

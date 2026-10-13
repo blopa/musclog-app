@@ -74,6 +74,7 @@ import { StepperInlineInput } from './theme/StepperInlineInput';
 const CALORIES_STEP = 12;
 
 export type NutritionGoals = {
+  targetMode?: import('@/database/models/NutritionGoal').NutritionTargetMode;
   totalCalories: number;
   protein: number;
   carbs: number;
@@ -316,7 +317,10 @@ export function NutritionGoalsBody({
   );
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
-  const [isDynamic, setIsDynamic] = useState(initialGoals.isDynamic ?? false);
+  const [targetMode, setTargetMode] = useState(
+    initialGoals.targetMode ?? (initialGoals.isDynamic ? 'daily' : 'manual')
+  );
+  const isDynamic = targetMode === 'daily';
   const [dynamicPreview, setDynamicPreview] = useState<ResolvedMacros | null>(null);
   const [isResolvingDynamicPreview, setIsResolvingDynamicPreview] = useState(false);
   const [userHeightM, setUserHeightM] = useState<number | null>(null);
@@ -411,7 +415,7 @@ export function NutritionGoalsBody({
       setTargetFFMI(initialGoals.targetFFMI ?? null);
       setTargetDate(initialGoals.targetDate ?? null);
       setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
-      setIsDynamic(initialGoals.isDynamic ?? false);
+      setTargetMode(initialGoals.targetMode ?? (initialGoals.isDynamic ? 'daily' : 'manual'));
       setDynamicPreview(null);
       setIsResolvingDynamicPreview(false);
       didAutofillDynamicTargetWeight.current = false;
@@ -427,6 +431,7 @@ export function NutritionGoalsBody({
       isManualCalorieUpdate.current = false;
       syncMacroRatios();
     };
+
     syncInitialGoals();
   }, [
     defaultGoalStartDate,
@@ -436,6 +441,7 @@ export function NutritionGoalsBody({
     initialGoals.fiber,
     initialGoals.goalStartDate,
     initialGoals.isDynamic,
+    initialGoals.targetMode,
     initialGoals.protein,
     initialGoals.targetBMI,
     initialGoals.targetBodyFat,
@@ -463,6 +469,7 @@ export function NutritionGoalsBody({
         didAutofillDynamicTargetWeight.current = false;
       }
     };
+
     syncWeight();
   }, [isDynamic, targetWeight, latestWeightKg, units]);
 
@@ -472,10 +479,12 @@ export function NutritionGoalsBody({
       if (!metric) {
         return;
       }
+
       metric.getDecrypted().then((dec) => {
         if (dec == null) {
           return;
         }
+
         const cm = storedHeightToCm(dec.value, dec.unit);
         setUserHeightM(convert(cm, 'cm').to('m') as number);
       });
@@ -488,6 +497,7 @@ export function NutritionGoalsBody({
       if (!metric) {
         return;
       }
+
       metric.getDecrypted().then((dec) => {
         if (dec != null) {
           setLatestWeightKg(storedWeightToKg(dec.value, dec.unit));
@@ -498,6 +508,7 @@ export function NutritionGoalsBody({
       if (!metric) {
         return;
       }
+
       metric.getDecrypted().then((dec) => {
         if (dec != null) {
           setLatestBodyFatPercent(dec.value);
@@ -514,11 +525,13 @@ export function NutritionGoalsBody({
     if (eatingPhase === previousEatingPhase.current) {
       return;
     }
+
     previousEatingPhase.current = eatingPhase;
 
     if (!macrosArePristine.current) {
       return;
     }
+
     if (!user || latestWeightKg == null || userHeightM == null) {
       return;
     }
@@ -571,15 +584,15 @@ export function NutritionGoalsBody({
         }
       }
 
-      const macros =
-        finalCalories !== plan.targetCalories
-          ? calculateMacros(finalCalories, fitnessGoal, {
-              weightKg: latestWeightKg,
-              bodyFatPercent: useBfForCalculations
-                ? (latestBodyFatPercent ?? undefined)
-                : undefined,
-            })
-          : { protein: plan.protein, carbs: plan.carbs, fats: plan.fats };
+      // Always from calculateMacros, never the base plan's: protein is anchored on the goal weight
+      // when one is set, which the base plan does not know about.
+      const macros = calculateMacros(finalCalories, fitnessGoal, {
+        weightKg: latestWeightKg,
+        bodyFatPercent: useBfForCalculations ? (latestBodyFatPercent ?? undefined) : undefined,
+        heightCm,
+        goalWeightKg: targetWeight != null ? displayToKg(targetWeight, units) : undefined,
+        weightGoal: eatingPhaseToWeightGoal(eatingPhase),
+      });
 
       const fiberValue = fiberFromCalories(finalCalories);
 
@@ -600,6 +613,7 @@ export function NutritionGoalsBody({
         setCalorieInputValue(finalCalories.toString());
         syncMacroRatios();
       };
+
       applyMacros();
     } catch {
       // ignore
@@ -725,6 +739,7 @@ export function NutritionGoalsBody({
       const sync = () => {
         setCalorieInputValue(totalCalories.toString());
       };
+
       sync();
     }
   }, [totalCalories, isCalorieEditing]);
@@ -755,15 +770,18 @@ export function NutritionGoalsBody({
     if (userHeightM === null || targetWeight === null) {
       return;
     }
+
     const recalcBmi = () => {
       setTargetBMI((prev) => {
         if (prev === null) {
           return prev;
         }
+
         const weightKg = displayToKg(targetWeight, units);
         return bmiFromWeightAndHeightM(weightKg, userHeightM);
       });
     };
+
     recalcBmi();
   }, [targetWeight, userHeightM, units]);
 
@@ -772,15 +790,18 @@ export function NutritionGoalsBody({
     if (userHeightM === null || targetWeight === null || !targetBodyFat) {
       return;
     }
+
     const recalcFfmi = () => {
       setTargetFFMI((prev) => {
         if (prev === null) {
           return prev;
         }
+
         const weightKg = displayToKg(targetWeight, units);
         return ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat);
       });
     };
+
     recalcFfmi();
   }, [targetWeight, targetBodyFat, userHeightM, units]);
 
@@ -810,6 +831,7 @@ export function NutritionGoalsBody({
       });
       syncMacroRatios();
     };
+
     clampMacros();
   }, [macroMax.protein, macroMax.carbs, macroMax.fats, macroMax.fiber, syncMacroRatios]);
 
@@ -825,6 +847,7 @@ export function NutritionGoalsBody({
         setDynamicPreview(null);
         setIsResolvingDynamicPreview(false);
       };
+
       clear();
       return;
     }
@@ -833,6 +856,7 @@ export function NutritionGoalsBody({
     const startResolving = () => {
       setIsResolvingDynamicPreview(true);
     };
+
     startResolving();
 
     resolveDynamicGoalPreview(
@@ -887,6 +911,7 @@ export function NutritionGoalsBody({
         targetDate,
         goalStartDate,
         isDynamic,
+        targetMode,
       });
     }
   }, [
@@ -903,6 +928,7 @@ export function NutritionGoalsBody({
     targetDate,
     goalStartDate,
     isDynamic,
+    targetMode,
     onFormChange,
     units,
   ]);
@@ -922,6 +948,7 @@ export function NutritionGoalsBody({
       targetDate,
       goalStartDate,
       isDynamic,
+      targetMode,
     } as NutritionGoals);
   }, [
     effectiveCalories,
@@ -932,6 +959,7 @@ export function NutritionGoalsBody({
     eatingPhase,
     goalStartDate,
     isDynamic,
+    targetMode,
     onSave,
     targetBMI,
     targetBodyFat,
@@ -948,6 +976,7 @@ export function NutritionGoalsBody({
       isInitialMount.current = false;
       return;
     }
+
     isInitialMount.current = false;
 
     if (isManualCalorieUpdate.current) {
@@ -988,10 +1017,13 @@ export function NutritionGoalsBody({
           <SegmentedControl
             options={[
               { label: t('nutritionGoals.manual'), value: 'manual' },
-              { label: t('nutritionGoals.dynamic'), value: 'dynamic' },
+              { label: t('weeklyReview.modes.daily'), value: 'daily' },
+              { label: t('weeklyReview.modes.weekly'), value: 'weekly' },
             ]}
-            value={isDynamic ? 'dynamic' : 'manual'}
-            onValueChange={(val) => setIsDynamic(val === 'dynamic')}
+            value={targetMode}
+            onValueChange={(val) =>
+              setTargetMode(val === 'weekly' ? 'weekly' : val === 'daily' ? 'daily' : 'manual')
+            }
           />
         </View>
 

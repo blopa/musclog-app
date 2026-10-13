@@ -114,6 +114,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
             if (!hasPoints) {
               return null;
             }
+
             return (
               <View key={p} className="items-center">
                 <Text className="text-[8px] uppercase tracking-tighter text-text-tertiary">

@@ -58,7 +58,7 @@ export default function PersonalizedBodyStatsScreen() {
   const [birthday, setBirthday] = useState<Date>(localCalendarDayDate(new Date(1990, 0, 1)));
   const [isBirthdayPickerVisible, setIsBirthdayPickerVisible] = useState(false);
   const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
-  const [bodyFat, setBodyFat] = useState<number | null>(25);
+  const [bodyFat, setBodyFat] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const units = setupData.units ?? 'metric';
@@ -198,7 +198,7 @@ export default function PersonalizedBodyStatsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={5} total={9} />
+        <QuickSetupProgressBar current={5} total={10} />
 
         <KeyboardAwareScrollView
           className="flex-1"
@@ -247,6 +247,8 @@ export default function PersonalizedBodyStatsScreen() {
                     label={t('onboarding.quickBodyStats.height')}
                     totalInches={parseFloat(height) || 67}
                     onPress={() => setIsHeightPickerVisible(true)}
+                    unset={!height}
+                    unsetPlaceholder={t('heightPicker.selectHeight')}
                   />
                 ) : (
                   <TextInput
@@ -257,6 +259,7 @@ export default function PersonalizedBodyStatsScreen() {
                       if (dotIndex !== -1 && text.length - dotIndex > 3) {
                         return;
                       }
+
                       setHeight(text);
                     }}
                     placeholder="0"

@@ -4,7 +4,8 @@ import { useRouter } from 'expo-router';
 import { ChevronRight, Copy, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Linking, ScrollView, Text, View } from 'react-native';
+import { Image, Linking, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -12,6 +13,9 @@ import { SettingsCard } from '@/components/cards/SettingsCard';
 import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ExerciseAliasesSection } from '@/components/workout/ExerciseAliasesSection';
+import { ExerciseRestrictionSection } from '@/components/workout/ExerciseRestrictionSection';
+import { ExerciseUserSettingsSection } from '@/components/workout/ExerciseUserSettingsSection';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import type ExerciseModel from '@/database/models/Exercise';
@@ -108,6 +112,7 @@ export default function ViewExerciseModal({
       setIsLoadingData(false);
       return;
     }
+
     try {
       const fetched = await ExerciseService.getExerciseById(resolvedId);
       setExercise(fetched ?? exerciseProp ?? null);
@@ -127,6 +132,7 @@ export default function ViewExerciseModal({
         setWorkouts([]);
         return;
       }
+
       try {
         const [pb, freq, overload] = await Promise.all([
           WorkoutAnalytics.getPersonalBestForExercise(ex.id),
@@ -182,6 +188,7 @@ export default function ViewExerciseModal({
       setIsLoadingData(true);
       loadExercise();
     };
+
     startLoad();
   }, [visible, resolvedId, loadExercise]);
 
@@ -193,6 +200,7 @@ export default function ViewExerciseModal({
     const runLoad = () => {
       loadStatsAndWorkouts(exercise);
     };
+
     runLoad();
   }, [exercise, exercise?.id, loadStatsAndWorkouts]);
 
@@ -276,14 +284,17 @@ export default function ViewExerciseModal({
             t('exercises.manageExerciseData.usedInTemplates', { count: templateSets.length })
           );
         }
+
         if (logSets.length > 0) {
           parts.push(t('exercises.manageExerciseData.usedInLogs', { count: logSets.length }));
         }
+
         return parts.join('. ');
       }
     } catch {
       // ignore
     }
+
     return null;
   };
 
@@ -306,6 +317,7 @@ export default function ViewExerciseModal({
       const updated = await ExerciseService.getExerciseById(exercise.id);
       setExercise(updated ?? exercise);
     }
+
     onExerciseUpdated?.();
   };
 
@@ -323,6 +335,7 @@ export default function ViewExerciseModal({
     if (!exercise?.id) {
       return;
     }
+
     try {
       await ExerciseService.duplicateExercise(exercise.id);
       showSnackbar('success', t('exercises.viewExercise.duplicateSuccess'));
@@ -337,6 +350,7 @@ export default function ViewExerciseModal({
     if (!exercise?.id) {
       return;
     }
+
     checkExerciseDependencies(exercise.id).then((warning) => {
       setDependencyWarning(warning);
       setDeleteConfirmVisible(true);
@@ -347,6 +361,7 @@ export default function ViewExerciseModal({
     if (!exercise?.id) {
       return;
     }
+
     setIsDeleting(true);
     try {
       await ExerciseService.deleteExercise(exercise.id);
@@ -468,7 +483,11 @@ export default function ViewExerciseModal({
           </Text>
         </View>
       ) : (
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+          bottomOffset={16}
+        >
           <View style={{ height: theme.size['384'], overflow: 'hidden', position: 'relative' }}>
             <Image
               source={backgroundImage}
@@ -626,6 +645,15 @@ export default function ViewExerciseModal({
             </GenericCard>
           </View>
 
+          <ExerciseAliasesSection exerciseId={exercise.id} />
+
+          <ExerciseUserSettingsSection
+            exerciseId={exercise.id}
+            isBodyweight={exercise.equipmentType === 'bodyweight'}
+          />
+
+          <ExerciseRestrictionSection exerciseId={exercise.id} />
+
           <View className="px-4 pb-2">
             <Text className="mb-4 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('exercises.viewExercise.oneRepMaxTrend')}
@@ -723,7 +751,7 @@ export default function ViewExerciseModal({
             </View>
           </View>
           <View style={{ height: theme.size['100'] }} />
-        </ScrollView>
+        </KeyboardAwareScrollView>
       )}
 
       <BottomPopUpMenu

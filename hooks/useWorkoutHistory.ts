@@ -145,7 +145,7 @@ async function processWorkoutSimple(
     duration: formatDurationForRecentWorkout(durationMinutes),
     calories: workout.caloriesBurned || 0,
     prs: prCount,
-    image: require('../assets/icon.png'), // Default image
+    image: require('../assets/musclog-icon-fallback.png'), // Default image
     imageBgColor: theme.colors.background.imageLight,
   };
 }
@@ -206,6 +206,7 @@ export function useWorkoutHistory({
       } else {
         setWorkouts([]);
       }
+
       return;
     }
 
@@ -228,6 +229,7 @@ export function useWorkoutHistory({
         } else {
           setWorkouts([]);
         }
+
         setHasMore(false);
         setIsLoading(false);
         return;
@@ -266,6 +268,7 @@ export function useWorkoutHistory({
       } else {
         setWorkouts([]);
       }
+
       setHasMore(false);
     } finally {
       setIsLoading(false);
@@ -389,6 +392,7 @@ export function useWorkoutHistory({
       const run = () => {
         void loadInitialWorkouts();
       };
+
       run();
     }
   }, [visible, workoutFilters, loadInitialWorkouts, groupByMonth]);
@@ -401,8 +405,10 @@ export function useWorkoutHistory({
         const run = () => {
           void loadInitialWorkouts();
         };
+
         run();
       }
+
       return;
     }
 
@@ -428,6 +434,7 @@ export function useWorkoutHistory({
     const runInit = () => {
       void loadInitialWorkouts();
     };
+
     runInit();
 
     return () => subscription.unsubscribe();
@@ -438,6 +445,7 @@ export function useWorkoutHistory({
     if (!groupByMonth || !searchQuery) {
       return sections;
     }
+
     return filterWorkoutsBySearch(sections, searchQuery);
   }, [groupByMonth, sections, searchQuery]);
 

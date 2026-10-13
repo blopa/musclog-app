@@ -4,6 +4,12 @@ import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { roundToDecimalPlaces } from './roundDecimal';
 import { gramsToDisplay, kgToDisplay } from './unitConversion';
 
+// Unit conversion followed by decimal storage can land microscopically below a half-step. This
+// covers both the current seven-decimal gym storage and legacy four-decimal rows (whose maximum
+// pound drift was ~0.00011) before applying the UI's one-decimal rule. The tolerance is far too
+// small to change a meaningfully different weight.
+const WEIGHT_DISPLAY_ROUNDING_TOLERANCE = 0.00012;
+
 /**
  * Weight stored in kg → display value in kg or lb, rounded to one decimal when not whole.
  * Same rules as {@link formatDisplayWeightKg}; use when the UI needs a number (e.g. set rows)
@@ -11,7 +17,7 @@ import { gramsToDisplay, kgToDisplay } from './unitConversion';
  */
 export function displayWeightKgNumeric(storedKg: number, units: Units): number {
   const d = kgToDisplay(storedKg, units);
-  return d % 1 === 0 ? d : roundToDecimalPlaces(d, 1);
+  return d % 1 === 0 ? d : roundToDecimalPlaces(d + WEIGHT_DISPLAY_ROUNDING_TOLERANCE, 1);
 }
 
 /**
@@ -25,6 +31,20 @@ export function formatDisplayWeightKg(locale: string, units: Units, kg: number):
   return rounded % 1 === 0
     ? formatAppInteger(locale, Math.round(rounded))
     : formatAppDecimal(locale, rounded, 1);
+}
+
+/**
+ * Locale-aware string for a PLATE or bar weight stored in kg. Plates come in quarter steps
+ * (1.25 kg, 2.5 lb), which the one-decimal rule of {@link formatDisplayWeightKg} rounds into a
+ * plate nobody owns ("1.3 kg"), so these keep up to two decimals.
+ */
+export function formatDisplayPlateWeightKg(locale: string, units: Units, kg: number): string {
+  const d = kgToDisplay(kg, units);
+  return formatAppDecimal(
+    locale,
+    roundToDecimalPlaces(d + WEIGHT_DISPLAY_ROUNDING_TOLERANCE, 2),
+    2
+  );
 }
 
 /**

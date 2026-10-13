@@ -45,6 +45,7 @@
     "region_chest": "Pecho",
     "region_core": "Core",
     "region_legs": "Piernas",
-    "region_shoulders": "Hombros"
+    "region_shoulders": "Hombros",
+    "notes": "Notas"
   }
 }

@@ -22,6 +22,7 @@ export function WebModalShellProvider({ children }: { children: ReactNode }) {
       setHostElement(null);
       return;
     }
+
     setHostElement(node as unknown as HTMLElement);
   }, []);
 
@@ -29,6 +30,7 @@ export function WebModalShellProvider({ children }: { children: ReactNode }) {
     if (hostElement == null) {
       return;
     }
+
     // Defensive: beat any RN inline pointer style; HTML does not support `box-none`.
     hostElement.style.setProperty('pointer-events', 'none', 'important');
     // If the flex/% height chain collapses, absolute inset can compute to 0×0 and the portal is invisible.

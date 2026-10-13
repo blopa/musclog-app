@@ -44,7 +44,13 @@
       "noWorkoutId": "Sin ID de entrenamiento",
       "unableToLoad": "No se pudo cargar",
       "feedbackReceived": "Comentarios del entrenamiento enviados con éxito.",
-      "failedToGetFeedback": "No se pudieron obtener comentarios. Por favor, inténtalo de nuevo."
+      "failedToGetFeedback": "No se pudieron obtener comentarios. Por favor, inténtalo de nuevo.",
+      "healthPrompt": {
+        "title": "¿Conectar tus datos de salud?",
+        "message": "Ahora que has terminado un entrenamiento, Musclog puede leer y escribir datos de salud como pasos, peso y entrenamientos.",
+        "confirm": "Conectar",
+        "later": "Quizás más tarde"
+      }
     },
     "muscleGroups": {
       "chest": "Pecho",

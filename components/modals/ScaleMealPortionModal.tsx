@@ -49,6 +49,7 @@ export function ScaleMealPortionModal({
     if (initialTotalGrams <= 0) {
       return null;
     }
+
     const ratio = targetGrams / initialTotalGrams;
     return {
       calories: mealNutrients.calories * ratio,
@@ -67,6 +68,7 @@ export function ScaleMealPortionModal({
         setIsSubmitting(false);
       }
     };
+
     syncOrReset();
   }, [visible, initialTotalGrams]);
 
@@ -74,6 +76,7 @@ export function ScaleMealPortionModal({
     if (isBusy || targetGrams < 1) {
       return;
     }
+
     setIsSubmitting(true);
     await flushLoadingPaint();
     try {

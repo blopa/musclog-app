@@ -6,6 +6,8 @@ import {
   calculateBMR,
   calculateBMRKatchMcArdle,
   calculateMacros,
+  MIN_FAT_CALORIE_SHARE,
+  proteinReferenceWeightKg,
   calculateNutritionPlan,
   calculateTargetCalories,
   calculateTDEE,
@@ -1655,9 +1657,9 @@ describe('calculateMacros', () => {
     expect(result.protein).toBe(Math.round(64 * 2.0));
   });
 
-  it('falls back to pct-based when body fat is invalid', () => {
+  it('ignores an invalid body fat and uses the bodyweight protein target', () => {
     const withInvalidBF = calculateMacros(2000, 'weight_loss', { weightKg: 80, bodyFatPercent: 3 });
-    const withoutBF = calculateMacros(2000, 'weight_loss');
+    const withoutBF = calculateMacros(2000, 'weight_loss', { weightKg: 80 });
     expect(withInvalidBF.protein).toBe(withoutBF.protein);
   });
 });
@@ -3365,5 +3367,106 @@ describe('calculateTDEE for male 180cm 85kg 39yo', () => {
     const tdeeKatchMcArdle = calculateTDEE({ bmr: bmrKatchMcArdle, activityLevel: 2 });
     // Expected TDEE (moderate): 1802 * 1.55 = 2793.1 -> 2793
     expect(tdeeKatchMcArdle).toBe(2478);
+  });
+});
+
+it('averages intake over coverage days and tissue energy over elapsed weight days', () => {
+  const anchors = { initialWeight: 83, finalWeight: 80.86, weightChangeDays: 30 };
+  const sparse = calculateTDEE({ ...anchors, totalCalories: 14000, totalDays: 7 });
+  const complete = calculateTDEE({ ...anchors, totalCalories: 60000, totalDays: 30 });
+  expect(sparse).toBe(complete);
+  expect(sparse).toBeLessThan(
+    calculateTDEE({ ...anchors, weightChangeDays: 7, totalCalories: 14000, totalDays: 7 })
+  );
+});
+
+describe('protein without body fat is anchored on bodyweight, not on calories', () => {
+  it('does not drop protein when calories drop', () => {
+    const maintenance = calculateMacros(2500, 'general', { weightKg: 79, heightCm: 180 });
+    const cut = calculateMacros(1500, 'general', { weightKg: 79, heightCm: 180 });
+    expect(cut.protein).toBe(maintenance.protein);
+    // 1.6 g/kg × 79 kg. The old percentage split gave 25% of 1500 kcal = 94 g.
+    expect(cut.protein).toBe(126);
+  });
+
+  it('raises protein to 2.0 g/kg in a deficit whatever the fitness goal', () => {
+    expect(calculateMacros(1800, 'general', { weightKg: 80, weightGoal: 'lose' }).protein).toBe(
+      160
+    );
+    expect(calculateMacros(2600, 'hypertrophy', { weightKg: 80 }).protein).toBe(144);
+    expect(calculateMacros(2600, 'endurance', { weightKg: 80 }).protein).toBe(112);
+  });
+
+  it('anchors on the goal weight when one is set', () => {
+    expect(
+      calculateMacros(2000, 'weight_loss', { weightKg: 100, heightCm: 175, goalWeightKg: 80 })
+        .protein
+    ).toBe(160);
+  });
+
+  it('caps a heavy user at a BMI-30 reference weight for their height', () => {
+    // 30 × 1.80² = 97.2 kg, so 140 kg asks for 194 g rather than 280 g.
+    expect(proteinReferenceWeightKg(140, { heightCm: 180 })).toBeCloseTo(97.2, 5);
+    expect(calculateMacros(2600, 'weight_loss', { weightKg: 140, heightCm: 180 }).protein).toBe(
+      194
+    );
+    // A user below the reference keeps their own weight.
+    expect(proteinReferenceWeightKg(60, { heightCm: 180 })).toBe(60);
+  });
+
+  it('does not cut a muscular lifter down to a BMI-25 weight', () => {
+    // 100 kg at 180 cm is BMI 30.9 but not overweight in any useful sense; capping at BMI 25 (81 kg)
+    // would have asked for 146 g instead of the 1.8 g/kg × 97 kg = 175 g the guidance implies.
+    expect(proteinReferenceWeightKg(95, { heightCm: 180 })).toBe(95);
+    expect(calculateMacros(3000, 'hypertrophy', { weightKg: 95, heightCm: 180 }).protein).toBe(171);
+  });
+
+  it('never returns macros that add up to more than the calorie target', () => {
+    // 200 kg × 2.0 g/kg = 400 g = 1600 kcal against a 1500 kcal target.
+    const split = calculateMacros(1500, 'weight_loss', { weightKg: 200, goalWeightKg: 200 });
+
+    expect(split.proteinLimited).toBe(true);
+    expect(split.protein * 4 + split.carbs * 4 + split.fats * 9).toBeLessThanOrEqual(1500 + 12);
+    expect(split.protein).toBe(Math.floor((1500 * 0.75) / 4));
+    expect(split.carbs + split.fats).toBeGreaterThan(0);
+    expect(split.proteinPct + split.carbsPct + split.fatsPct).toBe(100);
+  });
+
+  it('reserves a fat floor when protein takes most of a small budget', () => {
+    // 140 kg aiming for 135 kg at 1500 kcal: protein alone is ~72% of calories, which used to
+    // leave 20 g of fat (12%).
+    const split = calculateMacros(1500, 'weight_loss', {
+      weightKg: 140,
+      goalWeightKg: 135,
+      weightGoal: 'lose',
+    });
+
+    expect(split.fats * 9).toBeGreaterThanOrEqual(1500 * MIN_FAT_CALORIE_SHARE - 5);
+    expect(split.protein * 4 + split.carbs * 4 + split.fats * 9).toBeLessThanOrEqual(1500 + 12);
+  });
+
+  it('leaves an ordinary target untouched and unflagged', () => {
+    // 53% of calories as protein is high but feasible, and is exactly what a small deficit needs.
+    const split = calculateMacros(1200, 'weight_loss', { weightKg: 80, weightGoal: 'lose' });
+
+    expect(split.protein).toBe(160);
+    expect(split.proteinLimited).toBeUndefined();
+  });
+
+  it('still uses the FFM target when body fat is opted into', () => {
+    expect(calculateMacros(2000, 'weight_loss', { weightKg: 80, bodyFatPercent: 20 }).protein).toBe(
+      Math.round(80 * 0.8 * 2.7)
+    );
+  });
+
+  it('keeps the percentage split only when no weight is known at all', () => {
+    expect(calculateMacros(2000, 'general').protein).toBe(125);
+  });
+
+  it('the macro shares always add up to 100', () => {
+    for (const calories of [1200, 1517, 2333, 3001]) {
+      const split = calculateMacros(calories, 'strength', { weightKg: 77, heightCm: 171 });
+      expect(split.proteinPct + split.carbsPct + split.fatsPct).toBe(100);
+    }
   });
 });

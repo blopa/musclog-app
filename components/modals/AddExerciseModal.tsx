@@ -5,7 +5,6 @@ import {
   PlusCircle,
   Repeat2,
   Search,
-  TriangleAlert,
   User,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -19,8 +18,15 @@ import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
+import { describeExerciseRow } from '@/components/workout/describeExerciseRow';
+import {
+  ProgressionRuleRow,
+  ProgressionRuleSheet,
+} from '@/components/workout/ProgressionRuleEditor';
 import { type EquipmentType, type MechanicType, type MuscleGroup } from '@/database/models';
+import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { type AddExerciseData } from '@/hooks/useWorkoutForm';
@@ -29,6 +35,8 @@ import {
   getMuscleGroupTranslationKey,
 } from '@/utils/exerciseTranslation';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
+import type { ProgressionRule } from '@/utils/progressionRules';
+import { displayToKg } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -59,9 +67,11 @@ const normalizeMuscleGroup = (muscleGroup: MuscleGroup | string): MuscleGroupFil
   if (normalized.includes('chest')) {
     return 'chest';
   }
+
   if (normalized.includes('back') || normalized.includes('lat')) {
     return 'back';
   }
+
   if (
     normalized.includes('leg') ||
     normalized.includes('quad') ||
@@ -71,6 +81,7 @@ const normalizeMuscleGroup = (muscleGroup: MuscleGroup | string): MuscleGroupFil
   ) {
     return 'legs';
   }
+
   if (
     normalized.includes('arm') ||
     normalized.includes('bicep') ||
@@ -80,6 +91,7 @@ const normalizeMuscleGroup = (muscleGroup: MuscleGroup | string): MuscleGroupFil
   ) {
     return 'arms';
   }
+
   return null;
 };
 
@@ -94,12 +106,15 @@ const getExerciseType = (
   if (equipment.includes('bodyweight') || equipment.includes('body weight')) {
     return 'bodyweight' as EquipmentType;
   }
+
   if (mechanic.includes('compound')) {
     return 'compound' as MechanicType;
   }
+
   if (equipment.includes('machine')) {
     return 'machine' as EquipmentType;
   }
+
   return 'isolation' as MechanicType;
 };
 
@@ -108,6 +123,7 @@ const getExerciseIcon = (type: string) => {
   if (type === 'bodyweight') {
     return User;
   }
+
   return Dumbbell;
 };
 
@@ -115,6 +131,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { units } = useSettings();
+  const { unitsFor } = useExerciseUserSettings();
   const decimalSeparator = useMemo(
     () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),
     [i18n.resolvedLanguage, i18n.language]
@@ -136,6 +153,8 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [setType, setSetType] = useState<SetType>('normal');
   const [isSetTypePickerVisible, setIsSetTypePickerVisible] = useState(false);
   const [notes, setNotes] = useState('');
+  const [progression, setProgression] = useState<ProgressionRule | null>(null);
+  const [isRuleSheetVisible, setIsRuleSheetVisible] = useState(false);
 
   const {
     exercises: allExercises,
@@ -150,6 +169,13 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     initialLimit: 20,
     batchSize: 20,
   });
+
+  // Exercises the user avoids stay selectable — adding one is a deliberate act — but are marked.
+  const { active: restrictions } = useExerciseRestrictions();
+  const restrictionKindById = useMemo(
+    () => new Map(restrictions.map((restriction) => [restriction.exerciseId, restriction.kind])),
+    [restrictions]
+  );
 
   // Group exercises by muscle group
   const exercises = useMemo(() => {
@@ -179,7 +205,11 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       const exerciseOption: ExerciseOption = {
         id: exercise.id,
         label: exercise.name ?? '',
-        description: `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
+        description: describeExerciseRow(
+          `${t(muscleGroupI18nKey)} • ${t(exerciseTypeI18nKey)}`,
+          restrictionKindById.get(exercise.id),
+          t
+        ),
         icon: Icon,
         iconBgColor:
           exerciseType === 'bodyweight'
@@ -205,6 +235,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     theme.colors.accent.primary10,
     theme.colors.background.ink5,
     theme.colors.text.secondary,
+    restrictionKindById,
     t,
   ]);
 
@@ -228,6 +259,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         setSetType('normal');
         setIsSetTypePickerVisible(false);
         setNotes('');
+        setProgression(null);
       };
 
       reset();
@@ -301,6 +333,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     if (!selectedExerciseId) {
       return null;
     }
+
     const allExercises = Object.values(exercises).flat();
     return allExercises.find((ex) => ex.id === selectedExerciseId) || null;
   }, [selectedExerciseId, exercises]);
@@ -448,6 +481,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     if (!selectedExerciseId) {
       return;
     }
+
     onAddExercise?.({
       exerciseId: selectedExerciseId,
       sets: parseInt(sets, 10),
@@ -457,6 +491,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       restTimeAfter: parseInt(restTime, 10) || 60,
       setType,
       notes: notes.trim() || undefined,
+      progression,
     });
     onClose();
   };
@@ -680,6 +715,21 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           title={t('workouts.addExercise.setType.label')}
           items={setTypeMenuItems}
         />
+
+        {/* How this exercise's numbers move from session to session */}
+        <View className="mt-6">
+          <ProgressionRuleRow value={progression} onPress={() => setIsRuleSheetVisible(true)} />
+        </View>
+        {isRuleSheetVisible ? (
+          <ProgressionRuleSheet
+            exerciseName={selectedExercise?.label}
+            value={progression}
+            onChange={setProgression}
+            units={unitsFor(selectedExerciseId ?? undefined)}
+            plannedWeightKg={displayToKg(parseWeightString(weight), units)}
+            onClose={() => setIsRuleSheetVisible(false)}
+          />
+        ) : null}
 
         {/* Notes Section */}
         <View className="mt-6">

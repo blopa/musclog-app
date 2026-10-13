@@ -90,6 +90,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
                   </View>
                 </View>
                 <Switch
+                  accessibilityLabel={it.label}
                   disabled={it.disabled}
                   value={it.value}
                   onValueChange={it.onValueChange}

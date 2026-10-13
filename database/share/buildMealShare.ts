@@ -44,6 +44,7 @@ async function relatedPortion(mealFood: MealFood): Promise<FoodPortion | undefin
   if (!mealFood.portionId) {
     return undefined;
   }
+
   try {
     const portion = await mealFood.portion;
     return isActive(portion) ? portion : undefined;
@@ -60,6 +61,7 @@ export async function buildMealShareEnvelope(
   if (!mealData) {
     throw new Error('Meal not found');
   }
+
   const { meal } = mealData;
 
   // Every read below is independent per ingredient, so they run together rather than one
@@ -80,10 +82,12 @@ export async function buildMealShareEnvelope(
     if (!food) {
       continue;
     }
+
     foods.set(food.id, food);
     if (portion) {
       portions.set(portion.id, portion);
     }
+
     mealFoods.push({ food, model, portion });
   }
 
@@ -156,6 +160,7 @@ export async function buildMealShareEnvelope(
     if (model.portionId && !portion) {
       delete row.portion_id;
     }
+
     return row;
   });
 

@@ -56,6 +56,7 @@ export function BarcodeCameraModal({
         setIsBarcodeTextSearchModalVisible(false);
         setBarcodeTextSearchValue('');
       };
+
       reset();
       isSearchingBarcodeRef.current = false;
     }

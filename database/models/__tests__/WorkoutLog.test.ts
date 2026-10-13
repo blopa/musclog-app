@@ -110,6 +110,98 @@ describe('WorkoutLog completion', () => {
     );
   });
 
+  it('leaves warm-ups out of the volume: they are performed, but not working sets', async () => {
+    const working = {
+      logExerciseId: 'log-exercise-1',
+      completionStatus: 'performed',
+      setType: 'normal',
+      weight: 100,
+      reps: 5,
+      repsInReserve: 2,
+    };
+    const warmup = { ...working, setType: 'warmup', weight: 40, reps: 8 };
+    const log: any = Object.assign(Object.create(WorkoutLog.prototype), {
+      logExercises: {
+        fetch: jest
+          .fn()
+          .mockResolvedValue([{ id: 'log-exercise-1', exerciseId: 'exercise-1', deletedAt: null }]),
+      },
+      collections: {
+        get: jest.fn().mockReturnValue({
+          query: jest.fn().mockReturnValue({
+            fetch: jest.fn().mockResolvedValue([{ id: 'exercise-1', equipmentType: 'barbell' }]),
+          }),
+        }),
+      },
+      getAllSets: jest.fn().mockResolvedValue([warmup, working]),
+    });
+    mockCalculateWorkoutVolume.mockReturnValue(1);
+
+    await log.calculateVolume(75);
+
+    expect(mockCalculateWorkoutVolume).toHaveBeenCalledWith(
+      [
+        {
+          exercise: { equipmentType: 'barbell' },
+          sets: [{ weight: 100, reps: 5, repsInReserve: 2 }],
+        },
+      ],
+      75
+    );
+  });
+
+  describe('updateSet and the start adjustment', () => {
+    const logWithSet = (set: any) => {
+      const log: any = Object.assign(Object.create(WorkoutLog.prototype), {
+        completedAt: null,
+        collections: { get: jest.fn().mockReturnValue({ find: jest.fn().mockResolvedValue(set) }) },
+      });
+      // `updateSet` also stamps the workout log itself.
+      log.update = jest.fn(async (updater: (draft: any) => void) => updater(log));
+      return log;
+    };
+    const set = () => {
+      const row: any = {
+        weight: 65,
+        reps: 8,
+        restTimeAfter: 60,
+        adjustmentJson: '{"cause":"progression"}',
+      };
+      row.update = jest.fn(async (updater: (draft: any) => void) => updater(row));
+      return row;
+    };
+
+    it("clears the app's explanation when the user changes the weight or the reps", async () => {
+      const edited = set();
+      await logWithSet(edited).updateSet('s1', { weight: 70 });
+      expect(edited).toMatchObject({ weight: 70, adjustmentJson: undefined });
+
+      const reps = set();
+      await logWithSet(reps).updateSet('s1', { reps: 10 });
+      expect(reps).toMatchObject({ reps: 10, adjustmentJson: undefined });
+    });
+
+    it('clears it when the set is performed, because the numbers are then what the user did', async () => {
+      const performed = set();
+      await logWithSet(performed).updateSet('s1', {
+        weight: 65,
+        reps: 8,
+        completionStatus: 'performed',
+      });
+      expect(performed.adjustmentJson).toBeUndefined();
+    });
+
+    it('keeps it for a change that does not touch the numbers', async () => {
+      const rest = set();
+      await logWithSet(rest).updateSet('s1', { restTimeAfter: 90 });
+      expect(rest).toMatchObject({ restTimeAfter: 90, adjustmentJson: '{"cause":"progression"}' });
+
+      const skipped = set();
+      await logWithSet(skipped).updateSet('s1', { completionStatus: 'skipped' });
+      expect(skipped.adjustmentJson).toBe('{"cause":"progression"}');
+    });
+  });
+
   it('preserves the plan and marks every unsubmitted set skipped when finishing early', async () => {
     const performedExercise = updatable({ id: 'performed-exercise', deletedAt: null });
     const untouchedExercise = updatable({ id: 'untouched-exercise', deletedAt: null });
@@ -177,5 +269,42 @@ describe('WorkoutLog completion', () => {
     expect(log.completedAt).toBe(999);
     expect(log.totalVolume).toBe(456);
     expect(batch).toHaveBeenCalledWith(leftoverSetInPerformedExercise, untouchedSet, log);
+  });
+});
+
+describe('WorkoutLog.updateFeedback and the session note', () => {
+  const newLog = (fields: Record<string, unknown> = {}): any => {
+    const log: any = Object.assign(Object.create(WorkoutLog.prototype), fields);
+    log.update = jest.fn((callback) => {
+      callback(log);
+      return Promise.resolve();
+    });
+    return log;
+  };
+
+  it('stores a trimmed note alongside the ratings', async () => {
+    const log = newLog();
+
+    await log.updateFeedback({ exhaustionLevel: 6, workoutScore: 7, notes: '  felt strong  ' });
+
+    expect(log).toMatchObject({ exhaustionLevel: 6, workoutScore: 7, notes: 'felt strong' });
+  });
+
+  it('leaves an existing note alone when feedback carries no note (undefined)', async () => {
+    const log = newLog({ notes: 'keep' });
+
+    await log.updateFeedback({ workoutScore: 8 });
+
+    expect(log.notes).toBe('keep');
+  });
+
+  it('clears the note when it is blank or null', async () => {
+    const blank = newLog({ notes: 'old' });
+    await blank.updateFeedback({ notes: '   ' });
+    expect(blank.notes).toBeUndefined();
+
+    const cleared = newLog({ notes: 'old' });
+    await cleared.updateFeedback({ notes: null });
+    expect(cleared.notes).toBeUndefined();
   });
 });

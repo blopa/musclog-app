@@ -290,7 +290,9 @@
         "toggle": "Musclog Gratis Niveau LLM gebruiken",
         "toggleSubtitle": "Gebruik AI-functies zonder API-sleutel. Onderworpen aan een dagelijkse limiet.",
         "activeNote": "Gratis niveau is actief. Je eigen API-sleutels worden niet gebruikt."
-      }
+      },
+      "testKey": "Sleutel testen",
+      "testingKey": "Testen…"
     },
     "visualSettings": {
       "title": "Interface",
@@ -459,6 +461,22 @@
           "description": "Diepviolette oppervlakken met oranje accenten"
         }
       }
+    },
+    "workoutSettings": {
+      "title": "Trainingsinstellingen",
+      "subtitle": "Sportscholen, platen en oefeningen om te vermijden"
+    },
+    "helpAndFeedback": {
+      "title": "Hulp en feedback",
+      "subtitle": "Meld een bug, stel een functie voor of neem contact op",
+      "reportBug": "Een bug melden",
+      "requestFeature": "Een functie voorstellen",
+      "githubHint": "Opent GitHub (account nodig). Versie en apparaat zijn alvast ingevuld.",
+      "community": "Word lid van de community",
+      "communityHint": "Chat met andere Musclog-gebruikers",
+      "email": "Mail de support",
+      "emailHint": "Geen account nodig. Versie en apparaat worden aan het bericht toegevoegd.",
+      "openFailed": "Die link kon niet worden geopend."
     }
   }
 }

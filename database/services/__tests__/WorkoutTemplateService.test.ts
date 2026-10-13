@@ -1,8 +1,11 @@
 import { database } from '@/database/database-instance';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
+import { GymService } from '@/database/services/GymService';
+import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
+import { kgToDisplay } from '@/utils/unitConversion';
 import {
   ExerciseInWorkout,
   SaveTemplateData,
@@ -21,6 +24,7 @@ import {
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     where: jest.fn((field: string, condition: any) => ({ field, condition })),
+    on: jest.fn((table: string, conditions: any) => ({ table, conditions })),
     eq: jest.fn((value: any) => value),
     notEq: jest.fn((value: any) => value),
     oneOf: jest.fn((values: any[]) => values),
@@ -1335,7 +1339,7 @@ describe('WorkoutTemplateService', () => {
 
       jest.spyOn(UserService, 'getCurrentUser').mockResolvedValue(null);
       jest.spyOn(UserMetricService, 'getLatest').mockResolvedValue(null);
-      jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockResolvedValue(40);
+      jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockReturnValue(40);
 
       const createdTemplate = createMockWorkoutTemplate({ id: 'created-template' });
       const createdPlan = {
@@ -1487,6 +1491,57 @@ describe('WorkoutTemplateService', () => {
         expect.objectContaining({ templateId: 'copy', dayOfWeek: 'Friday' }),
       ]);
       expect(mockDatabase.get).not.toHaveBeenCalledWith('workout_plan_templates');
+    });
+  });
+
+  describe('getArchivedTemplatesWithMetadata', () => {
+    it('counts exercises and finds the latest completion with one query per table', async () => {
+      const day = 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const rowsByTable: Record<string, any[]> = {
+        workout_template_exercises: [
+          createMockWorkoutTemplateExercise({ id: 'te-1', templateId: 't1' }),
+          createMockWorkoutTemplateExercise({ id: 'te-2', templateId: 't1' }),
+          createMockWorkoutTemplateExercise({ id: 'te-3', templateId: 't2' }),
+        ],
+        workout_logs: [
+          createMockWorkoutLog({ id: 'l1', templateId: 't1', completedAt: now - 5 * day }),
+          createMockWorkoutLog({ id: 'l2', templateId: 't1', completedAt: now - 2 * day }),
+          createMockWorkoutLog({ id: 'l3', templateId: 't1', completedAt: undefined }),
+        ],
+      };
+      const queried: string[] = [];
+      mockDatabase.get.mockImplementation(((table: string) => ({
+        query: jest.fn(() => {
+          queried.push(table);
+          return { fetch: jest.fn().mockResolvedValue(rowsByTable[table] ?? []) };
+        }),
+      })) as any);
+      (mockWorkoutTemplateRepository as any).getArchived = jest.fn().mockReturnValue({
+        fetch: jest
+          .fn()
+          .mockResolvedValue([
+            createMockWorkoutTemplate({ id: 't1', name: 'One' }),
+            createMockWorkoutTemplate({ id: 't2', name: 'Two' }),
+          ]),
+      });
+
+      const result = await WorkoutTemplateService.getArchivedTemplatesWithMetadata();
+
+      expect(queried.sort()).toEqual(['workout_logs', 'workout_template_exercises']);
+      expect(result).toMatchObject([
+        { id: 't1', exerciseCount: 2, lastCompletedTimestamp: now - 2 * day },
+        { id: 't2', exerciseCount: 1, lastCompleted: undefined, lastCompletedTimestamp: undefined },
+      ]);
+    });
+
+    it('returns an empty list without querying when nothing is archived', async () => {
+      (mockWorkoutTemplateRepository as any).getArchived = jest
+        .fn()
+        .mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) });
+
+      await expect(WorkoutTemplateService.getArchivedTemplatesWithMetadata()).resolves.toEqual([]);
+      expect(mockDatabase.get).not.toHaveBeenCalled();
     });
   });
 
@@ -2645,5 +2700,180 @@ describe('WorkoutTemplateService', () => {
       expect(mockWorkoutTemplateRepository.getActive).toHaveBeenCalled();
       expect(result).toHaveLength(1);
     });
+  });
+});
+
+describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
+  const barbell = createMockExercise({
+    id: 'bench',
+    equipmentType: 'barbell',
+    mechanicType: 'compound',
+    loadMultiplier: 1,
+  });
+  const dumbbell = createMockExercise({
+    id: 'curl',
+    equipmentType: 'dumbbell',
+    mechanicType: 'isolation',
+    loadMultiplier: 0.3,
+  });
+
+  /** Last session: `weight` kg for 8 reps at the given average reps in reserve. */
+  function lastSession(exercise: any, weight: number, repsInReserve: number) {
+    installTables({
+      exercises: { find: jest.fn().mockResolvedValue(exercise) },
+      workout_log_exercises: [{ id: 'le-1' }],
+      workout_log_sets: [
+        { logExerciseId: 'le-1', weight, reps: 8, repsInReserve, completionStatus: 'performed' },
+      ],
+    });
+  }
+
+  const commercialGym = {
+    id: 'g',
+    name: 'Gym',
+    barWeightKg: 20,
+    plates: [
+      { weightKg: 20, count: 20 },
+      { weightKg: 10, count: 20 },
+      { weightKg: 5, count: 20 },
+      { weightKg: 2.5, count: 20 },
+      { weightKg: 1.25, count: 20 },
+    ],
+    weightIncrementKg: 2,
+    equipment: ['barbell', 'dumbbell'],
+  } as any;
+
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    mockDatabase.get.mockReset();
+    jest.spyOn(SettingsService, 'getProgressionMode').mockResolvedValue('weight_first');
+    jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('suggest');
+    jest.spyOn(SettingsService, 'getUnits').mockResolvedValue('metric');
+  });
+
+  it('keeps the 2.5 kg step and lands on a plate-loadable weight without a gym', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(null);
+    lastSession(barbell, 100, 4);
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    expect(suggestion).toEqual({ weightKg: 102.5, reps: 8 }); // a 2.5 kg multiple, not 103
+  });
+
+  it('steps a barbell by its smallest plate pair and lands on a loadable weight', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(commercialGym);
+    lastSession(barbell, 100, 4);
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    expect(suggestion.weightKg).toBe(102.5); // 2 × 1.25 kg, not rounded away
+  });
+
+  it('uses a coarser step when the gym only has bigger plates', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue({
+      ...commercialGym,
+      plates: [
+        { weightKg: 5, count: 20 },
+        { weightKg: 2.5, count: 20 },
+      ],
+    });
+    lastSession(barbell, 100, 4);
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    expect(suggestion.weightKg).toBe(105); // 2 × 2.5 kg
+  });
+
+  it('steps a dumbbell by the gym increment', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(commercialGym);
+    lastSession(dumbbell, 20, 4);
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('curl');
+
+    expect(suggestion.weightKg).toBe(22);
+  });
+
+  it('holds the load after one session with nothing left in reserve', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(commercialGym);
+    lastSession(barbell, 100, 0);
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    expect(suggestion.weightKg).toBe(100);
+  });
+
+  it('deloads by 10% after two sessions in a row with nothing in reserve', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(commercialGym);
+    const failed = (logExerciseId: string) => ({
+      logExerciseId,
+      weight: 100,
+      reps: 8,
+      repsInReserve: 0,
+      completionStatus: 'performed',
+    });
+    installTables({
+      exercises: { find: jest.fn().mockResolvedValue(barbell) },
+      workout_log_exercises: [{ id: 'le-1' }, { id: 'le-2' }],
+      workout_log_sets: [failed('le-1'), failed('le-2')],
+    });
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    expect(suggestion.weightKg).toBe(90); // 100 − 10%, not a token 2.5 kg
+  });
+
+  it('rounds to whole POUNDS for an exercise pinned to lbs on a metric account', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(null);
+    installTables({
+      exercises: { find: jest.fn().mockResolvedValue(barbell) },
+      exercise_user_settings: [{ exerciseId: 'bench', weightUnit: 'lbs' }],
+      workout_log_exercises: [{ id: 'le-1' }],
+      workout_log_sets: [
+        {
+          logExerciseId: 'le-1',
+          weight: 100,
+          reps: 8,
+          repsInReserve: 4,
+          completionStatus: 'performed',
+        },
+      ],
+    });
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    // 100 kg + a 5 lb step is 225.46 lb → 225 lb, not the 103 kg (227.08 lb) a metric
+    // rounding would show this lifter.
+    expect(kgToDisplay(suggestion.weightKg, 'imperial')).toBeCloseTo(225, 6);
+  });
+
+  it('holds unrated effort instead of treating placeholder zero as failure', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(null);
+    installTables({
+      exercises: { find: jest.fn().mockResolvedValue(barbell) },
+      workout_log_exercises: [{ id: 'le-1' }],
+      workout_log_sets: [
+        {
+          logExerciseId: 'le-1',
+          weight: 100,
+          reps: 8,
+          repsInReserve: 0,
+          rirRecorded: false,
+          completionStatus: 'performed',
+        },
+      ],
+    });
+    expect(await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench')).toEqual({
+      weightKg: 100,
+      reps: 8,
+    });
+  });
+
+  it('still suggests something when the gym cannot be read', async () => {
+    jest.spyOn(GymService, 'getActiveGym').mockRejectedValue(new Error('db unavailable'));
+    lastSession(barbell, 100, 4);
+
+    const suggestion = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise('bench');
+
+    expect(suggestion.weightKg).toBe(102.5);
   });
 });

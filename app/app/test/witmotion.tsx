@@ -733,6 +733,7 @@ export default function WitMotionTestScreen() {
     const run = () => {
       void refreshStoredDebugFiles();
     };
+
     run();
   }, [refreshStoredDebugFiles]);
 
@@ -829,6 +830,7 @@ export default function WitMotionTestScreen() {
     } finally {
       setIsSavingDebugData(false);
     }
+
     recordingStartedAtRef.current = null;
     recordedMotionRef.current = [];
   }, [refreshStoredDebugFiles]);
@@ -924,6 +926,7 @@ export default function WitMotionTestScreen() {
       ? `${pipelineResult.predictedReps} reps · ${pipelineResult.candidateSegments} candidates · ${recordedSampleCount} samples`
       : 'Recording finished';
   }
+
   const repCount = pipelineResult?.predictedReps ?? 0;
 
   return (

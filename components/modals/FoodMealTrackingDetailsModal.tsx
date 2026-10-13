@@ -245,6 +245,7 @@ export function FoodMealTrackingDetailsModal({
       const show = () => {
         setIsFoodDetailsModalVisible(true);
       };
+
       show();
     }
   }, [productFromSearch, isFoodDetailsModalVisible, meal, food, foodLog]);
@@ -307,6 +308,7 @@ export function FoodMealTrackingDetailsModal({
         setLocalCanEdit(canEdit);
       }
     };
+
     sync();
   }, [canEdit, alwaysAllowFoodEditing, mode]);
 
@@ -316,6 +318,7 @@ export function FoodMealTrackingDetailsModal({
       const sync = () => {
         setSelectedDate(localCalendarDayDate(new Date(initialDate)));
       };
+
       sync();
     }
   }, [visible, initialDate, foodLog]);
@@ -326,6 +329,7 @@ export function FoodMealTrackingDetailsModal({
       const sync = () => {
         setServingSize(initialServingSize);
       };
+
       sync();
     }
   }, [visible, initialServingSize, foodLog]);
@@ -341,6 +345,7 @@ export function FoodMealTrackingDetailsModal({
     const syncTime = () => {
       setSelectedTime(new Date());
     };
+
     syncTime();
   }, [selectedDate, isTimePristine]);
 
@@ -352,6 +357,7 @@ export function FoodMealTrackingDetailsModal({
       setLocalFood(null);
       setMatchedPortion(null); // Reset matched portion
     };
+
     resetBarcodeState();
 
     const checkLocalFood = async () => {
@@ -368,6 +374,7 @@ export function FoodMealTrackingDetailsModal({
       } else {
         setLocalFood(null);
       }
+
       setHasCheckedLocalFood(true);
     };
 
@@ -552,9 +559,11 @@ export function FoodMealTrackingDetailsModal({
         } else if (isSuccessStatus(productDetails?.status)) {
           setIsFoodDetailsModalVisible(true);
         }
+
         onBarcodeLookupComplete?.();
       }
     };
+
     resolveVisibility();
   }, [
     productDetails,
@@ -576,6 +585,7 @@ export function FoodMealTrackingDetailsModal({
         setTotalMealGrams(0);
         setMealAmountGrams(0);
       };
+
       reset();
       return;
     }
@@ -625,6 +635,7 @@ export function FoodMealTrackingDetailsModal({
               fat: roundToDecimalPlaces(nutrients.fat),
             });
           }
+
           setMealIngredientLabels(ingredientLabels);
           // Use prepared weight as the portion reference when the user set it,
           // otherwise fall back to the raw ingredient sum.
@@ -660,6 +671,7 @@ export function FoodMealTrackingDetailsModal({
       const clear = () => {
         setFoodLogDecrypted(null);
       };
+
       clear();
       return;
     }
@@ -667,6 +679,7 @@ export function FoodMealTrackingDetailsModal({
     const showModal = () => {
       setIsFoodDetailsModalVisible(true);
     };
+
     showModal();
 
     const setMeal = () => {
@@ -676,6 +689,7 @@ export function FoodMealTrackingDetailsModal({
         setSelectedMeal('lunch');
       }
     };
+
     setMeal();
 
     const setDate = () => {
@@ -685,6 +699,7 @@ export function FoodMealTrackingDetailsModal({
         setSelectedDate(localCalendarDayDate(new Date()));
       }
     };
+
     setDate();
 
     const setTime = () => {
@@ -696,10 +711,12 @@ export function FoodMealTrackingDetailsModal({
         setSelectedTime(new Date());
       }
     };
+
     setTime();
     const markTimePristine = () => {
       setIsTimePristine(false);
     };
+
     markTimePristine();
 
     let cancelled = false;
@@ -1143,6 +1160,7 @@ export function FoodMealTrackingDetailsModal({
 
         return brand || category || '';
       }
+
       const brand = productFromSearch.brands;
       const categories = productFromSearch.categories;
       if (brand && categories) {
@@ -1613,6 +1631,7 @@ export function FoodMealTrackingDetailsModal({
         setSelectedTime(new Date());
         setIsTimePristine(true);
       };
+
       reset();
     }
   }, [visible, canEdit, resetEditForm, resetAlternateSource]);

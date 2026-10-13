@@ -32,7 +32,7 @@ collects.
 
 - Coaching modes: **Coached**, **Collaborative**, and **Manual**, so users understand whether the
   app or the user owns target changes.
-- Explained weekly target updates based on the existing check-in and dynamic-target logic.
+- Extend Weekly Review with richer expenditure visualization and longitudinal decision comparisons.
 - Rate-of-change goals expressed as percentage of body weight per week, with a projected date and
   warnings for aggressive choices.
 - Planned maintenance phases, diet breaks, calorie cycling, and weekly calorie budgets.
@@ -50,7 +50,9 @@ collects.
 - Local corrections for inaccurate provider data, with optional upstream submission where the
   Musclog API supports it.
 - Multi-photo AI analysis with an optional context note and a recoverable draft.
-- Editable AI nutrition results before save, including macros, micros, serving, meal type, and time.
+- Editable AI nutrition results before save, including macros, micros, and serving. (Meal type, date, time and portion are already editable.)
+- An opt-in setting to save the photo of an AI-scanned meal to the device gallery automatically after it is logged. Today a photo can be saved or shared by hand from the full-screen viewer through the share sheet; automatic saving needs `expo-media-library` configured write-only (`savePhotosPermission`, no read permission — diff the committed `android/` manifest and `ios/` Info.plist after prebuild, since the plugin adds READ_MEDIA_* by default) and `utils/galleryImagePickerArchitecture.test.ts` kept green.
+- A community server link: `DISCORD_INVITE_URL` in `constants/projectLinks.json` is null, so the website's Discord card and the app's "Join the community" menu item stay hidden until an invite exists.
 - Persistent notes on logs plus explicit AI reprocessing that preserves the log's identity and date.
 - A non-blocking “what if?” preview showing how a proposed meal changes today's totals.
 - iOS Share Extension and Android share target for routing images into the existing analysis flow.
@@ -65,21 +67,24 @@ collects.
 
 ### High-value session improvements
 
-- Extend the between-set explanation to the rest of the session: a look-ahead nudge before the
-  set is logged, and the same treatment for the values `WorkoutTemplateService` picks when a
-  template is instantiated.
+- A look-ahead nudge before a set is logged, in the same one-sentence style as the between-sets and
+  start-of-workout explanations.
 - Name the records in the post-workout summary. `detectPersonalRecords` already returns each PR
   with its exercise and previous value, but the celebration screen shows only a count and any
   1RM-goal progress the PRs happen to touch.
-- An opt-out for the automatic rest-timer start. Completing a set already routes straight to a
-  running rest timer; only the setting is missing.
-- Contextual exercise substitutions based on equipment, muscle group, session, and history.
-- A plate calculator, followed later by named gym profiles with bars, plates, machines, and minimum
-  increments.
-- Smart, removable warm-up sets that are excluded from working-set volume.
+- Ask about the user's equipment during onboarding and offer a one-tap gym profile from it, so the
+  plate calculator and equipment-aware suggestions work before anyone opens Workout Settings.
+- Per-gym machine stacks (different increments per machine) on top of the gym-wide increment.
+- Typo-tolerant (edit-distance) exercise search. Today's search is exact-substring over normalized,
+  stemmed words plus abbreviations and aliases; add edit distance only if real queries show it is
+  still missing exercises.
 
 ### Readiness and programming
 
+- An **adaptive** autonomy level: today the app only suggests (and explains) where a workout starts;
+  adaptive would also update the plan's own prescriptions within bounds the user sets.
+- Extend explicit progression rules to pyramids and drop sets; top-set back-offs already ship. Automatic progression rewrites only
+  blocks of straight sets, because one number from last time cannot say how to move each of them.
 - An explained **push hard / normal / back off** readiness verdict combining sleep, recent training
   load, and mood. A numeric score should be secondary to the reasons.
 - User-approved volume reduction when readiness is low, with a one-tap restore path.
@@ -92,7 +97,9 @@ collects.
 ### Exercise goals v2
 
 The schema reserves `steps_per_day`, `distance_per_session`, `pace`, and `duration`, but the UI
-currently disables them. Implement them only with matching service logic, unit conversion,
+currently disables them. Distance and duration of a logged walk/run are now stored on
+`workout_logs` (`distance_m`, `activity`), so the data these goals need exists; what is missing is
+the goal logic and UI. Implement them only with matching service logic, unit conversion,
 history/progress calculation, localization, and tests. Keep one active consistency goal invariant
 and the existing 1RM/consistency behavior intact.
 
@@ -100,15 +107,21 @@ and the existing 1RM/consistency behavior intact.
 
 - Inline voice input for Loggy that uses the same send path as typed messages and preserves image
   attachments and armed intentions.
-- Ordered AI-provider failover with shared error classification, bounded retry, and precise
-  credential guidance. Do not fail over malformed requests as if they were transient outages.
+- Ordered AI-provider failover on top of the shared error classification, bounded retry and
+  credential guidance that now exist (`utils/aiErrors.ts`). Do not fail over malformed requests as
+  if they were transient outages, and never fail over an invalid-key error to another provider
+  silently.
 - Optional on-device food-description fallback on supported Apple hardware, clearly gated by
   runtime availability and language.
 - Siri/App Intents for log food, calories today, and log weight, using the same validation and sync
   paths as the app.
 - Spotlight indexing for user-owned foods, meals, exercises, and templates, with one privacy toggle
   that also purges the index.
-- Read-only Apple Watch snapshots and complications before adding mutations from the watch.
+- Watch companion, in two steps: first a read-only snapshot (a watchOS target over WatchConnectivity
+  and a Wear OS tile showing today's workout, the current set and the rest timer), then writes from
+  the watch once a conflict policy exists (see RESEARCH.md, "Watch companion").
+- Notes per set, and editing a finished workout's note from its detail view (today the workout note
+  is written when finishing, and exercise notes in the session).
 - iOS widget parity and more focused widgets backed by versioned snapshots rather than direct
   database access.
 - Health-backed reinstall recovery once stable cross-source deduplication identifiers exist.

@@ -8,6 +8,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { RestOverNextExercise } from '@/components/RestOverNextExercise';
 import { RestOverStatusIcon } from '@/components/RestOverStatusIcon';
 import { RestOverTitle } from '@/components/RestOverTitle';
@@ -44,6 +45,7 @@ export default function RestOverScreen() {
 
   const [pulseAnim] = useState(() => new Animated.Value(0.3));
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
+  const [isWorkoutSettingsVisible, setIsWorkoutSettingsVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [workoutLog, setWorkoutLog] = useState<WorkoutLog | null>(null);
@@ -93,6 +95,7 @@ export default function RestOverScreen() {
         if (log.deletedAt) {
           throw new Error(t('restOver.workoutDeleted'));
         }
+
         setWorkoutLog(log);
 
         // Load next set
@@ -252,9 +255,17 @@ export default function RestOverScreen() {
             setIsOptionsModalVisible(false);
             setIsWorkoutOverviewModalVisible(true);
           }}
-          // TODO: uncomment once we have workout settings
-          // onWorkoutSettings={() => router.navigate('/workout-settings')}
+          onWorkoutSettings={() => {
+            setIsOptionsModalVisible(false);
+            setIsWorkoutSettingsVisible(true);
+          }}
           onEndWorkout={handleEndWorkout}
+        />
+      ) : null}
+      {isWorkoutSettingsVisible ? (
+        <WorkoutSettingsModal
+          visible={isWorkoutSettingsVisible}
+          onClose={() => setIsWorkoutSettingsVisible(false)}
         />
       ) : null}
 
@@ -268,7 +279,7 @@ export default function RestOverScreen() {
               try {
                 await WorkoutService.completeWorkout(workoutLogId);
                 router.replace(
-                  `/app/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
+                  `/app/workout/workout-summary?workoutLogId=${workoutLogId}&showSessionFeedback=1`
                 );
               } catch (err) {
                 handleError(err, 'rest-over.onFinishAndSave');
@@ -302,10 +313,10 @@ export default function RestOverScreen() {
             setIsWorkoutOverviewModalVisible(false);
             router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
           }}
-          onSelectExercise={(exerciseId) => {
+          onSelectExercise={(logExerciseId) => {
             setIsWorkoutOverviewModalVisible(false);
             router.replace(
-              `/app/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`
+              `/app/workout/workout-session?workoutLogId=${workoutLogId}&logExerciseId=${logExerciseId}`
             );
           }}
           onCancelWorkout={() => {
@@ -318,7 +329,7 @@ export default function RestOverScreen() {
               try {
                 await WorkoutService.completeWorkout(workoutLogId);
                 router.replace(
-                  `/app/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
+                  `/app/workout/workout-summary?workoutLogId=${workoutLogId}&showSessionFeedback=1`
                 );
               } catch (err) {
                 handleError(err, 'rest-over.onFinishWorkout');

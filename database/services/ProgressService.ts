@@ -33,7 +33,7 @@ import { prepareProgressWeightHistory } from '@/utils/progressWeightHistory';
 import { TREND_WEIGHT_WARMUP_DAYS } from '@/utils/trendWeight';
 import { cmToDisplay, kgToDisplay, storedWeightToKg } from '@/utils/unitConversion';
 import { calculateExerciseVolume } from '@/utils/workoutCalculator';
-import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isWorkingSet } from '@/utils/workoutSetCompletion';
 
 import { type MenstrualPhase, MenstrualService } from './MenstrualService';
 import { NutritionGoalService } from './NutritionGoalService';
@@ -554,6 +554,7 @@ export class ProgressService {
       if (fatPoints.length === 0) {
         break;
       }
+
       const closestFat = fatPoints.reduce((prev, curr) =>
         Math.abs(curr.date - wp.date) < Math.abs(prev.date - wp.date) ? curr : prev
       );
@@ -587,6 +588,7 @@ export class ProgressService {
     if (logs.length === 0) {
       return [];
     }
+
     const muscleGroupSets = new Map<string, number>();
 
     const logIds = logs.map((l) => l.id);
@@ -613,7 +615,7 @@ export class ProgressService {
       .fetch();
 
     const setCountsByLogEx = new Map<string, number>();
-    for (const s of allSets.filter(isPerformedWorkoutSet)) {
+    for (const s of allSets.filter(isWorkingSet)) {
       const count = setCountsByLogEx.get(s.logExerciseId) || 0;
       setCountsByLogEx.set(s.logExerciseId, count + 1);
     }
@@ -639,6 +641,7 @@ export class ProgressService {
     if (points.length === 0) {
       return [];
     }
+
     const weeksMap = new Map<number, number[]>();
 
     // Use Sunday-to-Saturday weeks or just 7-day windows?
@@ -664,6 +667,7 @@ export class ProgressService {
     if (daily.length === 0) {
       return [];
     }
+
     const weeksMap = new Map<number, DailyNutrition[]>();
     const firstDate = daily[0].date;
 
@@ -705,6 +709,7 @@ export class ProgressService {
     if (points.length === 0) {
       return [];
     }
+
     const weeksMap = new Map<number, number>();
     const firstDate = points[0].date;
 
@@ -802,6 +807,7 @@ export class ProgressService {
     const empiricalTdee = calculateTDEE({
       totalCalories: empiricalCalories,
       totalDays: empiricalTdeeDays,
+      weightChangeDays: empiricalDays,
       initialWeight,
       finalWeight,
       initialFatPercentage: initialFat,
@@ -1179,7 +1185,7 @@ export class ProgressService {
         : [];
 
     const setsByLogExId = new Map<string, WorkoutLogSet[]>();
-    for (const s of allSets.filter(isPerformedWorkoutSet)) {
+    for (const s of allSets.filter(isWorkingSet)) {
       const existing = setsByLogExId.get(s.logExerciseId) || [];
       existing.push(s);
       setsByLogExId.set(s.logExerciseId, existing);
@@ -1221,6 +1227,7 @@ export class ProgressService {
         );
         muscleGroupVolume[muscleGroup] = (muscleGroupVolume[muscleGroup] || 0) + volume;
       }
+
       groupedMuscleVol.set(start, muscleGroupVolume);
     }
 
@@ -1249,6 +1256,7 @@ export class ProgressService {
       existing.count += 1;
       grouped.set(start, existing);
     }
+
     return Array.from(grouped.entries())
       .map(([date, data]) => ({ date, mood: data.sum / data.count }))
       .sort((a, b) => a.date - b.date);

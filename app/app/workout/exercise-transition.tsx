@@ -79,6 +79,7 @@ export default function NewExerciseTransitionScreen() {
         if (log.deletedAt) {
           throw new Error('Workout has been deleted');
         }
+
         setWorkoutLog(log);
 
         if (params.completedExerciseId) {
@@ -235,6 +236,7 @@ export default function NewExerciseTransitionScreen() {
     if (params.workoutLogId) {
       router.replace(`/app/workout/workout-session?workoutLogId=${params.workoutLogId}`);
     }
+
     return null;
   }
 

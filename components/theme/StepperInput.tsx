@@ -73,6 +73,7 @@ export const StepperInput: FC<StepperInputProps> = ({
       const sync = () => {
         setInputValue(formatValue(value));
       };
+
       sync();
     }
   }, [value, editing, formatValue]);
@@ -106,10 +107,12 @@ export const StepperInput: FC<StepperInputProps> = ({
       if (sanitized === '') {
         return;
       }
+
       const num = parseInt(sanitized, 10);
       if (!Number.isNaN(num) && onChangeValue) {
         onChangeValue(num);
       }
+
       return;
     }
 
@@ -122,6 +125,7 @@ export const StepperInput: FC<StepperInputProps> = ({
     if (sanitized === '' || sanitized === '-') {
       return;
     }
+
     const num = parseLocalizedDecimalString(sanitized, decimalSeparator, maxFractionDigits);
     if (onChangeValue) {
       onChangeValue(num);
@@ -137,8 +141,10 @@ export const StepperInput: FC<StepperInputProps> = ({
       } else {
         setInputValue(formatValue(value));
       }
+
       return;
     }
+
     const num = parseLocalizedDecimalString(inputValue, decimalSeparator, maxFractionDigits);
     if (inputValue.trim() !== '' && inputValue.trim() !== '-' && onChangeValue) {
       onChangeValue(num);
@@ -177,6 +183,7 @@ export const StepperInput: FC<StepperInputProps> = ({
                 return formatValue(num - step);
               });
             }
+
             onDecrement();
           }}
           accessibilityLabel={t('common.decreaseValue')}
@@ -263,6 +270,7 @@ export const StepperInput: FC<StepperInputProps> = ({
                 return formatValue(num + step);
               });
             }
+
             onIncrement();
           }}
           accessibilityLabel={t('common.increaseValue')}

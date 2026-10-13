@@ -15,6 +15,10 @@ export interface CompletedWorkoutPayload {
   workoutType?: string;
   units?: Units;
   segmentItems?: SegmentItem[];
+  /** A quick walk/run log: which activity it was, so it maps to WALKING/RUNNING and not generic cardio. */
+  activity?: 'walk' | 'run';
+  /** Distance covered, in metres. Written as its own record where the platform needs one. */
+  distanceM?: number;
 }
 
 export async function writeWorkoutToHealthConnect(

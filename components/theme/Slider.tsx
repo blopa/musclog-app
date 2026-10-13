@@ -43,6 +43,7 @@ export function Slider({
       const sync = () => {
         setDisplayValue(value);
       };
+
       sync();
     }
   }, [displayValue, value]);

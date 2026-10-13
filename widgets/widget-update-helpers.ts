@@ -4,7 +4,7 @@ import { requestWidgetUpdate } from 'react-native-android-widget';
 
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
-import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
+import { NutritionTargetService } from '@/database/services/NutritionTargetService';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import { NutritionWidget } from './NutritionWidget';
@@ -23,7 +23,7 @@ export async function requestNutritionWidgetUpdate(): Promise<void> {
         NutritionGoalService.getGoalForDate(today),
       ]);
 
-      const macros = goal ? ((await resolveDailyMacros(goal, today)) ?? goal) : null;
+      const macros = goal ? ((await NutritionTargetService.resolve(goal, today)) ?? goal) : null;
 
       return NutritionWidget({
         calories: nutrients.calories,

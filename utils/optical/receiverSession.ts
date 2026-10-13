@@ -87,6 +87,7 @@ export class OpticalReceiver {
     if (this.container !== null) {
       return 'ignored';
     }
+
     if (text === this.lastText) {
       this.textDups++;
       this.state.framesDup = this.textDups + (this.decoder?.framesDup ?? 0);
@@ -146,6 +147,7 @@ export class OpticalReceiver {
       if (!assembled || fnv1a(assembled) !== header.payloadFnv) {
         return 'checksum-failed';
       }
+
       this.container = assembled;
       return 'complete';
     }

@@ -22,6 +22,7 @@ import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
 import {
   effectiveUseMusclogGateway,
   isMusclogGatewayAvailable,
@@ -31,6 +32,12 @@ import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
 import { HistoryPickerField } from './aiHistorySettings';
 import { FullScreenModal } from './FullScreenModal';
+
+const AI_KEY_TEST_MESSAGE_KEYS = {
+  ok: 'errors.aiKeyTestOk',
+  rejected: 'errors.aiKeyTestRejected',
+  network: 'errors.aiKeyTestNetwork',
+} as const satisfies Record<AiKeyTestResult, string>;
 
 type AIIntegrationCardProps = {
   sectionTitle: string;
@@ -51,6 +58,8 @@ type AIIntegrationCardProps = {
   apiKeyPlaceholder: string;
   apiKeyHelper?: string;
   onSaveApiKey: () => void;
+  /** Checks the key as typed against the provider. Omitted for providers with nothing to check. */
+  onTestKey?: () => Promise<AiKeyTestResult>;
   hasUnsavedChanges?: boolean;
   modelLabel: string;
   modelValue: string;
@@ -70,6 +79,7 @@ function AIIntegrationCard({
   apiKeyPlaceholder,
   apiKeyHelper,
   onSaveApiKey,
+  onTestKey,
   hasUnsavedChanges,
   modelLabel,
   modelValue,
@@ -79,6 +89,16 @@ function AIIntegrationCard({
 }: AIIntegrationCardProps & { extraInputs?: ReactNode }) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const [testResult, setTestResult] = useState<AiKeyTestResult | 'testing' | null>(null);
+
+  const handleTestKey = async () => {
+    if (!onTestKey) {
+      return;
+    }
+
+    setTestResult('testing');
+    setTestResult(await onTestKey());
+  };
 
   return (
     <View>
@@ -159,6 +179,36 @@ function AIIntegrationCard({
                 variant={hasUnsavedChanges ? 'accent' : 'outline'}
               />
             </View>
+            {onTestKey ? (
+              <View className="mb-2 gap-2">
+                <Button
+                  label={
+                    testResult === 'testing'
+                      ? t('settings.aiSettings.testingKey')
+                      : t('settings.aiSettings.testKey')
+                  }
+                  onPress={handleTestKey}
+                  disabled={testResult === 'testing' || !apiKeyValue.trim()}
+                  size="sm"
+                  width="full"
+                  variant="outline"
+                />
+                {testResult && testResult !== 'testing' ? (
+                  <Text
+                    className="text-xs font-medium"
+                    style={{
+                      color:
+                        testResult === 'ok'
+                          ? theme.colors.status.success
+                          : theme.colors.status.error,
+                    }}
+                    testID="ai-key-test-result"
+                  >
+                    {t(AI_KEY_TEST_MESSAGE_KEYS[testResult])}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null}
           </View>
 
           {/* Model Selector */}
@@ -274,6 +324,7 @@ export function AISettingsModal({
     if (Platform.OS !== 'ios') {
       return;
     }
+
     try {
       const capable = await isOnDeviceAiCapable();
       setIsOnDeviceCapable(capable);
@@ -281,6 +332,7 @@ export function AISettingsModal({
         setIsOnDeviceReady(false);
         return;
       }
+
       const ready = await isOnDeviceAiAvailable();
       setIsOnDeviceReady(ready);
     } catch {
@@ -293,9 +345,11 @@ export function AISettingsModal({
     if (!visible || Platform.OS !== 'ios') {
       return;
     }
+
     const reload = () => {
       void reloadOnDeviceAiState();
     };
+
     reload();
   }, [visible, reloadOnDeviceAiState]);
 
@@ -305,6 +359,7 @@ export function AISettingsModal({
       const flush = () => {
         flushAllPendingChanges();
       };
+
       flush();
     }
   }, [visible, flushAllPendingChanges]);
@@ -348,6 +403,7 @@ export function AISettingsModal({
       setLocalStateLlmModel(localLlmModel);
       setLocalStateLlmBaseUrl(localLlmBaseUrl);
     };
+
     sync();
   }, [googleGeminiApiKey, openAiApiKey, localLlmApiKey, localLlmModel, localLlmBaseUrl]);
 
@@ -532,6 +588,7 @@ export function AISettingsModal({
               apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
               apiKeyHelper={t('settings.aiSettings.apiKeyHelper')}
               onSaveApiKey={handleSaveGeminiApiKey}
+              onTestKey={() => testApiKey('gemini', localGeminiApiKey)}
               hasUnsavedChanges={hasGeminiKeyChanges}
               modelLabel={t('settings.aiSettings.geminiModel')}
               modelValue={geminiModel}
@@ -560,6 +617,7 @@ export function AISettingsModal({
               onApiKeyChange={setLocalOpenAiApiKey}
               apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
               onSaveApiKey={handleSaveOpenAiApiKey}
+              onTestKey={() => testApiKey('openai', localOpenAiApiKey)}
               hasUnsavedChanges={hasOpenAiKeyChanges}
               modelLabel={t('settings.aiSettings.openAiModel')}
               modelValue={openAiModel}

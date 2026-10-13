@@ -22,6 +22,7 @@ import {
   MUTED,
 } from '@/components/website/websiteColors';
 import { FaqPageJsonLd, type FaqPageJsonLdItem } from '@/components/website/WebsiteStructuredData';
+import { SUPPORT_MAILTO_URL } from '@/constants/misc';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -419,7 +420,7 @@ export default function Faq() {
             <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {t('footer.text')}{' '}
               <a
-                href="mailto:support@musclog.app"
+                href={SUPPORT_MAILTO_URL}
                 className="font-medium hover:underline"
                 style={{ color: BRAND_GREEN_BRIGHT }}
               >

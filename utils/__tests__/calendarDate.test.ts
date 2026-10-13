@@ -13,6 +13,7 @@ import {
   isSameLocalCalendarDay,
   localCalendarDayDate,
   localCalendarDayDateFromDayKeyMs,
+  localCalendarDayFromParam,
   localCalendarDayPlusDays,
   localCalendarWeekIndexSince,
   localDayClosedRangeMaxMs,
@@ -199,6 +200,24 @@ describe('fasting-day timezone round-trip', () => {
     for (const hour of [0, 6, 12, 20, 23]) {
       const stamp = consumedDateTimeOnDay(selected, new Date(2026, 6, 8, hour, 30, 0));
       expect(utcNormalizedDayKey(stamp.timestamp, stamp.timezone)).toBe(expected);
+    }
+  });
+});
+
+describe('localCalendarDayFromParam', () => {
+  it('opens on the requested local calendar day', () => {
+    const day = localCalendarDayFromParam('2026-03-08');
+    expect(formatLocalCalendarDayIso(day)).toBe('2026-03-08');
+    expect(day.getHours()).toBe(0);
+    expect(formatLocalCalendarDayIso(localCalendarDayFromParam(['2026-03-09', 'x']))).toBe(
+      '2026-03-09'
+    );
+  });
+
+  it('falls back to today for a missing or malformed parameter, never an Invalid Date', () => {
+    const today = formatLocalCalendarDayIso(new Date());
+    for (const param of [undefined, '', 'yesterday', '2026-02-30', '2026-13-01', '26-03-08']) {
+      expect(formatLocalCalendarDayIso(localCalendarDayFromParam(param))).toBe(today);
     }
   });
 });

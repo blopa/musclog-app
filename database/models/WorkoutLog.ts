@@ -1,11 +1,13 @@
 import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, relation, writer } from '@nozbe/watermelondb/decorators';
 
+import { normalizeNote } from '@/utils/noteText';
+import { writeSetEffort } from '@/utils/setEffort';
 import { calculateWorkoutVolume, type ExerciseWithSets } from '@/utils/workoutCalculator';
 import {
   assertValidWorkoutSetDifficultyLevel,
-  isPerformedWorkoutSet,
   isPlannedWorkoutSet,
+  isWorkingSet,
   type WorkoutSetCompletionStatus,
 } from '@/utils/workoutSetCompletion';
 
@@ -37,6 +39,9 @@ export default class WorkoutLog extends Model {
   @field('type') type?: string;
   @field('exhaustion_level') exhaustionLevel?: number;
   @field('workout_score') workoutScore?: number;
+  @field('notes') notes?: string; // how the whole session went
+  @field('distance_m') distanceM?: number; // a logged walk/run, in metres
+  @field('activity') activity?: string; // 'walk' | 'run' for a quick cardio log
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
@@ -89,13 +94,15 @@ export default class WorkoutLog extends Model {
     const exerciseById = new Map(exercises.map((e) => [e.id, e]));
 
     // Fetch all sets in a single query (getAllSets already filters deleted)
-    const allSets = (await this.getAllSets()).filter(isPerformedWorkoutSet);
+    // Working sets only: a warm-up is real work but must not inflate the session's volume.
+    const allSets = (await this.getAllSets()).filter(isWorkingSet);
     const setsByLogExId = new Map<string, WorkoutLogSet[]>();
     for (const set of allSets) {
       const id = set.logExerciseId;
       if (!setsByLogExId.has(id)) {
         setsByLogExId.set(id, []);
       }
+
       setsByLogExId.get(id)!.push(set);
     }
 
@@ -146,28 +153,42 @@ export default class WorkoutLog extends Model {
       if (data.reps !== undefined) {
         updatedSet.reps = data.reps;
       }
+
       if (data.weight !== undefined) {
         updatedSet.weight = data.weight;
       }
+
+      // The numbers are now the user's own (an edit, or the set being performed), so the app's
+      // account of where they came from no longer applies.
+      if (data.reps !== undefined || data.weight !== undefined) {
+        updatedSet.adjustmentJson = undefined;
+      }
+
       if (data.partials !== undefined) {
         updatedSet.partials = data.partials;
       }
+
       if (data.restTimeAfter !== undefined) {
         updatedSet.restTimeAfter = data.restTimeAfter;
       }
+
       if (data.repsInReserve !== undefined) {
-        updatedSet.repsInReserve = data.repsInReserve;
+        writeSetEffort(updatedSet, data.repsInReserve);
       }
+
       if (data.difficultyLevel !== undefined) {
         assertValidWorkoutSetDifficultyLevel(data.difficultyLevel);
         updatedSet.difficultyLevel = data.difficultyLevel ?? undefined;
       }
+
       if (data.completionStatus !== undefined) {
         updatedSet.completionStatus = data.completionStatus;
       }
+
       if (data.setType !== undefined) {
         updatedSet.setType = data.setType;
       }
+
       updatedSet.updatedAt = now;
     });
 
@@ -216,7 +237,7 @@ export default class WorkoutLog extends Model {
       logSet.weight = weight;
       logSet.partials = partials ?? 0;
       logSet.restTimeAfter = 0;
-      logSet.repsInReserve = 0;
+      writeSetEffort(logSet, null);
       logSet.difficultyLevel = undefined;
       logSet.completionStatus = 'planned';
       logSet.setType = 'normal';
@@ -277,7 +298,7 @@ export default class WorkoutLog extends Model {
         logSet.weight = weight;
         logSet.partials = 0;
         logSet.restTimeAfter = 60;
-        logSet.repsInReserve = 0;
+        writeSetEffort(logSet, null);
         logSet.difficultyLevel = undefined;
         logSet.completionStatus = 'planned';
         logSet.setType = 'normal';
@@ -352,6 +373,8 @@ export default class WorkoutLog extends Model {
   async updateFeedback(feedback: {
     exhaustionLevel?: number;
     workoutScore?: number;
+    /** `undefined` leaves the note alone; blank or `null` clears it. */
+    notes?: string | null;
   }): Promise<void> {
     const now = Date.now();
     await this.update((log) => {
@@ -361,6 +384,10 @@ export default class WorkoutLog extends Model {
 
       if (feedback.workoutScore !== undefined) {
         log.workoutScore = feedback.workoutScore;
+      }
+
+      if (feedback.notes !== undefined) {
+        log.notes = normalizeNote(feedback.notes);
       }
 
       log.updatedAt = now;

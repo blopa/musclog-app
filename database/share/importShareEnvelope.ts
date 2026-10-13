@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
 import {
@@ -140,6 +141,7 @@ function batches<T>(values: T[]): T[][] {
   for (let index = 0; index < values.length; index += QUERY_VALUE_BATCH_SIZE) {
     result.push(values.slice(index, index + QUERY_VALUE_BATCH_SIZE));
   }
+
   return result;
 }
 
@@ -163,6 +165,7 @@ function indexBy<T>(items: T[], getKey: (item: T) => string | undefined): Map<st
     if (!key) {
       continue;
     }
+
     const matches = index.get(key);
     if (matches) {
       matches.push(item);
@@ -170,6 +173,7 @@ function indexBy<T>(items: T[], getKey: (item: T) => string | undefined): Map<st
       index.set(key, [item]);
     }
   }
+
   return index;
 }
 
@@ -192,6 +196,7 @@ async function resolveFoods(rows: ShareRow[]): Promise<Record<string, string>> {
     if (!sourceId) {
       continue;
     }
+
     const externalId = stringValue(row.external_id);
     const barcode = stringValue(row.barcode);
     const name = stringValue(row.name);
@@ -229,6 +234,7 @@ function portionSizeMatches(stored: null | number | undefined, incoming: unknown
   if (storedGrams === undefined || incomingGrams === undefined) {
     return storedGrams === incomingGrams;
   }
+
   return Math.abs(storedGrams - incomingGrams) <= IDENTITY_EPSILON;
 }
 
@@ -291,6 +297,7 @@ async function resolvePortions(
     if (!sourceId || !name) {
       continue;
     }
+
     // Owner scoping, not just name matching: an unowned portion may only match the receiver's
     // unowned ones, and an owned one only the portions of the food it came in with — and only when
     // that food was REUSED, since a newly created food has no existing portions to borrow. A
@@ -300,6 +307,7 @@ async function resolvePortions(
       if (!ownerType) {
         return globalsByName.get(name);
       }
+
       if (ownerType !== 'food') {
         return undefined;
       }
@@ -378,10 +386,12 @@ async function encryptShareRecords(
     if (!rows) {
       continue;
     }
+
     encrypted[table] = await Promise.all(
       rows.map(async (row) => ({ ...row, ...(await ENCRYPT_TRANSFORMS[strategy](row)) }))
     );
   }
+
   return encrypted;
 }
 
@@ -447,6 +457,7 @@ async function buildResolutions(
     if (strategy === 'create') {
       continue;
     }
+
     const rows = (records[table] ?? []).filter(
       (row) => row.deleted_at == null && row._status !== 'deleted' && typeof row.id === 'string'
     );
@@ -480,6 +491,7 @@ export async function importShareEnvelope(request: ShareImportRequest): Promise<
       resolvedAssets[assetId] = undefined;
     }
   }
+
   const writtenAssetUriSet = new Set(writtenAssetUris);
   const records = await encryptShareRecords(spec, envelope.records);
 
@@ -502,9 +514,11 @@ export async function importShareEnvelope(request: ShareImportRequest): Promise<
         ? await existingRowsOnSharedDays(replaceTable, records[replaceTable] ?? [])
         : [];
 
-      const operations = [
-        // Soft delete, stamped the way every model's own `markAsDeleted` stamps it. Prepared
-        // rather than called, because a `@writer` cannot be invoked from inside an open writer.
+      // Soft delete, stamped the way every model's own `markAsDeleted` stamps it. Prepared rather
+      // than called, because a `@writer` cannot be invoked from inside an open writer. Preparing
+      // mutates the cached records at once, so `commitPrepared` restores them if the batch rejects:
+      // otherwise the cache would keep the day's logs deleted while the database still has them.
+      await commitPrepared(database, replacing, () => [
         ...replacing.map((log) => prepareSoftDelete(log, now)),
         ...plan.creates.map(({ row, table }) =>
           // `row` contains raw schema column names and reached here through `spec.columns`. The
@@ -512,9 +526,7 @@ export async function importShareEnvelope(request: ShareImportRequest): Promise<
           // collection schema without assigning attacker-controlled properties onto a model.
           prepareLocalCreateFromRaw(database.get(table), row)
         ),
-      ];
-
-      await database.batch(...operations);
+      ]);
       const usedAssetUris = new Set<string>();
       for (const { row, table } of plan.creates) {
         for (const column of spec.assetColumns[table] ?? []) {
@@ -524,6 +536,7 @@ export async function importShareEnvelope(request: ShareImportRequest): Promise<
           }
         }
       }
+
       return {
         result: {
           kind: envelope.kind,

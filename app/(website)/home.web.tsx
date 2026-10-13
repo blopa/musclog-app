@@ -40,6 +40,7 @@ import {
 } from '@/components/website/websiteColors';
 import { SoftwareApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
+import { GITHUB_REPO_URL } from '@/constants/misc';
 import { THEME_IDS, type ThemeId } from '@/constants/settings';
 import { useThemeId } from '@/hooks/useTheme';
 import { THEME_DEFINITIONS } from '@/theme.registry';
@@ -95,7 +96,7 @@ export function CTA() {
                 {t('download')}
               </DownloadModal>
               <a
-                href="https://github.com/blopa/musclog-app"
+                href={GITHUB_REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink/40 bg-ink/5 px-4 py-3 font-semibold text-text-primary transition-colors hover:border-ink/70 hover:text-text-primary"
@@ -244,7 +245,7 @@ export function Features() {
       description: t('openSource.description'),
       link: {
         text: t('openSource.link'),
-        href: 'https://github.com/blopa/musclog-app',
+        href: GITHUB_REPO_URL,
         external: true,
       },
     },
@@ -1069,7 +1070,7 @@ export function Hero() {
 
             {/* GitHub Link */}
             <a
-              href="https://github.com/blopa/musclog-app"
+              href={GITHUB_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:text-text-primary"

@@ -106,6 +106,7 @@ const server = http.createServer((req, res) => {
 
       forwardHeaders[key] = value;
     }
+
     forwardHeaders['host'] = target.host;
 
     const options = {
@@ -149,6 +150,7 @@ const server = http.createServer((req, res) => {
             responseHeaders[key] = value;
           }
         }
+
         Object.assign(responseHeaders, getCorsHeaders(req));
 
         res.writeHead(proxyRes.statusCode, responseHeaders);
@@ -161,12 +163,14 @@ const server = http.createServer((req, res) => {
       if (!res.headersSent) {
         res.writeHead(502, { 'Content-Type': 'text/plain', ...getCorsHeaders(req) });
       }
+
       res.end(`Proxy error: ${err.message}`);
     });
 
     if (body.length > 0) {
       proxyReq.write(body);
     }
+
     proxyReq.end();
   });
 });

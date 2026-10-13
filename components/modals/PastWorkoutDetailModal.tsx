@@ -10,6 +10,7 @@ import { GenericCard } from '@/components/cards/GenericCard';
 import { LineChart, LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { CardioSummaryCard } from '@/components/workout/CardioSummaryCard';
 import { WorkoutMusclesDetails } from '@/components/WorkoutMusclesDetails';
 import type { Units } from '@/constants/settings';
 import { database } from '@/database';
@@ -20,6 +21,7 @@ import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/
 import { useChartCapture } from '@/hooks/useChartCapture';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '@/hooks/useEditWorkoutSets';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { usePastWorkoutDetail } from '@/hooks/usePastWorkoutDetail';
@@ -27,6 +29,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { healthConnectService } from '@/services/healthConnect';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
+import { formatDistance, formatPace } from '@/utils/cardioFormat';
 import { XAxisLabel } from '@/utils/chartUtils';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
@@ -94,7 +97,7 @@ function WorkoutSummaryCard({
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
+              className="text-xs font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.totalTime')}
@@ -117,7 +120,7 @@ function WorkoutSummaryCard({
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
+              className="text-xs font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.volume')}
@@ -138,7 +141,7 @@ function WorkoutSummaryCard({
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
+              className="text-xs font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.calories')}
@@ -188,7 +191,7 @@ function VolumeTrendCard({
             className="rounded px-2 py-0.5"
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
-            <Text className="text-[10px] font-bold uppercase text-accent-primary">
+            <Text className="text-xs font-bold uppercase text-accent-primary">
               {t('workoutDetail.volumeTrendPercentage', { percentage })}
             </Text>
           </View>
@@ -217,6 +220,7 @@ type SetRowProps = {
 };
 
 function SetRow({ set }: SetRowProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const textDecorationLine = set.isSkipped ? ('line-through' as const) : ('none' as const);
   const valueColor = set.isSkipped ? theme.colors.text.tertiary : theme.colors.text.primary;
@@ -243,7 +247,7 @@ function SetRow({ set }: SetRowProps) {
               textDecorationLine,
             }}
           >
-            {set.setNumber}
+            {set.isWarmup ? 'W' : set.setNumber}
           </Text>
         </View>
       </View>
@@ -264,7 +268,7 @@ function SetRow({ set }: SetRowProps) {
       </View>
       <View className="flex-1 items-center py-3">
         <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
-          {set.repsInReserve}
+          {set.rirRecorded === false ? t('trainingFlow.unrated') : set.repsInReserve}
         </Text>
       </View>
     </View>
@@ -297,27 +301,27 @@ function SetsTable({ sets }: SetsTableProps) {
         }}
       >
         <View className="w-12 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.set')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.weight')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.reps')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.partial')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
             {t('workoutDetail.rir')}
           </Text>
         </View>
@@ -373,7 +377,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
               {exercise.name}
             </Text>
             <Text
-              className="text-[10px] font-medium text-text-tertiary"
+              className="text-xs font-medium text-text-tertiary"
               style={{ marginTop: theme.spacing.gap.xs }}
             >
               {exercise.isSkipped
@@ -459,6 +463,7 @@ export default function PastWorkoutDetailModal({
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
   const { units } = useSettings();
+  const { unitsFor } = useExerciseUserSettings();
   const { formatInteger, locale } = useFormatAppNumber();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
@@ -488,6 +493,7 @@ export default function PastWorkoutDetailModal({
   const [isSavingToHC, setIsSavingToHC] = useState(false);
 
   const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
+  const editingUnits = unitsFor(editingExerciseId ?? undefined);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isEditMetadataVisible, setIsEditMetadataVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
@@ -540,6 +546,7 @@ export default function PastWorkoutDetailModal({
         setEditingExerciseId(null);
         setIsMenuVisible(false);
       };
+
       reset();
     }
   }, [visible, setIsMenuVisible]);
@@ -700,6 +707,27 @@ export default function PastWorkoutDetailModal({
           onEdit={() => setIsEditMetadataVisible(true)}
         />
 
+        {workout.cardio ? (
+          <CardioSummaryCard
+            activity={workout.cardio.activity}
+            distance={formatDistance(locale, workout.cardio.distanceM, units)}
+            pace={formatPace(locale, workout.cardio.distanceM, workout.cardio.durationS, units)}
+          />
+        ) : null}
+
+        {workout.notes ? (
+          <View
+            className="gap-1 rounded-xl p-4"
+            style={{ backgroundColor: theme.colors.background.ink5 }}
+            testID="workout-notes"
+          >
+            <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              {t('workoutDetail.notes')}
+            </Text>
+            <Text className="text-base text-text-primary">{workout.notes}</Text>
+          </View>
+        ) : null}
+
         {Platform.OS === 'android' && !externalId ? (
           <Button
             label={t('workoutDetail.syncToHealthConnect')}
@@ -770,6 +798,7 @@ export default function PastWorkoutDetailModal({
               console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
               setMusclesModalGroups([]);
             }
+
             const sets = (rawSets ?? [])
               .filter((s) => s.exerciseId === exerciseId)
               .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
@@ -824,6 +853,7 @@ export default function PastWorkoutDetailModal({
               if (data.reorderedExercises && data.reorderedExercises.length > 0) {
                 await WorkoutService.reorderWorkoutLogExercises(workoutId, data.reorderedExercises);
               }
+
               await reload();
             } catch (err) {
               console.error('Failed to save workout metadata:', err);
@@ -863,10 +893,11 @@ export default function PastWorkoutDetailModal({
               const fields = {
                 setId: s.id,
                 reps: s.reps,
-                weight: displayToKg(s.weight, units),
+                weight: displayToKg(s.weight, editingUnits),
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
-                repsInReserve: s.repsInReserve,
+                // Null clears the rating, so an unrated set stays unrated rather than "0 in reserve".
+                repsInReserve: s.rirRecorded === false ? null : s.repsInReserve,
                 setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };
 
@@ -891,16 +922,18 @@ export default function PastWorkoutDetailModal({
           }}
           workoutId={workoutId!}
           exerciseId={editingExerciseId}
+          units={editingUnits}
           initialSets={(rawSets || [])
             .filter((s) => s.exerciseId === editingExerciseId)
             .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
             .map((s) => ({
               id: s.id,
-              weight: kgToDisplay(s.weight ?? 0, units),
+              weight: kgToDisplay(s.weight ?? 0, editingUnits),
               reps: s.reps,
               partialReps: s.partials ?? 0,
               rest: s.restTimeAfter ?? 0,
               repsInReserve: s.repsInReserve ?? 0,
+              rirRecorded: s.rirRecorded,
             }))}
         />
       ) : null}

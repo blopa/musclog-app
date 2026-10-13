@@ -386,6 +386,7 @@ export class FoodService {
         if (!existingDefaultPortion) {
           throw new Error('Expected default mass portion for custom food');
         }
+
         defaultPortion = existingDefaultPortion;
       }
 
@@ -553,39 +554,51 @@ export class FoodService {
         if (updates.name !== undefined) {
           record.name = updates.name;
         }
+
         if (updates.brand !== undefined) {
           record.brand = updates.brand;
         }
+
         if (updates.barcode !== undefined) {
           record.barcode = updates.barcode;
         }
+
         if (updates.description !== undefined) {
           record.description = updates.description;
         }
+
         if (updates.externalId !== undefined) {
           record.externalId = updates.externalId;
         }
+
         if (updates.calories !== undefined) {
           record.calories = Math.max(0, updates.calories);
         }
+
         if (updates.protein !== undefined) {
           record.protein = Math.max(0, updates.protein);
         }
+
         if (updates.carbs !== undefined) {
           record.carbs = Math.max(0, updates.carbs);
         }
+
         if (updates.fat !== undefined) {
           record.fat = Math.max(0, updates.fat);
         }
+
         if (updates.fiber !== undefined) {
           record.fiber = Math.max(0, updates.fiber);
         }
+
         if (updates.micros !== undefined) {
           record.micros = updates.micros;
         }
+
         if ('imageUrl' in updates) {
           record.imageUrl = updates.imageUrl ?? undefined;
         }
+
         record.updatedAt = Date.now();
       });
 

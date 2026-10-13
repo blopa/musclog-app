@@ -7,12 +7,18 @@ import { useTheme } from '@/hooks/useTheme';
 type Option = {
   label: string;
   value: string;
-  icon?: ReactNode;
+  /** A node, or a render function when the icon's ink must follow the selected state. */
+  icon?: ReactNode | ((selected: boolean) => ReactNode);
   /** Unread-style count pinned to the segment's top-right corner. Hidden when 0 or omitted. */
   badge?: number;
 };
 
-type SegmentedControlVariant = 'elevated' | 'outline' | 'gradient';
+/**
+ * `pill` is the compact form: a rounded-full track that hugs its options, the selected one filled
+ * with the accent. It sits inline beside other content (the workout session's view toggle) where
+ * the full-width 56pt control would dominate.
+ */
+type SegmentedControlVariant = 'elevated' | 'outline' | 'gradient' | 'pill';
 
 type TestSegmentedControlProps = {
   options: Option[];
@@ -39,12 +45,45 @@ export function SegmentedControl({
         return `${containerBase} bg-bg-cardElevated`;
       case 'outline':
         return `${containerBase} bg-transparent border border-border-light`;
+      case 'pill':
+        return 'flex-row self-start rounded-full bg-bg-overlay p-1';
       default:
         return `${containerBase} bg-bg-card`;
     }
   };
 
   const containerClass = getContainerClass(variant);
+  const renderIcon = (option: Option, isSelected: boolean) =>
+    typeof option.icon === 'function' ? option.icon(isSelected) : option.icon;
+
+  if (variant === 'pill') {
+    return (
+      <View className={containerClass} accessibilityRole="radiogroup">
+        {options.map((option) => {
+          const isSelected = value === option.value;
+          return (
+            <Pressable
+              key={option.value}
+              accessibilityRole="radio"
+              accessibilityLabel={option.label}
+              accessibilityState={{ selected: isSelected, checked: isSelected }}
+              onPress={() => onValueChange(option.value)}
+              // The track's padding brings the pill to the 44pt target.
+              hitSlop={{ top: 4, bottom: 4 }}
+              className={`min-h-9 flex-row items-center gap-1.5 rounded-full px-3 ${isSelected ? 'bg-accent-primary' : ''}`}
+            >
+              {renderIcon(option, isSelected)}
+              <Text
+                className={`text-sm font-semibold ${isSelected ? 'text-text-on-accent' : 'text-text-secondary'}`}
+              >
+                {option.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  }
 
   return (
     <View
@@ -62,6 +101,9 @@ export function SegmentedControl({
         return (
           <Pressable
             key={option.value}
+            accessibilityRole="button"
+            accessibilityLabel={option.label}
+            accessibilityState={{ selected: isSelected }}
             className={`flex-1 justify-center self-stretch ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
             style={{ borderRadius: segmentBorderRadius }}
             onPress={() => onValueChange(option.value)}
@@ -86,15 +128,15 @@ export function SegmentedControl({
                 }}
               >
                 <View className="flex-row items-center justify-center gap-1.5">
-                  {option.icon}
-                  <Text className="text-center text-xs font-bold text-text-primary">
+                  {renderIcon(option, isSelected)}
+                  <Text className="text-center text-xs font-bold text-text-on-accent">
                     {option.label}
                   </Text>
                 </View>
               </LinearGradient>
             ) : (
               <View className="flex-row items-center justify-center gap-1.5">
-                {option.icon}
+                {renderIcon(option, isSelected)}
                 <Text
                   className={`text-center ${variant === 'gradient' ? 'text-xs' : 'text-sm'} font-bold ${
                     isSelected ? 'text-text-primary' : 'text-text-tertiary'

@@ -22,6 +22,7 @@ export function useAiEnabled(): { isEnabled: boolean; isLoading: boolean } {
             setIsEnabled(true);
             setIsLoading(false);
           }
+
           return;
         }
 
@@ -32,6 +33,7 @@ export function useAiEnabled(): { isEnabled: boolean; isLoading: boolean } {
             setIsEnabled(true);
             setIsLoading(false);
           }
+
           return;
         }
 

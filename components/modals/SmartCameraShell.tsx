@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles } from 'lucide-react-native';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,6 +10,7 @@ import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicato
 import { SmartCameraBottomActions, SmartCameraTopActions } from '@/components/SmartCameraActions';
 import { SMALL_SCREEN_HEIGHT, SmartCameraFrame } from '@/components/SmartCameraFrame';
 import { SmartCameraModePicker } from '@/components/SmartCameraModePicker';
+import { Button } from '@/components/theme/Button';
 import type { CameraMode } from '@/constants/camera';
 import { ThemeScope } from '@/context/ThemeContext';
 import { useTheme } from '@/hooks/useTheme';
@@ -48,6 +49,8 @@ type SmartCameraShellProps = {
   cameraSlot: ReactNode;
   /** Shows the processing overlay when true. */
   isLoading: boolean;
+  /** When given, the processing overlay offers a Cancel button that calls it. */
+  onCancelLoading?: () => void;
   cameraMode: CameraMode;
   flashEnabled: boolean;
   onFlashToggle: () => void;
@@ -80,6 +83,7 @@ function SmartCameraShellBody({
   onRequestPermission,
   cameraSlot,
   isLoading,
+  onCancelLoading,
   cameraMode,
   flashEnabled,
   onFlashToggle,
@@ -144,11 +148,7 @@ function SmartCameraShellBody({
         <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.alwaysWhite }}>
           {t('food.aiCamera.permissionRequired')}
         </Text>
-        <Pressable onPress={onRequestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
-          <Text className="font-semibold" style={{ color: theme.colors.text.onAccent }}>
-            {t('food.aiCamera.grantPermission')}
-          </Text>
-        </Pressable>
+        <Button label={t('food.aiCamera.grantPermission')} onPress={onRequestPermission} />
       </View>
     );
   }
@@ -193,6 +193,16 @@ function SmartCameraShellBody({
             style={{ backgroundColor: theme.colors.overlay.scrim90 }}
           >
             <CameraProcessingIndicator cameraMode={cameraMode} />
+            {onCancelLoading ? (
+              <View className="absolute bottom-16 left-0 right-0 items-center">
+                <Button
+                  label={t('common.cancel')}
+                  variant="outline"
+                  onPress={onCancelLoading}
+                  testID="camera-cancel-processing"
+                />
+              </View>
+            ) : null}
           </View>
         ) : null}
 

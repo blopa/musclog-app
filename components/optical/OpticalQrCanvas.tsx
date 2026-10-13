@@ -38,6 +38,7 @@ export function OpticalQrCanvas({ raster, budgetDp }: OpticalQrCanvasProps) {
     if (!raster) {
       return null;
     }
+
     return Skia.Image.MakeImage(
       {
         alphaType: AlphaType.Opaque,

@@ -63,6 +63,7 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
       const run = () => {
         void refresh();
       };
+
       run();
       void Sharing.isAvailableAsync()
         .then(setIsSharingAvailable)
@@ -161,6 +162,7 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
           // Best-effort cleanup only.
         });
       }
+
       setIsSharingAll(false);
     }
   }, [canShareAll, files, isSharingAll, t]);

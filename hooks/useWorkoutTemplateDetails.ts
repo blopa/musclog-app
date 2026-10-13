@@ -67,6 +67,7 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
       setError(null);
       setIsLoading(true);
     };
+
     initState();
 
     const templateQuery = database
@@ -90,6 +91,7 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
         if (ids.length === 0) {
           return of([]);
         }
+
         return database
           .get<WorkoutTemplateSet>('workout_template_sets')
           .query(
@@ -106,6 +108,7 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
         if (ids.length === 0) {
           return of([]);
         }
+
         return database
           .get<Exercise>('exercises')
           .query(Q.where('id', Q.oneOf(ids)), Q.where('deleted_at', Q.eq(null)))
@@ -124,6 +127,7 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
           if (!tpl) {
             return null;
           }
+
           const enrichedSets = buildEnrichedTemplateSets(tplExs, sets);
           return {
             template: tpl,
@@ -143,6 +147,7 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
             setIsLoading(false);
             return;
           }
+
           setTemplate(payload.template);
           setTemplateExercises(payload.templateExercises);
           setTemplateSets(payload.templateSets);

@@ -1,6 +1,7 @@
 import {
   displayWeightKgNumeric,
   formatDisplayGrams,
+  formatDisplayPlateWeightKg,
   formatDisplayWeightKg,
 } from '@/utils/formatDisplayWeight';
 
@@ -21,6 +22,17 @@ describe('formatDisplayWeight', () => {
     it('converts to lb and rounds to one decimal in imperial', () => {
       // 100 kg = 220.4622... lb
       expect(displayWeightKgNumeric(100, 'imperial')).toBe(220.5);
+    });
+
+    it('stabilizes current and legacy storage drift at a half-step boundary', () => {
+      expect(displayWeightKgNumeric(3.0617485, 'imperial')).toBe(6.8);
+      expect(displayWeightKgNumeric(3.2885447, 'imperial')).toBe(7.3);
+      expect(displayWeightKgNumeric(3.0617, 'imperial')).toBe(6.8);
+      expect(displayWeightKgNumeric(3.2885, 'imperial')).toBe(7.3);
+    });
+
+    it('does not hide a meaningfully lower value behind the drift tolerance', () => {
+      expect(displayWeightKgNumeric(3.0616, 'imperial')).toBe(6.7);
     });
 
     it('keeps an exactly-whole converted value whole', () => {
@@ -81,6 +93,19 @@ describe('formatDisplayWeight', () => {
     it('rounds a fractional gram amount to one decimal', () => {
       expect(formatDisplayGrams('en-US', 'metric', 12.34)).toBe('12.3');
       expect(formatDisplayGrams('en-US', 'metric', 12.36)).toBe('12.4');
+    });
+  });
+
+  describe('formatDisplayPlateWeightKg', () => {
+    it('keeps quarter-step plates exact instead of rounding them to one decimal', () => {
+      expect(formatDisplayPlateWeightKg('en-US', 'metric', 1.25)).toBe('1.25');
+      expect(formatDisplayPlateWeightKg('de-DE', 'metric', 1.25)).toBe('1,25');
+      expect(formatDisplayPlateWeightKg('en-US', 'metric', 20)).toBe('20');
+      expect(formatDisplayPlateWeightKg('en-US', 'metric', 2.5)).toBe('2.5');
+    });
+
+    it('shows a stored 2.5 lb plate as 2.5 lb, not a conversion artefact', () => {
+      expect(formatDisplayPlateWeightKg('en-US', 'imperial', 1.1339809)).toBe('2.5');
     });
   });
 });

@@ -46,6 +46,7 @@ export function sanitizeLocalizedDecimalInput(
   if (out.startsWith(decimalSeparator)) {
     out = `0${out}`;
   }
+
   return out;
 }
 
@@ -81,9 +82,11 @@ export function parseLocalizedDecimalString(
   if (Number.isNaN(n)) {
     return 0;
   }
+
   if (negative) {
     n = -Math.abs(n);
   }
+
   return roundToDecimalPlaces(n, maxFractionDigits);
 }
 
@@ -99,6 +102,7 @@ export function sanitizeLocalizedSignedDecimalInput(
   if (raw === '') {
     return '';
   }
+
   const trimmed = raw.trim();
   const neg = trimmed.startsWith('-');
   const body = neg ? trimmed.slice(1) : trimmed;
@@ -106,9 +110,11 @@ export function sanitizeLocalizedSignedDecimalInput(
   if (!neg) {
     return sanitized;
   }
+
   if (sanitized === '') {
     return '-';
   }
+
   return `-${sanitized}`;
 }
 
