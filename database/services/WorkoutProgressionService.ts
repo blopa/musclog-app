@@ -276,8 +276,18 @@ export class WorkoutProgressionService {
                 changed += 1;
               }
             }
-            // The rule's remembered state is left alone: a week the review overrode is not a
-            // session the rule can learn from.
+            // A week the review overrode is not a session the rule can learn from, so it does not
+            // advance the remembered state — but it must hand the last session's state on, or the
+            // next normal session would fall back to the rule's initial training max.
+            const carried = histories[index][0]?.state;
+            if (rule && carried) {
+              operations.push(
+                row.prepareUpdate((record) => {
+                  record.progressionJson = serializeSessionProgression(rule, carried);
+                  record.updatedAt = now;
+                })
+              );
+            }
             continue;
           }
           const projection = projectExerciseProgression({

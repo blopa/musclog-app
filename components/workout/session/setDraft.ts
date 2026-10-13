@@ -47,6 +47,25 @@ export function draftFromPrevious(
   };
 }
 
+/**
+ * The weight a set currently shows, in kilograms: the typed draft when there is one, otherwise
+ * the saved value. Anything that reasons about "the weight on the bar" (the plate calculator)
+ * must read this, not the persisted set, or it disagrees with the form.
+ */
+export function liveWeightKg(
+  set: EnrichedWorkoutLogSet,
+  draft: Partial<SessionDraft> | undefined,
+  units: Units,
+  locale: string
+): number {
+  const typed = draft?.weight;
+  if (typed === undefined || !typed.trim()) {
+    return set.weight;
+  }
+  const parsed = parseLocalizedDecimalString(typed, getDecimalSeparator(locale));
+  return Number.isFinite(parsed) ? displayToKg(parsed, units) : set.weight;
+}
+
 /** The values a completion saves, converted back to kilograms. */
 export function valuesFromDraft(
   draft: SessionDraft,

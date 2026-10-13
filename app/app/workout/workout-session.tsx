@@ -18,6 +18,7 @@ import { PlateCalculatorSheet } from '@/components/workout/PlateCalculatorSheet'
 import { ProgressionWhySheet } from '@/components/workout/session/ProgressionWhySheet';
 import { buildSessionBlocks, guidanceStateFor } from '@/components/workout/session/sessionModel';
 import { SessionTopBar } from '@/components/workout/session/SessionTopBar';
+import { liveWeightKg } from '@/components/workout/session/setDraft';
 import { WorkoutSessionInsights } from '@/components/workout/WorkoutSessionInsights';
 import {
   type TrainingViewAction,
@@ -28,6 +29,7 @@ import { WorkoutLogExerciseService } from '@/database/services/WorkoutLogExercis
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSessionBleTracking } from '@/hooks/useSessionBleTracking';
 import {
@@ -75,6 +77,7 @@ export default function WorkoutSessionScreen() {
   const { autoStartRestTimer, defaultRestSeconds, bleGenerateChartPayload } = useSettings();
   const { gym } = useActiveGym();
   const { unitsFor, get } = useExerciseUserSettings();
+  const { locale } = useFormatAppNumber();
   const [selectedLogExerciseId, setSelectedLogExerciseId] = useState<string | undefined>(
     params.logExerciseId
   );
@@ -274,7 +277,12 @@ export default function WorkoutSessionScreen() {
           onClose={close}
           currentExerciseId={target?.exercise.id}
           onReplace={async (exercise, outcome) => {
+            const swappedLogExerciseId = target?.set.logExerciseId;
             await actions.replaceExercise(exercise, outcome);
+            // Typed numbers belong to the old movement; the replacement has its own suggestion.
+            if (swappedLogExerciseId) {
+              controller.clearValueDrafts(swappedLogExerciseId);
+            }
             selectExercise(undefined);
             close();
           }}
@@ -340,7 +348,12 @@ export default function WorkoutSessionScreen() {
         <PlateCalculatorSheet
           visible
           onClose={close}
-          targetKg={target.set.weight}
+          targetKg={liveWeightKg(
+            target.set,
+            controller.drafts[target.set.id],
+            unitsFor(target.exercise.id),
+            locale
+          )}
           gym={gym}
           units={unitsFor(target.exercise.id)}
         />

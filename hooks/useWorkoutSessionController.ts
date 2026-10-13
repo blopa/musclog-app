@@ -305,33 +305,39 @@ export function useWorkoutSessionController(
       await WorkoutSessionService.saveSet(logId!, id, 'skipped');
     });
 
+  /**
+   * Drops the typed weight and reps of one exercise's unfinished sets, keeping effort and
+   * partials. A draft overrides the saved value by set ID, so anything that rewrites those
+   * numbers on the user's behalf (undo, swap) must call this or the old typing wins.
+   */
+  const clearValueDrafts = (logExerciseId: string) => {
+    const affected = new Set(
+      sets
+        .filter((set) => set.logExerciseId === logExerciseId && set.completionStatus === 'planned')
+        .map((set) => set.id)
+    );
+    const next = { ...draftsRef.current };
+    for (const id of affected) {
+      if (!next[id]) {
+        continue;
+      }
+      const effort = { ...next[id] };
+      delete effort.weight;
+      delete effort.reps;
+      if (Object.keys(effort).length) {
+        next[id] = effort;
+      } else {
+        delete next[id];
+      }
+    }
+    commitDrafts(next);
+  };
+
   /** "Use the plan's" for one exercise: only its unfinished sets go back to the prescription. */
   const revert = (logExerciseId: string) =>
     run(async () => {
       await WorkoutProgressionService.revertStartAdjustment(logExerciseId);
-      const affected = new Set(
-        sets
-          .filter(
-            (set) => set.logExerciseId === logExerciseId && set.completionStatus === 'planned'
-          )
-          .map((set) => set.id)
-      );
-
-      const next = { ...draftsRef.current };
-      for (const id of affected) {
-        if (!next[id]) {
-          continue;
-        }
-        const effort = { ...next[id] };
-        delete effort.weight;
-        delete effort.reps;
-        if (Object.keys(effort).length) {
-          next[id] = effort;
-        } else {
-          delete next[id];
-        }
-      }
-      commitDrafts(next);
+      clearValueDrafts(logExerciseId);
     });
 
   const finish = () =>
@@ -365,6 +371,7 @@ export function useWorkoutSessionController(
     complete,
     skip,
     revert,
+    clearValueDrafts,
     finish,
     discard,
     startRest,

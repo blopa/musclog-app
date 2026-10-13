@@ -35,13 +35,13 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   const weights = page.locator('input[data-testid$="-weight"]');
   await expect(weights).toHaveCount(3);
   await weights.first().fill(comma ? '62,5' : '62.5');
-  await page.getByRole('button', { name: copy.trainingFlow.guided, exact: true }).click();
+  await page.getByRole('radio', { name: copy.trainingFlow.guided, exact: true }).click();
   await expect(page.locator('input[data-testid$="-weight"]').first()).toHaveValue(
     comma ? '62,5' : '62.5'
   );
   await page.getByRole('button', { name: copy.trainingFlow.complete, exact: true }).click();
   await expect(page.getByTestId('session-rest-timer')).toContainText(copy.trainingFlow.rest);
-  await page.getByRole('button', { name: copy.trainingFlow.inline, exact: true }).click();
+  await page.getByRole('radio', { name: copy.trainingFlow.inline, exact: true }).click();
   await expect(
     page.getByRole('button', { name: copy.trainingFlow.reopen, exact: true })
   ).toHaveCount(1);

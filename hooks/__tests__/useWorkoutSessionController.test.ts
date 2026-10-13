@@ -354,3 +354,21 @@ it('keeps the countdown when the reminder cannot be scheduled', async () => {
   expect(hook.result.current.error).toBeNull();
   hook.unmount();
 });
+
+it('clearValueDrafts drops a swapped exercise’s typed numbers without touching other blocks or calling undo', async () => {
+  const rows = [
+    { ...set, logExerciseId: 'bench', id: 'a' },
+    { ...set, logExerciseId: 'squat', id: 'b' },
+  ];
+  const hook = renderHook(() => useWorkoutSessionController('log', rows, options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  act(() => {
+    hook.result.current.edit('a', { weight: '80', reps: '9' });
+    hook.result.current.edit('b', { weight: '80', reps: '9' });
+  });
+  act(() => hook.result.current.clearValueDrafts('bench'));
+  expect(hook.result.current.drafts.a).toBeUndefined();
+  expect(hook.result.current.drafts.b.weight).toBe('80');
+  expect(WorkoutProgressionService.revertStartAdjustment).not.toHaveBeenCalled();
+  hook.unmount();
+});

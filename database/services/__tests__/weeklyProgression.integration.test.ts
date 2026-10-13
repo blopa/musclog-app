@@ -30,7 +30,11 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
-import { serializeProgressionRule, parseSessionProgressionState } from '@/utils/progressionRules';
+import {
+  serializeProgressionRule,
+  serializeSessionProgression,
+  parseSessionProgressionState,
+} from '@/utils/progressionRules';
 import { parseSetPrescription } from '@/utils/setPrescription';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { WorkoutService } from '@/database/services/WorkoutService';
@@ -488,6 +492,82 @@ it('persists an entered training max in the session independently from template 
   );
   expect(w.sets[0].weight).toBe(80);
   expect(parseSessionProgressionState(w.block.progressionJson)?.trainingMaxKg).toBe(100);
+});
+
+it('a repeat week hands the accumulated training max on instead of resetting the rule', async () => {
+  const rule = {
+    type: 'percentage' as const,
+    reps: 5,
+    percentOfTrainingMax: 80,
+    trainingMaxPercent: 90,
+    trainingMaxKg: 100,
+  };
+  const first = await workout(serializeProgressionRule(rule)!);
+  await database.write(async () => {
+    await first.block.update((r) => {
+      r.progressionJson = serializeSessionProgression(rule, { trainingMaxKg: 120 });
+    });
+    await first.log.update((r) => {
+      r.completedAt = Date.now() - 1000;
+    });
+    await database.batch(
+      ...first.sets.map((set) =>
+        set.prepareUpdate((r) => {
+          r.completionStatus = 'performed';
+          r.weight = 96;
+          r.reps = 5;
+          r.repsInReserve = 2;
+          r.rirRecorded = true;
+        })
+      )
+    );
+  });
+  const next = await database.write(async () => {
+    const log = database.get<WorkoutLog>('workout_logs').prepareCreate((r) => {
+      r.templateId = first.template.id;
+      r.workoutName = 'Upper';
+      r.startedAt = Date.now();
+      r.createdAt = Date.now();
+      r.updatedAt = Date.now();
+    });
+    const block = database.get<WorkoutLogExercise>('workout_log_exercises').prepareCreate((r) => {
+      r.workoutLogId = log.id;
+      r.exerciseId = first.ex.id;
+      r.templateExerciseId = first.te.id;
+      r.exerciseOrder = 1;
+      r.progressionJson = serializeProgressionRule(rule);
+      r.createdAt = Date.now();
+      r.updatedAt = Date.now();
+    });
+    const sets = [1, 2].map((n) =>
+      database.get<WorkoutLogSet>('workout_log_sets').prepareCreate((r) => {
+        r.logExerciseId = block.id;
+        r.setOrder = n;
+        r.weight = 60;
+        r.reps = 5;
+        r.restTimeAfter = 90;
+        r.completionStatus = 'planned';
+        r.setType = 'normal';
+        r.rirRecorded = false;
+      })
+    );
+    await database.batch(log, block, ...sets);
+    return { log, block };
+  });
+  jest.spyOn(TrainingWeekRepository, 'activeTrainingWeek').mockResolvedValue({
+    decision: 'repeat',
+    reviewId: 'review',
+    snapshot: {
+      decision: 'repeat',
+      recommended: 'progress',
+      reasons: [],
+      goals: [],
+      window: { from: Date.now() - 1000, until: Date.now() + 1_000_000 },
+    },
+  });
+  await WorkoutProgressionService.applyStartProgression(next.log.id);
+  jest.restoreAllMocks();
+  expect(parseSessionProgressionState(next.block.progressionJson)?.trainingMaxKg).toBe(120);
 });
 
 it('scopes explicit evidence to the stable exercise row in its own template', async () => {

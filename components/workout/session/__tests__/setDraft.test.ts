@@ -1,6 +1,6 @@
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 
-import { draftFromSet, stepInput, valuesFromDraft } from '../setDraft';
+import { draftFromSet, liveWeightKg, stepInput, valuesFromDraft } from '../setDraft';
 
 const set = (fields: Partial<EnrichedWorkoutLogSet> = {}) =>
   ({
@@ -66,5 +66,22 @@ describe('stepInput', () => {
 
   it('reads and writes the locale’s separator', () => {
     expect(stepInput('62,5', 1.25, 'nl-NL', 2)).toBe('63,75');
+  });
+});
+
+describe('liveWeightKg', () => {
+  it('prefers the typed draft over the saved weight, in the exercise’s unit and locale', () => {
+    expect(liveWeightKg(set({ weight: 62.5 }), { weight: '80' }, 'metric', 'en-US')).toBe(80);
+    expect(liveWeightKg(set({ weight: 62.5 }), { weight: '72,5' }, 'metric', 'nl-NL')).toBe(72.5);
+    expect(liveWeightKg(set({ weight: 62.5 }), { weight: '100' }, 'imperial', 'en-US')).toBeCloseTo(
+      45.36,
+      1
+    );
+  });
+
+  it('falls back to the saved weight without a draft or with an unparseable one', () => {
+    expect(liveWeightKg(set({ weight: 62.5 }), undefined, 'metric', 'en-US')).toBe(62.5);
+    expect(liveWeightKg(set({ weight: 62.5 }), { reps: '5' }, 'metric', 'en-US')).toBe(62.5);
+    expect(liveWeightKg(set({ weight: 62.5 }), { weight: '' }, 'metric', 'en-US')).toBe(62.5);
   });
 });
