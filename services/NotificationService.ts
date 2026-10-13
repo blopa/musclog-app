@@ -13,7 +13,7 @@ import { MenstrualService } from '@/database/services/MenstrualService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
-import { darkTheme } from '@/theme'; // TODO: figure out how to get the current theme instead
+import { getTheme } from '@/theme';
 import {
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
@@ -29,6 +29,8 @@ export class NotificationService {
     if (this.isConfigured || Platform.OS === 'web') {
       return;
     }
+
+    const theme = await getTheme();
 
     Notifications.setNotificationHandler({
       handleNotification: async (notification) => {
@@ -50,7 +52,7 @@ export class NotificationService {
         name: i18n.t('notifications.channels.default'),
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: darkTheme.colors.status.error,
+        lightColor: theme.colors.status.error,
       });
 
       await Notifications.setNotificationChannelAsync('workout-active', {
