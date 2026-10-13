@@ -332,6 +332,23 @@
     "reasonBaseline": "Estimado a partir de tu perfil, todavía no de tus registros: unas {{expenditure}} kcal al día. Sigue registrando comida y peso para personalizarlo.",
     "largeChangeTitle": "Es un cambio grande",
     "largeChangeBody": "Los cambios grandes suelen deberse a comidas sin registrar o a algunos pesajes inusuales. Revisa el registro de comidas de esta semana antes de aplicarlo.",
-    "reviewFoodLog": "Revisar registro de comidas"
+    "reviewFoodLog": "Revisar registro de comidas",
+    "welcome": {
+      "title": "Bienvenido a tu revisión semanal",
+      "subtitle": "Un breve repaso y un plan para la semana que viene.",
+      "training": "Entrenamiento: lo que hiciste la semana pasada, tus récords y lo que viene. Los objetivos de los entrenamientos se siguen actualizando solos.",
+      "nutrition": "Nutrición: tu ingesta y tu tendencia de peso frente a tus objetivos, con una recomendación para la próxima semana.",
+      "control": "Tú decides: nada cambia hasta que lo apliques. Cada {{weekday}} hay una nueva revisión.",
+      "cta": "Entendido"
+    },
+    "empty": {
+      "firstWorkout": "Tus entrenamientos aparecerán aquí, junto con tus récords.",
+      "logFirstWorkout": "Registra tu primer entrenamiento",
+      "firstMeal": "Registra tus comidas y pésate algunas veces. Tu revisión recomendará objetivos según lo que realmente pasó.",
+      "logFirstMeal": "Registra tu primera comida",
+      "noFoodThisWeek": "No has registrado comida esta semana.",
+      "currentTargets": "Tus objetivos diarios",
+      "firstReviewOn": "Tu primera revisión estará lista el {{date}}."
+    }
   }
 }

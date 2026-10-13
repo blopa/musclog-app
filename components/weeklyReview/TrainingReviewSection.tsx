@@ -23,6 +23,7 @@ import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { summarizeWeeklyRecords } from '@/utils/weeklyRecords';
+import { hasWeeklyActivity, trainingHalfState } from '@/utils/weeklyReviewEmptyState';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
 
@@ -35,7 +36,10 @@ const PR_TYPE_KEYS = {
   volume: 'weeklyReview.prTypes.volume',
 } as const;
 
-/** A review section's header: its title and whether it is done, in words as well as colour. */
+/**
+ * A review section's header: its title and whether it is done, in words as well as colour. `null`
+ * hides the badge — a week with nothing in it has nothing "to review".
+ */
 export function ReviewSectionHeader({
   title,
   icon: Icon,
@@ -43,7 +47,7 @@ export function ReviewSectionHeader({
 }: {
   title: string;
   icon: typeof Dumbbell;
-  done: boolean;
+  done: boolean | null;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -53,16 +57,20 @@ export function ReviewSectionHeader({
         <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
       </View>
       <Text className="flex-1 text-xl font-bold text-text-primary">{title}</Text>
-      <View
-        className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${done ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
-      >
-        {done ? <CheckCircle2 size={theme.iconSize.xs} color={theme.colors.text.onAccent} /> : null}
-        <Text
-          className={`text-xs font-bold ${done ? 'text-text-on-accent' : 'text-text-secondary'}`}
+      {done == null ? null : (
+        <View
+          className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${done ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
         >
-          {t(done ? 'weeklyReview.reviewed' : 'weeklyReview.toReview')}
-        </Text>
-      </View>
+          {done ? (
+            <CheckCircle2 size={theme.iconSize.xs} color={theme.colors.text.onAccent} />
+          ) : null}
+          <Text
+            className={`text-xs font-bold ${done ? 'text-text-on-accent' : 'text-text-secondary'}`}
+          >
+            {t(done ? 'weeklyReview.reviewed' : 'weeklyReview.toReview')}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -70,6 +78,10 @@ export function ReviewSectionHeader({
 /**
  * The Training half of a Weekly Review: what was done, what improved, and what comes next. Marking
  * it reviewed is an acknowledgement only — workout targets never wait for it.
+ *
+ * A week without workouts drops the summary of zeros for an empty state; a user who has never
+ * logged one is pointed at their first. The acknowledgement is offered only when the week holds
+ * something to review at all — otherwise there is nothing to acknowledge.
  */
 export function TrainingReviewSection({
   data,
@@ -77,12 +89,15 @@ export function TrainingReviewSection({
   onAcknowledge,
   onPreviewNext,
   onEditPlan,
+  onLogWorkout,
 }: {
   data: Overview;
   busy: boolean;
   onAcknowledge: () => void;
   onPreviewNext: () => void;
   onEditPlan: () => void;
+  /** Opens Workouts, where a first workout is started. */
+  onLogWorkout: () => void;
 }) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
@@ -94,6 +109,8 @@ export function TrainingReviewSection({
   const { training } = data;
   const recordRows = summarizeWeeklyRecords(training.records);
   const reviewed = !!training.reviewedAt;
+  const state = trainingHalfState(data.activity);
+  const reviewable = hasWeeklyActivity(data.activity);
   const weightUnit = t(getWeightUnitI18nKey(units));
   const weekday = (value: number) =>
     new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'short', day: 'numeric' }).format(
@@ -105,37 +122,43 @@ export function TrainingReviewSection({
       className="gap-4 rounded-2xl border border-border-light bg-bg-card p-4"
       testID="review-training"
     >
-      <ReviewSectionHeader title={t('weeklyReview.training')} icon={Dumbbell} done={reviewed} />
-
-      <StatStrip
-        items={[
-          {
-            key: 'workouts',
-            value: formatInteger(training.workouts.length),
-            label: t('weeklyReview.stats.workouts'),
-            valueColor: theme.colors.text.primary,
-          },
-          {
-            key: 'sets',
-            value: formatInteger(training.workingSets),
-            label: t('weeklyReview.stats.workingSets'),
-            valueColor: theme.colors.text.primary,
-          },
-          {
-            key: 'volume',
-            value: formatInteger(Math.round(kgToDisplay(training.volume, units))),
-            unit: weightUnit,
-            label: t('weeklyReview.stats.volume'),
-            valueColor: theme.colors.text.primary,
-          },
-        ]}
-        palette={{
-          background: theme.colors.background.card,
-          border: theme.colors.border.light,
-          label: theme.colors.text.tertiary,
-          unit: theme.colors.text.tertiary,
-        }}
+      <ReviewSectionHeader
+        title={t('weeklyReview.training')}
+        icon={Dumbbell}
+        done={reviewable ? reviewed : null}
       />
+
+      {state === 'data' ? (
+        <StatStrip
+          items={[
+            {
+              key: 'workouts',
+              value: formatInteger(training.workouts.length),
+              label: t('weeklyReview.stats.workouts'),
+              valueColor: theme.colors.text.primary,
+            },
+            {
+              key: 'sets',
+              value: formatInteger(training.workingSets),
+              label: t('weeklyReview.stats.workingSets'),
+              valueColor: theme.colors.text.primary,
+            },
+            {
+              key: 'volume',
+              value: formatInteger(Math.round(kgToDisplay(training.volume, units))),
+              unit: weightUnit,
+              label: t('weeklyReview.stats.volume'),
+              valueColor: theme.colors.text.primary,
+            },
+          ]}
+          palette={{
+            background: theme.colors.background.card,
+            border: theme.colors.border.light,
+            label: theme.colors.text.tertiary,
+            unit: theme.colors.text.tertiary,
+          }}
+        />
+      ) : null}
 
       {training.workouts.length ? (
         <View className="gap-1.5">
@@ -151,8 +174,24 @@ export function TrainingReviewSection({
           ))}
         </View>
       ) : (
-        <Text className="text-sm text-text-secondary">{t('weeklyReview.noWorkoutsThisWeek')}</Text>
+        <Text className="text-sm text-text-secondary">
+          {t(
+            state === 'first'
+              ? 'weeklyReview.empty.firstWorkout'
+              : 'weeklyReview.noWorkoutsThisWeek'
+          )}
+        </Text>
       )}
+
+      {state === 'first' ? (
+        <Button
+          label={t('weeklyReview.empty.logFirstWorkout')}
+          icon={Dumbbell}
+          variant="gradientCta"
+          width="full"
+          onPress={onLogWorkout}
+        />
+      ) : null}
 
       {recordRows.length ? (
         <View className="gap-2">
@@ -233,16 +272,22 @@ export function TrainingReviewSection({
             </>
           ) : null}
         </View>
-      ) : (
+      ) : null}
+      {/* A first-timer already has the "Log your first workout" button above. */}
+      {!training.next && state !== 'first' ? (
         <Text className="text-sm text-text-secondary">{t('weeklyReview.noWorkout')}</Text>
-      )}
+      ) : null}
 
-      <Text className="text-xs text-text-tertiary">{t('weeklyReview.trainingHint')}</Text>
-      {reviewed ? null : (
+      {reviewable ? (
+        <Text className="text-xs text-text-tertiary">{t('weeklyReview.trainingHint')}</Text>
+      ) : null}
+      {reviewed || !reviewable ? null : (
         <Button
           label={t('weeklyReview.acknowledge')}
           icon={CheckCircle2}
-          variant="gradientCta"
+          // An empty half is still acknowledged so the week can be closed, but it is not the
+          // page's main action.
+          variant={state === 'data' ? 'gradientCta' : 'outline'}
           width="full"
           onPress={onAcknowledge}
           disabled={busy}

@@ -332,6 +332,23 @@
     "reasonBaseline": "Estimated from your profile, not yet from your logs: about {{expenditure}} kcal a day. Keep logging food and weight to personalize it.",
     "largeChangeTitle": "That’s a big change",
     "largeChangeBody": "Big swings usually come from meals that weren’t logged or a few unusual weigh-ins. Check this week’s food log before applying.",
-    "reviewFoodLog": "Review food log"
+    "reviewFoodLog": "Review food log",
+    "welcome": {
+      "title": "Welcome to your Weekly Review",
+      "subtitle": "A short look back, and a plan for the week ahead.",
+      "training": "Training: what you did last week, the records you set, and what comes next. Workout targets keep updating on their own.",
+      "nutrition": "Nutrition: your intake and weight trend compared with your targets, and a recommendation for the coming week.",
+      "control": "You decide: nothing changes until you apply it. A new review is ready every {{weekday}}.",
+      "cta": "Got it"
+    },
+    "empty": {
+      "firstWorkout": "Your workouts will show up here, with any records you set.",
+      "logFirstWorkout": "Log your first workout",
+      "firstMeal": "Log your meals and weigh in a few times. Your review then recommends targets from what actually happened.",
+      "logFirstMeal": "Log your first meal",
+      "noFoodThisWeek": "No food logged this week.",
+      "currentTargets": "Your daily targets",
+      "firstReviewOn": "Your first review will be ready on {{date}}."
+    }
   }
 }

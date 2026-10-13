@@ -90,7 +90,70 @@ export type WeeklyEvidenceGaps = {
 const trainingReviewedAtFor = (reviews: readonly WeeklyReview[], periodEnd: number) =>
   reviews.find((row) => row.periodEnd === periodEnd && row.trainingReviewedAt)?.trainingReviewedAt;
 
+/**
+ * What the reviewed week holds, counted from the records themselves rather than the account's age
+ * (restores and imports rewrite that), plus whether the user has EVER logged a workout or a meal —
+ * which is what tells a first week apart from a week off.
+ */
+export type WeeklyActivity = {
+  workouts: number;
+  foodLogs: number;
+  weighIns: number;
+  everWorkout: boolean;
+  everFood: boolean;
+};
+
 export class WeeklyReviewService {
+  /** The week's activity, [start, end). One definition shared by the overview and the status badge. */
+  static async weekActivity(start: number, end: number): Promise<WeeklyActivity> {
+    const [workouts, foodLogs, weighIns, everWorkout, everFood] = await Promise.all([
+      database
+        .get('workout_logs')
+        .query(
+          Q.where('completed_at', Q.gte(start)),
+          Q.where('completed_at', Q.lt(end)),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetchCount(),
+      database
+        .get('nutrition_logs')
+        .query(
+          Q.where('date', Q.gte(start)),
+          Q.where('date', Q.lt(end)),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetchCount(),
+      database
+        .get('user_metrics')
+        .query(
+          Q.where('type', 'weight'),
+          Q.where('date', Q.gte(start)),
+          Q.where('date', Q.lt(end)),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetchCount(),
+      database
+        .get('workout_logs')
+        .query(
+          Q.where('completed_at', Q.notEq(null)),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.take(1)
+        )
+        .fetchCount(),
+      database
+        .get('nutrition_logs')
+        .query(Q.where('deleted_at', Q.eq(null)), Q.take(1))
+        .fetchCount(),
+    ]);
+    return {
+      workouts,
+      foodLogs,
+      weighIns,
+      everWorkout: everWorkout > 0,
+      everFood: everFood > 0,
+    };
+  }
+
   static history(): Promise<WeeklyReview[]> {
     return database
       .get<WeeklyReview>('weekly_reviews')
@@ -118,7 +181,7 @@ export class WeeklyReviewService {
             .catch(() => null)
         : null
       : await NutritionGoalService.getCurrent();
-    const [reviews, intuitive, workouts, upcoming] = await Promise.all([
+    const [reviews, intuitive, workouts, upcoming, activity] = await Promise.all([
       this.history(),
       SettingsService.getIntuitiveEatingMode(),
       database
@@ -130,6 +193,7 @@ export class WeeklyReviewService {
         )
         .fetch(),
       WorkoutTodayRepository.upcoming(),
+      this.weekActivity(period.start, period.end),
     ]);
     const review =
       saved ??
@@ -178,6 +242,7 @@ export class WeeklyReviewService {
       accepted,
       trendWeight,
       intuitive,
+      activity,
       training: {
         reviewedAt: trainingReviewedAtFor(reviews, period.end),
         workouts,

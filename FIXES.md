@@ -67,6 +67,27 @@ A lifter who did set 1 of 3 and skipped the rest was moved up next session; unra
 - Draft edits in the live session are written after 400 ms of quiet and flushed on backgrounding,
   completion, discard and unmount.
 
+## Weekly Review spun forever after re-opening the same history row
+
+### Symptom
+
+On a new account, marking training reviewed puts the current week in Review history. Tapping that
+row, then tapping it again, left an empty page under "Back to latest review" with a spinner that
+never stopped.
+
+### Cause
+
+The screen emptied the overview itself (`clear()` from `useWeeklyReviewOverview`) and then set the
+selected review, relying on the selection change to trigger a reload. Re-selecting the review
+already open is not a change, so nothing reloaded and `data` stayed `null`.
+
+### Rules now
+
+- `useWeeklyReviewOverview` stores each result with the selection it was loaded for and returns it
+  only while that selection is current. There is no `clear()`: switching reviews shows the spinner
+  by itself, and re-selecting the open review keeps it. A load error is scoped the same way.
+- Pinned by `hooks/__tests__/useWeeklyReviewOverview.test.ts`.
+
 ## Exercise catalogue cutover safety
 
 The 256-entry legacy catalogue was replaced with 873 free-exercise-db entries and 1,746 images.

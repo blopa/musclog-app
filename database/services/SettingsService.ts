@@ -992,6 +992,15 @@ export class SettingsService {
     await this.setBooleanSetting('notifications_weekly_review', value);
   }
 
+  /** Whether the one-time Weekly Review welcome has been dismissed. Settings ride along in backups. */
+  static async getWeeklyReviewWelcomeSeen(): Promise<boolean> {
+    return this.getBooleanSetting('weekly_review_welcome_seen', false);
+  }
+
+  static async setWeeklyReviewWelcomeSeen(value: boolean): Promise<void> {
+    await this.setBooleanSetting('weekly_review_welcome_seen', value);
+  }
+
   static async setReviewWeekday(value: number): Promise<void> {
     if (!Number.isInteger(value) || value < 0 || value > 6) {
       throw new Error('Invalid weekday');

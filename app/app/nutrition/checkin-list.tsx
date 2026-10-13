@@ -24,6 +24,7 @@ import {
   NutritionReviewSection,
 } from '@/components/weeklyReview/NutritionReviewSection';
 import { TrainingReviewSection } from '@/components/weeklyReview/TrainingReviewSection';
+import { WeeklyReviewWelcome } from '@/components/weeklyReview/WeeklyReviewWelcome';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { type NutritionTargets } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -35,6 +36,7 @@ import { NotificationService } from '@/services/NotificationService';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
+import { hasWeeklyActivity, shouldShowWeeklyReviewWelcome } from '@/utils/weeklyReviewEmptyState';
 
 /** Old check-ins shown before "Show all": the history should not bury everything above it. */
 const LEGACY_HISTORY_PREVIEW = 4;
@@ -59,10 +61,7 @@ export default function CheckinListScreen() {
   const [selectedReview, setSelectedReview] = useState<string | undefined>(params.reviewId);
   const [requestedDay, setRequestedDay] = useState(params.reviewDay);
   const [legacyId, setLegacyId] = useState<string | null>(params.checkinId ?? null);
-  const { data, legacy, loadError, reload, clear } = useWeeklyReviewOverview(
-    selectedReview,
-    requestedDay
-  );
+  const { data, legacy, loadError, reload } = useWeeklyReviewOverview(selectedReview, requestedDay);
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
   const [editor, setEditor] = useState(false);
@@ -72,8 +71,13 @@ export default function CheckinListScreen() {
   const [weightDay, setWeightDay] = useState<number | null>(null);
   const [reminder, setReminder] = useState(false);
   const [showAllHistory, setShowAllHistory] = useState(false);
+  /** `null` until read, so the welcome cannot flash for someone who already dismissed it. */
+  const [welcomeSeen, setWelcomeSeen] = useState<boolean | null>(null);
   useEffect(() => {
     SettingsService.getNotificationsWeeklyReview().then(setReminder);
+    SettingsService.getWeeklyReviewWelcomeSeen()
+      .then(setWelcomeSeen)
+      .catch(() => setWelcomeSeen(true));
   }, []);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const locale = i18n.resolvedLanguage ?? i18n.language;
@@ -194,9 +198,27 @@ export default function CheckinListScreen() {
     !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
   ];
 
+  const viewingLatest = !selectedReview && !requestedDay;
+  const reviewable = !!data && hasWeeklyActivity(data.activity);
+  const dismissWelcome = () => {
+    setWelcomeSeen(true);
+    SettingsService.setWeeklyReviewWelcomeSeen(true).catch(() => {});
+  };
+
   // One modal at a time: sibling modals break presentation on iOS (see FIXES.md).
   let modal: ReactNode = null;
-  if (goalEditor && data?.goal) {
+  if (
+    data &&
+    welcomeSeen !== null &&
+    shouldShowWeeklyReviewWelcome({ seen: welcomeSeen, activity: data.activity, viewingLatest })
+  ) {
+    modal = (
+      <WeeklyReviewWelcome
+        weekdayLabel={new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(data.period.next)}
+        onClose={dismissWelcome}
+      />
+    );
+  } else if (goalEditor && data?.goal) {
     modal = (
       <NutritionGoalsModal
         visible
@@ -309,7 +331,7 @@ export default function CheckinListScreen() {
               </>
             ) : null}
           </View>
-          {selectedReview || requestedDay ? (
+          {viewingLatest ? null : (
             <Chip
               variant="solid"
               role="button"
@@ -318,10 +340,9 @@ export default function CheckinListScreen() {
               onPress={() => {
                 setSelectedReview(undefined);
                 setRequestedDay(undefined);
-                clear();
               }}
             />
-          ) : null}
+          )}
           {!data && !loadError ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
           {error || loadError ? (
             <View className="gap-3 rounded-2xl border border-status-error bg-bg-card p-4">
@@ -333,25 +354,42 @@ export default function CheckinListScreen() {
           ) : null}
           {data ? (
             <>
-              <View className="flex-row gap-2">
-                {[t('weeklyReview.training'), t('weeklyReview.nutrition')].map((label, index) => (
-                  <View
-                    key={label}
-                    className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2 ${progressDone[index] ? 'bg-accent-primary/10' : 'bg-bg-overlay'}`}
-                  >
-                    {progressDone[index] ? (
-                      <CheckCircle2 size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-                    ) : (
-                      <Circle size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                    )}
-                    <Text
-                      className={`text-sm font-semibold ${progressDone[index] ? 'text-accent-primary' : 'text-text-secondary'}`}
+              {reviewable ? (
+                <View className="flex-row gap-2">
+                  {[t('weeklyReview.training'), t('weeklyReview.nutrition')].map((label, index) => (
+                    <View
+                      key={label}
+                      className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2 ${progressDone[index] ? 'bg-accent-primary/10' : 'bg-bg-overlay'}`}
                     >
-                      {label}
-                    </Text>
-                  </View>
-                ))}
-              </View>
+                      {progressDone[index] ? (
+                        <CheckCircle2
+                          size={theme.iconSize.sm}
+                          color={theme.colors.accent.primary}
+                        />
+                      ) : (
+                        <Circle size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                      )}
+                      <Text
+                        className={`text-sm font-semibold ${progressDone[index] ? 'text-accent-primary' : 'text-text-secondary'}`}
+                      >
+                        {label}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ) : null}
+              {!reviewable && viewingLatest && !data.reviews.length ? (
+                // Nothing logged in the reviewed week and no review yet: say when there will be.
+                <Text className="text-sm text-text-secondary" testID="review-first-date">
+                  {t('weeklyReview.empty.firstReviewOn', {
+                    date: new Intl.DateTimeFormat(locale, {
+                      weekday: 'long',
+                      month: 'short',
+                      day: 'numeric',
+                    }).format(data.period.next),
+                  })}
+                </Text>
+              ) : null}
 
               <TrainingReviewSection
                 data={data}
@@ -365,6 +403,7 @@ export default function CheckinListScreen() {
                   })
                 }
                 onEditPlan={() => setRuleEditor(true)}
+                onLogWorkout={() => router.push('/app/workout/workouts')}
               />
 
               <NutritionReviewSection
@@ -382,6 +421,7 @@ export default function CheckinListScreen() {
                     params: { date: formatLocalCalendarDayIso(new Date(day)) },
                   })
                 }
+                onLogFirstMeal={() => router.push('/app/nutrition/food')}
               />
 
               <View className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4">
@@ -416,10 +456,7 @@ export default function CheckinListScreen() {
                         end: formatDate(review.periodEnd - 1),
                       })}
                       subtitle={t(historyLabelKey(review.nutritionDecision))}
-                      onPress={() => {
-                        clear();
-                        setSelectedReview(review.id);
-                      }}
+                      onPress={() => setSelectedReview(review.id)}
                     />
                   ))}
                   {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map(

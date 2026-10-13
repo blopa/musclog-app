@@ -4,15 +4,24 @@ import { useCallback, useRef, useState } from 'react';
 import { NutritionCheckinService } from '@/database/services/NutritionCheckinService';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
 
-/** Evidence is refreshed on every return from logging, even when review status hasn't changed. */
+type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
+
+/**
+ * Evidence is refreshed on every return from logging, even when review status hasn't changed.
+ *
+ * Each result is stored with the selection it was loaded for, and `data` is only returned while that
+ * selection is still current. Switching reviews therefore shows the spinner without the caller
+ * clearing anything — and re-selecting the review already on screen keeps it. The screen used to
+ * clear the data itself and rely on the selection change to reload, so tapping the history row that
+ * was already open emptied the page and left the spinner up forever.
+ */
 export function useWeeklyReviewOverview(reviewId?: string, day?: string) {
-  const [data, setData] = useState<Awaited<ReturnType<typeof WeeklyReviewService.overview>> | null>(
-    null
-  );
+  const key = `${reviewId ?? ''}|${day ?? ''}`;
+  const [loaded, setLoaded] = useState<{ key: string; overview: Overview } | null>(null);
   const [legacy, setLegacy] = useState<
     Awaited<ReturnType<typeof NutritionCheckinService.getPastHistory>>
   >([]);
-  const [loadError, setLoadError] = useState(false);
+  const [failedKey, setFailedKey] = useState<string | null>(null);
   const request = useRef(0);
   const reload = useCallback(async () => {
     const id = ++request.current;
@@ -27,15 +36,15 @@ export function useWeeklyReviewOverview(reviewId?: string, day?: string) {
       if (request.current !== id) {
         return;
       }
-      setData(overview);
+      setLoaded({ key, overview });
       setLegacy(history);
-      setLoadError(false);
+      setFailedKey(null);
     } catch {
       if (request.current === id) {
-        setLoadError(true);
+        setFailedKey(key);
       }
     }
-  }, [reviewId, day]);
+  }, [reviewId, day, key]);
   useFocusEffect(
     useCallback(() => {
       void reload();
@@ -44,9 +53,10 @@ export function useWeeklyReviewOverview(reviewId?: string, day?: string) {
       };
     }, [reload])
   );
-  const clear = () => {
-    request.current++;
-    setData(null);
+  return {
+    data: loaded?.key === key ? loaded.overview : null,
+    legacy,
+    loadError: failedKey === key,
+    reload,
   };
-  return { data, legacy, loadError, reload, clear };
 }

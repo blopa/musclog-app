@@ -6,6 +6,7 @@ import {
   Utensils,
   UtensilsCrossed,
 } from 'lucide-react-native';
+import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -25,6 +26,7 @@ import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/cal
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { hasWeeklyActivity, nutritionHalfState } from '@/utils/weeklyReviewEmptyState';
 
 import { isLargeCalorieChange, nutritionReason } from './nutritionReason';
 import { ReviewSectionHeader } from './TrainingReviewSection';
@@ -39,14 +41,6 @@ export const MACRO_LABEL_KEYS = {
   carbs: 'weeklyReview.macros.carbs',
   fats: 'weeklyReview.macros.fats',
   fiber: 'weeklyReview.macros.fiber',
-} as const satisfies Record<(typeof MACRO_FIELDS)[number], string>;
-
-const MACRO_UNIT_KEYS = {
-  totalCalories: 'common.kcal',
-  protein: 'common.units.g',
-  carbs: 'common.units.g',
-  fats: 'common.units.g',
-  fiber: 'common.units.g',
 } as const satisfies Record<(typeof MACRO_FIELDS)[number], string>;
 
 const MODE_KEYS = {
@@ -70,6 +64,7 @@ export function NutritionReviewSection({
   onEditGoal,
   onLogWeight,
   onLogFood,
+  onLogFirstMeal,
 }: {
   data: Overview;
   busy: boolean;
@@ -82,6 +77,8 @@ export function NutritionReviewSection({
   onLogWeight: (day: number) => void;
   /** Opens the food diary on `day` (local midnight), a day of the reviewed week with no food. */
   onLogFood: (day: number) => void;
+  /** Opens today's food diary: a first meal belongs to the week being built, not the one reviewed. */
+  onLogFirstMeal: () => void;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -100,7 +97,11 @@ export function NutritionReviewSection({
         className="gap-2 rounded-2xl border border-border-light bg-bg-card p-4"
         testID="review-nutrition"
       >
-        <ReviewSectionHeader title={t('weeklyReview.nutrition')} icon={Utensils} done={false} />
+        <ReviewSectionHeader
+          title={t('weeklyReview.nutrition')}
+          icon={Utensils}
+          done={hasWeeklyActivity(data.activity) ? false : null}
+        />
         <Text className="text-sm text-text-secondary">{t('weeklyReview.noGoal')}</Text>
       </View>
     );
@@ -141,33 +142,53 @@ export function NutritionReviewSection({
     !!recommendation?.canApply &&
     isLargeCalorieChange(data.current.totalCalories, recommendation.targets.totalCalories);
 
+  const applied = data.review?.nutritionDecision === 'apply';
+  const decidedBlock = (
+    <View className="flex-row items-start gap-3 rounded-xl bg-accent-primary/10 p-3">
+      <CalendarCheck size={theme.iconSize.md} color={theme.colors.accent.primary} />
+      <View className="min-w-0 flex-1 gap-0.5">
+        <Text className="text-base font-bold text-text-primary">
+          {t(applied ? 'weeklyReview.applied' : 'weeklyReview.kept')}
+        </Text>
+        {applied && data.review?.nutritionReviewedAt ? (
+          <Text className="text-sm text-text-secondary">
+            {t('weeklyReview.effective', {
+              // Approved targets start the next local calendar day (see `WeeklyReviewService.decide`);
+              // adding 24 hours lands on the wrong day across a daylight-saving change.
+              date: date(
+                localDayKeyPlusCalendarDays(
+                  localDayStartFromUtcMs(data.review.nutritionReviewedAt),
+                  1
+                )
+              ),
+            })}
+          </Text>
+        ) : null}
+      </View>
+    </View>
+  );
+
+  const state = nutritionHalfState(data.activity);
+  if (state !== 'data') {
+    return (
+      <NutritionEmptyState
+        data={data}
+        first={state === 'first'}
+        busy={busy}
+        decided={decided}
+        decidedBlock={decidedBlock}
+        logFoodLabel={t('weeklyReview.logFoodOn', { date: date(data.period.start) })}
+        onKeep={onKeep}
+        onEditGoal={onEditGoal}
+        onLogFood={() => onLogFood(data.period.start)}
+        onLogFirstMeal={onLogFirstMeal}
+      />
+    );
+  }
+
   let decision;
   if (decided) {
-    const applied = data.review?.nutritionDecision === 'apply';
-    decision = (
-      <View className="flex-row items-start gap-3 rounded-xl bg-accent-primary/10 p-3">
-        <CalendarCheck size={theme.iconSize.md} color={theme.colors.accent.primary} />
-        <View className="min-w-0 flex-1 gap-0.5">
-          <Text className="text-base font-bold text-text-primary">
-            {t(applied ? 'weeklyReview.applied' : 'weeklyReview.kept')}
-          </Text>
-          {applied && data.review?.nutritionReviewedAt ? (
-            <Text className="text-sm text-text-secondary">
-              {t('weeklyReview.effective', {
-                // Approved targets start the next local calendar day (see `WeeklyReviewService.decide`);
-                // adding 24 hours lands on the wrong day across a daylight-saving change.
-                date: date(
-                  localDayKeyPlusCalendarDays(
-                    localDayStartFromUtcMs(data.review.nutritionReviewedAt),
-                    1
-                  )
-                ),
-              })}
-            </Text>
-          ) : null}
-        </View>
-      </View>
-    );
+    decision = decidedBlock;
   } else if (mode !== 'weekly') {
     decision = (
       <View className="gap-3">
@@ -321,10 +342,8 @@ export function NutritionReviewSection({
               key={field}
               className={`flex-row items-center px-3 py-2.5 ${index ? 'border-t border-border-light' : ''}`}
             >
-              <Text className="flex-1 text-sm text-text-primary">
-                {t(MACRO_LABEL_KEYS[field])}
-                <Text className="text-xs text-text-tertiary">{` ${t(MACRO_UNIT_KEYS[field])}`}</Text>
-              </Text>
+              {/* The label already carries its unit: "Calories (kcal)". */}
+              <Text className="flex-1 text-sm text-text-primary">{t(MACRO_LABEL_KEYS[field])}</Text>
               <Text className="w-20 text-right text-sm text-text-secondary">
                 {formatInteger(Math.round(current))}
               </Text>
@@ -360,6 +379,103 @@ export function NutritionReviewSection({
 
       {decision}
 
+      <TextButton label={t('weeklyReview.editGoal')} onPress={onEditGoal} align="center" />
+    </View>
+  );
+}
+
+/** The four targets shown when there is no week to compare them with. Fiber stays in the table. */
+const COMPACT_TARGET_FIELDS = ['totalCalories', 'protein', 'carbs', 'fats'] as const;
+
+/**
+ * A nutrition half with no food in the reviewed week: there is nothing to compare, so the targets
+ * shrink to one strip and the page asks for the missing evidence instead. A user who has never
+ * logged a meal is sent to today's diary — the reviewed week is over, and their first review is
+ * built from the week they are in. A week off is filled in on the reviewed week itself.
+ */
+function NutritionEmptyState({
+  data,
+  first,
+  busy,
+  decided,
+  decidedBlock,
+  logFoodLabel,
+  onKeep,
+  onEditGoal,
+  onLogFood,
+  onLogFirstMeal,
+}: {
+  data: Overview;
+  first: boolean;
+  busy: boolean;
+  decided: boolean;
+  decidedBlock: ReactNode;
+  logFoodLabel: string;
+  onKeep: () => void;
+  onEditGoal: () => void;
+  onLogFood: () => void;
+  onLogFirstMeal: () => void;
+}) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
+  const current = data.current!;
+  const reviewable = hasWeeklyActivity(data.activity);
+  let footer: ReactNode = null;
+  if (decided) {
+    footer = decidedBlock;
+  } else if (reviewable) {
+    // The training half has something in it, so the week waits on a nutrition answer to close.
+    footer = (
+      <Button
+        label={t('weeklyReview.keep')}
+        variant="outline"
+        width="full"
+        disabled={busy}
+        onPress={onKeep}
+      />
+    );
+  }
+  return (
+    <View
+      className="gap-4 rounded-2xl border border-border-light bg-bg-card p-4"
+      testID="review-nutrition"
+    >
+      <ReviewSectionHeader
+        title={t('weeklyReview.nutrition')}
+        icon={Utensils}
+        done={reviewable ? decided : null}
+      />
+      <View className="gap-2">
+        <Text className="text-xs font-semibold uppercase tracking-wider text-accent-primary">
+          {t('weeklyReview.empty.currentTargets')}
+        </Text>
+        <StatStrip
+          items={COMPACT_TARGET_FIELDS.map((field) => ({
+            key: field,
+            value: formatInteger(Math.round(current[field])),
+            label: t(MACRO_LABEL_KEYS[field]),
+            valueColor: theme.colors.text.primary,
+          }))}
+          palette={{
+            background: theme.colors.background.card,
+            border: theme.colors.border.light,
+            label: theme.colors.text.tertiary,
+            unit: theme.colors.text.tertiary,
+          }}
+        />
+      </View>
+      <Text className="text-sm text-text-secondary">
+        {t(first ? 'weeklyReview.empty.firstMeal' : 'weeklyReview.empty.noFoodThisWeek')}
+      </Text>
+      <Button
+        label={first ? t('weeklyReview.empty.logFirstMeal') : logFoodLabel}
+        icon={UtensilsCrossed}
+        variant="gradientCta"
+        width="full"
+        onPress={first ? onLogFirstMeal : onLogFood}
+      />
+      {footer}
       <TextButton label={t('weeklyReview.editGoal')} onPress={onEditGoal} align="center" />
     </View>
   );

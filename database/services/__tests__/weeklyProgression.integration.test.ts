@@ -902,6 +902,32 @@ it('counts a week as reviewable only when it holds activity', async () => {
   expect(await weekHadActivity(period.end, period.end + 1)).toBe(false);
 });
 
+it('reports what the week holds and whether the user has ever logged', async () => {
+  const period = weeklyReviewPeriod();
+  expect(await WeeklyReviewService.weekActivity(period.start, period.end)).toEqual({
+    workouts: 0,
+    foodLogs: 0,
+    weighIns: 0,
+    everWorkout: false,
+    everFood: false,
+  });
+
+  // A workout finished after the reviewed week: not this week's, but the user is no first-timer.
+  const w = await workout();
+  await database.write(() =>
+    w.log.update((r) => {
+      r.completedAt = period.end + 60 * 60 * 1000;
+    })
+  );
+  const after = await WeeklyReviewService.weekActivity(period.start, period.end);
+  expect(after.workouts).toBe(0);
+  expect(after.everWorkout).toBe(true);
+  expect(after.everFood).toBe(false);
+
+  const overview = await WeeklyReviewService.overview();
+  expect(overview.activity).toEqual(after);
+});
+
 it.each(['manual', 'daily'] as const)(
   'goal editors leave weekly periods when switching to %s',
   async (mode) => {

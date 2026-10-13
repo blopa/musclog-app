@@ -332,6 +332,23 @@
     "reasonBaseline": "Geschat op basis van je profiel, nog niet van je logboek: ongeveer {{expenditure}} kcal per dag. Blijf voeding en gewicht loggen om het persoonlijk te maken.",
     "largeChangeTitle": "Dat is een grote verandering",
     "largeChangeBody": "Grote schommelingen komen meestal door maaltijden die niet gelogd zijn of een paar ongebruikelijke wegingen. Controleer het voedingslogboek van deze week voordat je toepast.",
-    "reviewFoodLog": "Voedingslogboek bekijken"
+    "reviewFoodLog": "Voedingslogboek bekijken",
+    "welcome": {
+      "title": "Welkom bij je weekoverzicht",
+      "subtitle": "Een korte terugblik en een plan voor de komende week.",
+      "training": "Training: wat je vorige week deed, je records en wat er komt. Trainingsdoelen blijven zichzelf bijwerken.",
+      "nutrition": "Voeding: je inname en gewichtstrend naast je doelen, met een aanbeveling voor de komende week.",
+      "control": "Jij beslist: er verandert niets tot je het toepast. Elke {{weekday}} staat er een nieuw overzicht klaar.",
+      "cta": "Begrepen"
+    },
+    "empty": {
+      "firstWorkout": "Je trainingen verschijnen hier, samen met je records.",
+      "logFirstWorkout": "Log je eerste training",
+      "firstMeal": "Log je maaltijden en weeg jezelf een paar keer. Je overzicht beveelt dan doelen aan op basis van wat er echt gebeurde.",
+      "logFirstMeal": "Log je eerste maaltijd",
+      "noFoodThisWeek": "Deze week geen voeding gelogd.",
+      "currentTargets": "Je dagelijkse doelen",
+      "firstReviewOn": "Je eerste overzicht staat klaar op {{date}}."
+    }
   }
 }
