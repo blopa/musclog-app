@@ -197,7 +197,7 @@ jest.mock('../useSettings', () => ({
 }));
 
 // Mock image assets
-jest.mock('../../assets/icon.png', () => 'mock-icon.png', { virtual: true });
+jest.mock('../../assets/musclog-icon-fallback.png', () => 'mock-icon.png', { virtual: true });
 
 describe('useWorkoutHistory', () => {
   beforeEach(() => {

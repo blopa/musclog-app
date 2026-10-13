@@ -363,17 +363,10 @@ export function ReplaceExerciseModal({
   const pickFooter = (
     <View className="flex-row items-stretch gap-3">
       <Button
-        label={t('replaceExercise.cancel')}
-        variant="outline"
-        size="sm"
-        width="flex-1"
-        onPress={onClose}
-      />
-      <Button
         label={t('replaceExercise.addReason')}
         variant="outline"
         size="sm"
-        width="flex-1"
+        width="auto"
         onPress={() => setStep('reason')}
         disabled={!chosen}
       />
@@ -382,7 +375,7 @@ export function ReplaceExerciseModal({
         label={t('replaceExercise.replace')}
         icon={Repeat}
         size="sm"
-        width="flex-2"
+        width="flex-1"
         onPress={handleConfirm}
         disabled={!chosen}
         testID="replace-now"

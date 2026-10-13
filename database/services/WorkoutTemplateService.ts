@@ -689,7 +689,7 @@ export class WorkoutTemplateService {
       lastCompleted,
       lastCompletedTimestamp,
       duration,
-      image: require('../../assets/icon.png'), // Default image for now
+      image: require('../../assets/musclog-icon-fallback.png'), // Default image for now
     };
   }
 

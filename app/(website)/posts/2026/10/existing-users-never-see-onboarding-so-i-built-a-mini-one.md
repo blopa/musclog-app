@@ -29,6 +29,8 @@ Each page is a few blocks, and there are four kinds:
 - **action**: a button that opens something (workout settings, the cardio log, the weekly review)
 - **featureList**: a short list of "also new" items, each optionally tappable
 
+![Three pages of the 2.13 tour: choosing the workout view, choosing how starting targets work, and picking a weekly review day](/images/blog/2026/10/whats-new-tour-pages.webp)
+
 Tapping a choice saves it immediately. There's no Save button and no "apply at the end", because a tour you can abandon halfway should never leave your choices in limbo.
 
 ## A release is a JSON file
@@ -93,6 +95,8 @@ That filter is a pure function, `selectWhatsNewFlow`, which takes the releases, 
 People don't update on schedule. Somebody who goes from 2.11 to 2.14 is owed three releases' worth of news, and showing all of it is a bad tour.
 
 The rule I settled on: pages are capped (six), and the cap is spent on the _newest_ releases first, then the result is shown oldest-first so it reads in the order things happened. An older release gets squeezed out before a newer one does. And since an old announcement can become wrong, any page or block can say `supersededIn: "2.15.0"`, and from that version on it's gone. Pages left with no blocks disappear.
+
+![The first page of the tour, which says you can revisit it in Settings, and the last one: a list of everything else that is new, each row tappable](/images/blog/2026/10/whats-new-also-new.webp)
 
 ## When it is allowed to appear
 

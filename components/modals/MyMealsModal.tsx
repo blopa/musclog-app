@@ -230,7 +230,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
                   value: formatRoundedDecimal(nutrients.fat, 2),
                 }),
               },
-              image: meal.imageUrl ? { uri: meal.imageUrl } : require('../../assets/icon.png'),
+              image: meal.imageUrl ? { uri: meal.imageUrl } : require('../../assets/musclog-icon-fallback.png'),
             };
           })
         );

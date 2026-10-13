@@ -50,6 +50,8 @@ function reachableWithin(denominations: Denomination[], capUnits: number): Reach
 
 `fewestPlates[u]` is the fewest plates per side that make exactly `u` units, or "not reachable". To load a target, walk down from the target until you find a reachable amount: that's the heaviest load that doesn't exceed it. The table also remembers how many of each plate it used, so the answer comes back as "15 ×1, 10 ×1" rather than just a weight.
 
+![The plate calculator loading 62.5 kg: a 20 kg and a 1.25 kg plate on each side of a 20 kg bar, loaded exactly](/images/blog/2026/10/plate-calculator-sheet.webp)
+
 Two details that matter:
 
 - **Plates load in pairs.** A stored count of 3 is one pair, not 1.5. The solver works per side and counts pairs.

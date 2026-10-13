@@ -1,6 +1,7 @@
 import {
   displayWeightKgNumeric,
   formatDisplayGrams,
+  formatDisplayPlateWeightKg,
   formatDisplayWeightKg,
 } from '@/utils/formatDisplayWeight';
 
@@ -92,6 +93,19 @@ describe('formatDisplayWeight', () => {
     it('rounds a fractional gram amount to one decimal', () => {
       expect(formatDisplayGrams('en-US', 'metric', 12.34)).toBe('12.3');
       expect(formatDisplayGrams('en-US', 'metric', 12.36)).toBe('12.4');
+    });
+  });
+
+  describe('formatDisplayPlateWeightKg', () => {
+    it('keeps quarter-step plates exact instead of rounding them to one decimal', () => {
+      expect(formatDisplayPlateWeightKg('en-US', 'metric', 1.25)).toBe('1.25');
+      expect(formatDisplayPlateWeightKg('de-DE', 'metric', 1.25)).toBe('1,25');
+      expect(formatDisplayPlateWeightKg('en-US', 'metric', 20)).toBe('20');
+      expect(formatDisplayPlateWeightKg('en-US', 'metric', 2.5)).toBe('2.5');
+    });
+
+    it('shows a stored 2.5 lb plate as 2.5 lb, not a conversion artefact', () => {
+      expect(formatDisplayPlateWeightKg('en-US', 'imperial', 1.1339809)).toBe('2.5');
     });
   });
 });

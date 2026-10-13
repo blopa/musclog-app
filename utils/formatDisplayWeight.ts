@@ -34,6 +34,20 @@ export function formatDisplayWeightKg(locale: string, units: Units, kg: number):
 }
 
 /**
+ * Locale-aware string for a PLATE or bar weight stored in kg. Plates come in quarter steps
+ * (1.25 kg, 2.5 lb), which the one-decimal rule of {@link formatDisplayWeightKg} rounds into a
+ * plate nobody owns ("1.3 kg"), so these keep up to two decimals.
+ */
+export function formatDisplayPlateWeightKg(locale: string, units: Units, kg: number): string {
+  const d = kgToDisplay(kg, units);
+  return formatAppDecimal(
+    locale,
+    roundToDecimalPlaces(d + WEIGHT_DISPLAY_ROUNDING_TOLERANCE, 2),
+    2
+  );
+}
+
+/**
  * Locale-aware numeric string for a mass given in **grams** (food portions, serving sizes).
  * Converts to g or oz via `gramsToDisplay`, then formats with the user locale.
  * Append `getMassUnitLabel(units)` in the UI when you need the unit suffix.

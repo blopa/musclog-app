@@ -145,7 +145,7 @@ async function processWorkoutSimple(
     duration: formatDurationForRecentWorkout(durationMinutes),
     calories: workout.caloriesBurned || 0,
     prs: prCount,
-    image: require('../assets/icon.png'), // Default image
+    image: require('../assets/musclog-icon-fallback.png'), // Default image
     imageBgColor: theme.colors.background.imageLight,
   };
 }

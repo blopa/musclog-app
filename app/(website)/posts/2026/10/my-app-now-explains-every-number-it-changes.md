@@ -2,7 +2,7 @@
 title: 'My workout app now explains every number it changes'
 date: '2026-10-16'
 category: 'engineering'
-description: 'Progressive overload that silently rewrites your weights is a bug you can''t see. Here is how Musclog turned every automatic change into data with a reason attached, and the three coaching bugs the explanations helped me find before release.'
+description: "Progressive overload that silently rewrites your weights is a bug you can't see. Here is how Musclog turned every automatic change into data with a reason attached, and the three coaching bugs the explanations helped me find before release."
 tags: ['Musclog', 'React Native', 'TypeScript', 'Progressive Overload', 'Fitness', 'UX']
 ---
 
@@ -37,6 +37,8 @@ export type StartSetAdjustment = {
 That object is saved with the set. The UI never decides anything: it renders the sentence for `(cause, field, plan, last, now)`. There's a single hook that turns an adjustment into text, and the live workout, the preview, "Next time" and the weekly review all use it, so the same change can't be phrased two ways.
 
 The marker works the same way. An adjusted number gets an accent underline (and a small calculator icon in the guided view), so it reads without relying on colour, and it disappears the moment you type over the number, because from that moment it's yours. Which fields get the marker is _derived from the adjustment_ by one function, not decided by whoever draws the card. An earlier version marked the weight card unconditionally while the app was changing reps, so the highlight pointed at the wrong number. Making the marker a function of the data fixed that class of bug, not just that instance.
+
+![Left: the Guided view, with a small calculator icon on the weight and reps the app set. Right: tapping Why? shows the rule, the plan, last time and today side by side](/images/blog/2026/10/session-adjusted-and-why.webp)
 
 One cause is deliberately not marked: **carry-over**. If you changed the weight on set 1, set 2 follows it. That number is yours from the previous set; calling it "adjusted" would be taking credit for your own decision.
 
@@ -98,4 +100,7 @@ The point I'd draw from this is not "I write bugs", though I do. It's that bugs 
 
 All of this runs on one input that most people skip: how many reps you had left. In the first version it lived behind a details sheet, one tap on the set number or a row below the fold. An input that costs three taps gets left empty, and an empty one makes the progression fall back to reps alone.
 
-So there's now a one-tap row on the current set: **0 · 1 · 2 · 3+**. Tapping the value you chose again clears it, so "unrated" stays a real state and never becomes a quiet zero. The best automation in the app is only as good as the one number you can't be asked for without making it cheap.
+So there's now a one-tap row on the current set: **0 · 1 · 2 · 3+**.
+
+![The current set in the Inline view, with a "Reps left in the tank?" row of 0, 1, 2 and 3+ right under it](/images/blog/2026/10/session-rir-quick-pick.webp)
+Tapping the value you chose again clears it, so "unrated" stays a real state and never becomes a quiet zero. The best automation in the app is only as good as the one number you can't be asked for without making it cheap.

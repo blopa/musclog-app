@@ -6,7 +6,7 @@ import { BottomPopUp } from '@/components/BottomPopUp';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { formatDisplayPlateWeightKg } from '@/utils/formatDisplayWeight';
 import { defaultBarWeightKg, defaultPlates, type GymSnapshot } from '@/utils/gym';
 import { platesPerSide } from '@/utils/plateCalculator';
 import { getWeightUnitI18nKey } from '@/utils/units';
@@ -54,7 +54,8 @@ export function PlateCalculatorSheet({
   const load = useMemo(() => platesPerSide(targetKg, loading), [targetKg, loading]);
 
   const unit = t(getWeightUnitI18nKey(units));
-  const show = (kg: number) => formatDisplayWeightKg(locale, units, kg);
+  // Plate maths deals in quarter steps; a 1.25 kg plate must not read as 1.3.
+  const show = (kg: number) => formatDisplayPlateWeightKg(locale, units, kg);
   const heaviestPlateKg = Math.max(...loading.plates.map((plate) => plate.weightKg), 1);
   const shortByKg = load.remainderKg;
   const isExact = !load.belowBar && Math.abs(shortByKg) < REMAINDER_NOISE_KG;
