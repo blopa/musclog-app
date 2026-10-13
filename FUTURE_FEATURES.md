@@ -94,6 +94,16 @@ collects.
 - Reliable persistence and recovery of an in-progress session across app restarts.
 - Progress-photo comparison after the existing body-metrics flow is audited.
 
+### Cycle tracking follow-ups
+
+- Import a cycle history from other trackers (Clue, Flo, Apple Health CSV exports) as a wizard.
+- Read and write menstruation and basal temperature through Health Connect / HealthKit, kept separable from self-reports.
+- Custom symptom fields, tags and scales beyond the bundled list; searching the log in natural language on-device.
+- A cycle-overlay "fingerprint" view comparing several cycles day by day.
+- Optional partner sharing of explicitly selected fields; pregnancy and postpartum modes.
+- A decoy screen and auto-delete for high-risk threat models, beyond the existing app lock.
+- Cycle data in the AI coach, only as an explicit opt-in per conversation and never by default.
+
 ### Exercise goals v2
 
 The schema reserves `steps_per_day`, `distance_per_session`, `pace`, and `duration`, but the UI

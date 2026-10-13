@@ -69,7 +69,7 @@ export async function hasActiveWorkout(): Promise<boolean> {
  */
 export async function getDismissedInsights(
   workoutLogId: string
-): Promise<{ hormonal?: boolean; fueling?: boolean }> {
+): Promise<{ cycle?: boolean; fueling?: boolean }> {
   try {
     const data = await AsyncStorage.getItem(`${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`);
     return data ? JSON.parse(data) : {};
@@ -84,7 +84,7 @@ export async function getDismissedInsights(
  */
 export async function setInsightDismissed(
   workoutLogId: string,
-  insightType: 'hormonal' | 'fueling'
+  insightType: 'cycle' | 'fueling'
 ): Promise<void> {
   try {
     const current = await getDismissedInsights(workoutLogId);

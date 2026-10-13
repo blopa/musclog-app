@@ -1,0 +1,105 @@
+/**
+ * Plain period shape the pure cycle modules work on. It is deliberately not the WatermelonDB
+ * model, so the same maths runs over decrypted rows later and in the Jest `node` project today.
+ */
+export type PeriodEndKind = 'open' | 'logged' | 'estimated' | 'unknown';
+
+export interface CyclePeriodInput {
+  /** Local midnight ms of the first bleeding day. */
+  startDate: number;
+  /** Local midnight ms of the last bleeding day (inclusive); null while the period is open. */
+  endDate: number | null;
+  endKind?: PeriodEndKind;
+  excludedFromStats?: boolean;
+}
+
+export type CycleExclusionReason =
+  | 'too_short'
+  | 'possible_missed_period'
+  | 'user_excluded'
+  | 'hormonal_context'
+  | 'postpartum_context';
+
+export interface CycleHistoryEntry {
+  start: number;
+  /** Start of the following period; absent for the cycle still in progress. */
+  nextStart?: number;
+  lengthDays?: number;
+  durationDays?: number;
+  /** True only when the end date was actually logged by the user. */
+  durationKnown: boolean;
+  status: 'used' | 'excluded' | 'in_progress';
+  reason?: CycleExclusionReason;
+}
+
+export type PredictionConfidence = 'none' | 'low' | 'moderate' | 'high';
+export type CycleVariability = 'regular' | 'variable' | 'highly_variable';
+
+// ── Decrypted record shapes ─────────────────────────────────────────────────────────────────
+// What the encrypted `payload` columns hold. The rest of the app only ever sees these.
+
+export type BleedingLevel = 'none' | 'spotting' | 'light' | 'medium' | 'heavy' | 'very_heavy';
+export type SymptomSeverity = 1 | 2 | 3;
+
+export interface CyclePeriodDto extends CyclePeriodInput {
+  id: string;
+  cycleId: string;
+  endKind: PeriodEndKind;
+  timezone: string;
+  excludedFromStats: boolean;
+  note: string;
+}
+
+export interface DaySymptom {
+  key: string;
+  /** Null = present but not rated, which is what a converted legacy symptom is. */
+  severity: SymptomSeverity | null;
+}
+
+export interface CycleDayLogDto {
+  id: string;
+  /** Local midnight ms of the day this describes. */
+  date: number;
+  timezone: string;
+  /** Null = bleeding not logged that day; `none` = explicitly no bleeding. */
+  bleeding: BleedingLevel | null;
+  symptoms: DaySymptom[];
+  /** True = the user said "no symptoms today", which is different from not logging. */
+  noSymptoms: boolean;
+  pain: number | null;
+  energy: number | null;
+  note: string;
+}
+
+export type ContraceptionMethod =
+  | 'none'
+  | 'combined_pill'
+  | 'progestin_pill'
+  | 'pill_unspecified'
+  | 'hormonal_iud'
+  | 'copper_iud'
+  | 'iud_unspecified'
+  | 'implant'
+  | 'patch'
+  | 'ring'
+  | 'injection'
+  | 'other';
+
+export type CycleLifeStage =
+  'regular' | 'pcos' | 'perimenopause' | 'postpartum' | 'post_pill' | 'no_bleeding';
+
+export interface CycleContextDto {
+  id: string;
+  cycleId: string;
+  /** Local midnight ms from which this context applies. */
+  effectiveFrom: number;
+  timezone: string;
+  lifeStage: CycleLifeStage;
+  contraception: ContraceptionMethod;
+  note: string;
+}
+
+export interface CycleConfig {
+  fallbackCycleLength: number;
+  fallbackPeriodDuration: number;
+}

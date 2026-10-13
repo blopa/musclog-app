@@ -84,7 +84,8 @@
         "deleteConfirmMessage": "¿Estás seguro de que deseas eliminar este archivo de copia de seguridad? Esta acción no se puede deshacer.",
         "restoreConfirmTitle": "¿Restaurar Base de Datos?",
         "restoreConfirmMessage": "Esto reemplazará todos los datos actuales con los datos de esta copia de seguridad. La app se recargará después de la restauración.",
-        "restoreSuccess": "Base de datos restaurada con éxito"
+        "restoreSuccess": "Base de datos restaurada con éxito",
+        "cycleEncryptionBackup": "Antes de cifrar los datos del ciclo"
       },
       "confirmExport": "Confirmar Exportación",
       "confirmImport": "Confirmar Importación",

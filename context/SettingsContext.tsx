@@ -20,6 +20,12 @@ import {
   DEFAULT_REST_SECONDS_SETTING_TYPE,
   DEFAULT_WORKOUT_AUTONOMY,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
+  APP_LOCK_MODE_SETTING_TYPE,
+  CYCLE_NOTIFICATION_STYLE_SETTING_TYPE,
+  CYCLE_QUICK_LOG_SETTING_TYPE,
+  CYCLE_SHOW_FERTILITY_SETTING_TYPE,
+  CYCLE_SHOW_PREDICTIONS_SETTING_TYPE,
+  CYCLE_VARIABILITY_HINT_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_LOCAL_LLM_SETTING_TYPE,
@@ -30,7 +36,10 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   HOME_ACTIONS_SETTING_TYPE,
   HOME_SUMMARY_CARD_SETTING_TYPE,
+  type AppLockMode,
+  type CycleNotificationStyle,
   type HomeSummaryCard,
+  parseAppLockMode,
   INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
@@ -142,6 +151,12 @@ type SettingsState = {
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   enableFastedDay: boolean;
+  cycleShowPredictions: boolean;
+  cycleShowFertility: boolean;
+  cycleNotificationStyle: CycleNotificationStyle;
+  cycleQuickLogRaw: string;
+  cycleVariabilityHintDismissed: boolean;
+  appLockMode: AppLockMode;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   /** `gyms.id` of the profile being trained in, '' for none. */
@@ -239,6 +254,12 @@ const DEFAULT_STATE: SettingsState = {
   useBfForCalculations: false,
   intuitiveEatingMode: false,
   enableFastedDay: false,
+  cycleShowPredictions: true,
+  cycleShowFertility: false,
+  cycleNotificationStyle: 'discreet',
+  cycleQuickLogRaw: '',
+  cycleVariabilityHintDismissed: false,
+  appLockMode: 'off',
   includeFiberInCarbs: true,
   progressionMode: 'reps_first',
   activeGymId: '',
@@ -381,6 +402,15 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     useBfForCalculations: getBoolean(map, USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
     enableFastedDay: getBoolean(map, ENABLE_FASTED_DAY_SETTING_TYPE, false),
+    cycleShowPredictions: getBoolean(map, CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, true),
+    cycleShowFertility: getBoolean(map, CYCLE_SHOW_FERTILITY_SETTING_TYPE, false),
+    cycleNotificationStyle:
+      getString(map, CYCLE_NOTIFICATION_STYLE_SETTING_TYPE) === 'detailed'
+        ? 'detailed'
+        : 'discreet',
+    cycleQuickLogRaw: getString(map, CYCLE_QUICK_LOG_SETTING_TYPE, ''),
+    cycleVariabilityHintDismissed: getBoolean(map, CYCLE_VARIABILITY_HINT_SETTING_TYPE, false),
+    appLockMode: parseAppLockMode(getString(map, APP_LOCK_MODE_SETTING_TYPE)),
     includeFiberInCarbs: getBoolean(map, INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, true),
     progressionMode,
     activeGymId: getString(map, ACTIVE_GYM_ID_SETTING_TYPE, ''),
@@ -451,6 +481,12 @@ export type SettingsContextType = UseSettingsResult & {
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   enableFastedDay: boolean;
+  cycleShowPredictions: boolean;
+  cycleShowFertility: boolean;
+  cycleNotificationStyle: CycleNotificationStyle;
+  cycleQuickLogRaw: string;
+  cycleVariabilityHintDismissed: boolean;
+  appLockMode: AppLockMode;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   activeGymId: string;

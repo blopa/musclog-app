@@ -1,6 +1,3 @@
-import type { LifeStage } from '@/database/models/MenstrualCycle';
-import type { PredictionConfidence } from '@/database/services/MenstrualService';
-
 export type PeriodLogMode = 'start' | 'end' | 'past';
 
 export const DEFAULT_PERIOD_DURATION = 5;
@@ -13,19 +10,6 @@ export const FLOW_LEVEL_KEYS: Record<number, string> = {
   3: 'cycle.flow.medium',
   4: 'cycle.flow.heavy',
   5: 'cycle.flow.veryHeavy',
-};
-
-export const LIFE_STAGE_WARNING_KEYS: Partial<Record<LifeStage, string>> = {
-  pcos: 'cycle.lifeStage.pcos',
-  post_pill: 'cycle.lifeStage.postPill',
-  postpartum: 'cycle.lifeStage.postpartum',
-  perimenopause: 'cycle.lifeStage.perimenopause',
-};
-
-export const CONFIDENCE_LABEL_KEYS: Partial<Record<PredictionConfidence, string>> = {
-  low: 'cycle.confidence.low',
-  medium: 'cycle.confidence.medium',
-  high: 'cycle.confidence.high',
 };
 
 export const PHYSICAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
@@ -52,3 +36,44 @@ export const EMOTIONAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
   { key: 'cycle.symptoms.brainFog', value: 'brain_fog' },
   { key: 'cycle.symptoms.lowLibido', value: 'low_libido' },
 ];
+
+/** Shortest interval between two period starts that is treated as a real cycle (days). */
+export const MIN_PLAUSIBLE_CYCLE_DAYS = 15;
+/** A cycle this many times the median of the others is flagged as a possibly missed period. */
+export const MISSED_PERIOD_RATIO = 1.8;
+/** Only this many of the most recent usable cycles feed predictions. */
+export const MAX_CYCLES_FOR_STATS = 12;
+/** Spread (longest - shortest usable cycle, days) up to which cycles count as regular (ACOG). */
+export const REGULAR_SPREAD_MAX_DAYS = 9;
+/** Spread above which a single predicted date is not meaningful. */
+export const HIGHLY_VARIABLE_SPREAD_DAYS = 20;
+export const MIN_CYCLES_MODERATE_CONFIDENCE = 2;
+export const MIN_CYCLES_HIGH_CONFIDENCE = 4;
+/** The luteal phase (ovulation to next period) is the steadiest part of the cycle. */
+export const LUTEAL_PHASE_DAYS = 14;
+export const OVULATORY_HALF_WINDOW_DAYS = 2;
+
+/** A period still "open" this long after it started was forgotten, not ongoing. */
+export const STALE_OPEN_PERIOD_DAYS = 14;
+/** Reminder lead time: the period reminder fires this many days before the predicted start. */
+export const PERIOD_REMINDER_LEAD_DAYS = 2;
+
+/** Symptom key (as stored) -> translation key, across both groups. */
+export const SYMPTOM_LABEL_KEYS: Record<string, string> = Object.fromEntries(
+  [...PHYSICAL_SYMPTOM_KEYS, ...EMOTIONAL_SYMPTOM_KEYS].map((option) => [option.value, option.key])
+);
+
+export const BLEEDING_LABEL_KEYS = {
+  none: 'cycle.calendar.bleeding.none',
+  spotting: 'cycle.calendar.bleeding.spotting',
+  light: 'cycle.calendar.bleeding.light',
+  medium: 'cycle.calendar.bleeding.medium',
+  heavy: 'cycle.calendar.bleeding.heavy',
+  very_heavy: 'cycle.calendar.bleeding.very_heavy',
+} as const;
+
+export const SEVERITY_LABEL_KEYS = {
+  1: 'cycle.severity.mild',
+  2: 'cycle.severity.moderate',
+  3: 'cycle.severity.severe',
+} as const;

@@ -54,18 +54,32 @@
         "periodDurationLabel": "Menstruatie"
       },
       "birthControl": {
-        "title": "Hormonale anticonceptie",
-        "description": "Gebruik je momenteel hormonale anticonceptie? Dit beïnvloedt de voorspelling van je hormonale fasen.",
+        "title": "Anticonceptie",
+        "description": "Gebruik je op dit moment anticonceptie? Hormonale methoden kunnen invloed hebben op je cyclus.",
         "none": "Geen",
-        "noneDescription": "Geen hormonale anticonceptie.",
+        "noneDescription": "Geen anticonceptie.",
         "pill": "De pil",
         "pillDescription": "Dagelijkse orale anticonceptiepil.",
-        "iud": "Spiraaltje",
-        "iudDescription": "Intra-uterien apparaat (hormonaal of koper).",
+        "iud": "Spiraal (type niet ingesteld)",
+        "iudDescription": "Kies hormonaal of koper om specifiek te zijn.",
         "implant": "Implantaat",
         "implantDescription": "Subcutaan hormonaal implantaat.",
         "other": "Anders",
-        "otherDescription": "Een andere vorm van anticonceptie."
+        "otherDescription": "Een andere vorm van anticonceptie.",
+        "hormonalIud": "Hormoonspiraal",
+        "hormonalIudDescription": "Spiraal die hormonen afgeeft.",
+        "copperIud": "Koperspiraal",
+        "copperIudDescription": "Spiraal zonder hormonen.",
+        "patch": "Pleister",
+        "patchDescription": "Hormonale huidpleister.",
+        "ring": "Vaginale ring",
+        "ringDescription": "Hormonale vaginale ring.",
+        "shot": "Prikpil",
+        "shotDescription": "Hormonale anticonceptie-injectie.",
+        "combinedPill": "Combinatiepil",
+        "combinedPillDescription": "Dagelijkse pil met oestrogeen en progestageen.",
+        "progestinPill": "Pil met alleen progestageen",
+        "progestinPillDescription": "Dagelijkse pil zonder oestrogeen."
       },
       "lifeStage": {
         "title": "Cyclus context",
@@ -78,7 +92,9 @@
         "postpartum": "Na de bevalling",
         "postpartumDescription": "Ik heb het afgelopen jaar bevallen.",
         "postPill": "Recent gestopt met anticonceptie",
-        "postPillDescription": "Ik ben recent gestopt met hormonale anticonceptie en mijn cyclus kan nog aan het herstellen zijn."
+        "postPillDescription": "Ik ben recent gestopt met hormonale anticonceptie en mijn cyclus kan nog aan het herstellen zijn.",
+        "noBleeding": "Bijhouden zonder bloeding",
+        "noBleedingDescription": "Ik heb geen menstruatie (bijvoorbeeld na een operatie of door onderdrukkende hormonen) maar wil bijhouden hoe ik me voel."
       },
       "goal": {
         "title": "Sync-doel",

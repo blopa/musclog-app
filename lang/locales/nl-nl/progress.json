@@ -143,6 +143,11 @@
     "proteinIntake": "Eiwitinname",
     "proteinVsWeightChange": "Eiwit vs Gewichtswijziging ({{unit}})",
     "chartExported": "Grafiek opgeslagen",
-    "chartExportFailed": "Exporteren van grafiek mislukt"
+    "chartExportFailed": "Exporteren van grafiek mislukt",
+    "cycleBand": {
+      "period": "Geregistreerde menstruatie",
+      "before": "Dagen ervoor",
+      "other": "Overige dagen"
+    }
   }
 }

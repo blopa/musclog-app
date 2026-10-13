@@ -177,6 +177,10 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
       return t('settings.advancedSettings.localBackups.exerciseCatalogueBackup');
     }
 
+    if (backup.reason === 'cycle-encryption') {
+      return t('settings.advancedSettings.localBackups.cycleEncryptionBackup');
+    }
+
     if (backup.reason === 'pre-restore') {
       return t('settings.advancedSettings.localBackups.preRestoreBackup');
     }

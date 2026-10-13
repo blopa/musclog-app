@@ -41,6 +41,8 @@ import { ExerciseService } from './services/ExerciseService';
 import { FoodPortionService } from './services/FoodPortionService';
 import { MuscleService } from './services/MuscleService';
 import { SettingsService } from './services/SettingsService';
+import { normalizeCycleDataForImport } from './cycleImportNormalization';
+import { encryptCycleText } from './cyclePayload';
 import { normalizeWorkoutSetCompletionForImport } from './workoutSetImportNormalization';
 
 export type ExportDump = {
@@ -138,6 +140,8 @@ async function prepareSavedForLaterItemCreate(
   });
 }
 
+const CYCLE_PAYLOAD_TABLES = new Set(['cycle_periods', 'cycle_day_logs', 'cycle_contexts']);
+
 /**
  * Restore the database from a dump string (full replace).
  * Decrypts with optional phrase, then clears and repopulates tables in dependency order.
@@ -156,6 +160,9 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // Pre-v26 exports used RPE=0 and is_skipped as an implicit lifecycle. Normalize that
   // relationship-aware legacy shape once, before validation and persistence.
   normalizeWorkoutSetCompletionForImport(parsed);
+
+  // Pre-v36 exports carry plaintext cycle tables; translate them into the encrypted records.
+  normalizeCycleDataForImport(parsed);
 
   // Pre-validate migration: exports before v16 store is_drop_set (boolean) instead of
   // set_type (string) on workout_log_sets and workout_template_sets.
@@ -367,6 +374,16 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
 
       if (tableName === 'nutrition_checkins' && dbData._exportVersion < 2) {
         raw.completed = false;
+      }
+
+      // Cycle payloads travel as plaintext (`_decrypted`) and are encrypted with THIS device's key.
+      // The key is resolved here, before the batch is written, never inside the write lock.
+      if (raw._decrypted === true) {
+        if (CYCLE_PAYLOAD_TABLES.has(tableName) && typeof raw.payload === 'string') {
+          raw.payload = await encryptCycleText(raw.payload);
+        } else if (tableName === 'menstrual_cycles' && typeof raw.config === 'string') {
+          raw.config = await encryptCycleText(raw.config);
+        }
       }
 
       // These rows have already passed schema-derived Zod validation and use physical database

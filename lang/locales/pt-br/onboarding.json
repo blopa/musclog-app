@@ -54,18 +54,32 @@
         "periodDurationLabel": "Menstruação"
       },
       "birthControl": {
-        "title": "Anticoncepcional Hormonal",
-        "description": "Você está usando algum anticoncepcional hormonal? Isso afeta as previsões de fase hormonal.",
+        "title": "Anticoncepcional",
+        "description": "Você usa algum método anticoncepcional? Métodos hormonais podem mudar o comportamento do seu ciclo.",
         "none": "Nenhum",
-        "noneDescription": "Sem contracepção hormonal.",
+        "noneDescription": "Sem anticoncepção.",
         "pill": "Pílula",
         "pillDescription": "Pílula contraceptiva oral diária.",
-        "iud": "DIU",
-        "iudDescription": "Dispositivo intrauterino (hormonal ou cobre).",
+        "iud": "DIU (tipo não informado)",
+        "iudDescription": "Escolha hormonal ou de cobre para ser específica.",
         "implant": "Implante",
         "implantDescription": "Implante hormonal subcutâneo.",
         "other": "Outro",
-        "otherDescription": "Outra forma de contracepção."
+        "otherDescription": "Outra forma de contracepção.",
+        "hormonalIud": "DIU hormonal",
+        "hormonalIudDescription": "Dispositivo intrauterino que libera hormônios.",
+        "copperIud": "DIU de cobre",
+        "copperIudDescription": "Dispositivo intrauterino sem hormônios.",
+        "patch": "Adesivo",
+        "patchDescription": "Adesivo hormonal na pele.",
+        "ring": "Anel vaginal",
+        "ringDescription": "Anel vaginal hormonal.",
+        "shot": "Injeção",
+        "shotDescription": "Injeção anticoncepcional hormonal.",
+        "combinedPill": "Pílula combinada",
+        "combinedPillDescription": "Pílula diária com estrogênio e progestágeno.",
+        "progestinPill": "Pílula só de progestágeno",
+        "progestinPillDescription": "Pílula diária sem estrogênio."
       },
       "lifeStage": {
         "title": "Contexto do Ciclo",
@@ -78,7 +92,9 @@
         "postpartum": "Pós-parto",
         "postpartumDescription": "Tive um bebê no último ano.",
         "postPill": "Parei o anticoncepcional recentemente",
-        "postPillDescription": "Parei o anticoncepcional hormonal recentemente e meu ciclo ainda pode estar se ajustando."
+        "postPillDescription": "Parei o anticoncepcional hormonal recentemente e meu ciclo ainda pode estar se ajustando.",
+        "noBleeding": "Acompanhamento sem sangramento",
+        "noBleedingDescription": "Não menstruo (por exemplo após cirurgia ou com hormônios que suprimem) mas quero acompanhar como me sinto."
       },
       "goal": {
         "title": "Meta de Sincronização",

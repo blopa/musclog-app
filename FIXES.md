@@ -3,6 +3,49 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Cycle tracking: counter wrapped, switch dropped, clears ignored
+
+### Symptom
+
+Six defects shipped in the first cycle tracking release. After the average cycle length passed
+without a newly logged period the day counter showed "Day 1" again while the phase stayed
+luteal and the predicted date was in the past. The profile "track my cycle" switch did nothing,
+and a user who skipped setup had no way to start tracking. Deselecting every symptom and saving
+kept the old symptoms. Four period starts 70 days apart reported "high" confidence while the
+prediction fell back to a 28-day cycle. The phase wheel placed ovulation differently from the
+phase the app said it was in. Any IUD was stored as hormonal.
+
+### Cause
+
+- `getCycleDay` took `diffDays % avgCycleLength`, while `getPhaseAtTimestamp` and
+  `predictNextPeriod` never rolled forward, so the three disagreed as soon as a period was late.
+- `EditPersonalInfoModal.handleSave` destructured the form without `trackCycle`, and
+  `getActive()` filtered on `is_active`, so a paused cycle vanished from the context and could
+  never be resumed.
+- `CycleLogModal` wrote flow and symptoms only when something was selected.
+- Confidence counted raw logs, and intervals outside 15-60 days were dropped without a trace.
+- `PhaseWheel` used a fixed 3-day ovulation and a 40/60 split of its own.
+- The hormonal flag was `birthControlType !== 'none'`.
+
+### Fix
+
+`utils/cycle/` holds the pure model: `cycleHistory.ts` keeps every cycle and tags the ones that
+should not feed predictions with a reason, `cycleStats.ts` derives confidence from usable cycles
+and their spread, and `cycleTimeline.ts` is the one phase and prediction layout the wheel, the
+cycle screen, reminders and charts read. The day counter never wraps; an overdue period is a
+`late` state with no segments. The context observes the latest cycle, exposes `pausedCycle` and
+`resumeTracking`, and the profile switch goes through `resolveTrackingToggle`.
+Clearing a day removes its record (`CycleDayLogService.save` deletes an emptied form). The hormonal flag is
+gone: `CONTRACEPTION_TRAITS` records whether a method is hormonal, unknown or neither, so a copper IUD is
+no longer called hormonal.
+
+Predicted dates were also computed as `start + N * 24h`, which lands at 23:00 or 01:00 across a daylight-saving
+change: the card said "Oct 26 – 28" while the calendar marked 27–28. They now use `addCalendarDays`.
+
+Starts and ends are stored as local-midnight instants, and one logged in another timezone can
+fall hours after today's local midnight; the timeline anchors them to their local calendar day
+before comparing, or that period reads as "in the future".
+
 ## Database durability: never mix SQLite connections on `musclog.db`
 
 ### Symptom

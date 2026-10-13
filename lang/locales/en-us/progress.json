@@ -143,6 +143,11 @@
     "proteinIntake": "Protein Intake",
     "proteinVsWeightChange": "Protein vs Weight Change ({{unit}})",
     "chartExported": "Chart saved",
-    "chartExportFailed": "Failed to export chart"
+    "chartExportFailed": "Failed to export chart",
+    "cycleBand": {
+      "period": "Logged period",
+      "before": "Days before",
+      "other": "Other days"
+    }
   }
 }

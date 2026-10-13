@@ -13,6 +13,7 @@ import {
 import { waitForPreMigrationBackup } from '@/database/preMigrationBackup';
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
 import { ExerciseService } from '@/database/services/ExerciseService';
+import { CycleDataEncryptionMigration } from '@/database/services/CycleDataEncryptionMigration';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { FoodService } from '@/database/services/FoodService';
 import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
@@ -134,6 +135,13 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     webOnly: true,
     runOnce: true,
     run: () => WorkoutSetStatusMigration.run(),
+  },
+  {
+    tag: 'CycleDataEncryptionMigration.run',
+    // Converts the plaintext pre-v36 cycle data into encrypted records. Idempotent by data (a
+    // cycle without `config`, a leftover flow/symptom metric) rather than `runOnce`, so a restored
+    // backup that still carries old rows is converted on the next boot as well.
+    run: () => CycleDataEncryptionMigration.run(),
   },
   {
     tag: 'WorkoutService.backfillNullTotalVolumes',

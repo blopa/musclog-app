@@ -15,11 +15,63 @@
     "settings": {
       "title": "Cyclus-instellingen",
       "subtitle": "Bewerk je cyclusconfiguratie",
-      "save": "Wijzigingen opslaan"
+      "save": "Wijzigingen opslaan",
+      "changeContext": "Levensfase of anticonceptie wijzigen",
+      "sectionUsual": "Je gebruikelijke duur",
+      "usualHint": "Wordt gebruikt tot er genoeg geschiedenis is om die van jou te leren.",
+      "sectionShown": "Wat wordt getoond",
+      "showPredictions": "Voorspellingen tonen",
+      "showPredictionsHint": "Schakel uit om te blijven registreren zonder voorspelde data.",
+      "showFertility": "Vruchtbaarheidsschattingen tonen",
+      "showFertilityHint": "Standaard uit. Een informatieve schatting van het vruchtbare venster, geen anticonceptie.",
+      "fertility": {
+        "explainTitle": "Vruchtbaarheidsschattingen tonen?",
+        "explainMessage": "Het vruchtbare venster wordt geschat op basis van je eerdere cycluslengtes. Daarmee is niet betrouwbaar vast te stellen wanneer je ovuleert, dus gebruik het nooit als enige methode om zwangerschap te voorkomen.",
+        "enable": "Schattingen tonen"
+      },
+      "sectionReminders": "Herinneringen",
+      "reminderHint": "Herinneringen zeggen nooit waar ze over gaan, tenzij je gedetailleerde tekst kiest.",
+      "reminderDiscreet": "Discreet",
+      "reminderDetailed": "Gedetailleerd",
+      "sectionTracking": "Bijhouden",
+      "sectionPrivacy": "Privacy",
+      "lockHint": "Vraag om je vingerafdruk, gezicht of pincode van het apparaat om te openen.",
+      "privacyNote": "Cyclusgegevens zijn versleuteld op deze telefoon. Back-ups die je exporteert zijn aparte bestanden die jij beheert.",
+      "lock": {
+        "off": "Uit",
+        "cycle": "Alleen cyclusgedeelte",
+        "app": "Hele app",
+        "noCredential": "Stel eerst een schermvergrendeling of biometrie in op je apparaat."
+      },
+      "sectionExport": "Exporteren",
+      "exportPeriods": "Menstruaties exporteren (CSV)",
+      "exportDays": "Dagelijkse registratie exporteren (CSV)",
+      "summaryTitle": "Samenvatting voor afspraak",
+      "summaryHint": "Een korte pdf van wat je registreerde: data, bloeding, symptomen, pijn en notities. Hij toont je gegevens en stelt geen diagnose.",
+      "summaryRange": "Laatste {{count}} maanden",
+      "summaryCreate": "Samenvatting maken (pdf)",
+      "sectionManage": "Beheren",
+      "pause": "Bijhouden pauzeren",
+      "pauseHint": "Pauzeren bewaart al je gegevens en verbergt het cyclustabblad en herinneringen tot je hervat.",
+      "delete": {
+        "action": "Alle cyclusgegevens verwijderen",
+        "title": "Alle cyclusgegevens verwijderen?",
+        "message": "Dit wist permanent elke menstruatie, dagelijkse registratie en levensfase van deze telefoon. Het kan niet ongedaan worden gemaakt. Bestanden die je eerder exporteerde of deelde staan buiten de app en worden niet beïnvloed.",
+        "confirm": "Alles verwijderen",
+        "prompt": "Bevestig het verwijderen van je cyclusgegevens",
+        "backupsTitle": "Ook lokale herstelpunten verwijderen?",
+        "backupsMessage": "Deze telefoon bewaart {{count}} herstelpunt dat een kopie van je cyclusgegevens kan bevatten, samen met de rest van je gegevens. Ook verwijderen?",
+        "backupsMessage_plural": "Deze telefoon bewaart {{count}} herstelpunten die een kopie van je cyclusgegevens kunnen bevatten, samen met de rest van je gegevens. Ook verwijderen?",
+        "backupsConfirm": "Herstelpunten verwijderen"
+      }
     },
     "noData": {
       "title": "Begin je cyclus bij te houden",
-      "description": "Tik op de knop om je eerste menstruatie te registreren en gepersonaliseerde fasevoorspellingen te ontvangen."
+      "description": "Tik op de knop om je eerste menstruatie te registreren en gepersonaliseerde fasevoorspellingen te ontvangen.",
+      "start": "Begin met bijhouden",
+      "pausedTitle": "Bijhouden is gepauzeerd",
+      "pausedDescription": "Je geschiedenis is bewaard. Hervat om verder te registreren en voorspellingen te zien.",
+      "resume": "Bijhouden hervatten"
     },
     "actions": {
       "periodStarted": "Mijn menstruatie is vandaag begonnen",
@@ -87,6 +139,219 @@
       "ovulatory": "Ovulatie",
       "ovulation": "Ovulatie",
       "luteal": "Luteale fase"
+    },
+    "late": {
+      "title": "{{count}} dag later dan je gebruikelijke bereik",
+      "title_plural": "{{count}} dagen later dan je gebruikelijke bereik",
+      "description": "Registreer je menstruatie zodra die begint, dan worden de voorspellingen bijgewerkt."
+    },
+    "insufficient": "Registreer een menstruatie om een voorspelling te zien",
+    "periodNotLogged": "Menstruatie nog niet geregistreerd",
+    "lock": {
+      "prompt": "Musclog ontgrendelen",
+      "unlock": "Ontgrendelen",
+      "cycleTitle": "Cyclusregistratie is vergrendeld",
+      "cycleDescription": "Verifieer je identiteit om je cyclusgegevens te zien.",
+      "appTitle": "Musclog is vergrendeld",
+      "appDescription": "Verifieer je identiteit om door te gaan."
+    },
+    "calendar": {
+      "bleeding": {
+        "none": "Geen bloeding",
+        "spotting": "Spotting",
+        "light": "Licht",
+        "medium": "Gemiddeld",
+        "heavy": "Zwaar",
+        "very_heavy": "Zeer zwaar"
+      },
+      "a11y": {
+        "period": "geregistreerde menstruatie",
+        "predicted": "verwachte periode",
+        "fertile": "geschat vruchtbaar venster",
+        "observation": "iets geregistreerd",
+        "today": "vandaag",
+        "nothing": "niets geregistreerd"
+      },
+      "previousMonth": "Vorige maand",
+      "nextMonth": "Volgende maand",
+      "legend": "Legenda van de kalender",
+      "legendPeriod": "Geregistreerde menstruatie of bloeding",
+      "legendSpotting": "Geregistreerde spotting",
+      "legendPredicted": "Verwachte periode",
+      "legendFertile": "Geschat vruchtbaar venster",
+      "legendLogged": "Iets geregistreerd"
+    },
+    "context": {
+      "title": "Levensfase en anticonceptie",
+      "description": "Leg een wijziging vast vanaf een datum. Je eerdere geschiedenis blijft bewaard.",
+      "effectiveFrom": "Geldt vanaf",
+      "chooseSpecific": "Kies een specifiek type voor betere begeleiding.",
+      "effects": "Sommige methoden veranderen hoe je cyclus zich gedraagt, dus voorspellingen en het vruchtbare venster kunnen verborgen of met een kanttekening getoond worden.",
+      "remove": "Deze wijziging verwijderen",
+      "timelineTitle": "Geschiedenis van levensfase en anticonceptie",
+      "from": "Vanaf {{date}}"
+    },
+    "daySheet": {
+      "title": "Deze dag registreren",
+      "severityHint": "Tik nogmaals op een symptoom om de sterkte te wijzigen.",
+      "noSymptoms": "Geen symptomen vandaag",
+      "noSymptomsLogged": "Geen symptomen",
+      "moreSymptoms": "Meer symptomen",
+      "fewerSymptoms": "Minder symptomen",
+      "pain": "Pijn",
+      "energy": "Energie",
+      "energyLevel": {
+        "1": "Zeer laag",
+        "2": "Laag",
+        "3": "Redelijk",
+        "4": "Goed",
+        "5": "Hoog"
+      },
+      "note": "Notitie",
+      "notePlaceholder": "Alles wat het onthouden waard is",
+      "clearDay": "Deze dag wissen",
+      "nothingLogged": "Niets geregistreerd voor deze dag.",
+      "addDetails": "Details toevoegen",
+      "edit": "Bewerken",
+      "startPeriodPrompt": "Bloeding geregistreerd buiten een menstruatie.",
+      "startPeriod": "Menstruatie hier starten"
+    },
+    "edit": {
+      "title": "Menstruatie bewerken",
+      "delete": "Deze menstruatie verwijderen",
+      "deleteTitle": "Deze menstruatie verwijderen?",
+      "deleteMessage": "Je statistieken en herinneringen worden zonder deze opnieuw berekend. Je kunt het direct daarna ongedaan maken.",
+      "deleted": "Menstruatie verwijderd",
+      "undo": "Ongedaan maken",
+      "recalculates": "Opslaan herberekent je statistieken en herinneringen."
+    },
+    "end": {
+      "title": "Hoe eindigde het?",
+      "open": "Nog bezig",
+      "onDate": "Op een datum",
+      "unknown": "Ik weet het niet meer",
+      "usualLength": "Gebruikelijke duur ({{days}} dagen)",
+      "estimatedHint": "Opgeslagen als schatting, niet als vastgelegde einddatum.",
+      "unknownHint": "De duur van deze menstruatie wordt niet gebruikt in je gemiddelden."
+    },
+    "errors": {
+      "future": "Data van een menstruatie kunnen niet in de toekomst liggen.",
+      "overlap": "Dit overlapt met een menstruatie die je al hebt geregistreerd.",
+      "endBeforeStart": "Het einde kan niet voor het begin liggen."
+    },
+    "fertilityDisclaimer": "Alleen een informatieve schatting. Gebruik het niet als enige methode om zwangerschap te voorkomen.",
+    "history": {
+      "title": "Geschiedenis",
+      "tabCalendar": "Kalender",
+      "tabHistory": "Menstruaties",
+      "empty": "Nog geen menstruaties geregistreerd.",
+      "estimatedEnd": "Geschat einde",
+      "unknownEnd": "Einde onbekend",
+      "ongoing": "Bezig",
+      "editHint": "Tik om te bewerken",
+      "days": "{{days}} dag",
+      "days_plural": "{{days}} dagen",
+      "cycleLength": "Cyclus van {{days}} dag",
+      "cycleLength_plural": "Cyclus van {{days}} dagen",
+      "notUsed": "Niet gebruikt voor voorspellingen: {{reason}}",
+      "reason": {
+        "too_short": "de tussentijd was erg kort, mogelijk een vergissing",
+        "possible_missed_period": "veel langer dan je andere cycli, mogelijk een gemiste menstruatie",
+        "user_excluded": "je hebt het uitgesloten",
+        "hormonal_context": "er werd een hormonale methode gebruikt",
+        "postpartum_context": "cycli na de bevalling tellen niet mee"
+      }
+    },
+    "insights": {
+      "title": "Patronen in je gegevens",
+      "basedOnRecords": "Alleen gebaseerd op je eigen gegevens.",
+      "viewData": "Gegevens bekijken",
+      "viewSessions": "Die trainingen bekijken",
+      "evidenceTitle": "Waarop dit gebaseerd is",
+      "recurringSymptom": "Je registreerde {{symptom}} binnen {{days}} dagen rond het begin van je menstruatie in {{hits}} van je laatste {{total}} cycli.",
+      "highPain": "Je registreerde pijn van {{level}} of meer binnen {{days}} dagen rond het begin van je menstruatie in {{hits}} van je laatste {{total}} cycli.",
+      "cycleLengthLonger": "Je laatste cyclus duurde {{length}} dagen, {{diff}} dagen langer dan de mediaan van je vorige {{count}} cycli ({{typical}} dagen).",
+      "cycleLengthShorter": "Je laatste cyclus duurde {{length}} dagen, {{diff}} dagen korter dan de mediaan van je vorige {{count}} cycli ({{typical}} dagen).",
+      "durationLonger": "Je laatste menstruatie duurde {{duration}} dagen, {{diff}} dagen langer dan de mediaan van je vorige {{count}} ({{typical}} dagen).",
+      "durationShorter": "Je laatste menstruatie duurde {{duration}} dagen, {{diff}} dagen korter dan de mediaan van je vorige {{count}} ({{typical}} dagen).",
+      "moodNearStart": "Je geregistreerde stemming was lager binnen {{days}} dagen rond het begin van je menstruatie dan op je andere dagen in {{hits}} van je laatste {{total}} cycli.",
+      "workoutNearStart": "In {{hits}} van je laatste {{total}} cycli hadden je trainingen binnen {{days}} dagen rond het begin van je menstruatie minder volume dan je andere sessies in dezelfde cyclus."
+    },
+    "phaseEstimated": "Geschatte fase",
+    "phaseUnknown": "Geen schatting",
+    "prediction": {
+      "insufficient": "Registreer een menstruatie om een voorspelling te zien",
+      "hidden": "Voorspellingen zijn verborgen",
+      "notShown": "Geen voorspelling in jouw situatie",
+      "likelyRange": "Waarschijnlijk {{from}} – {{to}}",
+      "likelyDate": "Waarschijnlijk rond {{date}}",
+      "caveated": "Deze methode kan je cyclus beïnvloeden, dus beschouw de schatting als richtlijn.",
+      "variabilityExpected": "De cycluslengte varieert in jouw situatie. Dat is gebruikelijk en het bereik weerspiegelt dat.",
+      "variableHint": "Je cycli variëren sterk ({{low}}–{{high}} dagen). Eén datum is mogelijk niet betrouwbaar.",
+      "keepHidden": "Verborgen houden",
+      "showRange": "Bereik tonen",
+      "fertile": "Geschat vruchtbaar venster: {{from}} – {{to}}",
+      "howCalculated": "Hoe wordt dit berekend?",
+      "show": "Voorspellingen tonen",
+      "hide": "Voorspellingen verbergen",
+      "detailsTitle": "Hoe de schatting wordt gemaakt",
+      "basis": "Gebaseerd op je laatste {{cycles}} cyclus · mediaan {{median}} dagen · bereik {{low}}–{{high}}",
+      "basis_plural": "Gebaseerd op je laatste {{cycles}} cycli · mediaan {{median}} dagen · bereik {{low}}–{{high}}",
+      "basisNone": "Nog geen bruikbare cycli, dus de schatting gebruikt je gebruikelijke duur van {{days}} dagen.",
+      "excludedCount": "{{cycles}} cyclus wordt niet gebruikt (zie hieronder).",
+      "excludedCount_plural": "{{cycles}} cycli worden niet gebruikt (zie hieronder).",
+      "cycleUsed": "Gebruikt voor voorspellingen",
+      "useForPredictions": "Deze cyclus gebruiken voor voorspellingen",
+      "evidenceNote": "Gebaseerd op je gegevens. Een voorspelling is een schatting, geen medisch resultaat.",
+      "confidence": {
+        "none": "Nog geen gegevens",
+        "low": "Lage betrouwbaarheid · {{cycles}} bruikbare cyclus",
+        "low_plural": "Lage betrouwbaarheid · {{cycles}} bruikbare cycli",
+        "moderate": "Matige betrouwbaarheid · {{cycles}} bruikbare cycli",
+        "high": "Hogere betrouwbaarheid · {{cycles}} bruikbare cycli"
+      },
+      "suppressed": {
+        "hormonal": "Bloedingen bij deze methode volgen mogelijk geen natuurlijke cyclus, dus een voorspelde datum zegt weinig. Je kunt nog steeds alles registreren.",
+        "postpartum": "Cycli keren na een bevalling vaak onvoorspelbaar terug. Voorspellingen verschijnen zodra je twee menstruaties hebt geregistreerd.",
+        "no_bleeding": "Je volgt zonder bloeding, dus er is geen menstruatie om te voorspellen. Dagelijkse registraties en patronen werken nog."
+      }
+    },
+    "quickLog": {
+      "title": "Snel registreren",
+      "pinPrompt": "Je registreert vaak {{symptom}}. Vastzetten in snel registreren?",
+      "noThanks": "Nee, bedankt",
+      "pin": "Vastzetten"
+    },
+    "severity": {
+      "mild": "licht",
+      "moderate": "matig",
+      "severe": "ernstig"
+    },
+    "summary": {
+      "title": "Cyclussamenvatting",
+      "range": "{{from}} – {{to}} (laatste {{months}} maanden)",
+      "disclaimer": "Zelf geregistreerde gegevens uit de Musclog-app. Het is geen diagnose en vervangt geen medisch advies.",
+      "sectionOverview": "Overzicht",
+      "sectionPeriods": "Menstruaties",
+      "sectionBleeding": "Bloedingsdagen per niveau",
+      "sectionSymptoms": "Meest geregistreerde symptomen (dagen)",
+      "sectionPain": "Pijn",
+      "sectionNotes": "Notities",
+      "sectionContext": "Levensfase en anticonceptie",
+      "colStart": "Begin",
+      "colEnd": "Einde",
+      "colDuration": "Dagen",
+      "colCycleLength": "Cyclus (dagen)",
+      "colStatus": "Gebruikt voor gemiddelden",
+      "empty": "Geen menstruaties in dit bereik.",
+      "statusUsed": "meegeteld",
+      "statusInProgress": "bezig",
+      "overviewPeriods": "{{n}} menstruatie geregistreerd",
+      "overviewPeriods_plural": "{{n}} menstruaties geregistreerd",
+      "overviewLength": "Cycluslengte: mediaan {{median}} dagen, bereik {{low}}–{{high}}.",
+      "overviewNoLength": "Te weinig voltooide cycli om een cycluslengte te noemen.",
+      "overviewUsed": "{{used}} cycli meegeteld voor gemiddelden, {{excluded}} niet meegeteld.",
+      "pain": "Pijn geregistreerd op {{days}} dagen: mediaan {{median}}/10, hoogste {{max}}/10, {{severe}} dagen met 6 of meer."
     }
   }
 }

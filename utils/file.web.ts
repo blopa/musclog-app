@@ -37,6 +37,8 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
     let reason = 'pre-migration';
     if (meta?.reason === 'exercise-catalogue') {
       reason = 'pre-exercise-catalogue';
+    } else if (meta?.reason === 'cycle-encryption') {
+      reason = 'pre-cycle-encryption';
     } else if (meta?.reason === 'pre-restore') {
       reason = 'pre-restore';
     }
@@ -62,6 +64,18 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
   }
 
   a.click();
+}
+
+/** Downloads a small text file through the browser. */
+export async function shareTextFile(
+  fileName: string,
+  content: string,
+  mimeType: string
+): Promise<void> {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  await downloadFile(url, fileName);
+  URL.revokeObjectURL(url);
 }
 
 export async function exportDatabase(

@@ -84,7 +84,8 @@
         "deleteConfirmMessage": "Are you sure you want to delete this backup file? This action cannot be undone.",
         "restoreConfirmTitle": "Restore Database?",
         "restoreConfirmMessage": "This will replace all current data with the data from this backup. The app will reload after restoration.",
-        "restoreSuccess": "Database restored successfully"
+        "restoreSuccess": "Database restored successfully",
+        "cycleEncryptionBackup": "Before cycle data encryption"
       },
       "confirmExport": "Confirm Export",
       "confirmImport": "Confirm Import",

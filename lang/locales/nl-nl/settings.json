@@ -84,7 +84,8 @@
         "deleteConfirmMessage": "Weet je zeker dat je dit back-upbestand wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
         "restoreConfirmTitle": "Database herstellen?",
         "restoreConfirmMessage": "Dit zal alle huidige gegevens vervangen door de gegevens van deze back-up. De app zal herstarten na het herstellen.",
-        "restoreSuccess": "Database succesvol hersteld"
+        "restoreSuccess": "Database succesvol hersteld",
+        "cycleEncryptionBackup": "Vóór het versleutelen van cyclusgegevens"
       },
       "confirmExport": "Export bevestigen",
       "confirmImport": "Import bevestigen",

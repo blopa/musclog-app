@@ -24,6 +24,7 @@ import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
+import { CycleTrackingService } from '@/database/services/CycleTrackingService';
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { MealService } from '@/database/services/MealService';
@@ -1418,23 +1419,22 @@ async function seedUserMetrics(): Promise<{ created: number }> {
 }
 
 async function seedMenstrualCycle(): Promise<void> {
-  const now = Date.now();
   try {
     const existing = await database.get<MenstrualCycle>('menstrual_cycles').query().fetch();
     if (existing.length > 0) {
       return;
     }
 
-    await database.write(async () => {
-      await database.get<MenstrualCycle>('menstrual_cycles').create((c) => {
-        c.avgCycleLength = 28;
-        c.avgPeriodDuration = 5;
-        c.useHormonalBirthControl = false;
-        c.lastPeriodStartDate = Date.now() - 14 * MS_PER_SOLAR_DAY;
-        c.isActive = true;
-        c.createdAt = now;
-        c.updatedAt = now;
-      });
+    // Four logged periods, newest started two weeks ago, through the same service the app uses.
+    const today = localDayStartMs(new Date());
+    await CycleTrackingService.create({
+      config: { fallbackCycleLength: 28, fallbackPeriodDuration: 5 },
+      context: null,
+      periods: [3, 2, 1, 0].map((cyclesAgo) => {
+        const startDate = today - (14 + cyclesAgo * 28) * MS_PER_SOLAR_DAY;
+
+        return { startDate, endDate: startDate + 4 * MS_PER_SOLAR_DAY };
+      }),
     });
     console.log('Seeded menstrual cycle');
   } catch (error) {

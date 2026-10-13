@@ -10,10 +10,11 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerModal } from '@/components/modals/DatePickerModal';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
+import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
+import { periodErrorKey } from '@/utils/cycle/periodErrors';
 import { handleError } from '@/utils/handleError';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 
@@ -25,32 +26,15 @@ const DEFAULT_CYCLE_DATA: CycleSetupData = {
   lastPeriodStartDate: null,
   cycleLength: 28,
   periodDuration: 5,
-  birthControlType: 'none',
-  syncGoal: 'performance',
+  contraception: 'none',
   lifeStage: 'regular',
 };
-
-function getCycleSetupErrorMessage(
-  error: unknown,
-  t: ReturnType<typeof useTranslation>['t']
-): string {
-  if (error instanceof Error) {
-    if (error.message === 'period_log_overlaps_existing') {
-      return t('onboarding.cycleSetup.errors.overlappingPeriods');
-    }
-
-    if (error.message === 'period_date_in_future') {
-      return t('onboarding.cycleSetup.errors.futureDate');
-    }
-  }
-
-  return t('errors.somethingWentWrong');
-}
 
 export default function CycleSetup() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { createCycle } = useMenstrualCycle();
 
   const params = useLocalSearchParams<{
     nextRoute?: string;
@@ -93,22 +77,19 @@ export default function CycleSetup() {
     setIsSaving(true);
 
     try {
-      await MenstrualCycleRepository.replaceActiveCycle(
-        {
-          avgCycleLength: data.cycleLength,
-          avgPeriodDuration: data.periodDuration,
-          useHormonalBirthControl: data.birthControlType !== 'none',
-          birthControlType: data.birthControlType !== 'none' ? data.birthControlType : undefined,
-          syncGoal: data.syncGoal,
-          lifeStage: data.lifeStage !== 'regular' ? data.lifeStage : undefined,
+      await createCycle({
+        config: {
+          fallbackCycleLength: data.cycleLength,
+          fallbackPeriodDuration: data.periodDuration,
         },
-        [
+        context: { lifeStage: data.lifeStage, contraception: data.contraception },
+        periods: [
           ...(data.lastPeriodStartDate
             ? [{ startDate: localDayStartMs(data.lastPeriodStartDate) }]
             : []),
           ...pastPeriods.map((past) => ({ startDate: localDayStartMs(past.startDate) })),
-        ]
-      );
+        ],
+      });
 
       if (nextRoute) {
         router.navigate(nextRoute as never);
@@ -117,7 +98,7 @@ export default function CycleSetup() {
         router.navigate('/app');
       }
     } catch (error) {
-      const snackbarMessage = getCycleSetupErrorMessage(error, t);
+      const snackbarMessage = t(periodErrorKey(error));
 
       await handleError(error, 'CycleSetup.handleFinish', {
         snackbarMessage,

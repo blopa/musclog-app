@@ -3,16 +3,21 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { database } from '@/database';
-import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
 import type WeeklyReview from '@/database/models/WeeklyReview';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
-import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
+import {
+  CycleRepository,
+  readContexts,
+  readCycleConfig,
+  readPeriods,
+} from '@/database/repositories/CycleRepository';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
-import { MenstrualService } from '@/database/services/MenstrualService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
+import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
+import { planCycleReminders } from '@/utils/cycle/cycleReminders';
 import { darkTheme } from '@/theme';
 import {
   localDayKeyPlusCalendarDaysFromNow,
@@ -515,66 +520,46 @@ export class NotificationService {
       return;
     }
 
-    // Fetch active cycle
-    const cycles = await database
-      .get<MenstrualCycle>('menstrual_cycles')
-      .query(Q.where('is_active', true), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    const cycle = cycles[0];
+    const cycle = (await CycleRepository.cycles().fetch()).find((c) => c.isActive);
     if (!cycle) {
       return;
     }
 
-    // Fetch period logs for this cycle
-    const periodLogs = await PeriodLogRepository.fetchForCycle(cycle.id);
-    const stats = MenstrualService.calculateCycleStats(periodLogs, {
-      avgCycleLength: cycle.avgCycleLength,
-      avgPeriodDuration: cycle.avgPeriodDuration,
+    const [periods, contexts, config, showPredictions, showFertility, style] = await Promise.all([
+      CycleRepository.periods(cycle.id).fetch().then(readPeriods),
+      CycleRepository.contexts(cycle.id).fetch().then(readContexts),
+      readCycleConfig(cycle),
+      SettingsService.getCycleShowPredictions(),
+      SettingsService.getCycleShowFertility(),
+      SettingsService.getCycleNotificationStyle(),
+    ]);
+    const { timeline } = buildCycleSnapshot({
+      periods,
+      contexts,
+      config,
+      nowMs: Date.now(),
+      showPredictions,
+      showFertility,
     });
 
-    const nextPeriodPrediction = MenstrualService.predictNextPeriod(periodLogs, stats);
-    if (!nextPeriodPrediction) {
-      return;
-    }
-
-    // Schedule next period prediction (2 days before)
-    const notificationDate = new Date(nextPeriodPrediction.date.getTime() - 2 * MS_PER_SOLAR_DAY);
-    notificationDate.setHours(9, 0, 0, 0);
-
-    if (notificationDate.getTime() > Date.now()) {
+    for (const reminder of planCycleReminders(timeline, Date.now())) {
+      const detailed = style === 'detailed';
+      const key = reminder.kind === 'period-start' ? 'periodPrediction' : 'fertileWindow';
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: i18n.t('notifications.types.periodPrediction.title'),
-          body: i18n.t('notifications.types.periodPrediction.body'),
-          data: { type: 'menstrual-cycle', subtype: 'period-start' },
+          // The default wording never says what it is about: a lock screen is a public place.
+          title: i18n.t(
+            detailed
+              ? `notifications.types.${key}.title`
+              : 'notifications.types.cycleDiscreet.title'
+          ),
+          body: i18n.t(
+            detailed ? `notifications.types.${key}.body` : 'notifications.types.cycleDiscreet.body'
+          ),
+          data: { type: 'menstrual-cycle', subtype: reminder.kind },
         },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: notificationDate,
-        },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reminder.date },
       });
-    }
-
-    // Schedule fertile window start
-    const fertileWindow = MenstrualService.getFertileWindow(periodLogs, stats);
-    if (fertileWindow) {
-      const fertileStartNotification = new Date(fertileWindow.start);
-      fertileStartNotification.setHours(9, 0, 0, 0);
-
-      if (fertileStartNotification.getTime() > Date.now()) {
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: i18n.t('notifications.types.fertileWindow.title'),
-            body: i18n.t('notifications.types.fertileWindow.body'),
-            data: { type: 'menstrual-cycle', subtype: 'fertile-window' },
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: fertileStartNotification,
-          },
-        });
-      }
     }
   }
 

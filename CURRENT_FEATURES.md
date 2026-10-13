@@ -105,7 +105,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - AI food photo and nutrition label analysis
 - AI-generated workout plans and full meal plans
 - AI insights based on your actual logged data (workouts, nutrition, body metrics)
-- AI has access to your goals, workout history, nutrition logs, and cycle phase
+- AI has access to your goals, workout history, and nutrition logs
 - Create and manage custom system prompts (general, nutrition, exercise-specific) and toggle them on/off
 - Configurable conversation history length
 - Copy or share AI chat messages
@@ -118,7 +118,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Time range filters: 7-day, 30-day, 90-day, or custom
 - Weekly rolling averages toggle
 - Correlation charts: volume vs. calories, body composition vs. protein, mood vs. macros/volume, etc.
-- Workout performance charted by menstrual cycle phase
+- Workout performance charted against days near a logged period (logged data only, no estimated phases)
 - AI-generated progress insights
 - Data export: encrypted JSON backup or human-readable Excel spreadsheet
 
@@ -136,13 +136,33 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Menstrual Cycle Tracking
 
-- Track menstrual, follicular, ovulation, and luteal phases
-- Phase wheel visualization showing current position in the cycle
-- Next period and fertile window predictions
-- Cycle-aware training recommendations (e.g., deload during menstrual phase)
-- Log flow intensity and symptoms with custom notes
-- Charts showing workout performance correlated to cycle phase
-- Support for hormonal and non-hormonal birth control configurations
+**Logging and history**
+
+- One-tap quick log for bleeding and pinned symptoms, plus a full day sheet: bleeding level, symptoms with mild/moderate/severe severity, "no symptoms today" (kept distinct from an unlogged day), pain 0–10, energy, mood and a note
+- Quick log learns: after a symptom is logged on enough days across cycles it offers to pin it
+- Log a period start or end, or a past period with an explicit end: a date, "I don't remember", or the usual length (stored as an estimate, never as a recorded end)
+- Calendar of logged bleeding, spotting, observations and the predicted window, using different shapes plus a text legend and spoken day descriptions; a list of periods with duration and cycle length
+- Edit a period's start or end, or delete it with undo; statistics and reminders recalculate. Excluded cycles stay visible with the reason, and any cycle can be switched out of the predictions
+- Bleeding logged outside a period offers to start one on that day
+
+**Predictions that say what they know**
+
+- Next period as a range with confidence based on usable cycles and how much they vary; "how is this calculated?" shows the cycles used and why any were not
+- The day counter keeps counting from the last logged start; an overdue period reads "later than your usual range"; predictions can be hidden while logging continues
+- Fertile-window estimate is opt-in (off by default), explained before it is enabled, and always shown with a not-contraception note
+- Birth control (combined or progestin pill, hormonal or copper IUD, implant, patch, ring, injection) and life stage (including postpartum, perimenopause, PCOS and tracking without bleeding) are a dated history; they decide which predictions exist, and cycles under a hormonal method or postpartum are not counted
+
+**Your own patterns**
+
+- Observations from your records only, each stating how many cycles it rests on and the days behind it: recurring symptoms or pain near the start of a period, cycle length and bleeding duration changes, mood and workout volume near a period start, with a list of the sessions involved
+- No phase-based energy labels, hormone cards or workout intensity multipliers
+
+**Privacy and data**
+
+- Periods, daily logs, life-stage history and notes are encrypted on the device
+- Optional lock (biometrics or device PIN) for the cycle area only, or the whole app; reminders are discreet by default and never say what they are about unless you choose detailed wording
+- Pause tracking without losing history; delete all cycle data permanently, with an offer to remove local recovery points that could hold a copy
+- Export periods and daily logs as CSV, or a PDF appointment summary for a chosen range; full backups include and restore cycle data, and old backups are converted on restore
 
 ---
 

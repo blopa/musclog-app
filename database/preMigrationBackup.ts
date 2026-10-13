@@ -11,7 +11,7 @@ export type BackupFileMeta = {
   createdAt: string;
   fromVersion: number | null;
   toVersion: number | null;
-  reason?: 'schema-migration' | 'pre-restore' | 'exercise-catalogue';
+  reason?: 'schema-migration' | 'pre-restore' | 'exercise-catalogue' | 'cycle-encryption';
   // Storage format of the backup file. 'sqlite' is a raw `VACUUM INTO` copy of
   // musclog.db (native pre-migration snapshots — fast to create, converted to
   // JSON lazily at restore/download time). 'json' (or absent, for older entries
@@ -181,6 +181,22 @@ export async function createPreExerciseCatalogueBackup(): Promise<string> {
   } catch (error) {
     console.error('[PreExerciseCatalogueBackup] Failed to create backup:', error);
     await reportBackupError(error, 'database.preExerciseCatalogueBackup');
+    throw error;
+  }
+}
+
+/**
+ * Required safety backup before cycle records are converted into their encrypted form. Failure
+ * is propagated so the conversion leaves every legacy row untouched and retries on a later boot.
+ */
+export async function createPreCycleEncryptionBackup(): Promise<string> {
+  try {
+    const uri = await executeBackup('pre-cycle-encryption', 'cycle-encryption');
+    console.log(`[PreCycleEncryptionBackup] Created: ${uri}`);
+    return uri;
+  } catch (error) {
+    console.error('[PreCycleEncryptionBackup] Failed to create backup:', error);
+    await reportBackupError(error, 'database.preCycleEncryptionBackup');
     throw error;
   }
 }

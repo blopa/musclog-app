@@ -54,18 +54,32 @@
         "periodDurationLabel": "Period"
       },
       "birthControl": {
-        "title": "Hormonal Birth Control",
-        "description": "Are you currently using any hormonal birth control? This affects hormonal phase predictions.",
+        "title": "Birth control",
+        "description": "Are you currently using any birth control? Hormonal methods can change how your cycle behaves.",
         "none": "None",
-        "noneDescription": "No hormonal contraception.",
+        "noneDescription": "No contraception.",
         "pill": "Pill",
         "pillDescription": "Daily oral contraceptive pill.",
-        "iud": "IUD",
-        "iudDescription": "Intrauterine device (hormonal or copper).",
+        "iud": "IUD (type not set)",
+        "iudDescription": "Choose hormonal or copper to be specific.",
         "implant": "Implant",
         "implantDescription": "Subcutaneous hormonal implant.",
         "other": "Other",
-        "otherDescription": "Another form of contraception."
+        "otherDescription": "Another form of contraception.",
+        "hormonalIud": "Hormonal IUD",
+        "hormonalIudDescription": "Intrauterine device that releases hormones.",
+        "copperIud": "Copper IUD",
+        "copperIudDescription": "Intrauterine device without hormones.",
+        "patch": "Patch",
+        "patchDescription": "Hormonal skin patch.",
+        "ring": "Vaginal ring",
+        "ringDescription": "Hormonal vaginal ring.",
+        "shot": "Injection",
+        "shotDescription": "Hormonal contraceptive injection.",
+        "combinedPill": "Combined pill",
+        "combinedPillDescription": "Daily pill with estrogen and progestin.",
+        "progestinPill": "Progestin-only pill",
+        "progestinPillDescription": "Daily pill without estrogen."
       },
       "lifeStage": {
         "title": "Cycle Context",
@@ -78,7 +92,9 @@
         "postpartum": "Postpartum",
         "postpartumDescription": "I gave birth in the last year.",
         "postPill": "Recently stopped birth control",
-        "postPillDescription": "I stopped hormonal birth control recently and my cycle may still be adjusting."
+        "postPillDescription": "I stopped hormonal birth control recently and my cycle may still be adjusting.",
+        "noBleeding": "Tracking without bleeding",
+        "noBleedingDescription": "I don't have periods (for example after surgery or on suppressing hormones) but want to track how I feel."
       },
       "goal": {
         "title": "Sync Goal",

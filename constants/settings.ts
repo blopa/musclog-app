@@ -296,6 +296,20 @@ export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
  */
 export const ENABLE_FASTED_DAY_SETTING_TYPE = 'enable_fasted_day';
 
+/** Cycle tracking preferences. Predictions default on; fertility estimates default OFF (opt-in). */
+export const CYCLE_SHOW_PREDICTIONS_SETTING_TYPE = 'cycle_show_predictions';
+export const CYCLE_SHOW_FERTILITY_SETTING_TYPE = 'cycle_show_fertility';
+/** 'discreet' (default): reminders never say what they are about. 'detailed': they do. */
+export const CYCLE_NOTIFICATION_STYLE_SETTING_TYPE = 'cycle_notification_style';
+/** Comma-separated symptom keys pinned to the one-tap quick log. Parsed by `parseQuickLog`. */
+export const CYCLE_QUICK_LOG_SETTING_TYPE = 'cycle_quick_log';
+/** Symptoms the user was already offered a pin for, so a suggestion is made once. */
+export const CYCLE_PIN_SUGGESTED_SETTING_TYPE = 'cycle_pin_suggested';
+/** Set when the user answers the "cycles vary a lot" card, so it is asked once. */
+export const CYCLE_VARIABILITY_HINT_SETTING_TYPE = 'cycle_variability_hint_dismissed';
+/** 'off' | 'cycle' (cycle area only) | 'app' (whole app). */
+export const APP_LOCK_MODE_SETTING_TYPE = 'app_lock_mode';
+
 /**
  * Setting type for smart double progression preference.
  * value: 'reps_first' | 'weight_first'.
@@ -441,6 +455,8 @@ export type ChartTooltipPosition = 'left' | 'right';
 export type NutritionLogHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type WorkoutHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type HomeSummaryCard = 'daily_summary' | 'weekly_streak';
+export type CycleNotificationStyle = 'discreet' | 'detailed';
+export type AppLockMode = 'off' | 'cycle' | 'app';
 
 export type UseSettingsResult = {
   units: Units;
@@ -463,6 +479,12 @@ export type UseSettingsResult = {
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   enableFastedDay: boolean;
+  cycleShowPredictions: boolean;
+  cycleShowFertility: boolean;
+  cycleNotificationStyle: CycleNotificationStyle;
+  cycleQuickLogRaw: string;
+  cycleVariabilityHintDismissed: boolean;
+  appLockMode: AppLockMode;
   progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
   nutritionDisplay: string;
@@ -471,3 +493,7 @@ export type UseSettingsResult = {
   homeSummaryCard: HomeSummaryCard;
   showHomeSteps: boolean;
 };
+
+export function parseAppLockMode(raw: string | undefined | null): AppLockMode {
+  return raw === 'cycle' || raw === 'app' ? raw : 'off';
+}

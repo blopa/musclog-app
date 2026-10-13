@@ -40,6 +40,24 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
   }
 }
 
+/**
+ * Writes a small text file to the cache and opens the share sheet for it. Used for exports the
+ * person asked for (CSV), which are theirs to place wherever they like.
+ */
+export async function shareTextFile(
+  fileName: string,
+  content: string,
+  mimeType: string
+): Promise<void> {
+  if (!cacheDirectory) {
+    throw new Error('Cache directory is not available');
+  }
+
+  const fileUri = `${cacheDirectory}${fileName}`;
+  await writeAsStringAsync(fileUri, content);
+  await Sharing.shareAsync(fileUri, { mimeType });
+}
+
 export async function exportDatabase(
   encryptionPhrase?: string,
   options: ExportDatabaseOptions = {}

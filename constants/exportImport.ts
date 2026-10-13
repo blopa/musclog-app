@@ -78,6 +78,9 @@ export const RESTORE_ORDER: string[] = [
   'nutrition_checkins',
   'exercise_goals',
   'menstrual_cycles',
+  'cycle_periods',
+  'cycle_day_logs',
+  'cycle_contexts',
 
   // Log tables (depend on templates and master data)
   'workout_logs',

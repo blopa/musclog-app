@@ -22,6 +22,8 @@ import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
 import { isStaticExport } from '@/constants/platform';
+import { AppLockOverlay } from '@/components/lock/AppLockOverlay';
+import { AppLockProvider } from '@/context/AppLockContext';
 import { ConfettiInteractionsProvider } from '@/context/ConfettiInteractionsContext';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { SmartCameraProvider } from '@/context/SmartCameraContext';
@@ -112,6 +114,7 @@ function AppContent() {
           animationDuration: 200,
         }}
       />
+      <AppLockOverlay />
     </>
   );
 }
@@ -138,21 +141,23 @@ function RootLayout() {
               >
                 <AppDbReadyGate>
                   <SettingsProvider>
-                    <ConfettiInteractionsProvider>
-                      <MenstrualCycleProvider>
-                        <ThemeProvider>
-                          <UnreadChatProvider>
-                            <SnackbarProvider>
-                              <SmartCameraProvider>
-                                <CoachProvider>
-                                  <AppContent />
-                                </CoachProvider>
-                              </SmartCameraProvider>
-                            </SnackbarProvider>
-                          </UnreadChatProvider>
-                        </ThemeProvider>
-                      </MenstrualCycleProvider>
-                    </ConfettiInteractionsProvider>
+                    <AppLockProvider>
+                      <ConfettiInteractionsProvider>
+                        <MenstrualCycleProvider>
+                          <ThemeProvider>
+                            <UnreadChatProvider>
+                              <SnackbarProvider>
+                                <SmartCameraProvider>
+                                  <CoachProvider>
+                                    <AppContent />
+                                  </CoachProvider>
+                                </SmartCameraProvider>
+                              </SnackbarProvider>
+                            </UnreadChatProvider>
+                          </ThemeProvider>
+                        </MenstrualCycleProvider>
+                      </ConfettiInteractionsProvider>
+                    </AppLockProvider>
                   </SettingsProvider>
                 </AppDbReadyGate>
               </Sentry.ErrorBoundary>

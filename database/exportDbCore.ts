@@ -4,6 +4,7 @@ import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 
 import type { AsyncStorageDump } from './asyncStorageBackup';
+import { decryptCycleText } from './cyclePayload';
 import {
   decryptNumber,
   decryptNutritionLogSnapshotRow,
@@ -60,6 +61,8 @@ export function selectAllRowsSql(tableName: string, includeDeletedRecords = true
   return `SELECT * FROM ${quoteIdentifier(tableName)}${deletedRecordsClause};`;
 }
 
+const CYCLE_PAYLOAD_TABLES = new Set(['cycle_periods', 'cycle_day_logs', 'cycle_contexts']);
+
 function addAsyncStorageDump(dbData: ExportDump, snapshot?: AsyncStorageDump): void {
   if (!snapshot || Object.keys(snapshot).length === 0) {
     return;
@@ -101,6 +104,19 @@ export async function dumpRowsToJson(
         })
       );
       dbData.user_metrics = decryptedRows;
+      continue;
+    }
+
+    if (CYCLE_PAYLOAD_TABLES.has(tableName) || tableName === 'menstrual_cycles') {
+      const column = tableName === 'menstrual_cycles' ? 'config' : 'payload';
+      dbData[tableName] = await Promise.all(
+        rows.map(async (row) => {
+          const text = await decryptCycleText(row[column] as string | undefined);
+
+          // A value that will not decrypt is exported untouched rather than dropped or corrupted.
+          return text == null ? row : { ...row, [column]: text, _decrypted: true };
+        })
+      );
       continue;
     }
 

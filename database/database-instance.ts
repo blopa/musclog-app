@@ -27,6 +27,9 @@ import Gym from './models/Gym';
 import Meal from './models/Meal';
 import MealFood from './models/MealFood';
 import MealFoodPortion from './models/MealFoodPortion';
+import CycleContext from './models/CycleContext';
+import CycleDayLog from './models/CycleDayLog';
+import CyclePeriod from './models/CyclePeriod';
 import MenstrualCycle from './models/MenstrualCycle';
 import Muscle from './models/Muscle';
 import Note from './models/Note';
@@ -75,6 +78,9 @@ export const database = new Database({
     User,
     MenstrualCycle,
     PeriodLog,
+    CyclePeriod,
+    CycleDayLog,
+    CycleContext,
     Setting,
     WorkoutTemplate,
     WorkoutPlan,

@@ -67,6 +67,10 @@
       "workoutDurationWarning": {
         "title": "Still Working Out?",
         "body": "Your session has been running for 5 hours. Don't forget to finish it in Musclog!"
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "You have an update."
       }
     }
   }

@@ -143,6 +143,11 @@
     "proteinIntake": "Потребление белка",
     "proteinVsWeightChange": "Белок vs изменение веса ({{unit}})",
     "chartExported": "График сохранён",
-    "chartExportFailed": "Не удалось экспортировать график"
+    "chartExportFailed": "Не удалось экспортировать график",
+    "cycleBand": {
+      "period": "Отмеченные месячные",
+      "before": "Дни перед",
+      "other": "Остальные дни"
+    }
   }
 }

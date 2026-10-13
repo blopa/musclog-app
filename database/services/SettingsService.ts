@@ -16,6 +16,13 @@ import {
   DEFAULT_REST_SECONDS_SETTING_TYPE,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   DUMP_LLM_REQUESTS_SETTING_TYPE,
+  APP_LOCK_MODE_SETTING_TYPE,
+  CYCLE_NOTIFICATION_STYLE_SETTING_TYPE,
+  CYCLE_PIN_SUGGESTED_SETTING_TYPE,
+  CYCLE_QUICK_LOG_SETTING_TYPE,
+  CYCLE_SHOW_FERTILITY_SETTING_TYPE,
+  CYCLE_SHOW_PREDICTIONS_SETTING_TYPE,
+  CYCLE_VARIABILITY_HINT_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_LOCAL_LLM_SETTING_TYPE,
@@ -26,7 +33,10 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   HOME_ACTIONS_SETTING_TYPE,
   HOME_SUMMARY_CARD_SETTING_TYPE,
+  type AppLockMode,
+  type CycleNotificationStyle,
   type HomeSummaryCard,
+  parseAppLockMode,
   INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
@@ -776,6 +786,73 @@ export class SettingsService {
    */
   static async getIntuitiveEatingMode(): Promise<boolean> {
     return SettingsService.getBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, false);
+  }
+
+  // ── Cycle tracking and app lock ──────────────────────────────────────────────────────────
+
+  static async getCycleShowPredictions(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, true);
+  }
+
+  static async setCycleShowPredictions(value: boolean) {
+    await SettingsService.setBooleanSetting(CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, value);
+  }
+
+  /** Fertility / ovulation estimates are opt-in: default false. */
+  static async getCycleShowFertility(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(CYCLE_SHOW_FERTILITY_SETTING_TYPE, false);
+  }
+
+  static async setCycleShowFertility(value: boolean) {
+    await SettingsService.setBooleanSetting(CYCLE_SHOW_FERTILITY_SETTING_TYPE, value);
+  }
+
+  static async getCycleNotificationStyle(): Promise<CycleNotificationStyle> {
+    const raw = await SettingsService.getStringSetting(CYCLE_NOTIFICATION_STYLE_SETTING_TYPE, '');
+
+    return raw === 'detailed' ? 'detailed' : 'discreet';
+  }
+
+  static async setCycleNotificationStyle(style: CycleNotificationStyle) {
+    await SettingsService.setStringSetting(CYCLE_NOTIFICATION_STYLE_SETTING_TYPE, style);
+  }
+
+  static async getCycleQuickLog(): Promise<string> {
+    return SettingsService.getStringSetting(CYCLE_QUICK_LOG_SETTING_TYPE, '');
+  }
+
+  static async setCycleQuickLog(raw: string) {
+    await SettingsService.setStringSetting(CYCLE_QUICK_LOG_SETTING_TYPE, raw);
+  }
+
+  static async getCyclePinSuggested(): Promise<string> {
+    return SettingsService.getStringSetting(CYCLE_PIN_SUGGESTED_SETTING_TYPE, '');
+  }
+
+  static async setCyclePinSuggested(raw: string) {
+    await SettingsService.setStringSetting(CYCLE_PIN_SUGGESTED_SETTING_TYPE, raw);
+  }
+
+  static async setCycleVariabilityHintDismissed(value: boolean) {
+    await SettingsService.setBooleanSetting(CYCLE_VARIABILITY_HINT_SETTING_TYPE, value);
+  }
+
+  static async getAppLockMode(): Promise<AppLockMode> {
+    return parseAppLockMode(await SettingsService.getStringSetting(APP_LOCK_MODE_SETTING_TYPE, ''));
+  }
+
+  static async setAppLockMode(mode: AppLockMode) {
+    await SettingsService.setStringSetting(APP_LOCK_MODE_SETTING_TYPE, mode);
+  }
+
+  /** Back to defaults after "delete all cycle data". The app lock choice is left as the user set it. */
+  static async resetCycleSettings() {
+    await SettingsService.setCycleShowPredictions(true);
+    await SettingsService.setCycleShowFertility(false);
+    await SettingsService.setCycleNotificationStyle('discreet');
+    await SettingsService.setCycleQuickLog('');
+    await SettingsService.setCyclePinSuggested('');
+    await SettingsService.setCycleVariabilityHintDismissed(false);
   }
 
   /**

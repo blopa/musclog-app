@@ -96,11 +96,14 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ### 🌙 Menstrual Cycle Tracking
 
-- Track cycle phases: menstrual, follicular, ovulation, and luteal
-- Predict next period and fertile window
-- Adjust workout intensity automatically based on current cycle phase
-- Support for hormonal and non-hormonal birth control types
-- Toggle cycle tracking on or off at any time
+- Log periods, bleeding, symptoms with severity, pain, energy and mood; correct or delete any entry with undo
+- Calendar and period history, where logged days and estimates look different and are described in words
+- Next-period estimate as a range with an explained confidence level; overdue periods are stated plainly, and predictions can be hidden
+- Optional, off-by-default fertile-window estimate, always labelled as not contraception
+- Birth control and life stage change what is shown (for example, no predicted date on a method that suppresses ovulation)
+- Patterns drawn only from your own records, with the days behind each one; no phase-based workout prescriptions
+- Everything is encrypted on the device, with an optional lock for the cycle area or the whole app, discreet reminders, CSV export and a PDF appointment summary
+- Pause tracking without losing history, or permanently delete all cycle data
 
 ### 📈 Progress & Insights
 

@@ -16,7 +16,6 @@ import { waitForDbReady } from '@/database/dbReady';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { MealService } from '@/database/services/MealService';
-import { MenstrualBackfillService } from '@/database/services/MenstrualBackfillService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -235,14 +234,6 @@ export function AppBoot() {
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
-  }, []);
-
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    void MenstrualBackfillService.runV22Backfill();
   }, []);
 
   return null;

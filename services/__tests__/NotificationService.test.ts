@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 
 import { database } from '@/database';
+import { CycleRepository } from '@/database/repositories/CycleRepository';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { SettingsService } from '@/database/services/SettingsService';
 import { NotificationService } from '@/services/NotificationService';
@@ -29,7 +30,7 @@ jest.mock('@/database/repositories/WorkoutPlanRepository', () => ({
 }));
 
 jest.mock('expo-notifications', () => ({
-  SchedulableTriggerInputTypes: { WEEKLY: 'weekly' },
+  SchedulableTriggerInputTypes: { WEEKLY: 'weekly', DATE: 'date' },
   getAllScheduledNotificationsAsync: jest.fn(),
   cancelScheduledNotificationAsync: jest.fn(),
   scheduleNotificationAsync: jest.fn(),
@@ -54,14 +55,21 @@ jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     getNotifications: jest.fn(),
     getNotificationsWorkoutReminders: jest.fn(),
+    getNotificationsMenstrualCycle: jest.fn(),
+    getCycleShowPredictions: jest.fn(),
+    getCycleShowFertility: jest.fn(),
+    getCycleNotificationStyle: jest.fn(),
   },
 }));
 
-jest.mock('@/database/repositories/PeriodLogRepository', () => ({
-  PeriodLogRepository: {},
+// The cycle reads go through CycleRepository (which reaches the real database instance); the
+// decrypting readers are replaced with identity functions so a test can hand over plain DTOs.
+jest.mock('@/database/repositories/CycleRepository', () => ({
+  CycleRepository: { cycles: jest.fn(), periods: jest.fn(), contexts: jest.fn() },
+  readPeriods: jest.fn(async (records: unknown[]) => records),
+  readContexts: jest.fn(async (records: unknown[]) => records),
+  readCycleConfig: jest.fn(async () => ({ fallbackCycleLength: 28, fallbackPeriodDuration: 5 })),
 }));
-
-jest.mock('@/database/services/MenstrualService', () => ({ MenstrualService: {} }));
 
 jest.mock('@/lang/lang', () => ({
   __esModule: true,
@@ -223,6 +231,70 @@ describe('weekly review reminders', () => {
     await NotificationService.scheduleWeeklyReviewNotification();
     expect(mockNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith('review');
     expect(mockNotifications.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith('other');
+    expect(mockNotifications.scheduleNotificationAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe('cycle reminders', () => {
+  const D = 24 * 60 * 60 * 1000;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const start = (daysAgo: number) => today.getTime() - daysAgo * D;
+  const period = (id: string, daysAgo: number) => ({
+    id,
+    cycleId: 'c1',
+    startDate: start(daysAgo),
+    endDate: start(daysAgo) + 4 * D,
+    endKind: 'logged',
+    timezone: '+00:00',
+    excludedFromStats: false,
+    note: '',
+  });
+  const repo = CycleRepository as jest.Mocked<typeof CycleRepository>;
+
+  function arrange(periods: ReturnType<typeof period>[], style: 'discreet' | 'detailed') {
+    mockSettingsService.getNotifications.mockResolvedValue(true);
+    (mockSettingsService.getNotificationsMenstrualCycle as jest.Mock).mockResolvedValue(true);
+    (mockSettingsService.getCycleShowPredictions as jest.Mock).mockResolvedValue(true);
+    (mockSettingsService.getCycleShowFertility as jest.Mock).mockResolvedValue(false);
+    (mockSettingsService.getCycleNotificationStyle as jest.Mock).mockResolvedValue(style);
+    mockNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([]);
+    mockNotifications.scheduleNotificationAsync.mockClear();
+    repo.cycles.mockReturnValue({ fetch: async () => [{ id: 'c1', isActive: true }] } as never);
+    repo.periods.mockReturnValue({ fetch: async () => periods } as never);
+    repo.contexts.mockReturnValue({ fetch: async () => [] } as never);
+  }
+
+  const onTrack = [period('a', 66), period('b', 38), period('c', 10)];
+
+  it('words a reminder discreetly by default, so a lock screen never says what it is about', async () => {
+    arrange(onTrack, 'discreet');
+    await NotificationService.scheduleMenstrualCycleNotifications();
+    const content = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].content;
+    expect(content.title).toBe('notifications.types.cycleDiscreet.title');
+    expect(content.body).toBe('notifications.types.cycleDiscreet.body');
+    expect(content.data).toMatchObject({ type: 'menstrual-cycle', subtype: 'period-start' });
+  });
+
+  it('uses the descriptive wording only when the person chose it', async () => {
+    arrange(onTrack, 'detailed');
+    await NotificationService.scheduleMenstrualCycleNotifications();
+    const content = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].content;
+    expect(content.title).toBe('notifications.types.periodPrediction.title');
+  });
+
+  it('schedules no fertile-window reminder unless fertility estimates are on', async () => {
+    arrange(onTrack, 'detailed');
+    await NotificationService.scheduleMenstrualCycleNotifications();
+    const subtypes = mockNotifications.scheduleNotificationAsync.mock.calls.map(
+      (call) => (call[0].content.data as { subtype: string }).subtype
+    );
+    expect(subtypes).toEqual(['period-start']);
+  });
+
+  it('schedules nothing for a period that is overdue', async () => {
+    arrange([period('a', 120), period('b', 92), period('c', 64)], 'detailed');
+    await NotificationService.scheduleMenstrualCycleNotifications();
     expect(mockNotifications.scheduleNotificationAsync).not.toHaveBeenCalled();
   });
 });

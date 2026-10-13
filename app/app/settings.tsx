@@ -13,6 +13,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
+import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { ManageBleDevicesModal } from '@/components/modals/ManageBleDevicesModal';
 import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
@@ -37,6 +38,7 @@ export default function SettingsScreen() {
     localLlmBaseUrl,
   } = useSettings();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
+  const [isCycleSettingsVisible, setCycleSettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isDataSettingsVisible, setDataSettingsVisible] = useState(false);
   const [isAppBehaviorSettingsVisible, setAppBehaviorSettingsVisible] = useState(false);
@@ -241,6 +243,26 @@ export default function SettingsScreen() {
           <SettingsCard
             icon={
               <MaterialIcons
+                name="calendar-month"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('cycle.settings.title')}
+            subtitle={t('cycle.settings.subtitle')}
+            onPress={() => setCycleSettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
+
+          <SettingsCard
+            icon={
+              <MaterialIcons
                 name="notifications"
                 size={theme.iconSize['2xl']}
                 color={theme.colors.accent.primary}
@@ -323,6 +345,10 @@ export default function SettingsScreen() {
       <WorkoutSettingsModal
         visible={isWorkoutSettingsVisible}
         onClose={() => setWorkoutSettingsVisible(false)}
+      />
+      <CycleSettingsModal
+        visible={isCycleSettingsVisible}
+        onClose={() => setCycleSettingsVisible(false)}
       />
       <NotificationsSettingsModal
         visible={isNotificationsSettingsVisible}

@@ -84,7 +84,8 @@
         "deleteConfirmMessage": "Tem certeza de que deseja excluir este arquivo de backup? Esta ação não pode ser desfeita.",
         "restoreConfirmTitle": "Restaurar Banco de Dados?",
         "restoreConfirmMessage": "Isso substituirá todos os dados atuais pelos dados deste backup. O aplicativo será recarregado após a restauração.",
-        "restoreSuccess": "Banco de dados restaurado com sucesso"
+        "restoreSuccess": "Banco de dados restaurado com sucesso",
+        "cycleEncryptionBackup": "Antes de criptografar os dados do ciclo"
       },
       "confirmExport": "Confirmar Exportação",
       "confirmImport": "Confirmar Importação",

@@ -67,6 +67,10 @@
       "workoutDurationWarning": {
         "title": "Ainda Treinando?",
         "body": "Sua sessão está rodando há 5 horas. Não esqueça de finalizá-la no Musclog!"
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "Você tem uma atualização."
       }
     }
   }

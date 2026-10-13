@@ -143,6 +143,11 @@
     "proteinIntake": "Ingestão de Proteína",
     "proteinVsWeightChange": "Proteína vs Mudança de Peso ({{unit}})",
     "chartExported": "Gráfico salvo",
-    "chartExportFailed": "Falha ao exportar gráfico"
+    "chartExportFailed": "Falha ao exportar gráfico",
+    "cycleBand": {
+      "period": "Período registrado",
+      "before": "Dias antes",
+      "other": "Outros dias"
+    }
   }
 }

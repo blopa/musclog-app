@@ -290,7 +290,9 @@ pattern across eight files and added nothing over the surface color.
 - Direct and calm. Avoid guilt, punishment, and alarmist red states for ordinary target variance.
 - Explain AI estimates and calculated health metrics at the point of use.
 - Keep core logging fast and usable offline; optional AI should not block a manual path.
-- Menstrual-cycle and recovery guidance should be framed as context, not deterministic instruction.
+- Menstrual-cycle guidance is context, not instruction. The app never prescribes training from a cycle phase (the evidence does not support universal rules); it reports observations from the person's own records, always with how many cycles they rest on and the days behind them.
+- A modeled value shows its uncertainty (a range and a confidence line), and a logged fact is never drawn the same way as an estimate.
+- Cycle calendars never rely on color alone: each kind of mark has its own shape (filled, outlined, dashed, bar, dot), a word in the legend, and a spoken description per day.
 
 ## Website
 

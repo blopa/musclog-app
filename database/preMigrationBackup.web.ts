@@ -235,6 +235,23 @@ export async function createPreExerciseCatalogueBackup(): Promise<string> {
   }
 }
 
+/** Create a required backup before cycle records are converted to their encrypted form on Web. */
+export async function createPreCycleEncryptionBackup(): Promise<string> {
+  if (!canCreateWebBackup()) {
+    throw new Error('Web backup storage is not available');
+  }
+
+  try {
+    const hash = await executeLiveBackup('cycle-encryption');
+    console.log(`[WebBackup] Created pre-cycle-encryption backup (hash: ${hash})`);
+    return `web-backup://${hash}`;
+  } catch (error) {
+    console.error('[WebBackup] Failed to create pre-cycle-encryption backup:', error);
+    handleError(error, 'preMigrationBackup.web.preCycleEncryption');
+    throw error;
+  }
+}
+
 // ─── Web migration check ───────────────────────────────────────────────────
 
 /**
