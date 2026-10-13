@@ -168,10 +168,10 @@
       "importOptically": "Импортировать данные с другого телефона",
       "storedLocally": "Все данные хранятся локально на вашем устройстве",
       "personalizedSetup": "Персонализированная настройка",
-      "personalizedSetupSteps": "8 шагов",
+      "personalizedSetupSteps": "10 шагов",
       "personalizedSetupSubtitle": "Получите точный TDEE, макросы и персональные рекомендации",
       "quickSetup": "Быстрая настройка",
-      "quickSetupSteps": "5 шагов",
+      "quickSetupSteps": "7 шагов",
       "quickSetupSubtitle": "Базовая настройка, можно персонализировать позже"
     },
     "quickPreferences": {

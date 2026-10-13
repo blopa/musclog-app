@@ -205,6 +205,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Onboarding
 
+- Landing setup labels reflect the current flow totals: 10 steps for Personalized Setup and 7 for Quick Setup in every supported language
+
 - Returning users get a short, skippable post-update tour on home, merging missed announcements into at most six pages plus an intro. The intro pairs page titles with descriptions and names the additional features under “Also new”. Fresh installs skip it; restored backups retain their seen version (older backups without one may show the tour again). The first announcement targets 2.13.1, the first production release with the tour: every update from an earlier version (including a 2.13.0 test build) shows it. It introduces Guided/Inline views, progression preferences, rest controls, gyms and plates, Weekly Review, plans, cardio, swaps, restrictions and warm-ups.
 - Quick or detailed guided setup flow
 - Restore a full profile either from a JSON backup or directly from another device via optical QR transfer on the first screen

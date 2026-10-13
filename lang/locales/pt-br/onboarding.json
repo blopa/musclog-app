@@ -168,10 +168,10 @@
       "importOptically": "Importar dados de outro celular",
       "storedLocally": "Todos os dados armazenados localmente no seu dispositivo",
       "personalizedSetup": "Configuração Personalizada",
-      "personalizedSetupSteps": "8 etapas",
+      "personalizedSetupSteps": "10 etapas",
       "personalizedSetupSubtitle": "Obtenha TDEE preciso, macros e recomendações personalizadas",
       "quickSetup": "Configuração Rápida",
-      "quickSetupSteps": "5 etapas",
+      "quickSetupSteps": "7 etapas",
       "quickSetupSubtitle": "Configuração básica, você pode personalizar depois"
     },
     "quickPreferences": {
