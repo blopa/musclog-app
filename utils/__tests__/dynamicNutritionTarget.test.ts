@@ -122,6 +122,9 @@ describe('resolveDailyMacros', () => {
       fiber: 25,
       isDynamic: true,
       usedEmpiricalData: true,
+      // The floor travels with the macros so the Weekly Review can warn below it.
+      minimumCalories: 1500,
+      minimumCaloriesDisabled: false,
       tdee: 2600,
     });
   });
@@ -154,6 +157,9 @@ describe('resolveDailyMacros', () => {
       fiber: 25,
       isDynamic: true,
       usedEmpiricalData: false,
+      // The floor travels with the macros so the Weekly Review can warn below it.
+      minimumCalories: 1500,
+      minimumCaloriesDisabled: false,
       tdee: 2600,
     });
   });

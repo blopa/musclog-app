@@ -158,7 +158,6 @@ export function WorkoutLibraryContent({
       <>
         <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
           {searchResults.map(({ template, plan }) => {
-            const featured = !hasSearchQuery && template.id === templates[0]?.id;
             return (
               <View key={`${plan?.id ?? 'unplanned'}:${template.id}`} className="gap-2">
                 {hasSearchQuery && showPlanSections ? (
@@ -173,11 +172,12 @@ export function WorkoutLibraryContent({
                   exerciseCount={template.exerciseCount}
                   duration={template.duration}
                   icon={template.icon}
-                  variant={featured ? undefined : 'standard'}
+                  // The Today card above the library is the screen's one primary action, so no
+                  // library card is drawn as a second, competing hero.
+                  variant="standard"
                   onStart={() => onStartWorkout(template.id, plan?.id)}
                   onPress={() => onPreviewWorkout(template.id, plan?.id)}
-                  // TODO: check why can't archive featured workout
-                  onArchive={featured ? undefined : () => onArchiveWorkout(template.id)}
+                  onArchive={() => onArchiveWorkout(template.id)}
                   onMore={() => onOpenWorkoutMenu(template.id, template.name, plan?.id)}
                 />
               </View>

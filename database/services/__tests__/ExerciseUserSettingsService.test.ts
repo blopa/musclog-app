@@ -161,3 +161,40 @@ describe('ExerciseUserSettingsService.update', () => {
     expect(mockState.rows[0].weightUnit).toBe('lbs');
   });
 });
+
+describe('bodyweight rep ceiling', () => {
+  it('stores a picked ceiling and keeps the other fields', async () => {
+    mockState.rows = [row({ note: 'full lockout' })];
+
+    await ExerciseUserSettingsService.setRepCeiling('ex-1', 35);
+
+    expect(live()[0]).toMatchObject({ note: 'full lockout', repCeiling: 35 });
+  });
+
+  it('does not store the default: picking 25 is the same as having no row', async () => {
+    await ExerciseUserSettingsService.setRepCeiling('ex-1', 25);
+    expect(database.batch).not.toHaveBeenCalled();
+
+    mockState.rows = [row({ repCeiling: 40 })];
+    await ExerciseUserSettingsService.setRepCeiling('ex-1', 25);
+    expect(live()).toHaveLength(0);
+  });
+
+  it('drops a ceiling the picker does not offer', async () => {
+    await ExerciseUserSettingsService.update('ex-1', { note: 'x', repCeiling: 27 });
+    expect(live()[0].repCeiling).toBeUndefined();
+  });
+
+  it('resolves every exercise’s ceiling in one read, defaulting to 25', async () => {
+    mockState.rows = [row({ exerciseId: 'dips', repCeiling: 30 }), row({ exerciseId: 'odd', repCeiling: 99 })];
+    jest
+      .spyOn(require('@/database/services/SettingsService').SettingsService, 'getUnits')
+      .mockResolvedValue('metric');
+
+    const { repCeilingFor } = await ExerciseUserSettingsService.getResolvers(null);
+
+    expect(repCeilingFor('dips')).toBe(30);
+    expect(repCeilingFor('odd')).toBe(25);
+    expect(repCeilingFor('push-ups')).toBe(25);
+  });
+});

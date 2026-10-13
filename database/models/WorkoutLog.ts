@@ -2,6 +2,7 @@ import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { normalizeNote } from '@/utils/noteText';
+import { writeSetEffort } from '@/utils/setEffort';
 import { calculateWorkoutVolume, type ExerciseWithSets } from '@/utils/workoutCalculator';
 import {
   assertValidWorkoutSetDifficultyLevel,
@@ -166,8 +167,7 @@ export default class WorkoutLog extends Model {
         updatedSet.restTimeAfter = data.restTimeAfter;
       }
       if (data.repsInReserve !== undefined) {
-        updatedSet.repsInReserve = data.repsInReserve;
-        updatedSet.rirRecorded = true;
+        writeSetEffort(updatedSet, data.repsInReserve);
       }
       if (data.difficultyLevel !== undefined) {
         assertValidWorkoutSetDifficultyLevel(data.difficultyLevel);
@@ -227,8 +227,7 @@ export default class WorkoutLog extends Model {
       logSet.weight = weight;
       logSet.partials = partials ?? 0;
       logSet.restTimeAfter = 0;
-      logSet.repsInReserve = 0;
-      logSet.rirRecorded = false;
+      writeSetEffort(logSet, null);
       logSet.difficultyLevel = undefined;
       logSet.completionStatus = 'planned';
       logSet.setType = 'normal';
@@ -289,8 +288,7 @@ export default class WorkoutLog extends Model {
         logSet.weight = weight;
         logSet.partials = 0;
         logSet.restTimeAfter = 60;
-        logSet.repsInReserve = 0;
-        logSet.rirRecorded = false;
+        writeSetEffort(logSet, null);
         logSet.difficultyLevel = undefined;
         logSet.completionStatus = 'planned';
         logSet.setType = 'normal';

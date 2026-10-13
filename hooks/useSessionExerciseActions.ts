@@ -48,31 +48,44 @@ export function useSessionExerciseActions({
   const { showSnackbar } = useSnackbar();
   const logExerciseId = target?.set.logExerciseId;
 
-  /** Runs one write with the saving spinner up, refreshes, and reports a failure in a snackbar. */
-  const runSaving = async (label: string, work: (logExerciseId: string) => Promise<unknown>) => {
+  /**
+   * Runs one write with the saving spinner up, refreshes, reports a failure in a snackbar, and
+   * says whether it went through. The failure is already shown to
+   * the user here, so callers only need the result to decide what to do next — never to undo
+   * something (clearing typed values, closing a sheet) as though the action had succeeded.
+   */
+  const runSaving = async (
+    label: string,
+    work: (logExerciseId: string) => Promise<unknown>
+  ): Promise<boolean> => {
     if (!logExerciseId) {
-      return;
+      return false;
     }
     try {
       setIsSaving(true);
       await work(logExerciseId);
       await refresh();
+      return true;
     } catch (err) {
       handleError(err, `workout-session.${label}`, {
         snackbarMessage: t('errors.somethingWentWrong'),
       });
+      return false;
     } finally {
       setIsSaving(false);
     }
   };
 
-  const replaceExercise = async (exercise: ReplaceExerciseData, outcome: SubstitutionOutcome) => {
+  const replaceExercise = async (
+    exercise: ReplaceExerciseData,
+    outcome: SubstitutionOutcome
+  ): Promise<boolean> => {
     if (!target) {
-      return;
+      return false;
     }
     const replaced = target.exercise;
 
-    await runSaving('handleReplaceExercise', async (id) => {
+    return runSaving('handleReplaceExercise', async (id) => {
       // The still-planned sets carry the OLD exercise's load: a planned 80 kg bench is not an
       // 80 kg dumbbell fly. The suggestion is read before the write, which only touches this log.
       const { weightKg } = await WorkoutTemplateService.getSuggestedWeightAndRepsForExercise(
@@ -83,20 +96,30 @@ export function useSessionExerciseActions({
         plannedWeightKg: weightKg,
       });
 
-      // What the user chose to remember is saved only once the swap itself has succeeded.
-      if (outcome.restriction) {
-        const saved = await ExerciseRestrictionService.set(replaced.id, outcome.restriction.kind, {
-          expiresAt: outcome.restriction.expiresAt,
-        });
-        if (!saved.ok) {
-          showSnackbar(
-            'error',
-            t('workoutSettings.restrictions.limit', { count: MAX_EXERCISE_RESTRICTIONS })
+      // What the user chose to remember is saved only once the swap itself has succeeded — and a
+      // failure there is reported on its own: the swap DID happen, so it must not read as failed.
+      try {
+        if (outcome.restriction) {
+          const saved = await ExerciseRestrictionService.set(
+            replaced.id,
+            outcome.restriction.kind,
+            { expiresAt: outcome.restriction.expiresAt }
           );
+          if (!saved.ok) {
+            showSnackbar(
+              'error',
+              t('workoutSettings.restrictions.limit', { count: MAX_EXERCISE_RESTRICTIONS })
+            );
+          }
         }
-      }
-      if (outcome.removeEquipmentFromGym && gym && replaced.equipmentType) {
-        await GymService.removeEquipment(gym.id, replaced.equipmentType);
+        if (outcome.removeEquipmentFromGym && gym && replaced.equipmentType) {
+          await GymService.removeEquipment(gym.id, replaced.equipmentType);
+        }
+      } catch (err) {
+        handleError(err, 'workout-session.rememberSwapChoice', {
+          snackbarMessage: t('errors.somethingWentWrong'),
+        });
+        return;
       }
 
       showSnackbar(

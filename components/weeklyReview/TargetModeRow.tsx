@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { Chip } from '@/components/theme/Chip';
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import type { NutritionTargetMode } from '@/database/models/NutritionGoal';
 
 export const TARGET_MODE_KEYS = {
@@ -43,7 +44,7 @@ export function TargetModeRow({
         icon={Target}
         label={since ? `${label} · ${since}` : label}
         accessibilityLabel={`${label}${since ? `, ${since}` : ''}, ${t('weeklyReview.title')}`}
-        onPress={() => router.push('/app/nutrition/checkin-list')}
+        onPress={() => router.push(WEEKLY_REVIEW_ROUTE)}
         testID="weekly-review-entry"
       />
     </View>

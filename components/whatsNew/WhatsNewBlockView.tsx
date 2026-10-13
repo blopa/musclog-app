@@ -72,10 +72,9 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
                 onPress={() => onAction(item.action!)}
               />
             ) : (
-              <View
-                key={item.id}
-                className="flex-row items-center gap-3 rounded-xl bg-bg-overlay px-4 py-3"
-              >
+              // Not tappable, so not drawn as a card: a filled row beside the tappable ListRows
+              // read as one more button that did nothing.
+              <View key={item.id} className="flex-row items-center gap-3 px-4 py-2">
                 <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 <View className="flex-1 gap-1">
                   <Text className="text-base font-semibold text-text-primary">

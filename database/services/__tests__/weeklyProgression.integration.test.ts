@@ -44,7 +44,7 @@ import { WorkoutTodayRepository } from '@/database/repositories/WorkoutTodayRepo
 import { dumpDatabase } from '@/database/exportDb.web';
 import { restoreDatabase } from '@/database/importDb';
 import { appExerciseId } from '@/utils/exerciseImage';
-import { parseProgressionRule } from '@/utils/progressionRules';
+import { parseProgressionRule, type ProgressionRule } from '@/utils/progressionRules';
 import { Q } from '@nozbe/watermelondb';
 import Schedule from '@/database/models/Schedule';
 import { weekHadActivity } from '@/hooks/useWeeklyReviewStatus';
@@ -80,7 +80,10 @@ jest.mock('@/database/services/SettingsService', () => ({
   },
 }));
 jest.mock('@/database/services/ExerciseUserSettingsService', () => ({
-  ExerciseUserSettingsService: { getWeightUnitsResolver: async () => () => 'metric' },
+  ExerciseUserSettingsService: {
+    getWeightUnitsResolver: async () => () => 'metric',
+    getResolvers: async () => ({ unitsFor: () => 'metric', repCeilingFor: () => 25 }),
+  },
 }));
 jest.mock('@/database/services/UserMetricService', () => ({
   UserMetricService: {
@@ -494,14 +497,23 @@ it('persists an entered training max in the session independently from template 
   expect(parseSessionProgressionState(w.block.progressionJson)?.trainingMaxKg).toBe(100);
 });
 
-it('a repeat week hands the accumulated training max on instead of resetting the rule', async () => {
-  const rule = {
+/**
+ * A percentage-rule session at a carried 120 kg training max, then a Weekly Review repeat week whose
+ * log exercise runs `nextRule`. Returns the state the repeat week's session ends up carrying.
+ */
+async function repeatWeekState(
+  nextRule?: (rule: ProgressionRule) => ProgressionRule
+): Promise<number | undefined> {
+  const rule: ProgressionRule = {
     type: 'percentage' as const,
     reps: 5,
     percentOfTrainingMax: 80,
     trainingMaxPercent: 90,
     trainingMaxKg: 100,
+    failuresBeforeReset: 2,
+    resetPercent: 10,
   };
+  const current = nextRule ? nextRule(rule) : rule;
   const first = await workout(serializeProgressionRule(rule)!);
   await database.write(async () => {
     await first.block.update((r) => {
@@ -535,7 +547,7 @@ it('a repeat week hands the accumulated training max on instead of resetting the
       r.exerciseId = first.ex.id;
       r.templateExerciseId = first.te.id;
       r.exerciseOrder = 1;
-      r.progressionJson = serializeProgressionRule(rule);
+      r.progressionJson = serializeProgressionRule(current);
       r.createdAt = Date.now();
       r.updatedAt = Date.now();
     });
@@ -567,7 +579,18 @@ it('a repeat week hands the accumulated training max on instead of resetting the
   });
   await WorkoutProgressionService.applyStartProgression(next.log.id);
   jest.restoreAllMocks();
-  expect(parseSessionProgressionState(next.block.progressionJson)?.trainingMaxKg).toBe(120);
+  return parseSessionProgressionState(next.block.progressionJson)?.trainingMaxKg;
+}
+
+it('a repeat week hands the accumulated training max on instead of resetting the rule', async () => {
+  expect(await repeatWeekState()).toBe(120);
+});
+
+it('a repeat week does not pair a changed starting max or a reset with the old training max', async () => {
+  // Carrying 120 kg next to the new rule would make the next session see an unchanged rule and
+  // keep loading from 120 kg, silently ignoring what the user just set.
+  expect(await repeatWeekState((rule) => ({ ...rule, trainingMaxKg: 90 }))).toBeUndefined();
+  expect(await repeatWeekState((rule) => ({ ...rule, resetAt: Date.now() }))).toBeUndefined();
 });
 
 it('scopes explicit evidence to the stable exercise row in its own template', async () => {

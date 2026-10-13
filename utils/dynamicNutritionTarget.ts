@@ -28,6 +28,10 @@ export interface ResolvedMacros {
   isDynamic: true;
   usedEmpiricalData: boolean;
   tdee: number;
+  /** The minimum-calorie floor for this user (`getMinCalories`), whether or not it is enforced. */
+  minimumCalories: number;
+  /** The user turned the floor off, so `totalCalories` may sit below `minimumCalories`. */
+  minimumCaloriesDisabled: boolean;
 }
 
 export interface DynamicGoalTrajectoryInput {
@@ -234,6 +238,9 @@ async function resolveDynamicGoalLike(
   const macros = calculateMacros(targetCalories, fitnessGoal, {
     weightKg,
     bodyFatPercent,
+    heightCm,
+    goalWeightKg: normalizedTargetWeight ?? undefined,
+    weightGoal: eatingPhaseToWeightGoal(goal.eatingPhase),
   });
 
   return {
@@ -245,6 +252,8 @@ async function resolveDynamicGoalLike(
     isDynamic: true as const,
     usedEmpiricalData: historicalParams !== null,
     tdee: Math.round(basePlan.tdee),
+    minimumCalories: getMinCalories(gender, basePlan.bmr),
+    minimumCaloriesDisabled: disableMinimumCalories,
   };
 }
 

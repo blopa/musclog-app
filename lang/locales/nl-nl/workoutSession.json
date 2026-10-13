@@ -101,7 +101,8 @@
       "rule": "Jouw regel",
       "suggested": "Voorgesteld",
       "learning": "Aan het leren",
-      "attention": "Vraagt aandacht"
+      "attention": "Vraagt aandacht",
+      "holding": "Zelfde als vorige keer"
     },
     "fields": {
       "repMin": "Minimum herhalingen",
@@ -113,7 +114,9 @@
       "backoffReps": "Herhalingen lichtere sets",
       "percentOfTrainingMax": "Belasting trainingsmaximum (%)",
       "trainingMaxPercent": "Geschatte 1RM voor maximum (%)",
-      "trainingMaxKg": "Startmaximum"
+      "trainingMaxKg": "Startmaximum",
+      "failuresBeforeReset": "Missers op rij voordat TM omlaag gaat",
+      "resetPercent": "TM verlagen met (%)"
     },
     "enterTm": "Startmaximum invoeren",
     "resetTm": "Maximum resetten en uit geschiedenis schatten",
@@ -135,7 +138,9 @@
         "deload": "{{failures}} mislukte sessies met dit gewicht: verlaag met {{deloadPercent}}%."
       },
       "backoff": "Gebruik {{percent}}% van de topset ({{top}} {{unit}}), afgerond op beschikbaar materiaal.",
-      "percentage": "Gebruik {{percent}}% van het bewaarde trainingsmaximum ({{tm}} {{unit}})."
+      "percentage": "Gebruik {{percent}}% van het bewaarde trainingsmaximum ({{tm}} {{unit}}).",
+      "ceiling": "Je zit op {{ceiling}} herhalingen. Om verder te komen: voeg gewicht toe (een gewichtsvest of dipriem), kies een zwaardere variant of vertraag het tempo.",
+      "percentageLowered": "{{failures}} sessies op rij werden herhalingen gemist, dus het trainingsmaximum is met {{resetPercent}}% verlaagd naar {{tm}} {{unit}}. Gebruik {{percent}}% daarvan."
     },
     "editTarget": "Doel bewerken",
     "summary": {
@@ -161,11 +166,12 @@
       "double_progression": "Train binnen een herhalingsbereik. Halen alle sets de bovengrens, dan gaat het gewicht omhoog en begin je weer onderaan.",
       "linear": "Elke keer dezelfde herhalingen. Meer gewicht na een training waarin je ze allemaal haalde; deload na herhaalde missers.",
       "top_set_backoff": "Eén zware topset binnen een herhalingsbereik, daarna lichtere back-off-sets op een percentage daarvan.",
-      "percentage": "Elke set op een percentage van een trainingsmax dat stijgt na elke geslaagde training."
+      "percentage": "Elke set op een percentage van een trainingsmaximum dat stijgt na elke geslaagde sessie en daalt na herhaalde missers."
     },
     "repsShort": "{{reps}} herh.",
     "tmEstimated": "Het trainingsmax wordt geschat uit je vorige training tot je er zelf een instelt.",
-    "holdHint": "Dezelfde doelen als vorige keer. Verbeter ze, of haal ze met herhalingen over, en ze gaan de volgende keer omhoog."
+    "holdHint": "Dezelfde doelen als vorige keer. Verbeter ze, of haal ze met herhalingen over, en ze gaan de volgende keer omhoog.",
+    "holdHintList": "Waar niets is veranderd, zijn de doelen die van vorige keer. Verbeter ze, of haal ze met herhalingen over, en ze gaan de volgende keer omhoog."
   },
   "trainingFlow": {
     "inline": "Overzicht",
@@ -295,7 +301,7 @@
     "noGoal": "Training is beschikbaar zonder voedingsdoel. Stel voedingsdoelen in je profiel in wanneer je wilt.",
     "intuitive": "Intuïtief eten staat aan. Je trainingsoverzicht blijft beschikbaar.",
     "history": "Geschiedenis",
-    "legacy": "Eerdere check-in",
+    "legacy": "Eerder weekoverzicht",
     "reminder": "Optionele wekelijkse herinnering",
     "reminderBody": "Je week is klaar voor het overzicht. Bekijk training en voedingsdoelen.",
     "cardWeek": "Week van {{start}} – {{end}}",
@@ -332,7 +338,7 @@
     "reasonEmpiricalNoTrend": "Volgens je logboek verbruik je ongeveer {{expenditure}} kcal per dag. Met deze doelen blijf je op schema voor je doel.",
     "reasonBaseline": "Geschat op basis van je profiel, nog niet van je logboek: ongeveer {{expenditure}} kcal per dag. Blijf voeding en gewicht loggen om het persoonlijk te maken.",
     "largeChangeTitle": "Dat is een grote verandering",
-    "largeChangeBody": "Grote schommelingen komen meestal door maaltijden die niet gelogd zijn of een paar ongebruikelijke wegingen. Controleer het voedingslogboek van deze week voordat je toepast.",
+    "largeChangeBody": "Je calorieën in één week met {{percent}}% aanpassen is ingrijpend en Musclog raadt het niet aan. Grote schommelingen komen meestal door maaltijden die niet gelogd zijn of een paar ongebruikelijke wegingen, dus controleer het voedingslogboek van deze week of houd je huidige doelen aan.",
     "reviewFoodLog": "Voedingslogboek bekijken",
     "welcome": {
       "title": "Welkom bij je weekoverzicht",
@@ -403,6 +409,9 @@
       "lowReserveStalled": "Je sets lieten niets in reserve en een lift die je volgt stagneert.",
       "dueForLighter": "Het is {{count}} weken geleden sinds een lichtere week.",
       "onTrack": "De training loopt goed."
-    }
+    },
+    "belowFloorTitle": "Onder de minimale caloriegrens",
+    "belowFloorBody": "Dit ligt onder je minimum van {{minimum}} kcal. Je hebt de minimale caloriegrens uitgezet in de geavanceerde instellingen; zo laag gaan wordt afgeraden en kan onveilig zijn.",
+    "estimateShort": "Schatting"
   }
 }

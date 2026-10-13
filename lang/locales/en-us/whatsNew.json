@@ -50,11 +50,11 @@
         },
         "targets": {
           "title": "A little help with your next set",
-          "description": "Musclog can suggest starting targets from your training history and adjust upcoming sets as you log. Adjusted values are marked, and you can always edit them."
+          "description": "Musclog suggests starting targets from your history. Changed numbers are marked, and you can always edit them."
         },
         "workoutAutonomy": {
           "title": "Starting targets",
-          "description": "Choose how your history shapes the next workout.",
+          "description": "How your history shapes the next workout.",
           "suggest": {
             "label": "Suggest targets",
             "description": "Use progression suggestions when starting a workout."
@@ -66,7 +66,7 @@
         },
         "progressionMode": {
           "title": "Progression preference",
-          "description": "When targets change, which should Musclog prioritize?",
+          "description": "What goes up first when targets change.",
           "reps_first": {
             "label": "Reps first",
             "description": "Build up repetitions before adding weight."

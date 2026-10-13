@@ -9,6 +9,7 @@ import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
 import type { SubstitutionReason } from '@/utils/exerciseSubstitution';
 import { normalizeNote } from '@/utils/noteText';
+import { writeSetEffort } from '@/utils/setEffort';
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
 import { isPlannedWorkoutSet, isWarmupSet, WARMUP_SET_TYPE } from '@/utils/workoutSetCompletion';
 
@@ -259,8 +260,7 @@ export class WorkoutLogExerciseService {
             record.weight = warmup.weightKg;
             record.partials = 0;
             record.restTimeAfter = options.restTimeAfter ?? anchorRestTimeAfter;
-            record.repsInReserve = 0;
-            record.rirRecorded = false;
+            writeSetEffort(record, null);
             record.completionStatus = 'planned';
             record.setType = WARMUP_SET_TYPE;
             record.setOrder = anchorOrder + index;

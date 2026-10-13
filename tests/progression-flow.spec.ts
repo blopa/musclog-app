@@ -59,7 +59,7 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await page.reload();
   await expect(weights.nth(1)).toHaveValue('60');
   await expect(weights.nth(2)).toHaveValue('60');
-  await page.goto(`${app}/nutrition/checkin-list`);
+  await page.goto(`${app}/weekly-review`);
   await expect(page.getByTestId('review-training')).toBeVisible();
   await expect(page.getByTestId('review-nutrition')).toBeVisible();
   await page.screenshot({ path: `/tmp/musclog-${testInfo.project.name}-review.png` });
@@ -71,10 +71,18 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await expect(
     page.getByRole('button', { name: copy.weeklyReview.applyTomorrow, exact: true })
   ).toBeEnabled();
-  // Nobody in this fixture has finished a workout yet, so training asks nothing of them: the
-  // section counts as reviewed and offers no decision. (The decision itself is pinned by the
-  // weekly-review integration tests, which can finish a workout.)
-  await expect(page.getByTestId('review-training')).toContainText(copy.weeklyReview.reviewed);
+  // The fixture finished a workout in the reviewed week, so training asks for a decision. Keep
+  // progressing is the one that leaves the rest of this run's session untouched (a repeat or a
+  // lighter week would rewrite the numbers the steps below check).
+  const decision = page.getByTestId('review-training-decision');
+  await expect(decision).toBeVisible();
+  await decision
+    .getByRole('button', { name: copy.weeklyReview.trainingDecision.progress.confirm, exact: true })
+    .last()
+    .click();
+  await expect(page.getByTestId('review-training-decided')).toContainText(
+    copy.weeklyReview.trainingDecision.progress.chosen
+  );
   await expect(page.getByTestId('review-training-decision')).toHaveCount(0);
   await page.getByRole('button', { name: copy.weeklyReview.applyTomorrow, exact: true }).click();
   await expect(page.getByTestId('review-nutrition')).toContainText(copy.weeklyReview.applied);

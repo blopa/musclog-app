@@ -7,14 +7,16 @@ import { useAdjustmentMessage } from '@/components/workout/useAdjustmentMessage'
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import type { GuidanceState } from '@/utils/progressionProjection';
 import type { ProgressionRule } from '@/utils/progressionRules';
 import { isStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
 
-import { GUIDANCE_STATE_KEYS, type GuidanceState, PROGRESSION_METHOD_KEYS } from './sessionModel';
+import { GUIDANCE_STATE_KEYS, PROGRESSION_METHOD_KEYS } from './sessionModel';
 
 const BADGE_CLASSES: Record<GuidanceState, { surface: string; text: string }> = {
   rule: { surface: 'bg-accent-primary/10', text: 'text-accent-primary' },
   suggested: { surface: 'bg-accent-primary/10', text: 'text-accent-primary' },
+  holding: { surface: 'bg-bg-overlay', text: 'text-text-secondary' },
   learning: { surface: 'bg-bg-overlay', text: 'text-text-secondary' },
   attention: { surface: 'bg-status-warning/10', text: 'text-status-warning' },
 };

@@ -5,17 +5,26 @@ import type { TemplateRecommendation } from '@/database/services/WorkoutProgress
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { counterpartAt } from '@/utils/progressionRules';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { GuidanceBadgeLine } from './session/GuidanceSummary';
 import { useAdjustmentMessage } from './useAdjustmentMessage';
 
-/** What to say when nothing changed: the rule, missing history, or holding last time's targets. */
+/**
+ * An exercise whose targets are simply last time's: nothing to explain on its own card. The list
+ * says it once for all of them ({@link WorkoutRecommendationList}) instead of repeating the same
+ * sentence under every exercise.
+ */
+const holdsLastTime = (row: TemplateRecommendation) =>
+  !row.changes.length && !row.rule && row.status !== 'learning';
+
+/** What to say on a card when nothing changed, or null when the list already said it. */
 function fallbackHintKey(row: TemplateRecommendation) {
   if (row.rule) {
     return 'progression.followRule';
   }
-  return row.status === 'learning' ? 'progression.learningHint' : 'progression.holdHint';
+  return row.status === 'learning' ? 'progression.learningHint' : null;
 }
 
 function RecommendationRow({ row }: { row: TemplateRecommendation }) {
@@ -31,8 +40,10 @@ function RecommendationRow({ row }: { row: TemplateRecommendation }) {
   const load = (weightKg: number, reps: number) =>
     `${formatDisplayWeightKg(locale, units, weightKg)} ${weightUnit} × ${formatInteger(reps, { useGrouping: false })}`;
   const previous = row.sets
-    .map((_, index) => row.previous?.sets.find((set, i) => (set.prescribedIndex ?? i) === index))
+    .map((_, index) => counterpartAt(row.previous?.sets ?? [], index))
     .filter((set): set is NonNullable<typeof set> => set != null);
+  const hintKey = fallbackHintKey(row);
+  const hint = message ?? (hintKey ? t(hintKey) : null);
 
   return (
     <View className="gap-2.5 rounded-xl border border-border-light bg-bg-secondary p-3">
@@ -63,9 +74,7 @@ function RecommendationRow({ row }: { row: TemplateRecommendation }) {
           })}
         </Text>
       ) : null}
-      <Text className="text-sm leading-5 text-text-secondary">
-        {message ?? t(fallbackHintKey(row))}
-      </Text>
+      {hint ? <Text className="text-sm leading-5 text-text-secondary">{hint}</Text> : null}
     </View>
   );
 }
@@ -79,8 +88,14 @@ export function WorkoutRecommendationList({
 }: {
   recommendations: TemplateRecommendation[];
 }) {
+  const { t } = useTranslation();
   return (
     <View className="gap-3" testID="workout-recommendations">
+      {recommendations.some(holdsLastTime) ? (
+        <Text className="text-sm leading-5 text-text-secondary" testID="recommendations-hold-hint">
+          {t('progression.holdHintList')}
+        </Text>
+      ) : null}
       {recommendations.map((row) => (
         <RecommendationRow key={row.templateExerciseId} row={row} />
       ))}

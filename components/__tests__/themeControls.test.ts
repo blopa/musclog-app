@@ -48,7 +48,7 @@ describe('NumericTextField', () => {
  * theme components. A new control in one of them belongs in `components/theme/` too.
  */
 const THEMED_FILES = [
-  'app/app/nutrition/checkin-list.tsx',
+  'app/app/weekly-review.tsx',
   'app/app/test/progression-flow.tsx',
   'components/ZoomableImageModal.tsx',
   'components/modals/EditGymModal.tsx',

@@ -15,13 +15,14 @@ import { useAdjustmentMessage } from '@/components/workout/useAdjustmentMessage'
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import type { GuidanceState } from '@/utils/progressionProjection';
 import { parseSessionProgressionState, type ProgressionRule } from '@/utils/progressionRules';
 import { isStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
 import type { SetPrescription } from '@/utils/setPrescription';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { GuidanceBadgeLine } from './GuidanceSummary';
-import { type GuidanceState, PROGRESSION_METHOD_KEYS } from './sessionModel';
+import { PROGRESSION_METHOD_KEYS } from './sessionModel';
 
 /**
  * "Why?" for an exercise's targets: the method, the reason in one sentence, the numbers the

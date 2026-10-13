@@ -26,6 +26,7 @@ export type PlanData = {
   tdee: number;
   bmr: number;
   currentWeightKg: number;
+  heightCm: number;
   bodyFatPercent?: number;
   gender: Gender;
   fitnessGoal: FitnessGoal;
@@ -140,6 +141,7 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
             tdee: plan.tdee,
             bmr: plan.bmr,
             currentWeightKg: weightKg,
+            heightCm,
             bodyFatPercent,
             gender,
             fitnessGoal,

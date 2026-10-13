@@ -101,7 +101,8 @@
       "rule": "Your rule",
       "suggested": "Suggested",
       "learning": "Learning",
-      "attention": "Needs attention"
+      "attention": "Needs attention",
+      "holding": "Same as last time"
     },
     "fields": {
       "repMin": "Minimum reps",
@@ -113,7 +114,9 @@
       "backoffReps": "Back-off reps",
       "percentOfTrainingMax": "Training max load (%)",
       "trainingMaxPercent": "Estimated 1RM used for TM (%)",
-      "trainingMaxKg": "Starting training max"
+      "trainingMaxKg": "Starting training max",
+      "failuresBeforeReset": "Consecutive misses before lowering TM",
+      "resetPercent": "Lower TM by (%)"
     },
     "enterTm": "Enter a starting training max",
     "resetTm": "Reset TM and estimate from history",
@@ -135,7 +138,9 @@
         "deload": "{{failures}} consecutive misses at this load: reduce it by {{deloadPercent}}%."
       },
       "backoff": "Use {{percent}}% of the top set ({{top}} {{unit}}), rounded to available equipment.",
-      "percentage": "Use {{percent}}% of the retained training max ({{tm}} {{unit}})."
+      "percentage": "Use {{percent}}% of the retained training max ({{tm}} {{unit}}).",
+      "ceiling": "You’ve reached {{ceiling}} reps. To keep progressing, add load (a weighted vest or dip belt), switch to a harder variation, or slow the tempo.",
+      "percentageLowered": "{{failures}} sessions in a row missed reps, so the training max was lowered by {{resetPercent}}% to {{tm}} {{unit}}. Use {{percent}}% of it."
     },
     "editTarget": "Edit target",
     "summary": {
@@ -161,11 +166,12 @@
       "double_progression": "Work within a rep range. When every set hits the top, add weight and start again at the bottom.",
       "linear": "Same reps every time. Add weight after a session where you got them all; deload after repeated misses.",
       "top_set_backoff": "One heavy top set worked through a rep range, then lighter back-off sets at a share of it.",
-      "percentage": "Every set at a percentage of a training max that goes up after each successful session."
+      "percentage": "Every set at a percentage of a training max that goes up after each successful session and drops after repeated misses."
     },
     "repsShort": "{{reps}} reps",
     "tmEstimated": "The training max is estimated from your last session until you set one.",
-    "holdHint": "Same targets as last time. Beat them, or match them with reps to spare, and they go up next time."
+    "holdHint": "Same targets as last time. Beat them, or match them with reps to spare, and they go up next time.",
+    "holdHintList": "Where nothing changed, the targets are last time’s. Beat them, or match them with reps to spare, and they go up next time."
   },
   "trainingFlow": {
     "inline": "Inline",
@@ -295,7 +301,7 @@
     "noGoal": "Training is available without a nutrition goal. Set nutrition goals in your profile when ready.",
     "intuitive": "Intuitive eating is on. Your training review remains available.",
     "history": "Review history",
-    "legacy": "Previous check-in",
+    "legacy": "Earlier review",
     "reminder": "Optional weekly review reminder",
     "reminderBody": "Your week is ready to review. Check training and nutrition targets.",
     "cardWeek": "Week of {{start}} – {{end}}",
@@ -332,7 +338,7 @@
     "reasonEmpiricalNoTrend": "From your logs, you burn about {{expenditure}} kcal a day. These targets keep you on pace for your goal.",
     "reasonBaseline": "Estimated from your profile, not yet from your logs: about {{expenditure}} kcal a day. Keep logging food and weight to personalize it.",
     "largeChangeTitle": "That’s a big change",
-    "largeChangeBody": "Big swings usually come from meals that weren’t logged or a few unusual weigh-ins. Check this week’s food log before applying.",
+    "largeChangeBody": "Changing calories by {{percent}}% in a single week is aggressive, and Musclog doesn’t recommend it. Big swings usually come from meals that weren’t logged or a few unusual weigh-ins, so check this week’s food log, or keep your current targets.",
     "reviewFoodLog": "Review food log",
     "welcome": {
       "title": "Welcome to your Weekly Review",
@@ -403,6 +409,9 @@
       "lowReserveStalled": "Your sets left nothing in reserve and a lift you're tracking has stalled.",
       "dueForLighter": "It has been {{count}} weeks since a lighter week.",
       "onTrack": "Training is on track."
-    }
+    },
+    "belowFloorTitle": "Below the minimum calorie floor",
+    "belowFloorBody": "This is below your minimum of {{minimum}} kcal. You turned off the minimum calorie floor in Advanced settings; going this low is not recommended and may be unsafe.",
+    "estimateShort": "Estimate"
   }
 }

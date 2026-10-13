@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
+import { BodyweightRepCeilingPicker } from '@/components/workout/BodyweightRepCeilingPicker';
 import { WeightUnitOverridePicker } from '@/components/workout/WeightUnitOverridePicker';
 import { ExerciseUserSettingsService } from '@/database/services/ExerciseUserSettingsService';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
@@ -14,14 +15,20 @@ import type { WeightUnitOverride } from '@/utils/unitConversion';
 
 type ExerciseUserSettingsSectionProps = {
   exerciseId: string;
+  /** Bodyweight exercises also pick the reps they climb to before progressing another way. */
+  isBodyweight?: boolean;
 };
 
 /**
- * The user's own settings for one exercise: the unit its weights are shown in and a note that is
- * pinned above the set in every workout. The unit applies the moment it is tapped; the note is
- * saved with its button, because a half-typed cue should not be written on every keystroke.
+ * The user's own settings for one exercise: the unit its weights are shown in, a note that is
+ * pinned above the set in every workout and, for bodyweight work, its rep ceiling. The unit and the
+ * ceiling apply the moment they are tapped; the note is saved with its button, because a half-typed
+ * cue should not be written on every keystroke.
  */
-export function ExerciseUserSettingsSection({ exerciseId }: ExerciseUserSettingsSectionProps) {
+export function ExerciseUserSettingsSection({
+  exerciseId,
+  isBodyweight = false,
+}: ExerciseUserSettingsSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { get, isLoading } = useExerciseUserSettings();
@@ -38,6 +45,15 @@ export function ExerciseUserSettingsSection({ exerciseId }: ExerciseUserSettings
     setError(null);
     try {
       await ExerciseUserSettingsService.setWeightUnit(exerciseId, unit);
+    } catch {
+      setError(t('exercises.viewExercise.preferences.failed'));
+    }
+  };
+
+  const chooseRepCeiling = async (ceiling: number) => {
+    setError(null);
+    try {
+      await ExerciseUserSettingsService.setRepCeiling(exerciseId, ceiling);
     } catch {
       setError(t('exercises.viewExercise.preferences.failed'));
     }
@@ -73,6 +89,14 @@ export function ExerciseUserSettingsSection({ exerciseId }: ExerciseUserSettings
             onChange={(unit) => void chooseUnit(unit)}
             disabled={isLoading}
           />
+
+          {isBodyweight ? (
+            <BodyweightRepCeilingPicker
+              value={stored.repCeiling}
+              onChange={(ceiling) => void chooseRepCeiling(ceiling)}
+              disabled={isLoading}
+            />
+          ) : null}
 
           <TextInput
             label={t('exercises.viewExercise.preferences.noteLabel')}

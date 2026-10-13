@@ -1061,10 +1061,16 @@ export interface MacroSplit {
 }
 
 export interface MacroOptions {
-  /** User's body weight (kg); required for FFM-based protein calculation. */
+  /** User's body weight (kg); anchors protein (FFM-based with body fat, bodyweight-based without). */
   weightKg?: number;
   /** Body fat percentage (0–100); required for FFM-based protein calculation. */
   bodyFatPercent?: number;
+  /** Height (cm); caps the bodyweight protein anchor at a BMI-25 reference weight. */
+  heightCm?: number;
+  /** The goal's target weight (kg); when set it anchors bodyweight-based protein instead. */
+  goalWeightKg?: number;
+  /** Whether the plan eats in a deficit, which raises bodyweight-based protein. */
+  weightGoal?: WeightGoal;
 }
 
 /**
@@ -1079,9 +1085,50 @@ const PROTEIN_G_PER_KG_FFM: Partial<Record<FitnessGoal, number>> = {
 };
 
 /**
- * Calculate macronutrient grams from target calories and the goal's percentage split.
- * For weight_loss and hypertrophy, protein is set from FFM when body composition is available
- * (ISSN g/kg FFM targets); remaining calories are split proportionally between carbs and fats.
+ * Protein in g per kg of BODYWEIGHT, used whenever there is no body-fat-based (FFM) target: body fat
+ * is opt-in, and a percentage of calories made protein FALL in a cut — exactly when it matters most
+ * for keeping muscle. Morton et al. 2018: gains plateau around 1.6 g/kg (upper CI 2.2); in a
+ * deficit 1.8–2.7 g/kg protects lean mass (Helms et al. 2014, ≈2.3–3.1 g/kg FFM); ISSN 2017 puts
+ * exercising people at 1.4–2.0.
+ */
+export const PROTEIN_G_PER_KG_BODYWEIGHT: Record<FitnessGoal, number> = {
+  weight_loss: 2.0,
+  hypertrophy: 1.8,
+  strength: 1.8,
+  general: 1.6,
+  endurance: 1.4,
+};
+/** Any goal eating in a deficit gets at least this. */
+export const PROTEIN_G_PER_KG_BODYWEIGHT_IN_DEFICIT = 2.0;
+/** The BMI the bodyweight anchor is capped at, so 140 kg does not ask for 280 g of protein. */
+const PROTEIN_REFERENCE_BMI = 25;
+
+/**
+ * The weight bodyweight-based protein is computed from: the goal weight when one is set, otherwise
+ * the current weight capped at a BMI-25 reference weight for the user's height.
+ */
+export function proteinReferenceWeightKg(
+  weightKg: number,
+  { heightCm, goalWeightKg }: Pick<MacroOptions, 'heightCm' | 'goalWeightKg'> = {}
+): number {
+  if (goalWeightKg != null && Number.isFinite(goalWeightKg) && goalWeightKg > 0) {
+    return goalWeightKg;
+  }
+  if (heightCm != null && Number.isFinite(heightCm) && heightCm > 0) {
+    const referenceKg = PROTEIN_REFERENCE_BMI * (heightCm / 100) ** 2;
+    return Math.min(weightKg, referenceKg);
+  }
+  return weightKg;
+}
+
+/**
+ * Calculate macronutrient grams from target calories.
+ *
+ * Protein is a fixed amount, never a share of calories, whenever a weight is known: g/kg FFM for
+ * weight_loss and hypertrophy when body composition is available (ISSN), otherwise g/kg of the
+ * reference bodyweight ({@link PROTEIN_G_PER_KG_BODYWEIGHT}, {@link proteinReferenceWeightKg}).
+ * The remaining calories are split between carbs and fats in the goal's proportion. Only with no
+ * weight at all does protein fall back to the goal's percentage split.
  *
  * - Protein & carbs: 4 kcal per gram
  * - Fat: 9 kcal per gram
@@ -1101,21 +1148,21 @@ export function calculateMacros(
     isValidBodyFat(options.bodyFatPercent)
   ) {
     const ffmKg = options.weightKg * (1 - options.bodyFatPercent! / 100);
-    const protein = Math.round(ffmKg * ffmProteinTarget);
-    const proteinCalories = protein * CALORIES_FOR_PROTEIN;
-    const remaining = Math.max(0, targetCalories - proteinCalories);
-    const carbsFatSum = carbsPct + fatsPct;
-    const carbs = Math.round((remaining * (carbsPct / carbsFatSum)) / CALORIES_FOR_CARBS);
-    const fats = Math.round((remaining * (fatsPct / carbsFatSum)) / CALORIES_FOR_FAT);
+    return splitAroundProtein(
+      targetCalories,
+      Math.round(ffmKg * ffmProteinTarget),
+      carbsPct,
+      fatsPct
+    );
+  }
 
-    return {
-      protein,
-      carbs,
-      fats,
-      proteinPct: Math.round((protein * CALORIES_FOR_PROTEIN * 100) / targetCalories),
-      carbsPct: Math.round((carbs * CALORIES_FOR_CARBS * 100) / targetCalories),
-      fatsPct: Math.round((fats * CALORIES_FOR_FAT * 100) / targetCalories),
-    };
+  if (options?.weightKg !== undefined && options.weightKg > 0) {
+    const gramsPerKg = Math.max(
+      PROTEIN_G_PER_KG_BODYWEIGHT[fitnessGoal] ?? PROTEIN_G_PER_KG_BODYWEIGHT.general,
+      options.weightGoal === 'lose' ? PROTEIN_G_PER_KG_BODYWEIGHT_IN_DEFICIT : 0
+    );
+    const protein = Math.round(proteinReferenceWeightKg(options.weightKg, options) * gramsPerKg);
+    return splitAroundProtein(targetCalories, protein, carbsPct, fatsPct);
   }
 
   return {
@@ -1125,6 +1172,30 @@ export function calculateMacros(
     proteinPct,
     carbsPct,
     fatsPct,
+  };
+}
+
+/** Fixed protein, then the rest of the calories split between carbs and fats in the goal's ratio. */
+function splitAroundProtein(
+  targetCalories: number,
+  protein: number,
+  carbsShare: number,
+  fatsShare: number
+): MacroSplit {
+  const remaining = Math.max(0, targetCalories - protein * CALORIES_FOR_PROTEIN);
+  const carbsFatSum = carbsShare + fatsShare;
+  const carbs = Math.round((remaining * (carbsShare / carbsFatSum)) / CALORIES_FOR_CARBS);
+  const fats = Math.round((remaining * (fatsShare / carbsFatSum)) / CALORIES_FOR_FAT);
+  const proteinPct = Math.round((protein * CALORIES_FOR_PROTEIN * 100) / targetCalories);
+  const carbsPct = Math.round((carbs * CALORIES_FOR_CARBS * 100) / targetCalories);
+  // Fats take the remainder, so the three shares always add up to 100 despite independent rounding.
+  return {
+    protein,
+    carbs,
+    fats,
+    proteinPct,
+    carbsPct,
+    fatsPct: Math.max(0, 100 - proteinPct - carbsPct),
   };
 }
 
@@ -1611,7 +1682,12 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
   const targetCalories = calculateTargetCaloriesForBmr(tdee, bmr);
 
   // Step 4 – Macros (driven by fitness goal for split; FFM-based protein when body fat available)
-  const macros = calculateMacros(targetCalories, fitnessGoal, { weightKg, bodyFatPercent });
+  const macros = calculateMacros(targetCalories, fitnessGoal, {
+    weightKg,
+    bodyFatPercent,
+    heightCm,
+    weightGoal,
+  });
 
   // Step 5 – Projection
   const projection = calculateWeightProjection(weightKg, targetCalories, tdee, {

@@ -4,6 +4,7 @@ import type { Units } from '@/constants/settings';
 import { database } from '@/database/database-instance';
 import type ExerciseUserSettings from '@/database/models/ExerciseUserSettings';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
+import { resolveRepCeiling, storedRepCeiling } from '@/utils/bodyweightRepCeiling';
 import type { GymSnapshot } from '@/utils/gym';
 import { normalizeNote } from '@/utils/noteText';
 import {
@@ -19,6 +20,8 @@ export interface ExerciseUserSettingsPatch {
   weightUnit?: WeightUnitOverride | null;
   /** `null` or blank clears the note; `undefined` leaves it as it is. */
   note?: string | null;
+  /** `null` (or the default ceiling) clears it; `undefined` leaves it as it is. */
+  repCeiling?: number | null;
 }
 
 /** Every pinned weight unit by exercise id. A value this build does not understand is skipped. */
@@ -35,8 +38,8 @@ export function weightUnitOverridesOf(
 }
 
 /**
- * What the user has said about an exercise itself: the unit its weights are shown in and a note
- * that follows it into every session. One live row per exercise, updated in place; a row whose
+ * What the user has said about an exercise itself: the unit its weights are shown in, a note that
+ * follows it into every session and, for bodyweight work, the reps it climbs to. One live row per exercise, updated in place; a row whose
  * every field has been cleared is retired rather than kept as an empty shell, so "has settings"
  * and "has a row" mean the same thing.
  */
@@ -49,21 +52,33 @@ export class ExerciseUserSettingsService {
   }
 
   /**
-   * "Which unit are this exercise's weights in?" for code outside React — the service-side twin of
-   * `useExerciseUserSettings().unitsFor`, applying the same exercise → gym → account rule. Reads the
-   * account unit and every override once, so a caller resolving many exercises pays for one read.
+   * The per-exercise answers code outside React needs, read once: "which unit are this exercise's
+   * weights in?" — the service-side twin of `useExerciseUserSettings().unitsFor`, applying the same
+   * exercise → gym → account rule — and "how many reps does this bodyweight exercise climb to?".
    * The gym is passed in because every caller that needs this has already read it.
    */
-  static async getWeightUnitsResolver(
-    gym: Pick<GymSnapshot, 'weightUnit'> | null
-  ): Promise<(exerciseId: string) => Units> {
+  static async getResolvers(gym: Pick<GymSnapshot, 'weightUnit'> | null): Promise<{
+    unitsFor: (exerciseId: string) => Units;
+    repCeilingFor: (exerciseId: string) => number;
+  }> {
     const [account, rows] = await Promise.all([
       SettingsService.getUnits(),
       ExerciseUserSettingsService.settingsQuery().fetch(),
     ]);
     const overrides = weightUnitOverridesOf(rows);
-    return (exerciseId) =>
-      resolveWeightUnits({ account, gym: gym?.weightUnit, exercise: overrides.get(exerciseId) });
+    const ceilings = new Map(rows.map((row) => [row.exerciseId, row.repCeiling]));
+    return {
+      unitsFor: (exerciseId) =>
+        resolveWeightUnits({ account, gym: gym?.weightUnit, exercise: overrides.get(exerciseId) }),
+      repCeilingFor: (exerciseId) => resolveRepCeiling(ceilings.get(exerciseId)),
+    };
+  }
+
+  /** {@link getResolvers}' unit half, for callers that need nothing else. */
+  static async getWeightUnitsResolver(
+    gym: Pick<GymSnapshot, 'weightUnit'> | null
+  ): Promise<(exerciseId: string) => Units> {
+    return (await ExerciseUserSettingsService.getResolvers(gym)).unitsFor;
   }
 
   static async getFor(exerciseId: string): Promise<ExerciseUserSettings | null> {
@@ -95,9 +110,12 @@ export class ExerciseUserSettingsService {
       const note = normalizeNote(rawNote);
       // A value this build does not understand is dropped rather than stored.
       const safeUnit = isWeightUnitOverride(weightUnit) ? weightUnit : undefined;
+      const repCeiling = storedRepCeiling(
+        patch.repCeiling === undefined ? keep?.repCeiling : patch.repCeiling
+      );
 
       const operations = duplicates.map((row) => prepareSoftDelete(row, now));
-      if (safeUnit === undefined && note === undefined) {
+      if (safeUnit === undefined && note === undefined && repCeiling === undefined) {
         if (keep) {
           operations.push(prepareSoftDelete(keep, now));
         }
@@ -106,6 +124,7 @@ export class ExerciseUserSettingsService {
           keep.prepareUpdate((row) => {
             row.weightUnit = safeUnit;
             row.note = note;
+            row.repCeiling = repCeiling;
             row.updatedAt = now;
           })
         );
@@ -115,6 +134,7 @@ export class ExerciseUserSettingsService {
             row.exerciseId = exerciseId;
             row.weightUnit = safeUnit;
             row.note = note;
+            row.repCeiling = repCeiling;
             row.createdAt = now;
             row.updatedAt = now;
             row.deletedAt = undefined;
@@ -134,5 +154,9 @@ export class ExerciseUserSettingsService {
 
   static async setNote(exerciseId: string, note: string | null) {
     await ExerciseUserSettingsService.update(exerciseId, { note });
+  }
+
+  static async setRepCeiling(exerciseId: string, repCeiling: number | null) {
+    await ExerciseUserSettingsService.update(exerciseId, { repCeiling });
   }
 }

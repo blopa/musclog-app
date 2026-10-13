@@ -8,17 +8,20 @@ import {
 } from '@/database/services/ExerciseUserSettingsService';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useSettings } from '@/hooks/useSettings';
+import { DEFAULT_BODYWEIGHT_REP_CEILING, resolveRepCeiling } from '@/utils/bodyweightRepCeiling';
 import {
   isWeightUnitOverride,
   resolveWeightUnits,
   type WeightUnitOverride,
 } from '@/utils/unitConversion';
 
-const SETTINGS_COLUMNS = ['weight_unit', 'note', 'updated_at'];
+const SETTINGS_COLUMNS = ['weight_unit', 'note', 'rep_ceiling', 'updated_at'];
 
 export interface ExerciseSettingsView {
   weightUnit: WeightUnitOverride | undefined;
   note: string | undefined;
+  /** The reps an unloaded bodyweight exercise climbs to (the default when none was picked). */
+  repCeiling: number;
 }
 
 export interface UseExerciseUserSettingsResult {
@@ -36,7 +39,11 @@ export interface UseExerciseUserSettingsResult {
   isLoading: boolean;
 }
 
-const NO_SETTINGS: ExerciseSettingsView = { weightUnit: undefined, note: undefined };
+const NO_SETTINGS: ExerciseSettingsView = {
+  weightUnit: undefined,
+  note: undefined,
+  repCeiling: DEFAULT_BODYWEIGHT_REP_CEILING,
+};
 
 /**
  * Per-exercise preferences, observed. The table is tiny (one row per exercise the user has
@@ -83,7 +90,11 @@ export function useExerciseUserSettings(): UseExerciseUserSettingsResult {
     const byExercise = new Map<string, ExerciseSettingsView>();
     for (const row of rows) {
       const weightUnit = isWeightUnitOverride(row.weightUnit) ? row.weightUnit : undefined;
-      byExercise.set(row.exerciseId, { weightUnit, note: row.note ?? undefined });
+      byExercise.set(row.exerciseId, {
+        weightUnit,
+        note: row.note ?? undefined,
+        repCeiling: resolveRepCeiling(row.repCeiling),
+      });
     }
     return {
       get: (exerciseId: string | undefined) =>

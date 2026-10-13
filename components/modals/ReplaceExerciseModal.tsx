@@ -42,10 +42,11 @@ import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
 import {
-  activeRestrictionFor,
+  excludedExerciseIds,
   INJURY_EXPIRY_OPTIONS,
   type InjuryExpiryOption,
   injuryExpiryTimestamp,
+  isDisliked,
   rankSubstitutes,
   restrictionKindForReason,
   SUBSTITUTION_REASONS,
@@ -170,12 +171,7 @@ export function ReplaceExerciseModal({
   // so pages stay full) anything the active gym cannot supply.
   const suggestionContext = useMemo(() => ({ restrictions, gym }), [restrictions, gym]);
   const excludeIds = useMemo(
-    () => [
-      ...(currentExerciseId ? [currentExerciseId] : []),
-      ...restrictions
-        .filter((restriction) => restriction.kind !== 'dislike')
-        .map((restriction) => restriction.exerciseId),
-    ],
+    () => [...(currentExerciseId ? [currentExerciseId] : []), ...excludedExerciseIds(restrictions)],
     [currentExerciseId, restrictions]
   );
   const equipmentTypes = useMemo(
@@ -265,11 +261,8 @@ export function ReplaceExerciseModal({
     () =>
       new Set(
         restrictions
-          .filter(
-            (restriction) =>
-              activeRestrictionFor(restriction.exerciseId, restrictions)?.kind === 'dislike'
-          )
           .map((restriction) => restriction.exerciseId)
+          .filter((id) => isDisliked(id, restrictions))
       ),
     [restrictions]
   );

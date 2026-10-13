@@ -177,7 +177,10 @@
         "noteLabel": "Note",
         "notePlaceholder": "A cue to read before every set, e.g. elbows tucked",
         "noteSave": "Save note",
-        "failed": "Couldn't save that. Please try again."
+        "failed": "Couldn't save that. Please try again.",
+        "repCeilingLabel": "Rep ceiling (no added weight)",
+        "repCeilingOption": "{{reps}} reps",
+        "repCeilingHint": "Musclog adds a rep each session up to this number. After that, progress with a weighted vest or belt, a harder variation or a slower tempo."
       }
     },
     "manageExerciseData": {

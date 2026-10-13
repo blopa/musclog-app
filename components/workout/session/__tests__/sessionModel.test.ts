@@ -101,4 +101,14 @@ describe('guidanceStateFor', () => {
     const [fresh] = buildSessionBlocks([set({})]);
     expect(guidanceStateFor(fresh, { gym: null })).toBe('learning');
   });
+
+  it('calls last time’s targets "same as last time", not a suggestion', () => {
+    const unchanged = serializeSetPrescription({
+      plan: { weightKg: 60, reps: 10 },
+      recommendation: { weightKg: 60, reps: 10 },
+      previous: { weightKg: 60, reps: 10 },
+    });
+    const [holding] = buildSessionBlocks([set({ prescriptionJson: unchanged })]);
+    expect(guidanceStateFor(holding, { gym: null })).toBe('holding');
+  });
 });

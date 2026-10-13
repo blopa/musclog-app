@@ -92,6 +92,31 @@ export function exerciseExclusionReason(
   return null;
 }
 
+/**
+ * Whether the restriction in force for an exercise is a dislike: it stays reachable, but is
+ * flagged and ranked down rather than recommended.
+ */
+export const isDisliked = (
+  exerciseId: string,
+  restrictions: readonly ActiveRestriction[],
+  now: number = Date.now()
+): boolean => activeRestrictionFor(exerciseId, restrictions, now)?.kind === 'dislike';
+
+/**
+ * The exercises a restriction removes from every list (`never`, an active `injury`) — what a
+ * SQL-side filter must leave out so pages stay full. Goes through {@link activeRestrictionFor}, so
+ * a healed injury is not excluded and a dislike never is.
+ */
+export function excludedExerciseIds(
+  restrictions: readonly ActiveRestriction[],
+  now: number = Date.now()
+): string[] {
+  return [...new Set(restrictions.map((restriction) => restriction.exerciseId))].filter((id) => {
+    const kind = activeRestrictionFor(id, restrictions, now)?.kind;
+    return kind === 'never' || kind === 'injury';
+  });
+}
+
 /** False for anything a suggestion, a generated plan or a swap list must never contain. */
 export function isExerciseSuggestible(
   exercise: Pick<SubstitutionExercise, 'id' | 'equipmentType'>,
@@ -118,8 +143,7 @@ export function rankSubstitutes<T extends SubstitutionExercise>(
     .filter((candidate) => candidate.id !== current.id && isExerciseSuggestible(candidate, ctx))
     .map((candidate) => {
       const sameFamily = muscleGroupFamily(candidate.muscleGroup) === currentFamily;
-      const disliked =
-        activeRestrictionFor(candidate.id, ctx.restrictions, ctx.now)?.kind === 'dislike';
+      const disliked = isDisliked(candidate.id, ctx.restrictions, ctx.now);
 
       let score = 0;
       if (sameFamily) {

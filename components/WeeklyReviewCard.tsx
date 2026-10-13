@@ -3,6 +3,7 @@ import { CalendarCheck, CalendarClock, ChevronRight } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 
@@ -45,7 +46,7 @@ export function WeeklyReviewCard({ compact = false }: { compact?: boolean }) {
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`${t('weeklyReview.title')}, ${statusLabel}`}
-      onPress={() => router.push('/app/nutrition/checkin-list')}
+      onPress={() => router.push(WEEKLY_REVIEW_ROUTE)}
       className={`flex-row items-center gap-3 rounded-2xl border ${ready ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'} ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
       testID="weekly-review-entry"
     >

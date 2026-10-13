@@ -26,6 +26,8 @@ const RULE_REASON_KEYS = {
   },
   backoff: 'progression.reason.backoff',
   percentage: 'progression.reason.percentage',
+  percentageLowered: 'progression.reason.percentageLowered',
+  ceiling: 'progression.reason.ceiling',
 } as const;
 
 function ruleReasonKey(rule: StartRuleDetail): string {
@@ -37,7 +39,9 @@ function ruleReasonKey(rule: StartRuleDetail): string {
     case 'backoff':
       return RULE_REASON_KEYS.backoff;
     case 'percentage':
-      return RULE_REASON_KEYS.percentage;
+      return rule.lowered ? RULE_REASON_KEYS.percentageLowered : RULE_REASON_KEYS.percentage;
+    case 'ceiling':
+      return RULE_REASON_KEYS.ceiling;
   }
 }
 
@@ -68,6 +72,7 @@ export function useAdjustmentMessage(adjustment: SetAdjustment | null | undefine
         unit: weightUnit,
         top: 'topSetKg' in rule ? formatWeight(rule.topSetKg) : '',
         tm: 'trainingMaxKg' in rule ? formatWeight(rule.trainingMaxKg) : '',
+        ...('lowered' in rule && rule.lowered ? rule.lowered : {}),
       });
     }
     const isWeight = adjustment.field === 'weight';

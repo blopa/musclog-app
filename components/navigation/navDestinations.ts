@@ -12,6 +12,7 @@ import {
 } from 'lucide-react-native';
 
 import type { NavItemKey } from '@/constants/settings';
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 
 export type NavDestination = {
   icon: LucideIcon;
@@ -92,7 +93,7 @@ export const NAV_DESTINATIONS = {
     icon: ClipboardCheck,
     labelKey: 'home.navigation.checkin',
     menuLabelKey: 'userMenu.checkin',
-    route: '/app/nutrition/checkin-list',
+    route: WEEKLY_REVIEW_ROUTE,
   },
   notes: {
     icon: StickyNote,

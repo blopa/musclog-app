@@ -3,11 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { subDays } from 'date-fns';
 
 import { ENCRYPTION_KEY } from '@/constants/database';
-import {
-  CURRENT_ONBOARDING_VERSION,
-  ONBOARDING_COMPLETED,
-  ONBOARDING_VERSION,
-} from '@/constants/misc';
 import { database } from '@/database/database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
 import ChatMessage from '@/database/models/ChatMessage';
@@ -35,6 +30,7 @@ import { MealService } from '@/database/services/MealService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserService } from '@/database/services/UserService';
 import { consumedDateTimeOnDay, localDayStartMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { setOnboardingCompleted } from '@/utils/onboardingService';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { calculateWorkoutVolume } from '@/utils/workoutCalculator';
 
@@ -2338,11 +2334,9 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   await SettingsService.setNavSlot(3, 'coach');
   console.log('Set default navigation bar slots: workouts, food, coach');
 
-  await AsyncStorage.multiSet([
-    [ONBOARDING_COMPLETED, 'true'],
-    // TODO: we might not want to force it to be the current version
-    [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
-  ]);
+  // The same completion real onboarding writes, which also records the What's new tour as seen: a
+  // freshly seeded demo user has nothing that "changed" and must not be greeted as an upgrader.
+  await setOnboardingCompleted();
 
   // Seed Gemini AI settings
   await SettingsService.setEnableGoogleGemini(true);

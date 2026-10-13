@@ -1,4 +1,4 @@
-import type { HistorySet, RuleLoadStep } from '@/utils/progressionRules';
+import { counterpartAt, type HistorySet, type RuleLoadStep } from '@/utils/progressionRules';
 import { sameLoad } from '@/utils/sameLoad';
 import type { StartSetAdjustment } from '@/utils/setAdjustment';
 import { deloadedLoad } from '@/utils/setProgression';
@@ -48,12 +48,9 @@ export function planWeekOverride(input: {
 }): WeekOverridePlan {
   const { kind, planned, last, step } = input;
   const keep = kind === 'lighter' ? lighterSetCount(planned.length) : planned.length;
-  const counterpart = (index: number): HistorySet | undefined =>
-    last.find((set, i) => (set.prescribedIndex ?? i) === index);
-
   const changes: WeekOverrideSetChange[] = [];
   for (const [index, set] of planned.slice(0, keep).entries()) {
-    const before = counterpart(index);
+    const before = counterpartAt(last, index);
     if (kind === 'repeat' && !before) {
       continue;
     }

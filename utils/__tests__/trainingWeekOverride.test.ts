@@ -54,7 +54,8 @@ describe('planWeekOverride', () => {
 
   it('lighter: falls back to the plan’s load with no history', () => {
     const plan = planWeekOverride({ kind: 'lighter', planned: planned(3), last: [], step });
-    expect(plan.changes[0].weightKg).toBe(55);
+    // 60 kg less 10% = 54 kg, snapped down to a loadable 52.5 kg.
+    expect(plan.changes[0].weightKg).toBe(52.5);
     expect(plan.changes[0].adjustment?.source).toBe('weekly_review');
   });
 

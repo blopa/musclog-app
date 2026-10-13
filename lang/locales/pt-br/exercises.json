@@ -177,7 +177,10 @@
         "noteLabel": "Anotação",
         "notePlaceholder": "Uma dica para ler antes de cada série, ex.: cotovelos junto ao corpo",
         "noteSave": "Salvar anotação",
-        "failed": "Não foi possível salvar. Tente novamente."
+        "failed": "Não foi possível salvar. Tente novamente.",
+        "repCeilingLabel": "Limite de repetições (sem peso adicional)",
+        "repCeilingOption": "{{reps}} repetições",
+        "repCeilingHint": "O Musclog adiciona uma repetição por sessão até esse número. Depois disso, evolua com um colete ou cinto com peso, uma variação mais difícil ou um ritmo mais lento."
       }
     },
     "manageExerciseData": {

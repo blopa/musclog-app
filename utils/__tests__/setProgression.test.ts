@@ -8,6 +8,7 @@ import {
   computeStartTarget,
   defaultRepsFor,
   deloadedLoad,
+  loadBelow,
   repsFirstRange,
   type LastWorkingSession,
   planStartChanges,
@@ -437,5 +438,76 @@ describe('deload after repeated misses at moderate effort', () => {
     expect(target({ planReps: 8, last: last(100, 8, 3), missedPlanBefore: true })).toMatchObject({
       kind: 'progression',
     });
+  });
+});
+
+describe('loadBelow', () => {
+  const plates = { incrementKg: 2.5, roundLoad: (kg: number) => Math.round(kg / 2.5) * 2.5 };
+
+  it('snaps down to the heaviest loadable weight at or under the target', () => {
+    expect(loadBelow(60, 54, plates)).toBe(52.5);
+    expect(loadBelow(62, 55.8, plates)).toBe(55);
+  });
+
+  it('always lands strictly below the current load when one exists', () => {
+    // 10% off 10 kg is 9 kg, which rounds back to 10 kg.
+    expect(loadBelow(10, 9, plates)).toBe(7.5);
+    expect(deloadedLoad(10, plates)).toBe(7.5);
+  });
+
+  it('returns the current load when nothing lighter can be set', () => {
+    expect(loadBelow(0, 0, plates)).toBe(0);
+    const barOnly = { incrementKg: 2.5, roundLoad: (kg: number) => Math.max(20, kg) };
+    expect(loadBelow(20, 18, barOnly)).toBe(20);
+  });
+});
+
+describe('bodyweight rep ceiling', () => {
+  const bodyweight = (reps: number, rir = 3, overrides = {}) =>
+    target({
+      last: { ...last(0, reps, rir), lowestReps: reps, rirRecorded: true },
+      progressionMode: 'reps_first',
+      planReps: 10,
+      repCeiling: 25,
+      ...overrides,
+    });
+
+  it('adds reps past the plan range and never invents external load', () => {
+    expect(bodyweight(12)).toEqual({ weightKg: 0, reps: 13, kind: 'progression' });
+    expect(bodyweight(24)).toEqual({ weightKg: 0, reps: 25, kind: 'progression' });
+  });
+
+  it('holds at the ceiling and says how to keep progressing', () => {
+    expect(bodyweight(25)).toEqual({
+      weightKg: 0,
+      reps: 25,
+      kind: 'repeat',
+      rule: { kind: 'ceiling', ceiling: 25 },
+    });
+  });
+
+  it('follows the exercise’s own ceiling', () => {
+    expect(bodyweight(25, 3, { repCeiling: 30 })).toMatchObject({ reps: 26, kind: 'progression' });
+    expect(bodyweight(30, 3, { repCeiling: 30 })).toMatchObject({ rule: { kind: 'ceiling' } });
+  });
+
+  it('applies to unrated sessions too', () => {
+    const unrated = target({
+      last: { ...last(0, 25, 0), lowestReps: 25, rirRecorded: false },
+      planReps: 10,
+      repCeiling: 25,
+    });
+    expect(unrated).toMatchObject({ weightKg: 0, reps: 25, rule: { kind: 'ceiling', ceiling: 25 } });
+  });
+
+  it('a deload with nothing to take off is a repeat, not a phantom deload', () => {
+    expect(
+      target({
+        last: { ...last(0, 8, 0), lowestReps: 8, rirRecorded: true },
+        failedBefore: true,
+        planReps: 10,
+        repCeiling: 25,
+      })
+    ).toEqual({ weightKg: 0, reps: 8, kind: 'repeat' });
   });
 });

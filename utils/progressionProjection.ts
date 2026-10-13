@@ -1,5 +1,6 @@
 import type { ProgressionMode } from '@/constants/settings';
 
+import { DEFAULT_BODYWEIGHT_REP_CEILING } from './bodyweightRepCeiling';
 import {
   type HistorySession,
   type PlannedRuleSet,
@@ -11,13 +12,19 @@ import {
 import { sameLoad } from './sameLoad';
 import { computeStartTarget, planStartChanges, type StartSetChange } from './setProgression';
 
+/**
+ * Where an exercise's targets come from. `holding` is the automatic progression with history that
+ * changed nothing — the targets are last time's — so it is not presented as a "suggestion".
+ */
+export type GuidanceState = 'rule' | 'suggested' | 'holding' | 'learning' | 'attention';
+
 export type ExerciseRecommendation = {
   sets: PlannedRuleSet[];
   changes: StartSetChange[];
   state: ProgressionSessionState | null;
   previous: HistorySession | null;
   rule: ProgressionRule | null;
-  status: 'rule' | 'suggested' | 'learning' | 'attention';
+  status: GuidanceState;
 };
 
 /** Movements with no load or reps to progress: their sets are timed or done as prescribed. */
@@ -60,6 +67,11 @@ export function projectExerciseProgression(input: {
   progressionMode: ProgressionMode;
   isCompound: boolean;
   isBodyweight: boolean;
+  /**
+   * The exercise's rep ceiling (`utils/bodyweightRepCeiling.ts`), applied while a bodyweight
+   * exercise is done unloaded. Defaults to the app's ceiling.
+   */
+  bodyweightRepCeiling?: number;
   /** `Exercise.mechanicType`; cardio, mobility and stretching are never progressed. */
   mechanicType?: string;
   /**
@@ -77,6 +89,9 @@ export function projectExerciseProgression(input: {
     ({ changes, state } = planRuleChanges(rule, planned, history, step));
   } else if (input.automatic && history[0]?.sets.length) {
     const last = summarize(history[0]);
+    // Bodyweight work that has never been loaded only adds reps; once the lifter logs external
+    // load on it, the load progresses like any other exercise.
+    const unloadedBodyweight = input.isBodyweight && last.weightKg === 0;
     const before = history[1]?.sets.length ? summarize(history[1]) : null;
     const failedBefore =
       before != null &&
@@ -97,8 +112,10 @@ export function projectExerciseProgression(input: {
         missedPlanBefore,
         planReps,
         ...step,
-        progressionMode:
-          input.isBodyweight && last.weightKg === 0 ? 'reps_first' : input.progressionMode,
+        progressionMode: unloadedBodyweight ? 'reps_first' : input.progressionMode,
+        repCeiling: unloadedBodyweight
+          ? (input.bodyweightRepCeiling ?? DEFAULT_BODYWEIGHT_REP_CEILING)
+          : undefined,
         isCompound: input.isCompound,
       }),
       last
@@ -114,13 +131,36 @@ export function projectExerciseProgression(input: {
     state,
     previous: history[0] ?? null,
     rule,
-    status:
-      rule?.type === 'percentage' && !state
-        ? 'learning'
-        : rule
-          ? 'rule'
-          : history.length && input.automatic
-            ? 'suggested'
-            : 'learning',
+    status: recommendationStatus({
+      rule,
+      state,
+      hasHistory: history.length > 0,
+      automatic: input.automatic,
+      changed: changes.length > 0,
+    }),
   };
+}
+
+/** Where a projection's targets come from, as the badge beside them names it. */
+function recommendationStatus({
+  rule,
+  state,
+  hasHistory,
+  automatic,
+  changed,
+}: {
+  rule: ProgressionRule | null;
+  state: ProgressionSessionState | null;
+  hasHistory: boolean;
+  automatic: boolean;
+  changed: boolean;
+}): GuidanceState {
+  if (rule) {
+    // A percentage rule with no training max yet is still learning one.
+    return rule.type === 'percentage' && !state ? 'learning' : 'rule';
+  }
+  if (!hasHistory || !automatic) {
+    return 'learning';
+  }
+  return changed ? 'suggested' : 'holding';
 }

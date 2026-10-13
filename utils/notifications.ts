@@ -2,6 +2,8 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
+
 export function addNotificationResponseReceivedListener(
   listener: (event: Notifications.NotificationResponse) => void
 ) {
@@ -44,18 +46,18 @@ export async function handleNotificationResponse(response: Notifications.Notific
     case 'nutrition-checkin':
       router.navigate(
         data['checkinId']
-          ? `/app/nutrition/checkin-list?checkinId=${encodeURIComponent(String(data['checkinId']))}`
-          : '/app/nutrition/checkin-list'
+          ? `${WEEKLY_REVIEW_ROUTE}?checkinId=${encodeURIComponent(String(data['checkinId']))}`
+          : WEEKLY_REVIEW_ROUTE
       );
       break;
 
     case 'weekly-review':
       router.navigate(
         data['reviewId']
-          ? `/app/nutrition/checkin-list?reviewId=${encodeURIComponent(String(data['reviewId']))}`
+          ? `${WEEKLY_REVIEW_ROUTE}?reviewId=${encodeURIComponent(String(data['reviewId']))}`
           : data['reviewDay']
-            ? `/app/nutrition/checkin-list?reviewDay=${encodeURIComponent(String(data['reviewDay']))}`
-            : '/app/nutrition/checkin-list'
+            ? `${WEEKLY_REVIEW_ROUTE}?reviewDay=${encodeURIComponent(String(data['reviewDay']))}`
+            : WEEKLY_REVIEW_ROUTE
       );
       break;
 

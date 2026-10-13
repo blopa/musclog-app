@@ -576,15 +576,15 @@ export function NutritionGoalsBody({
         }
       }
 
-      const macros =
-        finalCalories !== plan.targetCalories
-          ? calculateMacros(finalCalories, fitnessGoal, {
-              weightKg: latestWeightKg,
-              bodyFatPercent: useBfForCalculations
-                ? (latestBodyFatPercent ?? undefined)
-                : undefined,
-            })
-          : { protein: plan.protein, carbs: plan.carbs, fats: plan.fats };
+      // Always from calculateMacros, never the base plan's: protein is anchored on the goal weight
+      // when one is set, which the base plan does not know about.
+      const macros = calculateMacros(finalCalories, fitnessGoal, {
+        weightKg: latestWeightKg,
+        bodyFatPercent: useBfForCalculations ? (latestBodyFatPercent ?? undefined) : undefined,
+        heightCm,
+        goalWeightKg: targetWeight != null ? displayToKg(targetWeight, units) : undefined,
+        weightGoal: eatingPhaseToWeightGoal(eatingPhase),
+      });
 
       const fiberValue = fiberFromCalories(finalCalories);
 

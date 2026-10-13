@@ -50,11 +50,11 @@
         },
         "targets": {
           "title": "Uma ajuda para a próxima série",
-          "description": "O Musclog pode sugerir metas iniciais com base no seu histórico e ajustar as próximas séries enquanto você registra. Valores ajustados ficam marcados e você sempre pode editá-los."
+          "description": "O Musclog sugere metas iniciais com base no seu histórico. Números alterados são marcados, e você sempre pode editá-los."
         },
         "workoutAutonomy": {
           "title": "Metas iniciais",
-          "description": "Escolha como seu histórico influencia o próximo treino.",
+          "description": "Como seu histórico molda o próximo treino.",
           "suggest": {
             "label": "Sugerir metas",
             "description": "Usar sugestões de progressão ao iniciar um treino."
@@ -66,7 +66,7 @@
         },
         "progressionMode": {
           "title": "Preferência de progressão",
-          "description": "Quando as metas mudarem, o que o Musclog deve priorizar?",
+          "description": "O que sobe primeiro quando as metas mudam.",
           "reps_first": {
             "label": "Repetições primeiro",
             "description": "Aumentar as repetições antes de adicionar peso."

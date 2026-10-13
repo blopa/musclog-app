@@ -1,6 +1,11 @@
 import type { WeeklyNutritionRecommendation } from '@/database/services/WeeklyReviewService';
 
-import { isLargeCalorieChange, nutritionReason } from '../nutritionReason';
+import {
+  calorieChangeShare,
+  isBelowCalorieFloor,
+  isLargeCalorieChange,
+  nutritionReason,
+} from '../nutritionReason';
 
 const recommendation = (
   overrides: Partial<WeeklyNutritionRecommendation> = {}
@@ -61,5 +66,32 @@ describe('isLargeCalorieChange', () => {
     expect(isLargeCalorieChange(2000, 2300)).toBe(true);
     expect(isLargeCalorieChange(2000, 2200)).toBe(false);
     expect(isLargeCalorieChange(0, 1500)).toBe(false);
+  });
+});
+
+describe('calorie warnings', () => {
+  it('measures the change as a share of the current target', () => {
+    expect(calorieChangeShare(2500, 1500)).toBeCloseTo(0.4);
+    expect(calorieChangeShare(0, 1500)).toBe(0);
+    expect(isLargeCalorieChange(2500, 1500)).toBe(true);
+    expect(isLargeCalorieChange(2500, 2300)).toBe(false);
+  });
+
+  it('flags a recommendation below the floor only when the user turned the floor off', () => {
+    const low = { targets: { ...recommendation().targets, totalCalories: 1100 } };
+    expect(
+      isBelowCalorieFloor(
+        recommendation({ ...low, minimumCalories: 1500, minimumCaloriesDisabled: true })
+      )
+    ).toBe(true);
+    // With the floor on, the recommendation is clamped to it, so it cannot be below.
+    expect(
+      isBelowCalorieFloor(
+        recommendation({ ...low, minimumCalories: 1500, minimumCaloriesDisabled: false })
+      )
+    ).toBe(false);
+    // Snapshots saved before the floor was recorded say nothing.
+    expect(isBelowCalorieFloor(recommendation(low))).toBe(false);
+    expect(isBelowCalorieFloor(null)).toBe(false);
   });
 });

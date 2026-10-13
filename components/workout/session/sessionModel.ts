@@ -1,21 +1,22 @@
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { type GymSnapshot, isBarLoadedEquipment } from '@/utils/gym';
 import { platesPerSide } from '@/utils/plateCalculator';
+import type { GuidanceState } from '@/utils/progressionProjection';
 import {
   parseProgressionRule,
   parseSessionProgressionState,
   type ProgressionRule,
 } from '@/utils/progressionRules';
+import { sameLoad } from '@/utils/sameLoad';
 import { parseSetPrescription, type SetPrescription } from '@/utils/setPrescription';
 import { isWarmupSet } from '@/utils/workoutSetCompletion';
 
 /** How a target came about, as the badge beside it names it. */
-export type GuidanceState = 'rule' | 'suggested' | 'learning' | 'attention';
-
 /** Whole translation keys (never completed at the call site — see `check-translations`). */
 export const GUIDANCE_STATE_KEYS = {
   rule: 'progression.states.rule',
   suggested: 'progression.states.suggested',
+  holding: 'progression.states.holding',
   learning: 'progression.states.learning',
   attention: 'progression.states.attention',
 } as const satisfies Record<GuidanceState, string>;
@@ -103,5 +104,15 @@ export function guidanceStateFor(
     }
     return 'rule';
   }
-  return block.rows.some((row) => row.prescription?.previous) ? 'suggested' : 'learning';
+  if (!block.rows.some((row) => row.prescription?.previous)) {
+    return 'learning';
+  }
+  // History, but a recommendation that IS the plan: last time's targets, not a suggestion — the
+  // same `holding` the preview shows for this exercise before the session starts.
+  return block.rows.some(({ prescription }) => prescription && recommendsChange(prescription))
+    ? 'suggested'
+    : 'holding';
 }
+
+const recommendsChange = ({ plan, recommendation }: SetPrescription): boolean =>
+  !sameLoad(plan.weightKg, recommendation.weightKg) || plan.reps !== recommendation.reps;

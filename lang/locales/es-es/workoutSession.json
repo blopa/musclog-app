@@ -101,7 +101,8 @@
       "rule": "Tu regla",
       "suggested": "Sugerido",
       "learning": "Aprendiendo",
-      "attention": "Requiere atención"
+      "attention": "Requiere atención",
+      "holding": "Igual que la última vez"
     },
     "fields": {
       "repMin": "Repeticiones mínimas",
@@ -113,7 +114,9 @@
       "backoffReps": "Repeticiones de las series reducidas",
       "percentOfTrainingMax": "Carga del máximo de entrenamiento (%)",
       "trainingMaxPercent": "1RM estimado usado como máximo (%)",
-      "trainingMaxKg": "Máximo inicial"
+      "trainingMaxKg": "Máximo inicial",
+      "failuresBeforeReset": "Fallos seguidos antes de bajar el TM",
+      "resetPercent": "Bajar el TM un (%)"
     },
     "enterTm": "Introducir un máximo inicial",
     "resetTm": "Reiniciar máximo y estimarlo del historial",
@@ -135,7 +138,9 @@
         "deload": "{{failures}} fallos consecutivos con esta carga: redúcela un {{deloadPercent}}%."
       },
       "backoff": "Usa el {{percent}}% de la serie principal ({{top}} {{unit}}), ajustado al equipo disponible.",
-      "percentage": "Usa el {{percent}}% del máximo guardado ({{tm}} {{unit}})."
+      "percentage": "Usa el {{percent}}% del máximo guardado ({{tm}} {{unit}}).",
+      "ceiling": "Has llegado a {{ceiling}} repeticiones. Para seguir progresando, añade carga (un chaleco o cinturón lastrado), pasa a una variante más difícil o ralentiza el tempo.",
+      "percentageLowered": "{{failures}} sesiones seguidas sin completar las repeticiones, así que el máximo de entrenamiento bajó un {{resetPercent}}% hasta {{tm}} {{unit}}. Usa el {{percent}}% de él."
     },
     "editTarget": "Editar objetivo",
     "summary": {
@@ -161,11 +166,12 @@
       "double_progression": "Trabaja en un rango de repeticiones. Cuando todas las series lleguen al máximo, sube el peso y vuelve al mínimo.",
       "linear": "Mismas repeticiones cada vez. Sube el peso tras completarlas todas; descarga tras fallos repetidos.",
       "top_set_backoff": "Una serie principal pesada en un rango de repeticiones y luego series de descarga a un porcentaje de ella.",
-      "percentage": "Cada serie a un porcentaje de un máximo de entrenamiento que sube tras cada sesión completada."
+      "percentage": "Cada serie a un porcentaje de un máximo de entrenamiento que sube tras cada sesión completada y baja tras fallos repetidos."
     },
     "repsShort": "{{reps}} reps",
     "tmEstimated": "El máximo de entrenamiento se estima con tu última sesión hasta que fijes uno.",
-    "holdHint": "Los mismos objetivos que la última vez. Supéralos, o iguálalos con repeticiones de sobra, y subirán la próxima vez."
+    "holdHint": "Los mismos objetivos que la última vez. Supéralos, o iguálalos con repeticiones de sobra, y subirán la próxima vez.",
+    "holdHintList": "Donde no cambió nada, los objetivos son los de la última vez. Supéralos, o iguálalos con repeticiones de sobra, y subirán la próxima vez."
   },
   "trainingFlow": {
     "inline": "En línea",
@@ -332,7 +338,7 @@
     "reasonEmpiricalNoTrend": "Según tus registros, gastas unas {{expenditure}} kcal al día. Estos objetivos te mantienen al ritmo de tu meta.",
     "reasonBaseline": "Estimado a partir de tu perfil, todavía no de tus registros: unas {{expenditure}} kcal al día. Sigue registrando comida y peso para personalizarlo.",
     "largeChangeTitle": "Es un cambio grande",
-    "largeChangeBody": "Los cambios grandes suelen deberse a comidas sin registrar o a algunos pesajes inusuales. Revisa el registro de comidas de esta semana antes de aplicarlo.",
+    "largeChangeBody": "Cambiar las calorías un {{percent}}% en una sola semana es agresivo y Musclog no lo recomienda. Los cambios grandes suelen deberse a comidas sin registrar o a pesajes inusuales, así que revisa el registro de esta semana o mantén tus objetivos actuales.",
     "reviewFoodLog": "Revisar registro de comidas",
     "welcome": {
       "title": "Bienvenido a tu revisión semanal",
@@ -403,6 +409,9 @@
       "lowReserveStalled": "Tus series no dejaron nada en reserva y un levantamiento que sigues se ha estancado.",
       "dueForLighter": "Han pasado {{count}} semanas desde la última semana ligera.",
       "onTrack": "El entrenamiento va por buen camino."
-    }
+    },
+    "belowFloorTitle": "Por debajo del mínimo de calorías",
+    "belowFloorBody": "Esto está por debajo de tu mínimo de {{minimum}} kcal. Desactivaste el mínimo de calorías en los ajustes avanzados; bajar tanto no se recomienda y puede no ser seguro.",
+    "estimateShort": "Estimación"
   }
 }

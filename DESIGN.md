@@ -184,7 +184,11 @@ clipped by the parent; see `FIXES.md`.
 
 ### Buttons
 
-- Primary: emerald or the approved emerald-to-teal gradient, with high-contrast text.
+- Primary: emerald or the approved emerald-to-teal gradient, with high-contrast text. The
+  `gradientCta` button variant draws `gradients.cta`, which is that emerald-to-teal gradient (the
+  same stops as `gradients.accent`); it was indigo-to-green, which this rule does not allow.
+- One primary action per screen. When a screen has a hero (the Workouts screen's Today card), the
+  cards below it use their standard, secondary treatment rather than a second filled button.
 - Secondary: low-emphasis surface or outline treatment.
 - Destructive: red/rose and explicit action copy.
 - Disabled: visually subdued and non-interactive; never communicate disabled state by opacity alone

@@ -507,16 +507,19 @@ describe('WorkoutProgressionService', () => {
         const live = sets.filter((set) => !set.deletedAt);
         expect(live.map((set) => set.id)).toEqual(['s1', 's2', 's3']);
         expect(sets[3].deletedAt).toEqual(expect.any(Number));
-        for (const set of live) {
-          // 62 kg less 10% (6.2 kg beats the 2.5 kg step) = 55.8, snapped to a loadable 55.
-          expect(set.weight).toBe(55);
+        // The first two sets follow last session's 62 kg: less 10% (6.2 kg beats the 2.5 kg step)
+        // = 55.8, snapped DOWN to 55. Last session had no third set, so the third lightens the
+        // plan's own 60 kg: 54, snapped down to 52.5 — never rounded back up towards the plan.
+        const expected = [55, 55, 52.5];
+        for (const [index, set] of live.entries()) {
+          expect(set.weight).toBe(expected[index]);
           expect(set.reps).toBe(8);
           expect(set.repsInReserve).toBe(4);
           expect(JSON.parse(set.adjustmentJson)).toMatchObject({
             cause: 'deload',
             source: 'weekly_review',
             plan: { weightKg: 60, reps: 8 },
-            now: { weightKg: 55, reps: 8 },
+            now: { weightKg: expected[index], reps: 8 },
           });
           expect(JSON.parse(set.prescriptionJson)).toMatchObject({ workingSetCount: 3 });
         }

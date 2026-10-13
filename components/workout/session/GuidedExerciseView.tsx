@@ -24,6 +24,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { SessionDraft } from '@/hooks/useWorkoutSessionController';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import type { GuidanceState } from '@/utils/progressionProjection';
 import { adjustedFields } from '@/utils/setAdjustment';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
@@ -36,7 +37,7 @@ import {
 import { ExerciseNotes, type SessionNote } from './ExerciseNotes';
 import { GuidanceSummary } from './GuidanceSummary';
 import { RirQuickPick } from './RirQuickPick';
-import type { GuidanceState, SessionBlock, SessionSetRowModel } from './sessionModel';
+import type { SessionBlock, SessionSetRowModel } from './sessionModel';
 import { draftFromPrevious, stepInput } from './setDraft';
 
 const HERO_HEIGHT = 260;

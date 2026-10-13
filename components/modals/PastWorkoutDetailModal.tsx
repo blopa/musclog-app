@@ -893,8 +893,8 @@ export default function PastWorkoutDetailModal({
                 weight: displayToKg(s.weight, editingUnits),
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
-                repsInReserve: s.rirRecorded === false ? undefined : s.repsInReserve,
-                rirRecorded: s.rirRecorded,
+                // Null clears the rating, so an unrated set stays unrated rather than "0 in reserve".
+                repsInReserve: s.rirRecorded === false ? null : s.repsInReserve,
                 setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };
 

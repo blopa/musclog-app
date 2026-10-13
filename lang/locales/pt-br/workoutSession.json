@@ -101,7 +101,8 @@
       "rule": "Sua regra",
       "suggested": "Sugerido",
       "learning": "Aprendendo",
-      "attention": "Precisa de atenção"
+      "attention": "Precisa de atenção",
+      "holding": "Igual à última vez"
     },
     "fields": {
       "repMin": "Repetições mínimas",
@@ -113,7 +114,9 @@
       "backoffReps": "Repetições das séries reduzidas",
       "percentOfTrainingMax": "Carga do máximo de treino (%)",
       "trainingMaxPercent": "1RM estimado usado como máximo (%)",
-      "trainingMaxKg": "Máximo inicial"
+      "trainingMaxKg": "Máximo inicial",
+      "failuresBeforeReset": "Falhas seguidas antes de reduzir o TM",
+      "resetPercent": "Reduzir o TM em (%)"
     },
     "enterTm": "Informar um máximo inicial",
     "resetTm": "Redefinir máximo e estimar pelo histórico",
@@ -135,7 +138,9 @@
         "deload": "{{failures}} falhas consecutivas com esta carga: reduza {{deloadPercent}}%."
       },
       "backoff": "Use {{percent}}% da série principal ({{top}} {{unit}}), arredondado para o equipamento disponível.",
-      "percentage": "Use {{percent}}% do máximo de treino salvo ({{tm}} {{unit}})."
+      "percentage": "Use {{percent}}% do máximo de treino salvo ({{tm}} {{unit}}).",
+      "ceiling": "Você chegou a {{ceiling}} repetições. Para continuar evoluindo, adicione carga (um colete ou cinto com peso), mude para uma variação mais difícil ou desacelere o ritmo.",
+      "percentageLowered": "{{failures}} sessões seguidas sem completar as repetições, então o máximo de treino caiu {{resetPercent}}% para {{tm}} {{unit}}. Use {{percent}}% dele."
     },
     "editTarget": "Editar meta",
     "summary": {
@@ -161,11 +166,12 @@
       "double_progression": "Trabalhe numa faixa de repetições. Quando todas as séries chegarem ao topo, aumente a carga e recomece embaixo.",
       "linear": "Mesmas repetições toda vez. Aumente a carga após completar todas; faça deload após falhas repetidas.",
       "top_set_backoff": "Uma série principal pesada numa faixa de repetições e depois séries back-off a uma porcentagem dela.",
-      "percentage": "Cada série a uma porcentagem de um máximo de treino que sobe após cada sessão bem-sucedida."
+      "percentage": "Cada série a uma porcentagem de um máximo de treino que sobe após cada sessão bem-sucedida e cai após falhas repetidas."
     },
     "repsShort": "{{reps}} reps",
     "tmEstimated": "O máximo de treino é estimado pela sua última sessão até você definir um.",
-    "holdHint": "As mesmas metas da última vez. Supere-as, ou alcance-as com repetições sobrando, e elas sobem na próxima vez."
+    "holdHint": "As mesmas metas da última vez. Supere-as, ou alcance-as com repetições sobrando, e elas sobem na próxima vez.",
+    "holdHintList": "Onde nada mudou, as metas são as da última vez. Supere-as, ou alcance-as com repetições de sobra, e elas sobem na próxima vez."
   },
   "trainingFlow": {
     "inline": "Em linha",
@@ -295,7 +301,7 @@
     "noGoal": "O treino está disponível sem meta nutricional. Configure metas no perfil quando quiser.",
     "intuitive": "A alimentação intuitiva está ativada. A revisão do treino continua disponível.",
     "history": "Histórico de revisões",
-    "legacy": "Check-in anterior",
+    "legacy": "Revisão anterior",
     "reminder": "Lembrete semanal opcional",
     "reminderBody": "Sua semana está pronta para revisar. Confira treino e metas nutricionais.",
     "cardWeek": "Semana de {{start}} a {{end}}",
@@ -332,7 +338,7 @@
     "reasonEmpiricalNoTrend": "Pelos seus registros, você gasta cerca de {{expenditure}} kcal por dia. Estas metas mantêm você no ritmo do seu objetivo.",
     "reasonBaseline": "Estimado pelo seu perfil, ainda não pelos seus registros: cerca de {{expenditure}} kcal por dia. Continue registrando comida e peso para personalizar.",
     "largeChangeTitle": "É uma mudança grande",
-    "largeChangeBody": "Grandes variações costumam vir de refeições não registradas ou de algumas pesagens fora do comum. Confira o registro de alimentos desta semana antes de aplicar.",
+    "largeChangeBody": "Mudar as calorias em {{percent}}% em uma única semana é agressivo, e o Musclog não recomenda. Grandes variações costumam vir de refeições não registradas ou de algumas pesagens incomuns, então confira o diário desta semana ou mantenha suas metas atuais.",
     "reviewFoodLog": "Revisar registro de alimentos",
     "welcome": {
       "title": "Boas-vindas à sua revisão semanal",
@@ -403,6 +409,9 @@
       "lowReserveStalled": "Suas séries não deixaram nada de reserva e um exercício que você acompanha estagnou.",
       "dueForLighter": "Já se passaram {{count}} semanas desde a última semana leve.",
       "onTrack": "O treino está no caminho certo."
-    }
+    },
+    "belowFloorTitle": "Abaixo do mínimo de calorias",
+    "belowFloorBody": "Isso está abaixo do seu mínimo de {{minimum}} kcal. Você desativou o mínimo de calorias nas configurações avançadas; ir tão baixo não é recomendado e pode não ser seguro.",
+    "estimateShort": "Estimativa"
   }
 }

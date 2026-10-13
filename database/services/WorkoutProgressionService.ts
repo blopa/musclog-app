@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import type { Units } from '@/constants/settings';
 import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type Exercise from '@/database/models/Exercise';
@@ -11,7 +12,7 @@ import type WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
 import { TrainingWeekRepository } from '@/database/repositories/TrainingWeekRepository';
-import { isBarLoadedEquipment } from '@/utils/gym';
+import { type GymSnapshot, isBarLoadedEquipment } from '@/utils/gym';
 import { loadStepFor } from '@/utils/loadIncrement';
 import { platesPerSide } from '@/utils/plateCalculator';
 import {
@@ -20,10 +21,14 @@ import {
   projectExerciseProgression,
 } from '@/utils/progressionProjection';
 import {
+  carriedSessionState,
+  counterpartAt,
   type HistorySession,
   parseProgressionRule,
   parseSessionProgressionState,
   PROGRESSION_HISTORY_SESSIONS,
+  type ProgressionRule,
+  type ProgressionSessionState,
   serializeSessionProgression,
 } from '@/utils/progressionRules';
 import {
@@ -32,7 +37,12 @@ import {
   serializeStartAdjustment,
 } from '@/utils/setAdjustment';
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
-import { planWeekOverride } from '@/utils/trainingWeekOverride';
+import {
+  planWeekOverride,
+  type WeekOverrideKind,
+  type WeekOverridePlan,
+  type WeekOverrideSet,
+} from '@/utils/trainingWeekOverride';
 import {
   isPerformedWorkoutSet,
   isPlannedWorkoutSet,
@@ -55,6 +65,22 @@ export type TemplateRecommendation = ExerciseRecommendation & {
   exercise: Exercise;
 };
 
+type ProgressionContext = {
+  automatic: boolean;
+  mode: Awaited<ReturnType<typeof SettingsService.getProgressionMode>>;
+  gym: GymSnapshot | null;
+  /** Training done in a lighter week is deliberately below capacity, so it is no baseline. */
+  lighterWindows: readonly { from: number; until: number }[];
+  unitsFor: (exerciseId: string) => Units;
+  repCeilingFor: (exerciseId: string) => number;
+};
+
+/** What the session start does to one exercise's planned working sets. */
+type ExerciseStartPlan = WeekOverridePlan & {
+  /** The rule state to write onto the log exercise, or null to leave it as copied. */
+  state: ProgressionSessionState | null;
+};
+
 export class WorkoutProgressionService {
   /** Add/Swap use the same completed history and projection as previews and session starts. */
   static async projectAdHocExercise(exercise: Exercise): Promise<ExerciseRecommendation | null> {
@@ -63,7 +89,9 @@ export class WorkoutProgressionService {
     if (!history[0]?.sets.length) {
       return null;
     }
+    const step = loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id));
     return projectExerciseProgression({
+      ...this.projectionInput(exercise, context, step),
       planned: history[0].sets.map((set, index) => ({
         id: String(index),
         weight: set.weightKg,
@@ -71,12 +99,6 @@ export class WorkoutProgressionService {
       })),
       history,
       rule: null,
-      step: loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id)),
-      automatic: context.automatic,
-      progressionMode: context.mode,
-      isCompound: exercise.mechanicType === 'compound',
-      isBodyweight: exercise.equipmentType === 'bodyweight',
-      mechanicType: exercise.mechanicType,
       plannedFromHistory: true,
     });
   }
@@ -120,16 +142,16 @@ export class WorkoutProgressionService {
             .filter((set) => set.templateExerciseId === row.id && !isWarmupSet(set))
             .sort((a, b) => a.setOrder - b.setOrder)
             .map((set) => ({ id: set.id, weight: set.targetWeight, reps: set.targetReps }));
+          const step = loadStepFor(
+            exercise.equipmentType,
+            context.gym,
+            context.unitsFor(exercise.id)
+          );
           const projection = projectExerciseProgression({
+            ...this.projectionInput(exercise, context, step),
             planned,
             history,
             rule,
-            step: loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id)),
-            automatic: context.automatic,
-            progressionMode: context.mode,
-            isCompound: exercise.mechanicType === 'compound',
-            isBodyweight: exercise.equipmentType === 'bodyweight',
-            mechanicType: exercise.mechanicType,
           });
           if (
             context.gym &&
@@ -147,20 +169,21 @@ export class WorkoutProgressionService {
     ).filter((row): row is TemplateRecommendation => row !== null);
   }
 
-  private static async context() {
+  private static async context(): Promise<ProgressionContext> {
     const [autonomy, mode, gym, lighterWindows] = await Promise.all([
       SettingsService.getWorkoutAutonomy(),
       SettingsService.getProgressionMode(),
       GymService.getActiveGym().catch(() => null),
       TrainingWeekRepository.lighterWeekWindows(),
     ]);
+    const { unitsFor, repCeilingFor } = await ExerciseUserSettingsService.getResolvers(gym);
     return {
       automatic: autonomy === 'suggest',
       mode,
       gym,
-      /** Training done in a lighter week is deliberately below capacity, so it is no baseline. */
       lighterWindows,
-      unitsFor: await ExerciseUserSettingsService.getWeightUnitsResolver(gym),
+      unitsFor,
+      repCeilingFor,
     };
   }
 
@@ -215,6 +238,7 @@ export class WorkoutProgressionService {
       const operations: Model[] = [];
       let changed = 0;
       await commitPrepared(database, [...sets, ...logExercises], () => {
+        const now = Date.now();
         for (const [index, row] of logExercises.entries()) {
           const exercise = exercises.get(row.exerciseId);
           if (!exercise || !progressesLoad(exercise.mechanicType)) {
@@ -224,114 +248,58 @@ export class WorkoutProgressionService {
             .filter((set) => set.logExerciseId === row.id && !isWarmupSet(set))
             .sort((a, b) => a.setOrder - b.setOrder);
           const rule = rules[index];
-          if (week) {
-            const step = loadStepFor(
-              exercise.equipmentType,
-              context.gym,
-              context.unitsFor(exercise.id)
-            );
-            const plan = planWeekOverride({
-              kind: week.decision,
-              planned: planned.map((set) => ({ id: set.id, weight: set.weight, reps: set.reps })),
-              last: histories[index][0]?.sets ?? [],
-              step,
-            });
-            const changes = new Map(plan.changes.map((change) => [change.setId, change]));
-            const dropped = new Set(plan.dropSetIds);
-            const now = Date.now();
-            for (const [setIndex, set] of planned.entries()) {
-              if (dropped.has(set.id)) {
-                operations.push(prepareSoftDelete(set, now));
-                changed += 1;
-                continue;
-              }
-              const change = changes.get(set.id);
-              const original = { weightKg: set.weight, reps: set.reps };
-              operations.push(
-                set.prepareUpdate((record) => {
-                  record.prescriptionJson = serializeSetPrescription({
-                    established: true,
-                    workingSetCount: plan.workingSetCount,
-                    plan: original,
-                    recommendation: change?.adjustment?.now ?? original,
-                    explanation: change?.adjustment ?? undefined,
-                    previous: histories[index][0]?.sets.find(
-                      (entry, i) => (entry.prescribedIndex ?? i) === setIndex
-                    ),
-                  });
-                  if (change) {
-                    record.weight = change.weightKg;
-                    record.reps = change.reps;
-                    if (change.repsInReserve != null) {
-                      record.repsInReserve = change.repsInReserve;
-                    }
-                    record.adjustmentJson = change.adjustment
-                      ? serializeStartAdjustment(change.adjustment)
-                      : undefined;
-                  }
-                  record.updatedAt = now;
-                })
-              );
-              if (change?.adjustment) {
-                changed += 1;
-              }
-            }
-            // A week the review overrode is not a session the rule can learn from, so it does not
-            // advance the remembered state — but it must hand the last session's state on, or the
-            // next normal session would fall back to the rule's initial training max.
-            const carried = histories[index][0]?.state;
-            if (rule && carried) {
-              operations.push(
-                row.prepareUpdate((record) => {
-                  record.progressionJson = serializeSessionProgression(rule, carried);
-                  record.updatedAt = now;
-                })
-              );
-            }
-            continue;
-          }
-          const projection = projectExerciseProgression({
+          const history = histories[index];
+          const plan = this.planExercise({
+            exercise,
             planned: planned.map((set) => ({ id: set.id, weight: set.weight, reps: set.reps })),
-            history: histories[index],
+            history,
             rule,
-            step: loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id)),
-            automatic: context.automatic,
-            progressionMode: context.mode,
-            isCompound: exercise.mechanicType === 'compound',
-            isBodyweight: exercise.equipmentType === 'bodyweight',
-            mechanicType: exercise.mechanicType,
+            context,
+            week: week?.decision ?? null,
           });
-          const changes = new Map(projection.changes.map((change) => [change.setId, change]));
-          changed += changes.size;
+          const changes = new Map(plan.changes.map((change) => [change.setId, change]));
+          const dropped = new Set(plan.dropSetIds);
+          const lastSets = history[0]?.sets ?? [];
           for (const [setIndex, set] of planned.entries()) {
+            if (dropped.has(set.id)) {
+              operations.push(prepareSoftDelete(set, now));
+              changed += 1;
+              continue;
+            }
             const change = changes.get(set.id);
-            const plan = { weightKg: set.weight, reps: set.reps };
+            const original = { weightKg: set.weight, reps: set.reps };
             operations.push(
               set.prepareUpdate((record) => {
                 record.prescriptionJson = serializeSetPrescription({
                   established: true,
-                  workingSetCount: planned.length,
-                  plan,
-                  recommendation: change?.adjustment.now ?? plan,
-                  explanation: change?.adjustment,
-                  previous: histories[index][0]?.sets.find(
-                    (entry, i) => (entry.prescribedIndex ?? i) === setIndex
-                  ),
+                  workingSetCount: plan.workingSetCount,
+                  plan: original,
+                  recommendation: change?.adjustment?.now ?? original,
+                  explanation: change?.adjustment ?? undefined,
+                  previous: counterpartAt(lastSets, setIndex),
                 });
                 if (change) {
                   record.weight = change.weightKg;
                   record.reps = change.reps;
-                  record.adjustmentJson = serializeStartAdjustment(change.adjustment);
+                  if (change.repsInReserve != null) {
+                    record.repsInReserve = change.repsInReserve;
+                  }
+                  record.adjustmentJson = change.adjustment
+                    ? serializeStartAdjustment(change.adjustment)
+                    : undefined;
                 }
-                record.updatedAt = Date.now();
+                record.updatedAt = now;
               })
             );
+            if (change?.adjustment) {
+              changed += 1;
+            }
           }
-          if (rule && projection.state) {
+          if (rule && plan.state) {
             operations.push(
               row.prepareUpdate((record) => {
-                record.progressionJson = serializeSessionProgression(rule, projection.state);
-                record.updatedAt = Date.now();
+                record.progressionJson = serializeSessionProgression(rule, plan.state);
+                record.updatedAt = now;
               })
             );
           }
@@ -340,6 +308,68 @@ export class WorkoutProgressionService {
       });
       return changed;
     });
+  }
+
+  /**
+   * What the session start does to one exercise, in ONE shape whichever decided it: a Weekly
+   * Review's repeat or lighter week, or the exercise's rule / the automatic progression. The writer
+   * applies the shape and never needs to know which of them produced it.
+   */
+  private static planExercise({
+    exercise,
+    planned,
+    history,
+    rule,
+    context,
+    week,
+  }: {
+    exercise: Exercise;
+    planned: WeekOverrideSet[];
+    history: HistorySession[];
+    rule: ProgressionRule | null;
+    context: ProgressionContext;
+    week: WeekOverrideKind | null;
+  }): ExerciseStartPlan {
+    const step = loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id));
+    if (week) {
+      // A week the review overrode is not a session the rule can learn from, so it does not
+      // advance the remembered state — but it hands the last session's state on (while it still
+      // belongs to this rule), or the next normal session would start the rule over.
+      return {
+        ...planWeekOverride({ kind: week, planned, last: history[0]?.sets ?? [], step }),
+        state: carriedSessionState(rule, history[0]),
+      };
+    }
+    const projection = projectExerciseProgression({
+      ...this.projectionInput(exercise, context, step),
+      planned,
+      history,
+      rule,
+    });
+    return {
+      changes: projection.changes,
+      dropSetIds: [],
+      workingSetCount: planned.length,
+      state: rule ? projection.state : null,
+    };
+  }
+
+  /** The exercise- and account-dependent half of every projection, built in one place. */
+  private static projectionInput(
+    exercise: Exercise,
+    context: ProgressionContext,
+    step: ReturnType<typeof loadStepFor>
+  ) {
+    const isBodyweight = exercise.equipmentType === 'bodyweight';
+    return {
+      step,
+      automatic: context.automatic,
+      progressionMode: context.mode,
+      isCompound: exercise.mechanicType === 'compound',
+      isBodyweight,
+      bodyweightRepCeiling: isBodyweight ? context.repCeilingFor(exercise.id) : undefined,
+      mechanicType: exercise.mechanicType,
+    };
   }
 
   static async revertStartAdjustment(logExerciseId: string): Promise<number> {

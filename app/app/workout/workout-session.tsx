@@ -278,7 +278,11 @@ export default function WorkoutSessionScreen() {
           currentExerciseId={target?.exercise.id}
           onReplace={async (exercise, outcome) => {
             const swappedLogExerciseId = target?.set.logExerciseId;
-            await actions.replaceExercise(exercise, outcome);
+            // A failed swap keeps everything: the sheet stays open and the typed numbers still
+            // belong to the exercise that is still there. The error was already shown.
+            if (!(await actions.replaceExercise(exercise, outcome))) {
+              return;
+            }
             // Typed numbers belong to the old movement; the replacement has its own suggestion.
             if (swappedLogExerciseId) {
               controller.clearValueDrafts(swappedLogExerciseId);

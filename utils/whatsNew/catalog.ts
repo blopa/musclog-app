@@ -1,3 +1,5 @@
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
+
 export const WHATS_NEW_ICONS = [
   'sparkles',
   'layout',
@@ -71,7 +73,7 @@ export type WhatsNewAction = (typeof WHATS_NEW_ACTIONS)[number];
 export const WHATS_NEW_ACTION_CATALOG = {
   openWorkoutSettings: { kind: 'modal' },
   openCardioLog: { kind: 'modal' },
-  openWeeklyReview: { kind: 'route', route: '/app/nutrition/checkin-list' },
+  openWeeklyReview: { kind: 'route', route: WEEKLY_REVIEW_ROUTE },
   openWorkouts: { kind: 'route', route: '/app/workout/workouts' },
 } as const satisfies Record<WhatsNewAction, { kind: 'modal' } | { kind: 'route'; route: string }>;
 export type WhatsNewRoute = Extract<

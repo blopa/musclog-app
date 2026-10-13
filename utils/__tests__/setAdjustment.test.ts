@@ -295,3 +295,35 @@ describe('a start adjustment sourced from the Weekly Review', () => {
     });
   });
 });
+
+describe('explanations added for the rep ceiling and the training max reset', () => {
+  const base = {
+    cause: 'repeat',
+    field: 'reps',
+    from: 10,
+    to: 25,
+    plan: { weightKg: 0, reps: 10 },
+    last: { weightKg: 0, reps: 25, averageRepsInReserve: 2 },
+    now: { weightKg: 0, reps: 25 },
+  };
+
+  it('reads back a rep-ceiling explanation', () => {
+    const raw = JSON.stringify({ ...base, rule: { kind: 'ceiling', ceiling: 25 } });
+    expect(parseStartAdjustment(raw)?.rule).toEqual({ kind: 'ceiling', ceiling: 25 });
+    expect(
+      parseStartAdjustment(JSON.stringify({ ...base, rule: { kind: 'ceiling' } }))
+    ).toBeNull();
+  });
+
+  it('reads a percentage explanation with or without a reset', () => {
+    const percentage = { kind: 'percentage', trainingMaxKg: 90, percent: 80, raised: false };
+    expect(parseStartAdjustment(JSON.stringify({ ...base, rule: percentage }))?.rule).toEqual(
+      percentage
+    );
+    const lowered = { ...percentage, lowered: { failures: 2, resetPercent: 10 } };
+    expect(parseStartAdjustment(JSON.stringify({ ...base, rule: lowered }))?.rule).toEqual(lowered);
+    expect(
+      parseStartAdjustment(JSON.stringify({ ...base, rule: { ...percentage, lowered: {} } }))
+    ).toBeNull();
+  });
+});

@@ -24,6 +24,7 @@ import {
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 import { parseStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
+import { writeSetEffort } from '@/utils/setEffort';
 import { parseSetPrescription } from '@/utils/setPrescription';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
@@ -65,8 +66,8 @@ type WorkoutSetUpdateFields = {
   weight?: number;
   partials?: number;
   restTimeAfter?: number;
-  repsInReserve?: number;
-  rirRecorded?: boolean;
+  /** A number rates the set's effort; `null` clears the rating (unrated). */
+  repsInReserve?: number | null;
   difficultyLevel?: number | null;
   completionStatus?: WorkoutSetCompletionStatus;
   setType?: string;
@@ -1014,8 +1015,7 @@ export class WorkoutService {
                 record.weight = update.weight ?? 0;
                 record.partials = update.partials ?? 0;
                 record.restTimeAfter = update.restTimeAfter ?? 0;
-                record.repsInReserve = update.repsInReserve ?? 0;
-                record.rirRecorded = update.rirRecorded ?? update.repsInReserve != null;
+                writeSetEffort(record, update.repsInReserve);
                 record.difficultyLevel = update.difficultyLevel ?? undefined;
                 record.completionStatus = update.completionStatus ?? 'performed';
                 record.setType = update.setType ?? 'normal';
@@ -1047,8 +1047,7 @@ export class WorkoutService {
               }
 
               if (update.repsInReserve !== undefined) {
-                record.repsInReserve = update.repsInReserve;
-                record.rirRecorded = update.rirRecorded ?? true;
+                writeSetEffort(record, update.repsInReserve);
               }
 
               if (update.difficultyLevel !== undefined) {
@@ -1453,8 +1452,7 @@ export class WorkoutService {
               set.weight = originalSet.weight;
               set.partials = 0;
               set.restTimeAfter = originalSet.restTimeAfter;
-              set.repsInReserve = 0;
-              set.rirRecorded = false;
+              writeSetEffort(set, null);
               set.difficultyLevel = undefined;
               set.completionStatus = 'planned';
               set.setType = originalSet.setType ?? 'normal';

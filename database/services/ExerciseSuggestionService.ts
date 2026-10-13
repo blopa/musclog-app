@@ -3,7 +3,7 @@ import { ExerciseRestrictionService } from '@/database/services/ExerciseRestrict
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { GymService } from '@/database/services/GymService';
 import {
-  activeRestrictionFor,
+  isDisliked,
   isExerciseSuggestible,
   type SubstitutionContext,
 } from '@/utils/exerciseSubstitution';
@@ -42,9 +42,8 @@ export class ExerciseSuggestionService {
     const suggestible = exercises.filter((exercise) => isExerciseSuggestible(exercise, ctx));
     return {
       exercises: suggestible,
-      disliked: suggestible.filter(
-        (exercise) =>
-          activeRestrictionFor(exercise.id, ctx.restrictions, ctx.now)?.kind === 'dislike'
+      disliked: suggestible.filter((exercise) =>
+        isDisliked(exercise.id, ctx.restrictions, ctx.now)
       ),
       context: ctx,
     };

@@ -2,6 +2,7 @@ import {
   defaultProgressionRule,
   parseProgressionRule,
   planRuleChanges,
+  carriedSessionState,
   resolveTrainingMax,
   serializeSessionProgression,
   type HistorySession,
@@ -62,9 +63,9 @@ describe('explicit progression projections', () => {
         history([6, 7, 5]),
         history([7, 6, 6]),
       ]).sets[0]
-      // 60 kg - max(2.5 kg step, 10% = 6 kg) = 54 kg, snapped to the 2.5 kg step. A single 2.5 kg
-      // step clears nothing on a barbell.
-    ).toMatchObject({ weight: 55, reps: 8 });
+      // 60 kg - max(2.5 kg step, 10% = 6 kg) = 54 kg, snapped DOWN to the 2.5 kg step: a deload
+      // never rounds up towards the load being failed. A single 2.5 kg step clears nothing.
+    ).toMatchObject({ weight: 52.5, reps: 8 });
     // A miss at a different load does not count towards the stall.
     expect(
       project(defaultProgressionRule('double_progression'), [
@@ -77,7 +78,7 @@ describe('explicit progression projections', () => {
     const rule = defaultProgressionRule('top_set_backoff');
     expect(project(rule, [history([3, 8, 8])]).sets[0]).toMatchObject({ weight: 60, reps: 4 });
     expect(project(rule, [history([3, 8, 8]), history([3, 8, 8])]).sets[0]).toMatchObject({
-      weight: 55,
+      weight: 52.5,
       reps: 4,
     });
   });
@@ -99,7 +100,8 @@ describe('explicit progression projections', () => {
     expect(project(rule, [history([5, 5, 5])]).sets[0].weight).toBe(62.5);
     expect(
       project(rule, [history([4, 4, 4]), history([4, 4, 4]), history([4, 4, 4])]).sets[0].weight
-    ).toBe(55);
+      // 60 kg less 10% = 54 kg, snapped down to 52.5 kg.
+    ).toBe(52.5);
     expect(
       project(rule, [history([4, 4, 4]), history([4, 4, 4], 65), history([4, 4, 4])]).sets[0].weight
     ).toBe(60);
@@ -319,4 +321,189 @@ describe('automatic progression stall detection', () => {
       automatic([rated([6, 6, 6]), rated([6, 6, 6], 65)]).changes[0]?.adjustment.cause
     ).not.toBe('deload');
   });
+});
+
+describe('deloads always reach a lighter load', () => {
+  // A 10 kg dumbbell, 2.5 kg steps: 10% off is 9 kg, which rounds to the NEAREST loadable weight —
+  // 10 kg, the load being failed. The deload must snap down to 7.5 kg instead of holding forever.
+  const dumbbell = [{ id: 'd', weight: 10, reps: 10 }];
+  const miss = (): HistorySession => ({
+    sets: [{ weightKg: 10, reps: 8, repsInReserve: 0, rirRecorded: false }],
+    allPrescribedSetsPerformed: true,
+    rule: null,
+    state: null,
+  });
+
+  it('linear: a percentage that rounds back up still lowers the load by a real step', () => {
+    const rule = { ...defaultProgressionRule('linear'), reps: 10, failuresBeforeDeload: 2 };
+    const plan = planRuleChanges(rule, dumbbell, [miss(), miss()], step);
+    expect(plan.changes[0]).toMatchObject({
+      weightKg: 7.5,
+      adjustment: { cause: 'deload', rule: { kind: 'linear', outcome: 'deload' } },
+    });
+  });
+
+  it('linear: holds, rather than claiming a deload, when nothing lighter exists', () => {
+    const rule = { ...defaultProgressionRule('linear'), reps: 10, failuresBeforeDeload: 1 };
+    const atZero: HistorySession = {
+      ...miss(),
+      sets: [{ weightKg: 0, reps: 8, repsInReserve: 0, rirRecorded: false }],
+    };
+    const plan = planRuleChanges(rule, [{ id: 'b', weight: 0, reps: 10 }], [atZero], step);
+    expect(plan.changes).toEqual([]);
+  });
+
+  it('double progression: a second miss on a light load deloads below it, not back onto it', () => {
+    const plan = planRuleChanges(
+      defaultProgressionRule('double_progression'),
+      [{ id: 'd', weight: 10, reps: 8 }],
+      [
+        { ...miss(), sets: [{ weightKg: 10, reps: 6, repsInReserve: 0, rirRecorded: false }] },
+        { ...miss(), sets: [{ weightKg: 10, reps: 6, repsInReserve: 0, rirRecorded: false }] },
+      ],
+      step
+    );
+    expect(plan.changes[0]).toMatchObject({ weightKg: 7.5, adjustment: { cause: 'deload' } });
+  });
+});
+
+describe('percentage training max reset', () => {
+  const rule = {
+    ...defaultProgressionRule('percentage'),
+    type: 'percentage' as const,
+    reps: 5,
+    percentOfTrainingMax: 80,
+    trainingMaxKg: 100,
+  };
+  const session = (reps: number, trainingMaxKg = 100): HistorySession => ({
+    ...history([reps, reps, reps], trainingMaxKg * 0.8),
+    rule,
+    state: { trainingMaxKg },
+  });
+
+  it('defaults to cutting the training max by 10% after two sessions in a row miss reps', () => {
+    expect(rule).toMatchObject({ failuresBeforeReset: 2, resetPercent: 10 });
+    expect(resolveTrainingMax(rule, [session(3)], step)).toMatchObject({
+      trainingMaxKg: 100,
+      source: 'held',
+    });
+    expect(resolveTrainingMax(rule, [session(3), session(4)], step)).toMatchObject({
+      trainingMaxKg: 90,
+      source: 'lowered',
+      failures: 2,
+    });
+  });
+
+  it('loads the session from the lowered max and explains the reset', () => {
+    const plan = planRuleChanges(
+      rule,
+      [{ id: 'p', weight: 80, reps: 5 }],
+      [session(3), session(3)],
+      step
+    );
+    // 90 kg × 80% = 72 kg, snapped down to 70 — below the 80 kg the lifter kept missing.
+    expect(plan.state).toEqual({ trainingMaxKg: 90 });
+    expect(plan.changes[0]).toMatchObject({
+      weightKg: 70,
+      adjustment: {
+        cause: 'deload',
+        rule: { kind: 'percentage', lowered: { failures: 2, resetPercent: 10 } },
+      },
+    });
+  });
+
+  it('starts counting again after a reset instead of resetting twice in a row', () => {
+    // The last session ran at the lowered 90 kg max; the misses before it were at 100 kg.
+    expect(resolveTrainingMax(rule, [session(3, 90), session(3), session(3)], step)).toMatchObject(
+      { trainingMaxKg: 90, source: 'held' }
+    );
+  });
+
+  it('honours a custom streak and share', () => {
+    const strict = { ...rule, failuresBeforeReset: 1, resetPercent: 20 };
+    const strictSession = { ...session(3), rule: strict };
+    expect(resolveTrainingMax(strict, [strictSession], step)?.trainingMaxKg).toBe(80);
+  });
+
+  it('reads a rule stored before the reset existed with the default reset', () => {
+    const legacy = JSON.stringify({
+      type: 'percentage',
+      reps: 5,
+      percentOfTrainingMax: 80,
+      trainingMaxPercent: 90,
+    });
+    expect(parseProgressionRule(legacy)).toMatchObject({
+      type: 'percentage',
+      failuresBeforeReset: 2,
+      resetPercent: 10,
+    });
+    // An out-of-range value is still untrusted, not defaulted.
+    expect(
+      parseProgressionRule(JSON.stringify({ ...JSON.parse(legacy), resetPercent: 90 }))
+    ).toBeNull();
+  });
+});
+
+describe('carriedSessionState', () => {
+  const rule = {
+    ...defaultProgressionRule('percentage'),
+    type: 'percentage' as const,
+    trainingMaxKg: 100,
+  };
+  const last = (sessionRule: ProgressionRule | null): HistorySession => ({
+    ...history([5, 5, 5], 80),
+    rule: sessionRule,
+    state: { trainingMaxKg: 107.5 },
+  });
+
+  it('hands on the state while the rule is the one that produced it', () =>
+    expect(carriedSessionState(rule, last(rule))).toEqual({ trainingMaxKg: 107.5 }));
+
+  it('drops it when the starting training max or the reset changed since', () => {
+    expect(carriedSessionState({ ...rule, trainingMaxKg: 120 }, last(rule))).toBeNull();
+    expect(carriedSessionState({ ...rule, resetAt: 5 }, last(rule))).toBeNull();
+  });
+
+  it('has nothing to hand on for another method or no rule', () => {
+    expect(carriedSessionState(defaultProgressionRule('linear'), last(rule))).toBeNull();
+    expect(carriedSessionState(null, last(rule))).toBeNull();
+    expect(carriedSessionState(rule, last(defaultProgressionRule('linear')))).toBeNull();
+  });
+});
+
+describe('automatic progression of bodyweight exercises', () => {
+  const pushUps = [1, 2].map((n) => ({ id: String(n), weight: 0, reps: 10 }));
+  const done = (reps: number, weightKg = 0): HistorySession => ({
+    sets: [reps, reps].map((r) => ({ weightKg, reps: r, repsInReserve: 2, rirRecorded: true })),
+    allPrescribedSetsPerformed: true,
+    rule: null,
+    state: null,
+  });
+  const projectPushUps = (session: HistorySession, ceiling?: number) =>
+    projectExerciseProgression({
+      planned: session.sets[0].weightKg > 0 ? pushUps.map((s) => ({ ...s, weight: 10 })) : pushUps,
+      history: [session],
+      rule: null,
+      step,
+      automatic: true,
+      progressionMode: 'weight_first',
+      isCompound: true,
+      isBodyweight: true,
+      bodyweightRepCeiling: ceiling,
+    });
+
+  it('climbs reps to the default ceiling of 25 and never adds kilograms', () => {
+    expect(projectPushUps(done(12)).sets[0]).toEqual({ id: '1', weight: 0, reps: 13 });
+    expect(projectPushUps(done(25)).sets[0]).toEqual({ id: '1', weight: 0, reps: 25 });
+    expect(projectPushUps(done(25)).changes[0].adjustment.rule).toEqual({
+      kind: 'ceiling',
+      ceiling: 25,
+    });
+  });
+
+  it('uses the exercise’s own ceiling', () =>
+    expect(projectPushUps(done(25), 35).sets[0].reps).toBe(26));
+
+  it('progresses the load once the lifter has loaded it (a vest or a belt)', () =>
+    expect(projectPushUps(done(10, 10)).sets[0].weight).toBe(12.5));
 });

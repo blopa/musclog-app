@@ -102,7 +102,14 @@ export type StartRuleDetail =
       percent: number;
       /** The training max went up a step because the last session got every rep. */
       raised: boolean;
-    };
+      /**
+       * The training max was cut by `resetPercent` after `failures` sessions in a row missed reps
+       * at it. Absent on explanations written before the reset existed.
+       */
+      lowered?: { failures: number; resetPercent: number };
+    }
+  /** An unloaded bodyweight exercise reached its rep ceiling: reps hold, no load is invented. */
+  | { kind: 'ceiling'; ceiling: number };
 
 /** The same promise for the numbers a workout was STARTED with. Persisted with the set. */
 export type StartSetAdjustment = {
@@ -186,8 +193,14 @@ function isStartRuleDetail(value: any): value is StartRuleDetail {
       return finite(value.topSetKg) && finite(value.percent);
     case 'percentage':
       return (
-        finite(value.trainingMaxKg) && finite(value.percent) && typeof value.raised === 'boolean'
+        finite(value.trainingMaxKg) &&
+        finite(value.percent) &&
+        typeof value.raised === 'boolean' &&
+        (value.lowered === undefined ||
+          (finite(value.lowered?.failures) && finite(value.lowered?.resetPercent)))
       );
+    case 'ceiling':
+      return finite(value.ceiling);
     default:
       return false;
   }

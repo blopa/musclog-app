@@ -125,7 +125,7 @@ test('route actions wait for dismissal persistence, then navigate exactly once',
   click('whatsNew.openReview');
   expect(onDismiss).toHaveBeenCalledTimes(1);
   await act(async () => resolve());
-  expect(onNavigate).toHaveBeenCalledWith('/app/nutrition/checkin-list');
+  expect(onNavigate).toHaveBeenCalledWith('/app/weekly-review');
 });
 test('failed route dismissal stays open, reports an error, and permits retry', async () => {
   const onDismiss = jest.fn(async () => undefined).mockRejectedValueOnce(new Error('disk'));

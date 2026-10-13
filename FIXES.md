@@ -650,3 +650,23 @@ On web every `MaterialIcons` glyph rendered as a tofu box showing its private-us
 now loads `MaterialIcons.ttf` through `expo-font` under the family name `MaterialIcons-Regular` (the
 icon set's `postScriptName`, which the library uses as the web `font-family`); `app/_layout.tsx` calls
 it once. The native sibling is a no-op. A new icon set needs its own entry there.
+
+## Progression stalls hidden by rounding, bodyweight load, and protein that fell in a cut
+
+A deload rounded its target to the NEAREST loadable weight, so a 10% cut of a 10 kg dumbbell (9 kg)
+landed back on 10 kg: the linear rule then counted another miss at an unchanged load, forever. Every
+deload now goes through `loadBelow` (`utils/setProgression.ts`), which snaps down and guarantees a
+strictly lighter load whenever one exists. The percentage rule's training max could only go up or
+hold, so a lifter who outgrew it was held there indefinitely; it now resets after repeated misses.
+The automatic progression treated an unloaded bodyweight exercise like any other at the top of its
+range and prescribed "2.5 kg × 10" push-ups; it now climbs reps to a per-exercise ceiling
+(`exercise_user_settings.rep_ceiling`, v35) and says how to progress beyond it. A Weekly Review
+repeat/lighter week handed the previous session's training max on next to the CURRENT rule, so a
+starting max the user had just changed was silently ignored (`carriedSessionState`).
+
+Without body fat — which became opt-in — `calculateMacros` set protein as a percentage of calories,
+so the Weekly Review recommended cutting protein from 180 g to 113 g alongside a calorie cut. Protein
+is now g/kg of a reference bodyweight whenever a weight is known.
+
+A failed exercise swap cleared the values the user had typed, because `runSaving` swallowed the error
+and the caller carried on as if the swap had worked; it now returns whether it succeeded.

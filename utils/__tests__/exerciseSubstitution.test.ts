@@ -1,4 +1,6 @@
 import {
+  excludedExerciseIds,
+  isDisliked,
   activeRestrictionFor,
   exerciseExclusionReason,
   injuryExpiryOptionFor,
@@ -224,5 +226,27 @@ describe('substitution reasons', () => {
     expect(restrictionKindForReason('too_hard')).toBeNull();
     expect(restrictionKindForReason('too_easy')).toBeNull();
     expect(restrictionKindForReason('equipment_unavailable')).toBeNull();
+  });
+});
+
+describe('excludedExerciseIds / isDisliked', () => {
+  const now = 1_000;
+  const restrictions = [
+    { exerciseId: 'bench', kind: 'never' as const },
+    { exerciseId: 'squat', kind: 'injury' as const, expiresAt: now + 10 },
+    { exerciseId: 'healed', kind: 'injury' as const, expiresAt: now - 10 },
+    { exerciseId: 'fly', kind: 'dislike' as const },
+    // A stricter restriction on the same exercise wins over a dislike.
+    { exerciseId: 'dips', kind: 'dislike' as const },
+    { exerciseId: 'dips', kind: 'never' as const },
+  ];
+
+  it('excludes never and active injuries, not healed injuries or dislikes', () =>
+    expect(excludedExerciseIds(restrictions, now).sort()).toEqual(['bench', 'dips', 'squat']));
+
+  it('flags only the exercises whose strictest restriction is a dislike', () => {
+    expect(isDisliked('fly', restrictions, now)).toBe(true);
+    expect(isDisliked('dips', restrictions, now)).toBe(false);
+    expect(isDisliked('healed', restrictions, now)).toBe(false);
   });
 });

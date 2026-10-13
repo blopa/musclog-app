@@ -177,7 +177,10 @@
         "noteLabel": "Nota",
         "notePlaceholder": "Una indicación para leer antes de cada serie, p. ej. codos pegados",
         "noteSave": "Guardar nota",
-        "failed": "No se pudo guardar. Inténtalo de nuevo."
+        "failed": "No se pudo guardar. Inténtalo de nuevo.",
+        "repCeilingLabel": "Límite de repeticiones (sin peso añadido)",
+        "repCeilingOption": "{{reps}} repeticiones",
+        "repCeilingHint": "Musclog añade una repetición por sesión hasta este número. Después, progresa con un chaleco o cinturón lastrado, una variante más difícil o un tempo más lento."
       }
     },
     "manageExerciseData": {

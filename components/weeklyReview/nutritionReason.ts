@@ -37,7 +37,30 @@ export function nutritionReason(
     : { key: 'weeklyReview.reasonEmpiricalNoTrend', expenditure };
 }
 
-/** Whether a recommended calorie target moves far enough from the current one to double-check. */
+/** How far a recommended calorie target moves from the current one, as a share of it (0.4 = 40%). */
+export function calorieChangeShare(current: number, recommended: number): number {
+  return current > 0 ? Math.abs(recommended - current) / current : 0;
+}
+
+/**
+ * Whether a recommended calorie target moves far enough from the current one to warn about. Shown
+ * whether or not the recommendation can be applied yet: a 40% cut is worth flagging the moment it
+ * is on screen, not only once it becomes one tap away.
+ */
 export function isLargeCalorieChange(current: number, recommended: number): boolean {
-  return current > 0 && Math.abs(recommended - current) / current >= LARGE_CHANGE_SHARE;
+  return calorieChangeShare(current, recommended) >= LARGE_CHANGE_SHARE;
+}
+
+/**
+ * Whether a recommendation goes below the user's minimum-calorie floor. Only possible when they
+ * turned the floor off in Advanced settings; with it on the recommendation is clamped to it.
+ */
+export function isBelowCalorieFloor(
+  recommendation: WeeklyNutritionRecommendation | null | undefined
+): boolean {
+  return (
+    !!recommendation?.minimumCaloriesDisabled &&
+    recommendation.minimumCalories != null &&
+    recommendation.targets.totalCalories < recommendation.minimumCalories
+  );
 }

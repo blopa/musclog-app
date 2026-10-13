@@ -50,11 +50,11 @@
         },
         "targets": {
           "title": "Hulp bij je volgende set",
-          "description": "Musclog kan startdoelen voorstellen op basis van je trainingsgeschiedenis en komende sets aanpassen tijdens het loggen. Aangepaste waarden zijn gemarkeerd en blijven bewerkbaar."
+          "description": "Musclog stelt startdoelen voor op basis van je geschiedenis. Gewijzigde getallen worden gemarkeerd en je kunt ze altijd aanpassen."
         },
         "workoutAutonomy": {
           "title": "Startdoelen",
-          "description": "Kies hoe je geschiedenis je volgende training beïnvloedt.",
+          "description": "Hoe je geschiedenis je volgende training vormt.",
           "suggest": {
             "label": "Doelen voorstellen",
             "description": "Gebruik progressievoorstellen bij het starten van een training."
@@ -66,7 +66,7 @@
         },
         "progressionMode": {
           "title": "Progressievoorkeur",
-          "description": "Wat moet Musclog voorrang geven als doelen veranderen?",
+          "description": "Wat eerst omhoog gaat als doelen veranderen.",
           "reps_first": {
             "label": "Eerst herhalingen",
             "description": "Bouw herhalingen op voordat je gewicht toevoegt."

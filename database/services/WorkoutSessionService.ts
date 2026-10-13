@@ -9,6 +9,7 @@ import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { loadStepFor } from '@/utils/loadIncrement';
 import { parseProgressionRule } from '@/utils/progressionRules';
 import { computeIntraSessionAdjustment, parseStartAdjustment } from '@/utils/setAdjustment';
+import { writeSetEffort } from '@/utils/setEffort';
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
 import {
   assertValidWorkoutSetDifficultyLevel,
@@ -109,8 +110,7 @@ export class WorkoutSessionService {
               record.weight = values.weight;
               record.reps = values.reps;
               record.partials = values.partials ?? record.partials;
-              record.repsInReserve = values.repsInReserve ?? 0;
-              record.rirRecorded = values.repsInReserve != null;
+              writeSetEffort(record, values.repsInReserve);
               record.difficultyLevel = values.difficultyLevel;
               if (values.manual) {
                 prescription.override = 'manual';

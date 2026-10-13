@@ -1,8 +1,11 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { Flame, MoreHorizontal, NotebookPen, Repeat } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, ScrollView } from 'react-native';
+import { Image, ScrollView, View } from 'react-native';
 
 import { Chip } from '@/components/theme/Chip';
+import { useSurfaceColor } from '@/context/SurfaceColorContext';
 import type Exercise from '@/database/models/Exercise';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useTheme } from '@/hooks/useTheme';
@@ -10,6 +13,11 @@ import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '@/utils/exerciseTranslation';
+
+import { hidesContentToTheRight } from './scrollOverflow';
+
+/** Width of the edge fade that signals more chips past the right edge. */
+const EDGE_FADE_WIDTH = 32;
 
 export type SessionExerciseAction = 'warmup' | 'swap' | 'notes' | 'more';
 
@@ -63,6 +71,11 @@ export function ExerciseActionChips({
   canSwap: boolean;
 }) {
   const { t } = useTranslation();
+  const surface = useSurfaceColor();
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const [contentWidth, setContentWidth] = useState(0);
+  const [offsetX, setOffsetX] = useState(0);
+  const moreToTheRight = hidesContentToTheRight(viewportWidth, contentWidth, offsetX);
   const chips: {
     action: SessionExerciseAction;
     label: string;
@@ -81,27 +94,44 @@ export function ExerciseActionChips({
   ];
   return (
     // One row that scrolls sideways rather than wrapping: wrapped, "More" fell onto a second line
-    // and the four chips took more height than the set they sit above.
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ gap: 8 }}
-      style={{ flexGrow: 0 }}
-    >
-      {chips.map(({ action, label, icon: Icon, enabled }) => {
-        const isDisabled = disabled || !enabled;
-        return (
-          <Chip
-            key={action}
-            variant="solid"
-            role="button"
-            icon={Icon}
-            label={label}
-            disabled={isDisabled}
-            onPress={() => onAction(action)}
-          />
-        );
-      })}
-    </ScrollView>
+    // and the four chips took more height than the set they sit above. Because a cut-off chip
+    // alone does not say "this scrolls", an edge fade shows while chips are hidden to the right.
+    <View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 8 }}
+        style={{ flexGrow: 0 }}
+        onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
+        onContentSizeChange={(width) => setContentWidth(width)}
+        onScroll={(event) => setOffsetX(event.nativeEvent.contentOffset.x)}
+        scrollEventThrottle={32}
+      >
+        {chips.map(({ action, label, icon: Icon, enabled }) => {
+          const isDisabled = disabled || !enabled;
+          return (
+            <Chip
+              key={action}
+              variant="solid"
+              role="button"
+              icon={Icon}
+              label={label}
+              disabled={isDisabled}
+              onPress={() => onAction(action)}
+            />
+          );
+        })}
+      </ScrollView>
+      {moreToTheRight ? (
+        <LinearGradient
+          pointerEvents="none"
+          colors={['transparent', surface]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: EDGE_FADE_WIDTH }}
+          testID="exercise-actions-more"
+        />
+      ) : null}
+    </View>
   );
 }

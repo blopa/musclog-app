@@ -28,7 +28,12 @@ import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { hasWeeklyActivity, nutritionHalfState } from '@/utils/weeklyReviewEmptyState';
 
-import { isLargeCalorieChange, nutritionReason } from './nutritionReason';
+import {
+  calorieChangeShare,
+  isBelowCalorieFloor,
+  isLargeCalorieChange,
+  nutritionReason,
+} from './nutritionReason';
 import { ReviewSectionHeader } from './TrainingReviewSection';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
@@ -139,8 +144,19 @@ export function NutritionReviewSection({
   }
   const largeChange =
     !decided &&
-    !!recommendation?.canApply &&
+    !!recommendation &&
     isLargeCalorieChange(data.current.totalCalories, recommendation.targets.totalCalories);
+  const belowFloor = !decided && isBelowCalorieFloor(recommendation);
+  // Until the week has enough evidence the recommendation is an estimate: shown, but not offered.
+  const estimate = !decided && !!recommendation && !recommendation.canApply;
+  let recommendedColumnKey:
+    'weeklyReview.savedShort' | 'weeklyReview.estimateShort' | 'weeklyReview.recommended' =
+    'weeklyReview.recommended';
+  if (decided) {
+    recommendedColumnKey = 'weeklyReview.savedShort';
+  } else if (estimate) {
+    recommendedColumnKey = 'weeklyReview.estimateShort';
+  }
 
   const applied = data.review?.nutritionDecision === 'apply';
   const decidedBlock = (
@@ -329,8 +345,10 @@ export function NutritionReviewSection({
           <Text className="w-20 text-right text-xs font-bold uppercase text-text-tertiary">
             {t('weeklyReview.currentShort')}
           </Text>
-          <Text className="w-28 text-right text-xs font-bold uppercase text-accent-primary">
-            {t(decided ? 'weeklyReview.savedShort' : 'weeklyReview.recommended')}
+          <Text
+            className={`w-28 text-right text-xs font-bold uppercase ${estimate ? 'text-text-tertiary' : 'text-accent-primary'}`}
+          >
+            {t(recommendedColumnKey)}
           </Text>
         </View>
         {MACRO_FIELDS.map((field, index) => {
@@ -347,10 +365,14 @@ export function NutritionReviewSection({
               <Text className="w-20 text-right text-sm text-text-secondary">
                 {formatInteger(Math.round(current))}
               </Text>
-              <Text className="w-28 text-right text-sm font-bold text-text-primary">
+              <Text
+                className={`w-28 text-right text-sm ${estimate ? 'text-text-tertiary' : 'font-bold text-text-primary'}`}
+              >
                 {formatInteger(Math.round(next))}
                 {delta ? (
-                  <Text className="text-xs font-semibold text-accent-primary">{` ${signed(delta)}`}</Text>
+                  <Text
+                    className={`text-xs font-semibold ${estimate ? 'text-text-tertiary' : 'text-accent-primary'}`}
+                  >{` ${signed(delta)}`}</Text>
                 ) : null}
               </Text>
             </View>
@@ -363,12 +385,36 @@ export function NutritionReviewSection({
         <Text className="flex-1 text-sm text-text-secondary">{reason}</Text>
       </View>
 
-      {largeChange ? (
+      {belowFloor && recommendation?.minimumCalories != null ? (
+        <View className="gap-1 rounded-xl bg-status-error/10 p-3" testID="review-below-floor">
+          <Text className="text-sm font-semibold text-text-primary">
+            {t('weeklyReview.belowFloorTitle')}
+          </Text>
+          <Text className="text-sm text-text-secondary">
+            {t('weeklyReview.belowFloorBody', {
+              minimum: formatInteger(recommendation.minimumCalories),
+            })}
+          </Text>
+        </View>
+      ) : null}
+
+      {largeChange && recommendation ? (
         <View className="gap-1 rounded-xl bg-status-warning/10 p-3" testID="review-large-change">
           <Text className="text-sm font-semibold text-text-primary">
             {t('weeklyReview.largeChangeTitle')}
           </Text>
-          <Text className="text-sm text-text-secondary">{t('weeklyReview.largeChangeBody')}</Text>
+          <Text className="text-sm text-text-secondary">
+            {t('weeklyReview.largeChangeBody', {
+              percent: formatInteger(
+                Math.round(
+                  calorieChangeShare(
+                    data.current.totalCalories,
+                    recommendation.targets.totalCalories
+                  ) * 100
+                )
+              ),
+            })}
+          </Text>
           <TextButton
             // The week under review, not today: that is the log this warning asks to check.
             onPress={() => onLogFood(data.period.start)}

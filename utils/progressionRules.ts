@@ -1,6 +1,6 @@
 import { sameLoad } from './sameLoad';
 import type { StartAdjustmentCause, StartRuleDetail } from './setAdjustment';
-import { deloadedLoad, type StartSetChange } from './setProgression';
+import { deloadedLoad, loadBelow, type StartSetChange } from './setProgression';
 import { calculateAverage1RM } from './workoutCalculator';
 
 /**
@@ -49,14 +49,18 @@ export type TopSetBackoffRule = {
 
 /**
  * Every working set at a share of a training max. The training max is carried from session to
- * session (see {@link resolveTrainingMax}) and goes up one load step after a session that got every
- * rep. `trainingMaxKg` is where it starts; without one it is estimated from the last session.
+ * session (see {@link resolveTrainingMax}): it goes up one load step after a session that got every
+ * rep, and is cut by `resetPercent` after `failuresBeforeReset` sessions in a row that missed reps
+ * at it (the 5/3/1 reset — without it a lifter who outgrew a training max was held there forever).
+ * `trainingMaxKg` is where it starts; without one it is estimated from the last session.
  */
 export type PercentageRule = {
   type: 'percentage';
   reps: number;
   percentOfTrainingMax: number;
   trainingMaxPercent: number;
+  failuresBeforeReset: number;
+  resetPercent: number;
   trainingMaxKg?: number;
 };
 
@@ -104,6 +108,8 @@ export const PROGRESSION_RULE_BOUNDS = {
     reps: { min: 1, max: 50, step: 1 },
     percentOfTrainingMax: { min: 30, max: 100, step: 2.5 },
     trainingMaxPercent: { min: 70, max: 100, step: 5 },
+    failuresBeforeReset: { min: 1, max: PROGRESSION_HISTORY_SESSIONS, step: 1 },
+    resetPercent: { min: 5, max: 20, step: 5 },
     trainingMaxKg: { min: 1, max: 1000, step: 2.5 },
   },
 } as const satisfies {
@@ -123,7 +129,14 @@ export const DEFAULT_PROGRESSION_RULES = {
     backoffPercent: 85,
     backoffReps: 8,
   },
-  percentage: { type: 'percentage', reps: 5, percentOfTrainingMax: 80, trainingMaxPercent: 90 },
+  percentage: {
+    type: 'percentage',
+    reps: 5,
+    percentOfTrainingMax: 80,
+    trainingMaxPercent: 90,
+    failuresBeforeReset: 2,
+    resetPercent: 10,
+  },
 } as const satisfies { [T in ProgressionRuleType]: Extract<ProgressionRule, { type: T }> };
 
 export const defaultProgressionRule = (type: ProgressionRuleType): ProgressionRule => ({
@@ -135,6 +148,18 @@ const isFiniteNumber = (value: unknown): value is number =>
 
 const inBounds = (value: unknown, bounds: FieldBounds): value is number =>
   isFiniteNumber(value) && value >= bounds.min && value <= bounds.max;
+
+/**
+ * Fields added after rules were first stored. A rule saved before one existed carries no value for
+ * it, which means "the default" — not an untrusted rule — so the parser fills it in instead of
+ * dropping every rule written by an older build.
+ */
+const FIELDS_ADDED_LATER: Partial<Record<ProgressionRuleType, Record<string, number>>> = {
+  percentage: {
+    failuresBeforeReset: DEFAULT_PROGRESSION_RULES.percentage.failuresBeforeReset,
+    resetPercent: DEFAULT_PROGRESSION_RULES.percentage.resetPercent,
+  },
+};
 
 /**
  * Reduces an unknown value to a rule carrying only the fields its type declares, or null when it is
@@ -156,8 +181,9 @@ function toProgressionRule(value: unknown): ProgressionRule | null {
   if (isFiniteNumber(candidate.resetAt) && candidate.resetAt > 0) {
     rule.resetAt = candidate.resetAt;
   }
+  const addedLater = FIELDS_ADDED_LATER[type as ProgressionRuleType] ?? {};
   for (const [field, fieldBounds] of Object.entries(bounds)) {
-    const fieldValue = candidate[field];
+    const fieldValue = candidate[field] ?? addedLater[field];
     // The training max is the only optional field: absent means "estimate it".
     if (field === 'trainingMaxKg' && fieldValue == null) {
       continue;
@@ -245,6 +271,31 @@ export type HistorySession = {
   state: ProgressionSessionState | null;
 };
 
+/**
+ * The state a session that does NOT advance the rule (a Weekly Review's repeat or lighter week)
+ * hands on from `last`, so the next ordinary session continues from it — or null when it must not.
+ *
+ * It may only be handed on while it still belongs to this rule: the same percentage method, the same
+ * starting training max and the same reset. Pairing the current rule with an older rule's state
+ * would hide the user's change from {@link resolveTrainingMax}, which detects a new starting max or
+ * a reset precisely by comparing the rule with the one the last session ran under.
+ */
+export function carriedSessionState(
+  rule: ProgressionRule | null,
+  last: HistorySession | undefined
+): ProgressionSessionState | null {
+  const lastRule = last?.rule;
+  if (
+    rule?.type !== 'percentage' ||
+    lastRule?.type !== 'percentage' ||
+    lastRule.trainingMaxKg !== rule.trainingMaxKg ||
+    lastRule.resetAt !== rule.resetAt
+  ) {
+    return null;
+  }
+  return last?.state ?? null;
+}
+
 export type RuleLoadStep = {
   /** The smallest sensible change in load, in kg (`loadStepFor`). */
   incrementKg: number;
@@ -271,9 +322,15 @@ type SetTarget = {
   rule: StartRuleDetail;
 };
 
-/** The performed set that stood at prescription position `index` last time, if any. */
-const counterpartAt = (sets: readonly HistorySet[], index: number): HistorySet | undefined =>
-  sets.find((set, i) => (set.prescribedIndex ?? i) === index);
+/**
+ * The performed set that stood at prescription position `index` last time, if any. The one
+ * definition of "the same set last time", shared by the rules, a review's week override and the
+ * prescription the session start records.
+ */
+export const counterpartAt = (
+  sets: readonly HistorySet[],
+  index: number
+): HistorySet | undefined => sets.find((set, i) => (set.prescribedIndex ?? i) === index);
 
 const causeFromLoad = (next: number, previous: number): StartAdjustmentCause =>
   sameLoad(next, previous) ? 'repeat' : next > previous ? 'progression' : 'deload';
@@ -306,10 +363,12 @@ function rangeTarget(
       rule: { kind: 'range', outcome: 'add_weight', ...range },
     };
   }
+  const deloaded = deloadedLoad(last.weightKg, step);
   if (bestReps < repMin && last.weightKg > 0) {
-    return missedBefore
+    // With nothing lighter to load, a second miss can only hold.
+    return missedBefore && deloaded < last.weightKg
       ? {
-          weightKg: deloadedLoad(last.weightKg, step),
+          weightKg: deloaded,
           reps: repMin,
           cause: 'deload',
           rule: { kind: 'range', outcome: 'deload', ...range },
@@ -448,10 +507,13 @@ function linearTargets(
 
       failures++;
     }
+    // The rule's own percentage, snapped DOWN to a load that is really lighter: rounding to the
+    // nearest load could land back on the load being failed and hold the lifter there forever.
+    const deloaded = loadBelow(lastLoad, lastLoad * (1 - rule.deloadPercent / 100), step);
     target =
-      failures >= rule.failuresBeforeDeload && lastLoad > 0
+      failures >= rule.failuresBeforeDeload && deloaded < lastLoad
         ? {
-            weightKg: step.roundLoad(lastLoad * (1 - rule.deloadPercent / 100)),
+            weightKg: deloaded,
             reps: rule.reps,
             cause: 'deload',
             rule: { ...detail, outcome: 'deload', failures },
@@ -533,17 +595,23 @@ function topSetBackoffTargets(
 /**
  * The training max a percentage session is loaded from, and why. In order: the user changed the
  * rule's starting training max since the last session (their number wins); the last session
- * carried one (up a step if it got every rep, otherwise held); the rule names one; or it is
- * estimated from the last session's best set.
+ * carried one (up a step if it got every rep; cut by `resetPercent` once `failuresBeforeReset`
+ * sessions in a row missed reps at it; otherwise held); the rule names one; or it is estimated from
+ * the last session's best set.
  *
  * Re-estimating every session instead would ratchet the loads down: a set at 72% of a 1RM for 3
  * reps implies a lower 1RM than the lifter has, unless every set was rated for reps in reserve.
+ * That is why a stall cuts the carried number by a fixed share rather than re-estimating it.
  */
 export function resolveTrainingMax(
   rule: PercentageRule & ResetMarker,
   history: readonly HistorySession[],
   step: RuleLoadStep
-): { trainingMaxKg: number; source: 'raised' | 'held' | 'set' | 'estimated' } | null {
+): {
+  trainingMaxKg: number;
+  source: 'raised' | 'held' | 'lowered' | 'set' | 'estimated';
+  failures?: number;
+} | null {
   const carried = history[0]?.rule?.type === 'percentage' ? history[0] : undefined;
   const carriedRule = carried?.rule as PercentageRule | undefined;
   const startChanged =
@@ -551,13 +619,19 @@ export function resolveTrainingMax(
     (carriedRule.trainingMaxKg !== rule.trainingMaxKg || carried?.rule?.resetAt !== rule.resetAt);
 
   if (carried?.state && !startChanged) {
-    const raised = sessionGotEveryRep(carried, rule.reps);
-    return {
-      trainingMaxKg: raised
-        ? carried.state.trainingMaxKg + step.incrementKg
-        : carried.state.trainingMaxKg,
-      source: raised ? 'raised' : 'held',
-    };
+    const carriedMax = carried.state.trainingMaxKg;
+    if (sessionGotEveryRep(carried, rule.reps)) {
+      return { trainingMaxKg: carriedMax + step.incrementKg, source: 'raised' };
+    }
+    const failures = consecutiveMissesAtTrainingMax(rule, history, carriedMax);
+    if (failures >= rule.failuresBeforeReset) {
+      return {
+        trainingMaxKg: carriedMax * (1 - rule.resetPercent / 100),
+        source: 'lowered',
+        failures,
+      };
+    }
+    return { trainingMaxKg: carriedMax, source: 'held' };
   }
 
   if (rule.trainingMaxKg != null) {
@@ -585,6 +659,34 @@ export function resolveTrainingMax(
   };
 }
 
+/**
+ * Sessions in a row, most recent first, that ran this same rule (same start, same reset) at
+ * `trainingMaxKg` and missed reps. A session at another training max ends the streak, so after a
+ * reset the misses that caused it cannot trigger another one straight away.
+ */
+function consecutiveMissesAtTrainingMax(
+  rule: PercentageRule & ResetMarker,
+  history: readonly HistorySession[],
+  trainingMaxKg: number
+): number {
+  let failures = 0;
+  for (const session of history) {
+    const sessionRule = session.rule;
+    if (
+      sessionRule?.type !== 'percentage' ||
+      sessionRule.trainingMaxKg !== rule.trainingMaxKg ||
+      sessionRule.resetAt !== rule.resetAt ||
+      !session.state ||
+      !sameLoad(session.state.trainingMaxKg, trainingMaxKg) ||
+      sessionGotEveryRep(session, rule.reps)
+    ) {
+      break;
+    }
+    failures++;
+  }
+  return failures;
+}
+
 function percentageTargets(
   rule: PercentageRule,
   planned: readonly PlannedRuleSet[],
@@ -596,17 +698,26 @@ function percentageTargets(
     return { targets: [], state: null };
   }
 
-  const weightKg = step.roundLoad((trainingMax.trainingMaxKg * rule.percentOfTrainingMax) / 100);
-  const previousLoad = history[0]?.sets[0].weightKg ?? weightKg;
+  const exactKg = (trainingMax.trainingMaxKg * rule.percentOfTrainingMax) / 100;
+  const previousLoad = history[0]?.sets[0].weightKg;
+  // A lowered training max must lower the load: rounding to the nearest load could land back on
+  // the one the lifter kept missing.
+  const weightKg =
+    trainingMax.source === 'lowered' && previousLoad != null
+      ? loadBelow(previousLoad, exactKg, step)
+      : step.roundLoad(exactKg);
   const target: SetTarget = {
     weightKg,
     reps: rule.reps,
-    cause: causeFromLoad(weightKg, previousLoad),
+    cause: causeFromLoad(weightKg, previousLoad ?? weightKg),
     rule: {
       kind: 'percentage',
       trainingMaxKg: trainingMax.trainingMaxKg,
       percent: rule.percentOfTrainingMax,
       raised: trainingMax.source === 'raised',
+      ...(trainingMax.source === 'lowered'
+        ? { lowered: { failures: trainingMax.failures ?? 0, resetPercent: rule.resetPercent } }
+        : {}),
     },
   };
 

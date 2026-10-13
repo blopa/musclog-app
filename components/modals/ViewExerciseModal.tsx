@@ -636,7 +636,10 @@ export default function ViewExerciseModal({
 
           <ExerciseAliasesSection exerciseId={exercise.id} />
 
-          <ExerciseUserSettingsSection exerciseId={exercise.id} />
+          <ExerciseUserSettingsSection
+            exerciseId={exercise.id}
+            isBodyweight={exercise.equipmentType === 'bodyweight'}
+          />
 
           <ExerciseRestrictionSection exerciseId={exercise.id} />
 

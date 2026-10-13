@@ -36,7 +36,7 @@ const METHOD_DESCRIPTION_KEYS = {
   percentage: 'progression.descriptions.percentage',
 } as const satisfies Record<MethodType, string>;
 
-const FIELD_LABEL_KEYS: Record<string, string> = {
+const FIELD_LABEL_KEYS = {
   repMin: 'progression.fields.repMin',
   repMax: 'progression.fields.repMax',
   reps: 'progression.fields.reps',
@@ -46,8 +46,13 @@ const FIELD_LABEL_KEYS: Record<string, string> = {
   backoffReps: 'progression.fields.backoffReps',
   percentOfTrainingMax: 'progression.fields.percentOfTrainingMax',
   trainingMaxPercent: 'progression.fields.trainingMaxPercent',
+  failuresBeforeReset: 'progression.fields.failuresBeforeReset',
+  resetPercent: 'progression.fields.resetPercent',
   trainingMaxKg: 'progression.fields.trainingMaxKg',
-};
+} as const satisfies Record<
+  { [T in ProgressionRuleType]: keyof (typeof PROGRESSION_RULE_BOUNDS)[T] }[ProgressionRuleType],
+  string
+>;
 
 /** A method chosen afresh starts new carried state, never inheriting another method's streak. */
 const freshRule = (type: ProgressionRuleType): ProgressionRule => ({
@@ -160,7 +165,7 @@ export function ProgressionRuleFields({
         return (
           <StepperInlineInput
             key={field}
-            label={t(FIELD_LABEL_KEYS[field])}
+            label={t(FIELD_LABEL_KEYS[field as keyof typeof FIELD_LABEL_KEYS])}
             unit={isWeight ? t(getWeightUnitI18nKey(units)) : undefined}
             value={number}
             step={step}

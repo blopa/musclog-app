@@ -67,6 +67,12 @@ export type WeeklyNutritionRecommendation = {
    */
   expenditure?: number;
   trendChangeKg?: number;
+  /**
+   * The user's minimum-calorie floor and whether they turned it off in Advanced settings, so the
+   * review can warn when a recommendation goes below it. Optional for older snapshots.
+   */
+  minimumCalories?: number;
+  minimumCaloriesDisabled?: boolean;
 };
 
 /**
@@ -471,6 +477,8 @@ export class WeeklyReviewService {
           trendWeight != null && weekStartTrend != null ? trendWeight - weekStartTrend : undefined,
         foodDays,
         weightDays,
+        minimumCalories: proposed.minimumCalories,
+        minimumCaloriesDisabled: proposed.minimumCaloriesDisabled,
         canApply:
           foodDays >= MIN_WEEKLY_FOOD_DAYS &&
           weightDays >= MIN_WEEKLY_WEIGHT_ENTRIES &&

@@ -14,6 +14,7 @@ import { WhatsNewDebugSection } from '@/components/whatsNew/WhatsNewDebugSection
 import { CONVERSATION_CONTEXTS, type ConversationContext } from '@/constants/chat';
 import { ENCRYPTION_KEY } from '@/constants/database';
 import { UNITS_SETTING_TYPE } from '@/constants/settings';
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import { database, Exercise, Setting, User, UserMetric } from '@/database';
 import type { MuscleGroup } from '@/database/models';
@@ -40,7 +41,7 @@ const APP_SCREENS = [
   { name: 'Food', route: '/app/nutrition/food', category: 'Nutrition' },
   {
     name: 'Nutrition Check-in List',
-    route: '/app/nutrition/checkin-list',
+    route: WEEKLY_REVIEW_ROUTE,
     category: 'Nutrition',
   },
   { name: 'Workouts', route: '/app/workout/workouts', category: 'Workout' },

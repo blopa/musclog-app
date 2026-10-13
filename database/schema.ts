@@ -759,6 +759,8 @@ export const schema = appSchema({
         { name: 'exercise_id', type: 'string', isIndexed: true },
         { name: 'weight_unit', type: 'string', isOptional: true }, // 'kg' | 'lbs' display override
         { name: 'note', type: 'string', isOptional: true },
+        // Bodyweight rep ceiling (25–50); absent = the default (utils/bodyweightRepCeiling.ts)
+        { name: 'rep_ceiling', type: 'number', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

@@ -1,6 +1,6 @@
 import type { ProgressionMode } from '@/constants/settings';
 
-import { sameLoad } from './sameLoad';
+import { sameLoad, WEIGHT_EPSILON } from './sameLoad';
 import {
   DEFAULT_TARGET_REPS_IN_RESERVE,
   type StartAdjustmentCause,
@@ -47,6 +47,12 @@ export interface StartTargetInput {
   incrementKg: number;
   /** Snaps a load to what the equipment can really be set to. */
   roundLoad: (kg: number) => number;
+  /**
+   * Set for an UNLOADED bodyweight exercise: its reps climb to this ceiling and then hold, and load
+   * is never added — the app cannot know whether the lifter owns a vest or a dip belt. A bodyweight
+   * exercise already done with external load (`last.weightKg > 0`) progresses its load as usual.
+   */
+  repCeiling?: number;
 }
 
 export interface StartTarget {
@@ -95,15 +101,46 @@ export const loadStepIsUsable = (loadKg: number, incrementKg: number): boolean =
  */
 const DELOAD_SHARE = 0.1;
 
+/** How many load steps {@link loadBelow} walks down before deciding nothing lighter exists. */
+const MAX_LOAD_STEPS_DOWN = 64;
+
+type LoadSnap = { incrementKg: number; roundLoad: (kg: number) => number };
+
 /**
- * The load after a deload: a share of the load or one step, whichever is larger. Every deload in
- * the app (automatic and rule-based) goes through here, so a barbell lift never "deloads" by a
- * single 2.5 kg step that clears nothing.
+ * The heaviest load the equipment can really be set to that is at or below `targetKg` AND strictly
+ * below `currentKg` — the snap every deload goes through.
+ *
+ * Rounding to the nearest loadable weight is not enough for a deload: a 10% cut of a 10 kg dumbbell
+ * is 9 kg, which rounds straight back to 10 kg, so the "deload" changes nothing and the lifter is
+ * held at a load they keep failing, forever. Walking down one step at a time until the load is both
+ * no heavier than asked and lighter than now guarantees a real drop whenever one exists. When none
+ * does (an empty bar, the lightest dumbbell), `currentKg` comes back unchanged and the caller must
+ * not claim a deload.
  */
-export const deloadedLoad = (
-  loadKg: number,
-  { incrementKg, roundLoad }: { incrementKg: number; roundLoad: (kg: number) => number }
-): number => roundLoad(Math.max(0, loadKg - Math.max(incrementKg, loadKg * DELOAD_SHARE)));
+export function loadBelow(currentKg: number, targetKg: number, { incrementKg, roundLoad }: LoadSnap) {
+  const ceiling = Math.min(targetKg, currentKg);
+  let load = roundLoad(Math.max(0, ceiling));
+  for (let i = 0; i < MAX_LOAD_STEPS_DOWN && load > 0; i++) {
+    if (load <= ceiling + WEIGHT_EPSILON && !sameLoad(load, currentKg)) {
+      return load;
+    }
+    const next = roundLoad(Math.max(0, load - incrementKg));
+    if (next >= load) {
+      break;
+    }
+    load = next;
+  }
+  return load < currentKg && !sameLoad(load, currentKg) ? load : currentKg;
+}
+
+/**
+ * The load after a deload: a share of the load or one step, whichever is larger, snapped DOWN to
+ * a load that is really lighter ({@link loadBelow}). Every deload in the app — automatic, the
+ * linear rule's, the rep-range rules' and a lighter week's — goes through {@link loadBelow}, so none
+ * of them can round back up to the load it was meant to reduce.
+ */
+export const deloadedLoad = (loadKg: number, step: LoadSnap): number =>
+  loadBelow(loadKg, loadKg - Math.max(step.incrementKg, loadKg * DELOAD_SHARE), step);
 
 /** The default reps for an exercise with no history. */
 export const defaultRepsFor = (isCompound: boolean): number =>
@@ -127,12 +164,29 @@ export function repsFirstRange(
  * range, then add load. Without a plan to anchor the range (an exercise added mid-session) there is
  * nothing to judge the reps against, so the load holds.
  */
+/**
+ * The next reps for an unloaded bodyweight exercise that earned a progression: one more rep, up to
+ * its ceiling. At the ceiling the reps hold and the explanation says how to keep progressing.
+ */
+function bodyweightRepTarget(last: LastWorkingSession, fromReps: number, ceiling: number): StartTarget {
+  if (fromReps >= ceiling) {
+    return {
+      weightKg: last.weightKg,
+      reps: Math.max(fromReps, last.reps),
+      kind: 'repeat',
+      rule: { kind: 'ceiling', ceiling },
+    };
+  }
+  return { weightKg: last.weightKg, reps: fromReps + 1, kind: 'progression' };
+}
+
 function computeUnratedTarget({
   last,
   planReps,
   isCompound,
   incrementKg,
   roundLoad,
+  repCeiling,
 }: StartTargetInput): StartTarget {
   const hold: StartTarget = { weightKg: last.weightKg, reps: last.reps, kind: 'repeat' };
   // The session is judged by its weakest set: one strong first set says nothing about the rest.
@@ -143,6 +197,12 @@ function computeUnratedTarget({
 
   const { minReps, maxReps } = repsFirstRange(isCompound, planReps);
   const range = { repMin: minReps, repMax: maxReps };
+  if (repCeiling != null) {
+    const target = bodyweightRepTarget(last, worstReps, repCeiling);
+    return target.rule
+      ? target
+      : { ...target, rule: { kind: 'range', outcome: 'add_reps', ...range } };
+  }
   if (worstReps < maxReps || !loadStepIsUsable(last.weightKg, incrementKg)) {
     return {
       weightKg: last.weightKg,
@@ -173,6 +233,7 @@ function computeUnratedTarget({
  *    not a stall.
  *  - Otherwise: repeat last time.
  *  - Effort never rated: double progression on reps alone (`computeUnratedTarget`).
+ *  - An unloaded bodyweight exercise (`repCeiling`) only ever adds reps, up to its ceiling.
  */
 export function computeStartTarget(input: StartTargetInput): StartTarget {
   const {
@@ -184,6 +245,7 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
     isCompound,
     incrementKg,
     roundLoad,
+    repCeiling,
   } = input;
   const averageRir = last.averageRepsInReserve;
   // Unfinished work never counts as success: hold until the whole prescription was done.
@@ -196,6 +258,9 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
 
   const hitPlan = planReps == null || (last.lowestReps ?? last.reps) >= planReps;
   if (averageRir >= PROGRESS_REPS_IN_RESERVE && hitPlan) {
+    if (repCeiling != null) {
+      return bodyweightRepTarget(last, last.reps, repCeiling);
+    }
     if (progressionMode === 'weight_first' && loadStepIsUsable(last.weightKg, incrementKg)) {
       return {
         weightKg: roundLoad(last.weightKg + incrementKg),
@@ -218,11 +283,10 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
   }
 
   if ((averageRir === 0 && failedBefore) || (!hitPlan && missedPlanBefore)) {
-    return {
-      weightKg: deloadedLoad(last.weightKg, { incrementKg, roundLoad }),
-      reps: last.reps,
-      kind: 'deload',
-    };
+    const weightKg = deloadedLoad(last.weightKg, { incrementKg, roundLoad });
+    // Nothing lighter to go to (an unloaded or already-lightest exercise): it is a repeat, not a
+    // deload the numbers do not show.
+    return { weightKg, reps: last.reps, kind: weightKg < last.weightKg ? 'deload' : 'repeat' };
   }
 
   return { weightKg: last.weightKg, reps: last.reps, kind: 'repeat' };

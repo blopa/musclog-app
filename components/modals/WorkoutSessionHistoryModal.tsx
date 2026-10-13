@@ -1,5 +1,5 @@
 import { Dumbbell, Share2, Weight } from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -438,6 +438,25 @@ export function WorkoutSessionHistoryModal({
     return null;
   }, [isPreview, onStartWorkout, t]);
 
+  let exercisesList: ReactNode;
+  if (isPreview) {
+    exercisesList = <WorkoutRecommendationList recommendations={recommendations} />;
+  } else if (exerciseDataList.length > 0) {
+    exercisesList = exerciseDataList.map((exercise, index) => (
+      <ExerciseItem
+        key={exercise.id}
+        exercise={exercise}
+        isLast={index === exerciseDataList.length - 1}
+        weightUnitKey={exercise.weightUnitKey ?? weightUnitKey}
+        isPreview={isPreview}
+      />
+    ));
+  } else {
+    exercisesList = (
+      <Text className="text-text-secondary">{t('workoutHistory.noExercisesYet')}</Text>
+    );
+  }
+
   return (
     <FullScreenModal
       visible={visible}
@@ -459,8 +478,7 @@ export function WorkoutSessionHistoryModal({
       footer={footerContent}
     >
       <View className="gap-6 px-4 pb-8 pt-4">
-        {isPreview ? <WorkoutRecommendationList recommendations={recommendations} /> : null}
-        {/* Workout Summary */}
+        {/* Workout Summary: the workout's name leads, then what each exercise will start at. */}
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
@@ -521,22 +539,8 @@ export function WorkoutSessionHistoryModal({
         {/* Divider */}
         <View className="h-px" style={{ backgroundColor: theme.colors.border.light }} />
 
-        {/* Exercises List */}
-        <View className="flex-col gap-3">
-          {!isPreview && exerciseDataList.length > 0 ? (
-            exerciseDataList.map((exercise, index) => (
-              <ExerciseItem
-                key={exercise.id}
-                exercise={exercise}
-                isLast={index === exerciseDataList.length - 1}
-                weightUnitKey={exercise.weightUnitKey ?? weightUnitKey}
-                isPreview={isPreview}
-              />
-            ))
-          ) : !isPreview ? (
-            <Text className="text-text-secondary">{t('workoutHistory.noExercisesYet')}</Text>
-          ) : null}
-        </View>
+        {/* Exercises List: in a preview, each exercise with the targets it will start at. */}
+        <View className="flex-col gap-3">{exercisesList}</View>
         {/* Bottom spacing */}
         <View className="h-8" />
       </View>

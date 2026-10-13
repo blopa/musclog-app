@@ -10,6 +10,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { NutritionGoals, NutritionGoalsBody } from '@/components/NutritionGoalsBody';
 import { Button } from '@/components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { EatingPhase } from '@/database/models';
 import { NutritionCheckinService } from '@/database/services/NutritionCheckinService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
@@ -203,7 +204,7 @@ export default function NutritionGoalsScreen() {
         }
 
         if (isCheckinAdjusting) {
-          router.replace('/app/nutrition/checkin-list');
+          router.replace(WEEKLY_REVIEW_ROUTE);
           return;
         }
 

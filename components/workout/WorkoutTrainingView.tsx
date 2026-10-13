@@ -74,6 +74,7 @@ export function WorkoutTrainingView({
   onWarmups: (logExerciseId: string, warmups: readonly WarmupSetPrescription[] | 'remove') => void;
   onAddExercise: () => void;
   onFinish: () => void;
+  /** Context cards above the sets; shown in the Inline view only (Guided is the focus mode). */
   children?: ReactNode;
 }) {
   const { t } = useTranslation();
@@ -375,7 +376,8 @@ export function WorkoutTrainingView({
         <View className="pt-3">
           <FirstSessionTip view={controller.view} />
         </View>
-        {/* Guided leads with the set; context cards follow it instead of pushing the hero down. */}
+        {/* Context cards (fueling, cycle insights) belong to Inline's full picture. Guided is the
+            focus mode — one set, read from across the room — so it leaves them out entirely. */}
         <View
           onLayout={(event) => {
             insightsHeight.current = event.nativeEvent.layout.height;
@@ -385,7 +387,6 @@ export function WorkoutTrainingView({
           {controller.view === 'inline' ? children : null}
         </View>
         {body}
-        {controller.view === 'guided' ? <View className="pt-4">{children}</View> : null}
         {finishButton}
       </KeyboardAwareScrollView>
       {pinnedAction}

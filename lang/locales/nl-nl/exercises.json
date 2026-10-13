@@ -177,7 +177,10 @@
         "noteLabel": "Notitie",
         "notePlaceholder": "Een aanwijzing voor elke set, bijv. ellebogen dicht bij het lichaam",
         "noteSave": "Notitie opslaan",
-        "failed": "Opslaan is mislukt. Probeer het opnieuw."
+        "failed": "Opslaan is mislukt. Probeer het opnieuw.",
+        "repCeilingLabel": "Maximum aantal herhalingen (zonder extra gewicht)",
+        "repCeilingOption": "{{reps}} herhalingen",
+        "repCeilingHint": "Musclog voegt elke sessie een herhaling toe tot dit aantal. Daarna ga je vooruit met een gewichtsvest of dipriem, een zwaardere variant of een langzamer tempo."
       }
     },
     "manageExerciseData": {
