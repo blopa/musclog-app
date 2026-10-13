@@ -22,7 +22,7 @@ describe('calculateSetVolume', () => {
     expect(calculateSetVolume(100, 10, undefined, 'barbell', 80)).toBeCloseTo(128.26, 2);
   });
 
-  it('handles undefined bodyWeightKg safely (defaults to 0 if not provided)', () => {
+  it('treats a zero bodyWeightKg as no added bodyweight', () => {
     expect(calculateSetVolume(100, 10, 0, 'bodyweight', 0)).toBeCloseTo(128.26, 2);
   });
 });

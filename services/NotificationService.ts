@@ -13,7 +13,7 @@ import { MenstrualService } from '@/database/services/MenstrualService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
-import { getTheme } from '@/theme';
+import { darkTheme } from '@/theme';
 import {
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
@@ -30,8 +30,6 @@ export class NotificationService {
       return;
     }
 
-    const theme = await getTheme();
-
     Notifications.setNotificationHandler({
       handleNotification: async (notification) => {
         const isWorkoutUpdate = notification.request.identifier === 'active-workout-notification';
@@ -46,13 +44,14 @@ export class NotificationService {
     });
 
     if (Platform.OS === 'android') {
-      // Use dark theme colors for notification channels as per requirements.
-      // this will not dynamically update if the theme is changed.
+      // Always the dark theme's color: Android fixes a channel's lightColor at creation, so
+      // it can never follow the theme, and reading the preference here would touch the
+      // database before it is ready (configure() runs ahead of waitForDbReady()).
       await Notifications.setNotificationChannelAsync('default', {
         name: i18n.t('notifications.channels.default'),
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: theme.colors.status.error,
+        lightColor: darkTheme.colors.status.error,
       });
 
       await Notifications.setNotificationChannelAsync('workout-active', {

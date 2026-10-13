@@ -6,6 +6,7 @@ import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';
 import Meal from '@/database/models/Meal';
 import MealFoodPortion from '@/database/models/MealFoodPortion';
+import { fetchMapByIds } from '@/database/queryByIds';
 import i18n from '@/lang/lang';
 
 const PORTION_DISPLAY_NAME_I18N_KEYS = [
@@ -507,31 +508,24 @@ export class FoodPortionService {
         .fetch(),
     ]);
 
-    const foodIds = Array.from(new Set(foodLinks.map((row) => row.foodId)));
-    const fetchedFoods = foodIds.length
-      ? await database.get<Food>('foods').query(Q.where('id', Q.oneOf(foodIds))).fetch()
-      : [];
-    const foodMap = new Map(fetchedFoods.map((f) => [f.id, f]));
+    const liveOnly = Q.where('deleted_at', Q.eq(null));
+    const [foodMap, mealMap] = await Promise.all([
+      fetchMapByIds<Food>(
+        'foods',
+        'id',
+        foodLinks.map((row) => row.foodId),
+        liveOnly
+      ),
+      fetchMapByIds<Meal>(
+        'meals',
+        'id',
+        mealLinks.map((row) => row.mealId),
+        liveOnly
+      ),
+    ]);
 
-    const foods = foodLinks
-      .map((row) => {
-        const food = foodMap.get(row.foodId);
-        return food && !food.deletedAt ? food.name : null;
-      })
-      .filter((name): name is string => !!name);
-
-    const mealIds = Array.from(new Set(mealLinks.map((row) => row.mealId)));
-    const fetchedMeals = mealIds.length
-      ? await database.get<Meal>('meals').query(Q.where('id', Q.oneOf(mealIds))).fetch()
-      : [];
-    const mealMap = new Map(fetchedMeals.map((m) => [m.id, m]));
-
-    const meals = mealLinks
-      .map((row) => {
-        const meal = mealMap.get(row.mealId);
-        return meal && !meal.deletedAt ? meal.name : null;
-      })
-      .filter((name): name is string => !!name);
+    const foods = foodLinks.flatMap((row) => foodMap.get(row.foodId)?.name ?? []);
+    const meals = mealLinks.flatMap((row) => mealMap.get(row.mealId)?.name ?? []);
 
     return { foods: Array.from(new Set(foods)), meals: Array.from(new Set(meals)) };
   }
