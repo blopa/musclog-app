@@ -2,10 +2,12 @@ import { useRouter } from 'expo-router';
 import { CheckCircle, CircleDot, Plus, Settings, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { ContextTimeline } from '@/components/cycle/ContextTimeline';
 import { CycleCalendar } from '@/components/cycle/CycleCalendar';
+import { CycleComparison } from '@/components/cycle/CycleComparison';
 import { CycleDaySheet } from '@/components/cycle/CycleDaySheet';
 import { CycleInsightsCard } from '@/components/cycle/CycleInsightsCard';
 import { DayLogSummary } from '@/components/cycle/DayLogSummary';
@@ -27,6 +29,7 @@ import { Button } from '@/components/theme/Button';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextButton } from '@/components/theme/TextButton';
 import { type PeriodLogMode } from '@/constants/cycle';
+import { useCycleMoods } from '@/hooks/useCycleMoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
@@ -39,7 +42,7 @@ import {
 } from '@/utils/calendarDate';
 import type { CycleContextDto, CyclePeriodDto } from '@/utils/cycle/types';
 
-type HistoryTab = 'calendar' | 'history';
+type HistoryTab = 'calendar' | 'history' | 'comparison';
 
 export default function CycleScreen() {
   const theme = useTheme();
@@ -66,6 +69,7 @@ export default function CycleScreen() {
     nowMs,
   } = useMenstrualCycle();
 
+  const { moods } = useCycleMoods();
   const [tab, setTab] = useState<HistoryTab>('calendar');
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
   const [daySheetOpen, setDaySheetOpen] = useState(false);
@@ -111,7 +115,11 @@ export default function CycleScreen() {
   return (
     <MasterLayout>
       <CycleLockGate>
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView
+          bottomOffset={16}
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+        >
           <AnimatedContent>
             <View className="px-4 py-8">
               <View className="mb-6 flex-row items-center justify-between">
@@ -245,6 +253,7 @@ export default function CycleScreen() {
                     <QuickLogRow day={day} />
                     <DayLogSummary
                       log={dayLogs.find((log) => log.date === day)}
+                      mood={moods.find((m) => m.date === day)?.value}
                       onEdit={() => setDaySheetOpen(true)}
                     />
                   </View>
@@ -271,6 +280,7 @@ export default function CycleScreen() {
                       options={[
                         { label: t('cycle.history.tabCalendar'), value: 'calendar' },
                         { label: t('cycle.history.tabHistory'), value: 'history' },
+                        { label: t('cycle.comparison.tab'), value: 'comparison' },
                       ]}
                       value={tab}
                       onValueChange={(value) => setTab(value as HistoryTab)}
@@ -290,7 +300,16 @@ export default function CycleScreen() {
                         setDaySheetOpen(true);
                       }}
                     />
-                  ) : (
+                  ) : null}
+                  {tab === 'comparison' ? (
+                    <CycleComparison
+                      onSelectDay={(selected) => {
+                        setSelectedDate(new Date(selected));
+                        setDaySheetOpen(true);
+                      }}
+                    />
+                  ) : null}
+                  {tab === 'history' ? (
                     <View>
                       <PeriodHistoryList periods={periods} history={history} onEdit={setEditing} />
                       <ContextTimeline
@@ -310,13 +329,13 @@ export default function CycleScreen() {
                         />
                       </View>
                     </View>
-                  )}
+                  ) : null}
                 </>
               )}
             </View>
             <View pointerEvents="none" style={{ height: theme.spacing.margin.base }} />
           </AnimatedContent>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </CycleLockGate>
 
       <CycleDaySheet visible={daySheetOpen} onClose={() => setDaySheetOpen(false)} day={day} />

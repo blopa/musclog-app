@@ -22,7 +22,7 @@ export default function PersonalizedCycleScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const [menstruates, setMenstruates] = useState<boolean | null>(null);
+  const [menstruates, setMenstruates] = useState<'bleeding' | 'symptoms' | 'skip' | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleContinue = async () => {
@@ -34,10 +34,10 @@ export default function PersonalizedCycleScreen() {
     try {
       await setCurrentOnboardingStep('/app/onboarding/personalized-cycle');
 
-      if (menstruates) {
+      if (menstruates !== 'skip') {
         const nextRoute = encodeURIComponent(MUSCLOG_API_AFTER_CYCLE_ROUTE);
         router.navigate(
-          `/app/onboarding/cycle-setup?nextRoute=${nextRoute}&quickStep=8&quickTotal=10`
+          `/app/onboarding/cycle-setup?symptomOnly=${menstruates === 'symptoms'}&nextRoute=${nextRoute}&quickStep=8&quickTotal=10`
         );
       } else {
         router.navigate(MUSCLOG_API_DIRECT_ROUTE);
@@ -51,15 +51,21 @@ export default function PersonalizedCycleScreen() {
 
   const options = [
     {
-      value: true,
-      label: t('onboarding.personalizedCycle.yes'),
-      desc: t('onboarding.personalizedCycle.yesDesc'),
+      value: 'bleeding' as const,
+      label: t('cycle.personalize.trackBleeding'),
+      desc: t('cycle.personalize.trackBleedingHint'),
       icon: Waves,
     },
     {
-      value: false,
-      label: t('onboarding.personalizedCycle.no'),
-      desc: t('onboarding.personalizedCycle.noDesc'),
+      value: 'symptoms' as const,
+      label: t('cycle.personalize.trackSymptoms'),
+      desc: t('cycle.personalize.trackSymptomsHint'),
+      icon: Waves,
+    },
+    {
+      value: 'skip' as const,
+      label: t('cycle.personalize.skip'),
+      desc: t('cycle.personalize.skipHint'),
       icon: CircleOff,
     },
   ];
@@ -95,7 +101,7 @@ export default function PersonalizedCycleScreen() {
               className="mb-4 text-lg font-semibold"
               style={{ color: theme.colors.text.primary }}
             >
-              {t('onboarding.personalizedCycle.question')}
+              {t('cycle.personalize.question')}
             </Text>
 
             <View className="gap-3">

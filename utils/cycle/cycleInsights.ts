@@ -13,6 +13,7 @@ const MIN_HIT_SHARE = 0.6;
 const HIGH_PAIN = 6;
 
 export type InsightKind =
+  | 'recurring_preperiod_symptom'
   | 'recurring_symptom'
   | 'high_pain'
   | 'cycle_length'
@@ -51,7 +52,7 @@ export interface WorkoutPoint {
 export interface InsightInput {
   periods: CyclePeriodInput[];
   history: CycleHistoryEntry[];
-  dayLogs: Pick<CycleDayLogDto, 'date' | 'symptoms' | 'pain'>[];
+  dayLogs: Pick<CycleDayLogDto, 'date' | 'symptoms' | 'pain' | 'noSymptoms'>[];
   moods?: MoodPoint[];
   workouts?: WorkoutPoint[];
 }
@@ -71,12 +72,16 @@ function sharePasses(hits: number, total: number): boolean {
   return total >= MIN_INSIGHT_CYCLES && hits >= MIN_INSIGHT_CYCLES && hits / total >= MIN_HIT_SHARE;
 }
 
-function symptomInsights(input: InsightInput, starts: number[]): Insight[] {
+function symptomInsights(input: InsightInput, starts: number[], before = false): Insight[] {
+  const matches = (start: number, day: number) =>
+    before ? dayDiff(start, day) >= -7 && dayDiff(start, day) <= -1 : nearStart(start, day);
   const out: Insight[] = [];
 
   // A cycle only counts when something was logged around its start; otherwise "no cramps" and
   // "never opened the app" would look the same.
-  const logged = starts.filter((s) => input.dayLogs.some((l) => nearStart(s, l.date)));
+  const logged = starts.filter((s) =>
+    input.dayLogs.some((l) => matches(s, l.date) && (l.noSymptoms || l.symptoms.length > 0))
+  );
   if (logged.length < MIN_INSIGHT_CYCLES) {
     return out;
   }
@@ -86,7 +91,7 @@ function symptomInsights(input: InsightInput, starts: number[]): Insight[] {
     const days: number[] = [];
     const hitStarts = logged.filter((s) => {
       const hits = input.dayLogs.filter(
-        (l) => nearStart(s, l.date) && l.symptoms.some((x) => x.key === key)
+        (l) => matches(s, l.date) && l.symptoms.some((x) => x.key === key)
       );
       days.push(...hits.map((h) => h.date));
 
@@ -95,8 +100,8 @@ function symptomInsights(input: InsightInput, starts: number[]): Insight[] {
 
     if (sharePasses(hitStarts.length, logged.length)) {
       out.push({
-        kind: 'recurring_symptom',
-        id: `symptom:${key}`,
+        kind: before ? 'recurring_preperiod_symptom' : 'recurring_symptom',
+        id: `${before ? 'before' : 'symptom'}:${key}`,
         params: {
           symptom: key,
           hits: hitStarts.length,
@@ -295,6 +300,7 @@ export function computeInsights(input: InsightInput): Insight[] {
   return [
     ...workoutInsight(input, starts),
     ...symptomInsights(input, starts),
+    ...symptomInsights(input, starts, true),
     ...painInsight(input, starts),
     ...moodInsight(input, starts),
     ...cycleLengthInsight(input.history),

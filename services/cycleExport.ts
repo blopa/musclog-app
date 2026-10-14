@@ -4,7 +4,7 @@ import type { TFunction } from 'i18next';
 import { Platform } from 'react-native';
 
 import { contraceptionTitleKey, lifeStageTitleKey } from '@/components/cycle/ContextFields';
-import { SEVERITY_LABEL_KEYS, SYMPTOM_LABEL_KEYS } from '@/constants/cycle';
+import { SEVERITY_LABEL_KEYS } from '@/constants/cycle';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 import {
   buildAppointmentSummaryHtml,
@@ -12,8 +12,14 @@ import {
   type SummaryCopy,
   type SummaryInput,
 } from '@/utils/cycle/appointmentSummary';
-import { dayLogsCsv, periodsCsv } from '@/utils/cycle/cycleCsv';
-import type { CycleDayLogDto, CycleHistoryEntry, CyclePeriodDto } from '@/utils/cycle/types';
+import { contextsCsv, dayLogsCsv, periodsCsv } from '@/utils/cycle/cycleCsv';
+import { cycleSymptomLabel } from '@/utils/cycle/preferences';
+import type {
+  CycleContextDto,
+  CycleDayLogDto,
+  CycleHistoryEntry,
+  CyclePeriodDto,
+} from '@/utils/cycle/types';
 import { shareTextFile } from '@/utils/file';
 import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
 import { timestampSlug } from '@/utils/timestampSlug';
@@ -28,8 +34,15 @@ export async function exportPeriodsCsv(periods: CyclePeriodDto[], history: Cycle
   );
 }
 
-export async function exportDayLogsCsv(dayLogs: CycleDayLogDto[]) {
-  await shareTextFile(`${timestampSlug()}-musclog-cycle-days.csv`, dayLogsCsv(dayLogs), CSV_MIME);
+export async function exportDayLogsCsv(
+  dayLogs: CycleDayLogDto[],
+  moods: { date: number; value: number }[] = []
+) {
+  await shareTextFile(
+    `${timestampSlug()}-musclog-cycle-days.csv`,
+    dayLogsCsv(dayLogs, moods),
+    CSV_MIME
+  );
 }
 
 export type SummaryRangeMonths = 3 | 6 | 12;
@@ -71,6 +84,8 @@ export function buildSummaryCopy(
     new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(ms);
   const facts = collectSummaryFacts(input);
   const { stats } = input;
+  const displayObservation = (value: unknown) =>
+    typeof value === 'boolean' ? t(value ? 'common.yes' : 'common.no') : String(value);
   const used = facts.history.filter((h) => h.status === 'used').length;
   const excluded = facts.history.filter((h) => h.status === 'excluded').length;
 
@@ -134,12 +149,40 @@ export function buildSummaryCopy(
     endEstimated: t('cycle.history.estimatedEnd'),
     overviewLines,
     bleedingLabel: (level) => t(BLEEDING_KEYS[level]),
-    symptomLabel: (key) =>
-      SYMPTOM_LABEL_KEYS[key] ? t(SYMPTOM_LABEL_KEYS[key]) : key.replace(/_/g, ' '),
+    symptomLabel: (key) => cycleSymptomLabel(key, t),
     severityLabel: (severity) => t(SEVERITY_LABEL_KEYS[severity]),
     contextLine: (context) =>
       `${t(lifeStageTitleKey(context.lifeStage))} · ${t(contraceptionTitleKey(context.contraception))}`,
     painLine,
+    observationsTitle: t('cycle.personalize.summaryObservations'),
+    observationLines: [
+      ...(input.moods ?? [])
+        .filter((m) => m.date >= input.from && m.date <= nowMs)
+        .map(
+          (m) =>
+            `${date(m.date)} · ${t('cycle.personalize.goals.mood')}: ${t(`bodyMetrics.addEntry.moods.${m.value}`)}`
+        ),
+      ...input.dayLogs
+        .filter((d) => d.date >= input.from && d.date <= nowMs)
+        .flatMap((d) =>
+          Object.entries(d.observations ?? {}).flatMap(([key, value]) => {
+            if (key === 'customLabels') {
+              return [];
+            }
+
+            if (key === 'custom') {
+              return Object.entries(value as Record<string, unknown>).map(
+                ([id, v]) =>
+                  `${date(d.date)} · ${d.observations?.customLabels?.[id] ?? id}: ${displayObservation(v)}`
+              );
+            }
+
+            return [
+              `${date(d.date)} · ${t(`cycle.personalize.fields.${key}`)}: ${displayObservation(value)}`,
+            ];
+          })
+        ),
+    ],
     formatDate: date,
     formatInteger: int,
   };
@@ -154,7 +197,7 @@ export async function shareAppointmentSummary(args: {
   data: Omit<SummaryInput, 'from'>;
 }): Promise<void> {
   const from = monthsAgo(args.nowMs, args.months);
-  const input: SummaryInput = { ...args.data, from };
+  const input: SummaryInput = { ...args.data, from, to: args.nowMs };
   const html = buildAppointmentSummaryHtml(
     input,
     buildSummaryCopy(args.t, args.locale, input, args.months, args.nowMs)
@@ -168,4 +211,12 @@ export async function shareAppointmentSummary(args: {
 
   const { uri } = await Print.printToFileAsync({ html });
   await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
+}
+
+export async function exportContextsCsv(contexts: CycleContextDto[]) {
+  await shareTextFile(
+    `${timestampSlug()}-musclog-cycle-contexts.csv`,
+    contextsCsv(contexts),
+    CSV_MIME
+  );
 }

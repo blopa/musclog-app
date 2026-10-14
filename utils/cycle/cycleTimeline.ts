@@ -1,8 +1,8 @@
 import { LUTEAL_PHASE_DAYS, OVULATORY_HALF_WINDOW_DAYS } from '@/constants/cycle';
 import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
-import { addCalendarDays } from './dates';
 import type { PredictionStats } from './cycleStats';
+import { addCalendarDays } from './dates';
 import type { CyclePeriodInput } from './types';
 
 export type CyclePhase = 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';

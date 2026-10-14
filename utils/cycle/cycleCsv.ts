@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 
-import type { CycleDayLogDto, CycleHistoryEntry, CyclePeriodDto } from './types';
+import type { CycleContextDto, CycleDayLogDto, CycleHistoryEntry, CyclePeriodDto } from './types';
 
 /**
  * A cell for RFC 4180 CSV. Quoted when it holds a comma, quote or newline. A leading = + - @ is
@@ -39,6 +39,7 @@ export function periodsCsv(periods: CyclePeriodDto[], history: CycleHistoryEntry
     'used_for_predictions',
     'not_used_reason',
     'note',
+    'excluded_from_stats',
   ]);
   const lines = [...periods]
     .sort((a, b) => a.startDate - b.startDate)
@@ -54,13 +55,17 @@ export function periodsCsv(periods: CyclePeriodDto[], history: CycleHistoryEntry
         h ? h.status === 'used' : '',
         h?.reason ?? '',
         p.note,
+        p.excludedFromStats,
       ]);
     });
 
   return [header, ...lines].join(EOL) + EOL;
 }
 
-export function dayLogsCsv(dayLogs: CycleDayLogDto[]): string {
+export function dayLogsCsv(
+  dayLogs: CycleDayLogDto[],
+  moods: { date: number; value: number }[] = []
+): string {
   const header = row([
     'date',
     'bleeding',
@@ -69,8 +74,29 @@ export function dayLogsCsv(dayLogs: CycleDayLogDto[]): string {
     'no_symptoms_logged',
     'symptoms',
     'note',
+    'mood_0_4',
+    'observations_json',
+    'symptoms_json',
   ]);
-  const lines = [...dayLogs]
+  const byDate = new Map(dayLogs.map((d) => [d.date, d]));
+  for (const mood of moods) {
+    if (!byDate.has(mood.date)) {
+      byDate.set(mood.date, {
+        id: '',
+        timezone: '',
+        date: mood.date,
+        bleeding: null,
+        symptoms: [],
+        noSymptoms: false,
+        pain: null,
+        energy: null,
+        note: '',
+      });
+    }
+  }
+
+  const moodByDate = new Map(moods.map((m) => [m.date, m.value]));
+  const lines = [...byDate.values()]
     .sort((a, b) => a.date - b.date)
     .map((d) =>
       row([
@@ -82,8 +108,22 @@ export function dayLogsCsv(dayLogs: CycleDayLogDto[]): string {
         // "key:severity" pairs; severity 1 mild, 2 moderate, 3 severe, empty when not rated.
         d.symptoms.map((s) => `${s.key}:${s.severity ?? ''}`).join(';'),
         d.note,
+        moodByDate.get(d.date),
+        d.observations ? JSON.stringify(d.observations) : '',
+        JSON.stringify(d.symptoms),
       ])
     );
 
   return [header, ...lines].join(EOL) + EOL;
+}
+
+export function contextsCsv(contexts: CycleContextDto[]): string {
+  return (
+    [
+      row(['effective_from', 'life_stage', 'contraception', 'note']),
+      ...[...contexts]
+        .sort((a, b) => a.effectiveFrom - b.effectiveFrom)
+        .map((c) => row([csvDate(c.effectiveFrom), c.lifeStage, c.contraception, c.note])),
+    ].join(EOL) + EOL
+  );
 }

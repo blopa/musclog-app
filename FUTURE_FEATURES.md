@@ -98,8 +98,7 @@ collects.
 
 - Import a cycle history from other trackers (Clue, Flo, Apple Health CSV exports) as a wizard.
 - Read and write menstruation and basal temperature through Health Connect / HealthKit, kept separable from self-reports.
-- Custom symptom fields, tags and scales beyond the bundled list; searching the log in natural language on-device.
-- A cycle-overlay "fingerprint" view comparing several cycles day by day.
+- Custom bounded rating scales beyond the current text/number/yes-no fields; searching the log in natural language on-device.
 - Optional partner sharing of explicitly selected fields; pregnancy and postpartum modes.
 - A decoy screen and auto-delete for high-risk threat models, beyond the existing app lock.
 - Cycle data in the AI coach, only as an explicit opt-in per conversation and never by default.

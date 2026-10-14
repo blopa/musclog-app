@@ -4,6 +4,7 @@ import { Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { MoodSelectorCard } from '@/components/cards/MoodSelectorCard';
+import { CycleObservationInputs } from '@/components/cycle/CycleObservationInputs';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { TextButton } from '@/components/theme/TextButton';
@@ -25,7 +26,13 @@ import {
   stepSymptom,
   withNoSymptoms,
 } from '@/utils/cycle/dayLog';
-import { loadDayMood, saveDayMood } from '@/utils/cycle/dayMood';
+import { loadDayMood } from '@/utils/cycle/dayMood';
+import {
+  type ObservationDraft,
+  observationDraft,
+  resolveObservationDraft,
+} from '@/utils/cycle/observationDraft';
+import { cycleSymptomLabel } from '@/utils/cycle/preferences';
 import type { BleedingLevel, DaySymptom } from '@/utils/cycle/types';
 import { handleError } from '@/utils/handleError';
 
@@ -48,7 +55,7 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { cycleQuickLogRaw } = useSettings();
-  const { dayLogs, saveDayLog, guidance } = useMenstrualCycle();
+  const { dayLogs, saveDayLog, guidance, config } = useMenstrualCycle();
   const promptStartPeriod = useStartPeriodPrompt();
 
   const [bleeding, setBleeding] = useState<BleedingLevel | null>(null);
@@ -58,7 +65,9 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
   const [energy, setEnergy] = useState<number | null>(null);
   const [note, setNote] = useState('');
   const [mood, setMood] = useState<number | null>(null);
-  const [moodId, setMoodId] = useState<string | null>(null);
+  const [moodLoading, setMoodLoading] = useState(true);
+  const [moodError, setMoodError] = useState(false);
+  const [observations, setObservations] = useState<ObservationDraft>({});
   const [moodTouched, setMoodTouched] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -80,13 +89,24 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
       setEnergy(log.energy);
       setNote(log.note);
       setMoodTouched(false);
+      setMood(null);
+      setMoodLoading(true);
+      setMoodError(false);
+      setObservations(observationDraft(log.observations));
       setShowAll(false);
-      void loadDayMood(localCalendarDayDate(new Date(day))).then((m) => {
-        if (!cancelled) {
-          setMood(m?.value ?? null);
-          setMoodId(m?.id ?? null);
-        }
-      });
+      void loadDayMood(localCalendarDayDate(new Date(day)))
+        .then((m) => {
+          if (!cancelled) {
+            setMood(m?.value ?? null);
+            setMoodLoading(false);
+          }
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setMoodLoading(false);
+            setMoodError(true);
+          }
+        });
     });
 
     return () => {
@@ -97,8 +117,12 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, day]);
 
-  const pinned = parseQuickLog(cycleQuickLogRaw);
-  const allOptions = [...PHYSICAL_SYMPTOM_KEYS, ...EMOTIONAL_SYMPTOM_KEYS];
+  const pinned = config.quickLog ?? parseQuickLog(cycleQuickLogRaw);
+  const allOptions = [
+    ...PHYSICAL_SYMPTOM_KEYS,
+    ...EMOTIONAL_SYMPTOM_KEYS,
+    ...(config.customSymptoms ?? []).map((name) => ({ key: '', value: `custom:${name}` })),
+  ];
   const pinnedOptions = allOptions.filter((o) => pinned.includes(o.value));
   // Pinned symptoms first; a person with none pinned still sees a short starter list.
   let visibleOptions = pinnedOptions.length > 0 ? pinnedOptions : allOptions.slice(0, 8);
@@ -116,22 +140,36 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
     const current = symptoms.find((s) => s.key === key);
     const severity = current?.severity ? ` · ${t(SEVERITY_LABEL_KEYS[current.severity])}` : '';
 
-    return `${t(labelKey)}${severity}`;
+    return `${labelKey ? t(labelKey) : cycleSymptomLabel(key, t)}${severity}`;
   };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await saveDayLog({ date: day, bleeding, symptoms, noSymptoms, pain, energy, note });
-      if (moodTouched && mood != null) {
-        await saveDayMood(localCalendarDayDate(new Date(day)), mood, moodId);
+      let resolved;
+      try {
+        resolved = resolveObservationDraft(observations, config, existing?.observations);
+      } catch {
+        handleError(new Error('invalid_observations'), 'CycleDaySheet.validation', {
+          sendToSentry: false,
+          snackbarMessage: t('cycle.personalize.invalidObservation'),
+        });
+        return;
       }
+
+      await saveDayLog(
+        { date: day, bleeding, symptoms, noSymptoms, pain, energy, note, observations: resolved },
+        moodTouched ? mood : undefined
+      );
 
       promptStartPeriod(day, bleeding);
 
       onClose();
     } catch (error) {
-      handleError(error, 'CycleDaySheet.save', { snackbarMessage: t('errors.somethingWentWrong') });
+      handleError(error, 'CycleDaySheet.save', {
+        sendToSentry: false,
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -140,7 +178,7 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
   const handleClear = async () => {
     setIsSaving(true);
     try {
-      await saveDayLog({ ...blankDayLog(day) });
+      await saveDayLog({ ...blankDayLog(day) }, null);
       onClose();
     } catch (error) {
       handleError(error, 'CycleDaySheet.clear', {
@@ -150,6 +188,13 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
       setIsSaving(false);
     }
   };
+
+  let moodStatus = '';
+  if (moodLoading) {
+    moodStatus = t('cycle.personalize.loadingMood');
+  } else if (mood == null) {
+    moodStatus = t('cycle.personalize.moodUnlogged');
+  }
 
   return (
     <BottomPopUp
@@ -166,15 +211,20 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
             variant="accent"
             width="flex-1"
             loading={isSaving}
+            disabled={moodLoading || moodError}
           />
         </View>
       }
     >
       <View className="gap-6 pb-4">
-        {guidance.hidePeriodActions ? null : (
+        {
           <View className="gap-2">
             <Text className="text-base font-bold text-text-primary">
-              {t('cycle.flowIntensity')}
+              {t(
+                guidance.hidePeriodActions
+                  ? 'cycle.personalize.unexpectedBleeding'
+                  : 'cycle.flowIntensity'
+              )}
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {BLEEDING_LEVELS.map((level) => (
@@ -187,7 +237,7 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
               ))}
             </View>
           </View>
-        )}
+        }
 
         <View className="gap-2">
           <Text className="text-base font-bold text-text-primary">{t('cycle.symptomsTitle')}</Text>
@@ -252,14 +302,30 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
           </View>
         </View>
 
+        <Text className="text-xs text-text-secondary">{t('cycle.personalize.sharedMoodHint')}</Text>
+        {moodError ? (
+          <Text className="text-sm text-text-secondary">{t('errors.somethingWentWrong')}</Text>
+        ) : null}
+        <Text className="text-xs text-text-secondary">{moodStatus}</Text>
         <MoodSelectorCard
-          value={mood ?? 2}
+          disabled={moodLoading || moodError || isSaving}
+          value={mood ?? -1}
           onChange={(value) => {
             setMood(value);
             setMoodTouched(true);
           }}
         />
 
+        {mood != null ? (
+          <TextButton
+            label={t('cycle.personalize.clearMood')}
+            onPress={() => {
+              setMood(null);
+              setMoodTouched(true);
+            }}
+          />
+        ) : null}
+        <CycleObservationInputs config={config} value={observations} onChange={setObservations} />
         <View className="gap-2">
           <Text className="text-base font-bold text-text-primary">{t('cycle.daySheet.note')}</Text>
           <RNTextInput
@@ -283,9 +349,9 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
           />
         </View>
 
-        {existing ? (
+        {existing || mood != null ? (
           <TextButton
-            label={t('cycle.daySheet.clearDay')}
+            label={t('cycle.personalize.clearDayAndMood')}
             tone="danger"
             onPress={() => void handleClear()}
           />

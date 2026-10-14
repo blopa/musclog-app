@@ -51,9 +51,9 @@ describe('periodsCsv', () => {
   it('writes a header, ISO dates, cycle length and the quoted note', () => {
     const lines = periodsCsv(periods, buildCycleHistory(periods)).trim().split('\r\n');
     expect(lines[0]).toBe(
-      'start_date,end_date,end_kind,duration_days,cycle_length_days,used_for_predictions,not_used_reason,note'
+      'start_date,end_date,end_kind,duration_days,cycle_length_days,used_for_predictions,not_used_reason,note,excluded_from_stats'
     );
-    expect(lines[1]).toBe('2024-01-01,2024-01-05,logged,5,28,true,,"heavy, clots"');
+    expect(lines[1]).toBe('2024-01-01,2024-01-05,logged,5,28,true,,"heavy, clots",false');
     expect(lines[2].startsWith('2024-01-29,,open,')).toBe(true);
   });
 
@@ -93,7 +93,8 @@ describe('dayLogsCsv', () => {
       },
     ];
     const lines = dayLogsCsv(logs).trim().split('\r\n');
-    expect(lines[1]).toBe('2024-01-02,light,7,2,false,cramps:3;acne:,');
-    expect(lines[2]).toBe('2024-01-03,,,,true,,');
+    expect(lines[1]).toContain('2024-01-02,light,7,2,false,cramps:3;acne:,,,');
+    expect(lines[0]).toContain('mood_0_4,observations_json,symptoms_json');
+    expect(lines[2]).toBe('2024-01-03,,,,true,,,,,[]');
   });
 });

@@ -82,7 +82,11 @@ export interface MenstrualCycleContextType {
   updatePeriod: (id: string, patch: PeriodPatch) => Promise<void>;
   removePeriod: (id: string) => Promise<void>;
   restorePeriod: (id: string) => Promise<void>;
-  saveDayLog: (input: DayLogInput) => Promise<void>;
+  patchDayLog: (
+    date: number,
+    update: (existing: CycleDayLogDto | undefined) => DayLogInput
+  ) => Promise<DayLogInput>;
+  saveDayLog: (input: DayLogInput, mood?: number | null) => Promise<void>;
   setContext: (input: ContextInput) => Promise<void>;
   removeContext: (id: string) => Promise<void>;
   deactivateTracking: () => Promise<void>;
@@ -261,8 +265,10 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
         await CyclePeriodService.restore(id);
         afterWrite();
       },
-      saveDayLog: async (input: DayLogInput) => {
-        await CycleDayLogService.save(input);
+      patchDayLog: (date: number, update: (existing: CycleDayLogDto | undefined) => DayLogInput) =>
+        CycleDayLogService.patch(date, update),
+      saveDayLog: async (input: DayLogInput, mood?: number | null) => {
+        await CycleDayLogService.save(input, mood);
       },
       setContext: async (input: ContextInput) => {
         await CycleContextService.set(requireCycle(), input);

@@ -512,3 +512,46 @@ Workout progression runs immediately at session start and between applicable set
 **Residual metadata.** The cycle tables encrypt every personal field in one `payload`, but record ids and `created_at` / `updated_at` stay plaintext, so the device can reveal _when_ something was logged, never _what_. Exports shared outside the app, and local recovery points made before the conversion, can hold plaintext copies; "delete all cycle data" offers to remove the recovery points and says plainly that shared files are out of reach.
 
 **Dates.** Starts and ends are local calendar days. Predicted dates are computed with calendar-day arithmetic (`utils/cycle/dates.ts`), never `start + N * 24h`, which lands an hour off midnight across a daylight-saving change and moves a predicted day at the edge of a range.
+
+### Cycle journal portability and recovery
+
+Cycle-only JSON version 1 identifies itself with `format: "musclog-cycle"` and `version: 1`.
+Its arrays are `periods`, `dayLogs`, `contexts` and `moods`; `config` optionally carries usual
+lengths, goals, custom symptoms, enabled observation fields and custom field definitions.
+Record ids, cycle ids and source timezone offsets do not travel: start/end/day/effective dates
+are local `YYYY-MM-DD` calendar dates, converted to local midnight on the receiving device.
+Period end kind, exclusions, notes, symptom severity, explicit no-symptoms responses and custom
+labels survive. Shared mood history is included explicitly, including days without cycle logs.
+Future versions fail validation rather than silently discarding fields.
+
+CSV periods retain their original columns and add `excluded_from_stats`, preserving user exclusions even for an unfinished cycle. Daily CSV adds `mood_0_4`, `observations_json` and
+`symptoms_json`; the last two contain JSON inside RFC 4180 escaped cells. The JSON symptom
+column avoids ambiguous delimiters in user-created names; older daily CSVs retain support for
+`key:severity` pairs separated by semicolons. Context CSV uses `effective_from`, `life_stage`,
+`contraception`, `note`. Plain-text notes are defused for spreadsheet formula execution.
+JSON is the complete format for recovery, including configuration and field definitions;
+individual CSV files are primarily for inspection and selective migration. Future journal/mood entries that older app versions allowed are preserved on import; insights and appointment summaries exclude them until their date. Other trackers'
+formats are not accepted yet.
+
+Imports merge without clearing the database. A matching date is kept by default; explicitly
+choosing replacement replaces that record, rather than silently combining incompatible
+observations. Overlapping periods against existing data are counted and skipped. Duplicates
+within a file, future period/context dates, invalid calendar dates, conflicting custom field definitions and invalid
+values reject the file. The service repeats validation and reads under its writer before one
+batch. New custom definitions are carried even when other preferences are kept, to preserve
+readable history. Empty imported day entries do not create observations; an explicitly replaced
+empty day clears its existing day record.
+
+Encrypted backups wrap this JSON with `format: "musclog-cycle-encrypted"`, version 1,
+algorithm `PBKDF2-SHA256/AES-256-CBC/HMAC-SHA256`, 210,000 iterations, a random 16-byte salt and
+IV, base64 ciphertext and a hex HMAC. PBKDF2 derives separate 32-byte encryption/authentication
+keys. Authentication covers the format, version, algorithm, work factor, salt, IV and ciphertext,
+and is checked before decryption. The password is preserved exactly, confirmed before export,
+and never persisted. A lost password cannot be recovered by the app. A backup needs storage
+outside the phone; the last-prepared timestamp deliberately makes no claim that the share sheet
+completed or that a durable external copy exists. There is no automatic sync.
+
+Cycle symptom comparisons are observational: daily cell values stay missing when unlogged,
+explicit no-symptoms is zero, and historic unrated presence has its own marker. The pre-period
+view aligns to the next recorded start, never a predicted one. Recurring pre-period symptom
+insights inspect seven days and still require at least three observed cycles.

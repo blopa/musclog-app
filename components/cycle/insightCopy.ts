@@ -1,11 +1,13 @@
 import type { TFunction } from 'i18next';
 
-import { SYMPTOM_LABEL_KEYS } from '@/constants/cycle';
 import type { Insight } from '@/utils/cycle/cycleInsights';
+import { cycleSymptomLabel } from '@/utils/cycle/preferences';
 
 /** Whole translation keys per insight, never assembled at the call site. */
 export function insightSentenceKey(insight: Insight): string {
   switch (insight.kind) {
+    case 'recurring_preperiod_symptom':
+      return 'cycle.insights.recurringPreperiodSymptom';
     case 'recurring_symptom':
       return 'cycle.insights.recurringSymptom';
     case 'high_pain':
@@ -42,8 +44,7 @@ export function insightSentence(
   }
 
   if (typeof insight.params.symptom === 'string') {
-    const labelKey = SYMPTOM_LABEL_KEYS[insight.params.symptom];
-    params.symptom = (labelKey ? t(labelKey) : insight.params.symptom).toLowerCase();
+    params.symptom = cycleSymptomLabel(insight.params.symptom, t).toLowerCase();
   }
 
   return t(insightSentenceKey(insight), params);

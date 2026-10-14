@@ -14,6 +14,7 @@ const symptomLog = (n: number, key: string) => ({
   date: day(n),
   symptoms: [{ key, severity: 2 as const }],
   pain: null,
+  noSymptoms: false,
 });
 
 describe('computeInsights', () => {
@@ -108,4 +109,18 @@ describe('isNearPeriodStart', () => {
     expect(isNearPeriodStart([day(10)], day(30), day(29))).toBe(true);
     expect(isNearPeriodStart([], null, day(1))).toBe(false);
   });
+});
+
+it('finds symptoms a week before bleeding using recorded periods, not predicted phases', () => {
+  const logs = [symptomLog(23, 'migraine'), symptomLog(51, 'migraine'), symptomLog(79, 'migraine')];
+  const insight = computeInsights({ periods, history: history(), dayLogs: logs }).find(
+    (i) => i.kind === 'recurring_preperiod_symptom'
+  );
+  expect(insight?.params).toMatchObject({ symptom: 'migraine', hits: 3, total: 3 });
+  expect(insight?.evidence.days).toEqual([day(23), day(51), day(79)]);
+  expect(
+    computeInsights({ periods, history: history(), dayLogs: logs.slice(1) }).some(
+      (i) => i.kind === 'recurring_preperiod_symptom'
+    )
+  ).toBe(false);
 });

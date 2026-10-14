@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
-import { SYMPTOM_LABEL_KEYS } from '@/constants/cycle';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
-import { parseQuickLog, serializeQuickLog, suggestPin, togglePinned } from '@/utils/cycle/dayLog';
+import { MAX_QUICK_LOG, parseQuickLog, suggestPin, togglePinned } from '@/utils/cycle/dayLog';
+import { cycleSymptomLabel } from '@/utils/cycle/preferences';
 import { handleError } from '@/utils/handleError';
 
 /**
@@ -17,8 +17,8 @@ import { handleError } from '@/utils/handleError';
 export function PinSuggestionCard() {
   const { t } = useTranslation();
   const { cycleQuickLogRaw } = useSettings();
-  const { dayLogs, periods } = useMenstrualCycle();
-  const [offered, setOffered] = useState<string[] | null>(null);
+  const { dayLogs, periods, config, updateConfig } = useMenstrualCycle();
+  const [legacyOffered, setOffered] = useState<string[] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,11 +33,16 @@ export function PinSuggestionCard() {
     };
   }, []);
 
+  const offered = config.pinSuggested ?? legacyOffered;
   if (offered == null) {
     return null;
   }
 
-  const pinned = parseQuickLog(cycleQuickLogRaw);
+  const pinned = config.quickLog ?? parseQuickLog(cycleQuickLogRaw);
+  if (pinned.length >= MAX_QUICK_LOG) {
+    return null;
+  }
+
   const key = suggestPin(
     dayLogs,
     periods.map((p) => p.startDate).sort((a, b) => a - b),
@@ -48,16 +53,17 @@ export function PinSuggestionCard() {
     return null;
   }
 
-  const name = (SYMPTOM_LABEL_KEYS[key] ? t(SYMPTOM_LABEL_KEYS[key]) : key).toLowerCase();
+  const name = cycleSymptomLabel(key, t).toLowerCase();
 
   const answer = async (pin: boolean) => {
     try {
       // Remember the offer either way, so a "no thanks" is not asked again.
       setOffered([...offered, key]);
-      await SettingsService.setCyclePinSuggested([...new Set([...offered, key])].join(','));
-      if (pin) {
-        await SettingsService.setCycleQuickLog(serializeQuickLog(togglePinned(pinned, key)));
-      }
+      await updateConfig({
+        ...config,
+        pinSuggested: [...new Set([...offered, key])],
+        quickLog: pin ? togglePinned(pinned, key) : pinned,
+      });
     } catch (error) {
       handleError(error, 'PinSuggestionCard.answer', {
         snackbarMessage: t('errors.somethingWentWrong'),

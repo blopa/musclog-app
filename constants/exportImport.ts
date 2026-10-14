@@ -1,3 +1,4 @@
+import { CYCLE_BACKUP_STATUS_KEY } from '@/constants/cycle';
 import { ENCRYPTION_KEY } from '@/constants/database';
 import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
 import {
@@ -6,7 +7,11 @@ import {
 } from '@/constants/settings';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
-export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([ENCRYPTION_KEY, TEMP_NUTRITION_PLAN]);
+export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
+  ENCRYPTION_KEY,
+  TEMP_NUTRITION_PLAN,
+  CYCLE_BACKUP_STATUS_KEY,
+]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';
 

@@ -2,7 +2,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Plus, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
@@ -13,8 +14,8 @@ import { Button } from '@/components/theme/Button';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
-import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
 import { periodErrorKey } from '@/utils/cycle/periodErrors';
+import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
 import { handleError } from '@/utils/handleError';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 
@@ -40,6 +41,7 @@ export default function CycleSetup() {
     nextRoute?: string;
     quickStep?: string;
     quickTotal?: string;
+    symptomOnly?: string;
   }>();
 
   const nextRoute = params.nextRoute ? decodeURIComponent(params.nextRoute) : undefined;
@@ -73,7 +75,11 @@ export default function CycleSetup() {
   };
 
   const handleFinish = async () => {
-    const data: CycleSetupData = { ...DEFAULT_CYCLE_DATA, ...currentFormData };
+    const data: CycleSetupData = {
+      ...DEFAULT_CYCLE_DATA,
+      lifeStage: params.symptomOnly === 'true' ? 'no_bleeding' : 'regular',
+      ...currentFormData,
+    };
     setIsSaving(true);
 
     try {
@@ -81,8 +87,12 @@ export default function CycleSetup() {
         config: {
           fallbackCycleLength: data.cycleLength,
           fallbackPeriodDuration: data.periodDuration,
+          goals: data.goals ?? [],
         },
-        context: { lifeStage: data.lifeStage, contraception: data.contraception },
+        context: {
+          lifeStage: data.lifeStage,
+          contraception: data.contraception,
+        },
         periods: [
           ...(data.lastPeriodStartDate
             ? [{ startDate: localDayStartMs(data.lastPeriodStartDate) }]
@@ -109,13 +119,21 @@ export default function CycleSetup() {
     }
   };
 
+  const isSymptomOnly =
+    (currentFormData.lifeStage ?? (params.symptomOnly === 'true' ? 'no_bleeding' : 'regular')) ===
+    'no_bleeding';
+
   return (
     <MasterLayout showNavigationMenu={false}>
       {quickStep !== undefined && quickTotal !== undefined ? (
         <QuickSetupProgressBar current={quickStep} total={quickTotal} />
       ) : null}
 
-      <ScrollView className="flex-1 px-6 pt-8" showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        bottomOffset={16}
+        className="flex-1 px-6 pt-8"
+        showsVerticalScrollIndicator={false}
+      >
         <Text
           className="mb-2 text-3xl font-bold tracking-tight"
           style={{ color: theme.colors.text.primary }}
@@ -123,51 +141,60 @@ export default function CycleSetup() {
           {t('onboarding.cycleSetup.title')}
         </Text>
         <Text className="mb-8 text-lg text-text-secondary">
-          {t('onboarding.cycleSetup.description')}
+          {t(
+            isSymptomOnly
+              ? 'cycle.personalize.trackSymptomsHint'
+              : 'onboarding.cycleSetup.description'
+          )}
         </Text>
 
-        <EditCycleSetupData onFormChange={setCurrentFormData} />
+        <EditCycleSetupData
+          initialData={params.symptomOnly === 'true' ? { lifeStage: 'no_bleeding' } : undefined}
+          onFormChange={setCurrentFormData}
+        />
 
-        {/* Past periods section */}
-        <View className="mt-8 gap-3">
-          <Text className="text-base font-semibold text-text-secondary">
-            {t('onboarding.cycleSetup.pastPeriods.title')}
-          </Text>
-          <Text className="text-sm text-text-secondary">
-            {t('onboarding.cycleSetup.pastPeriods.description')}
-          </Text>
+        {/* Historical bleeding can be added later from the cycle history. */}
+        {!isSymptomOnly ? (
+          <View className="mt-8 gap-3">
+            <Text className="text-base font-semibold text-text-secondary">
+              {t('onboarding.cycleSetup.pastPeriods.title')}
+            </Text>
+            <Text className="text-sm text-text-secondary">
+              {t('onboarding.cycleSetup.pastPeriods.description')}
+            </Text>
 
-          {pastPeriods.map((period, index) => (
-            <View
-              key={period.startDate.getTime()}
-              className="flex-row items-center justify-between rounded-xl px-4 py-3"
-              style={{ backgroundColor: theme.colors.background.card }}
-            >
-              <Text style={{ color: theme.colors.text.primary }}>
-                {period.startDate.toLocaleDateString()}
-              </Text>
-              <TouchableOpacity onPress={() => handleRemovePastPeriod(index)} className="p-1">
-                <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
+            {pastPeriods.map((period, index) => (
+              <View
+                key={period.startDate.getTime()}
+                className="flex-row items-center justify-between rounded-xl px-4 py-3"
+                style={{ backgroundColor: theme.colors.background.card }}
+              >
+                <Text style={{ color: theme.colors.text.primary }}>
+                  {period.startDate.toLocaleDateString()}
+                </Text>
+                <TouchableOpacity onPress={() => handleRemovePastPeriod(index)} className="p-1">
+                  <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
+                </TouchableOpacity>
+              </View>
+            ))}
+
+            {pastPeriods.length < 6 ? (
+              <TouchableOpacity
+                onPress={handleAddPastPeriod}
+                className="flex-row items-center gap-2 rounded-xl border px-4 py-3"
+                style={{ borderColor: theme.colors.border.default }}
+              >
+                <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                <Text style={{ color: theme.colors.accent.primary }}>
+                  {t('onboarding.cycleSetup.pastPeriods.addPastPeriod')}
+                </Text>
               </TouchableOpacity>
-            </View>
-          ))}
-
-          {pastPeriods.length < 6 ? (
-            <TouchableOpacity
-              onPress={handleAddPastPeriod}
-              className="flex-row items-center gap-2 rounded-xl border px-4 py-3"
-              style={{ borderColor: theme.colors.border.default }}
-            >
-              <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              <Text style={{ color: theme.colors.accent.primary }}>
-                {t('onboarding.cycleSetup.pastPeriods.addPastPeriod')}
-              </Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
+            ) : null}
+          </View>
+        ) : null}
 
         <View pointerEvents="none" style={{ height: theme.spacing.margin['6xl'] }} />
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <BottomButtonWrapper>
         <Button

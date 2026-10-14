@@ -720,3 +720,18 @@ is now g/kg of a reference bodyweight whenever a weight is known.
 
 A failed exercise swap cleared the values the user had typed, because `runSaving` swallowed the error
 and the caller carried on as if the swap had worked; it now returns whether it succeeded.
+
+## Cycle daily mood consistency and same-timestamp edits
+
+Mood entered from the cycle sheet is the shared Home/Progress metric. The former clear-day
+path only removed the cycle payload, and cycle CSV/PDF exports omitted mood. Daily observations
+and an optional mood change now commit in one writer; an explicit clear-day includes shared
+mood, while permanent cycle deletion retains it with a visible explanation. Cycle exports and
+comparison cells read an observable, deduplicated mood history.
+
+CycleRepository's decrypted cache previously keyed only `(id, updated_at)`. Two rapid edits
+can share the same millisecond, leaving a stale DTO after an import or quick log. The cache now
+keeps one entry per record id and compares ciphertext as well as the timestamp before reusing it.
+
+Quick-log taps now resolve their toggles inside the database writer, so two rapid symptom taps
+retain both symptoms and optional observations. A failed bleeding save never offers a period start.

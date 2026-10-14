@@ -15,7 +15,8 @@ export function isBleeding(level: BleedingLevel | null | undefined): boolean {
 }
 
 export function isEmptyDayLog(
-  log: Pick<CycleDayLogDto, 'bleeding' | 'symptoms' | 'noSymptoms' | 'pain' | 'energy' | 'note'>
+  log: Pick<CycleDayLogDto, 'bleeding' | 'symptoms' | 'noSymptoms' | 'pain' | 'energy' | 'note'> &
+    Pick<Partial<CycleDayLogDto>, 'observations'>
 ): boolean {
   return (
     log.bleeding == null &&
@@ -23,7 +24,13 @@ export function isEmptyDayLog(
     !log.noSymptoms &&
     log.pain == null &&
     log.energy == null &&
-    log.note.trim() === ''
+    log.note.trim() === '' &&
+    Object.values(log.observations ?? {}).every(
+      (value) =>
+        value == null ||
+        value === '' ||
+        (typeof value === 'object' && Object.values(value).every((v) => v == null || v === ''))
+    )
   );
 }
 
@@ -143,7 +150,14 @@ export function patchDayLog(
   existing:
     | Pick<
         CycleDayLogDto,
-        'date' | 'bleeding' | 'symptoms' | 'noSymptoms' | 'pain' | 'energy' | 'note'
+        | 'date'
+        | 'bleeding'
+        | 'symptoms'
+        | 'noSymptoms'
+        | 'pain'
+        | 'energy'
+        | 'note'
+        | 'observations'
       >
     | undefined,
   date: number,
@@ -158,6 +172,7 @@ export function patchDayLog(
         pain: existing.pain,
         energy: existing.energy,
         note: existing.note,
+        observations: existing.observations,
       }
     : blankDayLog(date);
 

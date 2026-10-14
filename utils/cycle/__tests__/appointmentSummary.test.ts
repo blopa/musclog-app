@@ -146,3 +146,8 @@ describe('buildAppointmentSummaryHtml', () => {
     expect(escapeHtml(`"&'`)).toBe('&quot;&amp;&#39;');
   });
 });
+
+it('excludes journal observations beyond the appointment range end', () => {
+  const facts = collectSummaryFacts({ ...input, to: day(2) });
+  expect(facts.dayLogs.map((log) => log.date)).toEqual([day(2)]);
+});

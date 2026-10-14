@@ -1,3 +1,6 @@
+import { CycleTransferService } from '@/database/services/CycleTransferService';
+import { serializeCycleTransfer } from '@/utils/cycle/cycleTransfer';
+import { blankDayLog, patchDayLog, stepSymptom } from '@/utils/cycle/dayLog';
 import { Q } from '@nozbe/watermelondb';
 
 import { encryptNumber } from '@/database/encryptionHelpers';
@@ -594,4 +597,218 @@ describe('backup round trip', () => {
     });
     expect(cycle.birthControlType).toBeNull();
   });
+});
+
+// The new journal fields remain in the same encrypted payload and survive old-format defaults.
+describe('cycle journal and shared mood', () => {
+  const blank = (date: number) => ({
+    date,
+    bleeding: null,
+    symptoms: [],
+    noSymptoms: false,
+    pain: null,
+    energy: null,
+    note: '',
+  });
+  it('commits mood and custom observations together, preserves them on a quick edit, and clears both', async () => {
+    await newCycle();
+    const observations = {
+      sleepHours: 0,
+      sex: false,
+      custom: { field: 0 },
+      customLabels: { field: 'Personal field' },
+    };
+    await CycleDayLogService.save({ ...blank(day(1)), observations }, 0);
+    let logs = await readDayLogs(await CycleRepository.dayLogs().fetch());
+    expect(logs[0].observations).toEqual(observations);
+    const mood = await database
+      .get<UserMetric>('user_metrics')
+      .query(Q.where('type', 'mood'))
+      .fetch();
+    expect(await mood[0].getDecrypted()).toMatchObject({ value: 0 });
+    await CycleDayLogService.save({ ...logs[0], bleeding: 'spotting' });
+    logs = await readDayLogs(await CycleRepository.dayLogs().fetch());
+    expect(logs[0].observations).toEqual(observations);
+    expect(await mood[0].getDecrypted()).toMatchObject({ value: 0 });
+    await CycleDayLogService.save(blank(day(1)), null);
+    expect(await CycleRepository.dayLogs().fetch()).toHaveLength(0);
+    expect(
+      await database
+        .get<UserMetric>('user_metrics')
+        .query(Q.where('type', 'mood'), Q.where('deleted_at', Q.eq(null)))
+        .fetch()
+    ).toHaveLength(0);
+  });
+  it('rejects invalid observations before committing a mood or day', async () => {
+    await expect(
+      CycleDayLogService.save({ ...blank(day(1)), observations: { sleepHours: 25 } }, 3)
+    ).rejects.toThrow();
+    expect(await database.get('cycle_day_logs').query().fetch()).toHaveLength(0);
+    expect(await database.get('user_metrics').query().fetch()).toHaveLength(0);
+  });
+  it('keeps shared moods when cycle records are permanently deleted', async () => {
+    await newCycle();
+    await CycleDayLogService.save({ ...blank(day(1)), pain: 5 }, 3);
+    await CycleTrackingService.deleteAll();
+    expect(
+      await database.get<UserMetric>('user_metrics').query(Q.where('type', 'mood')).fetch()
+    ).toHaveLength(1);
+    expect(await database.get('cycle_day_logs').query().fetch()).toHaveLength(0);
+  });
+});
+
+describe('cycle-only merge', () => {
+  it('previews, merges and deduplicates without resetting other data, with encrypted fields and mood', async () => {
+    const id = await newCycle([{ startDate: day(1), endDate: day(5) }]);
+    const cycle = await database.get<MenstrualCycle>('menstrual_cycles').find(id);
+    const config = {
+      fallbackCycleLength: 30,
+      fallbackPeriodDuration: 5,
+      goals: ['mood' as const],
+      customFields: [{ id: 'field', label: 'Recovery', kind: 'number' as const }],
+    };
+    const periods = [{ ...(await livePeriods(id))[0], note: 'imported note' }];
+    const dayLogs = [
+      {
+        ...blankDayLog(day(2)),
+        id: 'export-id',
+        timezone: '+01:00',
+        observations: { custom: { field: 3 }, customLabels: { field: 'Recovery' } },
+      },
+    ];
+    const file = serializeCycleTransfer({
+      config,
+      periods,
+      dayLogs,
+      contexts: [],
+      moods: [{ date: day(2), value: 0 }],
+    });
+    const unrelated = await database.write(() =>
+      database.get<UserMetric>('user_metrics').create((m) => {
+        m.type = 'weight';
+        m.valueRaw = '80';
+        m.date = day(2);
+        m.timezone = '+00:00';
+        m.createdAt = Date.now();
+        m.updatedAt = Date.now();
+      })
+    );
+    expect(await CycleTransferService.preview(cycle, file, 'keep', false)).toMatchObject({
+      added: 2,
+      skipped: 1,
+      updated: 0,
+    });
+    await CycleTransferService.import(cycle, file, 'keep', false);
+    expect(await CycleTransferService.preview(cycle, file, 'keep', false)).toMatchObject({
+      added: 0,
+      skipped: 3,
+    });
+    expect((await livePeriods(id))[0].note).toBe('');
+    await CycleTransferService.import(cycle, file, 'replace', true);
+    expect((await livePeriods(id))[0].note).toBe('imported note');
+    expect((await readDayLogs(await CycleRepository.dayLogs().fetch()))[0].observations).toEqual(
+      dayLogs[0].observations
+    );
+    expect(await readCycleConfig(cycle)).toMatchObject(config);
+    expect(
+      (await database.get<CycleDayLog>('cycle_day_logs').query().fetch())[0].payload
+    ).not.toContain('Recovery');
+    expect(await database.get<UserMetric>('user_metrics').find(unrelated.id)).toBe(unrelated);
+  });
+  it('leaves existing records intact when any part of a file is invalid', async () => {
+    const id = await newCycle([{ startDate: day(1), endDate: day(5) }]);
+    const cycle = await database.get<MenstrualCycle>('menstrual_cycles').find(id);
+    const before = await livePeriods(id);
+    const file = JSON.stringify({
+      format: 'musclog-cycle',
+      version: 1,
+      periods: [],
+      dayLogs: [],
+      contexts: [],
+      moods: [{ date: 'bad date', value: 3 }],
+    });
+    await expect(CycleTransferService.import(cycle, file, 'replace', true)).rejects.toThrow();
+    expect(await livePeriods(id)).toEqual(before);
+    expect(await database.get('user_metrics').query().fetch()).toHaveLength(0);
+  });
+  it('backs up and restores optional preferences and observations through full-app exports', async () => {
+    const id = await newCycle();
+    const cycle = await database.get<MenstrualCycle>('menstrual_cycles').find(id);
+    await CycleTrackingService.updateConfig(cycle, {
+      fallbackCycleLength: 35,
+      fallbackPeriodDuration: 6,
+      goals: ['record'],
+      customSymptoms: ['My symptom'],
+      enabledFields: ['medication'],
+    });
+    await CycleDayLogService.save(
+      { ...blankDayLog(day(1)), observations: { medication: 'Recorded dose' } },
+      2
+    );
+    const exported = await dumpDatabase();
+    await restoreDatabase(exported);
+    const restored = await database.get<MenstrualCycle>('menstrual_cycles').find(id);
+    expect(await readCycleConfig(restored)).toMatchObject({
+      goals: ['record'],
+      customSymptoms: ['My symptom'],
+      enabledFields: ['medication'],
+    });
+    expect((await readDayLogs(await CycleRepository.dayLogs().fetch()))[0].observations).toEqual({
+      medication: 'Recorded dose',
+    });
+  });
+});
+
+it('shows the latest decrypted day after edits with the same millisecond timestamp', async () => {
+  const now = Date.now();
+  const clock = jest.spyOn(Date, 'now').mockReturnValue(now);
+  try {
+    await CycleDayLogService.save({ ...blankDayLog(day(1)), note: 'first edit' });
+    expect((await readDayLogs(await CycleRepository.dayLogs().fetch()))[0].note).toBe('first edit');
+    await CycleDayLogService.save({ ...blankDayLog(day(1)), note: 'second edit' });
+    expect((await readDayLogs(await CycleRepository.dayLogs().fetch()))[0].note).toBe(
+      'second edit'
+    );
+  } finally {
+    clock.mockRestore();
+  }
+});
+
+it('clears shared mood on its recorded calendar day even when its timezone differs', async () => {
+  const date = day(2);
+  const local = new Date(date);
+  const instant = Date.UTC(local.getFullYear(), local.getMonth(), local.getDate()) - 14 * 3600_000;
+  const cipher = await encryptNumber(3);
+  const mood = await database.write(() =>
+    database.get<UserMetric>('user_metrics').create((m) => {
+      m.type = 'mood';
+      m.date = instant;
+      m.timezone = '+14:00';
+      m.valueRaw = cipher;
+      m.createdAt = Date.now();
+      m.updatedAt = Date.now();
+    })
+  );
+  await CycleDayLogService.save(blankDayLog(date), null);
+  expect(mood.deletedAt).toBeGreaterThan(0);
+});
+
+it('merges rapid quick actions without losing another symptom or optional observations', async () => {
+  await CycleDayLogService.save({
+    ...blankDayLog(day(1)),
+    observations: { medication: 'Recorded dose' },
+  });
+  await Promise.all(
+    ['cramps', 'headache'].map((key) =>
+      CycleDayLogService.patch(day(1), (current) =>
+        patchDayLog(current, day(1), {
+          symptoms: stepSymptom(current?.symptoms ?? [], key),
+          noSymptoms: false,
+        })
+      )
+    )
+  );
+  const [log] = await readDayLogs(await CycleRepository.dayLogs().fetch());
+  expect(log.symptoms.map((s) => s.key).sort()).toEqual(['cramps', 'headache']);
+  expect(log.observations).toEqual({ medication: 'Recorded dose' });
 });

@@ -2,11 +2,17 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { Chip } from '@/components/theme/Chip';
-import { BLEEDING_LABEL_KEYS, SEVERITY_LABEL_KEYS, SYMPTOM_LABEL_KEYS } from '@/constants/cycle';
+import { BLEEDING_LABEL_KEYS, SEVERITY_LABEL_KEYS } from '@/constants/cycle';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { useStartPeriodPrompt } from '@/hooks/useStartPeriodPrompt';
-import { BLEEDING_LEVELS, parseQuickLog, patchDayLog, stepSymptom } from '@/utils/cycle/dayLog';
+import {
+  BLEEDING_LEVELS,
+  parseQuickLog,
+  patchDayLog as applyDayLogPatch,
+  stepSymptom,
+} from '@/utils/cycle/dayLog';
+import { cycleSymptomLabel } from '@/utils/cycle/preferences';
 import type { BleedingLevel } from '@/utils/cycle/types';
 import { handleError } from '@/utils/handleError';
 
@@ -22,23 +28,30 @@ type QuickLogRowProps = {
 export function QuickLogRow({ day }: QuickLogRowProps) {
   const { t } = useTranslation();
   const { cycleQuickLogRaw } = useSettings();
-  const { dayLogs, saveDayLog, guidance } = useMenstrualCycle();
+  const { dayLogs, patchDayLog, guidance, config } = useMenstrualCycle();
   const promptStartPeriod = useStartPeriodPrompt();
   const existing = dayLogs.find((log) => log.date === day);
-  const pinned = parseQuickLog(cycleQuickLogRaw);
+  const pinned = config.quickLog ?? parseQuickLog(cycleQuickLogRaw);
 
-  const save = async (patch: Parameters<typeof patchDayLog>[2]) => {
+  const save = async (update: Parameters<typeof patchDayLog>[1]) => {
     try {
-      await saveDayLog(patchDayLog(existing, day, patch));
+      return await patchDayLog(day, update);
     } catch (error) {
-      handleError(error, 'QuickLogRow.save', { snackbarMessage: t('errors.somethingWentWrong') });
+      handleError(error, 'QuickLogRow.save', {
+        sendToSentry: false,
+        snackbarMessage: t('errors.somethingWentWrong'),
+      });
+      return null;
     }
   };
 
   const toggleBleeding = async (level: BleedingLevel) => {
-    const next = existing?.bleeding === level ? null : level;
-    await save({ bleeding: next });
-    promptStartPeriod(day, next);
+    const saved = await save((current) =>
+      applyDayLogPatch(current, day, { bleeding: current?.bleeding === level ? null : level })
+    );
+    if (saved) {
+      promptStartPeriod(day, saved.bleeding);
+    }
   };
 
   return (
@@ -46,7 +59,12 @@ export function QuickLogRow({ day }: QuickLogRowProps) {
       <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
         {t('cycle.quickLog.title')}
       </Text>
-      {guidance.hidePeriodActions ? null : (
+      {guidance.hidePeriodActions ? (
+        <Text className="text-xs text-text-secondary">
+          {t('cycle.personalize.unexpectedBleeding')}
+        </Text>
+      ) : null}
+      {
         <View className="flex-row flex-wrap gap-2">
           {BLEEDING_LEVELS.map((level) => (
             <Chip
@@ -57,14 +75,12 @@ export function QuickLogRow({ day }: QuickLogRowProps) {
             />
           ))}
         </View>
-      )}
+      }
       {pinned.length > 0 ? (
         <View className="flex-row flex-wrap gap-2">
           {pinned.map((key) => {
             const current = existing?.symptoms.find((s) => s.key === key);
-            const name = SYMPTOM_LABEL_KEYS[key]
-              ? t(SYMPTOM_LABEL_KEYS[key])
-              : key.replace(/_/g, ' ');
+            const name = cycleSymptomLabel(key, t);
             const severity = current?.severity
               ? ` · ${t(SEVERITY_LABEL_KEYS[current.severity])}`
               : '';
@@ -76,10 +92,12 @@ export function QuickLogRow({ day }: QuickLogRowProps) {
                 selected={current != null}
                 role="checkbox"
                 onPress={() =>
-                  void save({
-                    symptoms: stepSymptom(existing?.symptoms ?? [], key),
-                    noSymptoms: false,
-                  })
+                  void save((current) =>
+                    applyDayLogPatch(current, day, {
+                      symptoms: stepSymptom(current?.symptoms ?? [], key),
+                      noSymptoms: false,
+                    })
+                  )
                 }
               />
             );

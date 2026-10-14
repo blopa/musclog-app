@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { ContextFields } from '@/components/cycle/ContextFields';
+import { CycleGoals } from '@/components/cycle/CycleGoals';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate } from '@/utils/calendarDate';
-import type { ContraceptionMethod, CycleLifeStage } from '@/utils/cycle/types';
+import type { ContraceptionMethod, CycleGoal, CycleLifeStage } from '@/utils/cycle/types';
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
@@ -18,6 +19,7 @@ export type CycleSetupData = {
   periodDuration: number;
   contraception: ContraceptionMethod;
   lifeStage: CycleLifeStage;
+  goals?: CycleGoal[];
 };
 
 type EditCycleSetupDataProps = {
@@ -48,6 +50,8 @@ export function EditCycleSetupData({
   );
   const [lifeStage, setLifeStage] = useState<CycleLifeStage>(initialData?.lifeStage ?? 'regular');
 
+  const [goals, setGoals] = useState<CycleGoal[]>(initialData?.goals ?? []);
+
   useEffect(() => {
     onFormChange?.({
       lastPeriodStartDate: selectedDate,
@@ -55,13 +59,15 @@ export function EditCycleSetupData({
       periodDuration,
       contraception,
       lifeStage,
+      goals,
     });
-  }, [selectedDate, cycleLength, periodDuration, contraception, lifeStage, onFormChange]);
+  }, [selectedDate, cycleLength, periodDuration, contraception, lifeStage, goals, onFormChange]);
 
   return (
     <>
       <View className="gap-6">
-        {showDatePicker ? (
+        {showContext ? <CycleGoals value={goals} onChange={setGoals} /> : null}
+        {showDatePicker && lifeStage !== 'no_bleeding' ? (
           <View>
             {selectedDate != null ? (
               <DatePickerInput
@@ -95,30 +101,32 @@ export function EditCycleSetupData({
           </View>
         ) : null}
 
-        {/* Cycle lengths */}
-        <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
-            {t('onboarding.cycleSetup.length.cycleLength')}
-          </Text>
-          <View className="flex-row gap-4">
-            <NumericInput
-              label={t('onboarding.cycleSetup.length.cycleLengthLabel')}
-              value={cycleLength.toString()}
-              onChangeText={(value) => setCycleLength(parseInt(value, 10) || 0)}
-              onIncrement={() => setCycleLength((value) => Math.min(45, value + 1))}
-              onDecrement={() => setCycleLength((value) => Math.max(15, value - 1))}
-              unit={t('common.days.label')}
-            />
-            <NumericInput
-              label={t('onboarding.cycleSetup.length.periodDurationLabel')}
-              value={periodDuration.toString()}
-              onChangeText={(value) => setPeriodDuration(parseInt(value, 10) || 0)}
-              onIncrement={() => setPeriodDuration((value) => Math.min(10, value + 1))}
-              onDecrement={() => setPeriodDuration((value) => Math.max(1, value - 1))}
-              unit={t('common.days.label')}
-            />
+        {/* Usual lengths are unnecessary for symptom-only setup. */}
+        {lifeStage !== 'no_bleeding' || !showContext ? (
+          <View>
+            <Text className="mb-3 text-base font-semibold text-text-secondary">
+              {t('onboarding.cycleSetup.length.cycleLength')}
+            </Text>
+            <View className="flex-row gap-4">
+              <NumericInput
+                label={t('onboarding.cycleSetup.length.cycleLengthLabel')}
+                value={cycleLength.toString()}
+                onChangeText={(value) => setCycleLength(parseInt(value, 10) || 0)}
+                onIncrement={() => setCycleLength((value) => Math.min(120, value + 1))}
+                onDecrement={() => setCycleLength((value) => Math.max(15, value - 1))}
+                unit={t('common.days.label')}
+              />
+              <NumericInput
+                label={t('onboarding.cycleSetup.length.periodDurationLabel')}
+                value={periodDuration.toString()}
+                onChangeText={(value) => setPeriodDuration(parseInt(value, 10) || 0)}
+                onIncrement={() => setPeriodDuration((value) => Math.min(30, value + 1))}
+                onDecrement={() => setPeriodDuration((value) => Math.max(1, value - 1))}
+                unit={t('common.days.label')}
+              />
+            </View>
           </View>
-        </View>
+        ) : null}
 
         {showContext ? (
           <ContextFields

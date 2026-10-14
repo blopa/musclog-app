@@ -3,8 +3,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { CyclePreferences } from '@/components/cycle/CyclePreferences';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
 import { CycleLockGate } from '@/components/lock/CycleLockGate';
+import { CyclePortabilityModal } from '@/components/modals/CyclePortabilityModal';
+import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { TextButton } from '@/components/theme/TextButton';
@@ -14,9 +17,10 @@ import { useAppLock } from '@/context/AppLockContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { deleteBackup, getStoredBackups } from '@/database/preMigrationBackup';
 import { SettingsService } from '@/database/services/SettingsService';
+import { useCycleMoods } from '@/hooks/useCycleMoods';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
-import { useSubModalState, useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useSettings } from '@/hooks/useSettings';
+import { useSubModalState, useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import {
   exportDayLogsCsv,
   exportPeriodsCsv,
@@ -93,6 +97,9 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
   const [months, setMonths] = useState<SummaryRangeMonths>(6);
   const [isExporting, setIsExporting] = useState(false);
 
+  const [portabilityOpen, setPortabilityOpen] = useSubModalVisibility(visible);
+  const [dataOpen, setDataOpen] = useSubModalVisibility(visible);
+  const { moods, isLoading: moodsLoading, error: moodsError } = useCycleMoods(visible);
   const tracked = cycle ?? pausedCycle;
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
@@ -108,6 +115,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
     setIsSaving(true);
     await guarded('CycleSettingsModal.save', async () => {
       await updateConfig({
+        ...config,
         fallbackCycleLength: form.cycleLength ?? config.fallbackCycleLength,
         fallbackPeriodDuration: form.periodDuration ?? config.fallbackPeriodDuration,
       });
@@ -254,6 +262,9 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                 </Section>
               ) : null}
 
+              <Section title={t('cycle.personalize.title')}>
+                <CyclePreferences />
+              </Section>
               <Section title={t('cycle.settings.sectionShown')}>
                 <ToggleInput
                   items={[
@@ -351,9 +362,22 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
           {tracked ? (
             <Section title={t('cycle.settings.sectionExport')}>
               <Button
+                label={t('cycle.portability.title')}
+                variant="outline"
+                onPress={() => setPortabilityOpen(true)}
+              />
+              <Button
+                label={t('cycle.portability.fullBackup')}
+                variant="outline"
+                onPress={() => setDataOpen(true)}
+              />
+              <Text className="text-xs text-text-secondary">
+                {t('cycle.portability.fullBackupHint')}
+              </Text>
+              <Button
                 label={t('cycle.settings.exportPeriods')}
                 variant="outline"
-                disabled={isExporting}
+                disabled={isExporting || moodsLoading || moodsError}
                 onPress={() =>
                   runExport('CycleSettingsModal.exportPeriods', () =>
                     exportPeriodsCsv(periods, history)
@@ -363,9 +387,9 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
               <Button
                 label={t('cycle.settings.exportDays')}
                 variant="outline"
-                disabled={isExporting}
+                disabled={isExporting || moodsLoading || moodsError}
                 onPress={() =>
-                  runExport('CycleSettingsModal.exportDays', () => exportDayLogsCsv(dayLogs))
+                  runExport('CycleSettingsModal.exportDays', () => exportDayLogsCsv(dayLogs, moods))
                 }
               />
               <Text className="mt-2 text-sm font-bold text-text-primary">
@@ -385,7 +409,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
               <Button
                 label={t('cycle.settings.summaryCreate')}
                 variant="outline"
-                disabled={isExporting}
+                disabled={isExporting || moodsLoading || moodsError}
                 onPress={() =>
                   runExport('CycleSettingsModal.summary', () =>
                     shareAppointmentSummary({
@@ -393,7 +417,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                       locale,
                       months,
                       nowMs,
-                      data: { periods, history, stats: predictionStats, dayLogs, contexts },
+                      data: { periods, history, stats: predictionStats, dayLogs, contexts, moods },
                     })
                   )
                 }
@@ -430,6 +454,10 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
         </View>
       </CycleLockGate>
 
+      {portabilityOpen ? (
+        <CyclePortabilityModal visible onClose={() => setPortabilityOpen(false)} />
+      ) : null}
+      <DataSettingsModal visible={dataOpen} onClose={() => setDataOpen(false)} />
       <CycleContextModal visible={contextOpen} onClose={() => setContextOpen(false)} />
 
       {active ? (

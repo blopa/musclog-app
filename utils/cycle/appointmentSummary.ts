@@ -35,17 +35,21 @@ export interface SummaryCopy {
   severityLabel: (severity: 1 | 2 | 3) => string;
   contextLine: (context: CycleContextDto) => string;
   painLine: string | null;
+  observationsTitle?: string;
+  observationLines?: string[];
   formatDate: (ms: number) => string;
   formatInteger: (n: number) => string;
 }
 
 export interface SummaryInput {
   from: number;
+  to?: number;
   periods: CyclePeriodDto[];
   history: CycleHistoryEntry[];
   stats: PredictionStats;
   dayLogs: CycleDayLogDto[];
   contexts: CycleContextDto[];
+  moods?: { date: number; value: number }[];
 }
 
 export interface SummaryFacts {
@@ -66,7 +70,9 @@ const MAX_SYMPTOMS = 8;
 export function collectSummaryFacts(input: SummaryInput): SummaryFacts {
   const periods = input.periods.filter((p) => p.startDate >= input.from);
   const history = input.history.filter((h) => h.start >= input.from);
-  const dayLogs = input.dayLogs.filter((d) => d.date >= input.from).sort((a, b) => a.date - b.date);
+  const dayLogs = input.dayLogs
+    .filter((d) => d.date >= input.from && d.date <= (input.to ?? Infinity))
+    .sort((a, b) => a.date - b.date);
   const contexts = input.contexts;
 
   const bleedingDays: SummaryFacts['bleedingDays'] = {};
@@ -136,7 +142,7 @@ export function escapeHtml(text: string): string {
 const e = escapeHtml;
 
 /**
- * A one-to-two page record of what the person logged, for a clinician. It states the data and
+ * An appointment record of what the person logged; length depends on the selected history. It states the data and
  * says it is self-recorded; it never interprets it.
  */
 export function buildAppointmentSummaryHtml(input: SummaryInput, copy: SummaryCopy): string {
@@ -228,6 +234,7 @@ ${section(
 ${section(copy.sections.pain, copy.painLine ? `<p>${e(copy.painLine)}</p>` : '')}
 ${section(copy.sections.notes, noteItems ? `<ul>${noteItems}</ul>` : '')}
 ${section(copy.sections.context, contextItems ? `<ul>${contextItems}</ul>` : '')}
+${section(copy.observationsTitle ?? '', copy.observationLines?.length ? `<ul>${copy.observationLines.map((line) => `<li>${e(line)}</li>`).join('')}</ul>` : '')}
 <p class="disclaimer">${e(copy.disclaimer)}</p>
 </body></html>`;
 }

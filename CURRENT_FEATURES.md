@@ -138,12 +138,14 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 **Logging and history**
 
+- Goal-neutral setup offers bleeding and symptoms, symptoms without periods, or skipping; timing, symptoms, mood and recordkeeping goals are independent and editable
+- Custom symptoms with up to six quick-log favorites; optional daily sleep hours, basal temperature in °C, discharge, medication/dose, sexual activity and tags, plus custom text/number/yes-no fields. Removed fields retain historical values and labels
 - One-tap quick log for bleeding and pinned symptoms, plus a full day sheet: bleeding level, symptoms with mild/moderate/severe severity, "no symptoms today" (kept distinct from an unlogged day), pain 0–10, energy, mood and a note
 - Quick log learns: after a symptom is logged on enough days across cycles it offers to pin it
 - Log a period start or end, or a past period with an explicit end: a date, "I don't remember", or the usual length (stored as an estimate, never as a recorded end)
 - Calendar of logged bleeding, spotting, observations and the predicted window, using different shapes plus a text legend and spoken day descriptions; a list of periods with duration and cycle length
 - Edit a period's start or end, or delete it with undo; statistics and reminders recalculate. Excluded cycles stay visible with the reason, and any cycle can be switched out of the predictions
-- Bleeding logged outside a period offers to start one on that day
+- Bleeding logged outside a period offers to start one on that day; no-bleeding mode keeps unexpected bleeding/spotting logging available without a period-start prompt
 
 **Predictions that say what they know**
 
@@ -155,6 +157,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 **Your own patterns**
 
 - Observations from your records only, each stating how many cycles it rests on and the days behind it: recurring symptoms or pain near the start of a period, cycle length and bleeding duration changes, mood and workout volume near a period start, with a list of the sessions involved
+- Compare up to six cycles by cycle day (up to 60 days) or the fortnight before the next recorded period; filter symptoms or bleeding/pain/energy/mood, tap a cell to edit, and keep missing observations distinct from explicit none
+- Recurring symptoms in the seven days before recorded periods, with the same evidence threshold as near-start patterns
 - No phase-based energy labels, hormone cards or workout intensity multipliers
 
 **Privacy and data**
@@ -162,7 +166,10 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Periods, daily logs, life-stage history and notes are encrypted on the device
 - Optional lock (biometrics or device PIN) for the cycle area only, or the whole app; reminders are discreet by default and never say what they are about unless you choose detailed wording
 - Pause tracking without losing history; delete all cycle data permanently, with an offer to remove local recovery points that could hold a copy
-- Export periods and daily logs as CSV, or a PDF appointment summary for a chosen range; full backups include and restore cycle data, and old backups are converted on restore
+- Shared mood edits and daily observations commit together; clear-day explicitly removes that day's shared mood from Home/Progress too. Permanent cycle deletion keeps shared mood, as disclosed in the confirmation
+- Export periods, daily logs (including shared mood and optional observations) and context history as CSV; appointment PDFs include mood and optional fields
+- Cycle-only versioned JSON export/import includes preferences, context, labels and shared mood history. Imports preview counts, default to keeping existing dates, offer explicit replacement and optional preference restoration, validate dates/duplicates, and skip overlaps with existing periods without resetting other app data
+- Password-protected, authenticated cycle backups with password confirmation, last-prepared status and recovery instructions; readable JSON/CSV/PDF are identified as unprotected. Cycle settings link to full-app backup/restore and local recovery points; full backups include all new fields
 
 ---
 

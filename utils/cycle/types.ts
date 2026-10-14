@@ -69,6 +69,27 @@ export interface CycleDayLogDto {
   pain: number | null;
   energy: number | null;
   note: string;
+  /** Optional observations added after v36; older payloads omit these. */
+  observations?: CycleObservations;
+}
+
+export type CycleGoal = 'timing' | 'symptoms' | 'mood' | 'record';
+export type ObservationField =
+  'sleepHours' | 'temperatureC' | 'discharge' | 'medication' | 'sex' | 'tags';
+export interface CustomCycleField {
+  id: string;
+  label: string;
+  kind: 'text' | 'number' | 'toggle';
+}
+export interface CycleObservations {
+  sleepHours?: number;
+  temperatureC?: number;
+  discharge?: string;
+  medication?: string;
+  sex?: boolean;
+  tags?: string;
+  custom?: Record<string, string | number | boolean>;
+  customLabels?: Record<string, string>;
 }
 
 export type ContraceptionMethod =
@@ -102,4 +123,10 @@ export interface CycleContextDto {
 export interface CycleConfig {
   fallbackCycleLength: number;
   fallbackPeriodDuration: number;
+  goals?: CycleGoal[];
+  customSymptoms?: string[];
+  enabledFields?: ObservationField[];
+  customFields?: CustomCycleField[];
+  quickLog?: string[];
+  pinSuggested?: string[];
 }

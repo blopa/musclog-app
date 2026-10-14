@@ -1,13 +1,15 @@
+import type { Model } from '@nozbe/watermelondb';
 import { Q } from '@nozbe/watermelondb';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { database } from '@/database/database-instance';
-import { clearCycleDtoCache } from '@/database/repositories/CycleRepository';
+import { CYCLE_BACKUP_STATUS_KEY } from '@/constants/cycle';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
+import { database } from '@/database/database-instance';
 import type CycleContext from '@/database/models/CycleContext';
 import type CyclePeriod from '@/database/models/CyclePeriod';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
-import { CycleRepository } from '@/database/repositories/CycleRepository';
+import { clearCycleDtoCache, CycleRepository } from '@/database/repositories/CycleRepository';
 import { SettingsService } from '@/database/services/SettingsService';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 import {
@@ -15,10 +17,9 @@ import {
   type InitialPeriod,
   normalizeInitialPeriods,
 } from '@/utils/cycle/periodRules';
+import { cycleConfigSchema } from '@/utils/cycle/preferences';
 import type { CycleConfig, CycleContextDto } from '@/utils/cycle/types';
 import { getCurrentTimezone } from '@/utils/timezone';
-
-import type { Model } from '@nozbe/watermelondb';
 
 export interface NewCycleInput {
   config: CycleConfig;
@@ -35,6 +36,7 @@ export class CycleTrackingService {
    * the new cycle with its periods and context in ONE batch, so a failure leaves nothing half-made.
    */
   static async create(input: NewCycleInput): Promise<string> {
+    cycleConfigSchema.parse(input.config);
     await primeCycleEncryption();
     const now = Date.now();
     const timezone = getCurrentTimezone();
@@ -136,6 +138,7 @@ export class CycleTrackingService {
   }
 
   static async updateConfig(cycle: MenstrualCycle, config: CycleConfig): Promise<void> {
+    cycleConfigSchema.parse(config);
     await primeCycleEncryption();
     const cipher = await encryptCyclePayload(config);
     await database.write(async () => {
@@ -190,5 +193,6 @@ export class CycleTrackingService {
 
     clearCycleDtoCache();
     await SettingsService.resetCycleSettings();
+    await AsyncStorage.removeItem(CYCLE_BACKUP_STATUS_KEY);
   }
 }

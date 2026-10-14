@@ -77,3 +77,6 @@ export const SEVERITY_LABEL_KEYS = {
   2: 'cycle.severity.moderate',
   3: 'cycle.severity.severe',
 } as const;
+
+/** Device-local bookkeeping; excluded from portable backups. */
+export const CYCLE_BACKUP_STATUS_KEY = 'musclog_cycle_backup_prepared_at';

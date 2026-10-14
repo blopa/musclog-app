@@ -96,13 +96,15 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ### 🌙 Menstrual Cycle Tracking
 
-- Log periods, bleeding, symptoms with severity, pain, energy and mood; correct or delete any entry with undo
-- Calendar and period history, where logged days and estimates look different and are described in words
+- Track bleeding and symptoms or keep a symptom-only journal; choose your goals, custom symptoms, favorite quick actions and optional daily fields
+- Log periods, bleeding, symptoms with severity, pain, energy and shared mood; period deletion has undo, and clearing a daily log explicitly clears that day’s shared mood
+- Calendar, period history and cycle-day comparisons with symptom filters; recorded values, missing days and estimates remain distinct
 - Next-period estimate as a range with an explained confidence level; overdue periods are stated plainly, and predictions can be hidden
 - Optional, off-by-default fertile-window estimate, always labelled as not contraception
 - Birth control and life stage change what is shown (for example, no predicted date on a method that suppresses ovulation)
 - Patterns drawn only from your own records, with the days behind each one; no phase-based workout prescriptions
-- Everything is encrypted on the device, with an optional lock for the cycle area or the whole app, discreet reminders, CSV export and a PDF appointment summary
+- Cycle records are encrypted on the device, with an optional lock, discreet reminders, CSV/JSON exports and an appointment PDF including shared mood
+- Encrypted cycle backups and an import preview that merges records with explicit conflict choices; full-app backup and restore remain available from cycle settings
 - Pause tracking without losing history, or permanently delete all cycle data
 
 ### 📈 Progress & Insights
@@ -110,7 +112,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - Visualize fitness progress with charts and graphs
 - Track body metrics with a smoothed weight trend, editable scale readings, body fat %, and custom measurements
 - Daily and weekly AI-generated insights on workouts and nutrition
-- **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and cycle phase over time
+- **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and days around recorded periods over time
 
 ### 🧠 AI Coach
 

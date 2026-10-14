@@ -1,7 +1,7 @@
 import { Q, type Query } from '@nozbe/watermelondb';
 
-import { database } from '@/database/database-instance';
 import { decryptCyclePayload } from '@/database/cyclePayload';
+import { database } from '@/database/database-instance';
 import type CycleContext from '@/database/models/CycleContext';
 import type CycleDayLog from '@/database/models/CycleDayLog';
 import type CyclePeriod from '@/database/models/CyclePeriod';
@@ -23,21 +23,22 @@ type DayLogPayload = Omit<CycleDayLogDto, 'id'>;
 type ContextPayload = Omit<CycleContextDto, 'id' | 'cycleId'>;
 
 // Decrypting a year of daily logs on every database emission would dominate the screen, and a
-// row's payload only changes together with its updated_at, so (id, updated_at) is a safe key.
-const dtoCache = new Map<string, unknown>();
+// cache also compares the ciphertext: two edits can share a millisecond timestamp. Each id
+// keeps only its latest decrypted version.
+const dtoCache = new Map<string, { payload: string; updatedAt: number; dto: unknown }>();
 
 async function decryptCached<T extends object>(
   record: { id: string; updatedAt: number; payload: string },
   build: (payload: T) => unknown
 ): Promise<unknown | null> {
-  const key = `${record.id}:${record.updatedAt}`;
-  if (dtoCache.has(key)) {
-    return dtoCache.get(key) ?? null;
+  const cached = dtoCache.get(record.id);
+  if (cached && cached.payload === record.payload && cached.updatedAt === record.updatedAt) {
+    return cached.dto ?? null;
   }
 
   const payload = await decryptCyclePayload<T>(record.payload);
   const dto = payload ? build(payload) : null;
-  dtoCache.set(key, dto);
+  dtoCache.set(record.id, { payload: record.payload, updatedAt: record.updatedAt, dto });
 
   return dto;
 }
@@ -96,6 +97,7 @@ export async function readCycleConfig(cycle: MenstrualCycle | null): Promise<Cyc
   const parsed = await decryptCyclePayload<Partial<CycleConfig>>(cycle?.config);
 
   return {
+    ...parsed,
     fallbackCycleLength: parsed?.fallbackCycleLength ?? DEFAULT_CYCLE_CONFIG.fallbackCycleLength,
     fallbackPeriodDuration:
       parsed?.fallbackPeriodDuration ?? DEFAULT_CYCLE_CONFIG.fallbackPeriodDuration,
