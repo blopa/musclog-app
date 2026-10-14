@@ -5,11 +5,7 @@
     "version": "2.13.2",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "web": {
       "output": "static",
       "favicon": "./assets/favicon.png"
@@ -79,12 +75,7 @@
         {
           "android": {
             "minSdkVersion": 26,
-            "buildArchs": [
-              "armeabi-v7a",
-              "arm64-v8a",
-              "x86",
-              "x86_64"
-            ],
+            "buildArchs": ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"],
             "enableMinifyInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true
           },
@@ -114,9 +105,7 @@
       [
         "react-native-android-widget",
         {
-          "fonts": [
-            "./assets/fonts/material.ttf"
-          ],
+          "fonts": ["./assets/fonts/material.ttf"],
           "widgets": [
             {
               "name": "SmartCamera",
@@ -142,8 +131,8 @@
       [
         "@kingstinct/react-native-healthkit",
         {
-          "NSHealthShareUsageDescription": "Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.",
-          "NSHealthUpdateUsageDescription": "Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync."
+          "NSHealthShareUsageDescription": "Musclog reads workouts, nutrition and body measurements, and optionally menstrual bleeding and basal temperature when you request a cycle import.",
+          "NSHealthUpdateUsageDescription": "Musclog writes workouts, nutrition and body metrics, and optionally your manually logged bleeding and basal temperature when you request a cycle export."
         }
       ],
       "expo-secure-store",
@@ -152,9 +141,7 @@
         "react-native-ble-plx",
         {
           "isBackgroundEnabled": false,
-          "modes": [
-            "central"
-          ],
+          "modes": ["central"],
           "neverForLocation": true,
           "bluetoothAlwaysPermission": "Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors"
         }
@@ -163,9 +150,7 @@
     ],
     "orientation": "default",
     "icon": "./assets/theme-icons/icon-bg-kinetic-depth.png",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "icon": "./assets/theme-icons/opaque/icon-bg-kinetic-depth.png",
       "backgroundColor": "#091310",
@@ -177,10 +162,7 @@
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
         "NSLocationWhenInUseUsageDescription": "Musclog does not use your location. This permission string is required because a bundled SDK references location APIs.",
-        "UIBackgroundModes": [
-          "fetch",
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["fetch", "remote-notification"]
       }
     },
     "android": {
@@ -214,7 +196,13 @@
         "android.permission.health.WRITE_DISTANCE",
         "android.permission.health.READ_LEAN_BODY_MASS",
         "android.permission.health.WRITE_LEAN_BODY_MASS",
-        "android.permission.health.READ_HEALTH_DATA_HISTORY"
+        "android.permission.health.READ_HEALTH_DATA_HISTORY",
+        "android.permission.health.READ_MENSTRUATION",
+        "android.permission.health.WRITE_MENSTRUATION",
+        "android.permission.health.READ_BASAL_BODY_TEMPERATURE",
+        "android.permission.health.WRITE_BASAL_BODY_TEMPERATURE",
+        "android.permission.health.READ_INTERMENSTRUAL_BLEEDING",
+        "android.permission.health.WRITE_INTERMENSTRUAL_BLEEDING"
       ]
     },
     "extra": {

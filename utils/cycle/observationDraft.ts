@@ -6,7 +6,9 @@ export type ObservationDraft = Record<string, string | boolean>;
 export function observationDraft(observations: CycleObservations = {}): ObservationDraft {
   const { custom } = observations;
   const fields = Object.fromEntries(
-    Object.entries(observations).filter(([key]) => key !== 'custom' && key !== 'customLabels')
+    Object.entries(observations).filter(
+      ([key]) => key !== 'custom' && key !== 'customLabels' && key !== 'health'
+    )
   );
   return Object.fromEntries(
     Object.entries({
@@ -24,7 +26,7 @@ export function resolveObservationDraft(
   config: CycleConfig,
   original: CycleObservations = {}
 ): CycleObservations {
-  const observations: CycleObservations = {};
+  const observations: CycleObservations = original.health ? { health: original.health } : {};
   const custom: Record<string, string | number | boolean> = {};
   for (const [key, value] of Object.entries(draft)) {
     if (value === '') {
@@ -39,13 +41,27 @@ export function resolveObservationDraft(
     const number =
       key === 'sleepHours' ||
       key === 'temperatureC' ||
+      key === 'impact' ||
       (key.startsWith('custom:') &&
         config.customFields?.find((f) => f.id === id)?.kind === 'number') ||
+      (key.startsWith('custom:') &&
+        config.customFields?.find((f) => f.id === id)?.kind === 'rating') ||
       (key.startsWith('custom:') && typeof original.custom?.[id] === 'number');
     const parsed = number
       ? Number(typeof value === 'string' ? value.replace(',', '.') : value)
       : value;
     if (key.startsWith('custom:')) {
+      const field = config.customFields?.find((f) => f.id === id);
+      if (
+        field?.kind === 'rating' &&
+        (typeof parsed !== 'number' ||
+          !Number.isInteger(parsed) ||
+          parsed < (field.min ?? 0) ||
+          parsed > (field.max ?? 10))
+      ) {
+        throw new Error('invalid_rating');
+      }
+
       custom[id] = parsed;
     } else {
       Object.assign(observations, { [key]: parsed });

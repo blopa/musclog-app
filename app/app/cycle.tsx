@@ -7,9 +7,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { ContextTimeline } from '@/components/cycle/ContextTimeline';
 import { CycleCalendar } from '@/components/cycle/CycleCalendar';
+import { CycleCareCard } from '@/components/cycle/CycleCareCard';
 import { CycleComparison } from '@/components/cycle/CycleComparison';
 import { CycleDaySheet } from '@/components/cycle/CycleDaySheet';
 import { CycleInsightsCard } from '@/components/cycle/CycleInsightsCard';
+import { CycleTrends } from '@/components/cycle/CycleTrends';
 import { DayLogSummary } from '@/components/cycle/DayLogSummary';
 import { PeriodHistoryList } from '@/components/cycle/PeriodHistoryList';
 import { PinSuggestionCard } from '@/components/cycle/PinSuggestionCard';
@@ -20,6 +22,7 @@ import { DateNavigator } from '@/components/DateNavigator';
 import { CycleLockGate } from '@/components/lock/CycleLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import { CycleContextModal } from '@/components/modals/CycleContextModal';
+import { CyclePortabilityModal } from '@/components/modals/CyclePortabilityModal';
 import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import { EditPeriodModal } from '@/components/modals/EditPeriodModal';
 import { PeriodLogModal } from '@/components/modals/PeriodLogModal';
@@ -42,7 +45,7 @@ import {
 } from '@/utils/calendarDate';
 import type { CycleContextDto, CyclePeriodDto } from '@/utils/cycle/types';
 
-type HistoryTab = 'calendar' | 'history' | 'comparison';
+type HistoryTab = 'calendar' | 'history' | 'comparison' | 'trends';
 
 export default function CycleScreen() {
   const theme = useTheme();
@@ -66,6 +69,7 @@ export default function CycleScreen() {
     dayLogs,
     contexts,
     guidance,
+    config,
     nowMs,
   } = useMenstrualCycle();
 
@@ -73,6 +77,7 @@ export default function CycleScreen() {
   const [tab, setTab] = useState<HistoryTab>('calendar');
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
   const [daySheetOpen, setDaySheetOpen] = useState(false);
+  const [restoreOpen, setRestoreOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [periodMode, setPeriodMode] = useState<PeriodLogMode>('start');
@@ -104,6 +109,10 @@ export default function CycleScreen() {
   const dayCounter = () => {
     if (cycleDay == null) {
       return '--';
+    }
+
+    if (config.cycleLengthKnown === false && predictionStats.usableCount === 0) {
+      return formatInteger(cycleDay);
     }
 
     const padded = cycleDay.toString().padStart(2, '0');
@@ -148,6 +157,10 @@ export default function CycleScreen() {
                       ? t('cycle.noData.pausedDescription')
                       : t('cycle.noData.description')}
                   </Text>
+                  <TextButton
+                    label={t('cycle.complete.restoreFirst')}
+                    onPress={() => setRestoreOpen(true)}
+                  />
                   <View className="mt-6 w-full">
                     <Button
                       label={pausedCycle ? t('cycle.noData.resume') : t('cycle.noData.start')}
@@ -159,39 +172,42 @@ export default function CycleScreen() {
                 </View>
               ) : (
                 <>
-                  <View className="mb-6 flex-row items-center justify-between">
-                    <View className="rounded-2xl bg-bg-overlay px-4 py-3">
-                      <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
-                        {t('focus.day')}
-                      </Text>
-                      <Text className="text-2xl font-black text-accent-primary">
-                        {dayCounter()}
-                      </Text>
-                      {isOverdue ? (
-                        <Text className="text-xs text-text-tertiary">
-                          {t('cycle.periodNotLogged')}
-                        </Text>
-                      ) : null}
-                    </View>
-                    <View className="items-end">
-                      <Text className="text-sm font-bold uppercase tracking-widest text-accent-primary">
-                        {t('focus.currentPhase')}
-                      </Text>
-                      <Text className="text-2xl font-black capitalize text-text-primary">
-                        {currentPhase ? t(`cycle.phase.${currentPhase}`) : '--'}
-                      </Text>
-                    </View>
-                  </View>
+                  {cycleDay != null && !guidance.hidePeriodActions ? (
+                    <>
+                      <View className="mb-6 flex-row items-center justify-between">
+                        <View className="rounded-2xl bg-bg-overlay px-4 py-3">
+                          <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                            {t('focus.day')}
+                          </Text>
+                          <Text className="text-2xl font-black text-accent-primary">
+                            {dayCounter()}
+                          </Text>
+                          {isOverdue ? (
+                            <Text className="text-xs text-text-tertiary">
+                              {t('cycle.periodNotLogged')}
+                            </Text>
+                          ) : null}
+                        </View>
+                        <View className="items-end">
+                          <Text className="text-sm font-bold uppercase tracking-widest text-accent-primary">
+                            {t('focus.currentPhase')}
+                          </Text>
+                          <Text className="text-2xl font-black capitalize text-text-primary">
+                            {currentPhase ? t(`cycle.phase.${currentPhase}`) : '--'}
+                          </Text>
+                        </View>
+                      </View>
 
-                  <View className="mb-8 items-center justify-center">
-                    <PhaseWheel
-                      currentPhase={currentPhase}
-                      cycleDay={cycleDay ?? 1}
-                      totalDays={avgCycleLength}
-                      segments={timeline?.segments ?? null}
-                    />
-                  </View>
-
+                      <View className="mb-8 items-center justify-center">
+                        <PhaseWheel
+                          currentPhase={currentPhase}
+                          cycleDay={cycleDay ?? 1}
+                          totalDays={avgCycleLength}
+                          segments={timeline?.segments ?? null}
+                        />
+                      </View>
+                    </>
+                  ) : null}
                   {guidance.hidePeriodActions ? null : (
                     <View className="mb-6 gap-3">
                       {isCurrentlyInPeriod ? (
@@ -260,6 +276,7 @@ export default function CycleScreen() {
 
                   <PinSuggestionCard />
                   <CycleInsightsCard />
+                  <CycleCareCard day={day} onAppointment={() => setSettingsOpen(true)} />
 
                   <View className="mb-4 flex-row items-center justify-between">
                     <Text className="text-2xl font-bold text-text-primary">
@@ -281,12 +298,21 @@ export default function CycleScreen() {
                         { label: t('cycle.history.tabCalendar'), value: 'calendar' },
                         { label: t('cycle.history.tabHistory'), value: 'history' },
                         { label: t('cycle.comparison.tab'), value: 'comparison' },
+                        { label: t('cycle.complete.trends'), value: 'trends' },
                       ]}
                       value={tab}
                       onValueChange={(value) => setTab(value as HistoryTab)}
                     />
                   </View>
 
+                  {tab === 'trends' ? (
+                    <CycleTrends
+                      onSelectDay={(selected) => {
+                        setSelectedDate(new Date(selected));
+                        setDaySheetOpen(true);
+                      }}
+                    />
+                  ) : null}
                   {tab === 'calendar' ? (
                     <CycleCalendar
                       periods={periods}
@@ -338,6 +364,7 @@ export default function CycleScreen() {
         </KeyboardAwareScrollView>
       </CycleLockGate>
 
+      <CyclePortabilityModal visible={restoreOpen} onClose={() => setRestoreOpen(false)} />
       <CycleDaySheet visible={daySheetOpen} onClose={() => setDaySheetOpen(false)} day={day} />
       <PeriodLogModal
         visible={periodModalOpen}

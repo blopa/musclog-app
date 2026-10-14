@@ -124,3 +124,25 @@ it('finds symptoms a week before bleeding using recorded periods, not predicted 
     )
   ).toBe(false);
 });
+
+it('finds personal sleep and energy differences only with sufficient recorded comparisons', () => {
+  const logs = [0, 28, 56].flatMap((start) => [
+    { ...symptomLog(start, 'fatigue'), energy: 1, observations: { sleepHours: 6 } },
+    ...[5, 6, 7].map((offset) => ({
+      ...symptomLog(start + offset, 'fatigue'),
+      energy: 4,
+      observations: { sleepHours: 8 },
+    })),
+  ]);
+  const insights = computeInsights({ periods, history: history(), dayLogs: logs });
+  expect(insights.find((i) => i.kind === 'energy_near_start')?.params).toEqual({
+    hits: 3,
+    total: 3,
+  });
+  expect(insights.find((i) => i.kind === 'sleep_near_start')?.evidence.days).toContain(day(7));
+  expect(
+    computeInsights({ periods, history: history(), dayLogs: logs.slice(0, 8) }).some(
+      (i) => i.kind === 'sleep_near_start'
+    )
+  ).toBe(false);
+});

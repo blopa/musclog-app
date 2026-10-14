@@ -45,6 +45,7 @@ export function buildCycleSnapshot(input: {
   });
   const stats = computePredictionStats(history, {
     avgCycleLength: config.fallbackCycleLength,
+    cycleLengthKnown: config.cycleLengthKnown,
     avgPeriodDuration: config.fallbackPeriodDuration,
   });
   const timeline = computeCycleTimeline(periods, stats, {

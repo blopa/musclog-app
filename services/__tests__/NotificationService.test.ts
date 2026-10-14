@@ -292,6 +292,32 @@ describe('cycle reminders', () => {
     expect(subtypes).toEqual(['period-start']);
   });
 
+  it('serializes overlapping scheduling requests so cancellation cannot leave duplicate reminders', async () => {
+    arrange(onTrack, 'discreet');
+    let started!: () => void;
+    let release!: (value: []) => void;
+    const began = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    const pending = new Promise<[]>((resolve) => {
+      release = resolve;
+    });
+    mockNotifications.getAllScheduledNotificationsAsync.mockImplementationOnce(() => {
+      started();
+      return pending;
+    });
+    mockNotifications.getAllScheduledNotificationsAsync.mockClear();
+    const first = NotificationService.scheduleMenstrualCycleNotifications();
+    const second = NotificationService.scheduleMenstrualCycleNotifications();
+    await began;
+    const readsWhileFirstPending =
+      mockNotifications.getAllScheduledNotificationsAsync.mock.calls.length;
+    release([]);
+    await Promise.all([first, second]);
+    expect(readsWhileFirstPending).toBe(1);
+    expect(mockNotifications.getAllScheduledNotificationsAsync).toHaveBeenCalledTimes(2);
+  });
+
   it('schedules nothing for a period that is overdue', async () => {
     arrange([period('a', 120), period('b', 92), period('c', 64)], 'detailed');
     await NotificationService.scheduleMenstrualCycleNotifications();

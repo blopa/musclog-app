@@ -1,3 +1,4 @@
+import { CycleHealthImportService } from '@/database/services/CycleHealthImportService';
 import { CycleTransferService } from '@/database/services/CycleTransferService';
 import { serializeCycleTransfer } from '@/utils/cycle/cycleTransfer';
 import { blankDayLog, patchDayLog, stepSymptom } from '@/utils/cycle/dayLog';
@@ -811,4 +812,93 @@ it('merges rapid quick actions without losing another symptom or optional observ
   const [log] = await readDayLogs(await CycleRepository.dayLogs().fetch());
   expect(log.symptoms.map((s) => s.key).sort()).toEqual(['cramps', 'headache']);
   expect(log.observations).toEqual({ medication: 'Recorded dose' });
+});
+
+describe('complete cycle recovery and imported provenance', () => {
+  it('restores a cycle onto a fresh installation in one commit without placeholder setup', async () => {
+    const incoming = serializeCycleTransfer({
+      config: {
+        fallbackCycleLength: 31,
+        fallbackPeriodDuration: 5,
+        cycleLengthKnown: false,
+        backupReminderDays: 30,
+      },
+      periods: [
+        {
+          id: 'old',
+          cycleId: 'old',
+          timezone: '+00:00',
+          startDate: day(1),
+          endDate: day(5),
+          endKind: 'logged',
+          excludedFromStats: false,
+          confirmedLongCycle: true,
+          note: '',
+        },
+      ],
+      contexts: [],
+      moods: [],
+      dayLogs: [],
+    });
+    const preview = await CycleTransferService.preview(null, incoming, 'keep', true);
+    expect(preview.added).toBe(1);
+    await CycleTransferService.import(null, incoming, 'keep', true);
+    const cycles = await CycleRepository.cycles().fetch();
+    expect(cycles).toHaveLength(1);
+    expect(cycles[0].isActive).toBe(true);
+    expect(await readCycleConfig(cycles[0])).toMatchObject({
+      cycleLengthKnown: false,
+      backupReminderDays: 30,
+    });
+    expect((await livePeriods(cycles[0].id))[0].confirmedLongCycle).toBe(true);
+  });
+  it('does not create an empty cycle when the recovery file is invalid', async () => {
+    await expect(CycleTransferService.import(null, '{"bad":true}', 'keep', true)).rejects.toThrow();
+    expect(await CycleRepository.cycles().fetch()).toHaveLength(0);
+  });
+  it('preserves a confirmed long cycle when editing its note', async () => {
+    const cycleId = await newCycle([{ startDate: day(1), endDate: day(5) }]);
+    const [period] = await livePeriods(cycleId);
+    await CyclePeriodService.update(period.id, { confirmedLongCycle: true });
+    await CyclePeriodService.update(period.id, { note: 'correct history' });
+    expect((await livePeriods(cycleId))[0].confirmedLongCycle).toBe(true);
+  });
+});
+
+it('imports health provenance atomically without replacing manual fields, including across re-imports', async () => {
+  await newCycle();
+  await CycleDayLogService.save({
+    ...blankDayLog(day(2)),
+    pain: 0,
+    note: 'manual',
+    observations: { temperatureC: 36.2 },
+  });
+  await CycleHealthImportService.import([
+    { date: day(2), id: 'h', source: 'healthkit', kind: 'temperatureC', value: 36.5 },
+  ]);
+  await CycleHealthImportService.import([
+    { date: day(2), id: 'h', source: 'healthkit', kind: 'temperatureC', value: 36.6 },
+  ]);
+  const logs = await readDayLogs(await CycleRepository.dayLogs().fetch());
+  expect(logs).toHaveLength(1);
+  expect(logs[0]).toMatchObject({
+    pain: 0,
+    note: 'manual',
+    observations: { temperatureC: 36.2, health: [{ id: 'h', value: 36.6 }] },
+  });
+  expect(await CycleRepository.allPeriods().fetch()).toHaveLength(0);
+});
+
+it('retains newly imported observations when a stale manual day form is saved', async () => {
+  await newCycle();
+  const stale = { ...blankDayLog(day(2)), pain: 2 };
+  await CycleDayLogService.save(stale);
+  await CycleHealthImportService.import([
+    { date: day(2), id: 'h', source: 'healthkit', kind: 'temperatureC', value: 36.6 },
+  ]);
+  await CycleDayLogService.save({ ...stale, pain: 4 });
+  const [log] = await readDayLogs(await CycleRepository.dayLogs().fetch());
+  expect(log.observations?.health?.[0].value).toBe(36.6);
+  await CycleDayLogService.save(blankDayLog(day(2)));
+  expect(await readDayLogs(await CycleRepository.dayLogs().fetch())).toHaveLength(0);
 });

@@ -70,8 +70,14 @@ export class CycleDayLogService {
       dtos.some((d) => d.id === r.id && localDayStartFromUtcMs(d.date) === date)
     );
     const [keep, ...duplicates] = matching;
+    const stored = keep ? dtos.find((d) => d.id === keep.id) : undefined;
+    const observations =
+      stored?.observations?.health && !isEmptyDayLog(input)
+        ? { ...input.observations, health: stored.observations.health }
+        : input.observations;
     const payload: DayLogPayload = {
       ...input,
+      observations,
       date,
       timezone: getCurrentTimezone(),
       note: input.note.trim(),

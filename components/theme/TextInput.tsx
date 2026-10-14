@@ -20,6 +20,7 @@ type TestInputProps = {
   inputMode?: InputModeOptions;
   icon?: ReactNode;
   secureTextEntry?: boolean;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   required?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -47,6 +48,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
       keyboardType = 'default',
       icon,
       secureTextEntry,
+      autoCapitalize,
       onFocus,
       onBlur,
       required = false,
@@ -125,6 +127,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
           >
             <RNTextInput
               ref={inputRef}
+              accessibilityLabel={typeof label === 'string' ? label : undefined}
               className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
               placeholder={placeholder}
               placeholderTextColor={theme.colors.text.tertiary}
@@ -133,6 +136,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               inputMode={inputMode}
               keyboardType={keyboardType}
               secureTextEntry={secureTextEntry}
+              autoCapitalize={autoCapitalize}
               onFocus={() => {
                 handleFocus();
                 if (Platform.OS === 'android' && selectTextOnFocus) {
@@ -176,6 +180,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
           >
             <RNTextInput
               ref={inputRef}
+              accessibilityLabel={typeof label === 'string' ? label : undefined}
               className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
               placeholder={placeholder}
               placeholderTextColor={theme.colors.text.tertiary}
@@ -184,6 +189,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               inputMode={inputMode}
               keyboardType={keyboardType}
               secureTextEntry={secureTextEntry}
+              autoCapitalize={autoCapitalize}
               onFocus={() => {
                 handleFocus();
                 if (Platform.OS === 'android' && selectTextOnFocus) {

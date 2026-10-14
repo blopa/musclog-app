@@ -96,10 +96,13 @@ collects.
 
 ### Cycle tracking follow-ups
 
-- Import a cycle history from other trackers (Clue, Flo, Apple Health CSV exports) as a wizard.
-- Read and write menstruation and basal temperature through Health Connect / HealthKit, kept separable from self-reports.
-- Custom bounded rating scales beyond the current text/number/yes-no fields; searching the log in natural language on-device.
-- Optional partner sharing of explicitly selected fields; pregnancy and postpartum modes.
+- Native parsers for proprietary Clue/Flo archives and Apple Health XML, beyond the current CSV column-mapping wizard.
+- Optional automatic client-encrypted backup to user-owned storage (WebDAV, Google Drive or iCloud) and conflict-aware multi-device sync. Backups remain manual for now, per user preference.
+- Automatic wearable integrations for additional sleep/HR/HRV/skin-temperature signals; imported basal temperature remains distinct from skin temperature.
+- On-device natural-language history queries beyond the current local all-word search.
+- Clinically reviewed condition-specific modules and validated PMS/PMDD questionnaires; the current presets are general diaries, not validated diagnostic instruments.
+- Full pregnancy care and postpartum/breastfeeding journeys, beyond the current quiet life-stage contexts, symptom diary and authoritative education links.
+- Revocable live partner access with per-field permission controls, beyond current selected-field file sharing.
 - A decoy screen and auto-delete for high-risk threat models, beyond the existing app lock.
 - Cycle data in the AI coach, only as an explicit opt-in per conversation and never by default.
 

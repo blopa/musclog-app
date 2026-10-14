@@ -259,7 +259,8 @@
         "possible_missed_period": "veel langer dan je andere cycli, mogelijk een gemiste menstruatie",
         "user_excluded": "je hebt het uitgesloten",
         "hormonal_context": "er werd een hormonale methode gebruikt",
-        "postpartum_context": "cycli na de bevalling tellen niet mee"
+        "postpartum_context": "cycli na de bevalling tellen niet mee",
+        "life_context": "situatie zonder natuurlijke menstruatievoorspelling"
       }
     },
     "insights": {
@@ -383,13 +384,19 @@
         "discharge": "Afscheiding / cervixslijm",
         "medication": "Medicatie en dosis",
         "sex": "Seksuele activiteit",
-        "tags": "Tags"
+        "tags": "Tags",
+        "impact": "Invloed op dagelijks leven",
+        "leakage": "Doorlekken naar kleding of beddengoed",
+        "clots": "Bloedstolsels",
+        "lhTest": "Ovulatietest (LH)",
+        "pregnancyTest": "Zwangerschapstest"
       },
       "customField": "Nieuw eigen veld",
       "kinds": {
         "text": "Tekst",
         "number": "Getal",
-        "toggle": "Ja / nee"
+        "toggle": "Ja / nee",
+        "rating": "Begrensde score"
       },
       "removeHint": "Als je een veld verwijdert, blijven eerdere waarden in de geschiedenis en exports bewaard.",
       "saving": "Opslaan…",
@@ -456,6 +463,131 @@
       "unlogged": "Niet vastgelegd",
       "unrated": "Aanwezig, niet beoordeeld",
       "limitHint": "Toont je laatste zes cycli, maximaal 60 dagen na een start of 14 dagen vóór de volgende vastgelegde start. Lege dagen blijven leeg."
+    },
+    "complete": {
+      "confirmLong": "Deze langere cyclus klopt",
+      "unknownLength": "Ik weet mijn gebruikelijke cyclusduur niet",
+      "rangeHeuristic": "Dit bereik is een schatting uit je geschiedenis, geen kansinterval of bevestigde ovulatiedatum.",
+      "backtest": "Terugblik: {{hits}} van {{checked}} latere starts vielen binnen het bereik; gemiddelde afwijking {{error}} dagen. Dit is geen klinische validatie.",
+      "restoreFirst": "Mijn geschiedenis herstellen of importeren",
+      "careTitle": "Je symptomen begrijpen",
+      "careHint": "Algemene informatie van NHS en RCOG. Registratie is geen diagnose. Bespreek klachten die je zorgen baren of je dagelijks leven beïnvloeden met een zorgverlener; zoek spoedzorg bij ernstige of snel verergerende klachten.",
+      "education": {
+        "bleeding": "Hevig bloedverlies — NHS (Engels)",
+        "pain": "Menstruatiepijn — NHS (Engels)",
+        "unexpected": "Onverwacht bloedverlies — NHS (Engels)",
+        "pms": "PMS en symptoomdagboeken — RCOG (Engels)",
+        "menopause": "Perimenopauze en menopauze — NHS (Engels)",
+        "pregnancy": "Informatie over zwangerschap — NHS (Engels)",
+        "postpartum": "Herstel na de bevalling — NHS (Engels)",
+        "pregnancy_loss": "Informatie over zwangerschapsverlies — NHS (Engels)"
+      },
+      "trends": "Trends en zoeken",
+      "trendsHint": "Bekijk je geregistreerde dagen, ook zonder menstruaties. Dit zijn waarnemingen, geen verklaringen voor veranderingen.",
+      "lastDays": "Laatste {{days}} dagen",
+      "summary": "{{logged}} geregistreerde dagen · {{heavy}} dagen hevig bloedverlies · {{spotting}} dagen spotting · {{impact}} dagen met invloed op dagelijks leven",
+      "recap": "Sinds de geregistreerde start op {{date}}: {{logged}} geregistreerde dagen, {{heavy}} dagen hevig bloedverlies, {{impact}} dagen met invloed op dagelijks leven.",
+      "symptomSummary": "{{symptom}}: {{days}} geregistreerde dagen, {{severe}} als ernstig beoordeeld",
+      "loggedOnly": "Alleen geregistreerde waarden worden getoond. Ontbrekende dagen zijn onbekend. De laatste 30 waarden staan hieronder.",
+      "noObservations": "Geen passende waarnemingen in dit bereik.",
+      "contextChanged": "Situatie gewijzigd op {{date}} — bekijk de geschiedenis.",
+      "search": "Zoek in je gegevens",
+      "searchHint": "Zoek symptomen, notities, medicatie, tags of eigen waarden. Alle woorden moeten overeenkomen. Zoeken blijft op dit apparaat; maximaal 50 dagen worden getoond.",
+      "metrics": {
+        "pain": "Pijn (0–10)",
+        "energy": "Energie (1–5)",
+        "mood": "Stemming (0–4)",
+        "sleepHours": "Slaap (uren)",
+        "temperatureC": "Basale temperatuur (°C)",
+        "impact": "Invloed op dagelijks leven (0–3)",
+        "bleeding": "Bloedverlies",
+        "symptoms": "Symptomen",
+        "note": "Notities",
+        "importedTemperatureC": "Geïmporteerde basale temperatuur (°C)"
+      },
+      "reminders": {
+        "hour": "Uur (0–23)",
+        "minute": "Minuut (0–59)",
+        "leadDays": "Dagen vóór menstruatie",
+        "period": "Herinnering voorspelde menstruatie",
+        "fertility": "Herinnering vruchtbare periode (indien ingeschakeld)",
+        "daily": "Dagelijkse herinnering om te registreren",
+        "endCheck": "Controleer menstruatie die na 7 dagen nog bezig is"
+      },
+      "backupDays": "Interval back-upherinnering (dagen; 0 schakelt uit)",
+      "remindersHint": "Tijden gebruiken je lokale klok. Dagelijkse herinneringen gelden voor 28 dagen en worden vernieuwd bij het openen van de app. Meldingen moeten ook in app- en apparaatinstellingen aanstaan.",
+      "notification": {
+        "daily-log": "Registreer vandaag als je dat wilt.",
+        "end-check": "Is de menstruatie die je als bezig markeerde nog gaande? Werk de einddatum bij wanneer je wilt.",
+        "backup": "Overweeg een versleutelde back-up van je gegevens."
+      },
+      "importTitle": "Geschiedenis uit een andere tracker importeren",
+      "importHint": "{{rows}} CSV-rijen. Kolommen: {{columns}}. Vul hieronder de exacte kolomnamen in; laat optionele velden leeg. Deze wizard accepteert CSV, geen eigen archiefformaten.",
+      "importColumns": {
+        "date": "Kolom datum/start",
+        "end": "Kolom einddatum (optioneel)",
+        "flow": "Kolom bloedverlies (optioneel)",
+        "temperature": "Kolom temperatuur in °C (optioneel)",
+        "symptoms": "Kolom symptomen (gescheiden door puntkomma)",
+        "note": "Kolom notities (optioneel)"
+      },
+      "dateOrder": {
+        "iso": "JJJJ-MM-DD",
+        "dmy": "Dag/maand/jaar",
+        "mdy": "Maand/dag/jaar"
+      },
+      "importPeriods": "Elke rij is een menstruatiestart (geen dagregistratie)",
+      "importError": "Controleer kolomnamen, datumvolgorde en waarden. Bloedverlies accepteert none, spotting, light, medium, heavy of very_heavy; temperatuur moet in °C zijn. Dubbele starts en ongeldige datums worden geweigerd.",
+      "previewImport": "Importvoorbeeld bekijken",
+      "healthTitle": "Cyclusgegevens in je gezondheidsopslag",
+      "healthHint": "Lees bloedverlies en basale temperatuur met je toestemming. Imports behouden hun bron en vervangen nooit handmatige registraties of menstruatiestarts. Historische toegang kan per platform beperkt zijn.",
+      "healthRead": "Lezen en bekijken",
+      "healthPreview": "{{count}} waarnemingen beschikbaar. Opnieuw importeren werkt alleen de kopieën met dezelfde bron-ID bij.",
+      "healthImport": "Deze waarnemingen importeren",
+      "healthWrite": "Handmatig bloedverlies en temperatuur exporteren",
+      "healthWriteHint": "Dit schrijft handmatig bloedverlies en basale temperatuur in het gekozen bereik naar je gezondheidsopslag. Andere apps met toestemming kunnen dit lezen. Imports, symptomen, stemming, medicatie, seks en notities zijn uitgesloten. Zeer hevig wordt als hevig geëxporteerd.",
+      "healthDone": "Geïmporteerde waarnemingen opgeslagen.",
+      "healthWritten": "{{count}} gezondheidsgegevens geschreven.",
+      "healthError": "Toegang mislukt of toestemming geweigerd. Controleer de gezondheidsrechten en probeer opnieuw. Een mislukte export kan enkele records hebben geschreven; opnieuw proberen werkt Musclogs eigen records bij.",
+      "importedValue": "Geïmporteerd uit {{source}}: {{value}}",
+      "sharing": "Geselecteerde gegevens delen",
+      "sharingHint": "Kies precies wat je wilt delen. Dit maakt een leesbaar JSON-bestand voor het gekozen bereik. De ontvanger kan het bewaren of doorsturen; dit is geen live toegang en kan niet worden ingetrokken. Niets is standaard geselecteerd.",
+      "shareSelected": "Geselecteerde velden exporteren",
+      "presets": "Optionele dagboekinstellingen",
+      "presetsHint": "Voeg nuttige velden toe en vul vrije favorietenplekken. Je geschiedenis en bestaande favorieten blijven behouden.",
+      "preset": {
+        "pms": "PMS-/stemmingsdagboek instellen",
+        "fertility": "Vruchtbaarheidswaarnemingen toevoegen",
+        "perimenopause": "Perimenopauzewaarnemingen toevoegen"
+      },
+      "pmsDiaryHint": "Een dagelijks symptoom- en impactdagboek over twee opeenvolgende cycli kan een gesprek over PMS ondersteunen. Dit is geen gevalideerde PMDD-vragenlijst en stelt geen diagnose.",
+      "fertilityHint": "Temperatuur, afscheiding en testresultaten zijn alleen waarnemingen. Ze bevestigen geen ovulatie en maken kalenderschattingen niet geschikt voor anticonceptie.",
+      "impact": {
+        "0": "Geen invloed",
+        "1": "Enige hinder",
+        "2": "Activiteiten beperkt",
+        "3": "Gewone activiteiten niet mogelijk"
+      },
+      "tests": {
+        "negative": "Negatief",
+        "positive": "Positief",
+        "unclear": "Onduidelijk"
+      },
+      "stagePregnancy": "Zwangerschap",
+      "stagePregnancyHint": "Menstruatie- en vruchtbaarheidsvoorspellingen zijn gepauzeerd. Bewaar je symptomen en wijzig je situatie wanneer je wilt.",
+      "stageLoss": "Na zwangerschapsverlies",
+      "stageLossHint": "Rustige registratie zonder menstruatie- of vruchtbaarheidsvoorspellingen. Je geschiedenis blijft behouden; wijzig je situatie wanneer je wilt.",
+      "stageSurgery": "Na hysterectomie",
+      "stageSurgeryHint": "Registreer symptomen zonder menstruatie- of vruchtbaarheidsvoorspellingen. Een operatie vertelt niet automatisch of je nog ovariumcycli hebt.",
+      "stageMenopause": "Na de menopauze",
+      "stageMenopauseHint": "Registreer symptomen zonder menstruatie- of vruchtbaarheidsvoorspellingen. Onverwacht bloedverlies kan worden vastgelegd.",
+      "ratingMin": "Minimumscore",
+      "ratingMax": "Maximumscore",
+      "chartDescription": "{{metric}} in de tijd. Elke stip is een geregistreerde waarde; datums en waarden staan hieronder.",
+      "variabilitySummary": "{{count}} geregistreerde cyclusintervallen: {{low}}–{{high}} dagen, inclusief intervallen uitgesloten van voorspellingen.",
+      "energyInsight": "Je registreerde minder energie rond menstruatiestarts in {{hits}} van {{total}} waargenomen cycli. Dit toont geen oorzaak aan.",
+      "sleepInsight": "Je registreerde kortere slaap rond menstruatiestarts in {{hits}} van {{total}} waargenomen cycli. Dit toont geen oorzaak aan.",
+      "reviewLong": "Deze lange cyclus weer als onzeker behandelen"
     }
   }
 }

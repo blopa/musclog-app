@@ -70,7 +70,7 @@ export class CycleTrackingService {
       input.context &&
       (input.context.lifeStage !== 'regular' || input.context.contraception !== 'none')
         ? await encryptCyclePayload({
-            effectiveFrom: localDayStartFromUtcMs(periods[0]?.startDate ?? now),
+            effectiveFrom: localDayStartFromUtcMs(now),
             timezone,
             lifeStage: input.context.lifeStage,
             contraception: input.context.contraception,

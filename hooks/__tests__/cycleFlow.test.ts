@@ -173,3 +173,14 @@ it('does not ask for period dates or usual lengths in symptom-only setup and res
   );
   expect(screen.getByText('onboarding.cycleSetup.length.cycleLength')).toBeTruthy();
 });
+
+it('lets users explicitly choose an unknown cycle length in setup', async () => {
+  const onFormChange = jest.fn();
+  render(createElement(EditCycleSetupData, { onFormChange }));
+  fireEvent.click(screen.getByRole('checkbox', { name: 'cycle.complete.unknownLength' }));
+  await waitFor(() =>
+    expect(onFormChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ cycleLengthKnown: false })
+    )
+  );
+});

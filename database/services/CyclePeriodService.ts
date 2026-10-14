@@ -1,5 +1,5 @@
-import { database } from '@/database/database-instance';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
+import { database } from '@/database/database-instance';
 import type CyclePeriod from '@/database/models/CyclePeriod';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { CycleRepository, readPeriods, toPeriodDto } from '@/database/repositories/CycleRepository';
@@ -23,6 +23,7 @@ export interface PeriodPatch {
   endKind?: PeriodEndKind;
   note?: string;
   excludedFromStats?: boolean;
+  confirmedLongCycle?: boolean;
 }
 
 const payloadOf = (dto: CyclePeriodDto): PeriodPayload => ({
@@ -31,6 +32,7 @@ const payloadOf = (dto: CyclePeriodDto): PeriodPayload => ({
   endKind: dto.endKind,
   timezone: dto.timezone,
   excludedFromStats: dto.excludedFromStats,
+  confirmedLongCycle: dto.confirmedLongCycle,
   note: dto.note,
 });
 
@@ -199,6 +201,7 @@ export class CyclePeriodService {
         ...end,
         note: patch.note ?? current.note,
         excludedFromStats: patch.excludedFromStats ?? current.excludedFromStats,
+        confirmedLongCycle: patch.confirmedLongCycle ?? current.confirmedLongCycle,
       };
       assertValidPeriod(siblings, next, { ignoreIds: [id] });
 

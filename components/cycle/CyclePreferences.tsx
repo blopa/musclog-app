@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { CycleDiaryPresets } from '@/components/cycle/CycleDiaryPresets';
 import { CycleGoals } from '@/components/cycle/CycleGoals';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
@@ -22,6 +23,8 @@ export function CyclePreferences() {
   const { cycleQuickLogRaw } = useSettings();
   const [name, setName] = useState('');
   const [fieldName, setFieldName] = useState('');
+  const [ratingMin, setRatingMin] = useState('0');
+  const [ratingMax, setRatingMax] = useState('10');
   const [kind, setKind] = useState<CustomCycleField['kind']>('text');
   const [busy, setBusy] = useState(false);
   const pinned = config.quickLog ?? parseQuickLog(cycleQuickLogRaw);
@@ -48,6 +51,7 @@ export function CyclePreferences() {
 
   return (
     <View className="gap-5" pointerEvents={busy ? 'none' : 'auto'}>
+      <CycleDiaryPresets />
       <CycleGoals value={config.goals ?? []} onChange={(goals) => save({ goals })} />
       <Text className="text-base font-bold text-text-primary">
         {t('cycle.personalize.quickTitle')}
@@ -121,7 +125,7 @@ export function CyclePreferences() {
         onChangeText={setFieldName}
       />
       <View className="flex-row flex-wrap gap-2">
-        {(['text', 'number', 'toggle'] as const).map((value) => (
+        {(['text', 'number', 'toggle', 'rating'] as const).map((value) => (
           <Chip
             key={value}
             label={t(`cycle.personalize.kinds.${value}`)}
@@ -130,6 +134,22 @@ export function CyclePreferences() {
           />
         ))}
       </View>
+      {kind === 'rating' ? (
+        <View className="flex-row gap-3">
+          <TextInput
+            label={t('cycle.complete.ratingMin')}
+            value={ratingMin}
+            onChangeText={setRatingMin}
+            inputMode="numeric"
+          />
+          <TextInput
+            label={t('cycle.complete.ratingMax')}
+            value={ratingMax}
+            onChangeText={setRatingMax}
+            inputMode="numeric"
+          />
+        </View>
+      ) : null}
       <Button
         label={t('cycle.personalize.add')}
         loading={busy}
@@ -137,7 +157,15 @@ export function CyclePreferences() {
         disabled={
           !fieldName.trim() ||
           fieldName.trim().length > 60 ||
-          (config.customFields?.length ?? 0) >= 20
+          (config.customFields?.length ?? 0) >= 20 ||
+          (kind === 'rating' &&
+            (!ratingMin.trim() ||
+              !ratingMax.trim() ||
+              !Number.isInteger(Number(ratingMin)) ||
+              !Number.isInteger(Number(ratingMax)) ||
+              Number(ratingMin) < -100 ||
+              Number(ratingMax) > 100 ||
+              Number(ratingMin) >= Number(ratingMax)))
         }
         onPress={() =>
           void run(async () => {
@@ -145,7 +173,12 @@ export function CyclePreferences() {
               ...config,
               customFields: [
                 ...(config.customFields ?? []),
-                { id: randomUUID(), label: fieldName.trim(), kind },
+                {
+                  id: randomUUID(),
+                  label: fieldName.trim(),
+                  kind,
+                  ...(kind === 'rating' ? { min: Number(ratingMin), max: Number(ratingMax) } : {}),
+                },
               ],
             });
             setFieldName('');

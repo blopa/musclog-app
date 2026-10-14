@@ -19,7 +19,9 @@ export type InsightKind =
   | 'cycle_length'
   | 'bleeding_duration'
   | 'mood_near_start'
-  | 'workout_near_start';
+  | 'workout_near_start'
+  | 'energy_near_start'
+  | 'sleep_near_start';
 
 export interface InsightEvidence {
   /** Local-midnight starts of the cycles the observation rests on. */
@@ -52,7 +54,8 @@ export interface WorkoutPoint {
 export interface InsightInput {
   periods: CyclePeriodInput[];
   history: CycleHistoryEntry[];
-  dayLogs: Pick<CycleDayLogDto, 'date' | 'symptoms' | 'pain' | 'noSymptoms'>[];
+  dayLogs: (Pick<CycleDayLogDto, 'date' | 'symptoms' | 'pain' | 'noSymptoms'> &
+    Partial<Pick<CycleDayLogDto, 'energy' | 'observations'>>)[];
   moods?: MoodPoint[];
   workouts?: WorkoutPoint[];
 }
@@ -291,6 +294,51 @@ function workoutInsight(input: InsightInput, starts: number[]): Insight[] {
  * rests on and carries the exact days behind it. Nothing here says a phase CAUSED anything, and
  * nothing is produced from fewer than three cycles.
  */
+function recoveryInsight(
+  input: InsightInput,
+  starts: number[],
+  metric: 'energy' | 'sleepHours'
+): Insight[] {
+  const value = (log: InsightInput['dayLogs'][number]) =>
+    metric === 'energy' ? log.energy : log.observations?.sleepHours;
+  const days: number[] = [];
+  const hits: number[] = [];
+  let total = 0;
+  const end =
+    Math.max(...input.dayLogs.map((d) => d.date), starts[starts.length - 1] ?? 0) +
+    MS_PER_SOLAR_DAY;
+  for (const window of cycleWindows(starts, end)) {
+    const logs = input.dayLogs.filter(
+      (d) => d.date >= window.start && d.date < window.end && value(d) != null
+    );
+    const near = logs.filter((d) => nearStart(window.start, d.date));
+    const rest = logs.filter((d) => !nearStart(window.start, d.date));
+    if (!near.length || rest.length < 3) {
+      continue;
+    }
+
+    total++;
+    if (
+      mean(near.map((d) => value(d)!)) <=
+      mean(rest.map((d) => value(d)!)) - (metric === 'energy' ? 1 : 0.5)
+    ) {
+      hits.push(window.start);
+      days.push(...near.map((d) => d.date), ...rest.map((d) => d.date));
+    }
+  }
+
+  return sharePasses(hits.length, total)
+    ? [
+        {
+          kind: metric === 'energy' ? 'energy_near_start' : 'sleep_near_start',
+          id: `recovery:${metric}`,
+          params: { hits: hits.length, total },
+          evidence: { cycleStarts: hits, days, workoutIds: [] },
+        },
+      ]
+    : [];
+}
+
 export function computeInsights(input: InsightInput): Insight[] {
   const starts = recentStarts(input.periods);
   if (starts.length < MIN_INSIGHT_CYCLES) {
@@ -298,6 +346,8 @@ export function computeInsights(input: InsightInput): Insight[] {
   }
 
   return [
+    ...recoveryInsight(input, starts, 'energy'),
+    ...recoveryInsight(input, starts, 'sleepHours'),
     ...workoutInsight(input, starts),
     ...symptomInsights(input, starts),
     ...symptomInsights(input, starts, true),

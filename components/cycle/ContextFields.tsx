@@ -96,6 +96,26 @@ const CONTRACEPTION: Record<
 
 const LIFE_STAGE: Record<CycleLifeStage, { title: string; description: string; icon: LucideIcon }> =
   {
+    pregnancy: {
+      title: 'cycle.complete.stagePregnancy',
+      description: 'cycle.complete.stagePregnancyHint',
+      icon: Baby,
+    },
+    pregnancy_loss: {
+      title: 'cycle.complete.stageLoss',
+      description: 'cycle.complete.stageLossHint',
+      icon: CircleSlash,
+    },
+    hysterectomy: {
+      title: 'cycle.complete.stageSurgery',
+      description: 'cycle.complete.stageSurgeryHint',
+      icon: CircleSlash,
+    },
+    menopause: {
+      title: 'cycle.complete.stageMenopause',
+      description: 'cycle.complete.stageMenopauseHint',
+      icon: Zap,
+    },
     regular: {
       title: 'onboarding.cycleSetup.lifeStage.regular',
       description: 'onboarding.cycleSetup.lifeStage.regularDescription',
@@ -138,6 +158,10 @@ const LIFE_STAGE_ORDER: CycleLifeStage[] = [
   'postpartum',
   'post_pill',
   'no_bleeding',
+  'pregnancy',
+  'pregnancy_loss',
+  'hysterectomy',
+  'menopause',
 ];
 const CONTRACEPTION_ORDER: ContraceptionMethod[] = [
   'none',

@@ -259,7 +259,8 @@
         "possible_missed_period": "it was much longer than your others, possibly a missed period",
         "user_excluded": "you excluded it",
         "hormonal_context": "a hormonal method was in use",
-        "postpartum_context": "postpartum cycles are not counted"
+        "postpartum_context": "postpartum cycles are not counted",
+        "life_context": "context without natural period prediction"
       }
     },
     "insights": {
@@ -383,13 +384,19 @@
         "discharge": "Discharge / cervical mucus",
         "medication": "Medication and dose",
         "sex": "Sexual activity",
-        "tags": "Tags"
+        "tags": "Tags",
+        "impact": "Daily-life impact",
+        "leakage": "Leakage through clothing or bedding",
+        "clots": "Blood clots",
+        "lhTest": "Ovulation (LH) test",
+        "pregnancyTest": "Pregnancy test"
       },
       "customField": "New custom field",
       "kinds": {
         "text": "Text",
         "number": "Number",
-        "toggle": "Yes / no"
+        "toggle": "Yes / no",
+        "rating": "Bounded rating"
       },
       "removeHint": "Removing a field from the form keeps its previously recorded values in history and exports.",
       "saving": "Saving…",
@@ -456,6 +463,131 @@
       "unlogged": "Not logged",
       "unrated": "Present, not rated",
       "limitHint": "Shows your latest six cycles, up to 60 days after a start or 14 days before the next logged start. Empty days stay empty."
+    },
+    "complete": {
+      "confirmLong": "This longer cycle is correct",
+      "unknownLength": "I don't know my usual cycle length",
+      "rangeHeuristic": "This range is an estimate from your history, not a probability interval or a confirmed ovulation date.",
+      "backtest": "Retrospective check: {{hits}} of {{checked}} later starts fell within the range; average midpoint error {{error}} days. This is not clinical validation.",
+      "restoreFirst": "Restore or bring my history",
+      "careTitle": "Understanding your symptoms",
+      "careHint": "General education from NHS and RCOG. Logging is not a diagnosis. If symptoms worry you or affect daily life, discuss them with a healthcare professional; seek urgent local care for severe or rapidly worsening symptoms.",
+      "education": {
+        "bleeding": "Heavy bleeding — NHS (English)",
+        "pain": "Period pain — NHS (English)",
+        "unexpected": "Unexpected bleeding — NHS (English)",
+        "pms": "PMS and symptom diaries — RCOG (English)",
+        "menopause": "Perimenopause and menopause — NHS (English)",
+        "pregnancy": "Pregnancy information — NHS (English)",
+        "postpartum": "Recovery after birth — NHS (English)",
+        "pregnancy_loss": "Pregnancy loss information — NHS (English)"
+      },
+      "trends": "Trends and search",
+      "trendsHint": "Explore your recorded days, including when you don't have periods. These are observations, not explanations of what caused a change.",
+      "lastDays": "Last {{days}} days",
+      "summary": "{{logged}} logged days · {{heavy}} heavy-flow days · {{spotting}} spotting days · {{impact}} days with daily-life impact",
+      "recap": "Since the recorded start on {{date}}: {{logged}} logged days, {{heavy}} heavy-flow days, {{impact}} days with daily-life impact.",
+      "symptomSummary": "{{symptom}}: {{days}} recorded days, {{severe}} rated severe",
+      "loggedOnly": "Only recorded values are shown. Missing days are unknown. The latest 30 values are listed.",
+      "noObservations": "No matching observations in this range.",
+      "contextChanged": "Context changed on {{date}} — see context history.",
+      "search": "Search your records",
+      "searchHint": "Search symptoms, notes, medication, tags or custom values. All words must match. Search stays on this device; up to 50 matching days are shown.",
+      "metrics": {
+        "pain": "Pain (0–10)",
+        "energy": "Energy (1–5)",
+        "mood": "Mood (0–4)",
+        "sleepHours": "Sleep (hours)",
+        "temperatureC": "Basal temperature (°C)",
+        "impact": "Daily-life impact (0–3)",
+        "bleeding": "Bleeding",
+        "symptoms": "Symptoms",
+        "note": "Notes",
+        "importedTemperatureC": "Imported basal temperature (°C)"
+      },
+      "reminders": {
+        "hour": "Hour (0–23)",
+        "minute": "Minute (0–59)",
+        "leadDays": "Days before period",
+        "period": "Predicted period reminder",
+        "fertility": "Fertile-window reminder (when enabled)",
+        "daily": "Daily logging reminder",
+        "endCheck": "Check a period still marked ongoing after 7 days"
+      },
+      "backupDays": "Backup reminder interval (days; 0 disables)",
+      "remindersHint": "Times use your local clock. Daily reminders cover the next 28 days and renew when you open the app. Notifications must also be enabled in app and device settings.",
+      "notification": {
+        "daily-log": "Record today if you want to.",
+        "end-check": "Is the period you marked ongoing still continuing? Update its end when you're ready.",
+        "backup": "Consider saving an encrypted backup of your records."
+      },
+      "importTitle": "Bring history from another tracker",
+      "importHint": "{{rows}} CSV rows. Columns: {{columns}}. Enter the exact column names below; leave optional fields empty. This wizard accepts CSV, not proprietary archives.",
+      "importColumns": {
+        "date": "Date/start column",
+        "end": "End date column (optional)",
+        "flow": "Flow column (optional)",
+        "temperature": "Temperature in °C column (optional)",
+        "symptoms": "Symptoms column (semicolon separated)",
+        "note": "Notes column (optional)"
+      },
+      "dateOrder": {
+        "iso": "YYYY-MM-DD",
+        "dmy": "Day/month/year",
+        "mdy": "Month/day/year"
+      },
+      "importPeriods": "Each row records a period start (not a daily log)",
+      "importError": "Check the column names, date order, and values. Flow accepts none, spotting, light, medium, heavy or very_heavy; temperature must be in °C. Duplicate period starts and invalid dates cannot be imported.",
+      "previewImport": "Preview import",
+      "healthTitle": "Cycle data in your health store",
+      "healthHint": "Read bleeding and basal temperature with your permission. Imported observations keep their source and never replace your manual logs or create period starts. Health-store access can be limited by platform history permissions.",
+      "healthRead": "Read and preview",
+      "healthPreview": "{{count}} observations available. Re-importing the same source IDs updates their imported copies only.",
+      "healthImport": "Import these observations",
+      "healthWrite": "Export manual bleeding and temperature",
+      "healthWriteHint": "This writes your manual bleeding and basal-temperature entries in the selected range to your device's health store. Other apps with permission may read them. Imported observations, symptoms, mood, medication, sex and notes are excluded. Very heavy flow is exported as heavy.",
+      "healthDone": "Imported observations saved.",
+      "healthWritten": "{{count}} health records written.",
+      "healthError": "Health access failed or permission was declined. Check device health permissions and try again. A failed export may have written some records; retrying updates Musclog's own records.",
+      "importedValue": "Imported from {{source}}: {{value}}",
+      "sharing": "Share selected records",
+      "sharingHint": "Choose exactly what to share. This creates a readable JSON file for your selected range. The recipient can keep or forward the file; this is not live access and cannot be revoked. Nothing is selected by default.",
+      "shareSelected": "Export selected fields",
+      "presets": "Optional diary setups",
+      "presetsHint": "Add useful fields and fill unused favorite slots. Your history and existing favorites stay intact.",
+      "preset": {
+        "pms": "Set up a PMS/mood diary",
+        "fertility": "Add fertility observations",
+        "perimenopause": "Add perimenopause observations"
+      },
+      "pmsDiaryHint": "A daily symptom-and-impact diary over two consecutive cycles can support a clinical conversation about PMS. This diary is not a validated PMDD questionnaire and does not diagnose PMDD.",
+      "fertilityHint": "Temperature, discharge and test results are observations only. They do not confirm ovulation or make calendar estimates suitable for contraception.",
+      "impact": {
+        "0": "No impact",
+        "1": "Some disruption",
+        "2": "Activities limited",
+        "3": "Unable to do usual activities"
+      },
+      "tests": {
+        "negative": "Negative",
+        "positive": "Positive",
+        "unclear": "Unclear"
+      },
+      "stagePregnancy": "Pregnancy",
+      "stagePregnancyHint": "Period and fertility predictions are paused. Keep your symptom records and change context when ready.",
+      "stageLoss": "After pregnancy loss",
+      "stageLossHint": "A quiet tracking context with no period or fertility predictions. Your history is kept; return to another context when ready.",
+      "stageSurgery": "After hysterectomy",
+      "stageSurgeryHint": "Track symptoms without period or fertility predictions. Surgery does not automatically tell us whether you still have ovarian cycles.",
+      "stageMenopause": "After menopause",
+      "stageMenopauseHint": "Track symptoms without period or fertility predictions. Unexpected bleeding can still be recorded.",
+      "ratingMin": "Minimum rating",
+      "ratingMax": "Maximum rating",
+      "chartDescription": "{{metric}} over time. Each dot is a recorded value; dates and values are listed below.",
+      "variabilitySummary": "{{count}} recorded cycle intervals in this range: {{low}}–{{high}} days, including intervals excluded from predictions.",
+      "energyInsight": "You logged lower energy near period starts in {{hits}} of {{total}} observed cycles. This does not establish a cause.",
+      "sleepInsight": "You logged shorter sleep near period starts in {{hits}} of {{total}} observed cycles. This does not establish a cause.",
+      "reviewLong": "Treat this long cycle as uncertain again"
     }
   }
 }

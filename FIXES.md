@@ -735,3 +735,11 @@ keeps one entry per record id and compares ciphertext as well as the timestamp b
 
 Quick-log taps now resolve their toggles inside the database writer, so two rapid symptom taps
 retain both symptoms and optional observations. A failed bleeding save never offers a period start.
+
+## Cycle tracking completion (October 2026)
+
+- Automatically excluded long cycles previously had no user correction path. `confirmedLongCycle` now restores a genuine long interval to prediction inputs without bypassing physiology or explicit exclusions.
+- A single start previously produced a narrow fallback date range. Unknown-length setup suppresses fallback dates, and sparse history now produces a wider heuristic range.
+- Cycle import previously required an existing record, so a new-phone restore needed placeholder setup. Cycle transfer can now create its parent and all records in the same batch after validation.
+- Setup previously applied the current contraception/life stage from the earliest past period. It now begins today; older context changes are recorded explicitly in dated history.
+- HealthKit 14's generated metadata type for intermenstrual bleeding is `Record<string, never>` even though native HealthKit accepts standard sync metadata. The cycle adapter uses a narrow documented type assertion for spotting and the actual `HKSyncIdentifier`/`HKSyncVersion` keys; adapter tests pin both. Recheck the assertion on library upgrades.

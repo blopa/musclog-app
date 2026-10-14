@@ -47,6 +47,7 @@ export function NumericInput({
       ) : null}
       <TextInput
         ref={inputRef}
+        accessibilityLabel={label}
         selectTextOnFocus
         className="w-full border-none bg-transparent p-0 text-center text-3xl font-black text-text-primary"
         value={value}

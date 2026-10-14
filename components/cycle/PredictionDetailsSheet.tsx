@@ -2,9 +2,11 @@ import { useTranslation } from 'react-i18next';
 import { Switch, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { TextButton } from '@/components/theme/TextButton';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';
+import { evaluatePredictions } from '@/utils/cycle/historyAnalysis';
 import { handleError } from '@/utils/handleError';
 
 type PredictionDetailsSheetProps = {
@@ -21,10 +23,11 @@ export function PredictionDetailsSheet({ visible, onClose }: PredictionDetailsSh
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
-  const { predictionStats: stats, history, periods, updatePeriod } = useMenstrualCycle();
+  const { predictionStats: stats, history, periods, config, updatePeriod } = useMenstrualCycle();
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const date = (ms: number) =>
     new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(ms);
+  const evaluation = evaluatePredictions(periods, history, config);
   const periodAt = new Map(periods.map((p) => [p.startDate, p]));
   const rows = [...history].filter((h) => h.status !== 'in_progress').reverse();
 
@@ -57,6 +60,16 @@ export function PredictionDetailsSheet({ visible, onClose }: PredictionDetailsSh
               })
             : t('cycle.prediction.basisNone', { days: formatInteger(stats.medianLength) })}
         </Text>
+        <Text className="text-xs text-text-secondary">{t('cycle.complete.rangeHeuristic')}</Text>
+        {evaluation.checked > 0 ? (
+          <Text className="text-sm text-text-secondary">
+            {t('cycle.complete.backtest', {
+              hits: formatInteger(evaluation.hits),
+              checked: formatInteger(evaluation.checked),
+              error: formatInteger(Math.round(evaluation.meanErrorDays!)),
+            })}
+          </Text>
+        ) : null}
         {stats.basis.excluded > 0 ? (
           <Text className="text-sm text-text-secondary">
             {t('cycle.prediction.excludedCount', {
@@ -91,6 +104,32 @@ export function PredictionDetailsSheet({ visible, onClose }: PredictionDetailsSh
                       })}
                 </Text>
               </View>
+              {row.reason === 'possible_missed_period' && period ? (
+                <TextButton
+                  label={t('cycle.complete.confirmLong')}
+                  onPress={() => {
+                    void updatePeriod(period.id, { confirmedLongCycle: true }).catch((error) =>
+                      handleError(error, 'PredictionDetailsSheet.confirm', {
+                        sendToSentry: false,
+                        snackbarMessage: t('errors.somethingWentWrong'),
+                      })
+                    );
+                  }}
+                />
+              ) : null}
+              {period?.confirmedLongCycle ? (
+                <TextButton
+                  label={t('cycle.complete.reviewLong')}
+                  onPress={() => {
+                    void updatePeriod(period.id, { confirmedLongCycle: false }).catch((error) =>
+                      handleError(error, 'PredictionDetailsSheet.review', {
+                        sendToSentry: false,
+                        snackbarMessage: t('errors.somethingWentWrong'),
+                      })
+                    );
+                  }}
+                />
+              ) : null}
               {canToggle ? (
                 <Switch
                   value={row.status === 'used'}

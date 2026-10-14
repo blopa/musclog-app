@@ -22,6 +22,10 @@ export function insightSentenceKey(insight: Insight): string {
         : 'cycle.insights.durationShorter';
     case 'mood_near_start':
       return 'cycle.insights.moodNearStart';
+    case 'energy_near_start':
+      return 'cycle.complete.energyInsight';
+    case 'sleep_near_start':
+      return 'cycle.complete.sleepInsight';
     case 'workout_near_start':
       return 'cycle.insights.workoutNearStart';
   }

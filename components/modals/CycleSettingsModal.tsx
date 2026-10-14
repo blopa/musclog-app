@@ -3,7 +3,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { CycleHealthSettings } from '@/components/cycle/CycleHealthSettings';
 import { CyclePreferences } from '@/components/cycle/CyclePreferences';
+import { CycleReminderSettings } from '@/components/cycle/CycleReminderSettings';
+import { CycleSharingSettings } from '@/components/cycle/CycleSharingSettings';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
 import { CycleLockGate } from '@/components/lock/CycleLockGate';
 import { CyclePortabilityModal } from '@/components/modals/CyclePortabilityModal';
@@ -117,6 +120,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
       await updateConfig({
         ...config,
         fallbackCycleLength: form.cycleLength ?? config.fallbackCycleLength,
+        cycleLengthKnown: form.cycleLengthKnown ?? config.cycleLengthKnown,
         fallbackPeriodDuration: form.periodDuration ?? config.fallbackPeriodDuration,
       });
       onClose();
@@ -245,6 +249,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                     }
                     initialData={{
                       cycleLength: config.fallbackCycleLength,
+                      cycleLengthKnown: config.cycleLengthKnown,
                       periodDuration: config.fallbackPeriodDuration,
                     }}
                     onFormChange={setForm}
@@ -264,6 +269,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
 
               <Section title={t('cycle.personalize.title')}>
                 <CyclePreferences />
+                <CycleHealthSettings />
               </Section>
               <Section title={t('cycle.settings.sectionShown')}>
                 <ToggleInput
@@ -298,6 +304,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
               </Section>
 
               <Section title={t('cycle.settings.sectionReminders')}>
+                <CycleReminderSettings />
                 <Text className="text-xs text-text-tertiary">
                   {t('cycle.settings.reminderHint')}
                 </Text>
@@ -361,6 +368,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
 
           {tracked ? (
             <Section title={t('cycle.settings.sectionExport')}>
+              <CycleSharingSettings />
               <Button
                 label={t('cycle.portability.title')}
                 variant="outline"

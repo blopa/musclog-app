@@ -53,6 +53,7 @@ const REASON_KEYS = {
   user_excluded: 'cycle.history.reason.user_excluded',
   hormonal_context: 'cycle.history.reason.hormonal_context',
   postpartum_context: 'cycle.history.reason.postpartum_context',
+  life_context: 'cycle.history.reason.life_context',
 } as const;
 
 const BLEEDING_KEYS = {
@@ -168,6 +169,13 @@ export function buildSummaryCopy(
           Object.entries(d.observations ?? {}).flatMap(([key, value]) => {
             if (key === 'customLabels') {
               return [];
+            }
+
+            if (key === 'health') {
+              return (d.observations?.health ?? []).map(
+                (observation) =>
+                  `${date(d.date)} · ${t('cycle.complete.importedValue', { source: observation.source === 'healthkit' ? 'Apple Health' : 'Health Connect', value: observation.kind === 'temperatureC' ? formatAppDecimal(locale, Number(observation.value), 2) + ' °C' : t(`cycle.calendar.bleeding.${observation.value}`) })}`
+              );
             }
 
             if (key === 'custom') {

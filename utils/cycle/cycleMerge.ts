@@ -53,7 +53,13 @@ export function planCycleMerge(
   const fields = new Map((existing.config.customFields ?? []).map((f) => [f.id, f]));
   for (const field of incoming.config?.customFields ?? []) {
     const old = fields.get(field.id);
-    if (old && (old.kind !== field.kind || old.label !== field.label)) {
+    if (
+      old &&
+      (old.kind !== field.kind ||
+        old.label !== field.label ||
+        old.min !== field.min ||
+        old.max !== field.max)
+    ) {
       throw new Error('custom_field_conflict');
     }
 

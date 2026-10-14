@@ -22,12 +22,14 @@ export interface PredictionStats {
   spread: number;
   variability: CycleVariability;
   confidence: PredictionConfidence;
+  fallbackKnown?: boolean;
   avgPeriodDuration: number;
   basis: { used: number; excluded: number; from: number | null; to: number | null };
 }
 
 export interface StatsFallback {
   avgCycleLength?: number | null;
+  cycleLengthKnown?: boolean;
   avgPeriodDuration?: number | null;
 }
 
@@ -102,6 +104,7 @@ export function computePredictionStats(
     spread,
     variability,
     confidence,
+    fallbackKnown: fallback.cycleLengthKnown !== false,
     avgPeriodDuration,
     basis: {
       used: used.length,

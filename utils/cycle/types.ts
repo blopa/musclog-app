@@ -11,6 +11,8 @@ export interface CyclePeriodInput {
   endDate: number | null;
   endKind?: PeriodEndKind;
   excludedFromStats?: boolean;
+  /** Confirms a genuine long cycle; never bypasses physiology/context exclusions. */
+  confirmedLongCycle?: boolean;
 }
 
 export type CycleExclusionReason =
@@ -18,7 +20,8 @@ export type CycleExclusionReason =
   | 'possible_missed_period'
   | 'user_excluded'
   | 'hormonal_context'
-  | 'postpartum_context';
+  | 'postpartum_context'
+  | 'life_context';
 
 export interface CycleHistoryEntry {
   start: number;
@@ -75,13 +78,32 @@ export interface CycleDayLogDto {
 
 export type CycleGoal = 'timing' | 'symptoms' | 'mood' | 'record';
 export type ObservationField =
-  'sleepHours' | 'temperatureC' | 'discharge' | 'medication' | 'sex' | 'tags';
+  | 'sleepHours'
+  | 'temperatureC'
+  | 'discharge'
+  | 'medication'
+  | 'sex'
+  | 'tags'
+  | 'impact'
+  | 'leakage'
+  | 'clots'
+  | 'lhTest'
+  | 'pregnancyTest';
 export interface CustomCycleField {
   id: string;
   label: string;
-  kind: 'text' | 'number' | 'toggle';
+  kind: 'text' | 'number' | 'toggle' | 'rating';
+  min?: number;
+  max?: number;
 }
 export interface CycleObservations {
+  impact?: number;
+  leakage?: boolean;
+  clots?: boolean;
+  lhTest?: 'negative' | 'positive' | 'unclear';
+  pregnancyTest?: 'negative' | 'positive' | 'unclear';
+  /** Imported health observations remain separate from self-report. */
+  health?: HealthCycleObservation[];
   sleepHours?: number;
   temperatureC?: number;
   discharge?: string;
@@ -107,7 +129,16 @@ export type ContraceptionMethod =
   | 'other';
 
 export type CycleLifeStage =
-  'regular' | 'pcos' | 'perimenopause' | 'postpartum' | 'post_pill' | 'no_bleeding';
+  | 'regular'
+  | 'pcos'
+  | 'perimenopause'
+  | 'postpartum'
+  | 'post_pill'
+  | 'no_bleeding'
+  | 'pregnancy'
+  | 'pregnancy_loss'
+  | 'hysterectomy'
+  | 'menopause';
 
 export interface CycleContextDto {
   id: string;
@@ -121,6 +152,10 @@ export interface CycleContextDto {
 }
 
 export interface CycleConfig {
+  /** False means the user does not know; no fallback date is presented as learned history. */
+  cycleLengthKnown?: boolean;
+  reminders?: CycleReminderPreferences;
+  backupReminderDays?: number;
   fallbackCycleLength: number;
   fallbackPeriodDuration: number;
   goals?: CycleGoal[];
@@ -129,4 +164,21 @@ export interface CycleConfig {
   customFields?: CustomCycleField[];
   quickLog?: string[];
   pinSuggested?: string[];
+}
+
+export interface CycleReminderPreferences {
+  hour: number;
+  minute: number;
+  leadDays: number;
+  period: boolean;
+  fertility: boolean;
+  daily: boolean;
+  endCheck: boolean;
+}
+
+export interface HealthCycleObservation {
+  id: string;
+  source: 'health_connect' | 'healthkit';
+  kind: 'bleeding' | 'temperatureC';
+  value: string | number;
 }

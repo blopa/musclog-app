@@ -31,6 +31,7 @@ export const periodTransferSchema = z
     endDate: date.nullable(),
     endKind: z.enum(['open', 'logged', 'estimated', 'unknown']),
     excludedFromStats: z.boolean(),
+    confirmedLongCycle: z.boolean().optional(),
     note,
   })
   .strict()
@@ -84,6 +85,10 @@ const contextTransferSchema = z
       'postpartum',
       'post_pill',
       'no_bleeding',
+      'pregnancy',
+      'pregnancy_loss',
+      'hysterectomy',
+      'menopause',
     ]),
     contraception: z.enum(
       CONTRACEPTION_METHODS as [
@@ -119,13 +124,16 @@ export function serializeCycleTransfer(input: {
       format: 'musclog-cycle',
       version: 1,
       config: input.config,
-      periods: input.periods.map(({ startDate, endDate, endKind, excludedFromStats, note }) => ({
-        startDate: csvDate(startDate),
-        endDate: endDate == null ? null : csvDate(endDate),
-        endKind,
-        excludedFromStats,
-        note,
-      })),
+      periods: input.periods.map(
+        ({ startDate, endDate, endKind, excludedFromStats, confirmedLongCycle, note }) => ({
+          startDate: csvDate(startDate),
+          endDate: endDate == null ? null : csvDate(endDate),
+          endKind,
+          excludedFromStats,
+          confirmedLongCycle,
+          note,
+        })
+      ),
       dayLogs: input.dayLogs.map(
         ({ date, bleeding, symptoms, noSymptoms, pain, energy, note, observations }) => ({
           date: csvDate(date),
@@ -296,6 +304,7 @@ export function parseCycleTransfer(text: string): CycleTransfer {
       excludedFromStats: r.excluded_from_stats
         ? boolean(r.excluded_from_stats)
         : r.not_used_reason === 'user_excluded',
+      confirmedLongCycle: r.confirmed_long_cycle ? boolean(r.confirmed_long_cycle) : undefined,
       note: undoCsvEscape(r.note ?? ''),
     }));
   } else if ('effective_from' in first) {

@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { AppState } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
 import { useSettingsContext } from '@/context/SettingsContext';
@@ -218,8 +219,18 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const dayLogs = useDecryptedQuery(CycleRepository.dayLogs(), readDayLogs, []);
 
   const afterWrite = useCallback(() => {
-    void NotificationService.scheduleMenstrualCycleNotifications();
+    void NotificationService.scheduleMenstrualCycleNotifications().catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        afterWrite();
+      }
+    });
+    afterWrite();
+    return () => subscription.remove();
+  }, [afterWrite]);
 
   const requireCycle = useCallback((): string => {
     if (!cycle) {

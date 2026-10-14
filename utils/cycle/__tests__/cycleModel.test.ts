@@ -97,8 +97,8 @@ describe('computeCycleTimeline', () => {
   const stats = computePredictionStats(buildCycleHistory(periods));
 
   it('counts elapsed days without wrapping when no new period is logged', () => {
-    const tl = computeCycleTimeline(periods, stats, { today: day(56 + 33) });
-    expect(tl.elapsedDay).toBe(34);
+    const tl = computeCycleTimeline(periods, stats, { today: day(56 + 40) });
+    expect(tl.elapsedDay).toBe(41);
     expect(tl.prediction.state).toBe('late');
     expect(tl.prediction.daysLate).toBeGreaterThan(0);
     expect(tl.segments).toBeNull();

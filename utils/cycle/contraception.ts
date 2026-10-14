@@ -33,7 +33,8 @@ export const DEFAULT_CONTEXT: Pick<CycleContextDto, 'lifeStage' | 'contraception
   contraception: 'none',
 };
 
-export type SuppressionReason = 'hormonal' | 'postpartum' | 'no_bleeding';
+export type SuppressionReason =
+  'hormonal' | 'postpartum' | 'no_bleeding' | 'pregnancy' | 'pregnancy_loss' | 'menopause';
 
 export interface ContextGuidance {
   /** Why period predictions are not shown, or null when they are. */
@@ -46,7 +47,7 @@ export interface ContextGuidance {
   variabilityIsExpected: boolean;
   hidePeriodActions: boolean;
   /** Cycles starting in this context should not feed predictions for a natural cycle. */
-  excludesCycles: 'hormonal_context' | 'postpartum_context' | null;
+  excludesCycles: 'hormonal_context' | 'postpartum_context' | 'life_context' | null;
 }
 
 /** The context in force on `day`: the latest one that has started, or the default. */
@@ -76,7 +77,9 @@ export function contextGuidance(
   const periodsSince = options.periodsSinceContext ?? 0;
 
   let suppressedReason: SuppressionReason | null = null;
-  if (lifeStage === 'no_bleeding') {
+  if (lifeStage === 'pregnancy' || lifeStage === 'pregnancy_loss' || lifeStage === 'menopause') {
+    suppressedReason = lifeStage;
+  } else if (lifeStage === 'no_bleeding' || lifeStage === 'hysterectomy') {
     suppressedReason = 'no_bleeding';
   } else if (traits.ovulationSuppressed === 'usually') {
     suppressedReason = 'hormonal';
@@ -85,7 +88,11 @@ export function contextGuidance(
   }
 
   let excludesCycles: ContextGuidance['excludesCycles'] = null;
-  if (traits.ovulationSuppressed === 'usually') {
+  if (
+    ['pregnancy', 'pregnancy_loss', 'menopause', 'hysterectomy', 'no_bleeding'].includes(lifeStage)
+  ) {
+    excludesCycles = 'life_context';
+  } else if (traits.ovulationSuppressed === 'usually') {
     excludesCycles = 'hormonal_context';
   } else if (lifeStage === 'postpartum') {
     excludesCycles = 'postpartum_context';
@@ -99,7 +106,13 @@ export function contextGuidance(
       FERTILITY_STAGES.has(lifeStage),
     predictionsCaveated: traits.ovulationSuppressed === 'sometimes',
     variabilityIsExpected: lifeStage === 'perimenopause' || lifeStage === 'pcos',
-    hidePeriodActions: lifeStage === 'no_bleeding',
+    hidePeriodActions: [
+      'no_bleeding',
+      'hysterectomy',
+      'menopause',
+      'pregnancy',
+      'pregnancy_loss',
+    ].includes(lifeStage),
     excludesCycles,
   };
 }

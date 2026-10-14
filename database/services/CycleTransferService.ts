@@ -6,11 +6,12 @@ import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import type CycleContext from '@/database/models/CycleContext';
 import type CycleDayLog from '@/database/models/CycleDayLog';
 import type CyclePeriod from '@/database/models/CyclePeriod';
-import type MenstrualCycle from '@/database/models/MenstrualCycle';
+import MenstrualCycle from '@/database/models/MenstrualCycle';
 import UserMetric from '@/database/models/UserMetric';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import {
   CycleRepository,
+  DEFAULT_CYCLE_CONFIG,
   readContexts,
   readCycleConfig,
   readDayLogs,
@@ -23,11 +24,11 @@ import { isEmptyDayLog } from '@/utils/cycle/dayLog';
 import { cycleConfigSchema } from '@/utils/cycle/preferences';
 import { getCurrentTimezone, getTimezoneAt } from '@/utils/timezone';
 
-async function existingData(cycle: MenstrualCycle) {
+async function existingData(cycle: MenstrualCycle | null) {
   const [periodRows, dayRows, contextRows, moodRows, config] = await Promise.all([
-    CycleRepository.periods(cycle.id).fetch(),
+    cycle ? CycleRepository.periods(cycle.id).fetch() : Promise.resolve([] as CyclePeriod[]),
     CycleRepository.dayLogs().fetch(),
-    CycleRepository.contexts(cycle.id).fetch(),
+    cycle ? CycleRepository.contexts(cycle.id).fetch() : Promise.resolve([] as CycleContext[]),
     database
       .get<UserMetric>('user_metrics')
       .query(
@@ -64,7 +65,7 @@ async function existingData(cycle: MenstrualCycle) {
 
 export class CycleTransferService {
   static async preview(
-    cycle: MenstrualCycle,
+    cycle: MenstrualCycle | null,
     text: string,
     choice: ConflictChoice,
     restorePreferences: boolean
@@ -75,7 +76,7 @@ export class CycleTransferService {
 
   /** A cycle-only merge: no reset, no writes to workout/nutrition/profile tables, one commit. */
   static async import(
-    cycle: MenstrualCycle,
+    cycle: MenstrualCycle | null,
     text: string,
     choice: ConflictChoice,
     restorePreferences: boolean
@@ -83,8 +84,12 @@ export class CycleTransferService {
     const incoming = parseCycleTransfer(text);
     await primeCycleEncryption();
     return database.write(async () => {
-      if (cycle.deletedAt != null) {
+      if (cycle && cycle.deletedAt != null) {
         throw new Error('cycle_removed');
+      }
+
+      if (!cycle && (await CycleRepository.cycles().fetch()).length > 0) {
+        throw new Error('cycle_changed_retry_preview');
       }
 
       const existing = await existingData(cycle);
@@ -115,7 +120,24 @@ export class CycleTransferService {
         Promise.all(plan.moods.add.map((point) => encryptUserMetricFields(point))),
         Promise.all(plan.moods.update.map(({ value }) => encryptUserMetricFields(value))),
       ]);
-      const operations: Model[] = [];
+      const target =
+        cycle ??
+        database.get<MenstrualCycle>('menstrual_cycles').prepareCreate((r) => {
+          r.avgCycleLength = DEFAULT_CYCLE_CONFIG.fallbackCycleLength;
+          r.avgPeriodDuration = DEFAULT_CYCLE_CONFIG.fallbackPeriodDuration;
+          r.lastPeriodStartDate = 0;
+          r.useHormonalBirthControl = false;
+          r.birthControlType = null;
+          r.lifeStage = null;
+          r.syncGoal = null;
+          r.timezone = timezone;
+          r.config = config;
+          r.isActive = true;
+          r.createdAt = now;
+          r.updatedAt = now;
+          r.deletedAt = null;
+        });
+      const operations: Model[] = cycle ? [] : [target];
       const prepareGroup = (
         table: string,
         rows: (CyclePeriod | CycleDayLog | CycleContext)[],
@@ -126,7 +148,7 @@ export class CycleTransferService {
           operations.push(
             database.get<CycleDayLog>(table).prepareCreate((r) => {
               if (hasCycleId) {
-                (r as unknown as CyclePeriod | CycleContext).cycleId = cycle.id;
+                (r as unknown as CyclePeriod | CycleContext).cycleId = target.id;
               }
 
               r.payload = cipher;
@@ -201,12 +223,15 @@ export class CycleTransferService {
           })
           .map((m) => prepareSoftDelete(m, now))
       );
-      operations.push(
-        cycle.prepareUpdate((r) => {
-          r.config = config;
-          r.updatedAt = now;
-        })
-      );
+      if (cycle) {
+        operations.push(
+          cycle.prepareUpdate((r) => {
+            r.config = config;
+            r.updatedAt = now;
+          })
+        );
+      }
+
       await database.batch(...operations);
       return plan.counts;
     });

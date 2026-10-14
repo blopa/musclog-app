@@ -72,7 +72,12 @@ export function buildCycleHistory(
   const candidates = entries.filter((e) => e.status === 'used');
   for (const entry of candidates) {
     const others = candidates.filter((e) => e !== entry).map((e) => e.lengthDays!);
-    if (others.length >= 2 && entry.lengthDays! >= median(others) * MISSED_PERIOD_RATIO) {
+    const confirmed = sorted.find((p) => p.startDate === entry.start)?.confirmedLongCycle;
+    if (
+      !confirmed &&
+      others.length >= 2 &&
+      entry.lengthDays! >= median(others) * MISSED_PERIOD_RATIO
+    ) {
       entry.status = 'excluded';
       entry.reason = 'possible_missed_period';
     }

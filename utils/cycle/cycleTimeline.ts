@@ -100,11 +100,18 @@ export function computeCycleTimeline(
   );
   const cycleLength = stats.medianLength;
 
-  if (!latest) {
+  if (!latest || (stats.usableCount === 0 && stats.fallbackKnown === false)) {
+    let emptyState: PredictionState = 'insufficient';
+    if (suppressed) {
+      emptyState = 'suppressed';
+    } else if (!showPredictions) {
+      emptyState = 'hidden';
+    }
+
     return {
-      elapsedDay: null,
+      elapsedDay: latest ? dayDiff(latest.startDate, today) + 1 : null,
       prediction: {
-        state: 'insufficient',
+        state: emptyState,
         mostLikely: null,
         earliest: null,
         latest: null,
@@ -119,8 +126,22 @@ export function computeCycleTimeline(
 
   const offset = dayDiff(latest.startDate, today);
   const mostLikely = addCalendarDays(latest.startDate, cycleLength);
-  const earliest = addCalendarDays(latest.startDate, Math.min(stats.rangeLow, cycleLength - 1));
-  const latestDate = addCalendarDays(latest.startDate, Math.max(stats.rangeHigh, cycleLength + 1));
+  // Sparse histories are deliberately broad. This heuristic is not a probability interval.
+  let padding = 1;
+  if (stats.usableCount < 3) {
+    padding = 7;
+  } else if (stats.usableCount < 5) {
+    padding = 3;
+  }
+
+  const earliest = addCalendarDays(
+    latest.startDate,
+    Math.max(15, Math.min(stats.rangeLow, cycleLength - padding))
+  );
+  const latestDate = addCalendarDays(
+    latest.startDate,
+    Math.max(stats.rangeHigh, cycleLength + padding)
+  );
 
   let state: PredictionState;
   let daysLate = 0;

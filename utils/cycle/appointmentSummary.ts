@@ -68,8 +68,14 @@ const MAX_SYMPTOMS = 8;
 
 /** The numbers behind the page, kept apart from the HTML so they can be tested directly. */
 export function collectSummaryFacts(input: SummaryInput): SummaryFacts {
-  const periods = input.periods.filter((p) => p.startDate >= input.from);
-  const history = input.history.filter((h) => h.start >= input.from);
+  const periods = input.periods.filter(
+    (p) => p.startDate >= input.from && p.startDate <= (input.to ?? Infinity)
+  );
+
+  const history = input.history.filter(
+    (h) => h.start >= input.from && h.start <= (input.to ?? Infinity)
+  );
+
   const dayLogs = input.dayLogs
     .filter((d) => d.date >= input.from && d.date <= (input.to ?? Infinity))
     .sort((a, b) => a.date - b.date);

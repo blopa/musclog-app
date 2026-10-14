@@ -16,14 +16,11 @@ import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanReposi
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
-import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
-import { planCycleReminders } from '@/utils/cycle/cycleReminders';
+import { getCycleBackupPreparedAt } from '@/services/cycleRecovery';
 import { darkTheme } from '@/theme';
-import {
-  localDayKeyPlusCalendarDaysFromNow,
-  localDayStartMs,
-  MS_PER_SOLAR_DAY,
-} from '@/utils/calendarDate';
+import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '@/utils/calendarDate';
+import { planCycleReminders } from '@/utils/cycle/cycleReminders';
+import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
 import { toExpoWeekday } from '@/utils/weekdays';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
 
@@ -500,7 +497,17 @@ export class NotificationService {
   }
 
   // Menstrual Cycle Notifications
-  static async scheduleMenstrualCycleNotifications() {
+  private static cycleReminderQueue: Promise<void> = Promise.resolve();
+
+  static scheduleMenstrualCycleNotifications(): Promise<void> {
+    const next = NotificationService.cycleReminderQueue
+      .catch(() => undefined)
+      .then(() => NotificationService.scheduleMenstrualCycleNotificationsNow());
+    NotificationService.cycleReminderQueue = next;
+    return next;
+  }
+
+  private static async scheduleMenstrualCycleNotificationsNow() {
     if (Platform.OS === 'web') {
       return;
     }
@@ -533,7 +540,7 @@ export class NotificationService {
       SettingsService.getCycleShowFertility(),
       SettingsService.getCycleNotificationStyle(),
     ]);
-    const { timeline } = buildCycleSnapshot({
+    const { timeline, activePeriod } = buildCycleSnapshot({
       periods,
       contexts,
       config,
@@ -542,20 +549,35 @@ export class NotificationService {
       showFertility,
     });
 
-    for (const reminder of planCycleReminders(timeline, Date.now())) {
+    const lastBackup = await getCycleBackupPreparedAt();
+    for (const reminder of planCycleReminders(timeline, Date.now(), {
+      preferences: config.reminders,
+      activePeriod,
+      backupDays: config.backupReminderDays,
+      lastBackup,
+    })) {
       const detailed = style === 'detailed';
       const key = reminder.kind === 'period-start' ? 'periodPrediction' : 'fertileWindow';
+      const general =
+        reminder.kind === 'daily-log' ||
+        reminder.kind === 'end-check' ||
+        reminder.kind === 'backup';
+      let bodyKey = 'notifications.types.cycleDiscreet.body';
+      if (detailed) {
+        bodyKey = general
+          ? `cycle.complete.notification.${reminder.kind}`
+          : `notifications.types.${key}.body`;
+      }
+
       await Notifications.scheduleNotificationAsync({
         content: {
           // The default wording never says what it is about: a lock screen is a public place.
           title: i18n.t(
-            detailed
+            detailed && !general
               ? `notifications.types.${key}.title`
               : 'notifications.types.cycleDiscreet.title'
           ),
-          body: i18n.t(
-            detailed ? `notifications.types.${key}.body` : 'notifications.types.cycleDiscreet.body'
-          ),
+          body: i18n.t(bodyKey),
           data: { type: 'menstrual-cycle', subtype: reminder.kind },
         },
         trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reminder.date },

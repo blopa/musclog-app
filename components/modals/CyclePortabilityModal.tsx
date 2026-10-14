@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { CycleImportMapping } from '@/components/cycle/CycleImportMapping';
 import { CycleLockGate } from '@/components/lock/CycleLockGate';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
@@ -23,6 +24,7 @@ import {
   parseCycleTransfer,
   serializeCycleTransfer,
 } from '@/utils/cycle/cycleTransfer';
+import { detectImportColumns } from '@/utils/cycle/externalImport';
 import { readFileAsStringAsync, shareTextFile } from '@/utils/file';
 import { timestampSlug } from '@/utils/timestampSlug';
 
@@ -43,6 +45,7 @@ export function CyclePortabilityModal({
   const [password, setPassword] = useState('');
   const [repeat, setRepeat] = useState('');
   const [importPassword, setImportPassword] = useState('');
+  const [externalCsv, setExternalCsv] = useState<string | null>(null);
   const [incoming, setIncoming] = useState<string | null>(null);
   const [choice, setChoice] = useState<ConflictChoice>('keep');
   const [restorePreferences, setRestorePreferences] = useState(false);
@@ -69,12 +72,12 @@ export function CyclePortabilityModal({
     };
   }, [visible]);
   useEffect(() => {
-    if (!visible || !incoming || !tracked) {
+    if (!visible || !incoming) {
       return;
     }
 
     let cancelled = false;
-    void CycleTransferService.preview(tracked, incoming, choice, restorePreferences)
+    void CycleTransferService.preview(tracked, incoming, choice, !tracked || restorePreferences)
       .then((result) => {
         if (!cancelled) {
           setCounts(result);
@@ -114,6 +117,7 @@ export function CyclePortabilityModal({
       if (encrypted) {
         await recordCycleBackupPrepared();
         setLastBackup(Date.now());
+        await NotificationService.scheduleMenstrualCycleNotifications();
         setPassword('');
         setRepeat('');
       }
@@ -123,6 +127,7 @@ export function CyclePortabilityModal({
   const pickFile = () =>
     void run(async () => {
       setIncoming(null);
+      setExternalCsv(null);
       setCounts(null);
       const selected = await DocumentPicker.getDocumentAsync({
         type: ['application/json', 'text/csv', 'text/comma-separated-values', 'text/plain'],
@@ -141,8 +146,18 @@ export function CyclePortabilityModal({
         String(await readFileAsStringAsync(asset.uri)),
         importPassword
       );
-      parseCycleTransfer(plain);
-      setIncoming(plain);
+      try {
+        parseCycleTransfer(plain);
+        setIncoming(plain);
+      } catch (error) {
+        if (plain.trimStart().startsWith('{')) {
+          throw error;
+        }
+
+        detectImportColumns(plain);
+        setExternalCsv(plain);
+      }
+
       setImportPassword('');
     });
   return (
@@ -223,9 +238,19 @@ export function CyclePortabilityModal({
             label={t('cycle.portability.chooseFile')}
             variant="outline"
             loading={busy}
-            disabled={busy || !tracked}
+            disabled={busy}
             onPress={pickFile}
           />
+          {externalCsv ? (
+            <CycleImportMapping
+              text={externalCsv}
+              onPrepared={(text) => {
+                setIncoming(text);
+                setExternalCsv(null);
+              }}
+              onCancel={() => setExternalCsv(null)}
+            />
+          ) : null}
           {incoming ? (
             <View className="gap-3">
               <Text className="text-sm text-text-secondary">
@@ -276,15 +301,11 @@ export function CyclePortabilityModal({
                 loading={busy}
                 onPress={() =>
                   void run(async () => {
-                    if (!tracked) {
-                      return;
-                    }
-
                     const result = await CycleTransferService.import(
                       tracked,
                       incoming,
                       choice,
-                      restorePreferences
+                      !tracked || restorePreferences
                     );
                     setIncoming(null);
                     setCounts(null);

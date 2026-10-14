@@ -86,6 +86,7 @@ export default function CycleSetup() {
       await createCycle({
         config: {
           fallbackCycleLength: data.cycleLength,
+          cycleLengthKnown: data.cycleLengthKnown,
           fallbackPeriodDuration: data.periodDuration,
           goals: data.goals ?? [],
         },

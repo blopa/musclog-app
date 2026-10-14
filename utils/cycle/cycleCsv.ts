@@ -40,6 +40,7 @@ export function periodsCsv(periods: CyclePeriodDto[], history: CycleHistoryEntry
     'not_used_reason',
     'note',
     'excluded_from_stats',
+    'confirmed_long_cycle',
   ]);
   const lines = [...periods]
     .sort((a, b) => a.startDate - b.startDate)
@@ -56,6 +57,7 @@ export function periodsCsv(periods: CyclePeriodDto[], history: CycleHistoryEntry
         h?.reason ?? '',
         p.note,
         p.excludedFromStats,
+        p.confirmedLongCycle ?? false,
       ]);
     });
 

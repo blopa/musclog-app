@@ -325,6 +325,22 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
             }}
           />
         ) : null}
+        {(existing?.observations?.health ?? []).map((observation) => (
+          <Text
+            key={`${observation.source}:${observation.id}`}
+            className="text-xs text-text-secondary"
+          >
+            {t('cycle.complete.importedValue', {
+              source: observation.source === 'healthkit' ? 'Apple Health' : 'Health Connect',
+              value:
+                observation.kind === 'bleeding'
+                  ? t(`cycle.calendar.bleeding.${observation.value}`)
+                  : new Intl.NumberFormat(i18n.resolvedLanguage ?? i18n.language, {
+                      maximumFractionDigits: 2,
+                    }).format(Number(observation.value)) + ' °C',
+            })}
+          </Text>
+        ))}
         <CycleObservationInputs config={config} value={observations} onChange={setObservations} />
         <View className="gap-2">
           <Text className="text-base font-bold text-text-primary">{t('cycle.daySheet.note')}</Text>

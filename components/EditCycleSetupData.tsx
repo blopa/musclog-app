@@ -11,11 +11,13 @@ import type { ContraceptionMethod, CycleGoal, CycleLifeStage } from '@/utils/cyc
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
+import { Chip } from './theme/Chip';
 import { NumericInput } from './theme/NumericInput';
 
 export type CycleSetupData = {
   lastPeriodStartDate: Date | null;
   cycleLength: number;
+  cycleLengthKnown?: boolean;
   periodDuration: number;
   contraception: ContraceptionMethod;
   lifeStage: CycleLifeStage;
@@ -44,6 +46,7 @@ export function EditCycleSetupData({
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [cycleLength, setCycleLength] = useState(initialData?.cycleLength ?? 28);
+  const [cycleLengthKnown, setCycleLengthKnown] = useState(initialData?.cycleLengthKnown ?? true);
   const [periodDuration, setPeriodDuration] = useState(initialData?.periodDuration ?? 5);
   const [contraception, setContraception] = useState<ContraceptionMethod>(
     initialData?.contraception ?? 'none'
@@ -56,12 +59,22 @@ export function EditCycleSetupData({
     onFormChange?.({
       lastPeriodStartDate: selectedDate,
       cycleLength,
+      cycleLengthKnown,
       periodDuration,
       contraception,
       lifeStage,
       goals,
     });
-  }, [selectedDate, cycleLength, periodDuration, contraception, lifeStage, goals, onFormChange]);
+  }, [
+    selectedDate,
+    cycleLengthKnown,
+    cycleLength,
+    periodDuration,
+    contraception,
+    lifeStage,
+    goals,
+    onFormChange,
+  ]);
 
   return (
     <>
@@ -107,6 +120,12 @@ export function EditCycleSetupData({
             <Text className="mb-3 text-base font-semibold text-text-secondary">
               {t('onboarding.cycleSetup.length.cycleLength')}
             </Text>
+            <Chip
+              label={t('cycle.complete.unknownLength')}
+              selected={!cycleLengthKnown}
+              role="checkbox"
+              onPress={() => setCycleLengthKnown(!cycleLengthKnown)}
+            />
             <View className="flex-row gap-4">
               <NumericInput
                 label={t('onboarding.cycleSetup.length.cycleLengthLabel')}

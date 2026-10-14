@@ -27,6 +27,9 @@ const SUPPRESSED_KEYS = {
   hormonal: 'cycle.prediction.suppressed.hormonal',
   postpartum: 'cycle.prediction.suppressed.postpartum',
   no_bleeding: 'cycle.prediction.suppressed.no_bleeding',
+  pregnancy: 'cycle.complete.stagePregnancyHint',
+  pregnancy_loss: 'cycle.complete.stageLossHint',
+  menopause: 'cycle.complete.stageMenopauseHint',
 } as const;
 
 /**

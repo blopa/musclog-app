@@ -259,7 +259,8 @@
         "possible_missed_period": "fue mucho más largo que los demás, posiblemente un periodo sin registrar",
         "user_excluded": "lo excluiste",
         "hormonal_context": "se usaba un método hormonal",
-        "postpartum_context": "los ciclos posparto no se cuentan"
+        "postpartum_context": "los ciclos posparto no se cuentan",
+        "life_context": "contexto sin predicción de periodo natural"
       }
     },
     "insights": {
@@ -383,13 +384,19 @@
         "discharge": "Flujo vaginal / moco cervical",
         "medication": "Medicamento y dosis",
         "sex": "Actividad sexual",
-        "tags": "Etiquetas"
+        "tags": "Etiquetas",
+        "impact": "Impacto en la vida diaria",
+        "leakage": "Fugas en ropa o sábanas",
+        "clots": "Coágulos",
+        "lhTest": "Prueba de ovulación (LH)",
+        "pregnancyTest": "Prueba de embarazo"
       },
       "customField": "Nuevo campo personalizado",
       "kinds": {
         "text": "Texto",
         "number": "Número",
-        "toggle": "Sí / no"
+        "toggle": "Sí / no",
+        "rating": "Escala limitada"
       },
       "removeHint": "Quitar un campo del formulario conserva sus valores anteriores en el historial y las exportaciones.",
       "saving": "Guardando…",
@@ -456,6 +463,131 @@
       "unlogged": "Sin registrar",
       "unrated": "Presente, sin evaluar",
       "limitHint": "Muestra tus últimos seis ciclos, hasta 60 días tras un inicio o 14 días antes del siguiente inicio registrado. Los días vacíos siguen vacíos."
+    },
+    "complete": {
+      "confirmLong": "Este ciclo más largo es correcto",
+      "unknownLength": "No sé cuánto suele durar mi ciclo",
+      "rangeHeuristic": "Este intervalo es una estimación de tu historial, no un intervalo de probabilidad ni una fecha de ovulación confirmada.",
+      "backtest": "Revisión retrospectiva: {{hits}} de {{checked}} inicios posteriores estuvieron dentro del intervalo; error medio de {{error}} días. No es una validación clínica.",
+      "restoreFirst": "Restaurar o importar mi historial",
+      "careTitle": "Entender tus síntomas",
+      "careHint": "Información general del NHS y RCOG. Registrar no es diagnosticar. Consulta a un profesional si los síntomas te preocupan o afectan tu vida diaria; busca atención urgente local ante síntomas graves o que empeoran rápidamente.",
+      "education": {
+        "bleeding": "Sangrado abundante — NHS (inglés)",
+        "pain": "Dolor menstrual — NHS (inglés)",
+        "unexpected": "Sangrado inesperado — NHS (inglés)",
+        "pms": "SPM y diarios de síntomas — RCOG (inglés)",
+        "menopause": "Perimenopausia y menopausia — NHS (inglés)",
+        "pregnancy": "Información sobre embarazo — NHS (inglés)",
+        "postpartum": "Recuperación después del parto — NHS (inglés)",
+        "pregnancy_loss": "Información sobre pérdida gestacional — NHS (inglés)"
+      },
+      "trends": "Tendencias y búsqueda",
+      "trendsHint": "Explora los días registrados, incluso sin menstruaciones. Son observaciones, no explicaciones de la causa de un cambio.",
+      "lastDays": "Últimos {{days}} días",
+      "summary": "{{logged}} días registrados · {{heavy}} días de flujo abundante · {{spotting}} días de manchado · {{impact}} días con impacto en la vida diaria",
+      "recap": "Desde el inicio registrado el {{date}}: {{logged}} días registrados, {{heavy}} días de flujo abundante y {{impact}} días con impacto en la vida diaria.",
+      "symptomSummary": "{{symptom}}: {{days}} días registrados, {{severe}} valorados como graves",
+      "loggedOnly": "Solo se muestran valores registrados. Los días sin registro son desconocidos. Se listan los últimos 30 valores.",
+      "noObservations": "No hay observaciones coincidentes en este intervalo.",
+      "contextChanged": "El contexto cambió el {{date}} — consulta el historial.",
+      "search": "Buscar en tus registros",
+      "searchHint": "Busca síntomas, notas, medicamentos, etiquetas o valores personalizados. Deben coincidir todas las palabras. La búsqueda permanece en este dispositivo; se muestran hasta 50 días.",
+      "metrics": {
+        "pain": "Dolor (0–10)",
+        "energy": "Energía (1–5)",
+        "mood": "Ánimo (0–4)",
+        "sleepHours": "Sueño (horas)",
+        "temperatureC": "Temperatura basal (°C)",
+        "impact": "Impacto en la vida diaria (0–3)",
+        "bleeding": "Sangrado",
+        "symptoms": "Síntomas",
+        "note": "Notas",
+        "importedTemperatureC": "Temperatura basal importada (°C)"
+      },
+      "reminders": {
+        "hour": "Hora (0–23)",
+        "minute": "Minuto (0–59)",
+        "leadDays": "Días antes del periodo",
+        "period": "Recordatorio del periodo previsto",
+        "fertility": "Recordatorio de ventana fértil (si está activada)",
+        "daily": "Recordatorio diario para registrar",
+        "endCheck": "Revisar un periodo que sigue abierto tras 7 días"
+      },
+      "backupDays": "Intervalo de recordatorio de copia (días; 0 desactiva)",
+      "remindersHint": "Los horarios usan tu hora local. Los recordatorios diarios cubren 28 días y se renuevan al abrir la app. Las notificaciones también deben estar activadas en la app y el dispositivo.",
+      "notification": {
+        "daily-log": "Registra hoy si quieres.",
+        "end-check": "¿Sigue el periodo que marcaste como abierto? Actualiza su final cuando quieras.",
+        "backup": "Considera guardar una copia cifrada de tus registros."
+      },
+      "importTitle": "Importar historial de otro rastreador",
+      "importHint": "{{rows}} filas CSV. Columnas: {{columns}}. Introduce los nombres exactos; deja vacíos los campos opcionales. Este asistente acepta CSV, no archivos propietarios.",
+      "importColumns": {
+        "date": "Columna de fecha/inicio",
+        "end": "Columna de fecha final (opcional)",
+        "flow": "Columna de flujo (opcional)",
+        "temperature": "Columna de temperatura en °C (opcional)",
+        "symptoms": "Columna de síntomas (separados por punto y coma)",
+        "note": "Columna de notas (opcional)"
+      },
+      "dateOrder": {
+        "iso": "AAAA-MM-DD",
+        "dmy": "Día/mes/año",
+        "mdy": "Mes/día/año"
+      },
+      "importPeriods": "Cada fila registra un inicio de periodo (no un registro diario)",
+      "importError": "Comprueba columnas, orden de fecha y valores. Flujo admite none, spotting, light, medium, heavy o very_heavy; temperatura en °C. No se importan inicios duplicados ni fechas inválidas.",
+      "previewImport": "Vista previa de importación",
+      "healthTitle": "Datos del ciclo en tu servicio de salud",
+      "healthHint": "Lee sangrado y temperatura basal con tu permiso. Los datos importados conservan su fuente, no reemplazan registros manuales ni crean inicios de periodo. El acceso histórico puede estar limitado por la plataforma.",
+      "healthRead": "Leer y revisar",
+      "healthPreview": "{{count}} observaciones disponibles. Reimportar los mismos identificadores actualiza solo sus copias importadas.",
+      "healthImport": "Importar estas observaciones",
+      "healthWrite": "Exportar sangrado y temperatura manuales",
+      "healthWriteHint": "Se enviarán tus registros manuales de sangrado y temperatura basal del intervalo elegido al servicio de salud. Otras apps autorizadas podrán leerlos. Se excluyen datos importados, síntomas, ánimo, medicación, sexo y notas. El flujo muy abundante se exporta como abundante.",
+      "healthDone": "Observaciones importadas guardadas.",
+      "healthWritten": "{{count}} registros de salud escritos.",
+      "healthError": "Falló el acceso o se denegó el permiso. Revisa los permisos de salud y vuelve a intentarlo. Una exportación fallida puede haber escrito algunos registros; reintentar actualiza los registros propios de Musclog.",
+      "importedValue": "Importado de {{source}}: {{value}}",
+      "sharing": "Compartir registros seleccionados",
+      "sharingHint": "Elige exactamente qué compartir. Se crea un JSON legible del intervalo seleccionado. El destinatario puede guardarlo o reenviarlo; no es acceso en vivo y no puede revocarse. Nada está seleccionado por defecto.",
+      "shareSelected": "Exportar campos seleccionados",
+      "presets": "Configuraciones opcionales del diario",
+      "presetsHint": "Añade campos útiles y ocupa espacios libres de favoritos. Se conservan tu historial y favoritos actuales.",
+      "preset": {
+        "pms": "Configurar diario de SPM/ánimo",
+        "fertility": "Añadir observaciones de fertilidad",
+        "perimenopause": "Añadir observaciones de perimenopausia"
+      },
+      "pmsDiaryHint": "Un diario diario de síntomas e impacto durante dos ciclos consecutivos puede apoyar una consulta sobre SPM. No es un cuestionario validado de TDPM ni lo diagnostica.",
+      "fertilityHint": "Temperatura, flujo cervical y pruebas son solo observaciones. No confirman la ovulación ni hacen que las estimaciones sirvan como anticonceptivo.",
+      "impact": {
+        "0": "Sin impacto",
+        "1": "Algo de interferencia",
+        "2": "Actividades limitadas",
+        "3": "No puedo hacer actividades habituales"
+      },
+      "tests": {
+        "negative": "Negativo",
+        "positive": "Positivo",
+        "unclear": "Incierto"
+      },
+      "stagePregnancy": "Embarazo",
+      "stagePregnancyHint": "Las predicciones del periodo y fertilidad están pausadas. Conserva tus registros y cambia el contexto cuando quieras.",
+      "stageLoss": "Después de una pérdida gestacional",
+      "stageLossHint": "Un contexto tranquilo sin predicciones del periodo ni fertilidad. Se conserva tu historial; cambia el contexto cuando quieras.",
+      "stageSurgery": "Después de una histerectomía",
+      "stageSurgeryHint": "Registra síntomas sin predicciones del periodo ni fertilidad. La cirugía no indica automáticamente si persisten ciclos ováricos.",
+      "stageMenopause": "Después de la menopausia",
+      "stageMenopauseHint": "Registra síntomas sin predicciones del periodo ni fertilidad. Puedes registrar sangrado inesperado.",
+      "ratingMin": "Puntuación mínima",
+      "ratingMax": "Puntuación máxima",
+      "chartDescription": "{{metric}} a lo largo del tiempo. Cada punto es un valor registrado; fechas y valores aparecen abajo.",
+      "variabilitySummary": "{{count}} intervalos de ciclo registrados: {{low}}–{{high}} días, incluidos los excluidos de las predicciones.",
+      "energyInsight": "Registraste menos energía cerca del inicio del periodo en {{hits}} de {{total}} ciclos observados. Esto no demuestra una causa.",
+      "sleepInsight": "Registraste menos sueño cerca del inicio del periodo en {{hits}} de {{total}} ciclos observados. Esto no demuestra una causa.",
+      "reviewLong": "Volver a considerar incierto este ciclo largo"
     }
   }
 }

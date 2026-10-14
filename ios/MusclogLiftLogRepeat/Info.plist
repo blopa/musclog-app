@@ -62,9 +62,9 @@
     <key>NSFaceIDUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to use Face ID.</string>
     <key>NSHealthShareUsageDescription</key>
-    <string>Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.</string>
+    <string>Musclog reads workouts, nutrition and body measurements, and optionally menstrual bleeding and basal temperature when you request a cycle import.</string>
     <key>NSHealthUpdateUsageDescription</key>
-    <string>Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync.</string>
+    <string>Musclog writes workouts, nutrition and body metrics, and optionally your manually logged bleeding and basal temperature when you request a cycle export.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Musclog does not use your location. This permission string is required because a bundled SDK references location APIs.</string>
     <key>NSMicrophoneUsageDescription</key>
