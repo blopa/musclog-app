@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
+import { isCycleReminderKind } from '@/utils/cycle/cycleReminders';
 
 export function addNotificationResponseReceivedListener(
   listener: (event: Notifications.NotificationResponse) => void
@@ -71,9 +72,16 @@ export async function handleNotificationResponse(response: Notifications.Notific
       router.navigate('/app/workout/workout-session');
       break;
 
-    case 'menstrual-cycle':
-      router.navigate('/app/cycle');
+    case 'menstrual-cycle': {
+      // The cycle screen explains which setting sent this and what it was based on.
+      const kind = data['subtype'];
+      router.navigate(
+        typeof kind === 'string' && isCycleReminderKind(kind)
+          ? `/app/cycle?reminder=${encodeURIComponent(kind)}`
+          : '/app/cycle'
+      );
       break;
+    }
 
     default:
       console.log('Unhandled notification type:', type);

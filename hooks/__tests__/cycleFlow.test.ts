@@ -8,7 +8,6 @@ import { CycleGoals } from '@/components/cycle/CycleGoals';
 import { QuickLogRow } from '@/components/cycle/QuickLogRow';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { blankDayLog } from '@/utils/cycle/dayLog';
-import { loadDayMood } from '@/utils/cycle/dayMood';
 
 const mockNavigate = jest.fn();
 const mockSave = jest.fn(async () => {});
@@ -16,7 +15,9 @@ const mockSnackbar = jest.fn();
 const mockStartPeriod = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ navigate: mockNavigate }) }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
-jest.mock('@/hooks/useSettings', () => ({ useSettings: () => ({ cycleQuickLogRaw: '' }) }));
+jest.mock('@/hooks/useSettings', () => ({
+  useSettings: () => ({ cycleQuickLogRaw: '', units: 'metric' }),
+}));
 jest.mock('@/hooks/useMenstrualCycle', () => ({ useMenstrualCycle: jest.fn() }));
 jest.mock('@/context/SnackbarContext', () => ({
   useSnackbar: () => ({ showSnackbar: mockSnackbar }),
@@ -29,8 +30,11 @@ jest.mock('@/utils/onboardingService', () => ({
   setCurrentOnboardingStep: jest.fn(async () => {}),
 }));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
-jest.mock('@/utils/cycle/dayMood', () => ({
-  loadDayMood: jest.fn(async () => ({ id: 'm', value: 3 })),
+jest.mock('@/components/modals/ConfirmationModal', () => ({
+  ConfirmationModal: ({ visible, onConfirm, confirmLabel }: any) =>
+    visible
+      ? require('react').createElement('button', { onClick: onConfirm }, `confirm:${confirmLabel}`)
+      : null,
 }));
 jest.mock('@/components/cycle/ContextFields', () => ({
   ContextFields: ({ onLifeStageChange }: any) =>
@@ -78,6 +82,9 @@ jest.mock('@/components/cards/MoodSelectorCard', () => ({
 const day = new Date(2024, 0, 1).getTime();
 const mockCycle = () => ({
   dayLogs: [],
+  moods: [{ date: day, value: 3 }],
+  moodsLoading: false,
+  moodsError: false,
   config: { fallbackCycleLength: 28, fallbackPeriodDuration: 5 },
   saveDayLog: mockSave,
   patchDayLog: async (date: number, update: any) => {
@@ -93,7 +100,6 @@ const mockCycle = () => ({
 beforeEach(() => {
   jest.clearAllMocks();
   (useMenstrualCycle as jest.Mock).mockReturnValue(mockCycle());
-  (loadDayMood as jest.Mock).mockResolvedValue({ id: 'm', value: 3 });
 });
 
 it('offers symptom-only onboarding and routes it into setup rather than skipping tracking', async () => {
@@ -102,7 +108,7 @@ it('offers symptom-only onboarding and routes it into setup rather than skipping
   fireEvent.click(screen.getByRole('button', { name: 'onboarding.personalizedCycle.continue' }));
   await waitFor(() =>
     expect(mockNavigate).toHaveBeenCalledWith(
-      expect.stringContaining('cycle-setup?symptomOnly=true')
+      expect.stringContaining('cycle-setup?tracking=symptoms')
     )
   );
 });
@@ -135,13 +141,31 @@ it('clears shared mood explicitly along with the cycle observations', async () =
   render(createElement(CycleDaySheet, { visible: true, day, onClose: jest.fn() }));
   await screen.findByText('mood:3');
   fireEvent.click(screen.getByRole('button', { name: 'cycle.personalize.clearDayAndMood' }));
+  // Clearing removes the shared mood too, so it asks first instead of acting on one tap.
+  expect(mockSave).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: 'confirm:cycle.daySheet.clearConfirm' }));
   await waitFor(() => expect(mockSave).toHaveBeenCalledWith(blankDayLog(day), null));
 });
+it('still saves the day when mood cannot be loaded, leaving the mood untouched', async () => {
+  (useMenstrualCycle as jest.Mock).mockReturnValue({
+    ...mockCycle(),
+    moods: [],
+    moodsError: true,
+    dayLogs: [{ ...blankDayLog(day), id: 'd', timezone: '+00:00', pain: 4 }],
+  });
+  render(createElement(CycleDaySheet, { visible: true, day, onClose: jest.fn() }));
+  const save = screen.getByRole('button', { name: 'common.save' }) as HTMLButtonElement;
+  expect(save.disabled).toBe(false);
+  fireEvent.click(save);
+  await waitFor(() =>
+    expect(mockSave).toHaveBeenCalledWith(expect.objectContaining({ pain: 4 }), undefined)
+  );
+});
 it('does not display an unlogged mood as Okay and preserves archived observations when saving', async () => {
-  (loadDayMood as jest.Mock).mockResolvedValue(null);
   const observations = { custom: { retired: 0 }, customLabels: { retired: 'Archived score' } };
   (useMenstrualCycle as jest.Mock).mockReturnValue({
     ...mockCycle(),
+    moods: [],
     dayLogs: [{ ...blankDayLog(day), id: 'd', timezone: '+00:00', observations }],
   });
   render(createElement(CycleDaySheet, { visible: true, day, onClose: jest.fn() }));

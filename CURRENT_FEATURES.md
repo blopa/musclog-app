@@ -161,12 +161,12 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Observations from your records only, each stating how many cycles it rests on and the days behind it: recurring symptoms or pain near the start of a period, cycle length and bleeding duration changes, mood and workout volume near a period start, with a list of the sessions involved
 - Compare up to six cycles by cycle day (up to 60 days) or the fortnight before the next recorded period; filter symptoms or bleeding/pain/energy/mood, tap a cell to edit, and keep missing observations distinct from explicit none
 - Recurring symptoms in the seven days before recorded periods, with the same evidence threshold as near-start patterns
-- No phase-based energy labels, hormone cards or workout intensity multipliers
+- No phase-based energy labels, hormone cards or workout intensity multipliers, and no cycle card in the live workout session. The wheel shows only bleeding and "between periods" unless the fertility estimate is turned on, since follicular, ovulatory and luteal phases are themselves an ovulation estimate
 
 **Privacy and data**
 
 - Periods, daily logs, life-stage history and notes are encrypted on the device
-- Optional lock (biometrics or device PIN) for the cycle area only, or the whole app; reminders are discreet by default and never say what they are about unless you choose detailed wording
+- Optional lock (biometrics or device PIN) for the cycle area only, or the whole app. The lock also covers sheets left open when it engages, hides the app from the app switcher's snapshot while it is in the background, and hides the cycle chart in Progress
 - Pause tracking without losing history; delete all cycle data permanently, with an offer to remove local recovery points that could hold a copy
 - Cycle preference edits refresh immediately and merge concurrent changes; failed cycle writes restore the saved state and remain retryable. Legacy encryption conversion and permanent cycle deletion commit atomically, including large histories.
 - Shared mood edits and daily observations commit together; clear-day explicitly removes that day's shared mood from Home/Progress too. Permanent cycle deletion keeps shared mood, as disclosed in the confirmation
@@ -179,7 +179,13 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Optional bounded integer rating fields with configurable limits; daily-life impact, leakage, clots, LH and pregnancy-test observations. PMS/mood, fertility-observation and perimenopause diary presets add fields without replacing history or existing favorites; these are journals, not diagnostic or contraceptive tools
 - Contexts for pregnancy, pregnancy loss, hysterectomy and menopause keep history and symptom logging while suppressing period/fertility predictions; unexpected bleeding remains recordable. Setup applies the chosen context from today rather than inventing its start across imported history
 - Contextual NHS/RCOG educational links (identified as English), appointment export access, and personal energy/sleep observations near recorded starts with minimum sample thresholds; no automated diagnosis or medical urgency classifier
-- Configurable local reminder hour/minute, period lead days, separate period/fertility switches, optional daily logging (28-day horizon, renewed on foreground), forgotten-end checks and backup reminders; discreet wording remains the default
+- Cycle reminders, each stating when it fires, how often, and whether its date is an estimate or a time you chose: a heads-up before the earliest predicted start (configurable notice), an optional reminder on the most likely day, an optional neutral note when a cycle runs longer than your usual range (it never suggests a reason), the opt-in fertile-window estimate, a daily check-in, a forgotten-end check and backup reminders
+- Pill reminder with its own time that knows the pack: every day, 21 + 7 or 24 + 4, skipping the pill-free days
+- Lock-screen wording in three levels — Private (never says what it is about, the default), Subtle (names the task, never periods, fertility or pills) and Detailed (states the estimated range) — with a live preview of every reminder that is on
+- Pause cycle reminders for a week, a month or until resumed; the pill reminder keeps going. Recording a pregnancy loss stops predictions and period reminders and offers to pause the rest for four weeks
+- A delivery check in cycle settings says whether a reminder can actually arrive (permission, app and cycle switches), shows the next one, turns everything on in one tap (asking for permission only then) and sends a test notification. Tapping a reminder explains why it was sent and what its date is based on
+- Removing a day's log or a context change erases it; a removed period stays undoable until the app restarts and is then erased. Automatic recovery points keep cycle records encrypted; downloading one makes a portable copy
+- Basal temperature is entered and shown in °F for imperial units
 - Backups remain manual: the user chooses when to prepare and save each password-protected file; optional reminders never upload or create a backup automatically
 - Restore-first cycle import creates a cycle and all its records in one commit without placeholder setup. External CSV import offers explicit column/date-order mapping and a validated preview; proprietary Clue/Flo archives and Apple Health XML are not directly parsed
 - Explicit native health-store read/preview/import and manual export for bleeding, spotting and basal temperature through Health Connect / HealthKit. Imported values preserve source IDs separately from self-report, do not create period starts, and re-import idempotently. Exports reconcile only Musclog-owned identifiers for selected live logs; health access may limit historical reads

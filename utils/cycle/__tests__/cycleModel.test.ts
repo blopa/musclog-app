@@ -2,7 +2,8 @@ import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 import { buildCycleHistory } from '../cycleHistory';
 import { computePredictionStats } from '../cycleStats';
-import { buildPhaseSegments, computeCycleTimeline, phaseAtDay } from '../cycleTimeline';
+import { buildCycleSnapshot } from '../cycleSnapshot';
+import { buildPhaseSegments, computeCycleTimeline } from '../cycleTimeline';
 import type { CyclePeriodInput } from '../types';
 
 const D = MS_PER_SOLAR_DAY;
@@ -129,6 +130,47 @@ describe('computeCycleTimeline', () => {
     expect(off.fertileEstimate).toBeNull();
   });
 
+  it('never names an ovulation-derived phase unless the fertility estimate is on', () => {
+    // Regression: the wheel and header said "Ovulatory" with the opt-in off, which is the same
+    // cycle-length-minus-14 guess as the fertile window under another name.
+    for (let n = 56; n < 56 + 28; n++) {
+      const off = computeCycleTimeline(periods, stats, { today: day(n) });
+      expect(['menstrual', 'between', null]).toContain(off.currentPhase);
+      expect(off.segments?.map((s) => s.key) ?? []).not.toContain('ovulatory');
+    }
+
+    const on = computeCycleTimeline(periods, stats, { today: day(56 + 14), showFertility: true });
+    expect(on.currentPhase).toBe('ovulatory');
+  });
+
+  it('agrees with the snapshot about an open period on every day it is ongoing', () => {
+    // Regression: an open period on day 7 with a 5-day average showed "Period, day 7" in the
+    // banner while the phase read "Follicular".
+    const open = [
+      ...periodsAt(0, 28),
+      { startDate: day(56), endDate: null, endKind: 'open' as const },
+    ];
+    for (let n = 56; n < 56 + 20; n++) {
+      const snapshot = buildCycleSnapshot({
+        periods: open.map((p, i) => ({
+          ...p,
+          id: String(i),
+          cycleId: 'c',
+          timezone: 'UTC',
+          excludedFromStats: false,
+          note: '',
+          endKind: p.endKind ?? 'logged',
+        })),
+        contexts: [],
+        config: { fallbackCycleLength: 28, fallbackPeriodDuration: 5 },
+        nowMs: day(n),
+        showPredictions: true,
+        showFertility: false,
+      });
+      expect(snapshot.activePeriod != null).toBe(snapshot.timeline.currentPhase === 'menstrual');
+    }
+  });
+
   it('is insufficient before any period is logged', () => {
     const tl = computeCycleTimeline([], computePredictionStats([]), { today: day(0) });
     expect(tl.prediction.state).toBe('insufficient');
@@ -152,8 +194,16 @@ describe('computeCycleTimeline', () => {
 });
 
 describe('buildPhaseSegments', () => {
-  it.each([15, 21, 28, 35, 60])('tiles a %i day cycle exactly', (length) => {
-    const segments = buildPhaseSegments(length, 5);
+  it.each([
+    [15, true],
+    [21, true],
+    [28, true],
+    [35, true],
+    [60, true],
+    [28, false],
+    [45, false],
+  ])('tiles a %i day cycle exactly (ovulation estimated: %s)', (length, estimate) => {
+    const segments = buildPhaseSegments(length, 5, estimate);
     expect(segments.reduce((sum, s) => sum + s.length, 0)).toBe(length);
     expect(segments.every((s) => s.length >= 0)).toBe(true);
     expect(segments[0].length).toBeGreaterThanOrEqual(1);
@@ -162,19 +212,9 @@ describe('buildPhaseSegments', () => {
       return expected + s.length;
     }, 0);
   });
-});
 
-describe('phaseAtDay', () => {
-  const periods = periodsAt(0, 30);
-  const stats = computePredictionStats(buildCycleHistory(periods));
-
-  it('is null before the first period and menstrual during it', () => {
-    expect(phaseAtDay(periods, stats, day(-1))).toBeNull();
-    expect(phaseAtDay(periods, stats, day(2))).toBe('menstrual');
-  });
-
-  it('uses the real cycle length once a later period is logged', () => {
-    expect(phaseAtDay(periods, stats, day(29))).toBe('luteal');
+  it('splits only into bleeding and the rest without the ovulation estimate', () => {
+    expect(buildPhaseSegments(28, 5, false).map((s) => s.key)).toEqual(['menstrual', 'between']);
   });
 });
 

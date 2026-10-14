@@ -1390,8 +1390,9 @@ async function seedUserMetrics(): Promise<{ created: number }> {
         });
         created++;
 
-        // Add energy levels (mood)
-        const energyValue = 5 + Math.sin(data.date / (5 * MS_PER_SOLAR_DAY)) * 4;
+        // Add a mood: the app's 0–4 integer scale (it was a fraction from 1 to 9, which no mood
+        // surface can label and the cycle export rejects).
+        const energyValue = Math.round(2 + Math.sin(data.date / (5 * MS_PER_SOLAR_DAY)) * 2);
         const encryptedEnergy = await encryptUserMetricFields({
           value: energyValue,
           unit: '',

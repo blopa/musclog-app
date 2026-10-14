@@ -1,9 +1,13 @@
+import { STALE_OPEN_PERIOD_DAYS } from '@/constants/cycle';
 import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 import type { CyclePeriodInput, PeriodEndKind } from './types';
 
 export type PeriodRuleError =
-  'period_date_in_future' | 'period_log_overlaps_existing' | 'period_end_before_start';
+  | 'period_date_in_future'
+  | 'period_log_overlaps_existing'
+  | 'period_end_before_start'
+  | 'period_not_found';
 
 export class PeriodRuleViolation extends Error {
   constructor(public readonly code: PeriodRuleError) {
@@ -31,6 +35,22 @@ export function periodLastDay(period: Interval): number {
 
 export function isOpenPeriod(period: Interval): boolean {
   return period.endDate == null && (period.endKind === 'open' || period.endKind === undefined);
+}
+
+/**
+ * The ONE answer to "is this period still going today?", read by the timeline (phase, wheel) and
+ * the snapshot (banner, "Period ended" button) alike. An open period counts until
+ * `STALE_OPEN_PERIOD_DAYS` after its start; after that the end was forgotten, not ongoing.
+ */
+export function isOngoingPeriod(period: Interval, today: number): boolean {
+  const start = localDayStartFromUtcMs(period.startDate);
+  const day = localDayStartFromUtcMs(today);
+
+  return (
+    isOpenPeriod(period) &&
+    start <= day &&
+    Math.round((day - start) / MS_PER_SOLAR_DAY) <= STALE_OPEN_PERIOD_DAYS
+  );
 }
 
 export function findOverlap<T extends Interval & { id: string }>(

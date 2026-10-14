@@ -2,10 +2,13 @@ import { commitPrepared } from '@/database/commitPrepared';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
 import { database } from '@/database/database-instance';
 import type CycleContext from '@/database/models/CycleContext';
-import { prepareSoftDelete } from '@/database/prepareSoftDelete';
-import { CycleRepository, readContexts } from '@/database/repositories/CycleRepository';
+import {
+  type ContextPayload,
+  CycleRepository,
+  readContexts,
+} from '@/database/repositories/CycleRepository';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
-import type { ContraceptionMethod, CycleContextDto, CycleLifeStage } from '@/utils/cycle/types';
+import type { ContraceptionMethod, CycleLifeStage } from '@/utils/cycle/types';
 import { getCurrentTimezone } from '@/utils/timezone';
 
 export interface ContextInput {
@@ -30,7 +33,7 @@ export class CycleContextService {
       const sameDay = records.find((r) =>
         dtos.some((d) => d.id === r.id && d.effectiveFrom === effectiveFrom)
       );
-      const payload: Omit<CycleContextDto, 'id' | 'cycleId'> = {
+      const payload: ContextPayload = {
         effectiveFrom,
         timezone: getCurrentTimezone(),
         lifeStage: input.lifeStage,
@@ -57,10 +60,11 @@ export class CycleContextService {
     });
   }
 
+  /** Destroyed, not soft-deleted: there is no undo, and a tombstone would keep the text. */
   static async remove(id: string): Promise<void> {
     await database.write(async () => {
       const record = await database.get<CycleContext>('cycle_contexts').find(id);
-      await commitPrepared(database, [record], () => [prepareSoftDelete(record, Date.now())]);
+      await commitPrepared(database, [record], () => [record.prepareDestroyPermanently()]);
     });
   }
 }

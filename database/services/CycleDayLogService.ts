@@ -8,7 +8,11 @@ import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import type CycleDayLog from '@/database/models/CycleDayLog';
 import UserMetric from '@/database/models/UserMetric';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
-import { CycleRepository, readDayLogs } from '@/database/repositories/CycleRepository';
+import {
+  CycleRepository,
+  type DayLogPayload,
+  readDayLogs,
+} from '@/database/repositories/CycleRepository';
 import { dayKeyRange, localDayStartFromUtcMs, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { isEmptyDayLog } from '@/utils/cycle/dayLog';
 import { observationsSchema } from '@/utils/cycle/preferences';
@@ -17,7 +21,10 @@ import { getCurrentTimezone, getTimezoneAt } from '@/utils/timezone';
 
 export type DayLogInput = Omit<CycleDayLogDto, 'id' | 'timezone'>;
 
-type DayLogPayload = Omit<CycleDayLogDto, 'id'>;
+/** The one definition of "the same calendar day" for day logs, used by every lookup here. */
+function isSameLocalDay(a: number, b: number): boolean {
+  return localDayStartFromUtcMs(a) === localDayStartFromUtcMs(b);
+}
 
 export class CycleDayLogService {
   /**
@@ -49,8 +56,8 @@ export class CycleDayLogService {
   ): Promise<DayLogInput> {
     await primeCycleEncryption();
     return database.write(async () => {
-      const existing = (await readDayLogs(await CycleRepository.dayLogs().fetch())).find(
-        (log) => log.date === localDayStartFromUtcMs(date)
+      const existing = (await readDayLogs(await CycleRepository.dayLogs().fetch())).find((log) =>
+        isSameLocalDay(log.date, date)
       );
       const input = update(existing);
       await CycleDayLogService.persist(input, undefined, null);
@@ -68,7 +75,7 @@ export class CycleDayLogService {
     const records = await CycleRepository.dayLogs().fetch();
     const dtos = await readDayLogs(records);
     const matching = records.filter((r) =>
-      dtos.some((d) => d.id === r.id && localDayStartFromUtcMs(d.date) === date)
+      dtos.some((d) => d.id === r.id && isSameLocalDay(d.date, date))
     );
     const [keep, ...duplicates] = matching;
     const stored = keep ? dtos.find((d) => d.id === keep.id) : undefined;
@@ -102,11 +109,13 @@ export class CycleDayLogService {
     const moods = range.filterRecords(moodRecords);
     const now = Date.now();
     await commitPrepared(database, [...matching, ...moods], () => {
-      const operations: Model[] = duplicates.map((r) => prepareSoftDelete(r, now));
+      // A cleared day is destroyed, not soft-deleted: a tombstone would keep decryptable text the
+      // person just removed (and every export used to carry it).
+      const operations: Model[] = duplicates.map((r) => r.prepareDestroyPermanently());
 
       if (encrypted == null) {
         if (keep) {
-          operations.push(prepareSoftDelete(keep, now));
+          operations.push(keep.prepareDestroyPermanently());
         }
       } else {
         if (keep) {

@@ -5,7 +5,6 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Chip } from '@/components/theme/Chip';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
-import { useCycleMoods } from '@/hooks/useCycleMoods';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -18,8 +17,7 @@ import { cycleSymptomLabel } from '@/utils/cycle/preferences';
 export function CycleComparison({ onSelectDay }: { onSelectDay: (date: number) => void }) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
-  const { periods, dayLogs, nowMs } = useMenstrualCycle();
-  const { moods, error } = useCycleMoods();
+  const { periods, dayLogs, today, moods, moodsError: error } = useMenstrualCycle();
   const [metric, setMetric] = useState<ComparisonMetric>('bleeding');
   const [anchor, setAnchor] = useState<ComparisonAnchor>('start');
   const [query, setQuery] = useState('');
@@ -31,8 +29,8 @@ export function CycleComparison({ onSelectDay }: { onSelectDay: (date: number) =
       ? cycleSymptomLabel(key.slice(8), t)
       : t(`cycle.comparison.metrics.${key}`);
   const rows = useMemo(
-    () => buildCycleComparison(periods, dayLogs, moods, metric, anchor, nowMs),
-    [periods, dayLogs, moods, metric, anchor, nowMs]
+    () => buildCycleComparison(periods, dayLogs, moods, metric, anchor, today),
+    [periods, dayLogs, moods, metric, anchor, today]
   );
   const date = (ms: number) =>
     new Date(ms).toLocaleDateString(i18n.resolvedLanguage ?? i18n.language);

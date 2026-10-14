@@ -15,7 +15,6 @@
     "settings": {
       "title": "Cycle Settings",
       "subtitle": "Edit your cycle configuration",
-      "save": "Save Changes",
       "changeContext": "Change life stage or birth control",
       "sectionUsual": "Your usual lengths",
       "usualHint": "Used until there's enough history to learn your own.",
@@ -30,9 +29,6 @@
         "enable": "Show estimates"
       },
       "sectionReminders": "Reminders",
-      "reminderHint": "Reminders never say what they're about unless you choose detailed wording.",
-      "reminderDiscreet": "Discreet",
-      "reminderDetailed": "Detailed",
       "sectionTracking": "Tracking",
       "sectionPrivacy": "Privacy",
       "lockHint": "Ask for your fingerprint, face or device PIN to open.",
@@ -138,7 +134,8 @@
       "follicular": "Follicular",
       "ovulatory": "Ovulatory",
       "ovulation": "Ovulation",
-      "luteal": "Luteal"
+      "luteal": "Luteal",
+      "between": "Between periods"
     },
     "late": {
       "title": "{{count}} day later than your usual range",
@@ -189,11 +186,14 @@
       "effects": "Some methods change how your cycle behaves, so predictions and the fertile window may be hidden or shown with a caveat.",
       "remove": "Remove this change",
       "timelineTitle": "Life stage & birth control history",
-      "from": "From {{date}}"
+      "from": "From {{date}}",
+      "lossQuietTitle": "Pause the other reminders too?",
+      "lossQuietMessage": "Predictions and period reminders have already stopped. You can also pause the daily check-in and other cycle reminders for 4 weeks. Pill reminders keep going. You can resume any time in cycle settings.",
+      "lossQuietConfirm": "Pause for 4 weeks",
+      "lossQuietKeep": "Keep them"
     },
     "daySheet": {
       "title": "Log this day",
-      "severityHint": "Tap a symptom again to change how strong it was.",
       "noSymptoms": "No symptoms today",
       "noSymptomsLogged": "No symptoms",
       "moreSymptoms": "More symptoms",
@@ -214,7 +214,13 @@
       "addDetails": "Add details",
       "edit": "Edit",
       "startPeriodPrompt": "Bleeding logged outside a period.",
-      "startPeriod": "Start period here"
+      "startPeriod": "Start period here",
+      "moodUnavailable": "Mood couldn't be loaded. Everything else still saves.",
+      "severityOptional": "How strong? Optional. Tap a rating again to clear it.",
+      "painScale": "0 = no pain, 10 = the worst you can imagine",
+      "clearTitle": "Clear this day?",
+      "clearMessage": "This removes everything logged for this day, including its mood on Home and Progress. It can't be undone.",
+      "clearConfirm": "Clear day"
     },
     "edit": {
       "title": "Edit period",
@@ -237,7 +243,8 @@
     "errors": {
       "future": "Period dates can't be in the future.",
       "overlap": "This overlaps a period you already logged.",
-      "endBeforeStart": "The end can't be before the start."
+      "endBeforeStart": "The end can't be before the start.",
+      "notFound": "That period no longer exists. It may have been removed."
     },
     "fertilityDisclaimer": "Informational estimate only. Do not use it alone to prevent pregnancy.",
     "history": {
@@ -380,7 +387,7 @@
       "fieldsHint": "Only your selected fields appear in the daily log.",
       "fields": {
         "sleepHours": "Sleep (hours)",
-        "temperatureC": "Basal temperature (°C)",
+        "temperatureC": "Basal temperature",
         "discharge": "Discharge / cervical mucus",
         "medication": "Medication and dose",
         "sex": "Sexual activity",
@@ -405,11 +412,11 @@
       "unexpectedBleeding": "Log unexpected bleeding or spotting",
       "sharedMoodHint": "Mood is shared with Home and Progress. Clearing it here removes that day’s mood there too. Deleting cycle data keeps shared moods.",
       "loadingMood": "Loading mood…",
-      "moodUnlogged": "Mood not recorded",
       "clearMood": "Clear mood when saving",
       "clearDayAndMood": "Clear this day’s observations and shared mood",
       "summaryObservations": "Mood and other observations",
-      "add": "Add"
+      "add": "Add",
+      "moodUnlogged": "Mood not recorded"
     },
     "portability": {
       "title": "Cycle backup and import",
@@ -505,22 +512,7 @@
         "note": "Notes",
         "importedTemperatureC": "Imported basal temperature (°C)"
       },
-      "reminders": {
-        "hour": "Hour (0–23)",
-        "minute": "Minute (0–59)",
-        "leadDays": "Days before period",
-        "period": "Predicted period reminder",
-        "fertility": "Fertile-window reminder (when enabled)",
-        "daily": "Daily logging reminder",
-        "endCheck": "Check a period still marked ongoing after 7 days"
-      },
       "backupDays": "Backup reminder interval (days; 0 disables)",
-      "remindersHint": "Times use your local clock. Daily reminders cover the next 28 days and renew when you open the app. Notifications must also be enabled in app and device settings.",
-      "notification": {
-        "daily-log": "Record today if you want to.",
-        "end-check": "Is the period you marked ongoing still continuing? Update its end when you're ready.",
-        "backup": "Consider saving an encrypted backup of your records."
-      },
       "importTitle": "Bring history from another tracker",
       "importHint": "{{rows}} CSV rows. Columns: {{columns}}. Enter the exact column names below; leave optional fields empty. This wizard accepts CSV, not proprietary archives.",
       "importColumns": {
@@ -588,6 +580,144 @@
       "energyInsight": "You logged lower energy near period starts in {{hits}} of {{total}} observed cycles. This does not establish a cause.",
       "sleepInsight": "You logged shorter sleep near period starts in {{hits}} of {{total}} observed cycles. This does not establish a cause.",
       "reviewLong": "Treat this long cycle as uncertain again"
+    },
+    "dayCounter": "{{day}}/{{length}}",
+    "notifications": {
+      "subtle": {
+        "cycle": "Your cycle update is ready.",
+        "routine": "Time for your daily reminder.",
+        "checkIn": "Time for your daily check-in.",
+        "update": "Time to update your log.",
+        "backup": "Time to save a backup."
+      },
+      "periodStart": {
+        "title": "Period may start soon",
+        "body": "Based on your recent cycles, your period may start around {{from}}. This is an estimate.",
+        "bodyRange": "Based on your recent cycles, your period may start between {{from}} and {{to}}. This is an estimate."
+      },
+      "periodDue": {
+        "title": "Period may start today",
+        "body": "Today is the most likely start, based on your recent cycles. Log it when it happens."
+      },
+      "periodLate": {
+        "title": "This cycle is longer than usual",
+        "body": "This cycle is longer than your recent pattern. There are many possible reasons. Tap if you'd like to update it.",
+        "bodyRange": "This cycle is longer than your recent pattern, which usually ends by {{to}}. There are many possible reasons. Tap if you'd like to update it."
+      },
+      "fertileWindow": {
+        "title": "Estimated fertile window",
+        "body": "Your estimated fertile window may begin {{from}}. It's a calendar estimate, not confirmation of ovulation, and not contraception.",
+        "bodyRange": "Your estimated fertile window is {{from}} to {{to}}. It's a calendar estimate, not confirmation of ovulation, and not contraception."
+      },
+      "pill": {
+        "title": "Pill reminder",
+        "body": "Time to take your pill."
+      },
+      "dailyLog": {
+        "title": "Daily cycle check-in",
+        "body": "Record today if you want to."
+      },
+      "endCheck": {
+        "title": "Is your period still going?",
+        "body": "The period you marked as ongoing started a week ago. Update its end when you're ready."
+      },
+      "backup": {
+        "title": "Cycle backup",
+        "body": "Consider saving an encrypted backup of your records."
+      }
+    },
+    "reminders": {
+      "time": "Reminder time",
+      "leadDays": "Days of notice before your period",
+      "oncePerCycle": "about once per cycle",
+      "atMostOncePerCycle": "at most once per cycle",
+      "daily": "every day",
+      "oncePerPeriod": "at most once per period",
+      "basis": {
+        "estimate": "an estimate from your logged cycles",
+        "routine": "a time you chose"
+      },
+      "notWhileSuppressed": "not sent while predictions are off for your situation",
+      "periodStart": {
+        "label": "Before my period",
+        "when": "At {{time}}, with the notice set below, before the earliest predicted start"
+      },
+      "periodDue": {
+        "label": "On the most likely day",
+        "when": "At {{time}} on the most likely start day"
+      },
+      "periodLate": {
+        "label": "If this cycle runs long",
+        "when": "The day after your usual range ends, in neutral wording"
+      },
+      "fertileWindow": {
+        "label": "Estimated fertile window",
+        "when": "At {{time}} when the estimated window begins",
+        "unavailable": "Available only with the fertile-window estimate turned on, in a situation where it means something."
+      },
+      "dailyLog": {
+        "label": "Daily check-in",
+        "when": "At {{time}}"
+      },
+      "endCheck": {
+        "label": "Check an ongoing period",
+        "when": "A week after a period you marked as ongoing"
+      },
+      "backup": {
+        "label": "Backup reminder"
+      },
+      "pill": {
+        "label": "Pill reminder",
+        "when": "Every pill day at {{time}}",
+        "time": "Pill time",
+        "pattern21": "21 days + 7 off",
+        "pattern24": "24 days + 4 off",
+        "continuous": "Every day",
+        "packStart": "First pill of the current pack",
+        "hint": "Pill-free days get no reminder. This is a reminder, not medical advice: follow your pill's instructions if you miss one.",
+        "notPaused": "keeps going during a pause"
+      },
+      "pause": {
+        "title": "Pause cycle reminders",
+        "week": "1 week",
+        "month": "1 month",
+        "indefinite": "Until I resume",
+        "resume": "Resume reminders",
+        "hint": "For illness, grief, travel or a break. Pill reminders keep going."
+      },
+      "status": {
+        "web": "Reminders are delivered by the Musclog phone app. Settings made here apply there too.",
+        "noPermission": "Notifications are not allowed for Musclog, so no reminder can arrive.",
+        "switchedOff": "Cycle notifications are switched off, so no reminder will arrive.",
+        "pausedUntil": "Reminders are paused until {{date}}.",
+        "paused": "Reminders are paused until you resume them.",
+        "next": "Next: {{reminder}}, {{date}}.",
+        "none": "Nothing is scheduled. Turn on a reminder below.",
+        "turnOn": "Turn on cycle reminders",
+        "permissionDenied": "Notifications were not allowed. You can allow them in your phone's settings."
+      },
+      "test": "Send a test notification",
+      "testSent": "Sent. It arrives in a few seconds, worded as you chose.",
+      "style": {
+        "title": "Lock-screen wording",
+        "hint": "What someone glancing at your phone could read. Private never says what a reminder is about.",
+        "private": "Private",
+        "subtle": "Subtle",
+        "detailed": "Detailed"
+      },
+      "preview": "Preview",
+      "lockScreenHint": "On a locked phone with a secure lock screen, Android also hides the text of cycle reminders.",
+      "why": {
+        "title": "Why you got this reminder",
+        "setting": "You turned on “{{reminder}}” in cycle settings.",
+        "estimateFromCycles": "Its date is an estimate from your logged cycles ({{cycles}} used), which have been {{low}} to {{high}} days long. A reminder can't be more precise than that.",
+        "estimateFromSetup": "Its date comes from the usual cycle length you entered, because there isn't enough logged history yet. It gets better as you log periods.",
+        "routine": "It goes off at the time you chose, whatever your cycle data says.",
+        "pillBreak": "It skips the pill-free days of your pack.",
+        "late": "A longer cycle has many possible reasons. Musclog never assumes one.",
+        "change": "Change or turn off reminders",
+        "estimateFromSteadyCycles": "Its date is an estimate from your logged cycles ({{cycles}} used), which have all been about {{low}} days long. Cycles can still vary, so treat it as approximate."
+      }
     }
   }
 }

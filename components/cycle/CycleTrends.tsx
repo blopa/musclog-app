@@ -6,10 +6,9 @@ import { CycleTrendChart } from '@/components/cycle/CycleTrendChart';
 import { Chip } from '@/components/theme/Chip';
 import { TextButton } from '@/components/theme/TextButton';
 import { TextInput } from '@/components/theme/TextInput';
-import { useCycleMoods } from '@/hooks/useCycleMoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
-import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { addCalendarDays } from '@/utils/cycle/dates';
 import {
   searchCycleLogs,
   summarizeWindow,
@@ -31,8 +30,7 @@ const METRICS: TrendMetric[] = [
 ];
 export function CycleTrends({ onSelectDay }: { onSelectDay: (day: number) => void }) {
   const { t, i18n } = useTranslation();
-  const { dayLogs, config, periods, history, contexts, nowMs } = useMenstrualCycle();
-  const { moods } = useCycleMoods();
+  const { dayLogs, config, periods, history, contexts, today, moods } = useMenstrualCycle();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
   const [query, setQuery] = useState('');
   const [metric, setMetric] = useState<TrendMetric>('pain');
@@ -40,28 +38,28 @@ export function CycleTrends({ onSelectDay }: { onSelectDay: (day: number) => voi
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const date = (ms: number) =>
     new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(ms);
-  const from = nowMs - days * MS_PER_SOLAR_DAY;
+  const from = addCalendarDays(today, -days);
   const filtered = useMemo(
-    () => dayLogs.filter((log) => log.date >= from && log.date <= nowMs),
-    [dayLogs, from, nowMs]
+    () => dayLogs.filter((log) => log.date >= from && log.date <= today),
+    [dayLogs, from, today]
   );
   const points = trendPoints(
     filtered,
-    moods.filter((m) => m.date >= from && m.date <= nowMs),
+    moods.filter((m) => m.date >= from && m.date <= today),
     metric
   );
   const labels = Object.fromEntries(
     dayLogs.flatMap((d) => d.symptoms.map((s) => [s.key, cycleSymptomLabel(s.key, t)]))
   );
   const found = searchCycleLogs(filtered, query, labels);
-  const summary = summarizeWindow(filtered, from, nowMs);
+  const summary = summarizeWindow(filtered, from, today);
   const cycleLengths = history
     .filter((h) => h.start >= from && h.lengthDays != null)
     .map((h) => h.lengthDays!);
   const latest = [...periods]
-    .filter((p) => p.startDate <= nowMs)
+    .filter((p) => p.startDate <= today)
     .sort((a, b) => b.startDate - a.startDate)[0];
-  const recap = latest ? summarizeWindow(dayLogs, latest.startDate, nowMs) : null;
+  const recap = latest ? summarizeWindow(dayLogs, latest.startDate, today) : null;
   const options = [
     ...METRICS,
     ...(config.customFields ?? [])
@@ -156,7 +154,7 @@ export function CycleTrends({ onSelectDay }: { onSelectDay: (day: number) => voi
         <Text className="text-sm text-text-secondary">{t('cycle.complete.noObservations')}</Text>
       )}
       {contexts
-        .filter((c) => c.effectiveFrom >= from && c.effectiveFrom <= nowMs)
+        .filter((c) => c.effectiveFrom >= from && c.effectiveFrom <= today)
         .map((c) => (
           <Text key={c.id} className="text-xs text-text-secondary">
             {t('cycle.complete.contextChanged', { date: date(c.effectiveFrom) })}

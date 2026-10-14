@@ -66,3 +66,15 @@ it('reports read failures so the export action can stay disabled', async () => {
   await waitFor(() => expect(result.current.error).toBe(true));
   expect(result.current.isLoading).toBe(false);
 });
+
+it('leaves out a stored mood that is not on the 0–4 scale instead of breaking labels and exports', async () => {
+  const { result } = renderHook(() => useCycleMoods());
+  const row = (day: number, value: number) => ({
+    date: Date.UTC(2024, 0, day, 10),
+    timezone: '+00:00',
+    getDecrypted: async () => ({ value }),
+  });
+  act(() => mockObserver.next([row(2, 3), row(3, 8.53), row(4, 5)]));
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+  expect(result.current.moods.map((m) => m.value)).toEqual([3]);
+});

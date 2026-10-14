@@ -12,6 +12,17 @@ export const CYCLE_EDUCATION = {
 } as const;
 export type CareTopic = keyof typeof CYCLE_EDUCATION;
 
+export const CARE_TOPIC_LABEL_KEYS: Record<CareTopic, string> = {
+  bleeding: 'cycle.complete.education.bleeding',
+  pain: 'cycle.complete.education.pain',
+  unexpected: 'cycle.complete.education.unexpected',
+  pms: 'cycle.complete.education.pms',
+  menopause: 'cycle.complete.education.menopause',
+  pregnancy: 'cycle.complete.education.pregnancy',
+  postpartum: 'cycle.complete.education.postpartum',
+  pregnancy_loss: 'cycle.complete.education.pregnancy_loss',
+};
+
 /** Educational destinations, not an automated diagnosis or urgency classification. */
 export function careTopics(log: CycleDayLogDto | undefined, stage: CycleLifeStage): CareTopic[] {
   const topics = new Set<CareTopic>(['pms']);

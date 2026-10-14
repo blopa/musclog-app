@@ -200,6 +200,9 @@ clipped by the parent; see `FIXES.md`.
   cards below it use their standard, secondary treatment rather than a second filled button.
 - Secondary: low-emphasis surface or outline treatment.
 - Destructive: red/rose and explicit action copy.
+- Cycle period actions ("My period started" / "ended") use `Button`'s `rose` / `roseOutline`
+  variants: the brand rose without `discard`'s destructive meaning. They were hand-rolled
+  `TouchableOpacity`s before.
 - Disabled: visually subdued and non-interactive; never communicate disabled state by opacity alone
   when the label would become unreadable.
 

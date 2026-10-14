@@ -25,6 +25,17 @@ jest.mock('@/database/services/SettingsService', () => ({
 jest.mock('@/database/preMigrationBackup', () => ({
   createPreRestoreBackup: jest.fn(async () => {}),
   createPreCycleEncryptionBackup: jest.fn(async () => 'backup-uri'),
+  getStoredBackups: jest.fn(async () => [
+    {
+      uri: 'backup-uri',
+      createdAt: '',
+      fromVersion: null,
+      toVersion: null,
+      reason: 'cycle-encryption',
+    },
+    { uri: 'other-uri', createdAt: '', fromVersion: null, toVersion: null, reason: 'pre-restore' },
+  ]),
+  deleteBackup: jest.fn(async () => {}),
 }));
 jest.mock('@/database/dbReady', () => ({ waitForBootMigrations: jest.fn(async () => {}) }));
 jest.mock('@/database/dbDurability', () => ({

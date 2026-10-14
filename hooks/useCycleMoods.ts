@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { useEffect, useState } from 'react';
 
+import { isMoodValue } from '@/constants/mood';
 import { isStaticExport } from '@/constants/platform';
 import { database } from '@/database/database-instance';
 import type UserMetric from '@/database/models/UserMetric';
@@ -42,7 +43,13 @@ export function useCycleMoods(enabled = true) {
                 return;
               }
 
-              setMoods([...new Map(points.map((point) => [point.date, point])).values()]);
+              // Only values on the shared 0–4 scale: anything else cannot be labelled, compared
+              // or exported (the cycle file format rejects it), so one bad row cannot break them.
+              setMoods([
+                ...new Map(
+                  points.filter((point) => isMoodValue(point.value)).map((p) => [p.date, p])
+                ).values(),
+              ]);
               setLoading(false);
               setError(false);
             })

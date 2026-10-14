@@ -4,12 +4,13 @@ import { cycleTestDay as day } from '@/database/services/__tests__/cycleTestSetu
 import { CycleHealthImportService } from '@/database/services/CycleHealthImportService';
 import { CycleTransferService } from '@/database/services/CycleTransferService';
 import { serializeCycleTransfer } from '@/utils/cycle/cycleTransfer';
-import { blankDayLog, patchDayLog, stepSymptom } from '@/utils/cycle/dayLog';
+import { blankDayLog, patchDayLog, toggleSymptom } from '@/utils/cycle/dayLog';
 import { Q } from '@nozbe/watermelondb';
 
 import { encryptNumber } from '@/database/encryptionHelpers';
 import { database } from '@/database/database-instance';
 import { dumpDatabase } from '@/database/exportDb.web';
+import { decryptCyclePayloadsInDump } from '@/database/exportDbCore';
 import { restoreDatabase } from '@/database/importDb';
 import type CycleContext from '@/database/models/CycleContext';
 import type CycleDayLog from '@/database/models/CycleDayLog';
@@ -28,6 +29,7 @@ import {
 import { CycleContextService } from '@/database/services/CycleContextService';
 import { CycleDataEncryptionMigration } from '@/database/services/CycleDataEncryptionMigration';
 import { CycleDayLogService } from '@/database/services/CycleDayLogService';
+import { CycleRecordPurge } from '@/database/services/CycleRecordPurge';
 import { CyclePeriodService } from '@/database/services/CyclePeriodService';
 import { CycleTrackingService } from '@/database/services/CycleTrackingService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -749,7 +751,7 @@ it('merges rapid quick actions without losing another symptom or optional observ
     ['cramps', 'headache'].map((key) =>
       CycleDayLogService.patch(day(1), (current) =>
         patchDayLog(current, day(1), {
-          symptoms: stepSymptom(current?.symptoms ?? [], key),
+          symptoms: toggleSymptom(current?.symptoms ?? [], key),
           noSymptoms: false,
         })
       )
@@ -913,5 +915,91 @@ describe('tracking mode settings', () => {
     expect(await CycleRepository.contexts(cycleId).fetch()).toHaveLength(0);
     await CycleTrackingService.setTrackingMode(cycle, 'symptoms');
     expect(cycle.isActive).toBe(true);
+  });
+});
+
+describe('deleted cycle text does not linger', () => {
+  const allRows = (table: string) => database.get(table).query().fetch();
+
+  it('destroys a cleared day instead of leaving a decryptable tombstone', async () => {
+    await newCycle();
+    await CycleDayLogService.save({ ...blankDayLog(day(3)), note: 'private' });
+    expect(await allRows('cycle_day_logs')).toHaveLength(1);
+    await CycleDayLogService.clear(day(3));
+    expect(await allRows('cycle_day_logs')).toHaveLength(0);
+  });
+
+  it('destroys a removed context outright', async () => {
+    const id = await newCycle();
+    await CycleContextService.set(id, {
+      effectiveFrom: day(1),
+      lifeStage: 'pregnancy_loss',
+      contraception: 'none',
+      note: 'private',
+    });
+    const [context] = await readContexts(await CycleRepository.contexts(id).fetch());
+    await CycleContextService.remove(context.id);
+    expect(await allRows('cycle_contexts')).toHaveLength(0);
+  });
+
+  it('keeps a removed period for undo, leaves it out of exports, and purges it at boot', async () => {
+    const id = await newCycle([{ startDate: day(1), endDate: day(4) }]);
+    const [period] = await livePeriods(id);
+    await CyclePeriodService.remove(period.id);
+    // Undo still works within the session.
+    await CyclePeriodService.restore(period.id);
+    expect(await livePeriods(id)).toHaveLength(1);
+
+    await CyclePeriodService.remove(period.id);
+    const exported = JSON.parse(await dumpDatabase());
+    expect(exported.cycle_periods).toHaveLength(0);
+
+    expect(await CycleRecordPurge.purgeDeleted()).toBe(1);
+    expect(await allRows('cycle_periods')).toHaveLength(0);
+    expect(await CycleRecordPurge.purgeDeleted()).toBe(0);
+  });
+
+  it('keeps cycle payloads encrypted in an on-device recovery point, readable once downloaded', async () => {
+    await newCycle([{ startDate: day(1), endDate: day(4) }]);
+    await CycleDayLogService.save({ ...blankDayLog(day(2)), note: 'only mine' });
+
+    const recoveryPoint = await dumpDatabase(undefined, { keepCycleCiphertext: true });
+    expect(recoveryPoint).not.toContain('only mine');
+    const atRest = JSON.parse(recoveryPoint);
+    expect(atRest.cycle_day_logs[0]._decrypted).toBeUndefined();
+
+    const portable = JSON.parse(await decryptCyclePayloadsInDump(recoveryPoint));
+    expect(portable.cycle_day_logs[0]._decrypted).toBe(true);
+    expect(JSON.parse(portable.cycle_day_logs[0].payload)).toMatchObject({ note: 'only mine' });
+
+    // Restoring the at-rest copy on the same device brings the records back.
+    await restoreDatabase(recoveryPoint);
+    const [log] = await readDayLogs(await CycleRepository.dayLogs().fetch());
+    expect(log.note).toBe('only mine');
+  });
+
+  it('reports a period that no longer exists as not found, not as an end-before-start error', async () => {
+    const id = await newCycle([{ startDate: day(1), endDate: day(4) }]);
+    const [period] = await livePeriods(id);
+    await CyclePeriodService.remove(period.id);
+    await expect(CyclePeriodService.update(period.id, { note: 'x' })).rejects.toMatchObject({
+      code: 'period_not_found',
+    });
+  });
+});
+
+describe('the pre-conversion safety backup', () => {
+  it('is deleted once every converted record reads back, and only that backup', async () => {
+    const { deleteBackup } = jest.requireMock('@/database/preMigrationBackup');
+    await seedLegacy();
+    await CycleDataEncryptionMigration.run();
+    expect(deleteBackup).toHaveBeenCalledTimes(1);
+    expect(deleteBackup).toHaveBeenCalledWith('backup-uri');
+  });
+
+  it('is kept when nothing was converted', async () => {
+    const { deleteBackup } = jest.requireMock('@/database/preMigrationBackup');
+    await CycleDataEncryptionMigration.run();
+    expect(deleteBackup).not.toHaveBeenCalled();
   });
 });

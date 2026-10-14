@@ -10,7 +10,7 @@ import {
   BLEEDING_LEVELS,
   parseQuickLog,
   patchDayLog as applyDayLogPatch,
-  stepSymptom,
+  toggleSymptom,
 } from '@/utils/cycle/dayLog';
 import { cycleSymptomLabel } from '@/utils/cycle/preferences';
 import type { BleedingLevel } from '@/utils/cycle/types';
@@ -64,18 +64,16 @@ export function QuickLogRow({ day }: QuickLogRowProps) {
           {t('cycle.personalize.unexpectedBleeding')}
         </Text>
       ) : null}
-      {
-        <View className="flex-row flex-wrap gap-2">
-          {BLEEDING_LEVELS.map((level) => (
-            <Chip
-              key={level}
-              label={t(BLEEDING_LABEL_KEYS[level])}
-              selected={existing?.bleeding === level}
-              onPress={() => void toggleBleeding(level)}
-            />
-          ))}
-        </View>
-      }
+      <View className="flex-row flex-wrap gap-2">
+        {BLEEDING_LEVELS.map((level) => (
+          <Chip
+            key={level}
+            label={t(BLEEDING_LABEL_KEYS[level])}
+            selected={existing?.bleeding === level}
+            onPress={() => void toggleBleeding(level)}
+          />
+        ))}
+      </View>
       {pinned.length > 0 ? (
         <View className="flex-row flex-wrap gap-2">
           {pinned.map((key) => {
@@ -94,7 +92,7 @@ export function QuickLogRow({ day }: QuickLogRowProps) {
                 onPress={() =>
                   void save((current) =>
                     applyDayLogPatch(current, day, {
-                      symptoms: stepSymptom(current?.symptoms ?? [], key),
+                      symptoms: toggleSymptom(current?.symptoms ?? [], key),
                       noSymptoms: false,
                     })
                   )

@@ -1,11 +1,10 @@
-import { STALE_OPEN_PERIOD_DAYS } from '@/constants/cycle';
-import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 
 import { contextAt, type ContextGuidance, contextGuidance } from './contraception';
 import { buildCycleHistory } from './cycleHistory';
 import { computePredictionStats, type PredictionStats } from './cycleStats';
 import { computeCycleTimeline, type CycleTimeline } from './cycleTimeline';
-import { isOpenPeriod } from './periodRules';
+import { isOngoingPeriod } from './periodRules';
 import type { CycleConfig, CycleContextDto, CycleHistoryEntry, CyclePeriodDto } from './types';
 
 export interface CycleSnapshot {
@@ -54,13 +53,7 @@ export function buildCycleSnapshot(input: {
     showFertility: input.showFertility && guidance.fertilityMeaningful,
     suppressed: guidance.suppressedReason != null,
   });
-  const activePeriod =
-    periods.find(
-      (p) =>
-        isOpenPeriod(p) &&
-        p.startDate <= nowMs + 1 &&
-        nowMs - p.startDate <= STALE_OPEN_PERIOD_DAYS * MS_PER_SOLAR_DAY
-    ) ?? null;
+  const activePeriod = periods.find((p) => isOngoingPeriod(p, today)) ?? null;
 
   return { activeContext, guidance, history, stats, timeline, activePeriod };
 }

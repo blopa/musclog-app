@@ -1,40 +1,45 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TextInput as RNTextInput, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { MoodSelectorCard } from '@/components/cards/MoodSelectorCard';
 import { CycleObservationInputs } from '@/components/cycle/CycleObservationInputs';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { TextButton } from '@/components/theme/TextButton';
+import { TextInput } from '@/components/theme/TextInput';
 import {
   BLEEDING_LABEL_KEYS,
   EMOTIONAL_SYMPTOM_KEYS,
+  ENERGY_LEVEL_LABEL_KEYS,
+  type EnergyLevel,
   PHYSICAL_SYMPTOM_KEYS,
   SEVERITY_LABEL_KEYS,
 } from '@/constants/cycle';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { useStartPeriodPrompt } from '@/hooks/useStartPeriodPrompt';
-import { useTheme } from '@/hooks/useTheme';
-import { localCalendarDayDate } from '@/utils/calendarDate';
+import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import {
   blankDayLog,
   BLEEDING_LEVELS,
   parseQuickLog,
-  stepSymptom,
+  setSymptomSeverity,
+  toggleSymptom,
   withNoSymptoms,
 } from '@/utils/cycle/dayLog';
-import { loadDayMood } from '@/utils/cycle/dayMood';
 import {
   type ObservationDraft,
   observationDraft,
   resolveObservationDraft,
 } from '@/utils/cycle/observationDraft';
 import { cycleSymptomLabel } from '@/utils/cycle/preferences';
-import type { BleedingLevel, DaySymptom } from '@/utils/cycle/types';
+import type { CycleDayLogDto, SymptomSeverity } from '@/utils/cycle/types';
 import { handleError } from '@/utils/handleError';
+import { celsiusToDisplay, getTemperatureUnitLabel } from '@/utils/unitConversion';
 
 type CycleDaySheetProps = {
   visible: boolean;
@@ -44,78 +49,67 @@ type CycleDaySheetProps = {
 };
 
 const PAIN_VALUES = Array.from({ length: 11 }, (_, i) => i);
-const ENERGY_VALUES = [1, 2, 3, 4, 5];
+const ENERGY_VALUES: EnergyLevel[] = [1, 2, 3, 4, 5];
+const SEVERITIES: SymptomSeverity[] = [1, 2, 3];
+const NOTE_MAX_LENGTH = 500;
+
+type Draft = Omit<CycleDayLogDto, 'id' | 'timezone' | 'observations'> & {
+  observations: ObservationDraft;
+  /** Null = no mood that day. Only written back when `moodTouched`. */
+  mood: number | null;
+  moodTouched: boolean;
+  showAllSymptoms: boolean;
+};
 
 /**
- * Everything about one day in one place: bleeding, symptoms with severity, pain, energy, mood and
- * a note. "No symptoms today" is a real answer, kept distinct from not having logged at all, and
- * emptying the form and saving removes the record rather than leaving the old one behind.
+ * Everything about one day in one place: bleeding, symptoms with an optional severity, pain,
+ * energy, mood and a note. "No symptoms today" is a real answer, kept distinct from not having
+ * logged at all, and emptying the form and saving removes the record rather than leaving the old
+ * one behind.
  */
 export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
   const { t, i18n } = useTranslation();
-  const theme = useTheme();
-  const { cycleQuickLogRaw } = useSettings();
-  const { dayLogs, saveDayLog, guidance, config } = useMenstrualCycle();
+  const { formatDecimal } = useFormatAppNumber();
+  const { cycleQuickLogRaw, units } = useSettings();
+  const { dayLogs, moods, moodsLoading, moodsError, saveDayLog, guidance, config } =
+    useMenstrualCycle();
   const promptStartPeriod = useStartPeriodPrompt();
-
-  const [bleeding, setBleeding] = useState<BleedingLevel | null>(null);
-  const [symptoms, setSymptoms] = useState<DaySymptom[]>([]);
-  const [noSymptoms, setNoSymptoms] = useState(false);
-  const [pain, setPain] = useState<number | null>(null);
-  const [energy, setEnergy] = useState<number | null>(null);
-  const [note, setNote] = useState('');
-  const [mood, setMood] = useState<number | null>(null);
-  const [moodLoading, setMoodLoading] = useState(true);
-  const [moodError, setMoodError] = useState(false);
-  const [observations, setObservations] = useState<ObservationDraft>({});
-  const [moodTouched, setMoodTouched] = useState(false);
-  const [showAll, setShowAll] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-
   const existing = dayLogs.find((log) => log.date === day);
 
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
+  const draftFor = (): Draft => {
+    const log = existing ?? blankDayLog(day);
 
-    let cancelled = false;
-    const frame = requestAnimationFrame(() => {
-      const log = existing ?? { ...blankDayLog(day) };
-      setBleeding(log.bleeding);
-      setSymptoms(log.symptoms);
-      setNoSymptoms(log.noSymptoms);
-      setPain(log.pain);
-      setEnergy(log.energy);
-      setNote(log.note);
-      setMoodTouched(false);
-      setMood(null);
-      setMoodLoading(true);
-      setMoodError(false);
-      setObservations(observationDraft(log.observations));
-      setShowAll(false);
-      void loadDayMood(localCalendarDayDate(new Date(day)))
-        .then((m) => {
-          if (!cancelled) {
-            setMood(m?.value ?? null);
-            setMoodLoading(false);
-          }
-        })
-        .catch(() => {
-          if (!cancelled) {
-            setMoodLoading(false);
-            setMoodError(true);
-          }
-        });
-    });
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(frame);
+    return {
+      ...log,
+      observations: observationDraft(log.observations, units),
+      mood: moods.find((m) => m.date === day)?.value ?? null,
+      moodTouched: false,
+      showAllSymptoms: false,
     };
-    // Reloaded when the sheet opens or the day changes, not when other days' logs update.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, day]);
+  };
+
+  // The form is a snapshot taken when the sheet opens (or moves to another day), not a
+  // subscription: a database emission while typing must not overwrite the draft. Adjusting state
+  // during render is React's sanctioned way to reset on a prop change, without an effect.
+  const [session, setSession] = useState<{ day: number; open: boolean }>({ day, open: false });
+  const [draft, setDraft] = useState<Draft>(draftFor);
+  if (visible && (!session.open || session.day !== day)) {
+    setSession({ day, open: true });
+    setDraft(draftFor());
+  } else if (!visible && session.open) {
+    setSession({ day, open: false });
+  }
+
+  // Mood arrives with the cycle data; until it has, the field takes the loaded value as long as
+  // the person has not chosen one themselves.
+  const loadedMood = moods.find((m) => m.date === day)?.value ?? null;
+  if (!draft.moodTouched && !moodsLoading && draft.mood !== loadedMood) {
+    setDraft({ ...draft, mood: loadedMood });
+  }
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [confirmClear, setConfirmClear] = useSubModalVisibility(visible);
+  const update = (patch: Partial<Draft>) => setDraft((current) => ({ ...current, ...patch }));
 
   const pinned = config.quickLog ?? parseQuickLog(cycleQuickLogRaw);
   const allOptions = [
@@ -124,11 +118,16 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
     ...(config.customSymptoms ?? []).map((name) => ({ key: '', value: `custom:${name}` })),
   ];
   const pinnedOptions = allOptions.filter((o) => pinned.includes(o.value));
-  // Pinned symptoms first; a person with none pinned still sees a short starter list.
-  let visibleOptions = pinnedOptions.length > 0 ? pinnedOptions : allOptions.slice(0, 8);
-  if (showAll) {
-    visibleOptions = allOptions;
-  }
+  // Pinned symptoms first; a person with none pinned still sees a short starter list. A symptom
+  // already logged stays visible however the list is narrowed.
+  const shortList = pinnedOptions.length > 0 ? pinnedOptions : allOptions.slice(0, 8);
+  const visibleOptions = draft.showAllSymptoms
+    ? allOptions
+    : allOptions.filter(
+        (o) => shortList.includes(o) || draft.symptoms.some((s) => s.key === o.value)
+      );
+  const labelFor = (value: string, labelKey: string) =>
+    labelKey ? t(labelKey) : cycleSymptomLabel(value, t);
 
   const dateLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage ?? i18n.language, {
     weekday: 'long',
@@ -136,34 +135,33 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
     day: 'numeric',
   }).format(day);
 
-  const symptomLabel = (key: string, labelKey: string) => {
-    const current = symptoms.find((s) => s.key === key);
-    const severity = current?.severity ? ` · ${t(SEVERITY_LABEL_KEYS[current.severity])}` : '';
-
-    return `${labelKey ? t(labelKey) : cycleSymptomLabel(key, t)}${severity}`;
-  };
-
   const handleSave = async () => {
+    let observations;
+    try {
+      observations = resolveObservationDraft(
+        draft.observations,
+        config,
+        existing?.observations,
+        units
+      );
+    } catch {
+      handleError(new Error('invalid_observations'), 'CycleDaySheet.validation', {
+        sendToSentry: false,
+        snackbarMessage: t('cycle.personalize.invalidObservation'),
+      });
+      return;
+    }
+
     setIsSaving(true);
     try {
-      let resolved;
-      try {
-        resolved = resolveObservationDraft(observations, config, existing?.observations);
-      } catch {
-        handleError(new Error('invalid_observations'), 'CycleDaySheet.validation', {
-          sendToSentry: false,
-          snackbarMessage: t('cycle.personalize.invalidObservation'),
-        });
-        return;
-      }
-
+      const { bleeding, symptoms, noSymptoms, pain, energy, note } = draft;
+      // An untouched mood is left alone (undefined), so a mood that failed to load can never be
+      // overwritten and never stops the rest of the day from saving.
       await saveDayLog(
-        { date: day, bleeding, symptoms, noSymptoms, pain, energy, note, observations: resolved },
-        moodTouched ? mood : undefined
+        { date: day, bleeding, symptoms, noSymptoms, pain, energy, note, observations },
+        draft.moodTouched ? draft.mood : undefined
       );
-
       promptStartPeriod(day, bleeding);
-
       onClose();
     } catch (error) {
       handleError(error, 'CycleDaySheet.save', {
@@ -176,6 +174,7 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
   };
 
   const handleClear = async () => {
+    setConfirmClear(false);
     setIsSaving(true);
     try {
       await saveDayLog({ ...blankDayLog(day) }, null);
@@ -189,12 +188,14 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
     }
   };
 
-  let moodStatus = '';
-  if (moodLoading) {
-    moodStatus = t('cycle.personalize.loadingMood');
-  } else if (mood == null) {
-    moodStatus = t('cycle.personalize.moodUnlogged');
+  let moodHint = t('cycle.personalize.sharedMoodHint');
+  if (moodsError) {
+    moodHint = t('cycle.daySheet.moodUnavailable');
+  } else if (moodsLoading) {
+    moodHint = t('cycle.personalize.loadingMood');
   }
+
+  const ratedSymptoms = draft.symptoms;
 
   return (
     <BottomPopUp
@@ -207,80 +208,110 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
           <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />
           <Button
             label={t('common.save')}
-            onPress={handleSave}
+            onPress={() => void handleSave()}
             variant="accent"
             width="flex-1"
             loading={isSaving}
-            disabled={moodLoading || moodError}
           />
         </View>
       }
     >
       <View className="gap-6 pb-4">
-        {
-          <View className="gap-2">
-            <Text className="text-base font-bold text-text-primary">
-              {t(
-                guidance.hidePeriodActions
-                  ? 'cycle.personalize.unexpectedBleeding'
-                  : 'cycle.flowIntensity'
-              )}
-            </Text>
-            <View className="flex-row flex-wrap gap-2">
-              {BLEEDING_LEVELS.map((level) => (
-                <Chip
-                  key={level}
-                  label={t(BLEEDING_LABEL_KEYS[level])}
-                  selected={bleeding === level}
-                  onPress={() => setBleeding(bleeding === level ? null : level)}
-                />
-              ))}
-            </View>
+        <View className="gap-2">
+          <Text className="text-base font-bold text-text-primary">
+            {t(
+              guidance.hidePeriodActions
+                ? 'cycle.personalize.unexpectedBleeding'
+                : 'cycle.flowIntensity'
+            )}
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            {BLEEDING_LEVELS.map((level) => (
+              <Chip
+                key={level}
+                label={t(BLEEDING_LABEL_KEYS[level])}
+                selected={draft.bleeding === level}
+                onPress={() => update({ bleeding: draft.bleeding === level ? null : level })}
+              />
+            ))}
           </View>
-        }
+        </View>
 
         <View className="gap-2">
           <Text className="text-base font-bold text-text-primary">{t('cycle.symptomsTitle')}</Text>
-          <Text className="text-xs text-text-tertiary">{t('cycle.daySheet.severityHint')}</Text>
           <View className="flex-row flex-wrap gap-2">
             <Chip
               label={t('cycle.daySheet.noSymptoms')}
-              selected={noSymptoms}
+              selected={draft.noSymptoms}
               role="checkbox"
-              onPress={() => {
-                const next = withNoSymptoms({ symptoms, noSymptoms }, !noSymptoms);
-                setSymptoms(next.symptoms);
-                setNoSymptoms(next.noSymptoms);
-              }}
+              onPress={() => update(withNoSymptoms(draft, !draft.noSymptoms))}
             />
             {visibleOptions.map((option) => (
               <Chip
                 key={option.value}
-                label={symptomLabel(option.value, option.key)}
-                selected={symptoms.some((s) => s.key === option.value)}
+                label={labelFor(option.value, option.key)}
+                selected={draft.symptoms.some((s) => s.key === option.value)}
                 role="checkbox"
-                onPress={() => {
-                  setSymptoms(stepSymptom(symptoms, option.value));
-                  setNoSymptoms(false);
-                }}
+                onPress={() =>
+                  update({
+                    symptoms: toggleSymptom(draft.symptoms, option.value),
+                    noSymptoms: false,
+                  })
+                }
               />
             ))}
           </View>
           <TextButton
-            label={showAll ? t('cycle.daySheet.fewerSymptoms') : t('cycle.daySheet.moreSymptoms')}
-            onPress={() => setShowAll(!showAll)}
+            label={
+              draft.showAllSymptoms
+                ? t('cycle.daySheet.fewerSymptoms')
+                : t('cycle.daySheet.moreSymptoms')
+            }
+            onPress={() => update({ showAllSymptoms: !draft.showAllSymptoms })}
           />
+          {ratedSymptoms.length > 0 ? (
+            <View className="gap-3 rounded-xl bg-bg-overlay p-3">
+              <Text className="text-xs text-text-secondary">
+                {t('cycle.daySheet.severityOptional')}
+              </Text>
+              {ratedSymptoms.map((symptom) => {
+                const option = allOptions.find((o) => o.value === symptom.key);
+                return (
+                  <View key={symptom.key} className="gap-2">
+                    <Text className="text-sm font-semibold text-text-primary">
+                      {labelFor(symptom.key, option?.key ?? '')}
+                    </Text>
+                    <View className="flex-row flex-wrap gap-2">
+                      {SEVERITIES.map((severity) => (
+                        <Chip
+                          key={severity}
+                          label={t(SEVERITY_LABEL_KEYS[severity])}
+                          selected={symptom.severity === severity}
+                          onPress={() =>
+                            update({
+                              symptoms: setSymptomSeverity(draft.symptoms, symptom.key, severity),
+                            })
+                          }
+                        />
+                      ))}
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+          ) : null}
         </View>
 
         <View className="gap-2">
           <Text className="text-base font-bold text-text-primary">{t('cycle.daySheet.pain')}</Text>
+          <Text className="text-xs text-text-secondary">{t('cycle.daySheet.painScale')}</Text>
           <View className="flex-row flex-wrap gap-2">
             {PAIN_VALUES.map((value) => (
               <Chip
                 key={value}
                 label={String(value)}
-                selected={pain === value}
-                onPress={() => setPain(pain === value ? null : value)}
+                selected={draft.pain === value}
+                onPress={() => update({ pain: draft.pain === value ? null : value })}
               />
             ))}
           </View>
@@ -294,37 +325,29 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
             {ENERGY_VALUES.map((value) => (
               <Chip
                 key={value}
-                label={t(`cycle.daySheet.energyLevel.${value}`)}
-                selected={energy === value}
-                onPress={() => setEnergy(energy === value ? null : value)}
+                label={t(ENERGY_LEVEL_LABEL_KEYS[value])}
+                selected={draft.energy === value}
+                onPress={() => update({ energy: draft.energy === value ? null : value })}
               />
             ))}
           </View>
         </View>
 
-        <Text className="text-xs text-text-secondary">{t('cycle.personalize.sharedMoodHint')}</Text>
-        {moodError ? (
-          <Text className="text-sm text-text-secondary">{t('errors.somethingWentWrong')}</Text>
-        ) : null}
-        <Text className="text-xs text-text-secondary">{moodStatus}</Text>
-        <MoodSelectorCard
-          disabled={moodLoading || moodError || isSaving}
-          value={mood ?? -1}
-          onChange={(value) => {
-            setMood(value);
-            setMoodTouched(true);
-          }}
-        />
-
-        {mood != null ? (
-          <TextButton
-            label={t('cycle.personalize.clearMood')}
-            onPress={() => {
-              setMood(null);
-              setMoodTouched(true);
-            }}
+        <View className="gap-2">
+          <Text className="text-xs text-text-secondary">{moodHint}</Text>
+          <MoodSelectorCard
+            disabled={moodsLoading || moodsError || isSaving}
+            value={draft.mood ?? -1}
+            onChange={(value) => update({ mood: value, moodTouched: true })}
           />
-        ) : null}
+          {draft.mood != null && !moodsError ? (
+            <TextButton
+              label={t('cycle.personalize.clearMood')}
+              onPress={() => update({ mood: null, moodTouched: true })}
+            />
+          ) : null}
+        </View>
+
         {(existing?.observations?.health ?? []).map((observation) => (
           <Text
             key={`${observation.source}:${observation.id}`}
@@ -334,45 +357,45 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
               source: observation.source === 'healthkit' ? 'Apple Health' : 'Health Connect',
               value:
                 observation.kind === 'bleeding'
-                  ? t(`cycle.calendar.bleeding.${observation.value}`)
-                  : new Intl.NumberFormat(i18n.resolvedLanguage ?? i18n.language, {
-                      maximumFractionDigits: 2,
-                    }).format(Number(observation.value)) + ' °C',
+                  ? t(BLEEDING_LABEL_KEYS[observation.value as keyof typeof BLEEDING_LABEL_KEYS])
+                  : `${formatDecimal(celsiusToDisplay(Number(observation.value), units), 2)} ${getTemperatureUnitLabel(units)}`,
             })}
           </Text>
         ))}
-        <CycleObservationInputs config={config} value={observations} onChange={setObservations} />
-        <View className="gap-2">
-          <Text className="text-base font-bold text-text-primary">{t('cycle.daySheet.note')}</Text>
-          <RNTextInput
-            value={note}
-            onChangeText={setNote}
-            multiline
-            numberOfLines={3}
-            maxLength={500}
-            placeholder={t('cycle.daySheet.notePlaceholder')}
-            placeholderTextColor={theme.colors.text.tertiary}
-            accessibilityLabel={t('cycle.daySheet.note')}
-            style={{
-              minHeight: 72,
-              borderRadius: 12,
-              borderWidth: 1,
-              borderColor: theme.colors.border.default,
-              padding: 12,
-              color: theme.colors.text.primary,
-              textAlignVertical: 'top',
-            }}
-          />
-        </View>
+        <CycleObservationInputs
+          config={config}
+          value={draft.observations}
+          onChange={(observations) => update({ observations })}
+        />
+        <TextInput
+          label={t('cycle.daySheet.note')}
+          value={draft.note}
+          onChangeText={(note) => update({ note })}
+          placeholder={t('cycle.daySheet.notePlaceholder')}
+          multiline
+          numberOfLines={3}
+          maxLength={NOTE_MAX_LENGTH}
+          selectTextOnFocus={false}
+        />
 
-        {existing || mood != null ? (
+        {existing || loadedMood != null ? (
           <TextButton
             label={t('cycle.personalize.clearDayAndMood')}
             tone="danger"
-            onPress={() => void handleClear()}
+            onPress={() => setConfirmClear(true)}
           />
         ) : null}
       </View>
+
+      <ConfirmationModal
+        visible={confirmClear}
+        onClose={() => setConfirmClear(false)}
+        onConfirm={() => void handleClear()}
+        title={t('cycle.daySheet.clearTitle')}
+        message={t('cycle.daySheet.clearMessage')}
+        confirmLabel={t('cycle.daySheet.clearConfirm')}
+        variant="destructive"
+      />
     </BottomPopUp>
   );
 }

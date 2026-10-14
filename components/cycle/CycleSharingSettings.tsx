@@ -4,10 +4,9 @@ import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
-import { useCycleMoods } from '@/hooks/useCycleMoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
-import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { addCalendarDays } from '@/utils/cycle/dates';
 import {
   selectedCycleSharing,
   SHARING_FIELDS,
@@ -18,8 +17,7 @@ import { timestampSlug } from '@/utils/timestampSlug';
 
 export function CycleSharingSettings() {
   const { t } = useTranslation();
-  const { dayLogs, nowMs } = useMenstrualCycle();
-  const { moods, isLoading, error } = useCycleMoods();
+  const { dayLogs, today, moods, moodsLoading: isLoading, moodsError: error } = useMenstrualCycle();
   const { formatInteger } = useFormatAppNumber();
   const [fields, setFields] = useState<SharingField[]>([]);
   const [days, setDays] = useState(30);
@@ -67,13 +65,7 @@ export function CycleSharingSettings() {
             .then(() =>
               shareTextFile(
                 `${timestampSlug()}-cycle-selected.json`,
-                selectedCycleSharing(
-                  dayLogs,
-                  moods,
-                  fields,
-                  nowMs - days * MS_PER_SOLAR_DAY,
-                  nowMs
-                ),
+                selectedCycleSharing(dayLogs, moods, fields, addCalendarDays(today, -days), today),
                 'application/json'
               )
             )

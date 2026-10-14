@@ -53,3 +53,12 @@ export function scopeRequiresLock(mode: AppLockMode, scope: LockScope): boolean 
 export function isScopeLocked(mode: AppLockMode, scope: LockScope, state: LockState): boolean {
   return scopeRequiresLock(mode, scope) && !state.unlocked;
 }
+
+/**
+ * Whether to draw the privacy cover: with any lock on, while the app is not in the foreground. The
+ * OS snapshots the screen for the app switcher as the app leaves, so a lock that only appears
+ * when the person comes BACK leaves the diary readable in the recent-apps list.
+ */
+export function isObscured(mode: AppLockMode, state: LockState): boolean {
+  return mode !== 'off' && state.backgroundedAt != null;
+}

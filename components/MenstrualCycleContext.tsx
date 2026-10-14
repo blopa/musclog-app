@@ -29,11 +29,14 @@ import {
   type PeriodPatch,
 } from '@/database/services/CyclePeriodService';
 import { CycleTrackingService, type NewCycleInput } from '@/database/services/CycleTrackingService';
+import { useCycleMoods } from '@/hooks/useCycleMoods';
+import { useLocalToday } from '@/hooks/useLocalToday';
 import { NotificationService } from '@/services/NotificationService';
 import type { ContextGuidance } from '@/utils/cycle/contraception';
+import type { MoodPoint } from '@/utils/cycle/cycleInsights';
 import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
 import type { PredictionStats } from '@/utils/cycle/cycleStats';
-import type { CyclePhase, CycleTimeline, PredictionState } from '@/utils/cycle/cycleTimeline';
+import type { CycleTimeline } from '@/utils/cycle/cycleTimeline';
 import type { CycleTrackingMode } from '@/utils/cycle/trackingMode';
 import type {
   CycleConfig,
@@ -42,7 +45,6 @@ import type {
   CycleDayLogDto,
   CycleHistoryEntry,
   CyclePeriodDto,
-  PredictionConfidence,
 } from '@/utils/cycle/types';
 
 export interface MenstrualCycleContextType {
@@ -56,27 +58,27 @@ export interface MenstrualCycleContextType {
   periods: CyclePeriodDto[];
   dayLogs: CycleDayLogDto[];
   contexts: CycleContextDto[];
+  /**
+   * Shared mood (the `user_metrics` mood the Home prompt writes), observed once here for every
+   * cycle surface. Each of them used to open its own subscription and decrypt every mood again.
+   */
+  moods: MoodPoint[];
+  moodsLoading: boolean;
+  moodsError: boolean;
   activeContext: CycleContextDto | null;
   guidance: ContextGuidance;
   history: CycleHistoryEntry[];
   predictionStats: PredictionStats;
-  /** The single phase/prediction model; the wheel, cards and reminders all read it. */
+  /**
+   * The single phase/prediction model; the wheel, cards and reminders all read it. Its
+   * `elapsedDay`, `currentPhase` and `prediction` are the cycle day, phase and next-period
+   * estimate: read them here rather than through a copy.
+   */
   timeline: CycleTimeline | null;
-  predictionState: PredictionState;
-  predictionConfidence: PredictionConfidence;
+  /** The period the user said is still going (the same predicate the timeline's phase uses). */
   activePeriod: CyclePeriodDto | null;
-  isCurrentlyInPeriod: boolean;
-  isCurrentlyInFertileWindow: boolean;
-  isIrregular: boolean;
-  nextPeriodDate: Date | null;
-  nextPeriodEarliest: Date | null;
-  nextPeriodLatest: Date | null;
-  fertileWindow: { start: Date; end: Date } | null;
-  currentPhase: CyclePhase | null;
-  /** Days since the last logged period start. Never wraps. */
-  cycleDay: number | null;
-  /** Current timestamp refreshed every minute; use for time-sensitive display values. */
-  nowMs: number;
+  /** Local midnight ms of today; changes only when the calendar day does. */
+  today: number;
   createCycle: (input: NewCycleInput) => Promise<void>;
   updateConfig: (update: CycleConfigUpdate) => Promise<void>;
   startPeriod: (startDate: number) => Promise<void>;
@@ -163,14 +165,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<CycleConfig>(DEFAULT_CYCLE_CONFIG);
   // isStaticExport is a build-time constant — no async loading on static export
   const [isLoading, setIsLoading] = useState(!isStaticExport);
-  // Refreshed every minute to trigger re-derivation of time-sensitive values without a
-  // WatermelonDB subscription event.
-  const [nowMs, setNowMs] = useState(Date.now);
-
-  useEffect(() => {
-    const id = setInterval(() => setNowMs(Date.now()), 60_000);
-    return () => clearInterval(id);
-  }, []);
+  const today = useLocalToday();
 
   // Observe every cycle row; the active one drives the app, a paused one is kept for resuming.
   useEffect(() => {
@@ -203,11 +198,13 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const trackedCycle = cycle ?? pausedCycle;
   useEffect(() => {
     let cancelled = false;
-    void readCycleConfig(trackedCycle).then((next) => {
-      if (!cancelled) {
-        setConfig(next);
-      }
-    });
+    void readCycleConfig(trackedCycle)
+      .catch(() => DEFAULT_CYCLE_CONFIG)
+      .then((next) => {
+        if (!cancelled) {
+          setConfig(next);
+        }
+      });
 
     return () => {
       cancelled = true;
@@ -227,7 +224,18 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
     readContexts,
     [trackedCycleId]
   );
-  const dayLogs = useDecryptedQuery(CycleRepository.dayLogs(), readDayLogs, []);
+  // Day logs carry no cycle id (they survive a pause/resume), but with no cycle at all there is
+  // nothing to show them on, so nothing is observed or decrypted.
+  const dayLogs = useDecryptedQuery(
+    trackedCycleId ? CycleRepository.dayLogs() : null,
+    readDayLogs,
+    [trackedCycleId != null]
+  );
+  const {
+    moods,
+    isLoading: moodsLoading,
+    error: moodsError,
+  } = useCycleMoods(trackedCycleId != null);
 
   const afterWrite = useCallback(() => {
     void NotificationService.scheduleMenstrualCycleNotifications().catch(() => undefined);
@@ -326,75 +334,54 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
     [afterWrite, cycle, pausedCycle, trackedCycle, requireCycle]
   );
 
-  const derived = useMemo(() => {
-    const snapshot = buildCycleSnapshot({
-      periods,
-      contexts,
-      config,
-      nowMs,
-      showPredictions: cycleShowPredictions,
-      showFertility: cycleShowFertility,
-    });
-    const timeline = cycle ? snapshot.timeline : null;
-    const prediction = timeline?.prediction;
-    const fertile = timeline?.fertileEstimate ?? null;
-
-    return {
-      ...snapshot,
-      timeline,
-      fertileWindow: fertile
-        ? { start: new Date(fertile.start), end: new Date(fertile.end) }
-        : null,
-      nextPeriodDate: prediction?.mostLikely != null ? new Date(prediction.mostLikely) : null,
-      nextPeriodEarliest: prediction?.earliest != null ? new Date(prediction.earliest) : null,
-      nextPeriodLatest: prediction?.latest != null ? new Date(prediction.latest) : null,
-    };
-  }, [contexts, periods, config, cycle, nowMs, cycleShowPredictions, cycleShowFertility]);
+  const snapshot = useMemo(
+    () =>
+      buildCycleSnapshot({
+        periods,
+        contexts,
+        config,
+        nowMs: today,
+        showPredictions: cycleShowPredictions,
+        showFertility: cycleShowFertility,
+      }),
+    [contexts, periods, config, today, cycleShowPredictions, cycleShowFertility]
+  );
 
   const value = useMemo<MenstrualCycleContextType>(
     () => ({
       cycle,
       pausedCycle,
       isLoading,
-      isActive: cycle?.isActive ?? false,
+      isActive: cycle != null,
       config,
-      periods: trackedCycle ? periods : [],
+      periods,
       dayLogs,
       contexts,
-      activeContext: derived.activeContext,
-      guidance: derived.guidance,
-      history: derived.history,
-      predictionStats: derived.stats,
-      timeline: derived.timeline,
-      predictionState: derived.timeline?.prediction.state ?? 'insufficient',
-      predictionConfidence: derived.stats.confidence,
-      activePeriod: derived.activePeriod,
-      isCurrentlyInPeriod: derived.activePeriod != null,
-      isCurrentlyInFertileWindow:
-        derived.fertileWindow != null &&
-        nowMs >= derived.fertileWindow.start.getTime() &&
-        nowMs <= derived.fertileWindow.end.getTime(),
-      isIrregular: derived.stats.variability !== 'regular',
-      nextPeriodDate: derived.nextPeriodDate,
-      nextPeriodEarliest: derived.nextPeriodEarliest,
-      nextPeriodLatest: derived.nextPeriodLatest,
-      fertileWindow: derived.fertileWindow,
-      currentPhase: derived.timeline?.currentPhase ?? null,
-      cycleDay: derived.timeline?.elapsedDay ?? null,
-      nowMs,
+      moods,
+      moodsLoading,
+      moodsError,
+      activeContext: snapshot.activeContext,
+      guidance: snapshot.guidance,
+      history: snapshot.history,
+      predictionStats: snapshot.stats,
+      timeline: cycle ? snapshot.timeline : null,
+      activePeriod: snapshot.activePeriod,
+      today,
       ...actions,
     }),
     [
       cycle,
       pausedCycle,
-      trackedCycle,
       isLoading,
       config,
       periods,
       dayLogs,
       contexts,
-      derived,
-      nowMs,
+      moods,
+      moodsLoading,
+      moodsError,
+      snapshot,
+      today,
       actions,
     ]
   );

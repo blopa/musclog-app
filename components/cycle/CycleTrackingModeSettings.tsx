@@ -30,7 +30,7 @@ export function CycleTrackingModeSettings({ onClose }: { onClose: () => void }) 
       router.navigate({
         pathname: '/app/onboarding/cycle-setup',
         params: {
-          symptomOnly: String(mode === 'symptoms'),
+          tracking: mode,
           nextRoute: encodeURIComponent('/app/settings'),
         },
       } as never);

@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { AppointmentSummarySheet } from '@/components/cycle/AppointmentSummarySheet';
 import { CycleHealthSettings } from '@/components/cycle/CycleHealthSettings';
 import { CyclePreferences } from '@/components/cycle/CyclePreferences';
 import { CycleReminderSettings } from '@/components/cycle/CycleReminderSettings';
@@ -21,18 +22,12 @@ import { useAppLock } from '@/context/AppLockContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { deleteBackup, getStoredBackups } from '@/database/preMigrationBackup';
 import { SettingsService } from '@/database/services/SettingsService';
-import { useCycleMoods } from '@/hooks/useCycleMoods';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
-import { useSubModalState, useSubModalVisibility } from '@/hooks/useSubModalVisibility';
-import {
-  exportDayLogsCsv,
-  exportPeriodsCsv,
-  shareAppointmentSummary,
-  type SummaryRangeMonths,
-} from '@/services/cycleExport';
-import { NotificationService } from '@/services/NotificationService';
+import { useSubModalState } from '@/hooks/useSubModalVisibility';
+import { exportDayLogsCsv, exportPeriodsCsv } from '@/services/cycleExport';
 import { canEnableAppLock, isAppLockSupported } from '@/utils/appLock';
+import type { CycleConfigPatch } from '@/utils/cycle/types';
 import { authenticateForDangerousAction } from '@/utils/dangerousActionAuth';
 import { handleError } from '@/utils/handleError';
 
@@ -45,9 +40,12 @@ type CycleSettingsModalProps = {
   onClose: () => void;
 };
 
-type Confirm = 'fertility' | 'delete' | 'backups' | null;
+/** One sub-surface at a time, rendered inside this modal and inside the lock gate. */
+type Sub =
+  'context' | 'portability' | 'data' | 'summary' | 'fertility' | 'delete' | 'backups' | null;
 
-const RANGES: SummaryRangeMonths[] = [3, 6, 12];
+/** Usual-length edits save as they are made, after this pause (and at once on close). */
+const LENGTH_SAVE_DELAY_MS = 600;
 const LOCK_MODES: { mode: AppLockMode; labelKey: string }[] = [
   { mode: 'off', labelKey: 'cycle.settings.lock.off' },
   { mode: 'cycle', labelKey: 'cycle.settings.lock.cycle' },
@@ -66,17 +64,17 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 /**
- * Everything about the cycle that is a preference rather than a log entry: usual lengths, what is
- * shown (predictions, the optional fertility estimate), how reminders read, who can open it, and
- * getting data out or removing it for good.
+ * Everything about the cycle that is a preference rather than a log entry: reminders, usual
+ * lengths, what is shown (predictions, the optional fertility estimate), who can open it, and
+ * getting data out or removing it for good. Every control saves when it changes; there is no
+ * Save button that only some of them obey.
  */
 export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const { unlock } = useAppLock();
-  const { cycleShowPredictions, cycleShowFertility, cycleNotificationStyle, appLockMode } =
-    useSettings();
+  const { cycleShowPredictions, cycleShowFertility, appLockMode } = useSettings();
   const {
     cycle,
     pausedCycle,
@@ -88,24 +86,14 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
     periods,
     history,
     dayLogs,
-    contexts,
-    predictionStats,
-    nowMs,
+    moods,
+    moodsLoading,
+    moodsError,
   } = useMenstrualCycle();
-  const [form, setForm] = useState<Partial<CycleSetupData>>({});
-  const [isSaving, setIsSaving] = useState(false);
-  // Both reset when this modal closes, so a ghost sub-modal can't reappear on the next open.
-  const [contextOpen, setContextOpen] = useSubModalVisibility(visible);
-  const [confirm, setConfirm] = useSubModalState<Confirm>(visible, null);
+  const [sub, setSub] = useSubModalState<Sub>(visible, null);
   const [backupCount, setBackupCount] = useState(0);
-  const [months, setMonths] = useState<SummaryRangeMonths>(6);
   const [isExporting, setIsExporting] = useState(false);
-
-  const [portabilityOpen, setPortabilityOpen] = useSubModalVisibility(visible);
-  const [dataOpen, setDataOpen] = useSubModalVisibility(visible);
-  const { moods, isLoading: moodsLoading, error: moodsError } = useCycleMoods(visible);
   const tracked = cycle ?? pausedCycle;
-  const locale = i18n.resolvedLanguage ?? i18n.language;
 
   const guarded = async (context: string, action: () => Promise<void>) => {
     try {
@@ -115,20 +103,42 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
     }
   };
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    await guarded('CycleSettingsModal.save', async () => {
-      await updateConfig({
-        ...(form.cycleLength !== undefined ? { fallbackCycleLength: form.cycleLength } : {}),
-        ...(form.cycleLengthKnown !== undefined ? { cycleLengthKnown: form.cycleLengthKnown } : {}),
-        ...(form.periodDuration !== undefined
-          ? { fallbackPeriodDuration: form.periodDuration }
-          : {}),
-      });
-      onClose();
-    });
-    setIsSaving(false);
+  // Steppers fire once per tap; one write per pause, not per tap. Flushed when the modal closes,
+  // so an edit followed straight away by closing is never lost.
+  const pendingLengths = useRef<CycleConfigPatch | null>(null);
+  const lengthTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const flushLengths = () => {
+    clearTimeout(lengthTimer.current);
+    const patch = pendingLengths.current;
+    pendingLengths.current = null;
+    if (patch && Object.keys(patch).length > 0) {
+      void guarded('CycleSettingsModal.lengths', () => updateConfig(patch));
+    }
   };
+
+  const onLengthsChange = (form: Partial<CycleSetupData>) => {
+    const patch: CycleConfigPatch = {
+      ...(form.cycleLength !== undefined && form.cycleLength !== config.fallbackCycleLength
+        ? { fallbackCycleLength: form.cycleLength }
+        : {}),
+      ...(form.cycleLengthKnown !== undefined && form.cycleLengthKnown !== config.cycleLengthKnown
+        ? { cycleLengthKnown: form.cycleLengthKnown }
+        : {}),
+      ...(form.periodDuration !== undefined && form.periodDuration !== config.fallbackPeriodDuration
+        ? { fallbackPeriodDuration: form.periodDuration }
+        : {}),
+    };
+    pendingLengths.current = patch;
+    clearTimeout(lengthTimer.current);
+    lengthTimer.current = setTimeout(flushLengths, LENGTH_SAVE_DELAY_MS);
+  };
+
+  const close = () => {
+    flushLengths();
+    onClose();
+  };
+
+  useEffect(() => () => clearTimeout(lengthTimer.current), []);
 
   const changeLock = async (mode: AppLockMode) => {
     if (mode === appLockMode) {
@@ -166,23 +176,21 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
       const backups = await getStoredBackups();
       if (backups.length > 0) {
         setBackupCount(backups.length);
-        setConfirm('backups');
+        setSub('backups');
 
         return;
       }
 
-      setConfirm(null);
+      setSub(null);
       onClose();
     });
   };
 
   const confirmDeleteBackups = async () => {
     await guarded('CycleSettingsModal.deleteBackups', async () => {
-      for (const backup of await getStoredBackups()) {
-        await deleteBackup(backup.uri);
-      }
-
-      setConfirm(null);
+      const backups = await getStoredBackups();
+      await Promise.all(backups.map((backup) => deleteBackup(backup.uri)));
+      setSub(null);
       onClose();
     });
   };
@@ -197,7 +205,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
         await guarded('CycleSettingsModal.fertility', () =>
           SettingsService.setCycleShowFertility(true)
         );
-        setConfirm(null);
+        setSub(null);
       },
     },
     delete: {
@@ -215,47 +223,68 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
       onConfirm: confirmDeleteBackups,
     },
   };
-  const active = confirm ? confirmCopy[confirm] : null;
+
+  const renderSub = () => {
+    switch (sub) {
+      case 'context':
+        return <CycleContextModal visible onClose={() => setSub(null)} />;
+      case 'portability':
+        return <CyclePortabilityModal visible onClose={() => setSub(null)} />;
+      case 'data':
+        return <DataSettingsModal visible onClose={() => setSub(null)} />;
+      case 'summary':
+        return <AppointmentSummarySheet visible onClose={() => setSub(null)} />;
+      case 'fertility':
+      case 'delete':
+      case 'backups': {
+        const copy = confirmCopy[sub];
+        return (
+          <ConfirmationModal
+            visible
+            onClose={() => setSub(null)}
+            onConfirm={copy.onConfirm}
+            title={copy.title}
+            message={copy.message}
+            confirmLabel={copy.confirmLabel}
+            variant={copy.variant}
+          />
+        );
+      }
+
+      default:
+        return null;
+    }
+  };
+
+  const exportsDisabled = isExporting || moodsLoading || moodsError;
 
   return (
     <FullScreenModal
       visible={visible}
-      onClose={onClose}
+      onClose={close}
       title={t('cycle.settings.title')}
       subtitle={t('cycle.settings.subtitle')}
-      footer={
-        cycle ? (
-          <Button
-            label={t('cycle.settings.save')}
-            onPress={handleSave}
-            variant="accent"
-            size="md"
-            width="full"
-            loading={isSaving}
-          />
-        ) : undefined
-      }
     >
       <CycleLockGate>
         <View className="gap-8 px-4 py-4">
-          <CycleTrackingModeSettings onClose={onClose} />
+          <CycleTrackingModeSettings onClose={close} />
           {tracked ? (
             <>
+              <Section title={t('cycle.settings.sectionReminders')}>
+                <CycleReminderSettings />
+              </Section>
+
               {cycle ? (
                 <Section title={t('cycle.settings.sectionUsual')}>
-                  {/* key forces remount on each open so the form resets to the saved values */}
+                  {/* key forces remount on each open so the form starts from the saved values */}
                   <EditCycleSetupData
-                    key={
-                      visible
-                        ? `${config.fallbackCycleLength}-${config.fallbackPeriodDuration}`
-                        : 'closed'
-                    }
+                    key={visible ? 'open' : 'closed'}
                     initialData={{
                       cycleLength: config.fallbackCycleLength,
                       cycleLengthKnown: config.cycleLengthKnown,
                       periodDuration: config.fallbackPeriodDuration,
                     }}
-                    onFormChange={setForm}
+                    onFormChange={onLengthsChange}
                     showDatePicker={false}
                     showContext={false}
                   />
@@ -265,15 +294,11 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                   <Button
                     label={t('cycle.settings.changeContext')}
                     variant="outline"
-                    onPress={() => setContextOpen(true)}
+                    onPress={() => setSub('context')}
                   />
                 </Section>
               ) : null}
 
-              <Section title={t('cycle.personalize.title')}>
-                <CyclePreferences />
-                <CycleHealthSettings />
-              </Section>
               <Section title={t('cycle.settings.sectionShown')}>
                 <ToggleInput
                   items={[
@@ -294,7 +319,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                       value: cycleShowFertility,
                       onValueChange: (value) => {
                         if (value) {
-                          setConfirm('fertility');
+                          setSub('fertility');
                         } else {
                           void guarded('CycleSettingsModal.fertility', () =>
                             SettingsService.setCycleShowFertility(false)
@@ -306,33 +331,9 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                 />
               </Section>
 
-              <Section title={t('cycle.settings.sectionReminders')}>
-                <CycleReminderSettings />
-                <Text className="text-xs text-text-tertiary">
-                  {t('cycle.settings.reminderHint')}
-                </Text>
-                <View className="flex-row flex-wrap gap-2">
-                  <Chip
-                    label={t('cycle.settings.reminderDiscreet')}
-                    selected={cycleNotificationStyle === 'discreet'}
-                    onPress={() =>
-                      void guarded('CycleSettingsModal.style', async () => {
-                        await SettingsService.setCycleNotificationStyle('discreet');
-                        await NotificationService.scheduleMenstrualCycleNotifications();
-                      })
-                    }
-                  />
-                  <Chip
-                    label={t('cycle.settings.reminderDetailed')}
-                    selected={cycleNotificationStyle === 'detailed'}
-                    onPress={() =>
-                      void guarded('CycleSettingsModal.style', async () => {
-                        await SettingsService.setCycleNotificationStyle('detailed');
-                        await NotificationService.scheduleMenstrualCycleNotifications();
-                      })
-                    }
-                  />
-                </View>
+              <Section title={t('cycle.personalize.title')}>
+                <CyclePreferences />
+                <CycleHealthSettings />
               </Section>
             </>
           ) : (
@@ -342,7 +343,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                 label={t('cycle.noData.start')}
                 variant="accent"
                 onPress={() => {
-                  onClose();
+                  close();
                   router.navigate({
                     pathname: '/app/onboarding/cycle-setup',
                     params: { nextRoute: encodeURIComponent('/app/cycle') },
@@ -373,14 +374,19 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
             <Section title={t('cycle.settings.sectionExport')}>
               <CycleSharingSettings />
               <Button
+                label={t('cycle.settings.summaryTitle')}
+                variant="outline"
+                onPress={() => setSub('summary')}
+              />
+              <Button
                 label={t('cycle.portability.title')}
                 variant="outline"
-                onPress={() => setPortabilityOpen(true)}
+                onPress={() => setSub('portability')}
               />
               <Button
                 label={t('cycle.portability.fullBackup')}
                 variant="outline"
-                onPress={() => setDataOpen(true)}
+                onPress={() => setSub('data')}
               />
               <Text className="text-xs text-text-secondary">
                 {t('cycle.portability.fullBackupHint')}
@@ -388,7 +394,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
               <Button
                 label={t('cycle.settings.exportPeriods')}
                 variant="outline"
-                disabled={isExporting || moodsLoading || moodsError}
+                disabled={isExporting}
                 onPress={() =>
                   runExport('CycleSettingsModal.exportPeriods', () =>
                     exportPeriodsCsv(periods, history)
@@ -398,39 +404,9 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
               <Button
                 label={t('cycle.settings.exportDays')}
                 variant="outline"
-                disabled={isExporting || moodsLoading || moodsError}
+                disabled={exportsDisabled}
                 onPress={() =>
                   runExport('CycleSettingsModal.exportDays', () => exportDayLogsCsv(dayLogs, moods))
-                }
-              />
-              <Text className="mt-2 text-sm font-bold text-text-primary">
-                {t('cycle.settings.summaryTitle')}
-              </Text>
-              <Text className="text-xs text-text-tertiary">{t('cycle.settings.summaryHint')}</Text>
-              <View className="flex-row flex-wrap gap-2">
-                {RANGES.map((range) => (
-                  <Chip
-                    key={range}
-                    label={t('cycle.settings.summaryRange', { count: range })}
-                    selected={months === range}
-                    onPress={() => setMonths(range)}
-                  />
-                ))}
-              </View>
-              <Button
-                label={t('cycle.settings.summaryCreate')}
-                variant="outline"
-                disabled={isExporting || moodsLoading || moodsError}
-                onPress={() =>
-                  runExport('CycleSettingsModal.summary', () =>
-                    shareAppointmentSummary({
-                      t,
-                      locale,
-                      months,
-                      nowMs,
-                      data: { periods, history, stats: predictionStats, dayLogs, contexts, moods },
-                    })
-                  )
                 }
               />
             </Section>
@@ -444,7 +420,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                   onPress={() =>
                     void guarded('CycleSettingsModal.pause', async () => {
                       await deactivateTracking();
-                      onClose();
+                      close();
                     })
                   }
                 />
@@ -458,30 +434,14 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
               <TextButton
                 label={t('cycle.settings.delete.action')}
                 tone="danger"
-                onPress={() => setConfirm('delete')}
+                onPress={() => setSub('delete')}
               />
             </Section>
           ) : null}
         </View>
+
+        {renderSub()}
       </CycleLockGate>
-
-      {portabilityOpen ? (
-        <CyclePortabilityModal visible onClose={() => setPortabilityOpen(false)} />
-      ) : null}
-      <DataSettingsModal visible={dataOpen} onClose={() => setDataOpen(false)} />
-      <CycleContextModal visible={contextOpen} onClose={() => setContextOpen(false)} />
-
-      {active ? (
-        <ConfirmationModal
-          visible
-          onClose={() => setConfirm(null)}
-          onConfirm={active.onConfirm}
-          title={active.title}
-          message={active.message}
-          confirmLabel={active.confirmLabel}
-          variant={active.variant}
-        />
-      ) : null}
     </FullScreenModal>
   );
 }

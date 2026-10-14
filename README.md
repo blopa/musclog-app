@@ -107,7 +107,8 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - Encrypted cycle backups and an import preview that merges records with explicit conflict choices; full-app backup and restore remain available from cycle settings
 - Unknown-length setup, confirmed long-cycle correction, sparse-history uncertainty and retrospective prediction checks
 - Symptoms-only trends/search, custom rating scales, daily-life impact, optional diary presets and quiet pregnancy/loss/surgery/menopause contexts
-- Custom reminder timing, restore-first import, external CSV mapping, selected-field file sharing and explicit native cycle health-store imports/exports
+- Reminders that explain themselves: a range-based period heads-up, optional due-day and neutral "longer than usual" notes, a pack-aware pill reminder, a daily check-in, a pause, three lock-screen wording levels with a live preview, and a delivery check with a test notification
+- Restore-first import, external CSV mapping, selected-field file sharing and explicit native cycle health-store imports/exports
 - Manual password-protected backup files with restore preview and optional backup reminders; no automatic cloud uploads
 - Pause tracking without losing history, or permanently delete all cycle data
 

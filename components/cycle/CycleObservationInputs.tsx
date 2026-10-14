@@ -3,8 +3,11 @@ import { Text, View } from 'react-native';
 
 import { Chip } from '@/components/theme/Chip';
 import { TextInput } from '@/components/theme/TextInput';
+import { useSettings } from '@/hooks/useSettings';
 import type { ObservationDraft } from '@/utils/cycle/observationDraft';
+import { OBSERVATION_FIELD_LABEL_KEYS } from '@/utils/cycle/preferences';
 import type { CycleConfig } from '@/utils/cycle/types';
+import { getTemperatureUnitLabel } from '@/utils/unitConversion';
 
 export function CycleObservationInputs({
   config,
@@ -16,6 +19,7 @@ export function CycleObservationInputs({
   onChange: (value: ObservationDraft) => void;
 }) {
   const { t } = useTranslation();
+  const { units } = useSettings();
   const fields = [
     ...(config.enabledFields ?? []).map((key) => {
       let kind = 'text';
@@ -25,7 +29,13 @@ export function CycleObservationInputs({
         kind = 'number';
       }
 
-      return { key, label: t(`cycle.personalize.fields.${key}`), kind };
+      // The draft holds temperature in the person's own unit (see observationDraft).
+      const label =
+        key === 'temperatureC'
+          ? `${t(OBSERVATION_FIELD_LABEL_KEYS[key])} (${getTemperatureUnitLabel(units)})`
+          : t(OBSERVATION_FIELD_LABEL_KEYS[key]);
+
+      return { key, label, kind };
     }),
     ...(config.customFields ?? []).map((field) => ({
       key: `custom:${field.id}`,

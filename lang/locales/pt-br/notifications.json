@@ -11,7 +11,8 @@
     },
     "channels": {
       "default": "Padrão",
-      "activeWorkout": "Treino Ativo"
+      "activeWorkout": "Treino Ativo",
+      "cycle": "Lembretes do ciclo"
     },
     "startNow": "Iniciar Agora",
     "types": {
@@ -54,11 +55,11 @@
       },
       "periodPrediction": {
         "title": "Previsão de Período",
-        "body": "Seu período está previsto para começar em 2 dias. Prepare-se!"
+        "body": "Sua menstruação pode começar em alguns dias, com base nos seus ciclos recentes."
       },
       "fertileWindow": {
         "title": "Janela Fértil",
-        "body": "Sua janela fértil está começando! Útil para acompanhar seus níveis de energia."
+        "body": "Sua janela fértil estimada pode começar em breve. É uma estimativa de calendário, não uma confirmação da ovulação."
       },
       "restTimerAlert": {
         "title": "Descanso Terminado - De Volta ao Trabalho!",

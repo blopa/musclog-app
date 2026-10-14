@@ -2,14 +2,65 @@ import { PERIOD_REMINDER_LEAD_DAYS } from '@/constants/cycle';
 
 import type { CycleTimeline } from './cycleTimeline';
 import { addCalendarDays } from './dates';
-import type { CyclePeriodInput, CycleReminderPreferences } from './types';
+import type { CyclePeriodInput, CycleReminderPreferences, PillSchedule } from './types';
 
 export type CycleReminderKind =
-  'period-start' | 'fertile-window' | 'daily-log' | 'end-check' | 'backup';
+  | 'period-start'
+  | 'period-due'
+  | 'period-late'
+  | 'fertile-window'
+  | 'daily-log'
+  | 'end-check'
+  | 'backup'
+  | 'pill';
+
+/** Ordered for settings and previews: estimates first, then routines the person scheduled. */
+export const CYCLE_REMINDER_KINDS: readonly CycleReminderKind[] = [
+  'period-start',
+  'period-due',
+  'period-late',
+  'fertile-window',
+  'pill',
+  'daily-log',
+  'end-check',
+  'backup',
+];
+
+export function isCycleReminderKind(value: string): value is CycleReminderKind {
+  return (CYCLE_REMINDER_KINDS as readonly string[]).includes(value);
+}
+
+/**
+ * Where a reminder's date comes from. A prediction is an estimate from the person's own cycles; a
+ * routine is a time they chose. Settings and the "why did I get this?" sheet both say which.
+ */
+export const CYCLE_REMINDER_BASIS: Record<CycleReminderKind, 'estimate' | 'routine'> = {
+  'period-start': 'estimate',
+  'period-due': 'estimate',
+  'period-late': 'estimate',
+  'fertile-window': 'estimate',
+  pill: 'routine',
+  'daily-log': 'routine',
+  'end-check': 'routine',
+  backup: 'routine',
+};
+
+/**
+ * Reminders a pause does not silence. A pill reminder is an adherence tool the person relies on;
+ * pausing "the cycle notifications" while grieving or travelling must not make them miss a pill.
+ */
+export const PAUSE_EXEMPT: ReadonlySet<CycleReminderKind> = new Set(['pill']);
+
 export interface CycleReminder {
   kind: CycleReminderKind;
+  /** The first (or only) time it fires. */
   date: Date;
+  /** Fires every day at `date`'s time: one OS slot instead of a month of one-shot reminders. */
+  repeatsDaily?: boolean;
+  /** For the wording: the estimated range or day the reminder is about. */
+  range?: { from: number; to: number };
 }
+
 export const DEFAULT_CYCLE_REMINDERS: CycleReminderPreferences = {
   hour: 9,
   minute: 0,
@@ -20,9 +71,47 @@ export const DEFAULT_CYCLE_REMINDERS: CycleReminderPreferences = {
   endCheck: false,
 };
 
-/** Dates use calendar arithmetic, including across DST. At most 31 slots per planning pass. */
+/** Days of one-shot pill reminders planned ahead; renewed whenever the app comes to the foreground. */
+export const PILL_HORIZON_DAYS = 28;
+
+export const DEFAULT_PILL_SCHEDULE: Omit<PillSchedule, 'packStart'> = {
+  enabled: true,
+  hour: 21,
+  minute: 0,
+  activeDays: 21,
+  breakDays: 7,
+};
+
+/** Whether a pause is in force at `nowMs`. `until: null` pauses until the person resumes. */
+export function isPaused(prefs: CycleReminderPreferences, nowMs: number): boolean {
+  const pause = prefs.pause;
+
+  return pause != null && (pause.until == null || pause.until > nowMs);
+}
+
+/** Whether `day` is a pill-taking day of the schedule (not a pill-free day). */
+export function isPillDay(schedule: PillSchedule, day: number): boolean {
+  if (schedule.breakDays === 0) {
+    return day >= schedule.packStart;
+  }
+
+  const length = schedule.activeDays + schedule.breakDays;
+  const offset = Math.round((day - schedule.packStart) / 86_400_000);
+  if (offset < 0) {
+    return false;
+  }
+
+  return offset % length < schedule.activeDays;
+}
+
+/**
+ * Every cycle reminder that should be scheduled now, in one pure pass. Predictions only exist for
+ * an estimate the screen would show (the timeline already folds in the context: hormonal methods,
+ * pregnancy, a loss, no-bleeding tracking), so changing the context cancels them on the next
+ * reschedule. Dates use calendar arithmetic, so they survive a DST change.
+ */
 export function planCycleReminders(
-  timeline: CycleTimeline,
+  timeline: CycleTimeline | null,
   nowMs: number,
   options: {
     preferences?: CycleReminderPreferences;
@@ -31,46 +120,119 @@ export function planCycleReminders(
     lastBackup?: number | null;
   } = {}
 ): CycleReminder[] {
-  const prefs = options.preferences ?? DEFAULT_CYCLE_REMINDERS;
-  const atTime = (ms: number) => {
+  const prefs = { ...DEFAULT_CYCLE_REMINDERS, ...options.preferences };
+  const atTime = (ms: number, hour = prefs.hour, minute = prefs.minute) => {
     const date = new Date(ms);
-    date.setHours(prefs.hour, prefs.minute, 0, 0);
+    date.setHours(hour, minute, 0, 0);
     return date;
   };
 
+  const nextAt = (hour: number, minute: number) =>
+    atTime(nowMs, hour, minute).getTime() > nowMs
+      ? atTime(nowMs, hour, minute)
+      : atTime(addCalendarDays(nowMs, 1), hour, minute);
+
   const reminders: CycleReminder[] = [];
-  const { prediction } = timeline;
-  if ((prediction.state === 'upcoming' || prediction.state === 'window') && prediction.earliest) {
+  const prediction = timeline?.prediction;
+  if (
+    prediction &&
+    (prediction.state === 'upcoming' || prediction.state === 'window') &&
+    prediction.earliest != null &&
+    prediction.latest != null
+  ) {
+    const range = { from: prediction.earliest, to: prediction.latest };
     if (prefs.period) {
       reminders.push({
         kind: 'period-start',
         date: atTime(addCalendarDays(prediction.earliest, -prefs.leadDays)),
+        range,
       });
     }
 
-    if (prefs.fertility && timeline.fertileEstimate) {
-      reminders.push({ kind: 'fertile-window', date: atTime(timeline.fertileEstimate.start) });
+    if (prefs.due && prediction.mostLikely != null) {
+      reminders.push({ kind: 'period-due', date: atTime(prediction.mostLikely), range });
+    }
+
+    // The day after the latest plausible start: "longer than your recent pattern", never "late".
+    if (prefs.late) {
+      reminders.push({
+        kind: 'period-late',
+        date: atTime(addCalendarDays(prediction.latest, 1)),
+        range,
+      });
+    }
+
+    if (prefs.fertility && timeline?.fertileEstimate) {
+      reminders.push({
+        kind: 'fertile-window',
+        date: atTime(timeline.fertileEstimate.start),
+        range: { from: timeline.fertileEstimate.start, to: timeline.fertileEstimate.end },
+      });
     }
   }
 
-  const nextTime = atTime(nowMs).getTime() > nowMs ? nowMs : addCalendarDays(nowMs, 1);
   if (prefs.daily) {
-    for (let i = 0; i < 28; i++) {
-      reminders.push({ kind: 'daily-log', date: atTime(addCalendarDays(nextTime, i)) });
-    }
+    reminders.push({
+      kind: 'daily-log',
+      date: nextAt(prefs.hour, prefs.minute),
+      repeatsDaily: true,
+    });
   }
 
-  if (prefs.endCheck && options.activePeriod?.endDate == null && options.activePeriod) {
+  if (prefs.endCheck && options.activePeriod && options.activePeriod.endDate == null) {
     const check = atTime(addCalendarDays(options.activePeriod.startDate, 7));
-    reminders.push({ kind: 'end-check', date: check.getTime() > nowMs ? check : atTime(nextTime) });
+    reminders.push({
+      kind: 'end-check',
+      date: check.getTime() > nowMs ? check : nextAt(prefs.hour, prefs.minute),
+    });
   }
 
   if ((options.backupDays ?? 0) > 0) {
     const due = atTime(
       addCalendarDays(options.lastBackup ?? nowMs, options.lastBackup ? options.backupDays! : 0)
     );
-    reminders.push({ kind: 'backup', date: due.getTime() > nowMs ? due : atTime(nextTime) });
+    reminders.push({
+      kind: 'backup',
+      date: due.getTime() > nowMs ? due : nextAt(prefs.hour, prefs.minute),
+    });
   }
 
-  return reminders.filter((r) => r.date.getTime() > nowMs);
+  const pill = prefs.pill;
+  if (pill?.enabled) {
+    if (pill.breakDays === 0 && pill.packStart <= nowMs) {
+      reminders.push({ kind: 'pill', date: nextAt(pill.hour, pill.minute), repeatsDaily: true });
+    } else {
+      for (let i = 0; i <= PILL_HORIZON_DAYS; i++) {
+        const day = addCalendarDays(new Date(nowMs).setHours(0, 0, 0, 0), i);
+        if (isPillDay(pill, day)) {
+          reminders.push({ kind: 'pill', date: atTime(day, pill.hour, pill.minute) });
+        }
+      }
+    }
+  }
+
+  const paused = isPaused(prefs, nowMs);
+  const pauseEnd = prefs.pause?.until ?? Number.POSITIVE_INFINITY;
+
+  return reminders.filter((r) => {
+    if (r.date.getTime() <= nowMs) {
+      return false;
+    }
+
+    if (!paused || PAUSE_EXEMPT.has(r.kind)) {
+      return true;
+    }
+
+    // A repeating reminder cannot start later, so a paused one waits for the next reschedule
+    // after the pause ends (every app foreground); a one-shot after the pause is kept.
+    return !r.repeatsDaily && r.date.getTime() > pauseEnd;
+  });
+}
+
+/** The soonest reminder that will fire, for the settings' "next reminder" line. */
+export function nextReminder(reminders: CycleReminder[]): CycleReminder | null {
+  return reminders.reduce<CycleReminder | null>(
+    (soonest, r) => (!soonest || r.date.getTime() < soonest.date.getTime() ? r : soonest),
+    null
+  );
 }

@@ -17,9 +17,6 @@ jest.mock('@/services/cycleExport', () => ({ exportContextsCsv: jest.fn() }));
 const mockUpdate = jest.fn(async (_update: unknown) => {});
 jest.mock('@/hooks/useMenstrualCycle', () => ({ useMenstrualCycle: jest.fn() }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
-jest.mock('@/hooks/useCycleMoods', () => ({
-  useCycleMoods: () => ({ moods: [], isLoading: false, error: false }),
-}));
 jest.mock('@/hooks/useFormatAppNumber', () => ({
   useFormatAppNumber: () => ({ formatInteger: String }),
 }));
@@ -86,7 +83,10 @@ beforeEach(() => {
     dayLogs: [],
     contexts: [],
     updateConfig: mockUpdate,
-    nowMs: new Date(2024, 3, 1).getTime(),
+    moods: [],
+    moodsLoading: false,
+    moodsError: false,
+    today: new Date(2024, 3, 1).getTime(),
   });
 });
 it('adds a diary preset without replacing existing fields or favorites', async () => {

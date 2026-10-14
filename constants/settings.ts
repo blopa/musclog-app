@@ -455,7 +455,25 @@ export type ChartTooltipPosition = 'left' | 'right';
 export type NutritionLogHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type WorkoutHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type HomeSummaryCard = 'daily_summary' | 'weekly_streak';
-export type CycleNotificationStyle = 'discreet' | 'detailed';
+/**
+ * What a cycle reminder shows on the lock screen. `discreet` (stored name kept for existing
+ * installs; shown as "Private") never says what it is about; `subtle` names the task but never
+ * periods, fertility or pills; `detailed` says it plainly.
+ */
+export type CycleNotificationStyle = 'discreet' | 'subtle' | 'detailed';
+export const CYCLE_NOTIFICATION_STYLES: readonly CycleNotificationStyle[] = [
+  'discreet',
+  'subtle',
+  'detailed',
+];
+
+/** The one parse of the stored value (service and context alike); anything unknown is private. */
+export function parseCycleNotificationStyle(
+  raw: string | null | undefined
+): CycleNotificationStyle {
+  return CYCLE_NOTIFICATION_STYLES.find((style) => style === raw) ?? 'discreet';
+}
+
 export type AppLockMode = 'off' | 'cycle' | 'app';
 
 export type UseSettingsResult = {

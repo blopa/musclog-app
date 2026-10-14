@@ -324,12 +324,12 @@ function ProgressScreenContent({
                       units={units}
                     />
                   ) : null}
-                  {hasAnyAggregationData((d: any) => d.menstrualPhaseHistory) ? (
+                  {hasAnyAggregationData((d: any) => d.cycleBandHistory) ? (
                     <MenstrualPerformanceChart
                       allData={{
-                        daily: allAggregationData.daily?.menstrualPhaseHistory ?? [],
-                        weekly: allAggregationData.weekly?.menstrualPhaseHistory ?? [],
-                        monthly: allAggregationData.monthly?.menstrualPhaseHistory ?? [],
+                        daily: allAggregationData.daily?.cycleBandHistory ?? [],
+                        weekly: allAggregationData.weekly?.cycleBandHistory ?? [],
+                        monthly: allAggregationData.monthly?.cycleBandHistory ?? [],
                       }}
                     />
                   ) : null}

@@ -28,6 +28,7 @@ type TestInputProps = {
   multiline?: boolean;
   numberOfLines?: number;
   editable?: boolean;
+  maxLength?: number;
 };
 
 const ANIMATION_DURATION = 100;
@@ -56,6 +57,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
       multiline = false,
       numberOfLines = 4,
       editable = true,
+      maxLength,
     },
     ref
   ) => {
@@ -150,6 +152,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               numberOfLines={multiline ? numberOfLines : undefined}
               textAlignVertical={multiline ? 'top' : 'center'}
               editable={editable}
+              maxLength={maxLength}
             />
             {icon ? (
               <View
@@ -203,6 +206,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               numberOfLines={multiline ? numberOfLines : undefined}
               textAlignVertical={multiline ? 'top' : 'center'}
               editable={editable}
+              maxLength={maxLength}
             />
             {icon ? (
               <View

@@ -1,5 +1,5 @@
 import { buildCycleHistory } from '../cycleHistory';
-import { computeInsights, isNearPeriodStart, MIN_INSIGHT_CYCLES } from '../cycleInsights';
+import { computeInsights, MIN_INSIGHT_CYCLES } from '../cycleInsights';
 import type { CyclePeriodInput } from '../types';
 
 const day = (n: number) => new Date(2024, 0, 1 + n).getTime();
@@ -75,10 +75,10 @@ describe('computeInsights', () => {
 
   it('flags workouts that were lighter near the start of most periods, with their ids', () => {
     const workouts = periods.flatMap((p, i) => [
-      { id: `near${i}`, date: p.startDate, volume: 500 },
-      { id: `a${i}`, date: p.startDate + 8 * 86_400_000, volume: 1000 },
-      { id: `b${i}`, date: p.startDate + 12 * 86_400_000, volume: 1100 },
-      { id: `c${i}`, date: p.startDate + 16 * 86_400_000, volume: 1000 },
+      { id: `near${i}`, date: p.startDate, volume: 500, workoutKey: 'legs' },
+      { id: `a${i}`, date: p.startDate + 8 * 86_400_000, volume: 1000, workoutKey: 'legs' },
+      { id: `b${i}`, date: p.startDate + 12 * 86_400_000, volume: 1100, workoutKey: 'legs' },
+      { id: `c${i}`, date: p.startDate + 16 * 86_400_000, volume: 1000, workoutKey: 'legs' },
     ]);
     const insight = computeInsights({ periods, history: history(), dayLogs: [], workouts }).find(
       (i) => i.kind === 'workout_near_start'
@@ -89,10 +89,10 @@ describe('computeInsights', () => {
 
   it('does not flag workouts that were not lighter', () => {
     const workouts = periods.flatMap((p, i) => [
-      { id: `near${i}`, date: p.startDate, volume: 1000 },
-      { id: `a${i}`, date: p.startDate + 8 * 86_400_000, volume: 1000 },
-      { id: `b${i}`, date: p.startDate + 12 * 86_400_000, volume: 1000 },
-      { id: `c${i}`, date: p.startDate + 16 * 86_400_000, volume: 1000 },
+      { id: `near${i}`, date: p.startDate, volume: 1000, workoutKey: 'legs' },
+      { id: `a${i}`, date: p.startDate + 8 * 86_400_000, volume: 1000, workoutKey: 'legs' },
+      { id: `b${i}`, date: p.startDate + 12 * 86_400_000, volume: 1000, workoutKey: 'legs' },
+      { id: `c${i}`, date: p.startDate + 16 * 86_400_000, volume: 1000, workoutKey: 'legs' },
     ]);
     expect(
       computeInsights({ periods, history: history(), dayLogs: [], workouts }).some(
@@ -100,14 +100,33 @@ describe('computeInsights', () => {
       )
     ).toBe(false);
   });
-});
 
-describe('isNearPeriodStart', () => {
-  it('is true within two days of a logged or predicted start, and false otherwise', () => {
-    expect(isNearPeriodStart([day(10)], null, day(11))).toBe(true);
-    expect(isNearPeriodStart([day(10)], null, day(13))).toBe(false);
-    expect(isNearPeriodStart([day(10)], day(30), day(29))).toBe(true);
-    expect(isNearPeriodStart([], null, day(1))).toBe(false);
+  it('compares a session only with the same workout', () => {
+    // Regression: an arm day near every start against heavy leg days otherwise read as "your
+    // volume drops around your period".
+    const workouts = periods.flatMap((p, i) => [
+      { id: `arms${i}`, date: p.startDate, volume: 400, workoutKey: 'arms' },
+      { id: `armsAway${i}`, date: p.startDate + 10 * 86_400_000, volume: 400, workoutKey: 'arms' },
+      { id: `legs${i}`, date: p.startDate + 14 * 86_400_000, volume: 2000, workoutKey: 'legs' },
+    ]);
+    expect(
+      computeInsights({ periods, history: history(), dayLogs: [], workouts }).some(
+        (i) => i.kind === 'workout_near_start'
+      )
+    ).toBe(false);
+  });
+
+  it('needs four comparable cycles before saying anything about workouts', () => {
+    const workouts = periods.slice(0, 3).flatMap((p, i) => [
+      { id: `near${i}`, date: p.startDate, volume: 500, workoutKey: 'legs' },
+      { id: `a${i}`, date: p.startDate + 8 * 86_400_000, volume: 1000, workoutKey: 'legs' },
+      { id: `b${i}`, date: p.startDate + 12 * 86_400_000, volume: 1000, workoutKey: 'legs' },
+    ]);
+    expect(
+      computeInsights({ periods, history: history(), dayLogs: [], workouts }).some(
+        (i) => i.kind === 'workout_near_start'
+      )
+    ).toBe(false);
   });
 });
 
@@ -139,7 +158,10 @@ it('finds personal sleep and energy differences only with sufficient recorded co
     hits: 3,
     total: 3,
   });
-  expect(insights.find((i) => i.kind === 'sleep_near_start')?.evidence.days).toContain(day(7));
+  const sleepDays = insights.find((i) => i.kind === 'sleep_near_start')?.evidence.days;
+  expect(sleepDays).toContain(day(0));
+  // Only the days near the start, not the comparison days, like every other observation.
+  expect(sleepDays).not.toContain(day(7));
   expect(
     computeInsights({ periods, history: history(), dayLogs: logs.slice(0, 8) }).some(
       (i) => i.kind === 'sleep_near_start'

@@ -1,4 +1,24 @@
+import type { CyclePhase } from '@/utils/cycle/cycleTimeline';
+
 export type PeriodLogMode = 'start' | 'end' | 'past';
+
+/** Whole keys, so `check-translations` sees them; a new phase fails the build until it has one. */
+export const CYCLE_PHASE_LABEL_KEYS: Record<CyclePhase, string> = {
+  menstrual: 'cycle.phase.menstrual',
+  between: 'cycle.phase.between',
+  follicular: 'cycle.phase.follicular',
+  ovulatory: 'cycle.phase.ovulatory',
+  luteal: 'cycle.phase.luteal',
+};
+
+export const ENERGY_LEVEL_LABEL_KEYS = {
+  1: 'cycle.daySheet.energyLevel.1',
+  2: 'cycle.daySheet.energyLevel.2',
+  3: 'cycle.daySheet.energyLevel.3',
+  4: 'cycle.daySheet.energyLevel.4',
+  5: 'cycle.daySheet.energyLevel.5',
+} as const;
+export type EnergyLevel = keyof typeof ENERGY_LEVEL_LABEL_KEYS;
 
 export const DEFAULT_PERIOD_DURATION = 5;
 

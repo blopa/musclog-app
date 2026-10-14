@@ -11,7 +11,8 @@
     },
     "channels": {
       "default": "Standaard",
-      "activeWorkout": "Actieve Workout"
+      "activeWorkout": "Actieve Workout",
+      "cycle": "Cyclusherinneringen"
     },
     "startNow": "Nu starten",
     "types": {
@@ -54,11 +55,11 @@
       },
       "periodPrediction": {
         "title": "Menstruatievoorspelling",
-        "body": "Je menstruatie begint naar verwachting over 2 dagen. Wees voorbereid!"
+        "body": "Je menstruatie kan over een paar dagen beginnen, op basis van je recente cycli."
       },
       "fertileWindow": {
         "title": "Vruchtbare periode",
-        "body": "Je vruchtbare periode begint! Handig voor het bijhouden van je energieniveaus."
+        "body": "Je geschatte vruchtbare periode kan binnenkort beginnen. Het is een kalenderschatting, geen bevestiging van de ovulatie."
       },
       "restTimerAlert": {
         "title": "Rust voorbij - weer aan de slag!",

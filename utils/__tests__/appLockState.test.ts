@@ -1,6 +1,7 @@
 import {
   APP_LOCK_GRACE_MS,
   INITIAL_LOCK_STATE,
+  isObscured,
   isScopeLocked,
   lockReducer,
   scopeRequiresLock,
@@ -60,5 +61,20 @@ describe('lockReducer', () => {
   it('can be locked explicitly', () => {
     const state = lockReducer({ unlocked: true, backgroundedAt: null }, { type: 'locked' });
     expect(state.unlocked).toBe(false);
+  });
+});
+
+describe('isObscured', () => {
+  it('covers the screen while away whenever a lock is on, so the app switcher shows nothing', () => {
+    const away = lockReducer(lockReducer(INITIAL_LOCK_STATE, { type: 'unlocked' }), {
+      type: 'background',
+      now: 1000,
+    });
+    expect(isObscured('cycle', away)).toBe(true);
+    expect(isObscured('app', away)).toBe(true);
+    expect(isObscured('off', away)).toBe(false);
+
+    const back = lockReducer(away, { type: 'foreground', now: 2000, graceMs: APP_LOCK_GRACE_MS });
+    expect(isObscured('cycle', back)).toBe(false);
   });
 });

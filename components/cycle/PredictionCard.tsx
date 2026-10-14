@@ -42,19 +42,12 @@ export function PredictionCard({ onOpenDetails }: PredictionCardProps) {
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
   const { cycleVariabilityHintDismissed } = useSettings();
-  const {
-    predictionState,
-    timeline,
-    predictionStats,
-    nextPeriodDate,
-    nextPeriodEarliest,
-    nextPeriodLatest,
-    guidance,
-    fertileWindow,
-  } = useMenstrualCycle();
+  const { timeline, predictionStats, guidance } = useMenstrualCycle();
+  const prediction = timeline?.prediction;
+  const fertileWindow = timeline?.fertileEstimate ?? null;
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const date = (d: Date) =>
-    new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' }).format(d);
+  const date = (ms: number) =>
+    new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' }).format(ms);
 
   const setHidden = async (hidden: boolean) => {
     try {
@@ -81,7 +74,7 @@ export function PredictionCard({ onOpenDetails }: PredictionCardProps) {
 
   let headline: string;
   let detail: string | null = null;
-  const state = predictionState;
+  const state = prediction?.state ?? 'insufficient';
   if (state === 'insufficient') {
     headline = t('cycle.prediction.insufficient');
   } else if (state === 'hidden') {
@@ -90,19 +83,21 @@ export function PredictionCard({ onOpenDetails }: PredictionCardProps) {
     headline = t('cycle.prediction.notShown');
     detail = guidance.suppressedReason ? t(SUPPRESSED_KEYS[guidance.suppressedReason]) : null;
   } else if (state === 'late') {
-    const daysLate = timeline?.prediction.daysLate ?? 0;
+    const daysLate = prediction?.daysLate ?? 0;
     headline = t('cycle.late.title', { count: daysLate, days: formatInteger(daysLate) });
     detail = t('cycle.late.description');
-  } else if (nextPeriodEarliest && nextPeriodLatest && nextPeriodDate) {
-    const spansDays =
-      Math.round((nextPeriodLatest.getTime() - nextPeriodEarliest.getTime()) / MS_PER_SOLAR_DAY) >=
-      1;
+  } else if (
+    prediction?.earliest != null &&
+    prediction.latest != null &&
+    prediction.mostLikely != null
+  ) {
+    const spansDays = Math.round((prediction.latest - prediction.earliest) / MS_PER_SOLAR_DAY) >= 1;
     headline = spansDays
       ? t('cycle.prediction.likelyRange', {
-          from: date(nextPeriodEarliest),
-          to: date(nextPeriodLatest),
+          from: date(prediction.earliest),
+          to: date(prediction.latest),
         })
-      : t('cycle.prediction.likelyDate', { date: date(nextPeriodDate) });
+      : t('cycle.prediction.likelyDate', { date: date(prediction.mostLikely) });
   } else {
     headline = t('cycle.prediction.insufficient');
   }

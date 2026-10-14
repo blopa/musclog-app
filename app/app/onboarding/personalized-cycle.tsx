@@ -10,7 +10,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
-import { CYCLE_TRACKING_CHOICES } from '@/utils/cycle/trackingMode';
+import { CYCLE_TRACKING_CHOICES, type CycleTrackingMode } from '@/utils/cycle/trackingMode';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 const NUTRITION_RESULTS_ROUTE =
@@ -23,7 +23,7 @@ export default function PersonalizedCycleScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const [menstruates, setMenstruates] = useState<'bleeding' | 'symptoms' | 'skip' | null>(null);
+  const [menstruates, setMenstruates] = useState<CycleTrackingMode | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleContinue = async () => {
@@ -38,7 +38,7 @@ export default function PersonalizedCycleScreen() {
       if (menstruates !== 'skip') {
         const nextRoute = encodeURIComponent(MUSCLOG_API_AFTER_CYCLE_ROUTE);
         router.navigate(
-          `/app/onboarding/cycle-setup?symptomOnly=${menstruates === 'symptoms'}&nextRoute=${nextRoute}&quickStep=8&quickTotal=10`
+          `/app/onboarding/cycle-setup?tracking=${menstruates}&nextRoute=${nextRoute}&quickStep=8&quickTotal=10`
         );
       } else {
         router.navigate(MUSCLOG_API_DIRECT_ROUTE);

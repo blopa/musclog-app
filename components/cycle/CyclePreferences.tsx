@@ -13,7 +13,12 @@ import { EMOTIONAL_SYMPTOM_KEYS, PHYSICAL_SYMPTOM_KEYS } from '@/constants/cycle
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { MAX_QUICK_LOG, parseQuickLog, togglePinned } from '@/utils/cycle/dayLog';
-import { cycleSymptomLabel, OBSERVATION_FIELDS, toggleChoice } from '@/utils/cycle/preferences';
+import {
+  cycleSymptomLabel,
+  OBSERVATION_FIELD_LABEL_KEYS,
+  OBSERVATION_FIELDS,
+  toggleChoice,
+} from '@/utils/cycle/preferences';
 import type { CustomCycleField, CycleConfigUpdate } from '@/utils/cycle/types';
 import { handleError } from '@/utils/handleError';
 
@@ -122,7 +127,7 @@ export function CyclePreferences() {
         {OBSERVATION_FIELDS.map((field) => (
           <Chip
             key={field}
-            label={t(`cycle.personalize.fields.${field}`)}
+            label={t(OBSERVATION_FIELD_LABEL_KEYS[field])}
             selected={config.enabledFields?.includes(field) ?? false}
             role="checkbox"
             onPress={() =>

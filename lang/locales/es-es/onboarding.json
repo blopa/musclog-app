@@ -109,7 +109,9 @@
       "pastPeriods": {
         "title": "Periodos Pasados (Opcional)",
         "description": "Agregar fechas de periodos pasados ayuda a la app a aprender la duración de tu ciclo y hacer mejores predicciones de inmediato.",
-        "addPastPeriod": "Agregar un periodo pasado"
+        "addPastPeriod": "Agregar un periodo pasado",
+        "duplicate": "Ese día ya está en la lista.",
+        "remove": "Quitar este periodo"
       },
       "errors": {
         "futureDate": "Las fechas del periodo no pueden estar en el futuro.",

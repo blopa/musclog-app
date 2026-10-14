@@ -35,22 +35,25 @@ export function isEmptyDayLog(
 }
 
 /**
- * Tapping a symptom chip steps through its severity: off -> mild -> moderate -> severe -> off.
- * A symptom converted from the old format has no rating and steps to mild.
+ * Tapping a symptom chip adds it (unrated: "present" is a complete answer) or removes it. It used
+ * to step through mild -> moderate -> severe -> off, so taking back one tap took three more and
+ * the only hint was a line of small print. Severity is a separate, optional choice.
  */
-export function stepSymptom(symptoms: DaySymptom[], key: string): DaySymptom[] {
-  const current = symptoms.find((s) => s.key === key);
-  if (!current) {
-    return [...symptoms, { key, severity: 1 }];
-  }
+export function toggleSymptom(symptoms: DaySymptom[], key: string): DaySymptom[] {
+  return symptoms.some((s) => s.key === key)
+    ? symptoms.filter((s) => s.key !== key)
+    : [...symptoms, { key, severity: null }];
+}
 
-  if (current.severity === 3) {
-    return symptoms.filter((s) => s.key !== key);
-  }
-
-  const next = ((current.severity ?? 0) + 1) as SymptomSeverity;
-
-  return symptoms.map((s) => (s.key === key ? { key, severity: next } : s));
+/** Rate (or, with `null`, un-rate) a symptom already logged; tapping the chosen rating clears it. */
+export function setSymptomSeverity(
+  symptoms: DaySymptom[],
+  key: string,
+  severity: SymptomSeverity | null
+): DaySymptom[] {
+  return symptoms.map((s) =>
+    s.key === key ? { key, severity: s.severity === severity ? null : severity } : s
+  );
 }
 
 /** Choosing "no symptoms" and logging a symptom contradict each other, so one clears the other. */

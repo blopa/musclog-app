@@ -3,22 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
-import { type PeriodBand } from '@/utils/cycle/periodBands';
-import { MenstrualPhasePoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useAppLock } from '@/context/AppLockContext';
+import { CycleBandPoint, TimeAggregation } from '@/database/services/ProgressService';
 import { useTheme } from '@/hooks/useTheme';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { getXAxisLabels } from '@/utils/chartUtils';
+import { type PeriodBand } from '@/utils/cycle/periodBands';
 
 import { ProgressChartSection } from './ProgressChartSection';
 
 interface MenstrualPerformanceChartProps {
-  allData: Record<TimeAggregation, MenstrualPhasePoint[]>;
+  allData: Record<TimeAggregation, CycleBandPoint[]>;
 }
 
 export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChartProps) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
+  const { isLocked } = useAppLock();
   const data = (allData && allData[aggregation]) || [];
   const getBandColor = (band: PeriodBand) => {
     if (band === 'period') {
@@ -73,6 +75,11 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
     { key: 'weight', label: t('progress.weight'), color: theme.colors.macros.protein.bg },
   ];
 
+  // The bands are logged periods: behind the cycle lock like every other cycle surface.
+  if (isLocked('cycle')) {
+    return null;
+  }
+
   return (
     <ProgressChartSection title={t('progress.correlationView.menstrualPerformance')}>
       <View className="mb-4 flex-row items-center gap-2">
@@ -113,7 +120,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
 
             return (
               <View key={band} className="items-center">
-                <Text className="text-[8px] uppercase tracking-tighter text-text-tertiary">
+                <Text className="text-xs uppercase text-text-tertiary">
                   {t(`progress.cycleBand.${band}`)}
                 </Text>
                 <View

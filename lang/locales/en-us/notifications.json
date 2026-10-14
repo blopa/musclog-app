@@ -11,7 +11,8 @@
     },
     "channels": {
       "default": "Default",
-      "activeWorkout": "Active Workout"
+      "activeWorkout": "Active Workout",
+      "cycle": "Cycle reminders"
     },
     "startNow": "Start Now",
     "types": {
@@ -54,11 +55,11 @@
       },
       "periodPrediction": {
         "title": "Period Prediction",
-        "body": "Your period is predicted to start in 2 days. Get ready!"
+        "body": "Your period may start in a few days, based on your recent cycles."
       },
       "fertileWindow": {
         "title": "Fertile Window",
-        "body": "Your fertile window is starting! Useful for tracking your energy levels."
+        "body": "Your estimated fertile window may begin soon. It's a calendar estimate, not confirmation of ovulation."
       },
       "restTimerAlert": {
         "title": "Rest Over - Back to Work!",

@@ -49,7 +49,21 @@ export interface WorkoutPoint {
   id: string;
   date: number;
   volume: number;
+  /**
+   * Which workout this was (template id, else its name). Sessions are only compared with the
+   * same workout: a leg day near a period start against an arm day otherwise is not a finding.
+   */
+  workoutKey: string;
 }
+
+/**
+ * Workouts need more cycles than the other observations: session volume is noisier than a
+ * symptom tick, and with three of five cycles a 15% dip appears by chance alone about half the
+ * time when each comparison is a coin flip.
+ */
+export const MIN_WORKOUT_INSIGHT_CYCLES = 4;
+/** A comparable workout needs this many sessions away from any period start as its baseline. */
+const MIN_BASELINE_SESSIONS = 2;
 
 export interface InsightInput {
   periods: CyclePeriodInput[];
@@ -254,30 +268,45 @@ function moodInsight(input: InsightInput, starts: number[]): Insight[] {
 
 function workoutInsight(input: InsightInput, starts: number[]): Insight[] {
   const workouts = input.workouts ?? [];
-  const end =
-    Math.max(...workouts.map((w) => w.date), starts[starts.length - 1] ?? 0) + MS_PER_SOLAR_DAY;
+  const nearAny = (date: number) => starts.some((start) => nearStart(start, date));
+
+  // Each workout's own typical volume, from sessions away from every period start.
+  const baselineByKey = new Map<string, number>();
+  const awayByKey = new Map<string, number[]>();
+  for (const w of workouts) {
+    if (!nearAny(w.date)) {
+      awayByKey.set(w.workoutKey, [...(awayByKey.get(w.workoutKey) ?? []), w.volume]);
+    }
+  }
+
+  for (const [key, volumes] of awayByKey) {
+    if (volumes.length >= MIN_BASELINE_SESSIONS) {
+      baselineByKey.set(key, median(volumes));
+    }
+  }
+
   const days: number[] = [];
   const workoutIds: string[] = [];
   const hitStarts: number[] = [];
   let total = 0;
-
-  for (const { start, end: windowEnd } of cycleWindows(starts, end)) {
-    const inCycle = workouts.filter((w) => w.date >= start && w.date < windowEnd);
-    const near = inCycle.filter((w) => nearStart(start, w.date));
-    const rest = inCycle.filter((w) => !nearStart(start, w.date));
-    if (near.length === 0 || rest.length < 3) {
+  for (const start of starts) {
+    const near = workouts.filter(
+      (w) => nearStart(start, w.date) && (baselineByKey.get(w.workoutKey) ?? 0) > 0
+    );
+    if (near.length === 0) {
       continue;
     }
 
     total += 1;
-    if (mean(near.map((w) => w.volume)) <= mean(rest.map((w) => w.volume)) * 0.85) {
+    const ratio = mean(near.map((w) => w.volume / baselineByKey.get(w.workoutKey)!));
+    if (ratio <= 0.85) {
       hitStarts.push(start);
       days.push(...near.map((w) => w.date));
       workoutIds.push(...near.map((w) => w.id));
     }
   }
 
-  return sharePasses(hitStarts.length, total)
+  return total >= MIN_WORKOUT_INSIGHT_CYCLES && sharePasses(hitStarts.length, total)
     ? [
         {
           kind: 'workout_near_start',
@@ -319,7 +348,8 @@ function recoveryInsight(
       mean(rest.map((d) => value(d)!)) - (metric === 'energy' ? 1 : 0.5)
     ) {
       hits.push(window.start);
-      days.push(...near.map((d) => d.date), ...rest.map((d) => d.date));
+      // The days the observation is ABOUT, like every other insight's evidence.
+      days.push(...near.map((d) => d.date));
     }
   }
 
@@ -357,19 +387,4 @@ export function computeInsights(input: InsightInput): Insight[] {
     ...cycleLengthInsight(input.history),
     ...bleedingDurationInsight(input.history),
   ];
-}
-
-/**
- * Whether `today` sits near the start of a period: within the same window the observations use,
- * of a logged start or of the predicted one. Used to show a relevant observation at the moment it
- * applies (for example, on a workout day) and not otherwise.
- */
-export function isNearPeriodStart(
-  periodStarts: number[],
-  predictedStart: number | null,
-  today: number
-): boolean {
-  return [...periodStarts, ...(predictedStart != null ? [predictedStart] : [])].some((start) =>
-    nearStart(start, today)
-  );
 }

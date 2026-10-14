@@ -6,9 +6,10 @@ import {
   parseQuickLog,
   patchDayLog,
   serializeQuickLog,
-  stepSymptom,
+  setSymptomSeverity,
   suggestPin,
   togglePinned,
+  toggleSymptom,
   withNoSymptoms,
 } from '../dayLog';
 
@@ -37,19 +38,24 @@ describe('isEmptyDayLog', () => {
   });
 });
 
-describe('stepSymptom', () => {
-  it('steps mild -> moderate -> severe -> off', () => {
-    let s = stepSymptom([], 'cramps');
-    expect(s).toEqual([{ key: 'cramps', severity: 1 }]);
-    s = stepSymptom(s, 'cramps');
-    expect(s[0].severity).toBe(2);
-    s = stepSymptom(s, 'cramps');
-    expect(s[0].severity).toBe(3);
-    expect(stepSymptom(s, 'cramps')).toEqual([]);
+describe('toggleSymptom', () => {
+  it('adds an unrated symptom with one tap and removes it with the next', () => {
+    const on = toggleSymptom([], 'cramps');
+    expect(on).toEqual([{ key: 'cramps', severity: null }]);
+    expect(toggleSymptom(on, 'cramps')).toEqual([]);
   });
 
-  it('treats an unrated converted symptom as the step before mild', () => {
-    expect(stepSymptom([{ key: 'acne', severity: null }], 'acne')[0].severity).toBe(1);
+  it('removes a rated symptom in one tap too', () => {
+    expect(toggleSymptom([{ key: 'acne', severity: 3 }], 'acne')).toEqual([]);
+  });
+});
+
+describe('setSymptomSeverity', () => {
+  it('rates a logged symptom and clears the rating when the same one is tapped again', () => {
+    const rated = setSymptomSeverity([{ key: 'cramps', severity: null }], 'cramps', 2);
+    expect(rated).toEqual([{ key: 'cramps', severity: 2 }]);
+    expect(setSymptomSeverity(rated, 'cramps', 2)).toEqual([{ key: 'cramps', severity: null }]);
+    expect(setSymptomSeverity(rated, 'other', 1)).toEqual(rated);
   });
 });
 

@@ -3,7 +3,7 @@ import { Linking, Text, View } from 'react-native';
 
 import { TextButton } from '@/components/theme/TextButton';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
-import { careTopics, CYCLE_EDUCATION } from '@/utils/cycle/careGuidance';
+import { CARE_TOPIC_LABEL_KEYS, careTopics, CYCLE_EDUCATION } from '@/utils/cycle/careGuidance';
 import { contextAt } from '@/utils/cycle/contraception';
 import { handleError } from '@/utils/handleError';
 
@@ -21,7 +21,7 @@ export function CycleCareCard({ day, onAppointment }: { day: number; onAppointme
       {topics.map((topic) => (
         <TextButton
           key={topic}
-          label={t(`cycle.complete.education.${topic}`)}
+          label={t(CARE_TOPIC_LABEL_KEYS[topic])}
           onPress={() => {
             void Linking.openURL(CYCLE_EDUCATION[topic]).catch((error) =>
               handleError(error, 'CycleCareCard.link', {

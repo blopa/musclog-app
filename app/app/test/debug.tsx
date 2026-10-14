@@ -486,8 +486,8 @@ export default function DebugTestScreen() {
     try {
       setNotificationStatus('Sending...');
       await NotificationService.testNotification(
-        'Period Prediction',
-        'Your period is predicted to start in 2 days. Get ready!',
+        'Period may start soon',
+        'Based on your recent cycles, your period may start in a few days. This is an estimate.',
         { type: 'menstrual-cycle', subtype: 'period-start' }
       );
       setNotificationStatus('Period prediction notification sent ✓');
@@ -502,8 +502,8 @@ export default function DebugTestScreen() {
     try {
       setNotificationStatus('Sending...');
       await NotificationService.testNotification(
-        'Fertile Window',
-        'Your fertile window is starting! Useful for tracking your energy levels.',
+        'Estimated fertile window',
+        'Your estimated fertile window may begin soon. It is a calendar estimate, not confirmation of ovulation.',
         { type: 'menstrual-cycle', subtype: 'fertile-window' }
       );
       setNotificationStatus('Fertile window notification sent ✓');

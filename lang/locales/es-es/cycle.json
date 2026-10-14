@@ -15,7 +15,6 @@
     "settings": {
       "title": "Ajustes del Ciclo",
       "subtitle": "Edita tu configuración del ciclo",
-      "save": "Guardar Cambios",
       "changeContext": "Cambiar etapa vital o anticoncepción",
       "sectionUsual": "Tus duraciones habituales",
       "usualHint": "Se usan hasta que haya suficiente historial para aprender los tuyos.",
@@ -30,9 +29,6 @@
         "enable": "Mostrar estimaciones"
       },
       "sectionReminders": "Recordatorios",
-      "reminderHint": "Los recordatorios nunca dicen de qué tratan, salvo que elijas el texto detallado.",
-      "reminderDiscreet": "Discreto",
-      "reminderDetailed": "Detallado",
       "sectionTracking": "Seguimiento",
       "sectionPrivacy": "Privacidad",
       "lockHint": "Pide tu huella, rostro o PIN del dispositivo para abrir.",
@@ -138,7 +134,8 @@
       "follicular": "Folicular",
       "ovulatory": "Ovulatoria",
       "ovulation": "Ovulación",
-      "luteal": "Lútea"
+      "luteal": "Lútea",
+      "between": "Entre periodos"
     },
     "late": {
       "title": "{{count}} día más tarde que tu rango habitual",
@@ -189,11 +186,14 @@
       "effects": "Algunos métodos cambian el comportamiento de tu ciclo, por lo que las predicciones y la ventana fértil pueden ocultarse o mostrarse con una advertencia.",
       "remove": "Quitar este cambio",
       "timelineTitle": "Historial de etapa vital y anticoncepción",
-      "from": "Desde {{date}}"
+      "from": "Desde {{date}}",
+      "lossQuietTitle": "¿Pausar también los demás recordatorios?",
+      "lossQuietMessage": "Las predicciones y los recordatorios del periodo ya se han detenido. También puedes pausar el registro diario y los demás recordatorios del ciclo durante 4 semanas. Los recordatorios de la píldora continúan. Puedes reanudarlos cuando quieras en los ajustes del ciclo.",
+      "lossQuietConfirm": "Pausar 4 semanas",
+      "lossQuietKeep": "Mantenerlos"
     },
     "daySheet": {
       "title": "Registrar este día",
-      "severityHint": "Toca un síntoma otra vez para cambiar su intensidad.",
       "noSymptoms": "Sin síntomas hoy",
       "noSymptomsLogged": "Sin síntomas",
       "moreSymptoms": "Más síntomas",
@@ -214,7 +214,13 @@
       "addDetails": "Añadir detalles",
       "edit": "Editar",
       "startPeriodPrompt": "Sangrado registrado fuera de un periodo.",
-      "startPeriod": "Iniciar periodo aquí"
+      "startPeriod": "Iniciar periodo aquí",
+      "moodUnavailable": "No se pudo cargar el estado de ánimo. Todo lo demás se guarda igualmente.",
+      "severityOptional": "¿Con qué intensidad? Opcional. Toca de nuevo una valoración para quitarla.",
+      "painScale": "0 = sin dolor, 10 = el peor imaginable",
+      "clearTitle": "¿Borrar este día?",
+      "clearMessage": "Se eliminará todo lo registrado este día, incluido su estado de ánimo en Inicio y Progreso. No se puede deshacer.",
+      "clearConfirm": "Borrar día"
     },
     "edit": {
       "title": "Editar periodo",
@@ -237,7 +243,8 @@
     "errors": {
       "future": "Las fechas del periodo no pueden estar en el futuro.",
       "overlap": "Esto se solapa con un periodo que ya registraste.",
-      "endBeforeStart": "El final no puede ser anterior al inicio."
+      "endBeforeStart": "El final no puede ser anterior al inicio.",
+      "notFound": "Ese periodo ya no existe. Puede que se haya eliminado."
     },
     "fertilityDisclaimer": "Solo es una estimación informativa. No la uses sola para evitar un embarazo.",
     "history": {
@@ -380,7 +387,7 @@
       "fieldsHint": "Solo los campos elegidos aparecen en el registro diario.",
       "fields": {
         "sleepHours": "Sueño (horas)",
-        "temperatureC": "Temperatura basal (°C)",
+        "temperatureC": "Temperatura basal",
         "discharge": "Flujo vaginal / moco cervical",
         "medication": "Medicamento y dosis",
         "sex": "Actividad sexual",
@@ -405,11 +412,11 @@
       "unexpectedBleeding": "Registrar sangrado inesperado o manchado",
       "sharedMoodHint": "El estado de ánimo se comparte con Inicio y Progreso. Borrarlo aquí también elimina el de ese día en esas pantallas. Eliminar los datos del ciclo conserva los estados de ánimo compartidos.",
       "loadingMood": "Cargando estado de ánimo…",
-      "moodUnlogged": "Estado de ánimo no registrado",
       "clearMood": "Borrar estado de ánimo al guardar",
       "clearDayAndMood": "Borrar observaciones y estado de ánimo compartido de este día",
       "summaryObservations": "Estado de ánimo y otras observaciones",
-      "add": "Añadir"
+      "add": "Añadir",
+      "moodUnlogged": "Estado de ánimo no registrado"
     },
     "portability": {
       "title": "Copia de seguridad e importación del ciclo",
@@ -505,22 +512,7 @@
         "note": "Notas",
         "importedTemperatureC": "Temperatura basal importada (°C)"
       },
-      "reminders": {
-        "hour": "Hora (0–23)",
-        "minute": "Minuto (0–59)",
-        "leadDays": "Días antes del periodo",
-        "period": "Recordatorio del periodo previsto",
-        "fertility": "Recordatorio de ventana fértil (si está activada)",
-        "daily": "Recordatorio diario para registrar",
-        "endCheck": "Revisar un periodo que sigue abierto tras 7 días"
-      },
       "backupDays": "Intervalo de recordatorio de copia (días; 0 desactiva)",
-      "remindersHint": "Los horarios usan tu hora local. Los recordatorios diarios cubren 28 días y se renuevan al abrir la app. Las notificaciones también deben estar activadas en la app y el dispositivo.",
-      "notification": {
-        "daily-log": "Registra hoy si quieres.",
-        "end-check": "¿Sigue el periodo que marcaste como abierto? Actualiza su final cuando quieras.",
-        "backup": "Considera guardar una copia cifrada de tus registros."
-      },
       "importTitle": "Importar historial de otro rastreador",
       "importHint": "{{rows}} filas CSV. Columnas: {{columns}}. Introduce los nombres exactos; deja vacíos los campos opcionales. Este asistente acepta CSV, no archivos propietarios.",
       "importColumns": {
@@ -588,6 +580,144 @@
       "energyInsight": "Registraste menos energía cerca del inicio del periodo en {{hits}} de {{total}} ciclos observados. Esto no demuestra una causa.",
       "sleepInsight": "Registraste menos sueño cerca del inicio del periodo en {{hits}} de {{total}} ciclos observados. Esto no demuestra una causa.",
       "reviewLong": "Volver a considerar incierto este ciclo largo"
+    },
+    "dayCounter": "{{day}}/{{length}}",
+    "notifications": {
+      "subtle": {
+        "cycle": "Tu actualización del ciclo está lista.",
+        "routine": "Es la hora de tu recordatorio diario.",
+        "checkIn": "Es la hora de tu registro diario.",
+        "update": "Es hora de actualizar tu registro.",
+        "backup": "Es hora de guardar una copia de seguridad."
+      },
+      "periodStart": {
+        "title": "El periodo podría empezar pronto",
+        "body": "Según tus ciclos recientes, tu periodo podría empezar hacia el {{from}}. Es una estimación.",
+        "bodyRange": "Según tus ciclos recientes, tu periodo podría empezar entre el {{from}} y el {{to}}. Es una estimación."
+      },
+      "periodDue": {
+        "title": "El periodo podría empezar hoy",
+        "body": "Hoy es el inicio más probable según tus ciclos recientes. Regístralo cuando ocurra."
+      },
+      "periodLate": {
+        "title": "Este ciclo es más largo de lo habitual",
+        "body": "Este ciclo es más largo que tu patrón reciente. Hay muchas razones posibles. Toca si quieres actualizarlo.",
+        "bodyRange": "Este ciclo es más largo que tu patrón reciente, que suele terminar hacia el {{to}}. Hay muchas razones posibles. Toca si quieres actualizarlo."
+      },
+      "fertileWindow": {
+        "title": "Ventana fértil estimada",
+        "body": "Tu ventana fértil estimada podría empezar el {{from}}. Es una estimación de calendario, no una confirmación de la ovulación ni un método anticonceptivo.",
+        "bodyRange": "Tu ventana fértil estimada va del {{from}} al {{to}}. Es una estimación de calendario, no una confirmación de la ovulación ni un método anticonceptivo."
+      },
+      "pill": {
+        "title": "Recordatorio de la píldora",
+        "body": "Es hora de tomar tu píldora."
+      },
+      "dailyLog": {
+        "title": "Registro diario del ciclo",
+        "body": "Registra el día de hoy si quieres."
+      },
+      "endCheck": {
+        "title": "¿Sigue tu periodo?",
+        "body": "El periodo que marcaste como en curso empezó hace una semana. Actualiza su final cuando quieras."
+      },
+      "backup": {
+        "title": "Copia del ciclo",
+        "body": "Considera guardar una copia cifrada de tus registros."
+      }
+    },
+    "reminders": {
+      "time": "Hora del recordatorio",
+      "leadDays": "Días de aviso antes del periodo",
+      "oncePerCycle": "aproximadamente una vez por ciclo",
+      "atMostOncePerCycle": "como mucho una vez por ciclo",
+      "daily": "cada día",
+      "oncePerPeriod": "como mucho una vez por periodo",
+      "basis": {
+        "estimate": "una estimación a partir de tus ciclos registrados",
+        "routine": "una hora que elegiste"
+      },
+      "notWhileSuppressed": "no se envía mientras las predicciones estén desactivadas para tu situación",
+      "periodStart": {
+        "label": "Antes de mi periodo",
+        "when": "A las {{time}}, con el aviso indicado abajo, antes del inicio previsto más temprano"
+      },
+      "periodDue": {
+        "label": "El día más probable",
+        "when": "A las {{time}} el día de inicio más probable"
+      },
+      "periodLate": {
+        "label": "Si este ciclo se alarga",
+        "when": "El día después de que termine tu rango habitual, con un mensaje neutral"
+      },
+      "fertileWindow": {
+        "label": "Ventana fértil estimada",
+        "when": "A las {{time}} cuando empieza la ventana estimada",
+        "unavailable": "Solo disponible con la estimación de la ventana fértil activada, en una situación en la que tenga sentido."
+      },
+      "dailyLog": {
+        "label": "Registro diario",
+        "when": "A las {{time}}"
+      },
+      "endCheck": {
+        "label": "Revisar un periodo en curso",
+        "when": "Una semana después de un periodo marcado como en curso"
+      },
+      "backup": {
+        "label": "Recordatorio de copia de seguridad"
+      },
+      "pill": {
+        "label": "Recordatorio de la píldora",
+        "when": "Cada día de píldora a las {{time}}",
+        "time": "Hora de la píldora",
+        "pattern21": "21 días + 7 de descanso",
+        "pattern24": "24 días + 4 de descanso",
+        "continuous": "Todos los días",
+        "packStart": "Primera píldora del envase actual",
+        "hint": "Los días sin píldora no tienen recordatorio. Es un recordatorio, no un consejo médico: si olvidas una, sigue las instrucciones de tu píldora.",
+        "notPaused": "sigue activo durante una pausa"
+      },
+      "pause": {
+        "title": "Pausar recordatorios del ciclo",
+        "week": "1 semana",
+        "month": "1 mes",
+        "indefinite": "Hasta que los reanude",
+        "resume": "Reanudar recordatorios",
+        "hint": "Para una enfermedad, un duelo, un viaje o un descanso. Los recordatorios de la píldora continúan."
+      },
+      "status": {
+        "web": "Los recordatorios los envía la app de Musclog para el móvil. Los ajustes hechos aquí también se aplican allí.",
+        "noPermission": "Musclog no tiene permiso para enviar notificaciones, así que no llegará ningún recordatorio.",
+        "switchedOff": "Las notificaciones del ciclo están desactivadas, así que no llegará ningún recordatorio.",
+        "pausedUntil": "Los recordatorios están en pausa hasta el {{date}}.",
+        "paused": "Los recordatorios están en pausa hasta que los reanudes.",
+        "next": "Próximo: {{reminder}}, {{date}}.",
+        "none": "No hay nada programado. Activa un recordatorio abajo.",
+        "turnOn": "Activar recordatorios del ciclo",
+        "permissionDenied": "No se permitieron las notificaciones. Puedes permitirlas en los ajustes del teléfono."
+      },
+      "test": "Enviar una notificación de prueba",
+      "testSent": "Enviada. Llegará en unos segundos, con el texto que elegiste.",
+      "style": {
+        "title": "Texto en la pantalla de bloqueo",
+        "hint": "Lo que podría leer alguien que mire tu teléfono. Privado nunca dice de qué trata un recordatorio.",
+        "private": "Privado",
+        "subtle": "Discreto",
+        "detailed": "Detallado"
+      },
+      "preview": "Vista previa",
+      "lockScreenHint": "Con una pantalla de bloqueo segura, Android también oculta el texto de los recordatorios del ciclo.",
+      "why": {
+        "title": "Por qué recibiste este recordatorio",
+        "setting": "Activaste «{{reminder}}» en los ajustes del ciclo.",
+        "estimateFromCycles": "Su fecha es una estimación a partir de tus ciclos registrados ({{cycles}} usados), que han durado entre {{low}} y {{high}} días. Un recordatorio no puede ser más preciso que eso.",
+        "estimateFromSetup": "Su fecha sale de la duración habitual del ciclo que indicaste, porque aún no hay suficiente historial. Mejora a medida que registras periodos.",
+        "routine": "Suena a la hora que elegiste, digan lo que digan tus datos del ciclo.",
+        "pillBreak": "Se salta los días sin píldora de tu envase.",
+        "late": "Un ciclo más largo tiene muchas razones posibles. Musclog nunca da una por supuesta.",
+        "change": "Cambiar o desactivar recordatorios",
+        "estimateFromSteadyCycles": "Su fecha es una estimación a partir de tus ciclos registrados ({{cycles}} usados), que han durado todos unos {{low}} días. Los ciclos pueden variar, así que tómala como aproximada."
+      }
     }
   }
 }

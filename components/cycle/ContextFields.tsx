@@ -190,8 +190,8 @@ export function ContextFields({
 }: ContextFieldsProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [stageOpen, setStageOpen] = useState(false);
-  const [methodOpen, setMethodOpen] = useState(false);
+  // One menu, two lists: never two sibling sheets (see `local/no-sibling-modals`).
+  const [menu, setMenu] = useState<'stage' | 'method' | null>(null);
 
   const methods: ContraceptionMethod[] = CONTRACEPTION_ORDER.includes(contraception)
     ? CONTRACEPTION_ORDER
@@ -210,7 +210,7 @@ export function ContextFields({
     iconBgColor: stageColors(stage).bg,
     onPress: () => {
       onLifeStageChange(stage);
-      setStageOpen(false);
+      setMenu(null);
     },
   }));
   const methodItems: BottomPopUpMenuItem[] = methods.map((method) => ({
@@ -221,7 +221,7 @@ export function ContextFields({
     iconBgColor: theme.colors.accent.primary10,
     onPress: () => {
       onContraceptionChange(method);
-      setMethodOpen(false);
+      setMenu(null);
     },
   }));
 
@@ -238,7 +238,7 @@ export function ContextFields({
           <PickerButton
             label={t(LIFE_STAGE[lifeStage].title)}
             icon={<StageIcon size={theme.iconSize.lg} color={stageColors(lifeStage).color} />}
-            onPress={() => setStageOpen(true)}
+            onPress={() => setMenu('stage')}
           />
         </View>
         <View>
@@ -248,22 +248,20 @@ export function ContextFields({
           <PickerButton
             label={t(CONTRACEPTION[contraception].title)}
             icon={<MethodIcon size={theme.iconSize.lg} color={theme.colors.accent.primary} />}
-            onPress={() => setMethodOpen(true)}
+            onPress={() => setMenu('method')}
           />
         </View>
       </View>
 
       <BottomPopUpMenu
-        visible={stageOpen}
-        onClose={() => setStageOpen(false)}
-        title={t('onboarding.cycleSetup.lifeStage.title')}
-        items={stageItems}
-      />
-      <BottomPopUpMenu
-        visible={methodOpen}
-        onClose={() => setMethodOpen(false)}
-        title={t('onboarding.cycleSetup.birthControl.title')}
-        items={methodItems}
+        visible={menu != null}
+        onClose={() => setMenu(null)}
+        title={
+          menu === 'method'
+            ? t('onboarding.cycleSetup.birthControl.title')
+            : t('onboarding.cycleSetup.lifeStage.title')
+        }
+        items={menu === 'method' ? methodItems : stageItems}
       />
     </>
   );

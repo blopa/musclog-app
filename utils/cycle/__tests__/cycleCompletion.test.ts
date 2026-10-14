@@ -240,7 +240,11 @@ describe('reminder personalization and education', () => {
       period: false,
     };
     const reminders = planCycleReminders(timeline, day(1), { preferences, backupDays: 30 });
-    expect(reminders.filter((r) => r.kind === 'daily-log')).toHaveLength(28);
+    // One repeating reminder, not 28 one-shots: iOS keeps at most 64 pending notifications for
+    // the whole app, so a month of check-ins crowded out workout and weekly-review reminders.
+    const daily = reminders.filter((r) => r.kind === 'daily-log');
+    expect(daily).toHaveLength(1);
+    expect(daily[0].repeatsDaily).toBe(true);
     expect(reminders.some((r) => r.kind === 'backup')).toBe(true);
     expect(reminders.every((r) => r.date.getHours() === 18 && r.date.getMinutes() === 30)).toBe(
       true

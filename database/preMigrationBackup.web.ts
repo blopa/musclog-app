@@ -180,7 +180,8 @@ function canCreateWebBackup(): boolean {
 }
 
 async function executeLiveBackup(reason: BackupFileMeta['reason']): Promise<string> {
-  const jsonString = await dumpDatabase();
+  // Same-device recovery point: cycle payloads stay encrypted at rest (see keepCycleCiphertext).
+  const jsonString = await dumpDatabase(undefined, { keepCycleCiphertext: true });
   const hash = await computeHash(jsonString);
   const uri = `web-backup://${hash}`;
   const createdAt = new Date().toISOString();
@@ -294,7 +295,7 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
     // dumpDatabase() uses WatermelonDB which internally queues operations
     // until its async setup (including migration) completes, so this is safe
     // to call even if WatermelonDB hasn't fully initialised yet.
-    const jsonString = await dumpDatabase();
+    const jsonString = await dumpDatabase(undefined, { keepCycleCiphertext: true });
     const hash = await computeHash(jsonString);
     const createdAt = new Date().toISOString();
 
@@ -339,3 +340,8 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
 // ─── AsyncStorage helpers (used by exportDb.web.ts / importDb on web) ─────
 // Re-exported so callers that import from preMigrationBackup get them on web.
 export { AsyncStorage };
+
+/** On web the download step decrypts (see `downloadFile`); the recovery point is used as is. */
+export async function exportPortableRecoveryPoint(uri: string): Promise<string> {
+  return uri;
+}

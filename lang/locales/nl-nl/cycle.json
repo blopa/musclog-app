@@ -15,7 +15,6 @@
     "settings": {
       "title": "Cyclus-instellingen",
       "subtitle": "Bewerk je cyclusconfiguratie",
-      "save": "Wijzigingen opslaan",
       "changeContext": "Levensfase of anticonceptie wijzigen",
       "sectionUsual": "Je gebruikelijke duur",
       "usualHint": "Wordt gebruikt tot er genoeg geschiedenis is om die van jou te leren.",
@@ -30,9 +29,6 @@
         "enable": "Schattingen tonen"
       },
       "sectionReminders": "Herinneringen",
-      "reminderHint": "Herinneringen zeggen nooit waar ze over gaan, tenzij je gedetailleerde tekst kiest.",
-      "reminderDiscreet": "Discreet",
-      "reminderDetailed": "Gedetailleerd",
       "sectionTracking": "Bijhouden",
       "sectionPrivacy": "Privacy",
       "lockHint": "Vraag om je vingerafdruk, gezicht of pincode van het apparaat om te openen.",
@@ -138,7 +134,8 @@
       "follicular": "Folliculaire fase",
       "ovulatory": "Ovulatie",
       "ovulation": "Ovulatie",
-      "luteal": "Luteale fase"
+      "luteal": "Luteale fase",
+      "between": "Tussen menstruaties"
     },
     "late": {
       "title": "{{count}} dag later dan je gebruikelijke bereik",
@@ -189,11 +186,14 @@
       "effects": "Sommige methoden veranderen hoe je cyclus zich gedraagt, dus voorspellingen en het vruchtbare venster kunnen verborgen of met een kanttekening getoond worden.",
       "remove": "Deze wijziging verwijderen",
       "timelineTitle": "Geschiedenis van levensfase en anticonceptie",
-      "from": "Vanaf {{date}}"
+      "from": "Vanaf {{date}}",
+      "lossQuietTitle": "Ook de andere herinneringen pauzeren?",
+      "lossQuietMessage": "Voorspellingen en menstruatieherinneringen zijn al gestopt. Je kunt ook de dagelijkse check-in en andere cyclusherinneringen 4 weken pauzeren. Pilherinneringen gaan door. Je kunt ze altijd hervatten in de cyclusinstellingen.",
+      "lossQuietConfirm": "4 weken pauzeren",
+      "lossQuietKeep": "Laten staan"
     },
     "daySheet": {
       "title": "Deze dag registreren",
-      "severityHint": "Tik nogmaals op een symptoom om de sterkte te wijzigen.",
       "noSymptoms": "Geen symptomen vandaag",
       "noSymptomsLogged": "Geen symptomen",
       "moreSymptoms": "Meer symptomen",
@@ -214,7 +214,13 @@
       "addDetails": "Details toevoegen",
       "edit": "Bewerken",
       "startPeriodPrompt": "Bloeding geregistreerd buiten een menstruatie.",
-      "startPeriod": "Menstruatie hier starten"
+      "startPeriod": "Menstruatie hier starten",
+      "moodUnavailable": "Stemming kon niet worden geladen. Al het andere wordt gewoon opgeslagen.",
+      "severityOptional": "Hoe sterk? Optioneel. Tik nogmaals op een score om die te wissen.",
+      "painScale": "0 = geen pijn, 10 = de ergste denkbare",
+      "clearTitle": "Deze dag wissen?",
+      "clearMessage": "Dit verwijdert alles wat voor deze dag is vastgelegd, inclusief de stemming op Home en Voortgang. Dit kan niet ongedaan worden gemaakt.",
+      "clearConfirm": "Dag wissen"
     },
     "edit": {
       "title": "Menstruatie bewerken",
@@ -237,7 +243,8 @@
     "errors": {
       "future": "Data van een menstruatie kunnen niet in de toekomst liggen.",
       "overlap": "Dit overlapt met een menstruatie die je al hebt geregistreerd.",
-      "endBeforeStart": "Het einde kan niet voor het begin liggen."
+      "endBeforeStart": "Het einde kan niet voor het begin liggen.",
+      "notFound": "Die menstruatie bestaat niet meer. Mogelijk is ze verwijderd."
     },
     "fertilityDisclaimer": "Alleen een informatieve schatting. Gebruik het niet als enige methode om zwangerschap te voorkomen.",
     "history": {
@@ -380,7 +387,7 @@
       "fieldsHint": "Alleen gekozen velden verschijnen in het dagelijkse logboek.",
       "fields": {
         "sleepHours": "Slaap (uren)",
-        "temperatureC": "Basale temperatuur (°C)",
+        "temperatureC": "Basale temperatuur",
         "discharge": "Afscheiding / cervixslijm",
         "medication": "Medicatie en dosis",
         "sex": "Seksuele activiteit",
@@ -405,11 +412,11 @@
       "unexpectedBleeding": "Onverwachte bloeding of spotting vastleggen",
       "sharedMoodHint": "Stemming wordt gedeeld met Home en Voortgang. Wissen verwijdert de stemming van die dag ook daar. Bij het verwijderen van cyclusgegevens blijven gedeelde stemmingen behouden.",
       "loadingMood": "Stemming laden…",
-      "moodUnlogged": "Stemming niet vastgelegd",
       "clearMood": "Stemming wissen bij opslaan",
       "clearDayAndMood": "Observaties en gedeelde stemming van deze dag wissen",
       "summaryObservations": "Stemming en andere observaties",
-      "add": "Toevoegen"
+      "add": "Toevoegen",
+      "moodUnlogged": "Stemming niet vastgelegd"
     },
     "portability": {
       "title": "Cyclusback-up en import",
@@ -505,22 +512,7 @@
         "note": "Notities",
         "importedTemperatureC": "Geïmporteerde basale temperatuur (°C)"
       },
-      "reminders": {
-        "hour": "Uur (0–23)",
-        "minute": "Minuut (0–59)",
-        "leadDays": "Dagen vóór menstruatie",
-        "period": "Herinnering voorspelde menstruatie",
-        "fertility": "Herinnering vruchtbare periode (indien ingeschakeld)",
-        "daily": "Dagelijkse herinnering om te registreren",
-        "endCheck": "Controleer menstruatie die na 7 dagen nog bezig is"
-      },
       "backupDays": "Interval back-upherinnering (dagen; 0 schakelt uit)",
-      "remindersHint": "Tijden gebruiken je lokale klok. Dagelijkse herinneringen gelden voor 28 dagen en worden vernieuwd bij het openen van de app. Meldingen moeten ook in app- en apparaatinstellingen aanstaan.",
-      "notification": {
-        "daily-log": "Registreer vandaag als je dat wilt.",
-        "end-check": "Is de menstruatie die je als bezig markeerde nog gaande? Werk de einddatum bij wanneer je wilt.",
-        "backup": "Overweeg een versleutelde back-up van je gegevens."
-      },
       "importTitle": "Geschiedenis uit een andere tracker importeren",
       "importHint": "{{rows}} CSV-rijen. Kolommen: {{columns}}. Vul hieronder de exacte kolomnamen in; laat optionele velden leeg. Deze wizard accepteert CSV, geen eigen archiefformaten.",
       "importColumns": {
@@ -588,6 +580,144 @@
       "energyInsight": "Je registreerde minder energie rond menstruatiestarts in {{hits}} van {{total}} waargenomen cycli. Dit toont geen oorzaak aan.",
       "sleepInsight": "Je registreerde kortere slaap rond menstruatiestarts in {{hits}} van {{total}} waargenomen cycli. Dit toont geen oorzaak aan.",
       "reviewLong": "Deze lange cyclus weer als onzeker behandelen"
+    },
+    "dayCounter": "{{day}}/{{length}}",
+    "notifications": {
+      "subtle": {
+        "cycle": "Je cyclusupdate staat klaar.",
+        "routine": "Tijd voor je dagelijkse herinnering.",
+        "checkIn": "Tijd voor je dagelijkse check-in.",
+        "update": "Tijd om je logboek bij te werken.",
+        "backup": "Tijd om een back-up te maken."
+      },
+      "periodStart": {
+        "title": "Menstruatie begint mogelijk binnenkort",
+        "body": "Op basis van je recente cycli kan je menstruatie rond {{from}} beginnen. Dit is een schatting.",
+        "bodyRange": "Op basis van je recente cycli kan je menstruatie tussen {{from}} en {{to}} beginnen. Dit is een schatting."
+      },
+      "periodDue": {
+        "title": "Menstruatie begint mogelijk vandaag",
+        "body": "Vandaag is de meest waarschijnlijke start op basis van je recente cycli. Leg het vast wanneer het gebeurt."
+      },
+      "periodLate": {
+        "title": "Deze cyclus is langer dan gewoonlijk",
+        "body": "Deze cyclus is langer dan je recente patroon. Daar zijn veel mogelijke redenen voor. Tik als je hem wilt bijwerken.",
+        "bodyRange": "Deze cyclus is langer dan je recente patroon, dat meestal uiterlijk {{to}} eindigt. Daar zijn veel mogelijke redenen voor. Tik als je hem wilt bijwerken."
+      },
+      "fertileWindow": {
+        "title": "Geschatte vruchtbare periode",
+        "body": "Je geschatte vruchtbare periode kan op {{from}} beginnen. Het is een kalenderschatting, geen bevestiging van de ovulatie en geen anticonceptie.",
+        "bodyRange": "Je geschatte vruchtbare periode loopt van {{from}} tot {{to}}. Het is een kalenderschatting, geen bevestiging van de ovulatie en geen anticonceptie."
+      },
+      "pill": {
+        "title": "Pilherinnering",
+        "body": "Tijd om je pil te nemen."
+      },
+      "dailyLog": {
+        "title": "Dagelijkse cyclus-check-in",
+        "body": "Leg vandaag vast als je wilt."
+      },
+      "endCheck": {
+        "title": "Ben je nog ongesteld?",
+        "body": "De menstruatie die je als lopend markeerde, begon een week geleden. Werk het einde bij wanneer je wilt."
+      },
+      "backup": {
+        "title": "Cyclusback-up",
+        "body": "Overweeg een versleutelde back-up van je gegevens te maken."
+      }
+    },
+    "reminders": {
+      "time": "Tijdstip van herinneringen",
+      "leadDays": "Dagen vooraf gewaarschuwd",
+      "oncePerCycle": "ongeveer één keer per cyclus",
+      "atMostOncePerCycle": "hooguit één keer per cyclus",
+      "daily": "elke dag",
+      "oncePerPeriod": "hooguit één keer per menstruatie",
+      "basis": {
+        "estimate": "een schatting op basis van je vastgelegde cycli",
+        "routine": "een tijd die je zelf koos"
+      },
+      "notWhileSuppressed": "wordt niet verstuurd zolang voorspellingen voor jouw situatie uit staan",
+      "periodStart": {
+        "label": "Voor mijn menstruatie",
+        "when": "Om {{time}}, met de waarschuwingstijd hieronder, vóór de vroegst voorspelde start"
+      },
+      "periodDue": {
+        "label": "Op de meest waarschijnlijke dag",
+        "when": "Om {{time}} op de meest waarschijnlijke startdag"
+      },
+      "periodLate": {
+        "label": "Als deze cyclus lang duurt",
+        "when": "De dag na het einde van je gebruikelijke bereik, in neutrale woorden"
+      },
+      "fertileWindow": {
+        "label": "Geschatte vruchtbare periode",
+        "when": "Om {{time}} wanneer de geschatte periode begint",
+        "unavailable": "Alleen beschikbaar als de schatting van de vruchtbare periode aan staat, in een situatie waarin die iets betekent."
+      },
+      "dailyLog": {
+        "label": "Dagelijkse check-in",
+        "when": "Om {{time}}"
+      },
+      "endCheck": {
+        "label": "Lopende menstruatie controleren",
+        "when": "Een week na een menstruatie die je als lopend markeerde"
+      },
+      "backup": {
+        "label": "Back-upherinnering"
+      },
+      "pill": {
+        "label": "Pilherinnering",
+        "when": "Elke pildag om {{time}}",
+        "time": "Tijdstip van de pil",
+        "pattern21": "21 dagen + 7 stop",
+        "pattern24": "24 dagen + 4 stop",
+        "continuous": "Elke dag",
+        "packStart": "Eerste pil van de huidige strip",
+        "hint": "Pilvrije dagen krijgen geen herinnering. Dit is een herinnering, geen medisch advies: volg de bijsluiter als je er een vergeet.",
+        "notPaused": "gaat door tijdens een pauze"
+      },
+      "pause": {
+        "title": "Cyclusherinneringen pauzeren",
+        "week": "1 week",
+        "month": "1 maand",
+        "indefinite": "Tot ik hervat",
+        "resume": "Herinneringen hervatten",
+        "hint": "Bij ziekte, rouw, reizen of een pauze. Pilherinneringen gaan door."
+      },
+      "status": {
+        "web": "Herinneringen worden verstuurd door de Musclog-app op je telefoon. Instellingen die je hier maakt, gelden daar ook.",
+        "noPermission": "Musclog mag geen meldingen sturen, dus er komt geen herinnering aan.",
+        "switchedOff": "Cyclusmeldingen staan uit, dus er komt geen herinnering aan.",
+        "pausedUntil": "Herinneringen zijn gepauzeerd tot {{date}}.",
+        "paused": "Herinneringen zijn gepauzeerd tot je ze hervat.",
+        "next": "Volgende: {{reminder}}, {{date}}.",
+        "none": "Er is niets ingepland. Zet hieronder een herinnering aan.",
+        "turnOn": "Cyclusherinneringen aanzetten",
+        "permissionDenied": "Meldingen zijn niet toegestaan. Je kunt ze toestaan in de instellingen van je telefoon."
+      },
+      "test": "Testmelding sturen",
+      "testSent": "Verstuurd. Hij komt binnen een paar seconden aan, in de gekozen bewoording.",
+      "style": {
+        "title": "Tekst op het vergrendelscherm",
+        "hint": "Wat iemand die op je telefoon kijkt kan lezen. Privé zegt nooit waar een herinnering over gaat.",
+        "private": "Privé",
+        "subtle": "Subtiel",
+        "detailed": "Uitgebreid"
+      },
+      "preview": "Voorbeeld",
+      "lockScreenHint": "Met een beveiligd vergrendelscherm verbergt Android ook de tekst van cyclusherinneringen.",
+      "why": {
+        "title": "Waarom je deze herinnering kreeg",
+        "setting": "Je hebt ‘{{reminder}}’ aangezet in de cyclusinstellingen.",
+        "estimateFromCycles": "De datum is een schatting op basis van je vastgelegde cycli ({{cycles}} gebruikt), die {{low}} tot {{high}} dagen duurden. Een herinnering kan niet preciezer zijn dan dat.",
+        "estimateFromSetup": "De datum komt van de gebruikelijke cyclusduur die je opgaf, omdat er nog niet genoeg geschiedenis is. Hij wordt beter naarmate je menstruaties vastlegt.",
+        "routine": "Hij gaat af op het tijdstip dat je koos, wat je cyclusgegevens ook zeggen.",
+        "pillBreak": "Hij slaat de pilvrije dagen van je strip over.",
+        "late": "Een langere cyclus heeft veel mogelijke redenen. Musclog gaat nooit van één uit.",
+        "change": "Herinneringen wijzigen of uitzetten",
+        "estimateFromSteadyCycles": "De datum is een schatting op basis van je vastgelegde cycli ({{cycles}} gebruikt), die allemaal ongeveer {{low}} dagen duurden. Cycli kunnen toch variëren, dus zie het als een benadering."
+      }
     }
   }
 }

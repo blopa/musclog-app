@@ -20,6 +20,7 @@ import { getWorkoutTemplates, type RawWorkoutTemplate } from '@/data/workoutTemp
 import type { LiftingExperience } from '@/database/models/User';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
 import {
@@ -57,6 +58,7 @@ const isExperience = (value: unknown): value is LiftingExperience =>
 export default function FirstWorkoutScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode?: string }>();
   // The last step of the quick (7) or personalized (10) setup; absent when opened directly.
@@ -161,7 +163,9 @@ export default function FirstWorkoutScreen() {
     setIsBusy(true);
     try {
       await WorkoutTemplateService.createWorkoutsFromJsonTemplate(template);
-      await finish('/app', true);
+      // The Workouts screen's Today card offers the plan's first workout with one "Start" tap, so
+      // the new plan leads somewhere instead of leaving the person on Home to look for it.
+      await finish('/app/workout/workouts', true);
     } catch (error) {
       handleError(error, 'firstWorkout.addPlan', {
         snackbarMessage: t('errors.somethingWentWrong'),
@@ -296,7 +300,7 @@ export default function FirstWorkoutScreen() {
                           fontSize: theme.typography.fontSize.base,
                         }}
                       >
-                        {t('onboarding.firstWorkout.dayLabel', { day })}
+                        {t('onboarding.firstWorkout.dayLabel', { day: formatInteger(day) })}
                       </Text>
                       <Text
                         style={{

@@ -280,7 +280,24 @@ describe('cycle reminders', () => {
     arrange(onTrack, 'detailed');
     await NotificationService.scheduleMenstrualCycleNotifications();
     const content = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].content;
-    expect(content.title).toBe('notifications.types.periodPrediction.title');
+    expect(content.title).toBe('cycle.notifications.periodStart.title');
+    // A range for an estimate, never one confident date.
+    expect(content.body).toBe('cycle.notifications.periodStart.bodyRange');
+  });
+
+  it('names the task but never the topic in the subtle style', async () => {
+    arrange(onTrack, 'subtle' as never);
+    await NotificationService.scheduleMenstrualCycleNotifications();
+    const content = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].content;
+    expect(content.title).toBe('notifications.types.cycleDiscreet.title');
+    expect(content.body).toBe('cycle.notifications.subtle.cycle');
+  });
+
+  it('schedules cycle reminders on their own channel', async () => {
+    arrange(onTrack, 'discreet');
+    await NotificationService.scheduleMenstrualCycleNotifications();
+    const { trigger } = mockNotifications.scheduleNotificationAsync.mock.calls[0][0];
+    expect(trigger).toMatchObject({ channelId: 'cycle' });
   });
 
   it('schedules no fertile-window reminder unless fertility estimates are on', async () => {

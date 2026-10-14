@@ -6,13 +6,19 @@ import { ContextFields } from '@/components/cycle/ContextFields';
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
+import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
+import { addCalendarDays } from '@/utils/cycle/dates';
 import type { ContraceptionMethod, CycleContextDto, CycleLifeStage } from '@/utils/cycle/types';
 import { handleError } from '@/utils/handleError';
 
 import { CenteredModal } from './CenteredModal';
+import { ConfirmationModal } from './ConfirmationModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
+
+/** How long the quiet period offered after recording a loss lasts. */
+export const LOSS_QUIET_DAYS = 28;
 
 type CycleContextModalProps = {
   visible: boolean;
@@ -28,11 +34,12 @@ type CycleContextModalProps = {
  */
 export function CycleContextModal({ visible, onClose, context }: CycleContextModalProps) {
   const { t } = useTranslation();
-  const { activeContext, setContext, removeContext } = useMenstrualCycle();
+  const { activeContext, setContext, removeContext, updateConfig } = useMenstrualCycle();
   const [lifeStage, setLifeStage] = useState<CycleLifeStage>('regular');
   const [contraception, setContraception] = useState<ContraceptionMethod>('none');
   const [from, setFrom] = useState<Date>(() => localCalendarDayDate(new Date()));
-  const [isPickerVisible, setIsPickerVisible] = useState(false);
+  // One sub-surface at a time: the date picker, or the quiet-period offer after a loss.
+  const [sub, setSub] = useSubModalState<'date' | 'lossQuiet' | null>(visible, null);
   const [isSaving, setIsSaving] = useState(false);
   const editing = context ?? null;
 
@@ -46,7 +53,6 @@ export function CycleContextModal({ visible, onClose, context }: CycleContextMod
       setLifeStage(base?.lifeStage ?? 'regular');
       setContraception(base?.contraception ?? 'none');
       setFrom(localCalendarDayDate(new Date(editing?.effectiveFrom ?? Date.now())));
-      setIsPickerVisible(false);
     });
 
     return () => cancelAnimationFrame(frame);
@@ -56,6 +62,14 @@ export function CycleContextModal({ visible, onClose, context }: CycleContextMod
     setIsSaving(true);
     try {
       await setContext({ effectiveFrom: localDayStartMs(from), lifeStage, contraception });
+      // Recording a loss already stops every prediction and period reminder (the context
+      // suppresses them on the reschedule that follows this write). What is left — the daily
+      // check-in and other routines — is offered a quiet period rather than silenced by default.
+      if (lifeStage === 'pregnancy_loss' && activeContext?.lifeStage !== 'pregnancy_loss') {
+        setSub('lossQuiet');
+        return;
+      }
+
       onClose();
     } catch (error) {
       handleError(error, 'CycleContextModal.save', {
@@ -104,7 +118,7 @@ export function CycleContextModal({ visible, onClose, context }: CycleContextMod
         <DatePickerInput
           label={t('cycle.context.effectiveFrom')}
           selectedDate={from}
-          onPress={() => setIsPickerVisible(true)}
+          onPress={() => setSub('date')}
         />
         <ContextFields
           lifeStage={lifeStage}
@@ -125,17 +139,46 @@ export function CycleContextModal({ visible, onClose, context }: CycleContextMod
         ) : null}
       </View>
 
-      <DatePickerModal
-        visible={isPickerVisible}
-        onClose={() => setIsPickerVisible(false)}
-        selectedDate={from}
-        onDateSelect={(date) => {
-          setFrom(localCalendarDayDate(date));
-          setIsPickerVisible(false);
-        }}
-        maxDate={localCalendarDayDate(new Date())}
-        maxYear={getLocalCalendarYear(new Date())}
-      />
+      {sub === 'lossQuiet' ? (
+        <ConfirmationModal
+          visible
+          onClose={() => {
+            setSub(null);
+            onClose();
+          }}
+          onConfirm={async () => {
+            try {
+              await updateConfig({
+                reminders: { pause: { until: addCalendarDays(Date.now(), LOSS_QUIET_DAYS) } },
+              });
+            } catch (error) {
+              handleError(error, 'CycleContextModal.lossQuiet', {
+                snackbarMessage: t('errors.somethingWentWrong'),
+              });
+            }
+
+            setSub(null);
+            onClose();
+          }}
+          title={t('cycle.context.lossQuietTitle')}
+          message={t('cycle.context.lossQuietMessage')}
+          confirmLabel={t('cycle.context.lossQuietConfirm')}
+          cancelLabel={t('cycle.context.lossQuietKeep')}
+          variant="primary"
+        />
+      ) : (
+        <DatePickerModal
+          visible={sub === 'date'}
+          onClose={() => setSub(null)}
+          selectedDate={from}
+          onDateSelect={(date) => {
+            setFrom(localCalendarDayDate(date));
+            setSub(null);
+          }}
+          maxDate={localCalendarDayDate(new Date())}
+          maxYear={getLocalCalendarYear(new Date())}
+        />
+      )}
     </CenteredModal>
   );
 }

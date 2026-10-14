@@ -8,12 +8,12 @@ import { CycleHealthImportService } from '@/database/services/CycleHealthImportS
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { cycleHealthSupported, readCycleHealth, writeCycleHealth } from '@/services/cycleHealth';
-import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { addCalendarDays } from '@/utils/cycle/dates';
 import type { DatedHealthObservation } from '@/utils/cycle/healthObservations';
 
 export function CycleHealthSettings() {
   const { t } = useTranslation();
-  const { dayLogs, nowMs } = useMenstrualCycle();
+  const { dayLogs, today } = useMenstrualCycle();
   const { formatInteger } = useFormatAppNumber();
   const [pending, setPending] = useState<DatedHealthObservation[] | null>(null);
   const [days, setDays] = useState(30);
@@ -62,7 +62,7 @@ export function CycleHealthSettings() {
         label={t('cycle.complete.healthRead')}
         onPress={() =>
           void run(async () => {
-            setPending(await readCycleHealth(nowMs - days * MS_PER_SOLAR_DAY, nowMs));
+            setPending(await readCycleHealth(addCalendarDays(today, -days), Date.now()));
           })
         }
       />
@@ -105,9 +105,7 @@ export function CycleHealthSettings() {
             onPress={() =>
               void run(async () => {
                 const count = await writeCycleHealth(
-                  dayLogs.filter(
-                    (d) => d.date >= nowMs - days * MS_PER_SOLAR_DAY && d.date <= nowMs
-                  )
+                  dayLogs.filter((d) => d.date >= addCalendarDays(today, -days) && d.date <= today)
                 );
                 setConfirmWrite(false);
                 setMessage(t('cycle.complete.healthWritten', { count: formatInteger(count) }));

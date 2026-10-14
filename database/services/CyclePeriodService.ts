@@ -3,13 +3,16 @@ import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePaylo
 import { database } from '@/database/database-instance';
 import type CyclePeriod from '@/database/models/CyclePeriod';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
-import { CycleRepository, readPeriods, toPeriodDto } from '@/database/repositories/CycleRepository';
+import {
+  CycleRepository,
+  type PeriodPayload,
+  readPeriods,
+  toPeriodDto,
+} from '@/database/repositories/CycleRepository';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { assertValidPeriod, isOpenPeriod, PeriodRuleViolation } from '@/utils/cycle/periodRules';
 import type { CyclePeriodDto, PeriodEndKind } from '@/utils/cycle/types';
 import { getCurrentTimezone } from '@/utils/timezone';
-
-type PeriodPayload = Omit<CyclePeriodDto, 'id' | 'cycleId'>;
 
 export interface NewPeriod {
   startDate: number;
@@ -162,8 +165,10 @@ export class CyclePeriodService {
   }
 
   /** "My period ended": ends the open period that started on or before `endDate`. */
-  static async end(cycleId: string, endDate: number): Promise<void> {
+  static async end(cycleId: string, rawEndDate: number): Promise<void> {
     await primeCycleEncryption();
+    // A day, like every start date: a mid-day instant would make the period one day longer.
+    const endDate = localDayStartFromUtcMs(rawEndDate);
 
     await database.write(async () => {
       const records = await CycleRepository.periods(cycleId).fetch();
@@ -195,7 +200,7 @@ export class CyclePeriodService {
       const record = await database.get<CyclePeriod>('cycle_periods').find(id);
       const current = await toPeriodDto(record);
       if (!current || record.deletedAt != null) {
-        throw new PeriodRuleViolation('period_end_before_start');
+        throw new PeriodRuleViolation('period_not_found');
       }
 
       const siblings = await readPeriods(await CycleRepository.periods(record.cycleId).fetch());

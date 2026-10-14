@@ -1,9 +1,16 @@
+import type { Units } from '@/constants/settings';
+import { celsiusToDisplay, displayToCelsius } from '@/utils/unitConversion';
+
 import { observationsSchema } from './preferences';
 import type { CycleConfig, CycleObservations } from './types';
 
 export type ObservationDraft = Record<string, string | boolean>;
 
-export function observationDraft(observations: CycleObservations = {}): ObservationDraft {
+/** `temperatureC` is stored in °C and drafted in the person's own unit. */
+export function observationDraft(
+  observations: CycleObservations = {},
+  units: Units = 'metric'
+): ObservationDraft {
   const { custom } = observations;
   const fields = Object.fromEntries(
     Object.entries(observations).filter(
@@ -16,7 +23,13 @@ export function observationDraft(observations: CycleObservations = {}): Observat
       ...Object.fromEntries(
         Object.entries(custom ?? {}).map(([id, value]) => [`custom:${id}`, value])
       ),
-    }).map(([key, value]) => [key, typeof value === 'boolean' ? value : String(value)])
+    }).map(([key, value]) => {
+      if (key === 'temperatureC' && typeof value === 'number') {
+        return [key, String(celsiusToDisplay(value, units))];
+      }
+
+      return [key, typeof value === 'boolean' ? value : String(value)];
+    })
   );
 }
 
@@ -24,7 +37,8 @@ export function observationDraft(observations: CycleObservations = {}): Observat
 export function resolveObservationDraft(
   draft: ObservationDraft,
   config: CycleConfig,
-  original: CycleObservations = {}
+  original: CycleObservations = {},
+  units: Units = 'metric'
 ): CycleObservations {
   const observations: CycleObservations = original.health ? { health: original.health } : {};
   const custom: Record<string, string | number | boolean> = {};
@@ -47,9 +61,13 @@ export function resolveObservationDraft(
       (key.startsWith('custom:') &&
         config.customFields?.find((f) => f.id === id)?.kind === 'rating') ||
       (key.startsWith('custom:') && typeof original.custom?.[id] === 'number');
-    const parsed = number
+    let parsed = number
       ? Number(typeof value === 'string' ? value.replace(',', '.') : value)
       : value;
+    if (key === 'temperatureC' && typeof parsed === 'number' && Number.isFinite(parsed)) {
+      parsed = displayToCelsius(parsed, units);
+    }
+
     if (key.startsWith('custom:')) {
       const field = config.customFields?.find((f) => f.id === id);
       if (

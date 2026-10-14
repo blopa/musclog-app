@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 
+import { CYCLE_PHASE_LABEL_KEYS } from '@/constants/cycle';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { type Theme } from '@/theme';
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import type { CyclePhase, PhaseSegment } from '@/utils/cycle/cycleTimeline';
 
 type PhaseWheelProps = {
@@ -21,6 +22,8 @@ function phaseColor(key: PhaseSegment['key'], theme: Theme) {
   switch (key) {
     case 'menstrual':
       return theme.colors.status.error;
+    case 'between':
+      return theme.colors.accent.primary;
     case 'follicular':
       return theme.colors.status.brandBright;
     case 'ovulatory':
@@ -120,15 +123,15 @@ export function PhaseWheel({ currentPhase, cycleDay, totalDays, segments }: Phas
 
       {/* Center overlay: what was logged (the day count), then the estimated phase */}
       <View className="absolute items-center justify-center">
-        <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+        <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
           {t('focus.day')}
         </Text>
         <Text className="text-5xl font-black text-text-primary">{formatInteger(cycleDay)}</Text>
         <Text className="mt-1 text-xs font-bold uppercase tracking-widest text-accent-primary">
-          {currentPhase ? t(`cycle.phase.${currentPhase}`) : t('cycle.phaseUnknown')}
+          {currentPhase ? t(CYCLE_PHASE_LABEL_KEYS[currentPhase]) : t('cycle.phaseUnknown')}
         </Text>
-        {currentPhase && currentPhase !== 'menstrual' ? (
-          <Text className="text-[10px] text-text-tertiary">{t('cycle.phaseEstimated')}</Text>
+        {currentPhase && currentPhase !== 'menstrual' && currentPhase !== 'between' ? (
+          <Text className="text-xs text-text-tertiary">{t('cycle.phaseEstimated')}</Text>
         ) : null}
       </View>
     </View>

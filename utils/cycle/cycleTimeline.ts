@@ -3,9 +3,15 @@ import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 import type { PredictionStats } from './cycleStats';
 import { addCalendarDays } from './dates';
+import { isOngoingPeriod } from './periodRules';
 import type { CyclePeriodInput } from './types';
 
-export type CyclePhase = 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
+/**
+ * `between` is the whole non-bleeding part of the cycle. It is what the wheel shows unless the
+ * person opted into the fertility estimate: follicular / ovulatory / luteal are all placed by
+ * guessing ovulation as cycle length minus 14 days, so showing them IS a fertility estimate.
+ */
+export type CyclePhase = 'menstrual' | 'between' | 'follicular' | 'ovulatory' | 'luteal';
 
 export interface PhaseSegment {
   key: CyclePhase;
@@ -38,7 +44,10 @@ export interface TimelineOptions {
   /** Local midnight ms of today. */
   today: number;
   showPredictions?: boolean;
-  /** Whether the user opted in AND the context makes an ovulation estimate meaningful. */
+  /**
+   * Whether the user opted in AND the context makes an ovulation estimate meaningful. Off, the
+   * layout has no ovulation-derived phases at all, not merely no fertile window.
+   */
   showFertility?: boolean;
   /** Set by the context (hormonal method, postpartum, no bleeding): no prediction is shown. */
   suppressed?: boolean;
@@ -60,10 +69,22 @@ const anchorDays = (periods: CyclePeriodInput[]): CyclePeriodInput[] =>
 
 /**
  * The one phase layout. The wheel, the cycle screen, reminders and charts all read it, so
- * they cannot disagree about where ovulation falls.
+ * they cannot disagree about where ovulation falls. Without `estimateOvulation` the cycle is
+ * split only into what was logged (bleeding) and the rest.
  */
-export function buildPhaseSegments(cycleLength: number, periodDuration: number): PhaseSegment[] {
+export function buildPhaseSegments(
+  cycleLength: number,
+  periodDuration: number,
+  estimateOvulation: boolean
+): PhaseSegment[] {
   const menstrual = Math.max(1, Math.min(periodDuration, cycleLength - 2));
+  if (!estimateOvulation) {
+    return [
+      { key: 'menstrual', startDay: 0, length: menstrual },
+      { key: 'between', startDay: menstrual, length: cycleLength - menstrual },
+    ];
+  }
+
   const ovulationDay = cycleLength - LUTEAL_PHASE_DAYS;
   const ovStart = Math.min(
     Math.max(menstrual, ovulationDay - OVULATORY_HALF_WINDOW_DAYS),
@@ -93,7 +114,7 @@ export function computeCycleTimeline(
   stats: PredictionStats,
   options: TimelineOptions
 ): CycleTimeline {
-  const { today, showPredictions = true, showFertility = true, suppressed = false } = options;
+  const { today, showPredictions = true, showFertility = false, suppressed = false } = options;
   const latest = anchorDays(periods).reduce<CyclePeriodInput | null>(
     (acc, p) => (p.startDate <= today && (!acc || p.startDate > acc.startDate) ? p : acc),
     null
@@ -160,12 +181,21 @@ export function computeCycleTimeline(
 
   const segments =
     state === 'upcoming' || state === 'window'
-      ? buildPhaseSegments(cycleLength, stats.avgPeriodDuration)
+      ? buildPhaseSegments(cycleLength, stats.avgPeriodDuration, showFertility)
       : null;
 
-  // The logged bleeding is a fact; the rest of the layout is only an estimate.
-  const inPeriod =
-    latest.endDate != null ? today <= latest.endDate : offset < stats.avgPeriodDuration;
+  // The logged bleeding is a fact; the rest of the layout is only an estimate. An open period is
+  // decided by the same predicate as the snapshot's `activePeriod`, so the banner ("period, day
+  // 7") and the phase can never disagree.
+  let inPeriod: boolean;
+  if (isOngoingPeriod(latest, today)) {
+    inPeriod = true;
+  } else if (latest.endDate != null) {
+    inPeriod = today <= latest.endDate;
+  } else {
+    inPeriod = latest.endKind !== 'open' && offset < stats.avgPeriodDuration;
+  }
+
   let currentPhase: CyclePhase | null = null;
   if (inPeriod) {
     currentPhase = 'menstrual';
@@ -190,38 +220,4 @@ export function computeCycleTimeline(
     fertileEstimate,
     cycleLength,
   };
-}
-
-/**
- * Phase of a past or present day, for charts. When a later period is logged the real cycle
- * length is known, so that is used instead of the average.
- */
-export function phaseAtDay(
-  periods: CyclePeriodInput[],
-  stats: PredictionStats,
-  day: number
-): CyclePhase | null {
-  const sorted = anchorDays(periods).sort((a, b) => a.startDate - b.startDate);
-  const index = sorted.reduce((acc, p, i) => (p.startDate <= day ? i : acc), -1);
-  if (index < 0) {
-    return null;
-  }
-
-  const period = sorted[index];
-  const next = sorted[index + 1];
-  const offset = dayDiff(period.startDate, day);
-  const duration =
-    period.endDate != null
-      ? dayDiff(period.startDate, period.endDate) + 1
-      : stats.avgPeriodDuration;
-  if (offset < duration) {
-    return 'menstrual';
-  }
-
-  const length = next ? dayDiff(period.startDate, next.startDate) : stats.medianLength;
-  if (offset >= length + (next ? 0 : Math.max(stats.rangeHigh - length, 1))) {
-    return null;
-  }
-
-  return phaseAtOffset(buildPhaseSegments(length, duration), offset);
 }

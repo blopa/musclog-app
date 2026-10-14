@@ -18,6 +18,21 @@ export const OBSERVATION_FIELDS = [
   'pregnancyTest',
 ] as const;
 
+/** Whole keys per field, so `check-translations` sees them and a new field must declare one. */
+export const OBSERVATION_FIELD_LABEL_KEYS: Record<(typeof OBSERVATION_FIELDS)[number], string> = {
+  sleepHours: 'cycle.personalize.fields.sleepHours',
+  temperatureC: 'cycle.personalize.fields.temperatureC',
+  discharge: 'cycle.personalize.fields.discharge',
+  medication: 'cycle.personalize.fields.medication',
+  sex: 'cycle.personalize.fields.sex',
+  tags: 'cycle.personalize.fields.tags',
+  impact: 'cycle.personalize.fields.impact',
+  leakage: 'cycle.personalize.fields.leakage',
+  clots: 'cycle.personalize.fields.clots',
+  lhTest: 'cycle.personalize.fields.lhTest',
+  pregnancyTest: 'cycle.personalize.fields.pregnancyTest',
+};
+
 export const customFieldSchema = z
   .object({
     id: z.string().min(1).max(100),
@@ -91,6 +106,20 @@ export const cycleConfigSchema = z
         fertility: z.boolean(),
         daily: z.boolean(),
         endCheck: z.boolean(),
+        due: z.boolean().optional(),
+        late: z.boolean().optional(),
+        pill: z
+          .object({
+            enabled: z.boolean(),
+            hour: z.number().int().min(0).max(23),
+            minute: z.number().int().min(0).max(59),
+            packStart: z.number().int(),
+            activeDays: z.number().int().min(1).max(365),
+            breakDays: z.number().int().min(0).max(14),
+          })
+          .strict()
+          .optional(),
+        pause: z.object({ until: z.number().int().nullable() }).strict().nullable().optional(),
       })
       .strict()
       .optional(),

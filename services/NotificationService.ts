@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
+import type { CycleNotificationStyle } from '@/constants/settings';
 import { database } from '@/database';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
 import type WeeklyReview from '@/database/models/WeeklyReview';
@@ -19,10 +20,19 @@ import i18n from '@/lang/lang';
 import { getCycleBackupPreparedAt } from '@/services/cycleRecovery';
 import { darkTheme } from '@/theme';
 import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '@/utils/calendarDate';
+import { cycleReminderContent } from '@/utils/cycle/cycleReminderCopy';
 import { planCycleReminders } from '@/utils/cycle/cycleReminders';
 import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
 import { toExpoWeekday } from '@/utils/weekdays';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
+
+const CYCLE_CHANNEL_ID = 'cycle';
+
+export interface CycleDeliveryStatus {
+  permission: Notifications.PermissionStatus | 'unsupported';
+  appEnabled: boolean;
+  cycleEnabled: boolean;
+}
 
 export class NotificationService {
   private static isConfigured = false;
@@ -54,6 +64,14 @@ export class NotificationService {
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: darkTheme.colors.status.error,
+      });
+
+      // Cycle reminders get their own channel so they can be silenced on their own in the OS
+      // settings, and so a secure lock screen hides their text whatever wording was chosen.
+      await Notifications.setNotificationChannelAsync(CYCLE_CHANNEL_ID, {
+        name: i18n.t('notifications.channels.cycle'),
+        importance: Notifications.AndroidImportance.DEFAULT,
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PRIVATE,
       });
 
       await Notifications.setNotificationChannelAsync('workout-active', {
@@ -499,6 +517,7 @@ export class NotificationService {
   // Menstrual Cycle Notifications
   private static cycleReminderQueue: Promise<void> = Promise.resolve();
 
+  /** Serialised: every cycle write and app foreground reschedules, and two passes must not interleave. */
   static scheduleMenstrualCycleNotifications(): Promise<void> {
     const next = NotificationService.cycleReminderQueue
       .catch(() => undefined)
@@ -507,21 +526,95 @@ export class NotificationService {
     return next;
   }
 
+  /**
+   * Everything the cycle reminder settings need to say whether a reminder can actually reach the
+   * person: the OS permission, the app-wide switch and the cycle switch. Read, never requested.
+   */
+  static async getCycleDeliveryStatus(): Promise<CycleDeliveryStatus> {
+    const [appEnabled, cycleEnabled] = await Promise.all([
+      SettingsService.getNotifications(),
+      SettingsService.getNotificationsMenstrualCycle(),
+    ]);
+    if (Platform.OS === 'web') {
+      return { permission: 'unsupported', appEnabled, cycleEnabled };
+    }
+
+    const { status } = (await Notifications.getPermissionsAsync()) as {
+      status: Notifications.PermissionStatus;
+    };
+
+    return { permission: status, appEnabled, cycleEnabled };
+  }
+
+  /**
+   * Asked in context: only when the person turns cycle reminders on, after seeing what they will
+   * look like, never at launch. Switches both settings on and reschedules on success.
+   */
+  static async enableCycleReminders(): Promise<boolean> {
+    if (Platform.OS === 'web') {
+      return false;
+    }
+
+    await this.configure();
+    const granted = await this.requestPermissions();
+    if (!granted) {
+      return false;
+    }
+
+    await SettingsService.setNotifications(true);
+    await SettingsService.setNotificationsMenstrualCycle(true);
+    await NotificationService.scheduleMenstrualCycleNotifications();
+    return true;
+  }
+
+  /** Sends, in a few seconds, exactly what a daily check-in would look like in the chosen style. */
+  static async sendCycleTestNotification(style: CycleNotificationStyle): Promise<boolean> {
+    if (Platform.OS === 'web') {
+      return false;
+    }
+
+    await this.configure();
+    if (!(await this.requestPermissions())) {
+      return false;
+    }
+
+    const content = cycleReminderContent(
+      { kind: 'daily-log' },
+      style,
+      i18n.t.bind(i18n),
+      i18n.resolvedLanguage ?? i18n.language
+    );
+    await Notifications.scheduleNotificationAsync({
+      content: { ...content, data: { type: 'menstrual-cycle', subtype: 'test' } },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 3,
+        channelId: CYCLE_CHANNEL_ID,
+      },
+    });
+    return true;
+  }
+
   private static async scheduleMenstrualCycleNotificationsNow() {
     if (Platform.OS === 'web') {
       return;
     }
 
-    const isEnabled = await SettingsService.getNotificationsMenstrualCycle();
-    const isNotificationsEnabled = await SettingsService.getNotifications();
+    const [isEnabled, isNotificationsEnabled] = await Promise.all([
+      SettingsService.getNotificationsMenstrualCycle(),
+      SettingsService.getNotifications(),
+    ]);
 
-    // Clear existing
+    // Clear existing: a context change (pregnancy, a loss, a hormonal method) or a pause takes
+    // effect by not planning the incompatible reminders again.
     const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-    for (const notification of scheduledNotifications) {
-      if (notification.content.data?.type === 'menstrual-cycle') {
-        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
-      }
-    }
+    await Promise.all(
+      scheduledNotifications
+        .filter((notification) => notification.content.data?.type === 'menstrual-cycle')
+        .map((notification) =>
+          Notifications.cancelScheduledNotificationAsync(notification.identifier)
+        )
+    );
 
     if (!isEnabled || !isNotificationsEnabled) {
       return;
@@ -532,55 +625,50 @@ export class NotificationService {
       return;
     }
 
-    const [periods, contexts, config, showPredictions, showFertility, style] = await Promise.all([
-      CycleRepository.periods(cycle.id).fetch().then(readPeriods),
-      CycleRepository.contexts(cycle.id).fetch().then(readContexts),
-      readCycleConfig(cycle),
-      SettingsService.getCycleShowPredictions(),
-      SettingsService.getCycleShowFertility(),
-      SettingsService.getCycleNotificationStyle(),
-    ]);
+    const [periods, contexts, config, showPredictions, showFertility, style, lastBackup] =
+      await Promise.all([
+        CycleRepository.periods(cycle.id).fetch().then(readPeriods),
+        CycleRepository.contexts(cycle.id).fetch().then(readContexts),
+        readCycleConfig(cycle),
+        SettingsService.getCycleShowPredictions(),
+        SettingsService.getCycleShowFertility(),
+        SettingsService.getCycleNotificationStyle(),
+        getCycleBackupPreparedAt(),
+      ]);
+    const nowMs = Date.now();
     const { timeline, activePeriod } = buildCycleSnapshot({
       periods,
       contexts,
       config,
-      nowMs: Date.now(),
+      nowMs,
       showPredictions,
       showFertility,
     });
+    const locale = i18n.resolvedLanguage ?? i18n.language;
 
-    const lastBackup = await getCycleBackupPreparedAt();
-    for (const reminder of planCycleReminders(timeline, Date.now(), {
+    for (const reminder of planCycleReminders(timeline, nowMs, {
       preferences: config.reminders,
       activePeriod,
       backupDays: config.backupReminderDays,
       lastBackup,
     })) {
-      const detailed = style === 'detailed';
-      const key = reminder.kind === 'period-start' ? 'periodPrediction' : 'fertileWindow';
-      const general =
-        reminder.kind === 'daily-log' ||
-        reminder.kind === 'end-check' ||
-        reminder.kind === 'backup';
-      let bodyKey = 'notifications.types.cycleDiscreet.body';
-      if (detailed) {
-        bodyKey = general
-          ? `cycle.complete.notification.${reminder.kind}`
-          : `notifications.types.${key}.body`;
-      }
-
       await Notifications.scheduleNotificationAsync({
         content: {
-          // The default wording never says what it is about: a lock screen is a public place.
-          title: i18n.t(
-            detailed && !general
-              ? `notifications.types.${key}.title`
-              : 'notifications.types.cycleDiscreet.title'
-          ),
-          body: i18n.t(bodyKey),
+          ...cycleReminderContent(reminder, style, i18n.t.bind(i18n), locale),
           data: { type: 'menstrual-cycle', subtype: reminder.kind },
         },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reminder.date },
+        trigger: reminder.repeatsDaily
+          ? {
+              type: Notifications.SchedulableTriggerInputTypes.DAILY,
+              hour: reminder.date.getHours(),
+              minute: reminder.date.getMinutes(),
+              channelId: CYCLE_CHANNEL_ID,
+            }
+          : {
+              type: Notifications.SchedulableTriggerInputTypes.DATE,
+              date: reminder.date,
+              channelId: CYCLE_CHANNEL_ID,
+            },
       });
     }
   }

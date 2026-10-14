@@ -9,7 +9,6 @@ import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { TextInput } from '@/components/theme/TextInput';
 import { CycleTransferService } from '@/database/services/CycleTransferService';
-import { useCycleMoods } from '@/hooks/useCycleMoods';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { exportContextsCsv } from '@/services/cycleExport';
 import {
@@ -40,8 +39,17 @@ export function CyclePortabilityModal({
   onClose: () => void;
 }) {
   const { t, i18n } = useTranslation();
-  const { cycle, pausedCycle, config, periods, dayLogs, contexts } = useMenstrualCycle();
-  const { moods, isLoading: moodsLoading, error: moodsError } = useCycleMoods(visible);
+  const {
+    cycle,
+    pausedCycle,
+    config,
+    periods,
+    dayLogs,
+    contexts,
+    moods,
+    moodsLoading,
+    moodsError,
+  } = useMenstrualCycle();
   const [password, setPassword] = useState('');
   const [repeat, setRepeat] = useState('');
   const [importPassword, setImportPassword] = useState('');

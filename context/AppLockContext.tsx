@@ -16,13 +16,16 @@ import { authenticateToUnlock } from '@/utils/appLock';
 import {
   APP_LOCK_GRACE_MS,
   INITIAL_LOCK_STATE,
+  isObscured,
   isScopeLocked,
-  type LockScope,
   lockReducer,
+  type LockScope,
 } from '@/utils/appLockState';
 
 interface AppLockContextType {
   isLocked: (scope: LockScope) => boolean;
+  /** The app is in the background with a lock on: draw the privacy cover. */
+  obscured: boolean;
   /** Asks the device to authenticate; resolves true and unlocks on success. */
   unlock: () => Promise<boolean>;
   lock: () => void;
@@ -73,9 +76,21 @@ export function AppLockProvider({ children }: { children: ReactNode }) {
     [appLockMode, state]
   );
 
-  const value = useMemo(() => ({ isLocked, unlock, lock }), [isLocked, unlock, lock]);
+  const obscured = isObscured(appLockMode, state);
+  const value = useMemo(
+    () => ({ isLocked, obscured, unlock, lock }),
+    [isLocked, obscured, unlock, lock]
+  );
 
   return <AppLockContext.Provider value={value}>{children}</AppLockContext.Provider>;
+}
+
+/**
+ * For surfaces that can render outside the provider (the shared Modal primitive is also used by
+ * screens mounted before it): null there, instead of throwing.
+ */
+export function useOptionalAppLock(): AppLockContextType | null {
+  return useContext(AppLockContext) ?? null;
 }
 
 export function useAppLock(): AppLockContextType {

@@ -10,8 +10,13 @@ import type CyclePeriod from '@/database/models/CyclePeriod';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import PeriodLog from '@/database/models/PeriodLog';
 import UserMetric from '@/database/models/UserMetric';
-import { createPreCycleEncryptionBackup } from '@/database/preMigrationBackup';
+import {
+  createPreCycleEncryptionBackup,
+  deleteBackup,
+  getStoredBackups,
+} from '@/database/preMigrationBackup';
 import { fetchByIds } from '@/database/queryByIds';
+import { CycleRepository, readDayLogs, readPeriods } from '@/database/repositories/CycleRepository';
 import { SettingsService } from '@/database/services/SettingsService';
 import { convertLegacyCycleData, type LegacyMetric } from '@/utils/cycle/legacyConversion';
 import { getCurrentTimezone } from '@/utils/timezone';
@@ -59,7 +64,12 @@ export class CycleDataEncryptionMigration {
         .fetch();
 
       if (pendingCycles.length === 0 && legacyMetrics.length === 0) {
-        return { migratedCycles: 0, migratedDays: 0, preserveFertility: false };
+        return {
+          migratedCycles: 0,
+          migratedDays: 0,
+          preserveFertility: false,
+          expectedPeriods: new Map<string, number>(),
+        };
       }
 
       // The key is already primed; finish every read and encryption before preparing models.
@@ -212,12 +222,47 @@ export class CycleDataEncryptionMigration {
         migratedCycles: pendingCycles.length,
         migratedDays: converted.dayLogs.length,
         preserveFertility: pendingCycles.some((c) => c.isActive),
+        expectedPeriods: new Map(
+          [...periodCiphers].map(([cycleId, ciphers]) => [cycleId, ciphers.length])
+        ),
       };
     });
     if (result.preserveFertility) {
       await SettingsService.setCycleShowFertility(true);
     }
 
+    if (result.migratedCycles > 0 || result.migratedDays > 0) {
+      await CycleDataEncryptionMigration.dropPlaintextBackupIfVerified(result.expectedPeriods);
+    }
+
     return { migratedCycles: result.migratedCycles, migratedDays: result.migratedDays };
+  }
+
+  /**
+   * The safety backup taken before the conversion is, by definition, a copy of the plaintext the
+   * conversion exists to remove. Once every converted record reads back (decrypts and parses), it
+   * has done its job and is deleted; if anything does not read back, it is kept for recovery.
+   */
+  static async dropPlaintextBackupIfVerified(expectedPeriods: Map<string, number>): Promise<void> {
+    try {
+      for (const [cycleId, expected] of expectedPeriods) {
+        const readable = await readPeriods(await CycleRepository.periods(cycleId).fetch());
+        if (readable.length < expected) {
+          return;
+        }
+      }
+
+      const dayRows = await CycleRepository.dayLogs().fetch();
+      if ((await readDayLogs(dayRows)).length !== dayRows.length) {
+        return;
+      }
+
+      const backups = await getStoredBackups();
+      await Promise.all(
+        backups.filter((b) => b.reason === 'cycle-encryption').map((b) => deleteBackup(b.uri))
+      );
+    } catch {
+      // Keeping a backup is always the safe failure.
+    }
   }
 }

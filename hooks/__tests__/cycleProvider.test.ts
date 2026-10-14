@@ -54,6 +54,14 @@ jest.mock('@/database/repositories/CycleRepository', () => ({
     dayLogs: () => mockEmptyQuery,
   },
 }));
+const mockMoods = jest.fn((_enabled: boolean) => ({
+  moods: [{ date: 1, value: 3 }],
+  isLoading: false,
+  error: false,
+}));
+jest.mock('@/hooks/useCycleMoods', () => ({
+  useCycleMoods: (enabled: boolean) => mockMoods(enabled),
+}));
 jest.mock('@/database/services/CycleTrackingService', () => ({ CycleTrackingService: {} }));
 jest.mock('@/database/services/CycleContextService', () => ({ CycleContextService: {} }));
 jest.mock('@/database/services/CycleDayLogService', () => ({ CycleDayLogService: {} }));
@@ -112,4 +120,17 @@ it('ignores decryption from an older config emission after the next one complete
   expect(result.current.config).toEqual(updated);
   unmount();
   expect(mockUnsubscribe).toHaveBeenCalled();
+});
+
+it('observes shared mood once for every cycle surface, and only while a cycle exists', async () => {
+  const { result, unmount } = renderHook(() => useMenstrualCycleContext(), { wrapper });
+  await act(async () => {});
+  expect(result.current.moods).toEqual([{ date: 1, value: 3 }]);
+  expect(result.current.moodsLoading).toBe(false);
+  expect(mockMoods).toHaveBeenLastCalledWith(true);
+  // `today` is a local midnight that only moves with the calendar day, not a minute clock.
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  expect(result.current.today).toBe(today.getTime());
+  unmount();
 });

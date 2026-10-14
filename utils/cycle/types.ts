@@ -174,6 +174,27 @@ export interface CycleReminderPreferences {
   fertility: boolean;
   daily: boolean;
   endCheck: boolean;
+  /** On the most likely start day. Optional: absent in configs saved before it existed. */
+  due?: boolean;
+  /** The day after the latest plausible start, in neutral wording ("longer than usual"). */
+  late?: boolean;
+  pill?: PillSchedule;
+  /** Silences every cycle reminder except the pill until `until` (null: until resumed). */
+  pause?: { until: number | null } | null;
+}
+
+/**
+ * A daily pill reminder that knows the pack. `breakDays: 0` is continuous use (no pill-free
+ * days); 21/7 and 24/4 skip the reminder on the pill-free days instead of nagging through them.
+ */
+export interface PillSchedule {
+  enabled: boolean;
+  hour: number;
+  minute: number;
+  /** Local midnight ms of the first pill of a pack. */
+  packStart: number;
+  activeDays: number;
+  breakDays: number;
 }
 
 export interface HealthCycleObservation {

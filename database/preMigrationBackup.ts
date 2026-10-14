@@ -1,5 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import {
+  cacheDirectory,
+  deleteAsync,
+  readAsStringAsync,
+  writeAsStringAsync,
+} from 'expo-file-system/legacy';
 
 import { timestampSlug } from '@/utils/timestampSlug';
 
@@ -144,7 +149,8 @@ async function executeBackup(
 
 async function createLiveBackupJson(): Promise<string> {
   const { dumpDatabase } = await import('./exportDb');
-  return dumpDatabase();
+  // Same-device recovery point: cycle payloads stay encrypted at rest (see keepCycleCiphertext).
+  return dumpDatabase(undefined, { keepCycleCiphertext: true });
 }
 
 /**
@@ -294,4 +300,20 @@ export function registerPreMigrationDbBackup(
 
 export function waitForPreMigrationBackup(): Promise<void> {
   return inFlightBackup ?? Promise.resolve();
+}
+
+/**
+ * A JSON recovery point as a file the person can take away: its cycle payloads (kept as this
+ * device's ciphertext at rest) decrypted, so the download restores on any device.
+ */
+export async function exportPortableRecoveryPoint(uri: string): Promise<string> {
+  if (!cacheDirectory) {
+    throw new Error('Cache directory is not available');
+  }
+
+  const { decryptCyclePayloadsInDump } = await import('./exportDbCore');
+  const portable = await decryptCyclePayloadsInDump(await readAsStringAsync(uri));
+  const out = `${cacheDirectory}portable-${uri.split('/').pop() ?? 'backup.json'}`;
+  await writeAsStringAsync(out, portable);
+  return out;
 }

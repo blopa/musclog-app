@@ -563,3 +563,21 @@ Daily-life impact complements numerical pain and flow: disruption, activity limi
 Trends without bleeding dates use calendar time and actual logged values, never inferred menstrual phases. Imported Health Connect/HealthKit bleeding and basal temperature are separate provenance records; skin temperature is not treated as basal temperature. Health exports use each platform's documented types and stable Musclog identifiers and never forward sex, medication, notes or imported values. The user's store permissions can limit the history visible to the app.
 
 Backups remain manual per user preference. The user explicitly prepares a password-protected, authenticated file and chooses where to save it. Last-prepared status is not proof of off-device storage. New-phone recovery requires the retained file and its password; optional reminders only prompt the user. Automatic client-encrypted cloud backup and multi-device synchronization remain future work.
+
+## Cycle reminders: what people keep enabled
+
+A review of period-tracker notifications (Flo, Clue, Period Calendar, Natural Cycles, Stardust, Maya, WomanLog, Clover, Euki, Apple Health; their documentation, store reviews and community threads, plus platform guidance and prediction studies) decided the reminder design:
+
+- **People disable everything to escape one noisy category.** Each reminder is its own switch, there is no engagement, content or promotional notification at all, and the daily check-in is off by default.
+- **The lock screen is a public place.** Wording is a separate choice from tone: Private (never says what it is about, the default), Subtle (names the task, never the topic) and Detailed. Settings preview the exact text, built by the same function that schedules it. Android additionally gets a `cycle` channel with PRIVATE lock-screen visibility.
+- **A calendar estimate is not a date.** Calendar-based fertile-day classification is frequently wrong, especially with irregular cycles, and generic trackers' period predictions can be days off. Detailed copy therefore states the estimated range and calls it an estimate; fertile-window copy says it is not confirmation of ovulation and not contraception.
+- **A longer cycle is not a pregnancy prompt.** The optional "longer than usual" reminder is neutral and names no reason; the explainer says Musclog never assumes one. Recording a pregnancy loss stops every prediction and period reminder (the context suppresses them) and offers — never applies — a quiet period for the rest.
+- **Reminders must explain themselves.** Each states when it fires, how often, and whether its date is an estimate or a time the person chose; tapping one opens "why did I get this?" with the cycles behind it.
+- **Adherence reminders outrank everything else.** The pill reminder knows the pack (21 + 7, 24 + 4, continuous) instead of nagging through pill-free days, and a pause does not silence it.
+- **Ask for permission in context.** Notification permission is requested when a reminder is switched on, and a delivery check shows whether a reminder can arrive at all, with a test send.
+
+Snooze and Taken/Skip actions on the notification itself, per-category lock-screen levels and wearable sync alerts are recorded in `FUTURE_FEATURES.md`.
+
+### Cycle phase and training
+
+Cycle-phase effects on strength and performance are small and inconsistent (a trivial reduction in the early follicular phase in pooled data, with low-certainty evidence), and follicular-phase length, hence ovulation day, varies widely between and within people. The app therefore draws no phase-based training conclusions and shows no cycle card in the live workout session, where an observation would read as a prediction about today. The personal "lower volume near a period start" observation compares each session only with the same workout away from period starts, excludes deliberate lighter weeks, and needs four comparable cycles.

@@ -21,10 +21,15 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
   if (uri.startsWith('web-backup://')) {
     const { getWebBackupContent, getStoredBackups } = await import('@/database/preMigrationBackup');
     const hash = uri.replace('web-backup://', '');
-    const content = await getWebBackupContent(hash);
-    if (!content) {
+    const stored = await getWebBackupContent(hash);
+    if (!stored) {
       throw new Error(`[WebBackup] Backup not found: ${hash}`);
     }
+
+    // Recovery points keep cycle records encrypted with this browser's key; the download is
+    // decrypted so it restores anywhere.
+    const { decryptCyclePayloadsInDump } = await import('@/database/exportDbCore');
+    const content = await decryptCyclePayloadsInDump(stored);
 
     // Build a descriptive filename from the metadata index.
     const backups = await getStoredBackups();
@@ -251,10 +256,15 @@ export async function openCropperAsync(options: OpenCropperOptions): Promise<{
 export async function readFileAsStringAsync(fileUri: string, options: { encoding?: string } = {}) {
   if (fileUri.startsWith('web-backup://')) {
     const hash = fileUri.replace('web-backup://', '');
-    const content = await getWebBackupContent(hash);
-    if (!content) {
+    const stored = await getWebBackupContent(hash);
+    if (!stored) {
       throw new Error(`[WebBackup] Backup not found: ${hash}`);
     }
+
+    // Recovery points keep cycle records encrypted with this browser's key; the download is
+    // decrypted so it restores anywhere.
+    const { decryptCyclePayloadsInDump } = await import('@/database/exportDbCore');
+    const content = await decryptCyclePayloadsInDump(stored);
 
     return content;
   }

@@ -75,7 +75,7 @@ describe('activeWorkoutStorage', () => {
     // never observe "no active workout, but insights for it still dismissed".
     it('removes the id and the workout-scoped insight key in a single atomic multiRemove', async () => {
       await setActiveWorkoutLogId('log-1');
-      await setInsightDismissed('log-1', 'hormonal');
+      await setInsightDismissed('log-1', 'fueling');
       jest.clearAllMocks();
 
       await clearActiveWorkoutLogId();
@@ -119,8 +119,9 @@ describe('activeWorkoutStorage', () => {
   });
 
   describe('dismissed insights', () => {
-    it('round-trips a dismissed insight and merges a second one into the same record', async () => {
-      await setInsightDismissed('log-1', 'hormonal');
+    it('round-trips a dismissed insight and merges it into an existing record', async () => {
+      // A record written by an older build (its phase card is gone) is kept, not clobbered.
+      await AsyncStorage.setItem('workout_insights_log-1', JSON.stringify({ hormonal: true }));
       await expect(getDismissedInsights('log-1')).resolves.toEqual({ hormonal: true });
 
       await setInsightDismissed('log-1', 'fueling');
@@ -143,7 +144,7 @@ describe('activeWorkoutStorage', () => {
     });
 
     it('keeps dismissals scoped per workout', async () => {
-      await setInsightDismissed('log-1', 'hormonal');
+      await setInsightDismissed('log-1', 'fueling');
 
       await expect(getDismissedInsights('log-2')).resolves.toEqual({});
     });
@@ -153,7 +154,7 @@ describe('activeWorkoutStorage', () => {
     it('swallows a write failure', async () => {
       (AsyncStorage.setItem as jest.Mock).mockRejectedValueOnce(new Error('disk full'));
 
-      await expect(setInsightDismissed('log-1', 'hormonal')).resolves.toBeUndefined();
+      await expect(setInsightDismissed('log-1', 'fueling')).resolves.toBeUndefined();
     });
   });
 
@@ -202,13 +203,13 @@ describe('activeWorkoutStorage', () => {
   describe('pruneWorkoutInsights', () => {
     it('removes orphaned insight keys but keeps the active workout’s', async () => {
       await setActiveWorkoutLogId('log-active');
-      await setInsightDismissed('log-active', 'hormonal');
+      await setInsightDismissed('log-active', 'fueling');
       await setInsightDismissed('log-old-1', 'fueling');
-      await setInsightDismissed('log-old-2', 'hormonal');
+      await setInsightDismissed('log-old-2', 'fueling');
 
       await pruneWorkoutInsights();
 
-      await expect(getDismissedInsights('log-active')).resolves.toEqual({ hormonal: true });
+      await expect(getDismissedInsights('log-active')).resolves.toEqual({ fueling: true });
       await expect(getDismissedInsights('log-old-1')).resolves.toEqual({});
       await expect(getDismissedInsights('log-old-2')).resolves.toEqual({});
     });

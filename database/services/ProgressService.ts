@@ -19,6 +19,7 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
+import { type PeriodBand, periodBandAt } from '@/utils/cycle/periodBands';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -26,7 +27,6 @@ import {
   ffmiFromWeightHeightAndBodyFat,
   isValidBodyFat,
 } from '@/utils/nutritionCalculator';
-import { type PeriodBand, periodBandAt } from '@/utils/cycle/periodBands';
 import { calculateEmpiricalTDEEWindow, type EmpiricalTDEEWindow } from '@/utils/progress';
 import { prepareProgressWeightHistory } from '@/utils/progressWeightHistory';
 import { TREND_WEIGHT_WARMUP_DAYS } from '@/utils/trendWeight';
@@ -109,7 +109,7 @@ export interface BodyCompProteinPoint {
   fatChange: number;
 }
 
-export interface MenstrualPhasePoint {
+export interface CycleBandPoint {
   date: number;
   /** Where the day sits relative to the user's own logged bleeding (no phase is estimated). */
   band: PeriodBand;
@@ -185,7 +185,7 @@ export interface ProgressData {
   insights: ProgressInsights;
   correlationHistory: CorrelationPoint[];
   bodyCompProteinHistory: BodyCompProteinPoint[];
-  menstrualPhaseHistory: MenstrualPhasePoint[];
+  cycleBandHistory: CycleBandPoint[];
   recoveryTrainingHistory: RecoveryTrainingPoint[];
   macroMuscleHistory: MacroMusclePoint[];
   moodHistory: MoodPoint[];
@@ -375,7 +375,7 @@ export class ProgressService {
       aggregation
     );
 
-    const menstrualPhaseHistory = await this.calculateMenstrualPhaseHistory(
+    const cycleBandHistory = await this.calculateMenstrualPhaseHistory(
       weightPoints,
       workoutLogs,
       startDate,
@@ -427,7 +427,7 @@ export class ProgressService {
       insights,
       correlationHistory,
       bodyCompProteinHistory,
-      menstrualPhaseHistory,
+      cycleBandHistory,
       recoveryTrainingHistory,
       macroMuscleHistory,
       moodHistory,
@@ -1030,7 +1030,7 @@ export class ProgressService {
     startDate: number,
     endDate: number,
     aggregation: TimeAggregation
-  ): Promise<MenstrualPhasePoint[]> {
+  ): Promise<CycleBandPoint[]> {
     const activeCycle = (await CycleRepository.cycles().fetch()).find((c) => c.isActive);
     if (!activeCycle) {
       return [];
@@ -1041,7 +1041,7 @@ export class ProgressService {
       return [];
     }
 
-    const history: MenstrualPhasePoint[] = [];
+    const history: CycleBandPoint[] = [];
 
     // Get energy levels from user metrics
     const energyMetrics = await UserMetricService.getMetricsHistory('mood', { startDate, endDate });

@@ -7,6 +7,7 @@ import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
+import { useSubModalState, useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { type EndChoice, endChoiceOf, resolveEnd } from '@/utils/cycle/periodEnd';
 import { periodErrorKey } from '@/utils/cycle/periodErrors';
@@ -36,8 +37,8 @@ export function EditPeriodModal({ visible, onClose, period, isLatest }: EditPeri
   const { updatePeriod, removePeriod, restorePeriod, config } = useMenstrualCycle();
   const [startDate, setStartDate] = useState<Date>(() => localCalendarDayDate(new Date()));
   const [endChoice, setEndChoice] = useState<EndChoice>({ kind: 'unknown', date: null });
-  const [picker, setPicker] = useState<'start' | 'end' | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [picker, setPicker] = useSubModalState<'start' | 'end' | null>(visible, null);
+  const [confirmDelete, setConfirmDelete] = useSubModalVisibility(visible);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -48,8 +49,6 @@ export function EditPeriodModal({ visible, onClose, period, isLatest }: EditPeri
     const frame = requestAnimationFrame(() => {
       setStartDate(localCalendarDayDate(new Date(period.startDate)));
       setEndChoice(endChoiceOf(period));
-      setPicker(null);
-      setConfirmDelete(false);
     });
 
     return () => cancelAnimationFrame(frame);

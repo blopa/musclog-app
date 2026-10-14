@@ -4,6 +4,7 @@ const KEYS = {
   period_date_in_future: 'cycle.errors.future',
   period_log_overlaps_existing: 'cycle.errors.overlap',
   period_end_before_start: 'cycle.errors.endBeforeStart',
+  period_not_found: 'cycle.errors.notFound',
 } as const;
 
 /** The translation key for a period-rule failure, or the generic one for anything else. */

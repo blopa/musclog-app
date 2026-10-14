@@ -11,7 +11,8 @@
     },
     "channels": {
       "default": "Por defecto",
-      "activeWorkout": "Entrenamiento Activo"
+      "activeWorkout": "Entrenamiento Activo",
+      "cycle": "Recordatorios del ciclo"
     },
     "startNow": "Iniciar Ahora",
     "types": {
@@ -54,11 +55,11 @@
       },
       "periodPrediction": {
         "title": "Predicción del Periodo",
-        "body": "Se predice que tu periodo comenzará en 2 días. ¡Prepárate!"
+        "body": "Tu periodo podría empezar en unos días, según tus ciclos recientes."
       },
       "fertileWindow": {
         "title": "Ventana Fértil",
-        "body": "¡Tu ventana fértil está comenzando! Útil para rastrear tus niveles de energía."
+        "body": "Tu ventana fértil estimada podría empezar pronto. Es una estimación de calendario, no una confirmación de la ovulación."
       },
       "restTimerAlert": {
         "title": "Descanso Terminado - ¡A trabajar!",

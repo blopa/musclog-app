@@ -19,7 +19,8 @@ type CycleCalendarProps = {
   periods: CyclePeriodInput[];
   dayLogs: CycleDayLogDto[];
   timeline: CycleTimeline | null;
-  nowMs: number;
+  /** Local midnight ms of today. */
+  today: number;
   selectedDay: number;
   onSelectDay: (day: number) => void;
   showFertile: boolean;
@@ -37,7 +38,7 @@ export function CycleCalendar({
   periods,
   dayLogs,
   timeline,
-  nowMs,
+  today,
   selectedDay,
   onSelectDay,
   showFertile,
@@ -46,7 +47,6 @@ export function CycleCalendar({
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const today = localDayStartFromUtcMs(nowMs);
   const [month, setMonth] = useState(() => new Date(today));
 
   const markersFor = useMemo(
@@ -63,6 +63,14 @@ export function CycleCalendar({
   }, [today]);
 
   const rose = theme.colors.rose.brand;
+  const cellBorderColor = (selected: boolean, roseRing: boolean) => {
+    if (selected) {
+      return theme.colors.accent.primary;
+    }
+
+    return roseRing ? rose : theme.colors.text.tertiary;
+  };
+
   const monthLabel = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(
     month
   );
@@ -172,11 +180,7 @@ export function CycleCalendar({
                   backgroundColor: filled ? rose : 'transparent',
                   borderWidth: spotting || m.predicted || isSelected || isToday ? 2 : 0,
                   borderStyle: m.predicted && !spotting ? 'dashed' : 'solid',
-                  borderColor: isSelected
-                    ? theme.colors.accent.primary
-                    : spotting || m.predicted
-                      ? rose
-                      : theme.colors.text.tertiary,
+                  borderColor: cellBorderColor(isSelected, spotting || m.predicted),
                 }}
               >
                 <Text

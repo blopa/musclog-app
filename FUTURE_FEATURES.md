@@ -105,6 +105,10 @@ collects.
 - Revocable live partner access with per-field permission controls, beyond current selected-field file sharing.
 - A decoy screen and auto-delete for high-risk threat models, beyond the existing app lock.
 - Cycle data in the AI coach, only as an explicit opt-in per conversation and never by default.
+- Notification actions: Snooze on any cycle reminder and Taken / Later / Skip on the pill reminder, recording the answer locally. Needs notification categories and a response handler that works with the app in the background on both platforms.
+- Per-category lock-screen levels (for example a detailed pill reminder but private period reminders), beyond the current single wording choice.
+- Ring, patch and injection schedules for the contraception reminder, beyond daily pill packs.
+- Wearable sync status alerts ("no temperature data received today") once automatic wearable imports exist.
 
 ### Exercise goals v2
 

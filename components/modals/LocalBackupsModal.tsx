@@ -10,7 +10,12 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { restoreDatabase } from '@/database/importDb';
-import { type BackupFileMeta, deleteBackup, getStoredBackups } from '@/database/preMigrationBackup';
+import {
+  type BackupFileMeta,
+  deleteBackup,
+  exportPortableRecoveryPoint,
+  getStoredBackups,
+} from '@/database/preMigrationBackup';
 import { SettingsService } from '@/database/services/SettingsService';
 import {
   convertSqliteBackupToJson,
@@ -101,8 +106,10 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         const jsonUri = await exportSqliteBackupAsJsonFile(selectedBackup);
         await downloadFile(jsonUri, jsonUri.split('/').pop());
       } else {
-        const fileName = selectedBackup.uri.split('/').pop();
-        await downloadFile(selectedBackup.uri, fileName);
+        // Recovery points keep cycle records encrypted with this device's key; the copy the person
+        // takes away is decrypted so it can be restored on another phone.
+        const jsonUri = await exportPortableRecoveryPoint(selectedBackup.uri);
+        await downloadFile(jsonUri, selectedBackup.uri.split('/').pop());
       }
     } catch (error) {
       console.error('Export failed:', error);

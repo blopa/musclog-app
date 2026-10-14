@@ -54,9 +54,9 @@ beforeEach(() => {
 
 describe('cycle tracking choices in settings', () => {
   it.each([
-    ['cycle.personalize.trackBleeding', false],
-    ['cycle.personalize.trackSymptoms', true],
-  ])('starts first-time setup for %s', (label, symptomOnly) => {
+    ['cycle.personalize.trackBleeding', 'bleeding'],
+    ['cycle.personalize.trackSymptoms', 'symptoms'],
+  ])('starts first-time setup for %s', (label, tracking) => {
     configure(false);
     render(createElement(CycleTrackingModeSettings, { onClose }));
     expect(screen.getAllByRole('radio')).toHaveLength(3);
@@ -64,7 +64,7 @@ describe('cycle tracking choices in settings', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: '/app/onboarding/cycle-setup',
-      params: { symptomOnly: String(symptomOnly), nextRoute: encodeURIComponent('/app/settings') },
+      params: { tracking, nextRoute: encodeURIComponent('/app/settings') },
     });
     expect(setTrackingMode).not.toHaveBeenCalled();
   });

@@ -109,7 +109,9 @@
       "pastPeriods": {
         "title": "Past Periods (Optional)",
         "description": "Adding past period start dates helps the app learn your cycle length and make better predictions right away.",
-        "addPastPeriod": "Add a past period"
+        "addPastPeriod": "Add a past period",
+        "duplicate": "That day is already on the list.",
+        "remove": "Remove this period"
       },
       "errors": {
         "futureDate": "Period dates can't be in the future.",
