@@ -289,11 +289,7 @@ function workoutInsight(input: InsightInput, starts: number[]): Insight[] {
     : [];
 }
 
-/**
- * Observations from the person's OWN records. Each one states how many of how many cycles it
- * rests on and carries the exact days behind it. Nothing here says a phase CAUSED anything, and
- * nothing is produced from fewer than three cycles.
- */
+/** Compares energy or sleep in the days around each start with the rest of that cycle. */
 function recoveryInsight(
   input: InsightInput,
   starts: number[],
@@ -339,6 +335,11 @@ function recoveryInsight(
     : [];
 }
 
+/**
+ * Observations from the person's OWN records. Each one states how many of how many cycles it
+ * rests on and carries the exact days behind it. Nothing here says a phase CAUSED anything, and
+ * nothing is produced from fewer than three cycles.
+ */
 export function computeInsights(input: InsightInput): Insight[] {
   const starts = recentStarts(input.periods);
   if (starts.length < MIN_INSIGHT_CYCLES) {

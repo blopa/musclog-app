@@ -63,11 +63,20 @@ export function CycleSharingSettings() {
         onPress={() => {
           setBusy(true);
           setFailed(false);
-          void shareTextFile(
-            `${timestampSlug()}-cycle-selected.json`,
-            selectedCycleSharing(dayLogs, moods, fields, nowMs - days * MS_PER_SOLAR_DAY, nowMs),
-            'application/json'
-          )
+          void Promise.resolve()
+            .then(() =>
+              shareTextFile(
+                `${timestampSlug()}-cycle-selected.json`,
+                selectedCycleSharing(
+                  dayLogs,
+                  moods,
+                  fields,
+                  nowMs - days * MS_PER_SOLAR_DAY,
+                  nowMs
+                ),
+                'application/json'
+              )
+            )
             .catch(() => setFailed(true))
             .finally(() => setBusy(false));
         }}
