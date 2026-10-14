@@ -157,6 +157,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
       "buildNumber": "312",
+      "entitlements": {
+        "com.apple.developer.usernotifications.time-sensitive": true
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
@@ -180,6 +183,7 @@
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.WAKE_LOCK",
         "android.permission.POST_NOTIFICATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.VIBRATE",
         "android.permission.health.READ_HEIGHT",
         "android.permission.health.WRITE_HEIGHT",

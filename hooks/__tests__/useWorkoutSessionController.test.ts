@@ -31,6 +31,7 @@ jest.mock('@/services/NotificationService', () => ({
   NotificationService: {
     scheduleRestTimerNotification: jest.fn(async () => {}),
     cancelRestTimerNotification: jest.fn(async () => {}),
+    setRestCueVisible: jest.fn(),
   },
 }));
 jest.mock('@/database/services/WorkoutProgressionService', () => ({
@@ -136,7 +137,8 @@ it('lengthens a running rest, moves its reminder, and keeps one rest id until a 
   expect(hook.result.current.restId).toBe(id);
   expect(NotificationService.cancelRestTimerNotification).toHaveBeenCalled();
   expect(NotificationService.scheduleRestTimerNotification).toHaveBeenLastCalledWith(
-    expect.any(Number)
+    expect.any(Number),
+    expect.anything()
   );
 
   await act(() => hook.result.current.startRest(45));

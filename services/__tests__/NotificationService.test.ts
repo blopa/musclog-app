@@ -5,6 +5,7 @@ import { CycleRepository } from '@/database/repositories/CycleRepository';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { SettingsService } from '@/database/services/SettingsService';
 import { NotificationService } from '@/services/NotificationService';
+import { DEFAULT_NOTIFICATION_PREFERENCES } from '@/utils/notificationPolicy';
 import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 
 jest.mock('@nozbe/watermelondb', () => ({
@@ -14,6 +15,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     oneOf: jest.fn((values) => values),
     or: jest.fn(),
     between: jest.fn(),
+    gte: jest.fn(),
   },
 }));
 
@@ -30,7 +32,7 @@ jest.mock('@/database/repositories/WorkoutPlanRepository', () => ({
 }));
 
 jest.mock('expo-notifications', () => ({
-  SchedulableTriggerInputTypes: { WEEKLY: 'weekly', DATE: 'date' },
+  SchedulableTriggerInputTypes: { WEEKLY: 'weekly', DATE: 'date', TIME_INTERVAL: 'timeInterval' },
   getAllScheduledNotificationsAsync: jest.fn(),
   cancelScheduledNotificationAsync: jest.fn(),
   scheduleNotificationAsync: jest.fn(),
@@ -51,6 +53,8 @@ jest.mock('@/database', () => ({
   database: { get: jest.fn() },
 }));
 
+jest.mock('@/database/models/WorkoutLog', () => ({ __esModule: true, default: class {} }));
+
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     getNotifications: jest.fn(),
@@ -59,6 +63,7 @@ jest.mock('@/database/services/SettingsService', () => ({
     getCycleShowPredictions: jest.fn(),
     getCycleShowFertility: jest.fn(),
     getCycleNotificationStyle: jest.fn(),
+    getNotificationPreferences: jest.fn(),
   },
 }));
 
@@ -114,6 +119,10 @@ function installResolvedSchedules(
 describe('NotificationService.scheduleWorkoutReminders', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers().setSystemTime(new Date(2026, 9, 14, 10, 0, 0)); // Wednesday
+    mockSettingsService.getNotificationPreferences.mockResolvedValue(
+      DEFAULT_NOTIFICATION_PREFERENCES
+    );
     mockSettingsService.getNotifications.mockResolvedValue(true);
     mockSettingsService.getNotificationsWorkoutReminders.mockResolvedValue(true);
     mockNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([
@@ -159,27 +168,29 @@ describe('NotificationService.scheduleWorkoutReminders', () => {
 
     expect(mockNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledTimes(1);
     expect(mockNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith('old-workout');
-    expect(mockNotifications.scheduleNotificationAsync).toHaveBeenCalledTimes(2);
-    expect(mockNotifications.scheduleNotificationAsync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        content: expect.objectContaining({
-          data: { type: 'workout-reminder', templateId: 'planned', planId: 'p1' },
-        }),
-        trigger: expect.objectContaining({ weekday: 2, hour: 8, minute: 0 }),
-      })
+    // One-off reminders over the next 14 days (Wed 14 Oct → Tue 27 Oct): two Mondays for the plan's
+    // workout and two Tuesdays for the standalone one, never a repeating weekly trigger.
+    expect(mockNotifications.scheduleNotificationAsync).toHaveBeenCalledTimes(4);
+    const calls = mockNotifications.scheduleNotificationAsync.mock.calls.map(
+      ([request]) => request
     );
-    expect(mockNotifications.scheduleNotificationAsync).toHaveBeenCalledWith(
-      expect.objectContaining({
-        content: expect.objectContaining({
-          data: {
-            type: 'workout-reminder',
-            templateId: 'standalone',
-            planId: undefined,
-          },
-        }),
-        trigger: expect.objectContaining({ weekday: 3, hour: 9, minute: 15 }),
-      })
-    );
+    expect(calls.every((request) => (request.trigger as any).type === 'date')).toBe(true);
+    expect(calls.map((request) => (request.trigger as any).date)).toEqual([
+      new Date(2026, 9, 19, 8, 0),
+      new Date(2026, 9, 20, 9, 15),
+      new Date(2026, 9, 26, 8, 0),
+      new Date(2026, 9, 27, 9, 15),
+    ]);
+    expect(calls[0].content.data).toEqual({
+      type: 'workout-reminder',
+      templateId: 'planned',
+      planId: 'p1',
+    });
+    expect(calls[1].content.data).toEqual({
+      type: 'workout-reminder',
+      templateId: 'standalone',
+      planId: undefined,
+    });
     // The calendar stores are read through the repository, not by this service.
     expect(mockGetResolvedSchedules).toHaveBeenCalledTimes(1);
     expect(mockDatabase.get).toHaveBeenCalledWith('workout_templates');

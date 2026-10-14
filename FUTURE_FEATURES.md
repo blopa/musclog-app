@@ -105,6 +105,11 @@ collects.
 - Revocable live partner access with per-field permission controls, beyond current selected-field file sharing.
 - A decoy screen and auto-delete for high-risk threat models, beyond the existing app lock.
 - Cycle data in the AI coach, only as an explicit opt-in per conversation and never by default.
+- Live workout surface: an iOS Live Activity / Dynamic Island and an Android chronometer notification with rest countdown, next set and +15s / Skip, updated locally. Needs a native widget extension and a local module (the persistent workout notification is text only today). Same for an Apple Watch / Wear OS rest haptic.
+- Timed sets (planks, intervals) as a work timer separate from the rest timer, with an auto-transition into rest.
+- Per-reminder "why did I get this?" with Mute / Change time for workout reminders (cycle reminders already have it), rest-alert sound/haptic choices, and a PR callout during the session.
+- Rotating-plan reminders ("next up: X" on the user's usual training days) and a "fully logged" check that skips the nightly nutrition overview.
+- Android exact-alarm status in the delivery check (`SCHEDULE_EXACT_ALARM` is declared, but Android 14+ may need the user to grant it in system settings).
 - Notification actions: Snooze on any cycle reminder and Taken / Later / Skip on the pill reminder, recording the answer locally. Needs notification categories and a response handler that works with the app in the background on both platforms.
 - Per-category lock-screen levels (for example a detailed pill reminder but private period reminders), beyond the current single wording choice.
 - Ring, patch and injection schedules for the contraception reminder, beyond daily pill packs.

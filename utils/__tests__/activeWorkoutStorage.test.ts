@@ -17,6 +17,8 @@ import {
 jest.mock('@/services/NotificationService', () => ({
   NotificationService: {
     dismissActiveWorkoutNotification: jest.fn().mockResolvedValue(undefined),
+    cancelUnfinishedWorkoutReminder: jest.fn().mockResolvedValue(undefined),
+    cancelRestTimerNotification: jest.fn().mockResolvedValue(undefined),
   },
 }));
 

@@ -211,13 +211,18 @@ export default function RestTimerScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completedSet, workoutLogId]);
 
+  useEffect(() => {
+    NotificationService.setRestCueVisible(true);
+    return () => NotificationService.setRestCueVisible(false);
+  }, []);
+
   // Schedule rest timer notification when rest begins, cancel on unmount (covers skip, auto-navigate, end workout)
   useEffect(() => {
     if (isLoading || !completedSet || initialRestTime <= 0) {
       return;
     }
 
-    NotificationService.scheduleRestTimerNotification(initialRestTime);
+    NotificationService.scheduleRestTimerNotification(initialRestTime, workoutLogId);
 
     return () => {
       NotificationService.cancelRestTimerNotification();

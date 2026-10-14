@@ -12,7 +12,9 @@
     "channels": {
       "default": "Standaard",
       "activeWorkout": "Actieve Workout",
-      "cycle": "Cyclusherinneringen"
+      "cycle": "Cyclusherinneringen",
+      "restTimer": "Rusttimer",
+      "workoutReminders": "Trainingsherinneringen"
     },
     "startNow": "Nu starten",
     "types": {
@@ -39,7 +41,8 @@
       "activeWorkout": {
         "title": "Workout: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
-        "bodyNoExercise": "{{totalTime}}"
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Training bezig"
       },
       "workoutReminderMorning": {
         "title": "Workout-herinnering",
@@ -72,7 +75,26 @@
       "cycleDiscreet": {
         "title": "Musclog",
         "body": "Je hebt een update."
+      },
+      "unfinishedWorkout": {
+        "title": "Training afronden?",
+        "body": "{{workoutName}} staat nog open. Rond af en log je training als je klaar bent."
+      },
+      "goalAtRisk": {
+        "title": "Weekdoel in gevaar",
+        "body": "Trainingen te gaan voor je weekdoel: {{count}}."
       }
+    },
+    "actions": {
+      "addRest": "+{{seconds}}s rust",
+      "nextSet": "Volgende set",
+      "snooze": "1 uur uitstellen"
+    },
+    "restPrompt": {
+      "title": "Rusttimer-meldingen?",
+      "message": "Je rusttimer loopt. Wil je een melding als je je telefoon vergrendelt of van app wisselt?",
+      "confirm": "Meldingen aanzetten",
+      "cancel": "Niet nu"
     }
   }
 }

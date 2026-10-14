@@ -50,6 +50,8 @@ export async function clearActiveWorkoutLogId(): Promise<void> {
 
     // Dismiss notification after storage is cleared
     await NotificationService.dismissActiveWorkoutNotification();
+    await NotificationService.cancelUnfinishedWorkoutReminder();
+    await NotificationService.cancelRestTimerNotification();
   } catch (error) {
     console.error('Error clearing active workout from storage:', error);
     throw error;

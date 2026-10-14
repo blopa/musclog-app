@@ -15,6 +15,7 @@ import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { Button } from '@/components/theme/Button';
 import { ExerciseNotesSheet } from '@/components/workout/ExerciseNotesSheet';
 import { PlateCalculatorSheet } from '@/components/workout/PlateCalculatorSheet';
+import { RestAlertsPrompt } from '@/components/workout/RestAlertsPrompt';
 import { ProgressionWhySheet } from '@/components/workout/session/ProgressionWhySheet';
 import {
   buildSessionBlocks,
@@ -29,6 +30,7 @@ import {
   WorkoutTrainingView,
 } from '@/components/workout/WorkoutTrainingView';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutLogExerciseService } from '@/database/services/WorkoutLogExerciseService';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
@@ -47,6 +49,11 @@ import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController
 import { NotificationService } from '@/services/NotificationService';
 import { isBarLoadedEquipment } from '@/utils/gym';
 import { handleError } from '@/utils/handleError';
+import {
+  activeWorkoutClock,
+  type ActiveWorkoutUpdateSeconds,
+  DEFAULT_NOTIFICATION_PREFERENCES,
+} from '@/utils/notificationPolicy';
 import { WARMUP_REST_SECONDS, type WarmupSetPrescription } from '@/utils/warmupSets';
 import { formatDuration } from '@/utils/workout';
 import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
@@ -150,16 +157,44 @@ export default function WorkoutSessionScreen() {
     bleGenerateChartPayload,
   });
 
+  // The clock is re-posted only every N seconds (a setting), since each re-post is a native call.
+  const [updateSeconds, setUpdateSeconds] = useState<ActiveWorkoutUpdateSeconds>(
+    DEFAULT_NOTIFICATION_PREFERENCES.activeWorkoutUpdateSeconds
+  );
+  useEffect(() => {
+    void SettingsService.getNotificationPreferences()
+      .then((prefs) => setUpdateSeconds(prefs.activeWorkoutUpdateSeconds))
+      .catch(() => undefined);
+  }, []);
+  const notificationDuration = activeWorkoutClock(
+    time.hours,
+    time.minutes,
+    time.seconds,
+    updateSeconds
+  );
   useEffect(() => {
     if (workoutLog && !workoutLog.completedAt) {
       NotificationService.updateActiveWorkoutNotification(
         workoutLog.workoutName || t('freeTraining.title'),
-        duration,
+        notificationDuration,
         session.currentSetData?.exercise.name,
         workoutLog.id
       );
     }
-  }, [workoutLog, duration, session.currentSetData?.exercise.name, t]);
+  }, [workoutLog, notificationDuration, session.currentSetData?.exercise.name, t]);
+
+  // "Forgot to finish?" nudge: re-armed after every saved set. Deliberately NOT cancelled when this
+  // screen unmounts — leaving the screen while the workout is open is exactly the case it is for;
+  // finishing or discarding clears it (clearActiveWorkoutLogId).
+  const resolvedSetCount = sets.filter(isResolvedWorkoutSet).length;
+  const unfinishedName = workoutLog?.workoutName || t('freeTraining.title');
+  const unfinishedLogId = workoutLog?.id;
+  const unfinishedDone = Boolean(workoutLog?.completedAt);
+  useEffect(() => {
+    if (unfinishedLogId && !unfinishedDone && resolvedSetCount > 0) {
+      void NotificationService.scheduleUnfinishedWorkoutReminder(unfinishedName);
+    }
+  }, [unfinishedLogId, unfinishedDone, resolvedSetCount, unfinishedName]);
   useEffect(() => {
     if (workoutLog?.id && !workoutLog.completedAt) {
       NotificationService.scheduleWorkoutDurationWarning(workoutLog.startedAt);
@@ -172,6 +207,9 @@ export default function WorkoutSessionScreen() {
   }, [workoutLog?.id, workoutLog?.completedAt, workoutLog?.startedAt]);
   useEffect(() => {
     if (workoutLog?.completedAt) {
+      // Today's reminder for this workout is moot now, and the weekly-goal nudge may be too.
+      void NotificationService.cancelUnfinishedWorkoutReminder();
+      void NotificationService.refreshAll().catch(() => undefined);
       router.replace(
         `/app/workout/workout-summary?workoutLogId=${workoutLog.id}${params.showFeedback === '1' ? '&showSessionFeedback=1' : ''}`
       );
@@ -494,6 +532,7 @@ export default function WorkoutSessionScreen() {
       />
       {content}
       {modal}
+      <RestAlertsPrompt hasCompletedSet={done > 0} />
     </MasterLayout>
   );
 }

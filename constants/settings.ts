@@ -150,6 +150,9 @@ export const NOTIFICATIONS_REST_TIMER_SETTING_TYPE = 'notifications_rest_timer';
  */
 export const NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE = 'notifications_workout_duration';
 
+/** One JSON blob (`NotificationPreferences`, utils/notificationPolicy.ts): quiet hours, pause, lead time, nudges. */
+export const NOTIFICATION_PREFERENCES_SETTING_TYPE = 'notification_preferences';
+
 export const CONVERSATION_CONTEXT = 'conversation_context';
 
 /**

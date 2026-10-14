@@ -347,7 +347,62 @@
       "restTimer": "Alertas de Timer de Descanso",
       "restTimerSubtitle": "Receba notificações quando seu período de descanso acabar",
       "workoutDuration": "Aviso de Treino Longo",
-      "workoutDurationSubtitle": "Alerta se sua sessão durar mais de 5 horas"
+      "workoutDurationSubtitle": "Alerta se sua sessão durar mais de 5 horas",
+      "restTimerRepeat": "Repetir alerta de descanso",
+      "restTimerRepeatSubtitle": "Me avise mais uma vez um minuto depois se eu não iniciei a próxima série",
+      "unfinishedWorkout": "Lembrete de treino não finalizado",
+      "unfinishedWorkoutSubtitle": "Me avise 45 minutos após minha última série se eu esqueci de finalizar",
+      "goalAtRisk": "Meta semanal em risco",
+      "goalAtRiskSubtitle": "Avise-me quando minha meta semanal de treinos estiver atrasando",
+      "weeklyReview": "Revisão semanal",
+      "weeklyReviewSubtitle": "Lembrete quando sua revisão semanal estiver pronta",
+      "lockScreen": "Detalhes na tela de bloqueio",
+      "lockScreenOptions": {
+        "full": "Todos os detalhes",
+        "minimal": "Mínimo"
+      },
+      "sections": {
+        "session": "Durante os treinos",
+        "plan": "Seu plano de treino",
+        "reports": "Relatórios e alimentação",
+        "quiet": "Horário silencioso e pausa",
+        "delivery": "Entrega"
+      },
+      "accountability": {
+        "structured": "Estruturado",
+        "gentle": "Suave",
+        "flexible": "Flexível"
+      },
+      "accountabilityHints": {
+        "structured": "Me lembre nos meus dias de treino planejados.",
+        "gentle": "Só me avise quando minha meta semanal estiver atrasando.",
+        "flexible": "Nunca me avise. Só mostre o que vem a seguir."
+      },
+      "reminderLead": "Lembrar antes do treino",
+      "leadOnTime": "No horário",
+      "leadMinutes": "{{minutes}} min",
+      "quietHours": "Horário silencioso",
+      "quietHoursSubtitle": "Sem lembretes nesta janela",
+      "quietExempt": "Alertas de descanso e seu treino ativo nunca são silenciados.",
+      "quietFrom": "De",
+      "quietUntil": "Até",
+      "pause": "Pausar lembretes",
+      "pauseOptions": {
+        "off": "Desligado",
+        "days3": "3 dias",
+        "week": "1 semana"
+      },
+      "deliveryStatus": "Permissão: {{permission}} · {{pending}} agendadas",
+      "permission": {
+        "granted": "permitida",
+        "denied": "bloqueada",
+        "undetermined": "ainda não solicitada",
+        "unsupported": "não suportada"
+      },
+      "testAlert": "Enviar alerta de descanso de teste",
+      "openSystemSettings": "Abrir configurações de notificações do sistema",
+      "updateInterval": "Atualizar o relógio do treino a cada",
+      "updateIntervalOption": "{{seconds}} s"
     },
     "supportProject": {
       "title": "Apoie o projeto"

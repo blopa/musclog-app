@@ -114,10 +114,7 @@ export function AppBoot() {
 
         await waitForDbReady();
 
-        NotificationService.scheduleWorkoutReminders();
-        NotificationService.scheduleNutritionOverview();
-        NotificationService.scheduleMenstrualCycleNotifications();
-        NotificationService.scheduleCheckinNotifications();
+        await NotificationService.refreshAll();
       })
       .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
 
@@ -228,6 +225,14 @@ export function AppBoot() {
     function onAppStateChange(status: AppStateStatus) {
       if (Platform.OS !== 'web') {
         focusManager.setFocused(status === 'active');
+      }
+
+      // Reminders are one-offs laid out over the next days, so each foreground tops the window up
+      // (and applies a pause or quiet hours that changed since).
+      if (status === 'active' && Platform.OS !== 'web') {
+        void waitForDbReady()
+          .then(() => NotificationService.refreshAll())
+          .catch(() => undefined);
       }
     }
 

@@ -12,7 +12,9 @@
     "channels": {
       "default": "Por defecto",
       "activeWorkout": "Entrenamiento Activo",
-      "cycle": "Recordatorios del ciclo"
+      "cycle": "Recordatorios del ciclo",
+      "restTimer": "Temporizador de descanso",
+      "workoutReminders": "Recordatorios de entrenamiento"
     },
     "startNow": "Iniciar Ahora",
     "types": {
@@ -39,7 +41,8 @@
       "activeWorkout": {
         "title": "Entrenamiento: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
-        "bodyNoExercise": "{{totalTime}}"
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Entrenamiento en curso"
       },
       "workoutReminderMorning": {
         "title": "Recordatorio de Entrenamiento",
@@ -72,7 +75,26 @@
       "cycleDiscreet": {
         "title": "Musclog",
         "body": "Tienes una novedad."
+      },
+      "unfinishedWorkout": {
+        "title": "¿Terminas tu entrenamiento?",
+        "body": "{{workoutName}} sigue abierto. Termínalo y regístralo cuando acabes."
+      },
+      "goalAtRisk": {
+        "title": "Objetivo semanal en riesgo",
+        "body": "Entrenamientos que faltan para tu objetivo semanal: {{count}}."
       }
+    },
+    "actions": {
+      "addRest": "+{{seconds}} s de descanso",
+      "nextSet": "Siguiente serie",
+      "snooze": "Posponer 1 h"
+    },
+    "restPrompt": {
+      "title": "¿Alertas del temporizador?",
+      "message": "Tu temporizador de descanso está en marcha. ¿Quieres una alerta si bloqueas el teléfono o cambias de app?",
+      "confirm": "Activar alertas",
+      "cancel": "Ahora no"
     }
   }
 }

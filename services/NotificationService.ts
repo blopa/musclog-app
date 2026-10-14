@@ -1,11 +1,21 @@
 import { Q } from '@nozbe/watermelondb';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 
+import {
+  GOAL_AT_RISK_NOTIFICATION_TYPE,
+  NOTIFICATION_ACTIONS,
+  NOTIFICATION_CATEGORIES,
+  NOTIFICATION_CHANNELS,
+  REST_TIMER_NOTIFICATION_ID,
+  REST_TIMER_REPEAT_NOTIFICATION_ID,
+  UNFINISHED_WORKOUT_NOTIFICATION_ID,
+} from '@/constants/notificationActions';
 import type { CycleNotificationStyle } from '@/constants/settings';
 import { database } from '@/database';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
 import type WeeklyReview from '@/database/models/WeeklyReview';
+import type WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import {
   CycleRepository,
@@ -23,7 +33,20 @@ import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '@/utils/cal
 import { cycleReminderContent } from '@/utils/cycle/cycleReminderCopy';
 import { planCycleReminders } from '@/utils/cycle/cycleReminders';
 import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
-import { toExpoWeekday } from '@/utils/weekdays';
+import {
+  calendarWeekBounds,
+  DEFAULT_NOTIFICATION_PREFERENCES,
+  goalAtRiskFireDate,
+  goalAtRiskRemaining,
+  isSuppressed,
+  type NotificationPreferences,
+  planNutritionOverview,
+  planWorkoutReminders,
+  REST_ADD_SECONDS,
+  REST_REPEAT_DELAY_SECONDS,
+  SNOOZE_MINUTES,
+  UNFINISHED_WORKOUT_DELAY_MINUTES,
+} from '@/utils/notificationPolicy';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
 
 const CYCLE_CHANNEL_ID = 'cycle';
@@ -37,6 +60,45 @@ export interface CycleDeliveryStatus {
 export class NotificationService {
   private static isConfigured = false;
 
+  /** True while a screen that shows the rest countdown (and fires its haptics) is mounted. */
+  private static restCueVisible = false;
+
+  static setRestCueVisible(visible: boolean) {
+    this.restCueVisible = visible;
+  }
+
+  /** Action buttons. Labels are read at registration; a language change applies on the next launch. */
+  private static async registerCategories() {
+    await Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.restTimer, [
+      {
+        identifier: NOTIFICATION_ACTIONS.restAddTime,
+        buttonTitle: i18n.t('notifications.actions.addRest', { seconds: REST_ADD_SECONDS }),
+        options: { opensAppToForeground: false },
+      },
+      {
+        identifier: NOTIFICATION_ACTIONS.restNextSet,
+        buttonTitle: i18n.t('notifications.actions.nextSet'),
+        options: { opensAppToForeground: true },
+      },
+    ]);
+    await Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.workoutReminder, [
+      {
+        identifier: NOTIFICATION_ACTIONS.reminderSnooze,
+        buttonTitle: i18n.t('notifications.actions.snooze'),
+        options: { opensAppToForeground: false },
+      },
+    ]);
+  }
+
+  /** Preferences failing to load must never stop a reminder, so this falls back to the defaults. */
+  private static async loadPreferences(): Promise<NotificationPreferences> {
+    try {
+      return await SettingsService.getNotificationPreferences();
+    } catch {
+      return { ...DEFAULT_NOTIFICATION_PREFERENCES };
+    }
+  }
+
   static async configure() {
     if (this.isConfigured || Platform.OS === 'web') {
       return;
@@ -44,13 +106,21 @@ export class NotificationService {
 
     Notifications.setNotificationHandler({
       handleNotification: async (notification) => {
-        const isWorkoutUpdate = notification.request.identifier === 'active-workout-notification';
+        const id = notification.request.identifier;
+        const isWorkoutUpdate = id === 'active-workout-notification';
+        // The rest screen already buzzes in the hand; a banner and a chime on top of a countdown the
+        // user is looking at adds noise, not information. Only the backgrounded app gets the push.
+        const isRestAlertOverVisibleTimer =
+          this.restCueVisible &&
+          AppState.currentState === 'active' &&
+          (id === REST_TIMER_NOTIFICATION_ID || id === REST_TIMER_REPEAT_NOTIFICATION_ID);
+        const quiet = isWorkoutUpdate || isRestAlertOverVisibleTimer;
         return {
-          shouldShowAlert: !isWorkoutUpdate,
-          shouldPlaySound: !isWorkoutUpdate,
+          shouldShowAlert: !quiet,
+          shouldPlaySound: !quiet,
           shouldSetBadge: false,
-          shouldShowBanner: !isWorkoutUpdate,
-          shouldShowList: true,
+          shouldShowBanner: !quiet,
+          shouldShowList: !isRestAlertOverVisibleTimer,
         };
       },
     });
@@ -59,7 +129,7 @@ export class NotificationService {
       // Always the dark theme's color: Android fixes a channel's lightColor at creation, so
       // it can never follow the theme, and reading the preference here would touch the
       // database before it is ready (configure() runs ahead of waitForDbReady()).
-      await Notifications.setNotificationChannelAsync('default', {
+      await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.default, {
         name: i18n.t('notifications.channels.default'),
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
@@ -74,12 +144,29 @@ export class NotificationService {
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PRIVATE,
       });
 
-      await Notifications.setNotificationChannelAsync('workout-active', {
+      await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.activeWorkout, {
         name: i18n.t('notifications.channels.activeWorkout'),
         importance: Notifications.AndroidImportance.LOW, // Low importance for persistent notification to avoid annoying sound/popup on every update
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
       });
+
+      // The rest alert is part of the workout, not engagement: it keeps the loudest importance, and
+      // living on its own channel lets someone keep it loud while quieting every reminder.
+      await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.restTimer, {
+        name: i18n.t('notifications.channels.restTimer'),
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 300, 150, 300],
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PRIVATE,
+      });
+
+      await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.workoutReminders, {
+        name: i18n.t('notifications.channels.workoutReminders'),
+        importance: Notifications.AndroidImportance.DEFAULT,
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PRIVATE,
+      });
     }
+
+    await this.registerCategories();
 
     this.isConfigured = true;
   }
@@ -167,10 +254,16 @@ export class NotificationService {
       return;
     }
 
-    const title = i18n.t('notifications.types.activeWorkout.title', { workoutName });
-    const body = currentExercise
-      ? i18n.t('notifications.types.activeWorkout.body', { totalTime, currentExercise })
-      : i18n.t('notifications.types.activeWorkout.bodyNoExercise', { totalTime });
+    // Both lines show on a locked screen, so the person can trade detail for privacy.
+    const { lockScreenDetail } = await this.loadPreferences();
+    const isMinimal = lockScreenDetail === 'minimal';
+    const title = isMinimal
+      ? i18n.t('notifications.types.activeWorkout.titleMinimal')
+      : i18n.t('notifications.types.activeWorkout.title', { workoutName });
+    const body =
+      currentExercise && !isMinimal
+        ? i18n.t('notifications.types.activeWorkout.body', { totalTime, currentExercise })
+        : i18n.t('notifications.types.activeWorkout.bodyNoExercise', { totalTime });
 
     // On Android, we use a fixed ID for the active workout notification to update it
     const NOTIFICATION_ID = 'active-workout-notification';
@@ -309,6 +402,7 @@ export class NotificationService {
       return;
     }
 
+    const prefs = await this.loadPreferences();
     const resolvedSchedules = await WorkoutPlanRepository.getResolvedSchedules();
     const templateIds = [...new Set(resolvedSchedules.map((schedule) => schedule.templateId))];
     const templates =
@@ -319,14 +413,23 @@ export class NotificationService {
             .fetch()
         : [];
     const templatesById = new Map(templates.map((template) => [template.id, template]));
+    const completedToday = await this.getTemplateIdsCompletedToday();
 
-    for (const schedule of resolvedSchedules) {
-      const template = templatesById.get(schedule.templateId);
-      if (!template || template.deletedAt || template.isArchived) {
+    const planned = planWorkoutReminders({
+      now: new Date(),
+      sources: resolvedSchedules.filter((schedule) => {
+        const template = templatesById.get(schedule.templateId);
+        return template && !template.deletedAt && !template.isArchived;
+      }),
+      prefs,
+      completedTemplateIdsToday: completedToday,
+    });
+
+    for (const reminder of planned) {
+      const template = templatesById.get(reminder.templateId);
+      if (!template) {
         continue;
       }
-
-      const [hours, minutes] = schedule.reminderTime.split(':').map(Number);
 
       await Notifications.scheduleNotificationAsync({
         content: {
@@ -334,20 +437,52 @@ export class NotificationService {
           body: i18n.t('notifications.types.workoutReminderMorning.body', {
             workoutName: template.name,
           }),
+          categoryIdentifier: NOTIFICATION_CATEGORIES.workoutReminder,
           data: {
             type: 'workout-reminder',
             templateId: template.id,
-            planId: schedule.planId,
+            planId: reminder.planId,
           },
+          ...Platform.select({
+            android: { channelId: NOTIFICATION_CHANNELS.workoutReminders },
+          }),
         },
         trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-          weekday: toExpoWeekday(schedule.dayIndex),
-          hour: hours,
-          minute: minutes,
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: reminder.date,
         },
       });
     }
+  }
+
+  /** Templates whose workout was already finished today — their reminder for today is moot. */
+  private static async getTemplateIdsCompletedToday(): Promise<Set<string>> {
+    try {
+      const start = localDayStartMs(new Date());
+      const logs = await database
+        .get<WorkoutLog>('workout_logs')
+        .query(Q.where('completed_at', Q.gte(start)), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      return new Set(
+        logs.map((log) => log.templateId).filter((id): id is string => typeof id === 'string')
+      );
+    } catch {
+      return new Set();
+    }
+  }
+
+  /** Re-plans every offline reminder. Cheap and idempotent: boot, foreground and workout end all call it. */
+  static async refreshAll() {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    await this.scheduleWorkoutReminders();
+    await this.scheduleNutritionOverview();
+    await this.scheduleGoalAtRiskReminder();
+    await this.scheduleMenstrualCycleNotifications();
+    await this.scheduleCheckinNotifications();
   }
 
   // Nutrition Overview
@@ -371,19 +506,19 @@ export class NotificationService {
       return;
     }
 
-    // Schedule for 9 PM every day
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: i18n.t('notifications.types.nutritionOverview.title'),
-        body: i18n.t('notifications.types.nutritionOverview.body'),
-        data: { type: 'nutrition-overview' },
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.DAILY,
-        hour: 21,
-        minute: 0,
-      },
-    });
+    // One-offs for the coming week rather than a repeating trigger, so a pause or quiet hours can drop
+    // individual evenings. They are re-planned on boot and every foreground.
+    const prefs = await this.loadPreferences();
+    for (const date of planNutritionOverview(new Date(), prefs)) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: i18n.t('notifications.types.nutritionOverview.title'),
+          body: i18n.t('notifications.types.nutritionOverview.body'),
+          data: { type: 'nutrition-overview' },
+        },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
+      });
+    }
   }
 
   // Nutrition Check-ins
@@ -427,6 +562,7 @@ export class NotificationService {
       return;
     }
 
+    const prefs = await this.loadPreferences();
     for (const checkin of checkins) {
       if (currentGoal && checkin.nutritionGoalId !== currentGoal.id) {
         continue;
@@ -436,7 +572,7 @@ export class NotificationService {
       // Set to 8 AM local time on the check-in day
       date.setHours(8, 0, 0, 0);
 
-      if (date.getTime() <= Date.now()) {
+      if (date.getTime() <= Date.now() || isSuppressed(date, prefs)) {
         continue;
       } else {
         await Notifications.scheduleNotificationAsync({
@@ -486,20 +622,17 @@ export class NotificationService {
     }
 
     const identifier = `weekly-review-${localDayStartMs(date)}`;
+    const blocked = !enabled || !allowed || isSuppressed(date, await this.loadPreferences());
     for (const notification of scheduled) {
       if (
         notification.content.data?.type === 'weekly-review' &&
-        (!enabled || !allowed || notification.identifier !== identifier)
+        (blocked || notification.identifier !== identifier)
       ) {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
       }
     }
 
-    if (
-      !enabled ||
-      !allowed ||
-      scheduled.some((notification) => notification.identifier === identifier)
-    ) {
+    if (blocked || scheduled.some((notification) => notification.identifier === identifier)) {
       return;
     }
 
@@ -674,7 +807,7 @@ export class NotificationService {
   }
 
   // Rest Timer Alert
-  static async scheduleRestTimerNotification(restSeconds: number) {
+  static async scheduleRestTimerNotification(restSeconds: number, workoutLogId?: string | null) {
     if (Platform.OS === 'web') {
       return;
     }
@@ -686,23 +819,41 @@ export class NotificationService {
     }
 
     // Cancel any pre-existing rest timer notification before scheduling a new one
-    await Notifications.cancelScheduledNotificationAsync('rest-timer-notification').catch(() => {});
+    await this.cancelRestTimerNotification();
+
+    const content = {
+      title: i18n.t('notifications.types.restTimerAlert.title'),
+      body: i18n.t('notifications.types.restTimerAlert.body'),
+      categoryIdentifier: NOTIFICATION_CATEGORIES.restTimer,
+      data: { type: 'rest-timer-alert', workoutLogId: workoutLogId ?? undefined },
+      ...Platform.select({
+        android: { channelId: NOTIFICATION_CHANNELS.restTimer },
+        ios: { interruptionLevel: 'timeSensitive' as const },
+      }),
+    };
 
     await Notifications.scheduleNotificationAsync({
-      identifier: 'rest-timer-notification',
-      content: {
-        title: i18n.t('notifications.types.restTimerAlert.title'),
-        body: i18n.t('notifications.types.restTimerAlert.body'),
-        data: { type: 'rest-timer-alert' },
-        ...Platform.select({
-          android: { channelId: 'default' },
-        }),
-      },
+      identifier: REST_TIMER_NOTIFICATION_ID,
+      content,
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: restSeconds,
       },
     });
+
+    // A second, shorter-lived nudge for the person who put the phone down across the room. It is
+    // cancelled with the first one the moment the rest is skipped or the next rest starts.
+    const prefs = await this.loadPreferences();
+    if (prefs.restTimerRepeat) {
+      await Notifications.scheduleNotificationAsync({
+        identifier: REST_TIMER_REPEAT_NOTIFICATION_ID,
+        content,
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: restSeconds + REST_REPEAT_DELAY_SECONDS,
+        },
+      });
+    }
   }
 
   static async cancelRestTimerNotification() {
@@ -710,7 +861,158 @@ export class NotificationService {
       return;
     }
 
-    await Notifications.cancelScheduledNotificationAsync('rest-timer-notification').catch(() => {});
+    await Promise.all([
+      Notifications.cancelScheduledNotificationAsync(REST_TIMER_NOTIFICATION_ID).catch(() => {}),
+      Notifications.cancelScheduledNotificationAsync(REST_TIMER_REPEAT_NOTIFICATION_ID).catch(
+        () => {}
+      ),
+    ]);
+  }
+
+  /** The "+30s" button on the rest alert: rest a little longer, without opening the app. */
+  static async extendRestFromNotification(workoutLogId?: string | null) {
+    await this.scheduleRestTimerNotification(REST_ADD_SECONDS, workoutLogId);
+    if (workoutLogId) {
+      const { setRestTimerEndAt } = await import('@/utils/activeWorkoutStorage');
+      await setRestTimerEndAt(workoutLogId, Date.now() + REST_ADD_SECONDS * 1000);
+    }
+  }
+
+  /** The "Snooze" button on a workout reminder: the same reminder again in an hour. */
+  static async snoozeReminder(content: Notifications.NotificationContent) {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: content.title ?? '',
+        body: content.body ?? '',
+        data: content.data,
+        categoryIdentifier: NOTIFICATION_CATEGORIES.workoutReminder,
+        ...Platform.select({
+          android: { channelId: NOTIFICATION_CHANNELS.workoutReminders },
+        }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: SNOOZE_MINUTES * 60,
+      },
+    });
+  }
+
+  // Unfinished workout: "did you forget to finish and log it?" after the last saved set.
+  static async scheduleUnfinishedWorkoutReminder(workoutName: string) {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const [isNotificationsEnabled, prefs] = await Promise.all([
+      SettingsService.getNotifications(),
+      this.loadPreferences(),
+    ]);
+    await this.cancelUnfinishedWorkoutReminder();
+    if (!isNotificationsEnabled || !prefs.unfinishedWorkout) {
+      return;
+    }
+
+    await Notifications.scheduleNotificationAsync({
+      identifier: UNFINISHED_WORKOUT_NOTIFICATION_ID,
+      content: {
+        title: i18n.t('notifications.types.unfinishedWorkout.title'),
+        body: i18n.t('notifications.types.unfinishedWorkout.body', { workoutName }),
+        data: { type: 'unfinished-workout' },
+        ...Platform.select({
+          android: { channelId: NOTIFICATION_CHANNELS.workoutReminders },
+        }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: UNFINISHED_WORKOUT_DELAY_MINUTES * 60,
+      },
+    });
+  }
+
+  static async cancelUnfinishedWorkoutReminder() {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    await Notifications.cancelScheduledNotificationAsync(UNFINISHED_WORKOUT_NOTIFICATION_ID).catch(
+      () => {}
+    );
+  }
+
+  // Weekly goal at risk — only when the user has a consistency goal and chose to be nudged.
+  static async scheduleGoalAtRiskReminder() {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    for (const notification of scheduled) {
+      if (notification.content.data?.type === GOAL_AT_RISK_NOTIFICATION_TYPE) {
+        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+      }
+    }
+
+    const [isNotificationsEnabled, prefs] = await Promise.all([
+      SettingsService.getNotifications(),
+      this.loadPreferences(),
+    ]);
+    if (!isNotificationsEnabled || !prefs.goalAtRisk || prefs.accountability === 'flexible') {
+      return;
+    }
+
+    const now = new Date();
+    const week = calendarWeekBounds(now);
+    const [{ ExerciseGoalService }, { WorkoutService }] = await Promise.all([
+      import('@/database/services/ExerciseGoalService'),
+      import('@/database/services/WorkoutService'),
+    ]);
+    const goal = await ExerciseGoalService.getActiveConsistencyGoal();
+    const done = await WorkoutService.getCompletedWorkoutCount({
+      startDate: week.start.getTime(),
+      endDate: now.getTime(),
+    });
+    const remaining = goalAtRiskRemaining({
+      goalPerWeek: goal?.targetSessionsPerWeek ?? null,
+      doneThisWeek: done,
+      daysLeft: week.daysLeft,
+    });
+    const date = remaining === null ? null : goalAtRiskFireDate(now, week.end);
+    if (remaining === null || !date || isSuppressed(date, prefs)) {
+      return;
+    }
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: i18n.t('notifications.types.goalAtRisk.title'),
+        body: i18n.t('notifications.types.goalAtRisk.body', { count: remaining }),
+        data: { type: GOAL_AT_RISK_NOTIFICATION_TYPE },
+        ...Platform.select({
+          android: { channelId: NOTIFICATION_CHANNELS.workoutReminders },
+        }),
+      },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
+    });
+  }
+
+  /** What the settings screen shows so "permission granted" is never mistaken for "will arrive". */
+  static async getDeliveryStatus(): Promise<{
+    permission: Notifications.PermissionStatus | 'unsupported';
+    pending: number;
+  }> {
+    if (Platform.OS === 'web') {
+      return { permission: 'unsupported', pending: 0 };
+    }
+
+    const [permissions, scheduled] = await Promise.all([
+      Notifications.getPermissionsAsync() as Promise<{ status: Notifications.PermissionStatus }>,
+      Notifications.getAllScheduledNotificationsAsync(),
+    ]);
+
+    return { permission: permissions.status, pending: scheduled.length };
   }
 
   // Workout Duration Warning
@@ -745,7 +1047,7 @@ export class NotificationService {
         body: i18n.t('notifications.types.workoutDurationWarning.body'),
         data: { type: 'workout-duration-warning' },
         ...Platform.select({
-          android: { channelId: 'default' },
+          android: { channelId: NOTIFICATION_CHANNELS.default },
         }),
       },
       trigger: {
@@ -778,15 +1080,16 @@ export class NotificationService {
       return null;
     }
 
-    await Notifications.cancelScheduledNotificationAsync('rest-timer-notification').catch(() => {});
+    await this.cancelRestTimerNotification();
 
     return await Notifications.scheduleNotificationAsync({
-      identifier: 'rest-timer-notification',
+      identifier: REST_TIMER_NOTIFICATION_ID,
       content: {
+        categoryIdentifier: NOTIFICATION_CATEGORIES.restTimer,
         title: i18n.t('notifications.types.restTimerAlert.title'),
         body: i18n.t('notifications.types.restTimerAlert.body'),
         data: { type: 'rest-timer-alert' },
-        ...Platform.select({ android: { channelId: 'default' } }),
+        ...Platform.select({ android: { channelId: NOTIFICATION_CHANNELS.restTimer } }),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,

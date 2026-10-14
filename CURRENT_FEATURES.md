@@ -245,7 +245,12 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Food search source configuration
 - Toggle: OCR before AI, intuitive eating mode, weight prediction, daily prompts, cycle tracking
 - Carb convention setting (include or exclude fiber in carbs display)
-- Notification settings
+- Notification settings, grouped as During workouts / Your training plan / Reports & food / Quiet hours & pause / Delivery. All offline: every reminder is a local schedule re-planned on boot, on each foreground and after a workout
+  - Rest alert on its own Android channel (time-sensitive on iOS), with **+30s** and **Next set** buttons, an optional repeat a minute later, and no banner over a countdown the user is already looking at. Permission is asked after the first completed set, not in settings
+  - Persistent workout notification (clock refresh interval configurable: 5 / 10 / 15 / 30 / 60 s) with a lock-screen detail choice (full / minimal); optional "forgot to finish?" nudge 45 minutes after the last saved set
+  - Workout reminders laid out as one-offs for the next 14 days: user-chosen lead time, **Snooze 1h** button, skipped for a workout already finished today. Accountability style: Structured (planned days) / Gentle (only when the weekly goal slips) / Flexible (no nudges)
+  - Weekly goal at risk, Weekly Review and nightly nutrition overview toggles
+  - Quiet hours (overnight window) and a 3-day / 1-week pause for everything except the live session; delivery check with a test rest alert
 - Advanced: database reset, data encryption options, raw DB access
 
 ---

@@ -12,7 +12,9 @@
     "channels": {
       "default": "По умолчанию",
       "activeWorkout": "Активная тренировка",
-      "cycle": "Напоминания цикла"
+      "cycle": "Напоминания цикла",
+      "restTimer": "Таймер отдыха",
+      "workoutReminders": "Напоминания о тренировках"
     },
     "startNow": "Начать сейчас",
     "types": {
@@ -39,7 +41,8 @@
       "activeWorkout": {
         "title": "Тренировка: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
-        "bodyNoExercise": "{{totalTime}}"
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Идёт тренировка"
       },
       "workoutReminderMorning": {
         "title": "Напоминание о тренировке",
@@ -72,7 +75,26 @@
       "cycleDiscreet": {
         "title": "Musclog",
         "body": "У вас есть обновление."
+      },
+      "unfinishedWorkout": {
+        "title": "Завершить тренировку?",
+        "body": "Тренировка «{{workoutName}}» всё ещё открыта. Завершите и запишите её, когда закончите."
+      },
+      "goalAtRisk": {
+        "title": "Недельная цель под угрозой",
+        "body": "Осталось тренировок до недельной цели: {{count}}."
       }
+    },
+    "actions": {
+      "addRest": "+{{seconds}} с отдыха",
+      "nextSet": "Следующий подход",
+      "snooze": "Отложить на 1 ч"
+    },
+    "restPrompt": {
+      "title": "Оповещения таймера?",
+      "message": "Таймер отдыха запущен. Хотите получать оповещение, если заблокируете телефон или переключитесь на другое приложение?",
+      "confirm": "Включить оповещения",
+      "cancel": "Не сейчас"
     }
   }
 }

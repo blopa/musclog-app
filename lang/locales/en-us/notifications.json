@@ -12,7 +12,9 @@
     "channels": {
       "default": "Default",
       "activeWorkout": "Active Workout",
-      "cycle": "Cycle reminders"
+      "cycle": "Cycle reminders",
+      "restTimer": "Rest timer",
+      "workoutReminders": "Workout reminders"
     },
     "startNow": "Start Now",
     "types": {
@@ -39,7 +41,8 @@
       "activeWorkout": {
         "title": "Workout: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
-        "bodyNoExercise": "{{totalTime}}"
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Workout in progress"
       },
       "workoutReminderMorning": {
         "title": "Workout Reminder",
@@ -72,7 +75,26 @@
       "cycleDiscreet": {
         "title": "Musclog",
         "body": "You have an update."
+      },
+      "unfinishedWorkout": {
+        "title": "Finish your workout?",
+        "body": "{{workoutName}} is still open. Finish and log it when you're done."
+      },
+      "goalAtRisk": {
+        "title": "Weekly goal at risk",
+        "body": "Workouts left to hit your weekly goal: {{count}}."
       }
+    },
+    "actions": {
+      "addRest": "+{{seconds}}s rest",
+      "nextSet": "Next set",
+      "snooze": "Snooze 1h"
+    },
+    "restPrompt": {
+      "title": "Rest timer alerts?",
+      "message": "Your rest timer is running. Want an alert if you lock your phone or switch apps?",
+      "confirm": "Enable alerts",
+      "cancel": "Not now"
     }
   }
 }

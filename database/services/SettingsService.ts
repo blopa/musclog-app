@@ -49,6 +49,7 @@ import {
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
   type NavItemKey,
+  NOTIFICATION_PREFERENCES_SETTING_TYPE,
   NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
   NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
   NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
@@ -95,6 +96,10 @@ import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { decryptDatabaseValue } from '@/utils/encryption';
+import {
+  type NotificationPreferences,
+  parseNotificationPreferences,
+} from '@/utils/notificationPolicy';
 import { clampRestSeconds } from '@/utils/restTimer';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits } from '@/utils/units';
@@ -569,6 +574,27 @@ export class SettingsService {
 
   static async getNotificationsWorkoutDuration(): Promise<boolean> {
     return SettingsService.getBooleanSetting(NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE, false);
+  }
+
+  static async getNotificationPreferences(): Promise<NotificationPreferences> {
+    return parseNotificationPreferences(
+      await SettingsService.getStringSetting(NOTIFICATION_PREFERENCES_SETTING_TYPE, '')
+    );
+  }
+
+  /** Merges a patch into the stored preferences (read and write, so two fields never clobber each other). */
+  static async updateNotificationPreferences(
+    patch: Partial<NotificationPreferences>
+  ): Promise<NotificationPreferences> {
+    const next = parseNotificationPreferences(
+      JSON.stringify({ ...(await SettingsService.getNotificationPreferences()), ...patch })
+    );
+    await SettingsService.setStringSetting(
+      NOTIFICATION_PREFERENCES_SETTING_TYPE,
+      JSON.stringify(next)
+    );
+
+    return next;
   }
 
   static async getCoachConversationContext(): Promise<'general' | 'exercise' | 'nutrition'> {

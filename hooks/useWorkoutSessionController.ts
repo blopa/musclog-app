@@ -127,6 +127,13 @@ export function useWorkoutSessionController(
     };
   }, [restEnd]);
 
+  // While this hook is mounted the rest countdown and its haptics are on screen, so the rest alert
+  // need not also pop a banner over it.
+  useEffect(() => {
+    NotificationService.setRestCueVisible(true);
+    return () => NotificationService.setRestCueVisible(false);
+  }, []);
+
   const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const persist = (next: Record<string, Partial<SessionDraft>>) => {
     if (persistTimer.current) {
@@ -221,7 +228,7 @@ export function useWorkoutSessionController(
       setRestTotal(seconds);
       setRestId((id) => id + 1);
       await setRestTimerEndAt(logId, end);
-      await NotificationService.scheduleRestTimerNotification(seconds);
+      await NotificationService.scheduleRestTimerNotification(seconds, logId);
     });
 
   /** Lengthens or shortens the rest that is running; its reminder moves with it. */
@@ -238,7 +245,7 @@ export function useWorkoutSessionController(
       setRestTotal((total) => Math.max(remaining, total + deltaSeconds));
       await setRestTimerEndAt(logId, end);
       await NotificationService.cancelRestTimerNotification();
-      await NotificationService.scheduleRestTimerNotification(remaining);
+      await NotificationService.scheduleRestTimerNotification(remaining, logId);
     });
 
   const stopRest = () =>
