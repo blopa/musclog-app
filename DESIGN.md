@@ -172,6 +172,12 @@ and units; a large number without context is not a useful hierarchy.
 Spacing follows a 4-point base scale: 4, 8, 12, 16, 20, 24, 32, and 48. Use
 `theme.spacing.padding`, `.gap`, and `.margin` instead of introducing near-duplicate literals.
 
+Onboarding content uses a 24-point horizontal inset (`px-6`). In cycle setup, keep the
+horizontal inset and top padding on an inner `View` inside `KeyboardAwareScrollView`,
+so the heading and every form section align with the bottom action button on web and native.
+The shared cycle setup form leaves 12 points (`mt-3`) between the unknown-cycle-length
+option and the cycle/period numeric inputs.
+
 Standard radii are 12 for inputs/general controls, 16 for primary cards, and `full` for circular or
 pill elements. Borders should be subtle; surface separation should usually come from tonal layering
 before outlines or heavy shadows.

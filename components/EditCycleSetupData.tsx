@@ -126,7 +126,7 @@ export function EditCycleSetupData({
               role="checkbox"
               onPress={() => setCycleLengthKnown(!cycleLengthKnown)}
             />
-            <View className="flex-row gap-4">
+            <View className="mt-3 flex-row gap-4">
               <NumericInput
                 label={t('onboarding.cycleSetup.length.cycleLengthLabel')}
                 value={cycleLength.toString()}

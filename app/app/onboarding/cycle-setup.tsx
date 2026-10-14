@@ -132,69 +132,71 @@ export default function CycleSetup() {
 
       <KeyboardAwareScrollView
         bottomOffset={16}
-        className="flex-1 px-6 pt-8"
+        className="flex-1"
         showsVerticalScrollIndicator={false}
       >
-        <Text
-          className="mb-2 text-3xl font-bold tracking-tight"
-          style={{ color: theme.colors.text.primary }}
-        >
-          {t('onboarding.cycleSetup.title')}
-        </Text>
-        <Text className="mb-8 text-lg text-text-secondary">
-          {t(
-            isSymptomOnly
-              ? 'cycle.personalize.trackSymptomsHint'
-              : 'onboarding.cycleSetup.description'
-          )}
-        </Text>
+        <View className="px-6 pt-8">
+          <Text
+            className="mb-2 text-3xl font-bold tracking-tight"
+            style={{ color: theme.colors.text.primary }}
+          >
+            {t('onboarding.cycleSetup.title')}
+          </Text>
+          <Text className="mb-8 text-lg text-text-secondary">
+            {t(
+              isSymptomOnly
+                ? 'cycle.personalize.trackSymptomsHint'
+                : 'onboarding.cycleSetup.description'
+            )}
+          </Text>
 
-        <EditCycleSetupData
-          initialData={params.symptomOnly === 'true' ? { lifeStage: 'no_bleeding' } : undefined}
-          onFormChange={setCurrentFormData}
-        />
+          <EditCycleSetupData
+            initialData={params.symptomOnly === 'true' ? { lifeStage: 'no_bleeding' } : undefined}
+            onFormChange={setCurrentFormData}
+          />
 
-        {/* Historical bleeding can be added later from the cycle history. */}
-        {!isSymptomOnly ? (
-          <View className="mt-8 gap-3">
-            <Text className="text-base font-semibold text-text-secondary">
-              {t('onboarding.cycleSetup.pastPeriods.title')}
-            </Text>
-            <Text className="text-sm text-text-secondary">
-              {t('onboarding.cycleSetup.pastPeriods.description')}
-            </Text>
+          {/* Historical bleeding can be added later from the cycle history. */}
+          {!isSymptomOnly ? (
+            <View className="mt-8 gap-3">
+              <Text className="text-base font-semibold text-text-secondary">
+                {t('onboarding.cycleSetup.pastPeriods.title')}
+              </Text>
+              <Text className="text-sm text-text-secondary">
+                {t('onboarding.cycleSetup.pastPeriods.description')}
+              </Text>
 
-            {pastPeriods.map((period, index) => (
-              <View
-                key={period.startDate.getTime()}
-                className="flex-row items-center justify-between rounded-xl px-4 py-3"
-                style={{ backgroundColor: theme.colors.background.card }}
-              >
-                <Text style={{ color: theme.colors.text.primary }}>
-                  {period.startDate.toLocaleDateString()}
-                </Text>
-                <TouchableOpacity onPress={() => handleRemovePastPeriod(index)} className="p-1">
-                  <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
+              {pastPeriods.map((period, index) => (
+                <View
+                  key={period.startDate.getTime()}
+                  className="flex-row items-center justify-between rounded-xl px-4 py-3"
+                  style={{ backgroundColor: theme.colors.background.card }}
+                >
+                  <Text style={{ color: theme.colors.text.primary }}>
+                    {period.startDate.toLocaleDateString()}
+                  </Text>
+                  <TouchableOpacity onPress={() => handleRemovePastPeriod(index)} className="p-1">
+                    <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+
+              {pastPeriods.length < 6 ? (
+                <TouchableOpacity
+                  onPress={handleAddPastPeriod}
+                  className="flex-row items-center gap-2 rounded-xl border px-4 py-3"
+                  style={{ borderColor: theme.colors.border.default }}
+                >
+                  <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                  <Text style={{ color: theme.colors.accent.primary }}>
+                    {t('onboarding.cycleSetup.pastPeriods.addPastPeriod')}
+                  </Text>
                 </TouchableOpacity>
-              </View>
-            ))}
+              ) : null}
+            </View>
+          ) : null}
 
-            {pastPeriods.length < 6 ? (
-              <TouchableOpacity
-                onPress={handleAddPastPeriod}
-                className="flex-row items-center gap-2 rounded-xl border px-4 py-3"
-                style={{ borderColor: theme.colors.border.default }}
-              >
-                <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                <Text style={{ color: theme.colors.accent.primary }}>
-                  {t('onboarding.cycleSetup.pastPeriods.addPastPeriod')}
-                </Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-        ) : null}
-
-        <View pointerEvents="none" style={{ height: theme.spacing.margin['6xl'] }} />
+          <View pointerEvents="none" style={{ height: theme.spacing.margin['6xl'] }} />
+        </View>
       </KeyboardAwareScrollView>
 
       <BottomButtonWrapper>
