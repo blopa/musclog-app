@@ -12,7 +12,7 @@ export function CycleReminderSettings() {
   const { config, updateConfig } = useMenstrualCycle();
   const preferences = config.reminders ?? DEFAULT_CYCLE_REMINDERS;
   const save = (patch: Partial<CycleReminderPreferences>) => {
-    void updateConfig({ ...config, reminders: { ...preferences, ...patch } }).catch((error) =>
+    void updateConfig({ reminders: patch }).catch((error) =>
       handleError(error, 'CycleReminderSettings.save', {
         sendToSentry: false,
         snackbarMessage: t('errors.somethingWentWrong'),
@@ -58,7 +58,7 @@ export function CycleReminderSettings() {
         onChangeText={(text) => {
           const value = Number(text);
           if (text.trim() && Number.isInteger(value) && value >= 0 && value <= 365) {
-            void updateConfig({ ...config, backupReminderDays: value }).catch((error) =>
+            void updateConfig({ backupReminderDays: value }).catch((error) =>
               handleError(error, 'CycleReminderSettings.backup', {
                 sendToSentry: false,
                 snackbarMessage: t('errors.somethingWentWrong'),

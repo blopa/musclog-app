@@ -1,5 +1,6 @@
-import { database } from '@/database/database-instance';
+import { commitPrepared } from '@/database/commitPrepared';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
+import { database } from '@/database/database-instance';
 import type CycleContext from '@/database/models/CycleContext';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { CycleRepository, readContexts } from '@/database/repositories/CycleRepository';
@@ -39,31 +40,27 @@ export class CycleContextService {
       const encrypted = await encryptCyclePayload(payload);
       const now = Date.now();
 
-      if (sameDay) {
-        await sameDay.update((r) => {
-          r.payload = encrypted;
-          r.updatedAt = now;
-        });
-
-        return;
-      }
-
-      await database.batch(
-        database.get<CycleContext>('cycle_contexts').prepareCreate((r) => {
-          r.cycleId = cycleId;
-          r.payload = encrypted;
-          r.createdAt = now;
-          r.updatedAt = now;
-          r.deletedAt = null;
-        })
-      );
+      await commitPrepared(database, sameDay ? [sameDay] : [], () => [
+        sameDay
+          ? sameDay.prepareUpdate((r) => {
+              r.payload = encrypted;
+              r.updatedAt = now;
+            })
+          : database.get<CycleContext>('cycle_contexts').prepareCreate((r) => {
+              r.cycleId = cycleId;
+              r.payload = encrypted;
+              r.createdAt = now;
+              r.updatedAt = now;
+              r.deletedAt = null;
+            }),
+      ]);
     });
   }
 
   static async remove(id: string): Promise<void> {
     await database.write(async () => {
       const record = await database.get<CycleContext>('cycle_contexts').find(id);
-      await database.batch(prepareSoftDelete(record, Date.now()));
+      await commitPrepared(database, [record], () => [prepareSoftDelete(record, Date.now())]);
     });
   }
 }

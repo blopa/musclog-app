@@ -37,6 +37,7 @@ import type { CyclePhase, CycleTimeline, PredictionState } from '@/utils/cycle/c
 import type { CycleTrackingMode } from '@/utils/cycle/trackingMode';
 import type {
   CycleConfig,
+  CycleConfigUpdate,
   CycleContextDto,
   CycleDayLogDto,
   CycleHistoryEntry,
@@ -77,7 +78,7 @@ export interface MenstrualCycleContextType {
   /** Current timestamp refreshed every minute; use for time-sensitive display values. */
   nowMs: number;
   createCycle: (input: NewCycleInput) => Promise<void>;
-  updateConfig: (config: CycleConfig) => Promise<void>;
+  updateConfig: (update: CycleConfigUpdate) => Promise<void>;
   startPeriod: (startDate: number) => Promise<void>;
   endPeriod: (endDate: number) => Promise<void>;
   addPastPeriod: (period: NewPeriod) => Promise<void>;
@@ -151,8 +152,14 @@ function useDecryptedQuery<R extends Model, T>(
 
 export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const { cycleShowPredictions, cycleShowFertility } = useSettingsContext();
-  const [cycle, setCycle] = useState<MenstrualCycle | null>(null);
-  const [pausedCycle, setPausedCycle] = useState<MenstrualCycle | null>(null);
+  // Models mutate in place; capture the cipher at emission time so config-only
+  // writes have an immutable state identity and trigger decryption immediately.
+  const [tracked, setTracked] = useState<{
+    cycle: MenstrualCycle | null;
+    pausedCycle: MenstrualCycle | null;
+    configCipher: string | null;
+  }>({ cycle: null, pausedCycle: null, configCipher: null });
+  const { cycle, pausedCycle, configCipher: trackedConfigCipher } = tracked;
   const [config, setConfig] = useState<CycleConfig>(DEFAULT_CYCLE_CONFIG);
   // isStaticExport is a build-time constant — no async loading on static export
   const [isLoading, setIsLoading] = useState(!isStaticExport);
@@ -176,13 +183,16 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       .subscribe({
         next: (cycles) => {
           const active = cycles.find((c) => c.isActive) ?? null;
-          setCycle(active);
-          setPausedCycle(active ? null : (cycles[0] ?? null));
+          const paused = active ? null : (cycles[0] ?? null);
+          setTracked({
+            cycle: active,
+            pausedCycle: paused,
+            configCipher: (active ?? paused)?.config ?? null,
+          });
           setIsLoading(false);
         },
         error: () => {
-          setCycle(null);
-          setPausedCycle(null);
+          setTracked({ cycle: null, pausedCycle: null, configCipher: null });
           setIsLoading(false);
         },
       });
@@ -191,7 +201,6 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const trackedCycle = cycle ?? pausedCycle;
-  const trackedConfigCipher = trackedCycle?.config ?? null;
   useEffect(() => {
     let cancelled = false;
     void readCycleConfig(trackedCycle).then((next) => {
@@ -248,7 +257,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
         await CycleTrackingService.create(input);
         afterWrite();
       },
-      updateConfig: async (next: CycleConfig) => {
+      updateConfig: async (next: CycleConfigUpdate) => {
         if (trackedCycle) {
           await CycleTrackingService.updateConfig(trackedCycle, next);
           afterWrite();

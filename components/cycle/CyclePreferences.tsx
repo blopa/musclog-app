@@ -14,7 +14,7 @@ import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { MAX_QUICK_LOG, parseQuickLog, togglePinned } from '@/utils/cycle/dayLog';
 import { cycleSymptomLabel, OBSERVATION_FIELDS, toggleChoice } from '@/utils/cycle/preferences';
-import type { CustomCycleField, CycleConfig } from '@/utils/cycle/types';
+import type { CustomCycleField, CycleConfigUpdate } from '@/utils/cycle/types';
 import { handleError } from '@/utils/handleError';
 
 export function CyclePreferences() {
@@ -46,8 +46,7 @@ export function CyclePreferences() {
     }
   };
 
-  const save = (patch: Partial<CycleConfig>) =>
-    void run(() => updateConfig({ ...config, ...patch }));
+  const save = (update: CycleConfigUpdate) => void run(() => updateConfig(update));
 
   return (
     <View className="gap-5" pointerEvents={busy ? 'none' : 'auto'}>
@@ -65,7 +64,11 @@ export function CyclePreferences() {
             role="checkbox"
             disabled={busy || (!pinned.includes(key) && pinned.length >= MAX_QUICK_LOG)}
             selected={pinned.includes(key)}
-            onPress={() => save({ quickLog: togglePinned(pinned, key) })}
+            onPress={() =>
+              save((current) => ({
+                quickLog: togglePinned(current.quickLog ?? parseQuickLog(cycleQuickLogRaw), key),
+              }))
+            }
           />
         ))}
       </View>
@@ -79,11 +82,17 @@ export function CyclePreferences() {
         variant="outline"
         onPress={() =>
           void run(async () => {
-            const existing = config.customSymptoms ?? [];
             const trimmed = name.trim();
-            if (!existing.some((s) => s.toLocaleLowerCase() === trimmed.toLocaleLowerCase())) {
-              await updateConfig({ ...config, customSymptoms: [...existing, trimmed] });
-            }
+            await updateConfig((current) => {
+              const existing = current.customSymptoms ?? [];
+              return {
+                customSymptoms: existing.some(
+                  (s) => s.toLocaleLowerCase() === trimmed.toLocaleLowerCase()
+                )
+                  ? existing
+                  : [...existing, trimmed],
+              };
+            });
 
             setName('');
           })
@@ -95,11 +104,12 @@ export function CyclePreferences() {
           label={t('cycle.personalize.removeNamed', { name: symptom })}
           onPress={() =>
             void run(async () => {
-              await updateConfig({
-                ...config,
-                customSymptoms: config.customSymptoms?.filter((s) => s !== symptom),
-                quickLog: pinned.filter((key) => key !== `custom:${symptom}`),
-              });
+              await updateConfig((current) => ({
+                customSymptoms: current.customSymptoms?.filter((s) => s !== symptom),
+                quickLog: (current.quickLog ?? parseQuickLog(cycleQuickLogRaw)).filter(
+                  (key) => key !== `custom:${symptom}`
+                ),
+              }));
             })
           }
         />
@@ -115,7 +125,11 @@ export function CyclePreferences() {
             label={t(`cycle.personalize.fields.${field}`)}
             selected={config.enabledFields?.includes(field) ?? false}
             role="checkbox"
-            onPress={() => save({ enabledFields: toggleChoice(config.enabledFields ?? [], field) })}
+            onPress={() =>
+              save((current) => ({
+                enabledFields: toggleChoice(current.enabledFields ?? [], field),
+              }))
+            }
           />
         ))}
       </View>
@@ -169,10 +183,9 @@ export function CyclePreferences() {
         }
         onPress={() =>
           void run(async () => {
-            await updateConfig({
-              ...config,
+            await updateConfig((current) => ({
               customFields: [
-                ...(config.customFields ?? []),
+                ...(current.customFields ?? []),
                 {
                   id: randomUUID(),
                   label: fieldName.trim(),
@@ -180,7 +193,7 @@ export function CyclePreferences() {
                   ...(kind === 'rating' ? { min: Number(ratingMin), max: Number(ratingMax) } : {}),
                 },
               ],
-            });
+            }));
             setFieldName('');
           })
         }
@@ -190,7 +203,9 @@ export function CyclePreferences() {
           key={field.id}
           label={t('cycle.personalize.removeNamed', { name: field.label })}
           onPress={() =>
-            save({ customFields: config.customFields?.filter((f) => f.id !== field.id) })
+            save((current) => ({
+              customFields: current.customFields?.filter((f) => f.id !== field.id),
+            }))
           }
         />
       ))}

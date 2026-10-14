@@ -182,3 +182,9 @@ export interface HealthCycleObservation {
   kind: 'bleeding' | 'temperatureC';
   value: string | number;
 }
+
+/** Preference edits merge with the latest config inside the database writer. */
+export type CycleConfigPatch = Omit<Partial<CycleConfig>, 'reminders'> & {
+  reminders?: Partial<CycleReminderPreferences>;
+};
+export type CycleConfigUpdate = CycleConfigPatch | ((current: CycleConfig) => CycleConfigPatch);

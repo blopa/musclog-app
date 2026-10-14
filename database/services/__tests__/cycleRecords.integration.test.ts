@@ -1,3 +1,6 @@
+/* eslint-disable simple-import-sort/imports -- Install the shared database mocks before importing services. */
+import { cycleTestDay as day } from '@/database/services/__tests__/cycleTestSetup';
+
 import { CycleHealthImportService } from '@/database/services/CycleHealthImportService';
 import { CycleTransferService } from '@/database/services/CycleTransferService';
 import { serializeCycleTransfer } from '@/utils/cycle/cycleTransfer';
@@ -31,64 +34,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { localDayStartMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { PeriodRuleViolation } from '@/utils/cycle/periodRules';
 
-jest.mock('@/database/adapter', () => {
-  const Loki = jest.requireActual('@nozbe/watermelondb/adapters/lokijs').default;
-  return {
-    __esModule: true,
-    default: new Loki({
-      schema: jest.requireActual('@/database/schema').schema,
-      migrations: jest.requireActual('@/database/migrations').migrations,
-      useWebWorker: false,
-      useIncrementalIndexedDB: false,
-      extraLokiOptions: { autosave: false },
-      _testLokiAdapter: new (require('lokijs').LokiMemoryAdapter)(),
-    }),
-  };
-});
-jest.mock('@/database/services/SettingsService', () => ({
-  SettingsService: {
-    setCycleShowFertility: jest.fn(async () => {}),
-    resetCycleSettings: jest.fn(async () => {}),
-    getThemePreference: async () => 'kinetic-depth',
-  },
-}));
-jest.mock('@/database/preMigrationBackup', () => ({
-  createPreRestoreBackup: jest.fn(async () => {}),
-  createPreCycleEncryptionBackup: jest.fn(async () => 'backup-uri'),
-}));
-jest.mock('@/database/dbReady', () => ({ waitForBootMigrations: jest.fn(async () => {}) }));
-jest.mock('@/database/dbDurability', () => ({
-  updateNutritionLogCountBaseline: jest.fn(async () => {}),
-}));
-jest.mock('@/database/services/AppExerciseCatalogueService', () => ({
-  AppExerciseCatalogueService: { sync: jest.fn(async () => {}) },
-}));
-jest.mock('@/database/services/MuscleService', () => ({
-  MuscleService: {
-    seedMuscles: jest.fn(async () => ({})),
-    backfillExerciseMuscles: jest.fn(async () => {}),
-  },
-}));
-jest.mock('@/database/services/UserService', () => ({
-  UserService: { getCurrentUser: jest.fn(async () => null) },
-}));
-jest.mock('@/utils/app', () => ({ reloadApp: jest.fn(async () => {}) }));
-jest.mock('@/utils/musclogGatewayAvailability', () => ({ isMusclogGatewayAvailable: () => true }));
-
-const day = (n: number) => localDayStartMs(new Date(new Date().getFullYear() - 1, 0, 1 + n));
 const D = MS_PER_SOLAR_DAY;
-
-afterAll(() => {
-  const adapter = database.adapter.underlyingAdapter as unknown as {
-    _dispatcher: { _worker: { _bridge: { driver: { loki: { close: () => void } } } } };
-  };
-  adapter._dispatcher._worker._bridge.driver.loki.close();
-});
-
-beforeEach(async () => {
-  jest.clearAllMocks();
-  await database.write(() => database.unsafeResetDatabase());
-});
 
 async function newCycle(periods: { startDate: number; endDate?: number | null }[] = []) {
   return CycleTrackingService.create({

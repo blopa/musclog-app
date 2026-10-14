@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { commitPrepared } from '@/database/commitPrepared';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
 import { database } from '@/database/database-instance';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
@@ -120,119 +121,135 @@ export class CycleTransferService {
         Promise.all(plan.moods.add.map((point) => encryptUserMetricFields(point))),
         Promise.all(plan.moods.update.map(({ value }) => encryptUserMetricFields(value))),
       ]);
-      const target =
-        cycle ??
-        database.get<MenstrualCycle>('menstrual_cycles').prepareCreate((r) => {
-          r.avgCycleLength = DEFAULT_CYCLE_CONFIG.fallbackCycleLength;
-          r.avgPeriodDuration = DEFAULT_CYCLE_CONFIG.fallbackPeriodDuration;
-          r.lastPeriodStartDate = 0;
-          r.useHormonalBirthControl = false;
-          r.birthControlType = null;
-          r.lifeStage = null;
-          r.syncGoal = null;
-          r.timezone = timezone;
-          r.config = config;
-          r.isActive = true;
-          r.createdAt = now;
-          r.updatedAt = now;
-          r.deletedAt = null;
-        });
-      const operations: Model[] = cycle ? [] : [target];
-      const prepareGroup = (
-        table: string,
-        rows: (CyclePeriod | CycleDayLog | CycleContext)[],
-        group: Awaited<ReturnType<typeof encryptGroup>>,
-        hasCycleId: boolean
-      ) => {
-        for (const cipher of group.add) {
-          operations.push(
-            database.get<CycleDayLog>(table).prepareCreate((r) => {
-              if (hasCycleId) {
-                (r as unknown as CyclePeriod | CycleContext).cycleId = target.id;
-              }
-
-              r.payload = cipher;
+      await commitPrepared(
+        database,
+        [
+          ...(cycle ? [cycle] : []),
+          ...existing.periodRows,
+          ...existing.dayRows,
+          ...existing.contextRows,
+          ...existing.moodRows,
+        ],
+        () => {
+          const target =
+            cycle ??
+            database.get<MenstrualCycle>('menstrual_cycles').prepareCreate((r) => {
+              r.avgCycleLength = DEFAULT_CYCLE_CONFIG.fallbackCycleLength;
+              r.avgPeriodDuration = DEFAULT_CYCLE_CONFIG.fallbackPeriodDuration;
+              r.lastPeriodStartDate = 0;
+              r.useHormonalBirthControl = false;
+              r.birthControlType = null;
+              r.lifeStage = null;
+              r.syncGoal = null;
+              r.timezone = timezone;
+              r.config = config;
+              r.isActive = true;
               r.createdAt = now;
               r.updatedAt = now;
               r.deletedAt = null;
-            })
-          );
-        }
+            });
+          const operations: Model[] = cycle ? [] : [target];
+          const prepareGroup = (
+            table: string,
+            rows: (CyclePeriod | CycleDayLog | CycleContext)[],
+            group: Awaited<ReturnType<typeof encryptGroup>>,
+            hasCycleId: boolean
+          ) => {
+            for (const cipher of group.add) {
+              operations.push(
+                database.get<CycleDayLog>(table).prepareCreate((r) => {
+                  if (hasCycleId) {
+                    (r as unknown as CyclePeriod | CycleContext).cycleId = target.id;
+                  }
 
-        for (const { id, cipher } of group.update) {
-          const row = rows.find((r) => r.id === id)!;
+                  r.payload = cipher;
+                  r.createdAt = now;
+                  r.updatedAt = now;
+                  r.deletedAt = null;
+                })
+              );
+            }
+
+            for (const { id, cipher } of group.update) {
+              const row = rows.find((r) => r.id === id)!;
+              operations.push(
+                row.prepareUpdate((r) => {
+                  r.payload = cipher;
+                  r.updatedAt = now;
+                })
+              );
+            }
+          };
+
+          prepareGroup('cycle_periods', existing.periodRows, periods, true);
+          const clearDays = new Set(
+            plan.dayLogs.update.filter(({ value }) => isEmptyDayLog(value)).map(({ id }) => id)
+          );
+          prepareGroup(
+            'cycle_day_logs',
+            existing.dayRows,
+            { ...days, update: days.update.filter(({ id }) => !clearDays.has(id)) },
+            false
+          );
           operations.push(
-            row.prepareUpdate((r) => {
-              r.payload = cipher;
-              r.updatedAt = now;
-            })
+            ...existing.dayRows
+              .filter((r) => clearDays.has(r.id))
+              .map((r) => prepareSoftDelete(r, now))
           );
-        }
-      };
+          prepareGroup('cycle_contexts', existing.contextRows, contexts, true);
+          const assignMood = (
+            m: UserMetric,
+            date: number,
+            cipher: { value: string; unit?: string }
+          ) => {
+            m.type = 'mood';
+            m.date = date;
+            m.valueRaw = cipher.value;
+            m.unitRaw = cipher.unit;
+            m.timezone = getTimezoneAt(date);
+            m.updatedAt = now;
+          };
 
-      prepareGroup('cycle_periods', existing.periodRows, periods, true);
-      const clearDays = new Set(
-        plan.dayLogs.update.filter(({ value }) => isEmptyDayLog(value)).map(({ id }) => id)
-      );
-      prepareGroup(
-        'cycle_day_logs',
-        existing.dayRows,
-        { ...days, update: days.update.filter(({ id }) => !clearDays.has(id)) },
-        false
-      );
-      operations.push(
-        ...existing.dayRows.filter((r) => clearDays.has(r.id)).map((r) => prepareSoftDelete(r, now))
-      );
-      prepareGroup('cycle_contexts', existing.contextRows, contexts, true);
-      const assignMood = (
-        m: UserMetric,
-        date: number,
-        cipher: { value: string; unit?: string }
-      ) => {
-        m.type = 'mood';
-        m.date = date;
-        m.valueRaw = cipher.value;
-        m.unitRaw = cipher.unit;
-        m.timezone = getTimezoneAt(date);
-        m.updatedAt = now;
-      };
-
-      plan.moods.add.forEach((point, i) =>
-        operations.push(
-          database.get<UserMetric>('user_metrics').prepareCreate((m) => {
-            assignMood(m, point.date, moodAdds[i]);
-            m.createdAt = now;
-          })
-        )
-      );
-      plan.moods.update.forEach(({ id, value }, i) =>
-        operations.push(
-          existing.moodRows
-            .find((m) => m.id === id)!
-            .prepareUpdate((m) => assignMood(m, value.date, moodUpdates[i]))
-        )
-      );
-      const replacedMoodIds = new Map(plan.moods.update.map(({ id, value }) => [value.date, id]));
-      operations.push(
-        ...existing.moodRows
-          .filter((m) => {
-            const keep = replacedMoodIds.get(
-              calendarDateFromRecordDay(m.date, m.timezone).getTime()
+          plan.moods.add.forEach((point, i) =>
+            operations.push(
+              database.get<UserMetric>('user_metrics').prepareCreate((m) => {
+                assignMood(m, point.date, moodAdds[i]);
+                m.createdAt = now;
+              })
+            )
+          );
+          plan.moods.update.forEach(({ id, value }, i) =>
+            operations.push(
+              existing.moodRows
+                .find((m) => m.id === id)!
+                .prepareUpdate((m) => assignMood(m, value.date, moodUpdates[i]))
+            )
+          );
+          const replacedMoodIds = new Map(
+            plan.moods.update.map(({ id, value }) => [value.date, id])
+          );
+          operations.push(
+            ...existing.moodRows
+              .filter((m) => {
+                const keep = replacedMoodIds.get(
+                  calendarDateFromRecordDay(m.date, m.timezone).getTime()
+                );
+                return keep != null && keep !== m.id;
+              })
+              .map((m) => prepareSoftDelete(m, now))
+          );
+          if (cycle) {
+            operations.push(
+              cycle.prepareUpdate((r) => {
+                r.config = config;
+                r.updatedAt = now;
+              })
             );
-            return keep != null && keep !== m.id;
-          })
-          .map((m) => prepareSoftDelete(m, now))
-      );
-      if (cycle) {
-        operations.push(
-          cycle.prepareUpdate((r) => {
-            r.config = config;
-            r.updatedAt = now;
-          })
-        );
-      }
+          }
 
-      await database.batch(...operations);
+          return operations;
+        }
+      );
       return plan.counts;
     });
   }

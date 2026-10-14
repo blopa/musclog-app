@@ -1,3 +1,4 @@
+import { commitPrepared } from '@/database/commitPrepared';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
 import { database } from '@/database/database-instance';
 import type CyclePeriod from '@/database/models/CyclePeriod';
@@ -115,19 +116,14 @@ export class CyclePeriodService {
       assertValidPeriod(remaining, { startDate, endDate: null, endKind: 'open' });
 
       const now = Date.now();
-      const operations = [];
-      for (const open of stillOpen) {
-        const record = records.find((r) => r.id === open.id)!;
-        const encrypted = await encryptCyclePayload(
-          payloadOf({ ...open, endDate: null, endKind: 'unknown' })
-        );
-        operations.push(
-          record.prepareUpdate((r) => {
-            r.payload = encrypted;
-            r.updatedAt = now;
-          })
-        );
-      }
+      const closed = await Promise.all(
+        stillOpen.map(async (open) => ({
+          record: records.find((r) => r.id === open.id)!,
+          cipher: await encryptCyclePayload(
+            payloadOf({ ...open, endDate: null, endKind: 'unknown' })
+          ),
+        }))
+      );
 
       const payload: PeriodPayload = {
         startDate,
@@ -138,16 +134,29 @@ export class CyclePeriodService {
         note: '',
       };
       const createdCipher = await encryptCyclePayload(payload);
-      const created = database.get<CyclePeriod>('cycle_periods').prepareCreate((r) => {
-        r.cycleId = cycleId;
-        r.payload = createdCipher;
-        r.createdAt = now;
-        r.updatedAt = now;
-        r.deletedAt = null;
-      });
-      operations.push(created);
-      await database.batch(...operations);
-
+      let created!: CyclePeriod;
+      await commitPrepared(
+        database,
+        closed.map(({ record }) => record),
+        () => {
+          created = database.get<CyclePeriod>('cycle_periods').prepareCreate((r) => {
+            r.cycleId = cycleId;
+            r.payload = createdCipher;
+            r.createdAt = now;
+            r.updatedAt = now;
+            r.deletedAt = null;
+          });
+          return [
+            ...closed.map(({ record, cipher }) =>
+              record.prepareUpdate((r) => {
+                r.payload = cipher;
+                r.updatedAt = now;
+              })
+            ),
+            created,
+          ];
+        }
+      );
       return { ...payload, id: created.id, cycleId };
     });
   }
@@ -169,12 +178,13 @@ export class CyclePeriodService {
       const next = { ...open, endDate, endKind: 'logged' as const };
       assertValidPeriod(existing, next, { ignoreIds: [open.id] });
       const encrypted = await encryptCyclePayload(payloadOf(next));
-      await records
-        .find((r) => r.id === open.id)!
-        .update((r) => {
+      const record = records.find((r) => r.id === open.id)!;
+      await commitPrepared(database, [record], () => [
+        record.prepareUpdate((r) => {
           r.payload = encrypted;
           r.updatedAt = Date.now();
-        });
+        }),
+      ]);
     });
   }
 
@@ -206,10 +216,12 @@ export class CyclePeriodService {
       assertValidPeriod(siblings, next, { ignoreIds: [id] });
 
       const encrypted = await encryptCyclePayload(payloadOf(next));
-      await record.update((r) => {
-        r.payload = encrypted;
-        r.updatedAt = Date.now();
-      });
+      await commitPrepared(database, [record], () => [
+        record.prepareUpdate((r) => {
+          r.payload = encrypted;
+          r.updatedAt = Date.now();
+        }),
+      ]);
 
       return next;
     });
@@ -222,7 +234,7 @@ export class CyclePeriodService {
   static async remove(id: string): Promise<void> {
     await database.write(async () => {
       const record = await database.get<CyclePeriod>('cycle_periods').find(id);
-      await database.batch(prepareSoftDelete(record, Date.now()));
+      await commitPrepared(database, [record], () => [prepareSoftDelete(record, Date.now())]);
     });
   }
 
@@ -239,10 +251,12 @@ export class CyclePeriodService {
 
       const siblings = await readPeriods(await CycleRepository.periods(record.cycleId).fetch());
       assertValidPeriod(siblings, dto, { ignoreIds: [id] });
-      await record.update((r) => {
-        r.deletedAt = null;
-        r.updatedAt = Date.now();
-      });
+      await commitPrepared(database, [record], () => [
+        record.prepareUpdate((r) => {
+          r.deletedAt = null;
+          r.updatedAt = Date.now();
+        }),
+      ]);
     });
   }
 }

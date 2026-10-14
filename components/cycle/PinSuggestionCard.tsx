@@ -58,12 +58,13 @@ export function PinSuggestionCard() {
   const answer = async (pin: boolean) => {
     try {
       // Remember the offer either way, so a "no thanks" is not asked again.
+      await updateConfig((current) => ({
+        pinSuggested: [...new Set([...(current.pinSuggested ?? offered), key])],
+        ...(pin
+          ? { quickLog: togglePinned(current.quickLog ?? parseQuickLog(cycleQuickLogRaw), key) }
+          : {}),
+      }));
       setOffered([...offered, key]);
-      await updateConfig({
-        ...config,
-        pinSuggested: [...new Set([...offered, key])],
-        quickLog: pin ? togglePinned(pinned, key) : pinned,
-      });
     } catch (error) {
       handleError(error, 'PinSuggestionCard.answer', {
         snackbarMessage: t('errors.somethingWentWrong'),

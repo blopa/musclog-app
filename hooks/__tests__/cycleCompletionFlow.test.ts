@@ -14,7 +14,7 @@ import { shareTextFile } from '@/utils/file';
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 jest.mock('@/lang/lang', () => ({ DEFAULT_LANG: 'en-US' }));
 jest.mock('@/services/cycleExport', () => ({ exportContextsCsv: jest.fn() }));
-const mockUpdate = jest.fn(async () => {});
+const mockUpdate = jest.fn(async (_update: unknown) => {});
 jest.mock('@/hooks/useMenstrualCycle', () => ({ useMenstrualCycle: jest.fn() }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
 jest.mock('@/hooks/useCycleMoods', () => ({
@@ -92,13 +92,15 @@ beforeEach(() => {
 it('adds a diary preset without replacing existing fields or favorites', async () => {
   render(createElement(CycleDiaryPresets));
   fireEvent.click(screen.getByRole('button', { name: 'cycle.complete.preset.pms' }));
-  await waitFor(() =>
-    expect(mockUpdate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        enabledFields: expect.arrayContaining(['sex', 'impact', 'sleepHours', 'medication']),
-        quickLog: expect.arrayContaining(['headache']),
-      })
-    )
+  await waitFor(() => expect(mockUpdate).toHaveBeenCalledWith(expect.any(Function)));
+  const update = mockUpdate.mock.calls[0][0] as (current: unknown) => unknown;
+  expect(
+    update({ ...config, enabledFields: ['sex', 'tags'], quickLog: ['headache', 'cramps'] })
+  ).toEqual(
+    expect.objectContaining({
+      enabledFields: expect.arrayContaining(['sex', 'tags', 'impact', 'sleepHours', 'medication']),
+      quickLog: expect.arrayContaining(['headache', 'cramps']),
+    })
   );
 });
 it('shares nothing by default and exports only the fields the user selects', async () => {

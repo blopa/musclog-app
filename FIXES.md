@@ -3,6 +3,14 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Cycle config observation and transaction failures (October 2026)
+
+Cycle config-only emissions reused the same WatermelonDB model object in React state, leaving decrypted preferences and predictions stale until an unrelated render. The provider now captures the emitted ciphertext in immutable state, triggering immediate decryption for active and paused cycles and discarding obsolete async results.
+
+Cycle writers prepared model mutations without restoring cached values when an adapter batch failed. They now use `commitPrepared` for updates and deletes, and finish reads/encryption before preparation. The legacy encryption migration previously split conversion and plaintext cleanup into 500-operation batches, allowing partial commits that made retry skip already-marked cycles. It now reads one authoritative snapshot inside its writer and commits replacements, config blanking and source destruction in one transaction; permanent cycle deletion also commits once. Regression tests reject the adapter commit, verify cached state, retry, and exercise migrations above 500 operations and concurrent migration passes.
+
+Cycle preference controls also submitted full config snapshots, so independent edits could overwrite each other. `updateConfig` merges patches against the latest decrypted config inside the writer, merges nested reminder fields, and supports synchronous list updaters. Controls now submit only changed fields and compute list changes from that current config. Integration tests cover concurrent patches and list edits; provider tests cover same-object emissions and obsolete decryption results.
+
 ## Cycle tracking: counter wrapped, switch dropped, clears ignored
 
 ### Symptom

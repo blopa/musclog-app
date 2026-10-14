@@ -9,14 +9,16 @@ import { database } from '@/database/database-instance';
 import type CycleContext from '@/database/models/CycleContext';
 import type CyclePeriod from '@/database/models/CyclePeriod';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
-import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
+import { fetchByIds } from '@/database/queryByIds';
 import {
   clearCycleDtoCache,
   CycleRepository,
   readContexts,
+  readCycleConfig,
 } from '@/database/repositories/CycleRepository';
 import { SettingsService } from '@/database/services/SettingsService';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { DEFAULT_CYCLE_REMINDERS } from '@/utils/cycle/cycleReminders';
 import {
   assertValidPeriod,
   type InitialPeriod,
@@ -24,7 +26,7 @@ import {
 } from '@/utils/cycle/periodRules';
 import { cycleConfigSchema } from '@/utils/cycle/preferences';
 import { type CycleTrackingMode, trackingLifeStage } from '@/utils/cycle/trackingMode';
-import type { CycleConfig, CycleContextDto } from '@/utils/cycle/types';
+import type { CycleConfig, CycleConfigUpdate, CycleContextDto } from '@/utils/cycle/types';
 import { getCurrentTimezone } from '@/utils/timezone';
 
 export interface NewCycleInput {
@@ -86,78 +88,99 @@ export class CycleTrackingService {
 
     return database.write(async () => {
       const active = await CycleRepository.cycles().fetch();
-      const operations: Model[] = active
-        .filter((c) => c.isActive)
-        .map((c) =>
-          c.prepareUpdate((r) => {
-            r.isActive = false;
-            r.updatedAt = now;
-          })
-        );
+      let cycle!: MenstrualCycle;
+      await commitPrepared(database, active, () => {
+        const operations: Model[] = active
+          .filter((c) => c.isActive)
+          .map((c) =>
+            c.prepareUpdate((r) => {
+              r.isActive = false;
+              r.updatedAt = now;
+            })
+          );
 
-      const cycle = database.get<MenstrualCycle>('menstrual_cycles').prepareCreate((c) => {
-        // The legacy plaintext columns stay at their defaults; nothing reads them any more.
-        c.avgCycleLength = 28;
-        c.avgPeriodDuration = 5;
-        c.useHormonalBirthControl = false;
-        c.birthControlType = null;
-        c.lastPeriodStartDate = 0;
-        c.timezone = timezone;
-        c.syncGoal = null;
-        c.lifeStage = null;
-        c.isActive = true;
-        c.config = configCipher;
-        c.createdAt = now;
-        c.updatedAt = now;
-        c.deletedAt = null;
+        cycle = database.get<MenstrualCycle>('menstrual_cycles').prepareCreate((c) => {
+          // The legacy plaintext columns stay at their defaults; nothing reads them any more.
+          c.avgCycleLength = 28;
+          c.avgPeriodDuration = 5;
+          c.useHormonalBirthControl = false;
+          c.birthControlType = null;
+          c.lastPeriodStartDate = 0;
+          c.timezone = timezone;
+          c.syncGoal = null;
+          c.lifeStage = null;
+          c.isActive = true;
+          c.config = configCipher;
+          c.createdAt = now;
+          c.updatedAt = now;
+          c.deletedAt = null;
+        });
+        operations.push(cycle);
+
+        periods.forEach((_, index) => {
+          operations.push(
+            database.get<CyclePeriod>('cycle_periods').prepareCreate((r) => {
+              r.cycleId = cycle.id;
+              r.payload = periodCiphers[index];
+              r.createdAt = now;
+              r.updatedAt = now;
+              r.deletedAt = null;
+            })
+          );
+        });
+
+        if (contextCipher) {
+          operations.push(
+            database.get<CycleContext>('cycle_contexts').prepareCreate((r) => {
+              r.cycleId = cycle.id;
+              r.payload = contextCipher;
+              r.createdAt = now;
+              r.updatedAt = now;
+              r.deletedAt = null;
+            })
+          );
+        }
+
+        return operations;
       });
-      operations.push(cycle);
-
-      periods.forEach((_, index) => {
-        operations.push(
-          database.get<CyclePeriod>('cycle_periods').prepareCreate((r) => {
-            r.cycleId = cycle.id;
-            r.payload = periodCiphers[index];
-            r.createdAt = now;
-            r.updatedAt = now;
-            r.deletedAt = null;
-          })
-        );
-      });
-
-      if (contextCipher) {
-        operations.push(
-          database.get<CycleContext>('cycle_contexts').prepareCreate((r) => {
-            r.cycleId = cycle.id;
-            r.payload = contextCipher;
-            r.createdAt = now;
-            r.updatedAt = now;
-            r.deletedAt = null;
-          })
-        );
-      }
-
-      await database.batch(...operations);
-
       return cycle.id;
     });
   }
 
-  static async updateConfig(cycle: MenstrualCycle, config: CycleConfig): Promise<void> {
-    cycleConfigSchema.parse(config);
+  static async updateConfig(cycle: MenstrualCycle, update: CycleConfigUpdate): Promise<void> {
     await primeCycleEncryption();
-    const cipher = await encryptCyclePayload(config);
     await database.write(async () => {
-      await cycle.update((c) => {
-        c.config = cipher;
-        c.updatedAt = Date.now();
+      const current = await readCycleConfig(cycle);
+      const patch = typeof update === 'function' ? update(current) : update;
+      const config = cycleConfigSchema.parse({
+        ...current,
+        ...patch,
+        ...(patch.reminders
+          ? {
+              reminders: { ...(current.reminders ?? DEFAULT_CYCLE_REMINDERS), ...patch.reminders },
+            }
+          : {}),
       });
+      const cipher = await encryptCyclePayload(config);
+      await commitPrepared(database, [cycle], () => [
+        cycle.prepareUpdate((c) => {
+          c.config = cipher;
+          c.updatedAt = Date.now();
+        }),
+      ]);
     });
   }
 
   /** Pausing keeps every record; the cycle simply stops appearing and reminding. */
   static async setActive(cycle: MenstrualCycle, isActive: boolean): Promise<void> {
-    await cycle.updateCycle({ isActive });
+    await database.write(() =>
+      commitPrepared(database, [cycle], () => [
+        cycle.prepareUpdate((r) => {
+          r.isActive = isActive;
+          r.updatedAt = Date.now();
+        }),
+      ])
+    );
   }
 
   /** Change the tracking choice without replacing the cycle or any of its logs. */
@@ -253,9 +276,9 @@ export class CycleTrackingService {
         ))
       );
 
-      for (const chunk of chunked(records, MAX_BATCH_OPERATIONS)) {
-        await database.batch(...chunk.map((r) => r.prepareDestroyPermanently()));
-      }
+      await commitPrepared(database, records, () =>
+        records.map((r) => r.prepareDestroyPermanently())
+      );
     });
 
     clearCycleDtoCache();

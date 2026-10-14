@@ -1,5 +1,4 @@
-import type { Model } from '@nozbe/watermelondb';
-
+import { commitPrepared } from '@/database/commitPrepared';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
 import { database } from '@/database/database-instance';
 import CycleDayLog from '@/database/models/CycleDayLog';
@@ -40,24 +39,23 @@ export class CycleHealthImportService {
           };
         })
       );
-      const operations: Model[] = changes.map(({ id, cipher }) =>
-        id
-          ? rows
-              .find((row) => row.id === id)!
-              .prepareUpdate((r) => {
+      await commitPrepared(database, rows, () =>
+        changes.map(({ id, cipher }) =>
+          id
+            ? rows
+                .find((row) => row.id === id)!
+                .prepareUpdate((r) => {
+                  r.payload = cipher;
+                  r.updatedAt = now;
+                })
+            : database.get<CycleDayLog>('cycle_day_logs').prepareCreate((r) => {
                 r.payload = cipher;
+                r.createdAt = now;
                 r.updatedAt = now;
+                r.deletedAt = null;
               })
-          : database.get<CycleDayLog>('cycle_day_logs').prepareCreate((r) => {
-              r.payload = cipher;
-              r.createdAt = now;
-              r.updatedAt = now;
-              r.deletedAt = null;
-            })
+        )
       );
-      if (operations.length) {
-        await database.batch(...operations);
-      }
 
       return input.length;
     });

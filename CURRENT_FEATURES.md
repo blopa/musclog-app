@@ -168,6 +168,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Periods, daily logs, life-stage history and notes are encrypted on the device
 - Optional lock (biometrics or device PIN) for the cycle area only, or the whole app; reminders are discreet by default and never say what they are about unless you choose detailed wording
 - Pause tracking without losing history; delete all cycle data permanently, with an offer to remove local recovery points that could hold a copy
+- Cycle preference edits refresh immediately and merge concurrent changes; failed cycle writes restore the saved state and remain retryable. Legacy encryption conversion and permanent cycle deletion commit atomically, including large histories.
 - Shared mood edits and daily observations commit together; clear-day explicitly removes that day's shared mood from Home/Progress too. Permanent cycle deletion keeps shared mood, as disclosed in the confirmation
 - Export periods, daily logs (including shared mood and optional observations) and context history as CSV; appointment PDFs include mood and optional fields
 - Cycle-only versioned JSON export/import includes preferences, context, labels and shared mood history. Imports preview counts, default to keeping existing dates, offer explicit replacement and optional preference restoration, validate dates/duplicates, and skip overlaps with existing periods without resetting other app data

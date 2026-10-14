@@ -22,7 +22,7 @@ const PRESETS = {
 } as const;
 export function CycleDiaryPresets() {
   const { t } = useTranslation();
-  const { config, updateConfig } = useMenstrualCycle();
+  const { updateConfig } = useMenstrualCycle();
   return (
     <View className="gap-2">
       <Text className="text-base font-bold text-text-primary">{t('cycle.complete.presets')}</Text>
@@ -33,13 +33,12 @@ export function CycleDiaryPresets() {
           label={t(`cycle.complete.preset.${key}`)}
           onPress={() => {
             const preset = PRESETS[key];
-            void updateConfig({
-              ...config,
+            void updateConfig((config) => ({
               enabledFields: [
                 ...new Set([...(config.enabledFields ?? []), ...preset.fields]),
               ] as ObservationField[],
               quickLog: [...new Set([...(config.quickLog ?? []), ...preset.symptoms])].slice(0, 6),
-            }).catch((error) =>
+            })).catch((error) =>
               handleError(error, 'CycleDiaryPresets.save', {
                 sendToSentry: false,
                 snackbarMessage: t('errors.somethingWentWrong'),

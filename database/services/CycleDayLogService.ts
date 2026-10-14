@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { commitPrepared } from '@/database/commitPrepared';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
 import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
@@ -100,63 +101,63 @@ export class CycleDayLogService {
             .fetch();
     const moods = range.filterRecords(moodRecords);
     const now = Date.now();
-    const operations: Model[] = duplicates.map((r) => prepareSoftDelete(r, now));
+    await commitPrepared(database, [...matching, ...moods], () => {
+      const operations: Model[] = duplicates.map((r) => prepareSoftDelete(r, now));
 
-    if (encrypted == null) {
-      if (keep) {
-        operations.push(prepareSoftDelete(keep, now));
-      }
-    } else {
-      if (keep) {
-        operations.push(
-          keep.prepareUpdate((r) => {
-            r.payload = encrypted;
-            r.updatedAt = now;
-          })
-        );
+      if (encrypted == null) {
+        if (keep) {
+          operations.push(prepareSoftDelete(keep, now));
+        }
       } else {
-        operations.push(
-          database.get<CycleDayLog>('cycle_day_logs').prepareCreate((r) => {
-            r.payload = encrypted;
-            r.createdAt = now;
-            r.updatedAt = now;
-            r.deletedAt = null;
-          })
-        );
+        if (keep) {
+          operations.push(
+            keep.prepareUpdate((r) => {
+              r.payload = encrypted;
+              r.updatedAt = now;
+            })
+          );
+        } else {
+          operations.push(
+            database.get<CycleDayLog>('cycle_day_logs').prepareCreate((r) => {
+              r.payload = encrypted;
+              r.createdAt = now;
+              r.updatedAt = now;
+              r.deletedAt = null;
+            })
+          );
+        }
       }
-    }
 
-    // Mood and cycle observations commit together. Undefined leaves the shared metric alone;
-    // null clears all mood entries on this day, including duplicates.
-    if (mood !== undefined) {
-      const [existingMood, ...duplicateMoods] = moods;
-      const remove = mood == null ? moods : duplicateMoods;
-      operations.push(...remove.map((m) => prepareSoftDelete(m, now)));
-      if (encryptedMood) {
-        const assign = (m: UserMetric) => {
-          m.type = 'mood';
-          m.valueRaw = encryptedMood.value;
-          m.unitRaw = encryptedMood.unit;
-          m.date = date;
-          m.timezone = getTimezoneAt(date);
-          m.updatedAt = now;
-        };
+      // Mood and cycle observations commit together. Undefined leaves the shared metric alone;
+      // null clears all mood entries on this day, including duplicates.
+      if (mood !== undefined) {
+        const [existingMood, ...duplicateMoods] = moods;
+        const remove = mood == null ? moods : duplicateMoods;
+        operations.push(...remove.map((m) => prepareSoftDelete(m, now)));
+        if (encryptedMood) {
+          const assign = (m: UserMetric) => {
+            m.type = 'mood';
+            m.valueRaw = encryptedMood.value;
+            m.unitRaw = encryptedMood.unit;
+            m.date = date;
+            m.timezone = getTimezoneAt(date);
+            m.updatedAt = now;
+          };
 
-        operations.push(
-          existingMood
-            ? existingMood.prepareUpdate(assign)
-            : database.get<UserMetric>('user_metrics').prepareCreate((m) => {
-                assign(m);
-                m.createdAt = now;
-                m.deletedAt = undefined;
-              })
-        );
+          operations.push(
+            existingMood
+              ? existingMood.prepareUpdate(assign)
+              : database.get<UserMetric>('user_metrics').prepareCreate((m) => {
+                  assign(m);
+                  m.createdAt = now;
+                  m.deletedAt = undefined;
+                })
+          );
+        }
       }
-    }
 
-    if (operations.length > 0) {
-      await database.batch(...operations);
-    }
+      return operations;
+    });
   }
 
   static async clear(date: number): Promise<void> {

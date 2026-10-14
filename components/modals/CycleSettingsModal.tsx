@@ -119,10 +119,11 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
     setIsSaving(true);
     await guarded('CycleSettingsModal.save', async () => {
       await updateConfig({
-        ...config,
-        fallbackCycleLength: form.cycleLength ?? config.fallbackCycleLength,
-        cycleLengthKnown: form.cycleLengthKnown ?? config.cycleLengthKnown,
-        fallbackPeriodDuration: form.periodDuration ?? config.fallbackPeriodDuration,
+        ...(form.cycleLength !== undefined ? { fallbackCycleLength: form.cycleLength } : {}),
+        ...(form.cycleLengthKnown !== undefined ? { cycleLengthKnown: form.cycleLengthKnown } : {}),
+        ...(form.periodDuration !== undefined
+          ? { fallbackPeriodDuration: form.periodDuration }
+          : {}),
       });
       onClose();
     });
