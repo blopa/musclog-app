@@ -11,13 +11,13 @@ import { TextInput } from '@/components/theme/TextInput';
 import { CycleTransferService } from '@/database/services/CycleTransferService';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { exportContextsCsv } from '@/services/cycleExport';
+import { CycleNotificationService } from '@/services/CycleNotificationService';
 import {
   decodeCycleFile,
   encryptCycleBackup,
   getCycleBackupPreparedAt,
   recordCycleBackupPrepared,
 } from '@/services/cycleRecovery';
-import { NotificationService } from '@/services/NotificationService';
 import {
   type ConflictChoice,
   parseCycleTransfer,
@@ -125,7 +125,7 @@ export function CyclePortabilityModal({
       if (encrypted) {
         await recordCycleBackupPrepared();
         setLastBackup(Date.now());
-        await NotificationService.scheduleMenstrualCycleNotifications();
+        await CycleNotificationService.scheduleMenstrualCycleNotifications();
         setPassword('');
         setRepeat('');
       }
@@ -317,7 +317,7 @@ export function CyclePortabilityModal({
                     );
                     setIncoming(null);
                     setCounts(null);
-                    await NotificationService.scheduleMenstrualCycleNotifications();
+                    await CycleNotificationService.scheduleMenstrualCycleNotifications();
                     setMessage(t('cycle.portability.imported', result));
                   })
                 }

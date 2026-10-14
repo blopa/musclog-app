@@ -4,7 +4,9 @@ import { database } from '@/database';
 import { CycleRepository } from '@/database/repositories/CycleRepository';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { SettingsService } from '@/database/services/SettingsService';
+import { CycleNotificationService } from '@/services/CycleNotificationService';
 import { NotificationService } from '@/services/NotificationService';
+import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 import { DEFAULT_NOTIFICATION_PREFERENCES } from '@/utils/notificationPolicy';
 import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 
@@ -214,7 +216,7 @@ describe('weekly review reminders', () => {
   });
   afterEach(() => jest.useRealTimers());
   it('schedules one reminder and skips resubmission for an existing identifier', async () => {
-    await NotificationService.scheduleWeeklyReviewNotification();
+    await NutritionNotificationService.scheduleWeeklyReviewNotification();
     const request = mockNotifications.scheduleNotificationAsync.mock.calls[0][0];
     expect(request.content?.data).toMatchObject({
       type: 'weekly-review',
@@ -223,12 +225,12 @@ describe('weekly review reminders', () => {
     mockNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([
       { identifier: request.identifier, content: request.content },
     ] as any);
-    await NotificationService.scheduleWeeklyReviewNotification();
+    await NutritionNotificationService.scheduleWeeklyReviewNotification();
     expect(mockNotifications.scheduleNotificationAsync).toHaveBeenCalledTimes(1);
   });
   it('does not send an immediate duplicate when this morning has passed', async () => {
     jest.setSystemTime(new Date(2026, 9, 12, 12));
-    await NotificationService.scheduleWeeklyReviewNotification();
+    await NutritionNotificationService.scheduleWeeklyReviewNotification();
     const trigger = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].trigger as any;
     expect(trigger.date.getDate()).toBe(19);
     expect(trigger.date.getHours()).toBe(8);
@@ -239,7 +241,7 @@ describe('weekly review reminders', () => {
       { identifier: 'review', content: { data: { type: 'weekly-review' } } },
       { identifier: 'other', content: { data: { type: 'rest-timer' } } },
     ] as any);
-    await NotificationService.scheduleWeeklyReviewNotification();
+    await NutritionNotificationService.scheduleWeeklyReviewNotification();
     expect(mockNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith('review');
     expect(mockNotifications.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith('other');
     expect(mockNotifications.scheduleNotificationAsync).not.toHaveBeenCalled();
@@ -280,7 +282,7 @@ describe('cycle reminders', () => {
 
   it('words a reminder discreetly by default, so a lock screen never says what it is about', async () => {
     arrange(onTrack, 'discreet');
-    await NotificationService.scheduleMenstrualCycleNotifications();
+    await CycleNotificationService.scheduleMenstrualCycleNotifications();
     const content = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].content;
     expect(content.title).toBe('notifications.types.cycleDiscreet.title');
     expect(content.body).toBe('notifications.types.cycleDiscreet.body');
@@ -289,7 +291,7 @@ describe('cycle reminders', () => {
 
   it('uses the descriptive wording only when the person chose it', async () => {
     arrange(onTrack, 'detailed');
-    await NotificationService.scheduleMenstrualCycleNotifications();
+    await CycleNotificationService.scheduleMenstrualCycleNotifications();
     const content = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].content;
     expect(content.title).toBe('cycle.notifications.periodStart.title');
     // A range for an estimate, never one confident date.
@@ -298,7 +300,7 @@ describe('cycle reminders', () => {
 
   it('names the task but never the topic in the subtle style', async () => {
     arrange(onTrack, 'subtle' as never);
-    await NotificationService.scheduleMenstrualCycleNotifications();
+    await CycleNotificationService.scheduleMenstrualCycleNotifications();
     const content = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].content;
     expect(content.title).toBe('notifications.types.cycleDiscreet.title');
     expect(content.body).toBe('cycle.notifications.subtle.cycle');
@@ -306,14 +308,14 @@ describe('cycle reminders', () => {
 
   it('schedules cycle reminders on their own channel', async () => {
     arrange(onTrack, 'discreet');
-    await NotificationService.scheduleMenstrualCycleNotifications();
+    await CycleNotificationService.scheduleMenstrualCycleNotifications();
     const { trigger } = mockNotifications.scheduleNotificationAsync.mock.calls[0][0];
     expect(trigger).toMatchObject({ channelId: 'cycle' });
   });
 
   it('schedules no fertile-window reminder unless fertility estimates are on', async () => {
     arrange(onTrack, 'detailed');
-    await NotificationService.scheduleMenstrualCycleNotifications();
+    await CycleNotificationService.scheduleMenstrualCycleNotifications();
     const subtypes = mockNotifications.scheduleNotificationAsync.mock.calls.map(
       (call) => (call[0].content.data as { subtype: string }).subtype
     );
@@ -335,8 +337,8 @@ describe('cycle reminders', () => {
       return pending;
     });
     mockNotifications.getAllScheduledNotificationsAsync.mockClear();
-    const first = NotificationService.scheduleMenstrualCycleNotifications();
-    const second = NotificationService.scheduleMenstrualCycleNotifications();
+    const first = CycleNotificationService.scheduleMenstrualCycleNotifications();
+    const second = CycleNotificationService.scheduleMenstrualCycleNotifications();
     await began;
     const readsWhileFirstPending =
       mockNotifications.getAllScheduledNotificationsAsync.mock.calls.length;
@@ -348,7 +350,7 @@ describe('cycle reminders', () => {
 
   it('schedules nothing for a period that is overdue', async () => {
     arrange([period('a', 120), period('b', 92), period('c', 64)], 'detailed');
-    await NotificationService.scheduleMenstrualCycleNotifications();
+    await CycleNotificationService.scheduleMenstrualCycleNotifications();
     expect(mockNotifications.scheduleNotificationAsync).not.toHaveBeenCalled();
   });
 });

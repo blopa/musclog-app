@@ -516,7 +516,8 @@
           "label": "Kinetic Varia",
           "description": "Diepviolette oppervlakken met oranje accenten"
         }
-      }
+      },
+      "iconAppliesLater": "Het app-icoon verandert zodra je de app verlaat."
     },
     "workoutSettings": {
       "title": "Trainingsinstellingen",

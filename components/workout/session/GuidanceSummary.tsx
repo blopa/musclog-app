@@ -8,7 +8,7 @@ import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { GuidanceState } from '@/utils/progressionProjection';
-import type { ProgressionRule } from '@/utils/progressionRules';
+import type { ProgressionRule } from '@/utils/progressionRuleSchema';
 import type { SetAdjustment } from '@/utils/setAdjustment';
 
 import { GUIDANCE_STATE_KEYS, PROGRESSION_METHOD_KEYS } from './sessionModel';

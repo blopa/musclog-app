@@ -71,6 +71,7 @@ export default function FirstWorkoutScreen() {
 
   useEffect(() => {
     let cancelled = false;
+    // TODO: avoid IIFE
     (async () => {
       try {
         const [rawTraining, rawPersonalized] = await Promise.all([

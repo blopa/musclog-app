@@ -1,5 +1,5 @@
 import { SettingsService } from '@/database/services/SettingsService';
-import { NotificationService } from '@/services/NotificationService';
+import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 
 import {
   isWhatsNewSettingValue,
@@ -40,11 +40,13 @@ export const WHATS_NEW_SETTING_IO: SettingIO = {
       const previous = await SettingsService.getReviewWeekday();
       await SettingsService.setReviewWeekday(value);
       try {
-        await NotificationService.scheduleWeeklyReviewNotification();
+        await NutritionNotificationService.scheduleWeeklyReviewNotification();
       } catch (error) {
         // Match the reverted choice if notification scheduling fails after the setting saved.
         await SettingsService.setReviewWeekday(previous);
-        await NotificationService.scheduleWeeklyReviewNotification().catch(() => undefined);
+        await NutritionNotificationService.scheduleWeeklyReviewNotification().catch(
+          () => undefined
+        );
         throw error;
       }
     },

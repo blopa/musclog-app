@@ -62,6 +62,7 @@ export function useCycleInsights(): { insights: Insight[]; sessions: InsightSess
           ])
         )
       );
+      // TODO: avoid IIFE
     })().catch(() => undefined);
 
     return () => {

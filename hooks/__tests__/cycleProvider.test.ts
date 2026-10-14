@@ -66,8 +66,8 @@ jest.mock('@/database/services/CycleTrackingService', () => ({ CycleTrackingServ
 jest.mock('@/database/services/CycleContextService', () => ({ CycleContextService: {} }));
 jest.mock('@/database/services/CycleDayLogService', () => ({ CycleDayLogService: {} }));
 jest.mock('@/database/services/CyclePeriodService', () => ({ CyclePeriodService: {} }));
-jest.mock('@/services/NotificationService', () => ({
-  NotificationService: { scheduleMenstrualCycleNotifications: async () => {} },
+jest.mock('@/services/CycleNotificationService', () => ({
+  CycleNotificationService: { scheduleMenstrualCycleNotifications: async () => {} },
 }));
 
 const initial = { fallbackCycleLength: 28, fallbackPeriodDuration: 5 };

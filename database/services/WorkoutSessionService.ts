@@ -9,7 +9,7 @@ import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { selectRetargets } from '@/utils/intraSessionRetarget';
 import { loadStepFor } from '@/utils/loadIncrement';
 import { progressesLoad } from '@/utils/progressionProjection';
-import { parseProgressionRule } from '@/utils/progressionRules';
+import { parseProgressionRule } from '@/utils/progressionRuleSchema';
 import { computeIntraSessionAdjustment, parseStartAdjustment } from '@/utils/setAdjustment';
 import { writeSetEffort } from '@/utils/setEffort';
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';

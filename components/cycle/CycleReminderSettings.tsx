@@ -19,8 +19,11 @@ import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
+import {
+  type CycleDeliveryStatus,
+  CycleNotificationService,
+} from '@/services/CycleNotificationService';
 import { getCycleBackupPreparedAt } from '@/services/cycleRecovery';
-import { type CycleDeliveryStatus, NotificationService } from '@/services/NotificationService';
 import { cycleReminderContent, REMINDER_LABEL_KEYS } from '@/utils/cycle/cycleReminderCopy';
 import {
   CYCLE_REMINDER_BASIS,
@@ -157,7 +160,7 @@ export function CycleReminderSettings() {
   const [now] = useState(() => Date.now());
 
   const refreshStatus = useCallback(() => {
-    void NotificationService.getCycleDeliveryStatus()
+    void CycleNotificationService.getCycleDeliveryStatus()
       .then(setStatus)
       .catch(() => setStatus(null));
   }, []);
@@ -183,7 +186,7 @@ export function CycleReminderSettings() {
       return;
     }
 
-    const granted = await NotificationService.enableCycleReminders();
+    const granted = await CycleNotificationService.enableCycleReminders();
     if (!granted) {
       showSnackbar('error', t('cycle.reminders.status.permissionDenied'));
     }
@@ -192,6 +195,7 @@ export function CycleReminderSettings() {
   };
 
   const save = (patch: Partial<CycleReminderPreferences>, turningOn = false) => {
+    // TODO: avoid IIFE
     void (async () => {
       await updateConfig({ reminders: patch });
       if (turningOn) {
@@ -201,9 +205,10 @@ export function CycleReminderSettings() {
   };
 
   const setStyle = (style: CycleNotificationStyle) => {
+    // TODO: avoid IIFE
     void (async () => {
       await SettingsService.setCycleNotificationStyle(style);
-      await NotificationService.scheduleMenstrualCycleNotifications();
+      await CycleNotificationService.scheduleMenstrualCycleNotifications();
     })().catch(fail('CycleReminderSettings.style'));
   };
 
@@ -379,7 +384,7 @@ export function CycleReminderSettings() {
           <TextButton
             label={t('cycle.reminders.test')}
             onPress={() =>
-              void NotificationService.sendCycleTestNotification(cycleNotificationStyle)
+              void CycleNotificationService.sendCycleTestNotification(cycleNotificationStyle)
                 .then((sent) => {
                   if (sent) {
                     showSnackbar('success', t('cycle.reminders.testSent'));

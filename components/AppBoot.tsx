@@ -22,6 +22,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
 import { healthDataSyncService } from '@/services/healthDataSync';
+import { refreshAllNotifications } from '@/services/notificationRefresh';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
 import { captureBootException } from '@/utils/bootErrorReporting';
@@ -114,7 +115,7 @@ export function AppBoot() {
 
         await waitForDbReady();
 
-        await NotificationService.refreshAll();
+        await refreshAllNotifications();
       })
       .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
 
@@ -231,7 +232,7 @@ export function AppBoot() {
       // (and applies a pause or quiet hours that changed since).
       if (status === 'active' && Platform.OS !== 'web') {
         void waitForDbReady()
-          .then(() => NotificationService.refreshAll())
+          .then(() => refreshAllNotifications())
           .catch(() => undefined);
       }
     }

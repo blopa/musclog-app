@@ -1,5 +1,5 @@
 import { SettingsService } from '@/database/services/SettingsService';
-import { NotificationService } from '@/services/NotificationService';
+import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 
 import { WHATS_NEW_SETTING_IO, writeWhatsNewSetting } from '../whatsNew/settingIO';
 
@@ -11,8 +11,10 @@ jest.mock('@/database/services/SettingsService', () => ({
     setReviewWeekday: jest.fn(async () => undefined),
   },
 }));
-jest.mock('@/services/NotificationService', () => ({
-  NotificationService: { scheduleWeeklyReviewNotification: jest.fn(async () => undefined) },
+jest.mock('@/services/NutritionNotificationService', () => ({
+  NutritionNotificationService: {
+    scheduleWeeklyReviewNotification: jest.fn(async () => undefined),
+  },
 }));
 beforeEach(() => jest.clearAllMocks());
 test('reads persisted defaults, writes only valid values', async () => {
@@ -27,18 +29,18 @@ test('reads persisted defaults, writes only valid values', async () => {
 test('reschedules only after a successful weekday write', async () => {
   await writeWhatsNewSetting('reviewWeekday', 5);
   expect(SettingsService.setReviewWeekday).toHaveBeenCalledWith(5);
-  expect(NotificationService.scheduleWeeklyReviewNotification).toHaveBeenCalledTimes(1);
+  expect(NutritionNotificationService.scheduleWeeklyReviewNotification).toHaveBeenCalledTimes(1);
   jest.mocked(SettingsService.setReviewWeekday).mockRejectedValueOnce(new Error('disk'));
   await expect(writeWhatsNewSetting('reviewWeekday', 3)).rejects.toThrow('disk');
-  expect(NotificationService.scheduleWeeklyReviewNotification).toHaveBeenCalledTimes(1);
+  expect(NutritionNotificationService.scheduleWeeklyReviewNotification).toHaveBeenCalledTimes(1);
 });
 
 test('restores the weekday when rescheduling fails after persistence', async () => {
   jest
-    .mocked(NotificationService.scheduleWeeklyReviewNotification)
+    .mocked(NutritionNotificationService.scheduleWeeklyReviewNotification)
     .mockRejectedValueOnce(new Error('notifications'));
   await expect(writeWhatsNewSetting('reviewWeekday', 5)).rejects.toThrow('notifications');
   expect(SettingsService.setReviewWeekday).toHaveBeenNthCalledWith(1, 5);
   expect(SettingsService.setReviewWeekday).toHaveBeenLastCalledWith(1);
-  expect(NotificationService.scheduleWeeklyReviewNotification).toHaveBeenCalledTimes(2);
+  expect(NutritionNotificationService.scheduleWeeklyReviewNotification).toHaveBeenCalledTimes(2);
 });

@@ -11,51 +11,29 @@ import {
   REST_TIMER_REPEAT_NOTIFICATION_ID,
   UNFINISHED_WORKOUT_NOTIFICATION_ID,
 } from '@/constants/notificationActions';
-import type { CycleNotificationStyle } from '@/constants/settings';
 import { database } from '@/database';
-import NutritionCheckin from '@/database/models/NutritionCheckin';
-import type WeeklyReview from '@/database/models/WeeklyReview';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
-import {
-  CycleRepository,
-  readContexts,
-  readCycleConfig,
-  readPeriods,
-} from '@/database/repositories/CycleRepository';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
-import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
-import { getCycleBackupPreparedAt } from '@/services/cycleRecovery';
+import {
+  cancelScheduledByType,
+  loadNotificationPreferences,
+} from '@/services/notificationScheduling';
 import { darkTheme } from '@/theme';
-import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '@/utils/calendarDate';
-import { cycleReminderContent } from '@/utils/cycle/cycleReminderCopy';
-import { planCycleReminders } from '@/utils/cycle/cycleReminders';
-import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
+import { localDayStartMs } from '@/utils/calendarDate';
 import {
   calendarWeekBounds,
-  DEFAULT_NOTIFICATION_PREFERENCES,
   goalAtRiskFireDate,
   goalAtRiskRemaining,
   isSuppressed,
-  type NotificationPreferences,
-  planNutritionOverview,
   planWorkoutReminders,
   REST_ADD_SECONDS,
   REST_REPEAT_DELAY_SECONDS,
   SNOOZE_MINUTES,
   UNFINISHED_WORKOUT_DELAY_MINUTES,
 } from '@/utils/notificationPolicy';
-import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
-
-const CYCLE_CHANNEL_ID = 'cycle';
-
-export interface CycleDeliveryStatus {
-  permission: Notifications.PermissionStatus | 'unsupported';
-  appEnabled: boolean;
-  cycleEnabled: boolean;
-}
 
 export class NotificationService {
   private static isConfigured = false;
@@ -88,15 +66,6 @@ export class NotificationService {
         options: { opensAppToForeground: false },
       },
     ]);
-  }
-
-  /** Preferences failing to load must never stop a reminder, so this falls back to the defaults. */
-  private static async loadPreferences(): Promise<NotificationPreferences> {
-    try {
-      return await SettingsService.getNotificationPreferences();
-    } catch {
-      return { ...DEFAULT_NOTIFICATION_PREFERENCES };
-    }
   }
 
   static async configure() {
@@ -138,7 +107,7 @@ export class NotificationService {
 
       // Cycle reminders get their own channel so they can be silenced on their own in the OS
       // settings, and so a secure lock screen hides their text whatever wording was chosen.
-      await Notifications.setNotificationChannelAsync(CYCLE_CHANNEL_ID, {
+      await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.cycle, {
         name: i18n.t('notifications.channels.cycle'),
         importance: Notifications.AndroidImportance.DEFAULT,
         lockscreenVisibility: Notifications.AndroidNotificationVisibility.PRIVATE,
@@ -255,7 +224,7 @@ export class NotificationService {
     }
 
     // Both lines show on a locked screen, so the person can trade detail for privacy.
-    const { lockScreenDetail } = await this.loadPreferences();
+    const { lockScreenDetail } = await loadNotificationPreferences();
     const isMinimal = lockScreenDetail === 'minimal';
     const title = isMinimal
       ? i18n.t('notifications.types.activeWorkout.titleMinimal')
@@ -391,18 +360,13 @@ export class NotificationService {
     const isNotificationsEnabled = await SettingsService.getNotifications();
 
     // Always clear existing reminders before rescheduling
-    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-    for (const notification of scheduledNotifications) {
-      if (notification.content.data?.type === 'workout-reminder') {
-        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
-      }
-    }
+    await cancelScheduledByType('workout-reminder');
 
     if (!isEnabled || !isNotificationsEnabled) {
       return;
     }
 
-    const prefs = await this.loadPreferences();
+    const prefs = await loadNotificationPreferences();
     const resolvedSchedules = await WorkoutPlanRepository.getResolvedSchedules();
     const templateIds = [...new Set(resolvedSchedules.map((schedule) => schedule.templateId))];
     const templates =
@@ -425,34 +389,36 @@ export class NotificationService {
       completedTemplateIdsToday: completedToday,
     });
 
-    for (const reminder of planned) {
-      const template = templatesById.get(reminder.templateId);
-      if (!template) {
-        continue;
-      }
+    await Promise.all(
+      planned.flatMap((reminder) => {
+        const template = templatesById.get(reminder.templateId);
+        if (!template) {
+          return [];
+        }
 
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: i18n.t('notifications.types.workoutReminderMorning.title'),
-          body: i18n.t('notifications.types.workoutReminderMorning.body', {
-            workoutName: template.name,
-          }),
-          categoryIdentifier: NOTIFICATION_CATEGORIES.workoutReminder,
-          data: {
-            type: 'workout-reminder',
-            templateId: template.id,
-            planId: reminder.planId,
+        return Notifications.scheduleNotificationAsync({
+          content: {
+            title: i18n.t('notifications.types.workoutReminderMorning.title'),
+            body: i18n.t('notifications.types.workoutReminderMorning.body', {
+              workoutName: template.name,
+            }),
+            categoryIdentifier: NOTIFICATION_CATEGORIES.workoutReminder,
+            data: {
+              type: 'workout-reminder',
+              templateId: template.id,
+              planId: reminder.planId,
+            },
+            ...Platform.select({
+              android: { channelId: NOTIFICATION_CHANNELS.workoutReminders },
+            }),
           },
-          ...Platform.select({
-            android: { channelId: NOTIFICATION_CHANNELS.workoutReminders },
-          }),
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: reminder.date,
-        },
-      });
-    }
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date: reminder.date,
+          },
+        });
+      })
+    );
   }
 
   /** Templates whose workout was already finished today — their reminder for today is moot. */
@@ -469,340 +435,6 @@ export class NotificationService {
       );
     } catch {
       return new Set();
-    }
-  }
-
-  /** Re-plans every offline reminder. Cheap and idempotent: boot, foreground and workout end all call it. */
-  static async refreshAll() {
-    if (Platform.OS === 'web') {
-      return;
-    }
-
-    await this.scheduleWorkoutReminders();
-    await this.scheduleNutritionOverview();
-    await this.scheduleGoalAtRiskReminder();
-    await this.scheduleMenstrualCycleNotifications();
-    await this.scheduleCheckinNotifications();
-  }
-
-  // Nutrition Overview
-  static async scheduleNutritionOverview() {
-    if (Platform.OS === 'web') {
-      return;
-    }
-
-    const isEnabled = await SettingsService.getNotificationsNutritionOverview();
-    const isNotificationsEnabled = await SettingsService.getNotifications();
-
-    // Clear existing
-    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-    for (const notification of scheduledNotifications) {
-      if (notification.content.data?.type === 'nutrition-overview') {
-        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
-      }
-    }
-
-    if (!isEnabled || !isNotificationsEnabled) {
-      return;
-    }
-
-    // One-offs for the coming week rather than a repeating trigger, so a pause or quiet hours can drop
-    // individual evenings. They are re-planned on boot and every foreground.
-    const prefs = await this.loadPreferences();
-    for (const date of planNutritionOverview(new Date(), prefs)) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: i18n.t('notifications.types.nutritionOverview.title'),
-          body: i18n.t('notifications.types.nutritionOverview.body'),
-          data: { type: 'nutrition-overview' },
-        },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
-      });
-    }
-  }
-
-  // Nutrition Check-ins
-  static async scheduleCheckinNotifications() {
-    if (Platform.OS === 'web') {
-      return;
-    }
-
-    const isNotificationsEnabled = await SettingsService.getNotifications();
-
-    await this.scheduleWeeklyReviewNotification();
-
-    // Clear existing check-in notifications
-    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-    for (const notification of scheduledNotifications) {
-      if (notification.content.data?.type === 'nutrition-checkin') {
-        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
-      }
-    }
-
-    if (!isNotificationsEnabled) {
-      return;
-    }
-
-    // Fetch pending check-ins for the next 30 calendar days.
-    // checkin_date stores local-midnight ms, so both bounds must be calendar-day keys.
-    const todayDayStart = localDayStartMs(new Date());
-    const thirtyDaysFromNow = localDayKeyPlusCalendarDaysFromNow(30);
-
-    const checkins = await database
-      .get<NutritionCheckin>('nutrition_checkins')
-      .query(
-        Q.or(Q.where('status', Q.eq('pending')), Q.where('status', Q.eq(null))),
-        Q.where('checkin_date', Q.between(todayDayStart, thirtyDaysFromNow)),
-        Q.where('deleted_at', Q.eq(null))
-      )
-      .fetch();
-
-    const currentGoal = await NutritionGoalService.getCurrent();
-    if (currentGoal?.targetMode === 'weekly') {
-      return;
-    }
-
-    const prefs = await this.loadPreferences();
-    for (const checkin of checkins) {
-      if (currentGoal && checkin.nutritionGoalId !== currentGoal.id) {
-        continue;
-      }
-
-      const date = new Date(checkin.checkinDate);
-      // Set to 8 AM local time on the check-in day
-      date.setHours(8, 0, 0, 0);
-
-      if (date.getTime() <= Date.now() || isSuppressed(date, prefs)) {
-        continue;
-      } else {
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: i18n.t('notifications.types.nutritionCheckin.title'),
-            body: i18n.t('notifications.types.nutritionCheckin.body'),
-            data: { type: 'nutrition-checkin', checkinId: checkin.id },
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date,
-          },
-        });
-      }
-    }
-  }
-
-  static async scheduleWeeklyReviewNotification(): Promise<void> {
-    if (Platform.OS === 'web') {
-      return;
-    }
-
-    const [enabled, allowed, weekday, scheduled, goal, intuitive] = await Promise.all([
-      SettingsService.getNotifications(),
-      SettingsService.getNotificationsWeeklyReview(),
-      SettingsService.getReviewWeekday(),
-      Notifications.getAllScheduledNotificationsAsync(),
-      NutritionGoalService.getCurrent(),
-      SettingsService.getIntuitiveEatingMode(),
-    ]);
-    const period = weeklyReviewPeriod(new Date(), weekday);
-    const reviews = await database
-      .get<WeeklyReview>('weekly_reviews')
-      .query(Q.where('period_end', period.end), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-    const reviewed = reviews.some(
-      (row) =>
-        (row.nutritionGoalId ?? null) === (goal?.id ?? null) &&
-        row.trainingReviewedAt &&
-        (!goal || intuitive || row.nutritionReviewedAt)
-    );
-    let date = new Date(reviewed ? period.next : period.end);
-    date.setHours(8, 0, 0, 0);
-    if (date.getTime() <= Date.now()) {
-      date = new Date(period.next);
-      date.setHours(8, 0, 0, 0);
-    }
-
-    const identifier = `weekly-review-${localDayStartMs(date)}`;
-    const blocked = !enabled || !allowed || isSuppressed(date, await this.loadPreferences());
-    for (const notification of scheduled) {
-      if (
-        notification.content.data?.type === 'weekly-review' &&
-        (blocked || notification.identifier !== identifier)
-      ) {
-        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
-      }
-    }
-
-    if (blocked || scheduled.some((notification) => notification.identifier === identifier)) {
-      return;
-    }
-
-    await Notifications.scheduleNotificationAsync({
-      identifier,
-      content: {
-        title: i18n.t('weeklyReview.title'),
-        body: i18n.t('weeklyReview.reminderBody'),
-        data: { type: 'weekly-review', reviewDay: localDayStartMs(date) },
-      },
-      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
-    });
-  }
-
-  // Menstrual Cycle Notifications
-  private static cycleReminderQueue: Promise<void> = Promise.resolve();
-
-  /** Serialised: every cycle write and app foreground reschedules, and two passes must not interleave. */
-  static scheduleMenstrualCycleNotifications(): Promise<void> {
-    const next = NotificationService.cycleReminderQueue
-      .catch(() => undefined)
-      .then(() => NotificationService.scheduleMenstrualCycleNotificationsNow());
-    NotificationService.cycleReminderQueue = next;
-    return next;
-  }
-
-  /**
-   * Everything the cycle reminder settings need to say whether a reminder can actually reach the
-   * person: the OS permission, the app-wide switch and the cycle switch. Read, never requested.
-   */
-  static async getCycleDeliveryStatus(): Promise<CycleDeliveryStatus> {
-    const [appEnabled, cycleEnabled] = await Promise.all([
-      SettingsService.getNotifications(),
-      SettingsService.getNotificationsMenstrualCycle(),
-    ]);
-    if (Platform.OS === 'web') {
-      return { permission: 'unsupported', appEnabled, cycleEnabled };
-    }
-
-    const { status } = (await Notifications.getPermissionsAsync()) as {
-      status: Notifications.PermissionStatus;
-    };
-
-    return { permission: status, appEnabled, cycleEnabled };
-  }
-
-  /**
-   * Asked in context: only when the person turns cycle reminders on, after seeing what they will
-   * look like, never at launch. Switches both settings on and reschedules on success.
-   */
-  static async enableCycleReminders(): Promise<boolean> {
-    if (Platform.OS === 'web') {
-      return false;
-    }
-
-    await this.configure();
-    const granted = await this.requestPermissions();
-    if (!granted) {
-      return false;
-    }
-
-    await SettingsService.setNotifications(true);
-    await SettingsService.setNotificationsMenstrualCycle(true);
-    await NotificationService.scheduleMenstrualCycleNotifications();
-    return true;
-  }
-
-  /** Sends, in a few seconds, exactly what a daily check-in would look like in the chosen style. */
-  static async sendCycleTestNotification(style: CycleNotificationStyle): Promise<boolean> {
-    if (Platform.OS === 'web') {
-      return false;
-    }
-
-    await this.configure();
-    if (!(await this.requestPermissions())) {
-      return false;
-    }
-
-    const content = cycleReminderContent(
-      { kind: 'daily-log' },
-      style,
-      i18n.t.bind(i18n),
-      i18n.resolvedLanguage ?? i18n.language
-    );
-    await Notifications.scheduleNotificationAsync({
-      content: { ...content, data: { type: 'menstrual-cycle', subtype: 'test' } },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 3,
-        channelId: CYCLE_CHANNEL_ID,
-      },
-    });
-    return true;
-  }
-
-  private static async scheduleMenstrualCycleNotificationsNow() {
-    if (Platform.OS === 'web') {
-      return;
-    }
-
-    const [isEnabled, isNotificationsEnabled] = await Promise.all([
-      SettingsService.getNotificationsMenstrualCycle(),
-      SettingsService.getNotifications(),
-    ]);
-
-    // Clear existing: a context change (pregnancy, a loss, a hormonal method) or a pause takes
-    // effect by not planning the incompatible reminders again.
-    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
-    await Promise.all(
-      scheduledNotifications
-        .filter((notification) => notification.content.data?.type === 'menstrual-cycle')
-        .map((notification) =>
-          Notifications.cancelScheduledNotificationAsync(notification.identifier)
-        )
-    );
-
-    if (!isEnabled || !isNotificationsEnabled) {
-      return;
-    }
-
-    const cycle = (await CycleRepository.cycles().fetch()).find((c) => c.isActive);
-    if (!cycle) {
-      return;
-    }
-
-    const [periods, contexts, config, showPredictions, showFertility, style, lastBackup] =
-      await Promise.all([
-        CycleRepository.periods(cycle.id).fetch().then(readPeriods),
-        CycleRepository.contexts(cycle.id).fetch().then(readContexts),
-        readCycleConfig(cycle),
-        SettingsService.getCycleShowPredictions(),
-        SettingsService.getCycleShowFertility(),
-        SettingsService.getCycleNotificationStyle(),
-        getCycleBackupPreparedAt(),
-      ]);
-    const nowMs = Date.now();
-    const { timeline, activePeriod } = buildCycleSnapshot({
-      periods,
-      contexts,
-      config,
-      nowMs,
-      showPredictions,
-      showFertility,
-    });
-    const locale = i18n.resolvedLanguage ?? i18n.language;
-
-    for (const reminder of planCycleReminders(timeline, nowMs, {
-      preferences: config.reminders,
-      activePeriod,
-      backupDays: config.backupReminderDays,
-      lastBackup,
-    })) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          ...cycleReminderContent(reminder, style, i18n.t.bind(i18n), locale),
-          data: { type: 'menstrual-cycle', subtype: reminder.kind },
-        },
-        trigger: reminder.repeatsDaily
-          ? {
-              type: Notifications.SchedulableTriggerInputTypes.DAILY,
-              hour: reminder.date.getHours(),
-              minute: reminder.date.getMinutes(),
-              channelId: CYCLE_CHANNEL_ID,
-            }
-          : {
-              type: Notifications.SchedulableTriggerInputTypes.DATE,
-              date: reminder.date,
-              channelId: CYCLE_CHANNEL_ID,
-            },
-      });
     }
   }
 
@@ -843,7 +475,7 @@ export class NotificationService {
 
     // A second, shorter-lived nudge for the person who put the phone down across the room. It is
     // cancelled with the first one the moment the rest is skipped or the next rest starts.
-    const prefs = await this.loadPreferences();
+    const prefs = await loadNotificationPreferences();
     if (prefs.restTimerRepeat) {
       await Notifications.scheduleNotificationAsync({
         identifier: REST_TIMER_REPEAT_NOTIFICATION_ID,
@@ -909,7 +541,7 @@ export class NotificationService {
 
     const [isNotificationsEnabled, prefs] = await Promise.all([
       SettingsService.getNotifications(),
-      this.loadPreferences(),
+      loadNotificationPreferences(),
     ]);
     await this.cancelUnfinishedWorkoutReminder();
     if (!isNotificationsEnabled || !prefs.unfinishedWorkout) {
@@ -949,16 +581,11 @@ export class NotificationService {
       return;
     }
 
-    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-    for (const notification of scheduled) {
-      if (notification.content.data?.type === GOAL_AT_RISK_NOTIFICATION_TYPE) {
-        await Notifications.cancelScheduledNotificationAsync(notification.identifier);
-      }
-    }
+    await cancelScheduledByType(GOAL_AT_RISK_NOTIFICATION_TYPE);
 
     const [isNotificationsEnabled, prefs] = await Promise.all([
       SettingsService.getNotifications(),
-      this.loadPreferences(),
+      loadNotificationPreferences(),
     ]);
     if (!isNotificationsEnabled || !prefs.goalAtRisk || prefs.accountability === 'flexible') {
       return;

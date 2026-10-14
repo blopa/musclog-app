@@ -6,7 +6,7 @@ import {
   parseProgressionRule,
   parseSessionProgressionState,
   type ProgressionRule,
-} from '@/utils/progressionRules';
+} from '@/utils/progressionRuleSchema';
 import { sameLoad } from '@/utils/sameLoad';
 import { isStartAdjustment } from '@/utils/setAdjustment';
 import { parseSetPrescription, type SetPrescription } from '@/utils/setPrescription';

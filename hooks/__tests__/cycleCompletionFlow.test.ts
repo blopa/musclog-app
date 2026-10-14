@@ -45,8 +45,8 @@ jest.mock('@/components/modals/FullScreenModal', () => ({
 jest.mock('@/components/lock/CycleLockGate', () => ({
   CycleLockGate: ({ children }: any) => children,
 }));
-jest.mock('@/services/NotificationService', () => ({
-  NotificationService: { scheduleMenstrualCycleNotifications: jest.fn(async () => {}) },
+jest.mock('@/services/CycleNotificationService', () => ({
+  CycleNotificationService: { scheduleMenstrualCycleNotifications: jest.fn(async () => {}) },
 }));
 jest.mock('expo-document-picker', () => ({ getDocumentAsync: jest.fn() }));
 jest.mock('@/database/services/CycleTransferService', () => ({

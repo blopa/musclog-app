@@ -20,17 +20,15 @@ import {
   progressesLoad,
   projectExerciseProgression,
 } from '@/utils/progressionProjection';
+import { carriedSessionState, counterpartAt, type HistorySession } from '@/utils/progressionRules';
 import {
-  carriedSessionState,
-  counterpartAt,
-  type HistorySession,
   parseProgressionRule,
   parseSessionProgressionState,
   PROGRESSION_HISTORY_SESSIONS,
   type ProgressionRule,
   type ProgressionSessionState,
   serializeSessionProgression,
-} from '@/utils/progressionRules';
+} from '@/utils/progressionRuleSchema';
 import {
   parseStartAdjustment,
   revertTargetFor,

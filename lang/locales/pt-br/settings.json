@@ -516,7 +516,8 @@
           "label": "Kinetic Varia",
           "description": "Superfícies violeta profundo com detalhes em laranja"
         }
-      }
+      },
+      "iconAppliesLater": "O ícone do app vai mudar quando você sair do app."
     },
     "workoutSettings": {
       "title": "Configurações de treino",

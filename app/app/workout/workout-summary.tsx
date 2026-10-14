@@ -62,6 +62,7 @@ export default function WorkoutSummaryScreen() {
   // Consumed on read, so it is offered exactly once.
   useEffect(() => {
     let cancelled = false;
+    // TODO: avoid IIFE
     (async () => {
       try {
         if ((await AsyncStorage.getItem(HEALTH_CONNECT_PROMPT_PENDING)) === 'true') {

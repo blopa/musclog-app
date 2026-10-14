@@ -23,6 +23,7 @@ import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { type PauseChoice, useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { useTheme } from '@/hooks/useTheme';
+import { refreshAllNotifications } from '@/services/notificationRefresh';
 import { NotificationService } from '@/services/NotificationService';
 import {
   ACCOUNTABILITY_STYLES,
@@ -101,7 +102,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
     if (!visible) {
       flushAllPendingChanges();
       // Reschedule notifications when settings might have changed
-      void NotificationService.refreshAll().catch(() => undefined);
+      void refreshAllNotifications().catch(() => undefined);
     }
   }, [visible, flushAllPendingChanges]);
 

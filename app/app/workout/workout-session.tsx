@@ -46,6 +46,7 @@ import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController';
+import { refreshAllNotifications } from '@/services/notificationRefresh';
 import { NotificationService } from '@/services/NotificationService';
 import { isBarLoadedEquipment } from '@/utils/gym';
 import { handleError } from '@/utils/handleError';
@@ -209,7 +210,7 @@ export default function WorkoutSessionScreen() {
     if (workoutLog?.completedAt) {
       // Today's reminder for this workout is moot now, and the weekly-goal nudge may be too.
       void NotificationService.cancelUnfinishedWorkoutReminder();
-      void NotificationService.refreshAll().catch(() => undefined);
+      void refreshAllNotifications().catch(() => undefined);
       router.replace(
         `/app/workout/workout-summary?workoutLogId=${workoutLog.id}${params.showFeedback === '1' ? '&showSessionFeedback=1' : ''}`
       );

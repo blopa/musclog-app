@@ -20,7 +20,7 @@ import {
   PROGRESSION_RULE_TYPES,
   type ProgressionRule,
   type ProgressionRuleType,
-} from '@/utils/progressionRules';
+} from '@/utils/progressionRuleSchema';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 

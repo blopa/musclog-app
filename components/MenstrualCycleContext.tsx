@@ -31,7 +31,7 @@ import {
 import { CycleTrackingService, type NewCycleInput } from '@/database/services/CycleTrackingService';
 import { useCycleMoods } from '@/hooks/useCycleMoods';
 import { useLocalToday } from '@/hooks/useLocalToday';
-import { NotificationService } from '@/services/NotificationService';
+import { CycleNotificationService } from '@/services/CycleNotificationService';
 import type { ContextGuidance } from '@/utils/cycle/contraception';
 import type { MoodPoint } from '@/utils/cycle/cycleInsights';
 import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
@@ -238,7 +238,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   } = useCycleMoods(trackedCycleId != null);
 
   const afterWrite = useCallback(() => {
-    void NotificationService.scheduleMenstrualCycleNotifications().catch(() => undefined);
+    void CycleNotificationService.scheduleMenstrualCycleNotifications().catch(() => undefined);
   }, []);
 
   useEffect(() => {

@@ -634,7 +634,7 @@ Explicit rule history uses stable template-exercise identity, preventing one rou
 
 ## Session forgot its progression rule after the first completed set
 
-`WorkoutService.getWorkoutWithDetails` built its enriched sets without each log exercise's `progressionJson`. The live session's `refresh` reloads through that path after every save, so from the second set on an exercise with a rule read as rule-free: its badge fell back to "Suggested · Automatic" while the reason underneath still described the rule. The reactive pipeline (`useWorkoutSessionState`) already passed the field, which is why the first render looked right. The field is now passed on both paths, pinned by "keeps the exercise rule on sets reloaded after a save" in `weeklyProgression.integration.test.ts` (verified to fail without the fix).
+`WorkoutService.getWorkoutWithDetails` built its enriched sets without each log exercise's `progressionJson`. The live session's `refresh` reloads through that path after every save, so from the second set on an exercise with a rule read as rule-free: its badge fell back to "Suggested · Automatic" while the reason underneath still described the rule. The reactive pipeline (`useWorkoutSessionState`) already passed the field, which is why the first render looked right. The field is now passed on both paths, pinned by "keeps the exercise rule on sets reloaded after a save" in `weeklyProgressionSession.integration.test.ts` (verified to fail without the fix).
 
 ## Summary "Total Time" read "0in m"
 

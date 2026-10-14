@@ -57,7 +57,7 @@ describe('syncAppIconWithTheme', () => {
   it('does nothing where the native module is unavailable (web, Jest, old builds)', async () => {
     const { syncAppIconWithTheme } = loadService();
 
-    await expect(syncAppIconWithTheme('kinetic-light')).resolves.toBeUndefined();
+    await expect(syncAppIconWithTheme('kinetic-light')).resolves.toBe(false);
     expect(mockListeners).toHaveLength(0);
   });
 
@@ -96,7 +96,7 @@ describe('syncAppIconWithTheme', () => {
     const native = nativeModule(null);
     const { syncAppIconWithTheme } = loadService();
 
-    await syncAppIconWithTheme('kinetic-light');
+    await expect(syncAppIconWithTheme('kinetic-light')).resolves.toBe(true);
     await syncAppIconWithTheme('kinetic-blush');
     expect(native.setAppIcon).not.toHaveBeenCalled();
     expect(mockListeners).toHaveLength(1);
@@ -121,7 +121,7 @@ describe('syncAppIconWithTheme', () => {
     native.setAppIcon.mockRejectedValue(new Error('unsupported'));
     const { syncAppIconWithTheme } = loadService();
 
-    await expect(syncAppIconWithTheme('kinetic-light')).resolves.toBeUndefined();
+    await expect(syncAppIconWithTheme('kinetic-light')).resolves.toBe(false);
     expect(mockHandleError).toHaveBeenCalledWith(expect.any(Error), 'themeAppIcon.apply', {
       showSnackbar: false,
     });

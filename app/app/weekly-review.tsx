@@ -35,7 +35,7 @@ import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
-import { NotificationService } from '@/services/NotificationService';
+import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
@@ -158,7 +158,7 @@ export default function WeeklyReviewScreen() {
     setError(false);
     try {
       await SettingsService.setReviewWeekday(day);
-      await NotificationService.scheduleWeeklyReviewNotification();
+      await NutritionNotificationService.scheduleWeeklyReviewNotification();
       await reload();
     } catch {
       setError(true);
@@ -169,7 +169,7 @@ export default function WeeklyReviewScreen() {
     setReminder(value);
     try {
       await SettingsService.setNotificationsWeeklyReview(value);
-      await NotificationService.scheduleWeeklyReviewNotification();
+      await NutritionNotificationService.scheduleWeeklyReviewNotification();
     } catch {
       setReminder(!value);
       setError(true);

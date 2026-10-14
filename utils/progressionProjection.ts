@@ -5,10 +5,9 @@ import {
   type HistorySession,
   type PlannedRuleSet,
   planRuleChanges,
-  type ProgressionRule,
-  type ProgressionSessionState,
   type RuleLoadStep,
 } from './progressionRules';
+import { type ProgressionRule, type ProgressionSessionState } from './progressionRuleSchema';
 import { sameLoad } from './sameLoad';
 import { computeStartTarget, planStartChanges, type StartSetChange } from './setProgression';
 

@@ -21,6 +21,7 @@ export function FirstSessionTip({ view }: { view: 'inline' | 'guided' }) {
 
   useEffect(() => {
     let cancelled = false;
+    // TODO: avoid IIFE
     (async () => {
       try {
         if ((await AsyncStorage.getItem(WORKOUT_FIRST_TIP_SEEN)) === 'true') {
