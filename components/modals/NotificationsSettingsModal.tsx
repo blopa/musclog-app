@@ -293,6 +293,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
                   </Text>
                   <SegmentedControl
                     variant="pill"
+                    fullWidth
                     value={String(prefs.activeWorkoutUpdateSeconds)}
                     onValueChange={(value) =>
                       void update({
@@ -312,6 +313,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
                 </Text>
                 <SegmentedControl
                   variant="pill"
+                  fullWidth
                   value={prefs.lockScreenDetail}
                   onValueChange={(value) =>
                     void update({ lockScreenDetail: value as LockScreenDetail })
@@ -325,12 +327,11 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
             </View>
 
             <View className="gap-4">
-              {sectionTitle(
-                t('settings.notificationsSettings.sections.plan'),
-                t(`settings.notificationsSettings.accountabilityHints.${prefs.accountability}`)
-              )}
-              <View className="px-4">
+              {sectionTitle(t('settings.notificationsSettings.sections.plan'))}
+              <View className="gap-2 px-4">
                 <SegmentedControl
+                  variant="pill"
+                  fullWidth
                   value={prefs.accountability}
                   onValueChange={(value) =>
                     void update({ accountability: value as AccountabilityStyle })
@@ -340,6 +341,9 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
                     label: t(`settings.notificationsSettings.accountability.${value}`),
                   }))}
                 />
+                <Text className="px-4 text-xs" style={{ color: theme.colors.text.secondary }}>
+                  {t(`settings.notificationsSettings.accountabilityHints.${prefs.accountability}`)}
+                </Text>
               </View>
               <View className="px-4">
                 <ToggleInput items={planItems} />
@@ -351,6 +355,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
                   </Text>
                   <SegmentedControl
                     variant="pill"
+                    fullWidth
                     value={String(prefs.reminderLeadMinutes)}
                     onValueChange={(value) =>
                       void update({
@@ -406,6 +411,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
                 </Text>
                 <SegmentedControl
                   variant="pill"
+                  fullWidth
                   value={pauseChoice}
                   onValueChange={(value) => void setPause(value as PauseChoice)}
                   options={[

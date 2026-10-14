@@ -77,9 +77,61 @@ describe('theme controls', () => {
   it('pairs segmented labels with the ink for their actual background', () => {
     const source = code('components/theme/SegmentedControl.tsx');
     expect(source).toContain('colors={theme.colors.gradients.cta}');
-    expect(source).toContain('text-center text-xs font-bold text-text-on-accent');
-    expect(source).toContain("isSelected ? 'text-text-primary' : 'text-text-secondary'");
+    expect(source).toContain('font-bold text-text-on-accent');
+    expect(source).toContain('font-bold text-text-secondary');
     expect(source).not.toContain('text-text-tertiary');
+  });
+
+  it('marks the selected segment with the accent in every full-width variant', () => {
+    // `elevated` and `outline` drew the selected segment as `bg-card` on the `bg-cardElevated`
+    // track, which was barely distinguishable from the unselected options.
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source).toMatch(/\{isSelected \? \(\s*<LinearGradient/);
+    expect(source).not.toContain('bg-bg-card ');
+    expect(source).not.toMatch(/variant === 'gradient' && isSelected/);
+  });
+
+  it.each([
+    'components/EditPhysicalStatsBody.tsx',
+    'components/modals/BasicSettingsModal.tsx',
+    'components/modals/CoachModal.tsx',
+    'components/modals/CreateWorkoutModal.tsx',
+    'components/modals/PastWorkoutsHistoryFilterMenu.tsx',
+  ])('%s inks its segment icons for the accent fill', (path) => {
+    // A static accent or primary-ink icon vanishes on the selected segment's accent fill.
+    const source = code(path);
+    expect(source).toMatch(/icon: \(selected: boolean\) =>/);
+    expect(source).toContain('selected ? theme.colors.text.onAccent : theme.colors.text.secondary');
+  });
+
+  it('announces every segment as a radio, whatever the variant', () => {
+    // The pill was a radiogroup while the full-width variants were buttons, so the same control
+    // read as two different things to a screen reader.
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source.match(/accessibilityRole="radiogroup"/g)).toHaveLength(2);
+    expect(source.match(/accessibilityRole="radio"/g)).toHaveLength(2);
+    expect(source).not.toContain('accessibilityRole="button"');
+    expect(source.match(/checked: isSelected/g)).toHaveLength(2);
+  });
+
+  it('uses the full-width pill for every setting value in the notification settings', () => {
+    // A form of settings mixed four pills with one full-width elevated control, which looks like
+    // a view switcher and made the same kind of choice look like two; and pills that hugged their
+    // options left a ragged edge beside the full-width cards (see DESIGN.md → Buttons).
+    const source = code('components/modals/NotificationsSettingsModal.tsx');
+    const controls = source.split('<SegmentedControl').slice(1);
+    expect(controls.length).toBeGreaterThan(0);
+    for (const control of controls) {
+      const props = control.slice(0, control.indexOf('/>'));
+      expect(props).toContain('variant="pill"');
+      expect(props).toMatch(/\bfullWidth\b/);
+    }
+  });
+
+  it('stretches a fullWidth pill and shares the track between its options', () => {
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source).toContain("fullWidth ? 'self-stretch' : 'self-start'");
+    expect(source).toContain("fullWidth ? 'flex-1 justify-center' : ''");
   });
 
   it.each(THEMED_FILES)('%s builds its controls from components/theme', (path) => {

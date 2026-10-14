@@ -194,8 +194,11 @@ clipped by the parent; see `FIXES.md`.
   `gradientCta` button variant draws `gradients.cta`, which is that emerald-to-teal gradient (the
   same stops as `gradients.accent`); it was indigo-to-green, which this rule does not allow.
   Both gradients keep `text.onAccent` at least 4.5:1 across their sweep: the token generator
-  blends an unsafe deep stop towards the vivid stop. Segmented controls use this same gradient
-  with `text.onAccent` for the selected label and `text.secondary` for unselected options.
+  blends an unsafe deep stop towards the vivid stop. Every full-width segmented control variant
+  marks its selected segment with this same gradient and `text.onAccent` (the `pill` with the flat
+  accent and the same ink), and `text.secondary` for unselected options. A segment icon that
+  changes colour uses the render-function form, `(selected) => …`, with those two inks — a static
+  accent icon vanishes on the selected fill.
 - One primary action per screen. When a screen has a hero (the Workouts screen's Today card), the
   cards below it use their standard, secondary treatment rather than a second filled button.
 - Secondary: low-emphasis surface or outline treatment.
@@ -217,10 +220,21 @@ appropriate, or both. Pick by what the control is, not by how it looks today:
 | Icon-only action (steppers, prev/next, back, more, remove ×)            | `IconButton` (`filled` / `elevated` / `ghost`; `media` over a photo)       |
 | One choice among several, or a compact action pill                      | `Chip` (`outline` for choices, `solid` for actions and the weekday picker) |
 | A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`)                                              |
-| Two or three mutually exclusive views                                   | `SegmentedControl` (`pill` when it sits inline beside other content)       |
+| Two to five mutually exclusive options shown side by side               | `SegmentedControl` — one form per screen (see below)                       |
 | A number the user types, kept as their own text                         | `NumericTextField` (`hero` / `field` / `cell`)                             |
 | A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
 | A search box or any labeled text field                                  | `TextInput` (`label=""` + a `Search` icon for search); never a raw input   |
+
+**`SegmentedControl`: full width or `pill`, never both on one screen.** The full-width variants
+(`elevated`, `outline`, `gradient` differ only in their track) are for a choice that switches what
+a screen shows or is the main field of a form or sheet. `pill` is for a choice that sits inline
+beside other content (the workout session's view toggle), where it hugs its options, or a
+secondary preference in a list of settings (every choice in the notification settings), where it
+takes `fullWidth` so it lines up with the cards and toggles around it — a hugging pill there
+leaves a ragged right edge. The notification settings once mixed four
+pills with one full-width control, which looked like a view switcher and made the same kind of
+choice read as two different controls. Every variant is a `radiogroup` of `radio`s for screen
+readers.
 
 A raw `Pressable` is right only for a composite surface that is itself the control — a card, a table
 cell (the set table's number, previous and check cells), a thumbnail, a radio card that hosts its own
