@@ -3,13 +3,18 @@ import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CYCLE_BACKUP_STATUS_KEY } from '@/constants/cycle';
+import { commitPrepared } from '@/database/commitPrepared';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
 import { database } from '@/database/database-instance';
 import type CycleContext from '@/database/models/CycleContext';
 import type CyclePeriod from '@/database/models/CyclePeriod';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
-import { clearCycleDtoCache, CycleRepository } from '@/database/repositories/CycleRepository';
+import {
+  clearCycleDtoCache,
+  CycleRepository,
+  readContexts,
+} from '@/database/repositories/CycleRepository';
 import { SettingsService } from '@/database/services/SettingsService';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 import {
@@ -18,6 +23,7 @@ import {
   normalizeInitialPeriods,
 } from '@/utils/cycle/periodRules';
 import { cycleConfigSchema } from '@/utils/cycle/preferences';
+import { type CycleTrackingMode, trackingLifeStage } from '@/utils/cycle/trackingMode';
 import type { CycleConfig, CycleContextDto } from '@/utils/cycle/types';
 import { getCurrentTimezone } from '@/utils/timezone';
 
@@ -152,6 +158,67 @@ export class CycleTrackingService {
   /** Pausing keeps every record; the cycle simply stops appearing and reminding. */
   static async setActive(cycle: MenstrualCycle, isActive: boolean): Promise<void> {
     await cycle.updateCycle({ isActive });
+  }
+
+  /** Change the tracking choice without replacing the cycle or any of its logs. */
+  static async setTrackingMode(cycle: MenstrualCycle, mode: CycleTrackingMode): Promise<void> {
+    if (mode === 'skip') {
+      await this.setActive(cycle, false);
+      return;
+    }
+
+    await primeCycleEncryption();
+    await database.write(async () => {
+      const now = Date.now();
+      const effectiveFrom = localDayStartFromUtcMs(now);
+      const records = await CycleRepository.contexts(cycle.id).fetch();
+      const contexts = await readContexts(records);
+      const current = contexts
+        .filter((c) => c.effectiveFrom <= effectiveFrom)
+        .sort((a, b) => b.effectiveFrom - a.effectiveFrom)[0];
+      const lifeStage = trackingLifeStage(mode, current?.lifeStage ?? 'regular');
+      const sameDay = records.find((r) =>
+        contexts.some((c) => c.id === r.id && c.effectiveFrom === effectiveFrom)
+      );
+      const payload =
+        lifeStage !== (current?.lifeStage ?? 'regular')
+          ? await encryptCyclePayload({
+              effectiveFrom,
+              timezone: getCurrentTimezone(),
+              lifeStage,
+              contraception: current?.contraception ?? 'none',
+              note: current?.effectiveFrom === effectiveFrom ? current.note : '',
+            })
+          : null;
+
+      await commitPrepared(database, sameDay ? [cycle, sameDay] : [cycle], () => {
+        const operations: Model[] = [];
+        if (payload) {
+          operations.push(
+            sameDay
+              ? sameDay.prepareUpdate((r) => {
+                  r.payload = payload;
+                  r.updatedAt = now;
+                })
+              : database.get<CycleContext>('cycle_contexts').prepareCreate((r) => {
+                  r.cycleId = cycle.id;
+                  r.payload = payload;
+                  r.createdAt = now;
+                  r.updatedAt = now;
+                  r.deletedAt = null;
+                })
+          );
+        }
+
+        operations.push(
+          cycle.prepareUpdate((r) => {
+            r.isActive = true;
+            r.updatedAt = now;
+          })
+        );
+        return operations;
+      });
+    });
   }
 
   /**

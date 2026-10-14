@@ -136,6 +136,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Menstrual Cycle Tracking
 
+- Enabled cycle tracking (bleeding and symptoms, or symptoms without periods) appears in the account menu when not assigned to the bottom navigation. Settings always offers the same three choices as onboarding, including Skip for now; switching modes preserves history, and skipping pauses tracking
+
 **Logging and history**
 
 - Goal-neutral setup offers bleeding and symptoms, symptoms without periods, or skipping; timing, symptoms, mood and recordkeeping goals are independent and editable

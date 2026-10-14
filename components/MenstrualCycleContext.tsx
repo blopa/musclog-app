@@ -34,6 +34,7 @@ import type { ContextGuidance } from '@/utils/cycle/contraception';
 import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
 import type { PredictionStats } from '@/utils/cycle/cycleStats';
 import type { CyclePhase, CycleTimeline, PredictionState } from '@/utils/cycle/cycleTimeline';
+import type { CycleTrackingMode } from '@/utils/cycle/trackingMode';
 import type {
   CycleConfig,
   CycleContextDto,
@@ -92,6 +93,7 @@ export interface MenstrualCycleContextType {
   removeContext: (id: string) => Promise<void>;
   deactivateTracking: () => Promise<void>;
   resumeTracking: () => Promise<void>;
+  setTrackingMode: (mode: CycleTrackingMode) => Promise<void>;
   deleteAllData: () => Promise<void>;
 }
 
@@ -298,6 +300,12 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       resumeTracking: async () => {
         if (pausedCycle) {
           await CycleTrackingService.setActive(pausedCycle, true);
+          afterWrite();
+        }
+      },
+      setTrackingMode: async (mode: CycleTrackingMode) => {
+        if (trackedCycle) {
+          await CycleTrackingService.setTrackingMode(trackedCycle, mode);
           afterWrite();
         }
       },

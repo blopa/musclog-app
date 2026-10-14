@@ -10,6 +10,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
+import { CYCLE_TRACKING_CHOICES } from '@/utils/cycle/trackingMode';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 const NUTRITION_RESULTS_ROUTE =
@@ -49,26 +50,12 @@ export default function PersonalizedCycleScreen() {
     }
   };
 
-  const options = [
-    {
-      value: 'bleeding' as const,
-      label: t('cycle.personalize.trackBleeding'),
-      desc: t('cycle.personalize.trackBleedingHint'),
-      icon: Waves,
-    },
-    {
-      value: 'symptoms' as const,
-      label: t('cycle.personalize.trackSymptoms'),
-      desc: t('cycle.personalize.trackSymptomsHint'),
-      icon: Waves,
-    },
-    {
-      value: 'skip' as const,
-      label: t('cycle.personalize.skip'),
-      desc: t('cycle.personalize.skipHint'),
-      icon: CircleOff,
-    },
-  ];
+  const options = CYCLE_TRACKING_CHOICES.map(({ value, labelKey, hintKey }) => ({
+    value,
+    label: t(labelKey),
+    desc: t(hintKey),
+    icon: value === 'skip' ? CircleOff : Waves,
+  }));
 
   return (
     <MasterLayout showNavigationMenu={false}>

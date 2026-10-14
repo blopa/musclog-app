@@ -7,6 +7,7 @@ import { CycleHealthSettings } from '@/components/cycle/CycleHealthSettings';
 import { CyclePreferences } from '@/components/cycle/CyclePreferences';
 import { CycleReminderSettings } from '@/components/cycle/CycleReminderSettings';
 import { CycleSharingSettings } from '@/components/cycle/CycleSharingSettings';
+import { CycleTrackingModeSettings } from '@/components/cycle/CycleTrackingModeSettings';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
 import { CycleLockGate } from '@/components/lock/CycleLockGate';
 import { CyclePortabilityModal } from '@/components/modals/CyclePortabilityModal';
@@ -236,6 +237,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
     >
       <CycleLockGate>
         <View className="gap-8 px-4 py-4">
+          <CycleTrackingModeSettings onClose={onClose} />
           {tracked ? (
             <>
               {cycle ? (

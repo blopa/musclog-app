@@ -902,3 +902,70 @@ it('retains newly imported observations when a stale manual day form is saved', 
   await CycleDayLogService.save(blankDayLog(day(2)));
   expect(await readDayLogs(await CycleRepository.dayLogs().fetch())).toHaveLength(0);
 });
+
+describe('tracking mode settings', () => {
+  it('pauses and resumes the same cycle without losing periods, logs, config or contraception', async () => {
+    const cycleId = await newCycle([{ startDate: day(1), endDate: day(5) }]);
+    const cycle = await database.get<MenstrualCycle>('menstrual_cycles').find(cycleId);
+    await CycleContextService.set(cycleId, {
+      effectiveFrom: day(0),
+      lifeStage: 'pcos',
+      contraception: 'combined_pill',
+    });
+    await CycleDayLogService.save({ ...blankDayLog(day(2)), note: 'Keep this' });
+    const before = await livePeriods(cycleId);
+    await CycleTrackingService.setTrackingMode(cycle, 'skip');
+    expect(cycle.isActive).toBe(false);
+    await CycleTrackingService.setTrackingMode(cycle, 'symptoms');
+    expect(cycle.isActive).toBe(true);
+    const contexts = await readContexts(await CycleRepository.contexts(cycleId).fetch());
+    expect(contexts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ lifeStage: 'no_bleeding', contraception: 'combined_pill' }),
+      ])
+    );
+    await CycleTrackingService.setTrackingMode(cycle, 'bleeding');
+    expect(
+      (await readContexts(await CycleRepository.contexts(cycleId).fetch())).filter(
+        (c) => c.effectiveFrom === localDayStartMs(new Date())
+      )
+    ).toEqual([expect.objectContaining({ lifeStage: 'regular', contraception: 'combined_pill' })]);
+    expect(await livePeriods(cycleId)).toEqual(before);
+    expect(await readDayLogs(await CycleRepository.dayLogs().fetch())).toEqual(
+      expect.arrayContaining([expect.objectContaining({ note: 'Keep this' })])
+    );
+    expect((await readCycleConfig(cycle)).fallbackCycleLength).toBe(30);
+    expect(await CycleRepository.cycles().fetch()).toHaveLength(1);
+  });
+
+  it('keeps an existing bleeding life stage when enabling bleeding tracking', async () => {
+    const cycleId = await newCycle();
+    const cycle = await database.get<MenstrualCycle>('menstrual_cycles').find(cycleId);
+    await CycleContextService.set(cycleId, {
+      effectiveFrom: day(0),
+      lifeStage: 'pcos',
+      contraception: 'none',
+    });
+    await CycleTrackingService.setTrackingMode(cycle, 'skip');
+    await CycleTrackingService.setTrackingMode(cycle, 'bleeding');
+    expect(cycle.isActive).toBe(true);
+    expect(await readContexts(await CycleRepository.contexts(cycleId).fetch())).toEqual([
+      expect.objectContaining({ lifeStage: 'pcos' }),
+    ]);
+  });
+
+  it('restores cached activation state if changing modes fails to commit', async () => {
+    const cycleId = await newCycle();
+    const cycle = await database.get<MenstrualCycle>('menstrual_cycles').find(cycleId);
+    await CycleTrackingService.setTrackingMode(cycle, 'skip');
+    const batch = jest.spyOn(database, 'batch').mockRejectedValueOnce(new Error('write failed'));
+    await expect(CycleTrackingService.setTrackingMode(cycle, 'symptoms')).rejects.toThrow(
+      'write failed'
+    );
+    batch.mockRestore();
+    expect(cycle.isActive).toBe(false);
+    expect(await CycleRepository.contexts(cycleId).fetch()).toHaveLength(0);
+    await CycleTrackingService.setTrackingMode(cycle, 'symptoms');
+    expect(cycle.isActive).toBe(true);
+  });
+});
