@@ -37,6 +37,7 @@ import {
   MIN_HOME_ACTIONS,
   parseHomeActions,
 } from '@/constants/homeActions';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -368,7 +369,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
                   label: t('settings.homeDailyStats.showHomeSteps.title'),
                   subtitle: t('settings.homeDailyStats.showHomeSteps.description'),
                   value: showHomeSteps,
-                  onValueChange: (v: boolean) => void SettingsService.setShowHomeSteps(v),
+                  onValueChange: (v: boolean) =>
+                    void SettingsService.set(SETTINGS.showHomeSteps, v),
                 },
               ]}
             />

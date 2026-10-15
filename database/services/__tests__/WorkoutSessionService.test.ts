@@ -29,7 +29,9 @@ const mockAutonomy = jest.fn();
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     getProgressionMode: jest.fn(async () => 'weight_first'),
-    getWorkoutAutonomy: () => mockAutonomy(),
+    get: jest.fn(async (setting: { type: string; defaultValue: unknown }) =>
+      setting.type === 'workout_autonomy' ? mockAutonomy() : setting.defaultValue
+    ),
   },
 }));
 jest.mock('@/database/services/UserMetricService', () => ({

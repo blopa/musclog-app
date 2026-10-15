@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { NotificationService } from '@/services/NotificationService';
 import {
@@ -38,7 +39,7 @@ export function useNotificationPreferences(visible: boolean) {
     let cancelled = false;
     void Promise.all([
       SettingsService.getNotificationPreferences(),
-      SettingsService.getNotificationsWeeklyReview(),
+      SettingsService.get(SETTINGS.notificationsWeeklyReview),
     ]).then(([loaded, review]) => {
       if (!cancelled) {
         setPrefs(loaded);
@@ -68,7 +69,7 @@ export function useNotificationPreferences(visible: boolean) {
 
   const updateWeeklyReview = useCallback(async (value: boolean) => {
     setWeeklyReview(value);
-    await SettingsService.setNotificationsWeeklyReview(value);
+    await SettingsService.set(SETTINGS.notificationsWeeklyReview, value);
   }, []);
 
   /** Asks for permission the first time any nudge is switched on, as the other toggles already do. */

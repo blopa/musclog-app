@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type { Units } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
@@ -66,7 +67,7 @@ export function useWorkoutSessionController(
   useEffect(() => {
     let live = true;
     Promise.all([
-      SettingsService.getWorkoutView(),
+      SettingsService.get(SETTINGS.workoutView),
       logId ? getRestTimerEndAt(logId) : Promise.resolve(null),
       key ? AsyncStorage.getItem(key) : Promise.resolve(null),
     ])
@@ -198,7 +199,7 @@ export function useWorkoutSessionController(
   const changeView = async (value: 'inline' | 'guided') => {
     setView(value);
     try {
-      await SettingsService.setWorkoutView(value);
+      await SettingsService.set(SETTINGS.workoutView, value);
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
     }

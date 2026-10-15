@@ -15,6 +15,7 @@ import {
   MIN_REST_SECONDS,
   REST_SECONDS_STEP,
 } from '@/constants/restTimer';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type ExerciseRestriction from '@/database/models/ExerciseRestriction';
 import { ExerciseRestrictionService } from '@/database/services/ExerciseRestrictionService';
 import { ExerciseService } from '@/database/services/ExerciseService';
@@ -155,7 +156,7 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
                 subtitle: t('workoutSettings.autonomy.suggestHint'),
                 value: workoutAutonomy === 'suggest',
                 onValueChange: (value) =>
-                  void SettingsService.setWorkoutAutonomy(value ? 'suggest' : 'manual'),
+                  void SettingsService.set(SETTINGS.workoutAutonomy, value ? 'suggest' : 'manual'),
               },
             ]}
           />
@@ -173,14 +174,16 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
                 label: t('workoutSettings.restTimer.autoStart'),
                 subtitle: t('workoutSettings.restTimer.autoStartHint'),
                 value: autoStartRestTimer,
-                onValueChange: (value) => void SettingsService.setAutoStartRestTimer(value),
+                onValueChange: (value) =>
+                  void SettingsService.set(SETTINGS.autoStartRestTimer, value),
               },
               {
                 key: 'haptics',
                 label: t('workoutSettings.restTimer.haptics'),
                 subtitle: t('workoutSettings.restTimer.hapticsHint'),
                 value: restTimerHaptics,
-                onValueChange: (value) => void SettingsService.setRestTimerHaptics(value),
+                onValueChange: (value) =>
+                  void SettingsService.set(SETTINGS.restTimerHaptics, value),
               },
             ]}
           />
@@ -190,12 +193,14 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
             maxFractionDigits={0}
             unit={t('workoutSettings.restTimer.seconds')}
             onIncrement={() =>
-              void SettingsService.setDefaultRestSeconds(
+              void SettingsService.set(
+                SETTINGS.defaultRestSeconds,
                 Math.min(MAX_REST_SECONDS, defaultRestSeconds + REST_SECONDS_STEP)
               )
             }
             onDecrement={() =>
-              void SettingsService.setDefaultRestSeconds(
+              void SettingsService.set(
+                SETTINGS.defaultRestSeconds,
                 Math.max(MIN_REST_SECONDS, defaultRestSeconds - REST_SECONDS_STEP)
               )
             }

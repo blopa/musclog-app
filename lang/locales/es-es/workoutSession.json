@@ -210,6 +210,9 @@
     "nextTime": "La próxima vez",
     "detailsHint": "Opcional. Deja el esfuerzo vacío si no has valorado esta serie.",
     "rirHint": "Repeticiones que te quedaban",
+    "rpeHint": "Misma escala que RIR: RPE 10 es no dejar nada",
+    "invalidWeight": "Introduce el peso que levantaste (0 si solo peso corporal).",
+    "invalidReps": "Introduce las repeticiones que hiciste o salta la serie.",
     "skipSet": "Saltar esta serie",
     "done": "Hecho",
     "columns": {
@@ -403,12 +406,23 @@
       "noWorkouts": "No hubo entrenamientos esta semana, así que la próxima retomas donde lo dejaste.",
       "missedConsistency": "Entrenaste mucho menos que tu objetivo semanal; repetir evita un salto brusco.",
       "repeatedDeloads": "{{count}} ejercicios necesitaron una descarga por sí solos esta semana.",
-      "lowReserveStalled": "Tus series no dejaron nada en reserva y un levantamiento que sigues se ha estancado.",
+      "lowReserveStalled": "Tus series no dejaron nada en reserva y un levantamiento se ha estancado.",
       "dueForLighter": "Han pasado {{count}} semanas desde la última semana ligera.",
       "onTrack": "El entrenamiento va por buen camino."
     },
     "belowFloorTitle": "Por debajo del mínimo de calorías",
     "belowFloorBody": "Esto está por debajo de tu mínimo de {{minimum}} kcal. Desactivaste el mínimo de calorías en los ajustes avanzados; bajar tanto no se recomienda y puede no ser seguro.",
-    "estimateShort": "Estimación"
+    "estimateShort": "Estimación",
+    "halfStatus": {
+      "done": "{{half}}: revisado",
+      "open": "{{half}}: por revisar"
+    },
+    "targetsEditor": {
+      "invalidCalories": "Introduce un objetivo de calorías mayor que 0.",
+      "invalidMacro": "Introduce un número (0 o más).",
+      "macroTotal": "Estos macros suman {{kcal}} kcal.",
+      "mismatch": "Estos macros suman {{kcal}} kcal, que no coincide con el objetivo de calorías.",
+      "useMacroTotal": "Usar {{kcal}} kcal"
+    }
   }
 }

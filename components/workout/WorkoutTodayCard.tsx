@@ -7,6 +7,7 @@ import { Text, View } from 'react-native';
 import { Button } from '@/components/theme/Button';
 import { ListRow } from '@/components/theme/ListRow';
 import { TextButton } from '@/components/theme/TextButton';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import {
   type TodayWorkout,
@@ -55,7 +56,7 @@ export function WorkoutTodayCard({
         const [log, next, autonomy] = await Promise.all([
           WorkoutService.getActiveWorkout(),
           activeOnly ? Promise.resolve([]) : WorkoutTodayRepository.upcoming(),
-          SettingsService.getWorkoutAutonomy(),
+          SettingsService.get(SETTINGS.workoutAutonomy),
         ]);
         let session: ActiveSession | null = null;
         if (log) {

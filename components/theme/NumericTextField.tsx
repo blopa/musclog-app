@@ -28,6 +28,11 @@ type NumericTextFieldProps = {
    * underline, so it reads without color too.
    */
   marked?: boolean;
+  /**
+   * The value cannot be saved as typed (an emptied weight, zero reps): an error-coloured outline,
+   * so the field to fix is visible next to the message that names it.
+   */
+  invalid?: boolean;
   /** Draw the field's own surface. Defaults to on for `field` and `cell`, off for `hero`. */
   surface?: boolean;
   editable?: boolean;
@@ -54,6 +59,7 @@ export function NumericTextField({
   integer = false,
   placeholder,
   marked = false,
+  invalid = false,
   surface = size !== 'hero',
   editable = true,
   testID,
@@ -79,6 +85,9 @@ export function NumericTextField({
         backgroundColor: surface ? theme.colors.background.cardElevated : 'transparent',
         borderBottomWidth: marked ? theme.borderWidth.medium : 0,
         borderBottomColor: theme.colors.accent.primary,
+        ...(invalid
+          ? { borderWidth: theme.borderWidth.medium, borderColor: theme.colors.status.error }
+          : {}),
       }}
     >
       <TextInput

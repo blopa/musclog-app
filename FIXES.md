@@ -3,6 +3,32 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Emptied set fields completed the set at 0 kg / 0 reps (October 2026)
+
+### Symptom
+
+Clearing the weight or reps field of a set in the live session and tapping ✓ completed it without
+a word: an emptied weight saved the set at 0 kg, and an emptied reps field saved a performed set of
+0 reps — which progression then read as a missed session, and two of them deloaded the lift.
+In a comma-decimal locale, "62.5" typed with a dot saved 625 kg.
+
+### Cause
+
+`valuesFromDraft` turned the draft into numbers with `parseLocalizedDecimalString` and `Number`.
+The first is lenient on purpose (it reads "" and "abc" as 0 and treats the other separator as
+digit grouping) and `Number('')` is 0, so nothing between the inputs and the writer could tell an
+emptied field from a typed zero. The writer's own validation only rejects NaN and negatives.
+
+### Fix
+
+`setDraftProblem` (`components/workout/session/setDraft.ts`) checks a set's inputs before it is
+completed, with `parseStrictLocalizedNumber` (`utils/localizedDecimalInput.ts`), which accepts a
+number only as the locale writes it. A failure names the field in a snackbar and outlines it
+(`NumericTextField`'s `invalid`) until the user edits it. Zero reps is refused as well: a set that
+was not done is skipped. The Weekly Review targets editor had the same lenient read and now uses
+the same strict parser (`components/weeklyReview/targetsDraft.ts`). Validation that decides whether
+a value may be SAVED must never use the lenient parser.
+
 ## Cycle config observation and transaction failures (October 2026)
 
 Cycle config-only emissions reused the same WatermelonDB model object in React state, leaving decrypted preferences and predictions stale until an unrelated render. The provider now captures the emitted ciphertext in immutable state, triggering immediate decryption for active and paused cycles and discarding obsolete async results.

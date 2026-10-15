@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type { Units } from '@/constants/settings';
 import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
@@ -36,6 +37,7 @@ import {
 } from '@/utils/setAdjustment';
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
 import {
+  applyWeekOverride,
   planWeekOverride,
   type WeekOverrideKind,
   type WeekOverridePlan,
@@ -70,66 +72,45 @@ type ProgressionContext = {
   /** Training done in a lighter week is deliberately below capacity, so it is no baseline. */
   lighterWindows: readonly { from: number; until: number }[];
   unitsFor: (exerciseId: string) => Units;
-  repCeilingFor: (exerciseId: string) => number;
+  repCeilingFor: (exercise: Exercise) => number;
 };
 
 /** What the session start does to one exercise's planned working sets. */
 type ExerciseStartPlan = WeekOverridePlan & {
   /** The rule state to write onto the log exercise, or null to leave it as copied. */
   state: ProgressionSessionState | null;
+  /** The same decision as a recommendation to show (Add/Swap), sets already applied. */
+  recommendation: ExerciseRecommendation;
 };
 
 export class WorkoutProgressionService {
   /** Add/Swap use the same completed history and projection as previews and session starts. */
   static async projectAdHocExercise(exercise: Exercise): Promise<ExerciseRecommendation | null> {
-    const context = await this.context();
+    // A repeat or lighter week the user chose in the Weekly Review governs an exercise added or
+    // swapped in mid-session exactly as it governs the rest of the workout (`planExercise`), or a
+    // replacement during a lighter week would start at a normal (or progressed) load.
+    const [context, week] = await Promise.all([
+      this.context(),
+      progressesLoad(exercise.mechanicType) ? TrainingWeekRepository.activeTrainingWeek() : null,
+    ]);
     const history = await this.history(exercise.id, undefined, undefined, context.lighterWindows);
     if (!history[0]?.sets.length) {
       return null;
     }
 
-    const step = loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id));
-    const planned = history[0].sets.map((set, index) => ({
-      id: String(index),
-      weight: set.weightKg,
-      reps: set.reps,
-    }));
-    const projection = projectExerciseProgression({
-      ...this.projectionInput(exercise, context, step),
-      planned,
+    return this.planExercise({
+      exercise,
+      planned: history[0].sets.map((set, index) => ({
+        id: String(index),
+        weight: set.weightKg,
+        reps: set.reps,
+      })),
       history,
       rule: null,
+      context,
+      week: week?.decision ?? null,
       plannedFromHistory: true,
-    });
-    // A repeat or lighter week the user chose in the Weekly Review governs an exercise added or
-    // swapped in mid-session exactly as it governs the rest of the workout, or a replacement during
-    // a lighter week would start at a normal (or progressed) load.
-    const week = progressesLoad(exercise.mechanicType)
-      ? await TrainingWeekRepository.activeTrainingWeek()
-      : null;
-    if (!week) {
-      return projection;
-    }
-
-    const override = planWeekOverride({
-      kind: week.decision,
-      planned,
-      last: history[0].sets,
-      step,
-    });
-    const changes = new Map(override.changes.map((change) => [change.setId, change]));
-    const dropped = new Set(override.dropSetIds);
-    return {
-      ...projection,
-      sets: planned
-        .filter((set) => !dropped.has(set.id))
-        .map((set) => {
-          const change = changes.get(set.id);
-          return change ? { ...set, weight: change.weightKg, reps: change.reps } : set;
-        }),
-      changes: [],
-      state: null,
-    };
+    }).recommendation;
   }
 
   static async projectTemplate(templateId: string): Promise<TemplateRecommendation[]> {
@@ -202,7 +183,7 @@ export class WorkoutProgressionService {
 
   private static async context(): Promise<ProgressionContext> {
     const [autonomy, mode, gym, lighterWindows] = await Promise.all([
-      SettingsService.getWorkoutAutonomy(),
+      SettingsService.get(SETTINGS.workoutAutonomy),
       SettingsService.getProgressionMode(),
       GymService.getActiveGym().catch(() => null),
       TrainingWeekRepository.lighterWeekWindows(),
@@ -358,7 +339,8 @@ export class WorkoutProgressionService {
   /**
    * What the session start does to one exercise, in ONE shape whichever decided it: a Weekly
    * Review's repeat or lighter week, or the exercise's rule / the automatic progression. The writer
-   * applies the shape and never needs to know which of them produced it.
+   * applies the shape and never needs to know which of them produced it, and `recommendation` is the
+   * same decision as Add/Swap shows it — so "the week beats the projection" is decided here only.
    */
   private static planExercise({
     exercise,
@@ -367,6 +349,7 @@ export class WorkoutProgressionService {
     rule,
     context,
     week,
+    plannedFromHistory = false,
   }: {
     exercise: Exercise;
     planned: WeekOverrideSet[];
@@ -374,29 +357,40 @@ export class WorkoutProgressionService {
     rule: ProgressionRule | null;
     context: ProgressionContext;
     week: WeekOverrideKind | null;
+    /** The "plan" is a copy of last session (Add/Swap), not a template's prescription. */
+    plannedFromHistory?: boolean;
   }): ExerciseStartPlan {
     const step = loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id));
-    if (week) {
-      // A week the review overrode is not a session the rule can learn from, so it does not
-      // advance the remembered state — but it hands the last session's state on (while it still
-      // belongs to this rule), or the next normal session would start the rule over.
-      return {
-        ...planWeekOverride({ kind: week, planned, last: history[0]?.sets ?? [], step }),
-        state: carriedSessionState(rule, history[0]),
-      };
-    }
-
     const projection = projectExerciseProgression({
       ...this.projectionInput(exercise, context, step),
       planned,
       history,
       rule,
+      plannedFromHistory,
     });
+    if (!week) {
+      return {
+        changes: projection.changes,
+        dropSetIds: [],
+        workingSetCount: planned.length,
+        state: rule ? projection.state : null,
+        recommendation: projection,
+      };
+    }
+
+    // A week the review overrode is not a session the rule can learn from, so it does not advance
+    // the remembered state — but it hands the last session's state on (while it still belongs to
+    // this rule), or the next normal session would start the rule over.
+    const override = planWeekOverride({ kind: week, planned, last: history[0]?.sets ?? [], step });
     return {
-      changes: projection.changes,
-      dropSetIds: [],
-      workingSetCount: planned.length,
-      state: rule ? projection.state : null,
+      ...override,
+      state: carriedSessionState(rule, history[0]),
+      recommendation: {
+        ...projection,
+        sets: applyWeekOverride(planned, override),
+        changes: [],
+        state: null,
+      },
     };
   }
 
@@ -413,7 +407,7 @@ export class WorkoutProgressionService {
       progressionMode: context.mode,
       isCompound: exercise.mechanicType === 'compound',
       isBodyweight,
-      bodyweightRepCeiling: isBodyweight ? context.repCeilingFor(exercise.id) : undefined,
+      bodyweightRepCeiling: isBodyweight ? context.repCeilingFor(exercise) : undefined,
       mechanicType: exercise.mechanicType,
     };
   }

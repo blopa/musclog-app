@@ -20,6 +20,7 @@ import { ExerciseNotes, type SessionNote } from './ExerciseNotes';
 import { GuidanceSummary } from './GuidanceSummary';
 import { InlineSetRow, SetTableHeader } from './InlineSetRow';
 import { canRevertStartAdjustment, type SessionBlock } from './sessionModel';
+import type { SetDraftField } from './setDraft';
 
 /**
  * One exercise of the Inline view: heading, where its targets come from, labelled actions, and a
@@ -37,12 +38,14 @@ export function InlineExerciseCard({
   notes,
   warmup,
   busy,
+  problem,
   onWhy,
   onRevert,
   onAction,
   onEdit,
   onComplete,
   onSkip,
+  onDetails,
   showHint = false,
 }: {
   block: SessionBlock;
@@ -56,12 +59,15 @@ export function InlineExerciseCard({
   notes: SessionNote[];
   warmup: 'add' | 'remove' | null;
   busy: boolean;
+  /** The set and field that stopped the last completion, until the user edits that set. */
+  problem?: { setId: string; field: SetDraftField } | null;
   onWhy: () => void;
   onRevert: () => void;
   onAction: (action: SessionExerciseAction) => void;
   onEdit: (setId: string, patch: Partial<SessionDraft>) => void;
   onComplete: (setId: string) => void;
   onSkip: (setId: string) => void;
+  onDetails: (setId: string) => void;
   /** The table hint is shown once per workout (on the first card), not under every exercise. */
   showHint?: boolean;
 }) {
@@ -135,9 +141,11 @@ export function InlineExerciseCard({
               units={units}
               isCurrent={row.set.id === currentSetId}
               busy={busy}
+              invalidField={problem?.setId === row.set.id ? problem.field : null}
               onEdit={(draft) => onEdit(row.set.id, draft)}
               onComplete={() => onComplete(row.set.id)}
               onSkip={() => onSkip(row.set.id)}
+              onDetails={() => onDetails(row.set.id)}
             />
           ))}
           {showHint ? (

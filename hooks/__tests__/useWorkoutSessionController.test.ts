@@ -14,8 +14,8 @@ import {
 
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getWorkoutView: jest.fn(async () => 'inline'),
-    setWorkoutView: jest.fn(async () => {}),
+    get: jest.fn(async () => 'inline'),
+    set: jest.fn(async () => {}),
   },
 }));
 jest.mock('@/database/services/WorkoutService', () => ({

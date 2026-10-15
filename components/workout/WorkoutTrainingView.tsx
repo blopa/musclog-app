@@ -43,10 +43,19 @@ import { buildSessionBlocks, guidanceStateFor, type SessionBlock } from './sessi
 import { SetDetailsSheet } from './session/SetDetailsSheet';
 import {
   draftFromSet,
+  linkEffortPatch,
   reconcileWeightDraft,
+  type SetDraftField,
+  setDraftProblem,
   stampWeightPatch,
   valuesFromDraft,
 } from './session/setDraft';
+
+/** What to tell the user when a set cannot be completed as typed; whole keys, never built. */
+const INVALID_FIELD_KEYS = {
+  weight: 'trainingFlow.invalidWeight',
+  reps: 'trainingFlow.invalidReps',
+} as const satisfies Record<SetDraftField, string>;
 
 type Controller = ReturnType<typeof useWorkoutSessionController>;
 
@@ -98,6 +107,8 @@ export function WorkoutTrainingView({
     null
   );
   const [detailsSetId, setDetailsSetId] = useState<string | null>(null);
+  // The set and field that stopped the last completion; cleared once the user edits that set.
+  const [problem, setProblem] = useState<{ setId: string; field: SetDraftField } | null>(null);
   const scroll = useRef<KeyboardAwareScrollViewRef>(null);
   const cardPositions = useRef(new Map<string, number>());
   const insightsHeight = useRef(0);
@@ -113,29 +124,29 @@ export function WorkoutTrainingView({
 
   const editDraft = (setId: string, patch: Partial<SessionDraft>) => {
     const set = sets.find((row) => row.id === setId);
-    controller.edit(setId, set ? stampWeightPatch(patch, unitsFor(set.exerciseId), locale) : patch);
-  };
-
-  // A typed weight is a display string: when the unit or locale changes under it, convert it so the
-  // number the user typed keeps meaning the same load.
-  useEffect(() => {
-    for (const set of sets) {
-      const patch = reconcileWeightDraft(
-        controller.drafts[set.id],
-        unitsFor(set.exerciseId),
-        locale
-      );
-      if (patch) {
-        controller.edit(set.id, patch);
-      }
+    const linked = linkEffortPatch(patch, locale);
+    if (problem?.setId === setId && patch[problem.field] !== undefined) {
+      setProblem(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sets, controller.drafts, locale, accountUnits, unitsFor]);
+
+    controller.edit(
+      setId,
+      set ? stampWeightPatch(linked, unitsFor(set.exerciseId), locale) : linked
+    );
+  };
 
   const isCurrentBlock = (block: SessionBlock) => block === currentBlock && !allResolved;
   const valuesFor = (setId: string) => {
     const set = sets.find((row) => row.id === setId)!;
-    return { ...draftFromSet(set, unitsFor(set.exerciseId), locale), ...controller.drafts[setId] };
+    const units = unitsFor(set.exerciseId);
+    const draft = controller.drafts[setId];
+    // A typed weight is a display string stamped with its unit and locale: when either has changed
+    // since, it is shown converted, so the number keeps meaning the same load.
+    return {
+      ...draftFromSet(set, units, locale),
+      ...draft,
+      ...reconcileWeightDraft(draft, units, locale),
+    };
   };
 
   const complete = (setId: string) => {
@@ -145,6 +156,13 @@ export function WorkoutTrainingView({
     }
 
     const reopening = isPerformedWorkoutSet(set);
+    const invalid = reopening ? null : setDraftProblem(valuesFor(setId), locale);
+    if (invalid) {
+      setProblem({ setId, field: invalid });
+      showSnackbar('error', t(INVALID_FIELD_KEYS[invalid]));
+      return;
+    }
+
     const loggedValues = valuesFromDraft(
       valuesFor(setId),
       unitsFor(set.exerciseId),
@@ -250,6 +268,17 @@ export function WorkoutTrainingView({
         : t('trainingFlow.allDoneSets', { sets: formatInteger(workingDone.length) });
   }
 
+  const finish = (
+    <Button
+      label={t('trainingFlow.finish')}
+      icon={CheckCircle}
+      onPress={onFinish}
+      disabled={controller.busy}
+      variant={allResolved ? 'gradientCta' : 'outline'}
+      size="lg"
+      width="full"
+    />
+  );
   const finishButton = (
     <View className="gap-3 pt-2">
       {allResolved ? (
@@ -275,15 +304,9 @@ export function WorkoutTrainingView({
           onPress={onAddExercise}
         />
       ) : null}
-      <Button
-        label={t('trainingFlow.finish')}
-        icon={CheckCircle}
-        onPress={onFinish}
-        disabled={controller.busy}
-        variant={allResolved ? 'gradientCta' : 'outline'}
-        size="lg"
-        width="full"
-      />
+      {/* Once every set is resolved, Finish is THE action and is pinned in the thumb zone below;
+          before that, finishing early is the exception and stays at the end of the list. */}
+      {allResolved ? null : finish}
     </View>
   );
 
@@ -337,19 +360,18 @@ export function WorkoutTrainingView({
           onWhy={() => onAction(currentBlock.logExerciseId, 'guidance')}
           onRevert={() => void controller.revert(currentBlock.logExerciseId)}
           onAction={(kind) => action(currentBlock, kind)}
+          invalidField={problem?.setId === row.set.id ? problem.field : null}
           onEdit={(draft) => editDraft(row.set.id, draft)}
           onDetails={() => setDetailsSetId(row.set.id)}
         />
       ) : null;
     pinnedAction = body ? (
-      <View className="bg-bg-primary px-4 pb-2 pt-2">
-        <GuidedCompleteButton
-          setId={row.set.id}
-          done={isPerformedWorkoutSet(row.set)}
-          busy={controller.busy}
-          onPress={() => complete(row.set.id)}
-        />
-      </View>
+      <GuidedCompleteButton
+        setId={row.set.id}
+        done={isPerformedWorkoutSet(row.set)}
+        busy={controller.busy}
+        onPress={() => complete(row.set.id)}
+      />
     ) : null;
   } else {
     body = (
@@ -383,8 +405,10 @@ export function WorkoutTrainingView({
                 onRevert={() => void controller.revert(block.logExerciseId)}
                 onAction={(kind) => action(block, kind)}
                 onEdit={editDraft}
+                problem={problem}
                 onComplete={complete}
                 onSkip={skip}
+                onDetails={setDetailsSetId}
                 showHint={index === 0}
               />
             </View>
@@ -433,7 +457,12 @@ export function WorkoutTrainingView({
         {body}
         {finishButton}
       </KeyboardAwareScrollView>
-      {pinnedAction}
+      {pinnedAction || allResolved ? (
+        <View className="gap-2 bg-bg-primary px-4 pb-2 pt-2">
+          {pinnedAction}
+          {allResolved ? finish : null}
+        </View>
+      ) : null}
       <RestTimerBar
         remaining={controller.restSeconds}
         total={controller.restTotal}

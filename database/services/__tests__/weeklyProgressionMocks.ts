@@ -21,9 +21,11 @@ jest.mock('@/database/services/GymService', () => ({
 }));
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    getWorkoutAutonomy: async () => 'manual',
+    get: require('./settingsGetMock').settingsGetMock({
+      workoutAutonomy: 'manual',
+      reviewWeekday: 1,
+    }),
     getProgressionMode: async () => 'weight_first',
-    getReviewWeekday: async () => 1,
     getThemePreference: async () => 'kinetic-depth',
     getIntuitiveEatingMode: async () => false,
     getEnableFastedDay: jest.fn(async () => false),

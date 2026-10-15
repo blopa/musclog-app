@@ -210,6 +210,9 @@
     "nextTime": "Next time",
     "detailsHint": "Optional. Leave effort empty if you did not rate this set.",
     "rirHint": "Reps you had left",
+    "rpeHint": "Same scale as RIR: RPE 10 means nothing left",
+    "invalidWeight": "Enter the weight you lifted (0 for bodyweight only).",
+    "invalidReps": "Enter the reps you did, or skip the set.",
     "skipSet": "Skip this set",
     "done": "Done",
     "columns": {
@@ -403,12 +406,23 @@
       "noWorkouts": "No workouts this week, so next week picks up where you left off.",
       "missedConsistency": "You trained far less than your weekly goal; repeating avoids a sudden jump.",
       "repeatedDeloads": "{{count}} exercises needed a deload on their own this week.",
-      "lowReserveStalled": "Your sets left nothing in reserve and a lift you're tracking has stalled.",
+      "lowReserveStalled": "Your sets left nothing in reserve and a lift has stalled.",
       "dueForLighter": "It has been {{count}} weeks since a lighter week.",
       "onTrack": "Training is on track."
     },
     "belowFloorTitle": "Below the minimum calorie floor",
     "belowFloorBody": "This is below your minimum of {{minimum}} kcal. You turned off the minimum calorie floor in Advanced settings; going this low is not recommended and may be unsafe.",
-    "estimateShort": "Estimate"
+    "estimateShort": "Estimate",
+    "halfStatus": {
+      "done": "{{half}} reviewed",
+      "open": "{{half}} to review"
+    },
+    "targetsEditor": {
+      "invalidCalories": "Enter a calorie target above 0.",
+      "invalidMacro": "Enter a number (0 or more).",
+      "macroTotal": "These macros add up to {{kcal}} kcal.",
+      "mismatch": "These macros add up to {{kcal}} kcal, which does not match the calorie target.",
+      "useMacroTotal": "Use {{kcal}} kcal"
+    }
   }
 }

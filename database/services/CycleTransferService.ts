@@ -5,7 +5,6 @@ import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePaylo
 import { database } from '@/database/database-instance';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import type CycleContext from '@/database/models/CycleContext';
-import type CycleDayLog from '@/database/models/CycleDayLog';
 import type CyclePeriod from '@/database/models/CyclePeriod';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import UserMetric from '@/database/models/UserMetric';
@@ -149,19 +148,27 @@ export class CycleTransferService {
               r.deletedAt = null;
             });
           const operations: Model[] = cycle ? [] : [target];
-          const prepareGroup = (
+          const linkToCycle = (r: CyclePeriod | CycleContext) => {
+            r.cycleId = target.id;
+          };
+
+          const prepareGroup = <
+            T extends Model & {
+              payload: string;
+              createdAt: number;
+              updatedAt: number;
+              deletedAt: number | null;
+            },
+          >(
             table: string,
-            rows: (CyclePeriod | CycleDayLog | CycleContext)[],
+            rows: T[],
             group: Awaited<ReturnType<typeof encryptGroup>>,
-            hasCycleId: boolean
+            onCreate?: (r: T) => void
           ) => {
             for (const cipher of group.add) {
               operations.push(
-                database.get<CycleDayLog>(table).prepareCreate((r) => {
-                  if (hasCycleId) {
-                    (r as unknown as CyclePeriod | CycleContext).cycleId = target.id;
-                  }
-
+                database.get<T>(table).prepareCreate((r) => {
+                  onCreate?.(r);
                   r.payload = cipher;
                   r.createdAt = now;
                   r.updatedAt = now;
@@ -181,22 +188,20 @@ export class CycleTransferService {
             }
           };
 
-          prepareGroup('cycle_periods', existing.periodRows, periods, true);
+          prepareGroup('cycle_periods', existing.periodRows, periods, linkToCycle);
           const clearDays = new Set(
             plan.dayLogs.update.filter(({ value }) => isEmptyDayLog(value)).map(({ id }) => id)
           );
-          prepareGroup(
-            'cycle_day_logs',
-            existing.dayRows,
-            { ...days, update: days.update.filter(({ id }) => !clearDays.has(id)) },
-            false
-          );
+          prepareGroup('cycle_day_logs', existing.dayRows, {
+            ...days,
+            update: days.update.filter(({ id }) => !clearDays.has(id)),
+          });
           operations.push(
             ...existing.dayRows
               .filter((r) => clearDays.has(r.id))
               .map((r) => prepareSoftDelete(r, now))
           );
-          prepareGroup('cycle_contexts', existing.contextRows, contexts, true);
+          prepareGroup('cycle_contexts', existing.contextRows, contexts, linkToCycle);
           const assignMood = (
             m: UserMetric,
             date: number,

@@ -34,7 +34,7 @@ export function useCycleInsights(): { insights: Insight[]; sessions: InsightSess
       startDate: today - LOOKBACK_DAYS * MS_PER_SOLAR_DAY,
       endDate: today + MS_PER_SOLAR_DAY - 1,
     };
-    void (async () => {
+    const load = async () => {
       const [logs, lighter] = await Promise.all([
         WorkoutService.getWorkoutHistory(range),
         TrainingWeekRepository.lighterWeekWindows().catch(() => []),
@@ -62,8 +62,9 @@ export function useCycleInsights(): { insights: Insight[]; sessions: InsightSess
           ])
         )
       );
-      // TODO: avoid IIFE
-    })().catch(() => undefined);
+    };
+
+    load().catch(() => undefined);
 
     return () => {
       cancelled = true;

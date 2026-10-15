@@ -1,28 +1,16 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { type HomeActionKey, MAX_HOME_ACTIONS } from '@/constants/homeActions';
-import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
+import { type SettingDefinition, SETTINGS } from '@/constants/settingDefinitions';
 import {
-  ACTIVE_GYM_ID_SETTING_TYPE,
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
-  APP_LOCK_MODE_SETTING_TYPE,
-  type AppLockMode,
-  AUTO_START_REST_TIMER_SETTING_TYPE,
   BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
-  CYCLE_NOTIFICATION_STYLE_SETTING_TYPE,
-  CYCLE_PIN_SUGGESTED_SETTING_TYPE,
-  CYCLE_QUICK_LOG_SETTING_TYPE,
-  CYCLE_SHOW_FERTILITY_SETTING_TYPE,
-  CYCLE_SHOW_PREDICTIONS_SETTING_TYPE,
-  CYCLE_VARIABILITY_HINT_SETTING_TYPE,
-  type CycleNotificationStyle,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
-  DEFAULT_REST_SECONDS_SETTING_TYPE,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   DUMP_LLM_REQUESTS_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
@@ -62,19 +50,14 @@ import {
   type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
-  parseAppLockMode,
-  parseCycleNotificationStyle,
-  parseWorkoutAutonomy,
   PROGRESSION_MODE_SETTING_TYPE,
   type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
-  REST_TIMER_HAPTICS_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
   SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
-  SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
@@ -84,10 +67,8 @@ import {
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
-  WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
-  type WorkoutAutonomy,
   type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
@@ -100,7 +81,6 @@ import {
   type NotificationPreferences,
   parseNotificationPreferences,
 } from '@/utils/notificationPolicy';
-import { clampRestSeconds } from '@/utils/restTimer';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits } from '@/utils/units';
 
@@ -817,69 +797,17 @@ export class SettingsService {
 
   // ── Cycle tracking and app lock ──────────────────────────────────────────────────────────
 
-  static async getCycleShowPredictions(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, true);
-  }
-
-  static async setCycleShowPredictions(value: boolean) {
-    await SettingsService.setBooleanSetting(CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, value);
-  }
-
-  /** Fertility / ovulation estimates are opt-in: default false. */
-  static async getCycleShowFertility(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(CYCLE_SHOW_FERTILITY_SETTING_TYPE, false);
-  }
-
-  static async setCycleShowFertility(value: boolean) {
-    await SettingsService.setBooleanSetting(CYCLE_SHOW_FERTILITY_SETTING_TYPE, value);
-  }
-
-  static async getCycleNotificationStyle(): Promise<CycleNotificationStyle> {
-    const raw = await SettingsService.getStringSetting(CYCLE_NOTIFICATION_STYLE_SETTING_TYPE, '');
-
-    return parseCycleNotificationStyle(raw);
-  }
-
-  static async setCycleNotificationStyle(style: CycleNotificationStyle) {
-    await SettingsService.setStringSetting(CYCLE_NOTIFICATION_STYLE_SETTING_TYPE, style);
-  }
-
-  static async getCycleQuickLog(): Promise<string> {
-    return SettingsService.getStringSetting(CYCLE_QUICK_LOG_SETTING_TYPE, '');
-  }
-
-  static async setCycleQuickLog(raw: string) {
-    await SettingsService.setStringSetting(CYCLE_QUICK_LOG_SETTING_TYPE, raw);
-  }
-
-  static async getCyclePinSuggested(): Promise<string> {
-    return SettingsService.getStringSetting(CYCLE_PIN_SUGGESTED_SETTING_TYPE, '');
-  }
-
-  static async setCyclePinSuggested(raw: string) {
-    await SettingsService.setStringSetting(CYCLE_PIN_SUGGESTED_SETTING_TYPE, raw);
-  }
-
-  static async setCycleVariabilityHintDismissed(value: boolean) {
-    await SettingsService.setBooleanSetting(CYCLE_VARIABILITY_HINT_SETTING_TYPE, value);
-  }
-
-  static async getAppLockMode(): Promise<AppLockMode> {
-    return parseAppLockMode(await SettingsService.getStringSetting(APP_LOCK_MODE_SETTING_TYPE, ''));
-  }
-
-  static async setAppLockMode(mode: AppLockMode) {
-    await SettingsService.setStringSetting(APP_LOCK_MODE_SETTING_TYPE, mode);
-  }
-
   /** Back to defaults after "delete all cycle data". The app lock choice is left as the user set it. */
+  /** Puts every cycle preference back to its default, in one write. */
   static async resetCycleSettings() {
-    await SettingsService.setCycleShowPredictions(true);
-    await SettingsService.setCycleShowFertility(false);
-    await SettingsService.setCycleNotificationStyle('discreet');
-    await SettingsService.setCycleQuickLog('');
-    await SettingsService.setCyclePinSuggested('');
-    await SettingsService.setCycleVariabilityHintDismissed(false);
+    await SettingsService.resetToDefaults([
+      SETTINGS.cycleShowPredictions,
+      SETTINGS.cycleShowFertility,
+      SETTINGS.cycleNotificationStyle,
+      SETTINGS.cycleQuickLog,
+      SETTINGS.cyclePinSuggested,
+      SETTINGS.cycleVariabilityHintDismissed,
+    ]);
   }
 
   /**
@@ -912,66 +840,6 @@ export class SettingsService {
    */
   static async setProgressionMode(mode: ProgressionMode) {
     await SettingsService.setStringSetting(PROGRESSION_MODE_SETTING_TYPE, mode);
-  }
-
-  static async getWorkoutAutonomy(): Promise<WorkoutAutonomy> {
-    return parseWorkoutAutonomy(
-      await SettingsService.getStringSetting(WORKOUT_AUTONOMY_SETTING_TYPE, '')
-    );
-  }
-
-  static async setWorkoutAutonomy(value: WorkoutAutonomy) {
-    await SettingsService.setStringSetting(WORKOUT_AUTONOMY_SETTING_TYPE, value);
-  }
-
-  static async getAutoStartRestTimer(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(AUTO_START_REST_TIMER_SETTING_TYPE, true);
-  }
-
-  static async setAutoStartRestTimer(value: boolean) {
-    await SettingsService.setBooleanSetting(AUTO_START_REST_TIMER_SETTING_TYPE, value);
-  }
-
-  static async getRestTimerHaptics(): Promise<boolean> {
-    return SettingsService.getBooleanSetting(REST_TIMER_HAPTICS_SETTING_TYPE, true);
-  }
-
-  static async setRestTimerHaptics(value: boolean) {
-    await SettingsService.setBooleanSetting(REST_TIMER_HAPTICS_SETTING_TYPE, value);
-  }
-
-  static async getDefaultRestSeconds(): Promise<number> {
-    return clampRestSeconds(
-      Number(
-        await SettingsService.getStringSetting(
-          DEFAULT_REST_SECONDS_SETTING_TYPE,
-          String(DEFAULT_REST_SECONDS)
-        )
-      )
-    );
-  }
-
-  static async setDefaultRestSeconds(seconds: number) {
-    await SettingsService.setStringSetting(
-      DEFAULT_REST_SECONDS_SETTING_TYPE,
-      String(clampRestSeconds(seconds))
-    );
-  }
-
-  /**
-   * The id of the gym profile the user is training in, or null for none.
-   */
-  static async getActiveGymId(): Promise<string | null> {
-    const id = await SettingsService.getStringSetting(ACTIVE_GYM_ID_SETTING_TYPE, '');
-    return id || null;
-  }
-
-  /**
-   * Select the gym profile to train in, or pass null for none. An empty string is stored for
-   * "none": the settings table has no delete-by-type, and `getActiveGymId` reads '' as null.
-   */
-  static async setActiveGymId(gymId: string | null) {
-    await SettingsService.setStringSetting(ACTIVE_GYM_ID_SETTING_TYPE, gymId ?? '');
   }
 
   /**
@@ -1008,10 +876,6 @@ export class SettingsService {
       HOME_ACTIONS_SETTING_TYPE,
       JSON.stringify(keys.slice(0, MAX_HOME_ACTIONS))
     );
-  }
-
-  static async setShowHomeSteps(value: boolean) {
-    await SettingsService.setBooleanSetting(SHOW_HOME_STEPS_SETTING_TYPE, value);
   }
 
   /**
@@ -1075,82 +939,60 @@ export class SettingsService {
 
   // --- Private helpers ---
 
-  static async getWorkoutView(): Promise<'inline' | 'guided'> {
-    const value = await this.getStringSetting('workout_view', 'guided');
-    return value === 'inline' ? 'inline' : 'guided';
+  /**
+   * Reads a setting through its definition (`constants/settingDefinitions.ts`): the stored value
+   * parsed, or the definition's default when nothing is stored. Prefer this over adding another
+   * get/set pair here — a definition is one line, and `SettingsContext` reads the same one.
+   */
+  static async get<T>(setting: SettingDefinition<T>): Promise<T> {
+    const raw = await SettingsService.getRawSetting(setting.type);
+    return raw === undefined ? setting.defaultValue : setting.parse(raw);
   }
 
-  static async setWorkoutView(value: 'inline' | 'guided'): Promise<void> {
-    await this.setStringSetting('workout_view', value);
+  /** Writes a setting through its definition, which may refuse a value it must never store. */
+  static async set<T>(setting: SettingDefinition<T>, value: T): Promise<void> {
+    await SettingsService.setSettingValues([
+      { type: setting.type, value: setting.serialize(value) },
+    ]);
   }
 
-  static async getReviewWeekday(): Promise<number> {
-    const value = Number(await this.getStringSetting('review_weekday', '1'));
-    return Number.isInteger(value) && value >= 0 && value <= 6 ? value : 1;
+  /** Resets several settings to their defaults in one write, so a reset cannot half-apply. */
+  static async resetToDefaults(settings: readonly SettingDefinition<any>[]): Promise<void> {
+    await SettingsService.setSettingValues(
+      settings.map((setting) => ({
+        type: setting.type,
+        value: setting.serialize(setting.defaultValue),
+      }))
+    );
   }
 
-  static async getNotificationsWeeklyReview(): Promise<boolean> {
-    return this.getBooleanSetting('notifications_weekly_review', false);
-  }
+  /** The most recent stored value of a setting type, or `undefined` when there is no row. */
+  private static async getRawSetting(type: string): Promise<string | undefined> {
+    const settings = await database
+      .get<Setting>('settings')
+      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
 
-  static async setNotificationsWeeklyReview(value: boolean): Promise<void> {
-    await this.setBooleanSetting('notifications_weekly_review', value);
-  }
-
-  /** Whether the one-time Weekly Review welcome has been dismissed. Settings ride along in backups. */
-  static async getWeeklyReviewWelcomeSeen(): Promise<boolean> {
-    return this.getBooleanSetting('weekly_review_welcome_seen', false);
-  }
-
-  static async setWeeklyReviewWelcomeSeen(value: boolean): Promise<void> {
-    await this.setBooleanSetting('weekly_review_welcome_seen', value);
-  }
-
-  static async setReviewWeekday(value: number): Promise<void> {
-    if (!Number.isInteger(value) || value < 0 || value > 6) {
-      throw new Error('Invalid weekday');
+    if (settings.length === 0) {
+      return undefined;
     }
 
-    await this.setStringSetting('review_weekday', String(value));
+    const mostRecent = settings.reduce((latest, current) =>
+      current.updatedAt > latest.updatedAt ? current : latest
+    );
+
+    return mostRecent.value ?? undefined;
   }
 
   private static async getStringSetting(type: string, defaultValue: string): Promise<string> {
-    const settings = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    if (settings.length === 0) {
-      return defaultValue;
-    }
-
-    const mostRecent = settings.reduce((latest, current) =>
-      current.updatedAt > latest.updatedAt ? current : latest
-    );
-
-    return mostRecent.value ?? defaultValue;
+    return (await SettingsService.getRawSetting(type)) ?? defaultValue;
   }
 
   private static async getBooleanSetting(type: string, defaultValue: boolean): Promise<boolean> {
-    const settings = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    if (settings.length === 0) {
-      return defaultValue;
-    }
-
-    const mostRecent = settings.reduce((latest, current) =>
-      current.updatedAt > latest.updatedAt ? current : latest
-    );
-
-    return mostRecent.value === 'true';
+    const raw = await SettingsService.getRawSetting(type);
+    return raw === undefined ? defaultValue : raw === 'true';
   }
 
-  /**
-   * Helper method to upsert boolean settings
-   */
   private static async setBooleanSetting(type: string, value: boolean) {
     await SettingsService.setSettingValues([{ type, value: value.toString() }]);
   }

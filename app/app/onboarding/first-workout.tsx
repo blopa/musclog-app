@@ -71,8 +71,7 @@ export default function FirstWorkoutScreen() {
 
   useEffect(() => {
     let cancelled = false;
-    // TODO: avoid IIFE
-    (async () => {
+    const load = async () => {
       try {
         const [rawTraining, rawPersonalized] = await Promise.all([
           AsyncStorage.getItem(TRAINING_SETUP_DATA),
@@ -110,7 +109,9 @@ export default function FirstWorkoutScreen() {
           setIsLoading(false);
         }
       }
-    })();
+    };
+
+    void load();
 
     return () => {
       cancelled = true;

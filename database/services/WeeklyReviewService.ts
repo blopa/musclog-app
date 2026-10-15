@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type NutritionGoal from '@/database/models/NutritionGoal';
@@ -145,6 +146,43 @@ export type WeeklyActivity = {
   everFood: boolean;
 };
 
+/** The training half's choice, with the evidence the review showed when it was made. */
+export type TrainingReviewChoice = { decision: TrainingDecision } & Pick<
+  TrainingDecisionSnapshot,
+  'recommended' | 'reasons' | 'goals'
+>;
+
+type ReviewDecisionCommon = { period: ReturnType<typeof weeklyReviewPeriod> };
+
+/**
+ * One half of a Weekly Review being decided. A union rather than one shape with every field
+ * optional: a nutrition decision always names its goal, an applied one always carries the
+ * recommendation it applies and the targets accepted, and a training decision always carries its
+ * choice — so none of that is re-checked, or asserted with `!`, inside `decide`.
+ */
+export type WeeklyReviewDecisionInput =
+  | (ReviewDecisionCommon & {
+      section: 'training';
+      /** The goal the review was shown for, when there was one; it keys the review row. */
+      goalId?: string;
+      training: TrainingReviewChoice;
+    })
+  | (ReviewDecisionCommon & {
+      section: 'nutrition';
+      goalId: string;
+      decision: 'keep';
+      recommendation?: WeeklyNutritionRecommendation;
+      /** The targets kept, recorded for the history. */
+      accepted?: NutritionTargets;
+    })
+  | (ReviewDecisionCommon & {
+      section: 'nutrition';
+      goalId: string;
+      decision: 'apply';
+      recommendation: WeeklyNutritionRecommendation;
+      accepted: NutritionTargets;
+    });
+
 export class WeeklyReviewService {
   /** The week's activity, [start, end). One definition shared by the overview and the status badge. */
   static async weekActivity(start: number, end: number): Promise<WeeklyActivity> {
@@ -199,7 +237,7 @@ export class WeeklyReviewService {
       .fetch();
   }
   static async overview(reviewId?: string, reviewDay?: Date) {
-    const weekday = await SettingsService.getReviewWeekday();
+    const weekday = await SettingsService.get(SETTINGS.reviewWeekday);
     const saved = reviewId
       ? await database.get<WeeklyReview>('weekly_reviews').find(reviewId)
       : undefined;
@@ -513,44 +551,30 @@ export class WeeklyReviewService {
     return { nutrition, trendWeight, gaps };
   }
 
-  static async decide(input: {
-    period: ReturnType<typeof weeklyReviewPeriod>;
-    goalId?: string;
-    section: 'training' | 'nutrition';
-    decision?: 'apply' | 'keep';
-    /** The training half's choice, with the evidence the review showed when it was made. */
-    training?: {
-      decision: TrainingDecision;
-    } & Pick<TrainingDecisionSnapshot, 'recommended' | 'reasons' | 'goals'>;
-    recommendation?: WeeklyNutritionRecommendation;
-    accepted?: NutritionTargets;
-  }): Promise<string> {
-    if (input.section === 'nutrition' && (!input.goalId || !input.decision)) {
-      throw new Error('A nutrition decision requires a goal');
-    }
-
-    if (
-      input.section === 'training' &&
-      (!input.training || !TRAINING_DECISIONS.includes(input.training.decision))
-    ) {
+  static async decide(input: WeeklyReviewDecisionInput): Promise<string> {
+    // The union already guarantees a goal for nutrition and a choice for training; this guards the
+    // VALUE, which comes from a stored proposal rather than from the type.
+    if (input.section === 'training' && !TRAINING_DECISIONS.includes(input.training.decision)) {
       throw new Error('A training decision is required');
     }
 
     // A review shapes the days until the next one is due. Once that has passed, training decisions
     // and approved targets would describe a week that is no longer the one being lived, so both are
     // refused; acknowledging ("keep") a past nutrition review changes nothing and stays possible.
-    if (
-      (input.section === 'training' || input.decision === 'apply') &&
-      Date.now() >= input.period.next
-    ) {
+    const shapesTheWeek = input.section === 'training' || input.decision === 'apply';
+    if (shapesTheWeek && Date.now() >= input.period.next) {
       throw new Error('This review has ended; refresh the review');
     }
 
-    if (input.decision === 'apply' && (!input.recommendation?.canApply || !input.accepted)) {
+    if (
+      input.section === 'nutrition' &&
+      input.decision === 'apply' &&
+      !input.recommendation.canApply
+    ) {
       throw new Error('More logged data is required');
     }
 
-    if (input.accepted) {
+    if (input.section === 'nutrition' && input.accepted) {
       NutritionTargetService.validateTargets(input.accepted);
     }
 
@@ -569,24 +593,28 @@ export class WeeklyReviewService {
 
       const goal =
         input.section === 'nutrition'
-          ? await database.get<NutritionGoal>('nutrition_goals').find(input.goalId!)
+          ? await database.get<NutritionGoal>('nutrition_goals').find(input.goalId)
           : null;
       if (goal && (goal.deletedAt || goal.effectiveUntil != null)) {
         throw new Error('Goal has changed; refresh the review');
       }
 
-      if (input.decision === 'apply' && goal && nutritionTargetMode(goal) !== 'weekly') {
+      // The approved targets, when this decision installs any: only an applied nutrition review does.
+      const applied =
+        input.section === 'nutrition' && input.decision === 'apply' && goal
+          ? { goal, targets: input.accepted }
+          : null;
+      if (applied && nutritionTargetMode(applied.goal) !== 'weekly') {
         throw new Error('Switch to weekly targets before applying');
       }
 
       const from = localDayKeyPlusCalendarDays(localDayStartMs(new Date()), 1);
-      const periods =
-        input.decision === 'apply' && goal
-          ? await database
-              .get<NutritionTargetPeriod>('nutrition_target_periods')
-              .query(Q.where('nutrition_goal_id', goal.id), Q.where('deleted_at', Q.eq(null)))
-              .fetch()
-          : [];
+      const periods = applied
+        ? await database
+            .get<NutritionTargetPeriod>('nutrition_target_periods')
+            .query(Q.where('nutrition_goal_id', applied.goal.id), Q.where('deleted_at', Q.eq(null)))
+            .fetch()
+        : [];
       const now = Date.now();
       const populate = (record: WeeklyReview) => {
         if (!existing) {
@@ -599,9 +627,9 @@ export class WeeklyReviewService {
         record.nutritionGoalId = input.goalId;
         if (input.section === 'training') {
           record.trainingReviewedAt = now;
-          record.trainingDecision = input.training!.decision;
+          record.trainingDecision = input.training.decision;
           record.trainingJson = serializeTrainingDecisionSnapshot({
-            ...input.training!,
+            ...input.training,
             // The decision shapes workouts from now until the next review is due.
             window: { from: now, until: input.period.next },
           });
@@ -626,7 +654,7 @@ export class WeeklyReviewService {
           ? existing.prepareUpdate(populate)
           : database.get<WeeklyReview>('weekly_reviews').prepareCreate(populate);
         const operations: Model[] = [review];
-        if (input.decision === 'apply' && goal) {
+        if (applied) {
           operations.push(
             ...periods
               .filter((row) => row.effectiveUntil == null || row.effectiveUntil > from)
@@ -636,7 +664,13 @@ export class WeeklyReviewService {
                   record.updatedAt = now;
                 })
               ),
-            NutritionTargetService.preparePeriod(goal.id, input.accepted!, from, now, review.id)
+            NutritionTargetService.preparePeriod(
+              applied.goal.id,
+              applied.targets,
+              from,
+              now,
+              review.id
+            )
           );
         }
 

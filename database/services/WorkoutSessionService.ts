@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type Exercise from '@/database/models/Exercise';
@@ -75,7 +76,7 @@ export class WorkoutSessionService {
     const [gym, mode, autonomy, bodyWeightKg] = await Promise.all([
       GymService.getActiveGym().catch(() => null),
       SettingsService.getProgressionMode(),
-      SettingsService.getWorkoutAutonomy(),
+      SettingsService.get(SETTINGS.workoutAutonomy),
       UserMetricService.getUserBodyWeightKgForVolume(),
     ]);
     const unitsFor = await ExerciseUserSettingsService.getWeightUnitsResolver(gym);

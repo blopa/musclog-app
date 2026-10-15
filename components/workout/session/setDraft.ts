@@ -3,7 +3,11 @@ import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import type { SessionSetValues } from '@/database/services/WorkoutSessionService';
 import type { SessionDraft } from '@/hooks/useWorkoutSessionController';
 import { displayWeightKgNumeric } from '@/utils/formatDisplayWeight';
-import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
+import {
+  getDecimalSeparator,
+  parseLocalizedDecimalString,
+  parseStrictLocalizedNumber,
+} from '@/utils/localizedDecimalInput';
 import { displayToKg } from '@/utils/unitConversion';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
@@ -63,8 +67,13 @@ export function liveWeightKg(
     return set.weight;
   }
 
-  const parsed = parseLocalizedDecimalString(typed, getDecimalSeparator(locale));
-  return Number.isFinite(parsed) ? displayToKg(parsed, units) : set.weight;
+  // A stamped draft is read in the unit and locale it was typed in, so it means the same load
+  // after the user switches either mid-session.
+  const parsed = parseLocalizedDecimalString(
+    typed,
+    getDecimalSeparator(draft?.weightLocale ?? locale)
+  );
+  return Number.isFinite(parsed) ? displayToKg(parsed, draft?.weightUnits ?? units) : set.weight;
 }
 
 /** Tags a patch that types a weight with the unit and locale it was typed in. */
@@ -79,8 +88,11 @@ export function stampWeightPatch(
 }
 
 /**
- * Re-expresses a typed weight in the unit and locale now in effect. Returns the patch to apply, or
- * `null` when the draft is already current (or has no typed weight / predates the stamp).
+ * Re-expresses a typed weight in the unit and locale now in effect, for display. Returns the
+ * fields to show over the draft, or `null` when the draft is already current (or has no typed
+ * weight / predates the stamp). It is applied when a draft is READ, never written back: the stored
+ * draft keeps the text as typed with its stamp, so switching units back and forth converts from
+ * the original every time instead of compounding rounding.
  */
 export function reconcileWeightDraft(
   draft: Partial<SessionDraft> | undefined,
@@ -109,6 +121,76 @@ export function reconcileWeightDraft(
   };
 }
 
+/** See `parseStrictLocalizedNumber`: an emptied weight used to complete the set at 0 kg. */
+const strictNumber = (text: string | undefined, locale: string) =>
+  parseStrictLocalizedNumber(text, getDecimalSeparator(locale));
+
+/** A field that stops a set from being completed as typed. */
+export type SetDraftField = 'weight' | 'reps';
+
+/** The most reps a set may record; matches the session writer's own bound. */
+const MAX_SET_REPS = 999;
+
+/**
+ * Why a set cannot be completed with what its inputs show, or `null` when it can. Checked before
+ * the save so the user is told which field to fix: an emptied reps field used to save a performed
+ * set of 0 reps (`Number('')` is 0), which progression then read as a missed session, and an
+ * emptied weight reached the writer as NaN and came back as a generic "not saved".
+ *
+ * Zero reps is refused too: a set that was not done is skipped, not completed.
+ */
+export function setDraftProblem(draft: SessionDraft, locale: string): SetDraftField | null {
+  if (strictNumber(draft.weight, locale) == null) {
+    return 'weight';
+  }
+
+  const reps = strictNumber(draft.reps, locale);
+  if (reps == null || !Number.isInteger(reps) || reps <= 0 || reps > MAX_SET_REPS) {
+    return 'reps';
+  }
+
+  return null;
+}
+
+/** The scale both effort inputs share: RPE 10 is a set with nothing left in reserve. */
+const RPE_AT_FAILURE = 10;
+
+/**
+ * Keeps reps in reserve and RPE describing the same set. They are one scale written two ways
+ * (RPE = 10 − RIR), and as independent fields a set could be saved as "2 in reserve, RPE 10".
+ * Typing either one rewrites the other; clearing either clears both. A value that does not parse
+ * is left for the user to finish typing and does not touch the other field.
+ */
+export function linkEffortPatch(
+  patch: Partial<SessionDraft>,
+  locale: string
+): Partial<SessionDraft> {
+  const counterpart = (text: string, min: number): string | null => {
+    if (!text.trim()) {
+      return '';
+    }
+
+    const value = strictNumber(text, locale);
+    if (value == null || value > RPE_AT_FAILURE) {
+      return null;
+    }
+
+    return formatInput(Math.max(min, RPE_AT_FAILURE - value), locale, 1);
+  };
+
+  if (patch.rir !== undefined && patch.rpe === undefined) {
+    const rpe = counterpart(patch.rir, 1);
+    return rpe == null ? patch : { ...patch, rpe };
+  }
+
+  if (patch.rpe !== undefined && patch.rir === undefined) {
+    const rir = counterpart(patch.rpe, 0);
+    return rir == null ? patch : { ...patch, rir };
+  }
+
+  return patch;
+}
+
 /** The values a completion saves, converted back to kilograms. */
 export function valuesFromDraft(
   draft: SessionDraft,
@@ -118,12 +200,22 @@ export function valuesFromDraft(
 ): SessionSetValues {
   const separator = getDecimalSeparator(locale);
   const parse = (value?: string) => parseLocalizedDecimalString(value ?? '', separator);
+  const difficultyLevel = draft.rpe?.trim() ? parse(draft.rpe) : undefined;
+  let repsInReserve: number | undefined;
+  if (draft.rir?.trim()) {
+    repsInReserve = parse(draft.rir);
+  } else if (difficultyLevel != null && Number.isFinite(difficultyLevel)) {
+    // RPE alone still rates the set: progression runs on reps in reserve, and a lifter who logs
+    // effort as RPE must not be treated as never having rated it.
+    repsInReserve = Math.max(0, RPE_AT_FAILURE - difficultyLevel);
+  }
+
   return {
     weight: displayToKg(parse(draft.weight), units),
     reps: Number(draft.reps),
     partials: Number(draft.partials || 0),
-    repsInReserve: draft.rir?.trim() ? parse(draft.rir) : undefined,
-    difficultyLevel: draft.rpe?.trim() ? parse(draft.rpe) : undefined,
+    repsInReserve,
+    difficultyLevel,
     manual,
   };
 }

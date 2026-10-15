@@ -21,8 +21,7 @@ export function FirstSessionTip({ view }: { view: 'inline' | 'guided' }) {
 
   useEffect(() => {
     let cancelled = false;
-    // TODO: avoid IIFE
-    (async () => {
+    const load = async () => {
       try {
         if ((await AsyncStorage.getItem(WORKOUT_FIRST_TIP_SEEN)) === 'true') {
           return;
@@ -40,7 +39,9 @@ export function FirstSessionTip({ view }: { view: 'inline' | 'guided' }) {
       } catch {
         // A tip is never worth an error.
       }
-    })();
+    };
+
+    void load();
 
     return () => {
       cancelled = true;

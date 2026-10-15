@@ -28,6 +28,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { defaultRepCeilingFor } from '@/utils/bodyweightRepCeiling';
 import {
   getPaddedYDomain,
   getTimeSeriesXDomain,
@@ -650,6 +651,7 @@ export default function ViewExerciseModal({
           <ExerciseUserSettingsSection
             exerciseId={exercise.id}
             isBodyweight={exercise.equipmentType === 'bodyweight'}
+            defaultRepCeiling={defaultRepCeilingFor(exercise.loadMultiplier)}
           />
 
           <ExerciseRestrictionSection exerciseId={exercise.id} />

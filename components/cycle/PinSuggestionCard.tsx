@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
@@ -22,7 +23,7 @@ export function PinSuggestionCard() {
 
   useEffect(() => {
     let cancelled = false;
-    void SettingsService.getCyclePinSuggested().then((raw) => {
+    void SettingsService.get(SETTINGS.cyclePinSuggested).then((raw) => {
       if (!cancelled) {
         setOffered(raw.split(',').filter(Boolean));
       }

@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { database } from '@/database';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
 import type WeeklyReview from '@/database/models/WeeklyReview';
@@ -121,8 +122,8 @@ export class NutritionNotificationService {
 
     const [enabled, allowed, weekday, scheduled, goal, intuitive] = await Promise.all([
       SettingsService.getNotifications(),
-      SettingsService.getNotificationsWeeklyReview(),
-      SettingsService.getReviewWeekday(),
+      SettingsService.get(SETTINGS.notificationsWeeklyReview),
+      SettingsService.get(SETTINGS.reviewWeekday),
       Notifications.getAllScheduledNotificationsAsync(),
       NutritionGoalService.getCurrent(),
       SettingsService.getIntuitiveEatingMode(),

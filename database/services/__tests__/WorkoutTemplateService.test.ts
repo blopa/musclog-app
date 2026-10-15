@@ -1,3 +1,4 @@
+import { settingsGetMock } from './settingsGetMock';
 import { database } from '@/database/database-instance';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import { GymService } from '@/database/services/GymService';
@@ -2747,7 +2748,9 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
     jest.restoreAllMocks();
     mockDatabase.get.mockReset();
     jest.spyOn(SettingsService, 'getProgressionMode').mockResolvedValue('weight_first');
-    jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('suggest');
+    jest
+      .spyOn(SettingsService, 'get')
+      .mockImplementation(settingsGetMock({ workoutAutonomy: 'suggest' }));
     jest.spyOn(SettingsService, 'getUnits').mockResolvedValue('metric');
   });
 

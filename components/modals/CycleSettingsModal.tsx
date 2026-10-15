@@ -17,6 +17,7 @@ import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type { AppLockMode } from '@/constants/settings';
 import { useAppLock } from '@/context/AppLockContext';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -157,7 +158,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
         return;
       }
 
-      await SettingsService.setAppLockMode(mode);
+      await SettingsService.set(SETTINGS.appLockMode, mode);
     });
   };
 
@@ -203,7 +204,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
       variant: 'primary' as const,
       onConfirm: async () => {
         await guarded('CycleSettingsModal.fertility', () =>
-          SettingsService.setCycleShowFertility(true)
+          SettingsService.set(SETTINGS.cycleShowFertility, true)
         );
         setSub(null);
       },
@@ -309,7 +310,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                       value: cycleShowPredictions,
                       onValueChange: (value) =>
                         void guarded('CycleSettingsModal.predictions', () =>
-                          SettingsService.setCycleShowPredictions(value)
+                          SettingsService.set(SETTINGS.cycleShowPredictions, value)
                         ),
                     },
                     {
@@ -322,7 +323,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
                           setSub('fertility');
                         } else {
                           void guarded('CycleSettingsModal.fertility', () =>
-                            SettingsService.setCycleShowFertility(false)
+                            SettingsService.set(SETTINGS.cycleShowFertility, false)
                           );
                         }
                       },

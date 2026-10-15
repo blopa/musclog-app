@@ -42,7 +42,7 @@ import {
   type SessionBlock,
   type SessionSetRowModel,
 } from './sessionModel';
-import { draftFromPrevious, stepInput } from './setDraft';
+import { draftFromPrevious, type SetDraftField, stepInput } from './setDraft';
 
 const HERO_HEIGHT = 260;
 
@@ -65,6 +65,7 @@ function StepperField({
   locale,
   editable,
   adjusted,
+  invalid,
   testID,
   onChange,
 }: {
@@ -72,6 +73,8 @@ function StepperField({
   unit?: string;
   /** The app calculated this number (see `adjustedFields`); the user has not typed over it. */
   adjusted?: boolean;
+  /** The value stopped the last completion (see `setDraftProblem`). */
+  invalid?: boolean;
   value: string;
   step: number;
   locale: string;
@@ -113,6 +116,7 @@ function StepperField({
         onChangeText={onChange}
         integer={wholeNumbers}
         marked={!!adjusted}
+        invalid={invalid}
       />
       <View className="flex-row gap-3">
         {button(-1)}
@@ -141,6 +145,7 @@ export function GuidedExerciseView({
   notes,
   warmup,
   busy,
+  invalidField,
   nextLabel,
   onPreviousExercise,
   onNextExercise,
@@ -164,6 +169,8 @@ export function GuidedExerciseView({
   notes: SessionNote[];
   warmup: 'add' | 'remove' | null;
   busy: boolean;
+  /** The field that stopped the last attempt to complete this set, until the user edits it. */
+  invalidField?: SetDraftField | null;
   /** "Up next" — the set after this one, already resolved through the superset order. */
   nextLabel?: string;
   onPreviousExercise?: () => void;
@@ -290,6 +297,7 @@ export function GuidedExerciseView({
             locale={locale}
             editable={!done}
             adjusted={weightAdjusted}
+            invalid={invalidField === 'weight'}
             testID={`set-${set.id}-weight`}
             onChange={(weight) => onEdit({ weight })}
           />
@@ -300,6 +308,7 @@ export function GuidedExerciseView({
             locale={locale}
             editable={!done}
             adjusted={repsAdjusted}
+            invalid={invalidField === 'reps'}
             testID={`set-${set.id}-reps`}
             onChange={(reps) => onEdit({ reps })}
           />

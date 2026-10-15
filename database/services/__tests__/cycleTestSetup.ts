@@ -17,7 +17,7 @@ jest.mock('@/database/adapter', () => {
 });
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
-    setCycleShowFertility: jest.fn(async () => {}),
+    set: jest.fn(async () => {}),
     resetCycleSettings: jest.fn(async () => {}),
     getThemePreference: async () => 'kinetic-depth',
   },

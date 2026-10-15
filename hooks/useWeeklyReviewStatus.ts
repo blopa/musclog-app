@@ -3,6 +3,7 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { database } from '@/database/database-instance';
 import { waitForDbReady } from '@/database/dbReady';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
@@ -35,7 +36,7 @@ export function useWeeklyReviewStatus() {
   const reload = useCallback(async () => {
     await waitForDbReady();
     const [weekday, goal, intuitive, reviews] = await Promise.all([
-      SettingsService.getReviewWeekday(),
+      SettingsService.get(SETTINGS.reviewWeekday),
       NutritionGoalService.getCurrent(),
       SettingsService.getIntuitiveEatingMode(),
       WeeklyReviewService.history(),

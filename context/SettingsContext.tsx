@@ -4,29 +4,19 @@ import { createContext, ReactNode, useContext, useEffect, useMemo, useState } fr
 import { GEMINI_MODELS } from '@/constants/ai';
 import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
-import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
+import { readSetting, SETTINGS } from '@/constants/settingDefinitions';
 import {
-  ACTIVE_GYM_ID_SETTING_TYPE,
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
-  APP_LOCK_MODE_SETTING_TYPE,
   type AppLockMode,
-  AUTO_START_REST_TIMER_SETTING_TYPE,
   BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   type ChartTooltipPosition,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
-  CYCLE_NOTIFICATION_STYLE_SETTING_TYPE,
-  CYCLE_QUICK_LOG_SETTING_TYPE,
-  CYCLE_SHOW_FERTILITY_SETTING_TYPE,
-  CYCLE_SHOW_PREDICTIONS_SETTING_TYPE,
-  CYCLE_VARIABILITY_HINT_SETTING_TYPE,
   type CycleNotificationStyle,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
-  DEFAULT_REST_SECONDS_SETTING_TYPE,
-  DEFAULT_WORKOUT_AUTONOMY,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
@@ -62,19 +52,14 @@ import {
   type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
-  parseAppLockMode,
-  parseCycleNotificationStyle,
-  parseWorkoutAutonomy,
   PROGRESSION_MODE_SETTING_TYPE,
   type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
-  REST_TIMER_HAPTICS_SETTING_TYPE,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
   SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
-  SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
@@ -86,7 +71,6 @@ import {
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
   type UseSettingsResult,
-  WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   type WorkoutAutonomy,
@@ -99,7 +83,6 @@ import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
-import { clampRestSeconds } from '@/utils/restTimer';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
@@ -255,19 +238,19 @@ const DEFAULT_STATE: SettingsState = {
   useBfForCalculations: false,
   intuitiveEatingMode: false,
   enableFastedDay: false,
-  cycleShowPredictions: true,
-  cycleShowFertility: false,
-  cycleNotificationStyle: 'discreet',
-  cycleQuickLogRaw: '',
-  cycleVariabilityHintDismissed: false,
-  appLockMode: 'off',
+  cycleShowPredictions: SETTINGS.cycleShowPredictions.defaultValue,
+  cycleShowFertility: SETTINGS.cycleShowFertility.defaultValue,
+  cycleNotificationStyle: SETTINGS.cycleNotificationStyle.defaultValue,
+  cycleQuickLogRaw: SETTINGS.cycleQuickLog.defaultValue,
+  cycleVariabilityHintDismissed: SETTINGS.cycleVariabilityHintDismissed.defaultValue,
+  appLockMode: SETTINGS.appLockMode.defaultValue,
   includeFiberInCarbs: true,
   progressionMode: 'reps_first',
   activeGymId: '',
-  workoutAutonomy: DEFAULT_WORKOUT_AUTONOMY,
-  autoStartRestTimer: true,
-  restTimerHaptics: true,
-  defaultRestSeconds: DEFAULT_REST_SECONDS,
+  workoutAutonomy: SETTINGS.workoutAutonomy.defaultValue,
+  autoStartRestTimer: SETTINGS.autoStartRestTimer.defaultValue,
+  restTimerHaptics: SETTINGS.restTimerHaptics.defaultValue,
+  defaultRestSeconds: SETTINGS.defaultRestSeconds.defaultValue,
   nutritionDisplay: '11111',
   advancedDataManagement: false,
   bleGenerateChartPayload: false,
@@ -275,7 +258,7 @@ const DEFAULT_STATE: SettingsState = {
   workoutHistoryDays: 'none',
   homeSummaryCard: 'daily_summary',
   homeActionsRaw: '',
-  showHomeSteps: true,
+  showHomeSteps: SETTINGS.showHomeSteps.defaultValue,
   isLoading: true,
 };
 
@@ -403,23 +386,20 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     useBfForCalculations: getBoolean(map, USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
     enableFastedDay: getBoolean(map, ENABLE_FASTED_DAY_SETTING_TYPE, false),
-    cycleShowPredictions: getBoolean(map, CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, true),
-    cycleShowFertility: getBoolean(map, CYCLE_SHOW_FERTILITY_SETTING_TYPE, false),
-    cycleNotificationStyle: parseCycleNotificationStyle(
-      getString(map, CYCLE_NOTIFICATION_STYLE_SETTING_TYPE)
-    ),
-    cycleQuickLogRaw: getString(map, CYCLE_QUICK_LOG_SETTING_TYPE, ''),
-    cycleVariabilityHintDismissed: getBoolean(map, CYCLE_VARIABILITY_HINT_SETTING_TYPE, false),
-    appLockMode: parseAppLockMode(getString(map, APP_LOCK_MODE_SETTING_TYPE)),
+    cycleShowPredictions: readSetting(map, SETTINGS.cycleShowPredictions),
+    cycleShowFertility: readSetting(map, SETTINGS.cycleShowFertility),
+    cycleNotificationStyle: readSetting(map, SETTINGS.cycleNotificationStyle),
+    cycleQuickLogRaw: readSetting(map, SETTINGS.cycleQuickLog),
+    cycleVariabilityHintDismissed: readSetting(map, SETTINGS.cycleVariabilityHintDismissed),
+    appLockMode: readSetting(map, SETTINGS.appLockMode),
     includeFiberInCarbs: getBoolean(map, INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, true),
     progressionMode,
-    activeGymId: getString(map, ACTIVE_GYM_ID_SETTING_TYPE, ''),
-    workoutAutonomy: parseWorkoutAutonomy(getString(map, WORKOUT_AUTONOMY_SETTING_TYPE)),
-    autoStartRestTimer: getBoolean(map, AUTO_START_REST_TIMER_SETTING_TYPE, true),
-    restTimerHaptics: getBoolean(map, REST_TIMER_HAPTICS_SETTING_TYPE, true),
-    defaultRestSeconds: clampRestSeconds(
-      getNumber(map, DEFAULT_REST_SECONDS_SETTING_TYPE, DEFAULT_REST_SECONDS)
-    ),
+    // State fields stay primitive and non-null: no active gym is the empty string here.
+    activeGymId: readSetting(map, SETTINGS.activeGymId) ?? '',
+    workoutAutonomy: readSetting(map, SETTINGS.workoutAutonomy),
+    autoStartRestTimer: readSetting(map, SETTINGS.autoStartRestTimer),
+    restTimerHaptics: readSetting(map, SETTINGS.restTimerHaptics),
+    defaultRestSeconds: readSetting(map, SETTINGS.defaultRestSeconds),
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
     bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
@@ -427,7 +407,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
     homeSummaryCard,
     homeActionsRaw: map.get(HOME_ACTIONS_SETTING_TYPE) ?? '',
-    showHomeSteps: getBoolean(map, SHOW_HOME_STEPS_SETTING_TYPE, true),
+    showHomeSteps: readSetting(map, SETTINGS.showHomeSteps),
     isLoading: false,
   };
 }

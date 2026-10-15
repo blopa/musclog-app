@@ -1,3 +1,4 @@
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 
@@ -15,35 +16,35 @@ type SettingIO = {
 };
 export const WHATS_NEW_SETTING_IO: SettingIO = {
   workoutView: {
-    read: () => SettingsService.getWorkoutView(),
-    write: (v) => SettingsService.setWorkoutView(v),
+    read: () => SettingsService.get(SETTINGS.workoutView),
+    write: (v) => SettingsService.set(SETTINGS.workoutView, v),
   },
   workoutAutonomy: {
-    read: () => SettingsService.getWorkoutAutonomy(),
-    write: (v) => SettingsService.setWorkoutAutonomy(v),
+    read: () => SettingsService.get(SETTINGS.workoutAutonomy),
+    write: (v) => SettingsService.set(SETTINGS.workoutAutonomy, v),
   },
   progressionMode: {
     read: () => SettingsService.getProgressionMode(),
     write: (v) => SettingsService.setProgressionMode(v),
   },
   autoStartRestTimer: {
-    read: () => SettingsService.getAutoStartRestTimer(),
-    write: (v) => SettingsService.setAutoStartRestTimer(v),
+    read: () => SettingsService.get(SETTINGS.autoStartRestTimer),
+    write: (v) => SettingsService.set(SETTINGS.autoStartRestTimer, v),
   },
   restTimerHaptics: {
-    read: () => SettingsService.getRestTimerHaptics(),
-    write: (v) => SettingsService.setRestTimerHaptics(v),
+    read: () => SettingsService.get(SETTINGS.restTimerHaptics),
+    write: (v) => SettingsService.set(SETTINGS.restTimerHaptics, v),
   },
   reviewWeekday: {
-    read: () => SettingsService.getReviewWeekday(),
+    read: () => SettingsService.get(SETTINGS.reviewWeekday),
     write: async (value) => {
-      const previous = await SettingsService.getReviewWeekday();
-      await SettingsService.setReviewWeekday(value);
+      const previous = await SettingsService.get(SETTINGS.reviewWeekday);
+      await SettingsService.set(SETTINGS.reviewWeekday, value);
       try {
         await NutritionNotificationService.scheduleWeeklyReviewNotification();
       } catch (error) {
         // Match the reverted choice if notification scheduling fails after the setting saved.
-        await SettingsService.setReviewWeekday(previous);
+        await SettingsService.set(SETTINGS.reviewWeekday, previous);
         await NutritionNotificationService.scheduleWeeklyReviewNotification().catch(
           () => undefined
         );

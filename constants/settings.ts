@@ -325,6 +325,12 @@ export const PROGRESSION_MODE_SETTING_TYPE = 'progression_mode';
  * primitive string so `SettingsState` stays primitive-only; the profile itself lives in `gyms`.
  */
 export const ACTIVE_GYM_ID_SETTING_TYPE = 'active_gym_id';
+/** Which live-session view the user last chose: `inline` or `guided`. */
+export const WORKOUT_VIEW_SETTING_TYPE = 'workout_view';
+/** The weekday (0 = Sunday) a Weekly Review falls due. */
+export const REVIEW_WEEKDAY_SETTING_TYPE = 'review_weekday';
+export const NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE = 'notifications_weekly_review';
+export const WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE = 'weekly_review_welcome_seen';
 
 /** Setting type for how much of a started workout's numbers the app decides. value: 'manual' | 'suggest'. */
 export const WORKOUT_AUTONOMY_SETTING_TYPE = 'workout_autonomy';

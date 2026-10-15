@@ -161,13 +161,12 @@ export function serializeCycleTransfer(input: {
 
 export function validateCycleTransfer(raw: unknown, now = Date.now()): CycleTransfer {
   const result = transferSchema.parse(raw);
-  for (const [rows, key] of [
-    [result.periods, 'startDate'],
-    [result.dayLogs, 'date'],
-    [result.contexts, 'effectiveFrom'],
-    [result.moods, 'date'],
+  for (const [key, dates] of [
+    ['startDate', result.periods.map((p) => p.startDate)],
+    ['date', result.dayLogs.map((d) => d.date)],
+    ['effectiveFrom', result.contexts.map((c) => c.effectiveFrom)],
+    ['date', result.moods.map((m) => m.date)],
   ] as const) {
-    const dates = rows.map((r) => (r as unknown as Record<string, number>)[key]);
     if (new Set(dates).size !== dates.length) {
       throw new Error('duplicate_cycle_dates');
     }

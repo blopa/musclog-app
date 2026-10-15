@@ -210,6 +210,9 @@
     "nextTime": "Volgende keer",
     "detailsHint": "Optioneel. Laat inspanning leeg als je deze set niet hebt beoordeeld.",
     "rirHint": "Herhalingen over",
+    "rpeHint": "Zelfde schaal als RIR: RPE 10 is niets meer over",
+    "invalidWeight": "Vul het gewicht in dat je tilde (0 voor alleen lichaamsgewicht).",
+    "invalidReps": "Vul de herhalingen in die je deed, of sla de set over.",
     "skipSet": "Deze set overslaan",
     "done": "Klaar",
     "columns": {
@@ -403,12 +406,23 @@
       "noWorkouts": "Geen trainingen deze week, dus volgende week pak je op waar je was gebleven.",
       "missedConsistency": "Je trainde veel minder dan je weekdoel; herhalen voorkomt een plotselinge sprong.",
       "repeatedDeloads": "{{count}} oefeningen hadden deze week zelf een deload nodig.",
-      "lowReserveStalled": "Je sets lieten niets in reserve en een lift die je volgt stagneert.",
+      "lowReserveStalled": "Je sets lieten niets in reserve en een lift stagneert.",
       "dueForLighter": "Het is {{count}} weken geleden sinds een lichtere week.",
       "onTrack": "De training loopt goed."
     },
     "belowFloorTitle": "Onder de minimale caloriegrens",
     "belowFloorBody": "Dit ligt onder je minimum van {{minimum}} kcal. Je hebt de minimale caloriegrens uitgezet in de geavanceerde instellingen; zo laag gaan wordt afgeraden en kan onveilig zijn.",
-    "estimateShort": "Schatting"
+    "estimateShort": "Schatting",
+    "halfStatus": {
+      "done": "{{half}} beoordeeld",
+      "open": "{{half}} nog te beoordelen"
+    },
+    "targetsEditor": {
+      "invalidCalories": "Vul een caloriedoel boven 0 in.",
+      "invalidMacro": "Vul een getal in (0 of meer).",
+      "macroTotal": "Deze macro’s tellen op tot {{kcal}} kcal.",
+      "mismatch": "Deze macro’s tellen op tot {{kcal}} kcal en dat komt niet overeen met het caloriedoel.",
+      "useMacroTotal": "{{kcal}} kcal gebruiken"
+    }
   }
 }

@@ -118,6 +118,18 @@ describe('recommendTrainingWeek', () => {
     );
   });
 
+  it('reads an exercise that deloaded on its own as a stall too, for users without 1RM goals', () => {
+    const grinding = { ...base, ratedSets: 8, averageRir: 0.2, goals: [] };
+    // One deload alone is below the repeated-deloads threshold; with grinding it is a fatigue signal.
+    expect(recommendTrainingWeek({ ...grinding, deloadedExercises: 1 })).toEqual({
+      decision: 'lighter',
+      reasons: [{ code: 'lowReserveStalled' }],
+    });
+    expect(
+      recommendTrainingWeek({ ...grinding, averageRir: 2, deloadedExercises: 1 }).decision
+    ).toBe('progress');
+  });
+
   it('suggests a lighter week once the interval has passed', () => {
     expect(recommendTrainingWeek({ ...base, decidedWeeksSinceLighter: 5 }).decision).toBe(
       'progress'

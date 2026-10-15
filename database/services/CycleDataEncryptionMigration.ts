@@ -1,6 +1,7 @@
 import type { Model } from '@nozbe/watermelondb';
 import { Q } from '@nozbe/watermelondb';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { commitPrepared } from '@/database/commitPrepared';
 import { encryptCyclePayload, primeCycleEncryption } from '@/database/cyclePayload';
 import { database } from '@/database/database-instance';
@@ -228,7 +229,7 @@ export class CycleDataEncryptionMigration {
       };
     });
     if (result.preserveFertility) {
-      await SettingsService.setCycleShowFertility(true);
+      await SettingsService.set(SETTINGS.cycleShowFertility, true);
     }
 
     if (result.migratedCycles > 0 || result.migratedDays > 0) {

@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
@@ -51,7 +52,7 @@ export function PredictionCard({ onOpenDetails }: PredictionCardProps) {
 
   const setHidden = async (hidden: boolean) => {
     try {
-      await SettingsService.setCycleShowPredictions(!hidden);
+      await SettingsService.set(SETTINGS.cycleShowPredictions, !hidden);
     } catch (error) {
       handleError(error, 'PredictionCard.setHidden', {
         snackbarMessage: t('errors.somethingWentWrong'),
@@ -61,9 +62,9 @@ export function PredictionCard({ onOpenDetails }: PredictionCardProps) {
 
   const dismissHint = async (hide: boolean) => {
     try {
-      await SettingsService.setCycleVariabilityHintDismissed(true);
+      await SettingsService.set(SETTINGS.cycleVariabilityHintDismissed, true);
       if (hide) {
-        await SettingsService.setCycleShowPredictions(false);
+        await SettingsService.set(SETTINGS.cycleShowPredictions, false);
       }
     } catch (error) {
       handleError(error, 'PredictionCard.dismissHint', {

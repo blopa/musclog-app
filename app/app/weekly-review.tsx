@@ -16,17 +16,14 @@ import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { ListRow } from '@/components/theme/ListRow';
 import { TextButton } from '@/components/theme/TextButton';
-import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { WeekdayChoiceChips } from '@/components/WeekdayChoiceChips';
-import {
-  MACRO_FIELDS,
-  MACRO_LABEL_KEYS,
-  NutritionReviewSection,
-} from '@/components/weeklyReview/NutritionReviewSection';
+import { NutritionReviewSection } from '@/components/weeklyReview/NutritionReviewSection';
+import { TargetsEditorSheet } from '@/components/weeklyReview/TargetsEditorSheet';
 import { historyLabelKeys } from '@/components/weeklyReview/trainingDecisionCopy';
 import { TrainingReviewSection } from '@/components/weeklyReview/TrainingReviewSection';
 import { WeeklyReviewWelcome } from '@/components/weeklyReview/WeeklyReviewWelcome';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { type NutritionTargets } from '@/database/services/NutritionTargetService';
@@ -37,7 +34,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
 import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
-import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import type { TrainingDecision } from '@/utils/trainingWeekDecision';
 import { hasWeeklyActivity, shouldShowWeeklyReviewWelcome } from '@/utils/weeklyReviewEmptyState';
@@ -82,12 +78,13 @@ export default function WeeklyReviewScreen() {
   /** `null` until read, so the welcome cannot flash for someone who already dismissed it. */
   const [welcomeSeen, setWelcomeSeen] = useState<boolean | null>(null);
   useEffect(() => {
-    SettingsService.getNotificationsWeeklyReview().then(setReminder);
-    SettingsService.getWeeklyReviewWelcomeSeen()
+    SettingsService.get(SETTINGS.notificationsWeeklyReview)
+      .then(setReminder)
+      .catch(() => setReminder(false));
+    SettingsService.get(SETTINGS.weeklyReviewWelcomeSeen)
       .then(setWelcomeSeen)
       .catch(() => setWelcomeSeen(true));
   }, []);
-  const [draft, setDraft] = useState<Record<string, string>>({});
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formatDate = (value: number) =>
     new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(value);
@@ -113,23 +110,48 @@ export default function WeeklyReviewScreen() {
     }
   };
 
-  const decide = (decision: 'apply' | 'keep', edited?: NutritionTargets) =>
-    data &&
-    run(
+  /** Applies the recommendation (or the user's edit of it); only possible when there is one. */
+  const apply = (edited?: NutritionTargets) => {
+    const goal = data?.goal;
+    const recommendation = data?.nutrition;
+    if (!data || !goal || !recommendation) {
+      return;
+    }
+
+    void run(
       () =>
         WeeklyReviewService.decide({
           period: data.period,
-          goalId: data.goal?.id,
+          goalId: goal.id,
           section: 'nutrition',
-          decision,
-          recommendation: data.nutrition ?? undefined,
-          accepted:
-            decision === 'apply'
-              ? (edited ?? data.nutrition?.targets)
-              : (data.current ?? undefined),
+          decision: 'apply',
+          recommendation,
+          accepted: edited ?? recommendation.targets,
         }),
       closePanel
     );
+  };
+
+  /** Keeps the current targets: the review is closed and nothing changes. */
+  const keep = () => {
+    const goal = data?.goal;
+    if (!data || !goal) {
+      return;
+    }
+
+    void run(
+      () =>
+        WeeklyReviewService.decide({
+          period: data.period,
+          goalId: goal.id,
+          section: 'nutrition',
+          decision: 'keep',
+          recommendation: data.nutrition ?? undefined,
+          accepted: data.current ?? undefined,
+        }),
+      closePanel
+    );
+  };
 
   const reviewTraining = (decision: TrainingDecision) =>
     data &&
@@ -157,7 +179,7 @@ export default function WeeklyReviewScreen() {
   const changeWeekday = async (day: number) => {
     setError(false);
     try {
-      await SettingsService.setReviewWeekday(day);
+      await SettingsService.set(SETTINGS.reviewWeekday, day);
       await NutritionNotificationService.scheduleWeeklyReviewNotification();
       await reload();
     } catch {
@@ -168,7 +190,7 @@ export default function WeeklyReviewScreen() {
   const toggleReminder = async (value: boolean) => {
     setReminder(value);
     try {
-      await SettingsService.setNotificationsWeeklyReview(value);
+      await SettingsService.set(SETTINGS.notificationsWeeklyReview, value);
       await NutritionNotificationService.scheduleWeeklyReviewNotification();
     } catch {
       setReminder(!value);
@@ -177,41 +199,31 @@ export default function WeeklyReviewScreen() {
   };
 
   const openEditor = () => {
-    if (!data?.nutrition) {
-      return;
+    if (data?.nutrition) {
+      setError(false);
+      setPanel({ kind: 'editTargets' });
     }
-
-    setDraft(
-      Object.fromEntries(
-        MACRO_FIELDS.map((field) => [
-          field,
-          new Intl.NumberFormat(locale, { useGrouping: false, maximumFractionDigits: 1 }).format(
-            data.nutrition!.targets[field]
-          ),
-        ])
-      )
-    );
-    setPanel({ kind: 'editTargets' });
   };
 
-  const editedTargets = () =>
-    Object.fromEntries(
-      MACRO_FIELDS.map((field) => [
-        field,
-        parseLocalizedDecimalString(draft[field] ?? '', getDecimalSeparator(locale)),
-      ])
-    ) as NutritionTargets;
-
-  const progressDone = [
-    !!data?.training.reviewedAt || !data?.activity.everWorkout,
-    !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
+  /** Where each half of the review stands; a status line, not a control. */
+  const progress = [
+    {
+      key: 'training',
+      label: t('weeklyReview.training'),
+      done: !!data?.training.reviewedAt || !data?.activity.everWorkout,
+    },
+    {
+      key: 'nutrition',
+      label: t('weeklyReview.nutrition'),
+      done: !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
+    },
   ];
 
   const viewingLatest = !selectedReview && !requestedDay;
   const reviewable = !!data && hasWeeklyActivity(data.activity);
   const dismissWelcome = () => {
     setWelcomeSeen(true);
-    SettingsService.setWeeklyReviewWelcomeSeen(true).catch(() => {});
+    SettingsService.set(SETTINGS.weeklyReviewWelcomeSeen, true).catch(() => {});
   };
 
   /** The sheet or modal for the open panel; `null` when its data has gone away underneath it. */
@@ -242,50 +254,15 @@ export default function WeeklyReviewScreen() {
           />
         );
       case 'editTargets':
-        return (
-          <BottomPopUp
-            visible
-            onClose={() => {
-              if (!busy) {
-                closePanel();
-              }
-            }}
-            title={t('weeklyReview.edit')}
-            footer={
-              <View className="gap-3">
-                <Button
-                  label={t('weeklyReview.applyTomorrow')}
-                  disabled={busy}
-                  onPress={() => decide('apply', editedTargets())}
-                />
-                <Button
-                  label={t('common.cancel')}
-                  variant="outline"
-                  disabled={busy}
-                  onPress={closePanel}
-                />
-              </View>
-            }
-          >
-            <View className="gap-3 pb-4">
-              {MACRO_FIELDS.map((field) => (
-                <TextInput
-                  key={field}
-                  label={t(MACRO_LABEL_KEYS[field])}
-                  value={draft[field] ?? ''}
-                  onChangeText={(value) => setDraft({ ...draft, [field]: value })}
-                  inputMode="decimal"
-                  keyboardType="numeric"
-                />
-              ))}
-              {error ? (
-                <Text accessibilityRole="alert" className="text-status-error">
-                  {t('weeklyReview.error')}
-                </Text>
-              ) : null}
-            </View>
-          </BottomPopUp>
-        );
+        return data?.nutrition ? (
+          <TargetsEditorSheet
+            initial={data.nutrition.targets}
+            busy={busy}
+            saveFailed={error}
+            onApply={apply}
+            onClose={closePanel}
+          />
+        ) : null;
       case 'logWeight':
         return (
           <AddUserMetricEntryModal
@@ -383,13 +360,15 @@ export default function WeeklyReviewScreen() {
           {data ? (
             <>
               {reviewable ? (
-                <View className="flex-row gap-2">
-                  {[t('weeklyReview.training'), t('weeklyReview.nutrition')].map((label, index) => (
-                    <View
-                      key={label}
-                      className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2 ${progressDone[index] ? 'bg-accent-primary/10' : 'bg-bg-overlay'}`}
-                    >
-                      {progressDone[index] ? (
+                // Plain status, deliberately not pill-shaped: filled pills read as tabs, and these
+                // cannot be tapped.
+                <View
+                  className="flex-row flex-wrap items-center gap-x-4 gap-y-1"
+                  accessibilityRole="summary"
+                >
+                  {progress.map((half) => (
+                    <View key={half.key} className="flex-row items-center gap-1.5">
+                      {half.done ? (
                         <CheckCircle2
                           size={theme.iconSize.sm}
                           color={theme.colors.accent.primary}
@@ -398,9 +377,14 @@ export default function WeeklyReviewScreen() {
                         <Circle size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
                       )}
                       <Text
-                        className={`text-sm font-semibold ${progressDone[index] ? 'text-accent-primary' : 'text-text-secondary'}`}
+                        className={`text-sm ${half.done ? 'font-semibold text-text-primary' : 'text-text-secondary'}`}
                       >
-                        {label}
+                        {t(
+                          half.done
+                            ? 'weeklyReview.halfStatus.done'
+                            : 'weeklyReview.halfStatus.open',
+                          { half: half.label }
+                        )}
                       </Text>
                     </View>
                   ))}
@@ -439,8 +423,8 @@ export default function WeeklyReviewScreen() {
               <NutritionReviewSection
                 data={data}
                 busy={busy}
-                onApply={() => decide('apply')}
-                onKeep={() => decide('keep')}
+                onApply={() => apply()}
+                onKeep={keep}
                 onEdit={openEditor}
                 onSwitchWeekly={switchWeekly}
                 onEditGoal={() => setPanel({ kind: 'editGoal' })}

@@ -11,6 +11,7 @@ import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextButton } from '@/components/theme/TextButton';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { CYCLE_NOTIFICATION_STYLES, type CycleNotificationStyle } from '@/constants/settings';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -24,7 +25,7 @@ import {
   CycleNotificationService,
 } from '@/services/CycleNotificationService';
 import { getCycleBackupPreparedAt } from '@/services/cycleRecovery';
-import { cycleReminderContent, REMINDER_LABEL_KEYS } from '@/utils/cycle/cycleReminderCopy';
+import { REMINDER_LABEL_KEYS } from '@/utils/cycle/cycleReminderCopy';
 import {
   CYCLE_REMINDER_BASIS,
   type CycleReminderKind,
@@ -34,6 +35,13 @@ import {
   nextReminder,
   planCycleReminders,
 } from '@/utils/cycle/cycleReminders';
+import {
+  cycleDeliveryState,
+  cycleReminderPreviews,
+  isDeliveryBlocked,
+  type ReminderStatusKind,
+  reminderStatusKind,
+} from '@/utils/cycle/cycleReminderStatus';
 import { addCalendarDays } from '@/utils/cycle/dates';
 import type { CycleReminderPreferences, PillSchedule } from '@/utils/cycle/types';
 import { handleError } from '@/utils/handleError';
@@ -171,8 +179,7 @@ export function CycleReminderSettings() {
       .catch(() => undefined);
   }, []);
 
-  const deliverable =
-    status != null && status.permission === 'granted' && status.appEnabled && status.cycleEnabled;
+  const delivery = cycleDeliveryState(Platform.OS === 'web', status);
 
   const fail = (context: string) => (error: unknown) =>
     handleError(error, context, {
@@ -182,7 +189,7 @@ export function CycleReminderSettings() {
 
   /** Turning a reminder on is the moment to ask for permission, not before. */
   const ensureDeliverable = async () => {
-    if (Platform.OS === 'web' || deliverable) {
+    if (delivery === 'web' || delivery === 'ok') {
       return;
     }
 
@@ -195,21 +202,23 @@ export function CycleReminderSettings() {
   };
 
   const save = (patch: Partial<CycleReminderPreferences>, turningOn = false) => {
-    // TODO: avoid IIFE
-    void (async () => {
+    const apply = async () => {
       await updateConfig({ reminders: patch });
       if (turningOn) {
         await ensureDeliverable();
       }
-    })().catch(fail('CycleReminderSettings.save'));
+    };
+
+    apply().catch(fail('CycleReminderSettings.save'));
   };
 
   const setStyle = (style: CycleNotificationStyle) => {
-    // TODO: avoid IIFE
-    void (async () => {
-      await SettingsService.setCycleNotificationStyle(style);
+    const apply = async () => {
+      await SettingsService.set(SETTINGS.cycleNotificationStyle, style);
       await CycleNotificationService.scheduleMenstrualCycleNotifications();
-    })().catch(fail('CycleReminderSettings.style'));
+    };
+
+    apply().catch(fail('CycleReminderSettings.style'));
   };
 
   const time = (hour: number, minute: number) =>
@@ -247,36 +256,14 @@ export function CycleReminderSettings() {
     ).map((row) => row.kind),
     ...(pill.enabled ? (['pill'] as const) : []),
   ];
-  const previewKinds = enabledKinds.length > 0 ? enabledKinds : (['period-start'] as const);
-  const sampleRange = {
-    from: timeline?.prediction.earliest ?? addCalendarDays(now, 12),
-    to: timeline?.prediction.latest ?? addCalendarDays(now, 15),
-  };
-
-  // Each distinct text once: in the private style every reminder reads the same.
-  const previews = [
-    ...new Map(
-      previewKinds
-        .map((kind) =>
-          cycleReminderContent(
-            {
-              kind,
-              range:
-                kind === 'fertile-window'
-                  ? {
-                      from: timeline?.fertileEstimate?.start ?? addCalendarDays(now, 10),
-                      to: timeline?.fertileEstimate?.end ?? addCalendarDays(now, 16),
-                    }
-                  : sampleRange,
-            },
-            cycleNotificationStyle,
-            t,
-            locale
-          )
-        )
-        .map((content) => [`${content.title}|${content.body}`, content] as const)
-    ).values(),
-  ];
+  const previews = cycleReminderPreviews({
+    enabledKinds,
+    timeline,
+    now,
+    style: cycleNotificationStyle,
+    t,
+    locale,
+  });
 
   const pausedLine = prefs.pause?.until
     ? t('cycle.reminders.status.pausedUntil', {
@@ -288,23 +275,23 @@ export function CycleReminderSettings() {
       })
     : t('cycle.reminders.status.paused');
 
-  let statusLine: string;
-  if (Platform.OS === 'web') {
-    statusLine = t('cycle.reminders.status.web');
-  } else if (status && status.permission !== 'granted') {
-    statusLine = t('cycle.reminders.status.noPermission');
-  } else if (status && (!status.appEnabled || !status.cycleEnabled)) {
-    statusLine = t('cycle.reminders.status.switchedOff');
-  } else if (paused) {
-    statusLine = pausedLine;
-  } else if (upcoming) {
-    statusLine = t('cycle.reminders.status.next', {
-      date: longDate(upcoming.date.getTime()),
-      reminder: t(REMINDER_LABEL_KEYS[upcoming.kind]),
-    });
-  } else {
-    statusLine = t('cycle.reminders.status.none');
-  }
+  const statusLines: Record<ReminderStatusKind, () => string> = {
+    web: () => t('cycle.reminders.status.web'),
+    noPermission: () => t('cycle.reminders.status.noPermission'),
+    switchedOff: () => t('cycle.reminders.status.switchedOff'),
+    paused: () => pausedLine,
+    next: () =>
+      upcoming
+        ? t('cycle.reminders.status.next', {
+            date: longDate(upcoming.date.getTime()),
+            reminder: t(REMINDER_LABEL_KEYS[upcoming.kind]),
+          })
+        : t('cycle.reminders.status.none'),
+    none: () => t('cycle.reminders.status.none'),
+  };
+  const statusLine =
+    statusLines[reminderStatusKind({ delivery, paused, hasUpcoming: !!upcoming })]();
+  const blocked = isDeliveryBlocked(delivery);
 
   const renderPicker = () => {
     switch (picker) {
@@ -357,21 +344,20 @@ export function CycleReminderSettings() {
       <View
         className="gap-3 rounded-2xl p-4"
         style={{
-          backgroundColor:
-            Platform.OS !== 'web' && status && !deliverable
-              ? theme.colors.status.warning10
-              : theme.colors.background.overlay,
+          backgroundColor: blocked
+            ? theme.colors.status.warning10
+            : theme.colors.background.overlay,
         }}
       >
         <View className="flex-row items-center gap-3">
-          {deliverable && !paused ? (
+          {delivery === 'ok' && !paused ? (
             <BellRing size={theme.iconSize.md} color={theme.colors.accent.primary} />
           ) : (
             <BellOff size={theme.iconSize.md} color={theme.colors.text.secondary} />
           )}
           <Text className="flex-1 text-sm text-text-primary">{statusLine}</Text>
         </View>
-        {Platform.OS !== 'web' && status && !deliverable ? (
+        {blocked ? (
           <Button
             label={t('cycle.reminders.status.turnOn')}
             variant="accent"
@@ -380,7 +366,7 @@ export function CycleReminderSettings() {
             onPress={() => void ensureDeliverable().catch(fail('CycleReminderSettings.enable'))}
           />
         ) : null}
-        {Platform.OS !== 'web' && deliverable ? (
+        {delivery === 'ok' ? (
           <TextButton
             label={t('cycle.reminders.test')}
             onPress={() =>

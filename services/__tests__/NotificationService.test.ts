@@ -1,3 +1,4 @@
+import { settingsGetMock } from '@/database/services/__tests__/settingsGetMock';
 import * as Notifications from 'expo-notifications';
 
 import { database } from '@/database';
@@ -62,9 +63,7 @@ jest.mock('@/database/services/SettingsService', () => ({
     getNotifications: jest.fn(),
     getNotificationsWorkoutReminders: jest.fn(),
     getNotificationsMenstrualCycle: jest.fn(),
-    getCycleShowPredictions: jest.fn(),
-    getCycleShowFertility: jest.fn(),
-    getCycleNotificationStyle: jest.fn(),
+    get: jest.fn(),
     getNotificationPreferences: jest.fn(),
   },
 }));
@@ -206,8 +205,7 @@ describe('weekly review reminders', () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date(2026, 9, 12, 7));
     Object.assign(mockSettingsService, {
-      getNotificationsWeeklyReview: jest.fn(async () => true),
-      getReviewWeekday: jest.fn(async () => 1),
+      get: settingsGetMock({ notificationsWeeklyReview: true, reviewWeekday: 1 }),
       getIntuitiveEatingMode: jest.fn(async () => false),
     });
     mockSettingsService.getNotifications.mockResolvedValue(true);
@@ -236,7 +234,9 @@ describe('weekly review reminders', () => {
     expect(trigger.date.getHours()).toBe(8);
   });
   it('respects opt-out and cancels only weekly reminders', async () => {
-    mockSettingsService.getNotificationsWeeklyReview.mockResolvedValue(false);
+    Object.assign(mockSettingsService, {
+      get: settingsGetMock({ notificationsWeeklyReview: false, reviewWeekday: 1 }),
+    });
     mockNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([
       { identifier: 'review', content: { data: { type: 'weekly-review' } } },
       { identifier: 'other', content: { data: { type: 'rest-timer' } } },
@@ -268,9 +268,13 @@ describe('cycle reminders', () => {
   function arrange(periods: ReturnType<typeof period>[], style: 'discreet' | 'detailed') {
     mockSettingsService.getNotifications.mockResolvedValue(true);
     (mockSettingsService.getNotificationsMenstrualCycle as jest.Mock).mockResolvedValue(true);
-    (mockSettingsService.getCycleShowPredictions as jest.Mock).mockResolvedValue(true);
-    (mockSettingsService.getCycleShowFertility as jest.Mock).mockResolvedValue(false);
-    (mockSettingsService.getCycleNotificationStyle as jest.Mock).mockResolvedValue(style);
+    Object.assign(mockSettingsService, {
+      get: settingsGetMock({
+        cycleShowPredictions: true,
+        cycleShowFertility: false,
+        cycleNotificationStyle: style,
+      }),
+    });
     mockNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([]);
     mockNotifications.scheduleNotificationAsync.mockClear();
     repo.cycles.mockReturnValue({ fetch: async () => [{ id: 'c1', isActive: true }] } as never);

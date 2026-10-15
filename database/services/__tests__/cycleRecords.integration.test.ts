@@ -1,4 +1,5 @@
 /* eslint-disable simple-import-sort/imports -- Install the shared database mocks before importing services. */
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { cycleTestDay as day } from '@/database/services/__tests__/cycleTestSetup';
 import { livePeriods, newCycle } from '@/database/services/__tests__/cycleRecordHelpers';
 
@@ -376,7 +377,7 @@ describe('CycleDataEncryptionMigration', () => {
         .fetchCount()
     ).toBe(0);
     expect(await database.get('user_metrics_notes').query().fetchCount()).toBe(0);
-    expect(SettingsService.setCycleShowFertility).toHaveBeenCalledWith(true);
+    expect(SettingsService.set).toHaveBeenCalledWith(SETTINGS.cycleShowFertility, true);
   });
 
   it('is idempotent: a second run finds nothing to do', async () => {

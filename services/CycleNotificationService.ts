@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { NOTIFICATION_CHANNELS } from '@/constants/notificationActions';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type { CycleNotificationStyle } from '@/constants/settings';
 import {
   CycleRepository,
@@ -133,9 +134,9 @@ export class CycleNotificationService {
         CycleRepository.periods(cycle.id).fetch().then(readPeriods),
         CycleRepository.contexts(cycle.id).fetch().then(readContexts),
         readCycleConfig(cycle),
-        SettingsService.getCycleShowPredictions(),
-        SettingsService.getCycleShowFertility(),
-        SettingsService.getCycleNotificationStyle(),
+        SettingsService.get(SETTINGS.cycleShowPredictions),
+        SettingsService.get(SETTINGS.cycleShowFertility),
+        SettingsService.get(SETTINGS.cycleNotificationStyle),
         getCycleBackupPreparedAt(),
       ]);
     const nowMs = Date.now();

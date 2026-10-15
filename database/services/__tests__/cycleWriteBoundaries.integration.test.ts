@@ -1,4 +1,5 @@
 /* eslint-disable simple-import-sort/imports -- Install the shared database mocks before importing services. */
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { cycleTestDay as day } from '@/database/services/__tests__/cycleTestSetup';
 
 import { type Model, Q } from '@nozbe/watermelondb';
@@ -266,7 +267,10 @@ it('commits a large migration in one transaction and retries with no duplicate r
   originals.forEach((r) => expect(r._preparedState).toBeNull());
   expect(await database.get('period_logs').query().fetchCount()).toBe(1);
   expect(await database.get('cycle_day_logs').query().fetchCount()).toBe(0);
-  expect(SettingsService.setCycleShowFertility).not.toHaveBeenCalled();
+  expect(SettingsService.set).not.toHaveBeenCalledWith(
+    SETTINGS.cycleShowFertility,
+    expect.anything()
+  );
   expect(await CycleDataEncryptionMigration.run()).toEqual({
     migratedCycles: 1,
     migratedDays: 550,
