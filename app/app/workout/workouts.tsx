@@ -3,13 +3,12 @@ import { useFocusEffect } from 'expo-router/react-navigation';
 import { Footprints, Layers3, Pencil, Plus, Search, Target, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { FilterTabs } from '@/components/FilterTabs';
-import { GradientText } from '@/components/GradientText';
 import { MasterLayout } from '@/components/MasterLayout';
 import { BrowseTemplatesModal, getRawTemplateById } from '@/components/modals/BrowseTemplatesModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
@@ -278,15 +277,15 @@ export default function WorkoutsScreen() {
           {/* Header */}
           <View className="px-4 py-6">
             <View className="flex-row items-center justify-between">
-              <GradientText
-                colors={theme.colors.gradients.workoutsTitle}
+              <Text
                 style={{
+                  color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize['4xl'],
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
                 {t('workouts.title')}
-              </GradientText>
+              </Text>
               <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
             </View>
             {/* Add spacing below header */}

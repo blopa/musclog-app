@@ -1,5 +1,7 @@
 # Musclog — Current Features
 
+App headings and celebration messages use solid, theme-aware text colors.
+
 The source of truth for user-facing features that ship today, grouped by area.
 
 ---

@@ -151,6 +151,10 @@ least WCAG AA contrast for normal text.
 
 ## Typography
 
+App headings and display text use solid `text.primary` ink across all themes, including Workouts,
+Notes, Health Connect onboarding, workout summaries, and rest-complete messages. Do not use
+gradient-filled glyphs.
+
 The app currently relies mainly on platform/system fonts; do not document an unbundled typeface as
 part of the brand. The token scale is:
 

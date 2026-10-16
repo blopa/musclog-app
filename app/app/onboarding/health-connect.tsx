@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import { HealthCategoryCard } from '@/components/cards/HealthCategoryCard';
-import { GradientText } from '@/components/GradientText';
 import { HealthConnectIllustration } from '@/components/HealthConnectIllustration';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
@@ -139,16 +138,16 @@ export default function HealthConnectScreen() {
                 >
                   {t('onboarding.healthConnect.connectYour')}{' '}
                 </Text>
-                <GradientText
-                  colors={[theme.colors.status.indigoLight, theme.colors.status.brandBright]}
+                <Text
                   style={{
+                    color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize['3xl'],
                     fontWeight: theme.typography.fontWeight.bold,
                     lineHeight: theme.typography.fontSize['3xl'] * 1.1,
                   }}
                 >
                   {t('onboarding.healthConnect.health')}
-                </GradientText>
+                </Text>
               </View>
               <Text
                 className="text-center font-normal leading-relaxed"

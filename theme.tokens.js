@@ -529,15 +529,12 @@ function createThemeColors(colors) {
       button: [colors.surfaceTint, colors.surfaceCard],
       progress: [colors.statusIndigo, colors.brandDeep, colors.brandVivid],
       colorfulCard: [colors.colorfulCardStart, colors.colorfulCardMiddle, colors.colorfulCardEnd],
-      workoutsTitle: [colors.statusPurple, colors.statusInfo, colors.brandVivid],
       // DESIGN.md: a primary action is emerald or the approved emerald-to-teal gradient. It was
       // indigo-to-green, which DESIGN.md does not allow, so it now uses the accent stops.
       cta: [colors.brandVivid, colors.accentGradientEnd],
       userBubble: [colors.brandPrimary, colors.brandVivid], // User message bubble gradient
-      // GradientText: these stops ARE the text colour, so every stop stays on the
-      // readable side of the theme's ground (>= 3:1 as large display type).
+      // Background gradient for nutrition-context coach messages.
       celebrationGlow: [colors.brandPale, colors.textPrimary, colors.brandBright],
-      restOverTitle: [colors.brandPrimary, colors.statusIndigo], // Rest over title gradient
       workoutStats: [colors.statusIndigo, colors.brandPrimary, colors.brandVivid], // Workout stats gradient
       // Fades the screen behind the session sheet — follows the theme surface.
       workoutSessionOverlay: [
