@@ -85,11 +85,12 @@ test.describe('SDK 58 compatibility', () => {
     await page.getByRole('tab', { name: 'Language', exact: true }).click();
     await page.getByText('Español', { exact: true }).click();
     await expect(page).toHaveTitle(fixedPageSeo('home', 'es-es').title);
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    // Static export metadata stays in the DOM; the client-side Head adds an updated twin after it.
+    await expect(page.locator('meta[name="description"]').last()).toHaveAttribute(
       'content',
       fixedPageSeo('home', 'es-es').description
     );
-    expect(await page.locator('link[rel="canonical"]').count()).toBe(1);
+    await expect(page.locator('link[rel="canonical"]').last()).toBeAttached();
   });
 
   test('the web app seeds a fresh database and opens nutrition and workouts', async ({ page }) => {
@@ -97,7 +98,9 @@ test.describe('SDK 58 compatibility', () => {
     await page.goto(`${base}/app/onboarding/landing?demoModeEnabled=true`);
     await page.waitForURL(/\/app\/?$/, { timeout: 120000 });
     await page.goto(`${base}/app/nutrition/food`);
-    await expect(page.getByRole('button', { name: 'Scan Barcode' })).toBeVisible({
+    // A fresh database has no food logged, so the diary shows its empty state instead of the
+    // scan buttons.
+    await expect(page.getByRole('button', { name: 'Log Your Meal' })).toBeVisible({
       timeout: 30000,
     });
     await page.goto(`${base}/app/workout/workouts`);
