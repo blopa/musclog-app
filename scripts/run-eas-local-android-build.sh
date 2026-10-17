@@ -13,6 +13,32 @@ if [[ "${1:-}" == "--load-dotenv" ]]; then
   shift
 fi
 
+# EAS cloud builds use the Node version pinned in eas.json; a local build uses
+# whatever `node` is on PATH. Use the .nvmrc major (through nvm when the active
+# Node differs) so `npm ci` and Metro behave as they do in the cloud.
+wanted_node_major="$(tr -d '[:space:]v' < .nvmrc)"
+node_major() {
+  node -v 2>/dev/null | sed -nE 's/^v([0-9]+).*/\1/p'
+}
+
+if [[ "$(node_major)" != "$wanted_node_major" ]]; then
+  nvm_sh="${NVM_DIR:-$HOME/.nvm}/nvm.sh"
+  if [[ -s "$nvm_sh" ]]; then
+    # nvm.sh is not written for `set -u`.
+    set +u
+    # shellcheck disable=SC1090
+    source "$nvm_sh"
+    nvm use --silent "$wanted_node_major" >/dev/null 2>&1 || true
+    set -u
+  fi
+  if [[ "$(node_major)" != "$wanted_node_major" ]]; then
+    echo "error: this project needs Node $wanted_node_major (see .nvmrc); found $(node -v 2>/dev/null || echo none)." >&2
+    echo "Install it with: nvm install $wanted_node_major" >&2
+    exit 1
+  fi
+fi
+echo "Using Node $(node -v)"
+
 # SDK 58 generates Gradle 9.4.1, which supports Java 17 through 26.
 # Prefer an explicitly selected supported JDK, then an installed LTS JDK.
 java_major() {
@@ -20,7 +46,9 @@ java_major() {
 }
 
 is_supported_jdk() {
-  [[ -x "$1/bin/java" ]] || return 1
+  # An empty path would test /bin/java, which exists on merged-/usr distros
+  # (Fedora) and would leave JAVA_HOME unset.
+  [[ -n "$1" && -x "$1/bin/java" ]] || return 1
   local major
   major="$(java_major "$1")"
   [[ "$major" =~ ^[0-9]+$ && "$major" -ge 17 && "$major" -le 26 ]]
