@@ -1,5 +1,6 @@
 import { WHATS_NEW_MAX_PAGES } from '@/constants/whatsNew';
 
+import { EMPTY_WHATS_NEW_CONTEXT, type WhatsNewContext } from './catalog';
 import type { WhatsNewBlock, WhatsNewKey, WhatsNewRelease } from './schema';
 import { compareVersions, parseAppVersion, parseVersion } from './version';
 
@@ -12,13 +13,20 @@ type FlowInput = {
   releases: readonly WhatsNewRelease[];
   currentVersion: string;
   maxPages?: number;
+  /** Facts that gate conditional pages; omitted means none hold. */
+  context?: WhatsNewContext;
 };
 
-function livePages(release: WhatsNewRelease, current: string): WhatsNewFlow['pages'] {
+function livePages(
+  release: WhatsNewRelease,
+  current: string,
+  context: WhatsNewContext
+): WhatsNewFlow['pages'] {
   const live = (item: { supersededIn?: string }) =>
     !item.supersededIn || compareVersions(current, item.supersededIn) < 0;
   return release.pages
     .filter(live)
+    .filter((page) => !page.requires || context[page.requires])
     .map((page) => ({
       key: `${release.version}:${page.id}`,
       version: release.version,
@@ -32,6 +40,7 @@ export function selectWhatsNewFlow({
   seenThrough,
   currentVersion,
   maxPages = WHATS_NEW_MAX_PAGES,
+  context = EMPTY_WHATS_NEW_CONTEXT,
 }: FlowInput & { seenThrough: string | null }): WhatsNewFlow {
   const empty: WhatsNewFlow = { pages: [], releaseVersions: [], truncated: false };
   if (!parseAppVersion(currentVersion)) {
@@ -50,7 +59,7 @@ export function selectWhatsNewFlow({
   let remaining = cap;
   let total = 0;
   const groups = eligible.map((release) => {
-    const pages = livePages(release, currentVersion);
+    const pages = livePages(release, currentVersion, context);
     total += pages.length;
     const selected = pages.slice(0, remaining);
     remaining -= selected.length;
@@ -71,7 +80,7 @@ export function selectReplayFlow(input: FlowInput): WhatsNewFlow {
       .find(
         (release) =>
           compareVersions(release.version, input.currentVersion) <= 0 &&
-          livePages(release, input.currentVersion).length > 0
+          livePages(release, input.currentVersion, input.context ?? EMPTY_WHATS_NEW_CONTEXT).length > 0
       );
     if (newest) {
       return selectWhatsNewFlow({ ...input, releases: [newest], seenThrough: null });

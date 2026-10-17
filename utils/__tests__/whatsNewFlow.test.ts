@@ -223,3 +223,44 @@ describe('pageHeadlineDetailKeys', () => {
     ]);
   });
 });
+
+describe('conditional pages', () => {
+  const gated: WhatsNewRelease = {
+    version: '2.14.0',
+    pages: [
+      { id: 'all', blocks: [{ id: 'info', type: 'info', titleKey: 'whatsNew.title' }] },
+      {
+        id: 'cycle',
+        requires: 'cycleTracking',
+        blocks: [{ id: 'info', type: 'info', titleKey: 'whatsNew.title' }],
+      },
+    ],
+  };
+  const keys = (context?: { cycleTracking: boolean }) =>
+    selectWhatsNewFlow({
+      releases: [gated],
+      seenThrough: null,
+      currentVersion: '2.14.0',
+      context,
+    }).pages.map((p) => p.key);
+
+  test('hides a gated page unless its condition holds', () => {
+    expect(keys()).toEqual(['2.14.0:all']);
+    expect(keys({ cycleTracking: false })).toEqual(['2.14.0:all']);
+    expect(keys({ cycleTracking: true })).toEqual(['2.14.0:all', '2.14.0:cycle']);
+  });
+
+  test('replay applies the same gate', () => {
+    const replay = (context?: { cycleTracking: boolean }) =>
+      selectReplayFlow({ releases: [gated], currentVersion: '2.14.0', context }).pages.length;
+    expect(replay()).toBe(1);
+    expect(replay({ cycleTracking: true })).toBe(2);
+  });
+
+  test('a release whose only page is gated yields no flow without the condition', () => {
+    const only = { ...gated, pages: [gated.pages[1]] };
+    expect(
+      selectWhatsNewFlow({ releases: [only], seenThrough: null, currentVersion: '2.14.0' }).pages
+    ).toEqual([]);
+  });
+});

@@ -109,3 +109,22 @@ test('rejects wrong filenames and invalid release versions', () => {
     []
   );
 });
+
+test('accepts a known page condition and rejects an unknown one', () => {
+  const page = (requires: string) => ({
+    version: '2.14.2',
+    pages: [
+      {
+        id: 'p',
+        requires,
+        blocks: [{ id: 'b', type: 'info', titleKey: 'whatsNew.title' }],
+      },
+    ],
+  });
+  expect(
+    parseWhatsNewRelease(page('cycleTracking'), '2.14.2.json').release?.pages[0].requires
+  ).toBe('cycleTracking');
+  expect(parseWhatsNewRelease(page('nope'), '2.14.2.json').issues.join()).toContain(
+    'unknown requires condition'
+  );
+});

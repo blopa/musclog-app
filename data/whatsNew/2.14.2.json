@@ -19,6 +19,33 @@
           "descriptionKey": "whatsNew.releases.v2_14_2.migration.description"
         }
       ]
+    },
+    {
+      "id": "cycle",
+      "requires": "cycleTracking",
+      "blocks": [
+        {
+          "id": "cycleDiary",
+          "type": "info",
+          "icon": "shield",
+          "titleKey": "whatsNew.releases.v2_14_2.cycleDiary.title",
+          "descriptionKey": "whatsNew.releases.v2_14_2.cycleDiary.description"
+        },
+        {
+          "id": "cycleReminders",
+          "type": "info",
+          "icon": "calendar",
+          "titleKey": "whatsNew.releases.v2_14_2.cycleReminders.title",
+          "descriptionKey": "whatsNew.releases.v2_14_2.cycleReminders.description"
+        },
+        {
+          "id": "cycleLock",
+          "type": "info",
+          "icon": "heart",
+          "titleKey": "whatsNew.releases.v2_14_2.cycleLock.title",
+          "descriptionKey": "whatsNew.releases.v2_14_2.cycleLock.description"
+        }
+      ]
     }
   ]
 }
