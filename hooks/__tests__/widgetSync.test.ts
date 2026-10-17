@@ -3,6 +3,7 @@ import { AppState } from 'react-native';
 
 import { NutritionService } from '@/database/services/NutritionService';
 import { widgetEvents } from '@/utils/widgetEvents';
+import CycleWidget from '@/widgets/CycleWidget';
 import NutritionWidget from '@/widgets/NutritionWidget';
 import { WidgetSync } from '@/widgets/WidgetSync';
 
@@ -67,6 +68,14 @@ jest.mock('@/widgets/NutritionWidget', () => ({
   __esModule: true,
   default: { updateTimeline: jest.fn(), updateSnapshot: jest.fn() },
 }));
+jest.mock('@/widgets/CycleWidget', () => ({
+  __esModule: true,
+  default: { updateTimeline: jest.fn(), updateSnapshot: jest.fn() },
+}));
+jest.mock('@/widgets/cycleWidgetData', () => ({
+  loadCycleWidgetInputs: jest.fn(async () => ({ lockMode: 'off', style: 'discreet', cycle: null })),
+  subscribeToCycleChanges: jest.fn(() => jest.fn()),
+}));
 jest.mock('@/widgets/SmartCameraWidget', () => ({
   __esModule: true,
   default: { updateSnapshot: jest.fn() },
@@ -111,4 +120,45 @@ it('refreshes after nutrition events, foregrounding, language and day changes, a
   act(() => widgetEvents.emitNutritionWidgetUpdate());
   expect(NutritionService.getDailyNutrients).toHaveBeenCalledTimes(5);
   expect((AppState.addEventListener as jest.Mock).mock.results[0].value.remove).toHaveBeenCalled();
+});
+
+describe('cycle widget', () => {
+  const { loadCycleWidgetInputs, subscribeToCycleChanges } = jest.requireMock(
+    '@/widgets/cycleWidgetData'
+  );
+
+  it('publishes the neutral snapshot with a midnight expiration', async () => {
+    const { unmount } = renderHook(() => WidgetSync());
+    await waitFor(() => expect(CycleWidget.updateTimeline).toHaveBeenCalledTimes(1));
+    const entries = (CycleWidget.updateTimeline as jest.Mock).mock.calls[0][0];
+    expect(entries[0].props.value).toBe('');
+    expect(entries[0].props.caption).toBe('widgets.cycle.privateCaption');
+    expect(entries[1].date.getHours()).toBe(0);
+    unmount();
+  });
+
+  it('refreshes after a cycle record change and stops listening on unmount', async () => {
+    const unsubscribe = jest.fn();
+    let notify: () => void = () => {};
+    (subscribeToCycleChanges as jest.Mock).mockImplementationOnce((listener: () => void) => {
+      notify = listener;
+      return unsubscribe;
+    });
+    const { unmount } = renderHook(() => WidgetSync());
+    await waitFor(() => expect(CycleWidget.updateTimeline).toHaveBeenCalledTimes(1));
+    act(() => notify());
+    await waitFor(() => expect(CycleWidget.updateTimeline).toHaveBeenCalledTimes(2));
+    unmount();
+    expect(unsubscribe).toHaveBeenCalled();
+  });
+
+  it('replaces the widget with the neutral snapshot when the records cannot be read', async () => {
+    (loadCycleWidgetInputs as jest.Mock).mockRejectedValueOnce(new Error('locked'));
+    const { unmount } = renderHook(() => WidgetSync());
+    await waitFor(() => expect(CycleWidget.updateTimeline).toHaveBeenCalledTimes(1));
+    const [{ props }] = (CycleWidget.updateTimeline as jest.Mock).mock.calls[0][0];
+    expect(props.value).toBe('');
+    expect(props.detail).toBe('');
+    unmount();
+  });
 });

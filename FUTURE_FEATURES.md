@@ -166,6 +166,7 @@ and the existing 1RM/consistency behavior intact.
   is written when finishing, and exercise notes in the session).
 - iOS widget parity and more focused widgets backed by versioned snapshots rather than direct
   database access.
+- Cycle widget follow-ups: a tap-through to a confirm screen for logging a period start (never a direct write from the home screen, which would bypass the cycle lock), and more sizes.
 - Health-backed reinstall recovery once stable cross-source deduplication identifiers exist.
 
 ## Cross-cutting UX

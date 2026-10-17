@@ -1,6 +1,11 @@
 {
   "widgets": {
     "refresh": "Откройте Musclog для обновления",
-    "smartCamera": "Умная камера"
+    "smartCamera": "Умная камера",
+    "cycle": {
+      "day": "День",
+      "privateCaption": "Нажмите, чтобы открыть",
+      "title": "Цикл"
+    }
   }
 }

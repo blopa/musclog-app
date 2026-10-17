@@ -1,6 +1,11 @@
 {
   "widgets": {
     "refresh": "Open Musclog om te vernieuwen",
-    "smartCamera": "Slimme camera"
+    "smartCamera": "Slimme camera",
+    "cycle": {
+      "day": "Dag",
+      "privateCaption": "Tik om te openen",
+      "title": "Cyclus"
+    }
   }
 }

@@ -15,11 +15,14 @@ it('configures both platforms, previews, identities, and existing compact Androi
   expect(config.widgets.map((widget: { name: string }) => widget.name)).toEqual([
     'Nutrition',
     'SmartCamera',
+    'Cycle',
   ]);
   expect(config.widgets[0].android).toMatchObject({ targetCellWidth: 4, targetCellHeight: 1 });
   expect(config.widgets[1].android).toMatchObject({ targetCellWidth: 1, targetCellHeight: 1 });
+  expect(config.widgets[2].android).toMatchObject({ targetCellWidth: 2, targetCellHeight: 1 });
   expect(config.widgets[0].ios.supportedFamilies).toEqual(['systemSmall', 'systemMedium']);
   expect(config.widgets[1].ios.supportedFamilies).toEqual(['systemSmall']);
+  expect(config.widgets[2].ios.supportedFamilies).toEqual(['systemSmall']);
   for (const widget of config.widgets) {
     expect(readFileSync(join(root, widget.ios.initialLayout), 'utf8')).toContain("'widget'");
     expect(readFileSync(join(root, widget.android.initialLayout), 'utf8')).toContain("'widget'");

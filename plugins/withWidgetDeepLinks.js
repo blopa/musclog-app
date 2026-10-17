@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 // SDK 58's Glance buttons broadcast interactions; JS listeners only run while the app is alive.
-// Route the two launcher shortcuts natively so they also work after the app has been terminated.
-const ACTIONS = { Nutrition: 'open-nutrition', SmartCamera: 'open-camera' };
+// Route the launcher shortcuts natively so they also work after the app has been terminated.
+const ACTIONS = { Nutrition: 'open-nutrition', SmartCamera: 'open-camera', Cycle: 'open-cycle' };
 
 function widgetProviderSource(androidPackage, name, action) {
   return `package ${androidPackage}

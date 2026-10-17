@@ -1,6 +1,7 @@
 import { handleError } from '@/utils/handleError';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+import { INITIAL_CYCLE_SNAPSHOT } from './cycleWidgetSnapshot';
 import { INITIAL_CAMERA_SNAPSHOT, INITIAL_NUTRITION_SNAPSHOT } from './widgetSnapshot';
 
 export async function resetWidgets(): Promise<void> {
@@ -17,6 +18,11 @@ export async function resetWidgets(): Promise<void> {
       const widget = (require('./SmartCameraWidget') as typeof import('./SmartCameraWidget'))
         .default;
       widget.updateSnapshot(INITIAL_CAMERA_SNAPSHOT);
+    },
+    () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const widget = (require('./CycleWidget') as typeof import('./CycleWidget')).default;
+      widget.updateSnapshot(INITIAL_CYCLE_SNAPSHOT);
     },
   ];
   for (const reset of clear) {

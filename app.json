@@ -131,6 +131,23 @@
                 "resizeMode": "none",
                 "initialLayout": "widgets/SmartCameraWidget.android.tsx"
               }
+            },
+            {
+              "name": "Cycle",
+              "displayName": "Cycle",
+              "description": "Shows your cycle day. Private by default.",
+              "ios": {
+                "supportedFamilies": ["systemSmall"],
+                "initialLayout": "widgets/CycleWidget.tsx"
+              },
+              "android": {
+                "minWidth": 110,
+                "minHeight": 60,
+                "targetCellWidth": 2,
+                "targetCellHeight": 1,
+                "resizeMode": "none",
+                "initialLayout": "widgets/CycleWidget.android.tsx"
+              }
             }
           ],
           "enableAndroid": true

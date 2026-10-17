@@ -15,6 +15,13 @@ import { useSettings } from '@/hooks/useSettings';
 import { handleError } from '@/utils/handleError';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+import CycleWidget from './CycleWidget';
+import { loadCycleWidgetInputs, subscribeToCycleChanges } from './cycleWidgetData';
+import {
+  buildCycleWidgetSnapshot,
+  type CycleWidgetInputs,
+  expiredCycleWidgetSnapshot,
+} from './cycleWidgetSnapshot';
 import NutritionWidget from './NutritionWidget';
 import SmartCameraWidget from './SmartCameraWidget';
 import { createWidgetRefreshQueue } from './widgetRefreshQueue';
@@ -24,6 +31,24 @@ import {
   expiredWidgetSnapshot,
   widgetPalette,
 } from './widgetSnapshot';
+
+/** What to publish when the cycle records cannot be read: nothing, never the previous values. */
+const UNREADABLE_CYCLE_INPUTS: CycleWidgetInputs = {
+  lockMode: 'app',
+  style: 'discreet',
+  cycle: null,
+};
+
+async function readCycleInputs(): Promise<CycleWidgetInputs> {
+  try {
+    return await loadCycleWidgetInputs();
+  } catch (error) {
+    // A home-screen widget outlives the app, so a failed read must replace what it shows rather
+    // than leave a stale day count where a lock or a style change should have hidden it.
+    void handleError(error, 'widgets.cycle', { showSnackbar: false });
+    return UNREADABLE_CYCLE_INPUTS;
+  }
+}
 
 let cameraImage: Promise<string | null> | undefined;
 
@@ -51,7 +76,13 @@ function sharedCameraImage(): Promise<string | null> {
 
 export function WidgetSync() {
   const { theme } = useThemeContext();
-  const { isLoading } = useSettings();
+  const {
+    isLoading,
+    appLockMode,
+    cycleNotificationStyle,
+    cycleShowPredictions,
+    cycleShowFertility,
+  } = useSettings();
   const { i18n, t } = useTranslation();
   const today = useLocalToday();
   const locale = i18n.resolvedLanguage ?? i18n.language;
@@ -66,10 +97,11 @@ export function WidgetSync() {
       async () => {
         await waitForDbReady();
         const date = new Date();
-        const [nutrients, goal, imageUri] = await Promise.all([
+        const [nutrients, goal, imageUri, cycleInputs] = await Promise.all([
           NutritionService.getDailyNutrients(date),
           NutritionGoalService.getGoalForDate(date),
           sharedCameraImage(),
+          readCycleInputs(),
         ]);
         const resolved = goal ? ((await NutritionTargetService.resolve(goal, date)) ?? goal) : null;
         return {
@@ -83,9 +115,15 @@ export function WidgetSync() {
             translate: (key) => t(key),
           }),
           camera: { label: t('widgets.smartCamera'), palette, imageUri, url: CAMERA_WIDGET_URL },
+          cycle: buildCycleWidgetSnapshot({
+            inputs: cycleInputs,
+            palette,
+            locale,
+            translate: (key, options) => t(key, options),
+          }),
         };
       },
-      ({ date, nutrition, camera }) => {
+      ({ date, nutrition, camera, cycle }) => {
         SmartCameraWidget.updateSnapshot(camera);
         if (Platform.OS === 'ios') {
           const midnight = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
@@ -93,8 +131,13 @@ export function WidgetSync() {
             { date, props: nutrition },
             { date: midnight, props: expiredWidgetSnapshot(nutrition) },
           ]);
+          CycleWidget.updateTimeline([
+            { date, props: cycle },
+            { date: midnight, props: expiredCycleWidgetSnapshot(cycle) },
+          ]);
         } else {
           NutritionWidget.updateSnapshot(nutrition);
+          CycleWidget.updateSnapshot(cycle);
         }
       },
       (error) => {
@@ -102,6 +145,9 @@ export function WidgetSync() {
       }
     );
     const unsubscribe = widgetEvents.onNutritionWidgetUpdate(() => {
+      void queue.refresh();
+    });
+    const unsubscribeCycle = subscribeToCycleChanges(() => {
       void queue.refresh();
     });
     const unsubscribeReset = widgetEvents.onReset(queue.dispose);
@@ -115,10 +161,23 @@ export function WidgetSync() {
     return () => {
       queue.dispose();
       unsubscribe();
+      unsubscribeCycle();
       unsubscribeReset();
       subscription.remove();
     };
-  }, [isLoading, locale, t, theme, today]);
+    // The lock and the style decide what the cycle widget may say, so a change to either must
+    // re-publish it at once rather than at the next foreground.
+  }, [
+    isLoading,
+    locale,
+    t,
+    theme,
+    today,
+    appLockMode,
+    cycleNotificationStyle,
+    cycleShowPredictions,
+    cycleShowFertility,
+  ]);
 
   return null;
 }
