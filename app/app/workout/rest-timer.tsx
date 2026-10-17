@@ -95,7 +95,8 @@ export default function RestTimerScreen() {
     return { set: nextSetFromHook, exercise };
   }, [nextSetFromHook, exercises]);
 
-  const { defaultRestSeconds, restTimerHaptics } = useSettings();
+  const { defaultRestSeconds, restTimerHaptics, restHapticStrength, restHeadsUpSeconds } =
+    useSettings();
   // The placeholder is the configured default, so the ring is drawn against the right length even
   // before the set's own rest is read (it used to be a hard-coded 90 against a real 60).
   const [restTime, setRestTime] = useState(defaultRestSeconds);
@@ -268,14 +269,25 @@ export default function RestTimerScreen() {
       return;
     }
 
-    const beat = hapticBeat(lastRemainingRef.current, restTime);
+    const beat = hapticBeat(
+      lastRemainingRef.current,
+      restTime,
+      initialRestTime > restHeadsUpSeconds ? restHeadsUpSeconds : 0
+    );
     lastRemainingRef.current = restTime;
     if (beat && restTimerHaptics) {
-      void playRestBeat(beat);
+      void playRestBeat(beat, restHapticStrength);
     }
-  }, [isTimerReady, restTime, restTimerHaptics]);
+  }, [
+    isTimerReady,
+    restTime,
+    initialRestTime,
+    restTimerHaptics,
+    restHapticStrength,
+    restHeadsUpSeconds,
+  ]);
 
-  const phase = restPhase(restTime, initialRestTime);
+  const phase = restPhase(restTime, initialRestTime, restHeadsUpSeconds);
 
   // Navigate when countdown reaches 0
   useEffect(() => {

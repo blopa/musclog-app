@@ -108,6 +108,8 @@ export interface CycleObservations {
   temperatureC?: number;
   discharge?: string;
   medication?: string;
+  /** What the pill reminder's buttons recorded for the day; absent = no answer. */
+  pill?: 'taken' | 'skipped';
   sex?: boolean;
   tags?: string;
   custom?: Record<string, string | number | boolean>;

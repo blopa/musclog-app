@@ -56,6 +56,9 @@ import {
   type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
+  type RestAlertSound,
+  type RestHapticStrength,
+  type RestHeadsUpSeconds,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
@@ -151,6 +154,12 @@ type SettingsState = {
   autoStartRestTimer: boolean;
   /** Haptic countdown on the rest timer. */
   restTimerHaptics: boolean;
+  /** Whether the rest-over notification makes a sound. */
+  restAlertSound: RestAlertSound;
+  /** How firm the haptic countdown is. */
+  restHapticStrength: RestHapticStrength;
+  /** Seconds before a rest ends that it turns to "get ready" (0 = never). */
+  restHeadsUpSeconds: RestHeadsUpSeconds;
   /** Rest, in seconds, after a set that names none of its own. */
   defaultRestSeconds: number;
   nutritionDisplay: string;
@@ -250,6 +259,9 @@ const DEFAULT_STATE: SettingsState = {
   workoutAutonomy: SETTINGS.workoutAutonomy.defaultValue,
   autoStartRestTimer: SETTINGS.autoStartRestTimer.defaultValue,
   restTimerHaptics: SETTINGS.restTimerHaptics.defaultValue,
+  restAlertSound: SETTINGS.restAlertSound.defaultValue,
+  restHapticStrength: SETTINGS.restHapticStrength.defaultValue,
+  restHeadsUpSeconds: SETTINGS.restHeadsUpSeconds.defaultValue,
   defaultRestSeconds: SETTINGS.defaultRestSeconds.defaultValue,
   nutritionDisplay: '11111',
   advancedDataManagement: false,
@@ -399,6 +411,9 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     workoutAutonomy: readSetting(map, SETTINGS.workoutAutonomy),
     autoStartRestTimer: readSetting(map, SETTINGS.autoStartRestTimer),
     restTimerHaptics: readSetting(map, SETTINGS.restTimerHaptics),
+    restAlertSound: readSetting(map, SETTINGS.restAlertSound),
+    restHapticStrength: readSetting(map, SETTINGS.restHapticStrength),
+    restHeadsUpSeconds: readSetting(map, SETTINGS.restHeadsUpSeconds),
     defaultRestSeconds: readSetting(map, SETTINGS.defaultRestSeconds),
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
@@ -473,6 +488,9 @@ export type SettingsContextType = UseSettingsResult & {
   workoutAutonomy: WorkoutAutonomy;
   autoStartRestTimer: boolean;
   restTimerHaptics: boolean;
+  restAlertSound: RestAlertSound;
+  restHapticStrength: RestHapticStrength;
+  restHeadsUpSeconds: RestHeadsUpSeconds;
   defaultRestSeconds: number;
   nutritionDisplay: string;
   advancedDataManagement: boolean;

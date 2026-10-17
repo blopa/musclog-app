@@ -9,6 +9,12 @@ import { OBSERVATION_FIELD_LABEL_KEYS } from '@/utils/cycle/preferences';
 import type { CycleConfig } from '@/utils/cycle/types';
 import { getTemperatureUnitLabel } from '@/utils/unitConversion';
 
+/** Whole keys, so `check-translations` sees them. */
+const PILL_ANSWER_KEYS = {
+  taken: 'cycle.daySheet.pill.taken',
+  skipped: 'cycle.daySheet.pill.skipped',
+} as const;
+
 export function CycleObservationInputs({
   config,
   value,
@@ -113,6 +119,25 @@ export function CycleObservationInputs({
 
   return (
     <View className="gap-4">
+      {/* Written by the pill reminder's buttons, so it appears only once an answer exists — and then
+          it can be corrected here, since a tap on a lock screen is easy to get wrong. */}
+      {value.pill ? (
+        <View className="gap-2">
+          <Text className="text-sm font-bold text-text-primary">
+            {t('cycle.daySheet.pill.label')}
+          </Text>
+          <View className="flex-row gap-2">
+            {(['taken', 'skipped'] as const).map((choice) => (
+              <Chip
+                key={choice}
+                label={t(PILL_ANSWER_KEYS[choice])}
+                selected={value.pill === choice}
+                onPress={() => onChange({ ...value, pill: value.pill === choice ? '' : choice })}
+              />
+            ))}
+          </View>
+        </View>
+      ) : null}
       {fields.map(renderInput)}
       {fields.length ? (
         <Text className="text-xs text-text-secondary">

@@ -220,7 +220,12 @@
       "painScale": "0 = no pain, 10 = the worst you can imagine",
       "clearTitle": "Clear this day?",
       "clearMessage": "This removes everything logged for this day, including its mood on Home and Progress. It can't be undone.",
-      "clearConfirm": "Clear day"
+      "clearConfirm": "Clear day",
+      "pill": {
+        "label": "Pill",
+        "taken": "Taken",
+        "skipped": "Skipped"
+      }
     },
     "edit": {
       "title": "Edit period",

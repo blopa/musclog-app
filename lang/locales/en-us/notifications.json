@@ -14,7 +14,8 @@
       "activeWorkout": "Active Workout",
       "cycle": "Cycle reminders",
       "restTimer": "Rest timer",
-      "workoutReminders": "Workout reminders"
+      "workoutReminders": "Workout reminders",
+      "restTimerQuiet": "Rest timer (no sound)"
     },
     "startNow": "Start Now",
     "types": {
@@ -83,12 +84,23 @@
       "goalAtRisk": {
         "title": "Weekly goal at risk",
         "body": "Workouts left to hit your weekly goal: {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Almost ready",
+        "body": "{{seconds}} seconds of rest left."
+      },
+      "workTimerAlert": {
+        "title": "Time's up",
+        "body": "Your timed set is done."
       }
     },
     "actions": {
       "addRest": "+{{seconds}}s rest",
       "nextSet": "Next set",
-      "snooze": "Snooze 1h"
+      "snooze": "Snooze 1h",
+      "done": "Done",
+      "later": "Later",
+      "skip": "Skip"
     },
     "restPrompt": {
       "title": "Rest timer alerts?",

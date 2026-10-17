@@ -220,7 +220,12 @@
       "painScale": "0 = sin dolor, 10 = el peor imaginable",
       "clearTitle": "¿Borrar este día?",
       "clearMessage": "Se eliminará todo lo registrado este día, incluido su estado de ánimo en Inicio y Progreso. No se puede deshacer.",
-      "clearConfirm": "Borrar día"
+      "clearConfirm": "Borrar día",
+      "pill": {
+        "label": "Píldora",
+        "taken": "Tomada",
+        "skipped": "Omitida"
+      }
     },
     "edit": {
       "title": "Editar periodo",

@@ -86,7 +86,15 @@
       "hapticsHint": "Um toque nos últimos três segundos e uma vibração ao chegar a zero.",
       "defaultRest": "Descanso padrão",
       "defaultRestHint": "Usado nas séries que não indicam o próprio descanso.",
-      "seconds": "s"
+      "seconds": "s",
+      "strongHaptics": "Vibração mais forte",
+      "strongHapticsHint": "Toques mais fortes e vibração dupla ao chegar a zero.",
+      "alertSound": "Som do alerta",
+      "alertSoundHint": "Toca um som quando chega o aviso de fim do descanso. Desativado mantém a vibração.",
+      "headsUp": "Aviso antes do fim do descanso",
+      "headsUpOff": "Desativado",
+      "headsUpSeconds": "{{seconds}} s",
+      "headsUpHint": "O cronômetro muda para \"prepare-se\" e vibra uma vez com essa antecedência antes de o descanso acabar."
     },
     "autonomy": {
       "title": "Quando um treino começa",

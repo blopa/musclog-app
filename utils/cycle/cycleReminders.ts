@@ -236,3 +236,48 @@ export function nextReminder(reminders: CycleReminder[]): CycleReminder | null {
     null
   );
 }
+
+/** "Later" on a pill reminder: soon enough to still be the same dose window. */
+export const PILL_LATER_MINUTES = 30;
+/** "Snooze" on any other cycle reminder. */
+export const CYCLE_SNOOZE_MINUTES = 60;
+
+/** The one answer a pill reminder's buttons record on the day; the diary shows it as ordinary data. */
+export type PillAnswer = 'taken' | 'skipped';
+
+/**
+ * Whether a snoozed copy of a reminder may still fire. A snooze outlives the reschedule that
+ * ordinary reminders are replaced by, so it has to be re-checked against what the plan would say
+ * now: a pause silences everything but the pill, and an estimate (a period or a fertile window)
+ * must not be repeated after a context change — pregnancy, a loss, a hormonal method — has taken
+ * the prediction away. A routine the person scheduled (daily check-in, backup, pill) has no such
+ * dependency.
+ */
+export function isSnoozeStillValid(
+  kind: CycleReminderKind,
+  state: {
+    timeline: CycleTimeline | null;
+    preferences?: CycleReminderPreferences;
+    nowMs: number;
+  }
+): boolean {
+  const prefs = { ...DEFAULT_CYCLE_REMINDERS, ...state.preferences };
+  if (isPaused(prefs, state.nowMs) && !PAUSE_EXEMPT.has(kind)) {
+    return false;
+  }
+
+  if (CYCLE_REMINDER_BASIS[kind] === 'routine') {
+    return true;
+  }
+
+  const predictionState = state.timeline?.prediction.state;
+  if (
+    predictionState !== 'upcoming' &&
+    predictionState !== 'window' &&
+    predictionState !== 'late'
+  ) {
+    return false;
+  }
+
+  return kind === 'fertile-window' ? prefs.fertility : true;
+}

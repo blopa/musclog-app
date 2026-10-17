@@ -8,10 +8,13 @@ import {
   NOTIFICATION_ACTIONS,
   NOTIFICATION_CATEGORIES,
   NOTIFICATION_CHANNELS,
+  REST_TIMER_HEADS_UP_NOTIFICATION_ID,
   REST_TIMER_NOTIFICATION_ID,
   REST_TIMER_REPEAT_NOTIFICATION_ID,
   UNFINISHED_WORKOUT_NOTIFICATION_ID,
+  WORK_TIMER_NOTIFICATION_ID,
 } from '@/constants/notificationActions';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { database } from '@/database';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
@@ -31,6 +34,7 @@ import {
   isSuppressed,
   planWorkoutReminders,
   REST_ADD_SECONDS,
+  REST_HEADS_UP_MIN_GAP_SECONDS,
   REST_REPEAT_DELAY_SECONDS,
   SNOOZE_MINUTES,
   UNFINISHED_WORKOUT_DELAY_MINUTES,
@@ -67,6 +71,32 @@ export class NotificationService {
         options: { opensAppToForeground: false },
       },
     ]);
+    // Neutral labels on purpose: the pill reminder's wording can be set to say nothing about pills,
+    // and a button reading "Taken" would give it away on a lock screen that shows actions.
+    await Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.cycleReminder, [
+      {
+        identifier: NOTIFICATION_ACTIONS.cycleSnooze,
+        buttonTitle: i18n.t('notifications.actions.snooze'),
+        options: { opensAppToForeground: false },
+      },
+    ]);
+    await Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORIES.cyclePill, [
+      {
+        identifier: NOTIFICATION_ACTIONS.pillDone,
+        buttonTitle: i18n.t('notifications.actions.done'),
+        options: { opensAppToForeground: false },
+      },
+      {
+        identifier: NOTIFICATION_ACTIONS.pillLater,
+        buttonTitle: i18n.t('notifications.actions.later'),
+        options: { opensAppToForeground: false },
+      },
+      {
+        identifier: NOTIFICATION_ACTIONS.pillSkip,
+        buttonTitle: i18n.t('notifications.actions.skip'),
+        options: { opensAppToForeground: false },
+      },
+    ]);
   }
 
   static async configure() {
@@ -83,11 +113,14 @@ export class NotificationService {
         const isRestAlertOverVisibleTimer =
           this.restCueVisible &&
           AppState.currentState === 'active' &&
-          (id === REST_TIMER_NOTIFICATION_ID || id === REST_TIMER_REPEAT_NOTIFICATION_ID);
+          (id === REST_TIMER_NOTIFICATION_ID ||
+            id === REST_TIMER_REPEAT_NOTIFICATION_ID ||
+            id === REST_TIMER_HEADS_UP_NOTIFICATION_ID ||
+            id === WORK_TIMER_NOTIFICATION_ID);
         const quiet = isWorkoutUpdate || isRestAlertOverVisibleTimer;
         return {
           shouldShowAlert: !quiet,
-          shouldPlaySound: !quiet,
+          shouldPlaySound: !quiet && !(id === REST_TIMER_HEADS_UP_NOTIFICATION_ID),
           shouldSetBadge: false,
           shouldShowBanner: !quiet,
           shouldShowList: !isRestAlertOverVisibleTimer,
@@ -125,6 +158,16 @@ export class NotificationService {
       await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.restTimer, {
         name: i18n.t('notifications.channels.restTimer'),
         importance: AndroidImportance.MAX,
+        vibrationPattern: [0, 300, 150, 300],
+        lockscreenVisibility: AndroidNotificationVisibility.PRIVATE,
+      });
+
+      // Same urgency as the rest alert, minus the chime: for the lifter who turned the sound off
+      // and for the "get ready" heads-up, which must buzz without ringing.
+      await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.restTimerQuiet, {
+        name: i18n.t('notifications.channels.restTimerQuiet'),
+        importance: AndroidImportance.HIGH,
+        sound: null,
         vibrationPattern: [0, 300, 150, 300],
         lockscreenVisibility: AndroidNotificationVisibility.PRIVATE,
       });
@@ -408,6 +451,11 @@ export class NotificationService {
               type: 'workout-reminder',
               templateId: template.id,
               planId: reminder.planId,
+              // What "Why did I get this?" explains. The plan's day and time, not the fire time.
+              dayIndex: reminder.dayIndex,
+              reminderTime: reminder.reminderTime,
+              leadMinutes: prefs.reminderLeadMinutes,
+              fromPlan: reminder.planId != null,
             },
             ...Platform.select({
               android: { channelId: NOTIFICATION_CHANNELS.workoutReminders },
@@ -454,13 +502,24 @@ export class NotificationService {
     // Cancel any pre-existing rest timer notification before scheduling a new one
     await this.cancelRestTimerNotification();
 
+    const [prefs, withSound, headsUpSeconds] = await Promise.all([
+      loadNotificationPreferences(),
+      SettingsService.get(SETTINGS.restAlertSound).then((sound) => sound === 'on'),
+      SettingsService.get(SETTINGS.restHeadsUpSeconds),
+    ]);
     const content = {
       title: i18n.t('notifications.types.restTimerAlert.title'),
       body: i18n.t('notifications.types.restTimerAlert.body'),
       categoryIdentifier: NOTIFICATION_CATEGORIES.restTimer,
       data: { type: 'rest-timer-alert', workoutLogId: workoutLogId ?? undefined },
+      sound: withSound,
       ...Platform.select({
-        android: { channelId: NOTIFICATION_CHANNELS.restTimer },
+        // Android fixes a channel's sound at creation, so "no chime" is a different channel.
+        android: {
+          channelId: withSound
+            ? NOTIFICATION_CHANNELS.restTimer
+            : NOTIFICATION_CHANNELS.restTimerQuiet,
+        },
         ios: { interruptionLevel: 'timeSensitive' as const },
       }),
     };
@@ -474,9 +533,29 @@ export class NotificationService {
       },
     });
 
+    // "Get ready": a short buzz a few seconds before the rest ends, for the lifter whose phone is
+    // face-down. Only for a rest long enough to have a before and an after.
+    if (headsUpSeconds > 0 && restSeconds > headsUpSeconds + REST_HEADS_UP_MIN_GAP_SECONDS) {
+      await Notifications.scheduleNotificationAsync({
+        identifier: REST_TIMER_HEADS_UP_NOTIFICATION_ID,
+        content: {
+          title: i18n.t('notifications.types.restTimerHeadsUp.title'),
+          body: i18n.t('notifications.types.restTimerHeadsUp.body', { seconds: headsUpSeconds }),
+          data: { type: 'rest-timer-alert', workoutLogId: workoutLogId ?? undefined },
+          sound: false,
+          ...Platform.select({
+            android: { channelId: NOTIFICATION_CHANNELS.restTimerQuiet },
+          }),
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: restSeconds - headsUpSeconds,
+        },
+      });
+    }
+
     // A second, shorter-lived nudge for the person who put the phone down across the room. It is
     // cancelled with the first one the moment the rest is skipped or the next rest starts.
-    const prefs = await loadNotificationPreferences();
     if (prefs.restTimerRepeat) {
       await Notifications.scheduleNotificationAsync({
         identifier: REST_TIMER_REPEAT_NOTIFICATION_ID,
@@ -489,6 +568,59 @@ export class NotificationService {
     }
   }
 
+  /**
+   * "Time's up" for a timed set, for the lifter who locked the phone mid-hold. It rides the rest
+   * alert's switch and sound choice: it is the same kind of cue, and a second setting for it would
+   * be one more thing to find.
+   */
+  static async scheduleWorkTimerNotification(seconds: number) {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    const [isEnabled, isNotificationsEnabled, withSound] = await Promise.all([
+      SettingsService.getNotificationsRestTimer(),
+      SettingsService.getNotifications(),
+      SettingsService.get(SETTINGS.restAlertSound).then((sound) => sound === 'on'),
+    ]);
+    if (!isEnabled || !isNotificationsEnabled) {
+      return;
+    }
+
+    await this.cancelWorkTimerNotification();
+    await Notifications.scheduleNotificationAsync({
+      identifier: WORK_TIMER_NOTIFICATION_ID,
+      content: {
+        title: i18n.t('notifications.types.workTimerAlert.title'),
+        body: i18n.t('notifications.types.workTimerAlert.body'),
+        data: { type: 'rest-timer-alert' },
+        sound: withSound,
+        ...Platform.select({
+          android: {
+            channelId: withSound
+              ? NOTIFICATION_CHANNELS.restTimer
+              : NOTIFICATION_CHANNELS.restTimerQuiet,
+          },
+          ios: { interruptionLevel: 'timeSensitive' as const },
+        }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds,
+      },
+    });
+  }
+
+  static async cancelWorkTimerNotification() {
+    if (Platform.OS === 'web') {
+      return;
+    }
+
+    await Notifications.cancelScheduledNotificationAsync(WORK_TIMER_NOTIFICATION_ID).catch(
+      () => {}
+    );
+  }
+
   static async cancelRestTimerNotification() {
     if (Platform.OS === 'web') {
       return;
@@ -496,6 +628,9 @@ export class NotificationService {
 
     await Promise.all([
       Notifications.cancelScheduledNotificationAsync(REST_TIMER_NOTIFICATION_ID).catch(() => {}),
+      Notifications.cancelScheduledNotificationAsync(REST_TIMER_HEADS_UP_NOTIFICATION_ID).catch(
+        () => {}
+      ),
       Notifications.cancelScheduledNotificationAsync(REST_TIMER_REPEAT_NOTIFICATION_ID).catch(
         () => {}
       ),

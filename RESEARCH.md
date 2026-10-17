@@ -576,7 +576,19 @@ A review of period-tracker notifications (Flo, Clue, Period Calendar, Natural Cy
 - **Adherence reminders outrank everything else.** The pill reminder knows the pack (21 + 7, 24 + 4, continuous) instead of nagging through pill-free days, and a pause does not silence it.
 - **Ask for permission in context.** Notification permission is requested when a reminder is switched on, and a delivery check shows whether a reminder can arrive at all, with a test send.
 
-Snooze and Taken/Skip actions on the notification itself, per-category lock-screen levels and wearable sync alerts are recorded in `FUTURE_FEATURES.md`.
+- **A button is a second lock-screen surface.** The pill reminder's actions are worded Done / Later / Skip, not "Taken", because the notification text can be set to say nothing about pills and an action row reading "Taken" would give it away. "Done" and "Skip" write the answer straight onto the day (`observations.pill`, shown and correctable in the day sheet); "Later" and "Snooze" re-send the same wording once as a separate `menstrual-cycle-snooze` notification, which an ordinary reschedule must not erase but must re-check — a pause or a context change that removes the prediction cancels a snoozed estimate, and only the pill (pause-exempt) and routines the person scheduled survive it.
+
+Per-category lock-screen levels and wearable sync alerts are recorded in `FUTURE_FEATURES.md`.
+
+## Workout notifications: what is a notification and what is a surface
+
+A review of workout-app notifications (Hevy, MacroFactor Workouts, Strong, Fitbod, trainwell, Keep, Strava, Apple Fitness; their help centres, release notes, store reviews and community threads, plus Apple and Android guidance) decided the design:
+
+- **Four jobs hide behind one permission prompt**: in-workout timing, adherence reminders, coaching/social, and marketing. Musclog sends only the first two, each with its own switch and Android channel, and nothing promotional or social.
+- **The rest alert is infrastructure, not engagement.** The complaint that recurs is not "too many" but "too quiet, delayed, indistinguishable or missing". So it is the only `timeSensitive` notification, keeps the loudest channel, can repeat once, and is configurable on three independent axes rather than one "stronger" default: the chime (off moves it to a vibrate-only channel — Android fixes a channel's sound at creation), the haptic firmness, and a "get ready" heads-up (off / 10 / 20 / 30 s) that is both a visual state with a single buzz and, backgrounded, a quiet notification. Users disagree sharply on volume, which is why there is no single right default.
+- **A timed set is not a rest.** Strong's threads show lifters repurposing the rest timer for planks and holds. The work timer is a separate primitive that counts a duration down and then hands over to the rest timer — and because logging the set a moment later would start a second rest, the timer remembers the rest it started and the next set completion skips its own.
+- **A reminder should say why it exists and offer a narrower exit than "turn everything off".** A tapped workout reminder opens a sheet that names the workout, the planned weekday and time and whether that day came from a plan or the workout's own schedule, and offers a one-week pause, turning workout reminders off, or the notification settings. A per-workout mute and an editable per-plan reminder time are not built (see `FUTURE_FEATURES.md`).
+- **Persistent surfaces beat repeated pushes** (a Live Activity or chronometer notification over a stream of banners). That is the largest remaining item and the only one needing native code; it is specified in `FUTURE_FEATURES.md`.
 
 ### Cycle phase and training
 

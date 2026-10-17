@@ -6,6 +6,7 @@ import {
   DEFAULT_CYCLE_REMINDERS,
   isPaused,
   isPillDay,
+  isSnoozeStillValid,
   nextReminder,
   planCycleReminders,
 } from '../cycleReminders';
@@ -182,5 +183,66 @@ describe('cycleReminderContent', () => {
       expect(CYCLE_REMINDER_COPY[kind].detailedTitle).toMatch(/^cycle\.notifications\./);
       expect(CYCLE_REMINDER_COPY[kind].subtleBody).toMatch(/^cycle\.notifications\.subtle\./);
     }
+  });
+});
+
+describe('isSnoozeStillValid', () => {
+  const state = (over: Partial<Parameters<typeof isSnoozeStillValid>[1]> = {}) => ({
+    timeline: timeline(),
+    preferences: { ...DEFAULT_CYCLE_REMINDERS },
+    nowMs: NOW,
+    ...over,
+  });
+
+  it('keeps a snoozed estimate while the prediction it rests on is still shown', () => {
+    expect(isSnoozeStillValid('period-start', state())).toBe(true);
+    expect(
+      isSnoozeStillValid('period-late', state({ timeline: timeline({ state: 'late' }) }))
+    ).toBe(true);
+  });
+
+  it.each(['hidden', 'suppressed'])(
+    'drops a snoozed estimate once the prediction is %s (a context change took it away)',
+    (predictionState) => {
+      expect(
+        isSnoozeStillValid(
+          'period-start',
+          state({ timeline: timeline({ state: predictionState }) })
+        )
+      ).toBe(false);
+    }
+  );
+
+  it('drops a snoozed estimate when there is no timeline at all', () => {
+    expect(isSnoozeStillValid('period-due', state({ timeline: null }))).toBe(false);
+  });
+
+  it('needs the fertility opt-in for a snoozed fertile-window reminder', () => {
+    expect(
+      isSnoozeStillValid(
+        'fertile-window',
+        state({ preferences: { ...DEFAULT_CYCLE_REMINDERS, fertility: false } })
+      )
+    ).toBe(false);
+    expect(isSnoozeStillValid('fertile-window', state())).toBe(true);
+  });
+
+  it('keeps a snoozed routine whatever the prediction says', () => {
+    expect(isSnoozeStillValid('daily-log', state({ timeline: null }))).toBe(true);
+    expect(isSnoozeStillValid('backup', state({ timeline: timeline({ state: 'hidden' }) }))).toBe(
+      true
+    );
+  });
+
+  it('lets a pause silence a snoozed reminder, except the pill', () => {
+    const paused = { ...DEFAULT_CYCLE_REMINDERS, pause: { until: null } };
+    expect(isSnoozeStillValid('daily-log', state({ preferences: paused }))).toBe(false);
+    expect(isSnoozeStillValid('period-start', state({ preferences: paused }))).toBe(false);
+    expect(isSnoozeStillValid('pill', state({ preferences: paused }))).toBe(true);
+  });
+
+  it('ignores a pause that has ended', () => {
+    const ended = { ...DEFAULT_CYCLE_REMINDERS, pause: { until: NOW - 1 } };
+    expect(isSnoozeStillValid('daily-log', state({ preferences: ended }))).toBe(true);
   });
 });

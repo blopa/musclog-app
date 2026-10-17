@@ -82,6 +82,7 @@ export const observationsSchema = z
     temperatureC: z.number().min(30).max(45).optional(),
     discharge: z.string().max(200).optional(),
     medication: z.string().max(500).optional(),
+    pill: z.enum(['taken', 'skipped']).optional(),
     sex: z.boolean().optional(),
     tags: z.string().max(200).optional(),
     customLabels: z.record(z.string().max(100), z.string().max(60)).optional(),

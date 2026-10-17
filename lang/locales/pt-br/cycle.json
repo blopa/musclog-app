@@ -220,7 +220,12 @@
       "painScale": "0 = sem dor, 10 = a pior imaginável",
       "clearTitle": "Limpar este dia?",
       "clearMessage": "Isso remove tudo o que foi registrado neste dia, incluindo o humor em Início e Progresso. Não é possível desfazer.",
-      "clearConfirm": "Limpar dia"
+      "clearConfirm": "Limpar dia",
+      "pill": {
+        "label": "Pílula",
+        "taken": "Tomada",
+        "skipped": "Pulada"
+      }
     },
     "edit": {
       "title": "Editar período",

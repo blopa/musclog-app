@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "Why did I get this?",
+      "thisWorkout": "this workout",
+      "setting": "Workout reminders are on, and {{workout}} is planned for {{day}}.",
+      "settingNoDay": "Workout reminders are on, and {{workout}} is in your plan.",
+      "fromPlan": "That day comes from a workout plan.",
+      "fromSchedule": "That day comes from the schedule you set on the workout.",
+      "timing": "The reminder is set for {{time}}, the planned time.",
+      "timingLead": "It arrives {{minutes}} minutes before the planned time, {{time}}.",
+      "pause": "Pause all reminders for {{days}} days",
+      "paused": "Reminders paused for {{days}} days.",
+      "turnOff": "Turn off workout reminders",
+      "turnedOff": "Workout reminders are off.",
+      "settings": "Notification settings",
+      "failed": "Couldn't change the reminders. Try again."
+    }
+  }
+}

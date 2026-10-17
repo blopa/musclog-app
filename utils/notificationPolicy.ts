@@ -195,6 +195,9 @@ export interface PlannedReminder {
   date: Date;
   templateId: string;
   planId?: string;
+  /** The plan's weekday and time this reminder is about (not the lead-adjusted fire time). */
+  dayIndex: number;
+  reminderTime: string;
 }
 
 /** How far ahead reminders are laid out. iOS keeps 64 pending notifications per app, shared with every other kind. */
@@ -240,7 +243,13 @@ export function planWorkoutReminders(input: {
         continue;
       }
 
-      planned.push({ date, templateId: source.templateId, planId: source.planId });
+      planned.push({
+        date,
+        templateId: source.templateId,
+        planId: source.planId,
+        dayIndex: source.dayIndex,
+        reminderTime: source.reminderTime,
+      });
     }
   }
 
@@ -314,3 +323,5 @@ export const UNFINISHED_WORKOUT_DELAY_MINUTES = 45;
 export const SNOOZE_MINUTES = 60;
 export const REST_ADD_SECONDS = 30;
 export const REST_REPEAT_DELAY_SECONDS = 60;
+/** A heads-up must land at least this long after the rest starts, or it is just a second alert. */
+export const REST_HEADS_UP_MIN_GAP_SECONDS = 5;

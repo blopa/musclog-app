@@ -349,6 +349,53 @@ export const AUTO_START_REST_TIMER_SETTING_TYPE = 'auto_start_rest_timer';
 export const REST_TIMER_HAPTICS_SETTING_TYPE = 'rest_timer_haptics';
 
 /**
+ * Setting type: whether the rest-over notification makes a sound. value: 'on' | 'off'. Defaults to
+ * on. Off keeps the vibration (it moves to a quieter Android channel) — it is for the lifter whose
+ * gym or music makes a chime unwelcome, not a way to lose the alert.
+ */
+export const REST_ALERT_SOUND_SETTING_TYPE = 'rest_alert_sound';
+
+/** Setting type: how firm the rest timer's haptic countdown is. value: 'standard' | 'strong'. */
+export const REST_HAPTIC_STRENGTH_SETTING_TYPE = 'rest_haptic_strength';
+
+/**
+ * Setting type: seconds before a rest ends at which the timer turns to "get ready" and buzzes once
+ * (0 = no heads-up). value: stringified member of `REST_HEADS_UP_OPTIONS`. Defaults to 10, the
+ * long-standing get-ready window.
+ */
+export const REST_HEADS_UP_SECONDS_SETTING_TYPE = 'rest_heads_up_seconds';
+
+export const REST_ALERT_SOUNDS = ['on', 'off'] as const;
+export type RestAlertSound = (typeof REST_ALERT_SOUNDS)[number];
+export const DEFAULT_REST_ALERT_SOUND: RestAlertSound = 'on';
+
+/** Reads a stored alert-sound choice, treating anything unrecognized as the default. */
+export function parseRestAlertSound(raw: string | null | undefined): RestAlertSound {
+  return raw === 'on' || raw === 'off' ? raw : DEFAULT_REST_ALERT_SOUND;
+}
+
+export const REST_HAPTIC_STRENGTHS = ['standard', 'strong'] as const;
+export type RestHapticStrength = (typeof REST_HAPTIC_STRENGTHS)[number];
+export const DEFAULT_REST_HAPTIC_STRENGTH: RestHapticStrength = 'standard';
+
+/** Reads a stored haptic strength, treating anything unrecognized as the default. */
+export function parseRestHapticStrength(raw: string | null | undefined): RestHapticStrength {
+  return raw === 'standard' || raw === 'strong' ? raw : DEFAULT_REST_HAPTIC_STRENGTH;
+}
+
+export const REST_HEADS_UP_OPTIONS = [0, 10, 20, 30] as const;
+export type RestHeadsUpSeconds = (typeof REST_HEADS_UP_OPTIONS)[number];
+export const DEFAULT_REST_HEADS_UP_SECONDS: RestHeadsUpSeconds = 10;
+
+/** Reads a stored heads-up window; a value that is not one of the options falls back to the default. */
+export function parseRestHeadsUpSeconds(raw: string | null | undefined): RestHeadsUpSeconds {
+  const value = Number(raw);
+  return (REST_HEADS_UP_OPTIONS as readonly number[]).includes(value) && raw !== '' && raw != null
+    ? (value as RestHeadsUpSeconds)
+    : DEFAULT_REST_HEADS_UP_SECONDS;
+}
+
+/**
  * Setting type: rest, in whole seconds, after a set that names none of its own.
  * value: stringified integer within `MIN_REST_SECONDS`..`MAX_REST_SECONDS`.
  */

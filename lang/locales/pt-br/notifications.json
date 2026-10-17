@@ -14,7 +14,8 @@
       "activeWorkout": "Treino Ativo",
       "cycle": "Lembretes do ciclo",
       "restTimer": "Temporizador de descanso",
-      "workoutReminders": "Lembretes de treino"
+      "workoutReminders": "Lembretes de treino",
+      "restTimerQuiet": "Cronômetro de descanso (sem som)"
     },
     "startNow": "Iniciar Agora",
     "types": {
@@ -83,12 +84,23 @@
       "goalAtRisk": {
         "title": "Meta semanal em risco",
         "body": "Treinos que faltam para sua meta semanal: {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Quase pronto",
+        "body": "Faltam {{seconds}} segundos de descanso."
+      },
+      "workTimerAlert": {
+        "title": "Tempo esgotado",
+        "body": "Sua série cronometrada terminou."
       }
     },
     "actions": {
       "addRest": "+{{seconds}} s de descanso",
       "nextSet": "Próxima série",
-      "snooze": "Adiar 1 h"
+      "snooze": "Adiar 1 h",
+      "done": "Feito",
+      "later": "Depois",
+      "skip": "Pular"
     },
     "restPrompt": {
       "title": "Alertas do temporizador?",

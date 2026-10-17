@@ -5,7 +5,7 @@ import { planCycleReminders, DEFAULT_CYCLE_REMINDERS } from '../cycleReminders';
 import { computePredictionStats } from '../cycleStats';
 import { computeCycleTimeline } from '../cycleTimeline';
 import { parseCycleTransfer, serializeCycleTransfer } from '../cycleTransfer';
-import { blankDayLog } from '../dayLog';
+import { blankDayLog, isEmptyDayLog } from '../dayLog';
 import { convertExternalCsv, detectImportColumns } from '../externalImport';
 import { groupHealthObservations, mergeHealthObservations } from '../healthObservations';
 import {
@@ -108,6 +108,21 @@ describe('journal and record ownership', () => {
     expect(() => groupHealthObservations([{ ...health, date: day(10) }], day(4))).toThrow();
     const original = { sex: false, health: [health] };
     expect(resolveObservationDraft(observationDraft(original), config, original)).toEqual(original);
+  });
+  it("keeps the pill reminder's answer through an edit of the day, and lets the person clear it", () => {
+    const original = { pill: 'taken' as const, sleepHours: 7 };
+    // The day sheet drafts every stored field, so an unrelated edit must not drop the answer.
+    expect(resolveObservationDraft(observationDraft(original), config, original)).toEqual(original);
+    // Tapping the chosen answer again blanks the draft entry, which removes it.
+    expect(
+      resolveObservationDraft({ ...observationDraft(original), pill: '' }, config, original)
+    ).toEqual({ sleepHours: 7 });
+    expect(() => resolveObservationDraft({ pill: 'maybe' }, config)).toThrow();
+  });
+  it('counts a recorded pill answer as content, so the day it was logged on is not discarded', () => {
+    expect(isEmptyDayLog({ ...blankDayLog(day(1)), observations: { pill: 'skipped' } })).toBe(
+      false
+    );
   });
   it('enforces custom rating bounds, including zero, and rejects reversed bounds', () => {
     const bounded: CycleConfig = {

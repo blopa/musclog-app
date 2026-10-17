@@ -18,6 +18,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { SessionDraft } from '@/hooks/useWorkoutSessionController';
 import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController';
+import { useWorkTimer } from '@/hooks/useWorkTimer';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { weightInputStep } from '@/utils/loadIncrement';
 import { resolveRestSeconds } from '@/utils/restTimer';
@@ -50,6 +51,7 @@ import {
   stampWeightPatch,
   valuesFromDraft,
 } from './session/setDraft';
+import { WorkTimerBar } from './session/WorkTimerBar';
 
 /** What to tell the user when a set cannot be completed as typed; whole keys, never built. */
 const INVALID_FIELD_KEYS = {
@@ -99,7 +101,12 @@ export function WorkoutTrainingView({
   const theme = useTheme();
   const { locale, formatInteger } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
-  const { units: accountUnits } = useSettings();
+  const {
+    units: accountUnits,
+    autoStartRestTimer,
+    restTimerHaptics,
+    restHapticStrength,
+  } = useSettings();
   const { gym } = useActiveGym();
   const { unitsFor, get } = useExerciseUserSettings();
   // The user's own choice for the rest panel, remembered for one rest only.
@@ -121,6 +128,23 @@ export function WorkoutTrainingView({
     blocks.find((block) => block.logExerciseId === selectedLogExerciseId) ??
     blocks.find((block) => block.logExerciseId === next?.logExerciseId) ??
     blocks[0];
+
+  // A timed set: when the countdown runs out the rest begins on its own (if the user lets rests
+  // start by themselves), and logging the set a moment later must not start it a second time.
+  const workTimer = useWorkTimer({
+    hapticsEnabled: restTimerHaptics,
+    hapticStrength: restHapticStrength,
+    onFinish: () => {
+      if (!autoStartRestTimer || controller.restSeconds > 0) {
+        return false;
+      }
+
+      void controller.startRest(
+        resolveRestSeconds(currentBlock?.focus.restTimeAfter, controller.defaultRest)
+      );
+      return true;
+    },
+  });
 
   const editDraft = (setId: string, patch: Partial<SessionDraft>) => {
     const set = sets.find((row) => row.id === setId);
@@ -169,20 +193,23 @@ export function WorkoutTrainingView({
       locale,
       controller.drafts[setId]?.weight !== undefined || controller.drafts[setId]?.reps !== undefined
     );
-    void controller.complete(setId, loggedValues).then((completed) => {
-      if (!completed || !reopening) {
-        return;
-      }
+    const restAlreadyStarted = workTimer.consumeRestHandoff(controller.restSeconds > 0);
+    void controller
+      .complete(setId, loggedValues, restAlreadyStarted ? { autoRest: false } : undefined)
+      .then((completed) => {
+        if (!completed || !reopening) {
+          return;
+        }
 
-      // Reopening is one stray tap away from un-logging a set: say so, and offer the way back.
-      // Putting it back is not a fresh set, so it must not start another rest.
-      showSnackbar('success', t('trainingFlow.setReopened'), {
-        action: t('trainingFlow.undo'),
-        duration: 5000,
-        onAction: () =>
-          void controller.complete(setId, { ...loggedValues, manual: true }, { autoRest: false }),
+        // Reopening is one stray tap away from un-logging a set: say so, and offer the way back.
+        // Putting it back is not a fresh set, so it must not start another rest.
+        showSnackbar('success', t('trainingFlow.setReopened'), {
+          action: t('trainingFlow.undo'),
+          duration: 5000,
+          onAction: () =>
+            void controller.complete(setId, { ...loggedValues, manual: true }, { autoRest: false }),
+        });
       });
-    });
   };
 
   const skip = (setId: string) => {
@@ -463,7 +490,19 @@ export function WorkoutTrainingView({
           {allResolved ? finish : null}
         </View>
       ) : null}
+      {workTimer.mode === 'closed' ? null : (
+        <WorkTimerBar
+          mode={workTimer.mode}
+          seconds={workTimer.seconds}
+          remaining={workTimer.remaining}
+          onAdjust={workTimer.adjust}
+          onStart={workTimer.start}
+          onStop={workTimer.stop}
+          onClose={workTimer.close}
+        />
+      )}
       <RestTimerBar
+        onOpenWorkTimer={workTimer.mode === 'closed' ? workTimer.open : undefined}
         remaining={controller.restSeconds}
         total={controller.restTotal}
         defaultRest={controller.defaultRest}

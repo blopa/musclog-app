@@ -105,10 +105,12 @@ import enUsWorkoutDetails from './locales/en-us/workoutDetails.json';
 import enUsWorkoutHistory from './locales/en-us/workoutHistory.json';
 import enUsWorkoutLog from './locales/en-us/workoutLog.json';
 import enUsWorkoutOptions from './locales/en-us/workoutOptions.json';
+import enUsWorkoutReminder from './locales/en-us/workoutReminder.json';
 import enUsWorkouts from './locales/en-us/workouts.json';
 import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSettings from './locales/en-us/workoutSettings.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
+import enUsWorkTimer from './locales/en-us/workTimer.json';
 // es-es
 import esEsAccessToken from './locales/es-es/access_token.json';
 import esEsAddMeal from './locales/es-es/addMeal.json';
@@ -187,10 +189,12 @@ import esEsWorkoutDetails from './locales/es-es/workoutDetails.json';
 import esEsWorkoutHistory from './locales/es-es/workoutHistory.json';
 import esEsWorkoutLog from './locales/es-es/workoutLog.json';
 import esEsWorkoutOptions from './locales/es-es/workoutOptions.json';
+import esEsWorkoutReminder from './locales/es-es/workoutReminder.json';
 import esEsWorkouts from './locales/es-es/workouts.json';
 import esEsWorkoutSession from './locales/es-es/workoutSession.json';
 import esEsWorkoutSettings from './locales/es-es/workoutSettings.json';
 import esEsWorkoutSummary from './locales/es-es/workoutSummary.json';
+import esEsWorkTimer from './locales/es-es/workTimer.json';
 // nl-nl
 import nlNlAccessToken from './locales/nl-nl/access_token.json';
 import nlNlAddMeal from './locales/nl-nl/addMeal.json';
@@ -269,10 +273,12 @@ import nlNlWorkoutDetails from './locales/nl-nl/workoutDetails.json';
 import nlNlWorkoutHistory from './locales/nl-nl/workoutHistory.json';
 import nlNlWorkoutLog from './locales/nl-nl/workoutLog.json';
 import nlNlWorkoutOptions from './locales/nl-nl/workoutOptions.json';
+import nlNlWorkoutReminder from './locales/nl-nl/workoutReminder.json';
 import nlNlWorkouts from './locales/nl-nl/workouts.json';
 import nlNlWorkoutSession from './locales/nl-nl/workoutSession.json';
 import nlNlWorkoutSettings from './locales/nl-nl/workoutSettings.json';
 import nlNlWorkoutSummary from './locales/nl-nl/workoutSummary.json';
+import nlNlWorkTimer from './locales/nl-nl/workTimer.json';
 // pt-br
 import ptBrAccessToken from './locales/pt-br/access_token.json';
 import ptBrAddMeal from './locales/pt-br/addMeal.json';
@@ -351,10 +357,12 @@ import ptBrWorkoutDetails from './locales/pt-br/workoutDetails.json';
 import ptBrWorkoutHistory from './locales/pt-br/workoutHistory.json';
 import ptBrWorkoutLog from './locales/pt-br/workoutLog.json';
 import ptBrWorkoutOptions from './locales/pt-br/workoutOptions.json';
+import ptBrWorkoutReminder from './locales/pt-br/workoutReminder.json';
 import ptBrWorkouts from './locales/pt-br/workouts.json';
 import ptBrWorkoutSession from './locales/pt-br/workoutSession.json';
 import ptBrWorkoutSettings from './locales/pt-br/workoutSettings.json';
 import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
+import ptBrWorkTimer from './locales/pt-br/workTimer.json';
 // ru-ru
 import ruRuAccessToken from './locales/ru-ru/access_token.json';
 import ruRuAddMeal from './locales/ru-ru/addMeal.json';
@@ -433,10 +441,12 @@ import ruRuWorkoutDetails from './locales/ru-ru/workoutDetails.json';
 import ruRuWorkoutHistory from './locales/ru-ru/workoutHistory.json';
 import ruRuWorkoutLog from './locales/ru-ru/workoutLog.json';
 import ruRuWorkoutOptions from './locales/ru-ru/workoutOptions.json';
+import ruRuWorkoutReminder from './locales/ru-ru/workoutReminder.json';
 import ruRuWorkouts from './locales/ru-ru/workouts.json';
 import ruRuWorkoutSession from './locales/ru-ru/workoutSession.json';
 import ruRuWorkoutSettings from './locales/ru-ru/workoutSettings.json';
 import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
+import ruRuWorkTimer from './locales/ru-ru/workTimer.json';
 // untranslated
 import untranslated from './locales/untranslated.json';
 
@@ -537,12 +547,14 @@ const resources = {
       ...enUsWeeklyStreakCard,
       ...enUsWhatsNew,
       ...enUsWidgets,
+      ...enUsWorkTimer,
       ...enUsWorkout,
       ...enUsWorkoutDetail,
       ...enUsWorkoutDetails,
       ...enUsWorkoutHistory,
       ...enUsWorkoutLog,
       ...enUsWorkoutOptions,
+      ...enUsWorkoutReminder,
       ...enUsWorkoutSession,
       ...enUsWorkoutSettings,
       ...enUsWorkoutSummary,
@@ -623,12 +635,14 @@ const resources = {
       ...esEsWeeklyStreakCard,
       ...esEsWhatsNew,
       ...esEsWidgets,
+      ...esEsWorkTimer,
       ...esEsWorkout,
       ...esEsWorkoutDetail,
       ...esEsWorkoutDetails,
       ...esEsWorkoutHistory,
       ...esEsWorkoutLog,
       ...esEsWorkoutOptions,
+      ...esEsWorkoutReminder,
       ...esEsWorkoutSession,
       ...esEsWorkoutSettings,
       ...esEsWorkoutSummary,
@@ -709,12 +723,14 @@ const resources = {
       ...nlNlWeeklyStreakCard,
       ...nlNlWhatsNew,
       ...nlNlWidgets,
+      ...nlNlWorkTimer,
       ...nlNlWorkout,
       ...nlNlWorkoutDetail,
       ...nlNlWorkoutDetails,
       ...nlNlWorkoutHistory,
       ...nlNlWorkoutLog,
       ...nlNlWorkoutOptions,
+      ...nlNlWorkoutReminder,
       ...nlNlWorkoutSession,
       ...nlNlWorkoutSettings,
       ...nlNlWorkoutSummary,
@@ -795,12 +811,14 @@ const resources = {
       ...ptBrWeeklyStreakCard,
       ...ptBrWhatsNew,
       ...ptBrWidgets,
+      ...ptBrWorkTimer,
       ...ptBrWorkout,
       ...ptBrWorkoutDetail,
       ...ptBrWorkoutDetails,
       ...ptBrWorkoutHistory,
       ...ptBrWorkoutLog,
       ...ptBrWorkoutOptions,
+      ...ptBrWorkoutReminder,
       ...ptBrWorkoutSession,
       ...ptBrWorkoutSettings,
       ...ptBrWorkoutSummary,
@@ -881,12 +899,14 @@ const resources = {
       ...ruRuWeeklyStreakCard,
       ...ruRuWhatsNew,
       ...ruRuWidgets,
+      ...ruRuWorkTimer,
       ...ruRuWorkout,
       ...ruRuWorkoutDetail,
       ...ruRuWorkoutDetails,
       ...ruRuWorkoutHistory,
       ...ruRuWorkoutLog,
       ...ruRuWorkoutOptions,
+      ...ruRuWorkoutReminder,
       ...ruRuWorkoutSession,
       ...ruRuWorkoutSettings,
       ...ruRuWorkoutSummary,

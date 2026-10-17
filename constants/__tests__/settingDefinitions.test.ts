@@ -62,3 +62,28 @@ describe('SETTINGS', () => {
     expect(SETTINGS.activeGymId.serialize(null)).toBe('');
   });
 });
+
+describe('rest alert settings', () => {
+  it('defaults to the behaviour the timer always had', () => {
+    expect(SETTINGS.restAlertSound.defaultValue).toBe('on');
+    expect(SETTINGS.restHapticStrength.defaultValue).toBe('standard');
+    expect(SETTINGS.restHeadsUpSeconds.defaultValue).toBe(10);
+  });
+
+  it('reads anything unrecognized as the default, since rows can come from a newer build', () => {
+    expect(SETTINGS.restAlertSound.parse('loud')).toBe('on');
+    expect(SETTINGS.restHapticStrength.parse('')).toBe('standard');
+    expect(SETTINGS.restHeadsUpSeconds.parse('45')).toBe(10);
+    expect(SETTINGS.restHeadsUpSeconds.parse('')).toBe(10);
+  });
+
+  it('round-trips every offered choice, including a heads-up of zero', () => {
+    expect(SETTINGS.restAlertSound.parse('off')).toBe('off');
+    expect(SETTINGS.restHapticStrength.parse('strong')).toBe('strong');
+    for (const seconds of [0, 10, 20, 30] as const) {
+      expect(
+        SETTINGS.restHeadsUpSeconds.parse(SETTINGS.restHeadsUpSeconds.serialize(seconds))
+      ).toBe(seconds);
+    }
+  });
+});

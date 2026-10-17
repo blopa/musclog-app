@@ -3,12 +3,16 @@ import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
 import {
+  CYCLE_NOTIFICATION_TYPE,
+  CYCLE_SNOOZE_NOTIFICATION_TYPE,
   GOAL_AT_RISK_NOTIFICATION_TYPE,
   NOTIFICATION_ACTIONS,
 } from '@/constants/notificationActions';
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
+import { CycleNotificationService } from '@/services/CycleNotificationService';
 import { NotificationService } from '@/services/NotificationService';
 import { isCycleReminderKind } from '@/utils/cycle/cycleReminders';
+import { workoutReminderRoute } from '@/utils/workoutReminderExplainer';
 
 export function addNotificationResponseReceivedListener(
   listener: (event: Notifications.NotificationResponse) => void
@@ -48,14 +52,28 @@ export async function handleNotificationResponse(response: Notifications.Notific
     return;
   }
 
+  // The cycle buttons record or defer without opening the app. They act on the notification's own
+  // content, so a "Later" copy keeps the wording the person chose.
+  const content = response.notification.request.content;
+  switch (response.actionIdentifier) {
+    case NOTIFICATION_ACTIONS.pillDone:
+      await CycleNotificationService.recordPillAnswer('taken');
+      return;
+    case NOTIFICATION_ACTIONS.pillSkip:
+      await CycleNotificationService.recordPillAnswer('skipped');
+      return;
+    case NOTIFICATION_ACTIONS.pillLater:
+      await CycleNotificationService.snoozePill(content);
+      return;
+    case NOTIFICATION_ACTIONS.cycleSnooze:
+      await CycleNotificationService.snoozeReminder(content);
+      return;
+  }
+
   switch (type) {
     case 'workout-reminder':
-      if (data['templateId']) {
-        router.navigate(`/app/workout/workouts?templateId=${data['templateId']}`);
-      } else {
-        router.navigate('/app/workout/workouts');
-      }
-
+      // The workouts screen explains the reminder ("Why did I get this?") from the same payload.
+      router.navigate(workoutReminderRoute(data));
       break;
 
     case 'nutrition-overview':
@@ -100,7 +118,8 @@ export async function handleNotificationResponse(response: Notifications.Notific
       router.navigate('/app/workout/workouts');
       break;
 
-    case 'menstrual-cycle': {
+    case CYCLE_NOTIFICATION_TYPE:
+    case CYCLE_SNOOZE_NOTIFICATION_TYPE: {
       // The cycle screen explains which setting sent this and what it was based on.
       const kind = data['subtype'];
       router.navigate(

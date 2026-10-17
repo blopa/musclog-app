@@ -199,3 +199,23 @@ describe('activeWorkoutClock', () => {
     ).toBe(30);
   });
 });
+
+describe('planWorkoutReminders context', () => {
+  it("carries the plan's weekday and time so a reminder can explain itself", () => {
+    const now = new Date(2026, 9, 14, 10); // Wednesday
+    const [reminder] = planWorkoutReminders({
+      now,
+      sources: [{ templateId: 't1', planId: 'p1', dayIndex: 4, reminderTime: '07:30' }],
+      prefs: { ...DEFAULT_NOTIFICATION_PREFERENCES, reminderLeadMinutes: 30 },
+      completedTemplateIdsToday: new Set(),
+    });
+    // Fires 30 minutes early, but is still ABOUT Friday at 07:30.
+    expect(reminder.date).toEqual(new Date(2026, 9, 16, 7, 0));
+    expect(reminder).toMatchObject({
+      templateId: 't1',
+      planId: 'p1',
+      dayIndex: 4,
+      reminderTime: '07:30',
+    });
+  });
+});

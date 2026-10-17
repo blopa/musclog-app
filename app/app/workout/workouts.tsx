@@ -23,6 +23,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import { WorkoutLibraryContent } from '@/components/workout/WorkoutLibraryContent';
+import { WorkoutReminderExplainerSheet } from '@/components/workout/WorkoutReminderExplainerSheet';
 import { WorkoutTodayCard } from '@/components/workout/WorkoutTodayCard';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
@@ -41,6 +42,7 @@ import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
+import { parseWorkoutReminderParams } from '@/utils/workoutReminderExplainer';
 
 /**
  * The workout a preview is showing, and the plan it was opened from.
@@ -60,7 +62,14 @@ export default function WorkoutsScreen() {
   const { i18n, t } = useTranslation();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const router = useRouter();
-  const params = useLocalSearchParams<{ previewTemplateId?: string }>();
+  const params = useLocalSearchParams<{
+    previewTemplateId?: string;
+    reminderTemplateId?: string;
+    reminderDay?: string;
+    reminderTime?: string;
+    reminderLead?: string;
+    reminderPlan?: string;
+  }>();
   const { isAiConfigured } = useSettings();
   const [previewTarget, setPreviewTarget] = useState<PreviewTarget | null>(null);
   const previewTemplateId = previewTarget?.templateId ?? null;
@@ -76,6 +85,33 @@ export default function WorkoutsScreen() {
       openPreview();
     }
   }, [params.previewTemplateId]);
+
+  // A tapped workout reminder lands here with its context in the route: explain it once, then drop
+  // the params so coming back to the screen does not reopen the sheet. Adjusting state during
+  // render, as the cycle screen does, so the sheet is part of the first frame.
+  const reminderContext = parseWorkoutReminderParams(params);
+  const [handledReminder, setHandledReminder] = useState<string | undefined>(undefined);
+  const [explainedReminder, setExplainedReminder] =
+    useState<ReturnType<typeof parseWorkoutReminderParams>>(null);
+  if (params.reminderTemplateId !== handledReminder) {
+    setHandledReminder(params.reminderTemplateId);
+    if (reminderContext) {
+      setExplainedReminder(reminderContext);
+    }
+  }
+
+  const closeReminderExplainer = () => {
+    setExplainedReminder(null);
+    if (params.reminderTemplateId) {
+      router.setParams({
+        reminderTemplateId: undefined,
+        reminderDay: undefined,
+        reminderTime: undefined,
+        reminderLead: undefined,
+        reminderPlan: undefined,
+      });
+    }
+  };
 
   const FILTER_TABS = [
     { id: 'all', label: t('workouts.filters.all') },
@@ -732,6 +768,11 @@ export default function WorkoutsScreen() {
         templateExercises={previewTemplateExercises}
         exercises={previewExercises}
         onStartWorkout={handleStartWorkoutFromPreview}
+      />
+
+      <WorkoutReminderExplainerSheet
+        reminder={explainedReminder}
+        onClose={closeReminderExplainer}
       />
     </MasterLayout>
   );

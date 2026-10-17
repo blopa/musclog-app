@@ -220,7 +220,12 @@
       "painScale": "0 = geen pijn, 10 = de ergste denkbare",
       "clearTitle": "Deze dag wissen?",
       "clearMessage": "Dit verwijdert alles wat voor deze dag is vastgelegd, inclusief de stemming op Home en Voortgang. Dit kan niet ongedaan worden gemaakt.",
-      "clearConfirm": "Dag wissen"
+      "clearConfirm": "Dag wissen",
+      "pill": {
+        "label": "Pil",
+        "taken": "Genomen",
+        "skipped": "Overgeslagen"
+      }
     },
     "edit": {
       "title": "Menstruatie bewerken",
