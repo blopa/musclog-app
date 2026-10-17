@@ -73,7 +73,7 @@ jest.mock('@/widgets/CycleWidget', () => ({
   default: { updateTimeline: jest.fn(), updateSnapshot: jest.fn() },
 }));
 jest.mock('@/widgets/cycleWidgetData', () => ({
-  loadCycleWidgetInputs: jest.fn(async () => ({ lockMode: 'off', style: 'discreet', cycle: null })),
+  loadCycleWidgetInputs: jest.fn(async () => ({ lockScopes: [], style: 'discreet', cycle: null })),
   subscribeToCycleChanges: jest.fn(() => jest.fn()),
 }));
 jest.mock('@/widgets/SmartCameraWidget', () => ({

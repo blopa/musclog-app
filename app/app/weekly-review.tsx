@@ -6,6 +6,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
 import { CheckinDetailsModal } from '@/components/modals/CheckinDetailsModal';
@@ -40,6 +41,9 @@ import { hasWeeklyActivity, shouldShowWeeklyReviewWelcome } from '@/utils/weekly
 
 /** Old check-ins shown before "Show all": the history should not bury everything above it. */
 const LEGACY_HISTORY_PREVIEW = 4;
+
+/** The review is training AND nutrition, so either area's lock holds the whole screen. */
+const WEEKLY_REVIEW_LOCK_AREAS = ['workout', 'nutrition'] as const;
 
 /**
  * The one sheet or modal open over the review. One value instead of a flag per sheet: two of them
@@ -316,193 +320,197 @@ export default function WeeklyReviewScreen() {
 
   return (
     <MasterLayout>
-      <KeyboardAwareScrollView
-        bottomOffset={16}
-        contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View className="gap-5" testID="weekly-review">
-          <View className="gap-1">
-            <Text className="text-3xl font-bold text-text-primary">{t('weeklyReview.title')}</Text>
+      <AreaLockGate area={WEEKLY_REVIEW_LOCK_AREAS}>
+        <KeyboardAwareScrollView
+          bottomOffset={16}
+          contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="gap-5" testID="weekly-review">
+            <View className="gap-1">
+              <Text className="text-3xl font-bold text-text-primary">
+                {t('weeklyReview.title')}
+              </Text>
+              {data ? (
+                <>
+                  <Text className="text-base font-semibold text-text-secondary">
+                    {t('weeklyReview.period', {
+                      start: formatDate(data.period.start),
+                      end: formatDate(data.period.end - 1),
+                    })}
+                  </Text>
+                  <Text className="text-xs text-text-tertiary">{t('weeklyReview.periodHint')}</Text>
+                </>
+              ) : null}
+            </View>
+            {viewingLatest ? null : (
+              <Chip
+                variant="solid"
+                role="button"
+                icon={ChevronLeft}
+                label={t('weeklyReview.latest')}
+                onPress={() => {
+                  setSelectedReview(undefined);
+                  setRequestedDay(undefined);
+                }}
+              />
+            )}
+            {!data && !loadError ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
+            {error || loadError ? (
+              <View className="gap-3 rounded-2xl border border-status-error bg-bg-card p-4">
+                <Text accessibilityRole="alert" className="text-sm text-status-error">
+                  {t(error ? 'weeklyReview.error' : 'errors.somethingWentWrong')}
+                </Text>
+                <Button label={t('common.tryAgain')} variant="outline" onPress={reload} />
+              </View>
+            ) : null}
             {data ? (
               <>
-                <Text className="text-base font-semibold text-text-secondary">
-                  {t('weeklyReview.period', {
-                    start: formatDate(data.period.start),
-                    end: formatDate(data.period.end - 1),
-                  })}
-                </Text>
-                <Text className="text-xs text-text-tertiary">{t('weeklyReview.periodHint')}</Text>
-              </>
-            ) : null}
-          </View>
-          {viewingLatest ? null : (
-            <Chip
-              variant="solid"
-              role="button"
-              icon={ChevronLeft}
-              label={t('weeklyReview.latest')}
-              onPress={() => {
-                setSelectedReview(undefined);
-                setRequestedDay(undefined);
-              }}
-            />
-          )}
-          {!data && !loadError ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
-          {error || loadError ? (
-            <View className="gap-3 rounded-2xl border border-status-error bg-bg-card p-4">
-              <Text accessibilityRole="alert" className="text-sm text-status-error">
-                {t(error ? 'weeklyReview.error' : 'errors.somethingWentWrong')}
-              </Text>
-              <Button label={t('common.tryAgain')} variant="outline" onPress={reload} />
-            </View>
-          ) : null}
-          {data ? (
-            <>
-              {reviewable ? (
-                // Plain status, deliberately not pill-shaped: filled pills read as tabs, and these
-                // cannot be tapped.
-                <View
-                  className="flex-row flex-wrap items-center gap-x-4 gap-y-1"
-                  accessibilityRole="summary"
-                >
-                  {progress.map((half) => (
-                    <View key={half.key} className="flex-row items-center gap-1.5">
-                      {half.done ? (
-                        <CheckCircle2
-                          size={theme.iconSize.sm}
-                          color={theme.colors.accent.primary}
-                        />
-                      ) : (
-                        <Circle size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                      )}
-                      <Text
-                        className={`text-sm ${half.done ? 'font-semibold text-text-primary' : 'text-text-secondary'}`}
-                      >
-                        {t(
-                          half.done
-                            ? 'weeklyReview.halfStatus.done'
-                            : 'weeklyReview.halfStatus.open',
-                          { half: half.label }
+                {reviewable ? (
+                  // Plain status, deliberately not pill-shaped: filled pills read as tabs, and these
+                  // cannot be tapped.
+                  <View
+                    className="flex-row flex-wrap items-center gap-x-4 gap-y-1"
+                    accessibilityRole="summary"
+                  >
+                    {progress.map((half) => (
+                      <View key={half.key} className="flex-row items-center gap-1.5">
+                        {half.done ? (
+                          <CheckCircle2
+                            size={theme.iconSize.sm}
+                            color={theme.colors.accent.primary}
+                          />
+                        ) : (
+                          <Circle size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
                         )}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ) : null}
-              {!reviewable && viewingLatest && !data.reviews.length ? (
-                // Nothing logged in the reviewed week and no review yet: say when there will be.
-                <Text className="text-sm text-text-secondary" testID="review-first-date">
-                  {t('weeklyReview.empty.firstReviewOn', {
-                    date: new Intl.DateTimeFormat(locale, {
-                      weekday: 'long',
-                      month: 'short',
-                      day: 'numeric',
-                    }).format(data.period.next),
-                  })}
-                </Text>
-              ) : null}
-
-              <TrainingReviewSection
-                data={data}
-                busy={busy}
-                onDecide={reviewTraining}
-                onChangeConsistencyGoal={changeConsistencyGoal}
-                onOpenGoals={() => setPanel({ kind: 'fitnessGoals' })}
-                onPreviewNext={() =>
-                  data.training.next &&
-                  router.push({
-                    pathname: '/app/workout/workouts',
-                    params: { previewTemplateId: data.training.next.template.id },
-                  })
-                }
-                onEditPlan={() => setPanel({ kind: 'editRules' })}
-                onLogWorkout={() => router.push('/app/workout/workouts')}
-              />
-
-              <NutritionReviewSection
-                data={data}
-                busy={busy}
-                onApply={() => apply()}
-                onKeep={keep}
-                onEdit={openEditor}
-                onSwitchWeekly={switchWeekly}
-                onEditGoal={() => setPanel({ kind: 'editGoal' })}
-                onLogWeight={(day) => setPanel({ kind: 'logWeight', day })}
-                onLogFood={(day) =>
-                  router.push({
-                    pathname: '/app/nutrition/food',
-                    params: { date: formatLocalCalendarDayIso(new Date(day)) },
-                  })
-                }
-                onLogFirstMeal={() => router.push('/app/nutrition/food')}
-              />
-
-              <View className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4">
-                <Text className="text-base font-bold text-text-primary">
-                  {t('weeklyReview.settings')}
-                </Text>
-                <Text className="text-sm text-text-secondary">{t('weeklyReview.weekday')}</Text>
-                <WeekdayChoiceChips value={data.weekday} onChange={changeWeekday} />
-                <ToggleInput
-                  items={[
-                    {
-                      key: 'weekly-review',
-                      label: t('weeklyReview.reminder'),
-                      value: reminder,
-                      onValueChange: toggleReminder,
-                    },
-                  ]}
-                />
-              </View>
-
-              {data.reviews.length || legacy.length ? (
-                <View className="gap-2">
-                  <Text className="text-lg font-bold text-text-primary">
-                    {t('weeklyReview.history')}
+                        <Text
+                          className={`text-sm ${half.done ? 'font-semibold text-text-primary' : 'text-text-secondary'}`}
+                        >
+                          {t(
+                            half.done
+                              ? 'weeklyReview.halfStatus.done'
+                              : 'weeklyReview.halfStatus.open',
+                            { half: half.label }
+                          )}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+                {!reviewable && viewingLatest && !data.reviews.length ? (
+                  // Nothing logged in the reviewed week and no review yet: say when there will be.
+                  <Text className="text-sm text-text-secondary" testID="review-first-date">
+                    {t('weeklyReview.empty.firstReviewOn', {
+                      date: new Intl.DateTimeFormat(locale, {
+                        weekday: 'long',
+                        month: 'short',
+                        day: 'numeric',
+                      }).format(data.period.next),
+                    })}
                   </Text>
-                  {data.reviews.map((review) => (
-                    <ListRow
-                      key={review.id}
-                      variant="card"
-                      title={t('weeklyReview.period', {
-                        start: formatDate(review.periodStart),
-                        end: formatDate(review.periodEnd - 1),
-                      })}
-                      subtitle={historyLabelKeys(review)
-                        .map((key) => t(key))
-                        .join(' · ')}
-                      onPress={() => setSelectedReview(review.id)}
-                    />
-                  ))}
-                  {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map(
-                    (review) => (
+                ) : null}
+
+                <TrainingReviewSection
+                  data={data}
+                  busy={busy}
+                  onDecide={reviewTraining}
+                  onChangeConsistencyGoal={changeConsistencyGoal}
+                  onOpenGoals={() => setPanel({ kind: 'fitnessGoals' })}
+                  onPreviewNext={() =>
+                    data.training.next &&
+                    router.push({
+                      pathname: '/app/workout/workouts',
+                      params: { previewTemplateId: data.training.next.template.id },
+                    })
+                  }
+                  onEditPlan={() => setPanel({ kind: 'editRules' })}
+                  onLogWorkout={() => router.push('/app/workout/workouts')}
+                />
+
+                <NutritionReviewSection
+                  data={data}
+                  busy={busy}
+                  onApply={() => apply()}
+                  onKeep={keep}
+                  onEdit={openEditor}
+                  onSwitchWeekly={switchWeekly}
+                  onEditGoal={() => setPanel({ kind: 'editGoal' })}
+                  onLogWeight={(day) => setPanel({ kind: 'logWeight', day })}
+                  onLogFood={(day) =>
+                    router.push({
+                      pathname: '/app/nutrition/food',
+                      params: { date: formatLocalCalendarDayIso(new Date(day)) },
+                    })
+                  }
+                  onLogFirstMeal={() => router.push('/app/nutrition/food')}
+                />
+
+                <View className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4">
+                  <Text className="text-base font-bold text-text-primary">
+                    {t('weeklyReview.settings')}
+                  </Text>
+                  <Text className="text-sm text-text-secondary">{t('weeklyReview.weekday')}</Text>
+                  <WeekdayChoiceChips value={data.weekday} onChange={changeWeekday} />
+                  <ToggleInput
+                    items={[
+                      {
+                        key: 'weekly-review',
+                        label: t('weeklyReview.reminder'),
+                        value: reminder,
+                        onValueChange: toggleReminder,
+                      },
+                    ]}
+                  />
+                </View>
+
+                {data.reviews.length || legacy.length ? (
+                  <View className="gap-2">
+                    <Text className="text-lg font-bold text-text-primary">
+                      {t('weeklyReview.history')}
+                    </Text>
+                    {data.reviews.map((review) => (
                       <ListRow
                         key={review.id}
                         variant="card"
-                        title={`${t('weeklyReview.legacy')} · ${formatDate(review.checkinDate)}`}
-                        onPress={() => setPanel({ kind: 'legacyCheckin', id: review.id })}
+                        title={t('weeklyReview.period', {
+                          start: formatDate(review.periodStart),
+                          end: formatDate(review.periodEnd - 1),
+                        })}
+                        subtitle={historyLabelKeys(review)
+                          .map((key) => t(key))
+                          .join(' · ')}
+                        onPress={() => setSelectedReview(review.id)}
                       />
-                    )
-                  )}
-                  {legacy.length > LEGACY_HISTORY_PREVIEW ? (
-                    <TextButton
-                      accessibilityState={{ expanded: showAllHistory }}
-                      onPress={() => setShowAllHistory(!showAllHistory)}
-                      label={
-                        showAllHistory
-                          ? t('weeklyReview.showFewer')
-                          : t('weeklyReview.showAll', { count: formatInteger(legacy.length) })
-                      }
-                    />
-                  ) : null}
-                </View>
-              ) : null}
-            </>
-          ) : null}
-        </View>
-      </KeyboardAwareScrollView>
-      {modal}
+                    ))}
+                    {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map(
+                      (review) => (
+                        <ListRow
+                          key={review.id}
+                          variant="card"
+                          title={`${t('weeklyReview.legacy')} · ${formatDate(review.checkinDate)}`}
+                          onPress={() => setPanel({ kind: 'legacyCheckin', id: review.id })}
+                        />
+                      )
+                    )}
+                    {legacy.length > LEGACY_HISTORY_PREVIEW ? (
+                      <TextButton
+                        accessibilityState={{ expanded: showAllHistory }}
+                        onPress={() => setShowAllHistory(!showAllHistory)}
+                        label={
+                          showAllHistory
+                            ? t('weeklyReview.showFewer')
+                            : t('weeklyReview.showAll', { count: formatInteger(legacy.length) })
+                        }
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+              </>
+            ) : null}
+          </View>
+        </KeyboardAwareScrollView>
+        {modal}
+      </AreaLockGate>
     </MasterLayout>
   );
 }

@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { AppState } from 'react-native';
 
+import type { AppLockScope } from '@/constants/settings';
 import { useSettingsContext } from '@/context/SettingsContext';
 import { authenticateToUnlock } from '@/utils/appLock';
 import {
@@ -19,11 +20,10 @@ import {
   isObscured,
   isScopeLocked,
   lockReducer,
-  type LockScope,
 } from '@/utils/appLockState';
 
 interface AppLockContextType {
-  isLocked: (scope: LockScope) => boolean;
+  isLocked: (scope: AppLockScope) => boolean;
   /** The app is in the background with a lock on: draw the privacy cover. */
   obscured: boolean;
   /** Asks the device to authenticate; resolves true and unlocks on success. */
@@ -35,7 +35,7 @@ const AppLockContext = createContext<AppLockContextType | undefined>(undefined);
 
 export function AppLockProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
-  const { appLockMode } = useSettingsContext();
+  const { appLockScopes } = useSettingsContext();
   const [state, dispatch] = useReducer(lockReducer, INITIAL_LOCK_STATE);
   const authenticating = useRef(false);
 
@@ -72,11 +72,11 @@ export function AppLockProvider({ children }: { children: ReactNode }) {
 
   const lock = useCallback(() => dispatch({ type: 'locked' }), []);
   const isLocked = useCallback(
-    (scope: LockScope) => isScopeLocked(appLockMode, scope, state),
-    [appLockMode, state]
+    (scope: AppLockScope) => isScopeLocked(appLockScopes, scope, state),
+    [appLockScopes, state]
   );
 
-  const obscured = isObscured(appLockMode, state);
+  const obscured = isObscured(appLockScopes, state);
   const value = useMemo(
     () => ({ isLocked, obscured, unlock, lock }),
     [isLocked, obscured, unlock, lock]

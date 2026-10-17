@@ -9,7 +9,7 @@ import {
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
-  type AppLockMode,
+  type AppLockScope,
   BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   type ChartTooltipPosition,
@@ -143,7 +143,11 @@ type SettingsState = {
   cycleNotificationStyle: CycleNotificationStyle;
   cycleQuickLogRaw: string;
   cycleVariabilityHintDismissed: boolean;
-  appLockMode: AppLockMode;
+  /**
+   * The raw stored list, NOT the parsed array (same rule as `homeActionsRaw`): a field that is
+   * reallocated per derivation would re-render every `useSettings()` consumer on any write.
+   */
+  appLockScopesRaw: string;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   /** `gyms.id` of the profile being trained in, '' for none. */
@@ -252,7 +256,7 @@ const DEFAULT_STATE: SettingsState = {
   cycleNotificationStyle: SETTINGS.cycleNotificationStyle.defaultValue,
   cycleQuickLogRaw: SETTINGS.cycleQuickLog.defaultValue,
   cycleVariabilityHintDismissed: SETTINGS.cycleVariabilityHintDismissed.defaultValue,
-  appLockMode: SETTINGS.appLockMode.defaultValue,
+  appLockScopesRaw: '',
   includeFiberInCarbs: true,
   progressionMode: 'reps_first',
   activeGymId: '',
@@ -403,7 +407,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     cycleNotificationStyle: readSetting(map, SETTINGS.cycleNotificationStyle),
     cycleQuickLogRaw: readSetting(map, SETTINGS.cycleQuickLog),
     cycleVariabilityHintDismissed: readSetting(map, SETTINGS.cycleVariabilityHintDismissed),
-    appLockMode: readSetting(map, SETTINGS.appLockMode),
+    appLockScopesRaw: map.get(SETTINGS.appLockScopes.type) ?? '',
     includeFiberInCarbs: getBoolean(map, INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, true),
     progressionMode,
     // State fields stay primitive and non-null: no active gym is the empty string here.
@@ -481,7 +485,7 @@ export type SettingsContextType = UseSettingsResult & {
   cycleNotificationStyle: CycleNotificationStyle;
   cycleQuickLogRaw: string;
   cycleVariabilityHintDismissed: boolean;
-  appLockMode: AppLockMode;
+  appLockScopes: readonly AppLockScope[];
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   activeGymId: string;
@@ -651,8 +655,17 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   // actual change instead of once per settings emission — see `homeActionsRaw`.
   const homeActions = useMemo(() => parseHomeActions(state.homeActionsRaw), [state.homeActionsRaw]);
 
+  const appLockScopes = useMemo(
+    () => SETTINGS.appLockScopes.parse(state.appLockScopesRaw),
+    [state.appLockScopesRaw]
+  );
+
   const value = useMemo(() => {
-    const { homeActionsRaw: _homeActionsRaw, ...publicState } = state;
+    const {
+      homeActionsRaw: _homeActionsRaw,
+      appLockScopesRaw: _appLockScopesRaw,
+      ...publicState
+    } = state;
 
     return {
       ...publicState,
@@ -660,12 +673,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       openAiApiKey: decryptedApiKeys.openAiApiKey,
       localLlmApiKey: decryptedApiKeys.localLlmApiKey,
       homeActions,
+      appLockScopes,
       isAiConfigured,
       isAiMealPhotoEnabled,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     };
-  }, [state, decryptedApiKeys, homeActions, isAiConfigured, isAiMealPhotoEnabled]);
+  }, [state, decryptedApiKeys, homeActions, appLockScopes, isAiConfigured, isAiMealPhotoEnabled]);
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 }

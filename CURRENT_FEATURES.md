@@ -170,7 +170,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 **Privacy and data**
 
 - Periods, daily logs, life-stage history and notes are encrypted on the device
-- Optional lock (biometrics or device PIN) for the cycle area only, or the whole app. The lock also covers sheets left open when it engages, hides the app from the app switcher's snapshot while it is in the background, and hides the cycle chart in Progress
+- Optional lock (fingerprint, face or device PIN), set per area in Settings → App lock: cycle tracking, workouts, nutrition and progress each have their own switch, plus one for the whole app. Turning any switch on or off asks for the fingerprint/face/PIN first. The lock also covers sheets left open when it engages, hides the app from the app switcher's snapshot while it is in the background, and hides the cycle chart in Progress
 - Pause tracking without losing history; delete all cycle data permanently, with an offer to remove local recovery points that could hold a copy
 - Cycle preference edits refresh immediately and merge concurrent changes; failed cycle writes restore the saved state and remain retryable. Legacy encryption conversion and permanent cycle deletion commit atomically, including large histories.
 - Shared mood edits and daily observations commit together; clear-day explicitly removes that day's shared mood from Home/Progress too. Permanent cycle deletion keeps shared mood, as disclosed in the confirmation

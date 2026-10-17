@@ -7,6 +7,7 @@ import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { CaloriesBurnedCard } from '@/components/cards/CaloriesBurnedCard';
 import { LineChart } from '@/components/charts/LineChart';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { AdherenceHistoryChart } from '@/components/progress/AdherenceHistoryChart';
@@ -168,42 +169,44 @@ export default function ProgressScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <Stack.Screen
-        options={{
-          title: t('progress.title'),
-          headerRight: () => <MenuButton onPress={() => setShowMenu(true)} />,
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: theme.colors.background.primary,
-          },
-          headerTintColor: theme.colors.text.primary,
-          headerShadowVisible: false,
-        }}
-      />
-      <ChartTooltipProvider tooltipPosition={chartTooltipPosition}>
-        <ProgressScreenContent
-          allAggregationData={allAggregationData}
-          chartPhase={effectiveChartPhase}
-          data={data}
-          hasAnyAggregationData={hasAnyAggregationData}
-          insets={insets}
-          isLoading={isLoading}
-          isAdvancedSettingsVisible={isAdvancedSettingsVisible}
-          menuItems={menuItems}
-          preset={preset}
-          changePreset={changePreset}
-          appliedCustomRange={appliedCustomRange}
-          onApplyCustomRange={applyCustomRange}
-          setUseWeeklyAverages={setUseWeeklyAverages}
-          setAdvancedSettingsVisible={setAdvancedSettingsVisible}
-          showMenu={showMenu}
-          setShowMenu={setShowMenu}
-          t={t}
-          theme={theme}
-          units={units}
-          useWeeklyAverages={useWeeklyAverages}
+      <AreaLockGate area="progress">
+        <Stack.Screen
+          options={{
+            title: t('progress.title'),
+            headerRight: () => <MenuButton onPress={() => setShowMenu(true)} />,
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: theme.colors.background.primary,
+            },
+            headerTintColor: theme.colors.text.primary,
+            headerShadowVisible: false,
+          }}
         />
-      </ChartTooltipProvider>
+        <ChartTooltipProvider tooltipPosition={chartTooltipPosition}>
+          <ProgressScreenContent
+            allAggregationData={allAggregationData}
+            chartPhase={effectiveChartPhase}
+            data={data}
+            hasAnyAggregationData={hasAnyAggregationData}
+            insets={insets}
+            isLoading={isLoading}
+            isAdvancedSettingsVisible={isAdvancedSettingsVisible}
+            menuItems={menuItems}
+            preset={preset}
+            changePreset={changePreset}
+            appliedCustomRange={appliedCustomRange}
+            onApplyCustomRange={applyCustomRange}
+            setUseWeeklyAverages={setUseWeeklyAverages}
+            setAdvancedSettingsVisible={setAdvancedSettingsVisible}
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            t={t}
+            theme={theme}
+            units={units}
+            useWeeklyAverages={useWeeklyAverages}
+          />
+        </ChartTooltipProvider>
+      </AreaLockGate>
     </MasterLayout>
   );
 }

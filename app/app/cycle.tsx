@@ -21,7 +21,7 @@ import { PredictionDetailsSheet } from '@/components/cycle/PredictionDetailsShee
 import { QuickLogRow } from '@/components/cycle/QuickLogRow';
 import { ReminderExplainerSheet } from '@/components/cycle/ReminderExplainerSheet';
 import { DateNavigator } from '@/components/DateNavigator';
-import { CycleLockGate } from '@/components/lock/CycleLockGate';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import { CycleContextModal } from '@/components/modals/CycleContextModal';
 import { CyclePortabilityModal } from '@/components/modals/CyclePortabilityModal';
@@ -198,7 +198,7 @@ export default function CycleScreen() {
 
   return (
     <MasterLayout>
-      <CycleLockGate>
+      <AreaLockGate area="cycle">
         <KeyboardAwareScrollView
           bottomOffset={16}
           className="flex-1"
@@ -404,7 +404,7 @@ export default function CycleScreen() {
 
         {/* Inside the gate: if the cycle area re-locks, an open sheet goes with it. */}
         {renderPanel()}
-      </CycleLockGate>
+      </AreaLockGate>
     </MasterLayout>
   );
 }

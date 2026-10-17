@@ -310,8 +310,13 @@ export const CYCLE_QUICK_LOG_SETTING_TYPE = 'cycle_quick_log';
 export const CYCLE_PIN_SUGGESTED_SETTING_TYPE = 'cycle_pin_suggested';
 /** Set when the user answers the "cycles vary a lot" card, so it is asked once. */
 export const CYCLE_VARIABILITY_HINT_SETTING_TYPE = 'cycle_variability_hint_dismissed';
-/** 'off' | 'cycle' (cycle area only) | 'app' (whole app). */
-export const APP_LOCK_MODE_SETTING_TYPE = 'app_lock_mode';
+/**
+ * The areas that ask for authentication, stored as a comma-separated list of `AppLockScope`s
+ * (empty = no lock). The key predates per-area locks, when it held one of 'off' | 'cycle' | 'app':
+ * those three are still valid serializations (no scopes, [cycle], [app]), so old rows and old
+ * backups read back unchanged.
+ */
+export const APP_LOCK_SCOPES_SETTING_TYPE = 'app_lock_mode';
 
 /**
  * Setting type for smart double progression preference.
@@ -530,7 +535,21 @@ export function parseCycleNotificationStyle(
   return CYCLE_NOTIFICATION_STYLES.find((style) => style === raw) ?? 'discreet';
 }
 
-export type AppLockMode = 'off' | 'cycle' | 'app';
+/**
+ * What can be locked. `app` is the whole app (a full-screen cover), the rest are individual areas
+ * whose screens ask on their own. Canonical order: it is the order the settings list them in and
+ * the order they are stored in.
+ */
+export const APP_LOCK_SCOPES = ['app', 'cycle', 'workout', 'nutrition', 'progress'] as const;
+
+export type AppLockScope = (typeof APP_LOCK_SCOPES)[number];
+
+/** The scopes that are an area of the app, as opposed to `app`, which covers all of them. */
+export type AppLockArea = Exclude<AppLockScope, 'app'>;
+
+export const APP_LOCK_AREAS = APP_LOCK_SCOPES.filter(
+  (scope): scope is AppLockArea => scope !== 'app'
+);
 
 export type UseSettingsResult = {
   units: Units;
@@ -558,7 +577,7 @@ export type UseSettingsResult = {
   cycleNotificationStyle: CycleNotificationStyle;
   cycleQuickLogRaw: string;
   cycleVariabilityHintDismissed: boolean;
-  appLockMode: AppLockMode;
+  appLockScopes: readonly AppLockScope[];
   progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
   nutritionDisplay: string;
@@ -568,6 +587,13 @@ export type UseSettingsResult = {
   showHomeSteps: boolean;
 };
 
-export function parseAppLockMode(raw: string | undefined | null): AppLockMode {
-  return raw === 'cycle' || raw === 'app' ? raw : 'off';
+/** Unknown names (a newer build, a hand-edited backup) and 'off' are dropped; order is canonical. */
+export function parseAppLockScopes(raw: string | undefined | null): AppLockScope[] {
+  const stored = new Set((raw ?? '').split(','));
+
+  return APP_LOCK_SCOPES.filter((scope) => stored.has(scope));
+}
+
+export function serializeAppLockScopes(scopes: readonly AppLockScope[]): string {
+  return parseAppLockScopes(scopes.join(',')).join(',');
 }

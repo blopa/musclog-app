@@ -42,8 +42,8 @@ jest.mock('@/components/theme/TextInput', () => ({
 jest.mock('@/components/modals/FullScreenModal', () => ({
   FullScreenModal: ({ children, visible }: any) => (visible ? children : null),
 }));
-jest.mock('@/components/lock/CycleLockGate', () => ({
-  CycleLockGate: ({ children }: any) => children,
+jest.mock('@/components/lock/AreaLockGate', () => ({
+  AreaLockGate: ({ children }: any) => children,
 }));
 jest.mock('@/services/CycleNotificationService', () => ({
   CycleNotificationService: { scheduleMenstrualCycleNotifications: jest.fn(async () => {}) },

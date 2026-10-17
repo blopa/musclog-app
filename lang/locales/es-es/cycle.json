@@ -31,14 +31,7 @@
       "sectionReminders": "Recordatorios",
       "sectionTracking": "Seguimiento",
       "sectionPrivacy": "Privacidad",
-      "lockHint": "Pide tu huella, rostro o PIN del dispositivo para abrir.",
       "privacyNote": "Los registros del ciclo están cifrados en este teléfono. Las copias que exportas son archivos aparte que tú controlas.",
-      "lock": {
-        "off": "Desactivado",
-        "cycle": "Solo el área del ciclo",
-        "app": "Toda la app",
-        "noCredential": "Configura primero un bloqueo de pantalla o biometría en tu dispositivo."
-      },
       "sectionExport": "Exportar",
       "exportPeriods": "Exportar periodos (CSV)",
       "exportDays": "Exportar registro diario (CSV)",
@@ -147,8 +140,6 @@
     "lock": {
       "prompt": "Desbloquear Musclog",
       "unlock": "Desbloquear",
-      "cycleTitle": "El seguimiento del ciclo está bloqueado",
-      "cycleDescription": "Autentícate para ver tus registros del ciclo.",
       "appTitle": "Musclog está bloqueado",
       "appDescription": "Autentícate para continuar."
     },

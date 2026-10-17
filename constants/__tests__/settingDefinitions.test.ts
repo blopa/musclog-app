@@ -8,7 +8,7 @@ describe('SETTINGS', () => {
       cycleShowPredictions: SETTINGS.cycleShowPredictions.defaultValue,
       cycleShowFertility: SETTINGS.cycleShowFertility.defaultValue,
       cycleNotificationStyle: SETTINGS.cycleNotificationStyle.defaultValue,
-      appLockMode: SETTINGS.appLockMode.defaultValue,
+      appLockScopes: SETTINGS.appLockScopes.defaultValue,
       workoutAutonomy: SETTINGS.workoutAutonomy.defaultValue,
       autoStartRestTimer: SETTINGS.autoStartRestTimer.defaultValue,
       restTimerHaptics: SETTINGS.restTimerHaptics.defaultValue,
@@ -22,7 +22,7 @@ describe('SETTINGS', () => {
       cycleShowPredictions: true,
       cycleShowFertility: false,
       cycleNotificationStyle: 'discreet',
-      appLockMode: 'off',
+      appLockScopes: [],
       workoutAutonomy: DEFAULT_WORKOUT_AUTONOMY,
       autoStartRestTimer: true,
       restTimerHaptics: true,
@@ -85,5 +85,22 @@ describe('rest alert settings', () => {
         SETTINGS.restHeadsUpSeconds.parse(SETTINGS.restHeadsUpSeconds.serialize(seconds))
       ).toBe(seconds);
     }
+  });
+});
+
+describe('appLockScopes', () => {
+  const { parse, serialize } = SETTINGS.appLockScopes;
+
+  it('reads the pre-per-area values unchanged', () => {
+    expect(parse('off')).toEqual([]);
+    expect(parse('')).toEqual([]);
+    expect(parse('cycle')).toEqual(['cycle']);
+    expect(parse('app')).toEqual(['app']);
+  });
+
+  it('round-trips a list in canonical order, dropping unknown and repeated names', () => {
+    expect(serialize(['progress', 'cycle', 'cycle', 'workout'])).toBe('cycle,workout,progress');
+    expect(parse('progress,nonsense,nutrition,progress')).toEqual(['nutrition', 'progress']);
+    expect(parse(serialize(['nutrition', 'workout']))).toEqual(['workout', 'nutrition']);
   });
 });

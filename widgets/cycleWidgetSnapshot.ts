@@ -1,6 +1,7 @@
-import type { AppLockMode, CycleNotificationStyle } from '@/constants/settings';
+import type { AppLockScope, CycleNotificationStyle } from '@/constants/settings';
 import type { CycleTimeline } from '@/utils/cycle/cycleTimeline';
 import type { CyclePeriodDto } from '@/utils/cycle/types';
+import { isCycleLockProtected } from '@/utils/appLockState';
 import { formatAppInteger } from '@/utils/formatAppNumber';
 
 import { INITIAL_WIDGET_PALETTE, type WidgetPalette } from './widgetSnapshot';
@@ -19,7 +20,7 @@ export type CycleWidgetSnapshot = {
 
 /** What the loader read; `cycle` is null when it was not allowed to, or there is nothing to read. */
 export type CycleWidgetInputs = {
-  lockMode: AppLockMode;
+  lockScopes: readonly AppLockScope[];
   style: CycleNotificationStyle;
   cycle: { timeline: CycleTimeline; activePeriod: CyclePeriodDto | null } | null;
 };
@@ -42,22 +43,23 @@ export const INITIAL_CYCLE_SNAPSHOT: CycleWidgetSnapshot = {
 /**
  * How much the widget may say. A home screen is readable without unlocking the phone, let alone
  * the app, so ANY app lock forces the neutral style no matter what the person picked; the style
- * only decides anything while no lock is on. Whole-app mode counts too: `scopeRequiresLock`
- * answers "does this SCREEN ask", but a widget is not a screen.
+ * only decides anything while no lock is on. The whole-app lock counts too, and the locks on the
+ * workout, nutrition and progress areas do not: `scopeRequiresLock` answers "does this SCREEN
+ * ask", but a widget is not a screen.
  */
 export function effectiveCycleWidgetStyle(
-  lockMode: AppLockMode,
+  lockScopes: readonly AppLockScope[],
   style: CycleNotificationStyle
 ): CycleNotificationStyle {
-  return lockMode === 'off' ? style : 'discreet';
+  return isCycleLockProtected(lockScopes) ? 'discreet' : style;
 }
 
 /** Whether the loader needs to read (and decrypt) cycle records at all. */
 export function cycleWidgetNeedsRecords(
-  lockMode: AppLockMode,
+  lockScopes: readonly AppLockScope[],
   style: CycleNotificationStyle
 ): boolean {
-  return effectiveCycleWidgetStyle(lockMode, style) !== 'discreet';
+  return effectiveCycleWidgetStyle(lockScopes, style) !== 'discreet';
 }
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
@@ -115,7 +117,7 @@ export function buildCycleWidgetSnapshot({
     refreshMessage,
     url: CYCLE_WIDGET_URL,
   };
-  const style = effectiveCycleWidgetStyle(inputs.lockMode, inputs.style);
+  const style = effectiveCycleWidgetStyle(inputs.lockScopes, inputs.style);
   if (style === 'discreet') {
     return { ...base, caption: translate('widgets.cycle.privateCaption') };
   }

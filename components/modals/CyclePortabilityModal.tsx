@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { CycleImportMapping } from '@/components/cycle/CycleImportMapping';
-import { CycleLockGate } from '@/components/lock/CycleLockGate';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { TextInput } from '@/components/theme/TextInput';
@@ -179,7 +179,7 @@ export function CyclePortabilityModal({
       }}
       title={t('cycle.portability.title')}
     >
-      <CycleLockGate>
+      <AreaLockGate area="cycle">
         <View className="gap-5 p-4">
           <Text className="text-base font-bold text-text-primary">
             {t('cycle.portability.backupTitle')}
@@ -330,7 +330,7 @@ export function CyclePortabilityModal({
             </Text>
           ) : null}
         </View>
-      </CycleLockGate>
+      </AreaLockGate>
     </FullScreenModal>
   );
 }

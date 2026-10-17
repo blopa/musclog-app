@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddExerciseToSessionModal } from '@/components/modals/AddExerciseToSessionModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
@@ -521,19 +522,21 @@ export default function WorkoutSessionScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <SessionTopBar
-        title={workoutLog?.workoutName || t('freeTraining.title')}
-        duration={duration}
-        done={done}
-        total={sets.length}
-        view={controller.view}
-        onViewChange={(value) => void controller.changeView(value)}
-        onPause={() => router.push('/app/workout/workouts')}
-        onMore={() => setPanel('more')}
-      />
-      {content}
-      {modal}
-      <RestAlertsPrompt hasCompletedSet={done > 0} />
+      <AreaLockGate area="workout">
+        <SessionTopBar
+          title={workoutLog?.workoutName || t('freeTraining.title')}
+          duration={duration}
+          done={done}
+          total={sets.length}
+          view={controller.view}
+          onViewChange={(value) => void controller.changeView(value)}
+          onPause={() => router.push('/app/workout/workouts')}
+          onMore={() => setPanel('more')}
+        />
+        {content}
+        {modal}
+        <RestAlertsPrompt hasCompletedSet={done > 0} />
+      </AreaLockGate>
     </MasterLayout>
   );
 }

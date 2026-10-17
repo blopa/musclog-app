@@ -38,7 +38,7 @@ function timeline(overrides: Partial<CycleTimeline['prediction']> = {}): CycleTi
 const inputs = (
   overrides: Partial<CycleWidgetInputs> & { timeline?: CycleTimeline } = {}
 ): CycleWidgetInputs => ({
-  lockMode: 'off',
+  lockScopes: [],
   style: 'detailed',
   cycle: { timeline: overrides.timeline ?? timeline(), activePeriod: null },
   ...overrides,
@@ -57,17 +57,26 @@ const visibleText = (s: ReturnType<typeof build>) =>
   [s.title, s.value, s.caption, s.detail].join(' ');
 
 describe('effectiveCycleWidgetStyle', () => {
-  it.each(['cycle', 'app'] as const)('forces the neutral style under the %s lock', (lockMode) => {
-    for (const style of ['discreet', 'subtle', 'detailed'] as const) {
-      expect(effectiveCycleWidgetStyle(lockMode, style)).toBe('discreet');
-      expect(cycleWidgetNeedsRecords(lockMode, style)).toBe(false);
+  it.each([['cycle'], ['app'], ['workout', 'cycle']] as const)(
+    'forces the neutral style when the cycle is behind a lock (%s)',
+    (...lockScopes) => {
+      for (const style of ['discreet', 'subtle', 'detailed'] as const) {
+        expect(effectiveCycleWidgetStyle(lockScopes, style)).toBe('discreet');
+        expect(cycleWidgetNeedsRecords(lockScopes, style)).toBe(false);
+      }
     }
-  });
+  );
 
   it('follows the chosen style with no lock', () => {
-    expect(effectiveCycleWidgetStyle('off', 'subtle')).toBe('subtle');
-    expect(cycleWidgetNeedsRecords('off', 'discreet')).toBe(false);
-    expect(cycleWidgetNeedsRecords('off', 'subtle')).toBe(true);
+    expect(effectiveCycleWidgetStyle([], 'subtle')).toBe('subtle');
+    expect(cycleWidgetNeedsRecords([], 'discreet')).toBe(false);
+    expect(cycleWidgetNeedsRecords([], 'subtle')).toBe(true);
+  });
+
+  it('ignores locks on the other areas: they do not protect the cycle', () => {
+    const others = ['workout', 'nutrition', 'progress'] as const;
+    expect(effectiveCycleWidgetStyle(others, 'subtle')).toBe('subtle');
+    expect(cycleWidgetNeedsRecords(others, 'detailed')).toBe(true);
   });
 });
 
@@ -83,8 +92,8 @@ describe('buildCycleWidgetSnapshot', () => {
 
   it.each(['cycle', 'app'] as const)(
     'stays neutral under the %s lock whatever the style',
-    (lockMode) => {
-      const snapshot = build(inputs({ lockMode, style: 'detailed' }));
+    (scope) => {
+      const snapshot = build(inputs({ lockScopes: [scope], style: 'detailed' }));
       expect(snapshot.value).toBe('');
       expect(visibleText(snapshot)).not.toMatch(/14|Likely|late/);
     }
@@ -129,7 +138,7 @@ describe('buildCycleWidgetSnapshot', () => {
   it('does not announce the next period while one is going', () => {
     const period = { startDate: day(-2) } as CyclePeriodDto;
     const snapshot = build({
-      lockMode: 'off',
+      lockScopes: [],
       style: 'detailed',
       cycle: { timeline: timeline(), activePeriod: period },
     });
@@ -141,7 +150,7 @@ describe('buildCycleWidgetSnapshot', () => {
     ['no active cycle', null],
     ['no logged period', { timeline: { ...timeline(), elapsedDay: null }, activePeriod: null }],
   ])('asks to open the app with %s', (_name, cycle) => {
-    const snapshot = build({ lockMode: 'off', style: 'detailed', cycle });
+    const snapshot = build({ lockScopes: [], style: 'detailed', cycle });
     expect(snapshot.value).toBe('');
     expect(snapshot.caption).toBe('widgets.refresh');
   });

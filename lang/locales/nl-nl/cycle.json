@@ -31,14 +31,7 @@
       "sectionReminders": "Herinneringen",
       "sectionTracking": "Bijhouden",
       "sectionPrivacy": "Privacy",
-      "lockHint": "Vraag om je vingerafdruk, gezicht of pincode van het apparaat om te openen.",
       "privacyNote": "Cyclusgegevens zijn versleuteld op deze telefoon. Back-ups die je exporteert zijn aparte bestanden die jij beheert.",
-      "lock": {
-        "off": "Uit",
-        "cycle": "Alleen cyclusgedeelte",
-        "app": "Hele app",
-        "noCredential": "Stel eerst een schermvergrendeling of biometrie in op je apparaat."
-      },
       "sectionExport": "Exporteren",
       "exportPeriods": "Menstruaties exporteren (CSV)",
       "exportDays": "Dagelijkse registratie exporteren (CSV)",
@@ -147,8 +140,6 @@
     "lock": {
       "prompt": "Musclog ontgrendelen",
       "unlock": "Ontgrendelen",
-      "cycleTitle": "Cyclusregistratie is vergrendeld",
-      "cycleDescription": "Verifieer je identiteit om je cyclusgegevens te zien.",
       "appTitle": "Musclog is vergrendeld",
       "appDescription": "Verifieer je identiteit om door te gaan."
     },

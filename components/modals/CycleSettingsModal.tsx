@@ -10,24 +10,21 @@ import { CycleReminderSettings } from '@/components/cycle/CycleReminderSettings'
 import { CycleSharingSettings } from '@/components/cycle/CycleSharingSettings';
 import { CycleTrackingModeSettings } from '@/components/cycle/CycleTrackingModeSettings';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
-import { CycleLockGate } from '@/components/lock/CycleLockGate';
+import { AppLockSettings } from '@/components/lock/AppLockSettings';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { CyclePortabilityModal } from '@/components/modals/CyclePortabilityModal';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { Button } from '@/components/theme/Button';
-import { Chip } from '@/components/theme/Chip';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { SETTINGS } from '@/constants/settingDefinitions';
-import type { AppLockMode } from '@/constants/settings';
-import { useAppLock } from '@/context/AppLockContext';
-import { useSnackbar } from '@/context/SnackbarContext';
 import { deleteBackup, getStoredBackups } from '@/database/preMigrationBackup';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { exportDayLogsCsv, exportPeriodsCsv } from '@/services/cycleExport';
-import { canEnableAppLock, isAppLockSupported } from '@/utils/appLock';
+import { isAppLockSupported } from '@/utils/appLock';
 import type { CycleConfigPatch } from '@/utils/cycle/types';
 import { authenticateForDangerousAction } from '@/utils/dangerousActionAuth';
 import { handleError } from '@/utils/handleError';
@@ -47,11 +44,6 @@ type Sub =
 
 /** Usual-length edits save as they are made, after this pause (and at once on close). */
 const LENGTH_SAVE_DELAY_MS = 600;
-const LOCK_MODES: { mode: AppLockMode; labelKey: string }[] = [
-  { mode: 'off', labelKey: 'cycle.settings.lock.off' },
-  { mode: 'cycle', labelKey: 'cycle.settings.lock.cycle' },
-  { mode: 'app', labelKey: 'cycle.settings.lock.app' },
-];
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -73,9 +65,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { showSnackbar } = useSnackbar();
-  const { unlock } = useAppLock();
-  const { cycleShowPredictions, cycleShowFertility, appLockMode } = useSettings();
+  const { cycleShowPredictions, cycleShowFertility } = useSettings();
   const {
     cycle,
     pausedCycle,
@@ -140,27 +130,6 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
   };
 
   useEffect(() => () => clearTimeout(lengthTimer.current), []);
-
-  const changeLock = async (mode: AppLockMode) => {
-    if (mode === appLockMode) {
-      return;
-    }
-
-    await guarded('CycleSettingsModal.lock', async () => {
-      if (mode !== 'off' && !(await canEnableAppLock())) {
-        showSnackbar('error', t('cycle.settings.lock.noCredential'));
-
-        return;
-      }
-
-      // Changing the lock is itself behind the lock.
-      if (!(await unlock())) {
-        return;
-      }
-
-      await SettingsService.set(SETTINGS.appLockMode, mode);
-    });
-  };
 
   const runExport = (context: string, action: () => Promise<void>) => {
     setIsExporting(true);
@@ -266,7 +235,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
       title={t('cycle.settings.title')}
       subtitle={t('cycle.settings.subtitle')}
     >
-      <CycleLockGate>
+      <AreaLockGate area="cycle">
         <View className="gap-8 px-4 py-4">
           <CycleTrackingModeSettings onClose={close} />
           {tracked ? (
@@ -356,17 +325,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
 
           {isAppLockSupported ? (
             <Section title={t('cycle.settings.sectionPrivacy')}>
-              <Text className="text-xs text-text-tertiary">{t('cycle.settings.lockHint')}</Text>
-              <View className="flex-row flex-wrap gap-2">
-                {LOCK_MODES.map(({ mode, labelKey }) => (
-                  <Chip
-                    key={mode}
-                    label={t(labelKey)}
-                    selected={appLockMode === mode}
-                    onPress={() => void changeLock(mode)}
-                  />
-                ))}
-              </View>
+              <AppLockSettings />
               <Text className="text-xs text-text-tertiary">{t('cycle.settings.privacyNote')}</Text>
             </Section>
           ) : null}
@@ -442,7 +401,7 @@ export function CycleSettingsModal({ visible, onClose }: CycleSettingsModalProps
         </View>
 
         {renderSub()}
-      </CycleLockGate>
+      </AreaLockGate>
     </FullScreenModal>
   );
 }

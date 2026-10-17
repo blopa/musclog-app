@@ -21,7 +21,7 @@ jest.mock('@/database/services/SettingsService', () => ({
 }));
 jest.mock('@/constants/settingDefinitions', () => ({
   SETTINGS: {
-    appLockMode: { key: 'lock' },
+    appLockScopes: { key: 'lock' },
     cycleNotificationStyle: { key: 'style' },
     cycleShowPredictions: { key: 'predictions' },
     cycleShowFertility: { key: 'fertility' },
@@ -30,13 +30,13 @@ jest.mock('@/constants/settingDefinitions', () => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockSettings = { lock: 'off', style: 'detailed' };
+  mockSettings = { lock: [], style: 'detailed' };
 });
 
 it.each([
-  ['the default discreet style', { lock: 'off', style: 'discreet' }],
-  ['the cycle lock', { lock: 'cycle', style: 'detailed' }],
-  ['the whole-app lock', { lock: 'app', style: 'detailed' }],
+  ['the default discreet style', { lock: [], style: 'discreet' }],
+  ['the cycle lock', { lock: ['cycle'], style: 'detailed' }],
+  ['the whole-app lock', { lock: ['app'], style: 'detailed' }],
 ])('never reads the encrypted records under %s', async (_name, settings) => {
   mockSettings = settings;
   const result = await loadCycleWidgetInputs();
@@ -49,6 +49,6 @@ it('reports no cycle when none is active', async () => {
     fetch: async () => [{ id: 'paused', isActive: false }],
   });
   const result = await loadCycleWidgetInputs();
-  expect(result).toEqual({ lockMode: 'off', style: 'detailed', cycle: null });
+  expect(result).toEqual({ lockScopes: [], style: 'detailed', cycle: null });
   expect(SettingsService.get).toHaveBeenCalled();
 });

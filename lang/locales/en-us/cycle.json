@@ -31,14 +31,7 @@
       "sectionReminders": "Reminders",
       "sectionTracking": "Tracking",
       "sectionPrivacy": "Privacy",
-      "lockHint": "Ask for your fingerprint, face or device PIN to open.",
       "privacyNote": "Cycle records are encrypted on this phone. Backups you export are separate files that you control.",
-      "lock": {
-        "off": "Off",
-        "cycle": "Cycle area only",
-        "app": "Whole app",
-        "noCredential": "Set up a screen lock or biometrics on your device first."
-      },
       "sectionExport": "Export",
       "exportPeriods": "Export periods (CSV)",
       "exportDays": "Export daily log (CSV)",
@@ -147,8 +140,6 @@
     "lock": {
       "prompt": "Unlock Musclog",
       "unlock": "Unlock",
-      "cycleTitle": "Cycle tracking is locked",
-      "cycleDescription": "Authenticate to see your cycle records.",
       "appTitle": "Musclog is locked",
       "appDescription": "Authenticate to continue."
     },

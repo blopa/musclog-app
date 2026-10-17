@@ -1,7 +1,4 @@
-import type { AppLockMode } from '@/constants/settings';
-
-/** Which part of the app a screen belongs to. */
-export type LockScope = 'app' | 'cycle';
+import type { AppLockScope } from '@/constants/settings';
 
 export interface LockState {
   unlocked: boolean;
@@ -39,19 +36,29 @@ export function lockReducer(state: LockState, event: LockEvent): LockState {
 }
 
 /**
- * Whether `scope` asks for authentication in `mode`. Whole-app mode already covers the cycle
- * area, so it is not asked twice; cycle mode leaves the rest of the app (gym use) untouched.
+ * Whether `scope` asks for authentication given the areas the user locked. Locking the whole app
+ * already covers every area, so with it on an area is not asked a second time; without it, each
+ * area asks only if it was chosen, which leaves the rest of the app (gym use) untouched.
  */
-export function scopeRequiresLock(mode: AppLockMode, scope: LockScope): boolean {
-  if (mode === 'off') {
-    return false;
+export function scopeRequiresLock(scopes: readonly AppLockScope[], scope: AppLockScope): boolean {
+  if (scope === 'app') {
+    return scopes.includes('app');
   }
 
-  return mode === 'app' ? scope === 'app' : scope === 'cycle';
+  return !scopes.includes('app') && scopes.includes(scope);
 }
 
-export function isScopeLocked(mode: AppLockMode, scope: LockScope, state: LockState): boolean {
-  return scopeRequiresLock(mode, scope) && !state.unlocked;
+export function isScopeLocked(
+  scopes: readonly AppLockScope[],
+  scope: AppLockScope,
+  state: LockState
+): boolean {
+  return scopeRequiresLock(scopes, scope) && !state.unlocked;
+}
+
+/** Whether any lock stands between a person holding the phone and the cycle records. */
+export function isCycleLockProtected(scopes: readonly AppLockScope[]): boolean {
+  return scopes.includes('app') || scopes.includes('cycle');
 }
 
 /**
@@ -59,6 +66,6 @@ export function isScopeLocked(mode: AppLockMode, scope: LockScope, state: LockSt
  * OS snapshots the screen for the app switcher as the app leaves, so a lock that only appears
  * when the person comes BACK leaves the diary readable in the recent-apps list.
  */
-export function isObscured(mode: AppLockMode, state: LockState): boolean {
-  return mode !== 'off' && state.backgroundedAt != null;
+export function isObscured(scopes: readonly AppLockScope[], state: LockState): boolean {
+  return scopes.length > 0 && state.backgroundedAt != null;
 }

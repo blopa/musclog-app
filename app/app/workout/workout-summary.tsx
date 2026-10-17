@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
 import ConfettiOverlay from '@/components/ConfettiOverlay';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { WorkoutSessionFeedback } from '@/components/workout/WorkoutSessionFeedback';
@@ -321,7 +322,7 @@ export default function WorkoutSummaryScreen() {
   }
 
   return (
-    <>
+    <AreaLockGate area="workout">
       <WorkoutSummaryCelebration
         onGoHome={handleGoHome}
         onShareSummary={handleShareSummary}
@@ -352,6 +353,6 @@ export default function WorkoutSummaryScreen() {
         cancelLabel={t('workout.summary.healthPrompt.later')}
         variant="primary"
       />
-    </>
+    </AreaLockGate>
   );
 }

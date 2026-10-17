@@ -1,0 +1,42 @@
+{
+  "lock": {
+    "settings": {
+      "title": "Appvergrendeling",
+      "subtitle": "Vraag om vingerafdruk, gezicht of pincode van het apparaat",
+      "hint": "Vraag om je vingerafdruk, gezicht of pincode van het apparaat voordat de gekozen onderdelen worden getoond. Ze worden opnieuw vergrendeld nadat de app 30 seconden op de achtergrond is geweest.",
+      "note": "Dit is een schermvergrendeling. Je gegevens blijven versleuteld en op deze telefoon; geëxporteerde back-ups zijn aparte bestanden die jij beheert.",
+      "noCredential": "Stel eerst een schermvergrendeling of biometrie in op je apparaat.",
+      "coveredByApp": "Gedekt door het vergrendelen van de hele app"
+    },
+    "areas": {
+      "app": {
+        "label": "Hele app",
+        "hint": "Vraag om verificatie voordat iets in Musclog wordt getoond"
+      },
+      "cycle": {
+        "label": "Cyclusregistratie",
+        "hint": "Menstruaties, symptomen en voorspellingen",
+        "lockedTitle": "Cyclusregistratie is vergrendeld",
+        "lockedDescription": "Verifieer je identiteit om je cyclusgegevens te zien."
+      },
+      "workout": {
+        "label": "Trainingen",
+        "hint": "Schema's, sessies en trainingsgeschiedenis",
+        "lockedTitle": "Trainingen zijn vergrendeld",
+        "lockedDescription": "Verifieer je identiteit om je trainingen te zien."
+      },
+      "nutrition": {
+        "label": "Voeding",
+        "hint": "Voedingsdagboek, maaltijden en wekelijkse doelen",
+        "lockedTitle": "Voeding is vergrendeld",
+        "lockedDescription": "Verifieer je identiteit om je voedingsgegevens te zien."
+      },
+      "progress": {
+        "label": "Voortgang",
+        "hint": "Grafieken, trends en lichaamsmaten",
+        "lockedTitle": "Voortgang is vergrendeld",
+        "lockedDescription": "Verifieer je identiteit om je voortgang te zien."
+      }
+    }
+  }
+}

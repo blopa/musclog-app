@@ -66,6 +66,7 @@ import enUsHealthConnect from './locales/en-us/healthConnect.json';
 import enUsHeightPicker from './locales/en-us/heightPicker.json';
 import enUsHome from './locales/en-us/home.json';
 import enUsImageViewer from './locales/en-us/imageViewer.json';
+import enUsLock from './locales/en-us/lock.json';
 import enUsLogSetPerformance from './locales/en-us/logSetPerformance.json';
 import enUsMealFoods from './locales/en-us/meal_foods.json';
 import enUsMeals from './locales/en-us/meals.json';
@@ -150,6 +151,7 @@ import esEsHealthConnect from './locales/es-es/healthConnect.json';
 import esEsHeightPicker from './locales/es-es/heightPicker.json';
 import esEsHome from './locales/es-es/home.json';
 import esEsImageViewer from './locales/es-es/imageViewer.json';
+import esEsLock from './locales/es-es/lock.json';
 import esEsLogSetPerformance from './locales/es-es/logSetPerformance.json';
 import esEsMealFoods from './locales/es-es/meal_foods.json';
 import esEsMeals from './locales/es-es/meals.json';
@@ -234,6 +236,7 @@ import nlNlHealthConnect from './locales/nl-nl/healthConnect.json';
 import nlNlHeightPicker from './locales/nl-nl/heightPicker.json';
 import nlNlHome from './locales/nl-nl/home.json';
 import nlNlImageViewer from './locales/nl-nl/imageViewer.json';
+import nlNlLock from './locales/nl-nl/lock.json';
 import nlNlLogSetPerformance from './locales/nl-nl/logSetPerformance.json';
 import nlNlMealFoods from './locales/nl-nl/meal_foods.json';
 import nlNlMeals from './locales/nl-nl/meals.json';
@@ -318,6 +321,7 @@ import ptBrHealthConnect from './locales/pt-br/healthConnect.json';
 import ptBrHeightPicker from './locales/pt-br/heightPicker.json';
 import ptBrHome from './locales/pt-br/home.json';
 import ptBrImageViewer from './locales/pt-br/imageViewer.json';
+import ptBrLock from './locales/pt-br/lock.json';
 import ptBrLogSetPerformance from './locales/pt-br/logSetPerformance.json';
 import ptBrMealFoods from './locales/pt-br/meal_foods.json';
 import ptBrMeals from './locales/pt-br/meals.json';
@@ -402,6 +406,7 @@ import ruRuHealthConnect from './locales/ru-ru/healthConnect.json';
 import ruRuHeightPicker from './locales/ru-ru/heightPicker.json';
 import ruRuHome from './locales/ru-ru/home.json';
 import ruRuImageViewer from './locales/ru-ru/imageViewer.json';
+import ruRuLock from './locales/ru-ru/lock.json';
 import ruRuLogSetPerformance from './locales/ru-ru/logSetPerformance.json';
 import ruRuMealFoods from './locales/ru-ru/meal_foods.json';
 import ruRuMeals from './locales/ru-ru/meals.json';
@@ -517,6 +522,7 @@ const resources = {
       ...enUsHeightPicker,
       ...enUsHome,
       ...enUsImageViewer,
+      ...enUsLock,
       ...enUsLogSetPerformance,
       ...enUsMealFoods,
       ...enUsMeals,
@@ -605,6 +611,7 @@ const resources = {
       ...esEsHeightPicker,
       ...esEsHome,
       ...esEsImageViewer,
+      ...esEsLock,
       ...esEsLogSetPerformance,
       ...esEsMealFoods,
       ...esEsMeals,
@@ -693,6 +700,7 @@ const resources = {
       ...nlNlHeightPicker,
       ...nlNlHome,
       ...nlNlImageViewer,
+      ...nlNlLock,
       ...nlNlLogSetPerformance,
       ...nlNlMealFoods,
       ...nlNlMeals,
@@ -781,6 +789,7 @@ const resources = {
       ...ptBrHeightPicker,
       ...ptBrHome,
       ...ptBrImageViewer,
+      ...ptBrLock,
       ...ptBrLogSetPerformance,
       ...ptBrMealFoods,
       ...ptBrMeals,
@@ -869,6 +878,7 @@ const resources = {
       ...ruRuHeightPicker,
       ...ruRuHome,
       ...ruRuImageViewer,
+      ...ruRuLock,
       ...ruRuLogSetPerformance,
       ...ruRuMealFoods,
       ...ruRuMeals,

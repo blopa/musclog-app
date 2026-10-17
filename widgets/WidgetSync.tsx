@@ -34,7 +34,7 @@ import {
 
 /** What to publish when the cycle records cannot be read: nothing, never the previous values. */
 const UNREADABLE_CYCLE_INPUTS: CycleWidgetInputs = {
-  lockMode: 'app',
+  lockScopes: ['app'],
   style: 'discreet',
   cycle: null,
 };
@@ -78,7 +78,7 @@ export function WidgetSync() {
   const { theme } = useThemeContext();
   const {
     isLoading,
-    appLockMode,
+    appLockScopes,
     cycleNotificationStyle,
     cycleShowPredictions,
     cycleShowFertility,
@@ -173,7 +173,7 @@ export function WidgetSync() {
     t,
     theme,
     today,
-    appLockMode,
+    appLockScopes,
     cycleNotificationStyle,
     cycleShowPredictions,
     cycleShowFertility,

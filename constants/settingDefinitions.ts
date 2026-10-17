@@ -1,8 +1,8 @@
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
-  APP_LOCK_MODE_SETTING_TYPE,
-  type AppLockMode,
+  APP_LOCK_SCOPES_SETTING_TYPE,
+  type AppLockScope,
   AUTO_START_REST_TIMER_SETTING_TYPE,
   CYCLE_NOTIFICATION_STYLE_SETTING_TYPE,
   CYCLE_PIN_SUGGESTED_SETTING_TYPE,
@@ -13,7 +13,7 @@ import {
   type CycleNotificationStyle,
   DEFAULT_REST_SECONDS_SETTING_TYPE,
   NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE,
-  parseAppLockMode,
+  parseAppLockScopes,
   parseCycleNotificationStyle,
   parseRestAlertSound,
   parseRestHapticStrength,
@@ -32,6 +32,7 @@ import {
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
   type WorkoutAutonomy,
+  serializeAppLockScopes,
 } from '@/constants/settings';
 import { clampRestSeconds } from '@/utils/restTimer';
 
@@ -85,7 +86,12 @@ export const SETTINGS = {
   cycleQuickLog: textSetting(CYCLE_QUICK_LOG_SETTING_TYPE),
   cyclePinSuggested: textSetting(CYCLE_PIN_SUGGESTED_SETTING_TYPE),
   cycleVariabilityHintDismissed: booleanSetting(CYCLE_VARIABILITY_HINT_SETTING_TYPE, false),
-  appLockMode: choiceSetting<AppLockMode>(APP_LOCK_MODE_SETTING_TYPE, parseAppLockMode),
+  appLockScopes: {
+    type: APP_LOCK_SCOPES_SETTING_TYPE,
+    defaultValue: [],
+    parse: parseAppLockScopes,
+    serialize: serializeAppLockScopes,
+  } satisfies SettingDefinition<AppLockScope[]>,
   workoutAutonomy: choiceSetting<WorkoutAutonomy>(
     WORKOUT_AUTONOMY_SETTING_TYPE,
     parseWorkoutAutonomy

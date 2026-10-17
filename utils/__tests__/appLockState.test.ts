@@ -1,6 +1,9 @@
+import { APP_LOCK_SCOPES } from '@/constants/settings';
+
 import {
   APP_LOCK_GRACE_MS,
   INITIAL_LOCK_STATE,
+  isCycleLockProtected,
   isObscured,
   isScopeLocked,
   lockReducer,
@@ -8,24 +11,41 @@ import {
 } from '../appLockState';
 
 describe('scopeRequiresLock', () => {
-  it('locks nothing when off', () => {
-    expect(scopeRequiresLock('off', 'app')).toBe(false);
-    expect(scopeRequiresLock('off', 'cycle')).toBe(false);
+  it('locks nothing when no scope is chosen', () => {
+    for (const scope of APP_LOCK_SCOPES) {
+      expect(scopeRequiresLock([], scope)).toBe(false);
+    }
   });
 
-  it('cycle mode locks only the cycle area, app mode only the app (which contains the cycle area)', () => {
-    expect(scopeRequiresLock('cycle', 'cycle')).toBe(true);
-    expect(scopeRequiresLock('cycle', 'app')).toBe(false);
-    expect(scopeRequiresLock('app', 'app')).toBe(true);
-    expect(scopeRequiresLock('app', 'cycle')).toBe(false);
+  it('asks only for the areas that were chosen', () => {
+    expect(scopeRequiresLock(['workout', 'progress'], 'workout')).toBe(true);
+    expect(scopeRequiresLock(['workout', 'progress'], 'progress')).toBe(true);
+    expect(scopeRequiresLock(['workout', 'progress'], 'nutrition')).toBe(false);
+    expect(scopeRequiresLock(['workout', 'progress'], 'cycle')).toBe(false);
+    expect(scopeRequiresLock(['workout', 'progress'], 'app')).toBe(false);
+  });
+
+  it('whole-app covers every area, so the areas are not asked a second time', () => {
+    expect(scopeRequiresLock(['app'], 'app')).toBe(true);
+    expect(scopeRequiresLock(['app', 'cycle', 'nutrition'], 'cycle')).toBe(false);
+    expect(scopeRequiresLock(['app', 'cycle', 'nutrition'], 'nutrition')).toBe(false);
+  });
+});
+
+describe('isCycleLockProtected', () => {
+  it('is true for the cycle or whole-app lock only', () => {
+    expect(isCycleLockProtected(['cycle'])).toBe(true);
+    expect(isCycleLockProtected(['app'])).toBe(true);
+    expect(isCycleLockProtected(['workout', 'nutrition', 'progress'])).toBe(false);
+    expect(isCycleLockProtected([])).toBe(false);
   });
 });
 
 describe('lockReducer', () => {
   it('starts locked and unlocks on success', () => {
-    expect(isScopeLocked('app', 'app', INITIAL_LOCK_STATE)).toBe(true);
+    expect(isScopeLocked(['app'], 'app', INITIAL_LOCK_STATE)).toBe(true);
     const unlocked = lockReducer(INITIAL_LOCK_STATE, { type: 'unlocked' });
-    expect(isScopeLocked('app', 'app', unlocked)).toBe(false);
+    expect(isScopeLocked(['app'], 'app', unlocked)).toBe(false);
   });
 
   it('stays unlocked for a short trip to the background', () => {
@@ -70,11 +90,12 @@ describe('isObscured', () => {
       type: 'background',
       now: 1000,
     });
-    expect(isObscured('cycle', away)).toBe(true);
-    expect(isObscured('app', away)).toBe(true);
-    expect(isObscured('off', away)).toBe(false);
+    expect(isObscured(['cycle'], away)).toBe(true);
+    expect(isObscured(['progress'], away)).toBe(true);
+    expect(isObscured(['app'], away)).toBe(true);
+    expect(isObscured([], away)).toBe(false);
 
     const back = lockReducer(away, { type: 'foreground', now: 2000, graceMs: APP_LOCK_GRACE_MS });
-    expect(isObscured('cycle', back)).toBe(false);
+    expect(isObscured(['cycle'], back)).toBe(false);
   });
 });

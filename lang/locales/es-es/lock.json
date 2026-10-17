@@ -1,0 +1,42 @@
+{
+  "lock": {
+    "settings": {
+      "title": "Bloqueo de la app",
+      "subtitle": "Pide huella, rostro o PIN del dispositivo",
+      "hint": "Pide tu huella, rostro o PIN del dispositivo antes de mostrar las áreas que elijas. Se vuelven a bloquear cuando la app lleva 30 segundos en segundo plano.",
+      "note": "Es un bloqueo de pantalla. Tus datos siguen cifrados y en este teléfono; las copias de seguridad exportadas son archivos aparte que tú controlas.",
+      "noCredential": "Configura primero un bloqueo de pantalla o biometría en tu dispositivo.",
+      "coveredByApp": "Cubierto al bloquear toda la app"
+    },
+    "areas": {
+      "app": {
+        "label": "Toda la app",
+        "hint": "Pide autenticación antes de mostrar cualquier cosa de Musclog"
+      },
+      "cycle": {
+        "label": "Seguimiento del ciclo",
+        "hint": "Periodos, síntomas y predicciones",
+        "lockedTitle": "El seguimiento del ciclo está bloqueado",
+        "lockedDescription": "Autentícate para ver tus registros del ciclo."
+      },
+      "workout": {
+        "label": "Entrenamientos",
+        "hint": "Planes, sesiones e historial de entrenamientos",
+        "lockedTitle": "Los entrenamientos están bloqueados",
+        "lockedDescription": "Autentícate para ver tus entrenamientos."
+      },
+      "nutrition": {
+        "label": "Nutrición",
+        "hint": "Diario de comidas, platos y objetivos semanales",
+        "lockedTitle": "La nutrición está bloqueada",
+        "lockedDescription": "Autentícate para ver tus datos de nutrición."
+      },
+      "progress": {
+        "label": "Progreso",
+        "hint": "Gráficos, tendencias y medidas corporales",
+        "lockedTitle": "El progreso está bloqueado",
+        "lockedDescription": "Autentícate para ver tu progreso."
+      }
+    }
+  }
+}
