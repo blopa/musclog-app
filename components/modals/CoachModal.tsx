@@ -39,7 +39,6 @@ import {
   InputToolbarProps,
   SendProps,
 } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { ChatMealCard } from '@/components/cards/ChatMealCard';
@@ -61,6 +60,7 @@ import { useUnreadChat } from '@/context/UnreadChatContext';
 import { ChatService } from '@/database/services/ChatService';
 import { MuscleService } from '@/database/services/MuscleService';
 import { WorkoutService } from '@/database/services/WorkoutService';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
@@ -650,7 +650,7 @@ export function CoachModal({
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   const router = useRouter();
 
   const { conversationContext, handleConversationContextChange } = useDebouncedSettings();

@@ -13,9 +13,8 @@ if [[ "${1:-}" == "--load-dotenv" ]]; then
   shift
 fi
 
-# Gradle 8.13 cannot run on Java 25+ (it fails resolving com.facebook.react.settings
-# with the bare Java version as the message), and Fedora now ships only JDK 25.
-# Use JAVA_HOME if it is 17 or 21, otherwise pick one from ~/.jdks or /usr/lib/jvm.
+# SDK 58 generates Gradle 9.4.1, which supports Java 17 through 26.
+# Prefer an explicitly selected supported JDK, then an installed LTS JDK.
 java_major() {
   "$1/bin/java" -version 2>&1 | sed -nE '1s/.*version "([0-9]+).*/\1/p'
 }
@@ -24,7 +23,7 @@ is_supported_jdk() {
   [[ -x "$1/bin/java" ]] || return 1
   local major
   major="$(java_major "$1")"
-  [[ "$major" == "17" || "$major" == "21" ]]
+  [[ "$major" =~ ^[0-9]+$ && "$major" -ge 17 && "$major" -le 26 ]]
 }
 
 if ! is_supported_jdk "${JAVA_HOME:-}"; then
@@ -36,7 +35,7 @@ if ! is_supported_jdk "${JAVA_HOME:-}"; then
     fi
   done
   if [[ -z "$found_jdk" ]]; then
-    echo "error: Android builds need JDK 17 or 21 (Gradle 8.13 cannot run on newer Java)." >&2
+    echo "error: Android builds need a supported JDK between 17 and 26." >&2
     echo "Install one under ~/.jdks, e.g. an Eclipse Temurin 17 tarball from https://adoptium.net" >&2
     exit 1
   fi

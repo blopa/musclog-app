@@ -365,3 +365,13 @@ Weekly Review leads with the week and a Training / Nutrition progress pair, then
 - Restore is available before setup. Import mapping previews before any write, rejects ambiguity, and keeps the user's selected column names on error. Sharing starts with no fields selected and clearly describes a readable, non-revocable static file.
 - Health imports show source alongside values and never masquerade as manual logs. Health exports explain the receiving store and the explicitly omitted sensitive fields before confirmation.
 - Backups are manual: explain the encryption-password recovery requirement, last-prepared status and the need to save the file outside the app. Optional reminders never create or upload backups.
+
+## Home screen widgets
+
+Nutrition Progress shows the data date, consumed/target calories, and protein, digestible-carbohydrate,
+and fat progress. Bars are bounded to 0–100%; missing goals never appear as fabricated zero targets.
+Android retains the compact 4×1 nutrition and 1×1 camera sizes. iOS supports small/medium nutrition
+and a small camera widget. Colors and translated copy are supplied from the app’s selected palette
+and language, respecting iOS tinting. Empty/initial widgets invite opening Musclog; cached values
+retain their date, and the iOS midnight timeline replaces expired values with a refresh prompt.
+Widget timelines and foreground refresh are subject to the operating system’s rendering schedule.

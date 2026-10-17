@@ -1,5 +1,6 @@
 import { X } from 'lucide-react-native';
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import type { ViewInstance } from 'react-native';
 import {
   Animated,
   Keyboard,
@@ -11,11 +12,11 @@ import {
   TouchableWithoutFeedback, // it's deprecated, but using Pressable instead causes a gap below the modal on mobile
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { computeKeyboardSheetLift } from '@/components/keyboardSheetLift';
 import { sheetSurfaceColor } from '@/components/sheetSurfaceColor';
 import { SurfaceColorProvider } from '@/context/SurfaceColorContext';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -53,7 +54,7 @@ export function BottomPopUp({
     !scrollable && Platform.OS !== 'web' ? { height: effectiveMaxHeight } : undefined;
 
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   /** Published to descendants so content can fade out to the real surface behind it. */
   const sheetSurfaceColorValue = sheetSurfaceColor(theme);
   /**
@@ -111,7 +112,7 @@ export function BottomPopUp({
   };
 
   const [slideAnim] = useState(() => new Animated.Value(theme.size['300']));
-  const sheetRef = useRef<View>(null);
+  const sheetRef = useRef<ViewInstance>(null);
   const [rawKeyboardBottomLift, setKeyboardBottomLift] = useState(0);
   // Derive: when the sheet is not visible the lift is always 0
   const keyboardBottomLift = visible ? rawKeyboardBottomLift : 0;

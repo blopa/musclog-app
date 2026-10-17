@@ -95,6 +95,7 @@ import enUsUserMenu from './locales/en-us/userMenu.json';
 import enUsWebsite from './locales/en-us/website.json';
 import enUsWeeklyStreakCard from './locales/en-us/weeklyStreakCard.json';
 import enUsWhatsNew from './locales/en-us/whatsNew.json';
+import enUsWidgets from './locales/en-us/widgets.json';
 import enUsWorkout from './locales/en-us/workout.json';
 import enUsWorkoutLogSets from './locales/en-us/workout_log_sets.json';
 import enUsWorkoutLogs from './locales/en-us/workout_logs.json';
@@ -176,6 +177,7 @@ import esEsUserMenu from './locales/es-es/userMenu.json';
 import esEsWebsite from './locales/es-es/website.json';
 import esEsWeeklyStreakCard from './locales/es-es/weeklyStreakCard.json';
 import esEsWhatsNew from './locales/es-es/whatsNew.json';
+import esEsWidgets from './locales/es-es/widgets.json';
 import esEsWorkout from './locales/es-es/workout.json';
 import esEsWorkoutLogSets from './locales/es-es/workout_log_sets.json';
 import esEsWorkoutLogs from './locales/es-es/workout_logs.json';
@@ -257,6 +259,7 @@ import nlNlUserMenu from './locales/nl-nl/userMenu.json';
 import nlNlWebsite from './locales/nl-nl/website.json';
 import nlNlWeeklyStreakCard from './locales/nl-nl/weeklyStreakCard.json';
 import nlNlWhatsNew from './locales/nl-nl/whatsNew.json';
+import nlNlWidgets from './locales/nl-nl/widgets.json';
 import nlNlWorkout from './locales/nl-nl/workout.json';
 import nlNlWorkoutLogSets from './locales/nl-nl/workout_log_sets.json';
 import nlNlWorkoutLogs from './locales/nl-nl/workout_logs.json';
@@ -338,6 +341,7 @@ import ptBrUserMenu from './locales/pt-br/userMenu.json';
 import ptBrWebsite from './locales/pt-br/website.json';
 import ptBrWeeklyStreakCard from './locales/pt-br/weeklyStreakCard.json';
 import ptBrWhatsNew from './locales/pt-br/whatsNew.json';
+import ptBrWidgets from './locales/pt-br/widgets.json';
 import ptBrWorkout from './locales/pt-br/workout.json';
 import ptBrWorkoutLogSets from './locales/pt-br/workout_log_sets.json';
 import ptBrWorkoutLogs from './locales/pt-br/workout_logs.json';
@@ -419,6 +423,7 @@ import ruRuUserMenu from './locales/ru-ru/userMenu.json';
 import ruRuWebsite from './locales/ru-ru/website.json';
 import ruRuWeeklyStreakCard from './locales/ru-ru/weeklyStreakCard.json';
 import ruRuWhatsNew from './locales/ru-ru/whatsNew.json';
+import ruRuWidgets from './locales/ru-ru/widgets.json';
 import ruRuWorkout from './locales/ru-ru/workout.json';
 import ruRuWorkoutLogSets from './locales/ru-ru/workout_log_sets.json';
 import ruRuWorkoutLogs from './locales/ru-ru/workout_logs.json';
@@ -531,6 +536,7 @@ const resources = {
       ...enUsWebsite,
       ...enUsWeeklyStreakCard,
       ...enUsWhatsNew,
+      ...enUsWidgets,
       ...enUsWorkout,
       ...enUsWorkoutDetail,
       ...enUsWorkoutDetails,
@@ -616,6 +622,7 @@ const resources = {
       ...esEsWebsite,
       ...esEsWeeklyStreakCard,
       ...esEsWhatsNew,
+      ...esEsWidgets,
       ...esEsWorkout,
       ...esEsWorkoutDetail,
       ...esEsWorkoutDetails,
@@ -701,6 +708,7 @@ const resources = {
       ...nlNlWebsite,
       ...nlNlWeeklyStreakCard,
       ...nlNlWhatsNew,
+      ...nlNlWidgets,
       ...nlNlWorkout,
       ...nlNlWorkoutDetail,
       ...nlNlWorkoutDetails,
@@ -786,6 +794,7 @@ const resources = {
       ...ptBrWebsite,
       ...ptBrWeeklyStreakCard,
       ...ptBrWhatsNew,
+      ...ptBrWidgets,
       ...ptBrWorkout,
       ...ptBrWorkoutDetail,
       ...ptBrWorkoutDetails,
@@ -871,6 +880,7 @@ const resources = {
       ...ruRuWebsite,
       ...ruRuWeeklyStreakCard,
       ...ruRuWhatsNew,
+      ...ruRuWidgets,
       ...ruRuWorkout,
       ...ruRuWorkoutDetail,
       ...ruRuWorkoutDetails,

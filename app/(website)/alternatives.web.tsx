@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Activity,
   Award,
@@ -27,7 +25,9 @@ import {
   MUTED,
   ON_BRAND,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
+('use client');
 
 // ---------------------------------------------------------------------------
 // Language-independent comparison data.
@@ -722,4 +722,8 @@ function SectionTable({
       </table>
     </div>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('alternatives');
 }

@@ -1,5 +1,6 @@
 import { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ViewInstance } from 'react-native';
 import { ScrollView, Text, View } from 'react-native';
 
 import BodyHighlighter from '@/components/BodyHighlighter';
@@ -9,7 +10,7 @@ import { buildSlugIntensityMap, MuscleSlug } from '@/utils/muscleGroupMapping';
 
 type WorkoutMusclesDetailsProps = {
   muscleGroups: (string | null | undefined)[];
-  captureRef?: RefObject<View | null>;
+  captureRef?: RefObject<ViewInstance | null>;
 };
 
 const SPIDER_REGIONS: { key: string; slugs: MuscleSlug[] }[] = [

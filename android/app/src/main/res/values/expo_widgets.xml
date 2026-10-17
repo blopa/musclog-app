@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="expo_widgets_names">
+    <item>Nutrition</item>
+    <item>SmartCamera</item>
+  </string-array>
+  <string name="nutrition_display_name">Nutrition Progress</string>
+  <string name="nutrition_description">Shows daily nutrition progress</string>
+  <string name="smart_camera_display_name">Smart Camera</string>
+  <string name="smart_camera_description">Open Smart Camera</string>
+</resources>

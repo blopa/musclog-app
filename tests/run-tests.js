@@ -5,7 +5,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 8081;
+const PORT = Number(process.env.MUSCLOG_TEST_PORT ?? 8081);
 const DIST_PATH = path.join(__dirname, '..', 'dist');
 const BASE_PATH = '/musclog-app';
 
@@ -26,21 +26,9 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   let filePath = url.pathname;
 
-  // Handle base path redirect
-  if (filePath === '/' || filePath === '') {
-    res.writeHead(302, { Location: BASE_PATH + '/' });
-    res.end();
-    return;
-  }
-
   let relativePath = filePath;
   if (filePath.startsWith(BASE_PATH)) {
     relativePath = filePath.substring(BASE_PATH.length);
-  } else {
-    // If it doesn't start with BASE_PATH and it's not a root redirect, 404
-    res.writeHead(404);
-    res.end('Not Found');
-    return;
   }
 
   if (relativePath === '/' || relativePath === '') {
@@ -48,6 +36,12 @@ const server = http.createServer((req, res) => {
   }
 
   let fullPath = path.join(DIST_PATH, relativePath);
+  const exportedHtml = [`${fullPath}.html`, path.join(fullPath, 'index.html')].find(
+    (candidate) => fs.existsSync(candidate) && fs.statSync(candidate).isFile()
+  );
+  if (exportedHtml) {
+    fullPath = exportedHtml;
+  }
 
   if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
     const ext = path.extname(fullPath).toLowerCase();
@@ -85,7 +79,7 @@ function runPlaywright() {
 
     const pw = spawn('npx', ['playwright', 'test', ...args], {
       stdio: 'inherit',
-      shell: true,
+      shell: false,
     });
 
     pw.on('close', (code) => {

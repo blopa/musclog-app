@@ -263,7 +263,7 @@ that queue, blocking unrelated native operations such as the image picker and cr
 
 ### Fix
 
-- `patches/expo-secure-store+57.0.3.patch` moves SecureStore operations to a dedicated serial
+- `patches/expo-secure-store+58.0.2.patch` moves SecureStore operations to a dedicated serial
   `Dispatchers.IO` lane.
 - `package.json` keeps `expo.autolinking.android.buildFromSource: ["expo-secure-store"]`; SDK 57
   otherwise uses the prebuilt AAR and ignores the Kotlin patch.
@@ -350,7 +350,7 @@ Accepted false positives must explain that the host closes first.
 Expo Router 57.0.18 misparsed platform extensions on catch-all names such as
 `[...slug].web.tsx`, left the extension in loader context keys, and used the wrong development
 loader path for route groups. 57.0.26 fixed the first two upstream; only the development loader
-path remains patched, in `patches/expo-router+57.0.26.patch`. The old 57.0.18 patch failed
+path remains patched, in `patches/expo-router+58.0.23.patch`. The old 57.0.18 patch failed
 `patch-package` in CI (`npm ci` postinstall) once the dependency moved to 57.0.26.
 `utils/__tests__/expoRouterLoaderPatch.test.ts` pins all three behaviors.
 
@@ -420,13 +420,13 @@ the shape.
 
 After a Fedora update left JDK 25 as the only installed Java, every local Android build failed in
 Gradle with `Error resolving plugin [id: 'com.facebook.react.settings'] > 25.0.4.1` — the message is
-just the Java version string, because Gradle 8.13 (pinned by `plugins/withGradleVersion`) cannot run
+just the Java version string, because Gradle 8.13 (then pinned by `plugins/withGradleVersion`) cannot run
 on Java 25. Android Studio's bundled JBR is also 25, so it is no fallback. Android builds need JDK
 17 or 21. `scripts/run-eas-local-android-build.sh` keeps a `JAVA_HOME` that is already 17/21,
 otherwise picks one from `~/.jdks/jdk-17*`/`jdk-21*` or `/usr/lib/jvm`, and exits with an install
 hint when there is none. The EAS working copy also has no `local.properties`, so the script defaults
 `ANDROID_HOME` to `~/Android/Sdk` (Android Studio's location) when it is unset — otherwise Gradle
-stops with `SDK location not found` right after the JDK check passes. Revisit when Gradle moves to 9.1+, which supports Java 25.
+stops with `SDK location not found` right after the JDK check passes. SDK 58 removes that obsolete pin and uses Gradle 9.4.1; the launcher now accepts Java 17–26.
 
 ## Android release optimization
 
@@ -788,3 +788,29 @@ retain both symptoms and optional observations. A failed bleeding save never off
 - **Daily reminders were 28 one-shot notifications** that never skipped a logged day; iOS caps an app at 64 pending notifications, so they crowded out workout and weekly-review reminders. It is one repeating trigger now.
 - **A mood that failed to load blocked saving the whole day**, the symptom chip took four taps to deselect, and "clear day" erased shared mood without asking. Mood is read from the provider and never blocks Save; a tap toggles a symptom (severity is a separate optional choice); clearing asks first.
 - **Updating a deleted period said "end before start".** It throws `period_not_found` now; `end()` also normalises its date to local midnight like `start()`.
+
+## Expo SDK 58 migration
+
+Expo 58.0.14 / React Native 0.88 use scene-based iOS startup and stricter instance ref types.
+Static metadata now comes from route-level `generateMetadata`, and the custom HTML document renders
+Expo’s head/body nodes so hydration assets survive. JSON-LD is direct prerendered script markup.
+The production root renders the marketing page itself; the previous redirect exported no actual
+landing content. The site remains statically hosted, with the existing base-path and blog helpers.
+
+All six package patches remain necessary in the versions selected for this upgrade. Router’s grouped
+development loader paths and SecureStore’s serial I/O queue are rebased to SDK 58; SecureStore still
+builds from source. Crop launch remains on Main, LokiJS preserves lazy-copy/save integrity, and the
+barcode detector still removes jcenter. The Gutenye OCR patch now contains only its Gradle/codegen
+workaround: generated build outputs and OpenCV binaries were accidentally captured in the old patch
+and have been removed. The Gradle 8.13 pin is no longer configured: RN’s Foojay resolver is 1.0.0,
+and the generated SDK 58 wrapper is Gradle 9.4.1. Simulator binary fixes remain until the affected
+OCR/ML Kit distributions supply proper simulator slices. BLE writes and handle reads use their
+synchronous SDK 58 methods; otherwise recording and JSON export could race unfinished promises.
+
+Widgets now use Expo Widgets. Its published Android plugin requires `enableAndroid: true`. The
+initial-layout registry stubs nonrelative app imports, so initial palette imports use documented
+relative paths. A native generated-provider hook preserves camera/nutrition shortcut behavior after
+Android process death; the app’s JS interaction listener alone cannot do that. Widget snapshots are
+refreshed by one mounted owner after database/settings readiness, and are cleared on restore/reset.
+
+- SDK 58 native compilation also requires `patches/@nozbe+watermelondb+0.28.0.patch`: enable Android BuildConfig generation under AGP 9, and use an iOS `WMDatabaseJSIBridge` TurboModule to install the existing SQLite JSI bindings. Guard the legacy `RCTCxxBridge` installer when that header is absent. The adapter and stored database format are unchanged; remove only after upstream includes equivalent native support.

@@ -10,10 +10,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { IconButton } from '@/components/theme/IconButton';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { shareImage } from '@/utils/shareImage';
 
 import {
@@ -43,7 +43,7 @@ const SPRING = { damping: 20, stiffness: 220 } as const;
 export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModalProps) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   const [isSharing, setIsSharing] = useState(false);
 
   const viewportW = useSharedValue(1);

@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useRef } from 'react';
+import type { TextInputInstance } from 'react-native';
 import { Pressable, Text, TextInput as RNTextInput, TextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -27,7 +28,7 @@ export function NumericInput({
 }: TestNumericInputProps) {
   const theme = useTheme();
   const unitColorFinal = unitColor || theme.colors.accent.primary;
-  const inputRef = useRef<RNTextInput | null>(null);
+  const inputRef = useRef<TextInputInstance | null>(null);
 
   return (
     <View className="flex-1 flex-col items-center gap-1 rounded-lg border border-ink/10 bg-bg-card p-4">

@@ -314,7 +314,7 @@ export function OptionsMultiSelector<T extends string | number>({
         <View style={{ flex: 1 }}>
           <Pressable
             onPress={() => (showCheckboxes ? toggle(option.id) : onOptionPress?.(option.id))}
-            disabled={!showCheckboxes ? !onOptionPress : null}
+            disabled={!showCheckboxes ? !onOptionPress : false}
             style={{ flex: 1 }}
           >
             {({ pressed }) => (

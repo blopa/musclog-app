@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -38,7 +39,7 @@ function ScrollPicker({
   textMutedColor,
   highlightBgColor,
 }: ScrollPickerProps) {
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const [displayIndex, setDisplayIndex] = useState(initialIndex);
 
   useEffect(() => {

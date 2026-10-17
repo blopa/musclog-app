@@ -1,12 +1,19 @@
 import '@/lang/lang';
 
-import { Redirect, usePathname, useRootNavigationState, useRouter } from 'expo-router';
+import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
 import { SplashLoading } from '@/components/SplashLoading';
-import { WebsiteSeoForCurrentRoute } from '@/components/website/WebsiteSeo';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
+import { WebsiteShell } from '@/components/website/WebsiteShell';
 import { isProduction } from '@/utils/app';
 import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
+
+import Home from './(website)/home.web';
+
+export function generateMetadata() {
+  return fixedPageMetadata('home');
+}
 
 export default function Index() {
   const router = useRouter();
@@ -23,10 +30,9 @@ export default function Index() {
 
   if (isProduction()) {
     return (
-      <>
-        <WebsiteSeoForCurrentRoute fallbackRouteKey="home" />
-        <Redirect href="/home" />
-      </>
+      <WebsiteShell>
+        <Home />
+      </WebsiteShell>
     );
   }
 

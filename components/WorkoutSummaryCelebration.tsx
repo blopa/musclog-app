@@ -3,8 +3,8 @@ import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './cards/GenericCard';
@@ -41,7 +41,7 @@ export function WorkoutSummaryCelebration({
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   const [glowAnim1] = useState(() => new Animated.Value(0.6));
   const [glowAnim2] = useState(() => new Animated.Value(0.6));
 

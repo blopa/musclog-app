@@ -1,3 +1,4 @@
+jest.mock('@/widgets/resetWidgets', () => ({ resetWidgets: jest.fn(async () => {}) }));
 import './weeklyProgressionMocks';
 
 import {

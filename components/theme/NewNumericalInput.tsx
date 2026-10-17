@@ -1,5 +1,6 @@
 import { Minus, Plus } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
+import type { TextInputInstance } from 'react-native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -23,7 +24,7 @@ export default function NewNumericalInput({
 }: NewNumericalInputProps) {
   const theme = useTheme();
   const [inputValue, setInputValue] = useState(value.toString());
-  const inputRef = useRef<TextInput | null>(null);
+  const inputRef = useRef<TextInputInstance | null>(null);
   const isCompact = variant === 'compact';
 
   useEffect(() => {

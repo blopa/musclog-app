@@ -1,5 +1,3 @@
-'use client';
-
 import { Dumbbell, Info, Search, X } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +17,7 @@ import {
   scrim,
   surface,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { type ExerciseCatalogueEntry, getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import i18n from '@/lang/lang';
 import { buildExerciseImagePath } from '@/utils/exerciseImage';
@@ -28,6 +27,7 @@ import {
   matchesExerciseSearch,
 } from '@/utils/exerciseSearch';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
+('use client');
 
 const MUSCLE_GROUPS = [
   'chest',
@@ -547,4 +547,8 @@ export default function ExercisesPage() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('exercises');
 }

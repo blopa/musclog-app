@@ -3,7 +3,6 @@ import { RefreshCw, Ruler, Scale, Utensils } from 'lucide-react-native';
 import { startTransition, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { CaloriesBurnedCard } from '@/components/cards/CaloriesBurnedCard';
@@ -30,6 +29,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { ChartTooltipProvider, useChartTooltip } from '@/context/ChartTooltipContext';
 import { useAiEnabled } from '@/hooks/useAiEnabled';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useProgressData } from '@/hooks/useProgressData';
 import { useSettings } from '@/hooks/useSettings';
@@ -40,7 +40,7 @@ export default function ProgressScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   const { units, chartTooltipPosition } = useSettings();
   const { isEnabled: aiEnabled } = useAiEnabled();
   const {

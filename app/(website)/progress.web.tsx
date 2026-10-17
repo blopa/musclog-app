@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Activity,
   CalendarRange,
@@ -29,6 +27,7 @@ import {
   ON_BRAND,
   surface,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import {
   CALORIES_FOR_CARBS,
   CALORIES_FOR_FAT,
@@ -50,6 +49,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
+('use client');
 
 const CYAN = hue('info');
 const INDIGO = hue('indigo');
@@ -1463,4 +1463,8 @@ export default function ProgressWebsitePage() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('progress');
 }

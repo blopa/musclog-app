@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import type { TextInputInstance } from 'react-native';
 import { Platform, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -65,7 +66,7 @@ export function NumericTextField({
   testID,
 }: NumericTextFieldProps) {
   const theme = useTheme();
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const [focused, setFocused] = useState(false);
 
   const metrics = {

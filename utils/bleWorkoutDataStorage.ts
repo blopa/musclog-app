@@ -165,7 +165,7 @@ export function createBleWorkoutTrackingTempFile(sessionId: string): File {
   dir.create({ intermediates: true, idempotent: true });
 
   const tempFile = new File(dir, 'samples.ndjson');
-  tempFile.write('', { append: false });
+  tempFile.writeSync('', { append: false });
   return tempFile;
 }
 
@@ -223,7 +223,7 @@ export function appendBleWorkoutSamplesToNdjsonFile(file: File, samples: BleWork
   }
 
   const ndjsonText = serializeSamplesAsNdjson(samples);
-  file.write(ndjsonText, { append: true });
+  file.writeSync(ndjsonText, { append: true });
 }
 
 function appendNdjsonFileToJsonArray(sourceFile: File, destinationFile: File): void {
@@ -242,14 +242,14 @@ function appendNdjsonFileToJsonArray(sourceFile: File, destinationFile: File): v
         continue;
       }
 
-      destinationFile.write(`${wroteAnySample ? ',\n' : ''}  ${line}`, { append: true });
+      destinationFile.writeSync(`${wroteAnySample ? ',\n' : ''}  ${line}`, { append: true });
       wroteAnySample = true;
     }
 
     if (isFinal) {
       const finalLine = buffer.trim();
       if (finalLine) {
-        destinationFile.write(`${wroteAnySample ? ',\n' : ''}  ${finalLine}`, { append: true });
+        destinationFile.writeSync(`${wroteAnySample ? ',\n' : ''}  ${finalLine}`, { append: true });
         wroteAnySample = true;
       }
 
@@ -259,7 +259,7 @@ function appendNdjsonFileToJsonArray(sourceFile: File, destinationFile: File): v
 
   try {
     while (true) {
-      const bytes = handle.readBytes(8192);
+      const bytes = handle.readBytesSync(8192);
       if (bytes.length === 0) {
         break;
       }
@@ -275,7 +275,7 @@ function appendNdjsonFileToJsonArray(sourceFile: File, destinationFile: File): v
   }
 
   if (wroteAnySample) {
-    destinationFile.write('\n', { append: true });
+    destinationFile.writeSync('\n', { append: true });
   }
 }
 
@@ -343,9 +343,9 @@ export async function saveBleWorkoutFile(data: BleWorkoutFileInput): Promise<str
 
   if (data.samplesFile) {
     const outputFile = new File(dir, fileName);
-    outputFile.write(buildMetadataHeader(data), { append: false });
+    outputFile.writeSync(buildMetadataHeader(data), { append: false });
     appendNdjsonFileToJsonArray(data.samplesFile, outputFile);
-    outputFile.write('  ]\n}\n', { append: true });
+    outputFile.writeSync('  ]\n}\n', { append: true });
 
     try {
       data.samplesFile.parentDirectory.delete();
@@ -381,7 +381,7 @@ function readSampleCountFromBleFile(file: File): number {
 
   try {
     while (buffer.length < 4096) {
-      const bytes = handle.readBytes(BLE_COMPRESS_CHUNK_BYTES);
+      const bytes = handle.readBytesSync(BLE_COMPRESS_CHUNK_BYTES);
       if (bytes.length === 0) {
         break;
       }
@@ -412,7 +412,7 @@ async function streamDownsampledSamples(source: File, outFile: File, step: numbe
   let sampleIndex = 0;
   let wroteAny = false;
 
-  outFile.write('[', { append: false });
+  outFile.writeSync('[', { append: false });
 
   const processLine = (rawLine: string) => {
     const t = rawLine.trimStart();
@@ -432,7 +432,7 @@ async function streamDownsampledSamples(source: File, outFile: File, step: numbe
     if (sampleIndex % step === 0) {
       // Strip trailing comma that appendNdjsonFileToJsonArray may have added.
       const sampleJson = t.endsWith(',') ? t.slice(0, -1) : t;
-      outFile.write(`${wroteAny ? ',' : ''}\n  ${sampleJson}`, { append: true });
+      outFile.writeSync(`${wroteAny ? ',' : ''}\n  ${sampleJson}`, { append: true });
       wroteAny = true;
     }
 
@@ -441,7 +441,7 @@ async function streamDownsampledSamples(source: File, outFile: File, step: numbe
 
   try {
     while (true) {
-      const bytes = handle.readBytes(BLE_COMPRESS_CHUNK_BYTES);
+      const bytes = handle.readBytesSync(BLE_COMPRESS_CHUNK_BYTES);
       if (bytes.length === 0) {
         break;
       }
@@ -467,7 +467,7 @@ async function streamDownsampledSamples(source: File, outFile: File, step: numbe
     handle.close();
   }
 
-  outFile.write('\n]', { append: true });
+  outFile.writeSync('\n]', { append: true });
 }
 
 /**

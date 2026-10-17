@@ -1,0 +1,125 @@
+diff --git a/node_modules/@nozbe/watermelondb/native/android/build.gradle b/node_modules/@nozbe/watermelondb/native/android/build.gradle
+--- a/node_modules/@nozbe/watermelondb/native/android/build.gradle
++++ b/node_modules/@nozbe/watermelondb/native/android/build.gradle
+@@ -21,6 +21,10 @@
+ apply plugin: 'kotlin-android'
+ 
+ android {
++    buildFeatures {
++        buildConfig true
++    }
++
+     compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
+     buildToolsVersion getExtOrDefault('buildToolsVersion')
+ 
+diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.h b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.h
+--- a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.h
++++ b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.h
+@@ -1,13 +1,19 @@
+ #pragma once
+ 
+-#import <React/RCTBridge+Private.h>
++#import <Foundation/Foundation.h>
++
++#if __has_include(<React/RCTCxxBridge.h>)
++#import <React/RCTCxxBridge.h>
++#endif
+ 
+ #ifdef __cplusplus
+ extern "C"
+ {
+ #endif
+ 
++#if __has_include(<React/RCTCxxBridge.h>)
+ void installWatermelonJSI(RCTCxxBridge *bridge);
++#endif
+ void watermelondbProvideSyncJson(int id, NSData *json, NSError **errorPtr);
+ 
+ #ifdef __cplusplus
+diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.mm b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.mm
+--- a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.mm
++++ b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/JSIInstaller.mm
+@@ -1,6 +1,7 @@
+ #import "JSIInstaller.h"
+ #import "Database.h"
+ 
++#if __has_include(<React/RCTCxxBridge.h>)
+ extern "C" void installWatermelonJSI(RCTCxxBridge *bridge) {
+     if (bridge.runtime == nullptr) {
+         return;
+@@ -10,3 +11,5 @@
+     assert(runtime != nullptr);
+     watermelondb::Database::install(runtime);
+ }
++
++#endif
+diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDatabaseBridge.m b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDatabaseBridge.m
+--- a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDatabaseBridge.m
++++ b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/objc/WMDatabaseBridge.m
+@@ -194,6 +194,7 @@
+ 
+ #pragma mark - JSI Support
+ 
++#if __has_include(<React/RCTCxxBridge.h>)
+ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(initializeJSI)
+ {
+     __block RCTCxxBridge *bridge = (RCTCxxBridge *) _bridge;
+@@ -204,6 +205,8 @@
+     return @YES;
+ }
+ 
++
++#endif
+ 
+ RCT_EXPORT_METHOD(provideSyncJson:(nonnull NSNumber *)id
+     json:(nonnull NSString *)json
+diff --git a/node_modules/@nozbe/watermelondb/WatermelonDB.podspec b/node_modules/@nozbe/watermelondb/WatermelonDB.podspec
+--- a/node_modules/@nozbe/watermelondb/WatermelonDB.podspec
++++ b/node_modules/@nozbe/watermelondb/WatermelonDB.podspec
+@@ -31,6 +31,8 @@
+   s.compiler_flags = '-Os'
+ 
+   s.dependency "React"
++  s.dependency "ReactCommon/turbomodule/core"
++  s.dependency "React-jsi"
+ 
+   s.libraries = 'sqlite3'
+ 
+diff --git a/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/WMDatabaseJSIBridge.mm b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/WMDatabaseJSIBridge.mm
+new file mode 100644
+--- /dev/null
++++ b/node_modules/@nozbe/watermelondb/native/ios/WatermelonDB/WMDatabaseJSIBridge.mm
+@@ -0,0 +1,33 @@
++// React Native 0.88 removed RCTCxxBridge. Install the same database bindings on the JS runtime
++// through a TurboModule instead of accessing a bridge runtime pointer.
++#import <React/RCTBridgeModule.h>
++#import <ReactCommon/RCTTurboModule.h>
++#import "Database.h"
++
++using namespace facebook;
++using namespace facebook::react;
++
++class WMDatabaseRuntimeModule final : public TurboModule {
++public:
++  explicit WMDatabaseRuntimeModule(std::shared_ptr<CallInvoker> invoker)
++      : TurboModule("WMDatabaseJSIBridge", std::move(invoker)) {
++    methodMap_["install"] = MethodMetadata{0, [](jsi::Runtime &runtime, TurboModule &,
++        const jsi::Value *, size_t) -> jsi::Value {
++      watermelondb::Database::install(&runtime);
++      return jsi::Value(true);
++    }};
++  }
++};
++
++@interface WMDatabaseJSIBridge : NSObject <RCTBridgeModule, RCTTurboModule>
++@end
++
++@implementation WMDatabaseJSIBridge
++RCT_EXPORT_MODULE(WMDatabaseJSIBridge)
++
+++ (BOOL)requiresMainQueueSetup { return NO; }
++
++- (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params {
++  return std::make_shared<WMDatabaseRuntimeModule>(params.jsInvoker);
++}
++@end

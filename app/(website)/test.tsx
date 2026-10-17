@@ -5,6 +5,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { BODY_TEXT_SOFT, hue } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { isProduction } from '@/utils/app';
 import { analyzeRecordedReps } from '@/utils/repAnalysis';
@@ -637,4 +638,8 @@ export default function Test() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('test');
 }

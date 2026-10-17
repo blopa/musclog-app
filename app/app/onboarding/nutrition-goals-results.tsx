@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
@@ -52,7 +53,7 @@ export default function NutritionGoalsResults() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
   const { units, useBfForCalculations } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const { formatDecimal, formatInteger } = useFormatAppNumber();

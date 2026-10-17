@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next';
 import { Calendar, Clock, Plus, SlidersHorizontal } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -91,7 +92,7 @@ export default function BodyMetricsHistoryModal({
   const [isAddMetricVisible, setIsAddMetricVisible] = useState(false);
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<BodyMetricsHistoryFilters>(DEFAULT_FILTERS);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
 
   useEffect(() => {
     if (!visible) {

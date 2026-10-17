@@ -38,6 +38,7 @@ import {
   ON_BRAND,
   scrim,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { SoftwareApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
 import { GITHUB_REPO_URL } from '@/constants/misc';
@@ -1157,4 +1158,8 @@ export default function Home() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('home');
 }

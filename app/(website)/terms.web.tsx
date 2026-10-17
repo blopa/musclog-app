@@ -9,6 +9,7 @@ import {
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { SUPPORT_EMAIL, SUPPORT_MAILTO_URL } from '@/constants/misc';
 
 export default function Terms() {
@@ -239,4 +240,8 @@ export default function Terms() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('terms');
 }

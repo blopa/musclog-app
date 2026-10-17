@@ -126,6 +126,16 @@
             "description": "Houd opwarmsets gescheiden van je werksets."
           }
         }
+      },
+      "v2_14_2": {
+        "widgets": {
+          "title": "Widgets op beide platforms",
+          "description": "Voedingsvoortgang en Slimme camera werken nu ook op iOS en volgen het thema en de taal van de app. Houd op iOS het beginscherm ingedrukt, kies Voeg widget toe en vervolgens Musclog."
+        },
+        "migration": {
+          "title": "Voeg je Android-widgets opnieuw toe",
+          "description": "Verwijder je oude Musclog-widgets en voeg Voedingsvoortgang of Slimme camera opnieuw toe via de widgetkiezer."
+        }
       }
     }
   }

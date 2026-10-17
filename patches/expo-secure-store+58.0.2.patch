@@ -1,8 +1,7 @@
 diff --git a/node_modules/expo-secure-store/android/src/main/java/expo/modules/securestore/SecureStoreModule.kt b/node_modules/expo-secure-store/android/src/main/java/expo/modules/securestore/SecureStoreModule.kt
-index 421fcbc..8860add 100644
 --- a/node_modules/expo-secure-store/android/src/main/java/expo/modules/securestore/SecureStoreModule.kt
 +++ b/node_modules/expo-secure-store/android/src/main/java/expo/modules/securestore/SecureStoreModule.kt
-@@ -13,6 +13,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
+@@ -13,6 +13,9 @@
  import expo.modules.securestore.encryptors.AESEncryptor
  import expo.modules.securestore.encryptors.HybridAESEncryptor
  import expo.modules.securestore.encryptors.KeyBasedEncryptor
@@ -12,39 +11,35 @@ index 421fcbc..8860add 100644
  import kotlinx.coroutines.runBlocking
  import org.json.JSONException
  import org.json.JSONObject
-@@ -24,6 +27,9 @@ import javax.crypto.BadPaddingException
+@@ -24,6 +27,7 @@
  
  open class SecureStoreModule : Module() {
    private val mAESEncryptor = AESEncryptor()
-+  private val moduleCoroutineScope = CoroutineScope(
-+    Dispatchers.IO.limitedParallelism(1) + SupervisorJob()
-+  )
++  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO.limitedParallelism(1) + SupervisorJob())
    open val reactContext: Context
      get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
  
-@@ -34,14 +40,14 @@ open class SecureStoreModule : Module() {
+@@ -34,14 +38,14 @@
    override fun definition() = ModuleDefinition {
      Name("ExpoSecureStore")
  
 -    AsyncFunction("setValueWithKeyAsync") Coroutine { value: String?, key: String?, options: SecureStoreOptions ->
--      key ?: throw NullKeyException()
--      return@Coroutine setItemImpl(key, value, options, false)
--    }
 +    (AsyncFunction("setValueWithKeyAsync") Coroutine { value: String?, key: String?, options: SecureStoreOptions ->
-+        key ?: throw NullKeyException()
-+        return@Coroutine setItemImpl(key, value, options, false)
-+      }).runOnQueue(moduleCoroutineScope)
- 
--    AsyncFunction("getValueWithKeyAsync") Coroutine { key: String, options: SecureStoreOptions ->
--      return@Coroutine getItemImpl(key, options)
+       key ?: throw NullKeyException()
+       return@Coroutine setItemImpl(key, value, options, false)
 -    }
+-
+-    AsyncFunction("getValueWithKeyAsync") Coroutine { key: String, options: SecureStoreOptions ->
++    }).runOnQueue(moduleCoroutineScope)
++
 +    (AsyncFunction("getValueWithKeyAsync") Coroutine { key: String, options: SecureStoreOptions ->
-+        return@Coroutine getItemImpl(key, options)
-+      }).runOnQueue(moduleCoroutineScope)
+       return@Coroutine getItemImpl(key, options)
+-    }
++    }).runOnQueue(moduleCoroutineScope)
  
      Function("setValueWithKeySync") { value: String?, key: String?, options: SecureStoreOptions ->
        key ?: throw NullKeyException()
-@@ -64,7 +70,7 @@ open class SecureStoreModule : Module() {
+@@ -64,7 +68,7 @@
        } catch (e: Exception) {
          throw DeleteException(e.message, key, options.keychainService, e)
        }

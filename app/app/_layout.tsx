@@ -20,9 +20,9 @@ import { CoachProvider } from '@/components/CoachContext';
 import { DocumentTitle } from '@/components/DocumentTitle';
 import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
+import { AppLockOverlay } from '@/components/lock/AppLockOverlay';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
 import { isStaticExport } from '@/constants/platform';
-import { AppLockOverlay } from '@/components/lock/AppLockOverlay';
 import { AppLockProvider } from '@/context/AppLockContext';
 import { ConfettiInteractionsProvider } from '@/context/ConfettiInteractionsContext';
 import { SettingsProvider } from '@/context/SettingsContext';
@@ -33,6 +33,7 @@ import { UnreadChatProvider } from '@/context/UnreadChatContext';
 import { WebModalShellProvider } from '@/context/WebModalShellContext';
 import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
 import { handleError } from '@/utils/handleError';
+import { WidgetSync } from '@/widgets/WidgetSync';
 
 // Fix NativeWind className support on iOS for these components
 // These components don't properly support className on iOS without cssInterop
@@ -106,6 +107,7 @@ function AppContent() {
         <SystemBars style={themeMode === 'dark' ? 'light' : 'dark'} />
       ) : null}
       <LanguageInitializer />
+      <WidgetSync />
       <Stack
         screenOptions={{
           headerShown: false,

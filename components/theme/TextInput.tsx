@@ -6,6 +6,7 @@ import {
   Platform,
   Text,
   TextInput as RNTextInput,
+  type TextInputInstance,
   View,
 } from 'react-native';
 
@@ -38,7 +39,7 @@ const ANIMATION_DURATION = 100;
  * On web, uses focus-within CSS. On native, uses Animated.Value updated via onFocus/onBlur.
  * This is a "native" React Native approach without useState/useReducer/useRef hooks.
  */
-export const TextInput = forwardRef<RNTextInput, TestInputProps>(
+export const TextInput = forwardRef<TextInputInstance, TestInputProps>(
   (
     {
       label,
@@ -62,7 +63,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
     ref
   ) => {
     const theme = useTheme();
-    const inputRef = useRef<RNTextInput>(null);
+    const inputRef = useRef<TextInputInstance>(null);
 
     useImperativeHandle(ref, () => inputRef.current!);
 

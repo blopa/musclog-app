@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 import * as Notifications from 'expo-notifications';
+import { AndroidImportance, AndroidNotificationVisibility } from 'expo-notifications';
 import { AppState, Platform } from 'react-native';
 
 import {
@@ -100,7 +101,7 @@ export class NotificationService {
       // database before it is ready (configure() runs ahead of waitForDbReady()).
       await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.default, {
         name: i18n.t('notifications.channels.default'),
-        importance: Notifications.AndroidImportance.MAX,
+        importance: AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: darkTheme.colors.status.error,
       });
@@ -109,29 +110,29 @@ export class NotificationService {
       // settings, and so a secure lock screen hides their text whatever wording was chosen.
       await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.cycle, {
         name: i18n.t('notifications.channels.cycle'),
-        importance: Notifications.AndroidImportance.DEFAULT,
-        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PRIVATE,
+        importance: AndroidImportance.DEFAULT,
+        lockscreenVisibility: AndroidNotificationVisibility.PRIVATE,
       });
 
       await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.activeWorkout, {
         name: i18n.t('notifications.channels.activeWorkout'),
-        importance: Notifications.AndroidImportance.LOW, // Low importance for persistent notification to avoid annoying sound/popup on every update
-        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+        importance: AndroidImportance.LOW, // Low importance for persistent notification to avoid annoying sound/popup on every update
+        lockscreenVisibility: AndroidNotificationVisibility.PUBLIC,
       });
 
       // The rest alert is part of the workout, not engagement: it keeps the loudest importance, and
       // living on its own channel lets someone keep it loud while quieting every reminder.
       await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.restTimer, {
         name: i18n.t('notifications.channels.restTimer'),
-        importance: Notifications.AndroidImportance.MAX,
+        importance: AndroidImportance.MAX,
         vibrationPattern: [0, 300, 150, 300],
-        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PRIVATE,
+        lockscreenVisibility: AndroidNotificationVisibility.PRIVATE,
       });
 
       await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNELS.workoutReminders, {
         name: i18n.t('notifications.channels.workoutReminders'),
-        importance: Notifications.AndroidImportance.DEFAULT,
-        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PRIVATE,
+        importance: AndroidImportance.DEFAULT,
+        lockscreenVisibility: AndroidNotificationVisibility.PRIVATE,
       });
     }
 

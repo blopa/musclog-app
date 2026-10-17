@@ -1,3 +1,4 @@
+jest.mock('@/widgets/resetWidgets', () => ({ resetWidgets: jest.fn(async () => {}) }));
 /* eslint-disable simple-import-sort/imports -- Install the shared database mocks before importing services. */
 import { cycleTestDay as day } from '@/database/services/__tests__/cycleTestSetup';
 import { livePeriods, newCycle } from '@/database/services/__tests__/cycleRecordHelpers';

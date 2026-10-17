@@ -1,6 +1,7 @@
 import { Minus, Plus } from 'lucide-react-native';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TextInputInstance } from 'react-native';
 import { Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -65,7 +66,7 @@ export const StepperInput: FC<StepperInputProps> = ({
   const unitFontSize = theme.typography.fontSize['2xl'];
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(() => formatValue(value));
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
 
   // Sync inputValue with value prop when not editing
   useEffect(() => {

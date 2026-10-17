@@ -2,9 +2,9 @@ import {
   type DoubleProgressionRule,
   type LinearProgressionRule,
   type PercentageRule,
-  type ResetMarker,
   type ProgressionRule,
   type ProgressionSessionState,
+  type ResetMarker,
   type TopSetBackoffRule,
 } from './progressionRuleSchema';
 import { sameLoad } from './sameLoad';

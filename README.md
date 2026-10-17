@@ -178,7 +178,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 |                | @kingstinct/react-native-healthkit (iOS)                             |
 | Localization   | i18next + react-i18next                                              |
 | Animations     | React Native Reanimated 4                                            |
-| Widgets        | react-native-android-widget                                          |
+| Widgets        | expo-widgets + Expo UI (Android and iOS)                             |
 | Chat UI        | react-native-gifted-chat                                             |
 | Validation     | Zod                                                                  |
 | Error Tracking | Sentry                                                               |
@@ -205,7 +205,7 @@ musclog/
 ├── gameboy/                    # Musclog GB ROM source and build tools
 ├── public/                     # Website assets and generated SEO outputs
 ├── scripts/                    # Build, generation, validation, and maintenance scripts
-└── widgets/                    # Android Nutrition and Smart Camera widgets
+└── widgets/                    # Android/iOS Nutrition and Smart Camera widgets
 ```
 
 ---
@@ -341,3 +341,9 @@ The bundled exercise data and photos come from [free-exercise-db](https://github
 - [Expo Documentation](https://docs.expo.dev/)
 - [WatermelonDB Documentation](https://watermelondb.dev/)
 - [NativeWind Documentation](https://www.nativewind.dev/)
+
+SDK 58 verification: `npm run check-widget-bundles` builds and executes both isolated widget
+runtimes. After `npm run build-android-web`, `npm run test:upgrade:web` checks exported SEO,
+blog navigation, public controls, and fresh app seeding in Chromium. Set `MUSCLOG_TEST_PORT`
+when another local test server is already running. The iOS widget extension requires App Groups
+on both app identifiers and matching signing profiles.

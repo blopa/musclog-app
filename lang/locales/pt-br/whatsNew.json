@@ -126,6 +126,16 @@
             "description": "Mantenha os aquecimentos separados das séries de trabalho."
           }
         }
+      },
+      "v2_14_2": {
+        "widgets": {
+          "title": "Widgets nas duas plataformas",
+          "description": "Progresso nutricional e Câmera inteligente agora funcionam no iOS e seguem o tema e o idioma do app. No iOS, mantenha a tela inicial pressionada, escolha Adicionar widget e depois Musclog."
+        },
+        "migration": {
+          "title": "Adicione seus widgets Android novamente",
+          "description": "Remova os widgets antigos do Musclog e adicione Progresso nutricional ou Câmera inteligente novamente pelo seletor de widgets."
+        }
       }
     }
   }

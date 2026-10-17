@@ -18,8 +18,11 @@ import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { parseDatabaseExportJson } from '@/utils/optical/gameBoyExport';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
+import { resetWidgets } from '@/widgets/resetWidgets';
 
 import { replaceAppAsyncStorage } from './asyncStorageReset';
+import { normalizeCycleDataForImport } from './cycleImportNormalization';
+import { encryptCycleText } from './cyclePayload';
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
 import { waitForBootMigrations } from './dbReady';
@@ -41,8 +44,6 @@ import { ExerciseService } from './services/ExerciseService';
 import { FoodPortionService } from './services/FoodPortionService';
 import { MuscleService } from './services/MuscleService';
 import { SettingsService } from './services/SettingsService';
-import { normalizeCycleDataForImport } from './cycleImportNormalization';
-import { encryptCycleText } from './cyclePayload';
 import { normalizeWorkoutSetCompletionForImport } from './workoutSetImportNormalization';
 
 export type ExportDump = {
@@ -528,5 +529,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   }
 
   // Reload the app after importing is complete
+  await resetWidgets();
   await reloadApp();
 }

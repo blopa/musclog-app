@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.13.2",
+    "version": "2.14.2",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android", "web"],
@@ -15,24 +15,13 @@
       "baseUrl": "/"
     },
     "plugins": [
-      [
-        "./plugins/withGradleVersion",
-        {
-          "version": "8.13"
-        }
-      ],
       "./plugins/withGradleJvmArgs",
       "./plugins/withIosSimulatorBuildFix",
       "./plugins/withThemeAppIcons",
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
-      [
-        "expo-router",
-        {
-          "unstable_useServerDataLoaders": true
-        }
-      ],
+      ["expo-router", {}],
       [
         "expo-splash-screen",
         {
@@ -102,30 +91,49 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
       ],
+      "./plugins/withWidgetDeepLinks",
       [
-        "react-native-android-widget",
+        "expo-widgets",
         {
-          "fonts": ["./assets/fonts/material.ttf"],
+          "bundleIdentifier": "com.werules.logger.ExpoWidgetsTarget",
+          "groupIdentifier": "group.com.werules.logger",
           "widgets": [
             {
-              "name": "SmartCamera",
-              "label": "Smart Camera",
-              "minWidth": "60dp",
-              "minHeight": "60dp",
-              "targetCellWidth": 1,
-              "targetCellHeight": 1,
-              "description": "Open Smart Camera"
+              "name": "Nutrition",
+              "displayName": "Nutrition Progress",
+              "description": "Shows daily nutrition progress",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium"],
+                "initialLayout": "widgets/NutritionWidget.tsx"
+              },
+              "android": {
+                "minWidth": 180,
+                "minHeight": 60,
+                "targetCellWidth": 4,
+                "targetCellHeight": 1,
+                "resizeMode": "none",
+                "initialLayout": "widgets/NutritionWidget.android.tsx"
+              }
             },
             {
-              "name": "Nutrition",
-              "label": "Nutrition Progress",
-              "minWidth": "180dp",
-              "minHeight": "60dp",
-              "targetCellWidth": 4,
-              "targetCellHeight": 1,
-              "description": "Shows daily nutrition progress"
+              "name": "SmartCamera",
+              "displayName": "Smart Camera",
+              "description": "Open Smart Camera",
+              "ios": {
+                "supportedFamilies": ["systemSmall"],
+                "initialLayout": "widgets/SmartCameraWidget.tsx"
+              },
+              "android": {
+                "minWidth": 60,
+                "minHeight": 60,
+                "targetCellWidth": 1,
+                "targetCellHeight": 1,
+                "resizeMode": "none",
+                "initialLayout": "widgets/SmartCameraWidget.android.tsx"
+              }
             }
-          ]
+          ],
+          "enableAndroid": true
         }
       ],
       [
@@ -156,7 +164,7 @@
       "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "312",
+      "buildNumber": "313",
       "entitlements": {
         "com.apple.developer.usernotifications.time-sensitive": true
       },
@@ -171,7 +179,7 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 312,
+      "versionCode": 313,
       "adaptiveIcon": {
         "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
         "backgroundColor": "#091310"

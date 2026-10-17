@@ -126,6 +126,16 @@
             "description": "Keep warm-ups separate from your working sets."
           }
         }
+      },
+      "v2_14_2": {
+        "widgets": {
+          "title": "Widgets on both platforms",
+          "description": "Nutrition Progress and Smart Camera now support iOS and follow your app theme and language. On iOS, touch and hold the Home Screen, choose Add Widget, then Musclog."
+        },
+        "migration": {
+          "title": "Re-add your Android widgets",
+          "description": "Remove your old Musclog widgets and add Nutrition Progress or Smart Camera again from your launcher’s widget picker."
+        }
       }
     }
   }
