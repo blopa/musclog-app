@@ -5,7 +5,10 @@
   },
   "build": {
     "base": {
-      "node": "26.10.0"
+      "node": "26.10.0",
+      "android": {
+        "resourceClass": "large"
+      }
     },
     "development": {
       "extends": "base",
