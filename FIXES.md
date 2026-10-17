@@ -814,3 +814,7 @@ Android process death; the app’s JS interaction listener alone cannot do that.
 refreshed by one mounted owner after database/settings readiness, and are cleared on restore/reset.
 
 - SDK 58 native compilation also requires `patches/@nozbe+watermelondb+0.28.0.patch`: enable Android BuildConfig generation under AGP 9, and use an iOS `WMDatabaseJSIBridge` TurboModule to install the existing SQLite JSI bindings. Guard the legacy `RCTCxxBridge` installer when that header is absent. The adapter and stored database format are unchanged; remove only after upstream includes equivalent native support.
+
+## EAS Android build: "Gradle build daemon disappeared unexpectedly"
+
+A release build died during the native (CMake) phase with no Java error: just `The message received from the daemon indicates that the daemon has disappeared`. Skia, Reanimated, Worklets and the other native modules compile for four ABIs at once, and with `org.gradle.parallel=true` and the default worker count the EAS worker ran out of RAM (on top of the 4 GB daemon heap and 2 GB Kotlin daemon), so the OS killed the daemon. `plugins/withGradleJvmArgs.js` now also writes `org.gradle.workers.max=2` (mirrored in `android/gradle.properties`). If it recurs, set `"android": { "resourceClass": "large" }` on the build profile in `eas.json` rather than dropping ABIs.
