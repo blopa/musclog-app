@@ -815,12 +815,21 @@ refreshed by one mounted owner after database/settings readiness, and are cleare
 
 - SDK 58 native compilation also requires `patches/@nozbe+watermelondb+0.28.0.patch`: enable Android BuildConfig generation under AGP 9, and use an iOS `WMDatabaseJSIBridge` TurboModule to install the existing SQLite JSI bindings. Guard the legacy `RCTCxxBridge` installer when that header is absent. The adapter and stored database format are unchanged; remove only after upstream includes equivalent native support.
 
-## EAS Android build: "Gradle build daemon disappeared unexpectedly"
+## EAS Android build: out of memory, then out of time
 
-After the SDK 58 migration (which also bumped `@shopify/react-native-skia` 2.6.2 → 2.14.0), production Android builds on EAS died in the native (CMake) phase with no Java error, just `The message received from the daemon indicates that the daemon has disappeared`, every time inside Skia's `buildCMakeRelWithDebInfo`. The worker ran out of RAM and the OS killed the Gradle daemon. Skia's translation units pull in the whole Skia header tree and take over a gigabyte each, and every CMake task runs its own `ninja` with one clang per CPU, on top of the 4 GB Gradle heap and the 2 GB Kotlin daemon.
+After the SDK 58 migration (which also bumped `@shopify/react-native-skia` 2.6.2 → 2.14.0, the version SDK 58 pins), production Android builds on the free EAS worker (no paid plan, so no `large` resource class) failed three times, always inside `shopify_react-native-skia:buildCMakeRelWithDebInfo[arm64-v8a]`. The last good build (2.13.2) took 22 minutes:
 
-- `org.gradle.workers.max=2` (`plugins/withGradleJvmArgs.js`) alone did not help: it limits how many Gradle tasks run, not how many compilers each task starts.
-- A `large` EAS resource class needs a paid EAS plan, so it is not an option for this account.
-- The fix is `plugins/withNativeBuildJobPools.js`, which adds `-DCMAKE_JOB_POOLS=compile=2;link=1` (plus the pool selectors) to every Android module's CMake arguments from the root `android/build.gradle`. Its block must sit above `apply plugin: "com.facebook.react.rootproject"`, which evaluates `:app` immediately. Verify with a configure-only run, e.g. `./gradlew -PreactNativeArchitectures=arm64-v8a ":shopify_react-native-skia:configureCMakeRelWithDebInfo[arm64-v8a]"`, then look for `pool compile` in the module's `.cxx/**/CMakeFiles/rules.ninja`.
+1. After 19 min: `Gradle build daemon disappeared unexpectedly`, with no Java error. The OS killed the daemon because the worker ran out of RAM.
+2. With `org.gradle.workers.max=2` (`plugins/withGradleJvmArgs.js`): the same failure after 37 min. That setting limits Gradle tasks, not the one-clang-per-CPU `ninja` each CMake task starts.
+3. With ninja job pools (2 compiles, 1 link per project): no error, the log just stops. EAS cancelled the build at exactly 45 min (`buildDuration: 2700003` in `eas build:list --json`), the free tier's limit. The worker was swapping.
 
-Dropping ABIs from `buildArchs` does not lower the peak (each ABI is its own task), so do not reach for that.
+Measured locally: Skia's `RNSkManager.cpp` peaks at ~3.5 GB and ~75 s per ABI on a 16-core machine (`RNSkPictureView.cpp` and `ViewProperty.cpp` are next at ~30 s). With `-g0` it is ~2.9 GB, ~30% faster and 7x smaller. `plugins/withNativeBuildJobPools.js` now:
+
+- adds ninja job pools to every Android CMake module from the root `android/build.gradle`, with Skia at 1 compile at a time;
+- builds release C/C++ without debug info (`CMAKE_{C,CXX}_FLAGS_RELWITHDEBINFO=-O2 -g0 -DNDEBUG`). The NDK puts its own `-g` earlier on the command line, so the flag must be in the per-config flags. Debug builds keep symbols. Native frames in crash reports lose line numbers.
+
+The block must sit above `apply plugin: "com.facebook.react.rootproject"`, which evaluates `:app` immediately.
+
+`buildArchs` also dropped 32-bit `x86` (`armeabi-v7a`, `arm64-v8a`, `x86_64` remain). It does not lower the peak, but it removes a quarter of the native compile time, and essentially no real devices use it.
+
+To verify, run a configure-only build, e.g. `./gradlew -PreactNativeArchitectures=arm64-v8a ":shopify_react-native-skia:configureCMakeRelWithDebInfo[arm64-v8a]"`. Then check `pool compile` in `.cxx/**/CMakeFiles/rules.ninja` and the `-g0` in `compile_commands.json`. `eas build:list --platform android --json` shows `buildDuration` per build.
