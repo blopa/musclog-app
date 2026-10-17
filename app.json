@@ -16,6 +16,7 @@
     },
     "plugins": [
       "./plugins/withGradleJvmArgs",
+      "./plugins/withNativeBuildJobPools",
       "./plugins/withIosSimulatorBuildFix",
       "./plugins/withThemeAppIcons",
       "expo-system-ui",

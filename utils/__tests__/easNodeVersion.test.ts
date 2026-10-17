@@ -55,32 +55,3 @@ describe('Node version pin', () => {
     }
   });
 });
-
-// Release builds compile Skia, Reanimated, Worklets and VisionCamera for four ABIs;
-// on the default Android worker the OOM killer took the Gradle daemon mid-build
-// ("Gradle build daemon disappeared unexpectedly"). See FIXES.md.
-describe('Android build worker size', () => {
-  type AndroidProfile = { extends?: string; android?: { resourceClass?: string } };
-
-  function resolveResourceClass(
-    profiles: Record<string, AndroidProfile>,
-    name: string
-  ): string | undefined {
-    const profile = profiles[name];
-    return (
-      profile.android?.resourceClass ??
-      (profile.extends ? resolveResourceClass(profiles, profile.extends) : undefined)
-    );
-  }
-
-  it('builds every Android profile on the large worker', () => {
-    const { build } = readJson<{ build: Record<string, AndroidProfile> }>('eas.json');
-
-    for (const name of Object.keys(build)) {
-      expect({ name, resourceClass: resolveResourceClass(build, name) }).toEqual({
-        name,
-        resourceClass: 'large',
-      });
-    }
-  });
-});
