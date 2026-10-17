@@ -34,11 +34,10 @@ import {
   isLargeCalorieChange,
   nutritionReason,
 } from './nutritionReason';
+import { TARGET_FIELDS, type TargetField } from './targetsDraft';
 import { ReviewSectionHeader } from './TrainingReviewSection';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
-
-export const MACRO_FIELDS = ['totalCalories', 'protein', 'carbs', 'fats', 'fiber'] as const;
 
 export const MACRO_LABEL_KEYS = {
   totalCalories: 'weeklyReview.macros.totalCalories',
@@ -46,7 +45,7 @@ export const MACRO_LABEL_KEYS = {
   carbs: 'weeklyReview.macros.carbs',
   fats: 'weeklyReview.macros.fats',
   fiber: 'weeklyReview.macros.fiber',
-} as const satisfies Record<(typeof MACRO_FIELDS)[number], string>;
+} as const satisfies Record<TargetField, string>;
 
 const MODE_KEYS = {
   manual: 'weeklyReview.modes.manual',
@@ -368,7 +367,7 @@ export function NutritionReviewSection({
             {t(recommendedColumnKey)}
           </Text>
         </View>
-        {MACRO_FIELDS.map((field, index) => {
+        {TARGET_FIELDS.map((field, index) => {
           const current = data.current![field];
           const next = shownRecommendation?.[field] ?? current;
           const delta = Math.round(next) - Math.round(current);

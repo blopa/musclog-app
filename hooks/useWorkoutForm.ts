@@ -37,7 +37,7 @@ export interface UseWorkoutFormParams {
 }
 
 export interface AddExerciseData {
-  progression?: import('@/utils/progressionRules').ProgressionRule | null;
+  progression?: import('@/utils/progressionRuleSchema').ProgressionRule | null;
   exerciseId: string;
   sets: number;
   reps: number;

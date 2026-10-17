@@ -2,7 +2,7 @@ import type { Model } from '@nozbe/watermelondb';
 
 /** The columns a soft delete stamps. Matches what every model's `markAsDeleted` override writes. */
 interface SoftDeletable extends Model {
-  deletedAt?: number;
+  deletedAt?: number | null;
   updatedAt: number;
 }
 

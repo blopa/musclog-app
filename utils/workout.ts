@@ -10,7 +10,7 @@ import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { Theme } from '@/theme';
 
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
-import type { ProgressionRule } from './progressionRules';
+import type { ProgressionRule } from './progressionRuleSchema';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 import { dayNameToIndex } from './weekdays';

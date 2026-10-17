@@ -126,6 +126,28 @@
             "description": "Separa los calentamientos de tus series de trabajo."
           }
         }
+      },
+      "v2_14_2": {
+        "widgets": {
+          "title": "Widgets en ambas plataformas",
+          "description": "Progreso nutricional y Cámara inteligente ahora están disponibles en iOS y siguen el tema y el idioma de la app. En iOS, mantén pulsada la pantalla de inicio, elige Añadir widget y luego Musclog."
+        },
+        "migration": {
+          "title": "Vuelve a añadir tus widgets de Android",
+          "description": "Elimina los widgets antiguos de Musclog y añade de nuevo Progreso nutricional o Cámara inteligente desde el selector de widgets."
+        },
+        "cycleDiary": {
+          "title": "Un diario del ciclo privado y cifrado",
+          "description": "Tus periodos, registros diarios y contexto ahora se guardan cifrados en tu dispositivo. Las predicciones indican su nivel de confianza y la estimación de la ventana fértil es opcional y viene desactivada."
+        },
+        "cycleReminders": {
+          "title": "Recordatorios y widget del ciclo",
+          "description": "Elige cuánto dice un recordatorio, desde totalmente discreto hasta detallado, y añade el nuevo widget de ciclo de solo lectura. Con un bloqueo de la app activado, el widget no muestra nada personal."
+        },
+        "cycleLock": {
+          "title": "Bloquea solo tu ciclo",
+          "description": "En Ajustes → Bloqueo de la app ahora puedes proteger tu ciclo, entrenamientos, nutrición, progreso o toda la app con la credencial de tu dispositivo."
+        }
       }
     }
   }

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, View } from 'react-native';
 
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import { EndWorkoutModal } from '@/components/modals/EndWorkoutModal';
 import { WorkoutOptionsModal } from '@/components/modals/WorkoutOptionsModal';
@@ -95,7 +96,8 @@ export default function RestTimerScreen() {
     return { set: nextSetFromHook, exercise };
   }, [nextSetFromHook, exercises]);
 
-  const { defaultRestSeconds, restTimerHaptics } = useSettings();
+  const { defaultRestSeconds, restTimerHaptics, restHapticStrength, restHeadsUpSeconds } =
+    useSettings();
   // The placeholder is the configured default, so the ring is drawn against the right length even
   // before the set's own rest is read (it used to be a hard-coded 90 against a real 60).
   const [restTime, setRestTime] = useState(defaultRestSeconds);
@@ -211,13 +213,18 @@ export default function RestTimerScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completedSet, workoutLogId]);
 
+  useEffect(() => {
+    NotificationService.setRestCueVisible(true);
+    return () => NotificationService.setRestCueVisible(false);
+  }, []);
+
   // Schedule rest timer notification when rest begins, cancel on unmount (covers skip, auto-navigate, end workout)
   useEffect(() => {
     if (isLoading || !completedSet || initialRestTime <= 0) {
       return;
     }
 
-    NotificationService.scheduleRestTimerNotification(initialRestTime);
+    NotificationService.scheduleRestTimerNotification(initialRestTime, workoutLogId);
 
     return () => {
       NotificationService.cancelRestTimerNotification();
@@ -263,14 +270,25 @@ export default function RestTimerScreen() {
       return;
     }
 
-    const beat = hapticBeat(lastRemainingRef.current, restTime);
+    const beat = hapticBeat(
+      lastRemainingRef.current,
+      restTime,
+      initialRestTime > restHeadsUpSeconds ? restHeadsUpSeconds : 0
+    );
     lastRemainingRef.current = restTime;
     if (beat && restTimerHaptics) {
-      void playRestBeat(beat);
+      void playRestBeat(beat, restHapticStrength);
     }
-  }, [isTimerReady, restTime, restTimerHaptics]);
+  }, [
+    isTimerReady,
+    restTime,
+    initialRestTime,
+    restTimerHaptics,
+    restHapticStrength,
+    restHeadsUpSeconds,
+  ]);
 
-  const phase = restPhase(restTime, initialRestTime);
+  const phase = restPhase(restTime, initialRestTime, restHeadsUpSeconds);
 
   // Navigate when countdown reaches 0
   useEffect(() => {
@@ -377,200 +395,202 @@ export default function RestTimerScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <View className="flex-1">
-        <View
-          className="absolute right-[-40%] top-[-20%] h-[20%] w-[110%] overflow-hidden rounded-full"
-          style={{
-            ...theme.shadows.purpleGlow,
-            backgroundColor: theme.colors.background.purpleBlob,
-          }}
-        />
-        <View
-          className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
-          style={{
-            ...theme.shadows.purpleGlow,
-            backgroundColor: theme.colors.background.brandBlob,
-          }}
-        />
-
-        {/* Header */}
-        <View className="relative z-20">
-          <WorkoutTimeTracker
-            onClose={() => setIsEndWorkoutModalVisible(true)}
-            onOptionsPress={() => setIsOptionsModalVisible(true)}
-            startTime={workoutLog.startedAt}
+      <AreaLockGate area="workout">
+        <View className="flex-1">
+          <View
+            className="absolute right-[-40%] top-[-20%] h-[20%] w-[110%] overflow-hidden rounded-full"
+            style={{
+              ...theme.shadows.purpleGlow,
+              backgroundColor: theme.colors.background.purpleBlob,
+            }}
           />
-        </View>
-
-        {/* Main Content */}
-        <View className="z-10 flex-1 items-center justify-center gap-10 px-6">
-          {/* Timer */}
-          <RestTimer
-            restTime={restTime}
-            rotationAnim={rotationAnim}
-            initialRestTime={initialRestTime}
-            phase={phase}
+          <View
+            className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
+            style={{
+              ...theme.shadows.purpleGlow,
+              backgroundColor: theme.colors.background.brandBlob,
+            }}
           />
 
-          {/* What is coming, large enough to read from across the gym */}
-          {nextSet ? (
-            <View className="items-center gap-1" testID="rest-up-next">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {t('restTimer.upNext')}
-              </Text>
-              <Text className="text-3xl font-bold" style={{ color: theme.colors.text.primary }}>
-                {`${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)} × ${nextSet.set.reps ?? 0}`}
-              </Text>
-            </View>
-          ) : null}
-
-          {/* Controls */}
-          <RestTimerControls
-            onMinus5s={handleMinus5s}
-            onSkipRest={handleSkipRest}
-            onPlus5s={handlePlus5s}
-          />
-        </View>
-        <View className="z-10 mx-auto w-full max-w-lg gap-4 px-4 pb-8">
-          {/* Completed Exercise */}
-          <View className="flex-row items-center justify-between px-2">
-            <View className="flex-row items-center gap-2">
-              <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              <Text className="text-sm" style={{ color: theme.colors.overlay.ink50 }}>
-                {t('restTimer.done')}:{' '}
-                <Text className="font-medium text-text-primary">
-                  {completedSet.exercise.name ?? ''}
-                </Text>
-              </Text>
-            </View>
-            <Text className="font-medium" style={{ color: theme.colors.overlay.ink70 }}>
-              {formatDisplayWeight(completedSet.set.weight ?? 0)} {t(weightUnitKey)}{' '}
-              <Text style={{ color: theme.colors.overlay.ink30 }}>×</Text>{' '}
-              {completedSet.set.reps ?? 0} {t('restTimer.reps')}
-            </Text>
+          {/* Header */}
+          <View className="relative z-20">
+            <WorkoutTimeTracker
+              onClose={() => setIsEndWorkoutModalVisible(true)}
+              onOptionsPress={() => setIsOptionsModalVisible(true)}
+              startTime={workoutLog.startedAt}
+            />
           </View>
 
-          {/* Next Exercise Card */}
-          {nextSet ? (
-            <DetailedItemCard
-              item={{
-                name: nextSet.exercise.name ?? '',
-                media: nextSet.exercise.imageUrl
-                  ? { uri: nextSet.exercise.imageUrl }
-                  : { icon: Dumbbell, color: theme.colors.text.secondary },
-                itemOne: {
-                  value: `${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)}`,
-                  icon: Dumbbell,
-                },
-                itemTwo: {
-                  value: t('restTimer.repsWithCount', {
-                    count: nextSet.set.reps ?? 0,
-                  }),
-                  icon: Repeat,
-                },
-                itemThree: {
-                  value: t('restTimer.repsWithCount', {
-                    count: nextSet.set.reps ?? 0,
-                  }),
-                  icon: ChevronRight,
-                },
-              }}
-              onPress={() => {
-                navigateToNextScreen();
-              }}
-              ctaLabel={<UpNextLabel />}
+          {/* Main Content */}
+          <View className="z-10 flex-1 items-center justify-center gap-10 px-6">
+            {/* Timer */}
+            <RestTimer
+              restTime={restTime}
+              rotationAnim={rotationAnim}
+              initialRestTime={initialRestTime}
+              phase={phase}
             />
-          ) : null}
+
+            {/* What is coming, large enough to read from across the gym */}
+            {nextSet ? (
+              <View className="items-center gap-1" testID="rest-up-next">
+                <Text
+                  className="text-xs font-semibold tracking-widest"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {t('restTimer.upNext')}
+                </Text>
+                <Text className="text-3xl font-bold" style={{ color: theme.colors.text.primary }}>
+                  {`${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)} × ${nextSet.set.reps ?? 0}`}
+                </Text>
+              </View>
+            ) : null}
+
+            {/* Controls */}
+            <RestTimerControls
+              onMinus5s={handleMinus5s}
+              onSkipRest={handleSkipRest}
+              onPlus5s={handlePlus5s}
+            />
+          </View>
+          <View className="z-10 mx-auto w-full max-w-lg gap-4 px-4 pb-8">
+            {/* Completed Exercise */}
+            <View className="flex-row items-center justify-between px-2">
+              <View className="flex-row items-center gap-2">
+                <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                <Text className="text-sm" style={{ color: theme.colors.overlay.ink50 }}>
+                  {t('restTimer.done')}:{' '}
+                  <Text className="font-medium text-text-primary">
+                    {completedSet.exercise.name ?? ''}
+                  </Text>
+                </Text>
+              </View>
+              <Text className="font-medium" style={{ color: theme.colors.overlay.ink70 }}>
+                {formatDisplayWeight(completedSet.set.weight ?? 0)} {t(weightUnitKey)}{' '}
+                <Text style={{ color: theme.colors.overlay.ink30 }}>×</Text>{' '}
+                {completedSet.set.reps ?? 0} {t('restTimer.reps')}
+              </Text>
+            </View>
+
+            {/* Next Exercise Card */}
+            {nextSet ? (
+              <DetailedItemCard
+                item={{
+                  name: nextSet.exercise.name ?? '',
+                  media: nextSet.exercise.imageUrl
+                    ? { uri: nextSet.exercise.imageUrl }
+                    : { icon: Dumbbell, color: theme.colors.text.secondary },
+                  itemOne: {
+                    value: `${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)}`,
+                    icon: Dumbbell,
+                  },
+                  itemTwo: {
+                    value: t('restTimer.repsWithCount', {
+                      count: nextSet.set.reps ?? 0,
+                    }),
+                    icon: Repeat,
+                  },
+                  itemThree: {
+                    value: t('restTimer.repsWithCount', {
+                      count: nextSet.set.reps ?? 0,
+                    }),
+                    icon: ChevronRight,
+                  },
+                }}
+                onPress={() => {
+                  navigateToNextScreen();
+                }}
+                ctaLabel={<UpNextLabel />}
+              />
+            ) : null}
+          </View>
         </View>
-      </View>
-      {isOptionsModalVisible ? (
-        <WorkoutOptionsModal
-          visible={isOptionsModalVisible}
-          onClose={() => setIsOptionsModalVisible(false)}
-          onPreviewWorkout={() => {
-            setIsOptionsModalVisible(false);
-            setIsWorkoutOverviewModalVisible(true);
-          }}
-          onWorkoutSettings={() => {
-            setIsOptionsModalVisible(false);
-            setIsWorkoutSettingsVisible(true);
-          }}
-          onEndWorkout={handleEndWorkout}
-        />
-      ) : null}
-      {isWorkoutSettingsVisible ? (
-        <WorkoutSettingsModal
-          visible={isWorkoutSettingsVisible}
-          onClose={() => setIsWorkoutSettingsVisible(false)}
-        />
-      ) : null}
-      {isEndWorkoutModalVisible ? (
-        <EndWorkoutModal
-          visible={isEndWorkoutModalVisible}
-          onClose={() => setIsEndWorkoutModalVisible(false)}
-          onFinishAndSave={async () => {
-            if (workoutLog) {
-              await WorkoutService.completeWorkout(workoutLog.id);
-              router.replace(
-                `/app/workout/workout-summary?workoutLogId=${workoutLog.id}&showSessionFeedback=1`
-              );
-            }
-          }}
-          onFinishAndDiscard={async () => {
-            // Clear active workout from storage when discarding
-            if (workoutLog) {
-              await clearActiveWorkoutLogId();
-            }
-
-            // navigate to workout screen
-            router.replace('/app/workout/workouts');
-          }}
-        />
-      ) : null}
-
-      {/* Workout Session Overview Modal */}
-      {isWorkoutOverviewModalVisible ? (
-        <WorkoutSessionOverviewModal
-          visible={isWorkoutOverviewModalVisible}
-          onClose={() => setIsWorkoutOverviewModalVisible(false)}
-          workoutLogId={workoutLogId}
-          onStartWorkout={() => {
-            setIsWorkoutOverviewModalVisible(false);
-            router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
-          }}
-          onResumeSession={() => {
-            setIsWorkoutOverviewModalVisible(false);
-            router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
-          }}
-          onSelectExercise={(logExerciseId) => {
-            setIsWorkoutOverviewModalVisible(false);
-            router.replace(
-              `/app/workout/workout-session?workoutLogId=${workoutLogId}&logExerciseId=${logExerciseId}`
-            );
-          }}
-          onCancelWorkout={() => {
-            setIsWorkoutOverviewModalVisible(false);
-            setIsEndWorkoutModalVisible(true);
-          }}
-          onFinishWorkout={async () => {
-            setIsWorkoutOverviewModalVisible(false);
-            if (workoutLog) {
-              try {
+        {isOptionsModalVisible ? (
+          <WorkoutOptionsModal
+            visible={isOptionsModalVisible}
+            onClose={() => setIsOptionsModalVisible(false)}
+            onPreviewWorkout={() => {
+              setIsOptionsModalVisible(false);
+              setIsWorkoutOverviewModalVisible(true);
+            }}
+            onWorkoutSettings={() => {
+              setIsOptionsModalVisible(false);
+              setIsWorkoutSettingsVisible(true);
+            }}
+            onEndWorkout={handleEndWorkout}
+          />
+        ) : null}
+        {isWorkoutSettingsVisible ? (
+          <WorkoutSettingsModal
+            visible={isWorkoutSettingsVisible}
+            onClose={() => setIsWorkoutSettingsVisible(false)}
+          />
+        ) : null}
+        {isEndWorkoutModalVisible ? (
+          <EndWorkoutModal
+            visible={isEndWorkoutModalVisible}
+            onClose={() => setIsEndWorkoutModalVisible(false)}
+            onFinishAndSave={async () => {
+              if (workoutLog) {
                 await WorkoutService.completeWorkout(workoutLog.id);
                 router.replace(
                   `/app/workout/workout-summary?workoutLogId=${workoutLog.id}&showSessionFeedback=1`
                 );
-              } catch (err) {
-                handleError(err, 'rest-timer.onFinishWorkout');
-                console.error('Error completing workout:', err);
               }
-            }
-          }}
-        />
-      ) : null}
+            }}
+            onFinishAndDiscard={async () => {
+              // Clear active workout from storage when discarding
+              if (workoutLog) {
+                await clearActiveWorkoutLogId();
+              }
+
+              // navigate to workout screen
+              router.replace('/app/workout/workouts');
+            }}
+          />
+        ) : null}
+
+        {/* Workout Session Overview Modal */}
+        {isWorkoutOverviewModalVisible ? (
+          <WorkoutSessionOverviewModal
+            visible={isWorkoutOverviewModalVisible}
+            onClose={() => setIsWorkoutOverviewModalVisible(false)}
+            workoutLogId={workoutLogId}
+            onStartWorkout={() => {
+              setIsWorkoutOverviewModalVisible(false);
+              router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
+            }}
+            onResumeSession={() => {
+              setIsWorkoutOverviewModalVisible(false);
+              router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
+            }}
+            onSelectExercise={(logExerciseId) => {
+              setIsWorkoutOverviewModalVisible(false);
+              router.replace(
+                `/app/workout/workout-session?workoutLogId=${workoutLogId}&logExerciseId=${logExerciseId}`
+              );
+            }}
+            onCancelWorkout={() => {
+              setIsWorkoutOverviewModalVisible(false);
+              setIsEndWorkoutModalVisible(true);
+            }}
+            onFinishWorkout={async () => {
+              setIsWorkoutOverviewModalVisible(false);
+              if (workoutLog) {
+                try {
+                  await WorkoutService.completeWorkout(workoutLog.id);
+                  router.replace(
+                    `/app/workout/workout-summary?workoutLogId=${workoutLog.id}&showSessionFeedback=1`
+                  );
+                } catch (err) {
+                  handleError(err, 'rest-timer.onFinishWorkout');
+                  console.error('Error completing workout:', err);
+                }
+              }
+            }}
+          />
+        ) : null}
+      </AreaLockGate>
     </MasterLayout>
   );
 }

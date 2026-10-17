@@ -1,3 +1,4 @@
+import type { Model, Query } from '@nozbe/watermelondb';
 import {
   createContext,
   ReactNode,
@@ -7,106 +8,186 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { AppState } from 'react-native';
 
-import { DEFAULT_PERIOD_DURATION } from '@/constants/cycle';
 import { isStaticExport } from '@/constants/platform';
-import type {
-  BirthControlType,
-  LifeStage,
-  MenstrualCycleUpdate,
-  SyncGoal,
-} from '@/database/models';
+import { useSettingsContext } from '@/context/SettingsContext';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
-import PeriodLog, { type PeriodLogCreate } from '@/database/models/PeriodLog';
-import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
-import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import {
-  CycleStats,
-  EnergyLevel,
-  MenstrualPhase,
-  MenstrualService,
-  PredictionConfidence,
-} from '@/database/services/MenstrualService';
-import { NotificationService } from '@/services/NotificationService';
+  CycleRepository,
+  DEFAULT_CYCLE_CONFIG,
+  readContexts,
+  readCycleConfig,
+  readDayLogs,
+  readPeriods,
+} from '@/database/repositories/CycleRepository';
+import { type ContextInput, CycleContextService } from '@/database/services/CycleContextService';
+import { CycleDayLogService, type DayLogInput } from '@/database/services/CycleDayLogService';
+import {
+  CyclePeriodService,
+  type NewPeriod,
+  type PeriodPatch,
+} from '@/database/services/CyclePeriodService';
+import { CycleTrackingService, type NewCycleInput } from '@/database/services/CycleTrackingService';
+import { useCycleMoods } from '@/hooks/useCycleMoods';
+import { useLocalToday } from '@/hooks/useLocalToday';
+import { CycleNotificationService } from '@/services/CycleNotificationService';
+import type { ContextGuidance } from '@/utils/cycle/contraception';
+import type { MoodPoint } from '@/utils/cycle/cycleInsights';
+import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
+import type { PredictionStats } from '@/utils/cycle/cycleStats';
+import type { CycleTimeline } from '@/utils/cycle/cycleTimeline';
+import type { CycleTrackingMode } from '@/utils/cycle/trackingMode';
+import type {
+  CycleConfig,
+  CycleConfigUpdate,
+  CycleContextDto,
+  CycleDayLogDto,
+  CycleHistoryEntry,
+  CyclePeriodDto,
+} from '@/utils/cycle/types';
 
 export interface MenstrualCycleContextType {
+  /** The active cycle, or null when tracking was never set up or is paused. */
   cycle: MenstrualCycle | null;
-  periodLogs: PeriodLog[];
-  activePeriodLog: PeriodLog | null;
-  cycleStats: CycleStats | null;
+  /** A cycle whose tracking was switched off. Its history is kept so tracking can resume. */
+  pausedCycle: MenstrualCycle | null;
   isLoading: boolean;
   isActive: boolean;
-  isCurrentlyInPeriod: boolean;
-  isCurrentlyInFertileWindow: boolean;
-  isIrregular: boolean;
-  predictionConfidence: PredictionConfidence;
-  nextPeriodDate: Date | null;
-  nextPeriodEarliest: Date | null;
-  nextPeriodLatest: Date | null;
-  fertileWindow: { start: Date; end: Date } | null;
-  currentPhase: MenstrualPhase | null;
-  energyLevel: EnergyLevel | null;
-  intensityMultiplier: number;
-  cycleDay: number | null;
-  /** Current timestamp refreshed every minute; use for time-sensitive display values. */
-  nowMs: number;
-  updateCycle: (data: MenstrualCycleUpdate) => Promise<void>;
-  createNewCycle: (data: {
-    avgCycleLength?: number;
-    avgPeriodDuration?: number;
-    useHormonalBirthControl?: boolean;
-    birthControlType?: BirthControlType;
-    lastPeriodStartDate?: number | null;
-    syncGoal?: SyncGoal;
-    lifeStage?: LifeStage;
-  }) => Promise<void>;
-  logPeriodStart: (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => Promise<PeriodLog | null>;
-  logPeriodEnd: (endDate: number) => Promise<void>;
-  addPastPeriod: (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => Promise<PeriodLog | null>;
+  config: CycleConfig;
+  periods: CyclePeriodDto[];
+  dayLogs: CycleDayLogDto[];
+  contexts: CycleContextDto[];
+  /**
+   * Shared mood (the `user_metrics` mood the Home prompt writes), observed once here for every
+   * cycle surface. Each of them used to open its own subscription and decrypt every mood again.
+   */
+  moods: MoodPoint[];
+  moodsLoading: boolean;
+  moodsError: boolean;
+  activeContext: CycleContextDto | null;
+  guidance: ContextGuidance;
+  history: CycleHistoryEntry[];
+  predictionStats: PredictionStats;
+  /**
+   * The single phase/prediction model; the wheel, cards and reminders all read it. Its
+   * `elapsedDay`, `currentPhase` and `prediction` are the cycle day, phase and next-period
+   * estimate: read them here rather than through a copy.
+   */
+  timeline: CycleTimeline | null;
+  /** The period the user said is still going (the same predicate the timeline's phase uses). */
+  activePeriod: CyclePeriodDto | null;
+  /** Local midnight ms of today; changes only when the calendar day does. */
+  today: number;
+  createCycle: (input: NewCycleInput) => Promise<void>;
+  updateConfig: (update: CycleConfigUpdate) => Promise<void>;
+  startPeriod: (startDate: number) => Promise<void>;
+  endPeriod: (endDate: number) => Promise<void>;
+  addPastPeriod: (period: NewPeriod) => Promise<void>;
+  updatePeriod: (id: string, patch: PeriodPatch) => Promise<void>;
+  removePeriod: (id: string) => Promise<void>;
+  restorePeriod: (id: string) => Promise<void>;
+  patchDayLog: (
+    date: number,
+    update: (existing: CycleDayLogDto | undefined) => DayLogInput
+  ) => Promise<DayLogInput>;
+  saveDayLog: (input: DayLogInput, mood?: number | null) => Promise<void>;
+  setContext: (input: ContextInput) => Promise<void>;
+  removeContext: (id: string) => Promise<void>;
   deactivateTracking: () => Promise<void>;
+  resumeTracking: () => Promise<void>;
+  setTrackingMode: (mode: CycleTrackingMode) => Promise<void>;
+  deleteAllData: () => Promise<void>;
 }
 
 const MenstrualCycleContext = createContext<MenstrualCycleContextType | undefined>(undefined);
 
-export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
-  const [cycle, setCycle] = useState<MenstrualCycle | null>(null);
-  const [periodLogs, setPeriodLogs] = useState<PeriodLog[]>([]);
-  // isStaticExport is a build-time constant — no async loading on static export
-  const [isLoading, setIsLoading] = useState(!isStaticExport);
-  // Refreshed every minute to trigger re-derivation of time-sensitive values
-  // (isCurrentlyInFertileWindow, currentPhase) without a WatermelonDB subscription event.
-  const [nowMs, setNowMs] = useState(Date.now);
+const PAYLOAD_COLUMNS = ['payload', 'updated_at', 'deleted_at'];
+const EMPTY: never[] = [];
+
+/**
+ * Observes a query and decrypts every emission. A token drops a result that finished after a
+ * newer one started, since decryption is async and emissions can overlap.
+ */
+function useDecryptedQuery<R extends Model, T>(
+  query: Query<R> | null,
+  read: (records: R[]) => Promise<T[]>,
+  deps: unknown[]
+): T[] {
+  const [value, setValue] = useState<T[]>([]);
 
   useEffect(() => {
-    const id = setInterval(() => setNowMs(Date.now()), 60_000);
-    return () => clearInterval(id);
-  }, []);
+    if (isStaticExport || !query) {
+      return;
+    }
 
-  // Subscribe to the active menstrual cycle
+    let latest = 0;
+    const subscription = query.observeWithColumns(PAYLOAD_COLUMNS).subscribe({
+      next: (records) => {
+        const token = ++latest;
+        void read(records)
+          .then((dtos) => {
+            if (token === latest) {
+              setValue(dtos);
+            }
+          })
+          .catch(() => {
+            if (token === latest) {
+              setValue([]);
+            }
+          });
+      },
+      error: () => setValue([]),
+    });
+
+    return () => {
+      latest += 1;
+      subscription.unsubscribe();
+    };
+    // `query` is rebuilt per render; `deps` carries the identity the caller actually means.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+
+  // With nothing to observe the answer is empty, whatever the previous query last emitted.
+  return isStaticExport || !query ? EMPTY : value;
+}
+
+export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
+  const { cycleShowPredictions, cycleShowFertility } = useSettingsContext();
+  // Models mutate in place; capture the cipher at emission time so config-only
+  // writes have an immutable state identity and trigger decryption immediately.
+  const [tracked, setTracked] = useState<{
+    cycle: MenstrualCycle | null;
+    pausedCycle: MenstrualCycle | null;
+    configCipher: string | null;
+  }>({ cycle: null, pausedCycle: null, configCipher: null });
+  const { cycle, pausedCycle, configCipher: trackedConfigCipher } = tracked;
+  const [config, setConfig] = useState<CycleConfig>(DEFAULT_CYCLE_CONFIG);
+  // isStaticExport is a build-time constant — no async loading on static export
+  const [isLoading, setIsLoading] = useState(!isStaticExport);
+  const today = useLocalToday();
+
+  // Observe every cycle row; the active one drives the app, a paused one is kept for resuming.
   useEffect(() => {
     if (isStaticExport) {
       return;
     }
 
-    const subscription = MenstrualCycleRepository.getActive()
-      .observeWithColumns([
-        'avg_cycle_length',
-        'avg_period_duration',
-        'use_hormonal_birth_control',
-        'birth_control_type',
-        'last_period_start_date',
-        'sync_goal',
-        'life_stage',
-        'is_active',
-        'updated_at',
-      ])
+    const subscription = CycleRepository.cycles()
+      .observeWithColumns(['is_active', 'config', 'updated_at', 'deleted_at'])
       .subscribe({
         next: (cycles) => {
-          setCycle(cycles[0] || null);
+          const active = cycles.find((c) => c.isActive) ?? null;
+          const paused = active ? null : (cycles[0] ?? null);
+          setTracked({
+            cycle: active,
+            pausedCycle: paused,
+            configCipher: (active ?? paused)?.config ?? null,
+          });
           setIsLoading(false);
         },
         error: () => {
-          setCycle(null);
+          setTracked({ cycle: null, pausedCycle: null, configCipher: null });
           setIsLoading(false);
         },
       });
@@ -114,185 +195,196 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Subscribe to period_logs for the active cycle
+  const trackedCycle = cycle ?? pausedCycle;
   useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    if (!cycle) {
-      return;
-    }
-
-    const subscription = PeriodLogRepository.getForCycle(cycle.id)
-      .observeWithColumns(['start_date', 'end_date', 'notes', 'deleted_at', 'updated_at'])
-      .subscribe({
-        next: (logs) => setPeriodLogs(logs),
-        error: () => setPeriodLogs([]),
+    let cancelled = false;
+    void readCycleConfig(trackedCycle)
+      .catch(() => DEFAULT_CYCLE_CONFIG)
+      .then((next) => {
+        if (!cancelled) {
+          setConfig(next);
+        }
       });
 
-    return () => subscription.unsubscribe();
-  }, [cycle]);
-
-  const updateCycle = useCallback(
-    async (data: MenstrualCycleUpdate): Promise<void> => {
-      if (!cycle) {
-        return;
-      }
-
-      await cycle.updateCycle(data);
-      void NotificationService.scheduleMenstrualCycleNotifications();
-    },
-    [cycle]
-  );
-
-  const createNewCycle = useCallback(
-    async (data: {
-      avgCycleLength?: number;
-      avgPeriodDuration?: number;
-      useHormonalBirthControl?: boolean;
-      birthControlType?: BirthControlType;
-      lastPeriodStartDate?: number | null;
-      syncGoal?: SyncGoal;
-      lifeStage?: LifeStage;
-    }): Promise<void> => {
-      const { lastPeriodStartDate, ...cycleData } = data;
-      await MenstrualCycleRepository.replaceActiveCycle(
-        cycleData,
-        lastPeriodStartDate != null ? [{ startDate: lastPeriodStartDate }] : []
-      );
-    },
-    []
-  );
-
-  const logPeriodStart = useCallback(
-    async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
-      if (!cycle) {
-        return null;
-      }
-
-      const result = await PeriodLogRepository.startPeriodAtomically(
-        { ...data, menstrualCycleId: cycle.id },
-        cycle
-      );
-      void NotificationService.scheduleMenstrualCycleNotifications();
-
-      return result;
-    },
-    [cycle]
-  );
-
-  const logPeriodEnd = useCallback(
-    async (endDate: number): Promise<void> => {
-      const active = MenstrualService.getActivePeriodLog(periodLogs);
-      if (!active) {
-        return;
-      }
-
-      if (endDate < active.startDate) {
-        throw new Error('period_end_before_start');
-      }
-
-      await active.endPeriod(endDate);
-      void NotificationService.scheduleMenstrualCycleNotifications();
-    },
-    [periodLogs]
-  );
-
-  const addPastPeriod = useCallback(
-    async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
-      if (!cycle) {
-        return null;
-      }
-
-      // Past periods have definitionally ended — always set a concrete endDate so they
-      // don't appear as "currently in period" via the isActive (endDate == null) check.
-      const avgDuration = cycle.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
-      const endDate =
-        data.endDate ?? MenstrualService.inferPeriodEndDate(data.startDate, avgDuration);
-      const updateAnchor = !cycle.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
-      const result = await PeriodLogRepository.createWithCycleAnchor(
-        { ...data, endDate, menstrualCycleId: cycle.id },
-        cycle,
-        updateAnchor
-      );
-      void NotificationService.scheduleMenstrualCycleNotifications();
-      return result;
-    },
-    [cycle]
-  );
-
-  const deactivateTracking = useCallback(async (): Promise<void> => {
-    if (cycle) {
-      await cycle.updateCycle({ isActive: false });
-      void NotificationService.scheduleMenstrualCycleNotifications();
-    }
-  }, [cycle]);
-
-  const value = useMemo(() => {
-    const effectivePeriodLogs = cycle ? periodLogs : [];
-    const stats = cycle
-      ? MenstrualService.calculateCycleStats(effectivePeriodLogs, {
-          avgCycleLength: cycle.avgCycleLength,
-          avgPeriodDuration: cycle.avgPeriodDuration,
-        })
-      : null;
-    const activePeriodLog = MenstrualService.getActivePeriodLog(effectivePeriodLogs, nowMs);
-    const currentPhase =
-      cycle && stats ? MenstrualService.calculateCurrentPhase(effectivePeriodLogs, stats) : null;
-    const nextPeriodPrediction =
-      cycle && stats ? MenstrualService.predictNextPeriod(effectivePeriodLogs, stats) : null;
-    const fertileWindow =
-      cycle && stats ? MenstrualService.getFertileWindow(effectivePeriodLogs, stats) : null;
-
-    return {
-      cycle,
-      periodLogs: isStaticExport ? [] : effectivePeriodLogs,
-      isLoading,
-      isActive: cycle?.isActive ?? false,
-      activePeriodLog,
-      cycleStats: stats,
-      currentPhase,
-      energyLevel: currentPhase ? MenstrualService.getEnergyLevel(currentPhase) : null,
-      intensityMultiplier:
-        cycle && currentPhase
-          ? MenstrualService.getIntensityMultiplier(currentPhase, cycle.syncGoal ?? undefined)
-          : 1.0,
-      cycleDay:
-        cycle && stats
-          ? MenstrualService.getCycleDay(effectivePeriodLogs, stats, cycle.timezone)
-          : null,
-      nextPeriodDate: nextPeriodPrediction?.date ?? null,
-      nextPeriodEarliest: nextPeriodPrediction?.earliest ?? null,
-      nextPeriodLatest: nextPeriodPrediction?.latest ?? null,
-      fertileWindow,
-      nowMs,
-      isCurrentlyInPeriod: activePeriodLog != null,
-      isCurrentlyInFertileWindow:
-        fertileWindow != null &&
-        nowMs >= fertileWindow.start.getTime() &&
-        nowMs <= fertileWindow.end.getTime(),
-      isIrregular: stats?.isIrregular ?? false,
-      predictionConfidence: stats?.confidence ?? ('none' as const),
-      updateCycle,
-      createNewCycle,
-      logPeriodStart,
-      logPeriodEnd,
-      addPastPeriod,
-      deactivateTracking,
+    return () => {
+      cancelled = true;
     };
-  }, [
-    cycle,
-    nowMs,
-    periodLogs,
-    isLoading,
-    updateCycle,
-    createNewCycle,
-    logPeriodStart,
-    logPeriodEnd,
-    addPastPeriod,
-    deactivateTracking,
-  ]);
+    // The cipher changes whenever the config does; the model identity alone would not.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trackedCycle?.id, trackedConfigCipher]);
+
+  const trackedCycleId = trackedCycle?.id ?? null;
+  const periods = useDecryptedQuery(
+    trackedCycleId ? CycleRepository.periods(trackedCycleId) : null,
+    readPeriods,
+    [trackedCycleId]
+  );
+  const contexts = useDecryptedQuery(
+    trackedCycleId ? CycleRepository.contexts(trackedCycleId) : null,
+    readContexts,
+    [trackedCycleId]
+  );
+  // Day logs carry no cycle id (they survive a pause/resume), but with no cycle at all there is
+  // nothing to show them on, so nothing is observed or decrypted.
+  const dayLogs = useDecryptedQuery(
+    trackedCycleId ? CycleRepository.dayLogs() : null,
+    readDayLogs,
+    [trackedCycleId != null]
+  );
+  const {
+    moods,
+    isLoading: moodsLoading,
+    error: moodsError,
+  } = useCycleMoods(trackedCycleId != null);
+
+  const afterWrite = useCallback(() => {
+    void CycleNotificationService.scheduleMenstrualCycleNotifications().catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        afterWrite();
+      }
+    });
+    afterWrite();
+    return () => subscription.remove();
+  }, [afterWrite]);
+
+  const requireCycle = useCallback((): string => {
+    if (!cycle) {
+      throw new Error('cycle_tracking_not_active');
+    }
+
+    return cycle.id;
+  }, [cycle]);
+
+  const actions = useMemo(
+    () => ({
+      createCycle: async (input: NewCycleInput) => {
+        await CycleTrackingService.create(input);
+        afterWrite();
+      },
+      updateConfig: async (next: CycleConfigUpdate) => {
+        if (trackedCycle) {
+          await CycleTrackingService.updateConfig(trackedCycle, next);
+          afterWrite();
+        }
+      },
+      startPeriod: async (startDate: number) => {
+        await CyclePeriodService.start(requireCycle(), startDate);
+        afterWrite();
+      },
+      endPeriod: async (endDate: number) => {
+        await CyclePeriodService.end(requireCycle(), endDate);
+        afterWrite();
+      },
+      addPastPeriod: async (period: NewPeriod) => {
+        await CyclePeriodService.create(requireCycle(), period);
+        afterWrite();
+      },
+      updatePeriod: async (id: string, patch: PeriodPatch) => {
+        await CyclePeriodService.update(id, patch);
+        afterWrite();
+      },
+      removePeriod: async (id: string) => {
+        await CyclePeriodService.remove(id);
+        afterWrite();
+      },
+      restorePeriod: async (id: string) => {
+        await CyclePeriodService.restore(id);
+        afterWrite();
+      },
+      patchDayLog: (date: number, update: (existing: CycleDayLogDto | undefined) => DayLogInput) =>
+        CycleDayLogService.patch(date, update),
+      saveDayLog: async (input: DayLogInput, mood?: number | null) => {
+        await CycleDayLogService.save(input, mood);
+      },
+      setContext: async (input: ContextInput) => {
+        await CycleContextService.set(requireCycle(), input);
+        afterWrite();
+      },
+      removeContext: async (id: string) => {
+        await CycleContextService.remove(id);
+        afterWrite();
+      },
+      deactivateTracking: async () => {
+        if (cycle) {
+          await CycleTrackingService.setActive(cycle, false);
+          afterWrite();
+        }
+      },
+      resumeTracking: async () => {
+        if (pausedCycle) {
+          await CycleTrackingService.setActive(pausedCycle, true);
+          afterWrite();
+        }
+      },
+      setTrackingMode: async (mode: CycleTrackingMode) => {
+        if (trackedCycle) {
+          await CycleTrackingService.setTrackingMode(trackedCycle, mode);
+          afterWrite();
+        }
+      },
+      deleteAllData: async () => {
+        await CycleTrackingService.deleteAll();
+        afterWrite();
+      },
+    }),
+    [afterWrite, cycle, pausedCycle, trackedCycle, requireCycle]
+  );
+
+  const snapshot = useMemo(
+    () =>
+      buildCycleSnapshot({
+        periods,
+        contexts,
+        config,
+        nowMs: today,
+        showPredictions: cycleShowPredictions,
+        showFertility: cycleShowFertility,
+      }),
+    [contexts, periods, config, today, cycleShowPredictions, cycleShowFertility]
+  );
+
+  const value = useMemo<MenstrualCycleContextType>(
+    () => ({
+      cycle,
+      pausedCycle,
+      isLoading,
+      isActive: cycle != null,
+      config,
+      periods,
+      dayLogs,
+      contexts,
+      moods,
+      moodsLoading,
+      moodsError,
+      activeContext: snapshot.activeContext,
+      guidance: snapshot.guidance,
+      history: snapshot.history,
+      predictionStats: snapshot.stats,
+      timeline: cycle ? snapshot.timeline : null,
+      activePeriod: snapshot.activePeriod,
+      today,
+      ...actions,
+    }),
+    [
+      cycle,
+      pausedCycle,
+      isLoading,
+      config,
+      periods,
+      dayLogs,
+      contexts,
+      moods,
+      moodsLoading,
+      moodsError,
+      snapshot,
+      today,
+      actions,
+    ]
+  );
 
   return <MenstrualCycleContext.Provider value={value}>{children}</MenstrualCycleContext.Provider>;
 }

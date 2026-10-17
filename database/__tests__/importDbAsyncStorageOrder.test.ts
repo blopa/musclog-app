@@ -1,3 +1,4 @@
+jest.mock('@/widgets/resetWidgets', () => ({ resetWidgets: jest.fn(async () => {}) }));
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { restoreDatabase } from '@/database/importDb';

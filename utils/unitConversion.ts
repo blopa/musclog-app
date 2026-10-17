@@ -393,3 +393,19 @@ export function prepareMetricDataToDisplay<T extends Record<string, unknown>>(
 
   return result;
 }
+
+/**
+ * Body temperature (basal / skin) is stored in °C like every other measurement and shown in °F to
+ * imperial users. Two decimals keep a °F reading round-tripping to the same °C value.
+ */
+export function celsiusToDisplay(celsius: number, units: Units): number {
+  return units === 'imperial' ? Math.round(((celsius * 9) / 5) * 100 + 3200) / 100 : celsius;
+}
+
+export function displayToCelsius(value: number, units: Units): number {
+  return units === 'imperial' ? Math.round((((value - 32) * 5) / 9) * 100) / 100 : value;
+}
+
+export function getTemperatureUnitLabel(units: Units): '°C' | '°F' {
+  return units === 'imperial' ? '°F' : '°C';
+}

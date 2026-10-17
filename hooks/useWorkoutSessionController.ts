@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type { Units } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
@@ -66,7 +67,7 @@ export function useWorkoutSessionController(
   useEffect(() => {
     let live = true;
     Promise.all([
-      SettingsService.getWorkoutView(),
+      SettingsService.get(SETTINGS.workoutView),
       logId ? getRestTimerEndAt(logId) : Promise.resolve(null),
       key ? AsyncStorage.getItem(key) : Promise.resolve(null),
     ])
@@ -126,6 +127,13 @@ export function useWorkoutSessionController(
       subscription.remove();
     };
   }, [restEnd]);
+
+  // While this hook is mounted the rest countdown and its haptics are on screen, so the rest alert
+  // need not also pop a banner over it.
+  useEffect(() => {
+    NotificationService.setRestCueVisible(true);
+    return () => NotificationService.setRestCueVisible(false);
+  }, []);
 
   const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const persist = (next: Record<string, Partial<SessionDraft>>) => {
@@ -191,7 +199,7 @@ export function useWorkoutSessionController(
   const changeView = async (value: 'inline' | 'guided') => {
     setView(value);
     try {
-      await SettingsService.setWorkoutView(value);
+      await SettingsService.set(SETTINGS.workoutView, value);
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
     }
@@ -221,7 +229,7 @@ export function useWorkoutSessionController(
       setRestTotal(seconds);
       setRestId((id) => id + 1);
       await setRestTimerEndAt(logId, end);
-      await NotificationService.scheduleRestTimerNotification(seconds);
+      await NotificationService.scheduleRestTimerNotification(seconds, logId);
     });
 
   /** Lengthens or shortens the rest that is running; its reminder moves with it. */
@@ -238,7 +246,7 @@ export function useWorkoutSessionController(
       setRestTotal((total) => Math.max(remaining, total + deltaSeconds));
       await setRestTimerEndAt(logId, end);
       await NotificationService.cancelRestTimerNotification();
-      await NotificationService.scheduleRestTimerNotification(remaining);
+      await NotificationService.scheduleRestTimerNotification(remaining, logId);
     });
 
   const stopRest = () =>

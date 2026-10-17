@@ -1,18 +1,13 @@
-import Head from 'expo-router/head';
-
 import { GITHUB_REPO_URL } from '@/constants/misc';
 
-const SITE_ORIGIN = 'https://musclog.app';
+import { blogPostPath } from './blogRoutes';
+import { SITE_ORIGIN } from './websiteMetadata';
+
 const SITE_NAME = 'Musclog';
 const LOGO_URL = `${SITE_ORIGIN}/images/seo-image.png`;
 const SAME_AS = [GITHUB_REPO_URL, 'https://instagram.com/musclog.app'];
 
-/**
- * Expo Router's Head uses react-helmet-async, which requires script content as
- * a string child and converts it to innerHTML itself. Passing
- * dangerouslySetInnerHTML directly is ignored by Helmet. `<` is escaped so a
- * value containing "</script>" cannot prematurely close the tag.
- */
+/** Escape script terminators before embedding JSON-LD in prerendered HTML. */
 function jsonLdText(data: unknown): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
 }
@@ -43,9 +38,9 @@ export function WebsiteOrganizationJsonLd() {
   };
 
   return (
-    <Head>
-      <script type="application/ld+json">{jsonLdText(graph)}</script>
-    </Head>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdText(graph) }} />
+    </>
   );
 }
 
@@ -71,9 +66,9 @@ export function SoftwareApplicationJsonLd({ description }: { description: string
   };
 
   return (
-    <Head>
-      <script type="application/ld+json">{jsonLdText(schema)}</script>
-    </Head>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdText(schema) }} />
+    </>
   );
 }
 
@@ -102,9 +97,9 @@ export function FaqPageJsonLd({ items }: { items: FaqPageJsonLdItem[] }) {
   };
 
   return (
-    <Head>
-      <script type="application/ld+json">{jsonLdText(schema)}</script>
-    </Head>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdText(schema) }} />
+    </>
   );
 }
 
@@ -146,15 +141,15 @@ export function BlogListingJsonLd({
         '@type': 'ListItem',
         position: positionOffset + index + 1,
         name: post.title,
-        url: `${SITE_ORIGIN}/blog/${post.slug}`,
+        url: `${SITE_ORIGIN}${blogPostPath(post.slug)}`,
       })),
     },
   };
 
   return (
-    <Head>
-      <script type="application/ld+json">{jsonLdText(schema)}</script>
-    </Head>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdText(schema) }} />
+    </>
   );
 }
 
@@ -205,8 +200,8 @@ export function BlogPostingJsonLd({
   };
 
   return (
-    <Head>
-      <script type="application/ld+json">{jsonLdText(schema)}</script>
-    </Head>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdText(schema) }} />
+    </>
   );
 }

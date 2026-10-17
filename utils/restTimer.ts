@@ -33,17 +33,21 @@ export type RestPhase = 'resting' | 'getReady' | 'done';
  * read the change from across a gym without looking at the digits — it is announced in words as
  * well as colour. A rest no longer than the window has nothing to get ready for: it just rests.
  */
-export function restPhase(remainingSeconds: number, totalSeconds: number): RestPhase {
+export function restPhase(
+  remainingSeconds: number,
+  totalSeconds: number,
+  headsUpSeconds: number = GET_READY_SECONDS
+): RestPhase {
   if (remainingSeconds <= 0) {
     return 'done';
   }
 
-  return totalSeconds > GET_READY_SECONDS && remainingSeconds <= GET_READY_SECONDS
+  return headsUpSeconds > 0 && totalSeconds > headsUpSeconds && remainingSeconds <= headsUpSeconds
     ? 'getReady'
     : 'resting';
 }
 
-export type HapticBeat = 'tick' | 'done';
+export type HapticBeat = 'headsUp' | 'tick' | 'done';
 
 /** The last seconds that get a tick before the final buzz. */
 export const HAPTIC_TICK_SECONDS: readonly number[] = [3, 2, 1];
@@ -55,8 +59,17 @@ export const HAPTIC_TICK_SECONDS: readonly number[] = [3, 2, 1];
  * that have nothing to do with the clock (a +5 s tap, the app coming back to the foreground), and a
  * value-only rule would buzz again on each of them. A jump that skips a beat (backgrounded, then
  * resumed at 1 s) fires only for where it lands.
+ *
+ * `headsUpSeconds` is the moment the timer turns to "get ready" (0 or omitted: none). It buzzes
+ * once, as the countdown crosses onto it, so the lifter who is not looking at the screen still
+ * learns the rest is nearly over. Pass it only for a rest longer than the window, as `restPhase`
+ * does, or a 20 s rest would announce itself the instant it starts.
  */
-export function hapticBeat(previous: number | null, remaining: number): HapticBeat | null {
+export function hapticBeat(
+  previous: number | null,
+  remaining: number,
+  headsUpSeconds = 0
+): HapticBeat | null {
   if (previous === null || previous === remaining) {
     return null;
   }
@@ -65,5 +78,11 @@ export function hapticBeat(previous: number | null, remaining: number): HapticBe
     return 'done';
   }
 
-  return HAPTIC_TICK_SECONDS.includes(remaining) ? 'tick' : null;
+  if (HAPTIC_TICK_SECONDS.includes(remaining)) {
+    return 'tick';
+  }
+
+  return headsUpSeconds > 0 && remaining === headsUpSeconds && previous > remaining
+    ? 'headsUp'
+    : null;
 }

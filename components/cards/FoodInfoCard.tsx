@@ -2,6 +2,7 @@ import type { TFunction } from 'i18next';
 import { Info } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { MacrosPizzaChart } from '@/components/theme/MacrosPizzaChart';
@@ -53,7 +54,7 @@ export function FoodInfoCard({
   const { width: windowWidth } = useWindowDimensions();
   const [macroViewIndex, setMacroViewIndex] = useState(0);
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
 
   // Calculate macro percentages for legend
   const totalMacros = food.protein + food.carbs + food.fat;

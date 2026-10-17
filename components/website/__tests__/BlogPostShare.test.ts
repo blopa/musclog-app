@@ -56,7 +56,7 @@ describe('blog post share row', () => {
   });
 
   it('builds the shared URL from the SEO origin rather than a second copy of it', () => {
-    expect(source).toContain("import { absoluteUrl, SEO_IMAGE_URL } from './WebsiteSeo'");
+    expect(source).toContain("import { absoluteUrl, SEO_IMAGE_URL } from './websiteMetadata'");
     expect(source).toContain('const url = absoluteUrl(canonicalPath)');
     expect(source).not.toMatch(/https:\/\/musclog\.app/);
   });

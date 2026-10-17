@@ -39,7 +39,6 @@ import {
   InputToolbarProps,
   SendProps,
 } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { ChatMealCard } from '@/components/cards/ChatMealCard';
@@ -61,6 +60,7 @@ import { useUnreadChat } from '@/context/UnreadChatContext';
 import { ChatService } from '@/database/services/ChatService';
 import { MuscleService } from '@/database/services/MuscleService';
 import { WorkoutService } from '@/database/services/WorkoutService';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
@@ -650,7 +650,7 @@ export function CoachModal({
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   const router = useRouter();
 
   const { conversationContext, handleConversationContextChange } = useDebouncedSettings();
@@ -1340,14 +1340,10 @@ export function CoachModal({
         value: 'general',
         label: t('coach.context.general'),
         badge: unreadCountsByContext.general,
-        icon: (
+        icon: (selected: boolean) => (
           <Zap
             size={theme.iconSize.sm}
-            color={
-              conversationContext === 'general'
-                ? theme.colors.text.primary
-                : theme.colors.text.tertiary
-            }
+            color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
           />
         ),
       },
@@ -1355,14 +1351,10 @@ export function CoachModal({
         value: 'exercise',
         label: t('coach.context.exercise'),
         badge: unreadCountsByContext.exercise,
-        icon: (
+        icon: (selected: boolean) => (
           <Dumbbell
             size={theme.iconSize.sm}
-            color={
-              conversationContext === 'exercise'
-                ? theme.colors.text.primary
-                : theme.colors.text.tertiary
-            }
+            color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
           />
         ),
       },
@@ -1370,19 +1362,15 @@ export function CoachModal({
         value: 'nutrition',
         label: t('coach.context.nutrition'),
         badge: unreadCountsByContext.nutrition,
-        icon: (
+        icon: (selected: boolean) => (
           <UtensilsCrossed
             size={theme.iconSize.sm}
-            color={
-              conversationContext === 'nutrition'
-                ? theme.colors.text.primary
-                : theme.colors.text.tertiary
-            }
+            color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
           />
         ),
       },
     ],
-    [conversationContext, theme, t, unreadCountsByContext]
+    [theme, t, unreadCountsByContext]
   );
 
   return (

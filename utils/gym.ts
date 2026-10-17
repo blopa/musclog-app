@@ -109,6 +109,22 @@ export function defaultWeightIncrementKg(units: Units): number {
     : DEFAULT_WEIGHT_INCREMENT_KG;
 }
 
+/**
+ * The gym assumed for a user who never described theirs: a standard bar, a full set of standard
+ * plates and the default step. Warm-ups load from it so they always come out as weights a bar can
+ * carry. Progression deliberately does NOT round non-bar loads to it (see `roundToLoadable`).
+ */
+export function defaultGymSnapshot(units: Units): GymSnapshot {
+  return {
+    id: 'default',
+    name: 'default',
+    barWeightKg: defaultBarWeightKg(units),
+    plates: defaultPlates(units),
+    weightIncrementKg: defaultWeightIncrementKg(units),
+    equipment: [],
+  };
+}
+
 const isEquipmentType = (value: unknown): value is EquipmentType =>
   typeof value === 'string' && (EQUIPMENT_TYPES as readonly string[]).includes(value);
 

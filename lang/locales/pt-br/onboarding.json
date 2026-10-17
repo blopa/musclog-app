@@ -54,18 +54,32 @@
         "periodDurationLabel": "Menstruação"
       },
       "birthControl": {
-        "title": "Anticoncepcional Hormonal",
-        "description": "Você está usando algum anticoncepcional hormonal? Isso afeta as previsões de fase hormonal.",
+        "title": "Anticoncepcional",
+        "description": "Você usa algum método anticoncepcional? Métodos hormonais podem mudar o comportamento do seu ciclo.",
         "none": "Nenhum",
-        "noneDescription": "Sem contracepção hormonal.",
+        "noneDescription": "Sem anticoncepção.",
         "pill": "Pílula",
         "pillDescription": "Pílula contraceptiva oral diária.",
-        "iud": "DIU",
-        "iudDescription": "Dispositivo intrauterino (hormonal ou cobre).",
+        "iud": "DIU (tipo não informado)",
+        "iudDescription": "Escolha hormonal ou de cobre para ser específica.",
         "implant": "Implante",
         "implantDescription": "Implante hormonal subcutâneo.",
         "other": "Outro",
-        "otherDescription": "Outra forma de contracepção."
+        "otherDescription": "Outra forma de contracepção.",
+        "hormonalIud": "DIU hormonal",
+        "hormonalIudDescription": "Dispositivo intrauterino que libera hormônios.",
+        "copperIud": "DIU de cobre",
+        "copperIudDescription": "Dispositivo intrauterino sem hormônios.",
+        "patch": "Adesivo",
+        "patchDescription": "Adesivo hormonal na pele.",
+        "ring": "Anel vaginal",
+        "ringDescription": "Anel vaginal hormonal.",
+        "shot": "Injeção",
+        "shotDescription": "Injeção anticoncepcional hormonal.",
+        "combinedPill": "Pílula combinada",
+        "combinedPillDescription": "Pílula diária com estrogênio e progestágeno.",
+        "progestinPill": "Pílula só de progestágeno",
+        "progestinPillDescription": "Pílula diária sem estrogênio."
       },
       "lifeStage": {
         "title": "Contexto do Ciclo",
@@ -78,7 +92,9 @@
         "postpartum": "Pós-parto",
         "postpartumDescription": "Tive um bebê no último ano.",
         "postPill": "Parei o anticoncepcional recentemente",
-        "postPillDescription": "Parei o anticoncepcional hormonal recentemente e meu ciclo ainda pode estar se ajustando."
+        "postPillDescription": "Parei o anticoncepcional hormonal recentemente e meu ciclo ainda pode estar se ajustando.",
+        "noBleeding": "Acompanhamento sem sangramento",
+        "noBleedingDescription": "Não menstruo (por exemplo após cirurgia ou com hormônios que suprimem) mas quero acompanhar como me sinto."
       },
       "goal": {
         "title": "Meta de Sincronização",
@@ -93,7 +109,9 @@
       "pastPeriods": {
         "title": "Períodos Passados (Opcional)",
         "description": "Adicionar datas de períodos passados ajuda o app a aprender a duração do seu ciclo e fazer melhores previsões de imediato.",
-        "addPastPeriod": "Adicionar um período passado"
+        "addPastPeriod": "Adicionar um período passado",
+        "duplicate": "Esse dia já está na lista.",
+        "remove": "Remover esta menstruação"
       },
       "errors": {
         "futureDate": "As datas da menstruação não podem estar no futuro.",
@@ -168,10 +186,10 @@
       "importOptically": "Importar dados de outro celular",
       "storedLocally": "Todos os dados armazenados localmente no seu dispositivo",
       "personalizedSetup": "Configuração Personalizada",
-      "personalizedSetupSteps": "8 etapas",
+      "personalizedSetupSteps": "10 etapas",
       "personalizedSetupSubtitle": "Obtenha TDEE preciso, macros e recomendações personalizadas",
       "quickSetup": "Configuração Rápida",
-      "quickSetupSteps": "5 etapas",
+      "quickSetupSteps": "7 etapas",
       "quickSetupSubtitle": "Configuração básica, você pode personalizar depois"
     },
     "quickPreferences": {
@@ -329,7 +347,9 @@
       "editHint": "Mude exercícios, séries ou regras quando quiser.",
       "emptyTitle": "Comece com um treino vazio",
       "emptyDescription": "Os planos da biblioteca são feitos para equipamentos de academia, então vamos pulá-los. Adicione exercícios durante o treino ou veja planos depois.",
-      "startNow": "Adicionar e começar",
+      "addPlan": "Adicionar plano",
+      "dayLabel": "Dia {{day}}",
+      "dayExercises": "{{count}} exercícios",
       "startEmpty": "Iniciar treino vazio",
       "notNow": "Agora não",
       "howTitle": "Como funciona",
@@ -339,7 +359,7 @@
       "stepLogBody": "Informe carga e repetições e o cronômetro de descanso inicia sozinho.",
       "stepNextTitle": "Mais inteligente da próxima vez",
       "stepNextBody": "Lembramos seus números e sugerimos a próxima carga.",
-      "planHint": "Pronto para começar? Toque em \"{{action}}\" para adicionar este plano ao seu perfil e iniciar seu primeiro treino agora mesmo, ou toque em \"{{later}}\" para fazer isso depois."
+      "planHint": "Toque em \"{{action}}\" para adicionar este plano ao seu perfil, ou em \"{{later}}\" para escolher um treino depois."
     }
   }
 }

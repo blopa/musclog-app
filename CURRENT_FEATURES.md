@@ -1,5 +1,7 @@
 # Musclog — Current Features
 
+App headings and celebration messages use solid, theme-aware text colors.
+
 The source of truth for user-facing features that ship today, grouped by area.
 
 ---
@@ -13,7 +15,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Quick-access action row, configurable in Interface settings: pick two to four of Start Workout, Track Food, Scan Barcode, AI Photo, My Meals and Add Note, and they appear in the order you pick them
 - Recent foods and recent workouts previews
 - Permanent Weekly Review entry below Home actions, plus a prominent Resume card while a workout is active
-- Android home screen widgets: Nutrition Progress + Smart Camera
+- Android and iOS home screen widgets: Nutrition Progress, Smart Camera and a read-only Cycle widget, following the app palette and language. The Cycle widget is private by default ("Tap to open") and shows the cycle day, or day plus the estimated range, only in the subtle/detailed notification styles and never while an app lock is on. Nutrition shows dated calorie and macro progress; iOS expires old-day values to a refresh prompt. Android users re-add widgets once after the Expo Widgets migration.
 
 ---
 
@@ -30,11 +32,13 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Built-in programs and AI-generated routines create complete named workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID
-- Rest timer with a configurable default rest, optional auto-start (or a "Start rest" button), a large countdown that scales with the screen, a distinct "Get ready" state for the last ten seconds that is spoken as well as coloured, a haptic countdown, and the next set's load shown prominently
+- Rest timer with a configurable default rest, optional auto-start (or a "Start rest" button), a large countdown that scales with the screen, a "Get ready" state before the end that is spoken as well as coloured and whose lead time is yours to pick (off / 10 / 20 / 30 s), a haptic countdown with a standard or strong firmness, a rest-over alert whose sound can be turned off (it keeps the vibration), and the next set's load shown prominently
+- Without a gym profile, barbell targets move in standard plate pairs and dumbbell or machine targets keep your own numbers (12 kg dumbbells progress to 14.5, never jumping to 15)
 - Smart warm-up sets: one tap adds a ramp (an empty-bar set on heavy barbell lifts, then 40 / 60 / 80%) before an exercise's first working set, snapped to weights your gym can actually load. Warm-ups are marked "W" in history and are excluded from volume, personal records, estimated 1RM, progression, goals and the figures the AI coach sees (calories and Health Connect still count them)
-- Inline and Guided workout views share direct numeric entry, one-tap set completion/reopening, optional effort details, persistent rest timers, superset order, and explicit Finish Workout. Inline is a per-exercise set table (set, last time, weight, reps, ✓) where tapping "Last time" repeats those numbers; Guided is one set at a time over the exercise photo with large −/+ steppers and Complete set pinned above the rest timer, so it never needs a scroll. New installs use Inline; existing users keep Guided until switching. Pending inputs survive switching and restart. On narrow screens or with larger text, Last time stays fully visible below the row.
+- Inline and Guided workout views share direct numeric entry, one-tap set completion/reopening (an emptied weight or reps field is outlined and named instead of saving 0), optional effort details (reps in reserve and RPE are linked, and either one rates the set for progression), Finish pinned within thumb reach once every set is done, persistent rest timers, superset order, and explicit Finish Workout. Inline is a per-exercise set table (set, last time, weight, reps, ✓) where tapping "Last time" repeats those numbers; Guided is one set at a time over the exercise photo with large −/+ steppers and Complete set pinned above the rest timer, so it never needs a scroll. New installs use Inline; existing users keep Guided until switching. Pending inputs survive switching and restart. On narrow screens or with larger text, Last time stays fully visible below the row.
 - A pinned rest timer under the session with progress, −15 s / +30 s, a "get ready" phase, haptic countdown, and a large panel (automatic in Guided)
-- Per-exercise Automatic, Double progression, Linear, Top set + back-offs, and Percentage of training max rules, chosen from a sheet that explains each method; tap an exercise in the workout editor (or use the Progression row when adding one). Explicit rules work with automatic suggestions disabled; warm-ups, skipped sets, and missing effort are handled separately. One bad session never deloads: the load drops only after two sessions in a row at the same load ended at failure (or short of the rep range); the first one holds. Reps-first progression climbs from the reps the workout plans, so a 5-rep strength block stays a 5-rep block. Cardio, mobility and stretching are never progressed. A deload always lands on a lighter load the equipment can really be set to (it never rounds back up to the weight being failed). Bodyweight exercises done without added weight only ever add reps, up to a rep ceiling you pick per exercise (25, 30 … 50; default 25) — at the ceiling the app suggests a weighted vest or belt, a harder variation or a slower tempo instead of inventing extra kilograms. The percentage-of-training-max rule lowers the training max (by 10% after two sessions in a row that missed reps, both adjustable) as well as raising it.
+- A set timer for timed sets (planks, holds, intervals): open it from the rest bar, set the length in 5 s steps, and it counts down with the same haptic cue and a time's-up notification if the phone is locked; when it runs out the rest starts on its own (if rests auto-start), and logging the set afterwards does not start a second rest
+- Per-exercise Automatic, Double progression, Linear, Top set + back-offs, and Percentage of training max rules, chosen from a sheet that explains each method; tap an exercise in the workout editor (or use the Progression row when adding one). Explicit rules work with automatic suggestions disabled; warm-ups, skipped sets, and missing effort are handled separately. One bad session never deloads: the load drops only after two sessions in a row at the same load ended at failure (or short of the rep range); the first one holds. Reps-first progression climbs from the reps the workout plans, so a 5-rep strength block stays a 5-rep block. Cardio, mobility and stretching are never progressed. A deload always lands on a lighter load the equipment can really be set to (it never rounds back up to the weight being failed). Bodyweight exercises done without added weight only ever add reps, up to a rep ceiling you pick per exercise (10, 12, 15, 20, 25 … 50; by default 15 for movements that lift nearly your whole body, such as pull-ups, chin-ups, dips and jumps, and 25 otherwise) — at the ceiling the app suggests a weighted vest or belt, a harder variation or a slower tempo instead of inventing extra kilograms. The percentage-of-training-max rule lowers the training max (by 10% after two sessions in a row that missed reps, both adjustable) as well as raising it.
 - "Why?" beside every target: the method, the reason in a sentence, the plan / last time / today numbers, and actions (Use the plan's, plate calculator, edit gym, edit workout and rules). Numbers the app calculated are marked until you type over them.
 - Read-only upcoming targets in previews, Next time in summaries, and Weekly Review. Targets show their source and reason; Use the plan’s restores unfinished prescriptions and removes pending load/rep overrides while retaining entered effort. Template edits preserve exercise identity and active-session rule snapshots.
 - Today in Workouts shows the workout in progress (progress bar, Resume), or today's scheduled workout / the next rotating-plan workout with Preview and start, workouts already trained today as done, and the active gym and starting-target setting. With no schedule and no rotating plan it suggests the recently trained workout rested longest ("last done Thu, Oct 8"), so the card always offers something to start
@@ -93,7 +97,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Weekly Review is reachable from Home, Workouts, and Food (a review card while a week is waiting; otherwise Food's "Weekly targets · since …" line). A week counts as ready only when it holds a workout, food log or weigh-in. The training half is a real decision too: the week is judged against your fitness goals (workouts per week, 1RM goals on pace or not), the review recommends Keep progressing, Repeat last session or a Lighter week (about 10% lighter loads and a third fewer sets) with its reasons, and your choice shapes how next week's workouts start — even with workout suggestions set to manual, because you chose it. After two weeks above or below your weekly workout goal it offers a one-tap change to the goal. Someone who has never finished a workout is not asked. Training and nutrition decisions are independent; workout progression never waits for a review. Personal records show one row per exercise (three, then Show all). The nutrition recommendation states the expenditure and the week's trend-weight change it is based on, and a calorie change of 15% or more is flagged as aggressive and not recommended, with a prompt to check the week's food log — even before the recommendation can be applied. With the minimum-calorie floor turned off in Advanced settings, a recommendation below your minimum gets its own warning. Until the week has enough data the recommended column is shown as a dimmed estimate. A recommendation can be applied once the week has food logged (or a flagged fasting day) on at least 5 of its 7 days and three weigh-ins; until then the review says so and offers buttons that open the food diary or weight entry on the exact day of that week still missing data. Review history retains earlier reviews (legacy check-ins) and decisions across goal changes. The review lives at its own route, so opening it no longer highlights the Food tab; an old saved link still forwards to it for now. A half with nothing in the reviewed week shows an empty state instead of a summary of zeros: training points a first-timer at "Log your first workout"; nutrition shrinks to one strip of the current daily targets with "Log your first meal" (today's diary) or, after a week off, "Log food for …" on the reviewed week. A week with nothing in it at all hides the progress chips, the review badges and the acknowledge/keep buttons, and says when the first review will be ready. The first time a review has anything in it (either half), a one-time welcome sheet explains what the review covers; it is not shown again once dismissed.
 - Protein targets stay anchored to bodyweight when body fat is not tracked (body fat is opt-in): 1.6–2.0 g per kg depending on your goal, at least 2.0 g/kg while cutting, from your goal weight when one is set (or a healthy-BMI reference weight for your height), so protein no longer drops when calories drop.
 - Manual, Daily automatic, and Weekly review target modes. Existing daily goals retain their behavior; new guided setup defaults to Weekly review. Approved calories and net-carb macros begin tomorrow and stay stable until replaced, with historical target periods.
-- Weekly nutrition decisions show current/recommended targets, trend weight and logged-day coverage, with Apply tomorrow, Keep, and a focused recommendation editor. Missing evidence keeps targets while more data is collected. Optional review weekday and reminder. Legacy comparisons account for gain/loss goals.
+- Weekly nutrition decisions show current/recommended targets, trend weight and logged-day coverage, with Apply tomorrow, Keep, and a focused recommendation editor that checks every field and shows what the macros add up to, offering to use that when it does not match the calorie target. Missing evidence keeps targets while more data is collected. Optional review weekday and reminder. Legacy comparisons account for gain/loss goals.
 
 ---
 
@@ -105,7 +109,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - AI food photo and nutrition label analysis
 - AI-generated workout plans and full meal plans
 - AI insights based on your actual logged data (workouts, nutrition, body metrics)
-- AI has access to your goals, workout history, nutrition logs, and cycle phase
+- AI has access to your goals, workout history, and nutrition logs
 - Create and manage custom system prompts (general, nutrition, exercise-specific) and toggle them on/off
 - Configurable conversation history length
 - Copy or share AI chat messages
@@ -118,7 +122,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Time range filters: 7-day, 30-day, 90-day, or custom
 - Weekly rolling averages toggle
 - Correlation charts: volume vs. calories, body composition vs. protein, mood vs. macros/volume, etc.
-- Workout performance charted by menstrual cycle phase
+- Workout performance charted against days near a logged period (logged data only, no estimated phases)
 - AI-generated progress insights
 - Data export: encrypted JSON backup or human-readable Excel spreadsheet
 
@@ -136,13 +140,61 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Menstrual Cycle Tracking
 
-- Track menstrual, follicular, ovulation, and luteal phases
-- Phase wheel visualization showing current position in the cycle
-- Next period and fertile window predictions
-- Cycle-aware training recommendations (e.g., deload during menstrual phase)
-- Log flow intensity and symptoms with custom notes
-- Charts showing workout performance correlated to cycle phase
-- Support for hormonal and non-hormonal birth control configurations
+- Enabled cycle tracking (bleeding and symptoms, or symptoms without periods) appears in the account menu when not assigned to the bottom navigation. Settings always offers the same three choices as onboarding, including Skip for now; switching modes preserves history, and skipping pauses tracking
+
+**Logging and history**
+
+- Goal-neutral setup offers bleeding and symptoms, symptoms without periods, or skipping; timing, symptoms, mood and recordkeeping goals are independent and editable
+- Custom symptoms with up to six quick-log favorites; optional daily sleep hours, basal temperature in °C, discharge, medication/dose, sexual activity and tags, plus custom text/number/yes-no fields. Removed fields retain historical values and labels
+- One-tap quick log for bleeding and pinned symptoms, plus a full day sheet: bleeding level, symptoms with mild/moderate/severe severity, "no symptoms today" (kept distinct from an unlogged day), pain 0–10, energy, mood and a note
+- Quick log learns: after a symptom is logged on enough days across cycles it offers to pin it
+- Log a period start or end, or a past period with an explicit end: a date, "I don't remember", or the usual length (stored as an estimate, never as a recorded end)
+- Calendar of logged bleeding, spotting, observations and the predicted window, using different shapes plus a text legend and spoken day descriptions; a list of periods with duration and cycle length
+- Edit a period's start or end, or delete it with undo; statistics and reminders recalculate. Excluded cycles stay visible with the reason, and any cycle can be switched out of the predictions
+- Bleeding logged outside a period offers to start one on that day; no-bleeding mode keeps unexpected bleeding/spotting logging available without a period-start prompt
+
+**Predictions that say what they know**
+
+- Next period as a range with confidence based on usable cycles and how much they vary; "how is this calculated?" shows the cycles used and why any were not
+- The day counter keeps counting from the last logged start; an overdue period reads "later than your usual range"; predictions can be hidden while logging continues
+- Fertile-window estimate is opt-in (off by default), explained before it is enabled, and always shown with a not-contraception note
+- Birth control (combined or progestin pill, hormonal or copper IUD, implant, patch, ring, injection) and life stage (including postpartum, perimenopause, PCOS and tracking without bleeding) are a dated history; they decide which predictions exist, and cycles under a hormonal method or postpartum are not counted
+
+**Your own patterns**
+
+- Observations from your records only, each stating how many cycles it rests on and the days behind it: recurring symptoms or pain near the start of a period, cycle length and bleeding duration changes, mood and workout volume near a period start, with a list of the sessions involved
+- Compare up to six cycles by cycle day (up to 60 days) or the fortnight before the next recorded period; filter symptoms or bleeding/pain/energy/mood, tap a cell to edit, and keep missing observations distinct from explicit none
+- Recurring symptoms in the seven days before recorded periods, with the same evidence threshold as near-start patterns
+- No phase-based energy labels, hormone cards or workout intensity multipliers, and no cycle card in the live workout session. The wheel shows only bleeding and "between periods" unless the fertility estimate is turned on, since follicular, ovulatory and luteal phases are themselves an ovulation estimate
+
+**Privacy and data**
+
+- Periods, daily logs, life-stage history and notes are encrypted on the device
+- Optional lock (fingerprint, face or device PIN), set per area in Settings → App lock: cycle tracking, workouts, nutrition and progress each have their own switch, plus one for the whole app. Turning any switch on or off asks for the fingerprint/face/PIN first. The lock also covers sheets left open when it engages, hides the app from the app switcher's snapshot while it is in the background, and hides the cycle chart in Progress
+- Pause tracking without losing history; delete all cycle data permanently, with an offer to remove local recovery points that could hold a copy
+- Cycle preference edits refresh immediately and merge concurrent changes; failed cycle writes restore the saved state and remain retryable. Legacy encryption conversion and permanent cycle deletion commit atomically, including large histories.
+- Shared mood edits and daily observations commit together; clear-day explicitly removes that day's shared mood from Home/Progress too. Permanent cycle deletion keeps shared mood, as disclosed in the confirmation
+- Export periods, daily logs (including shared mood and optional observations) and context history as CSV; appointment PDFs include mood and optional fields
+- Cycle-only versioned JSON export/import includes preferences, context, labels and shared mood history. Imports preview counts, default to keeping existing dates, offer explicit replacement and optional preference restoration, validate dates/duplicates, and skip overlaps with existing periods without resetting other app data
+- Password-protected, authenticated cycle backups with password confirmation, last-prepared status and recovery instructions; readable JSON/CSV/PDF are identified as unprotected. Cycle settings link to full-app backup/restore and local recovery points; full backups include all new fields
+- Unknown cycle length can be selected explicitly. With no usable history it suppresses fallback dates while preserving the day count; sparse histories use at least ±7 days below three usable cycles, ±3 below five, and ±1 thereafter. Ranges are historical heuristics, not calibrated probability intervals
+- Confirm a genuinely long cycle that was flagged as possibly missing a period, or undo that confirmation; context and manual exclusions still apply. The prediction inspector includes a retrospective check using only earlier period starts
+- Trends and local word search work with or without recorded periods: dated plots and values for pain, energy, mood, sleep, temperature, daily-life impact, bleeding and custom numeric/rating fields; cycle recap, symptom/severity counts, spotting/heavy-flow counts, context changes and all recorded cycle-length intervals
+- Optional bounded integer rating fields with configurable limits; daily-life impact, leakage, clots, LH and pregnancy-test observations. PMS/mood, fertility-observation and perimenopause diary presets add fields without replacing history or existing favorites; these are journals, not diagnostic or contraceptive tools
+- Contexts for pregnancy, pregnancy loss, hysterectomy and menopause keep history and symptom logging while suppressing period/fertility predictions; unexpected bleeding remains recordable. Setup applies the chosen context from today rather than inventing its start across imported history
+- Contextual NHS/RCOG educational links (identified as English), appointment export access, and personal energy/sleep observations near recorded starts with minimum sample thresholds; no automated diagnosis or medical urgency classifier
+- Cycle reminders, each stating when it fires, how often, and whether its date is an estimate or a time you chose: a heads-up before the earliest predicted start (configurable notice), an optional reminder on the most likely day, an optional neutral note when a cycle runs longer than your usual range (it never suggests a reason), the opt-in fertile-window estimate, a daily check-in, a forgotten-end check and backup reminders
+- Pill reminder with its own time that knows the pack: every day, 21 + 7 or 24 + 4, skipping the pill-free days. Its notification has **Done / Later / Skip** buttons that work without opening the app: Done and Skip record the answer on today's diary page (shown and correctable in the day sheet), Later brings it back in 30 minutes
+- Every other cycle reminder has a **Snooze** button (back in an hour, same wording). A snoozed reminder is re-checked on the next reschedule, so a pause or a change in life stage that removes the prediction cancels a snoozed estimate
+- Lock-screen wording in three levels — Private (never says what it is about, the default), Subtle (names the task, never periods, fertility or pills) and Detailed (states the estimated range) — with a live preview of every reminder that is on
+- Pause cycle reminders for a week, a month or until resumed; the pill reminder keeps going. Recording a pregnancy loss stops predictions and period reminders and offers to pause the rest for four weeks
+- A delivery check in cycle settings says whether a reminder can actually arrive (permission, app and cycle switches), shows the next one, turns everything on in one tap (asking for permission only then) and sends a test notification. Tapping a reminder explains why it was sent and what its date is based on
+- Removing a day's log or a context change erases it; a removed period stays undoable until the app restarts and is then erased. Automatic recovery points keep cycle records encrypted; downloading one makes a portable copy
+- Basal temperature is entered and shown in °F for imperial units
+- Backups remain manual: the user chooses when to prepare and save each password-protected file; optional reminders never upload or create a backup automatically
+- Restore-first cycle import creates a cycle and all its records in one commit without placeholder setup. External CSV import offers explicit column/date-order mapping and a validated preview; proprietary Clue/Flo archives and Apple Health XML are not directly parsed
+- Explicit native health-store read/preview/import and manual export for bleeding, spotting and basal temperature through Health Connect / HealthKit. Imported values preserve source IDs separately from self-report, do not create period starts, and re-import idempotently. Exports reconcile only Musclog-owned identifiers for selected live logs; health access may limit historical reads
+- Optional selected-field sharing exports only chosen bleeding/symptoms/pain/energy/mood/notes and a selected date range as readable JSON; no fields selected by default. This is a static file, not revocable live partner access
 
 ---
 
@@ -198,18 +250,25 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Food search source configuration
 - Toggle: OCR before AI, intuitive eating mode, weight prediction, daily prompts, cycle tracking
 - Carb convention setting (include or exclude fiber in carbs display)
-- Notification settings
+- Notification settings, grouped as During workouts / Your training plan / Reports & food / Quiet hours & pause / Delivery. All offline: every reminder is a local schedule re-planned on boot, on each foreground and after a workout
+  - Rest alert on its own Android channel (time-sensitive on iOS), with **+30s** and **Next set** buttons, an optional repeat a minute later, an optional quiet "get ready" heads-up before it ends, a sound switch (off keeps the vibration, on a separate quiet channel), and no banner over a countdown the user is already looking at. Permission is asked after the first completed set, not in settings. The same alert (and switch) covers a timed set's time's-up
+  - Persistent workout notification (clock refresh interval configurable: 5 / 10 / 15 / 30 / 60 s) with a lock-screen detail choice (full / minimal); optional "forgot to finish?" nudge 45 minutes after the last saved set
+  - Workout reminders laid out as one-offs for the next 14 days: user-chosen lead time, **Snooze 1h** button, skipped for a workout already finished today. Tapping one opens "Why did I get this?": the workout, its planned weekday and time, whether the day comes from a plan or the workout's own schedule, and one-tap exits (pause all reminders for a week, turn workout reminders off, open the notification settings). Accountability style: Structured (planned days) / Gentle (only when the weekly goal slips) / Flexible (no nudges)
+  - Weekly goal at risk, Weekly Review and nightly nutrition overview toggles
+  - Quiet hours (overnight window) and a 3-day / 1-week pause for everything except the live session; delivery check with a test rest alert
 - Advanced: database reset, data encryption options, raw DB access
 
 ---
 
 ## Onboarding
 
+- Landing setup labels reflect the current flow totals: 10 steps for Personalized Setup and 7 for Quick Setup in every supported language
+
 - Returning users get a short, skippable post-update tour on home, merging missed announcements into at most six pages plus an intro. The intro pairs page titles with descriptions and names the additional features under “Also new”. Fresh installs skip it; restored backups retain their seen version (older backups without one may show the tour again). The first announcement targets 2.13.1, the first production release with the tour: every update from an earlier version (including a 2.13.0 test build) shows it. It introduces Guided/Inline views, progression preferences, rest controls, gyms and plates, Weekly Review, plans, cardio, swaps, restrictions and warm-ups.
 - Quick or detailed guided setup flow
 - Restore a full profile either from a JSON backup or directly from another device via optical QR transfer on the first screen
 - Personalized nutrition goal calculation based on age, weight, height, activity level, and weight goal
-- Training branch in both the quick and the personalized setup (one shared screen, skippable for nutrition-only users): where you train (gym / home / minimal), experience (quick setup only), days per week and whether the app suggests loads. It creates your first active gym profile and sets the load-suggestion preference, and the setup ends on a first workout: a matching bundled plan (gym trainers) to start now or add for later, or an empty workout (home/minimal, since every bundled plan needs gym equipment)
+- Training branch in both the quick and the personalized setup (one shared screen, skippable for nutrition-only users): where you train (gym / home / minimal), experience (quick setup only), days per week and whether the app suggests loads. It creates your first active gym profile and sets the load-suggestion preference, and the setup ends on a first workout: a matching bundled plan (gym trainers) with a per-day breakdown, which you simply add to your profile (it does not start a session), or an empty workout (home/minimal, since every bundled plan needs gym equipment)
 - A one-time "how a session works" tip at the top of the first workout (what ✓ logs, the rest timer, warm-ups not counting toward volume), shown only to people who have never finished a workout and gone for good once dismissed
 - Optional Health Connect / HealthKit setup is offered once, after the first finished workout, instead of in the middle of the setup (users who skip the training questions get it at the end of the setup)
 - AI provider configuration during setup

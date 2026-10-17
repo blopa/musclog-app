@@ -176,6 +176,24 @@ function bumpProjectVersions(projectDir, bumpType) {
 
   fs.writeFileSync(files.android, android);
   fs.writeFileSync(files.ios, ios);
+  const widgetInfo = path.join(projectDir, 'ios/ExpoWidgetsTarget/Info.plist');
+  if (fs.existsSync(widgetInfo)) {
+    let widget = fs.readFileSync(widgetInfo, 'utf8');
+    widget = replaceRequired(
+      widget,
+      /(<key>CFBundleShortVersionString<\/key>\s*<string>)[^<]+(<\/string>)/,
+      `$1${nextVersion}$2`,
+      'widget version'
+    );
+    widget = replaceRequired(
+      widget,
+      /(<key>CFBundleVersion<\/key>\s*<string>)[^<]+(<\/string>)/,
+      `$1${nextBuild}$2`,
+      'widget build number'
+    );
+    fs.writeFileSync(widgetInfo, widget);
+  }
+
   assertReleaseVersionsMatch(projectDir);
   return { build: nextBuild, version: nextVersion };
 }

@@ -3,6 +3,83 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Emptied set fields completed the set at 0 kg / 0 reps (October 2026)
+
+### Symptom
+
+Clearing the weight or reps field of a set in the live session and tapping ✓ completed it without
+a word: an emptied weight saved the set at 0 kg, and an emptied reps field saved a performed set of
+0 reps — which progression then read as a missed session, and two of them deloaded the lift.
+In a comma-decimal locale, "62.5" typed with a dot saved 625 kg.
+
+### Cause
+
+`valuesFromDraft` turned the draft into numbers with `parseLocalizedDecimalString` and `Number`.
+The first is lenient on purpose (it reads "" and "abc" as 0 and treats the other separator as
+digit grouping) and `Number('')` is 0, so nothing between the inputs and the writer could tell an
+emptied field from a typed zero. The writer's own validation only rejects NaN and negatives.
+
+### Fix
+
+`setDraftProblem` (`components/workout/session/setDraft.ts`) checks a set's inputs before it is
+completed, with `parseStrictLocalizedNumber` (`utils/localizedDecimalInput.ts`), which accepts a
+number only as the locale writes it. A failure names the field in a snackbar and outlines it
+(`NumericTextField`'s `invalid`) until the user edits it. Zero reps is refused as well: a set that
+was not done is skipped. The Weekly Review targets editor had the same lenient read and now uses
+the same strict parser (`components/weeklyReview/targetsDraft.ts`). Validation that decides whether
+a value may be SAVED must never use the lenient parser.
+
+## Cycle config observation and transaction failures (October 2026)
+
+Cycle config-only emissions reused the same WatermelonDB model object in React state, leaving decrypted preferences and predictions stale until an unrelated render. The provider now captures the emitted ciphertext in immutable state, triggering immediate decryption for active and paused cycles and discarding obsolete async results.
+
+Cycle writers prepared model mutations without restoring cached values when an adapter batch failed. They now use `commitPrepared` for updates and deletes, and finish reads/encryption before preparation. The legacy encryption migration previously split conversion and plaintext cleanup into 500-operation batches, allowing partial commits that made retry skip already-marked cycles. It now reads one authoritative snapshot inside its writer and commits replacements, config blanking and source destruction in one transaction; permanent cycle deletion also commits once. Regression tests reject the adapter commit, verify cached state, retry, and exercise migrations above 500 operations and concurrent migration passes.
+
+Cycle preference controls also submitted full config snapshots, so independent edits could overwrite each other. `updateConfig` merges patches against the latest decrypted config inside the writer, merges nested reminder fields, and supports synchronous list updaters. Controls now submit only changed fields and compute list changes from that current config. Integration tests cover concurrent patches and list edits; provider tests cover same-object emissions and obsolete decryption results.
+
+## Cycle tracking: counter wrapped, switch dropped, clears ignored
+
+### Symptom
+
+Six defects shipped in the first cycle tracking release. After the average cycle length passed
+without a newly logged period the day counter showed "Day 1" again while the phase stayed
+luteal and the predicted date was in the past. The profile "track my cycle" switch did nothing,
+and a user who skipped setup had no way to start tracking. Deselecting every symptom and saving
+kept the old symptoms. Four period starts 70 days apart reported "high" confidence while the
+prediction fell back to a 28-day cycle. The phase wheel placed ovulation differently from the
+phase the app said it was in. Any IUD was stored as hormonal.
+
+### Cause
+
+- `getCycleDay` took `diffDays % avgCycleLength`, while `getPhaseAtTimestamp` and
+  `predictNextPeriod` never rolled forward, so the three disagreed as soon as a period was late.
+- `EditPersonalInfoModal.handleSave` destructured the form without `trackCycle`, and
+  `getActive()` filtered on `is_active`, so a paused cycle vanished from the context and could
+  never be resumed.
+- `CycleLogModal` wrote flow and symptoms only when something was selected.
+- Confidence counted raw logs, and intervals outside 15-60 days were dropped without a trace.
+- `PhaseWheel` used a fixed 3-day ovulation and a 40/60 split of its own.
+- The hormonal flag was `birthControlType !== 'none'`.
+
+### Fix
+
+`utils/cycle/` holds the pure model: `cycleHistory.ts` keeps every cycle and tags the ones that
+should not feed predictions with a reason, `cycleStats.ts` derives confidence from usable cycles
+and their spread, and `cycleTimeline.ts` is the one phase and prediction layout the wheel, the
+cycle screen, reminders and charts read. The day counter never wraps; an overdue period is a
+`late` state with no segments. The context observes the latest cycle, exposes `pausedCycle` and
+`resumeTracking`, and the profile switch goes through `resolveTrackingToggle`.
+Clearing a day removes its record (`CycleDayLogService.save` deletes an emptied form). The hormonal flag is
+gone: `CONTRACEPTION_TRAITS` records whether a method is hormonal, unknown or neither, so a copper IUD is
+no longer called hormonal.
+
+Predicted dates were also computed as `start + N * 24h`, which lands at 23:00 or 01:00 across a daylight-saving
+change: the card said "Oct 26 – 28" while the calendar marked 27–28. They now use `addCalendarDays`.
+
+Starts and ends are stored as local-midnight instants, and one logged in another timezone can
+fall hours after today's local midnight; the timeline anchors them to their local calendar day
+before comparing, or that period reads as "in the future".
+
 ## Database durability: never mix SQLite connections on `musclog.db`
 
 ### Symptom
@@ -186,7 +263,7 @@ that queue, blocking unrelated native operations such as the image picker and cr
 
 ### Fix
 
-- `patches/expo-secure-store+57.0.3.patch` moves SecureStore operations to a dedicated serial
+- `patches/expo-secure-store+58.0.2.patch` moves SecureStore operations to a dedicated serial
   `Dispatchers.IO` lane.
 - `package.json` keeps `expo.autolinking.android.buildFromSource: ["expo-secure-store"]`; SDK 57
   otherwise uses the prebuilt AAR and ignores the Kotlin patch.
@@ -273,7 +350,7 @@ Accepted false positives must explain that the host closes first.
 Expo Router 57.0.18 misparsed platform extensions on catch-all names such as
 `[...slug].web.tsx`, left the extension in loader context keys, and used the wrong development
 loader path for route groups. 57.0.26 fixed the first two upstream; only the development loader
-path remains patched, in `patches/expo-router+57.0.26.patch`. The old 57.0.18 patch failed
+path remains patched, in `patches/expo-router+58.0.23.patch`. The old 57.0.18 patch failed
 `patch-package` in CI (`npm ci` postinstall) once the dependency moved to 57.0.26.
 `utils/__tests__/expoRouterLoaderPatch.test.ts` pins all three behaviors.
 
@@ -343,13 +420,13 @@ the shape.
 
 After a Fedora update left JDK 25 as the only installed Java, every local Android build failed in
 Gradle with `Error resolving plugin [id: 'com.facebook.react.settings'] > 25.0.4.1` — the message is
-just the Java version string, because Gradle 8.13 (pinned by `plugins/withGradleVersion`) cannot run
+just the Java version string, because Gradle 8.13 (then pinned by `plugins/withGradleVersion`) cannot run
 on Java 25. Android Studio's bundled JBR is also 25, so it is no fallback. Android builds need JDK
 17 or 21. `scripts/run-eas-local-android-build.sh` keeps a `JAVA_HOME` that is already 17/21,
 otherwise picks one from `~/.jdks/jdk-17*`/`jdk-21*` or `/usr/lib/jvm`, and exits with an install
 hint when there is none. The EAS working copy also has no `local.properties`, so the script defaults
 `ANDROID_HOME` to `~/Android/Sdk` (Android Studio's location) when it is unset — otherwise Gradle
-stops with `SDK location not found` right after the JDK check passes. Revisit when Gradle moves to 9.1+, which supports Java 25.
+stops with `SDK location not found` right after the JDK check passes. SDK 58 removes that obsolete pin and uses Gradle 9.4.1; the launcher now accepts Java 17–26.
 
 ## Android release optimization
 
@@ -583,7 +660,7 @@ Explicit rule history uses stable template-exercise identity, preventing one rou
 
 ## Session forgot its progression rule after the first completed set
 
-`WorkoutService.getWorkoutWithDetails` built its enriched sets without each log exercise's `progressionJson`. The live session's `refresh` reloads through that path after every save, so from the second set on an exercise with a rule read as rule-free: its badge fell back to "Suggested · Automatic" while the reason underneath still described the rule. The reactive pipeline (`useWorkoutSessionState`) already passed the field, which is why the first render looked right. The field is now passed on both paths, pinned by "keeps the exercise rule on sets reloaded after a save" in `weeklyProgression.integration.test.ts` (verified to fail without the fix).
+`WorkoutService.getWorkoutWithDetails` built its enriched sets without each log exercise's `progressionJson`. The live session's `refresh` reloads through that path after every save, so from the second set on an exercise with a rule read as rule-free: its badge fell back to "Suggested · Automatic" while the reason underneath still described the rule. The reactive pipeline (`useWorkoutSessionState`) already passed the field, which is why the first render looked right. The field is now passed on both paths, pinned by "keeps the exercise rule on sets reloaded after a save" in `weeklyProgressionSession.integration.test.ts` (verified to fail without the fix).
 
 ## Summary "Total Time" read "0in m"
 
@@ -677,3 +754,82 @@ is now g/kg of a reference bodyweight whenever a weight is known.
 
 A failed exercise swap cleared the values the user had typed, because `runSaving` swallowed the error
 and the caller carried on as if the swap had worked; it now returns whether it succeeded.
+
+## Cycle daily mood consistency and same-timestamp edits
+
+Mood entered from the cycle sheet is the shared Home/Progress metric. The former clear-day
+path only removed the cycle payload, and cycle CSV/PDF exports omitted mood. Daily observations
+and an optional mood change now commit in one writer; an explicit clear-day includes shared
+mood, while permanent cycle deletion retains it with a visible explanation. Cycle exports and
+comparison cells read an observable, deduplicated mood history.
+
+CycleRepository's decrypted cache previously keyed only `(id, updated_at)`. Two rapid edits
+can share the same millisecond, leaving a stale DTO after an import or quick log. The cache now
+keeps one entry per record id and compares ciphertext as well as the timestamp before reusing it.
+
+Quick-log taps now resolve their toggles inside the database writer, so two rapid symptom taps
+retain both symptoms and optional observations. A failed bleeding save never offers a period start.
+
+## Cycle tracking completion (October 2026)
+
+- Automatically excluded long cycles previously had no user correction path. `confirmedLongCycle` now restores a genuine long interval to prediction inputs without bypassing physiology or explicit exclusions.
+- A single start previously produced a narrow fallback date range. Unknown-length setup suppresses fallback dates, and sparse history now produces a wider heuristic range.
+- Cycle import previously required an existing record, so a new-phone restore needed placeholder setup. Cycle transfer can now create its parent and all records in the same batch after validation.
+- Setup previously applied the current contraception/life stage from the earliest past period. It now begins today; older context changes are recorded explicitly in dated history.
+- HealthKit 14's generated metadata type for intermenstrual bleeding is `Record<string, never>` even though native HealthKit accepts standard sync metadata. The cycle adapter uses a narrow documented type assertion for spotting and the actual `HKSyncIdentifier`/`HKSyncVersion` keys; adapter tests pin both. Recheck the assertion on library upgrades.
+
+## Cycle tracking review: privacy leaks, contradictions and reminder noise (October 2026)
+
+- **The lock did not cover what it seemed to.** A sheet left open when the app locked stayed readable, because a native Modal is its own window and the root `AppLockOverlay` sat below it; the app switcher's snapshot showed the diary, because the overlay only appeared when the app came back; the Progress screen drew logged periods with the cycle area locked; and the cycle screen's sheets sat outside `AreaLockGate`, so a re-lock left an open day sheet on screen. The overlay is now drawn inside the shared `components/theme/Modal` primitive as well, draws a blank privacy cover while backgrounded (`isObscured`), and every cycle surface sits behind the gate. Pinned by `components/__tests__/appLockCoverage.test.ts`.
+- **Deleted cycle text stayed on the device, decryptable.** A cleared day, a removed context and a removed period were soft-deleted, and exports filter WatermelonDB's `_status`, not `deleted_at`, so every full export — including the automatic recovery points in the cache folder — wrote them out decrypted. Recovery points also stored every live cycle payload in plaintext, and the encryption migration's own safety backup was a plaintext copy of the very rows it "must not let linger". Fixed by destroying cleared days and contexts, purging removed periods at boot (`CycleRecordPurge`), dropping deleted cycle rows from exports, keeping recovery points encrypted (`keepCycleCiphertext`, decrypted only on download) and deleting the safety backup once the conversion reads back.
+- **The fertility opt-in leaked through the phase.** With the estimate off, the wheel and header still said "Ovulatory": follicular/ovulatory/luteal are placed by assuming ovulation at cycle length minus 14, i.e. they are the fertility estimate under another name. Without the opt-in the layout is now only `menstrual` + `between`.
+- **The screen contradicted itself about bleeding.** The banner treated an open period as ongoing for up to 14 days while the phase counted only the average duration, so day 7 of an open period read "Period, day 7" beside "Follicular". Both now read `isOngoingPeriod`.
+- **Detailed reminder copy was wrong.** It hard-coded "in 2 days" whatever lead time was set, and the fertile-window text said it was "useful for tracking your energy levels" — the phase-energy claim the redesign removed everywhere else.
+- **Daily reminders were 28 one-shot notifications** that never skipped a logged day; iOS caps an app at 64 pending notifications, so they crowded out workout and weekly-review reminders. It is one repeating trigger now.
+- **A mood that failed to load blocked saving the whole day**, the symptom chip took four taps to deselect, and "clear day" erased shared mood without asking. Mood is read from the provider and never blocks Save; a tap toggles a symptom (severity is a separate optional choice); clearing asks first.
+- **Updating a deleted period said "end before start".** It throws `period_not_found` now; `end()` also normalises its date to local midnight like `start()`.
+
+## Expo SDK 58 migration
+
+Expo 58.0.14 / React Native 0.88 use scene-based iOS startup and stricter instance ref types.
+Static metadata now comes from route-level `generateMetadata`, and the custom HTML document renders
+Expo’s head/body nodes so hydration assets survive. JSON-LD is direct prerendered script markup.
+The production root renders the marketing page itself; the previous redirect exported no actual
+landing content. The site remains statically hosted, with the existing base-path and blog helpers.
+
+All six package patches remain necessary in the versions selected for this upgrade. Router’s grouped
+development loader paths and SecureStore’s serial I/O queue are rebased to SDK 58; SecureStore still
+builds from source. Crop launch remains on Main, LokiJS preserves lazy-copy/save integrity, and the
+barcode detector still removes jcenter. The Gutenye OCR patch now contains only its Gradle/codegen
+workaround: generated build outputs and OpenCV binaries were accidentally captured in the old patch
+and have been removed. The Gradle 8.13 pin is no longer configured: RN’s Foojay resolver is 1.0.0,
+and the generated SDK 58 wrapper is Gradle 9.4.1. Simulator binary fixes remain until the affected
+OCR/ML Kit distributions supply proper simulator slices. BLE writes and handle reads use their
+synchronous SDK 58 methods; otherwise recording and JSON export could race unfinished promises.
+
+Widgets now use Expo Widgets. Its published Android plugin requires `enableAndroid: true`. The
+initial-layout registry stubs nonrelative app imports, so initial palette imports use documented
+relative paths. A native generated-provider hook preserves camera/nutrition shortcut behavior after
+Android process death; the app’s JS interaction listener alone cannot do that. Widget snapshots are
+refreshed by one mounted owner after database/settings readiness, and are cleared on restore/reset.
+
+- SDK 58 native compilation also requires `patches/@nozbe+watermelondb+0.28.0.patch`: enable Android BuildConfig generation under AGP 9, and use an iOS `WMDatabaseJSIBridge` TurboModule to install the existing SQLite JSI bindings. Guard the legacy `RCTCxxBridge` installer when that header is absent. The adapter and stored database format are unchanged; remove only after upstream includes equivalent native support.
+
+## EAS Android build: out of memory, then out of time
+
+After the SDK 58 migration (which also bumped `@shopify/react-native-skia` 2.6.2 → 2.14.0, the version SDK 58 pins), production Android builds on the free EAS worker (no paid plan, so no `large` resource class) failed three times, always inside `shopify_react-native-skia:buildCMakeRelWithDebInfo[arm64-v8a]`. The last good build (2.13.2) took 22 minutes:
+
+1. After 19 min: `Gradle build daemon disappeared unexpectedly`, with no Java error. The OS killed the daemon because the worker ran out of RAM.
+2. With `org.gradle.workers.max=2` (`plugins/withGradleJvmArgs.js`): the same failure after 37 min. That setting limits Gradle tasks, not the one-clang-per-CPU `ninja` each CMake task starts.
+3. With ninja job pools (2 compiles, 1 link per project): no error, the log just stops. EAS cancelled the build at exactly 45 min (`buildDuration: 2700003` in `eas build:list --json`), the free tier's limit. The worker was swapping.
+
+Measured locally: Skia's `RNSkManager.cpp` peaks at ~3.5 GB and ~75 s per ABI on a 16-core machine (`RNSkPictureView.cpp` and `ViewProperty.cpp` are next at ~30 s). With `-g0` it is ~2.9 GB, ~30% faster and 7x smaller. `plugins/withNativeBuildJobPools.js` now:
+
+- adds ninja job pools to every Android CMake module from the root `android/build.gradle`, with Skia at 1 compile at a time;
+- builds release C/C++ without debug info (`CMAKE_{C,CXX}_FLAGS_RELWITHDEBINFO=-O2 -g0 -DNDEBUG`). The NDK puts its own `-g` earlier on the command line, so the flag must be in the per-config flags. Debug builds keep symbols. Native frames in crash reports lose line numbers.
+
+The block must sit above `apply plugin: "com.facebook.react.rootproject"`, which evaluates `:app` immediately.
+
+`buildArchs` also dropped 32-bit `x86` (`armeabi-v7a`, `arm64-v8a`, `x86_64` remain). It does not lower the peak, but it removes a quarter of the native compile time, and essentially no real devices use it.
+
+To verify, run a configure-only build, e.g. `./gradlew -PreactNativeArchitectures=arm64-v8a ":shopify_react-native-skia:configureCMakeRelWithDebInfo[arm64-v8a]"`. Then check `pool compile` in `.cxx/**/CMakeFiles/rules.ninja` and the `-g0` in `compile_commands.json`. `eas build:list --platform android --json` shows `buildDuration` per build.

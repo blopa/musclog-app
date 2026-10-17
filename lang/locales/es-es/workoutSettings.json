@@ -86,7 +86,15 @@
       "hapticsHint": "Un toque en los últimos tres segundos y una vibración al llegar a cero.",
       "defaultRest": "Descanso por defecto",
       "defaultRestHint": "Se usa en las series que no indican su propio descanso.",
-      "seconds": "s"
+      "seconds": "s",
+      "strongHaptics": "Vibración más fuerte",
+      "strongHapticsHint": "Toques más intensos y doble vibración al llegar a cero.",
+      "alertSound": "Sonido de alerta",
+      "alertSoundHint": "Reproduce un sonido cuando llega el aviso de fin de descanso. Si lo desactivas, se mantiene la vibración.",
+      "headsUp": "Aviso antes de que termine el descanso",
+      "headsUpOff": "Desactivado",
+      "headsUpSeconds": "{{seconds}} s",
+      "headsUpHint": "El temporizador pasa a «prepárate» y vibra una vez con esta antelación antes de que termine el descanso."
     },
     "autonomy": {
       "title": "Al empezar un entrenamiento",

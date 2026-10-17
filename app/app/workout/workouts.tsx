@@ -1,15 +1,14 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useFocusEffect } from 'expo-router/react-navigation';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Footprints, Layers3, Pencil, Plus, Search, Target, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { FilterTabs } from '@/components/FilterTabs';
-import { GradientText } from '@/components/GradientText';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import { BrowseTemplatesModal, getRawTemplateById } from '@/components/modals/BrowseTemplatesModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
@@ -25,6 +24,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import { WorkoutLibraryContent } from '@/components/workout/WorkoutLibraryContent';
+import { WorkoutReminderExplainerSheet } from '@/components/workout/WorkoutReminderExplainerSheet';
 import { WorkoutTodayCard } from '@/components/workout/WorkoutTodayCard';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
@@ -43,6 +43,7 @@ import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
+import { parseWorkoutReminderParams } from '@/utils/workoutReminderExplainer';
 
 /**
  * The workout a preview is showing, and the plan it was opened from.
@@ -62,7 +63,14 @@ export default function WorkoutsScreen() {
   const { i18n, t } = useTranslation();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const router = useRouter();
-  const params = useLocalSearchParams<{ previewTemplateId?: string }>();
+  const params = useLocalSearchParams<{
+    previewTemplateId?: string;
+    reminderTemplateId?: string;
+    reminderDay?: string;
+    reminderTime?: string;
+    reminderLead?: string;
+    reminderPlan?: string;
+  }>();
   const { isAiConfigured } = useSettings();
   const [previewTarget, setPreviewTarget] = useState<PreviewTarget | null>(null);
   const previewTemplateId = previewTarget?.templateId ?? null;
@@ -78,6 +86,33 @@ export default function WorkoutsScreen() {
       openPreview();
     }
   }, [params.previewTemplateId]);
+
+  // A tapped workout reminder lands here with its context in the route: explain it once, then drop
+  // the params so coming back to the screen does not reopen the sheet. Adjusting state during
+  // render, as the cycle screen does, so the sheet is part of the first frame.
+  const reminderContext = parseWorkoutReminderParams(params);
+  const [handledReminder, setHandledReminder] = useState<string | undefined>(undefined);
+  const [explainedReminder, setExplainedReminder] =
+    useState<ReturnType<typeof parseWorkoutReminderParams>>(null);
+  if (params.reminderTemplateId !== handledReminder) {
+    setHandledReminder(params.reminderTemplateId);
+    if (reminderContext) {
+      setExplainedReminder(reminderContext);
+    }
+  }
+
+  const closeReminderExplainer = () => {
+    setExplainedReminder(null);
+    if (params.reminderTemplateId) {
+      router.setParams({
+        reminderTemplateId: undefined,
+        reminderDay: undefined,
+        reminderTime: undefined,
+        reminderLead: undefined,
+        reminderPlan: undefined,
+      });
+    }
+  };
 
   const FILTER_TABS = [
     { id: 'all', label: t('workouts.filters.all') },
@@ -268,400 +303,405 @@ export default function WorkoutsScreen() {
 
   return (
     <MasterLayout>
-      {showConfetti ? <ConfettiOverlay /> : null}
-      <View className="flex-1">
-        <KeyboardAwareScrollView
-          className="flex-1"
-          showsVerticalScrollIndicator={false}
-          bottomOffset={16}
-        >
-          {/* Header */}
-          <View className="px-4 py-6">
-            <View className="flex-row items-center justify-between">
-              <GradientText
-                colors={theme.colors.gradients.workoutsTitle}
-                style={{
-                  fontSize: theme.typography.fontSize['4xl'],
-                  fontWeight: theme.typography.fontWeight.bold,
+      <AreaLockGate area="workout">
+        {showConfetti ? <ConfettiOverlay /> : null}
+        <View className="flex-1">
+          <KeyboardAwareScrollView
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            bottomOffset={16}
+          >
+            {/* Header */}
+            <View className="px-4 py-6">
+              <View className="flex-row items-center justify-between">
+                <Text
+                  style={{
+                    color: theme.colors.text.primary,
+                    fontSize: theme.typography.fontSize['4xl'],
+                    fontWeight: theme.typography.fontWeight.bold,
+                  }}
+                >
+                  {t('workouts.title')}
+                </Text>
+                <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
+              </View>
+              {/* Add spacing below header */}
+              <View style={{ height: theme.spacing.gap.lg }} />
+              <View className="mb-4 gap-3">
+                <WorkoutTodayCard
+                  onDiscard={() => setIsDiscardInterruptedConfirmVisible(true)}
+                  refreshKey={todayCardRefreshKey}
+                  onPreview={(templateId, planId) => setPreviewTarget({ templateId, planId })}
+                />
+                <WeeklyReviewCard compact />
+              </View>
+              {/* Filter Tabs */}
+              <FilterTabs
+                tabs={FILTER_TABS}
+                activeTab={activeFilter}
+                onTabChange={setActiveFilter}
+                showContainer={false}
+              />
+              {/* Search Input */}
+              <View className="mt-3">
+                <TextInput
+                  label=""
+                  value={searchQuery}
+                  onChangeText={setSearchQuery}
+                  placeholder={t('workouts.searchPlaceholder')}
+                  icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+                />
+              </View>
+            </View>
+
+            {/* Workouts List */}
+            <View className="mx-4 mb-8 gap-4">
+              <WorkoutLibraryContent
+                activeFilter={activeFilter}
+                error={error}
+                isLoading={isLoadingScreen}
+                memberships={memberships}
+                openAccordions={openAccordions}
+                plans={plans}
+                searchQuery={searchQuery}
+                templates={templates}
+                onArchiveWorkout={async (templateId) => {
+                  try {
+                    await WorkoutTemplateService.archiveTemplate(templateId);
+                    showSnackbar('success', t('workouts.archiveSuccess'));
+                  } catch (err) {
+                    console.error('Error archiving workout:', err);
+                    showSnackbar('error', t('workouts.archiveError'));
+                  }
                 }}
-              >
-                {t('workouts.title')}
-              </GradientText>
-              <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
-            </View>
-            {/* Add spacing below header */}
-            <View style={{ height: theme.spacing.gap.lg }} />
-            <View className="mb-4 gap-3">
-              <WorkoutTodayCard
-                onDiscard={() => setIsDiscardInterruptedConfirmVisible(true)}
-                refreshKey={todayCardRefreshKey}
-                onPreview={(templateId, planId) => setPreviewTarget({ templateId, planId })}
-              />
-              <WeeklyReviewCard compact />
-            </View>
-            {/* Filter Tabs */}
-            <FilterTabs
-              tabs={FILTER_TABS}
-              activeTab={activeFilter}
-              onTabChange={setActiveFilter}
-              showContainer={false}
-            />
-            {/* Search Input */}
-            <View className="mt-3">
-              <TextInput
-                label=""
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder={t('workouts.searchPlaceholder')}
-                icon={<Search size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+                onClearSearch={() => setSearchQuery('')}
+                onCreateWorkout={() => setIsCreateOptionsVisible(true)}
+                onOpenPlanMenu={(planId) => {
+                  setSelectedPlanId(planId);
+                  setIsPlanMenuVisible(true);
+                }}
+                onOpenWorkoutMenu={openWorkoutMenu}
+                onStartWorkout={handleStartWorkout}
+                onPreviewWorkout={handlePreviewWorkout}
+                onToggleAccordion={toggleAccordion}
               />
             </View>
-          </View>
+            <View className="h-32" />
+          </KeyboardAwareScrollView>
+        </View>
 
-          {/* Workouts List */}
-          <View className="mx-4 mb-8 gap-4">
-            <WorkoutLibraryContent
-              activeFilter={activeFilter}
-              error={error}
-              isLoading={isLoadingScreen}
-              memberships={memberships}
-              openAccordions={openAccordions}
-              plans={plans}
-              searchQuery={searchQuery}
-              templates={templates}
-              onArchiveWorkout={async (templateId) => {
-                try {
-                  await WorkoutTemplateService.archiveTemplate(templateId);
-                  showSnackbar('success', t('workouts.archiveSuccess'));
-                } catch (err) {
-                  console.error('Error archiving workout:', err);
-                  showSnackbar('error', t('workouts.archiveError'));
-                }
-              }}
-              onClearSearch={() => setSearchQuery('')}
-              onCreateWorkout={() => setIsCreateOptionsVisible(true)}
-              onOpenPlanMenu={(planId) => {
-                setSelectedPlanId(planId);
-                setIsPlanMenuVisible(true);
-              }}
-              onOpenWorkoutMenu={openWorkoutMenu}
-              onStartWorkout={handleStartWorkout}
-              onPreviewWorkout={handlePreviewWorkout}
-              onToggleAccordion={toggleAccordion}
-            />
-          </View>
-          <View className="h-32" />
-        </KeyboardAwareScrollView>
-      </View>
-
-      {/* Workout Details Menu */}
-      <WorkoutDetailsMenu
-        visible={isMenuVisible}
-        onClose={() => setIsMenuVisible(false)}
-        workoutName={selectedWorkoutName}
-        onEdit={() => {
-          if (selectedWorkoutId) {
-            setEditingTemplateId(selectedWorkoutId);
-            setIsCreateWorkoutModalVisible(true);
-            setIsMenuVisible(false);
-          } else {
-            console.error('Cannot edit workout: No workout ID selected');
-            setIsMenuVisible(false);
-          }
-        }}
-        onDuplicate={async () => {
-          if (!selectedWorkoutId) {
-            console.error('Cannot duplicate workout: No workout ID selected');
-            setIsMenuVisible(false);
-            return;
-          }
-
-          try {
-            const newTemplate = await WorkoutTemplateService.duplicateTemplate(selectedWorkoutId);
-            setEditingTemplateId(newTemplate.id);
-            setIsCreateWorkoutModalVisible(true);
-            setIsMenuVisible(false);
-            showSnackbar('success', t('workouts.duplicateSuccess'));
-          } catch (err) {
-            console.error('Error duplicating workout:', err);
-            showSnackbar('error', t('workouts.duplicateError'));
-            // Keep menu open on error so user can try again
-          }
-        }}
-        onShare={async () => {
-          setIsMenuVisible(false);
-          try {
-            const message = await WorkoutTemplateService.getShareMessage(selectedWorkoutId);
-            await shareText(message);
-          } catch (err) {
-            console.error('Error sharing workout:', err);
-            showSnackbar('error', t('common.error'));
-          }
-        }}
-        onDelete={() => {
-          setIsMenuVisible(false);
-          setIsDeleteConfirmationVisible(true);
-        }}
-        onPreview={() => {
-          if (selectedWorkoutId) {
-            handlePreviewWorkout(selectedWorkoutId, menuPlanId);
-          }
-        }}
-        onAddToPlan={() => {
-          if (!selectedWorkoutId) {
-            return;
-          }
-
-          setIsMenuVisible(false);
-          planAssignment.openPicker(
-            memberships
-              .filter((membership) => membership.templateId === selectedWorkoutId)
-              .map((membership) => membership.planId)
-          );
-        }}
-      />
-      <CreateWorkoutOptionsModal
-        visible={isCreateOptionsVisible}
-        onClose={() => setIsCreateOptionsVisible(false)}
-        isAiEnabled={isAiConfigured}
-        onStartFreeTraining={async () => {
-          try {
-            const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
-            setIsCreateOptionsVisible(false);
-            router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
-          } catch (err) {
-            if (err instanceof ActiveWorkoutExistsError) {
-              setIsCreateOptionsVisible(false);
-              handleActiveWorkoutExists();
+        {/* Workout Details Menu */}
+        <WorkoutDetailsMenu
+          visible={isMenuVisible}
+          onClose={() => setIsMenuVisible(false)}
+          workoutName={selectedWorkoutName}
+          onEdit={() => {
+            if (selectedWorkoutId) {
+              setEditingTemplateId(selectedWorkoutId);
+              setIsCreateWorkoutModalVisible(true);
+              setIsMenuVisible(false);
+            } else {
+              console.error('Cannot edit workout: No workout ID selected');
+              setIsMenuVisible(false);
+            }
+          }}
+          onDuplicate={async () => {
+            if (!selectedWorkoutId) {
+              console.error('Cannot duplicate workout: No workout ID selected');
+              setIsMenuVisible(false);
               return;
             }
-
-            console.error('Error starting free workout:', err);
-            showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
-          }
-        }}
-        onGenerateWithAi={() => {
-          setIsCreateOptionsVisible(false);
-          setIsGenerateWithAiModalVisible(true);
-        }}
-        onCreateEmptyTemplate={() => {
-          setIsCreateOptionsVisible(false);
-          setEditingTemplateId(undefined);
-          setIsCreateWorkoutModalVisible(true);
-        }}
-        onBrowseTemplates={() => {
-          setIsCreateOptionsVisible(false);
-          // Open the Browse Templates modal
-          setIsBrowseTemplatesVisible(true);
-        }}
-      />
-      {isCreateWorkoutModalVisible ? (
-        <CreateWorkoutModal
-          visible={true}
-          onClose={() => {
-            setIsCreateWorkoutModalVisible(false);
-            setEditingTemplateId(undefined);
-          }}
-          templateId={editingTemplateId}
-        />
-      ) : null}
-      <GenerateWorkoutWithAiModal
-        visible={isGenerateWithAiModalVisible}
-        onClose={() => setIsGenerateWithAiModalVisible(false)}
-      />
-      <BrowseTemplatesModal
-        visible={isBrowseTemplatesVisible}
-        onClose={() => setIsBrowseTemplatesVisible(false)}
-        onTemplateSelect={(template) => {
-          const rawTemplate = getRawTemplateById(
-            template.id,
-            i18n.resolvedLanguage ?? i18n.language
-          );
-          if (rawTemplate) {
-            setSelectedRawTemplate({ templateId: template.id, title: template.title });
-            setIsCreateFromTemplateConfirmationVisible(true);
-          } else {
-            console.error('Could not find raw template data for:', template.id);
-            setIsBrowseTemplatesVisible(false);
-          }
-        }}
-      >
-        <ConfirmationModal
-          visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
-          onClose={() => {
-            setIsCreateFromTemplateConfirmationVisible(false);
-            setSelectedRawTemplate(null);
-          }}
-          onConfirm={async () => {
-            if (!selectedRawTemplate) {
-              return;
-            }
-
-            setIsCreatingWorkoutsFromTemplate(true);
-            await flushLoadingPaint();
 
             try {
-              const rawTemplate = getRawTemplateById(
-                selectedRawTemplate.templateId,
-                i18n.resolvedLanguage ?? i18n.language
+              const newTemplate = await WorkoutTemplateService.duplicateTemplate(selectedWorkoutId);
+              setEditingTemplateId(newTemplate.id);
+              setIsCreateWorkoutModalVisible(true);
+              setIsMenuVisible(false);
+              showSnackbar('success', t('workouts.duplicateSuccess'));
+            } catch (err) {
+              console.error('Error duplicating workout:', err);
+              showSnackbar('error', t('workouts.duplicateError'));
+              // Keep menu open on error so user can try again
+            }
+          }}
+          onShare={async () => {
+            setIsMenuVisible(false);
+            try {
+              const message = await WorkoutTemplateService.getShareMessage(selectedWorkoutId);
+              await shareText(message);
+            } catch (err) {
+              console.error('Error sharing workout:', err);
+              showSnackbar('error', t('common.error'));
+            }
+          }}
+          onDelete={() => {
+            setIsMenuVisible(false);
+            setIsDeleteConfirmationVisible(true);
+          }}
+          onPreview={() => {
+            if (selectedWorkoutId) {
+              handlePreviewWorkout(selectedWorkoutId, menuPlanId);
+            }
+          }}
+          onAddToPlan={() => {
+            if (!selectedWorkoutId) {
+              return;
+            }
+
+            setIsMenuVisible(false);
+            planAssignment.openPicker(
+              memberships
+                .filter((membership) => membership.templateId === selectedWorkoutId)
+                .map((membership) => membership.planId)
+            );
+          }}
+        />
+        <CreateWorkoutOptionsModal
+          visible={isCreateOptionsVisible}
+          onClose={() => setIsCreateOptionsVisible(false)}
+          isAiEnabled={isAiConfigured}
+          onStartFreeTraining={async () => {
+            try {
+              const workoutLog = await WorkoutService.startFreeWorkout(
+                t('freeTraining.workoutName')
               );
-              if (!rawTemplate) {
-                console.error('Could not find raw template data');
-                setIsCreatingWorkoutsFromTemplate(false);
+              setIsCreateOptionsVisible(false);
+              router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
+            } catch (err) {
+              if (err instanceof ActiveWorkoutExistsError) {
+                setIsCreateOptionsVisible(false);
+                handleActiveWorkoutExists();
                 return;
               }
 
-              const created =
-                await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
-              showSnackbar(
-                'success',
-                created.plan
-                  ? t('workouts.createFromTemplate.successMessageWithPlan', {
-                      planName: created.plan.name,
-                      count: created.templates.length,
-                    })
-                  : t('workouts.createFromTemplate.successMessage')
-              );
-              setIsBrowseTemplatesVisible(false);
-            } catch (error) {
-              console.error('Error creating workouts from template:', error);
-              showSnackbar('error', t('common.error'));
-            } finally {
-              setIsCreatingWorkoutsFromTemplate(false);
+              console.error('Error starting free workout:', err);
+              showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
             }
           }}
-          title={t('workouts.createFromTemplate.title')}
-          message={t('workouts.createFromTemplate.message')}
-          confirmLabel={t('workouts.createFromTemplate.confirm')}
-          cancelLabel={t('workouts.createFromTemplate.cancel')}
-          isLoading={isCreatingWorkoutsFromTemplate}
+          onGenerateWithAi={() => {
+            setIsCreateOptionsVisible(false);
+            setIsGenerateWithAiModalVisible(true);
+          }}
+          onCreateEmptyTemplate={() => {
+            setIsCreateOptionsVisible(false);
+            setEditingTemplateId(undefined);
+            setIsCreateWorkoutModalVisible(true);
+          }}
+          onBrowseTemplates={() => {
+            setIsCreateOptionsVisible(false);
+            // Open the Browse Templates modal
+            setIsBrowseTemplatesVisible(true);
+          }}
         />
-      </BrowseTemplatesModal>
-      <ConfirmationModal
-        visible={isDeleteConfirmationVisible}
-        onClose={() => setIsDeleteConfirmationVisible(false)}
-        onConfirm={handleConfirmDeleteWorkout}
-        title={t('workouts.deleteConfirmation.title')}
-        message={t('workouts.deleteConfirmation.message', { name: selectedWorkoutName })}
-        confirmLabel={t('workouts.delete')}
-        variant="destructive"
-        isLoading={isDeletingWorkoutTemplate}
-      />
-      {/* Discard Interrupted Session Confirmation */}
-      <ConfirmationModal
-        visible={isDiscardInterruptedConfirmVisible}
-        onClose={() => setIsDiscardInterruptedConfirmVisible(false)}
-        onConfirm={async () => {
-          if (!interruptedWorkoutLog) {
-            return;
+        {isCreateWorkoutModalVisible ? (
+          <CreateWorkoutModal
+            visible={true}
+            onClose={() => {
+              setIsCreateWorkoutModalVisible(false);
+              setEditingTemplateId(undefined);
+            }}
+            templateId={editingTemplateId}
+          />
+        ) : null}
+        <GenerateWorkoutWithAiModal
+          visible={isGenerateWithAiModalVisible}
+          onClose={() => setIsGenerateWithAiModalVisible(false)}
+        />
+        <BrowseTemplatesModal
+          visible={isBrowseTemplatesVisible}
+          onClose={() => setIsBrowseTemplatesVisible(false)}
+          onTemplateSelect={(template) => {
+            const rawTemplate = getRawTemplateById(
+              template.id,
+              i18n.resolvedLanguage ?? i18n.language
+            );
+            if (rawTemplate) {
+              setSelectedRawTemplate({ templateId: template.id, title: template.title });
+              setIsCreateFromTemplateConfirmationVisible(true);
+            } else {
+              console.error('Could not find raw template data for:', template.id);
+              setIsBrowseTemplatesVisible(false);
+            }
+          }}
+        >
+          <ConfirmationModal
+            visible={isCreateFromTemplateConfirmationVisible ? !!selectedRawTemplate : false}
+            onClose={() => {
+              setIsCreateFromTemplateConfirmationVisible(false);
+              setSelectedRawTemplate(null);
+            }}
+            onConfirm={async () => {
+              if (!selectedRawTemplate) {
+                return;
+              }
+
+              setIsCreatingWorkoutsFromTemplate(true);
+              await flushLoadingPaint();
+
+              try {
+                const rawTemplate = getRawTemplateById(
+                  selectedRawTemplate.templateId,
+                  i18n.resolvedLanguage ?? i18n.language
+                );
+                if (!rawTemplate) {
+                  console.error('Could not find raw template data');
+                  setIsCreatingWorkoutsFromTemplate(false);
+                  return;
+                }
+
+                const created =
+                  await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
+                showSnackbar(
+                  'success',
+                  created.plan
+                    ? t('workouts.createFromTemplate.successMessageWithPlan', {
+                        planName: created.plan.name,
+                        count: created.templates.length,
+                      })
+                    : t('workouts.createFromTemplate.successMessage')
+                );
+                setIsBrowseTemplatesVisible(false);
+              } catch (error) {
+                console.error('Error creating workouts from template:', error);
+                showSnackbar('error', t('common.error'));
+              } finally {
+                setIsCreatingWorkoutsFromTemplate(false);
+              }
+            }}
+            title={t('workouts.createFromTemplate.title')}
+            message={t('workouts.createFromTemplate.message')}
+            confirmLabel={t('workouts.createFromTemplate.confirm')}
+            cancelLabel={t('workouts.createFromTemplate.cancel')}
+            isLoading={isCreatingWorkoutsFromTemplate}
+          />
+        </BrowseTemplatesModal>
+        <ConfirmationModal
+          visible={isDeleteConfirmationVisible}
+          onClose={() => setIsDeleteConfirmationVisible(false)}
+          onConfirm={handleConfirmDeleteWorkout}
+          title={t('workouts.deleteConfirmation.title')}
+          message={t('workouts.deleteConfirmation.message', { name: selectedWorkoutName })}
+          confirmLabel={t('workouts.delete')}
+          variant="destructive"
+          isLoading={isDeletingWorkoutTemplate}
+        />
+        {/* Discard Interrupted Session Confirmation */}
+        <ConfirmationModal
+          visible={isDiscardInterruptedConfirmVisible}
+          onClose={() => setIsDiscardInterruptedConfirmVisible(false)}
+          onConfirm={async () => {
+            if (!interruptedWorkoutLog) {
+              return;
+            }
+
+            setIsDiscardingInterrupted(true);
+            try {
+              await clearActiveWorkoutLogId();
+              await WorkoutService.deleteWorkoutLog(interruptedWorkoutLog.id);
+              setInterruptedWorkoutLog(null);
+              setTodayCardRefreshKey((key) => key + 1);
+            } catch (err) {
+              console.error('Error discarding interrupted workout:', err);
+              handleError(err, 'workouts.discardInterrupted');
+              showSnackbar('error', t('errors.somethingWentWrong'));
+            } finally {
+              setIsDiscardingInterrupted(false);
+              setIsDiscardInterruptedConfirmVisible(false);
+            }
+          }}
+          title={t('workouts.interruptedSession.discardConfirmTitle')}
+          message={t('workouts.interruptedSession.discardConfirmMessage')}
+          confirmLabel={t('workouts.interruptedSession.discardConfirm')}
+          cancelLabel={t('workouts.interruptedSession.discardCancel')}
+          variant="destructive"
+          isLoading={isDiscardingInterrupted}
+        />
+
+        <BottomPopUpMenu
+          visible={isPlanMenuVisible}
+          onClose={() => setIsPlanMenuVisible(false)}
+          title={
+            plans.find((plan) => plan.id === selectedPlanId)?.name ?? t('workouts.plans.title')
           }
+          items={[
+            {
+              icon: Pencil,
+              iconColor: theme.colors.text.primary,
+              iconBgColor: theme.colors.text.primary20,
+              title: t('workouts.plans.editTitle'),
+              description: t('workouts.plans.editDescription'),
+              onPress: () => {
+                setEditingPlanId(selectedPlanId);
+                setIsPlanMenuVisible(false);
+                setIsPlanEditorVisible(true);
+              },
+            },
+            {
+              icon: Trash2,
+              iconColor: theme.colors.status.error,
+              iconBgColor: theme.colors.status.error20,
+              title: t('workouts.plans.deleteTitle'),
+              description: t('workouts.plans.deleteDescription'),
+              titleColor: theme.colors.status.error,
+              descriptionColor: theme.colors.status.error,
+              onPress: () => {
+                setIsPlanMenuVisible(false);
+                setIsDeletePlanConfirmationVisible(true);
+              },
+            },
+          ]}
+        />
 
-          setIsDiscardingInterrupted(true);
-          try {
-            await clearActiveWorkoutLogId();
-            await WorkoutService.deleteWorkoutLog(interruptedWorkoutLog.id);
-            setInterruptedWorkoutLog(null);
-            setTodayCardRefreshKey((key) => key + 1);
-          } catch (err) {
-            console.error('Error discarding interrupted workout:', err);
-            handleError(err, 'workouts.discardInterrupted');
-            showSnackbar('error', t('errors.somethingWentWrong'));
-          } finally {
-            setIsDiscardingInterrupted(false);
-            setIsDiscardInterruptedConfirmVisible(false);
-          }
-        }}
-        title={t('workouts.interruptedSession.discardConfirmTitle')}
-        message={t('workouts.interruptedSession.discardConfirmMessage')}
-        confirmLabel={t('workouts.interruptedSession.discardConfirm')}
-        cancelLabel={t('workouts.interruptedSession.discardCancel')}
-        variant="destructive"
-        isLoading={isDiscardingInterrupted}
-      />
+        <BottomPopUpMenu
+          visible={isScreenMenuVisible}
+          onClose={() => setIsScreenMenuVisible(false)}
+          title={t('workouts.title')}
+          items={[
+            {
+              icon: Layers3,
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: `${theme.colors.accent.primary}20`,
+              title: t('workouts.plans.createTitle'),
+              description: t('workouts.plans.createDescription'),
+              onPress: () => {
+                setEditingPlanId(undefined);
+                setIsPlanEditorVisible(true);
+              },
+            },
+            {
+              icon: Plus,
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: `${theme.colors.accent.primary}20`,
+              title: t('workouts.createTemplate.title'),
+              description: t('workouts.createTemplate.description'),
+              onPress: () => {
+                setIsCreateOptionsVisible(true);
+              },
+            },
+            {
+              icon: Footprints,
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: `${theme.colors.accent.primary}20`,
+              title: t('cardio.menuItem'),
+              description: t('cardio.subtitle'),
+              onPress: () => {
+                setIsLogCardioVisible(true);
+              },
+            },
+            {
+              icon: Target,
+              iconColor: theme.colors.accent.secondary,
+              iconBgColor: `${theme.colors.accent.secondary}20`,
+              title: t('exerciseGoals.title'),
+              description: t('goalsManagement.exerciseGoalsSubtitle'),
+              onPress: () => {
+                setIsGoalsManagementModalVisible(true);
+              },
+            },
+          ]}
+        />
 
-      <BottomPopUpMenu
-        visible={isPlanMenuVisible}
-        onClose={() => setIsPlanMenuVisible(false)}
-        title={plans.find((plan) => plan.id === selectedPlanId)?.name ?? t('workouts.plans.title')}
-        items={[
-          {
-            icon: Pencil,
-            iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
-            title: t('workouts.plans.editTitle'),
-            description: t('workouts.plans.editDescription'),
-            onPress: () => {
-              setEditingPlanId(selectedPlanId);
-              setIsPlanMenuVisible(false);
-              setIsPlanEditorVisible(true);
-            },
-          },
-          {
-            icon: Trash2,
-            iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
-            title: t('workouts.plans.deleteTitle'),
-            description: t('workouts.plans.deleteDescription'),
-            titleColor: theme.colors.status.error,
-            descriptionColor: theme.colors.status.error,
-            onPress: () => {
-              setIsPlanMenuVisible(false);
-              setIsDeletePlanConfirmationVisible(true);
-            },
-          },
-        ]}
-      />
-
-      <BottomPopUpMenu
-        visible={isScreenMenuVisible}
-        onClose={() => setIsScreenMenuVisible(false)}
-        title={t('workouts.title')}
-        items={[
-          {
-            icon: Layers3,
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: `${theme.colors.accent.primary}20`,
-            title: t('workouts.plans.createTitle'),
-            description: t('workouts.plans.createDescription'),
-            onPress: () => {
-              setEditingPlanId(undefined);
-              setIsPlanEditorVisible(true);
-            },
-          },
-          {
-            icon: Plus,
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: `${theme.colors.accent.primary}20`,
-            title: t('workouts.createTemplate.title'),
-            description: t('workouts.createTemplate.description'),
-            onPress: () => {
-              setIsCreateOptionsVisible(true);
-            },
-          },
-          {
-            icon: Footprints,
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: `${theme.colors.accent.primary}20`,
-            title: t('cardio.menuItem'),
-            description: t('cardio.subtitle'),
-            onPress: () => {
-              setIsLogCardioVisible(true);
-            },
-          },
-          {
-            icon: Target,
-            iconColor: theme.colors.accent.secondary,
-            iconBgColor: `${theme.colors.accent.secondary}20`,
-            title: t('exerciseGoals.title'),
-            description: t('goalsManagement.exerciseGoalsSubtitle'),
-            onPress: () => {
-              setIsGoalsManagementModalVisible(true);
-            },
-          },
-        ]}
-      />
-
-      {/*
+        {/*
         The plan picker, the plan editor and the delete-plan confirmation are screen-level siblings
         of the menus that open them, not `children` of those menus: every menu item closes its menu
         before running its handler, and a hidden `Modal` renders no children — so a follow-up modal
@@ -669,72 +709,81 @@ export default function WorkoutsScreen() {
         here for the reason FIXES.md allows it: only one of these is ever
         visible at a time, so no dismissed modal is left holding the iOS presenter.
       */}
-      {planAssignment.modals}
-      {/* Editing an existing plan, which the assignment flow (create-only) does not cover. */}
-      {isPlanEditorVisible ? (
-        <CreateEditPlanModal
-          visible={true}
-          planId={editingPlanId}
-          onClose={() => {
-            setIsPlanEditorVisible(false);
-            setEditingPlanId(undefined);
+        {planAssignment.modals}
+        {/* Editing an existing plan, which the assignment flow (create-only) does not cover. */}
+        {isPlanEditorVisible ? (
+          <CreateEditPlanModal
+            visible={true}
+            planId={editingPlanId}
+            onClose={() => {
+              setIsPlanEditorVisible(false);
+              setEditingPlanId(undefined);
+            }}
+          />
+        ) : null}
+        <ConfirmationModal
+          visible={isDeletePlanConfirmationVisible}
+          onClose={() => setIsDeletePlanConfirmationVisible(false)}
+          onConfirm={async () => {
+            if (!selectedPlanId) {
+              return;
+            }
+
+            setIsDeletingPlan(true);
+            try {
+              await WorkoutPlanService.deletePlan(selectedPlanId);
+              showSnackbar('success', t('workouts.plans.deleteSuccess'));
+            } catch (error) {
+              await handleError(error, 'workouts.deletePlan', {
+                snackbarMessage: t('workouts.plans.deleteError'),
+              });
+            } finally {
+              setIsDeletingPlan(false);
+              setIsDeletePlanConfirmationVisible(false);
+            }
           }}
+          title={t('workouts.plans.deleteConfirmation.title')}
+          message={t('workouts.plans.deleteConfirmation.message', {
+            name: plans.find((plan) => plan.id === selectedPlanId)?.name,
+          })}
+          confirmLabel={t('common.delete')}
+          variant="destructive"
+          isLoading={isDeletingPlan}
         />
-      ) : null}
-      <ConfirmationModal
-        visible={isDeletePlanConfirmationVisible}
-        onClose={() => setIsDeletePlanConfirmationVisible(false)}
-        onConfirm={async () => {
-          if (!selectedPlanId) {
-            return;
-          }
 
-          setIsDeletingPlan(true);
-          try {
-            await WorkoutPlanService.deletePlan(selectedPlanId);
-            showSnackbar('success', t('workouts.plans.deleteSuccess'));
-          } catch (error) {
-            await handleError(error, 'workouts.deletePlan', {
-              snackbarMessage: t('workouts.plans.deleteError'),
-            });
-          } finally {
-            setIsDeletingPlan(false);
-            setIsDeletePlanConfirmationVisible(false);
-          }
-        }}
-        title={t('workouts.plans.deleteConfirmation.title')}
-        message={t('workouts.plans.deleteConfirmation.message', {
-          name: plans.find((plan) => plan.id === selectedPlanId)?.name,
-        })}
-        confirmLabel={t('common.delete')}
-        variant="destructive"
-        isLoading={isDeletingPlan}
-      />
+        {/* Mounted only while open so each open starts from the defaults */}
+        {isLogCardioVisible ? (
+          <LogCardioModal
+            visible={isLogCardioVisible}
+            onClose={() => setIsLogCardioVisible(false)}
+          />
+        ) : null}
 
-      {/* Mounted only while open so each open starts from the defaults */}
-      {isLogCardioVisible ? (
-        <LogCardioModal visible={isLogCardioVisible} onClose={() => setIsLogCardioVisible(false)} />
-      ) : null}
+        <GoalsManagementModal
+          visible={isGoalsManagementModalVisible}
+          onClose={() => setIsGoalsManagementModalVisible(false)}
+          tab="fitness"
+        />
 
-      <GoalsManagementModal
-        visible={isGoalsManagementModalVisible}
-        onClose={() => setIsGoalsManagementModalVisible(false)}
-        tab="fitness"
-      />
+        {/* Workout Preview Modal */}
+        <WorkoutSessionHistoryModal
+          visible={isPreviewModalVisible && !!previewTemplate ? !isLoadingPreview : false}
+          onClose={() => {
+            setPreviewTarget(null);
+          }}
+          isPreview={true}
+          workoutTemplate={previewTemplate || undefined}
+          templateSets={previewTemplateSets}
+          templateExercises={previewTemplateExercises}
+          exercises={previewExercises}
+          onStartWorkout={handleStartWorkoutFromPreview}
+        />
 
-      {/* Workout Preview Modal */}
-      <WorkoutSessionHistoryModal
-        visible={isPreviewModalVisible && !!previewTemplate ? !isLoadingPreview : false}
-        onClose={() => {
-          setPreviewTarget(null);
-        }}
-        isPreview={true}
-        workoutTemplate={previewTemplate || undefined}
-        templateSets={previewTemplateSets}
-        templateExercises={previewTemplateExercises}
-        exercises={previewExercises}
-        onStartWorkout={handleStartWorkoutFromPreview}
-      />
+        <WorkoutReminderExplainerSheet
+          reminder={explainedReminder}
+          onClose={closeReminderExplainer}
+        />
+      </AreaLockGate>
     </MasterLayout>
   );
 }

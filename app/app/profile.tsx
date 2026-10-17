@@ -35,6 +35,7 @@ import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { type Gender } from '@/database/models';
 import { UserService } from '@/database/services/UserService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
@@ -43,6 +44,7 @@ import { useUserMetrics } from '@/hooks/useUserMetrics';
 import { useWeightPrediction } from '@/hooks/useWeightPrediction';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { calculateBMIWithStatus } from '@/utils/bmiHelper';
+import { resolveTrackingToggle } from '@/utils/cycle/trackingToggle';
 import {
   formatDateOfBirthFromTimestamp,
   persistFitnessDetails,
@@ -105,6 +107,12 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const {
+    isActive: isCycleActive,
+    pausedCycle,
+    deactivateTracking,
+    resumeTracking,
+  } = useMenstrualCycle();
   const { units, weightUnit, heightUnit, showWeightPrediction } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
@@ -280,6 +288,23 @@ export default function ProfileScreen() {
         avatarIcon: data.avatarIcon || null,
         avatarColor: data.avatarColor || null,
       });
+
+      const trackingAction = resolveTrackingToggle({
+        requested: data.trackCycle,
+        isActive: isCycleActive,
+        hasPausedCycle: pausedCycle != null,
+      });
+      if (trackingAction === 'pause') {
+        // Pausing keeps every record; turning it back on resumes the same history.
+        await deactivateTracking();
+      } else if (trackingAction === 'resume') {
+        await resumeTracking();
+      } else if (trackingAction === 'setup') {
+        router.navigate({
+          pathname: '/app/onboarding/cycle-setup',
+          params: { nextRoute: encodeURIComponent('/app/profile') },
+        } as never);
+      }
     } catch (err) {
       handleError(err, 'profile.handleSavePersonalInfo', {
         snackbarMessage: t('errors.somethingWentWrong'),
@@ -510,6 +535,7 @@ export default function ProfileScreen() {
                 gender: dbUser.gender,
                 avatarIcon: dbUser.avatarIcon,
                 avatarColor: dbUser.avatarColor,
+                trackCycle: isCycleActive,
               }
             : undefined
         }

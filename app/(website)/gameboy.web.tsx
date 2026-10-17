@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { WasmBoyJoypadState } from 'wasmboy';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { isProduction } from '@/utils/app';
 import {
   readAndDecodeGameBoySaves,
@@ -582,4 +583,8 @@ function PillButton({ button, label, onPress, disabled, children }: ButtonProps)
       {children}
     </button>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('gameboy');
 }

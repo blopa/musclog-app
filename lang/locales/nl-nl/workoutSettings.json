@@ -86,7 +86,15 @@
       "hapticsHint": "Een tik bij de laatste drie seconden en een trilling bij nul.",
       "defaultRest": "Standaardrust",
       "defaultRestHint": "Gebruikt voor sets die geen eigen rust vermelden.",
-      "seconds": "sec"
+      "seconds": "sec",
+      "strongHaptics": "Sterkere trillingen",
+      "strongHapticsHint": "Zwaardere tikken en een dubbele trilling bij nul.",
+      "alertSound": "Waarschuwingsgeluid",
+      "alertSoundHint": "Speel een geluid af wanneer de melding dat de rust voorbij is binnenkomt. Uit houdt de trilling.",
+      "headsUp": "Waarschuwing voor het einde van de rust",
+      "headsUpOff": "Uit",
+      "headsUpSeconds": "{{seconds}} sec",
+      "headsUpHint": "De timer schakelt over naar \"maak je klaar\" en trilt één keer zo lang voordat de rust eindigt."
     },
     "autonomy": {
       "title": "Als een training start",

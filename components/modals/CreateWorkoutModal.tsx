@@ -110,12 +110,10 @@ export default function CreateWorkoutModal({
           {
             label: t('createWorkout.workoutInsight.ai'),
             value: 'ai',
-            icon: (
+            icon: (selected: boolean) => (
               <Sparkles
                 size={theme.iconSize.xs}
-                color={
-                  workoutInsights === 'ai' ? theme.colors.text.primary : theme.colors.text.tertiary
-                }
+                color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
               />
             ),
           },

@@ -498,3 +498,98 @@ party.
 The everyday loop is plan → train → understand changes → review the week. MacroFactor’s [inline logging and nearby timers](https://macrofactor.com/wp-content/uploads/2026/01/Workouts-Quick-Start-Guide.pdf), [contextual progression explanations](https://help.macrofactorapp.com/en/articles/391-what-does-the-smart-progression-wand-mean), and [declinable weekly nutrition decisions](https://help.macrofactorapp.com/en/articles/247-introduction-to-check-ins-and-coaching-modules) inform presentation. They do not supply Musclog’s algorithms. Musclog retains deterministic local calculations and optional AI.
 
 Workout progression runs immediately at session start and between applicable sets, with read-only future projections after training. Weekly training acknowledgement summarizes it and never approves or delays it. Nutrition targets can instead use weekly approval: dated stable targets start tomorrow, keeping a clear historical record. The weekly recommendation includes available expenditure history before solving the existing goal trajectory; the daily resolver preserves its legacy trajectory branch. Formula baselines and empirical estimates are labeled separately, with existing evidence thresholds rather than invented confidence scores. Periodization, watches, social features and reproducing proprietary algorithms remain outside this implementation.
+
+## Cycle tracking: prediction thresholds and evidence
+
+**Prediction is a range with a confidence level.** `utils/cycle/cycleStats.ts` takes the median of up to the last 12 usable cycles, and the range includes the shortest to longest of them, padded to at least seven days either side of the median below three usable cycles, three below five, and one thereafter. This is a historical heuristic, not a calibrated probability interval. An explicitly unknown fallback length suppresses dates until usable history exists. The prediction inspector reports retrospective next-start coverage and midpoint error using only earlier starts; this is not clinical validation. Confidence is `low` below two usable cycles, `moderate` below four and `high` from four; a spread above 9 days (the ACOG threshold for irregular cycles) lowers it one level, and above 20 days it is `low` and a single date is offered to be hidden. The numbers are named constants in `constants/cycle.ts`. Logged period count is deliberately not the input: four starts 70 days apart are four logs but a poor basis for a date.
+
+**Which cycles count.** A gap under 15 days is treated as a probable mislog, and one at least 1.8 times the median of the others (with at least two others to compare) as a probable missed period. They are shown with the reason rather than dropped, and the person can manually exclude a cycle or confirm that a flagged long interval really happened. Confirmation never bypasses short-interval or physiological-context exclusions. Cycles under a method that usually stops ovulation, and postpartum cycles, are excluded because they are not natural cycles.
+
+**Ovulation is not predicted from cycle length.** Calendar-style estimates identify ovulation poorly ([systematic review of consumer apps](https://pubmed.ncbi.nlm.nih.gov/29749274/)), so the fertile window is opt-in, shown with a not-contraception note, and absent whenever the context makes it meaningless (hormonal methods, postpartum, perimenopause, PCOS, tracking without bleeding). Which methods usually suppress ovulation follows the [NICHD overview](https://www.nichd.nih.gov/health/topics/contraception/conditioninfo/types): combined methods usually do, a hormonal IUD or progestin-only pill often does not, a copper IUD never does.
+
+**No phase prescriptions.** A [meta-analysis of exercise performance across the cycle](https://link.springer.com/article/10.1007/s40279-020-01319-3) found trivial average differences and does not support universal phase-based guidance. The app therefore removed the fixed energy labels and intensity multipliers and instead reports how the person's own logged symptoms, mood and workout volume behaved near the start of their periods, only from three or more cycles and with the evidence listed.
+
+**Residual metadata.** The cycle tables encrypt every personal field in one `payload`, but record ids and `created_at` / `updated_at` stay plaintext, so the device can reveal _when_ something was logged, never _what_. Exports shared outside the app, and local recovery points made before the conversion, can hold plaintext copies; "delete all cycle data" offers to remove the recovery points and says plainly that shared files are out of reach.
+
+**Dates.** Starts and ends are local calendar days. Predicted dates are computed with calendar-day arithmetic (`utils/cycle/dates.ts`), never `start + N * 24h`, which lands an hour off midnight across a daylight-saving change and moves a predicted day at the edge of a range.
+
+### Cycle journal portability and recovery
+
+Cycle-only JSON version 1 identifies itself with `format: "musclog-cycle"` and `version: 1`.
+Its arrays are `periods`, `dayLogs`, `contexts` and `moods`; `config` optionally carries usual
+lengths, goals, custom symptoms, enabled observation fields and custom field definitions.
+Record ids, cycle ids and source timezone offsets do not travel: start/end/day/effective dates
+are local `YYYY-MM-DD` calendar dates, converted to local midnight on the receiving device.
+Period end kind, exclusions, notes, symptom severity, explicit no-symptoms responses and custom
+labels survive. Shared mood history is included explicitly, including days without cycle logs.
+Future versions fail validation rather than silently discarding fields.
+
+CSV periods retain their original columns and add `excluded_from_stats`, preserving user exclusions even for an unfinished cycle. Daily CSV adds `mood_0_4`, `observations_json` and
+`symptoms_json`; the last two contain JSON inside RFC 4180 escaped cells. The JSON symptom
+column avoids ambiguous delimiters in user-created names; older daily CSVs retain support for
+`key:severity` pairs separated by semicolons. Context CSV uses `effective_from`, `life_stage`,
+`contraception`, `note`. Plain-text notes are defused for spreadsheet formula execution.
+JSON is the complete format for recovery, including configuration and field definitions;
+individual CSV files are primarily for inspection and selective migration. Future journal/mood entries that older app versions allowed are preserved on import; insights and appointment summaries exclude them until their date. Other trackers'
+formats are not accepted yet.
+
+Imports merge without clearing the database. A matching date is kept by default; explicitly
+choosing replacement replaces that record, rather than silently combining incompatible
+observations. Overlapping periods against existing data are counted and skipped. Duplicates
+within a file, future period/context dates, invalid calendar dates, conflicting custom field definitions and invalid
+values reject the file. The service repeats validation and reads under its writer before one
+batch. New custom definitions are carried even when other preferences are kept, to preserve
+readable history. Empty imported day entries do not create observations; an explicitly replaced
+empty day clears its existing day record.
+
+Encrypted backups wrap this JSON with `format: "musclog-cycle-encrypted"`, version 1,
+algorithm `PBKDF2-SHA256/AES-256-CBC/HMAC-SHA256`, 210,000 iterations, a random 16-byte salt and
+IV, base64 ciphertext and a hex HMAC. PBKDF2 derives separate 32-byte encryption/authentication
+keys. Authentication covers the format, version, algorithm, work factor, salt, IV and ciphertext,
+and is checked before decryption. The password is preserved exactly, confirmed before export,
+and never persisted. A lost password cannot be recovered by the app. A backup needs storage
+outside the phone; the last-prepared timestamp deliberately makes no claim that the share sheet
+completed or that a durable external copy exists. There is no automatic sync.
+
+Cycle symptom comparisons are observational: daily cell values stay missing when unlogged,
+explicit no-symptoms is zero, and historic unrated presence has its own marker. The pre-period
+view aligns to the next recorded start, never a predicted one. Recurring pre-period symptom
+insights inspect seven days and still require at least three observed cycles.
+
+### Completing the cycle journal
+
+Daily-life impact complements numerical pain and flow: disruption, activity limitation and inability to do usual activities are self-reported observations, not severity-based triage. NHS [heavy-period guidance](https://www.nhs.uk/conditions/heavy-periods/) and [period-pain guidance](https://www.nhs.uk/symptoms/period-pain/) support discussing symptoms that affect daily life. The optional PMS diary references [RCOG guidance](https://www.rcog.org.uk/for-the-public/browse-our-patient-information/managing-premenstrual-syndrome-pms/) on prospective recording over two cycles; it is explicitly not a validated PMDD instrument. Clinician review and validated condition-specific tools remain future work.
+
+Trends without bleeding dates use calendar time and actual logged values, never inferred menstrual phases. Imported Health Connect/HealthKit bleeding and basal temperature are separate provenance records; skin temperature is not treated as basal temperature. Health exports use each platform's documented types and stable Musclog identifiers and never forward sex, medication, notes or imported values. The user's store permissions can limit the history visible to the app.
+
+Backups remain manual per user preference. The user explicitly prepares a password-protected, authenticated file and chooses where to save it. Last-prepared status is not proof of off-device storage. New-phone recovery requires the retained file and its password; optional reminders only prompt the user. Automatic client-encrypted cloud backup and multi-device synchronization remain future work.
+
+## Cycle reminders: what people keep enabled
+
+A review of period-tracker notifications (Flo, Clue, Period Calendar, Natural Cycles, Stardust, Maya, WomanLog, Clover, Euki, Apple Health; their documentation, store reviews and community threads, plus platform guidance and prediction studies) decided the reminder design:
+
+- **People disable everything to escape one noisy category.** Each reminder is its own switch, there is no engagement, content or promotional notification at all, and the daily check-in is off by default.
+- **The lock screen is a public place.** Wording is a separate choice from tone: Private (never says what it is about, the default), Subtle (names the task, never the topic) and Detailed. Settings preview the exact text, built by the same function that schedules it. Android additionally gets a `cycle` channel with PRIVATE lock-screen visibility.
+- **A calendar estimate is not a date.** Calendar-based fertile-day classification is frequently wrong, especially with irregular cycles, and generic trackers' period predictions can be days off. Detailed copy therefore states the estimated range and calls it an estimate; fertile-window copy says it is not confirmation of ovulation and not contraception.
+- **A longer cycle is not a pregnancy prompt.** The optional "longer than usual" reminder is neutral and names no reason; the explainer says Musclog never assumes one. Recording a pregnancy loss stops every prediction and period reminder (the context suppresses them) and offers — never applies — a quiet period for the rest.
+- **Reminders must explain themselves.** Each states when it fires, how often, and whether its date is an estimate or a time the person chose; tapping one opens "why did I get this?" with the cycles behind it.
+- **Adherence reminders outrank everything else.** The pill reminder knows the pack (21 + 7, 24 + 4, continuous) instead of nagging through pill-free days, and a pause does not silence it.
+- **Ask for permission in context.** Notification permission is requested when a reminder is switched on, and a delivery check shows whether a reminder can arrive at all, with a test send.
+
+- **A button is a second lock-screen surface.** The pill reminder's actions are worded Done / Later / Skip, not "Taken", because the notification text can be set to say nothing about pills and an action row reading "Taken" would give it away. "Done" and "Skip" write the answer straight onto the day (`observations.pill`, shown and correctable in the day sheet); "Later" and "Snooze" re-send the same wording once as a separate `menstrual-cycle-snooze` notification, which an ordinary reschedule must not erase but must re-check — a pause or a context change that removes the prediction cancels a snoozed estimate, and only the pill (pause-exempt) and routines the person scheduled survive it.
+
+Per-category lock-screen levels and wearable sync alerts are recorded in `FUTURE_FEATURES.md`.
+
+## Workout notifications: what is a notification and what is a surface
+
+A review of workout-app notifications (Hevy, MacroFactor Workouts, Strong, Fitbod, trainwell, Keep, Strava, Apple Fitness; their help centres, release notes, store reviews and community threads, plus Apple and Android guidance) decided the design:
+
+- **Four jobs hide behind one permission prompt**: in-workout timing, adherence reminders, coaching/social, and marketing. Musclog sends only the first two, each with its own switch and Android channel, and nothing promotional or social.
+- **The rest alert is infrastructure, not engagement.** The complaint that recurs is not "too many" but "too quiet, delayed, indistinguishable or missing". So it is the only `timeSensitive` notification, keeps the loudest channel, can repeat once, and is configurable on three independent axes rather than one "stronger" default: the chime (off moves it to a vibrate-only channel — Android fixes a channel's sound at creation), the haptic firmness, and a "get ready" heads-up (off / 10 / 20 / 30 s) that is both a visual state with a single buzz and, backgrounded, a quiet notification. Users disagree sharply on volume, which is why there is no single right default.
+- **A timed set is not a rest.** Strong's threads show lifters repurposing the rest timer for planks and holds. The work timer is a separate primitive that counts a duration down and then hands over to the rest timer — and because logging the set a moment later would start a second rest, the timer remembers the rest it started and the next set completion skips its own.
+- **A reminder should say why it exists and offer a narrower exit than "turn everything off".** A tapped workout reminder opens a sheet that names the workout, the planned weekday and time and whether that day came from a plan or the workout's own schedule, and offers a one-week pause, turning workout reminders off, or the notification settings. A per-workout mute and an editable per-plan reminder time are not built (see `FUTURE_FEATURES.md`).
+- **Persistent surfaces beat repeated pushes** (a Live Activity or chronometer notification over a stream of banners). That is the largest remaining item and the only one needing native code; it is specified in `FUTURE_FEATURES.md`.
+
+### Cycle phase and training
+
+Cycle-phase effects on strength and performance are small and inconsistent (a trivial reduction in the early follicular phase in pooled data, with low-certainty evidence), and follicular-phase length, hence ovulation day, varies widely between and within people. The app therefore draws no phase-based training conclusions and shows no cycle card in the live workout session, where an observation would read as a prediction about today. The personal "lower volume near a period start" observation compares each session only with the same workout away from period starts, excludes deliberate lighter weeks, and needs four comparable cycles.

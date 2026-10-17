@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -53,8 +54,8 @@ export function TimePickerModal({
 }: TimePickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const hoursScrollRef = useRef<ScrollView>(null);
-  const minutesScrollRef = useRef<ScrollView>(null);
+  const hoursScrollRef = useRef<ScrollViewInstance>(null);
+  const minutesScrollRef = useRef<ScrollViewInstance>(null);
 
   const h24 = selectedTime.getHours();
   const isPm = h24 >= 12;

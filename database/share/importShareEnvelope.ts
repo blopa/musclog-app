@@ -314,7 +314,9 @@ async function resolvePortions(
 
       const reusedOwnerId = context.reusedLocalId('foods', stringValue(row.owner_id));
       return reusedOwnerId ? ownedByOwnerId.get(reusedOwnerId) : undefined;
+      // TODO: avoid IIFE
     })();
+
     const match = candidates?.find((portion) => portionIdentityMatches(portion, row));
     if (match) {
       resolutions[sourceId] = match.id;

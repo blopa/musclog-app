@@ -34,7 +34,7 @@ it('keeps v31 purely additive and includes all new optional columns in the schem
   expect(schema.tables.nutrition_goals.columns.target_mode.isOptional).toBe(true);
 });
 it('uses identical target/review table definitions for native migration and Loki schema with restore dependencies', () => {
-  expect(CURRENT_DATABASE_VERSION).toBe(35);
+  expect(CURRENT_DATABASE_VERSION).toBe(36);
   const laterColumns = new Set(weeklyReviewTrainingColumns.map((column) => column.name));
   for (const step of migration32.steps.filter((step) => step.type === 'create_table')) {
     // v32 created the table; v34 added the training columns on top of it.

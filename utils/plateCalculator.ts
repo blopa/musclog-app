@@ -1,6 +1,8 @@
+import type { Units } from '@/constants/settings';
 import type { EquipmentType } from '@/database/models/Exercise';
 
 import { type GymPlate, type GymSnapshot, isBarLoadedEquipment } from './gym';
+import { displayToKg, kgToDisplay } from './unitConversion';
 
 /** Loads are solved in hundredths of a kilogram so 1.25 kg and 20.4117 kg plates stay exact. */
 const UNITS_PER_KG = 100;
@@ -172,23 +174,41 @@ export function nearestLoadableKg(targetKg: number, gym: LoadingGym): number {
 }
 
 /**
- * Rounds a computed load to one the equipment can really be set to, or leaves it alone for a
- * gym-less user (whose rounding is the app's long-standing whole-kilogram one).
+ * Without a gym, in the unit the user sees: a bar loads in pairs of the smallest standard plate
+ * (2 × 1.25 kg, 2 × 2.5 lb), so it moves on that grid.
+ */
+const NO_GYM_BAR_STEP: Record<Units, number> = { metric: 2.5, imperial: 5 };
+/**
+ * Without a gym, nothing is known about the dumbbell rack or the stack, so a non-bar load is only
+ * tidied to the precision the weight input works in. Snapping it to the 2.5 kg grid invented
+ * equipment: a lifter on 12 kg dumbbells progressed to 15 kg (+25%) and deloaded to 7.5 kg (−37%).
+ */
+const NO_GYM_FINE_STEP: Record<Units, number> = { metric: 0.5, imperial: 1 };
+
+/**
+ * Rounds a computed load to one the equipment can really be set to. The ONE rounding rule for
+ * loads, with or without a gym: progression (`loadStepFor`) and warm-ups both go through it.
  *
- * A barbell snaps to what the plates can make; everything else (dumbbells, stacks, cables) to a
- * multiple of the gym's smallest increment.
+ * With a gym, a barbell snaps to what its plates can make and everything else (dumbbells, stacks,
+ * cables) to a multiple of the gym's smallest increment. Without one, see `NO_GYM_BAR_STEP` and
+ * `NO_GYM_FINE_STEP`; both are applied in the unit the user reads, so a pound user lands on whole
+ * pounds rather than on round kilograms that read as 143.3 lb.
  */
 export function roundToLoadable(
   kg: number,
   equipmentType: EquipmentType | string | undefined,
-  gym: GymSnapshot | null | undefined
+  gym: GymSnapshot | null | undefined,
+  units: Units
 ): number {
-  if (!gym) {
-    return Math.round(kg);
-  }
-
   if (!Number.isFinite(kg) || kg <= 0) {
     return 0;
+  }
+
+  if (!gym) {
+    const step = isBarLoadedEquipment(equipmentType)
+      ? NO_GYM_BAR_STEP[units]
+      : NO_GYM_FINE_STEP[units];
+    return displayToKg(Math.round(kgToDisplay(kg, units) / step) * step, units);
   }
 
   if (isBarLoadedEquipment(equipmentType) && gym.plates.length > 0) {

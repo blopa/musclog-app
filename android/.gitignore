@@ -7,10 +7,12 @@
 build/
 .idea
 .gradle
+.kotlin/
 local.properties
 *.iml
 *.hprof
 .cxx/
+gradle/gradle-daemon-jvm.properties
 
 # generated inline modules
 app/src/main/java/inline/

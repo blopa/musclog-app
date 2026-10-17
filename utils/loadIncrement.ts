@@ -3,7 +3,7 @@ import type { EquipmentType } from '@/database/models/Exercise';
 
 import { defaultWeightIncrementKg, type GymSnapshot, isBarLoadedEquipment } from './gym';
 import { roundToLoadable } from './plateCalculator';
-import { kgToDisplay, roundWeightForUnits } from './unitConversion';
+import { kgToDisplay } from './unitConversion';
 
 /** The numeric input's step with no gym configured: the app's long-standing half-unit nudge. */
 const LEGACY_INPUT_STEP = 0.5;
@@ -77,19 +77,6 @@ export function loadStepFor(
 ): LoadStep {
   return {
     incrementKg: incrementFor(equipmentType, gym, units),
-    roundLoad: (kg) => {
-      if (gym) {
-        return roundToLoadable(kg, equipmentType, gym);
-      }
-
-      if (units === 'imperial') {
-        return roundWeightForUnits(kg, units);
-      }
-
-      // Metric with no gym: the standard plates load in 2.5 kg pairs, so land on a multiple of the
-      // step. Rounding to a whole kilogram produced 60 → 63 → 66, which no plate set can load.
-      const step = defaultWeightIncrementKg(units);
-      return Math.max(0, Math.round(kg / step) * step);
-    },
+    roundLoad: (kg) => roundToLoadable(kg, equipmentType, gym, units),
   };
 }

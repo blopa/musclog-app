@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CycleDaySheet } from '@/components/cycle/CycleDaySheet';
 import { AddExerciseModal } from '@/components/modals/AddExerciseModal';
 import { AddExerciseToSessionModal } from '@/components/modals/AddExerciseToSessionModal';
 import { AddFoodItemToMealModal } from '@/components/modals/AddFoodItemToMealModal';
@@ -26,7 +27,6 @@ import { CreateFoodPortionModal } from '@/components/modals/CreateFoodPortionMod
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
-import { CycleLogModal } from '@/components/modals/CycleLogModal';
 import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import {
   ExerciseDataModal,
@@ -97,6 +97,7 @@ import { ExerciseService } from '@/database/services/ExerciseService';
 import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/WorkoutService';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
+import { localDayStartMs } from '@/utils/calendarDate';
 
 const TEST_WORKOUT_METADATA_NOW = Date.now();
 
@@ -2314,20 +2315,17 @@ export default function ModalsTestScreen() {
         onClose={() => setIsAiCustomPromptEditVisible(false)}
       />
 
-      <CycleLogModal
+      <CycleDaySheet
         key={isCycleLogVisible ? 'cycle-log-open' : 'cycle-log-closed'}
         visible={isCycleLogVisible}
         onClose={() => setIsCycleLogVisible(false)}
-        initialDate={new Date()}
+        day={localDayStartMs(new Date())}
       />
 
-      {cycle ? (
-        <CycleSettingsModal
-          visible={isCycleSettingsVisible}
-          onClose={() => setIsCycleSettingsVisible(false)}
-          cycle={cycle}
-        />
-      ) : null}
+      <CycleSettingsModal
+        visible={isCycleSettingsVisible}
+        onClose={() => setIsCycleSettingsVisible(false)}
+      />
 
       <GenericEditModal
         visible={isGenericEditVisible}

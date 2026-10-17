@@ -4,19 +4,12 @@ import '@/lang/lang';
 
 import { Slot } from 'expo-router';
 
-import { WebsiteProviders } from '@/components/website/WebsiteProviders';
-import { WebsiteSeoForCurrentRoute } from '@/components/website/WebsiteSeo';
-import { WebsiteOrganizationJsonLd } from '@/components/website/WebsiteStructuredData';
-import { WebsiteWrapper } from '@/components/website/WebsiteWrapper';
+import { WebsiteShell } from '@/components/website/WebsiteShell';
 
 export default function WebsiteLayout() {
   return (
-    <WebsiteProviders>
-      <WebsiteSeoForCurrentRoute />
-      <WebsiteOrganizationJsonLd />
-      <WebsiteWrapper>
-        <Slot />
-      </WebsiteWrapper>
-    </WebsiteProviders>
+    <WebsiteShell>
+      <Slot />
+    </WebsiteShell>
   );
 }

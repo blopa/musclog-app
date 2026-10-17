@@ -11,7 +11,11 @@
     },
     "channels": {
       "default": "Standaard",
-      "activeWorkout": "Actieve Workout"
+      "activeWorkout": "Actieve Workout",
+      "cycle": "Cyclusherinneringen",
+      "restTimer": "Rusttimer",
+      "workoutReminders": "Trainingsherinneringen",
+      "restTimerQuiet": "Rusttimer (zonder geluid)"
     },
     "startNow": "Nu starten",
     "types": {
@@ -38,7 +42,8 @@
       "activeWorkout": {
         "title": "Workout: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
-        "bodyNoExercise": "{{totalTime}}"
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Training bezig"
       },
       "workoutReminderMorning": {
         "title": "Workout-herinnering",
@@ -54,11 +59,11 @@
       },
       "periodPrediction": {
         "title": "Menstruatievoorspelling",
-        "body": "Je menstruatie begint naar verwachting over 2 dagen. Wees voorbereid!"
+        "body": "Je menstruatie kan over een paar dagen beginnen, op basis van je recente cycli."
       },
       "fertileWindow": {
         "title": "Vruchtbare periode",
-        "body": "Je vruchtbare periode begint! Handig voor het bijhouden van je energieniveaus."
+        "body": "Je geschatte vruchtbare periode kan binnenkort beginnen. Het is een kalenderschatting, geen bevestiging van de ovulatie."
       },
       "restTimerAlert": {
         "title": "Rust voorbij - weer aan de slag!",
@@ -67,7 +72,41 @@
       "workoutDurationWarning": {
         "title": "Nog steeds aan het trainen?",
         "body": "Je sessie is al 5 uur bezig. Vergeet niet om deze te beëindigen in Musclog!"
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "Je hebt een update."
+      },
+      "unfinishedWorkout": {
+        "title": "Training afronden?",
+        "body": "{{workoutName}} staat nog open. Rond af en log je training als je klaar bent."
+      },
+      "goalAtRisk": {
+        "title": "Weekdoel in gevaar",
+        "body": "Trainingen te gaan voor je weekdoel: {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Bijna klaar",
+        "body": "Nog {{seconds}} seconden rust."
+      },
+      "workTimerAlert": {
+        "title": "De tijd is om",
+        "body": "Je tijdset is klaar."
       }
+    },
+    "actions": {
+      "addRest": "+{{seconds}}s rust",
+      "nextSet": "Volgende set",
+      "snooze": "1 uur uitstellen",
+      "done": "Klaar",
+      "later": "Later",
+      "skip": "Overslaan"
+    },
+    "restPrompt": {
+      "title": "Rusttimer-meldingen?",
+      "message": "Je rusttimer loopt. Wil je een melding als je je telefoon vergrendelt of van app wisselt?",
+      "confirm": "Meldingen aanzetten",
+      "cancel": "Niet nu"
     }
   }
 }

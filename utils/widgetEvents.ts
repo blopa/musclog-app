@@ -6,8 +6,19 @@
 type Listener = () => void;
 
 const listeners: Set<Listener> = new Set();
+const resetListeners: Set<Listener> = new Set();
 
 export const widgetEvents = {
+  onReset(listener: Listener): () => void {
+    resetListeners.add(listener);
+    return () => {
+      resetListeners.delete(listener);
+    };
+  },
+
+  emitReset(): void {
+    resetListeners.forEach((listener) => listener());
+  },
   /**
    * Subscribe to nutrition widget update events.
    * Returns an unsubscribe function.

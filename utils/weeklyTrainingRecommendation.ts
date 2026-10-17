@@ -128,9 +128,14 @@ export function recommendTrainingWeek(evidence: TrainingEvidence): {
   reasons: TrainingReason[];
 } {
   const reasons: TrainingReason[] = [];
-  const goingBackwards = evidence.goals.some(
-    (goal) => goal.kind === '1rm' && (goal.status === 'stalling' || goal.status === 'declining')
-  );
+  // A stalled lift is either a 1RM goal going nowhere or an exercise that had to deload on its
+  // own. Reading only the goals left everyone without a 1RM goal — most users — with no fatigue
+  // signal but the calendar.
+  const stalled =
+    evidence.deloadedExercises > 0 ||
+    evidence.goals.some(
+      (goal) => goal.kind === '1rm' && (goal.status === 'stalling' || goal.status === 'declining')
+    );
 
   if (evidence.deloadedExercises >= MIN_DELOADED_EXERCISES) {
     reasons.push({ code: 'repeatedDeloads', count: evidence.deloadedExercises });
@@ -140,7 +145,7 @@ export function recommendTrainingWeek(evidence: TrainingEvidence): {
     evidence.ratedSets >= MIN_RATED_SETS &&
     evidence.averageRir != null &&
     evidence.averageRir <= GRINDING_AVERAGE_RIR &&
-    goingBackwards
+    stalled
   ) {
     reasons.push({ code: 'lowReserveStalled' });
   }

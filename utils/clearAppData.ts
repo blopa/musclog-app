@@ -12,6 +12,7 @@ import { database } from '@/database/database-instance';
 import { waitForBootMigrations } from '@/database/dbReady';
 import { reloadApp } from '@/utils/app';
 import { deleteStoredEncryptionKey } from '@/utils/encryptionKeyStorage';
+import { resetWidgets } from '@/widgets/resetWidgets';
 
 const DATABASE_FILE_NAMES = new Set([
   `${DATABASE_NAME}.db`,
@@ -47,6 +48,7 @@ async function deleteDirectoryContents(
 
 export async function clearAllAppData(): Promise<void> {
   await waitForBootMigrations();
+  await resetWidgets();
   await database.write(async () => {
     await database.unsafeResetDatabase();
   });

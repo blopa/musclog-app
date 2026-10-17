@@ -90,12 +90,25 @@ describe('loadStepFor', () => {
     expect(seen).toEqual([60, 62.5, 65, 67.5, 70]);
   });
 
-  it('rounds to whole POUNDS for an exercise shown in pounds, whatever the account says', () => {
-    // The caller passes the resolved unit: an exercise pinned to lbs on a metric account.
-    const step = loadStepFor('barbell', null, 'imperial');
-    const rounded = step.roundLoad(65);
-    expect(kgToDisplay(rounded, 'imperial')).toBeCloseTo(143, 6);
-    expect(kgToDisplay(step.incrementKg, 'imperial')).toBeCloseTo(5, 3);
+  it('rounds in POUNDS for an exercise shown in pounds, whatever the account says', () => {
+    // The caller passes the resolved unit: an exercise pinned to lbs on a metric account. 65 kg is
+    // 143.3 lb: a bar lands on 145 (pairs of 2.5 lb plates), a dumbbell on the whole pound.
+    const bar = loadStepFor('barbell', null, 'imperial');
+    expect(kgToDisplay(bar.roundLoad(65), 'imperial')).toBeCloseTo(145, 6);
+    expect(kgToDisplay(bar.incrementKg, 'imperial')).toBeCloseTo(5, 3);
+    expect(
+      kgToDisplay(loadStepFor('dumbbell', null, 'imperial').roundLoad(65), 'imperial')
+    ).toBeCloseTo(143, 6);
+  });
+
+  it('does not invent a dumbbell rack for a user without a gym', () => {
+    // 12 kg dumbbells: one step up is 14.5, not the 15 a 2.5 kg grid would force (+25%), and a
+    // deload comes off the real load instead of crashing to 7.5 kg.
+    const step = loadStepFor('dumbbell', null, 'metric');
+    expect(step.roundLoad(12 + step.incrementKg)).toBe(14.5);
+    expect(step.roundLoad(9.5)).toBe(9.5);
+    // A bar still moves in plate pairs.
+    expect(loadStepFor('barbell', null, 'metric').roundLoad(61)).toBe(60);
   });
 
   it('snaps to what the gym can load when there is a gym, in any unit', () => {

@@ -84,7 +84,8 @@
         "deleteConfirmMessage": "Weet je zeker dat je dit back-upbestand wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
         "restoreConfirmTitle": "Database herstellen?",
         "restoreConfirmMessage": "Dit zal alle huidige gegevens vervangen door de gegevens van deze back-up. De app zal herstarten na het herstellen.",
-        "restoreSuccess": "Database succesvol hersteld"
+        "restoreSuccess": "Database succesvol hersteld",
+        "cycleEncryptionBackup": "Vóór het versleutelen van cyclusgegevens"
       },
       "confirmExport": "Export bevestigen",
       "confirmImport": "Import bevestigen",
@@ -346,7 +347,62 @@
       "restTimer": "Rusttimer-meldingen",
       "restTimerSubtitle": "Ontvang een melding als je rustperiode voorbij is",
       "workoutDuration": "Waarschuwing lange workout",
-      "workoutDurationSubtitle": "Melding als je sessie langer dan 5 uur duurt"
+      "workoutDurationSubtitle": "Melding als je sessie langer dan 5 uur duurt",
+      "restTimerRepeat": "Rustmelding herhalen",
+      "restTimerRepeatSubtitle": "Herinner me een minuut later nog eens als ik de volgende set niet ben gestart",
+      "unfinishedWorkout": "Herinnering onafgeronde training",
+      "unfinishedWorkoutSubtitle": "Stuur me 45 minuten na mijn laatste set een seintje als ik vergeten ben af te ronden",
+      "goalAtRisk": "Weekdoel in gevaar",
+      "goalAtRiskSubtitle": "Waarschuw me als mijn wekelijkse trainingsdoel achterop raakt",
+      "weeklyReview": "Wekelijkse review",
+      "weeklyReviewSubtitle": "Herinnering wanneer je wekelijkse review klaar is",
+      "lockScreen": "Details op het vergrendelscherm",
+      "lockScreenOptions": {
+        "full": "Alle details",
+        "minimal": "Minimaal"
+      },
+      "sections": {
+        "session": "Tijdens trainingen",
+        "plan": "Je trainingsplan",
+        "reports": "Rapporten & voeding",
+        "quiet": "Stille uren & pauze",
+        "delivery": "Bezorging"
+      },
+      "accountability": {
+        "structured": "Gestructureerd",
+        "gentle": "Zacht",
+        "flexible": "Flexibel"
+      },
+      "accountabilityHints": {
+        "structured": "Herinner me op mijn geplande trainingsdagen.",
+        "gentle": "Stuur alleen een seintje als mijn weekdoel achterop raakt.",
+        "flexible": "Nooit een seintje. Toon alleen wat er komt."
+      },
+      "reminderLead": "Herinner me vóór de training",
+      "leadOnTime": "Op tijd",
+      "leadMinutes": "{{minutes}} min",
+      "quietHours": "Stille uren",
+      "quietHoursSubtitle": "Geen herinneringen in dit tijdvak",
+      "quietExempt": "Rustmeldingen en je actieve training worden nooit gedempt.",
+      "quietFrom": "Van",
+      "quietUntil": "Tot",
+      "pause": "Herinneringen pauzeren",
+      "pauseOptions": {
+        "off": "Uit",
+        "days3": "3 dagen",
+        "week": "1 week"
+      },
+      "deliveryStatus": "Toestemming: {{permission}} · {{pending}} gepland",
+      "permission": {
+        "granted": "toegestaan",
+        "denied": "geblokkeerd",
+        "undetermined": "nog niet gevraagd",
+        "unsupported": "niet ondersteund"
+      },
+      "testAlert": "Testmelding voor rust sturen",
+      "openSystemSettings": "Systeeminstellingen voor meldingen openen",
+      "updateInterval": "Trainingsklok bijwerken elke",
+      "updateIntervalOption": "{{seconds}} s"
     },
     "supportProject": {
       "title": "Steun het project"
@@ -460,7 +516,8 @@
           "label": "Kinetic Varia",
           "description": "Diepviolette oppervlakken met oranje accenten"
         }
-      }
+      },
+      "iconAppliesLater": "Het app-icoon verandert zodra je de app verlaat."
     },
     "workoutSettings": {
       "title": "Trainingsinstellingen",

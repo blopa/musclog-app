@@ -151,6 +151,10 @@ least WCAG AA contrast for normal text.
 
 ## Typography
 
+App headings and display text use solid `text.primary` ink across all themes, including Workouts,
+Notes, Health Connect onboarding, workout summaries, and rest-complete messages. Do not use
+gradient-filled glyphs.
+
 The app currently relies mainly on platform/system fonts; do not document an unbundled typeface as
 part of the brand. The token scale is:
 
@@ -172,6 +176,12 @@ and units; a large number without context is not a useful hierarchy.
 Spacing follows a 4-point base scale: 4, 8, 12, 16, 20, 24, 32, and 48. Use
 `theme.spacing.padding`, `.gap`, and `.margin` instead of introducing near-duplicate literals.
 
+Onboarding content uses a 24-point horizontal inset (`px-6`). In cycle setup, keep the
+horizontal inset and top padding on an inner `View` inside `KeyboardAwareScrollView`,
+so the heading and every form section align with the bottom action button on web and native.
+The shared cycle setup form leaves 12 points (`mt-3`) between the unknown-cycle-length
+option and the cycle/period numeric inputs.
+
 Standard radii are 12 for inputs/general controls, 16 for primary cards, and `full` for circular or
 pill elements. Borders should be subtle; surface separation should usually come from tonal layering
 before outlines or heavy shadows.
@@ -187,10 +197,19 @@ clipped by the parent; see `FIXES.md`.
 - Primary: emerald or the approved emerald-to-teal gradient, with high-contrast text. The
   `gradientCta` button variant draws `gradients.cta`, which is that emerald-to-teal gradient (the
   same stops as `gradients.accent`); it was indigo-to-green, which this rule does not allow.
+  Both gradients keep `text.onAccent` at least 4.5:1 across their sweep: the token generator
+  blends an unsafe deep stop towards the vivid stop. Every full-width segmented control variant
+  marks its selected segment with this same gradient and `text.onAccent` (the `pill` with the flat
+  accent and the same ink), and `text.secondary` for unselected options. A segment icon that
+  changes colour uses the render-function form, `(selected) => …`, with those two inks — a static
+  accent icon vanishes on the selected fill.
 - One primary action per screen. When a screen has a hero (the Workouts screen's Today card), the
   cards below it use their standard, secondary treatment rather than a second filled button.
 - Secondary: low-emphasis surface or outline treatment.
 - Destructive: red/rose and explicit action copy.
+- Cycle period actions ("My period started" / "ended") use `Button`'s `rose` / `roseOutline`
+  variants: the brand rose without `discard`'s destructive meaning. They were hand-rolled
+  `TouchableOpacity`s before.
 - Disabled: visually subdued and non-interactive; never communicate disabled state by opacity alone
   when the label would become unreadable.
 
@@ -205,10 +224,21 @@ appropriate, or both. Pick by what the control is, not by how it looks today:
 | Icon-only action (steppers, prev/next, back, more, remove ×)            | `IconButton` (`filled` / `elevated` / `ghost`; `media` over a photo)       |
 | One choice among several, or a compact action pill                      | `Chip` (`outline` for choices, `solid` for actions and the weekday picker) |
 | A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`)                                              |
-| Two or three mutually exclusive views                                   | `SegmentedControl` (`pill` when it sits inline beside other content)       |
+| Two to five mutually exclusive options shown side by side               | `SegmentedControl` — one form per screen (see below)                       |
 | A number the user types, kept as their own text                         | `NumericTextField` (`hero` / `field` / `cell`)                             |
 | A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
 | A search box or any labeled text field                                  | `TextInput` (`label=""` + a `Search` icon for search); never a raw input   |
+
+**`SegmentedControl`: full width or `pill`, never both on one screen.** The full-width variants
+(`elevated`, `outline`, `gradient` differ only in their track) are for a choice that switches what
+a screen shows or is the main field of a form or sheet. `pill` is for a choice that sits inline
+beside other content (the workout session's view toggle), where it hugs its options, or a
+secondary preference in a list of settings (every choice in the notification settings), where it
+takes `fullWidth` so it lines up with the cards and toggles around it — a hugging pill there
+leaves a ragged right edge. The notification settings once mixed four
+pills with one full-width control, which looked like a view switcher and made the same kind of
+choice read as two different controls. Every variant is a `radiogroup` of `radio`s for screen
+readers.
 
 A raw `Pressable` is right only for a composite surface that is itself the control — a card, a table
 cell (the set table's number, previous and check cells), a thumbnail, a radio card that hosts its own
@@ -287,7 +317,9 @@ pattern across eight files and added nothing over the surface color.
 - Direct and calm. Avoid guilt, punishment, and alarmist red states for ordinary target variance.
 - Explain AI estimates and calculated health metrics at the point of use.
 - Keep core logging fast and usable offline; optional AI should not block a manual path.
-- Menstrual-cycle and recovery guidance should be framed as context, not deterministic instruction.
+- Menstrual-cycle guidance is context, not instruction. The app never prescribes training from a cycle phase (the evidence does not support universal rules); it reports observations from the person's own records, always with how many cycles they rest on and the days behind them.
+- A modeled value shows its uncertainty (a range and a confidence line), and a logged fact is never drawn the same way as an estimate.
+- Cycle calendars never rely on color alone: each kind of mark has its own shape (filled, outlined, dashed, bar, dot), a word in the legend, and a spoken description per day.
 
 ## Website
 
@@ -323,3 +355,23 @@ The session follows a set table, not a form. **Inline**: one card per exercise �
 Home shows a compact permanent Weekly Review card below actions, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due and otherwise the "Weekly targets · since …" line, which is itself the way in. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
 
 Weekly Review leads with the week and a Training / Nutrition progress pair, then the two sections. Training: a `StatStrip` (workouts, working sets, volume in the user's unit), the week's workouts, records as trophy rows, and "Next up" with preview and editor actions; upcoming targets are collapsed by default. Nutrition: a `StatStrip` of the evidence (trend weight, food days, weigh-ins), a Current / Recommended table with signed deltas, the reason, then one gradient "Apply targets starting tomorrow" over "Keep current" and "Edit". Missing evidence makes "Keep targets while collecting data" the primary action with shortcuts to log. Review day and reminder live in a settings card below, history last. Opening or canceling a sheet never acknowledges a review. Training acknowledgement never gates progression. Respect themes, exercise units, local decimal separators, safe areas and keyboard clearance.
+
+### Cycle journal completion
+
+- Keep daily logging first; optional presets add fields progressively and preserve existing favorites. Daily-life impact uses labelled choices, and missing observations remain distinct from explicit zero/none.
+- Unknown cycle length never displays a fallback denominator or a precise date as personal knowledge. Historical prediction ranges and retrospective checks state that they are heuristic, not medical validation.
+- Trends are available without bleeding dates. Plots use separate recorded points rather than joining missing days; the accompanying dated values are accessible and editable. Search stays on-device and says that all words must match.
+- Pregnancy/loss/surgery/menopause contexts use quiet, neutral wording and retain history. Educational links name NHS/RCOG and identify English content; avoid diagnostic conclusions and phase-based prescriptions.
+- Restore is available before setup. Import mapping previews before any write, rejects ambiguity, and keeps the user's selected column names on error. Sharing starts with no fields selected and clearly describes a readable, non-revocable static file.
+- Health imports show source alongside values and never masquerade as manual logs. Health exports explain the receiving store and the explicitly omitted sensitive fields before confirmation.
+- Backups are manual: explain the encryption-password recovery requirement, last-prepared status and the need to save the file outside the app. Optional reminders never create or upload backups.
+
+## Home screen widgets
+
+Nutrition Progress shows the data date, consumed/target calories, and protein, digestible-carbohydrate,
+and fat progress. Bars are bounded to 0–100%; missing goals never appear as fabricated zero targets.
+Android retains the compact 4×1 nutrition and 1×1 camera sizes. iOS supports small/medium nutrition
+and a small camera widget. Colors and translated copy are supplied from the app’s selected palette
+and language, respecting iOS tinting. Empty/initial widgets invite opening Musclog; cached values
+retain their date, and the iOS midnight timeline replaces expired values with a refresh prompt.
+Widget timelines and foreground refresh are subject to the operating system’s rendering schedule.

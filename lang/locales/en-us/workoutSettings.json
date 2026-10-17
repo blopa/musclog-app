@@ -86,7 +86,15 @@
       "hapticsHint": "A tick for the last three seconds and a buzz at zero.",
       "defaultRest": "Default rest",
       "defaultRestHint": "Used for sets that don't name their own rest.",
-      "seconds": "sec"
+      "seconds": "sec",
+      "strongHaptics": "Stronger haptics",
+      "strongHapticsHint": "Heavier taps and a double buzz at zero.",
+      "alertSound": "Alert sound",
+      "alertSoundHint": "Play a sound when the rest-over notification arrives. Off keeps the vibration.",
+      "headsUp": "Heads-up before rest ends",
+      "headsUpOff": "Off",
+      "headsUpSeconds": "{{seconds}} s",
+      "headsUpHint": "The timer turns to \"get ready\" and buzzes once this long before the rest ends."
     },
     "autonomy": {
       "title": "When a workout starts",

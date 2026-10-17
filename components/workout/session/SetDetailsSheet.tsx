@@ -50,7 +50,7 @@ export function SetDetailsSheet({
       <View className="gap-5 pb-6">
         <View className="flex-row flex-wrap gap-3">
           {field('rir', t('trainingFlow.rirLabel'), t('trainingFlow.rirHint'))}
-          {field('rpe', t('trainingFlow.rpe'))}
+          {field('rpe', t('trainingFlow.rpe'), t('trainingFlow.rpeHint'))}
           {field('partials', t('trainingFlow.partials'))}
         </View>
         {canSkip ? (

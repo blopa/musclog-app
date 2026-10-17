@@ -465,6 +465,9 @@ export const schema = appSchema({
         { name: 'sync_goal', type: 'string', isOptional: true }, // 'performance', 'symptoms', 'energy'
         { name: 'life_stage', type: 'string', isOptional: true }, // 'regular', 'pcos', 'perimenopause', 'postpartum', 'post_pill'
         { name: 'is_active', type: 'boolean' }, // Allow users to turn tracking off
+        // Encrypted JSON { fallbackCycleLength, fallbackPeriodDuration }. Null on a row that
+        // predates v36 and has not been through CycleDataEncryptionMigration yet.
+        { name: 'config', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -479,6 +482,41 @@ export const schema = appSchema({
         { name: 'end_date', type: 'number', isOptional: true }, // null = period still active or end unknown
         { name: 'notes', type: 'string', isOptional: true },
         { name: 'timezone', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Cycle records from v36 on. Everything that describes the person (dates, bleeding,
+    // symptoms, notes, contraception) lives in one encrypted JSON `payload`; only ids and
+    // timestamps stay plain. The retired period_logs table above is read by the migration only.
+    tableSchema({
+      name: 'cycle_periods',
+      columns: [
+        { name: 'cycle_id', type: 'string', isIndexed: true },
+        { name: 'payload', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    tableSchema({
+      name: 'cycle_day_logs',
+      columns: [
+        { name: 'payload', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    tableSchema({
+      name: 'cycle_contexts',
+      columns: [
+        { name: 'cycle_id', type: 'string', isIndexed: true },
+        { name: 'payload', type: 'string' },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

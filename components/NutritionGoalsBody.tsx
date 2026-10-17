@@ -17,6 +17,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TextInputInstance } from 'react-native';
 import {
   ActivityIndicator,
   Platform,
@@ -335,7 +336,7 @@ export function NutritionGoalsBody({
   const [calorieInputValue, setCalorieInputValue] = useState(() =>
     initialGoals.totalCalories.toString()
   );
-  const calorieInputRef = useRef<TextInput>(null);
+  const calorieInputRef = useRef<TextInputInstance>(null);
 
   const preciseMacros = useRef({
     protein: initialGoals.protein,

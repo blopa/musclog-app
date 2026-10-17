@@ -7,7 +7,15 @@ import { Theme } from '@/theme';
 type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 type ThemeButtonVariant =
-  'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
+  | 'accent'
+  | 'discard'
+  | 'outline'
+  | 'secondary'
+  | 'secondaryGradient'
+  | 'dashed'
+  | 'gradientCta'
+  | 'rose'
+  | 'roseOutline';
 
 type ThemeButtonProps = {
   label: string;
@@ -90,6 +98,7 @@ function getBackground(theme: Theme, variant: ThemeButtonVariant, isDisabled: bo
     case 'gradientCta':
       return g(theme.colors.gradients.cta);
     case 'discard':
+    case 'rose':
       return theme.colors.rose.brand;
     case 'secondaryGradient':
       return g(theme.colors.gradients.button);
@@ -97,6 +106,7 @@ function getBackground(theme: Theme, variant: ThemeButtonVariant, isDisabled: bo
       return theme.colors.background.overlay;
     case 'outline':
     case 'dashed':
+    case 'roseOutline':
       return 'transparent';
     default:
       return g(theme.colors.gradients.accent);
@@ -110,6 +120,10 @@ function getTextColor(theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
 
   if (variant === 'outline') {
     return theme.colors.text.secondary;
+  }
+
+  if (variant === 'roseOutline') {
+    return theme.colors.rose.brand;
   }
 
   if (variant === 'dashed') {
@@ -134,6 +148,14 @@ function getBorder(
       borderWidth: theme.borderWidth.medium,
       borderStyle: 'solid',
       borderColor: theme.colors.background.ink10,
+    };
+  }
+
+  if (variant === 'roseOutline') {
+    return {
+      borderWidth: theme.borderWidth.medium,
+      borderStyle: 'solid',
+      borderColor: theme.colors.rose.brand,
     };
   }
 

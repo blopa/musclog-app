@@ -4,7 +4,11 @@ import type { Units } from '@/constants/settings';
 import { database } from '@/database/database-instance';
 import type ExerciseUserSettings from '@/database/models/ExerciseUserSettings';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
-import { resolveRepCeiling, storedRepCeiling } from '@/utils/bodyweightRepCeiling';
+import {
+  defaultRepCeilingFor,
+  resolveRepCeiling,
+  storedRepCeiling,
+} from '@/utils/bodyweightRepCeiling';
 import type { GymSnapshot } from '@/utils/gym';
 import { normalizeNote } from '@/utils/noteText';
 import {
@@ -44,6 +48,10 @@ export function weightUnitOverridesOf(
  * every field has been cleared is retired rather than kept as an empty shell, so "has settings"
  * and "has a row" mean the same thing.
  */
+/** What resolving a rep ceiling needs to know about the exercise: whose it is, and how much of
+ * the body it moves (which sets the default). */
+export type RepCeilingExercise = { id: string; loadMultiplier?: number | null };
+
 export class ExerciseUserSettingsService {
   /** Live rows. Observe with `observeWithColumns` — a row is updated in place. */
   static settingsQuery(): Query<ExerciseUserSettings> {
@@ -60,7 +68,7 @@ export class ExerciseUserSettingsService {
    */
   static async getResolvers(gym: Pick<GymSnapshot, 'weightUnit'> | null): Promise<{
     unitsFor: (exerciseId: string) => Units;
-    repCeilingFor: (exerciseId: string) => number;
+    repCeilingFor: (exercise: RepCeilingExercise) => number;
   }> {
     const [account, rows] = await Promise.all([
       SettingsService.getUnits(),
@@ -71,7 +79,8 @@ export class ExerciseUserSettingsService {
     return {
       unitsFor: (exerciseId) =>
         resolveWeightUnits({ account, gym: gym?.weightUnit, exercise: overrides.get(exerciseId) }),
-      repCeilingFor: (exerciseId) => resolveRepCeiling(ceilings.get(exerciseId)),
+      repCeilingFor: (exercise) =>
+        resolveRepCeiling(ceilings.get(exercise.id), defaultRepCeilingFor(exercise.loadMultiplier)),
     };
   }
 

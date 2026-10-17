@@ -1,62 +1,51 @@
-import { Zap } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 
-import { EnergyLevel, MenstrualPhase } from '@/database/services/MenstrualService';
+import { CYCLE_PHASE_LABEL_KEYS } from '@/constants/cycle';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { type Theme } from '@/theme';
+import type { CyclePhase, PhaseSegment } from '@/utils/cycle/cycleTimeline';
 
 type PhaseWheelProps = {
-  currentPhase: MenstrualPhase | null;
-  energyLevel: EnergyLevel | null;
+  currentPhase: CyclePhase | null;
+  /** Days since the last logged period start. */
   cycleDay: number;
   totalDays: number;
-  avgPeriodDuration?: number;
+  /** From the cycle timeline. Null when the layout would be a guess (late, hidden). */
+  segments: PhaseSegment[] | null;
 };
 
-// Helper function to calculate phase proportions dynamically
-function calculatePhaseProportions(
-  avgCycleLength: number,
-  avgPeriodDuration: number,
-  theme: Theme
-) {
-  const menstrualLength = avgPeriodDuration;
-  const ovulationLength = 3; // Standard ovulation window
-
-  // Remaining days after menstrual and ovulation phases
-  const remainingDays = avgCycleLength - menstrualLength - ovulationLength;
-
-  // Split remaining days between follicular and luteal phases
-  // Follicular is typically shorter than luteal
-  const follicularLength = Math.floor(remainingDays * 0.4);
-  const lutealLength = remainingDays - follicularLength;
-
-  return [
-    { key: 'menstrual' as const, color: theme.colors.status.error, length: menstrualLength },
-    {
-      key: 'follicular' as const,
-      color: theme.colors.status.brandBright,
-      length: follicularLength,
-    },
-    { key: 'ovulatory' as const, color: theme.colors.status.amber, length: ovulationLength },
-    { key: 'luteal' as const, color: theme.colors.status.purple, length: lutealLength },
-  ];
+function phaseColor(key: PhaseSegment['key'], theme: Theme) {
+  switch (key) {
+    case 'menstrual':
+      return theme.colors.status.error;
+    case 'between':
+      return theme.colors.accent.primary;
+    case 'follicular':
+      return theme.colors.status.brandBright;
+    case 'ovulatory':
+      return theme.colors.status.amber;
+    case 'luteal':
+      return theme.colors.status.purple;
+  }
 }
 
-export function PhaseWheel({
-  currentPhase,
-  energyLevel,
-  cycleDay,
-  totalDays,
-  avgPeriodDuration = 5,
-}: PhaseWheelProps) {
+export function PhaseWheel({ currentPhase, cycleDay, totalDays, segments }: PhaseWheelProps) {
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const theme = useTheme();
 
-  // Calculate phases dynamically based on user's cycle
-  const PHASES = calculatePhaseProportions(totalDays, avgPeriodDuration, theme);
+  const PHASES = (segments ?? [])
+    .filter((segment) => segment.length > 0)
+    .map((segment) => ({
+      key: segment.key,
+      color: phaseColor(segment.key, theme),
+      startDay: segment.startDay,
+      length: segment.length,
+    }));
 
   const size = 260;
   const strokeWidth = 16;
@@ -70,7 +59,8 @@ export function PhaseWheel({
   const gapDeg = (3 / circumference) * 360;
 
   // Current day indicator angle (progress through the cycle)
-  const dayRotation = ((cycleDay - 1) / totalDays) * 360;
+  // Clamped so an overdue period parks the marker at the end instead of wrapping to Day 1.
+  const dayRotation = (Math.min(cycleDay - 1, totalDays) / totalDays) * 360;
 
   return (
     <View className="items-center justify-center" style={{ width: size, height: size }}>
@@ -88,8 +78,8 @@ export function PhaseWheel({
           />
 
           {/* Phase arcs */}
-          {PHASES.map((phase, index) => {
-            const startDay = PHASES.slice(0, index).reduce((acc, p) => acc + p.length, 0);
+          {PHASES.map((phase) => {
+            const startDay = phase.startDay;
             const rawStartDeg = (startDay / totalDays) * 360;
             const rawSweepDeg = (phase.length / totalDays) * 360;
 
@@ -131,17 +121,18 @@ export function PhaseWheel({
         </G>
       </Svg>
 
-      {/* Center overlay */}
+      {/* Center overlay: what was logged (the day count), then the estimated phase */}
       <View className="absolute items-center justify-center">
-        <View className="mb-2 h-14 w-14 items-center justify-center rounded-full bg-accent-primary">
-          <Zap size={28} color={theme.colors.text.onAccent} />
-        </View>
-        <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
-          {t('focus.energyLevel')}
+        <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+          {t('focus.day')}
         </Text>
-        <Text className="text-3xl font-black capitalize text-text-primary">
-          {energyLevel || '--'}
+        <Text className="text-5xl font-black text-text-primary">{formatInteger(cycleDay)}</Text>
+        <Text className="mt-1 text-xs font-bold uppercase tracking-widest text-accent-primary">
+          {currentPhase ? t(CYCLE_PHASE_LABEL_KEYS[currentPhase]) : t('cycle.phaseUnknown')}
         </Text>
+        {currentPhase && currentPhase !== 'menstrual' && currentPhase !== 'between' ? (
+          <Text className="text-xs text-text-tertiary">{t('cycle.phaseEstimated')}</Text>
+        ) : null}
       </View>
     </View>
   );

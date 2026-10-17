@@ -37,6 +37,7 @@ import {
   MIN_HOME_ACTIONS,
   parseHomeActions,
 } from '@/constants/homeActions';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -44,6 +45,7 @@ import {
   THEME_IDS,
   type ThemeOption,
 } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
 import SettingsService from '@/database/services/SettingsService';
 import { useAvailableHomeActions } from '@/hooks/useAvailableHomeActions';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
@@ -108,6 +110,7 @@ function selectedToBinary(selected: MacroKey[]): string {
 export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
@@ -161,7 +164,9 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     // row is what re-themes the app.
     await SettingsService.setTheme(option);
     // Only a manual pick moves the launcher icon (see services/themeAppIcon.ts).
-    await syncAppIconWithTheme(option);
+    if (await syncAppIconWithTheme(option)) {
+      showSnackbar('success', t('settings.theme.iconAppliesLater'));
+    }
   };
 
   const handleHomeSummaryCardChange = async (card: HomeSummaryCard) => {
@@ -364,7 +369,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
                   label: t('settings.homeDailyStats.showHomeSteps.title'),
                   subtitle: t('settings.homeDailyStats.showHomeSteps.description'),
                   value: showHomeSteps,
-                  onValueChange: (v: boolean) => void SettingsService.setShowHomeSteps(v),
+                  onValueChange: (v: boolean) =>
+                    void SettingsService.set(SETTINGS.showHomeSteps, v),
                 },
               ]}
             />

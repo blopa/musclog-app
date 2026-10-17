@@ -3,16 +3,14 @@ import convert from 'convert';
 
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
-import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionLog from '@/database/models/NutritionLog';
-import PeriodLog from '@/database/models/PeriodLog';
 import Supplement from '@/database/models/Supplement';
 import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { withFastedZeroDays } from '@/database/nutritionDayCoverage';
-import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
+import { CycleRepository, readPeriods } from '@/database/repositories/CycleRepository';
 import {
   dayKeyRange,
   localDayKeyPlusCalendarDays,
@@ -21,6 +19,7 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
+import { type PeriodBand, periodBandAt } from '@/utils/cycle/periodBands';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -35,7 +34,6 @@ import { cmToDisplay, kgToDisplay, storedWeightToKg } from '@/utils/unitConversi
 import { calculateExerciseVolume } from '@/utils/workoutCalculator';
 import { isWorkingSet } from '@/utils/workoutSetCompletion';
 
-import { type MenstrualPhase, MenstrualService } from './MenstrualService';
 import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
 import { SettingsService } from './SettingsService';
@@ -111,9 +109,10 @@ export interface BodyCompProteinPoint {
   fatChange: number;
 }
 
-export interface MenstrualPhasePoint {
+export interface CycleBandPoint {
   date: number;
-  phase: MenstrualPhase;
+  /** Where the day sits relative to the user's own logged bleeding (no phase is estimated). */
+  band: PeriodBand;
   workoutScore: number;
   energyLevel: number;
   weight: number;
@@ -186,7 +185,7 @@ export interface ProgressData {
   insights: ProgressInsights;
   correlationHistory: CorrelationPoint[];
   bodyCompProteinHistory: BodyCompProteinPoint[];
-  menstrualPhaseHistory: MenstrualPhasePoint[];
+  cycleBandHistory: CycleBandPoint[];
   recoveryTrainingHistory: RecoveryTrainingPoint[];
   macroMuscleHistory: MacroMusclePoint[];
   moodHistory: MoodPoint[];
@@ -376,7 +375,7 @@ export class ProgressService {
       aggregation
     );
 
-    const menstrualPhaseHistory = await this.calculateMenstrualPhaseHistory(
+    const cycleBandHistory = await this.calculateMenstrualPhaseHistory(
       weightPoints,
       workoutLogs,
       startDate,
@@ -428,7 +427,7 @@ export class ProgressService {
       insights,
       correlationHistory,
       bodyCompProteinHistory,
-      menstrualPhaseHistory,
+      cycleBandHistory,
       recoveryTrainingHistory,
       macroMuscleHistory,
       moodHistory,
@@ -1031,28 +1030,18 @@ export class ProgressService {
     startDate: number,
     endDate: number,
     aggregation: TimeAggregation
-  ): Promise<MenstrualPhasePoint[]> {
-    const cycles = await database
-      .get<MenstrualCycle>('menstrual_cycles')
-      .query(Q.where('is_active', Q.eq(true)), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    if (cycles.length === 0) {
+  ): Promise<CycleBandPoint[]> {
+    const activeCycle = (await CycleRepository.cycles().fetch()).find((c) => c.isActive);
+    if (!activeCycle) {
       return [];
     }
 
-    const c = cycles[0];
-    const periodLogs: PeriodLog[] = await PeriodLogRepository.fetchForCycle(c.id);
-    const stats = MenstrualService.calculateCycleStats(periodLogs, {
-      avgCycleLength: c.avgCycleLength,
-      avgPeriodDuration: c.avgPeriodDuration,
-    });
-
-    if (stats.logCount === 0) {
+    const periods = await readPeriods(await CycleRepository.periods(activeCycle.id).fetch());
+    if (periods.length === 0) {
       return [];
     }
 
-    const history: MenstrualPhasePoint[] = [];
+    const history: CycleBandPoint[] = [];
 
     // Get energy levels from user metrics
     const energyMetrics = await UserMetricService.getMetricsHistory('mood', { startDate, endDate });
@@ -1068,14 +1057,7 @@ export class ProgressService {
     for (let d = startDate; d <= endDate; d += step) {
       const dayTs = this.getStartOfAggregation(d, aggregation);
 
-      // Use MenstrualService with the actual log history so phase is derived from
-      // period_logs (the canonical source) rather than the stale lastPeriodStartDate field.
-      const menstrualPhase = MenstrualService.getPhaseAtTimestamp(periodLogs, stats, dayTs);
-      if (menstrualPhase == null) {
-        continue;
-      }
-
-      const phase = menstrualPhase;
+      const band = periodBandAt(periods, dayTs);
 
       const workoutsInPeriod = workoutLogs.filter((wl) => {
         const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(wl), aggregation);
@@ -1100,7 +1082,7 @@ export class ProgressService {
 
       history.push({
         date: dayTs,
-        phase,
+        band,
         workoutScore: avgWorkoutScore,
         energyLevel: avgEnergy,
         weight: weight?.value || 0,

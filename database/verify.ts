@@ -42,6 +42,9 @@ export async function verifyDatabaseTables(): Promise<{
     'nutrition_target_periods',
     'nutrition_checkins',
     'menstrual_cycles',
+    'cycle_periods',
+    'cycle_day_logs',
+    'cycle_contexts',
     'chat_messages',
   ];
 

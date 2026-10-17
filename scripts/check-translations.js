@@ -30,6 +30,9 @@ const CONFIG = {
     '../components/**/*.ts',
     '../types/**/*.ts',
     '../services/**/*.ts',
+    // Label tables (`Record<…, string>` of whole keys) live in constants/ too.
+    '../constants/**/*.ts',
+    '../context/**/*.tsx',
     '../data/whatsNew/*.json',
   ],
   ignorePatterns: [

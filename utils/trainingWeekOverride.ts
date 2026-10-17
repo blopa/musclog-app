@@ -26,6 +26,21 @@ export type WeekOverridePlan = {
   workingSetCount: number;
 };
 
+/** The planned sets as a week override leaves them: changed numbers, dropped sets removed. */
+export function applyWeekOverride(
+  planned: readonly WeekOverrideSet[],
+  plan: Pick<WeekOverridePlan, 'changes' | 'dropSetIds'>
+): WeekOverrideSet[] {
+  const changes = new Map(plan.changes.map((change) => [change.setId, change]));
+  const dropped = new Set(plan.dropSetIds);
+  return planned
+    .filter((set) => !dropped.has(set.id))
+    .map((set) => {
+      const change = changes.get(set.id);
+      return change ? { ...set, weight: change.weightKg, reps: change.reps } : set;
+    });
+}
+
 /**
  * What a Weekly Review decision of "repeat" or "lighter" does to one exercise's planned working
  * sets. Pure, so the arithmetic is testable without a database.

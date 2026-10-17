@@ -1,32 +1,34 @@
-import { FlexWidget, ImageWidget } from 'react-native-android-widget';
+import { Image, Link, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  containerBackground,
+  font,
+  foregroundStyle,
+  frame,
+  widgetURL,
+} from '@expo/ui/swift-ui/modifiers';
+import { createWidget } from 'expo-widgets';
 
-import { darkTheme } from '@/theme'; // TODO: figure out how to get the current theme instead
+import { type CameraWidgetSnapshot, INITIAL_CAMERA_SNAPSHOT } from './widgetSnapshot';
 
-export function SmartCameraWidget() {
-  // Use dark theme colors for widget as per requirements.
-  // this will not dynamically update if the theme is changed.
-  const theme = darkTheme;
-
+function SmartCameraWidget(props: CameraWidgetSnapshot) {
+  'widget';
   return (
-    <FlexWidget
-      style={{
-        height: 'match_parent',
-        width: 'match_parent',
-        justifyContent: 'center',
-        alignItems: 'center',
-        // backgroundColor: theme.colors.background.primary as ColorProp,
-        borderRadius: theme.borderRadius.xl,
-      }}
-      clickAction="OPEN_URI"
-      clickActionData={{
-        uri: 'com.werules.logger://?action=open-camera',
-      }}
+    <Link
+      destination={props.url}
+      modifiers={[containerBackground(props.palette.background, 'widget'), widgetURL(props.url)]}
     >
-      <ImageWidget
-        image={require('../assets/camera-widget.png')}
-        imageWidth={256}
-        imageHeight={256}
-      />
-    </FlexWidget>
+      <VStack spacing={8} modifiers={[frame({ maxWidth: Infinity, maxHeight: Infinity })]}>
+        {props.imageUri ? (
+          <Image uiImage={props.imageUri} modifiers={[frame({ width: 64, height: 64 })]} />
+        ) : (
+          <Image systemName="camera.fill" size={40} color={props.palette.accent} />
+        )}
+        <Text modifiers={[font({ size: 12 }), foregroundStyle(props.palette.text)]}>
+          {props.label}
+        </Text>
+      </VStack>
+    </Link>
   );
 }
+
+export default createWidget('SmartCamera', SmartCameraWidget, INITIAL_CAMERA_SNAPSHOT);

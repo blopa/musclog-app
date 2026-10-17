@@ -21,6 +21,7 @@ const matter = require('gray-matter');
 
 const {
   blogCategoryPath,
+  blogPostPath,
   blogPagePathsAfterFirst,
   SAFE_CATEGORY_KEY,
   SAFE_SLUG_SEGMENT,
@@ -107,7 +108,7 @@ function discoverBlogPostPaths(postsDirectory = BLOG_POSTS_DIRECTORY) {
       throw new Error(`Invalid blog post path for a public URL: ${relativePath}`);
     }
 
-    return `/blog/${slug}`;
+    return blogPostPath(slug);
   });
 }
 

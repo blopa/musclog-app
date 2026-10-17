@@ -114,7 +114,6 @@ export function WorkoutSummaryCelebration({
   const { t } = useTranslation();
 
   const gradientCtaStr = `linear-gradient(90deg, ${theme.colors.gradients.cta[0]}, ${theme.colors.gradients.cta[1]})`;
-  const celebrationGlowStr = `linear-gradient(90deg, ${theme.colors.gradients.celebrationGlow[0]}, ${theme.colors.gradients.celebrationGlow[1]})`;
   const workoutStatsStr = `linear-gradient(90deg, ${theme.colors.gradients.workoutStats[0]}, ${theme.colors.gradients.workoutStats[1]})`;
 
   const { value: timeValue, suffix: timeSuffix } = splitDurationLabel(totalTime);
@@ -221,10 +220,7 @@ export function WorkoutSummaryCelebration({
           textAlign: 'center',
           letterSpacing: theme.typography.letterSpacing.tight,
           marginBottom: theme.spacing.padding.sm,
-          background: celebrationGlowStr,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
+          color: theme.colors.text.primary,
         }}
       >
         {t('workoutSummary.youCrushedIt')}

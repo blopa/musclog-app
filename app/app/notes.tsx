@@ -16,7 +16,6 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPo
 import { NoteCard } from '@/components/cards/NoteCard';
 import { NoteRow } from '@/components/cards/NoteRow';
 import { useCoach } from '@/components/CoachContext';
-import { GradientText } from '@/components/GradientText';
 import { MasterLayout } from '@/components/MasterLayout';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { GenericEditModal } from '@/components/modals/GenericEditModal';
@@ -218,15 +217,15 @@ export default function NotesScreen() {
         <AnimatedContent>
           <View className="px-4 py-6">
             <View className="flex-row items-center justify-between">
-              <GradientText
-                colors={theme.colors.gradients.workoutsTitle}
+              <Text
                 style={{
+                  color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize['4xl'],
                   fontWeight: theme.typography.fontWeight.bold,
                 }}
               >
                 {t('notes.title')}
-              </GradientText>
+              </Text>
               <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
             </View>
           </View>

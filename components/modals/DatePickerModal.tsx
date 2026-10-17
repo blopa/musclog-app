@@ -1,9 +1,6 @@
 import {
   addDays,
   addMonths,
-  eachDayOfInterval,
-  endOfMonth,
-  endOfWeek,
   format,
   getMonth,
   getYear,
@@ -26,6 +23,7 @@ import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import i18n, { DEFAULT_LANG, LanguageKeys, LOCALE_MAP } from '@/lang/lang';
 import { localCalendarDayDate } from '@/utils/calendarDate';
+import { monthGridDays } from '@/utils/monthGrid';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -79,12 +77,7 @@ export function DatePickerModal({
   const currentLanguage = (i18n.language || DEFAULT_LANG) as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP[DEFAULT_LANG];
 
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 }); // Sunday = 0
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
-
-  const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  const days = monthGridDays(currentMonth).map((day) => day.date);
   const weekRefStart = startOfWeek(today, { weekStartsOn: 0 });
   const weekDayLetters = Array.from({ length: 7 }, (_, i) =>
     format(addDays(weekRefStart, i), 'EEEEE', { locale })

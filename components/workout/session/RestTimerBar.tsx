@@ -35,6 +35,7 @@ export function RestTimerBar({
   onStart,
   onStop,
   onAdjust,
+  onOpenWorkTimer,
 }: {
   remaining: number;
   total: number;
@@ -44,24 +45,31 @@ export function RestTimerBar({
   onStart: () => void;
   onStop: () => void;
   onAdjust: (deltaSeconds: number) => void;
+  /** Opens the work timer for a timed set. Omitted while it is already open. Idle rests only. */
+  onOpenWorkTimer?: () => void;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { restTimerHaptics } = useSettings();
+  const { restTimerHaptics, restHapticStrength, restHeadsUpSeconds } = useSettings();
   const clock = useClockFormat();
   const resting = remaining > 0;
-  const phase = restPhase(remaining, total);
+  const phase = restPhase(remaining, total, restHeadsUpSeconds);
   const lastRemaining = useRef<number | null>(null);
   useEffect(() => {
     const previous = lastRemaining.current;
-    const beat = hapticBeat(previous, remaining);
+    // A rest no longer than the window has nothing to be warned about (same rule as `restPhase`).
+    const beat = hapticBeat(
+      previous,
+      remaining,
+      total > restHeadsUpSeconds ? restHeadsUpSeconds : 0
+    );
     lastRemaining.current = remaining;
     // Skipping a rest also lands on 0; only a countdown that actually ran out buzzes.
     const ranOut = beat !== 'done' || (previous != null && previous <= 2);
     if (beat && ranOut && restTimerHaptics) {
-      void playRestBeat(beat);
+      void playRestBeat(beat, restHapticStrength);
     }
-  }, [remaining, restTimerHaptics]);
+  }, [remaining, total, restTimerHaptics, restHapticStrength, restHeadsUpSeconds]);
 
   const fraction = resting && total > 0 ? Math.min(1, remaining / total) : 0;
   const tone = phase === 'getReady' ? 'text-status-warning' : 'text-text-primary';
@@ -106,6 +114,14 @@ export function RestTimerBar({
             <ChevronUp size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
           )}
         </Pressable>
+        {!resting && onOpenWorkTimer ? (
+          <Chip
+            variant="solid"
+            role="button"
+            label={t('workTimer.open')}
+            onPress={onOpenWorkTimer}
+          />
+        ) : null}
         {expanded ? null : (
           <Chip
             variant="solid"

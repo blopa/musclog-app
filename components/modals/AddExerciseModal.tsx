@@ -35,7 +35,7 @@ import {
   getMuscleGroupTranslationKey,
 } from '@/utils/exerciseTranslation';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
-import type { ProgressionRule } from '@/utils/progressionRules';
+import type { ProgressionRule } from '@/utils/progressionRuleSchema';
 import { displayToKg } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 

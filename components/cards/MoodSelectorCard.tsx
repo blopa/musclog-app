@@ -8,7 +8,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { GenericCard } from './GenericCard';
 
 type MoodSelectorCardProps = {
-  value: number; // 0-4: Poor, Low, Okay, Good, Great
+  disabled?: boolean;
+  value: number; // -1: unrecorded; 0-4: Poor, Low, Okay, Good, Great
   onChange: (value: number) => void;
   /** `default` shows emoji mood chips only; `enhanced` adds the slider above them. */
   variant?: 'default' | 'enhanced';
@@ -16,7 +17,12 @@ type MoodSelectorCardProps = {
 
 const MOOD_EMOJIS = ['😫', '😔', '😐', '😊', '🤩'];
 
-export function MoodSelectorCard({ value, onChange, variant = 'default' }: MoodSelectorCardProps) {
+export function MoodSelectorCard({
+  value,
+  onChange,
+  variant = 'default',
+  disabled = false,
+}: MoodSelectorCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -39,7 +45,9 @@ export function MoodSelectorCard({ value, onChange, variant = 'default' }: MoodS
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
             <Text className="text-xs font-bold text-accent-primary" numberOfLines={1}>
-              {t(`bodyMetrics.addEntry.moods.${value}`)}
+              {value < 0
+                ? t('cycle.personalize.moodUnlogged')
+                : t(`bodyMetrics.addEntry.moods.${value}`)}
             </Text>
           </View>
         </View>
@@ -66,6 +74,7 @@ export function MoodSelectorCard({ value, onChange, variant = 'default' }: MoodS
               return (
                 <Pressable
                   key={moodValue}
+                  disabled={disabled}
                   onPress={() => onChange(moodValue)}
                   className="flex-col items-center gap-1"
                 >

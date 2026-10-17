@@ -1,5 +1,6 @@
 import { Q, type Query } from '@nozbe/watermelondb';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { database } from '@/database/database-instance';
 import type { EquipmentType } from '@/database/models/Exercise';
 import type Gym from '@/database/models/Gym';
@@ -63,7 +64,7 @@ export class GymService {
 
   /** The gym being trained in, or null when none is selected (or the selected one was deleted). */
   static async getActiveGym(): Promise<GymSnapshot | null> {
-    const id = await SettingsService.getActiveGymId();
+    const id = await SettingsService.get(SETTINGS.activeGymId);
     return id ? await GymService.getGymById(id) : null;
   }
 
@@ -81,7 +82,7 @@ export class GymService {
     });
 
     if (options.makeActive) {
-      await SettingsService.setActiveGymId(created.id);
+      await SettingsService.set(SETTINGS.activeGymId, created.id);
     }
 
     return snapshotFromGymRow(created);
@@ -107,13 +108,13 @@ export class GymService {
     // markAsDeleted is a @writer and opens its own write; it must not be called inside one.
     await gym.markAsDeleted();
 
-    if ((await SettingsService.getActiveGymId()) === id) {
-      await SettingsService.setActiveGymId(null);
+    if ((await SettingsService.get(SETTINGS.activeGymId)) === id) {
+      await SettingsService.set(SETTINGS.activeGymId, null);
     }
   }
 
   static async setActiveGym(id: string | null): Promise<void> {
-    await SettingsService.setActiveGymId(id);
+    await SettingsService.set(SETTINGS.activeGymId, id);
   }
 
   /** Remove one equipment type from a gym — the "equipment unavailable" follow-up of a swap. */

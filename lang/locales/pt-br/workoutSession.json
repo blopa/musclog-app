@@ -26,10 +26,6 @@
     "notFoundDescription": "Não foi possível carregar sessão de treino. Por favor, tente novamente.",
     "goBack": "Voltar",
     "bodyweight": "Peso Corporal",
-    "hormonalInsight": "Insight Hormonal",
-    "ovulationInsight": "Durante a ovulação, você pode experimentar aumento de força e desempenho.",
-    "menstrualInsight": "Durante a menstruação, você pode precisar reduzir a intensidade e focar na recuperação.",
-    "phaseInsight": "Fase atual: {{phase}}. Multiplicador de intensidade: {{multiplier}}x",
     "fuelingInsight": "Insight de Energia",
     "lowFuelingMessage": "Você consumiu apenas {{carbs}}g de carboidratos nas últimas {{hours}} horas. Estoques de glicogênio podem estar baixos. Em sessões futuras, tente consumir mais carboidratos antes do treino. Um lanche rápido agora ainda pode ajudar no seu desempenho.",
     "fullyFueledMessage": "Você consumiu {{carbs}}g de carboidratos nas últimas {{hours}} horas. Você está totalmente abastecido e pronto para o treino!",
@@ -214,6 +210,9 @@
     "nextTime": "Na próxima vez",
     "detailsHint": "Opcional. Deixe o esforço em branco se você não avaliou esta série.",
     "rirHint": "Repetições que sobraram",
+    "rpeHint": "Mesma escala do RIR: RPE 10 é não sobrar nada",
+    "invalidWeight": "Informe o peso que você levantou (0 para só peso corporal).",
+    "invalidReps": "Informe as repetições que você fez ou pule a série.",
     "skipSet": "Pular esta série",
     "done": "Concluído",
     "columns": {
@@ -407,12 +406,23 @@
       "noWorkouts": "Nenhum treino nesta semana, então a próxima retoma de onde você parou.",
       "missedConsistency": "Você treinou bem menos que sua meta semanal; repetir evita um salto brusco.",
       "repeatedDeloads": "{{count}} exercícios precisaram de uma redução de carga por conta própria nesta semana.",
-      "lowReserveStalled": "Suas séries não deixaram nada de reserva e um exercício que você acompanha estagnou.",
+      "lowReserveStalled": "Suas séries não deixaram nada de reserva e um exercício estagnou.",
       "dueForLighter": "Já se passaram {{count}} semanas desde a última semana leve.",
       "onTrack": "O treino está no caminho certo."
     },
     "belowFloorTitle": "Abaixo do mínimo de calorias",
     "belowFloorBody": "Isso está abaixo do seu mínimo de {{minimum}} kcal. Você desativou o mínimo de calorias nas configurações avançadas; ir tão baixo não é recomendado e pode não ser seguro.",
-    "estimateShort": "Estimativa"
+    "estimateShort": "Estimativa",
+    "halfStatus": {
+      "done": "{{half}}: revisado",
+      "open": "{{half}}: a revisar"
+    },
+    "targetsEditor": {
+      "invalidCalories": "Informe uma meta de calorias acima de 0.",
+      "invalidMacro": "Informe um número (0 ou mais).",
+      "macroTotal": "Estes macros somam {{kcal}} kcal.",
+      "mismatch": "Estes macros somam {{kcal}} kcal, o que não bate com a meta de calorias.",
+      "useMacroTotal": "Usar {{kcal}} kcal"
+    }
   }
 }

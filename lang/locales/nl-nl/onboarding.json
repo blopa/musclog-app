@@ -54,18 +54,32 @@
         "periodDurationLabel": "Menstruatie"
       },
       "birthControl": {
-        "title": "Hormonale anticonceptie",
-        "description": "Gebruik je momenteel hormonale anticonceptie? Dit beïnvloedt de voorspelling van je hormonale fasen.",
+        "title": "Anticonceptie",
+        "description": "Gebruik je op dit moment anticonceptie? Hormonale methoden kunnen invloed hebben op je cyclus.",
         "none": "Geen",
-        "noneDescription": "Geen hormonale anticonceptie.",
+        "noneDescription": "Geen anticonceptie.",
         "pill": "De pil",
         "pillDescription": "Dagelijkse orale anticonceptiepil.",
-        "iud": "Spiraaltje",
-        "iudDescription": "Intra-uterien apparaat (hormonaal of koper).",
+        "iud": "Spiraal (type niet ingesteld)",
+        "iudDescription": "Kies hormonaal of koper om specifiek te zijn.",
         "implant": "Implantaat",
         "implantDescription": "Subcutaan hormonaal implantaat.",
         "other": "Anders",
-        "otherDescription": "Een andere vorm van anticonceptie."
+        "otherDescription": "Een andere vorm van anticonceptie.",
+        "hormonalIud": "Hormoonspiraal",
+        "hormonalIudDescription": "Spiraal die hormonen afgeeft.",
+        "copperIud": "Koperspiraal",
+        "copperIudDescription": "Spiraal zonder hormonen.",
+        "patch": "Pleister",
+        "patchDescription": "Hormonale huidpleister.",
+        "ring": "Vaginale ring",
+        "ringDescription": "Hormonale vaginale ring.",
+        "shot": "Prikpil",
+        "shotDescription": "Hormonale anticonceptie-injectie.",
+        "combinedPill": "Combinatiepil",
+        "combinedPillDescription": "Dagelijkse pil met oestrogeen en progestageen.",
+        "progestinPill": "Pil met alleen progestageen",
+        "progestinPillDescription": "Dagelijkse pil zonder oestrogeen."
       },
       "lifeStage": {
         "title": "Cyclus context",
@@ -78,7 +92,9 @@
         "postpartum": "Na de bevalling",
         "postpartumDescription": "Ik heb het afgelopen jaar bevallen.",
         "postPill": "Recent gestopt met anticonceptie",
-        "postPillDescription": "Ik ben recent gestopt met hormonale anticonceptie en mijn cyclus kan nog aan het herstellen zijn."
+        "postPillDescription": "Ik ben recent gestopt met hormonale anticonceptie en mijn cyclus kan nog aan het herstellen zijn.",
+        "noBleeding": "Bijhouden zonder bloeding",
+        "noBleedingDescription": "Ik heb geen menstruatie (bijvoorbeeld na een operatie of door onderdrukkende hormonen) maar wil bijhouden hoe ik me voel."
       },
       "goal": {
         "title": "Sync-doel",
@@ -93,7 +109,9 @@
       "pastPeriods": {
         "title": "Eerdere menstruaties (optioneel)",
         "description": "Het toevoegen van datums van eerdere menstruaties helpt de app je cycluslengte te leren en direct betere voorspellingen te doen.",
-        "addPastPeriod": "Eerdere menstruatie toevoegen"
+        "addPastPeriod": "Eerdere menstruatie toevoegen",
+        "duplicate": "Die dag staat al in de lijst.",
+        "remove": "Deze menstruatie verwijderen"
       },
       "errors": {
         "futureDate": "Menstruatiedata kunnen niet in de toekomst liggen.",
@@ -168,10 +186,10 @@
       "importOptically": "Gegevens importeren vanaf een andere telefoon",
       "storedLocally": "Alle gegevens lokaal opgeslagen op uw apparaat",
       "personalizedSetup": "Gepersonaliseerde Installatie",
-      "personalizedSetupSteps": "8 stappen",
+      "personalizedSetupSteps": "10 stappen",
       "personalizedSetupSubtitle": "Krijg nauwkeurige TDEE, macro's en gepersonaliseerde aanbevelingen",
       "quickSetup": "Snelle Installatie",
-      "quickSetupSteps": "5 stappen",
+      "quickSetupSteps": "7 stappen",
       "quickSetupSubtitle": "Basisinstallatie, u kunt later aanpassen"
     },
     "quickPreferences": {
@@ -329,7 +347,9 @@
       "editHint": "Pas oefeningen, sets of regels aan wanneer je wilt.",
       "emptyTitle": "Begin met een lege training",
       "emptyDescription": "De schema's in de bibliotheek zijn gebouwd voor sportschoolapparatuur, dus die slaan we over. Voeg onderweg oefeningen toe of bekijk later schema's.",
-      "startNow": "Toevoegen en starten",
+      "addPlan": "Schema toevoegen",
+      "dayLabel": "Dag {{day}}",
+      "dayExercises": "{{count}} oefeningen",
       "startEmpty": "Lege training starten",
       "notNow": "Niet nu",
       "howTitle": "Zo werkt het",
@@ -339,7 +359,7 @@
       "stepLogBody": "Voer gewicht en herhalingen in en de rusttimer start vanzelf.",
       "stepNextTitle": "Slimmer de volgende keer",
       "stepNextBody": "We onthouden je cijfers en stellen je volgende gewicht voor.",
-      "planHint": "Klaar om te beginnen? Tik op \"{{action}}\" om dit schema aan je profiel toe te voegen en meteen je eerste training te starten, of tik op \"{{later}}\" om het later te doen."
+      "planHint": "Tik op \"{{action}}\" om dit schema aan je profiel toe te voegen, of op \"{{later}}\" om later zelf een training te kiezen."
     }
   }
 }

@@ -12,7 +12,9 @@ import { WhatsNewCard } from '@/components/cards/WhatsNewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
+import { AppLockSettingsModal } from '@/components/modals/AppLockSettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
+import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { ManageBleDevicesModal } from '@/components/modals/ManageBleDevicesModal';
 import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
@@ -22,6 +24,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { isAppLockSupported } from '@/utils/appLock';
 
 export default function SettingsScreen() {
   const theme = useTheme();
@@ -37,12 +40,14 @@ export default function SettingsScreen() {
     localLlmBaseUrl,
   } = useSettings();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
+  const [isCycleSettingsVisible, setCycleSettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isDataSettingsVisible, setDataSettingsVisible] = useState(false);
   const [isAppBehaviorSettingsVisible, setAppBehaviorSettingsVisible] = useState(false);
   const [isVisualSettingsVisible, setVisualSettingsVisible] = useState(false);
   const [isNotificationsSettingsVisible, setNotificationsSettingsVisible] = useState(false);
   const [isBleDevicesVisible, setBleDevicesVisible] = useState(false);
+  const [isAppLockVisible, setAppLockVisible] = useState(false);
   const [isWorkoutSettingsVisible, setWorkoutSettingsVisible] = useState(false);
 
   const handleGoogleGeminiApiKeyChange = async (value: string) => {
@@ -241,6 +246,48 @@ export default function SettingsScreen() {
           <SettingsCard
             icon={
               <MaterialIcons
+                name="calendar-month"
+                size={theme.iconSize['2xl']}
+                color={theme.colors.accent.primary}
+              />
+            }
+            title={t('cycle.settings.title')}
+            subtitle={t('cycle.settings.subtitle')}
+            onPress={() => setCycleSettingsVisible(true)}
+            rightIcon={
+              <MaterialIcons
+                name="chevron-right"
+                size={theme.iconSize.xl}
+                color={theme.colors.text.secondary}
+              />
+            }
+          />
+
+          {isAppLockSupported ? (
+            <SettingsCard
+              icon={
+                <MaterialIcons
+                  name="lock"
+                  size={theme.iconSize['2xl']}
+                  color={theme.colors.accent.primary}
+                />
+              }
+              title={t('lock.settings.title')}
+              subtitle={t('lock.settings.subtitle')}
+              onPress={() => setAppLockVisible(true)}
+              rightIcon={
+                <MaterialIcons
+                  name="chevron-right"
+                  size={theme.iconSize.xl}
+                  color={theme.colors.text.secondary}
+                />
+              }
+            />
+          ) : null}
+
+          <SettingsCard
+            icon={
+              <MaterialIcons
                 name="notifications"
                 size={theme.iconSize['2xl']}
                 color={theme.colors.accent.primary}
@@ -324,6 +371,11 @@ export default function SettingsScreen() {
         visible={isWorkoutSettingsVisible}
         onClose={() => setWorkoutSettingsVisible(false)}
       />
+      <CycleSettingsModal
+        visible={isCycleSettingsVisible}
+        onClose={() => setCycleSettingsVisible(false)}
+      />
+      <AppLockSettingsModal visible={isAppLockVisible} onClose={() => setAppLockVisible(false)} />
       <NotificationsSettingsModal
         visible={isNotificationsSettingsVisible}
         onClose={() => setNotificationsSettingsVisible(false)}

@@ -3,11 +3,11 @@ import { RefreshCw, Ruler, Scale, Utensils } from 'lucide-react-native';
 import { startTransition, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { CaloriesBurnedCard } from '@/components/cards/CaloriesBurnedCard';
 import { LineChart } from '@/components/charts/LineChart';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { AdherenceHistoryChart } from '@/components/progress/AdherenceHistoryChart';
@@ -30,6 +30,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { ChartTooltipProvider, useChartTooltip } from '@/context/ChartTooltipContext';
 import { useAiEnabled } from '@/hooks/useAiEnabled';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useProgressData } from '@/hooks/useProgressData';
 import { useSettings } from '@/hooks/useSettings';
@@ -40,7 +41,7 @@ export default function ProgressScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   const { units, chartTooltipPosition } = useSettings();
   const { isEnabled: aiEnabled } = useAiEnabled();
   const {
@@ -168,42 +169,44 @@ export default function ProgressScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <Stack.Screen
-        options={{
-          title: t('progress.title'),
-          headerRight: () => <MenuButton onPress={() => setShowMenu(true)} />,
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: theme.colors.background.primary,
-          },
-          headerTintColor: theme.colors.text.primary,
-          headerShadowVisible: false,
-        }}
-      />
-      <ChartTooltipProvider tooltipPosition={chartTooltipPosition}>
-        <ProgressScreenContent
-          allAggregationData={allAggregationData}
-          chartPhase={effectiveChartPhase}
-          data={data}
-          hasAnyAggregationData={hasAnyAggregationData}
-          insets={insets}
-          isLoading={isLoading}
-          isAdvancedSettingsVisible={isAdvancedSettingsVisible}
-          menuItems={menuItems}
-          preset={preset}
-          changePreset={changePreset}
-          appliedCustomRange={appliedCustomRange}
-          onApplyCustomRange={applyCustomRange}
-          setUseWeeklyAverages={setUseWeeklyAverages}
-          setAdvancedSettingsVisible={setAdvancedSettingsVisible}
-          showMenu={showMenu}
-          setShowMenu={setShowMenu}
-          t={t}
-          theme={theme}
-          units={units}
-          useWeeklyAverages={useWeeklyAverages}
+      <AreaLockGate area="progress">
+        <Stack.Screen
+          options={{
+            title: t('progress.title'),
+            headerRight: () => <MenuButton onPress={() => setShowMenu(true)} />,
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: theme.colors.background.primary,
+            },
+            headerTintColor: theme.colors.text.primary,
+            headerShadowVisible: false,
+          }}
         />
-      </ChartTooltipProvider>
+        <ChartTooltipProvider tooltipPosition={chartTooltipPosition}>
+          <ProgressScreenContent
+            allAggregationData={allAggregationData}
+            chartPhase={effectiveChartPhase}
+            data={data}
+            hasAnyAggregationData={hasAnyAggregationData}
+            insets={insets}
+            isLoading={isLoading}
+            isAdvancedSettingsVisible={isAdvancedSettingsVisible}
+            menuItems={menuItems}
+            preset={preset}
+            changePreset={changePreset}
+            appliedCustomRange={appliedCustomRange}
+            onApplyCustomRange={applyCustomRange}
+            setUseWeeklyAverages={setUseWeeklyAverages}
+            setAdvancedSettingsVisible={setAdvancedSettingsVisible}
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            t={t}
+            theme={theme}
+            units={units}
+            useWeeklyAverages={useWeeklyAverages}
+          />
+        </ChartTooltipProvider>
+      </AreaLockGate>
     </MasterLayout>
   );
 }
@@ -324,12 +327,12 @@ function ProgressScreenContent({
                       units={units}
                     />
                   ) : null}
-                  {hasAnyAggregationData((d: any) => d.menstrualPhaseHistory) ? (
+                  {hasAnyAggregationData((d: any) => d.cycleBandHistory) ? (
                     <MenstrualPerformanceChart
                       allData={{
-                        daily: allAggregationData.daily?.menstrualPhaseHistory ?? [],
-                        weekly: allAggregationData.weekly?.menstrualPhaseHistory ?? [],
-                        monthly: allAggregationData.monthly?.menstrualPhaseHistory ?? [],
+                        daily: allAggregationData.daily?.cycleBandHistory ?? [],
+                        weekly: allAggregationData.weekly?.cycleBandHistory ?? [],
+                        monthly: allAggregationData.monthly?.cycleBandHistory ?? [],
                       }}
                     />
                   ) : null}

@@ -10,6 +10,7 @@ import { WeightUnitOverridePicker } from '@/components/workout/WeightUnitOverrid
 import { ExerciseUserSettingsService } from '@/database/services/ExerciseUserSettingsService';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { DEFAULT_BODYWEIGHT_REP_CEILING } from '@/utils/bodyweightRepCeiling';
 import { MAX_NOTE_LENGTH } from '@/utils/noteText';
 import type { WeightUnitOverride } from '@/utils/unitConversion';
 
@@ -17,6 +18,8 @@ type ExerciseUserSettingsSectionProps = {
   exerciseId: string;
   /** Bodyweight exercises also pick the reps they climb to before progressing another way. */
   isBodyweight?: boolean;
+  /** The ceiling this movement climbs to until the user picks one (`defaultRepCeilingFor`). */
+  defaultRepCeiling?: number;
 };
 
 /**
@@ -28,6 +31,7 @@ type ExerciseUserSettingsSectionProps = {
 export function ExerciseUserSettingsSection({
   exerciseId,
   isBodyweight = false,
+  defaultRepCeiling = DEFAULT_BODYWEIGHT_REP_CEILING,
 }: ExerciseUserSettingsSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -92,7 +96,7 @@ export function ExerciseUserSettingsSection({
 
           {isBodyweight ? (
             <BodyweightRepCeilingPicker
-              value={stored.repCeiling}
+              value={stored.repCeiling ?? defaultRepCeiling}
               onChange={(ceiling) => void chooseRepCeiling(ceiling)}
               disabled={isLoading}
             />

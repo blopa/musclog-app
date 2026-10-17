@@ -2,7 +2,8 @@ import { ImageFormat, makeImageFromView } from '@shopify/react-native-skia';
 import { cacheDirectory, EncodingType, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { useCallback, useRef, useState } from 'react';
-import { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
+import { findNodeHandle } from 'react-native';
 
 import i18n from '@/lang/lang';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
@@ -20,7 +21,7 @@ function waitForNextFrame(): Promise<void> {
 }
 
 export function useChartCapture() {
-  const captureRef = useRef<View>(null);
+  const captureRef = useRef<ViewInstance>(null);
   const [isCapturing, setIsCapturing] = useState(false);
 
   const captureAndShare = useCallback(async (title: string) => {
@@ -32,7 +33,9 @@ export function useChartCapture() {
     await waitForNextFrame();
 
     try {
-      const skImage = await makeImageFromView(captureRef);
+      const skImage = await makeImageFromView({
+        current: findNodeHandle(captureRef.current) ?? null,
+      });
       if (!skImage) {
         throw new Error('Failed to capture chart view');
       }

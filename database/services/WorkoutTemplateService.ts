@@ -25,7 +25,7 @@ import {
   parseProgressionRule,
   type ProgressionRule,
   serializeProgressionRule,
-} from '@/utils/progressionRules';
+} from '@/utils/progressionRuleSchema';
 import { roundWeightForUnits } from '@/utils/unitConversion';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';

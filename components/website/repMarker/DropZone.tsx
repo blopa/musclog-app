@@ -47,6 +47,7 @@ export function DropZone({
     }
   };
 
+  // TODO: avoid IIFE
   const borderColor = (() => {
     if (error) {
       return ACCENT_RED;

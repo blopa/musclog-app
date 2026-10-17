@@ -1,5 +1,4 @@
 import { Check, SkipForward } from 'lucide-react-native';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
@@ -15,8 +14,7 @@ import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import { RirQuickPick } from './RirQuickPick';
 import type { SessionSetRowModel } from './sessionModel';
-import { SetDetailsSheet } from './SetDetailsSheet';
-import { draftFromPrevious } from './setDraft';
+import { draftFromPrevious, type SetDraftField } from './setDraft';
 
 /**
  * Column widths shared by the header and every row, so they always line up. The inputs are kept
@@ -62,9 +60,11 @@ export function InlineSetRow({
   units,
   isCurrent,
   busy,
+  invalidField,
   onEdit,
   onComplete,
   onSkip,
+  onDetails,
 }: {
   row: SessionSetRowModel;
   draft?: Partial<SessionDraft>;
@@ -73,15 +73,18 @@ export function InlineSetRow({
   units: Units;
   isCurrent: boolean;
   busy: boolean;
+  /** The field that stopped the last attempt to complete this set, until the user edits it. */
+  invalidField?: SetDraftField | null;
   onEdit: (patch: Partial<SessionDraft>) => void;
   onComplete: () => void;
   onSkip: () => void;
+  /** Opens the set's details (effort, partials, skip): one sheet, owned by the session view. */
+  onDetails: () => void;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { locale, formatInteger } = useFormatAppNumber();
   const compact = useCompactSetTable();
-  const [details, setDetails] = useState(false);
   const { set, workingNumber, prescription } = row;
   const done = isPerformedWorkoutSet(set);
   const skipped = set.completionStatus === 'skipped';
@@ -108,7 +111,7 @@ export function InlineSetRow({
     surface = 'border-accent-primary bg-bg-secondary';
   }
 
-  const input = (field: 'weight' | 'reps', label: string, width: number) => (
+  const input = (field: SetDraftField, label: string, width: number) => (
     <NumericTextField
       size="cell"
       width={width}
@@ -121,6 +124,7 @@ export function InlineSetRow({
       onChangeText={(text) => onEdit({ [field]: text })}
       integer={field === 'reps'}
       marked={marked(field)}
+      invalid={invalidField === field}
       surface={!done}
     />
   );
@@ -158,9 +162,11 @@ export function InlineSetRow({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${setName}, ${t('trainingFlow.details')}`}
-          onPress={() => setDetails(true)}
+          onPress={onDetails}
           className="items-center justify-center rounded-lg"
           style={{ width: SET_TABLE_COLUMNS.set, height: 44 }}
+          // The column is 32pt so the row fits a 390pt phone; the touch target still reaches 44.
+          hitSlop={{ left: 6, right: 6 }}
         >
           <Text
             className={`text-base font-bold ${workingNumber == null ? 'text-text-secondary' : 'text-text-primary'}`}
@@ -214,21 +220,6 @@ export function InlineSetRow({
             testID={`set-${set.id}-skip`}
           />
         </View>
-      ) : null}
-      {details ? (
-        <SetDetailsSheet
-          title={setName}
-          draft={values}
-          editable={!done}
-          canSkip={editable}
-          busy={busy}
-          onChange={onEdit}
-          onSkip={() => {
-            setDetails(false);
-            onSkip();
-          }}
-          onClose={() => setDetails(false)}
-        />
       ) : null}
     </View>
   );

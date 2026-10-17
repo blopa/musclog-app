@@ -17,6 +17,13 @@ export const WHATS_NEW_ICONS = [
 ] as const;
 export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
 
+/** Facts about the person's data that can gate a whole page of a release. */
+export const WHATS_NEW_CONDITIONS = ['cycleTracking'] as const;
+export type WhatsNewCondition = (typeof WHATS_NEW_CONDITIONS)[number];
+export type WhatsNewContext = Record<WhatsNewCondition, boolean>;
+/** Nothing is known: every conditional page stays hidden. */
+export const EMPTY_WHATS_NEW_CONTEXT: WhatsNewContext = { cycleTracking: false };
+
 export const WHATS_NEW_SETTINGS = [
   'workoutView',
   'workoutAutonomy',

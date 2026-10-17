@@ -1,448 +1,410 @@
-import {
-  Activity,
-  AlertCircle,
-  Calendar,
-  CheckCircle,
-  CircleDot,
-  Plus,
-  Settings,
-  Sparkles,
-} from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { CheckCircle, CircleDot, Plus, Settings, Sparkles } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-import { PhysiologicalInsightsCard } from '@/components/cards/PhysiologicalInsightsCard';
+import { AppointmentSummarySheet } from '@/components/cycle/AppointmentSummarySheet';
+import { ContextTimeline } from '@/components/cycle/ContextTimeline';
+import { CycleCalendar } from '@/components/cycle/CycleCalendar';
+import { CycleCareCard } from '@/components/cycle/CycleCareCard';
+import { CycleComparison } from '@/components/cycle/CycleComparison';
+import { CycleDaySheet } from '@/components/cycle/CycleDaySheet';
+import { CycleInsightsCard } from '@/components/cycle/CycleInsightsCard';
+import { CycleTrends } from '@/components/cycle/CycleTrends';
+import { DayLogSummary } from '@/components/cycle/DayLogSummary';
+import { PeriodHistoryList } from '@/components/cycle/PeriodHistoryList';
+import { PinSuggestionCard } from '@/components/cycle/PinSuggestionCard';
+import { PredictionCard } from '@/components/cycle/PredictionCard';
+import { PredictionDetailsSheet } from '@/components/cycle/PredictionDetailsSheet';
+import { QuickLogRow } from '@/components/cycle/QuickLogRow';
+import { ReminderExplainerSheet } from '@/components/cycle/ReminderExplainerSheet';
 import { DateNavigator } from '@/components/DateNavigator';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
-import { CycleLogModal } from '@/components/modals/CycleLogModal';
+import { CycleContextModal } from '@/components/modals/CycleContextModal';
+import { CyclePortabilityModal } from '@/components/modals/CyclePortabilityModal';
 import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
+import { EditPeriodModal } from '@/components/modals/EditPeriodModal';
 import { PeriodLogModal } from '@/components/modals/PeriodLogModal';
 import { PhaseWheel } from '@/components/PhaseWheel';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
-import {
-  CONFIDENCE_LABEL_KEYS,
-  FLOW_LEVEL_KEYS,
-  LIFE_STAGE_WARNING_KEYS,
-  type PeriodLogMode,
-} from '@/constants/cycle';
-import { MenstrualService } from '@/database/services/MenstrualService';
-import { UserMetricService } from '@/database/services/UserMetricService';
+import { Button } from '@/components/theme/Button';
+import { IconButton } from '@/components/theme/IconButton';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { TextButton } from '@/components/theme/TextButton';
+import { CYCLE_PHASE_LABEL_KEYS, type PeriodLogMode } from '@/constants/cycle';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import {
-  localCalendarDayDate,
-  localDayClosedRangeMaxMs,
-  localDayStartMs,
-  MS_PER_SOLAR_DAY,
-} from '@/utils/calendarDate';
+import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
+import { type CycleReminderKind, isCycleReminderKind } from '@/utils/cycle/cycleReminders';
+import type { CycleContextDto, CyclePeriodDto } from '@/utils/cycle/types';
 
-type DailyMetric = {
-  id: string;
-  type: string;
-  value: number;
-  note: string | undefined;
-};
+type HistoryTab = 'calendar' | 'history' | 'comparison' | 'trends';
 
-const getHormoneTrend = (trend?: string) => {
-  if (trend === 'rising') {
-    return 'up';
-  }
-
-  if (trend === 'dropping') {
-    return 'down';
-  }
-
-  return 'stable';
-};
+/**
+ * One sheet or modal at a time. A flag per surface let several be "open" at once and put seven
+ * modals side by side, the shape iOS drops modals for (see `local/no-sibling-modals`).
+ */
+type Panel =
+  | { kind: 'day' }
+  | { kind: 'restore' }
+  | { kind: 'settings' }
+  | { kind: 'details' }
+  | { kind: 'appointment' }
+  | { kind: 'period'; mode: PeriodLogMode }
+  | { kind: 'editPeriod'; period: CyclePeriodDto }
+  | { kind: 'context'; context: CycleContextDto | null }
+  | { kind: 'why'; reminder: CycleReminderKind };
 
 export default function CycleScreen() {
   const theme = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { reminder } = useLocalSearchParams<{ reminder?: string }>();
   const { formatInteger } = useFormatAppNumber();
-
-  const formatFlowMetric = (value: number) => {
-    const key = FLOW_LEVEL_KEYS[value];
-    if (key) {
-      return t(key);
-    }
-
-    return `${formatInteger(value)}/5`;
-  };
-
-  const formatMetricValue = (metric: DailyMetric) => {
-    if (metric.type === 'period_flow') {
-      return formatFlowMetric(metric.value);
-    }
-
-    return metric.note || '--';
-  };
-
+  const { cycleShowFertility } = useSettings();
   const {
-    currentPhase,
-    energyLevel,
-    cycleDay,
     cycle,
-    cycleStats,
-    nextPeriodDate,
-    nextPeriodEarliest,
-    nextPeriodLatest,
-    isCurrentlyInPeriod,
-    isIrregular,
-    predictionConfidence,
-    activePeriodLog,
-    nowMs,
+    pausedCycle,
+    resumeTracking,
+    timeline,
+    predictionStats,
+    activePeriod,
+    periods,
+    history,
+    dayLogs,
+    contexts,
+    moods,
+    guidance,
+    config,
+    today,
   } = useMenstrualCycle();
 
-  const [isLogModalVisible, setIsLogModalVisible] = useState(false);
-  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
-  const [periodLogMode, setPeriodLogMode] = useState<PeriodLogMode>('start');
-  const [isPeriodLogModalVisible, setIsPeriodLogModalVisible] = useState(false);
-  const [dailyMetrics, setDailyMetrics] = useState<DailyMetric[]>([]);
+  const [tab, setTab] = useState<HistoryTab>('calendar');
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
-
-  const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
-
-  const avgCycleLength = cycleStats?.avgCycleLength ?? cycle?.avgCycleLength ?? 28;
-  const cycleProgress = cycleDay != null ? Math.round((cycleDay / avgCycleLength) * 100) : 0;
-
-  const openPeriodLog = (mode: PeriodLogMode) => {
-    setPeriodLogMode(mode);
-    setIsPeriodLogModalVisible(true);
+  // The last panel stays mounted after it closes, so its closing animation can play.
+  const [panel, setPanelState] = useState<Panel | null>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const setPanel = (next: Panel) => {
+    setPanelState(next);
+    setPanelOpen(true);
   };
 
-  useEffect(() => {
-    const fetchDailyMetrics = async () => {
-      const startMs = localDayStartMs(selectedDate);
-      const endMs = localDayClosedRangeMaxMs(selectedDate);
+  // A tapped reminder lands here with `?reminder=<kind>`: explain it once, then drop the param so
+  // returning to the screen does not reopen the sheet. Adjusting state during render rather than
+  // in an effect, so the sheet is part of the first frame.
+  const [handledReminder, setHandledReminder] = useState<string | undefined>(undefined);
+  if (reminder !== handledReminder) {
+    setHandledReminder(reminder);
+    if (reminder && isCycleReminderKind(reminder)) {
+      setPanel({ kind: 'why', reminder });
+    }
+  }
 
-      const flowMetrics = await UserMetricService.getMetricsHistory('period_flow', {
-        startDate: startMs,
-        endDate: endMs,
-      });
+  const close = () => {
+    setPanelOpen(false);
+    if (reminder) {
+      router.setParams({ reminder: undefined });
+    }
+  };
 
-      const symptomMetrics = await UserMetricService.getMetricsHistory('period_symptoms', {
-        startDate: startMs,
-        endDate: endMs,
-      });
+  const day = localDayStartMs(selectedDate);
+  const cycleDay = timeline?.elapsedDay ?? null;
+  const currentPhase = timeline?.currentPhase ?? null;
+  const avgCycleLength = predictionStats.medianLength;
+  const isOverdue = timeline?.prediction.state === 'late';
+  const latestStart = periods.reduce((max, p) => Math.max(max, p.startDate), 0);
+  const showFertile = cycleShowFertility && timeline?.fertileEstimate != null;
 
-      const allMetrics = [...flowMetrics, ...symptomMetrics];
-      const decoratedMetrics = await Promise.all(
-        allMetrics.map(async (m) => {
-          const decrypted = await m.getDecrypted();
-          const note = await m.getNote();
-          return {
-            id: m.id,
-            type: m.type,
-            value: decrypted.value,
-            note: note,
-          };
-        })
-      );
+  const openDay = (selected: number) => {
+    setSelectedDate(localCalendarDayDate(new Date(selected)));
+    setPanel({ kind: 'day' });
+  };
 
-      setDailyMetrics(decoratedMetrics);
-    };
+  const startTracking = () => {
+    router.navigate({
+      pathname: '/app/onboarding/cycle-setup',
+      params: { nextRoute: encodeURIComponent('/app/cycle') },
+    } as never);
+  };
 
-    fetchDailyMetrics();
-  }, [isLogModalVisible, isPeriodLogModalVisible, selectedDate]);
-
-  const lifeStage = cycle?.lifeStage;
-  const lifeStageWarningKey = lifeStage ? LIFE_STAGE_WARNING_KEYS[lifeStage] : undefined;
-  const lifeStageWarning = lifeStageWarningKey ? t(lifeStageWarningKey) : null;
-
-  const confidenceLabelKey = CONFIDENCE_LABEL_KEYS[predictionConfidence];
-  const confidenceLabel = confidenceLabelKey
-    ? t(confidenceLabelKey, { count: cycleStats?.logCount ?? 0 })
-    : null;
-
-  const formatDate = (date: Date | null) => {
-    if (!date) {
+  const dayCounter = () => {
+    if (cycleDay == null) {
       return '--';
     }
 
-    return date.toLocaleDateString(i18n.resolvedLanguage ?? i18n.language, {
-      month: 'long',
-      day: 'numeric',
+    // Without learned history, or past the usual length, a "/28" denominator would be wrong.
+    if (
+      (config.cycleLengthKnown === false && predictionStats.usableCount === 0) ||
+      cycleDay > avgCycleLength
+    ) {
+      return formatInteger(cycleDay);
+    }
+
+    return t('cycle.dayCounter', {
+      day: formatInteger(cycleDay),
+      length: formatInteger(avgCycleLength),
     });
   };
 
-  const nextPeriodDisplay =
-    isIrregular && nextPeriodEarliest && nextPeriodLatest
-      ? `${formatDate(nextPeriodEarliest)} – ${formatDate(nextPeriodLatest)}`
-      : formatDate(nextPeriodDate);
+  const renderPanel = () => {
+    switch (panel?.kind) {
+      case 'day':
+        return <CycleDaySheet visible={panelOpen} onClose={close} day={day} />;
+      case 'restore':
+        return <CyclePortabilityModal visible={panelOpen} onClose={close} />;
+      case 'settings':
+        return <CycleSettingsModal visible={panelOpen} onClose={close} />;
+      case 'details':
+        return <PredictionDetailsSheet visible={panelOpen} onClose={close} />;
+      case 'appointment':
+        return <AppointmentSummarySheet visible={panelOpen} onClose={close} />;
+      case 'period':
+        return (
+          <PeriodLogModal
+            visible={panelOpen}
+            onClose={close}
+            mode={panel.mode}
+            initialDate={selectedDate}
+          />
+        );
+      case 'editPeriod':
+        return (
+          <EditPeriodModal
+            visible={panelOpen}
+            onClose={close}
+            period={panel.period}
+            isLatest={panel.period.startDate === latestStart}
+          />
+        );
+      case 'context':
+        return <CycleContextModal visible={panelOpen} onClose={close} context={panel.context} />;
+      case 'why':
+        return (
+          <ReminderExplainerSheet
+            kind={panelOpen ? panel.reminder : null}
+            onClose={close}
+            onChangeReminders={() => setPanel({ kind: 'settings' })}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <MasterLayout>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <AnimatedContent>
-          <View className="px-4 py-8">
-            {/* Title */}
-            <View className="mb-6 flex-row items-center justify-between">
-              <Text className="text-4xl font-black text-text-primary">{t('cycle.title')}</Text>
-              {cycle ? (
-                <Pressable
-                  onPress={() => setIsSettingsModalVisible(true)}
-                  className="h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                  hitSlop={8}
-                >
-                  <Settings size={20} color={theme.colors.text.secondary} />
-                </Pressable>
-              ) : null}
-            </View>
-
-            {/* Life stage contextual banner */}
-            {lifeStageWarning ? (
-              <View
-                className="mb-6 flex-row items-center gap-3 rounded-2xl p-4"
-                style={{ backgroundColor: theme.colors.status.warning10 }}
-              >
-                <AlertCircle size={18} color={theme.colors.status.warning} />
-                <Text className="flex-1 text-sm" style={{ color: theme.colors.status.warning }}>
-                  {lifeStageWarning}
+      <AreaLockGate area="cycle">
+        <KeyboardAwareScrollView
+          bottomOffset={16}
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+        >
+          <AnimatedContent>
+            <View className="px-4 py-8">
+              <View className="mb-6 flex-row items-center justify-between">
+                <Text className="flex-1 text-4xl font-black text-text-primary">
+                  {t('cycle.title')}
                 </Text>
+                <IconButton
+                  icon={Settings}
+                  accessibilityLabel={t('cycle.settings.title')}
+                  onPress={() => setPanel({ kind: 'settings' })}
+                />
               </View>
-            ) : null}
 
-            {/* No data empty state */}
-            {!cycle ? (
-              <View className="mb-8 items-center rounded-2xl bg-bg-overlay p-8">
-                <Sparkles size={40} color={theme.colors.text.secondary} />
-                <Text className="mt-4 text-center text-lg font-bold text-text-primary">
-                  {t('cycle.noData.title')}
-                </Text>
-                <Text className="mt-2 text-center text-sm text-text-secondary">
-                  {t('cycle.noData.description')}
-                </Text>
-              </View>
-            ) : (
-              <>
-                {/* Day counter + phase label */}
-                <View className="mb-8 flex-row items-center justify-between">
-                  <View className="rounded-2xl bg-bg-overlay px-4 py-3">
-                    <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
-                      {t('focus.day')}
-                    </Text>
-                    <Text className="text-2xl font-black text-accent-primary">
-                      {cycleDay != null
-                        ? `${cycleDay.toString().padStart(2, '0')}/${avgCycleLength}`
-                        : '--'}
-                    </Text>
-                  </View>
-                  <View className="items-end">
-                    <Text className="text-sm font-bold uppercase tracking-widest text-accent-primary">
-                      {t('focus.currentPhase')}
-                    </Text>
-                    <Text className="text-2xl font-black capitalize text-text-primary">
-                      {currentPhase ? t(`cycle.phase.${currentPhase}`) : '--'}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* Phase Wheel */}
-                <View className="mb-10 items-center justify-center">
-                  <PhaseWheel
-                    currentPhase={currentPhase}
-                    energyLevel={energyLevel}
-                    cycleDay={cycleDay ?? 1}
-                    totalDays={avgCycleLength}
-                    avgPeriodDuration={cycleStats?.avgPeriodDuration ?? cycle?.avgPeriodDuration}
+              {!cycle ? (
+                <View className="mb-8 items-center rounded-2xl bg-bg-overlay p-8">
+                  <Sparkles size={40} color={theme.colors.text.secondary} />
+                  <Text className="mt-4 text-center text-lg font-bold text-text-primary">
+                    {pausedCycle ? t('cycle.noData.pausedTitle') : t('cycle.noData.title')}
+                  </Text>
+                  <Text className="mt-2 text-center text-sm text-text-secondary">
+                    {pausedCycle
+                      ? t('cycle.noData.pausedDescription')
+                      : t('cycle.noData.description')}
+                  </Text>
+                  <TextButton
+                    label={t('cycle.complete.restoreFirst')}
+                    onPress={() => setPanel({ kind: 'restore' })}
                   />
+                  <View className="mt-6 w-full">
+                    <Button
+                      label={pausedCycle ? t('cycle.noData.resume') : t('cycle.noData.start')}
+                      onPress={pausedCycle ? () => void resumeTracking() : startTracking}
+                      variant="accent"
+                      width="full"
+                    />
+                  </View>
                 </View>
-
-                {/* Period quick actions */}
-                <View className="mb-6 gap-3">
-                  {isCurrentlyInPeriod ? (
-                    <>
-                      <View
-                        className="flex-row items-center gap-3 rounded-2xl px-4 py-3"
-                        style={{ backgroundColor: theme.colors.rose.brand10 }}
-                      >
-                        <CircleDot size={16} color={theme.colors.rose.brand} />
-                        <Text
-                          className="text-sm font-semibold"
-                          style={{ color: theme.colors.rose.brand }}
-                        >
-                          {activePeriodLog
-                            ? t('cycle.periodActive', {
-                                day:
-                                  Math.round(
-                                    (nowMs - activePeriodLog.startDate) / MS_PER_SOLAR_DAY
-                                  ) + 1,
-                              })
-                            : t('cycle.periodActiveGeneric')}
+              ) : (
+                <>
+                  {/* Today: where the cycle is, the one period action, and logging the day. */}
+                  {cycleDay != null && !guidance.hidePeriodActions ? (
+                    <View className="mb-4 flex-row items-center justify-between">
+                      <View className="rounded-2xl bg-bg-overlay px-4 py-3">
+                        <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                          {t('focus.day')}
+                        </Text>
+                        <Text className="text-2xl font-black text-accent-primary">
+                          {dayCounter()}
+                        </Text>
+                        {isOverdue ? (
+                          <Text className="text-xs text-text-tertiary">
+                            {t('cycle.periodNotLogged')}
+                          </Text>
+                        ) : null}
+                      </View>
+                      <View className="items-end">
+                        <Text className="text-sm font-bold uppercase tracking-widest text-accent-primary">
+                          {t('focus.currentPhase')}
+                        </Text>
+                        <Text className="text-2xl font-black text-text-primary">
+                          {currentPhase ? t(CYCLE_PHASE_LABEL_KEYS[currentPhase]) : '--'}
                         </Text>
                       </View>
-                      <TouchableOpacity
-                        onPress={() => openPeriodLog('end')}
-                        className="flex-row items-center justify-center gap-2 rounded-2xl border-2 px-4 py-4"
-                        style={{ borderColor: theme.colors.rose.brand }}
-                      >
-                        <CheckCircle size={20} color={theme.colors.rose.brand} />
-                        <Text className="font-bold" style={{ color: theme.colors.rose.brand }}>
-                          {t('cycle.actions.periodEnded')}
-                        </Text>
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => openPeriodLog('start')}
-                      className="flex-row items-center justify-center gap-2 rounded-2xl px-4 py-4"
-                      style={{ backgroundColor: theme.colors.rose.brand }}
-                    >
-                      <CircleDot size={20} color={theme.colors.text.alwaysWhite} />
-                      <Text className="font-bold text-text-always-white">
-                        {t('cycle.actions.periodStarted')}
-                      </Text>
-                    </TouchableOpacity>
+                    </View>
+                  ) : null}
+
+                  {guidance.hidePeriodActions ? null : (
+                    <View className="mb-6 gap-3">
+                      {activePeriod ? (
+                        <>
+                          <View
+                            className="flex-row items-center gap-3 rounded-2xl px-4 py-3"
+                            style={{ backgroundColor: theme.colors.rose.brand10 }}
+                          >
+                            <CircleDot size={16} color={theme.colors.rose.brand} />
+                            <Text
+                              className="text-sm font-semibold"
+                              style={{ color: theme.colors.rose.brand }}
+                            >
+                              {cycleDay != null
+                                ? t('cycle.periodActive', { day: formatInteger(cycleDay) })
+                                : t('cycle.periodActiveGeneric')}
+                            </Text>
+                          </View>
+                          <Button
+                            label={t('cycle.actions.periodEnded')}
+                            icon={CheckCircle}
+                            variant="roseOutline"
+                            width="full"
+                            onPress={() => setPanel({ kind: 'period', mode: 'end' })}
+                          />
+                        </>
+                      ) : (
+                        <Button
+                          label={t('cycle.actions.periodStarted')}
+                          icon={CircleDot}
+                          variant="rose"
+                          width="full"
+                          onPress={() => setPanel({ kind: 'period', mode: 'start' })}
+                        />
+                      )}
+                    </View>
                   )}
 
-                  <TouchableOpacity
-                    onPress={() => openPeriodLog('past')}
-                    className="flex-row items-center justify-center gap-2 rounded-xl border px-4 py-3"
-                    style={{ borderColor: theme.colors.border.default }}
-                  >
-                    <Calendar size={16} color={theme.colors.text.secondary} />
-                    <Text className="text-sm text-text-secondary">
-                      {t('cycle.actions.logPastPeriod')}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-
-            {/* Date Navigator */}
-            <View className="mb-6">
-              <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
-            </View>
-
-            {/* Cycle Insights & Log */}
-            <View className="mb-8">
-              <View className="mb-4 flex-row items-center justify-between">
-                <Text className="text-2xl font-bold text-text-primary">
-                  {t('cycle.insightsAndLog')}
-                </Text>
-                <Pressable
-                  onPress={() => setIsLogModalVisible(true)}
-                  className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary"
-                >
-                  <Plus size={24} color={theme.colors.text.onAccent} />
-                </Pressable>
-              </View>
-
-              {/* Next Period Prediction */}
-              {cycle ? (
-                <View className="mb-4 rounded-2xl border-2 border-ink/5 bg-bg-overlay p-5">
-                  <View className="mb-4 flex-row items-center gap-4">
-                    <View className="h-10 w-10 items-center justify-center rounded-xl bg-bg-navActive">
-                      <Calendar size={20} color={theme.colors.accent.primary} />
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
-                        {t('cycle.nextPeriod')}
-                      </Text>
-                      <Text className="text-lg font-black text-text-primary">
-                        {nextPeriodDisplay}
-                      </Text>
-                    </View>
-                  </View>
-
-                  {/* Cycle progress bar */}
-                  <View className="mb-3 h-2 w-full overflow-hidden rounded-full bg-bg-navActive">
-                    <View
-                      className="h-full bg-accent-primary"
-                      style={{ width: `${cycleProgress}%` }}
+                  <View className="mb-6 gap-4">
+                    <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
+                    <QuickLogRow day={day} />
+                    <DayLogSummary
+                      log={dayLogs.find((log) => log.date === day)}
+                      mood={moods.find((m) => m.date === day)?.value}
+                      onEdit={() => setPanel({ kind: 'day' })}
                     />
                   </View>
 
-                  {/* Confidence + irregular indicators */}
-                  <View className="flex-row items-center justify-between">
-                    {confidenceLabel ? (
-                      <Text className="text-xs text-text-tertiary">{confidenceLabel}</Text>
-                    ) : null}
-                    {isIrregular ? (
-                      <Text className="text-xs text-text-tertiary">
-                        {t('cycle.confidence.irregular')}
-                      </Text>
-                    ) : null}
+                  {/* The forecast: the wheel and what the estimate rests on. */}
+                  {cycleDay != null && !guidance.hidePeriodActions ? (
+                    <View className="mb-6 items-center justify-center">
+                      <PhaseWheel
+                        currentPhase={currentPhase}
+                        cycleDay={cycleDay}
+                        totalDays={avgCycleLength}
+                        segments={timeline?.segments ?? null}
+                      />
+                    </View>
+                  ) : null}
+                  <PredictionCard onOpenDetails={() => setPanel({ kind: 'details' })} />
+
+                  <PinSuggestionCard />
+                  <CycleInsightsCard />
+                  <CycleCareCard
+                    day={day}
+                    onAppointment={() => setPanel({ kind: 'appointment' })}
+                  />
+
+                  <View className="mb-4 flex-row items-center justify-between">
+                    <Text className="text-2xl font-bold text-text-primary">
+                      {t('cycle.history.title')}
+                    </Text>
+                    <IconButton
+                      icon={Plus}
+                      accessibilityLabel={t('cycle.actions.logPastPeriod')}
+                      color={theme.colors.accent.primary}
+                      onPress={() => setPanel({ kind: 'period', mode: 'past' })}
+                    />
                   </View>
 
-                  {/* Prediction disclaimer */}
-                  <Text className="mt-2 text-xs text-text-tertiary">
-                    {t('cycle.predictionDisclaimer')}
-                  </Text>
-                </View>
-              ) : null}
+                  <View className="mb-4">
+                    <SegmentedControl
+                      options={[
+                        { label: t('cycle.history.tabCalendar'), value: 'calendar' },
+                        { label: t('cycle.history.tabHistory'), value: 'history' },
+                        { label: t('cycle.comparison.tab'), value: 'comparison' },
+                        { label: t('cycle.complete.trends'), value: 'trends' },
+                      ]}
+                      value={tab}
+                      onValueChange={(value) => setTab(value as HistoryTab)}
+                    />
+                  </View>
 
-              {/* Daily log items */}
-              {dailyMetrics.length > 0 ? (
-                <View className="gap-4">
-                  {dailyMetrics.map((metric) => (
-                    <View
-                      key={metric.id}
-                      className="flex-row items-center justify-between rounded-2xl border-2 border-ink/5 bg-bg-card p-5"
-                    >
-                      <View className="flex-1">
-                        <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-text-tertiary">
-                          {metric.type === 'period_flow'
-                            ? t('cycle.flowIntensity')
-                            : t('cycle.symptomsTitle')}
-                        </Text>
-                        <Text className="text-lg font-black text-text-primary">
-                          {formatMetricValue(metric)}
-                        </Text>
-                      </View>
-                      <View className="h-10 w-10 items-center justify-center rounded-full bg-bg-navActive">
-                        <Activity size={20} color={theme.colors.accent.primary} />
+                  {tab === 'trends' ? <CycleTrends onSelectDay={openDay} /> : null}
+                  {tab === 'calendar' ? (
+                    <CycleCalendar
+                      periods={periods}
+                      dayLogs={dayLogs}
+                      timeline={timeline}
+                      today={today}
+                      selectedDay={day}
+                      showFertile={showFertile}
+                      onSelectDay={openDay}
+                    />
+                  ) : null}
+                  {tab === 'comparison' ? <CycleComparison onSelectDay={openDay} /> : null}
+                  {tab === 'history' ? (
+                    <View>
+                      <PeriodHistoryList
+                        periods={periods}
+                        history={history}
+                        onEdit={(period) => setPanel({ kind: 'editPeriod', period })}
+                      />
+                      <ContextTimeline
+                        contexts={contexts}
+                        onEdit={(context) => setPanel({ kind: 'context', context })}
+                      />
+                      <View className="mt-4">
+                        <TextButton
+                          label={t('cycle.settings.changeContext')}
+                          onPress={() => setPanel({ kind: 'context', context: null })}
+                        />
                       </View>
                     </View>
-                  ))}
-                </View>
-              ) : null}
+                  ) : null}
+                </>
+              )}
             </View>
+            <View pointerEvents="none" style={{ height: theme.spacing.margin.base }} />
+          </AnimatedContent>
+        </KeyboardAwareScrollView>
 
-            {/* Physiological Insights */}
-            {currentPhase ? (
-              <View className="mb-8 flex-row gap-4">
-                <PhysiologicalInsightsCard
-                  type="estrogen"
-                  label={t('focus.estrogen')}
-                  value={insights?.estrogen || '--'}
-                  trend={getHormoneTrend(insights?.estrogen)}
-                />
-                <PhysiologicalInsightsCard
-                  type="metabolism"
-                  label={t('focus.metabolism')}
-                  value={insights?.metabolism || '--'}
-                  trend={insights?.metabolism === 'increasing' ? 'up' : 'stable'}
-                />
-              </View>
-            ) : null}
-          </View>
-          <View pointerEvents="none" style={{ height: theme.spacing.margin.base }} />
-        </AnimatedContent>
-      </ScrollView>
-
-      <CycleLogModal
-        visible={isLogModalVisible}
-        onClose={() => setIsLogModalVisible(false)}
-        initialDate={selectedDate}
-      />
-
-      <PeriodLogModal
-        visible={isPeriodLogModalVisible}
-        onClose={() => setIsPeriodLogModalVisible(false)}
-        mode={periodLogMode}
-        initialDate={selectedDate}
-      />
-
-      {cycle ? (
-        <CycleSettingsModal
-          visible={isSettingsModalVisible}
-          onClose={() => setIsSettingsModalVisible(false)}
-          cycle={cycle}
-        />
-      ) : null}
+        {/* Inside the gate: if the cycle area re-locks, an open sheet goes with it. */}
+        {renderPanel()}
+      </AreaLockGate>
     </MasterLayout>
   );
 }

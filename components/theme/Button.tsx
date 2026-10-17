@@ -18,8 +18,20 @@ type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
+/**
+ * `rose` / `roseOutline` are the cycle area's period actions ("My period started" / "ended"):
+ * the brand's rose without `discard`'s destructive meaning.
+ */
 type ThemeButtonVariant =
-  'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
+  | 'accent'
+  | 'discard'
+  | 'outline'
+  | 'secondary'
+  | 'secondaryGradient'
+  | 'dashed'
+  | 'gradientCta'
+  | 'rose'
+  | 'roseOutline';
 
 type ThemeButtonProps = {
   label: string;
@@ -109,6 +121,7 @@ const getGradientColors = (
     case 'gradientCta':
       return theme.colors.gradients.cta;
     case 'discard':
+    case 'rose':
       return [theme.colors.rose.brand, theme.colors.rose.brand] as const;
     case 'secondaryGradient':
       return theme.colors.gradients.button;
@@ -128,6 +141,8 @@ const getTextColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
     case 'outline':
     case 'dashed':
       return theme.colors.text.secondary;
+    case 'roseOutline':
+      return theme.colors.rose.brand;
     // `secondaryGradient` fills with `gradients.button`, which is a SURFACE gradient
     // rather than a colourful one, so its label is on-surface ink like `secondary`.
     case 'secondary':
@@ -149,6 +164,8 @@ const getIconColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
     case 'outline':
     case 'dashed':
       return theme.colors.text.secondary;
+    case 'roseOutline':
+      return theme.colors.rose.brand;
     case 'secondary':
       return theme.colors.accent.secondary;
     case 'secondaryGradient':
@@ -176,8 +193,10 @@ const getShadowStyle = (
     case 'secondaryGradient':
     case 'dashed':
     case 'gradientCta':
+    case 'roseOutline':
       return theme.shadows.none;
     case 'discard':
+    case 'rose':
       return theme.shadows.roseGlow;
     default:
       return configShadow;
@@ -190,7 +209,7 @@ const getOutlineBackgroundColor = (
   isDisabled: boolean,
   isPressed: boolean
 ): string | undefined => {
-  if (variant !== 'outline' || isDisabled) {
+  if ((variant !== 'outline' && variant !== 'roseOutline') || isDisabled) {
     return undefined;
   }
 
@@ -201,6 +220,7 @@ const getBorderWidth = (theme: Theme, variant: ThemeButtonVariant): number => {
   switch (variant) {
     case 'outline':
     case 'dashed':
+    case 'roseOutline':
       return theme.borderWidth.medium;
     case 'secondary':
     case 'secondaryGradient':
@@ -214,6 +234,8 @@ const getBorderColor = (theme: Theme, variant: ThemeButtonVariant): string => {
   switch (variant) {
     case 'outline':
       return theme.colors.background.ink10;
+    case 'roseOutline':
+      return theme.colors.rose.brand;
     case 'dashed':
       return theme.colors.border.dashed;
     case 'secondaryGradient':
@@ -253,6 +275,9 @@ export function Button({
   const isSecondaryVariant = variant === 'secondary';
   const isSecondaryGradientVariant = variant === 'secondaryGradient';
   const isDashedVariant = variant === 'dashed';
+  // Drawn as a plain bordered/filled view rather than over a gradient.
+  const isFlatVariant =
+    isOutlineVariant || isSecondaryVariant || isDashedVariant || variant === 'roseOutline';
   const isGradientCtaVariant = variant === 'gradientCta';
   const isDisabled = disabled || loading;
 
@@ -429,7 +454,7 @@ export function Button({
         accessibilityState={{ disabled: true }}
         testID={testID}
       >
-        {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
+        {isFlatVariant ? (
           <View
             style={{
               borderRadius: config.borderRadius,
@@ -496,7 +521,7 @@ export function Button({
       disabled={false}
       {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
     >
-      {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
+      {isFlatVariant ? (
         <View
           style={{
             borderRadius: config.borderRadius,

@@ -1,4 +1,5 @@
 import { ReactNode, useRef, useState } from 'react';
+import type { TextInputInstance } from 'react-native';
 import { Platform, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -66,7 +67,7 @@ export function MacroInput({
 }: MacroInputProps) {
   const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<RNTextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const { sizeConfig, variantColors, variantBorderColors } = getVariantsData(theme);
 
   const highlightColor = variantColors[variant];

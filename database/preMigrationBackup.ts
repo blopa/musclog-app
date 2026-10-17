@@ -1,5 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import {
+  cacheDirectory,
+  deleteAsync,
+  readAsStringAsync,
+  writeAsStringAsync,
+} from 'expo-file-system/legacy';
 
 import { timestampSlug } from '@/utils/timestampSlug';
 
@@ -11,7 +16,7 @@ export type BackupFileMeta = {
   createdAt: string;
   fromVersion: number | null;
   toVersion: number | null;
-  reason?: 'schema-migration' | 'pre-restore' | 'exercise-catalogue';
+  reason?: 'schema-migration' | 'pre-restore' | 'exercise-catalogue' | 'cycle-encryption';
   // Storage format of the backup file. 'sqlite' is a raw `VACUUM INTO` copy of
   // musclog.db (native pre-migration snapshots — fast to create, converted to
   // JSON lazily at restore/download time). 'json' (or absent, for older entries
@@ -144,7 +149,8 @@ async function executeBackup(
 
 async function createLiveBackupJson(): Promise<string> {
   const { dumpDatabase } = await import('./exportDb');
-  return dumpDatabase();
+  // Same-device recovery point: cycle payloads stay encrypted at rest (see keepCycleCiphertext).
+  return dumpDatabase(undefined, { keepCycleCiphertext: true });
 }
 
 /**
@@ -181,6 +187,22 @@ export async function createPreExerciseCatalogueBackup(): Promise<string> {
   } catch (error) {
     console.error('[PreExerciseCatalogueBackup] Failed to create backup:', error);
     await reportBackupError(error, 'database.preExerciseCatalogueBackup');
+    throw error;
+  }
+}
+
+/**
+ * Required safety backup before cycle records are converted into their encrypted form. Failure
+ * is propagated so the conversion leaves every legacy row untouched and retries on a later boot.
+ */
+export async function createPreCycleEncryptionBackup(): Promise<string> {
+  try {
+    const uri = await executeBackup('pre-cycle-encryption', 'cycle-encryption');
+    console.log(`[PreCycleEncryptionBackup] Created: ${uri}`);
+    return uri;
+  } catch (error) {
+    console.error('[PreCycleEncryptionBackup] Failed to create backup:', error);
+    await reportBackupError(error, 'database.preCycleEncryptionBackup');
     throw error;
   }
 }
@@ -278,4 +300,20 @@ export function registerPreMigrationDbBackup(
 
 export function waitForPreMigrationBackup(): Promise<void> {
   return inFlightBackup ?? Promise.resolve();
+}
+
+/**
+ * A JSON recovery point as a file the person can take away: its cycle payloads (kept as this
+ * device's ciphertext at rest) decrypted, so the download restores on any device.
+ */
+export async function exportPortableRecoveryPoint(uri: string): Promise<string> {
+  if (!cacheDirectory) {
+    throw new Error('Cache directory is not available');
+  }
+
+  const { decryptCyclePayloadsInDump } = await import('./exportDbCore');
+  const portable = await decryptCyclePayloadsInDump(await readAsStringAsync(uri));
+  const out = `${cacheDirectory}portable-${uri.split('/').pop() ?? 'backup.json'}`;
+  await writeAsStringAsync(out, portable);
+  return out;
 }

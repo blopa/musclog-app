@@ -1,0 +1,65 @@
+import {
+  buildNutritionWidgetSnapshot,
+  expiredWidgetSnapshot,
+  INITIAL_WIDGET_PALETTE,
+  widgetProgress,
+} from '../widgetSnapshot';
+
+const date = new Date(2026, 9, 17, 12);
+const input = {
+  date,
+  nutrients: { calories: 900, protein: 40, carbs: 110, fat: 20, fiber: 10 },
+  goal: { totalCalories: 1800, protein: 80, carbs: 200, fats: 40 },
+  palette: INITIAL_WIDGET_PALETTE,
+  locale: 'en-US',
+  translate: (key: string) => key,
+};
+
+describe('nutrition widget snapshots', () => {
+  it('uses digestible carbs and the resolved goals for finite, bounded progress', () => {
+    const snapshot = buildNutritionWidgetSnapshot(input);
+    expect(snapshot.dateKey).toBe('2026-10-17');
+    expect(snapshot.calorieProgress).toBe(0.5);
+    expect(snapshot.totals).toEqual({ calories: 900, protein: 40, carbs: 100, fat: 20 });
+    expect(snapshot.targets).toEqual({ calories: 1800, protein: 80, carbs: 200, fat: 40 });
+    expect(snapshot.macros.map((macro) => macro.progress)).toEqual([0.5, 0.5, 0.5]);
+    expect(snapshot.macros[1].value).toBe('100 g');
+    expect(JSON.parse(JSON.stringify(snapshot))).toEqual(snapshot);
+    expect(widgetProgress(200, 100)).toBe(1);
+    expect(widgetProgress(-1, 100)).toBe(0);
+    expect(widgetProgress(NaN, 100)).toBe(0);
+    expect(widgetProgress(100, 0)).toBe(0);
+    expect(widgetProgress(100, Infinity)).toBe(0);
+  });
+
+  it('keeps actual totals when there is no goal without fabricating a zero target', () => {
+    const snapshot = buildNutritionWidgetSnapshot({ ...input, goal: null });
+    expect(snapshot.calories).toBe('900');
+    expect(snapshot.targets).toBeNull();
+    expect(snapshot.calorieTarget).toBe('common.kcal');
+    expect(snapshot.macros.every((macro) => macro.progress === 0)).toBe(true);
+  });
+
+  it('publishes translated copy, the selected palette, and a localized date', () => {
+    const snapshot = buildNutritionWidgetSnapshot({
+      ...input,
+      locale: 'nl-NL',
+      palette: { ...input.palette, accent: '#123456' },
+      translate: (key) => `nl:${key}`,
+    });
+    expect(snapshot.dateLabel).toBe(
+      new Intl.DateTimeFormat('nl-NL', { month: 'short', day: 'numeric' }).format(date)
+    );
+    expect(snapshot.palette.accent).toBe('#123456');
+    expect(snapshot.macros[0].label).toBe('nl:nutrition.macros.protein');
+  });
+
+  it('expires to a refresh prompt instead of relabeling yesterday’s values as current', () => {
+    const snapshot = buildNutritionWidgetSnapshot(input);
+    const expired = expiredWidgetSnapshot(snapshot);
+    expect(expired.message).toBe('widgets.refresh');
+    expect(expired.calories).toBe('—');
+    expect(expired.macros).toEqual([]);
+    expect(expired.dateKey).toBe(snapshot.dateKey);
+  });
+});

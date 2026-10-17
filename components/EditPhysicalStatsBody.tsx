@@ -107,26 +107,20 @@ export function EditPhysicalStatsBody({
               {
                 label: t('editFitnessDetails.imperial'),
                 value: 'imperial',
-                icon: (
+                icon: (selected: boolean) => (
                   <Scale
                     size={theme.iconSize.md}
-                    color={
-                      units === 'imperial'
-                        ? theme.colors.accent.primary
-                        : theme.colors.text.tertiary
-                    }
+                    color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
                   />
                 ),
               },
               {
                 label: t('editFitnessDetails.metric'),
                 value: 'metric',
-                icon: (
+                icon: (selected: boolean) => (
                   <Ruler
                     size={theme.iconSize.md}
-                    color={
-                      units === 'metric' ? theme.colors.accent.primary : theme.colors.text.tertiary
-                    }
+                    color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
                   />
                 ),
               },

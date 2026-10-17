@@ -84,7 +84,8 @@
         "deleteConfirmMessage": "Are you sure you want to delete this backup file? This action cannot be undone.",
         "restoreConfirmTitle": "Restore Database?",
         "restoreConfirmMessage": "This will replace all current data with the data from this backup. The app will reload after restoration.",
-        "restoreSuccess": "Database restored successfully"
+        "restoreSuccess": "Database restored successfully",
+        "cycleEncryptionBackup": "Before cycle data encryption"
       },
       "confirmExport": "Confirm Export",
       "confirmImport": "Confirm Import",
@@ -346,7 +347,62 @@
       "restTimer": "Rest Timer Alerts",
       "restTimerSubtitle": "Get notified when your rest period is over",
       "workoutDuration": "Long Workout Warning",
-      "workoutDurationSubtitle": "Alert if your session runs over 5 hours"
+      "workoutDurationSubtitle": "Alert if your session runs over 5 hours",
+      "restTimerRepeat": "Repeat Rest Alert",
+      "restTimerRepeatSubtitle": "Remind me once more a minute later if I haven't started the next set",
+      "unfinishedWorkout": "Unfinished Workout Reminder",
+      "unfinishedWorkoutSubtitle": "Nudge me 45 minutes after my last set if I forgot to finish",
+      "goalAtRisk": "Weekly Goal at Risk",
+      "goalAtRiskSubtitle": "Warn me when my weekly workout goal is slipping",
+      "weeklyReview": "Weekly Review",
+      "weeklyReviewSubtitle": "Reminder when your weekly review is ready",
+      "lockScreen": "Lock screen details",
+      "lockScreenOptions": {
+        "full": "Full details",
+        "minimal": "Minimal"
+      },
+      "sections": {
+        "session": "During workouts",
+        "plan": "Your training plan",
+        "reports": "Reports & food",
+        "quiet": "Quiet hours & pause",
+        "delivery": "Delivery"
+      },
+      "accountability": {
+        "structured": "Structured",
+        "gentle": "Gentle",
+        "flexible": "Flexible"
+      },
+      "accountabilityHints": {
+        "structured": "Remind me on my planned workout days.",
+        "gentle": "Only nudge me when my weekly goal is slipping.",
+        "flexible": "Never nudge me. Just show what's next."
+      },
+      "reminderLead": "Remind me before the workout",
+      "leadOnTime": "On time",
+      "leadMinutes": "{{minutes}} min",
+      "quietHours": "Quiet Hours",
+      "quietHoursSubtitle": "No reminders during this window",
+      "quietExempt": "Rest alerts and your active workout are never silenced.",
+      "quietFrom": "From",
+      "quietUntil": "Until",
+      "pause": "Pause reminders",
+      "pauseOptions": {
+        "off": "Off",
+        "days3": "3 days",
+        "week": "1 week"
+      },
+      "deliveryStatus": "Permission: {{permission}} · {{pending}} scheduled",
+      "permission": {
+        "granted": "allowed",
+        "denied": "blocked",
+        "undetermined": "not asked yet",
+        "unsupported": "not supported"
+      },
+      "testAlert": "Send a test rest alert",
+      "openSystemSettings": "Open system notification settings",
+      "updateInterval": "Update the workout clock every",
+      "updateIntervalOption": "{{seconds}}s"
     },
     "supportProject": {
       "title": "Support the Project"
@@ -460,7 +516,8 @@
           "label": "Kinetic Varia",
           "description": "Deep violet surfaces with an orange visor accent"
         }
-      }
+      },
+      "iconAppliesLater": "The app icon will change when you leave the app."
     },
     "workoutSettings": {
       "title": "Workout Settings",

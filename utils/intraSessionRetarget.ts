@@ -1,5 +1,5 @@
 import type { WorkoutAutonomy } from '@/constants/settings';
-import { type ProgressionRule } from '@/utils/progressionRules';
+import { type ProgressionRule } from '@/utils/progressionRuleSchema';
 import { parseSetPrescription } from '@/utils/setPrescription';
 import {
   isPerformedWorkoutSet,

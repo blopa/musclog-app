@@ -35,6 +35,7 @@ export const getEncryptionKey = async (
     await storeEncryptionKey(storageKey, encryption);
     encryptionKeys.set(storageKey, encryption);
     return encryption;
+    // TODO: avoid IIFE
   })();
 
   encryptionKeyLoads.set(storageKey, load);

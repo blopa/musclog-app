@@ -13,7 +13,7 @@ import { getBlogPaginationItems } from '@/utils/blogPagination';
 import type { BlogPostPage } from '@/utils/blogPosts.server';
 
 import { useBlogListingCopy } from './blogListingCopy';
-import { blogCategoryPath, blogListingPath } from './blogRoutes';
+import { blogCategoryPath, blogListingPath, blogPostPath } from './blogRoutes';
 import { GridPattern } from './WebsiteBackgrounds';
 import { BODY_TEXT, BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT, brandBright } from './websiteColors';
 
@@ -165,7 +165,7 @@ export function BlogPostListing({
                 <h2 className="text-balance text-2xl font-bold leading-tight md:text-[2rem]">
                   {/* Plain anchors preserve inherited HTML typography and hover colors here. */}
                   <a
-                    href={`/blog/${post.slug}`}
+                    href={blogPostPath(post.slug)}
                     className="text-text-primary transition-colors group-hover:text-accent-bright"
                   >
                     {post.title}

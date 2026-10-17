@@ -150,6 +150,9 @@ export const NOTIFICATIONS_REST_TIMER_SETTING_TYPE = 'notifications_rest_timer';
  */
 export const NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE = 'notifications_workout_duration';
 
+/** One JSON blob (`NotificationPreferences`, utils/notificationPolicy.ts): quiet hours, pause, lead time, nudges. */
+export const NOTIFICATION_PREFERENCES_SETTING_TYPE = 'notification_preferences';
+
 export const CONVERSATION_CONTEXT = 'conversation_context';
 
 /**
@@ -296,6 +299,25 @@ export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
  */
 export const ENABLE_FASTED_DAY_SETTING_TYPE = 'enable_fasted_day';
 
+/** Cycle tracking preferences. Predictions default on; fertility estimates default OFF (opt-in). */
+export const CYCLE_SHOW_PREDICTIONS_SETTING_TYPE = 'cycle_show_predictions';
+export const CYCLE_SHOW_FERTILITY_SETTING_TYPE = 'cycle_show_fertility';
+/** 'discreet' (default): reminders never say what they are about. 'detailed': they do. */
+export const CYCLE_NOTIFICATION_STYLE_SETTING_TYPE = 'cycle_notification_style';
+/** Comma-separated symptom keys pinned to the one-tap quick log. Parsed by `parseQuickLog`. */
+export const CYCLE_QUICK_LOG_SETTING_TYPE = 'cycle_quick_log';
+/** Symptoms the user was already offered a pin for, so a suggestion is made once. */
+export const CYCLE_PIN_SUGGESTED_SETTING_TYPE = 'cycle_pin_suggested';
+/** Set when the user answers the "cycles vary a lot" card, so it is asked once. */
+export const CYCLE_VARIABILITY_HINT_SETTING_TYPE = 'cycle_variability_hint_dismissed';
+/**
+ * The areas that ask for authentication, stored as a comma-separated list of `AppLockScope`s
+ * (empty = no lock). The key predates per-area locks, when it held one of 'off' | 'cycle' | 'app':
+ * those three are still valid serializations (no scopes, [cycle], [app]), so old rows and old
+ * backups read back unchanged.
+ */
+export const APP_LOCK_SCOPES_SETTING_TYPE = 'app_lock_mode';
+
 /**
  * Setting type for smart double progression preference.
  * value: 'reps_first' | 'weight_first'.
@@ -308,6 +330,12 @@ export const PROGRESSION_MODE_SETTING_TYPE = 'progression_mode';
  * primitive string so `SettingsState` stays primitive-only; the profile itself lives in `gyms`.
  */
 export const ACTIVE_GYM_ID_SETTING_TYPE = 'active_gym_id';
+/** Which live-session view the user last chose: `inline` or `guided`. */
+export const WORKOUT_VIEW_SETTING_TYPE = 'workout_view';
+/** The weekday (0 = Sunday) a Weekly Review falls due. */
+export const REVIEW_WEEKDAY_SETTING_TYPE = 'review_weekday';
+export const NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE = 'notifications_weekly_review';
+export const WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE = 'weekly_review_welcome_seen';
 
 /** Setting type for how much of a started workout's numbers the app decides. value: 'manual' | 'suggest'. */
 export const WORKOUT_AUTONOMY_SETTING_TYPE = 'workout_autonomy';
@@ -324,6 +352,53 @@ export const AUTO_START_REST_TIMER_SETTING_TYPE = 'auto_start_rest_timer';
  * rest timer. value: 'true' | 'false'. Defaults to true; a no-op on web.
  */
 export const REST_TIMER_HAPTICS_SETTING_TYPE = 'rest_timer_haptics';
+
+/**
+ * Setting type: whether the rest-over notification makes a sound. value: 'on' | 'off'. Defaults to
+ * on. Off keeps the vibration (it moves to a quieter Android channel) — it is for the lifter whose
+ * gym or music makes a chime unwelcome, not a way to lose the alert.
+ */
+export const REST_ALERT_SOUND_SETTING_TYPE = 'rest_alert_sound';
+
+/** Setting type: how firm the rest timer's haptic countdown is. value: 'standard' | 'strong'. */
+export const REST_HAPTIC_STRENGTH_SETTING_TYPE = 'rest_haptic_strength';
+
+/**
+ * Setting type: seconds before a rest ends at which the timer turns to "get ready" and buzzes once
+ * (0 = no heads-up). value: stringified member of `REST_HEADS_UP_OPTIONS`. Defaults to 10, the
+ * long-standing get-ready window.
+ */
+export const REST_HEADS_UP_SECONDS_SETTING_TYPE = 'rest_heads_up_seconds';
+
+export const REST_ALERT_SOUNDS = ['on', 'off'] as const;
+export type RestAlertSound = (typeof REST_ALERT_SOUNDS)[number];
+export const DEFAULT_REST_ALERT_SOUND: RestAlertSound = 'on';
+
+/** Reads a stored alert-sound choice, treating anything unrecognized as the default. */
+export function parseRestAlertSound(raw: string | null | undefined): RestAlertSound {
+  return raw === 'on' || raw === 'off' ? raw : DEFAULT_REST_ALERT_SOUND;
+}
+
+export const REST_HAPTIC_STRENGTHS = ['standard', 'strong'] as const;
+export type RestHapticStrength = (typeof REST_HAPTIC_STRENGTHS)[number];
+export const DEFAULT_REST_HAPTIC_STRENGTH: RestHapticStrength = 'standard';
+
+/** Reads a stored haptic strength, treating anything unrecognized as the default. */
+export function parseRestHapticStrength(raw: string | null | undefined): RestHapticStrength {
+  return raw === 'standard' || raw === 'strong' ? raw : DEFAULT_REST_HAPTIC_STRENGTH;
+}
+
+export const REST_HEADS_UP_OPTIONS = [0, 10, 20, 30] as const;
+export type RestHeadsUpSeconds = (typeof REST_HEADS_UP_OPTIONS)[number];
+export const DEFAULT_REST_HEADS_UP_SECONDS: RestHeadsUpSeconds = 10;
+
+/** Reads a stored heads-up window; a value that is not one of the options falls back to the default. */
+export function parseRestHeadsUpSeconds(raw: string | null | undefined): RestHeadsUpSeconds {
+  const value = Number(raw);
+  return (REST_HEADS_UP_OPTIONS as readonly number[]).includes(value) && raw !== '' && raw != null
+    ? (value as RestHeadsUpSeconds)
+    : DEFAULT_REST_HEADS_UP_SECONDS;
+}
 
 /**
  * Setting type: rest, in whole seconds, after a set that names none of its own.
@@ -441,6 +516,40 @@ export type ChartTooltipPosition = 'left' | 'right';
 export type NutritionLogHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type WorkoutHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type HomeSummaryCard = 'daily_summary' | 'weekly_streak';
+/**
+ * What a cycle reminder shows on the lock screen. `discreet` (stored name kept for existing
+ * installs; shown as "Private") never says what it is about; `subtle` names the task but never
+ * periods, fertility or pills; `detailed` says it plainly.
+ */
+export type CycleNotificationStyle = 'discreet' | 'subtle' | 'detailed';
+export const CYCLE_NOTIFICATION_STYLES: readonly CycleNotificationStyle[] = [
+  'discreet',
+  'subtle',
+  'detailed',
+];
+
+/** The one parse of the stored value (service and context alike); anything unknown is private. */
+export function parseCycleNotificationStyle(
+  raw: string | null | undefined
+): CycleNotificationStyle {
+  return CYCLE_NOTIFICATION_STYLES.find((style) => style === raw) ?? 'discreet';
+}
+
+/**
+ * What can be locked. `app` is the whole app (a full-screen cover), the rest are individual areas
+ * whose screens ask on their own. Canonical order: it is the order the settings list them in and
+ * the order they are stored in.
+ */
+export const APP_LOCK_SCOPES = ['app', 'cycle', 'workout', 'nutrition', 'progress'] as const;
+
+export type AppLockScope = (typeof APP_LOCK_SCOPES)[number];
+
+/** The scopes that are an area of the app, as opposed to `app`, which covers all of them. */
+export type AppLockArea = Exclude<AppLockScope, 'app'>;
+
+export const APP_LOCK_AREAS = APP_LOCK_SCOPES.filter(
+  (scope): scope is AppLockArea => scope !== 'app'
+);
 
 export type UseSettingsResult = {
   units: Units;
@@ -463,6 +572,12 @@ export type UseSettingsResult = {
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   enableFastedDay: boolean;
+  cycleShowPredictions: boolean;
+  cycleShowFertility: boolean;
+  cycleNotificationStyle: CycleNotificationStyle;
+  cycleQuickLogRaw: string;
+  cycleVariabilityHintDismissed: boolean;
+  appLockScopes: readonly AppLockScope[];
   progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
   nutritionDisplay: string;
@@ -471,3 +586,14 @@ export type UseSettingsResult = {
   homeSummaryCard: HomeSummaryCard;
   showHomeSteps: boolean;
 };
+
+/** Unknown names (a newer build, a hand-edited backup) and 'off' are dropped; order is canonical. */
+export function parseAppLockScopes(raw: string | undefined | null): AppLockScope[] {
+  const stored = new Set((raw ?? '').split(','));
+
+  return APP_LOCK_SCOPES.filter((scope) => stored.has(scope));
+}
+
+export function serializeAppLockScopes(scopes: readonly AppLockScope[]): string {
+  return parseAppLockScopes(scopes.join(',')).join(',');
+}
