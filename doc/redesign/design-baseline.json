@@ -156,7 +156,7 @@
       "tell": 13,
       "phase": 9,
       "summary": "ScrollView-of-map + Load more on history and search lists; only 4 files virtualize",
-      "status": "open"
+      "status": "partial"
     },
     {
       "id": "FINDING-017",

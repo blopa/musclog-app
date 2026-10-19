@@ -461,3 +461,23 @@ describe('Phase 7: copy', () => {
     expect(offenders).toEqual([]);
   });
 });
+
+/**
+ * Phase 9: lists whose length is not bounded are virtualized and page on scroll. These screens
+ * once rendered `ScrollView` + `.map()` with a "Load more" button.
+ */
+describe('virtualized paginated lists', () => {
+  const VIRTUALIZED: [string, string][] = [
+    ['components/modals/PastWorkoutsHistoryModal.tsx', 'SectionList'],
+    ['components/modals/BodyMetricsHistoryModal.tsx', 'FlatList'],
+    ['components/modals/MyMealsModal.tsx', 'FlatList'],
+  ];
+
+  it.each(VIRTUALIZED)('%s renders a %s that loads the next page on scroll', (file, list) => {
+    const source = readFileSync(join(root, file), 'utf8');
+    expect(source).toContain(`<${list}`);
+    expect(source).toContain('onEndReached=');
+    expect(source).not.toMatch(/\bScrollView\b/);
+    expect(source).not.toMatch(/Button[^>]*onPress=\{(loadMore|loadMoreWorkouts)\}/);
+  });
+});

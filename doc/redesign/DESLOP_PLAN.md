@@ -645,6 +645,8 @@ release Android build without blank cells or dropped frames.
 **Risk and rollback.** Medium: pagination behavior changes. Keep the existing tests for the
 history and search hooks green, and add one per converted list for "next page loads on scroll".
 
+**Status.** Done for `PastWorkoutsHistoryModal` (`SectionList`), `BodyMetricsHistoryModal` and `MyMealsModal` (`FlatList`, `onEndReached` paging, "Load more" buttons gone). **`FoodSearchModal` is still open**: it stacks three independently paginated sources (local, API, USDA), error banners and the favorites/meals/recent tabs in one `ScrollView`, so virtualizing it needs a flat row model first. The `loadMore` translation keys of the three converted lists are now unused.
+
 **Release note.** "Faster history and search lists."
 
 ---
