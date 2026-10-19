@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Sparkles } from 'lucide-react-native';
+import { ScanLine, Sparkles } from 'lucide-react-native';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -237,7 +237,12 @@ function SmartCameraShellBody({
             className="flex-row items-center justify-center gap-2"
             style={{ marginTop: isSmallScreen ? 12 : 20, zIndex: 1 }}
           >
-            <Sparkles size={theme.iconSize.md} color={theme.colors.overlay.alwaysWhite70} />
+            {/* Sparkles marks the AI modes only; a barcode is read on the device. */}
+            {cameraMode === 'barcode-scan' ? (
+              <ScanLine size={theme.iconSize.md} color={theme.colors.overlay.alwaysWhite70} />
+            ) : (
+              <Sparkles size={theme.iconSize.md} color={theme.colors.overlay.alwaysWhite70} />
+            )}
             <Text
               className="text-center text-sm font-medium drop-shadow-md"
               style={{ color: theme.colors.overlay.alwaysWhite70 }}

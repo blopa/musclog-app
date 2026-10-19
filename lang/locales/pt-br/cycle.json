@@ -1,6 +1,6 @@
 {
   "cycle": {
-    "title": "Foco do Ciclo de Hoje",
+    "title": "Ciclo",
     "nextPeriod": "Previsão do Próximo Período",
     "insightsAndLog": "Insights e Registro do Ciclo",
     "dailyLog": "Registro Diário",
@@ -10,7 +10,7 @@
     "logSymptoms": "Registrar Sintomas",
     "logDaily": "Registro Diário do Ciclo",
     "predictionDisclaimer": "As previsões do ciclo são estimativas e não são um método contraceptivo.",
-    "periodActive": "Período ativo — Dia {{day}}",
+    "periodActive": "Período ativo, dia {{day}}",
     "periodActiveGeneric": "Período ativo",
     "settings": {
       "title": "Configurações do Ciclo",
@@ -80,11 +80,11 @@
       "useToday": "Usar hoje"
     },
     "confidence": {
-      "low": "Estimativa — baseada em {{count}} ciclo",
-      "low_plural": "Estimativa — baseada em {{count}} ciclos",
+      "low": "Estimativa baseada em {{count}} ciclo",
+      "low_plural": "Estimativa baseada em {{count}} ciclos",
       "medium": "Baseada em {{count}} ciclos",
-      "high": "Baseada em {{count}} ciclos — boa precisão",
-      "irregular": "Ciclos variam — mostrando intervalo de datas"
+      "high": "Baseada em {{count}} ciclos, boa precisão",
+      "irregular": "Os ciclos variam, então mostramos um intervalo de datas"
     },
     "lifeStage": {
       "pcos": "Com SOP, os ciclos podem ser muito irregulares. As previsões são aproximadas.",
@@ -476,14 +476,14 @@
       "careTitle": "Entender seus sintomas",
       "careHint": "Informações gerais do NHS e RCOG. Registrar não é diagnosticar. Converse com um profissional se os sintomas preocuparem ou afetarem sua rotina; procure atendimento urgente local para sintomas graves ou que pioram rapidamente.",
       "education": {
-        "bleeding": "Sangramento intenso — NHS (inglês)",
-        "pain": "Dor menstrual — NHS (inglês)",
-        "unexpected": "Sangramento inesperado — NHS (inglês)",
-        "pms": "TPM e diários de sintomas — RCOG (inglês)",
-        "menopause": "Perimenopausa e menopausa — NHS (inglês)",
-        "pregnancy": "Informações sobre gravidez — NHS (inglês)",
-        "postpartum": "Recuperação após o parto — NHS (inglês)",
-        "pregnancy_loss": "Informações sobre perda gestacional — NHS (inglês)"
+        "bleeding": "Sangramento intenso (NHS, inglês)",
+        "pain": "Dor menstrual (NHS, inglês)",
+        "unexpected": "Sangramento inesperado (NHS, inglês)",
+        "pms": "TPM e diários de sintomas (RCOG, inglês)",
+        "menopause": "Perimenopausa e menopausa (NHS, inglês)",
+        "pregnancy": "Informações sobre gravidez (NHS, inglês)",
+        "postpartum": "Recuperação após o parto (NHS, inglês)",
+        "pregnancy_loss": "Informações sobre perda gestacional (NHS, inglês)"
       },
       "trends": "Tendências e busca",
       "trendsHint": "Explore os dias registrados, inclusive sem menstruações. São observações, não explicações da causa de uma mudança.",
@@ -493,7 +493,7 @@
       "symptomSummary": "{{symptom}}: {{days}} dias registrados, {{severe}} avaliados como graves",
       "loggedOnly": "Apenas valores registrados são mostrados. Dias sem registro são desconhecidos. Os últimos 30 valores estão listados.",
       "noObservations": "Nenhuma observação correspondente neste intervalo.",
-      "contextChanged": "O contexto mudou em {{date}} — veja o histórico.",
+      "contextChanged": "O contexto mudou em {{date}}. Veja o histórico.",
       "search": "Buscar nos seus registros",
       "searchHint": "Busque sintomas, notas, medicamentos, etiquetas ou valores personalizados. Todas as palavras devem corresponder. A busca fica neste dispositivo; até 50 dias são mostrados.",
       "metrics": {
@@ -577,7 +577,6 @@
       "sleepInsight": "Você registrou menos sono perto do início da menstruação em {{hits}} de {{total}} ciclos observados. Isto não estabelece uma causa.",
       "reviewLong": "Voltar a considerar incerto este ciclo longo"
     },
-    "dayCounter": "{{day}}/{{length}}",
     "notifications": {
       "subtle": {
         "cycle": "Sua atualização do ciclo está pronta.",

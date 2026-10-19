@@ -1,7 +1,7 @@
 {
   "exerciseTransition": {
     "totalTime": "Tiempo total",
-    "completeSuffix": "¡Completado!",
+    "completeSuffix": "completado",
     "completedMessage": "Buen esfuerzo. Toma aire.",
     "upNext": "A continuación",
     "target": "Objetivo",

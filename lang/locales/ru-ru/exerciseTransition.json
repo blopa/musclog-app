@@ -1,7 +1,7 @@
 {
   "exerciseTransition": {
     "totalTime": "Общее время",
-    "completeSuffix": "Завершено!",
+    "completeSuffix": "завершено",
     "completedMessage": "Отличная работа. Переведите дыхание.",
     "upNext": "Следующее",
     "target": "Цель",

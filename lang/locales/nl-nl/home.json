@@ -1,10 +1,6 @@
 {
   "home": {
-    "greeting": {
-      "goodMorning": "Goedemorgen",
-      "goodAfternoon": "Goedemiddag",
-      "goodEvening": "Goedenavond"
-    },
+    "accountMenu": "Accountmenu openen",
     "actions": {
       "startWorkout": "Start\nWorkout",
       "trackFood": "Eten\nLoggen",

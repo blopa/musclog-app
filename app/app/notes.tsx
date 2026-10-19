@@ -1,8 +1,8 @@
 import {
+  Clock,
   Copy,
   History,
   Pencil,
-  Sparkles,
   StickyNote,
   Trash2,
   UtensilsCrossed,
@@ -234,6 +234,7 @@ export default function NotesScreen() {
                 description={t('emptyStates.notes.description')}
                 buttonLabel={t('emptyStates.notes.buttonLabel')}
                 buttonVariant="gradientCta"
+                bare
                 onButtonPress={() => setIsCreateVisible(true)}
               />
             ) : null}
@@ -241,7 +242,7 @@ export default function NotesScreen() {
             {latest.length > 0 ? (
               <View className="mb-8">
                 <View className="mb-4 flex-row items-center gap-2">
-                  <Sparkles size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+                  <Clock size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                   <Text className="text-sm font-semibold text-text-secondary">
                     {t('notes.sections.latest')}
                   </Text>

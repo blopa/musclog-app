@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react-native';
+import { Megaphone } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -33,7 +33,7 @@ export function WhatsNewIntro({
   return (
     <View className="flex-1 justify-center gap-6 py-6">
       <View className="items-center gap-5">
-        <WhatsNewIconBadge icon={Sparkles} size="hero" />
+        <WhatsNewIconBadge icon={Megaphone} size="hero" />
         <Text
           accessibilityRole="header"
           className="text-center text-4xl font-bold text-text-primary"

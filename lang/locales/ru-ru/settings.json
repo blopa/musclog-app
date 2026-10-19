@@ -47,7 +47,7 @@
       "records": "записей",
       "migrated": "перенесено",
       "tablesFound": "Найденные таблицы:",
-      "successful": "Миграция успешна!",
+      "successful": "Миграция завершена",
       "failed": "Миграция не удалась",
       "error": "Ошибка: {{error}}",
       "clickToCheck": "Нажмите «Проверить данные миграции», чтобы увидеть, что можно перенести",
@@ -166,9 +166,9 @@
       "progressionModeWeightFirst": "Приоритет прогрессии веса",
       "progressionModeWeightFirstSubtitle": "Увеличивать вес напрямую при высоком RIR, вместо добавления повторений",
       "enableAdvancedDataManagement": "Включить расширенное управление данными",
-      "enableAdvancedDataManagementSubtitle": "Открывает прямой доступ к данным приложения — только для опытных пользователей",
+      "enableAdvancedDataManagementSubtitle": "Открывает прямой доступ к данным приложения (только для опытных пользователей)",
       "enableAdvancedDataManagementConfirmTitle": "Только для опытных пользователей",
-      "enableAdvancedDataManagementConfirmMessage": "Это только для опытных пользователей. Работа с данными здесь может необратимо повредить приложение — используйте только если знаете, что делаете.",
+      "enableAdvancedDataManagementConfirmMessage": "Это только для опытных пользователей. Работа с данными здесь может необратимо повредить приложение. Используйте только если знаете, что делаете.",
       "dataManagement": "Управление данными",
       "manageFoodData": "Управление данными продуктов",
       "manageFoodDataSubtitle": "Просматривайте, редактируйте или удаляйте пользовательские записи о продуктах",
@@ -242,7 +242,7 @@
       "imageProcessing": "Обработка изображений",
       "useOcrBeforeAi": "OCR перед отправкой в ИИ",
       "useOcrBeforeAiSubtitle": "Обрабатывать изображения локально с OCR и отправлять текст",
-      "useOcrBeforeAiOnDeviceSubtitle": "Требуется для Apple Intelligence — OCR преобразует изображения в текст перед отправкой.",
+      "useOcrBeforeAiOnDeviceSubtitle": "Требуется для Apple Intelligence. OCR преобразует изображения в текст перед отправкой.",
       "sendFoundationFoodsToLlm": "Отправлять базовые продукты в ИИ",
       "sendFoundationFoodsToLlmSubtitle": "Улучшить подбор ингредиентов с помощью базы данных основных продуктов",
       "getOpenAiKey": "Получить ключ OpenAI",
@@ -312,7 +312,7 @@
       "slot2Label": "Слот 2 (правее камеры)",
       "slot3Label": "Слот 3 (крайний правый)",
       "selectItem": "Выберите ярлык для этого слота",
-      "currentlyInSlot": "Сейчас в слоте {{slot}} — поменяются местами",
+      "currentlyInSlot": "Сейчас в слоте {{slot}} (поменяются местами)",
       "navItems": {
         "workouts": "Тренировки",
         "food": "Питание",
@@ -466,7 +466,7 @@
       "chosenCount": "{{chosen}}/{{max}}",
       "hintOrder": "Они появятся в том порядке, в котором вы их выберете.",
       "hintAtMin": "Оставьте не менее {{min}} на главном экране.",
-      "hintAtMax": "Это максимум — уберите одно, чтобы добавить другое."
+      "hintAtMax": "Это максимум. Уберите одно, чтобы добавить другое."
     },
     "homeSummaryCard": {
       "sectionTitle": "Карточка сводки на главном экране",

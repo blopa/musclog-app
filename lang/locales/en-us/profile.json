@@ -4,7 +4,7 @@
       "title": "Profile"
     },
     "goal": "Goal",
-    "currentStats": "Current Stats",
+    "currentStats": "Current stats",
     "history": "History",
     "management": "Management",
     "loading": "Loading...",
@@ -23,23 +23,23 @@
       "other": "Other"
     },
     "managementItems": {
-      "editPersonal": "Edit Personal Info",
+      "editPersonal": "Edit personal info",
       "editPersonalDesc": "Update your name, avatar, and personal details",
-      "editFitness": "Edit Fitness Details",
+      "editFitness": "Edit fitness details",
       "editFitnessDesc": "Update your fitness goals and preferences",
-      "appPreferences": "App Preferences",
+      "appPreferences": "App preferences",
       "appPreferencesDesc": "Customize app settings and preferences"
     },
     "stats": {
       "weight": "Weight",
       "height": "Height",
-      "bodyFat": "Body Fat",
+      "bodyFat": "Body fat",
       "bmi": "BMI",
       "age": "Age",
       "gender": "Gender"
     },
     "weightPrediction": {
-      "title": "Predicted Weight",
+      "title": "Predicted weight",
       "subtitle": "Estimated from TDEE and your calorie tracking since last weigh-in"
     }
   }

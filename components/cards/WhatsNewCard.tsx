@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Sparkles } from 'lucide-react-native';
+import { Megaphone } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -34,7 +34,7 @@ export function WhatsNewCard() {
   return (
     <>
       <SettingsCard
-        icon={<Sparkles size={theme.iconSize['2xl']} color={theme.colors.accent.primary} />}
+        icon={<Megaphone size={theme.iconSize['2xl']} color={theme.colors.accent.primary} />}
         title={t('whatsNew.settingsCard.title')}
         subtitle={t('whatsNew.settingsCard.subtitle')}
         onPress={() => setVisible(true)}

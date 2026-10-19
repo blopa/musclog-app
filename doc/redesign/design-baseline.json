@@ -72,7 +72,7 @@
       "category": "surfaces",
       "phase": 6,
       "summary": "Decorative backgrounds: landing blobs, ghost watermark icons on home tiles, floating icons on Health Connect",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-007",
@@ -97,7 +97,7 @@
       "tell": [8, 30],
       "phase": 5,
       "summary": "Home: greeting header, stat strip, two 180px tiles duplicating nav destinations, persistent review card",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-010",
@@ -147,7 +147,7 @@
       "tell": 36,
       "phase": 6,
       "summary": "Decorative infinite glow pulses on the JS thread (rest-over.tsx:65-76, WorkoutSummaryCelebration.tsx:50-66)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-016",
@@ -165,7 +165,7 @@
       "tell": 33,
       "phase": 7,
       "summary": "Em dashes in ~35 visible en-us strings, 33 exclamation strings, marketing stat (2M+ items) in UI",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-018",
@@ -173,7 +173,7 @@
       "category": "copy",
       "phase": 7,
       "summary": "Sparkles used for non-AI meanings (42 usages in 26 files)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-019",
@@ -181,7 +181,7 @@
       "category": "states",
       "phase": 6,
       "summary": "Template empty state: 160px circle icon + gradient CTA (EmptyStateCard)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-020",
@@ -197,7 +197,7 @@
       "category": "surfaces",
       "phase": 6,
       "summary": "Dashed 'Add ...' bars repeated per section (10 files), used for permanent actions rather than empty slots",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-022",
@@ -205,7 +205,7 @@
       "category": "screenAnatomy",
       "phase": 5,
       "summary": "Cycle shows the cycle day twice (Day 15/28 badge and the ring); title wraps to two lines",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-023",

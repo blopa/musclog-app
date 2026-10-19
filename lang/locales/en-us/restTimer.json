@@ -11,7 +11,7 @@
     "missingWorkoutData": "Missing workout data",
     "completedSetNotFound": "Completed set not found",
     "getReady": "Get ready",
-    "go": "Go!",
+    "go": "Go",
     "a11yRemaining": "{{time}} remaining"
   }
 }

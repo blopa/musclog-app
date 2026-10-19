@@ -28,7 +28,7 @@
     "bodyweight": "Peso corporal",
     "fuelingInsight": "Información de Combustible",
     "lowFuelingMessage": "Has consumido solo {{carbs}}g de carbohidratos en las últimas {{hours}} horas. Las reservas de glucógeno podrían estar bajas. Para futuras sesiones, busca consumir más carbohidratos antes del entrenamiento. Un refrigerio rápido ahora podría ayudar a tu rendimiento.",
-    "fullyFueledMessage": "Has consumido {{carbs}}g de carbohidratos en las últimas {{hours}} horas. ¡Estás totalmente cargado y listo para darle con todo!",
+    "fullyFueledMessage": "Has consumido {{carbs}}g de carbohidratos en las últimas {{hours}} horas, suficiente energía para esta sesión.",
     "missingDataTitle": "Problema de Datos de la Sesión",
     "missingDataDescription": "No se pudo cargar el ejercicio actual. Revisa el resumen o termina la sesión.",
     "viewOverview": "Ver Resumen",
@@ -37,7 +37,7 @@
     "tracking": "Rastreando",
     "trackingSaved": "Seguimiento guardado ({{count}} muestras)",
     "sensorConnected": "Conectado a {{name}}",
-    "sensorDisconnectedTracking": "Sensor desconectado — datos de seguimiento descartados",
+    "sensorDisconnectedTracking": "Sensor desconectado: datos de seguimiento descartados",
     "sensorDisconnected": "Sensor desconectado",
     "disconnect": "Desconectar",
     "adjustment": {

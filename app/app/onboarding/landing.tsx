@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
-import { Download, Lock, ScanLine, Settings2, Star, Zap } from 'lucide-react-native';
+import { Download, Lock, ScanLine, Settings2, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Dimensions, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MasterLayout } from '@/components/MasterLayout';
@@ -20,8 +20,6 @@ import { isProduction } from '@/utils/app';
 import { importDatabase, shouldSeedDevData } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function LandingScreen() {
   const theme = useTheme();
@@ -117,7 +115,7 @@ export default function LandingScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      {/* Main Background Gradient */}
+      {/* A flat surface: the landing used to float an indigo and a green blob behind the content. */}
       <View
         style={{
           position: 'absolute',
@@ -128,32 +126,6 @@ export default function LandingScreen() {
           backgroundColor: theme.colors.background.primary,
         }}
       />
-
-      {/* Ambient Background Effects */}
-      <View className="absolute inset-0 overflow-hidden" pointerEvents="none">
-        {/* Top left blob */}
-        <View
-          className="absolute rounded-full opacity-60"
-          style={{
-            top: -SCREEN_HEIGHT * 0.2,
-            left: -SCREEN_WIDTH * 0.1,
-            width: SCREEN_WIDTH * 1.2,
-            height: SCREEN_HEIGHT * 0.6,
-            backgroundColor: theme.colors.status.indigo10, // indigo-600/20 equivalent
-          }}
-        />
-        {/* Bottom right blob */}
-        <View
-          className="absolute rounded-full opacity-60"
-          style={{
-            bottom: -SCREEN_HEIGHT * 0.1,
-            right: -SCREEN_WIDTH * 0.2,
-            width: SCREEN_WIDTH * 0.8,
-            height: SCREEN_HEIGHT * 0.5,
-            backgroundColor: theme.colors.status.brandVivid20, // primary/10 equivalent
-          }}
-        />
-      </View>
 
       {/* Main Content */}
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
@@ -193,23 +165,13 @@ export default function LandingScreen() {
 
           {/* Hero Section */}
           <View className="flex-1 items-center justify-center gap-8 py-6">
-            {/* Logo Icon with Gradient Background */}
-            <View className="mb-4">
-              <View
-                style={{
-                  backgroundColor: theme.colors.accent.primary,
-                  width: theme.size['12'],
-                  height: theme.size['12'],
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  ...theme.shadows.lg,
-                }}
-              >
-                <Star size={theme.iconSize['3xl']} color={theme.colors.text.onAccent} />
-              </View>
-            </View>
+            {/* The app's own mark, the same one the splash screen shows. */}
+            <Image
+              source={require('@/assets/logo.png')}
+              accessibilityIgnoresInvertColors
+              style={{ width: theme.size['96'], height: theme.size['96'] }}
+              resizeMode="contain"
+            />
 
             {/* Typography Section */}
             <View className="mt-4 items-center gap-2">

@@ -1,7 +1,7 @@
 {
   "exerciseTransition": {
     "totalTime": "Totale tijd",
-    "completeSuffix": "Voltooid!",
+    "completeSuffix": "voltooid",
     "completedMessage": "Geweldige inzet. Kom even op adem.",
     "upNext": "Volgende",
     "target": "Doel",

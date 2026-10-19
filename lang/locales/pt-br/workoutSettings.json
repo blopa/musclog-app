@@ -68,7 +68,7 @@
       "title": "Calculadora de anilhas",
       "subtitle": "Carregando {{weight}} {{unit}}",
       "belowBar": "Isso é menos que a barra de {{bar}} {{unit}}.",
-      "barOnly": "Só a barra — sem anilhas.",
+      "barOnly": "Só a barra, sem anilhas.",
       "perSide": "Em cada lado",
       "plateLine": "{{weight}} {{unit}}",
       "bar": "Barra",

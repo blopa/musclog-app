@@ -25,7 +25,7 @@
       "chooseExercise": "Kies een oefening",
       "searchPlaceholder": "Zoek oefeningen…",
       "currentEstimated1RM": "Je huidige geschatte 1RM: {{value}} {{unit}}",
-      "noHistoryForExercise": "Nog geen trainingsgeschiedenis — we beginnen met bijhouden vanaf je eerste sessie.",
+      "noHistoryForExercise": "Nog geen trainingsgeschiedenis. We beginnen met bijhouden vanaf je eerste sessie.",
       "targetWeight": "Doelgewicht ({{unit}})",
       "sessionsPerWeek": "Sessies per week",
       "targetDate": "Streefdatum (optioneel)",

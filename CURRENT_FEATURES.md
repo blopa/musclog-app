@@ -11,10 +11,10 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Daily summary card with calorie intake vs. goal and macro breakdown
 - Daily stat strip under the summary card: today's step count (tap to open the metric log) plus calories burned so far today (TDEE spread across the day by the circadian model, so it reflects the current hour rather than the whole day), eaten, and the resulting deficit or surplus, tinted by direction
 - Weekly streak card showing consecutive days of nutrition logging (current & best streak)
-- Time-based personalized greetings (Good Morning / Afternoon / Evening)
-- Quick-access action row, configurable in Appearance and home settings: pick two to four of Start Workout, Track Food, Scan Barcode, AI Photo, My Meals and Add Note, and they appear in the order you pick them
+- Date heading with the avatar as the way into the account menu
+- Compact quick-action tiles, configurable in Appearance and home settings: pick two to four of Start workout, Track food, Scan barcode, AI photo, My meals and Add note, and they appear in the order you pick them
 - Recent foods and recent workouts previews
-- Permanent Weekly Review entry below Home actions, plus a prominent Resume card while a workout is active
+- Weekly Review below Home actions: the full card while a week is waiting, otherwise a one-line entry naming the next review, plus a prominent Resume card while a workout is active
 - Android and iOS home screen widgets: Nutrition Progress, Smart Camera and a read-only Cycle widget, following the app palette and language. The Cycle widget is private by default ("Tap to open") and shows the cycle day, or day plus the estimated range, only in the subtle/detailed notification styles and never while an app lock is on. Nutrition shows dated calorie and macro progress; iOS expires old-day values to a refresh prompt. Android users re-add widgets once after the Expo Widgets migration.
 
 ---

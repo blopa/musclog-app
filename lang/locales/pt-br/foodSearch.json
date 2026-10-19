@@ -36,7 +36,7 @@
     "loadingMeals": "Carregando refeições...",
     "noResultsFor": "Nenhum resultado encontrado para \"{{query}}\"",
     "trySomethingElse": "Tente pesquisar por outra coisa ou crie um alimento personalizado",
-    "noRecentFoods": "Nenhum alimento recente encontrado. Comece a pesquisar ou adicione alimentos personalizados!",
+    "noRecentFoods": "Ainda não há alimentos recentes. Pesquise um alimento ou crie o seu.",
     "createFood": "Criar Alimento",
     "noFavoriteFoods": "Nenhum Alimento Favorito",
     "loadFavoritesError": "Falha ao carregar favoritos",

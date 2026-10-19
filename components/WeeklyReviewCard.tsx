@@ -7,12 +7,25 @@ import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 
+type WeeklyReviewCardProps = {
+  compact?: boolean;
+  /**
+   * Home's form: the full card only while a week is waiting (or half done), otherwise a single
+   * line that still names the next review. A permanent card on Home repeated, every day, what the
+   * line says.
+   */
+  quietUntilReady?: boolean;
+};
+
 /**
- * The permanent way into Weekly Review from Home, Workouts and Food. It says which week is waiting
- * and whether it is done, so the review is something the user sees every day rather than a screen
- * they have to remember exists.
+ * The way into Weekly Review from Home, Workouts and Food. It says which week is waiting and
+ * whether it is done, so the review is something the user sees rather than a screen they have to
+ * remember exists.
  */
-export function WeeklyReviewCard({ compact = false }: { compact?: boolean }) {
+export function WeeklyReviewCard({
+  compact = false,
+  quietUntilReady = false,
+}: WeeklyReviewCardProps) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
@@ -43,6 +56,29 @@ export function WeeklyReviewCard({ compact = false }: { compact?: boolean }) {
   }
 
   const Icon = ready ? CalendarCheck : CalendarClock;
+
+  if (quietUntilReady && !ready) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${t('weeklyReview.title')}, ${statusLabel}`}
+        onPress={() => router.push(WEEKLY_REVIEW_ROUTE)}
+        className="min-h-11 flex-row items-center gap-3 active:opacity-70"
+        testID="weekly-review-entry"
+      >
+        <Icon size={theme.iconSize.md} color={theme.colors.text.secondary} />
+        <Text className="text-sm font-semibold text-text-primary">{t('weeklyReview.title')}</Text>
+        {detail ? (
+          <Text className="min-w-0 flex-1 text-sm text-text-secondary" numberOfLines={1}>
+            {detail}
+          </Text>
+        ) : (
+          <View className="flex-1" />
+        )}
+        <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+      </Pressable>
+    );
+  }
 
   return (
     <Pressable

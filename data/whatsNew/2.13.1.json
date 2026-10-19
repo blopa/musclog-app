@@ -55,7 +55,7 @@
               "value": "suggest",
               "labelKey": "whatsNew.releases.v2_13_1.workoutAutonomy.suggest.label",
               "descriptionKey": "whatsNew.releases.v2_13_1.workoutAutonomy.suggest.description",
-              "icon": "sparkles"
+              "icon": "trendingUp"
             },
             {
               "value": "manual",

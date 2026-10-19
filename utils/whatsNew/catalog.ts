@@ -1,7 +1,6 @@
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 
 export const WHATS_NEW_ICONS = [
-  'sparkles',
   'layout',
   'list',
   'target',

@@ -56,7 +56,7 @@
       "preferencesLabel": "Preferencias",
       "placeholder": "ej. Comidas ricas en proteínas para ganar músculo, prefiero pollo y arroz, evitar lácteos...",
       "applyLabel": "Generar Comidas",
-      "successMessage": "¡Comida creada con éxito!",
+      "successMessage": "Comida creada.",
       "errorMessage": "No se pudieron generar las comidas. Por favor, inténtalo de nuevo.",
       "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
       "generating": "Generando comidas..."
@@ -77,7 +77,7 @@
       "descriptionLabel": "Descripción (opcional)",
       "descriptionPlaceholder": "ej. Comida rica en proteínas con pollo y arroz",
       "nutritionBasisLabel": "Base Nutricional",
-      "savedSuccess": "¡Comida guardada con éxito!"
+      "savedSuccess": "Comida guardada."
     }
   }
 }

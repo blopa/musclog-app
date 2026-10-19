@@ -1,5 +1,5 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import { CheckCircle2, Dumbbell, Play, Sparkles, Warehouse } from 'lucide-react-native';
+import { CheckCircle2, Dumbbell, Play, TrendingUp, Warehouse } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -108,7 +108,7 @@ export function WorkoutTodayCard({
         <Text className="text-xs text-text-tertiary">{gym?.name ?? t('trainingFlow.noGym')}</Text>
       </View>
       <View className="flex-row items-center gap-1.5">
-        <Sparkles size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
+        <TrendingUp size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
         <Text className="text-xs text-text-tertiary">
           {t(automatic ? 'trainingFlow.guidanceOn' : 'trainingFlow.guidanceOff')}
         </Text>

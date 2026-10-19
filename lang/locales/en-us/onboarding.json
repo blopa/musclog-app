@@ -3,50 +3,50 @@
     "skip": "Skip",
     "back": "Back",
     "next": "Next",
-    "getStarted": "Get Started",
+    "getStarted": "Get started",
     "steps": {
       "step1": {
-        "title": "Effortless Tracking",
+        "title": "Effortless tracking",
         "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
       },
       "step2": {
-        "title": "Smart Nutrition",
+        "title": "Smart nutrition",
         "description": "Log meals in seconds with AI scanning or our massive database. Understanding your fuel is the key to peak performance."
       },
       "step3": {
-        "title": "One App, Total Control",
+        "title": "One app, total control",
         "description": "Connect the dots between your diet and your lifts. See exactly how your nutrition fuels your strength gains with unified progress charts."
       },
       "step4": {
-        "title": "Let's Get Personal",
+        "title": "Let's get personal",
         "description": "To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
       }
     },
     "fitnessInfo": {
-      "physicalTitle": "Body Stats",
-      "goalsTitle": "Fitness Goals",
+      "physicalTitle": "Body stats",
+      "goalsTitle": "Fitness goals",
       "maybeLater": "Maybe later",
       "save": "Save",
       "next": "Next",
       "continue": "Continue",
-      "errorSaving": "Error Saving"
+      "errorSaving": "Error saving"
     },
     "personalInfo": {
-      "title": "Set Personal Information",
-      "errorSaving": "Error Saving",
+      "title": "Set personal information",
+      "errorSaving": "Error saving",
       "finish": "Finish",
-      "trackCycle": "Track Menstrual Cycle?",
+      "trackCycle": "Track menstrual cycle?",
       "trackCycleDescription": "Sync your performance and nutrition with your hormonal phases."
     },
     "cycleSetup": {
-      "title": "Cycle Tracking Setup",
-      "description": "We'll learn your cycle as you track — no need to know your averages upfront.",
+      "title": "Cycle tracking setup",
+      "description": "We'll learn your cycle as you track, so you don't need to know your averages upfront.",
       "anchor": {
-        "title": "Last Period",
-        "description": "When did your last period start? A rough guess is fine — you can update this later.",
+        "title": "Last period",
+        "description": "When did your last period start? A rough guess is fine. You can update this later.",
         "tapToSelect": "Tap to select a date",
         "iDontKnow": "I don't know / skip",
-        "skipInstead": "Clear date — I'm not sure"
+        "skipInstead": "Clear date (I'm not sure)"
       },
       "length": {
         "cycleLength": "Cycle length",
@@ -82,7 +82,7 @@
         "progestinPillDescription": "Daily pill without estrogen."
       },
       "lifeStage": {
-        "title": "Cycle Context",
+        "title": "Cycle context",
         "regular": "Nothing unusual",
         "regularDescription": "My cycle is roughly regular.",
         "pcos": "PCOS / Irregular cycles",
@@ -97,17 +97,17 @@
         "noBleedingDescription": "I don't have periods (for example after surgery or on suppressing hormones) but want to track how I feel."
       },
       "goal": {
-        "title": "Sync Goal",
+        "title": "Sync goal",
         "description": "What is your primary focus for hormonal syncing?",
-        "performance": "Optimize Performance",
+        "performance": "Optimize performance",
         "performanceDescription": "Peak strength and PR optimization.",
-        "symptoms": "Manage Symptoms",
+        "symptoms": "Manage symptoms",
         "symptomsDescription": "Focus on comfort and recovery during shifts.",
-        "energy": "Predict Energy Lows",
+        "energy": "Predict energy lows",
         "energyDescription": "Anticipate lows and adjust intensity accordingly."
       },
       "pastPeriods": {
-        "title": "Past Periods (Optional)",
+        "title": "Past periods (optional)",
         "description": "Adding past period start dates helps the app learn your cycle length and make better predictions right away.",
         "addPastPeriod": "Add a past period",
         "duplicate": "That day is already on the list.",
@@ -126,10 +126,10 @@
         "nutrition": "Nutrition",
         "weight": "Weight",
         "sleep": "Sleep",
-        "bodyComposition": "Body Composition"
+        "bodyComposition": "Body composition"
       },
-      "allowHealthAccess": "Allow Health Access",
-      "reviewHealthAccess": "Review Health Access",
+      "allowHealthAccess": "Allow health access",
+      "reviewHealthAccess": "Review health access",
       "connectedCount": "Connected {{granted}}/{{total}}",
       "accessCount": "Access requested {{granted}}/{{total}}",
       "connectedTypes": "Connected: {{types}}",
@@ -155,15 +155,15 @@
       "continue": "Continue"
     },
     "landing": {
-      "getStarted": "Get Started",
+      "getStarted": "Get started",
       "termsAndPrivacy": "By continuing, you agree to our Terms & Privacy Policy.",
       "appName": "Musclog",
-      "tagline": "100% Free, 100% Yours",
+      "tagline": "100% Free, 100% yours",
       "description": "Track your workouts and nutrition with complete privacy. No accounts, no cloud, no subscriptions.",
       "storedLocally": "All data stored locally on your device",
-      "viewTerms": "View Terms",
+      "viewTerms": "View terms",
       "preparingApp": "Preparing the app for you...",
-      "migratingPreamble": "Upgrading from the previous Musclog — we're bringing your data over.",
+      "migratingPreamble": "Upgrading from the previous Musclog. We're bringing your data over.",
       "migratingData": "Migrating your data...",
       "migratingStep": "Migrating {{step}}...",
       "migrationSteps": {
@@ -183,23 +183,23 @@
         "workout_log_sets": "workout log sets",
         "validating": "data"
       },
-      "importData": "Import Data",
+      "importData": "Import data",
       "importOptically": "Import data from another phone",
-      "personalizedSetup": "Personalized Setup",
+      "personalizedSetup": "Personalized setup",
       "personalizedSetupSteps": "10 steps",
       "personalizedSetupSubtitle": "Get accurate TDEE, macros, and personalized recommendations",
-      "quickSetup": "Quick Setup",
+      "quickSetup": "Quick setup",
       "quickSetupSteps": "7 steps",
       "quickSetupSubtitle": "Basic setup, you can personalize later"
     },
     "quickPreferences": {
       "title": "Let's get started",
       "subtitle": "Set your preferences for measurements and display.",
-      "unitSystem": "Unit System",
+      "unitSystem": "Unit system",
       "metric": "Metric",
       "imperial": "Imperial",
       "gender": "Gender",
-      "genderNote": "Our calorie and macro formulas come from older research that only recognized two groups, so they can't reflect everyone. Pick whichever best matches your current body and hormones (for example, if you're on hormone therapy) — or choose \"Other\" for averaged values.",
+      "genderNote": "Our calorie and macro formulas come from older research that only recognized two groups, so they can't reflect everyone. Pick whichever best matches your current body and hormones (for example, if you're on hormone therapy), or choose \"Other\" for averaged values.",
       "male": "Male",
       "female": "Female",
       "other": "Other / Prefer not to say",
@@ -208,12 +208,12 @@
     "quickGoals": {
       "title": "What are your goals?",
       "subtitle": "We'll customize your experience based on these.",
-      "fitnessFocus": "Fitness Focus",
-      "buildMuscle": "Build Muscle",
+      "fitnessFocus": "Fitness focus",
+      "buildMuscle": "Build muscle",
       "strength": "Strength",
       "endurance": "Endurance",
       "general": "General",
-      "weightGoal": "Weight Goal",
+      "weightGoal": "Weight goal",
       "lose": "Lose",
       "maintain": "Maintain",
       "gain": "Gain",
@@ -226,7 +226,7 @@
       "weight": "Weight",
       "birthday": "Birthday",
       "birthdayHelper": "Used to calculate your age for accurate calorie estimates",
-      "bodyFat": "Body Fat Percentage",
+      "bodyFat": "Body fat percentage",
       "bodyFatHelper": "If you know it, this helps with calorie calculations",
       "continue": "Continue"
     },
@@ -247,13 +247,13 @@
       "advancedDesc": "3+ years of dedicated training",
       "sedentary": "Sedentary",
       "sedentaryDesc": "Little or no exercise",
-      "lightlyActive": "Lightly Active",
+      "lightlyActive": "Lightly active",
       "lightlyActiveDesc": "Light exercise 1–3 days/week",
-      "moderatelyActive": "Moderately Active",
+      "moderatelyActive": "Moderately active",
       "moderatelyActiveDesc": "Moderate exercise 3–5 days/week",
-      "veryActive": "Very Active",
+      "veryActive": "Very active",
       "veryActiveDesc": "Hard exercise 6–7 days/week",
-      "extremelyActive": "Extremely Active",
+      "extremelyActive": "Extremely active",
       "extremelyActiveDesc": "Very hard exercise or physical job",
       "continue": "Continue"
     },
@@ -273,32 +273,32 @@
       "subtitle": "Enhance your fitness journey with AI-powered insights.",
       "features": {
         "coach": {
-          "title": "AI Workout Assistant",
+          "title": "AI workout assistant",
           "desc": "Get exercise suggestions and form tips"
         },
         "insights": {
-          "title": "Progress Insights",
+          "title": "Progress insights",
           "desc": "Personalized analysis of your training"
         },
         "recommendations": {
-          "title": "Smart Recommendations",
+          "title": "Smart recommendations",
           "desc": "AI-powered workout and nutrition advice"
         }
       },
-      "dataSharingTitle": "Data Sharing Notice",
+      "dataSharingTitle": "Data sharing notice",
       "dataSharingBody": "To provide AI features, some of your fitness data will be shared with Musclog servers. The free tier has limited requests per day.",
       "readPrivacyPolicy": "Read our Privacy Policy",
       "enable": "Enable Musclog AI",
       "noThanks": "No thanks, continue without AI"
     },
     "setGoals": {
-      "title": "Smart Goal",
+      "title": "Smart goal",
       "calculation": "Calculation",
       "description": "We use the Mifflin–St Jeor and Katch–McArdle equations to estimate your metabolism, then your activity level and goals to set your calorie and macro targets.",
-      "personalizedMacros": "Personalized Macros",
-      "dynamicAdjustments": "Dynamic Adjustments",
-      "calculateForMe": "Calculate for Me",
-      "setThemMyself": "I'll Set Them Myself",
+      "personalizedMacros": "Personalized macros",
+      "dynamicAdjustments": "Dynamic adjustments",
+      "calculateForMe": "Calculate for me",
+      "setThemMyself": "I'll set them myself",
       "missingData": "Please complete your fitness details first so we can calculate your plan."
     },
     "trainingSetup": {

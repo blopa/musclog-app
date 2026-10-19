@@ -47,7 +47,7 @@
       "records": "registros",
       "migrated": "migrados",
       "tablesFound": "Tabelas Encontradas:",
-      "successful": "Migração Bem-sucedida!",
+      "successful": "Migração concluída",
       "failed": "Migração Falhou",
       "error": "Erro: {{error}}",
       "clickToCheck": "Clique em Verificar Dados de Migração para ver o que pode ser migrado",
@@ -166,9 +166,9 @@
       "progressionModeWeightFirst": "Priorizar Progressão de Peso",
       "progressionModeWeightFirstSubtitle": "Aumentar o peso diretamente quando o RIR está alto, em vez de adicionar repetições",
       "enableAdvancedDataManagement": "Habilitar Gerenciamento Avançado de Dados",
-      "enableAdvancedDataManagementSubtitle": "Desbloqueia acesso direto aos dados do app — somente para usuários avançados",
+      "enableAdvancedDataManagementSubtitle": "Desbloqueia acesso direto aos dados do app (somente para usuários avançados)",
       "enableAdvancedDataManagementConfirmTitle": "Somente para Usuários Avançados",
-      "enableAdvancedDataManagementConfirmMessage": "Isso é apenas para usuários avançados. Mexer nos dados aqui pode corromper seu app de forma irreparável — use apenas se souber o que está fazendo.",
+      "enableAdvancedDataManagementConfirmMessage": "Isso é apenas para usuários avançados. Mexer nos dados aqui pode corromper seu app de forma irreparável. Use apenas se souber o que está fazendo.",
       "dataManagement": "Gerenciamento de dados",
       "manageFoodData": "Gerenciar Dados de Alimentos",
       "manageFoodDataSubtitle": "Visualizar, editar ou excluir suas entradas de alimentos personalizados",
@@ -242,7 +242,7 @@
       "imageProcessing": "Processamento de imagem",
       "useOcrBeforeAi": "Usar OCR Antes de Enviar para IA",
       "useOcrBeforeAiSubtitle": "Processar imagens localmente com OCR e enviar texto em vez disso",
-      "useOcrBeforeAiOnDeviceSubtitle": "Obrigatório para Apple Intelligence — o OCR converte imagens em texto antes de enviar.",
+      "useOcrBeforeAiOnDeviceSubtitle": "Obrigatório para Apple Intelligence. O OCR converte imagens em texto antes de enviar.",
       "sendFoundationFoodsToLlm": "Enviar Foundation Foods para IA",
       "sendFoundationFoodsToLlmSubtitle": "Melhorar correspondência de ingredientes usando o banco de dados de foundation foods",
       "getOpenAiKey": "Obter Chave OpenAI",
@@ -312,7 +312,7 @@
       "slot2Label": "Slot 2 (direita da câmera)",
       "slot3Label": "Slot 3 (extrema direita)",
       "selectItem": "Escolha um atalho para este slot",
-      "currentlyInSlot": "Atualmente no slot {{slot}} — será trocado",
+      "currentlyInSlot": "Atualmente no slot {{slot}} (será trocado)",
       "navItems": {
         "workouts": "Treinos",
         "food": "Alimento",
@@ -466,7 +466,7 @@
       "chosenCount": "{{chosen}}/{{max}}",
       "hintOrder": "Elas aparecem na ordem em que você escolher.",
       "hintAtMin": "Mantenha pelo menos {{min}} na sua tela inicial.",
-      "hintAtMax": "Esse é o máximo — remova uma para adicionar outra."
+      "hintAtMax": "Esse é o máximo. Remova uma para adicionar outra."
     },
     "homeSummaryCard": {
       "sectionTitle": "Cartão de resumo inicial",

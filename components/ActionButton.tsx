@@ -1,5 +1,5 @@
 import { LucideIcon } from 'lucide-react-native';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
@@ -12,10 +12,8 @@ export type ActionButtonTone = 'accent' | 'muted';
 
 type ToneStyle = {
   bgColor: string;
-  iconBgColor: string;
   iconColor: string;
   textColor: string;
-  backgroundIconColor: string;
 };
 
 type ActionButtonProps = {
@@ -25,23 +23,24 @@ type ActionButtonProps = {
   onPress?: () => void;
 };
 
+/**
+ * A compact home tile: the icon above a short label, nothing else. It used to be a 180px card
+ * with a tinted icon circle and a faded watermark copy of the same icon, which took a quarter of
+ * the first screen to repeat destinations the tab bar already offers.
+ */
 export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonProps) {
   const theme = useTheme();
 
   const toneConfig: Record<ActionButtonTone, ToneStyle> = {
     accent: {
       bgColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.background.workoutIcon,
-      iconColor: theme.colors.background.primary,
-      textColor: 'text-bg-primary',
-      backgroundIconColor: theme.colors.background.primary,
+      iconColor: theme.colors.text.onAccent,
+      textColor: 'text-text-on-accent',
     },
     muted: {
       bgColor: theme.colors.background.overlay,
-      iconBgColor: theme.colors.background.iconDarker,
       iconColor: theme.colors.text.primary,
       textColor: 'text-text-primary',
-      backgroundIconColor: theme.colors.text.muted,
     },
   };
 
@@ -49,34 +48,19 @@ export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonP
 
   return (
     <Pressable
-      className="relative w-full justify-between overflow-hidden rounded-2xl p-6"
-      style={{
-        minHeight: theme.size['180'],
-        backgroundColor: config.bgColor,
-      }}
+      accessibilityRole="button"
+      // The label carries a deliberate line break for the tile; a screen reader reads one phrase.
+      accessibilityLabel={label.replace(/\n/g, ' ')}
+      className="w-full justify-between gap-3 rounded-2xl p-4 active:opacity-80"
+      style={{ minHeight: theme.size['96'], backgroundColor: config.bgColor }}
       onPress={onPress}
     >
-      <View
-        className="h-12 w-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: config.iconBgColor }}
-      >
-        <Icon
-          size={theme.iconSize.xl}
-          color={config.iconColor}
-          strokeWidth={theme.strokeWidth.medium}
-        />
-      </View>
-      <Text className={`text-2xl font-bold leading-tight ${config.textColor}`}>{label}</Text>
-      <View
-        className="absolute -bottom-6 -right-6"
-        style={{ opacity: theme.colors.opacity.veryLight }}
-      >
-        <Icon
-          size={theme.iconSize.background}
-          color={config.backgroundIconColor}
-          strokeWidth={theme.strokeWidth.thin}
-        />
-      </View>
+      <Icon
+        size={theme.iconSize.xl}
+        color={config.iconColor}
+        strokeWidth={theme.strokeWidth.medium}
+      />
+      <Text className={`text-base font-bold leading-tight ${config.textColor}`}>{label}</Text>
     </Pressable>
   );
 }

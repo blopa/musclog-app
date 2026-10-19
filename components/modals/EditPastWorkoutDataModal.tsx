@@ -8,6 +8,7 @@ import Animated, { LinearTransition } from 'react-native-reanimated';
 import { GenericCard } from '@/components/cards/GenericCard';
 import DashedButton from '@/components/theme/DashedButton';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import { TextButton } from '@/components/theme/TextButton';
 import type { Units } from '@/constants/settings';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -351,12 +352,16 @@ export default function EditPastWorkoutDataModal({
           </Animated.View>
         ))}
         <View style={{ marginTop: theme.spacing.gap.base }}>
-          <DashedButton
-            label={t('workoutDetail.addSet')}
-            onPress={handleAdd}
-            size="sm"
-            icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />}
-          />
+          {sets.length === 0 ? (
+            <DashedButton
+              label={t('workoutDetail.addSet')}
+              onPress={handleAdd}
+              size="sm"
+              icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.text.secondary} />}
+            />
+          ) : (
+            <TextButton label={t('workoutDetail.addSet')} icon={PlusIcon} onPress={handleAdd} />
+          )}
         </View>
       </KeyboardAwareScrollView>
     </FullScreenModal>

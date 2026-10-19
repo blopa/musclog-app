@@ -1,6 +1,6 @@
 {
   "cycle": {
-    "title": "Focus van de dag",
+    "title": "Cyclus",
     "nextPeriod": "Volgende menstruatie",
     "insightsAndLog": "Cyclus-inzichten & Logboek",
     "dailyLog": "Dagelijks logboek",
@@ -10,7 +10,7 @@
     "logSymptoms": "Symptomen loggen",
     "logDaily": "Dagelijks cyclus-logboek",
     "predictionDisclaimer": "Cyclusvoorspellingen zijn schattingen en geen anticonceptiemethode.",
-    "periodActive": "Menstruatie actief — Dag {{day}}",
+    "periodActive": "Menstruatie actief, dag {{day}}",
     "periodActiveGeneric": "Menstruatie actief",
     "settings": {
       "title": "Cyclus-instellingen",
@@ -80,11 +80,11 @@
       "useToday": "Gebruik vandaag"
     },
     "confidence": {
-      "low": "Schatting — gebaseerd op {{count}} cyclus",
-      "low_plural": "Schatting — gebaseerd op {{count}} cycli",
+      "low": "Schatting op basis van {{count}} cyclus",
+      "low_plural": "Schatting op basis van {{count}} cycli",
       "medium": "Gebaseerd op {{count}} cycli",
-      "high": "Gebaseerd op {{count}} cycli — goede nauwkeurigheid",
-      "irregular": "Cycli variëren — datumbereik weergegeven"
+      "high": "Gebaseerd op {{count}} cycli, goede nauwkeurigheid",
+      "irregular": "Cycli variëren, dus er wordt een datumbereik getoond"
     },
     "lifeStage": {
       "pcos": "Met PCOS kunnen cycli zeer onregelmatig zijn. Voorspellingen zijn ruwe schattingen.",
@@ -476,14 +476,14 @@
       "careTitle": "Je symptomen begrijpen",
       "careHint": "Algemene informatie van NHS en RCOG. Registratie is geen diagnose. Bespreek klachten die je zorgen baren of je dagelijks leven beïnvloeden met een zorgverlener; zoek spoedzorg bij ernstige of snel verergerende klachten.",
       "education": {
-        "bleeding": "Hevig bloedverlies — NHS (Engels)",
-        "pain": "Menstruatiepijn — NHS (Engels)",
-        "unexpected": "Onverwacht bloedverlies — NHS (Engels)",
-        "pms": "PMS en symptoomdagboeken — RCOG (Engels)",
-        "menopause": "Perimenopauze en menopauze — NHS (Engels)",
-        "pregnancy": "Informatie over zwangerschap — NHS (Engels)",
-        "postpartum": "Herstel na de bevalling — NHS (Engels)",
-        "pregnancy_loss": "Informatie over zwangerschapsverlies — NHS (Engels)"
+        "bleeding": "Hevig bloedverlies (NHS, Engels)",
+        "pain": "Menstruatiepijn (NHS, Engels)",
+        "unexpected": "Onverwacht bloedverlies (NHS, Engels)",
+        "pms": "PMS en symptoomdagboeken (RCOG, Engels)",
+        "menopause": "Perimenopauze en menopauze (NHS, Engels)",
+        "pregnancy": "Informatie over zwangerschap (NHS, Engels)",
+        "postpartum": "Herstel na de bevalling (NHS, Engels)",
+        "pregnancy_loss": "Informatie over zwangerschapsverlies (NHS, Engels)"
       },
       "trends": "Trends en zoeken",
       "trendsHint": "Bekijk je geregistreerde dagen, ook zonder menstruaties. Dit zijn waarnemingen, geen verklaringen voor veranderingen.",
@@ -493,7 +493,7 @@
       "symptomSummary": "{{symptom}}: {{days}} geregistreerde dagen, {{severe}} als ernstig beoordeeld",
       "loggedOnly": "Alleen geregistreerde waarden worden getoond. Ontbrekende dagen zijn onbekend. De laatste 30 waarden staan hieronder.",
       "noObservations": "Geen passende waarnemingen in dit bereik.",
-      "contextChanged": "Situatie gewijzigd op {{date}} — bekijk de geschiedenis.",
+      "contextChanged": "Situatie gewijzigd op {{date}}. Bekijk de geschiedenis.",
       "search": "Zoek in je gegevens",
       "searchHint": "Zoek symptomen, notities, medicatie, tags of eigen waarden. Alle woorden moeten overeenkomen. Zoeken blijft op dit apparaat; maximaal 50 dagen worden getoond.",
       "metrics": {
@@ -577,7 +577,6 @@
       "sleepInsight": "Je registreerde kortere slaap rond menstruatiestarts in {{hits}} van {{total}} waargenomen cycli. Dit toont geen oorzaak aan.",
       "reviewLong": "Deze lange cyclus weer als onzeker behandelen"
     },
-    "dayCounter": "{{day}}/{{length}}",
     "notifications": {
       "subtle": {
         "cycle": "Je cyclusupdate staat klaar.",

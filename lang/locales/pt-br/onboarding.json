@@ -40,13 +40,13 @@
     },
     "cycleSetup": {
       "title": "Configuração do Rastreamento do Ciclo",
-      "description": "Aprenderemos seu ciclo à medida que você registrar — não precisa saber suas médias de antemão.",
+      "description": "Aprenderemos seu ciclo à medida que você registrar, não precisa saber suas médias de antemão.",
       "anchor": {
         "title": "Última Menstruação",
-        "description": "Quando sua última menstruação começou? Uma estimativa aproximada está ótima — você pode atualizar depois.",
+        "description": "Quando sua última menstruação começou? Uma estimativa aproximada está ótima. Você pode atualizar depois.",
         "tapToSelect": "Toque para selecionar uma data",
         "iDontKnow": "Não sei / pular",
-        "skipInstead": "Limpar data — não tenho certeza"
+        "skipInstead": "Limpar data (não tenho certeza)"
       },
       "length": {
         "cycleLength": "Duração do ciclo",
@@ -162,7 +162,7 @@
       "description": "Acompanhe seu progresso com insights baseados em dados e alcance seus objetivos de fitness.",
       "viewTerms": "Ver Termos",
       "preparingApp": "Preparando o app para você...",
-      "migratingPreamble": "Atualizando do Musclog anterior — estamos trazendo seus dados.",
+      "migratingPreamble": "Atualizando do Musclog anterior. Estamos trazendo seus dados.",
       "migratingData": "Migrando seus dados...",
       "migratingStep": "Migrando {{step}}...",
       "migrationSteps": {

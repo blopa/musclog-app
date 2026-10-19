@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import { BLOCK_FRACTIONS, type BlockKey } from '@/constants/circadian';
 import { useCircadianBurn } from '@/hooks/useCircadianBurn';
@@ -17,31 +16,17 @@ const BLOCK_ORDER: BlockKey[] = ['earlySlеep', 'nadir', 'morning', 'midday', 'p
 // Sub-components
 // ---------------------------------------------------------------------------
 
+/** Marks the figure as live. It used to pulse; the number ticking up already says so. */
 function LiveDot() {
   const theme = useTheme();
-  const opacity = useState(() => new Animated.Value(1))[0];
-
-  useEffect(() => {
-    const anim = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.2, duration: 700, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: true }),
-      ])
-    );
-
-    anim.start();
-
-    return () => anim.stop();
-  }, [opacity]);
 
   return (
-    <Animated.View
+    <View
       style={{
         width: 8,
         height: 8,
         borderRadius: 4,
         backgroundColor: theme.colors.status.brandBright,
-        opacity,
       }}
     />
   );

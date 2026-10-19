@@ -11,7 +11,7 @@
     "missingWorkoutData": "Faltan datos del entrenamiento",
     "completedSetNotFound": "Serie completada no encontrada",
     "getReady": "Prepárate",
-    "go": "¡Ya!",
+    "go": "Ya",
     "a11yRemaining": "Quedan {{time}}"
   }
 }

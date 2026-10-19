@@ -40,13 +40,13 @@
     },
     "cycleSetup": {
       "title": "Cyclusregistratie instellen",
-      "description": "We leren je cyclus kennen naarmate je bijhoudt — je hoeft je gemiddelden niet van tevoren te weten.",
+      "description": "We leren je cyclus kennen naarmate je bijhoudt, je hoeft je gemiddelden niet van tevoren te weten.",
       "anchor": {
         "title": "Laatste menstruatie",
-        "description": "Wanneer begon je laatste menstruatie? Een ruwe schatting is prima — je kunt dit later bijwerken.",
+        "description": "Wanneer begon je laatste menstruatie? Een ruwe schatting is prima. Je kunt dit later bijwerken.",
         "tapToSelect": "Tik om een datum te selecteren",
         "iDontKnow": "Ik weet het niet / overslaan",
-        "skipInstead": "Datum wissen — ik weet het niet zeker"
+        "skipInstead": "Datum wissen (ik weet het niet zeker)"
       },
       "length": {
         "cycleLength": "Cyclusduur",
@@ -162,7 +162,7 @@
       "description": "Houd je voortgang bij met data-gedreven inzichten en behaal je fitnessdoelen.",
       "viewTerms": "Voorwaarden bekijken",
       "preparingApp": "De app voorbereiden...",
-      "migratingPreamble": "Upgraden van de vorige Musclog — we zetten je gegevens over.",
+      "migratingPreamble": "Upgraden van de vorige Musclog. We zetten je gegevens over.",
       "migratingData": "Gegevens migreren...",
       "migratingStep": "Migreren van {{step}}...",
       "migrationSteps": {

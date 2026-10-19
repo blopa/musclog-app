@@ -20,7 +20,7 @@
       "menuDescription": "Añadir ejercicios y series a esta sesión"
     },
     "exerciseComplete": {
-      "title": "¡Buen trabajo!",
+      "title": "Ejercicio completado",
       "subtitle": "Ejercicio completado. ¿Listo para más?",
       "setsCompleted": "{{count}} series completadas",
       "totalVolume": "Volumen total",

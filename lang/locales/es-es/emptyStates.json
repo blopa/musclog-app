@@ -17,12 +17,12 @@
     },
     "food": {
       "title": "Nada registrado hoy",
-      "description": "¡Alimenta tu cuerpo!",
+      "description": "Las comidas que registres hoy aparecerán aquí.",
       "button": "Registrar"
     },
     "notes": {
       "title": "Aún no hay notas",
-      "description": "Apunta lo que estás preparando — 70 g de brócoli, una idea de receta — y regístralo cuando quieras.",
+      "description": "Apunta lo que estás cocinando, como 70 g de brócoli o una idea de receta, y regístralo cuando quieras.",
       "buttonLabel": "Escribe tu primera nota"
     }
   }

@@ -75,7 +75,7 @@
       "dailySurplus": "Дневной профицит: {{kcal}} ккал",
       "projectionFat": "Жир: {{value}} {{unit}}",
       "projectionLean": "Мышцы: {{value}} {{unit}}",
-      "leanMassClarification": "Мышечная масса включает воду, гликоген и другие ткани без жира — не только мышцы.",
+      "leanMassClarification": "Мышечная масса включает воду, гликоген и другие ткани без жира, не только мышцы.",
       "formulasBasedOn": "На основе модели состава тела Hall/Forbes и метаболизируемой энергии (Int J Obes 2008; Br J Nutr 2007).",
       "macroSourcesNote": "Целевые макросы основаны на IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016) и Helms et al. (2014).",
       "goalLabels": {

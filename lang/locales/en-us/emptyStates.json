@@ -1,14 +1,14 @@
 {
   "emptyStates": {
     "workouts": {
-      "title": "No Workouts Yet",
+      "title": "No workouts yet",
       "description": "Your fitness journey starts with your first rep. Plan your routine and track your progress here.",
-      "buttonLabel": "Create Your First Workout"
+      "buttonLabel": "Create your first workout"
     },
     "foods": {
-      "title": "No Food Logged",
+      "title": "No food logged",
       "description": "Log your meals to stay on top of your nutrition goals. Your body will thank you.",
-      "buttonLabel": "Log Your Meal"
+      "buttonLabel": "Log your meal"
     },
     "workout": {
       "title": "No workouts yet",
@@ -17,12 +17,12 @@
     },
     "food": {
       "title": "Nothing logged today",
-      "description": "Fuel your body!",
+      "description": "Meals you log today show up here.",
       "button": "Log"
     },
     "notes": {
       "title": "No notes yet",
-      "description": "Jot down what you're making — 70g of broccoli, a recipe idea — and track it whenever you're ready.",
+      "description": "Jot down what you're cooking, like 70g of broccoli or a recipe idea, and track it when you're ready.",
       "buttonLabel": "Write your first note"
     }
   }

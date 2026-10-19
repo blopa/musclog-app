@@ -206,7 +206,7 @@
       "scaleMealPortion": "Maaltijdportie aanpassen",
       "scaleMealPortionDesc": "Verhoog of verlaag het totaal aantal gram; alle items schalen mee",
       "scaleMealPortionModalTitle": "Maaltijdportie aanpassen",
-      "scaleMealPortionModalSubtitle": "Totaal aantal gram voor deze maaltijd — elk item wordt naar verhouding geschaald",
+      "scaleMealPortionModalSubtitle": "Totaal aantal gram voor deze maaltijd. Elk item wordt naar verhouding geschaald",
       "scaleMealPortionSuccess": "Maaltijdporties bijgewerkt",
       "scaleMealPortionError": "Bijwerken van maaltijdporties mislukt",
       "scaleMealPortionInvalid": "Voer ten minste 1 g in",
@@ -288,7 +288,7 @@
       },
       "searchFood": {
         "title": "Zoeken naar voeding",
-        "description": "Zoek in onze database van 2M+ items"
+        "description": "Zoek in voedingsdatabases en je eigen items"
       },
       "createCustomFood": "Aangepast voedingsmiddel maken",
       "trackCustomMeal": "Maaltijd bijhouden",
@@ -382,7 +382,7 @@
       "zinc": "Zink",
       "loadingDetails": "Gegevens laden...",
       "loadingMoreDetails": "Meer gegevens laden...",
-      "successMessage": "Item succesvol bijgehouden!",
+      "successMessage": "Item bijgehouden.",
       "errorMessage": "Bijhouden van item mislukt. Probeer het opnieuw.",
       "updateFood": "Item bijwerken",
       "sourceOpenFood": "Open Food Facts",
@@ -427,7 +427,7 @@
       "estimated": "Geschat",
       "mealName": "Maaltijdnaam",
       "mealNamePlaceholder": "bijv. Smoothie na workout",
-      "mealDescriptionPlaceholder": "Optioneel — bereidingsnotities, wanneer je dit eet, enz.",
+      "mealDescriptionPlaceholder": "Optioneel: bereidingsnotities, wanneer je dit eet, enz.",
       "ingredients": "Ingrediënten ({{count}})",
       "addPhoto": "Foto toevoegen",
       "editList": "Lijst bewerken",
@@ -439,7 +439,7 @@
       "ingredientsRequired": "Voeg ten minste één ingrediënt toe",
       "saveFailed": "Opslaan van maaltijd mislukt. Probeer het opnieuw.",
       "preparedWeight": "Bereid gewicht ({{unit}})",
-      "preparedWeightHelper": "Optioneel — gewicht na bereiding"
+      "preparedWeightHelper": "Optioneel: gewicht na bereiding"
     },
     "aiCamera": {
       "requestingPermission": "Cameratoegang aanvragen...",
@@ -475,7 +475,7 @@
       "aiAnalysisFailed": "AI-analyse mislukt. Probeer het opnieuw.",
       "aiNotConfigured": "AI is niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de instellingen.",
       "onDeviceNotSupported": "Maaltijdfotoanalyse is niet beschikbaar met Apple Intelligence. Configureer OpenAI of Gemini in de Instellingen.",
-      "mealLoggedSuccess": "Maaltijd succesvol bijgehouden!",
+      "mealLoggedSuccess": "Maaltijd bijgehouden.",
       "mealLoggingFailed": "Bijhouden van maaltijd mislukt. Probeer het opnieuw.",
       "analysisSuccess": "{{name}}: {{kcal}} kcal, E {{protein}}g K {{carbs}}g V {{fat}}g"
     },

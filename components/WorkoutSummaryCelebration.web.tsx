@@ -135,38 +135,6 @@ export function WorkoutSummaryCelebration({
         boxSizing: 'border-box',
       }}
     >
-      {/* Background glows */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '25%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 256,
-          height: 256,
-          borderRadius: 128,
-          backgroundColor: theme.colors.status.indigo10,
-          filter: 'blur(48px)',
-          opacity: 0.7,
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          top: '33%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 192,
-          height: 192,
-          borderRadius: 96,
-          backgroundColor: theme.colors.status.brandVivid20,
-          filter: 'blur(48px)',
-          opacity: 0.6,
-          pointerEvents: 'none',
-        }}
-      />
-
       {/* Trophy */}
       <div style={{ position: 'relative', marginBottom: 32 }}>
         <div

@@ -5,9 +5,9 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { Button } from '@/components/theme/Button';
-import DashedButton from '@/components/theme/DashedButton';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { TextButton } from '@/components/theme/TextButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { WeekdayPicker } from '@/components/theme/WeekdayPicker';
 import {
@@ -542,11 +542,10 @@ export default function CreateWorkoutModal({
                   {t('createWorkout.ruleTapHint')}
                 </Text>
                 <View style={{ marginTop: theme.spacing.margin.md }}>
-                  <DashedButton
+                  <TextButton
                     label={t('workouts.addExercise.title')}
+                    icon={Plus}
                     onPress={() => setAddExerciseVisible(true)}
-                    size="sm"
-                    icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
                   />
                 </View>
               </>

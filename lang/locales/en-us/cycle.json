@@ -1,19 +1,19 @@
 {
   "cycle": {
-    "title": "Today's Cycle Focus",
-    "nextPeriod": "Next Period Prediction",
-    "insightsAndLog": "Cycle Insights & Log",
-    "dailyLog": "Daily Log",
-    "flowIntensity": "Flow Intensity",
+    "title": "Cycle",
+    "nextPeriod": "Next period prediction",
+    "insightsAndLog": "Cycle insights & log",
+    "dailyLog": "Daily log",
+    "flowIntensity": "Flow intensity",
     "symptomsTitle": "Symptoms",
     "noLogsToday": "No symptoms logged for today.",
-    "logSymptoms": "Log Symptoms",
-    "logDaily": "Daily Cycle Log",
+    "logSymptoms": "Log symptoms",
+    "logDaily": "Daily cycle log",
     "predictionDisclaimer": "Cycle predictions are estimates and not a contraceptive method.",
-    "periodActive": "Period active — Day {{day}}",
+    "periodActive": "Period active, day {{day}}",
     "periodActiveGeneric": "Period active",
     "settings": {
-      "title": "Cycle Settings",
+      "title": "Cycle settings",
       "subtitle": "Edit your cycle configuration",
       "changeContext": "Change life stage or birth control",
       "sectionUsual": "Your usual lengths",
@@ -68,9 +68,9 @@
       "logPastPeriod": "Log a past period"
     },
     "periodLog": {
-      "startTitle": "Log Period Start",
-      "endTitle": "Log Period End",
-      "pastTitle": "Add Past Period",
+      "startTitle": "Log period start",
+      "endTitle": "Log period end",
+      "pastTitle": "Add past period",
       "startDescription": "Mark when your period began. You can log for today or a past date.",
       "endDescription": "Mark when your period ended.",
       "pastDescription": "Adding past period dates helps the app learn your cycle and make better predictions.",
@@ -80,11 +80,11 @@
       "useToday": "Use today"
     },
     "confidence": {
-      "low": "Estimate — based on {{count}} cycle",
-      "low_plural": "Estimate — based on {{count}} cycles",
+      "low": "Estimate based on {{count}} cycle",
+      "low_plural": "Estimate based on {{count}} cycles",
       "medium": "Based on {{count}} cycles",
-      "high": "Based on {{count}} cycles — good accuracy",
-      "irregular": "Cycles vary — showing date range"
+      "high": "Based on {{count}} cycles, good accuracy",
+      "irregular": "Cycles vary, so a date range is shown"
     },
     "lifeStage": {
       "pcos": "With PCOS, cycles can be highly irregular. Predictions are rough estimates.",
@@ -97,30 +97,30 @@
       "light": "Light",
       "medium": "Medium",
       "heavy": "Heavy",
-      "veryHeavy": "Very Heavy"
+      "veryHeavy": "Very heavy"
     },
     "symptoms": {
       "physicalTitle": "Physical",
-      "emotionalTitle": "Emotional & Mental",
+      "emotionalTitle": "Emotional & mental",
       "cramps": "Cramps",
       "headache": "Headache",
       "migraine": "Migraine",
       "bloating": "Bloating",
-      "breastTenderness": "Breast Tenderness",
+      "breastTenderness": "Breast tenderness",
       "nausea": "Nausea",
-      "backPain": "Back Pain",
+      "backPain": "Back pain",
       "fatigue": "Fatigue",
       "acne": "Acne",
-      "foodCravings": "Food Cravings",
-      "digestiveIssues": "Digestive Issues",
-      "hotFlashes": "Hot Flashes",
+      "foodCravings": "Food cravings",
+      "digestiveIssues": "Digestive issues",
+      "hotFlashes": "Hot flashes",
       "insomnia": "Insomnia",
-      "moodSwings": "Mood Swings",
+      "moodSwings": "Mood swings",
       "anxiety": "Anxiety",
       "irritability": "Irritability",
-      "lowMood": "Low Mood",
-      "brainFog": "Brain Fog",
-      "lowLibido": "Low Libido"
+      "lowMood": "Low mood",
+      "brainFog": "Brain fog",
+      "lowLibido": "Low libido"
     },
     "phase": {
       "menstrual": "Menstrual",
@@ -476,14 +476,14 @@
       "careTitle": "Understanding your symptoms",
       "careHint": "General education from NHS and RCOG. Logging is not a diagnosis. If symptoms worry you or affect daily life, discuss them with a healthcare professional; seek urgent local care for severe or rapidly worsening symptoms.",
       "education": {
-        "bleeding": "Heavy bleeding — NHS (English)",
-        "pain": "Period pain — NHS (English)",
-        "unexpected": "Unexpected bleeding — NHS (English)",
-        "pms": "PMS and symptom diaries — RCOG (English)",
-        "menopause": "Perimenopause and menopause — NHS (English)",
-        "pregnancy": "Pregnancy information — NHS (English)",
-        "postpartum": "Recovery after birth — NHS (English)",
-        "pregnancy_loss": "Pregnancy loss information — NHS (English)"
+        "bleeding": "Heavy bleeding (NHS, English)",
+        "pain": "Period pain (NHS, English)",
+        "unexpected": "Unexpected bleeding (NHS, English)",
+        "pms": "PMS and symptom diaries (RCOG, English)",
+        "menopause": "Perimenopause and menopause (NHS, English)",
+        "pregnancy": "Pregnancy information (NHS, English)",
+        "postpartum": "Recovery after birth (NHS, English)",
+        "pregnancy_loss": "Pregnancy loss information (NHS, English)"
       },
       "trends": "Trends and search",
       "trendsHint": "Explore your recorded days, including when you don't have periods. These are observations, not explanations of what caused a change.",
@@ -493,7 +493,7 @@
       "symptomSummary": "{{symptom}}: {{days}} recorded days, {{severe}} rated severe",
       "loggedOnly": "Only recorded values are shown. Missing days are unknown. The latest 30 values are listed.",
       "noObservations": "No matching observations in this range.",
-      "contextChanged": "Context changed on {{date}} — see context history.",
+      "contextChanged": "Context changed on {{date}}. See context history.",
       "search": "Search your records",
       "searchHint": "Search symptoms, notes, medication, tags or custom values. All words must match. Search stays on this device; up to 50 matching days are shown.",
       "metrics": {
@@ -577,7 +577,6 @@
       "sleepInsight": "You logged shorter sleep near period starts in {{hits}} of {{total}} observed cycles. This does not establish a cause.",
       "reviewLong": "Treat this long cycle as uncertain again"
     },
-    "dayCounter": "{{day}}/{{length}}",
     "notifications": {
       "subtle": {
         "cycle": "Your cycle update is ready.",

@@ -56,7 +56,7 @@ test.each([
 });
 test('keeps supported block types, settings and optional fields', () => {
   const result = parse([
-    { ...info, icon: 'sparkles', descriptionKey: 'whatsNew.copy', supersededIn: '2.14.0' },
+    { ...info, icon: 'layout', descriptionKey: 'whatsNew.copy', supersededIn: '2.14.0' },
     { id: 'choice', type: 'choice', titleKey: 'whatsNew.title', setting: 'workoutView', options },
     { id: 'boolean', type: 'choice', titleKey: 'whatsNew.title', setting: 'restTimerHaptics' },
     { id: 'weekday', type: 'choice', titleKey: 'whatsNew.title', setting: 'reviewWeekday' },

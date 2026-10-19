@@ -40,13 +40,13 @@
     },
     "cycleSetup": {
       "title": "Configuración del Seguimiento del Ciclo",
-      "description": "Aprenderemos tu ciclo a medida que lo registres — no necesitas saber tus promedios de antemano.",
+      "description": "Aprenderemos tu ciclo a medida que lo registres, no necesitas saber tus promedios de antemano.",
       "anchor": {
         "title": "Último Periodo",
-        "description": "¿Cuándo comenzó tu último periodo? Una estimación aproximada está bien — puedes actualizarlo después.",
+        "description": "¿Cuándo comenzó tu último periodo? Una estimación aproximada está bien. Puedes actualizarlo después.",
         "tapToSelect": "Toca para seleccionar una fecha",
         "iDontKnow": "No lo sé / omitir",
-        "skipInstead": "Borrar fecha — no estoy segura"
+        "skipInstead": "Borrar fecha (no estoy segura)"
       },
       "length": {
         "cycleLength": "Duración del ciclo",
@@ -162,7 +162,7 @@
       "description": "Sigue tu progreso con información basada en datos y alcanza tus objetivos de fitness.",
       "viewTerms": "Ver Términos",
       "preparingApp": "Preparando la app para ti...",
-      "migratingPreamble": "Actualizando desde el Musclog anterior — estamos trayendo tus datos.",
+      "migratingPreamble": "Actualizando desde el Musclog anterior. Estamos trayendo tus datos.",
       "migratingData": "Migrando tus datos...",
       "migratingStep": "Migrando {{step}}...",
       "migrationSteps": {

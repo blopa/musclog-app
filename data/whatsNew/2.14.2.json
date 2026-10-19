@@ -7,14 +7,14 @@
         {
           "id": "widgets",
           "type": "info",
-          "icon": "sparkles",
+          "icon": "layout",
           "titleKey": "whatsNew.releases.v2_14_2.widgets.title",
           "descriptionKey": "whatsNew.releases.v2_14_2.widgets.description"
         },
         {
           "id": "migration",
           "type": "info",
-          "icon": "sparkles",
+          "icon": "settings",
           "titleKey": "whatsNew.releases.v2_14_2.migration.title",
           "descriptionKey": "whatsNew.releases.v2_14_2.migration.description"
         }

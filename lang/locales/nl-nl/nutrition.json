@@ -48,16 +48,16 @@
       "onTrack": "Op schema",
       "ahead": "Vooruit",
       "behind": "Achterop",
-      "noCheckinFoundDesc": "Je hebt geen controles gepland voor vandaag. Kom terug op je volgende geplande controledag!",
+      "noCheckinFoundDesc": "Je hebt geen controles gepland voor vandaag. Kom terug op je volgende geplande controledag.",
       "headline": {
-        "onTrack": "Ziet er goed uit!",
-        "ahead": "Je gaat sneller!",
+        "onTrack": "Op schema",
+        "ahead": "Voor op schema",
         "behind": "Ruimte voor verbetering"
       },
       "subtext": {
         "onTrack": "Je hebt deze week een constant tempo aangehouden. Blijf doorgaan richting je doelen.",
         "ahead": "Je loopt voor op je gewichtsdoelen! Goed werk met je consistentie.",
-        "behind": "Je had wat schommelingen deze week, maar consistentie is de sleutel. Laten we de draad weer oppakken!"
+        "behind": "Je cijfers schommelden deze week. Consequent loggen maakt ze stabieler."
       },
       "weightTrend": "Gewichtstrend",
       "target": "Doel",

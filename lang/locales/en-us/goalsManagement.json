@@ -1,19 +1,19 @@
 {
   "goalsManagement": {
-    "title": "Goals Management",
-    "nutritionAndBodyTab": "Nutrition & Body",
-    "fitnessAndExerciseTab": "Fitness & Exercise",
+    "title": "Goals management",
+    "nutritionAndBodyTab": "Nutrition & body",
+    "fitnessAndExerciseTab": "Fitness & exercise",
     "subtitle": "Track your progress and history.",
     "currentGoals": "Current goals",
     "history": "Goals history",
-    "newGoal": "New Goal",
+    "newGoal": "New goal",
     "createGoalDesc": "Set new nutrition targets and macros",
-    "createCheckin": "Create Check-in",
+    "createCheckin": "Create check-in",
     "createCheckinDesc": "Add a new nutrition check-in entry",
     "emptyStateMessage": "Create a new goal to get started",
     "editGoal": "Edit",
     "deleteGoalAction": "Delete",
-    "deleteGoal": "Delete Goal",
+    "deleteGoal": "Delete goal",
     "deleteGoalMessage": "This goal will be permanently removed from your history.",
     "manageGoalData": {
       "deleteGoalWarning": "Are you sure you want to delete this goal? This action cannot be undone.",
@@ -37,36 +37,36 @@
       "phaseBulk": "Bulk"
     },
     "goalCreationMethod": {
-      "title": "New Goal",
+      "title": "New goal",
       "subtitle": "How would you like to set up your new goal?",
-      "guidedTitle": "Answer a Few Questions",
+      "guidedTitle": "Answer a few questions",
       "guidedDescription": "We'll guide you step-by-step to the right calorie and macro targets.",
-      "manualTitle": "Set Manually",
+      "manualTitle": "Set manually",
       "manualDescription": "Enter your calories, macros, and targets directly.",
       "autoCalculateTitle": "Calculate it for me",
       "autoCalculateDescription": "We calculate your targets using the Mifflin-St Jeor formula based on your profile."
     },
     "goalWizard": {
-      "title": "Set Up Your Goal",
+      "title": "Set up your goal",
       "step": "Step {{current}} of {{total}}",
       "next": "Next",
       "back": "Back",
-      "createGoal": "Create Goal",
+      "createGoal": "Create goal",
       "goalType": {
         "title": "What's your main goal?",
         "subtitle": "This helps us recommend the right calorie and macro targets for you.",
-        "lose": "Lose Weight",
+        "lose": "Lose weight",
         "loseDescription": "Reduce body fat through a calorie deficit.",
-        "maintain": "Maintain Weight",
+        "maintain": "Maintain weight",
         "maintainDescription": "Keep your current weight and body composition.",
-        "gain": "Gain Weight",
+        "gain": "Gain weight",
         "gainDescription": "Build muscle and strength with a calorie surplus."
       },
       "goalWeight": {
         "titleMain": "What is your",
         "titleAccent": "goal weight?",
         "subtitle": "Set the weight you want to reach. Your current weight is shown for reference.",
-        "label": "Goal Weight",
+        "label": "Goal weight",
         "currentWeightLabel": "Your current weight",
         "tipLoseBF": "Aiming for 0.5–1% of your body weight per week is a sustainable rate that helps preserve muscle mass during a cut.",
         "tipGain": "Gaining 0.25–0.5 kg per week keeps fat gain minimal while still allowing steady muscle growth.",
@@ -75,15 +75,15 @@
       "targetDate": {
         "title": "When do you want to reach your goal?",
         "subtitle": "Setting a deadline helps you track your progress over time.",
-        "label": "Target Date",
+        "label": "Target date",
         "notSet": "No specific date",
         "clear": "Clear date",
-        "warningLabel": "Aggressive Timeline",
+        "warningLabel": "Aggressive timeline",
         "warningMessage": "Requested pace: about {{weeklyLoss}} {{unit}} per week. Suggested upper range for your current body weight: about {{suggestedMaxWeeklyLoss}} {{unit}} per week. We'll still calculate calories for it, but a more realistic target date would be around {{estimatedDate}}."
       }
     },
     "manageCheckinData": {
-      "title": "Nutrition Check-ins",
+      "title": "Nutrition check-ins",
       "searchPlaceholder": "Search check-ins...",
       "noCheckins": "No check-ins yet",
       "noCheckinsDesc": "Check-ins are created when you set up an AI-calculated nutrition goal",
@@ -94,10 +94,10 @@
       "deleteCheckin": "Delete check-in",
       "deleteCheckinDesc": "Permanently remove this check-in",
       "subtitleFormat": "Target {{targetWeight}} {{unit}} • {{targetBodyFat}}% body fat",
-      "checkinDate": "Check-in Date"
+      "checkinDate": "Check-in date"
     },
     "exerciseGoals": "Exercise goals",
-    "exerciseGoalsTitle": "Strength & Consistency",
+    "exerciseGoalsTitle": "Strength & consistency",
     "exerciseGoalsSubtitle": "Track 1RM targets and workout frequency"
   }
 }

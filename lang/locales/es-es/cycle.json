@@ -1,6 +1,6 @@
 {
   "cycle": {
-    "title": "Enfoque del Ciclo de Hoy",
+    "title": "Ciclo",
     "nextPeriod": "Predicción del Próximo Periodo",
     "insightsAndLog": "Información y Registro del Ciclo",
     "dailyLog": "Registro Diario",
@@ -10,7 +10,7 @@
     "logSymptoms": "Registrar Síntomas",
     "logDaily": "Registro Diario del Ciclo",
     "predictionDisclaimer": "Las predicciones del ciclo son estimaciones y no son un método anticonceptivo.",
-    "periodActive": "Periodo activo — Día {{day}}",
+    "periodActive": "Periodo activo, día {{day}}",
     "periodActiveGeneric": "Periodo activo",
     "settings": {
       "title": "Ajustes del Ciclo",
@@ -80,11 +80,11 @@
       "useToday": "Usar hoy"
     },
     "confidence": {
-      "low": "Estimación — basada en {{count}} ciclo",
-      "low_plural": "Estimación — basada en {{count}} ciclos",
+      "low": "Estimación basada en {{count}} ciclo",
+      "low_plural": "Estimación basada en {{count}} ciclos",
       "medium": "Basada en {{count}} ciclos",
-      "high": "Basada en {{count}} ciclos — buena precisión",
-      "irregular": "Los ciclos varían — mostrando rango de fechas"
+      "high": "Basada en {{count}} ciclos, buena precisión",
+      "irregular": "Los ciclos varían, así que se muestra un rango de fechas"
     },
     "lifeStage": {
       "pcos": "Con SOP, los ciclos pueden ser muy irregulares. Las predicciones son aproximadas.",
@@ -476,14 +476,14 @@
       "careTitle": "Entender tus síntomas",
       "careHint": "Información general del NHS y RCOG. Registrar no es diagnosticar. Consulta a un profesional si los síntomas te preocupan o afectan tu vida diaria; busca atención urgente local ante síntomas graves o que empeoran rápidamente.",
       "education": {
-        "bleeding": "Sangrado abundante — NHS (inglés)",
-        "pain": "Dolor menstrual — NHS (inglés)",
-        "unexpected": "Sangrado inesperado — NHS (inglés)",
-        "pms": "SPM y diarios de síntomas — RCOG (inglés)",
-        "menopause": "Perimenopausia y menopausia — NHS (inglés)",
-        "pregnancy": "Información sobre embarazo — NHS (inglés)",
-        "postpartum": "Recuperación después del parto — NHS (inglés)",
-        "pregnancy_loss": "Información sobre pérdida gestacional — NHS (inglés)"
+        "bleeding": "Sangrado abundante (NHS, inglés)",
+        "pain": "Dolor menstrual (NHS, inglés)",
+        "unexpected": "Sangrado inesperado (NHS, inglés)",
+        "pms": "SPM y diarios de síntomas (RCOG, inglés)",
+        "menopause": "Perimenopausia y menopausia (NHS, inglés)",
+        "pregnancy": "Información sobre embarazo (NHS, inglés)",
+        "postpartum": "Recuperación después del parto (NHS, inglés)",
+        "pregnancy_loss": "Información sobre pérdida gestacional (NHS, inglés)"
       },
       "trends": "Tendencias y búsqueda",
       "trendsHint": "Explora los días registrados, incluso sin menstruaciones. Son observaciones, no explicaciones de la causa de un cambio.",
@@ -493,7 +493,7 @@
       "symptomSummary": "{{symptom}}: {{days}} días registrados, {{severe}} valorados como graves",
       "loggedOnly": "Solo se muestran valores registrados. Los días sin registro son desconocidos. Se listan los últimos 30 valores.",
       "noObservations": "No hay observaciones coincidentes en este intervalo.",
-      "contextChanged": "El contexto cambió el {{date}} — consulta el historial.",
+      "contextChanged": "El contexto cambió el {{date}}. Consulta el historial.",
       "search": "Buscar en tus registros",
       "searchHint": "Busca síntomas, notas, medicamentos, etiquetas o valores personalizados. Deben coincidir todas las palabras. La búsqueda permanece en este dispositivo; se muestran hasta 50 días.",
       "metrics": {
@@ -577,7 +577,6 @@
       "sleepInsight": "Registraste menos sueño cerca del inicio del periodo en {{hits}} de {{total}} ciclos observados. Esto no demuestra una causa.",
       "reviewLong": "Volver a considerar incierto este ciclo largo"
     },
-    "dayCounter": "{{day}}/{{length}}",
     "notifications": {
       "subtle": {
         "cycle": "Tu actualización del ciclo está lista.",

@@ -75,7 +75,7 @@
       "dailySurplus": "Dagelijks overschot: {{kcal}} kcal",
       "projectionFat": "Vet: {{value}} {{unit}}",
       "projectionLean": "Vetvrije massa: {{value}} {{unit}}",
-      "leanMassClarification": "Vetvrije massa omvat water, glycogeen en ander niet-vetweefsel — niet alleen spieren.",
+      "leanMassClarification": "Vetvrije massa omvat water, glycogeen en ander niet-vetweefsel, niet alleen spieren.",
       "formulasBasedOn": "Gebaseerd op het Hall/Forbes lichaamssamenstellingsmodel & metaboliseerbare energie (Int J Obes 2008; Br J Nutr 2007).",
       "macroSourcesNote": "Macrodoelen gebaseerd op IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016), en Helms et al. (2014).",
       "goalLabels": {

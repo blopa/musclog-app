@@ -1,7 +1,7 @@
 {
   "exerciseTransition": {
     "totalTime": "Total time",
-    "completeSuffix": "Complete!",
+    "completeSuffix": "complete",
     "completedMessage": "Great effort. Catch your breath.",
     "upNext": "Up next",
     "target": "Target",
@@ -16,7 +16,7 @@
     "loadingNextExercise": "Loading next exercise...",
     "errorTitle": "Workout not found",
     "errorDescription": "Unable to load exercise transition screen. Please try again.",
-    "goBack": "Go Back",
+    "goBack": "Go back",
     "noWorkoutId": "No workout ID provided",
     "loadFailed": "Failed to load workout data"
   }

@@ -28,7 +28,7 @@
         "description": "Klaar voor {{workoutName}}? Gepland voor {{time}} vandaag."
       },
       "workoutCompleted": {
-        "title": "Workout voltooid!",
+        "title": "Workout voltooid",
         "description": "Goed gedaan met het voltooien van {{workoutName}}. Je hebt {{calories}} kcal verbrand."
       },
       "kudosReceived": {
@@ -51,7 +51,7 @@
       },
       "nutritionOverview": {
         "title": "Dagelijks voedingsoverzicht",
-        "body": "Bekijk hoe je voeding vandaag overeenkwam met je doelen!"
+        "body": "Bekijk hoe je voeding van vandaag zich verhoudt tot je doelen."
       },
       "nutritionCheckin": {
         "title": "Wekelijkse voortgangscontrole",
@@ -66,12 +66,12 @@
         "body": "Je geschatte vruchtbare periode kan binnenkort beginnen. Het is een kalenderschatting, geen bevestiging van de ovulatie."
       },
       "restTimerAlert": {
-        "title": "Rust voorbij - weer aan de slag!",
-        "body": "Je rustperiode is voorbij. Tijd voor de volgende set!"
+        "title": "Rust voorbij",
+        "body": "Je rust is voorbij. Tijd voor de volgende set."
       },
       "workoutDurationWarning": {
         "title": "Nog steeds aan het trainen?",
-        "body": "Je sessie is al 5 uur bezig. Vergeet niet om deze te beëindigen in Musclog!"
+        "body": "Je sessie loopt al 5 uur. Vergeet niet om deze in Musclog te beëindigen."
       },
       "cycleDiscreet": {
         "title": "Musclog",

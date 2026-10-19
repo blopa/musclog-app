@@ -11,7 +11,7 @@
     "missingWorkoutData": "Данные тренировки отсутствуют",
     "completedSetNotFound": "Завершённый подход не найден",
     "getReady": "Приготовьтесь",
-    "go": "Вперёд!",
+    "go": "Вперёд",
     "a11yRemaining": "Осталось {{time}}"
   }
 }

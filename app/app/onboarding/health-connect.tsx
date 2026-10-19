@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import { HealthCategoryCard } from '@/components/cards/HealthCategoryCard';
-import { HealthConnectIllustration } from '@/components/HealthConnectIllustration';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
@@ -122,10 +121,8 @@ export default function HealthConnectScreen() {
           {...scrollProps}
         >
           {/* Main Content */}
-          <View className="flex-col items-center px-6 pt-4">
-            {/* Illustration Section */}
-            <HealthConnectIllustration />
-
+          {/* No illustration: the four data types below say what connecting shares. */}
+          <View className="flex-col items-center px-6 pt-12">
             {/* Typography Block */}
             <View className="mb-8 w-full gap-4 text-center">
               <View className="flex-row flex-wrap items-center justify-center">

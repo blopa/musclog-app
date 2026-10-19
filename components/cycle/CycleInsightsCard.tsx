@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react-native';
+import { Lightbulb } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -38,7 +38,7 @@ export function CycleInsightsCard() {
   return (
     <View className="mb-6 rounded-2xl border-2 border-ink/5 bg-bg-overlay p-5">
       <View className="mb-3 flex-row items-center gap-2">
-        <Sparkles size={18} color={theme.colors.accent.primary} />
+        <Lightbulb size={18} color={theme.colors.accent.primary} />
         <Text className="text-base font-bold text-text-primary">{t('cycle.insights.title')}</Text>
       </View>
       <View className="gap-4">

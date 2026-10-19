@@ -13,6 +13,7 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import DashedButton from '@/components/theme/DashedButton';
 import { IconButton } from '@/components/theme/IconButton';
+import { TextButton } from '@/components/theme/TextButton';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';
@@ -207,10 +208,17 @@ export default function CycleSetup() {
                 </View>
               ))}
 
-              {pastPeriods.length < 6 ? (
+              {pastPeriods.length === 0 ? (
                 <DashedButton
                   label={t('onboarding.cycleSetup.pastPeriods.addPastPeriod')}
                   icon={<Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+                  onPress={handleAddPastPeriod}
+                />
+              ) : null}
+              {pastPeriods.length > 0 && pastPeriods.length < 6 ? (
+                <TextButton
+                  label={t('onboarding.cycleSetup.pastPeriods.addPastPeriod')}
+                  icon={Plus}
                   onPress={handleAddPastPeriod}
                 />
               ) : null}

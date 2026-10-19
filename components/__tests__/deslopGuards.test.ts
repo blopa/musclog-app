@@ -102,14 +102,12 @@ describe('Phase 1: buttons and shape', () => {
 /**
  * Phase 2: gradients only where they carry meaning. A file may draw a `LinearGradient` when it is a
  * photo or camera scrim, a fade to the surface behind it, the `hero` card, a slider track, or the
- * one `gradientCta` button. Adding a file here needs a reason, and the two illustrations are
- * scheduled for removal in Phase 6.
+ * one `gradientCta` button. Adding a file here needs a reason.
  */
 const LINEAR_GRADIENT_ALLOWLIST = [
   'components/BottomButtonWrapper.tsx',
   'components/ExerciseTransitionScreen.tsx',
   'components/FilterTabs.tsx',
-  'components/GoogleGeminiIllustration.tsx',
   'components/SmartCameraFrame.tsx',
   'components/cards/ChatWorkoutCard.tsx',
   'components/cards/DetailedItemCard.tsx',
@@ -255,5 +253,211 @@ describe('Phase 4: labels and microtext', () => {
       }
     }
     expect(caps.length).toBeLessThanOrEqual(ALL_CAPS_COPY_CEILING);
+  });
+});
+
+const localeDir = (locale: string) => join(root, 'lang/locales', locale);
+
+/** Every string in a locale (website copy excluded), keyed `file:dotted.path`. */
+function localeStrings(locale: string): [string, string][] {
+  const out: [string, string][] = [];
+  const walk = (node: unknown, key: string) => {
+    if (typeof node === 'string') {
+      out.push([key, node]);
+    } else if (node && typeof node === 'object') {
+      for (const [child, value] of Object.entries(node)) {
+        walk(value, key.endsWith(':') ? `${key}${child}` : `${key}.${child}`);
+      }
+    }
+  };
+  for (const name of readdirSync(localeDir(locale))) {
+    if (name.endsWith('.json') && name !== 'website.json') {
+      walk(JSON.parse(readFileSync(join(localeDir(locale), name), 'utf8')), `${name}:`);
+    }
+  }
+
+  return out;
+}
+
+const LOCALES = ['en-us', 'es-es', 'nl-nl', 'pt-br', 'ru-ru'];
+
+describe('Phase 5: Home and the hero surfaces', () => {
+  it('draws the home action tile without a watermark or a tinted icon circle', () => {
+    const source = stripComments(readFileSync(join(root, 'components/ActionButton.tsx'), 'utf8'));
+    expect(source).not.toMatch(/\babsolute\b|position:\s*['"]absolute['"]/);
+    expect(source).not.toMatch(/iconSize\.background|iconBgColor|rounded-full/);
+  });
+
+  it('opens Home on the date, not a greeting or the version string', () => {
+    const home = stripComments(readFileSync(join(root, 'app/app/index.tsx'), 'utf8'));
+    expect(home).not.toMatch(/home\.greeting|getTimeBasedGreeting|packageJson/);
+    for (const locale of LOCALES) {
+      const keys = localeStrings(locale).map(([key]) => key);
+      expect(keys.filter((key) => key.startsWith('home.json:home.greeting'))).toEqual([]);
+    }
+  });
+
+  it('shows the full Weekly Review card on Home only while a review is waiting', () => {
+    const home = stripComments(readFileSync(join(root, 'app/app/index.tsx'), 'utf8'));
+    expect(home).toMatch(/<WeeklyReviewCard quietUntilReady \/>/);
+  });
+
+  it('shows the cycle day once, inside the wheel', () => {
+    const cycle = stripComments(readFileSync(join(root, 'app/app/cycle.tsx'), 'utf8'));
+    expect(cycle).not.toMatch(/dayCounter|focus\.currentPhase/);
+  });
+});
+
+/**
+ * Phase 6: motion and decoration have to carry information. The two loops left are progress
+ * spinners (rotation, on the native driver); TextInput's border colour cannot use the native
+ * driver, which is why it is the one JS-driven animation.
+ */
+const ANIMATED_LOOP_ALLOWLIST = [
+  'app/app/workout/rest-timer.tsx',
+  'components/CameraProcessingIndicator.tsx',
+];
+/** Dashed outlines are for an empty slot (an empty meal, no sets yet); these are what is left. */
+const DASHED_CEILING = 5;
+
+describe('Phase 6: empty states, illustrations and decorative motion', () => {
+  it('runs no infinite animation outside the allowlisted spinners', () => {
+    const offenders = occurrences(/Animated\.loop\(|withRepeat\(/g)
+      .map((hit) => hit.file)
+      .filter(
+        (file) =>
+          !ANIMATED_LOOP_ALLOWLIST.includes(file) &&
+          file !== 'components/theme/SkeletonLoader.tsx' &&
+          // The viewfinder's scan line is the camera's own feedback, out of the plan's scope.
+          file !== 'components/SmartCameraFrame.tsx'
+      );
+    expect(offenders).toEqual([]);
+  });
+
+  it('drives animations on the native thread except for TextInput colour', () => {
+    const offenders = occurrences(/useNativeDriver:\s*false/g)
+      .map((hit) => hit.file)
+      .filter((file) => file !== 'components/theme/TextInput.tsx');
+    expect(offenders).toEqual([]);
+  });
+
+  it('draws no blurred glow blobs', () => {
+    expect(occurrences(/\bblur-3xl\b|filter:\s*['"]blur\(/g)).toEqual([]);
+  });
+
+  it('keeps the onboarding landing free of background shapes', () => {
+    const landing = stripComments(
+      readFileSync(join(root, 'app/app/onboarding/landing.tsx'), 'utf8')
+    );
+    expect(landing).not.toMatch(/rounded-full opacity|SCREEN_WIDTH|SCREEN_HEIGHT|\bStar\b/);
+  });
+
+  it('draws the empty state icon plainly with a secondary button by default', () => {
+    const source = stripComments(
+      readFileSync(join(root, 'components/theme/EmptyStateCard.tsx'), 'utf8')
+    );
+    expect(source).not.toMatch(/\bh-40\b|\bw-40\b|accent\.primary10/);
+    expect(source).toMatch(/buttonVariant = 'secondary'/);
+  });
+
+  it('keeps dashed "Add" bars from spreading', () => {
+    expect(total(occurrences(/<DashedButton\b|variant="dashed"/g))).toBeLessThanOrEqual(
+      DASHED_CEILING
+    );
+  });
+});
+
+/** Placeholders that ARE a dash: an empty pace and the "not logged" mark in the cycle legends. */
+const EM_DASH_ALLOWLIST = [
+  'cardio.json:cardio.noPace',
+  'cycle.json:cycle.comparison.flowLegend',
+  'cycle.json:cycle.comparison.symptomLegend',
+  'cycle.json:cycle.comparison.numberLegend',
+];
+/** The two goal-achieved celebrations; everything else reads flat. */
+const EXCLAMATION_CEILING = 2;
+/** Sparkles means AI. Every file here draws it on an AI affordance only. */
+const SPARKLES_ALLOWLIST = [
+  'app/app/nutrition/food.tsx',
+  'app/app/onboarding/musclog-api.tsx',
+  'components/SmartCameraModePicker.tsx',
+  'components/modals/AINotConfiguredModal.tsx',
+  'components/modals/AINutritionTrackingContextModal.tsx',
+  'components/modals/AddFoodModal.tsx',
+  'components/modals/AddMealModal.tsx',
+  'components/modals/CreateWorkoutModal.tsx',
+  'components/modals/CreateWorkoutOptionsModal.tsx',
+  'components/modals/GenerateWorkoutWithAiModal.tsx',
+  'components/modals/NotificationsModal.tsx',
+  'components/modals/SmartCameraShell.tsx',
+];
+/** Proper nouns that keep their capitals inside a sentence-case label. */
+const PROPER_NOUNS =
+  /\b(Health Connect|Apple( Health| Intelligence)?|Open Food Facts|Foundation Foods|Weekly Review|Kinetic \w+|Game Boy|Gemini|Google|OpenAI|HealthKit|Musclog|Loggy|Monday|Smith|Discord|GitHub|NHS|Keiser|Tonal)\b/g;
+const SMALL_WORDS = new Set([
+  'a',
+  'an',
+  'the',
+  'and',
+  'or',
+  'of',
+  'to',
+  'in',
+  'on',
+  'for',
+  'by',
+  'with',
+  'at',
+  'from',
+  'vs',
+  'per',
+  'your',
+  'my',
+]);
+
+describe('Phase 7: copy', () => {
+  it('writes no em dash in en-us copy outside the placeholders', () => {
+    const dashes = localeStrings('en-us')
+      .filter(([key, value]) => value.includes('—') && !EM_DASH_ALLOWLIST.includes(key))
+      .map(([key]) => key);
+    expect(dashes).toEqual([]);
+  });
+
+  it('keeps exclamation marks for real celebrations', () => {
+    const shouting = localeStrings('en-us').filter(([, value]) => value.trimEnd().endsWith('!'));
+    expect(shouting.length).toBeLessThanOrEqual(EXCLAMATION_CEILING);
+  });
+
+  it('sets short en-us labels in sentence case', () => {
+    const titleCase = localeStrings('en-us')
+      .filter(([, value]) => {
+        if (/[.!?]\s/.test(value) || (value.includes('{{') && value.length > 60)) {
+          return false;
+        }
+        const words = value.replace(PROPER_NOUNS, '').match(/[A-Za-z][A-Za-z'’-]*/g) ?? [];
+        const all = value.match(/[A-Za-z][A-Za-z'’-]*/g) ?? [];
+        if (all.length < 2 || all.length > 7) {
+          return false;
+        }
+        const rest = words.slice(value.startsWith(words[0] ?? '') ? 1 : 0);
+        const capitalised = rest.filter(
+          (word) =>
+            /^[A-Z][a-z]/.test(word) &&
+            !/[A-Z]/.test(word.slice(1)) &&
+            !SMALL_WORDS.has(word.toLowerCase()) &&
+            !/ - /.test(value)
+        );
+        const lower = rest.filter((word) => /^[a-z]/.test(word) && !SMALL_WORDS.has(word));
+        return capitalised.length > 0 && lower.length === 0;
+      })
+      .map(([key, value]) => `${key} = ${value}`);
+    expect(titleCase).toEqual([]);
+  });
+
+  it('uses Sparkles only on AI affordances', () => {
+    const offenders = occurrences(/\bSparkles\b/g)
+      .map((hit) => hit.file)
+      .filter((file) => !SPARKLES_ALLOWLIST.includes(file));
+    expect(offenders).toEqual([]);
   });
 });

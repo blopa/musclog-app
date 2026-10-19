@@ -68,7 +68,7 @@
       "title": "Plaatcalculator",
       "subtitle": "{{weight}} {{unit}} laden",
       "belowBar": "Dat is lichter dan de stang van {{bar}} {{unit}}.",
-      "barOnly": "Alleen de stang — geen platen nodig.",
+      "barOnly": "Alleen de stang, geen platen nodig.",
       "perSide": "Aan elke kant",
       "plateLine": "{{weight}} {{unit}}",
       "bar": "Stang",

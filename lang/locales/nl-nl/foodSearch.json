@@ -36,7 +36,7 @@
     "loadingMeals": "Maaltijden laden...",
     "noResultsFor": "Geen resultaten gevonden voor \"{{query}}\"",
     "trySomethingElse": "Probeer een andere zoekterm of maak een aangepast item",
-    "noRecentFoods": "Geen recente items gevonden. Begin met zoeken of voeg aangepaste items toe!",
+    "noRecentFoods": "Nog geen recente items. Zoek een item of maak je eigen.",
     "createFood": "Item maken",
     "noFavoriteFoods": "Geen favoriete items",
     "loadFavoritesError": "Laden van favorieten mislukt",

@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CheckCircle, CircleDot, Plus, Settings, Sparkles } from 'lucide-react-native';
+import { CalendarHeart, CheckCircle, CircleDot, Plus, Settings } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -80,7 +80,6 @@ export default function CycleScreen() {
     contexts,
     moods,
     guidance,
-    config,
     today,
   } = useMenstrualCycle();
 
@@ -130,25 +129,6 @@ export default function CycleScreen() {
       pathname: '/app/onboarding/cycle-setup',
       params: { nextRoute: encodeURIComponent('/app/cycle') },
     } as never);
-  };
-
-  const dayCounter = () => {
-    if (cycleDay == null) {
-      return '--';
-    }
-
-    // Without learned history, or past the usual length, a "/28" denominator would be wrong.
-    if (
-      (config.cycleLengthKnown === false && predictionStats.usableCount === 0) ||
-      cycleDay > avgCycleLength
-    ) {
-      return formatInteger(cycleDay);
-    }
-
-    return t('cycle.dayCounter', {
-      day: formatInteger(cycleDay),
-      length: formatInteger(avgCycleLength),
-    });
   };
 
   const renderPanel = () => {
@@ -206,10 +186,28 @@ export default function CycleScreen() {
         >
           <AnimatedContent>
             <View className="px-4 py-8">
-              <View className="mb-6 flex-row items-center justify-between">
-                <Text className="flex-1 text-4xl font-black text-text-primary">
-                  {t('cycle.title')}
-                </Text>
+              {/* One short title with where the cycle is as its subtitle. The day itself is shown once,
+                  inside the wheel; a "15/28" badge up here repeated it. */}
+              <View className="mb-6 flex-row items-center justify-between gap-3">
+                <View className="min-w-0 flex-1">
+                  <Text
+                    accessibilityRole="header"
+                    className="text-4xl font-black text-text-primary"
+                    numberOfLines={1}
+                  >
+                    {t('cycle.title')}
+                  </Text>
+                  {cycle && cycleDay != null && !guidance.hidePeriodActions && currentPhase ? (
+                    <Text className="mt-1 text-base font-semibold text-accent-primary">
+                      {t(CYCLE_PHASE_LABEL_KEYS[currentPhase])}
+                    </Text>
+                  ) : null}
+                  {cycle && isOverdue && !guidance.hidePeriodActions ? (
+                    <Text className="mt-1 text-sm text-text-tertiary">
+                      {t('cycle.periodNotLogged')}
+                    </Text>
+                  ) : null}
+                </View>
                 <IconButton
                   icon={Settings}
                   accessibilityLabel={t('cycle.settings.title')}
@@ -219,7 +217,7 @@ export default function CycleScreen() {
 
               {!cycle ? (
                 <View className="mb-8 items-center rounded-2xl bg-bg-overlay p-8">
-                  <Sparkles size={40} color={theme.colors.text.secondary} />
+                  <CalendarHeart size={40} color={theme.colors.text.secondary} />
                   <Text className="mt-4 text-center text-lg font-bold text-text-primary">
                     {pausedCycle ? t('cycle.noData.pausedTitle') : t('cycle.noData.title')}
                   </Text>
@@ -243,33 +241,7 @@ export default function CycleScreen() {
                 </View>
               ) : (
                 <>
-                  {/* Today: where the cycle is, the one period action, and logging the day. */}
-                  {cycleDay != null && !guidance.hidePeriodActions ? (
-                    <View className="mb-4 flex-row items-center justify-between">
-                      <View className="rounded-2xl bg-bg-overlay px-4 py-3">
-                        <Text className="text-xs font-bold text-text-tertiary">
-                          {t('focus.day')}
-                        </Text>
-                        <Text className="text-2xl font-black text-accent-primary">
-                          {dayCounter()}
-                        </Text>
-                        {isOverdue ? (
-                          <Text className="text-xs text-text-tertiary">
-                            {t('cycle.periodNotLogged')}
-                          </Text>
-                        ) : null}
-                      </View>
-                      <View className="items-end">
-                        <Text className="text-sm font-bold text-accent-primary">
-                          {t('focus.currentPhase')}
-                        </Text>
-                        <Text className="text-2xl font-black text-text-primary">
-                          {currentPhase ? t(CYCLE_PHASE_LABEL_KEYS[currentPhase]) : '--'}
-                        </Text>
-                      </View>
-                    </View>
-                  ) : null}
-
+                  {/* Today: the one period action, and logging the day. */}
                   {guidance.hidePeriodActions ? null : (
                     <View className="mb-6 gap-3">
                       {activePeriod ? (

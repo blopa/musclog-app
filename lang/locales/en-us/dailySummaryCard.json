@@ -6,19 +6,19 @@
     "fiber": "Fiber",
     "fiberShort": "Fi",
     "carbsShort": "C",
-    "dailySummary": "Day Summary",
+    "dailySummary": "Day summary",
     "fats": "Fats",
     "fatsShort": "F",
-    "goalExceeded": "Goal Exceeded",
-    "goalReached": "Goal Reached",
+    "goalExceeded": "Goal exceeded",
+    "goalReached": "Goal reached",
     "kcal": "kcal",
     "over": "Over",
     "protein": "Protein",
     "proteinShort": "P",
     "remaining": "Remaining",
-    "setGoals": "Set Goals",
-    "setGoalsToTrack": "Set Goals To Track",
+    "setGoals": "Set goals",
+    "setGoalsToTrack": "Set goals to track",
     "today": "Today",
-    "weeklyAvg": "Weekly Average"
+    "weeklyAvg": "Weekly average"
   }
 }

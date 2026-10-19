@@ -47,7 +47,7 @@
       "records": "records",
       "migrated": "gemigreerd",
       "tablesFound": "Gevonden tabellen:",
-      "successful": "Migratie succesvol!",
+      "successful": "Migratie voltooid",
       "failed": "Migratie mislukt",
       "error": "Fout: {{error}}",
       "clickToCheck": "Klik op 'Migratiegegevens controleren' om te zien wat gemigreerd kan worden",
@@ -166,9 +166,9 @@
       "progressionModeWeightFirst": "Prioriteit aan gewichtsprogessie",
       "progressionModeWeightFirstSubtitle": "Verhoog het gewicht direct als de RIR hoog is, in plaats van herhalingen toe te voegen",
       "enableAdvancedDataManagement": "Geavanceerd gegevensbeheer inschakelen",
-      "enableAdvancedDataManagementSubtitle": "Ontgrendel ruwe toegang tot je app-gegevens — alleen voor geavanceerde gebruikers",
+      "enableAdvancedDataManagementSubtitle": "Ontgrendel ruwe toegang tot je app-gegevens (alleen voor geavanceerde gebruikers)",
       "enableAdvancedDataManagementConfirmTitle": "Alleen voor geavanceerde gebruikers",
-      "enableAdvancedDataManagementConfirmMessage": "Dit is alleen voor geavanceerde gebruikers. Het rommelen met de gegevens hier kan je app onherstelbaar laten crashen — gebruik dit alleen als je weet wat je doet.",
+      "enableAdvancedDataManagementConfirmMessage": "Dit is alleen voor geavanceerde gebruikers. Het rommelen met de gegevens hier kan je app onherstelbaar laten crashen. Gebruik dit alleen als je weet wat je doet.",
       "dataManagement": "Gegevensbeheer",
       "manageFoodData": "Voedingsmiddelen beheren",
       "manageFoodDataSubtitle": "Bekijk, bewerk of verwijder je aangepaste voedingsmiddelen",
@@ -242,7 +242,7 @@
       "imageProcessing": "Beeldverwerking",
       "useOcrBeforeAi": "OCR gebruiken voor AI",
       "useOcrBeforeAiSubtitle": "Verwerk afbeeldingen lokaal met OCR en stuur tekst in plaats daarvan",
-      "useOcrBeforeAiOnDeviceSubtitle": "Vereist voor Apple Intelligence — OCR zet afbeeldingen om naar tekst voor verzending.",
+      "useOcrBeforeAiOnDeviceSubtitle": "Vereist voor Apple Intelligence. OCR zet afbeeldingen om naar tekst voor verzending.",
       "sendFoundationFoodsToLlm": "Basismiddelen naar AI sturen",
       "sendFoundationFoodsToLlmSubtitle": "Verbeter het matchen van ingrediënten met de database van basisvoedingsmiddelen",
       "getOpenAiKey": "Vraag OpenAI sleutel aan",
@@ -312,7 +312,7 @@
       "slot2Label": "Slot 2 (rechts van camera)",
       "slot3Label": "Slot 3 (uiterst rechts)",
       "selectItem": "Kies een snelkoppeling voor dit slot",
-      "currentlyInSlot": "Momenteel in slot {{slot}} — zal wisselen",
+      "currentlyInSlot": "Momenteel in slot {{slot}} (zal wisselen)",
       "navItems": {
         "workouts": "Workouts",
         "food": "Voeding",
@@ -466,7 +466,7 @@
       "chosenCount": "{{chosen}}/{{max}}",
       "hintOrder": "Ze verschijnen in de volgorde waarin je ze kiest.",
       "hintAtMin": "Houd er minstens {{min}} op je startscherm.",
-      "hintAtMax": "Dit is het maximum — verwijder er een om een andere toe te voegen."
+      "hintAtMax": "Dit is het maximum. Verwijder er een om een andere toe te voegen."
     },
     "homeSummaryCard": {
       "sectionTitle": "Startscherm-overzichtskaart",

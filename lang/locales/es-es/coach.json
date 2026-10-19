@@ -26,12 +26,12 @@
     "analyzeProgressPrompt": "Analizaré tus entrenamientos recientes. ¿Algún comentario que quieras decirme antes de que lo haga?",
     "nutritionCheckPrompt": "Revisaré tu nutrición de los últimos 7 días. ¿Algún comentario que quieras añadir antes de que lo haga?",
     "trackMealPrompt": "Dime qué has comido (¡incluso puedes enviar una foto!) y estimaré los macros y lo registraré por ti.",
-    "welcomeMessage": "Hola. Mi nombre es Loggy, soy tu Entrenador de Fitness por IA. Estoy aquí para ayudarte a alcanzar tus objetivos de fitness, seguir tu progreso y brindarte orientación personalizada. ¡Siéntete libre de preguntarme cualquier cosa sobre entrenamientos, nutrición o tu viaje de fitness!",
-    "welcomeMessageExercise": "¡Hola! Soy Loggy. Estoy aquí para ayudarte con tu entrenamiento, ya sea creando un nuevo plan de ejercicios, revisando tu técnica o analizando tu progreso. ¿Qué hay en tu agenda de entrenamiento para hoy?",
-    "welcomeMessageNutrition": "¡Hola! Soy Loggy. Puedo ayudarte a mantenerte al día con tu nutrición registrando tus comidas, estimando macros y brindando información dietética. ¡Cuéntame sobre tus comidas recientes o hazme cualquier pregunta sobre nutrición!",
+    "welcomeMessage": "Hola, soy Loggy, tu entrenador con IA. Pregúntame lo que quieras sobre tus entrenamientos, tu nutrición o tu progreso.",
+    "welcomeMessageExercise": "Hola, soy Loggy. Pídeme que cree un plan de entrenamiento, revise tu técnica o analice tu progreso.",
+    "welcomeMessageNutrition": "Hola, soy Loggy. Cuéntame qué has comido y estimaré los macros, o hazme una pregunta sobre nutrición.",
     "insights": {
-      "noNutritionLogs": "No puedo ofrecerte información sobre nutrición porque no has registrado ninguna comida en los últimos 7 días. ¡Empieza a registrar tu comida para recibir comentarios personalizados!",
-      "noWorkoutLogs": "No puedo ofrecerte información sobre entrenamientos porque no has completado ninguno en los últimos 7 días. ¡Ponte en movimiento y estaré listo para analizar tu entrenamiento!"
+      "noNutritionLogs": "Todavía no puedo darte información sobre nutrición porque no has registrado comidas en los últimos 7 días. Registra lo que comes y tendré comentarios para ti.",
+      "noWorkoutLogs": "Todavía no puedo darte información sobre entrenamientos porque no has completado ninguno en los últimos 7 días. Termina uno y analizaré tu entrenamiento."
     },
     "errors": {
       "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes.",
@@ -55,7 +55,7 @@
       "workoutPlanGeneratedWithName": "¡He creado {{planName}} con {{count}} entrenamientos para ti! 💪 {{description}}",
       "mealPlanGenerated": "¡He creado un plan de comidas de 3 días con {{count}} comidas para ti! 🥗 {{description}}",
       "trackMealSuccess": "He registrado {{count}} ingredientes para tu comida: {{ingredients}}. Total: {{calories}} kcal.",
-      "trackMealReady": "He analizado {{count}} comida(s): {{meals}} ({{calories}} kcal en total). ¡Toca una comida para revisarla y registrarla!",
+      "trackMealReady": "He analizado {{count}} comida(s): {{meals}} ({{calories}} kcal en total). Toca una comida para revisarla y registrarla.",
       "historyCleared": "Historial de chat borrado."
     },
     "aiInstructions": {

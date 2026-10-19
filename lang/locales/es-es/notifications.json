@@ -28,7 +28,7 @@
         "description": "¿Listo para {{workoutName}}? Programado para hoy a las {{time}}."
       },
       "workoutCompleted": {
-        "title": "¡Entrenamiento Completado!",
+        "title": "Entrenamiento completado",
         "description": "Buen trabajo terminando {{workoutName}}. Quemaste {{calories}} kcal."
       },
       "kudosReceived": {
@@ -51,7 +51,7 @@
       },
       "nutritionOverview": {
         "title": "Resumen Diario de Nutrición",
-        "body": "¡Mira cómo se alineó tu nutrición con tus objetivos hoy!"
+        "body": "Mira cómo se compara tu nutrición de hoy con tus objetivos."
       },
       "nutritionCheckin": {
         "title": "Revisión de Progreso Semanal",
@@ -66,12 +66,12 @@
         "body": "Tu ventana fértil estimada podría empezar pronto. Es una estimación de calendario, no una confirmación de la ovulación."
       },
       "restTimerAlert": {
-        "title": "Descanso Terminado - ¡A trabajar!",
-        "body": "Tu tiempo de descanso ha terminado. ¡Hora de ir a por la siguiente serie!"
+        "title": "Descanso terminado",
+        "body": "Tu descanso ha terminado. Toca la siguiente serie."
       },
       "workoutDurationWarning": {
         "title": "¿Sigues entrenando?",
-        "body": "Tu sesión lleva 5 horas en curso. ¡No olvides terminarla en Musclog!"
+        "body": "Tu sesión lleva 5 horas en curso. Recuerda terminarla en Musclog."
       },
       "cycleDiscreet": {
         "title": "Musclog",

@@ -684,15 +684,15 @@ baseline's `unverified` list either verified or carried forward with a reason.
 
 Decide these before the phase that needs them. Each has a recommendation.
 
-| #   | Question                                                                               | Needed by | Recommendation                                                                                                     |
-| --- | -------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------ |
-| D1  | Does the selected `SegmentedControl` segment keep the gradient?                        | Phase 2   | **Decided:** solid accent; the gradient is reserved for `gradientCta`.                                             |
-| D2  | Hero card: tonal single-hue gradient, or flat like Kinetic Light?                      | Phase 2   | **Decided:** tonal single-hue; it keeps the card as the one expressive element per screen.                         |
-| D3  | Settings top-level grouping and names                                                  | Phase 3   | **Decided:** the seven groups in Phase 3, step 4.                                                                  |
-| D4  | Unit abbreviations in caps (`KCAL`) or lowercase (`kcal`)?                             | Phase 4   | **Decided:** lowercase `kcal`, matching the stat strip.                                                            |
-| D5  | Home header: date, nothing, or keep a greeting?                                        | Phase 5   | Date.                                                                                                              |
-| D6  | Weekly Review card on Home: permanent or only while due?                               | Phase 5   | Only while due, plus a one-line entry otherwise; consistent with Food.                                             |
-| D7  | Should the Home action tiles stay at all, given the nav bar has the same destinations? | Phase 5   | Keep them, compact. The picker lets users choose actions the nav bar does not have (log weight, AI camera, notes). |
+| #   | Question                                                                               | Needed by | Recommendation                                                                                                   |
+| --- | -------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------- |
+| D1  | Does the selected `SegmentedControl` segment keep the gradient?                        | Phase 2   | **Decided:** solid accent; the gradient is reserved for `gradientCta`.                                           |
+| D2  | Hero card: tonal single-hue gradient, or flat like Kinetic Light?                      | Phase 2   | **Decided:** tonal single-hue; it keeps the card as the one expressive element per screen.                       |
+| D3  | Settings top-level grouping and names                                                  | Phase 3   | **Decided:** the seven groups in Phase 3, step 4.                                                                |
+| D4  | Unit abbreviations in caps (`KCAL`) or lowercase (`kcal`)?                             | Phase 4   | **Decided:** lowercase `kcal`, matching the stat strip.                                                          |
+| D5  | Home header: date, nothing, or keep a greeting?                                        | Phase 5   | **Decided:** date.                                                                                               |
+| D6  | Weekly Review card on Home: permanent or only while due?                               | Phase 5   | **Decided:** only while due, plus a one-line entry otherwise; consistent with Food.                              |
+| D7  | Should the Home action tiles stay at all, given the nav bar has the same destinations? | Phase 5   | **Decided:** keep them, compact. The picker offers actions the nav bar does not have (AI camera, notes, cardio). |
 
 ## Appendix A: Audit findings
 

@@ -2,17 +2,17 @@
   "timePicker": {
     "am": "AM",
     "cancel": "Cancel",
-    "clearSelection": "Clear Selection",
+    "clearSelection": "Clear selection",
     "clearTime": "Clear time",
-    "confirm": "Set Time",
-    "confirmTime": "Confirm Time",
+    "confirm": "Set time",
+    "confirmTime": "Confirm time",
     "hours": "Hours",
     "midnight": "Midnight",
     "minutes": "Minutes",
     "noon": "Noon",
     "now": "Now",
     "pm": "PM",
-    "selectedStartTime": "Selected Start Time",
-    "selectTime": "Select Time"
+    "selectedStartTime": "Selected start time",
+    "selectTime": "Select time"
   }
 }

@@ -11,6 +11,7 @@ import {
   Egg,
   Fish,
   Grape,
+  Lightbulb,
   type LucideIcon,
   Milk,
   Pizza,
@@ -19,7 +20,6 @@ import {
   Salad,
   Search,
   Soup,
-  Sparkles,
   Utensils,
   UtensilsCrossed,
   Wheat,
@@ -201,7 +201,7 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
 
 type SectionHeaderProps = {
   title: string;
-  icon?: typeof Sparkles;
+  icon?: typeof Lightbulb;
   rightAction?: {
     label: string;
     onPress: () => void;
@@ -1588,7 +1588,7 @@ export function FoodSearchModal({
               suggestedFoods &&
               suggestedFoods.length > 0 ? (
                 <View>
-                  <SectionHeader title={suggestedTitle} icon={Sparkles} />
+                  <SectionHeader title={suggestedTitle} icon={Lightbulb} />
                   <View className="gap-1.5">
                     {isLoadingSuggested ? (
                       <View className="py-4">

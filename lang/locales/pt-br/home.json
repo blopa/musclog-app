@@ -1,10 +1,6 @@
 {
   "home": {
-    "greeting": {
-      "goodMorning": "Bom Dia",
-      "goodAfternoon": "Boa Tarde",
-      "goodEvening": "Boa Noite"
-    },
+    "accountMenu": "Abrir o menu da conta",
     "actions": {
       "startWorkout": "Iniciar\nTreino",
       "trackFood": "Registrar\nComida",

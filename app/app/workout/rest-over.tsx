@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Play, WifiOff } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Animated, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -44,7 +44,6 @@ export default function RestOverScreen() {
   const workoutLogId = params.workoutLogId;
   const nextSetOrder = params.nextSetOrder ? parseInt(params.nextSetOrder, 10) : null;
 
-  const [pulseAnim] = useState(() => new Animated.Value(0.3));
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isWorkoutSettingsVisible, setIsWorkoutSettingsVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
@@ -59,24 +58,6 @@ export default function RestOverScreen() {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Pulse animation for the glow
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 0.5,
-          duration: 3000,
-          useNativeDriver: false,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 0.3,
-          duration: 3000,
-          useNativeDriver: false,
-        }),
-      ])
-    ).start();
-  }, [pulseAnim]);
 
   // Load next set data
   useEffect(() => {
@@ -198,20 +179,6 @@ export default function RestOverScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <AreaLockGate area="workout">
-        <Animated.View
-          className="absolute right-[-10%] top-[-20%] h-[50%] w-[80%] rounded-full blur-3xl"
-          style={{
-            backgroundColor: theme.colors.accent.primary40,
-            opacity: pulseAnim,
-          }}
-        />
-        <Animated.View
-          className="absolute bottom-[-10%] left-[-20%] h-[50%] w-[90%] rounded-full blur-3xl"
-          style={{
-            backgroundColor: theme.colors.status.brandVivid20,
-          }}
-        />
-
         {/* Header */}
         <View className="relative z-20">
           <WorkoutTimeTracker

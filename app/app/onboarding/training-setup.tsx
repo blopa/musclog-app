@@ -1,6 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Activity, Check, Dumbbell, Home, SlidersHorizontal, Sparkles } from 'lucide-react-native';
+import {
+  Activity,
+  Check,
+  Dumbbell,
+  Home,
+  SlidersHorizontal,
+  TrendingUp,
+} from 'lucide-react-native';
 import { type ComponentType, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -58,7 +65,7 @@ const AUTONOMY_OPTIONS: CardOption<WorkoutAutonomy>[] = [
     value: 'suggest',
     labelKey: 'onboarding.trainingSetup.help.suggest',
     descKey: 'onboarding.trainingSetup.help.suggestDesc',
-    icon: Sparkles,
+    icon: TrendingUp,
   },
   {
     value: 'manual',

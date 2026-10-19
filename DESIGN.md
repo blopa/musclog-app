@@ -339,6 +339,38 @@ tree ownership are separate concerns. Modal headers sit on the modal's own surfa
 shared shells route a header through a gradient; a purple-to-transparent wash was a copy-pasted
 pattern across eight files and added nothing over the surface color.
 
+### Home
+
+Home opens on the day it is about: a date heading ("Monday, Oct 19") on the left and the avatar on
+the right, which is the way into the account menu and carries an accessible label. No time-of-day
+greeting and no version string; the version lives in Settings > About. The home action tiles are
+compact (about 96pt, the icon above a short label, `rounded-2xl`), with no tinted icon circle and
+no faded watermark copy of the icon; the selection, picker and reconciliation rules in `AGENTS.md`
+are unchanged. The Weekly Review card on Home is full size only while a week is waiting (or half
+reviewed); otherwise it is one line naming the next review (`WeeklyReviewCard quietUntilReady`).
+Cycle shows the cycle day once, inside the wheel, with a one-word title and the phase as its
+subtitle.
+
+### Empty states, decoration and motion
+
+- An empty state is a plain icon (40 to 48pt, `text.tertiary`, no tinted circle), one line on
+  what belongs here, one on how to add it, and a `secondary` button. `gradientCta` only when the
+  empty state is the screen and its button is that screen's one primary action. When the empty
+  state is the whole screen (Notes), pass `bare` so there is no card around the only thing on the
+  page.
+- A dashed outline means "this slot is empty, fill it": an empty meal, a list with no sets yet.
+  Under a list that already has entries, "Add …" is a `TextButton` with a plus icon, not another
+  dashed bar.
+- No decoration that conveys nothing: no background blobs or blurred glows, no floating icon
+  clusters around an illustration, no gradient icon tiles. Onboarding shows the real app mark
+  (`assets/logo.png`), not a placeholder glyph.
+- Decorative loops are not allowed. An infinite animation is a progress indicator (a spinner, a
+  skeleton) and runs on the native driver; a pulsing glow, a floating trophy or a pulsing "live"
+  dot is removed rather than moved to another thread. `TextInput`'s border colour is the one
+  JS-driven animation, because colour cannot use the native driver.
+  `deslopGuards.test.ts` holds the loop allowlist, `useNativeDriver: false`, blur and the dashed
+  count.
+
 ### Inputs
 
 - Numeric controls use the shared steppers/pickers and locale-aware parsing.
@@ -362,6 +394,15 @@ pattern across eight files and added nothing over the surface color.
 
 - Performance-oriented without gender stereotypes or bodybuilding clichés.
 - Direct and calm. Avoid guilt, punishment, and alarmist red states for ordinary target variance.
+- Sentence case for headings, buttons and menu items ("Track by meal type", "Create workout
+  template"). Proper nouns keep their capitals (Health Connect, Open Food Facts, Weekly Review,
+  theme names).
+- No em dashes in copy: use a comma, a colon, parentheses or two sentences. The dash survives only
+  as a value placeholder (an empty pace, the "not logged" mark in a legend).
+- No exclamation marks except a genuine celebration (a goal achieved). Confirmations read flat
+  ("Meal saved."), and the UI makes no marketing claims ("2M+ items").
+- Sparkles means AI. It marks an AI affordance (already gated on `isAiConfigured`) and nothing
+  else: automatic targets use a trend icon, What's new a megaphone.
 - Explain AI estimates and calculated health metrics at the point of use.
 - Keep core logging fast and usable offline; optional AI should not block a manual path.
 - Menstrual-cycle guidance is context, not instruction. The app never prescribes training from a cycle phase (the evidence does not support universal rules); it reports observations from the person's own records, always with how many cycles they rest on and the days behind them.
@@ -399,7 +440,7 @@ The session follows a set table, not a form. **Inline**: one card per exercise �
 
 "Why?" is a sheet, not a stack of buttons: method and reason first, then a small inputs table (rule, plan, last time, today), then action rows with icons and one-line hints (Use the plan's, Plate calculator, Edit gym, Edit workout and rules; Edit target only when the equipment cannot build the load). The rule editor is the same pattern: radio cards that each explain their method in a sentence, with the chosen card expanding to its settings. An exercise row in the workout editor names its rule and opens that sheet on tap.
 
-Home shows a compact permanent Weekly Review card below actions, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due (and on empty or fasting days); otherwise the way in is the "Weekly Review" item of the summary card's menu, whose supporting line says where today's targets come from ("Daily automatic targets · since …"). The targets chip and the "Dynamic" badge that used to sit above the card took a fifth of the first screen to say what that one line says. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
+Home shows the Weekly Review card below actions while a week is waiting, and a one-line entry naming the next review otherwise, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due (and on empty or fasting days); otherwise the way in is the "Weekly Review" item of the summary card's menu, whose supporting line says where today's targets come from ("Daily automatic targets · since …"). The targets chip and the "Dynamic" badge that used to sit above the card took a fifth of the first screen to say what that one line says. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
 
 Weekly Review leads with the week and a Training / Nutrition progress pair, then the two sections. Training: a `StatStrip` (workouts, working sets, volume in the user's unit), the week's workouts, records as trophy rows, and "Next up" with preview and editor actions; upcoming targets are collapsed by default. Nutrition: a `StatStrip` of the evidence (trend weight, food days, weigh-ins), a Current / Recommended table with signed deltas, the reason, then one gradient "Apply targets starting tomorrow" over "Keep current" and "Edit". Missing evidence makes "Keep targets while collecting data" the primary action with shortcuts to log. Review day and reminder live in a settings card below, history last. Opening or canceling a sheet never acknowledges a review. Training acknowledgement never gates progression. Respect themes, exercise units, local decimal separators, safe areas and keyboard clearance.
 

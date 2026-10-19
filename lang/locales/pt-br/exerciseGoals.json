@@ -25,7 +25,7 @@
       "chooseExercise": "Escolha um Exercício",
       "searchPlaceholder": "Buscar exercícios…",
       "currentEstimated1RM": "Seu 1RM estimado atual: {{value}} {{unit}}",
-      "noHistoryForExercise": "Ainda não há histórico — começaremos a acompanhar desde sua primeira sessão.",
+      "noHistoryForExercise": "Ainda não há histórico. Começaremos a acompanhar desde sua primeira sessão.",
       "targetWeight": "Meta {{unit}}",
       "sessionsPerWeek": "Sessões por Semana",
       "targetDate": "Data Meta (opcional)",
