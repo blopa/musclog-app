@@ -1,7 +1,7 @@
 import type { AppLockScope, CycleNotificationStyle } from '@/constants/settings';
+import { isCycleLockProtected } from '@/utils/appLockState';
 import type { CycleTimeline } from '@/utils/cycle/cycleTimeline';
 import type { CyclePeriodDto } from '@/utils/cycle/types';
-import { isCycleLockProtected } from '@/utils/appLockState';
 import { formatAppInteger } from '@/utils/formatAppNumber';
 
 import { INITIAL_WIDGET_PALETTE, type WidgetPalette } from './widgetSnapshot';

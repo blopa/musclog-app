@@ -78,11 +78,13 @@ export function WhatsNewDebugSection() {
           key={release.version}
           label={t('whatsNew.debug.preview', { version: release.version })}
           onPress={() =>
-            setPreview(selectReplayFlow({
+            setPreview(
+              selectReplayFlow({
                 releases: [release],
                 currentVersion: release.version,
                 context: { cycleTracking: true },
-              }))
+              })
+            )
           }
         />
       ))}

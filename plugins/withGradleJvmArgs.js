@@ -28,9 +28,11 @@ module.exports = function withGradleJvmArgs(config) {
     gradleConfig.modResults = gradleConfig.modResults.filter(
       (item) => !(item.type === 'property' && item.key in managed)
     );
+
     for (const [key, value] of Object.entries(managed)) {
       gradleConfig.modResults.push({ type: 'property', key, value });
     }
+
     return gradleConfig;
   });
 };

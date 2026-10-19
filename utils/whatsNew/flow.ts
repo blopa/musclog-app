@@ -80,7 +80,8 @@ export function selectReplayFlow(input: FlowInput): WhatsNewFlow {
       .find(
         (release) =>
           compareVersions(release.version, input.currentVersion) <= 0 &&
-          livePages(release, input.currentVersion, input.context ?? EMPTY_WHATS_NEW_CONTEXT).length > 0
+          livePages(release, input.currentVersion, input.context ?? EMPTY_WHATS_NEW_CONTEXT)
+            .length > 0
       );
     if (newest) {
       return selectWhatsNewFlow({ ...input, releases: [newest], seenThrough: null });

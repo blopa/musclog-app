@@ -27,12 +27,12 @@ import {
   type RestHapticStrength,
   type RestHeadsUpSeconds,
   REVIEW_WEEKDAY_SETTING_TYPE,
+  serializeAppLockScopes,
   SHOW_HOME_STEPS_SETTING_TYPE,
   WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE,
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
   type WorkoutAutonomy,
-  serializeAppLockScopes,
 } from '@/constants/settings';
 import { clampRestSeconds } from '@/utils/restTimer';
 
