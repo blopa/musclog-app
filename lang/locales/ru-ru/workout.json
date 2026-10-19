@@ -85,6 +85,11 @@
       "resistance_band": "Эластичная лента",
       "medicine_ball": "Медбол",
       "smith_machine": "Тренажёр Смита",
+      "plate_machine": "Рычажный тренажёр с дисками",
+      "cardio": "Кардио",
+      "stretching": "Растяжка",
+      "plyometric": "Плиометрика",
+      "mobility": "Мобильность",
       "other": "Другое"
     }
   }

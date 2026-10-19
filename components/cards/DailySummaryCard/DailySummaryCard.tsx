@@ -360,14 +360,14 @@ export function DailySummaryCard({
               <View className="flex-row gap-2 pt-1">
                 {dailyMacroItems.map((macro) => (
                   <View key={macro.label} className="flex-1 gap-1.5">
-                    <View className="flex-row items-end justify-between">
+                    {/* Label above the figure: side by side they fought for width and the label truncated. */}
+                    <View className="gap-0.5">
                       <Text
                         className="font-bold uppercase"
                         numberOfLines={1}
                         style={{
                           fontSize: theme.typography.fontSize.xxs,
                           color: theme.colors.colorfulCard.ink70,
-                          flexShrink: 1,
                         }}
                       >
                         {macro.label}

@@ -17,7 +17,12 @@ export interface YAxisLabel {
   yDomainValue: number;
 }
 
-export const MAX_X_LABELS = 8;
+/**
+ * Most x labels a chart prints. A phone-width plot is about 300px once the gutters and the y axis
+ * are out of the way, so eight labels sat ~43px apart against a 40px label box and dates such as
+ * "10/12 10/13" ran into each other; six leaves ~60px between neighbours.
+ */
+export const MAX_X_LABELS = 6;
 export const X_AXIS_LABEL_WIDTH = 40;
 export const X_AXIS_LABEL_OFFSET = 20;
 

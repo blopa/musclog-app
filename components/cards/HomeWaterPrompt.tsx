@@ -231,7 +231,7 @@ export function HomeWaterPrompt({
               label={t('bodyMetrics.addEntry.yes')}
               onPress={() => handleAnswer(1)}
               icon={CheckCircle2}
-              variant="gradientCta"
+              variant="accent"
               size="sm"
               width="flex-1"
               loading={isSaving}

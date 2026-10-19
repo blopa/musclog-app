@@ -341,6 +341,7 @@ export default function WorkoutsScreen() {
                 activeTab={activeFilter}
                 onTabChange={setActiveFilter}
                 showContainer={false}
+                scrollViewContentContainerStyle={{ paddingHorizontal: 0 }}
               />
               {/* Search Input */}
               <View className="mt-3">

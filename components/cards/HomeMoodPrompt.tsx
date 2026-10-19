@@ -124,7 +124,7 @@ export function HomeMoodPrompt({ onVisibilityChange }: HomeMoodPromptProps) {
             onPress={handleSave}
             icon={CheckCircle}
             iconPosition="right"
-            variant="gradientCta"
+            variant="accent"
             size="sm"
             width="full"
             loading={isSaving}

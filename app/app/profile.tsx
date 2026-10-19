@@ -430,7 +430,6 @@ export default function ProfileScreen() {
                   flexDirection: 'row',
                   flexWrap: 'wrap',
                   width: '100%',
-                  marginHorizontal: -8,
                 }}
               >
                 {stats.map((stat) => (

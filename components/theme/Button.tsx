@@ -57,46 +57,46 @@ const getSizeConfig = (theme: Theme) => {
       paddingVertical: theme.spacing.padding.sm,
       borderRadius: theme.borderRadius.md,
       fontSize: theme.typography.fontSize.xs,
-      fontWeight: theme.typography.fontWeight.bold,
+      fontWeight: theme.typography.fontWeight.semibold,
       iconSize: theme.iconSize.xs,
       gap: theme.spacing.gap.xs,
       shadow: theme.shadows.sm,
     },
     sm: {
       paddingVertical: theme.spacing.padding.md,
-      borderRadius: theme.borderRadius.lg,
+      borderRadius: theme.borderRadius.md,
       fontSize: theme.typography.fontSize.sm,
-      fontWeight: theme.typography.fontWeight.bold,
+      fontWeight: theme.typography.fontWeight.semibold,
       iconSize: theme.iconSize.sm,
       gap: theme.spacing.gap.sm,
       shadow: theme.shadows.md,
     },
     md: {
       paddingVertical: theme.spacing.padding.base,
-      borderRadius: theme.borderRadius.xl,
+      borderRadius: theme.borderRadius.lg,
       fontSize: theme.typography.fontSize.base,
       fontWeight: theme.typography.fontWeight.bold,
       iconSize: theme.iconSize.md,
       gap: theme.spacing.gap.md,
-      shadow: theme.shadows.accentGlow,
+      shadow: theme.shadows.none,
     },
     lg: {
       paddingVertical: theme.spacing.padding.lg,
-      borderRadius: theme.borderRadius['2xl'],
+      borderRadius: theme.borderRadius.lg,
       fontSize: theme.typography.fontSize.xl,
       fontWeight: theme.typography.fontWeight.bold,
       iconSize: theme.iconSize.lg,
       gap: theme.spacing.gap.md,
-      shadow: theme.shadows.accentGlowLarge,
+      shadow: theme.shadows.none,
     },
     xl: {
       paddingVertical: theme.spacing.padding.xl,
-      borderRadius: theme.borderRadius['2xl'],
+      borderRadius: theme.borderRadius.lg,
       fontSize: theme.typography.fontSize.xl,
       fontWeight: theme.typography.fontWeight.bold,
       iconSize: theme.iconSize.lg,
       gap: theme.spacing.gap.md,
-      shadow: theme.shadows.accentGlowLarge,
+      shadow: theme.shadows.none,
     },
   };
 };
@@ -128,7 +128,8 @@ const getGradientColors = (
     case 'secondary':
       return [theme.colors.background.overlay, theme.colors.background.overlay] as const;
     default:
-      return theme.colors.gradients.accent;
+      // `accent` is a solid fill; the gradient is `gradientCta`'s, the one primary action per screen.
+      return [theme.colors.accent.primary, theme.colors.accent.primary] as const;
   }
 };
 
@@ -148,6 +149,8 @@ const getTextColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
     case 'secondary':
     case 'secondaryGradient':
       return theme.colors.text.primary;
+    case 'accent':
+      return theme.colors.text.onAccent;
     default:
       break;
   }
@@ -170,6 +173,8 @@ const getIconColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
       return theme.colors.accent.secondary;
     case 'secondaryGradient':
       return theme.colors.text.primary;
+    case 'accent':
+      return theme.colors.text.onAccent;
     default:
       break;
   }
@@ -194,10 +199,9 @@ const getShadowStyle = (
     case 'dashed':
     case 'gradientCta':
     case 'roseOutline':
-      return theme.shadows.none;
     case 'discard':
     case 'rose':
-      return theme.shadows.roseGlow;
+      return theme.shadows.none;
     default:
       return configShadow;
   }
@@ -352,7 +356,6 @@ export function Button({
 
   const textElement = (
     <Text
-      className="tracking-wide"
       style={{
         fontSize: config.fontSize,
         fontWeight: config.fontWeight,
@@ -519,7 +522,11 @@ export function Button({
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       disabled={false}
-      {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
+      {...(Platform.OS === 'android' && {
+        unstable_pressDelay: 130,
+        // Bounded to the button's own radius by the `overflow: hidden` on `buttonStyle`.
+        android_ripple: { color: theme.colors.background.ink10, borderless: false },
+      })}
     >
       {isFlatVariant ? (
         <View

@@ -49,7 +49,7 @@ export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonP
 
   return (
     <Pressable
-      className="relative w-full justify-between overflow-hidden rounded-3xl p-6"
+      className="relative w-full justify-between overflow-hidden rounded-2xl p-6"
       style={{
         minHeight: theme.size['180'],
         backgroundColor: config.bgColor,

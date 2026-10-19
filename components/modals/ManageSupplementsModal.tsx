@@ -177,7 +177,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
                   label={t('settings.advancedSettings.addSupplement')}
                   onPress={openCreateModal}
                   icon={Plus}
-                  variant="gradientCta"
+                  variant="accent"
                   width="full"
                 />
               </View>

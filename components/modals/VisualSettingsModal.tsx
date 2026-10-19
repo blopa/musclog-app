@@ -271,16 +271,16 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.visualSettings.title')}>
-      <View className="gap-2 py-6">
+      <View className="gap-8 py-6">
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.homeActions.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.homeActions.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -295,10 +295,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.theme.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.theme.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -313,10 +313,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.visualSettings.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.visualSettings.sectionSubtitle')}
           </Text>
 
@@ -330,10 +330,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.nutritionDisplay.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.nutritionDisplay.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -348,10 +348,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.homeSummaryCard.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.homeSummaryCard.sectionSubtitle')}
           </Text>
           <PickerButton

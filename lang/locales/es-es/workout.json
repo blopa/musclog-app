@@ -85,6 +85,11 @@
       "resistance_band": "Banda de Resistencia",
       "medicine_ball": "Balón Medicinal",
       "smith_machine": "Máquina Smith",
+      "plate_machine": "Máquina de discos",
+      "cardio": "Cardio",
+      "stretching": "Estiramiento",
+      "plyometric": "Pliométrico",
+      "mobility": "Movilidad",
       "other": "Otro"
     }
   }

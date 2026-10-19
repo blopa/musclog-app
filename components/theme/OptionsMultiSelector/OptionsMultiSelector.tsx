@@ -335,7 +335,6 @@ export function OptionsMultiSelector<T extends string | number>({
                   backgroundColor:
                     hasGroups && groupColor ? groupColor + '08' : theme.colors.background.card,
                   transform: [{ scale: pressed && !disablePressAnimation ? 0.98 : 1 }],
-                  ...(selected ? theme.shadows.accentGlow : {}),
                 }}
               >
                 <View

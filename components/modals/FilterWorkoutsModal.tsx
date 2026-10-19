@@ -276,7 +276,6 @@ export function FilterWorkoutsModal({
                     borderColor: isSelected
                       ? theme.colors.accent.primary
                       : theme.colors.border.light,
-                    ...(isSelected ? theme.shadows.accentGlow : {}),
                   }}
                 >
                   <Text

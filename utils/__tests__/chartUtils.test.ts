@@ -1,4 +1,10 @@
-import { getPaddedYDomain, getTimeSeriesXDomain, getXAxisLabels } from '@/utils/chartUtils';
+import {
+  getPaddedYDomain,
+  getTimeSeriesXDomain,
+  getXAxisLabels,
+  MAX_X_LABELS,
+  X_AXIS_LABEL_WIDTH,
+} from '@/utils/chartUtils';
 
 describe('getXAxisLabels', () => {
   it('returns empty array for empty data', () => {
@@ -24,9 +30,18 @@ describe('getXAxisLabels', () => {
   it('subsamples to MAX_X_LABELS when data is large', () => {
     const data = Array.from({ length: 20 }, (_, i) => ({ x: i * 100 }));
     const labels = getXAxisLabels(data);
-    expect(labels).toHaveLength(8);
+    expect(labels).toHaveLength(MAX_X_LABELS);
     expect(labels[0].positionPercent).toBe(0);
     expect(labels[labels.length - 1].positionPercent).toBe(100);
+  });
+
+  it('keeps neighbouring labels at least one label box apart on a phone-width plot', () => {
+    const plotWidth = 300;
+    const labels = getXAxisLabels(Array.from({ length: 40 }, (_, i) => ({ x: i * 100 })));
+    for (let i = 1; i < labels.length; i++) {
+      const gapPx = ((labels[i].positionPercent - labels[i - 1].positionPercent) / 100) * plotWidth;
+      expect(gapPx).toBeGreaterThan(X_AXIS_LABEL_WIDTH);
+    }
   });
 
   it('uses custom format function', () => {

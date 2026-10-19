@@ -3,6 +3,26 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Raw translation keys in the live session: equipment labels built at runtime (October 2026)
+
+### Symptom
+
+Leg Press and cardio exercises showed `workout.exerciseTypes.plate_machine` and
+`workout.exerciseTypes.cardio` under the exercise name in the live workout session.
+
+### Cause
+
+`getExerciseTypeTranslationKey` builds the key from the catalogue's `equipmentType` / `mechanicType`
+value at runtime. The free-exercise-db import introduced `plate_machine` and `cardio` (and the
+mechanic types `stretching`, `plyometric` and `mobility`) with no label, and
+`npm run check-translations` only sees literal keys, so nothing flagged them.
+
+### Fix
+
+Labels in all five locales, plus `utils/__tests__/exerciseTranslation.test.ts`, which collects every
+distinct type in `data/exercisesData.json` and asserts each locale labels it. A new catalogue value
+now fails that test instead of reaching a screen.
+
 ## Emptied set fields completed the set at 0 kg / 0 reps (October 2026)
 
 ### Symptom

@@ -85,6 +85,11 @@
       "resistance_band": "Faixa de Resistência",
       "medicine_ball": "Bola de Medicina",
       "smith_machine": "Máquina Smith",
+      "plate_machine": "Máquina de anilhas",
+      "cardio": "Cardio",
+      "stretching": "Alongamento",
+      "plyometric": "Pliométrico",
+      "mobility": "Mobilidade",
       "other": "Outro"
     }
   }

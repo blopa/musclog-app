@@ -63,7 +63,6 @@ const OptionItem = memo(
               borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
               backgroundColor: theme.colors.background.card,
               transform: [{ scale: pressed ? 0.98 : 1 }],
-              ...(isSelected ? theme.shadows.accentGlow : {}),
             }}
           >
             <View

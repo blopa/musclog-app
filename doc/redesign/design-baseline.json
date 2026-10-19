@@ -29,7 +29,7 @@
       "category": "copy",
       "phase": 0,
       "summary": "Raw i18n keys on screen: workout.exerciseTypes.plate_machine (39 exercises) and cardio (14) have no label",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-002",
@@ -55,7 +55,7 @@
       "category": "surfaces",
       "phase": 1,
       "summary": "Button: gradient default fill, accentGlow shadows, radius 20-24, tracking-wide labels",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-005",
@@ -64,7 +64,7 @@
       "tell": 11,
       "phase": 1,
       "summary": "Radius drift from DESIGN.md (rounded-3xl home tiles, 2xl buttons)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-006",
@@ -88,7 +88,7 @@
       "category": "typography",
       "phase": 0,
       "summary": "Food hero card truncates macro labels (P.., CA.., FIB..); letter-spaced button labels wrap to two lines",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-009",
@@ -105,7 +105,7 @@
       "category": "screenAnatomy",
       "phase": 0,
       "summary": "Profile stat grid double negative margin (-mx-2 + marginHorizontal -8, profile.tsx:420-433)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-011",
@@ -113,7 +113,7 @@
       "category": "screenAnatomy",
       "phase": 0,
       "summary": "Settings > Interface: section headings sit closer to the previous control than to their own",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-012",
@@ -189,7 +189,7 @@
       "category": "screenAnatomy",
       "phase": 0,
       "summary": "Workouts filter chips inset at x=40 against a 16px gutter; last chip clipped without an edge fade",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-021",
@@ -213,7 +213,7 @@
       "category": "typography",
       "phase": 0,
       "summary": "Progress chart x-axis date labels overlap (10/12 10/13)",
-      "status": "open"
+      "status": "fixed"
     }
   ],
   "dismissed": [
@@ -237,7 +237,10 @@
       "check": "tell 14 paddingTop magic number",
       "reason": "single hit in app/app/test/optical-bench.tsx"
     },
-    { "check": "confetti", "reason": "one-time milestone celebrations, deduplicated per activity" }
+    {
+      "check": "confetti",
+      "reason": "one-time milestone celebrations, deduplicated per activity"
+    }
   ],
   "unverified": [
     "native Android/iOS rendering (no emulator/simulator reachable)",

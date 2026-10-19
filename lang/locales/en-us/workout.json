@@ -85,6 +85,11 @@
       "resistance_band": "Resistance Band",
       "medicine_ball": "Medicine Ball",
       "smith_machine": "Smith Machine",
+      "plate_machine": "Plate Loaded Machine",
+      "cardio": "Cardio",
+      "stretching": "Stretching",
+      "plyometric": "Plyometric",
+      "mobility": "Mobility",
       "other": "Other"
     }
   }

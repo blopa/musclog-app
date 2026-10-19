@@ -85,6 +85,11 @@
       "resistance_band": "Weerstandsband",
       "medicine_ball": "Medicijnbal",
       "smith_machine": "Smith-machine",
+      "plate_machine": "Plate-loaded machine",
+      "cardio": "Cardio",
+      "stretching": "Rekken",
+      "plyometric": "Plyometrisch",
+      "mobility": "Mobiliteit",
       "other": "Overig"
     }
   }
