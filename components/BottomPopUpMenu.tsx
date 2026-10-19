@@ -108,29 +108,39 @@ export function BottomPopUpMenu({
       ) : (
         children ||
         (items && (
-          <ListGroup>
-            {orderMenuItems(items, isDestructive).map((item, index) => (
-              <ListRow
-                key={`${item.title}-${index}`}
-                variant="grouped"
-                icon={item.icon}
-                iconColor={isDestructive(item) ? theme.colors.status.error : undefined}
-                title={item.title}
-                titleColor={item.titleColor}
-                subtitle={item.description}
-                selected={item.selected}
-                testID={item.testID}
-                trailing={trailingFor(item)}
-                onPress={() => {
-                  if (!item.keepOpenOnPress) {
-                    onClose?.();
-                  }
+          // The list is the sheet: it bleeds through BottomPopUp's 24pt content padding so the
+          // rows and their press highlight span the sheet, while the row content stays on the
+          // title's line.
+          <View
+            style={{
+              marginHorizontal: -theme.spacing.padding.xl,
+              marginTop: -theme.spacing.padding.md,
+            }}
+          >
+            <ListGroup flush>
+              {orderMenuItems(items, isDestructive).map((item, index) => (
+                <ListRow
+                  key={`${item.title}-${index}`}
+                  variant="grouped"
+                  icon={item.icon}
+                  iconColor={isDestructive(item) ? theme.colors.status.error : undefined}
+                  title={item.title}
+                  titleColor={item.titleColor}
+                  subtitle={item.description}
+                  selected={item.selected}
+                  testID={item.testID}
+                  trailing={trailingFor(item)}
+                  onPress={() => {
+                    if (!item.keepOpenOnPress) {
+                      onClose?.();
+                    }
 
-                  item.onPress();
-                }}
-              />
-            ))}
-          </ListGroup>
+                    item.onPress();
+                  }}
+                />
+              ))}
+            </ListGroup>
+          </View>
         ))
       )}
     </BottomPopUp>

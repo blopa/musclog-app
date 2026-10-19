@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { X } from 'lucide-react-native';
+import { Bug, X } from 'lucide-react-native';
 import { createElement, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -217,8 +217,8 @@ export function UserMenuModal({
             </View>
 
             {/* Menu Items */}
-            <View className="p-6">
-              <ListGroup>
+            <View className="py-2">
+              <ListGroup flush>
                 {menuItems.map(({ item, label, icon, onPress }) => (
                   <ListRow
                     key={item}
@@ -235,6 +235,7 @@ export function UserMenuModal({
                   <ListRow
                     key="debug"
                     variant="grouped"
+                    icon={Bug}
                     title={t('userMenu.debugPage')}
                     trailing={loadingItem === 'debug' ? spinner : null}
                     disabled={loadingItem === 'debug'}
@@ -246,8 +247,8 @@ export function UserMenuModal({
               </ListGroup>
             </View>
 
-            {/* Top safe area spacing */}
-            <View className="h-8" />
+            {/* Bottom breathing room */}
+            <View className="h-4" />
           </View>
         </SafeAreaView>
       </Pressable>

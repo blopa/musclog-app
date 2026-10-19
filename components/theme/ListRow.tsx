@@ -1,7 +1,8 @@
 import { Check, CheckCircle2, ChevronRight, Circle } from 'lucide-react-native';
-import type { ComponentType, ReactNode } from 'react';
+import { type ComponentType, type ReactNode, useContext } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { ListGroupContext } from '@/components/theme/ListGroup';
 import { useTheme } from '@/hooks/useTheme';
 
 /**
@@ -57,6 +58,7 @@ export function ListRow({
   const theme = useTheme();
   const isChoice = selected !== undefined;
   const isGrouped = variant === 'grouped';
+  const { flush } = useContext(ListGroupContext);
   let surface = 'rounded-xl bg-bg-overlay';
   if (variant === 'card') {
     surface = 'rounded-xl border border-border-light bg-bg-card';
@@ -96,9 +98,9 @@ export function ListRow({
       onPress={onPress}
       testID={testID}
       android_ripple={isGrouped ? { color: theme.colors.background.ink10 } : undefined}
-      className={`flex-row items-center gap-3 px-4 py-3 active:opacity-80 ${
-        isGrouped ? 'min-h-[52px]' : 'min-h-14'
-      } ${surface} ${choiceBorder}`}
+      className={`flex-row items-center gap-3 py-3 ${
+        flush && isGrouped ? 'min-h-14 px-6 active:bg-ink/5' : 'px-4 active:opacity-80'
+      } ${isGrouped && !flush ? 'min-h-[52px]' : 'min-h-14'} ${surface} ${choiceBorder}`}
     >
       {Icon ? (
         <Icon

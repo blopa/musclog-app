@@ -169,6 +169,8 @@ describe('Phase 3: rows, menus and settings', () => {
   it('does not wrap the menu list in a second padding (BottomPopUp already pads its content)', () => {
     const menu = stripComments(readFileSync(join(root, 'components/BottomPopUpMenu.tsx'), 'utf8'));
     expect(menu).not.toMatch(/className="p-6"/);
+    // A menu list is the sheet: flush, full-bleed rows, never a rounded group inset in the sheet.
+    expect(menu).toMatch(/<ListGroup flush>/);
   });
 
   it.each([

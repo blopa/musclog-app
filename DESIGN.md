@@ -278,9 +278,12 @@ item); a row that acts immediately (Delete, Duplicate, Share) has none, and a pi
 check on its current choice instead. `BottomPopUpMenu` renders its items this way, `SettingsCard`
 is a row (stack it inside a `ListGroup`), and Settings, the Profile management list, the account
 menu and the Add Food tracking methods all use it. A menu item's `iconBgColor` is typed `never`, so
-a leftover tint fails the build. The menu list fills the sheet's content width: `BottomPopUp`
-already pads its content by 24, and a second padding inside the menu made the list look inset
-against every other sheet.
+a leftover tint fails the build. A list that IS the sheet or menu (`BottomPopUpMenu`, the
+account menu) is `ListGroup flush`: no surface of its own, rows bleed through the sheet's 24pt
+padding so the press highlight spans the sheet, and each row pads its content by 24 so the icons
+and titles sit on the sheet title's line. Do not draw a rounded group inside a sheet — a card
+inside the sheet's own padding read as inset twice. The rounded `ListGroup` is for lists on a
+screen (Settings, the Profile management list).
 
 Radio controls (`OptionsSelector` and `Chip`) expose `aria-checked` explicitly as well as native
 accessibility state; React Native Web does not translate `accessibilityState.checked` by itself.
