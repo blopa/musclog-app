@@ -348,8 +348,8 @@ so it lines up with the avatar the account menu itself opens with. No time-of-da
 greeting and no version string; the version lives in Settings > About. The home action tiles are
 compact (about 96pt, the icon above a short label, `rounded-2xl`), with no tinted icon circle and
 no faded watermark copy of the icon; the selection, picker and reconciliation rules in `AGENTS.md`
-are unchanged. The Weekly Review card on Home is full size only while a week is waiting (or half
-reviewed); otherwise it is one line naming the next review (`WeeklyReviewCard quietUntilReady`).
+are unchanged. Home shows a compact Weekly Review card while a week is waiting (or half
+reviewed); otherwise it is one line naming the next review (`WeeklyReviewCard compact quietUntilReady`).
 Cycle shows the cycle day once, inside the wheel, with a one-word title and the phase as its
 subtitle.
 

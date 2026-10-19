@@ -10,7 +10,7 @@ import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 type WeeklyReviewCardProps = {
   compact?: boolean;
   /**
-   * Home's form: the full card only while a week is waiting (or half done), otherwise a single
+   * Home's form: a card only while a week is waiting (or half done), otherwise a single
    * line that still names the next review. A permanent card on Home repeated, every day, what the
    * line says.
    */

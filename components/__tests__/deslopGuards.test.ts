@@ -297,9 +297,9 @@ describe('Phase 5: Home and the hero surfaces', () => {
     }
   });
 
-  it('shows the full Weekly Review card on Home only while a review is waiting', () => {
+  it('shows the compact Weekly Review card on Home only while a review is waiting', () => {
     const home = stripComments(readFileSync(join(root, 'app/app/index.tsx'), 'utf8'));
-    expect(home).toMatch(/<WeeklyReviewCard quietUntilReady \/>/);
+    expect(home).toMatch(/<WeeklyReviewCard compact quietUntilReady \/>/);
   });
 
   it('shows the cycle day once, inside the wheel', () => {
