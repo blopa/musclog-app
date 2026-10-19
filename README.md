@@ -286,6 +286,22 @@ npm run screenshots               # Build web and capture Playwright screenshots
 npm run start-clear               # Start Expo with a cleared cache
 ```
 
+Screenshot runs default to `kinetic-depth`. Select a palette with an environment variable:
+
+```bash
+MUSCLOG_SCREENSHOT_THEME=kinetic-light npm run screenshots
+# Reuse an existing web build and capture only one device size:
+MUSCLOG_SCREENSHOT_THEME=kinetic-shock npm run playwright-runner -- tests/screenshot-automation.spec.ts --project=portrait-6.7
+```
+
+Valid themes are `kinetic-depth`, `kinetic-light`, `kinetic-shock`, `kinetic-volt`,
+`kinetic-blush`, and `kinetic-varia`. Images are saved under
+`screenshots/app-store/<theme>/<device>/`. The screenshot suite enables reduced
+motion, which disables web confetti for every screen and modal. Screenshot commands
+run only the capture suite; SDK compatibility tests remain available separately.
+They use `npm run screenshots:build` to enable the modal fixture in the web export.
+Normal production builds keep test routes disabled.
+
 ---
 
 ## Building for Production

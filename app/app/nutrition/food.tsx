@@ -1572,7 +1572,9 @@ export default function FoodScreen() {
                 </>
               ) : null}
 
-              {showReviewCard ? <WeeklyReviewCard compact /> : null}
+              {showReviewCard && (isScreenLoading || !showTrackedDayContent || isFastedDayView) ? (
+                <WeeklyReviewCard compact />
+              ) : null}
 
               {/* Empty State */}
               {!isScreenLoading && hasNoFood ? (
@@ -1642,6 +1644,8 @@ export default function FoodScreen() {
                         />
                       }
                     />
+
+                    {showReviewCard ? <WeeklyReviewCard compact /> : null}
 
                     {/* Copy-day prompt: an empty day is usually a repeat of a previous one */}
                     {showCopyDayPrompt ? (

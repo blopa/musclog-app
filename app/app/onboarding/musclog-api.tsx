@@ -95,7 +95,7 @@ export default function MusclogApiScreen() {
                 <Sparkles size={32} color={theme.colors.status.purple} />
               </View>
 
-              <View>
+              <View className="flex-1">
                 <View className="flex-row items-center gap-2">
                   <Text
                     className="text-2xl font-black tracking-tight"

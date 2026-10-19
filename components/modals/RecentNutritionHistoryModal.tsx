@@ -17,7 +17,6 @@ import { getMassUnitI18nKey } from '@/utils/units';
 import { FullScreenModal } from './FullScreenModal';
 
 type FoodItem = UnifiedFoodResult & {
-  icon?: string; // Emoji
   iconName?: string; // Lucide icon name, e.g. 'utensils-crossed'
   iconColor?: string;
   iconBgColor?: string;

@@ -243,14 +243,14 @@
     }
   ],
   "unverified": [
-    "native Android/iOS rendering (no emulator/simulator reachable)",
-    "keyboard avoidance on device",
-    "splash to first screen",
-    "scroll performance on long lists",
-    "1.3x font scale / Dynamic Type (0 maxFontSizeMultiplier in code)",
-    "Android edge-to-edge insets",
-    "Android press feedback (0 android_ripple in code)",
-    "iOS swipe-back on screens with custom headers",
-    "Light / Varia themes beyond Home, Food, Workouts, Settings; Volt captured only as skeletons; Blush and Shock not captured"
+    "native Android/iOS rendering (carried forward: needs a release build on a device; no device available when Phase 10 was prepared)",
+    "keyboard avoidance on device (carried forward: device only)",
+    "splash to first screen (carried forward: device only)",
+    "scroll performance on long lists (carried forward: device only; FINDING-016 still partial, Phase 9)",
+    "1.3x / 2.0x font scale (code half done: MAX_CHROME_FONT_SCALE caps tab labels, Button and StatStrip, pinned by chromeFontScale.test.ts; ScreenHeader does not exist until Phase 8; on-device check still needed)",
+    "Android edge-to-edge insets (carried forward: device only)",
+    "Android press feedback (code half done: android_ripple now on Button, ListRow, SettingsCard, MealTypeButton; on-device check still needed)",
+    "iOS swipe-back on screens with custom headers (carried forward: device only; FINDING-012 still open, Phase 8)",
+    "Light / Varia themes beyond Home, Food, Workouts, Settings; Volt captured only as skeletons; Blush and Shock not captured (carried forward: needs a manual theme sweep)"
   ]
 }

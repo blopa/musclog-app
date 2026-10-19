@@ -853,3 +853,28 @@ The block must sit above `apply plugin: "com.facebook.react.rootproject"`, which
 `buildArchs` also dropped 32-bit `x86` (`armeabi-v7a`, `arm64-v8a`, `x86_64` remain). It does not lower the peak, but it removes a quarter of the native compile time, and essentially no real devices use it.
 
 To verify, run a configure-only build, e.g. `./gradlew -PreactNativeArchitectures=arm64-v8a ":shopify_react-native-skia:configureCMakeRelWithDebInfo[arm64-v8a]"`. Then check `pool compile` in `.cxx/**/CMakeFiles/rules.ninja` and the `-g0` in `compile_commands.json`. `eas build:list --platform android --json` shows `buildDuration` per build.
+
+### Screenshot theme reverted after selection
+
+The screenshot setup selected a theme through the public preferences picker and
+immediately unloaded the page. Its checked radio reflects the synchronous browser
+mirror; WatermelonDB’s LokiJS web adapter persists writes on a 500ms autosave
+interval. The reload could discard the new database value and restore the previous
+theme (often `kinetic-light`), failing the theme assertion before the first capture.
+The suite now waits 1500ms before leaving the picker and still checks the resolved
+app theme after navigation. Screenshot npm commands explicitly select the capture
+spec instead of also running SDK compatibility tests.
+
+The capture targets also follow the split from Advanced Settings into Data Settings
+and App Preferences. Modal actions have a 15-second timeout, recover by reloading
+the fixture after a failure, and report missing captures as a failed suite instead
+of silently succeeding with incomplete output.
+
+Normal production web exports redirect `/app/test/modals` to Home. Screenshot
+commands now use `screenshots:build`, which sets `EXPO_PUBLIC_SCREENSHOT_MODE=1`
+to allow only that fixture on web. The exception is absent from ordinary web and
+native production builds.
+
+Each modal capture reloads the fixture before the next one. Escape alone leaves
+non-dismissible modals (such as session feedback) open, blocking subsequent
+buttons and causing missing captures.

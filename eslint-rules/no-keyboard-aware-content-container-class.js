@@ -8,7 +8,14 @@
  * rendered edge to edge with its last row hidden under the footer.
  *
  * Put the padding/gap classes on an inner `View` instead.
+ *
+ * The same holds for spacing classes on `className` itself: `AddUserMetricEntryModal`
+ * (`px-4 pb-12`), `ExercisesModal` (`px-4 pb-32`) and `DataLogModal` (`px-4 gap-3`) shipped with
+ * them and rendered edge to edge. Only layout classes such as `flex-1` are safe there.
  */
+const SPACING_CLASS =
+  /(^|\s)(?:[a-z0-9-]+:)*-?(?:p|m)[xytblrse]?-|(^|\s)(?:[a-z0-9-]+:)*gap(?:-[xy])?-/;
+
 module.exports = {
   meta: {
     type: 'problem',
@@ -20,6 +27,8 @@ module.exports = {
     messages: {
       unsupported:
         'NativeWind does not map `contentContainerClassName` for KeyboardAwareScrollView, so these classes are silently dropped. Put them on an inner <View> instead.',
+      spacing:
+        'Padding, margin and gap classes on a KeyboardAwareScrollView `className` do not lay out its content. Put them on an inner <View> instead.',
     },
   },
   create(context) {
@@ -36,6 +45,17 @@ module.exports = {
             attribute.name.name === 'contentContainerClassName'
           ) {
             context.report({ node: attribute, messageId: 'unsupported' });
+          }
+
+          if (
+            attribute.type === 'JSXAttribute' &&
+            attribute.name.type === 'JSXIdentifier' &&
+            attribute.name.name === 'className' &&
+            attribute.value?.type === 'Literal' &&
+            typeof attribute.value.value === 'string' &&
+            SPACING_CLASS.test(attribute.value.value)
+          ) {
+            context.report({ node: attribute, messageId: 'spacing' });
           }
         }
       },

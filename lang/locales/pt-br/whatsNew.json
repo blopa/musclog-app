@@ -136,6 +136,14 @@
           "title": "Adicione seus widgets Android novamente",
           "description": "Remova os widgets antigos do Musclog e adicione Progresso nutricional ou Câmera inteligente novamente pelo seletor de widgets."
         },
+        "menus": {
+          "title": "Menus e Configurações mais calmos",
+          "description": "Menus e Configurações agora são listas agrupadas simples em vez de pilhas de cartões, e as Configurações estão organizadas em sete grupos mais claros."
+        },
+        "home": {
+          "title": "Uma tela inicial mais organizada",
+          "description": "O Início abre com os números de hoje, a data no topo e atalhos menores. O cartão de Revisão semanal só aparece enquanto há uma revisão pendente."
+        },
         "cycleDiary": {
           "title": "Um diário do ciclo privado e criptografado",
           "description": "Suas menstruações, registros diários e contexto agora ficam criptografados no seu dispositivo. As previsões mostram o nível de confiança e a estimativa da janela fértil é opcional e vem desativada."

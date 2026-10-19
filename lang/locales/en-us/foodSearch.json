@@ -6,9 +6,9 @@
     "foodDescriptionPer100g": "{{brand}} • {{calories}} kcal per 100g",
     "recentHistory": "Recent history",
     "viewAll": "View all",
-    "yourFoods": "🍽️ Your Foods ({{count}}) 🍽️",
-    "openFoodFacts": "🌐 Open Food Facts ({{count}}) 🌐",
-    "usda": "🏛️ USDA ({{count}}) 🏛️",
+    "yourFoods": "Your Foods ({{count}})",
+    "openFoodFacts": "Open Food Facts ({{count}})",
+    "usda": "USDA ({{count}})",
     "filters": {
       "allResults": "All results",
       "openFoodFacts": "Open Food Facts",

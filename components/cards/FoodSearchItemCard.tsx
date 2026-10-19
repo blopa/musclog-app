@@ -9,7 +9,6 @@ import { addOpacityToHex } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
 
 type FoodItem = UnifiedFoodResult & {
-  icon?: string; // Emoji
   iconComponent?: LucideIcon; // Lucide icon component
   iconName?: string; // Lucide icon name, e.g. 'utensils-crossed'
   iconColor?: string;
@@ -70,10 +69,6 @@ export function FoodSearchItemCard({
           color={food.iconColor ?? theme.colors.accent.primary}
         />
       );
-    }
-
-    if (food.icon) {
-      return <Text className="text-xl">{food.icon}</Text>;
     }
 
     return <View className="h-full w-full opacity-80" />;

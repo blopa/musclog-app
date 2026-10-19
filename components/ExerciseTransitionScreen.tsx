@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, Check } from 'lucide-react-native';
+import { Armchair, ArrowRight, Check, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 
@@ -238,9 +238,11 @@ export function ExerciseTransitionScreen({
                           theme.colors.background.secondary ?? theme.colors.background.primary,
                       }}
                     >
-                      <Text className="text-base">
-                        {item.toLowerCase().includes('barbell') ? '🏋️' : '🪑'}
-                      </Text>
+                      {item.toLowerCase().includes('barbell') ? (
+                        <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                      ) : (
+                        <Armchair size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                      )}
                       <Text
                         className="text-xs font-medium"
                         style={{ color: theme.colors.text.primary }}

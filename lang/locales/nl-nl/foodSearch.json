@@ -6,9 +6,9 @@
     "foodDescriptionPer100g": "{{brand}} • {{calories}} kcal per 100g",
     "recentHistory": "Recente geschiedenis",
     "viewAll": "Alles bekijken",
-    "yourFoods": "🍽️ Jouw items ({{count}}) 🍽️",
-    "openFoodFacts": "🌐 Open Food Facts ({{count}}) 🌐",
-    "usda": "🏛️ USDA ({{count}}) 🏛️",
+    "yourFoods": "Jouw items ({{count}})",
+    "openFoodFacts": "Open Food Facts ({{count}})",
+    "usda": "USDA ({{count}})",
     "filters": {
       "allResults": "Alle resultaten",
       "openFoodFacts": "Open Food Facts",

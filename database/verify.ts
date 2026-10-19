@@ -68,17 +68,17 @@ export async function verifyDatabaseTables(): Promise<{
     }
 
     if (missingTables.length > 0) {
-      console.error('❌ Database tables missing:', missingTables);
+      console.error('[ERROR] Database tables missing:', missingTables);
       console.error(
-        '⚠️  FIX: Uninstall the app completely and reinstall to recreate the database.'
+        '[WARN] FIX: Uninstall the app completely and reinstall to recreate the database.'
       );
       return { success: false, missingTables };
     }
 
-    console.log('✅ All database tables verified');
+    console.log('[OK] All database tables verified');
     return { success: true, missingTables: [] };
   } catch (error) {
-    console.error('❌ Error verifying database tables:', error);
+    console.error('[ERROR] Error verifying database tables:', error);
     return { success: false, missingTables, error: error as Error };
   }
 }

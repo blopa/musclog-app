@@ -366,6 +366,11 @@ subtitle.
 - No decoration that conveys nothing: no background blobs or blurred glows, no floating icon
   clusters around an illustration, no gradient icon tiles. Onboarding shows the real app mark
   (`assets/logo.png`), not a placeholder glyph.
+- App-owned visuals are Lucide icons, never emoji: moods, equipment, source headings and the notes
+  marker are icons sized and tinted from theme tokens, and data strings (such as an exercise row's
+  description) stay plain text, with a flag like `hasNotes` telling the UI which icon to draw.
+  Translations carry no emoji either, and shared text (the workout summary) uses translated
+  labels. Coach messages (`coach.json`, `utils/prompts.ts`) and user-authored text keep theirs.
 - Decorative loops are not allowed. An infinite animation is a progress indicator (a spinner, a
   skeleton) and runs on the native driver; a pulsing glow, a floating trophy or a pulsing "live"
   dot is removed rather than moved to another thread. `TextInput`'s border colour is the one

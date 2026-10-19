@@ -85,11 +85,11 @@ export function SegmentedControl({
               onPress={() => onValueChange(option.value)}
               // The track's padding brings the pill to the 44pt target.
               hitSlop={{ top: 4, bottom: 4 }}
-              className={`min-h-9 flex-row items-center gap-1.5 rounded-full px-3 ${fullWidth ? 'flex-1 justify-center' : ''} ${isSelected ? 'bg-accent-primary' : ''}`}
+              className={`min-h-9 min-w-0 flex-row items-center gap-1.5 rounded-full px-3 py-2 ${fullWidth ? 'flex-1 justify-center' : ''} ${isSelected ? 'bg-accent-primary' : ''}`}
             >
               {renderIcon(option, isSelected)}
               <Text
-                className={`text-sm font-semibold ${isSelected ? 'text-text-on-accent' : 'text-text-secondary'}`}
+                className={`min-w-0 shrink text-center text-sm font-semibold ${isSelected ? 'text-text-on-accent' : 'text-text-secondary'}`}
               >
                 {option.label}
               </Text>
@@ -105,7 +105,8 @@ export function SegmentedControl({
       className={containerClass}
       accessibilityRole="radiogroup"
       style={{
-        height: theme.size['14'],
+        // Allow translated labels and larger accessibility text to grow the track.
+        minHeight: theme.size['14'],
         paddingHorizontal: theme.spacing.padding['1half'],
         paddingVertical: theme.spacing.padding['1half'],
         gap: theme.spacing.gap.xs,
@@ -120,32 +121,38 @@ export function SegmentedControl({
             accessibilityRole="radio"
             accessibilityLabel={option.label}
             accessibilityState={{ selected: isSelected, checked: isSelected }}
-            className="flex-1 justify-center self-stretch"
-            style={{ borderRadius: segmentBorderRadius }}
+            className="min-w-0 flex-auto justify-center self-stretch"
+            style={{ borderRadius: segmentBorderRadius, minHeight: theme.size['44'] }}
             onPress={() => onValueChange(option.value)}
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
             {isSelected ? (
               <View
                 style={{
-                  flex: 1,
+                  flexGrow: 1,
+                  paddingHorizontal: theme.spacing.padding.sm,
+                  paddingVertical: theme.spacing.padding.sm,
                   borderRadius: segmentBorderRadius,
                   backgroundColor: theme.colors.accent.primary,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <View className="flex-row items-center justify-center gap-1.5">
+                <View className="min-w-0 flex-row items-center justify-center gap-1.5 self-stretch">
                   {renderIcon(option, isSelected)}
-                  <Text className={`text-center ${labelSize} font-bold text-text-on-accent`}>
+                  <Text
+                    className={`min-w-0 shrink text-center ${labelSize} font-bold text-text-on-accent`}
+                  >
                     {option.label}
                   </Text>
                 </View>
               </View>
             ) : (
-              <View className="flex-row items-center justify-center gap-1.5">
+              <View className="min-w-0 flex-row items-center justify-center gap-1.5 px-2 py-2">
                 {renderIcon(option, isSelected)}
-                <Text className={`text-center ${labelSize} font-bold text-text-secondary`}>
+                <Text
+                  className={`min-w-0 shrink text-center ${labelSize} font-bold text-text-secondary`}
+                >
                   {option.label}
                 </Text>
               </View>

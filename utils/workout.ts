@@ -329,11 +329,11 @@ export function transformExercisesToOptions(
 ): SelectorOption<string>[] {
   return exercisesInWorkout.map((ex) => {
     const row = formatExerciseListRowMeta(ex.sets, ex.reps, ex.weight, ex.isBodyweight, units);
-    const description = ex.notes ? `${row.description} • 📝` : row.description;
     return {
       id: ex.id,
       label: ex.label,
-      description,
+      description: row.description,
+      hasNotes: Boolean(ex.notes),
       trailingHighlight: row.trailingHighlight,
       icon: ex.icon,
       iconBgColor: ex.iconBgColor,

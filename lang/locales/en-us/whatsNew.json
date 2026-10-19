@@ -136,6 +136,14 @@
           "title": "Re-add your Android widgets",
           "description": "Remove your old Musclog widgets and add Nutrition Progress or Smart Camera again from your launcher’s widget picker."
         },
+        "menus": {
+          "title": "Calmer menus and Settings",
+          "description": "Menus and Settings are now simple grouped lists instead of stacks of cards, and Settings is organized into seven clearer groups."
+        },
+        "home": {
+          "title": "A tidier Home screen",
+          "description": "Home opens on today’s numbers with the date on top and smaller shortcut tiles. The Weekly Review card appears only while a review is due."
+        },
         "cycleDiary": {
           "title": "A private, encrypted cycle diary",
           "description": "Your periods, day logs and context are now stored encrypted on your device. Predictions show how confident they are, and a fertile-window estimate is optional and off by default."

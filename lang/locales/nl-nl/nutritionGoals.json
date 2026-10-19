@@ -129,6 +129,16 @@
       }
     },
     "goalMode": "Doelmodus",
+    "modeOptions": {
+      "manual": "Handmatig",
+      "daily": "Dagelijks",
+      "weekly": "Wekelijks"
+    },
+    "modeHints": {
+      "manual": "Stel zelf je doelen in. Ze blijven gelijk totdat je ze aanpast.",
+      "daily": "Je doelen worden elke dag automatisch bijgewerkt op basis van je gegevens en je streefdatum.",
+      "weekly": "Beoordeel je doelen elke week en keur ze goed. Ze blijven gelijk tussen de evaluaties."
+    },
     "manual": "Handmatig",
     "dynamic": "Dynamisch",
     "dynamicInfo": "Dagelijkse doelen worden elke dag automatisch berekend op basis van je huidige gegevens en je doelplanning. Je huidige caloriedoel is {{kcal}} kcal.",

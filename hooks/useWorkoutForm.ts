@@ -275,18 +275,17 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
                 meta.isBodyweight,
                 units
               );
-              const baseDescription = notes ? `${row.description} • 📝` : row.description;
               return {
                 ...ex,
-                description: baseDescription,
+                description: row.description,
+                hasNotes: Boolean(notes),
                 trailingHighlight: row.trailingHighlight,
               };
             }
 
-            const baseDescription = ex.description.replace(' • 📝', '');
             return {
               ...ex,
-              description: notes ? `${baseDescription} • 📝` : baseDescription,
+              hasNotes: Boolean(notes),
               trailingHighlight: undefined,
             };
           }

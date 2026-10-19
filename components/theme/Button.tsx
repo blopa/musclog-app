@@ -11,6 +11,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import { useTheme } from '@/hooks/useTheme';
 import { Theme } from '@/theme';
 
@@ -363,6 +364,7 @@ export function Button({
         textAlign: 'center',
         flexShrink: 1,
       }}
+      maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
       numberOfLines={2}
       ellipsizeMode="tail"
     >

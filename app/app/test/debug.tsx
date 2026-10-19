@@ -376,7 +376,7 @@ export default function DebugTestScreen() {
         { role: 'user', content: 'Hello there! Reply with just one short sentence.' },
       ]);
       console.log('[AppleIntelligence] response =', JSON.stringify(response));
-      setOnDeviceAiStatus(response ? `✓ Working!\n\nResponse: "${response}"` : 'Empty response');
+      setOnDeviceAiStatus(response ? `Working!\n\nResponse: "${response}"` : 'Empty response');
     } catch (e) {
       console.error('[AppleIntelligence] Error:', e);
       setOnDeviceAiStatus(`Error: ${e instanceof Error ? e.message : String(e)}`);
@@ -424,7 +424,7 @@ export default function DebugTestScreen() {
   const requestNotificationPermissions = async () => {
     try {
       const granted = await NotificationService.requestPermissions();
-      setNotificationStatus(granted ? 'Permissions granted ✓' : 'Permissions denied ✗');
+      setNotificationStatus(granted ? 'Permissions granted' : 'Permissions denied');
       console.log('Notification permissions:', granted ? 'granted' : 'denied');
     } catch (error) {
       console.error('Error requesting notification permissions:', error);
@@ -442,7 +442,7 @@ export default function DebugTestScreen() {
         '00:00:00',
         'Bench Press'
       );
-      setNotificationStatus(`Active workout notification started ✓ (${durationStr})`);
+      setNotificationStatus(`Active workout notification started (${durationStr})`);
       console.log('Active workout notification sent');
     } catch (error) {
       console.error('Error testing active workout notification:', error);
@@ -458,7 +458,7 @@ export default function DebugTestScreen() {
         'Ready to crush your Push Day workout today??',
         { type: 'workout-reminder', templateId: 'test-template-id' }
       );
-      setNotificationStatus('Workout reminder notification sent ✓');
+      setNotificationStatus('Workout reminder notification sent');
       console.log('Workout reminder notification sent');
     } catch (error) {
       console.error('Error testing workout reminder notification:', error);
@@ -474,7 +474,7 @@ export default function DebugTestScreen() {
         'Check how your nutrition aligned with your goals today!',
         { type: 'nutrition-overview' }
       );
-      setNotificationStatus('Nutrition overview notification sent ✓');
+      setNotificationStatus('Nutrition overview notification sent');
       console.log('Nutrition overview notification sent');
     } catch (error) {
       console.error('Error testing nutrition overview notification:', error);
@@ -490,7 +490,7 @@ export default function DebugTestScreen() {
         'Based on your recent cycles, your period may start in a few days. This is an estimate.',
         { type: 'menstrual-cycle', subtype: 'period-start' }
       );
-      setNotificationStatus('Period prediction notification sent ✓');
+      setNotificationStatus('Period prediction notification sent');
       console.log('Period prediction notification sent');
     } catch (error) {
       console.error('Error testing period prediction notification:', error);
@@ -506,7 +506,7 @@ export default function DebugTestScreen() {
         'Your estimated fertile window may begin soon. It is a calendar estimate, not confirmation of ovulation.',
         { type: 'menstrual-cycle', subtype: 'fertile-window' }
       );
-      setNotificationStatus('Fertile window notification sent ✓');
+      setNotificationStatus('Fertile window notification sent');
       console.log('Fertile window notification sent');
     } catch (error) {
       console.error('Error testing fertile window notification:', error);
@@ -518,7 +518,7 @@ export default function DebugTestScreen() {
     try {
       setNotificationStatus('Scheduling in 5s...');
       await NotificationService.testRestTimerNotification(5);
-      setNotificationStatus('Rest timer notification scheduled in 5s ✓');
+      setNotificationStatus('Rest timer notification scheduled in 5s');
       console.log('Rest timer notification scheduled');
     } catch (error) {
       console.error('Error testing rest timer notification:', error);
@@ -530,7 +530,7 @@ export default function DebugTestScreen() {
     try {
       setNotificationStatus('Scheduling in 5s...');
       await NotificationService.testWorkoutDurationWarning(5);
-      setNotificationStatus('Workout duration warning scheduled in 5s ✓');
+      setNotificationStatus('Workout duration warning scheduled in 5s');
       console.log('Workout duration warning scheduled');
     } catch (error) {
       console.error('Error testing workout duration warning:', error);
@@ -543,7 +543,7 @@ export default function DebugTestScreen() {
       setNotificationStatus('Dismissing...');
       setTestWorkoutStartTime(null); // Stop the timer
       await NotificationService.dismissActiveWorkoutNotification();
-      setNotificationStatus('Active workout notification dismissed ✓');
+      setNotificationStatus('Active workout notification dismissed');
       console.log('Active workout notification dismissed');
     } catch (error) {
       console.error('Error dismissing active workout notification:', error);

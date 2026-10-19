@@ -329,7 +329,7 @@ function BenchPanel() {
         />
         {sweep ? (
           <Mono color={sweep.matches ? theme.colors.status.success : theme.colors.status.error}>
-            {sweep.matches ? '✓ PASS' : '✗ FAIL'}
+            {sweep.matches ? 'PASS' : 'FAIL'}
             {'\n'}got {sweep.digest}
             {'\n'}expected {sweep.expected}
             {'\n'}
@@ -793,11 +793,11 @@ function ReceivePanel() {
   if (complete) {
     statusColor = theme.colors.status.success;
     statusText =
-      `✓ COMPLETE — ${fmtBytes(snapshot.totalLen)} in ${snapshot.elapsed.toFixed(1)} s ` +
+      `COMPLETE — ${fmtBytes(snapshot.totalLen)} in ${snapshot.elapsed.toFixed(1)} s ` +
       `(${fmtBytes(snapshot.throughput)}/s)`;
   } else if (failed) {
     statusColor = theme.colors.status.error;
-    statusText = '✗ CHECKSUM FAILED — reassembled but the payload hash did not match';
+    statusText = 'CHECKSUM FAILED — reassembled but the payload hash did not match';
   }
 
   return (

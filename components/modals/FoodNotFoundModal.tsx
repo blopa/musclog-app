@@ -1,4 +1,4 @@
-import { AlertTriangle, ChevronRight, Edit, Search } from 'lucide-react-native';
+import { AlertTriangle, Camera, ChevronRight, Edit, Search } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -61,7 +61,7 @@ export function FoodNotFoundModal({
               }}
             >
               <View className="h-12 w-12 items-center justify-center rounded-lg bg-text-always-white/20">
-                <Text className="text-2xl">✨</Text>
+                <Camera size={theme.iconSize.xl} color={theme.colors.text.onAccent} />
               </View>
               <View className="flex-1">
                 <Text className="text-lg font-bold" style={{ color: theme.colors.text.onAccent }}>

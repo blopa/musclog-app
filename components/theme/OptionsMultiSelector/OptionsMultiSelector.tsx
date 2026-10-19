@@ -1,4 +1,4 @@
-import { Check, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronUp, StickyNote } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -368,15 +368,31 @@ export function OptionsMultiSelector<T extends string | number>({
                     >
                       {option.label}
                     </Text>
-                    <Text
+                    <View
                       style={{
-                        fontSize: theme.typography.fontSize.xs,
-                        color: theme.colors.text.secondary,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: theme.spacing.gap.xs,
                         marginTop: theme.spacing.padding.xsHalf,
                       }}
                     >
-                      {option.description}
-                    </Text>
+                      <Text
+                        style={{
+                          flexShrink: 1,
+                          fontSize: theme.typography.fontSize.xs,
+                          color: theme.colors.text.secondary,
+                        }}
+                      >
+                        {option.description}
+                      </Text>
+                      {option.hasNotes ? (
+                        <StickyNote
+                          size={theme.iconSize.xs}
+                          color={theme.colors.text.secondary}
+                          accessibilityLabel={t('workoutDetail.notes')}
+                        />
+                      ) : null}
+                    </View>
                   </View>
                 </View>
                 <View

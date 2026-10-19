@@ -1403,103 +1403,105 @@ export function DataLogModal({
       headerRight={renderHeaderRight()}
       scrollable={false}
     >
-      <KeyboardAwareScrollView className="mt-6 flex flex-col gap-3 px-4" bottomOffset={16}>
-        {/* Search Bar */}
-        <View className="relative">
-          <TextInput
-            label=""
-            value={searchQuery}
-            onChangeText={onSearchQueryChange}
-            placeholder={translations.searchPlaceholder}
-            icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
-          />
-        </View>
+      <KeyboardAwareScrollView className="flex-1" bottomOffset={16}>
+        <View className="mt-6 flex flex-col gap-3 px-4">
+          {/* Search Bar */}
+          <View className="relative">
+            <TextInput
+              label=""
+              value={searchQuery}
+              onChangeText={onSearchQueryChange}
+              placeholder={translations.searchPlaceholder}
+              icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
+            />
+          </View>
 
-        {/* Item List */}
-        <View className="mt-6 flex flex-col gap-3">
-          {isLoading ? (
-            <View className="flex flex-col gap-4">
-              <SkeletonLoader width={80} height={16} className="mb-2" />
-              {[1, 2, 3].map((i) => (
-                <View
-                  key={i}
-                  className="rounded-lg border p-4"
-                  style={{
-                    backgroundColor: theme.colors.background.card,
-                    borderColor: theme.colors.background.ink5,
-                  }}
-                >
-                  <View className="flex-row items-center gap-4">
-                    <SkeletonLoader width={40} height={40} borderRadius={20} />
-                    <View className="flex-1 gap-2">
-                      <SkeletonLoader width="70%" height={16} />
-                      <SkeletonLoader width="50%" height={14} />
+          {/* Item List */}
+          <View className="mt-6 flex flex-col gap-3">
+            {isLoading ? (
+              <View className="flex flex-col gap-4">
+                <SkeletonLoader width={80} height={16} className="mb-2" />
+                {[1, 2, 3].map((i) => (
+                  <View
+                    key={i}
+                    className="rounded-lg border p-4"
+                    style={{
+                      backgroundColor: theme.colors.background.card,
+                      borderColor: theme.colors.background.ink5,
+                    }}
+                  >
+                    <View className="flex-row items-center gap-4">
+                      <SkeletonLoader width={40} height={40} borderRadius={20} />
+                      <View className="flex-1 gap-2">
+                        <SkeletonLoader width="70%" height={16} />
+                        <SkeletonLoader width="50%" height={14} />
+                      </View>
                     </View>
                   </View>
-                </View>
-              ))}
-            </View>
-          ) : typedDayGroups.length === 0 ? (
-            <View
-              className="items-center justify-center py-12"
-              style={{ backgroundColor: theme.colors.background.card }}
-            >
-              <MaterialIcons
-                name={getEmptyStateIconName(variant)}
-                size={48}
-                color={theme.colors.text.tertiary}
-              />
-              <Text
-                className="mt-3 text-center text-base font-medium"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {translations.noItemsText}
-              </Text>
-              <Text
-                className="mt-1 text-center text-sm"
-                style={{ color: theme.colors.text.tertiary }}
-              >
-                {translations.noItemsDesc}
-              </Text>
-            </View>
-          ) : (
-            typedDayGroups.map((dayData) => (
-              <View
-                key={`${dayData.date}-${dayData.dateTimestamp}`}
-                className="flex flex-col gap-2"
-              >
-                <View>
-                  <Text className="text-sm font-bold text-text-secondary">{dayData.date}</Text>
-                </View>
-                <View className="flex flex-col gap-2">{dayData.items.map(renderItem)}</View>
+                ))}
               </View>
-            ))
-          )}
+            ) : typedDayGroups.length === 0 ? (
+              <View
+                className="items-center justify-center py-12"
+                style={{ backgroundColor: theme.colors.background.card }}
+              >
+                <MaterialIcons
+                  name={getEmptyStateIconName(variant)}
+                  size={48}
+                  color={theme.colors.text.tertiary}
+                />
+                <Text
+                  className="mt-3 text-center text-base font-medium"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {translations.noItemsText}
+                </Text>
+                <Text
+                  className="mt-1 text-center text-sm"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
+                  {translations.noItemsDesc}
+                </Text>
+              </View>
+            ) : (
+              typedDayGroups.map((dayData) => (
+                <View
+                  key={`${dayData.date}-${dayData.dateTimestamp}`}
+                  className="flex flex-col gap-2"
+                >
+                  <View>
+                    <Text className="text-sm font-bold text-text-secondary">{dayData.date}</Text>
+                  </View>
+                  <View className="flex flex-col gap-2">{dayData.items.map(renderItem)}</View>
+                </View>
+              ))
+            )}
 
-          {!isLoading && hasMore ? (
-            <View className="py-4">
-              <Button
-                label={loadingLabel}
-                variant="outline"
-                size="sm"
-                width="full"
-                disabled={isLoadingMore}
-                loading={isLoadingMore}
-                onPress={loadMore}
-              />
+            {!isLoading && hasMore ? (
+              <View className="py-4">
+                <Button
+                  label={loadingLabel}
+                  variant="outline"
+                  size="sm"
+                  width="full"
+                  disabled={isLoadingMore}
+                  loading={isLoadingMore}
+                  onPress={loadMore}
+                />
+              </View>
+            ) : null}
+          </View>
+
+          {/* End of history indicator */}
+          {!isLoading && typedDayGroups.length > 0 && !hasMore ? (
+            <View className="mt-12 flex flex-col items-center justify-center opacity-40">
+              <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
+              <Text className="mt-2 text-sm font-medium text-text-tertiary">
+                {translations.endOfHistoryText}
+              </Text>
             </View>
           ) : null}
         </View>
-
-        {/* End of history indicator */}
-        {!isLoading && typedDayGroups.length > 0 && !hasMore ? (
-          <View className="mt-12 flex flex-col items-center justify-center opacity-40">
-            <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
-            <Text className="mt-2 text-sm font-medium text-text-tertiary">
-              {translations.endOfHistoryText}
-            </Text>
-          </View>
-        ) : null}
       </KeyboardAwareScrollView>
 
       <BottomPopUpMenu

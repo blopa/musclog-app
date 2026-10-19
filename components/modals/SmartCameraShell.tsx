@@ -148,7 +148,11 @@ function SmartCameraShellBody({
         <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.alwaysWhite }}>
           {t('food.aiCamera.permissionRequired')}
         </Text>
-        <Button label={t('food.aiCamera.grantPermission')} onPress={onRequestPermission} />
+        <Button
+          label={t('food.aiCamera.grantPermission')}
+          onPress={onRequestPermission}
+          style={{ alignSelf: 'center' }}
+        />
       </View>
     );
   }

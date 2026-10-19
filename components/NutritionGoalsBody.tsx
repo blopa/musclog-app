@@ -1009,22 +1009,25 @@ export function NutritionGoalsBody({
           <Text className="mb-2 text-sm text-text-secondary">{t('nutritionGoals.subtitle')}</Text>
         ) : null}
 
-        {/* Goal Mode: Manual / Dynamic */}
+        {/* Goal mode */}
         <View className="gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
             {t('nutritionGoals.goalMode')}
           </Text>
           <SegmentedControl
             options={[
-              { label: t('nutritionGoals.manual'), value: 'manual' },
-              { label: t('weeklyReview.modes.daily'), value: 'daily' },
-              { label: t('weeklyReview.modes.weekly'), value: 'weekly' },
+              { label: t('nutritionGoals.modeOptions.manual'), value: 'manual' },
+              { label: t('nutritionGoals.modeOptions.daily'), value: 'daily' },
+              { label: t('nutritionGoals.modeOptions.weekly'), value: 'weekly' },
             ]}
             value={targetMode}
             onValueChange={(val) =>
               setTargetMode(val === 'weekly' ? 'weekly' : val === 'daily' ? 'daily' : 'manual')
             }
           />
+          <Text className="px-1 text-sm text-text-secondary">
+            {t(`nutritionGoals.modeHints.${targetMode}`)}
+          </Text>
         </View>
 
         {/* Dynamic mode info callout */}

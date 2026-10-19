@@ -494,7 +494,7 @@ export default function HomeScreen() {
         {/* Action Buttons */}
         <HomeActionsRow selected={homeActions} onActionPress={(key) => homeActionHandlers[key]()} />
         <View className="mx-4 mb-6">
-          <WeeklyReviewCard quietUntilReady />
+          <WeeklyReviewCard compact quietUntilReady />
         </View>
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">

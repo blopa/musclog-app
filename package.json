@@ -6,8 +6,11 @@
   },
   "scripts": {
     "playwright-runner": "node tests/run-tests.js",
-    "screenshots": "npm run build-android-web && npm run playwright-runner --",
-    "screenshots-portrait": "npm run build-android-web && npm run playwright-runner --project=portrait-6.7",
+    "screenshots:build": "EXPO_PUBLIC_SCREENSHOT_MODE=1 npm run build-android-web",
+    "screenshots": "npm run screenshots:build && npm run playwright-runner -- tests/screenshot-automation.spec.ts",
+    "screenshots:sync-legacy": "node scripts/sync-legacy-screenshots.js",
+    "screenshots:all": "npm run screenshots && npm run screenshots:sync-legacy",
+    "screenshots-portrait": "npm run screenshots:build && npm run playwright-runner -- tests/screenshot-automation.spec.ts --project=portrait-6.7",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "lint:eslint": "eslint .",
     "lint:eslint-errors": "eslint . --quiet",

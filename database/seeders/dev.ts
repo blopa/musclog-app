@@ -2342,6 +2342,12 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   // freshly seeded demo user has nothing that "changed" and must not be greeted as an upgrader.
   await setOnboardingCompleted();
 
+  // Store screenshots are built with EXPO_PUBLIC_SCREENSHOT_MODE; the daily water question is a
+  // transient prompt that only adds noise to them. Regular demo mode keeps it.
+  if (process.env.EXPO_PUBLIC_SCREENSHOT_MODE === '1') {
+    await SettingsService.setShowDailyWaterPrompt(false);
+  }
+
   // Seed Gemini AI settings
   await SettingsService.setEnableGoogleGemini(true);
   await SettingsService.setGoogleGeminiApiKey('dev-gemini-api-key-12345');

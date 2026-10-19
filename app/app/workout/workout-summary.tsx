@@ -242,11 +242,11 @@ export default function WorkoutSummaryScreen() {
     const lines = [
       t('workoutSummary.shareText'),
       '',
-      `⏱ ${totalTime}`,
-      `🏋️ ${volume}`,
+      `${t('workoutSummary.duration')}: ${totalTime}`,
+      `${t('workoutSummary.volume')}: ${volume}`,
       ...(caloriesBurned > 0
         ? [
-            `🔥 ${t('common.amount_kcal', {
+            `${t('workoutSummary.caloriesBurned')}: ${t('common.amount_kcal', {
               amount: formatAppInteger(locale, caloriesBurned),
             })}`,
           ]

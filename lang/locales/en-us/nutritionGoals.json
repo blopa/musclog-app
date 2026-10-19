@@ -129,6 +129,16 @@
       }
     },
     "goalMode": "Goal mode",
+    "modeOptions": {
+      "manual": "Manual",
+      "daily": "Daily",
+      "weekly": "Weekly"
+    },
+    "modeHints": {
+      "manual": "Set your own targets. They stay the same until you edit them.",
+      "daily": "Targets update automatically each day based on your stats and goal date.",
+      "weekly": "Review and approve targets each week. They stay the same between reviews."
+    },
     "manual": "Manual",
     "dynamic": "Dynamic",
     "dynamicInfo": "Daily targets are auto-calculated each day from your current stats and goal timeline. Your current calorie target is {{kcal}} kcal.",

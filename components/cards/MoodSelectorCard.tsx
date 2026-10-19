@@ -1,4 +1,4 @@
-import { Smile } from 'lucide-react-native';
+import { Annoyed, Frown, Laugh, type LucideIcon, Meh, Smile } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -11,11 +11,11 @@ type MoodSelectorCardProps = {
   disabled?: boolean;
   value: number; // -1: unrecorded; 0-4: Poor, Low, Okay, Good, Great
   onChange: (value: number) => void;
-  /** `default` shows emoji mood chips only; `enhanced` adds the slider above them. */
+  /** `default` shows icon mood chips only; `enhanced` adds the slider above them. */
   variant?: 'default' | 'enhanced';
 };
 
-const MOOD_EMOJIS = ['😫', '😔', '😐', '😊', '🤩'];
+const MOOD_ICONS: LucideIcon[] = [Frown, Annoyed, Meh, Smile, Laugh];
 
 export function MoodSelectorCard({
   value,
@@ -71,14 +71,22 @@ export function MoodSelectorCard({
           <View className={`flex-row justify-between px-1 ${variant === 'enhanced' ? 'mt-4' : ''}`}>
             {[0, 1, 2, 3, 4].map((moodValue) => {
               const isSelected = value === moodValue;
+              const MoodIcon = MOOD_ICONS[moodValue];
               return (
                 <Pressable
                   key={moodValue}
                   disabled={disabled}
                   onPress={() => onChange(moodValue)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t(`bodyMetrics.addEntry.moods.${moodValue}`)}
+                  accessibilityState={{ selected: isSelected, disabled }}
                   className="flex-col items-center gap-1"
                 >
-                  <Text className="text-xl">{MOOD_EMOJIS[moodValue]}</Text>
+                  <MoodIcon
+                    size={theme.iconSize.xl}
+                    color={isSelected ? theme.colors.accent.primary : theme.colors.text.tertiary}
+                    strokeWidth={isSelected ? 2.5 : 2}
+                  />
                   <Text
                     className={`text-xs font-bold ${
                       isSelected ? 'text-accent-primary' : 'text-text-tertiary'

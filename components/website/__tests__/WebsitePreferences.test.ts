@@ -52,17 +52,17 @@ const openPreferences = () => {
 };
 
 describe('website preferences', () => {
-  it('opens styled language choices with flags and the current locale selected', () => {
+  it('opens styled language choices with code badges and the current locale selected', () => {
     const trigger = openPreferences();
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
     expect(screen.queryByRole('combobox')).toBeNull();
     const group = screen.getByRole('radiogroup', { name: 'website.navigation.language' });
     expect(within(group).getAllByRole('radio')).toHaveLength(4);
     expect((screen.getByRole('radio', { name: 'English' }) as HTMLInputElement).checked).toBe(true);
-    expect(group.textContent).toContain('🇬🇧');
-    expect(group.textContent).toContain('🇪🇸');
-    expect(group.textContent).toContain('🇳🇱');
-    expect(group.textContent).toContain('🇧🇷');
+    expect(group.textContent).toContain('EN');
+    expect(group.textContent).toContain('ES');
+    expect(group.textContent).toContain('NL');
+    expect(group.textContent).toContain('PT');
     expect(document.activeElement).toBe(
       screen.getByRole('tab', { name: 'website.navigation.language' })
     );

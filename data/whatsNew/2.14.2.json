@@ -21,6 +21,25 @@
       ]
     },
     {
+      "id": "redesign",
+      "blocks": [
+        {
+          "id": "menus",
+          "type": "info",
+          "icon": "list",
+          "titleKey": "whatsNew.releases.v2_14_2.menus.title",
+          "descriptionKey": "whatsNew.releases.v2_14_2.menus.description"
+        },
+        {
+          "id": "home",
+          "type": "info",
+          "icon": "layout",
+          "titleKey": "whatsNew.releases.v2_14_2.home.title",
+          "descriptionKey": "whatsNew.releases.v2_14_2.home.description"
+        }
+      ]
+    },
+    {
       "id": "cycle",
       "requires": "cycleTracking",
       "blocks": [

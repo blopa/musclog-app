@@ -59,7 +59,7 @@ export default function LandingScreen() {
         if (!isProduction()) {
           const result = await verifyDatabaseTables();
           if (!result.success) {
-            console.error('⚠️  DATABASE NOT INITIALIZED PROPERLY');
+            console.error('[WARN] DATABASE NOT INITIALIZED PROPERLY');
             console.error('Missing tables:', result.missingTables);
             console.error('Solution: Uninstall the app completely and reinstall it.');
           }

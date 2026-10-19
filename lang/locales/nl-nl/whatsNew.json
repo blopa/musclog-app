@@ -136,6 +136,14 @@
           "title": "Voeg je Android-widgets opnieuw toe",
           "description": "Verwijder je oude Musclog-widgets en voeg Voedingsvoortgang of Slimme camera opnieuw toe via de widgetkiezer."
         },
+        "menus": {
+          "title": "Rustigere menu’s en instellingen",
+          "description": "Menu’s en Instellingen zijn nu eenvoudige gegroepeerde lijsten in plaats van stapels kaarten, en Instellingen is verdeeld in zeven duidelijkere groepen."
+        },
+        "home": {
+          "title": "Een overzichtelijker startscherm",
+          "description": "Het startscherm opent met de cijfers van vandaag, de datum bovenaan en kleinere snelkoppelingen. De kaart Wekelijkse review verschijnt alleen als er een review klaarstaat."
+        },
         "cycleDiary": {
           "title": "Een privé, versleuteld cyclusdagboek",
           "description": "Je menstruaties, dagregistraties en context worden nu versleuteld op je apparaat opgeslagen. Voorspellingen tonen hoe zeker ze zijn en een schatting van het vruchtbare venster is optioneel en staat standaard uit."

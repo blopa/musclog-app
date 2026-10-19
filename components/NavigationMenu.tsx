@@ -7,6 +7,7 @@ import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
+import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import type { NavItemKey } from '@/constants/settings';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
@@ -61,7 +62,10 @@ function NavSlotButton({
           />
         ) : null}
       </View>
-      <Text className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}>
+      <Text
+        maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+        className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+      >
         {label}
       </Text>
     </Pressable>

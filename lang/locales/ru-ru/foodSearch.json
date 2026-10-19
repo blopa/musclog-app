@@ -6,9 +6,9 @@
     "foodDescriptionPer100g": "{{brand}} • {{calories}} ккал на 100г",
     "recentHistory": "Недавняя история",
     "viewAll": "Показать все",
-    "yourFoods": "🍽️ Ваши продукты ({{count}}) 🍽️",
-    "openFoodFacts": "🌐 Open Food Facts ({{count}}) 🌐",
-    "usda": "🏛️ USDA ({{count}}) 🏛️",
+    "yourFoods": "Ваши продукты ({{count}})",
+    "openFoodFacts": "Open Food Facts ({{count}})",
+    "usda": "USDA ({{count}})",
     "filters": {
       "allResults": "Все результаты",
       "openFoodFacts": "Open Food Facts",

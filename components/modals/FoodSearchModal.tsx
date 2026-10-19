@@ -10,7 +10,9 @@ import {
   Donut,
   Egg,
   Fish,
+  Globe,
   Grape,
+  Landmark,
   Lightbulb,
   type LucideIcon,
   Milk,
@@ -91,7 +93,6 @@ function pickRandomFoodIcon(): LucideIcon {
 }
 
 type FoodItem = UnifiedFoodResult & {
-  icon?: string; // Emoji
   iconName?: string; // Lucide icon name, e.g. 'utensils-crossed'
   iconColor?: string;
   iconBgColor?: string;
@@ -271,7 +272,7 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
             style={{ borderRadius: theme.borderRadius.xl }}
           />
         ) : (
-          <Text className="text-xl">🍽️</Text>
+          <UtensilsCrossed size={theme.iconSize.lg} color={theme.colors.text.secondary} />
         )}
       </View>
 
@@ -418,7 +419,7 @@ export function FoodSearchModal({
     };
   }, [visible]);
 
-  // Pick a new random food emoji each time the user starts a new search
+  // Pick a new random food icon each time the user starts a new search
   useEffect(() => {
     if (searchQuery) {
       const randomize = () => {
@@ -1146,6 +1147,10 @@ export function FoodSearchModal({
                                 <View className="mb-3 flex-row items-center gap-2">
                                   <View className="h-0.5 flex-1 bg-accent-primary/20" />
                                   <View className="flex-row items-center gap-2">
+                                    <UtensilsCrossed
+                                      size={theme.iconSize.sm}
+                                      color={theme.colors.accent.primary}
+                                    />
                                     <Text className="text-xs font-medium text-accent-primary">
                                       {t('foodSearch.yourFoods', {
                                         count: resultsBySource.local.length,
@@ -1213,6 +1218,10 @@ export function FoodSearchModal({
                                     <View className="mb-3 flex-row items-center gap-2">
                                       <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                       <View className="flex-row items-center gap-2">
+                                        <Globe
+                                          size={theme.iconSize.sm}
+                                          color={theme.colors.text.tertiary}
+                                        />
                                         <Text className="text-xs font-medium text-text-tertiary">
                                           {t('foodSearch.openFoodFacts', {
                                             count: resultsBySource.api.length,
@@ -1310,6 +1319,10 @@ export function FoodSearchModal({
                                   <View className="mb-3 flex-row items-center gap-2">
                                     <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                     <View className="flex-row items-center gap-2">
+                                      <Landmark
+                                        size={theme.iconSize.sm}
+                                        color={theme.colors.text.tertiary}
+                                      />
                                       <Text className="text-xs font-medium text-text-tertiary">
                                         {t('foodSearch.usda', {
                                           count: resultsBySource.usda.length,

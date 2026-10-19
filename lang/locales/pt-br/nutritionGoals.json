@@ -129,6 +129,16 @@
       }
     },
     "goalMode": "Modo de meta",
+    "modeOptions": {
+      "manual": "Manual",
+      "daily": "Diário",
+      "weekly": "Semanal"
+    },
+    "modeHints": {
+      "manual": "Defina suas metas. Elas permanecem iguais até você alterá-las.",
+      "daily": "As metas são atualizadas automaticamente a cada dia com base nos seus dados e na data da sua meta.",
+      "weekly": "Revise e aprove as metas a cada semana. Elas permanecem iguais entre as revisões."
+    },
     "manual": "Manual",
     "dynamic": "Dinâmico",
     "dynamicInfo": "As metas diárias são calculadas automaticamente a cada dia com base nos seus dados atuais e no prazo da sua meta. Sua meta atual de calorias é {{kcal}} kcal.",

@@ -136,6 +136,14 @@
           "title": "Vuelve a añadir tus widgets de Android",
           "description": "Elimina los widgets antiguos de Musclog y añade de nuevo Progreso nutricional o Cámara inteligente desde el selector de widgets."
         },
+        "menus": {
+          "title": "Menús y Ajustes más tranquilos",
+          "description": "Los menús y Ajustes ahora son listas agrupadas sencillas en lugar de pilas de tarjetas, y Ajustes se organiza en siete grupos más claros."
+        },
+        "home": {
+          "title": "Una pantalla de inicio más ordenada",
+          "description": "Inicio se abre con los números de hoy, la fecha arriba y accesos directos más pequeños. La tarjeta de Revisión semanal solo aparece cuando hay una pendiente."
+        },
         "cycleDiary": {
           "title": "Un diario del ciclo privado y cifrado",
           "description": "Tus periodos, registros diarios y contexto ahora se guardan cifrados en tu dispositivo. Las predicciones indican su nivel de confianza y la estimación de la ventana fértil es opcional y viene desactivada."

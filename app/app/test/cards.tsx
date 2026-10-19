@@ -642,7 +642,7 @@ export default function CardsTestScreen() {
                 protein: 5,
                 carbs: 45,
                 fat: 1.8,
-                icon: '🍚',
+                iconName: 'utensils-crossed',
               }}
               onAddPress={() => console.log('Add food')}
             />
