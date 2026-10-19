@@ -36,7 +36,7 @@ export function MoodSelectorCard({
               color={theme.colors.text.tertiary}
               style={{ flexShrink: 0 }}
             />
-            <Text className="flex-1 text-xs font-bold uppercase tracking-wider text-text-secondary">
+            <Text className="flex-1 text-xs font-bold text-text-secondary">
               {t('bodyMetrics.addEntry.moodQuestion')}
             </Text>
           </View>
@@ -80,7 +80,7 @@ export function MoodSelectorCard({
                 >
                   <Text className="text-xl">{MOOD_EMOJIS[moodValue]}</Text>
                   <Text
-                    className={`text-[10px] font-bold uppercase ${
+                    className={`text-xs font-bold ${
                       isSelected ? 'text-accent-primary' : 'text-text-tertiary'
                     }`}
                     style={{ opacity: isSelected ? 1 : 0.4 }}

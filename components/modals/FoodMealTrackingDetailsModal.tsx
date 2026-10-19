@@ -1815,7 +1815,7 @@ export function FoodMealTrackingDetailsModal({
 
             {/* Meal Selection */}
             <View>
-              <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
+              <Text className="mb-3 text-xs font-bold text-text-secondary">
                 {t('food.foodDetails.meal')}
               </Text>
               <FilterTabs
@@ -1934,7 +1934,7 @@ export function FoodMealTrackingDetailsModal({
                 </Text>
               </View>
 
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+              <Text className="text-xs font-bold text-text-secondary">
                 {t('food.foodDetails.macrosPer100g')}
               </Text>
 

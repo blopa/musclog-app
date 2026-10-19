@@ -167,7 +167,6 @@ export default function NotesScreen() {
       {
         icon: Pencil,
         iconColor: theme.colors.accent.primary,
-        iconBgColor: theme.colors.accent.primary10,
         title: t('notes.noteMenu.edit'),
         description: t('notes.noteMenu.editDescription'),
         onPress: () => setEditingNote(note),
@@ -175,7 +174,6 @@ export default function NotesScreen() {
       {
         icon: Copy,
         iconColor: theme.colors.accent.primary,
-        iconBgColor: theme.colors.accent.primary10,
         title: t('notes.noteMenu.duplicate'),
         description: t('notes.noteMenu.duplicateDescription'),
         onPress: () => void handleDuplicateNote(note),
@@ -188,7 +186,6 @@ export default function NotesScreen() {
             {
               icon: UtensilsCrossed,
               iconColor: theme.colors.accent.primary,
-              iconBgColor: theme.colors.accent.primary10,
               title: t('notes.noteMenu.track'),
               description: t('notes.noteMenu.trackDescription'),
               onPress: () => handleTrackNote(note),
@@ -198,7 +195,6 @@ export default function NotesScreen() {
       {
         icon: Trash2,
         iconColor: theme.colors.status.error,
-        iconBgColor: theme.colors.status.error10,
         titleColor: theme.colors.status.error,
         title: t('notes.noteMenu.delete'),
         description: t('notes.noteMenu.deleteDescription'),
@@ -246,7 +242,7 @@ export default function NotesScreen() {
               <View className="mb-8">
                 <View className="mb-4 flex-row items-center gap-2">
                   <Sparkles size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-                  <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                  <Text className="text-sm font-semibold text-text-secondary">
                     {t('notes.sections.latest')}
                   </Text>
                 </View>
@@ -268,7 +264,7 @@ export default function NotesScreen() {
               <View>
                 <View className="mb-4 flex-row items-center gap-2">
                   <History size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-                  <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                  <Text className="text-sm font-semibold text-text-secondary">
                     {t('notes.sections.earlier')}
                   </Text>
                 </View>
@@ -312,7 +308,6 @@ export default function NotesScreen() {
           {
             icon: StickyNote,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('notes.screenMenu.create'),
             description: t('notes.screenMenu.createDescription'),
             onPress: () => setIsCreateVisible(true),

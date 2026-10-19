@@ -33,7 +33,7 @@ export function NumericInput({
   return (
     <View className="flex-1 flex-col items-center gap-1 rounded-lg border border-ink/10 bg-bg-card p-4">
       <Text
-        className="font-bold uppercase tracking-widest text-text-tertiary"
+        className="font-bold text-text-tertiary"
         style={{ fontSize: theme.typography.fontSize.xs }}
       >
         {label}

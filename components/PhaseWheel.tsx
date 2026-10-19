@@ -123,11 +123,9 @@ export function PhaseWheel({ currentPhase, cycleDay, totalDays, segments }: Phas
 
       {/* Center overlay: what was logged (the day count), then the estimated phase */}
       <View className="absolute items-center justify-center">
-        <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
-          {t('focus.day')}
-        </Text>
+        <Text className="text-xs font-bold text-text-tertiary">{t('focus.day')}</Text>
         <Text className="text-5xl font-black text-text-primary">{formatInteger(cycleDay)}</Text>
-        <Text className="mt-1 text-xs font-bold uppercase tracking-widest text-accent-primary">
+        <Text className="mt-1 text-xs font-bold text-accent-primary">
           {currentPhase ? t(CYCLE_PHASE_LABEL_KEYS[currentPhase]) : t('cycle.phaseUnknown')}
         </Text>
         {currentPhase && currentPhase !== 'menstrual' && currentPhase !== 'between' ? (

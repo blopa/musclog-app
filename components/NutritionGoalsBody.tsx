@@ -1,6 +1,5 @@
 import convert from 'convert';
 import { differenceInCalendarDays } from 'date-fns';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   Activity,
   Beef,
@@ -225,7 +224,7 @@ function MacrosDistributionChart({
 
   return (
     <View className="items-center py-10">
-      <Text className="mb-6 text-sm font-semibold uppercase tracking-widest text-text-secondary opacity-60">
+      <Text className="mb-6 text-sm font-semibold text-text-secondary opacity-60">
         {t('nutritionGoals.macrosDistribution')}
       </Text>
 
@@ -1054,14 +1053,8 @@ export function NutritionGoalsBody({
               backgroundColor: theme.colors.background.cardElevated,
             }}
           >
-            <LinearGradient
-              colors={[theme.colors.status.indigo10, theme.colors.accent.secondary10]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ position: 'absolute', inset: 0 }}
-            />
             <View className="relative z-10 items-center">
-              <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+              <Text className="mb-1 text-xs font-medium text-text-secondary">
                 {t('nutritionGoals.totalDailyCalories')}
               </Text>
               <View className="w-full flex-row items-center justify-center gap-6">
@@ -1111,7 +1104,7 @@ export function NutritionGoalsBody({
                       </Text>
                     </Pressable>
                   )}
-                  <Text className="text-lg font-semibold uppercase text-accent-primary">
+                  <Text className="text-lg font-semibold text-accent-primary">
                     {t('food.common.kcal')}
                   </Text>
                 </View>
@@ -1253,7 +1246,7 @@ export function NutritionGoalsBody({
         {!isDynamic ? (
           <>
             <Text
-              className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+              className="mb-2 mt-8 font-bold text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xs }}
             >
               {t('nutritionGoals.dailyMacroTargets')}
@@ -1384,7 +1377,7 @@ export function NutritionGoalsBody({
 
         {/* Target Body Metrics */}
         <Text
-          className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+          className="mb-2 mt-8 font-bold text-text-secondary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('nutritionGoals.targetBodyMetrics')}

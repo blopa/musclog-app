@@ -579,7 +579,7 @@ export default function BodyMetricsHistoryModal({
                 <View className="p-5">
                   <View className="mb-6 flex-row items-center justify-between">
                     <View>
-                      <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                      <Text className="mb-1 text-xs font-medium text-text-secondary">
                         {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
                       </Text>
                       <View className="flex-row items-baseline gap-1">

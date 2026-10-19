@@ -38,7 +38,7 @@
       "tell": 2,
       "phase": 2,
       "summary": "Hero gradient starts on statusIndigo in every theme (theme.tokens.js:142-146)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-003",
@@ -47,7 +47,7 @@
       "tell": [3, 4, 15, 21],
       "phase": 3,
       "summary": "Card-stack + icon-chip rows: BottomPopUpMenu (37 menus, 186 iconBgColor items), SettingsCard (35), ManagementItem, TrackingMethodButton",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-004",
@@ -80,7 +80,7 @@
       "category": "typography",
       "phase": 4,
       "summary": "All-caps tracked microtext reflex (343 uppercase, 241 tracking-* in app/ + components/)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-008",
@@ -129,7 +129,7 @@
       "category": "navigation",
       "phase": 3,
       "summary": "Settings IA: overlapping group names (Basic Settings / Interface / App Preferences / Local Data Settings)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-014",
@@ -138,7 +138,7 @@
       "tell": 4,
       "phase": 3,
       "summary": "Rainbow icon chips with no categorical meaning (Add Food meal types, Profile management, account menu)",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-015",

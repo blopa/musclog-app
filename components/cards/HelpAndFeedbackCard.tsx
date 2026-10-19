@@ -42,7 +42,6 @@ export function HelpAndFeedbackCard() {
   ): BottomPopUpMenuItem => ({
     icon,
     iconColor: theme.colors.accent.primary,
-    iconBgColor: theme.colors.accent.primary20,
     title,
     description,
     onPress,

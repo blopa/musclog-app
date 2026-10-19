@@ -435,7 +435,7 @@ export default function RestTimerScreen() {
             {nextSet ? (
               <View className="items-center gap-1" testID="rest-up-next">
                 <Text
-                  className="text-xs font-semibold tracking-widest"
+                  className="text-xs font-semibold"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   {t('restTimer.upNext')}

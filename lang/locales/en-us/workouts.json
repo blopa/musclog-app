@@ -120,8 +120,8 @@
       "clearFilters": "Clear Filters",
       "applyFilters": "Apply Filters",
       "workoutType": "Workout Type",
-      "targetMuscles": "TARGET MUSCLES",
-      "duration": "DURATION",
+      "targetMuscles": "Target muscles",
+      "duration": "Duration",
       "upTo": "Up to {{duration}}",
       "workoutTypes": {
         "strength": "Strength",

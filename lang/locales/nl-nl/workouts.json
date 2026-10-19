@@ -120,8 +120,8 @@
       "clearFilters": "Filters wissen",
       "applyFilters": "Filters toepassen",
       "workoutType": "Workouttype",
-      "targetMuscles": "DOELSPIEREN",
-      "duration": "DUUR",
+      "targetMuscles": "Doelspieren",
+      "duration": "Duur",
       "upTo": "Tot {{duration}}",
       "workoutTypes": {
         "strength": "Kracht",

@@ -120,8 +120,8 @@
       "clearFilters": "Limpar Filtros",
       "applyFilters": "Aplicar Filtros",
       "workoutType": "Tipo de Treino",
-      "targetMuscles": "MÚSCULOS ALVO",
-      "duration": "DURAÇÃO",
+      "targetMuscles": "Músculos alvo",
+      "duration": "Duração",
       "upTo": "Até {{duration}}",
       "workoutTypes": {
         "strength": "Força",

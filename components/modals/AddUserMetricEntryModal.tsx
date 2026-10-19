@@ -326,7 +326,7 @@ export default function AddUserMetricEntryModal({
       <View className="p-6">
         {/* Metric Input Section */}
         <View>
-          <Text className="mb-4 text-center text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="mb-4 text-center text-xs font-bold text-text-secondary">
             {config.label} ({config.unit})
           </Text>
 

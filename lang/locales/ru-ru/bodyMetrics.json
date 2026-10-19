@@ -59,7 +59,7 @@
       }
     },
     "current": {
-      "label": "ТЕКУЩЕЕ"
+      "label": "Текущее"
     },
     "history": {
       "title": "История",
@@ -75,12 +75,12 @@
       "filters": {
         "title": "Фильтр истории",
         "sortOrder": {
-          "title": "ПОРЯДОК СОРТИРОВКИ",
+          "title": "Порядок сортировки",
           "newestFirst": "Сначала новые",
           "oldestFirst": "Сначала старые"
         },
         "trend": {
-          "title": "ТРЕНД",
+          "title": "Тренд",
           "all": "Все",
           "increased": "Увеличилось",
           "decreased": "Снизилось",

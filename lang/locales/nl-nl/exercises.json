@@ -65,8 +65,8 @@
       }
     },
     "typeTags": {
-      "bodyweight": "LICHAAMSGEWICHT",
-      "equipment": "APPARATUUR"
+      "bodyweight": "Lichaamsgewicht",
+      "equipment": "Apparatuur"
     },
     "emptyGroupMessage": "Tik om {{muscleGroup}} oefeningen te bekijken.",
     "createExercise": {
@@ -119,14 +119,14 @@
       }
     },
     "viewExercise": {
-      "watchTechnique": "BEKIJK TECHNIEK",
+      "watchTechnique": "Bekijk techniek",
       "primaryMuscle": "Primaire spier",
       "equipment": "Apparatuur",
       "mechanic": "Mechanisme",
       "personalBest": "Persoonlijk record",
       "avgFrequency": "Gem. frequentie",
       "workoutsUsingThis": "Workouts die dit gebruiken",
-      "templates": "SJABLONEN",
+      "templates": "Sjablonen",
       "exerciseOptions": "Oefeningopties",
       "editExercise": "Oefening bewerken",
       "editExerciseDescription": "Wijzig oefeninggegevens",

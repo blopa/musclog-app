@@ -420,7 +420,6 @@ export function MultipleLinesChart({
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
                     color: theme.colors.text.tertiary,
-                    textTransform: 'uppercase',
                     letterSpacing: -0.5,
                   }}
                 >

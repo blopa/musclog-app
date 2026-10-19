@@ -18,7 +18,7 @@ export function UpNextLabel() {
         }}
       >
         <Text
-          className="font-bold uppercase tracking-widest text-accent-primary"
+          className="font-bold text-accent-primary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('restTimer.upNext')}

@@ -65,8 +65,8 @@
       }
     },
     "typeTags": {
-      "bodyweight": "С ВЕСОМ ТЕЛА",
-      "equipment": "С ОБОРУДОВАНИЕМ"
+      "bodyweight": "С весом тела",
+      "equipment": "С оборудованием"
     },
     "emptyGroupMessage": "Нажмите для просмотра упражнений на {{muscleGroup}}.",
     "createExercise": {
@@ -119,14 +119,14 @@
       }
     },
     "viewExercise": {
-      "watchTechnique": "СМОТРЕТЬ ТЕХНИКУ",
+      "watchTechnique": "Смотреть технику",
       "primaryMuscle": "Основная мышца",
       "equipment": "Оборудование",
       "mechanic": "Механика",
       "personalBest": "Личный рекорд",
       "avgFrequency": "Ср. частота",
       "workoutsUsingThis": "Тренировки с этим упражнением",
-      "templates": "ШАБЛОНЫ",
+      "templates": "Шаблоны",
       "exerciseOptions": "Параметры упражнения",
       "editExercise": "Редактировать упражнение",
       "editExerciseDescription": "Изменить детали упражнения",

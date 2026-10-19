@@ -238,8 +238,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     activeSlot !== null
       ? NAV_ITEM_KEYS.filter((item) => isNavItemAvailable(item, isCycleActive)).map((item) => ({
           icon: NAV_DESTINATIONS[item].icon,
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: currentSlots[activeSlot] === item,
           title: getItemLabel(item),
           description: getItemDescription(item),
           onPress: () => {
@@ -427,8 +426,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         subtitle={t('settings.theme.popupSubtitle')}
         items={THEME_OPTIONS.map((option) => ({
           icon: THEME_ICON[option],
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: option === themePreference,
           title: t(`settings.theme.options.${option}.label`),
           description: t(`settings.theme.options.${option}.description`),
           onPress: () => handleThemeChange(option),
@@ -441,8 +439,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         subtitle={t('settings.homeSummaryCard.popupSubtitle')}
         items={HOME_SUMMARY_CARD_OPTIONS.map((card) => ({
           icon: HOME_SUMMARY_CARD_ICON[card],
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: card === homeSummaryCard,
           title: t(`settings.homeSummaryCard.options.${card}.label`),
           description: t(`settings.homeSummaryCard.options.${card}.description`),
           onPress: () => handleHomeSummaryCardChange(card),

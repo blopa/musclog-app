@@ -214,9 +214,7 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
     <View className="mb-3 flex-row items-center justify-between px-1">
       <View className="flex-row items-center gap-2">
         {Icon ? <Icon size={theme.iconSize.sm} color={theme.colors.accent.secondary} /> : null}
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-          {title}
-        </Text>
+        <Text className="text-xs font-bold text-text-secondary">{title}</Text>
       </View>
       {rightAction ? (
         <Pressable onPress={rightAction.onPress} className="p-3">
@@ -1148,7 +1146,7 @@ export function FoodSearchModal({
                                 <View className="mb-3 flex-row items-center gap-2">
                                   <View className="h-0.5 flex-1 bg-accent-primary/20" />
                                   <View className="flex-row items-center gap-2">
-                                    <Text className="text-xs font-medium uppercase text-accent-primary">
+                                    <Text className="text-xs font-medium text-accent-primary">
                                       {t('foodSearch.yourFoods', {
                                         count: resultsBySource.local.length,
                                       })}
@@ -1215,7 +1213,7 @@ export function FoodSearchModal({
                                     <View className="mb-3 flex-row items-center gap-2">
                                       <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                       <View className="flex-row items-center gap-2">
-                                        <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                        <Text className="text-xs font-medium text-text-tertiary">
                                           {t('foodSearch.openFoodFacts', {
                                             count: resultsBySource.api.length,
                                           })}
@@ -1312,7 +1310,7 @@ export function FoodSearchModal({
                                   <View className="mb-3 flex-row items-center gap-2">
                                     <View className="h-0.5 flex-1 bg-text-tertiary/30" />
                                     <View className="flex-row items-center gap-2">
-                                      <Text className="text-xs font-medium uppercase text-text-tertiary">
+                                      <Text className="text-xs font-medium text-text-tertiary">
                                         {t('foodSearch.usda', {
                                           count: resultsBySource.usda.length,
                                         })}

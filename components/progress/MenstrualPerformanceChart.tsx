@@ -120,7 +120,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
 
             return (
               <View key={band} className="items-center">
-                <Text className="text-xs uppercase text-text-tertiary">
+                <Text className="text-xs text-text-tertiary">
                   {t(`progress.cycleBand.${band}`)}
                 </Text>
                 <View

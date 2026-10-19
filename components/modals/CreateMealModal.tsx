@@ -879,8 +879,6 @@ export function CreateMealModal({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
               }}
             >
               {t('food.createMeal.ingredients', { count: ingredients.length })}
@@ -1183,7 +1181,6 @@ export function CreateMealModal({
             {
               icon: Trash2,
               iconColor: theme.colors.status.error,
-              iconBgColor: theme.colors.status.error20,
               title: t('food.meals.manageMealData.deleteMeal'),
               description: t('food.meals.manageMealData.deleteMealDesc'),
               titleColor: theme.colors.status.error,

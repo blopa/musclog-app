@@ -123,9 +123,7 @@ export function PredictionCard({ onOpenDetails }: PredictionCardProps) {
           <Calendar size={20} color={theme.colors.accent.primary} />
         </View>
         <View className="flex-1">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
-            {t('cycle.nextPeriod')}
-          </Text>
+          <Text className="text-xs font-bold text-text-tertiary">{t('cycle.nextPeriod')}</Text>
           <Text className="text-lg font-black text-text-primary">{headline}</Text>
         </View>
       </View>

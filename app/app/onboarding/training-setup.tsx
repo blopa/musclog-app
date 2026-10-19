@@ -198,10 +198,7 @@ export default function TrainingSetupScreen() {
   );
 
   const sectionLabel = (key: string) => (
-    <Text
-      className="text-xs font-semibold tracking-widest"
-      style={{ color: theme.colors.text.tertiary }}
-    >
+    <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
       {t(key).toUpperCase()}
     </Text>
   );

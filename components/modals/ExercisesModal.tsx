@@ -80,7 +80,7 @@ function ExerciseListItem({
             }`}
           >
             <Text
-              className="font-bold uppercase tracking-wider"
+              className="font-bold"
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color:

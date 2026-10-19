@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Download, Lock, ScanLine, Settings2, Star, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
@@ -119,11 +118,15 @@ export default function LandingScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       {/* Main Background Gradient */}
-      <LinearGradient
-        colors={theme.colors.gradients.landingBackground}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: theme.colors.background.primary,
+        }}
       />
 
       {/* Ambient Background Effects */}
@@ -192,11 +195,9 @@ export default function LandingScreen() {
           <View className="flex-1 items-center justify-center gap-8 py-6">
             {/* Logo Icon with Gradient Background */}
             <View className="mb-4">
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+              <View
                 style={{
+                  backgroundColor: theme.colors.accent.primary,
                   width: theme.size['12'],
                   height: theme.size['12'],
                   alignItems: 'center',
@@ -206,8 +207,8 @@ export default function LandingScreen() {
                   ...theme.shadows.lg,
                 }}
               >
-                <Star size={theme.iconSize['3xl']} color={theme.colors.accent.primary} />
-              </LinearGradient>
+                <Star size={theme.iconSize['3xl']} color={theme.colors.text.onAccent} />
+              </View>
             </View>
 
             {/* Typography Section */}
@@ -227,11 +228,10 @@ export default function LandingScreen() {
 
               {/* Tagline */}
               <Text
-                className="font-bold tracking-wide"
+                className="font-bold"
                 style={{
                   color: theme.colors.accent.primary,
                   fontSize: theme.typography.fontSize.lg,
-                  letterSpacing: theme.typography.letterSpacing.wide,
                 }}
               >
                 {t('onboarding.landing.tagline')}

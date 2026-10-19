@@ -195,7 +195,7 @@ export function TimePickerModal({
           />
           <Pressable onPress={onClose} className="py-2">
             <Text
-              className="font-semibold uppercase tracking-widest"
+              className="font-semibold"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 color: addOpacityToHex(theme.colors.text.primary, 0.4),
@@ -235,7 +235,7 @@ export function TimePickerModal({
             </Text>
           </View>
           <Text
-            className="font-semibold uppercase"
+            className="font-semibold"
             style={{
               fontSize: theme.typography.fontSize.xxs,
               color: addOpacityToHex(theme.colors.text.primary, 0.4),
@@ -254,7 +254,7 @@ export function TimePickerModal({
           {/* Column labels */}
           <View className="mb-3 flex-row justify-around">
             <Text
-              className="font-semibold uppercase"
+              className="font-semibold"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 color: addOpacityToHex(theme.colors.text.primary, 0.4),
@@ -264,7 +264,7 @@ export function TimePickerModal({
               {t('timePicker.hours')}
             </Text>
             <Text
-              className="font-semibold uppercase"
+              className="font-semibold"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 color: addOpacityToHex(theme.colors.text.primary, 0.4),

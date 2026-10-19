@@ -35,13 +35,12 @@ function optionLabel(t: TFunction, keyPrefix: string, option: HistoryDays): stri
 function buildMenuItems(
   t: TFunction,
   { keyPrefix, icon }: HistoryConfig,
-  style: { iconColor: string; iconBgColor: string },
+  value: HistoryDays,
   onSelect: (value: HistoryDays) => void
 ): BottomPopUpMenuItem[] {
   return HISTORY_DAY_OPTIONS.map((option) => ({
     icon,
-    iconColor: style.iconColor,
-    iconBgColor: style.iconBgColor,
+    selected: option === value,
     title: optionLabel(t, keyPrefix, option),
     description:
       option === 'none'
@@ -72,15 +71,10 @@ export function HistoryPickerField({ kind, value, onChange }: HistoryPickerField
   const title = t(`settings.aiSettings.${config.keyPrefix}`);
   const subtitle = t(`settings.aiSettings.${config.keyPrefix}Subtitle`);
 
-  const menuItems = buildMenuItems(
-    t,
-    config,
-    { iconColor: theme.colors.accent.primary, iconBgColor: theme.colors.accent.primary10 },
-    (option) => {
-      onChange(option);
-      setMenuVisible(false);
-    }
-  );
+  const menuItems = buildMenuItems(t, config, value, (option) => {
+    onChange(option);
+    setMenuVisible(false);
+  });
 
   return (
     <>

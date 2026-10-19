@@ -30,6 +30,7 @@ import {
 import { EditPersonalInfoModal } from '@/components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { ListGroup } from '@/components/theme/ListGroup';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { type Gender } from '@/database/models';
@@ -131,24 +132,21 @@ export default function ProfileScreen() {
         titleKey: 'profile.managementItems.editPersonal',
         descriptionKey: 'profile.managementItems.editPersonalDesc',
         icon: User,
-        iconColor: theme.colors.accent.primary,
       },
       {
         id: 'fitness',
         titleKey: 'profile.managementItems.editFitness',
         descriptionKey: 'profile.managementItems.editFitnessDesc',
         icon: Dumbbell,
-        iconColor: theme.colors.status.purple,
       },
       {
         id: 'preferences',
         titleKey: 'profile.managementItems.appPreferences',
         descriptionKey: 'profile.managementItems.appPreferencesDesc',
         icon: List,
-        iconColor: theme.colors.text.secondary,
       },
     ],
-    [theme]
+    []
   );
 
   useEffect(() => {
@@ -487,14 +485,13 @@ export default function ProfileScreen() {
           <Text className="mb-4 text-2xl font-bold text-text-primary">
             {t('profile.management')}
           </Text>
-          <View className="gap-3">
+          <ListGroup>
             {managementItems.map((item) => (
               <ManagementItem
                 key={item.id}
                 title={t(item.titleKey)}
                 description={t(item.descriptionKey)}
                 icon={item.icon}
-                iconColor={item.iconColor}
                 onPress={() => {
                   if (item.id === 'personal') {
                     setIsEditPersonalVisible(true);
@@ -506,7 +503,7 @@ export default function ProfileScreen() {
                 }}
               />
             ))}
-          </View>
+          </ListGroup>
         </View>
 
         {/* Bottom spacing for navigation */}

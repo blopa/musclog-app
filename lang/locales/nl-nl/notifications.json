@@ -2,12 +2,12 @@
   "notifications": {
     "header": {
       "title": "Meldingen",
-      "clearAll": "ALLES WISSEN"
+      "clearAll": "Alles wissen"
     },
     "sections": {
-      "today": "VANDAAG",
-      "yesterday": "GISTEREN",
-      "earlier": "EERDER"
+      "today": "Vandaag",
+      "yesterday": "Gisteren",
+      "earlier": "Eerder"
     },
     "channels": {
       "default": "Standaard",

@@ -30,7 +30,7 @@ export function SameAsYesterdayCard({
     <View style={{ marginTop: theme.spacing.padding.lg }}>
       <View className="mb-3 flex-row items-center gap-2 px-1">
         <History size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="text-xs font-bold text-text-secondary">
           {t('foodSearch.sameAsYesterday')}
         </Text>
       </View>
@@ -69,7 +69,7 @@ export function SameAsYesterdayCard({
                 }}
               >
                 <Text
-                  className="text-xs font-bold uppercase tracking-tighter"
+                  className="text-xs font-bold"
                   style={{
                     color: theme.colors.accent.secondary,
                     marginBottom: theme.spacing.margin['2'],
@@ -203,10 +203,7 @@ export function SameAsYesterdayCard({
             >
               <Plus size={theme.iconSize.xl} color={theme.colors.background.primary} />
             </Pressable>
-            <Text
-              className="text-[9px] font-bold uppercase tracking-tighter"
-              style={{ color: theme.colors.accent.secondary }}
-            >
+            <Text className="text-xs font-bold" style={{ color: theme.colors.accent.secondary }}>
               {t('foodSearch.addAll')}
             </Text>
           </View>

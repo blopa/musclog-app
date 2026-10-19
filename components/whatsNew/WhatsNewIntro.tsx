@@ -52,7 +52,7 @@ export function WhatsNewIntro({
 
       {headlines.length > 0 ? (
         <View className="gap-3 rounded-2xl bg-bg-overlay p-4">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="text-xs font-bold text-text-secondary">
             {t('whatsNew.intro.inside')}
           </Text>
           {headlines.map((headline, index) => (

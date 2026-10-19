@@ -1,21 +1,21 @@
 {
   "workoutSession": {
-    "totalTime": "ОБЩЕЕ ВРЕМЯ",
+    "totalTime": "Общее время",
     "setOf": "ПОДХОД {{current}} ИЗ {{total}}",
     "lastSetForExercise": "Последний подход этого упражнения",
     "weight": "ВЕС",
-    "reps": "ПОВТОРЕНИЯ",
+    "reps": "Повторения",
     "kg": "кг",
     "lb": "фунт",
     "previousSetFormat": "{{weight}} {{unit}} × {{count}} {{repsLabel}}",
-    "partials": "ЧАСТИЧНЫЕ",
+    "partials": "Частичные",
     "previous": "Предыдущий",
     "history": "История",
-    "skip": "ПРОПУСТИТЬ",
-    "edit": "ИЗМЕНИТЬ",
-    "replace": "ЗАМЕНИТЬ",
-    "muscles": "МЫШЦЫ",
-    "completeSet": "ЗАВЕРШИТЬ ПОДХОД",
+    "skip": "Пропустить",
+    "edit": "Изменить",
+    "replace": "Заменить",
+    "muscles": "Мышцы",
+    "completeSet": "Завершить подход",
     "skipSet": {
       "title": "Пропустить подход?",
       "message": "Вы уверены, что хотите пропустить этот подход?",
@@ -58,7 +58,7 @@
     },
     "startRest": "Начать отдых ({{seconds}} с)",
     "warmup": {
-      "badge": "РАЗМИНКА",
+      "badge": "Разминка",
       "add": "Добавить разминочные подходы",
       "remove": "Убрать разминку"
     },

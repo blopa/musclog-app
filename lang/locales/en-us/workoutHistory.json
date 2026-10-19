@@ -2,8 +2,8 @@
   "workoutHistory": {
     "title": "Session History",
     "previewTitle": "Workout Preview",
-    "workoutInProgress": "WORKOUT IN PROGRESS",
-    "previewSubtitle": "PREVIEW",
+    "workoutInProgress": "Workout in progress",
+    "previewSubtitle": "Preview",
     "duration": "Duration",
     "volume": "Vol",
     "setsDone": "Sets Done",

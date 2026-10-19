@@ -240,7 +240,7 @@ function ExerciseList({
   return (
     <>
       <View className="gap-3">
-        <Text className="px-2 text-xs font-bold uppercase tracking-widest text-text-muted">
+        <Text className="px-2 text-xs font-bold text-text-muted">
           {t('workout.workoutSequence')}
         </Text>
         <View className="gap-3">
@@ -384,7 +384,6 @@ export default function WorkoutSessionOverviewModal({
     {
       icon: XCircle,
       iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error8,
       title: t('workoutOptions.cancelWorkout'),
       description: t('workoutOptions.cancelWorkoutDesc'),
       onPress: () => {
@@ -395,7 +394,6 @@ export default function WorkoutSessionOverviewModal({
     {
       icon: CheckSquare,
       iconColor: theme.colors.status.success,
-      iconBgColor: theme.colors.status.success20,
       title: t('workoutOptions.finishWorkout'),
       description: t('workoutOptions.finishWorkoutDesc'),
       onPress: () => {

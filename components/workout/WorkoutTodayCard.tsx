@@ -125,7 +125,7 @@ export function WorkoutTodayCard({
       >
         <View className="flex-row items-center gap-2">
           <View className="h-2.5 w-2.5 rounded-full bg-accent-primary" />
-          <Text className="text-xs font-bold uppercase tracking-wider text-accent-primary">
+          <Text className="text-xs font-bold text-accent-primary">
             {t('trainingFlow.activeWorkout')}
           </Text>
         </View>
@@ -192,9 +192,7 @@ export function WorkoutTodayCard({
       className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4"
       testID="workout-today"
     >
-      <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-        {t('trainingFlow.today')}
-      </Text>
+      <Text className="text-xs font-bold text-text-secondary">{t('trainingFlow.today')}</Text>
       {error ? (
         <Text accessibilityRole="alert" className="text-sm text-status-error">
           {t('errors.somethingWentWrong')}

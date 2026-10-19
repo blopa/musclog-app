@@ -466,8 +466,6 @@ export function AddFoodItemToMealModal({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.wider,
             }}
           >
             {t('food.addFoodItemToMeal.searchResults')}

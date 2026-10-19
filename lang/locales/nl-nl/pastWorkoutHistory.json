@@ -19,8 +19,8 @@
     },
     "filters": {
       "title": "Workouts filteren",
-      "workoutType": "WORKOUTTYPE",
-      "minDuration": "MIN. DUUR",
+      "workoutType": "Workouttype",
+      "minDuration": "Min. duur",
       "reset": "Reset",
       "applyFilters": "Filters toepassen",
       "durationFormats": {
@@ -37,13 +37,13 @@
         "yoga": "Yoga"
       },
       "dateRange": {
-        "title": "DATUMBEREIK",
+        "title": "Datumbereik",
         "30days": "Laatste 30 dagen",
         "90days": "Laatste 90 dagen",
         "custom": "Aangepast"
       },
       "muscleGroups": {
-        "title": "SPIERGROEP (MEERVOUDIGE SELECTIE)",
+        "title": "Spiergroep (meervoudige selectie)",
         "chest": "Borst",
         "back": "Rug",
         "legs": "Benen",

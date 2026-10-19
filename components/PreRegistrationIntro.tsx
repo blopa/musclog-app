@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Dumbbell, TrendingUp } from 'lucide-react-native';
 import { Dimensions, View } from 'react-native';
 import Svg, {
@@ -27,22 +26,10 @@ export default function PreRegistrationIntro() {
       }}
     >
       {/* Ambient Background Glow */}
-      <View className="absolute inset-0 rounded-full opacity-70">
-        <LinearGradient
-          colors={[
-            theme.colors.status.indigo30,
-            theme.colors.status.brandBright10,
-            theme.colors.status.brandVivid30,
-          ]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{
-            flex: 1,
-            borderRadius: 9999,
-            overflow: 'hidden',
-          }}
-        />
-      </View>
+      <View
+        className="absolute inset-0 rounded-full"
+        style={{ backgroundColor: theme.colors.accent.primary10 }}
+      />
 
       {/* Main Container */}
       <View
@@ -103,7 +90,7 @@ export default function PreRegistrationIntro() {
                 <SvgLinearGradient id="userGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <Stop offset="0%" stopColor={theme.colors.text.primary} />
                   <Stop offset="50%" stopColor={theme.colors.status.brandBright} />
-                  <Stop offset="100%" stopColor={theme.colors.status.indigoLight} />
+                  <Stop offset="100%" stopColor={theme.colors.accent.primary} />
                 </SvgLinearGradient>
               </Defs>
               {/* CircleUserRound icon - circle for head */}
@@ -137,16 +124,11 @@ export default function PreRegistrationIntro() {
               right: -theme.size['4'],
               width: theme.size['14'],
               height: theme.size['14'],
-              ...theme.shadows.lg,
-              shadowColor: theme.colors.status.brandBright,
-              shadowOpacity: theme.shadowOpacity.light,
             }}
           >
-            <LinearGradient
-              colors={theme.colors.gradients.cta}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+            <View
               style={{
+                backgroundColor: theme.colors.accent.primary,
                 width: '100%',
                 height: '100%',
                 borderRadius: theme.borderRadius['2xl'],
@@ -156,10 +138,10 @@ export default function PreRegistrationIntro() {
             >
               <TrendingUp
                 size={theme.iconSize['2xl']}
-                color={theme.colors.text.primary}
+                color={theme.colors.text.onAccent}
                 strokeWidth={theme.strokeWidth.medium}
               />
-            </LinearGradient>
+            </View>
           </View>
 
           {/* Bottom-Left Floating Icon - Fitness */}

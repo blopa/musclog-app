@@ -210,8 +210,6 @@ export function HeightPickerModal({
                 color: textMuted,
                 fontSize: 11,
                 fontWeight: '600',
-                letterSpacing: 2,
-                textTransform: 'uppercase',
               }}
             >
               {t('heightPicker.cancel')}
@@ -282,9 +280,7 @@ export function HeightPickerModal({
               color: textMuted,
               fontSize: 10,
               fontWeight: '600',
-              letterSpacing: 2.5,
               marginTop: 4,
-              textTransform: 'uppercase',
             }}
           >
             {t('heightPicker.selectedHeight')}
@@ -304,8 +300,6 @@ export function HeightPickerModal({
                 color: textMuted,
                 fontSize: 10,
                 fontWeight: '600',
-                letterSpacing: 2,
-                textTransform: 'uppercase',
               }}
             >
               {t('heightPicker.feet')}
@@ -317,8 +311,6 @@ export function HeightPickerModal({
                 color: textMuted,
                 fontSize: 10,
                 fontWeight: '600',
-                letterSpacing: 2,
-                textTransform: 'uppercase',
               }}
             >
               {t('heightPicker.inches')}

@@ -464,10 +464,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     () =>
       setTypeOptions.map((option) => ({
         icon: option.icon,
-        iconColor: option.iconColor,
-        iconBgColor: option.iconBgColor,
         title: option.label,
-        description: '',
         onPress: () => setSetType(option.value),
       })),
     [setTypeOptions]
@@ -536,8 +533,6 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: theme.typography.fontWeight.bold,
                     color: theme.colors.text.secondary,
-                    textTransform: 'uppercase',
-                    letterSpacing: theme.typography.letterSpacing.extraWide,
                   }}
                 >
                   {t('workouts.addExercise.targetMuscle')}

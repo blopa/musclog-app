@@ -226,10 +226,7 @@ export function CopyDayFromHistoryModal({
     return (
       <View className="gap-4">
         <View className="flex-row items-center justify-between">
-          <Text
-            className="text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
             {t('food.actions.copyDayItemsToCopy')}
           </Text>
           <Pressable onPress={toggleSelectAll}>
@@ -334,10 +331,7 @@ export function CopyDayFromHistoryModal({
 
         {/* Recent days that actually have food — faster than hunting through a calendar. */}
         <View className="gap-2">
-          <Text
-            className="text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
             {t('food.actions.copyDayRecentDays')}
           </Text>
 

@@ -59,7 +59,7 @@
       }
     },
     "current": {
-      "label": "HUIDIG"
+      "label": "Huidig"
     },
     "history": {
       "title": "Geschiedenis",
@@ -75,12 +75,12 @@
       "filters": {
         "title": "Geschiedenis filteren",
         "sortOrder": {
-          "title": "SORTEERVOLGORDE",
+          "title": "Sorteervolgorde",
           "newestFirst": "Nieuwste eerst",
           "oldestFirst": "Oudste eerst"
         },
         "trend": {
-          "title": "TREND",
+          "title": "Trend",
           "all": "Alle",
           "increased": "Toegenomen",
           "decreased": "Afgenomen",

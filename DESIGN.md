@@ -38,9 +38,13 @@ Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, 
 white or the regular on-surface ink.
 
 The Daily Summary card always renders the `colorful-gradient` background; a theme says how that
-should read through `gradients.colorfulCard` alone. The three dark palettes and Kinetic Blush keep a
-saturated sweep; Kinetic Light collapses its stops to the flat card surface, which renders exactly
-like an ordinary card (`gradients.landingBackground` uses the same flat-gradient idiom). The component must not derive this presentation decision from `themeMode`; another
+should read through `gradients.colorfulCard` alone. The ramp is single-hue: `brandDeep` → `brandPrimary`
+→ `brandVivid`, each mixed with `surfaceCard` by the theme's `colorfulCardBlend`, so every theme's
+hero belongs to its own palette. It used to start on `statusIndigo`, which opened Home with the same
+periwinkle sweep in every theme, orange Varia included; `utils/__tests__/dailySummaryCardTheme.test.ts`
+now fails if a stop drifts more than 25° of hue from the theme's accent. The dark palettes and
+Kinetic Blush keep a saturated sweep; Kinetic Light collapses its stops to the flat card surface,
+which renders exactly like an ordinary card. The component must not derive this presentation decision from `themeMode`; another
 light theme may legitimately choose a gradient — Kinetic Blush does. Its foreground uses the matching
 `colorfulCard` ink tokens: white in Kinetic Depth and Kinetic Shock, warm black in Kinetic Volt, and opaque deep
 green-slate in Kinetic Light.
@@ -168,6 +172,15 @@ part of the brand. The token scale is:
 | `2xl`–`5xl` | 24–48 | Screen headings and primary stats |
 | `6xl`–`8xl` | 60–96 | Rare hero values                  |
 
+**Labels are sentence case.** A small heading above a group of content is `SectionLabel`
+(`text-sm font-semibold text-text-secondary`, optional `tone="accent"` for the one live-state label
+on a screen, optional icon). Tracked all-caps is reserved for unit and weekday abbreviations;
+everything else — eyebrows, column headers, badges, button labels, menu titles — is sentence case
+with no letter-spacing, in the copy as well as the classes (`"DATA PORTABILITY"` is now
+`"Data portability"`). Units are lowercase: `kcal`, not `Kcal` or `KCAL`. Sentence-case labels are
+wider than tracked caps in Russian and Dutch, so let them wrap rather than truncate.
+`deslopGuards.test.ts` holds `uppercase`, wide `tracking-*` and all-caps en-us copy at zero.
+
 Use large numeric type for the one value a card is meant to communicate. Preserve readable labels
 and units; a large number without context is not a useful hierarchy.
 
@@ -200,9 +213,9 @@ clipped by the parent; see `FIXES.md`.
   at least 4.5:1 (the token generator blends an unsafe deep stop towards the vivid stop). Buttons
   carry no shadow or glow, and their labels are never letter-spaced (tracking made "Scan Barcode"
   wrap). Selected options in a list signal selection with the 2px accent border and a check, not a
-  halo. Every full-width segmented control variant marks its selected segment with the
-  `gradientCta` gradient and `text.onAccent` (the `pill` with the flat accent and the same ink),
-  and `text.secondary` for unselected options. A segment icon that changes colour uses the
+  halo. Every segmented control variant marks its selected segment with a solid `accent.primary`
+  fill and `text.onAccent` (decision D1 of the de-slop plan: the gradient is `gradientCta`'s
+  alone), and `text.secondary` for unselected options. A segment icon that changes colour uses the
   render-function form, `(selected) => …`, with those two inks — a static accent icon vanishes on
   the selected fill.
 - Button radius: `xs` and `sm` use 12 (`borderRadius.md`), `md` and up use 16 (`borderRadius.lg`).
@@ -229,7 +242,9 @@ appropriate, or both. Pick by what the control is, not by how it looks today:
 | Text-only secondary action ("Show all", "Edit goal", a quiet "Discard") | `TextButton` (`tone`: `accent` / `danger` / `muted`)                       |
 | Icon-only action (steppers, prev/next, back, more, remove ×)            | `IconButton` (`filled` / `elevated` / `ghost`; `media` over a photo)       |
 | One choice among several, or a compact action pill                      | `Chip` (`outline` for choices, `solid` for actions and the weekday picker) |
-| A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`)                                              |
+| A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`; `grouped` inside a `ListGroup`)              |
+| A list of settings, menu items or destinations                          | `ListGroup` of `ListRow variant="grouped"` (or `SettingsCard` rows)        |
+| A small heading above a group of content                                | `SectionLabel`                                                             |
 | Two to five mutually exclusive options shown side by side               | `SegmentedControl` — one form per screen (see below)                       |
 | A number the user types, kept as their own text                         | `NumericTextField` (`hero` / `field` / `cell`)                             |
 | A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
@@ -251,6 +266,21 @@ cell (the set table's number, previous and check cells), a thumbnail, a radio ca
 fields (`ProgressionRuleEditor`), a row whose whole surface toggles a panel (`RestTimerBar`,
 `GuidanceSummary`) — never for something one of these already draws. `components/__tests__/themeControls.test.ts`
 lists the screens that have been moved onto them.
+
+**Lists are grouped, not a card per row.** `ListGroup` is one rounded (16) surface holding rows
+separated by hairlines, with an optional `SectionLabel` title above and footer text below; the rows
+draw no surface of their own. A row's icon is naked (20px, `text.secondary`): no tinted square or
+circle behind it, and no per-row color — the rainbow of chips the menus used to carry encoded
+nothing. The icon turns `accent.primary` only on the picked choice of a picker (`selected`), and
+`status.error` on a destructive row, which also moves to the end of the list. **A chevron means the
+row pushes a screen or opens a sheet with more choices** (`showChevron` on a `BottomPopUpMenu`
+item); a row that acts immediately (Delete, Duplicate, Share) has none, and a picker row shows a
+check on its current choice instead. `BottomPopUpMenu` renders its items this way, `SettingsCard`
+is a row (stack it inside a `ListGroup`), and Settings, the Profile management list, the account
+menu and the Add Food tracking methods all use it. A menu item's `iconBgColor` is typed `never`, so
+a leftover tint fails the build. The menu list fills the sheet's content width: `BottomPopUp`
+already pads its content by 24, and a second padding inside the menu made the list look inset
+against every other sheet.
 
 Radio controls (`OptionsSelector` and `Chip`) expose `aria-checked` explicitly as well as native
 accessibility state; React Native Web does not translate `accessibilityState.checked` by itself.
@@ -275,6 +305,14 @@ exception — see `components/cards/cardSurface.ts` for the resolver and
 - **`hero`** — the `colorfulCard` gradient fill. Reserved for `DailySummaryCard`; do not add a
   second consumer without updating this section.
 
+**Gradients carry meaning or they go.** A `LinearGradient` is allowed for a photo or camera scrim,
+a fade to the surface behind it (sticky footers, collapsed previews, filter rows), the `hero` card,
+the slider track, and the one `gradientCta` button. Washes, icon tiles, chat bubbles, progress
+fills and summary panels are flat: the token they imitated (`accent.primary`, `accent.primary10`,
+`background.card`). `gradients.cta` is read only inside `components/theme/`; a hand-rolled gradient
+button goes through `Button`. `components/__tests__/deslopGuards.test.ts` holds the file allowlist,
+so a new gradient fails CI until it is added there with a reason.
+
 One radius throughout: `theme.borderRadius.lg` (16), the same value as Tailwind's `rounded-2xl`.
 Do not introduce a third style, a per-card radius, or a gradient card fill outside `hero` — a
 `GenericCard` call covers the case, and a hand-rolled surface should be migrated to it rather than
@@ -282,7 +320,7 @@ copied.
 
 A row of small figures read side by side — today's energy under the home card, the weekly-average
 macros inside it — is always `components/StatStrip.tsx`: hairline-divided cells, the number first
-and its uppercase label under it. The component reads no theme of its own; the caller passes a
+and its sentence-case label under it (`text-xs`, no tracking). The component reads no theme of its own; the caller passes a
 `StatStripPalette` so the same row works on a plain card and on the hero gradient. Do not draw a
 second variant of this row.
 
@@ -358,7 +396,7 @@ The session follows a set table, not a form. **Inline**: one card per exercise �
 
 "Why?" is a sheet, not a stack of buttons: method and reason first, then a small inputs table (rule, plan, last time, today), then action rows with icons and one-line hints (Use the plan's, Plate calculator, Edit gym, Edit workout and rules; Edit target only when the equipment cannot build the load). The rule editor is the same pattern: radio cards that each explain their method in a sentence, with the chosen card expanding to its settings. An exercise row in the workout editor names its rule and opens that sheet on tap.
 
-Home shows a compact permanent Weekly Review card below actions, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due and otherwise the "Weekly targets · since …" line, which is itself the way in. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
+Home shows a compact permanent Weekly Review card below actions, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due (and on empty or fasting days); otherwise the way in is the "Weekly Review" item of the summary card's menu, whose supporting line says where today's targets come from ("Daily automatic targets · since …"). The targets chip and the "Dynamic" badge that used to sit above the card took a fifth of the first screen to say what that one line says. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
 
 Weekly Review leads with the week and a Training / Nutrition progress pair, then the two sections. Training: a `StatStrip` (workouts, working sets, volume in the user's unit), the week's workouts, records as trophy rows, and "Next up" with preview and editor actions; upcoming targets are collapsed by default. Nutrition: a `StatStrip` of the evidence (trend weight, food days, weigh-ins), a Current / Recommended table with signed deltas, the reason, then one gradient "Apply targets starting tomorrow" over "Keep current" and "Edit". Missing evidence makes "Keep targets while collecting data" the primary action with shortcuts to log. Review day and reminder live in a settings card below, history last. Opening or canceling a sheet never acknowledges a review. Training acknowledgement never gates progression. Respect themes, exercise units, local decimal separators, safe areas and keyboard clearance.
 

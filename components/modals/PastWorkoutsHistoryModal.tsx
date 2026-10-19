@@ -242,8 +242,6 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
                     fontSize: theme.typography.fontSize.xxs,
                     fontWeight: theme.typography.fontWeight.bold,
                     color: theme.colors.status.brandBright,
-                    textTransform: 'uppercase',
-                    letterSpacing: theme.typography.letterSpacing.wider,
                   }}
                 >
                   {workout.prCount === 1
@@ -306,7 +304,7 @@ function WorkoutMonthSection({ section, isLastMonth, onWorkoutPress }: WorkoutMo
   return (
     <View>
       <Text
-        className="mb-3 px-1 font-bold uppercase tracking-widest"
+        className="mb-3 px-1 font-bold"
         style={{
           fontSize: theme.typography.fontSize.xs,
           color: theme.colors.text.secondary,

@@ -542,9 +542,7 @@ export function CycleReminderSettings() {
             />
           ))}
         </View>
-        <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
-          {t('cycle.reminders.preview')}
-        </Text>
+        <Text className="text-xs font-bold text-text-tertiary">{t('cycle.reminders.preview')}</Text>
         {previews.map((content) => (
           <View
             key={`${content.title}|${content.body}`}

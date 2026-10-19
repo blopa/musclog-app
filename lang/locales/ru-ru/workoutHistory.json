@@ -2,8 +2,8 @@
   "workoutHistory": {
     "title": "История сессий",
     "previewTitle": "Предпросмотр тренировки",
-    "workoutInProgress": "ТРЕНИРОВКА В ПРОЦЕССЕ",
-    "previewSubtitle": "ПРЕДПРОСМОТР",
+    "workoutInProgress": "Тренировка в процессе",
+    "previewSubtitle": "Предпросмотр",
     "duration": "Длительность",
     "volume": "Объём",
     "setsDone": "Подходов выполнено",

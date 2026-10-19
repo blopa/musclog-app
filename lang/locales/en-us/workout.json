@@ -32,7 +32,7 @@
     },
     "exercises": "{{count}} Exercises",
     "workoutSequence": "Workout Sequence",
-    "skipped": "SKIPPED",
+    "skipped": "Skipped",
     "startFromExercise": {
       "title": "Start from Exercise",
       "message": "Do you want to start the workout from {{exerciseName}}?",

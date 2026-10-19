@@ -708,8 +708,6 @@ export default function ExerciseGoalCreationModal({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.accent.primary,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
               }}
             >
               {t('exerciseGoals.creation.reviewSummary')}
@@ -749,8 +747,6 @@ export default function ExerciseGoalCreationModal({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
               }}
             >
               {t('exerciseGoals.creation.exerciseLabel')}
@@ -797,8 +793,6 @@ export default function ExerciseGoalCreationModal({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
             }}
           >
             {t('exerciseGoals.creation.typeLabel')}
@@ -827,8 +821,6 @@ export default function ExerciseGoalCreationModal({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
             }}
           >
             {t('exerciseGoals.creation.targetLabel')}
@@ -929,8 +921,6 @@ export default function ExerciseGoalCreationModal({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.accent.primary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
             }}
           >
             {t('exerciseGoals.creation.projectionPreview', {

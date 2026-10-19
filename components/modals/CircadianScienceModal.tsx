@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, ScrollView, Text, View } from 'react-native';
@@ -60,10 +59,7 @@ function RateStat({ label, value }: { label: string; value: string }) {
       }}
     >
       <Text className="text-base font-bold text-text-primary">{value}</Text>
-      <Text
-        className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider"
-        style={{ color: theme.colors.text.secondary }}
-      >
+      <Text className="mt-0.5 text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
         {label}
       </Text>
     </View>
@@ -178,18 +174,10 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         {/* ── Hero: live counter ─────────────────────────────────── */}
-        <LinearGradient
-          colors={[theme.colors.accent.primary10, 'transparent']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 20 }}
-        >
+        <View style={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 20 }}>
           <View className="flex-row items-center gap-2">
             <LiveDot />
-            <Text
-              className="text-[10px] font-bold uppercase tracking-widest"
-              style={{ color: theme.colors.accent.primary }}
-            >
+            <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
               {t('progress.circadianModal.liveCounter')}
             </Text>
           </View>
@@ -204,7 +192,7 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
               kcal
             </Text>
           </Text>
-        </LinearGradient>
+        </View>
 
         <View className="px-5">
           {/* ── Rate stats row ─────────────────────────────────── */}
@@ -224,10 +212,7 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
           </View>
 
           {/* ── Phase breakdown ────────────────────────────────── */}
-          <Text
-            className="mb-3 text-xs font-bold uppercase tracking-widest"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="mb-3 text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
             {t('progress.circadianModal.allPhases')}
           </Text>
 

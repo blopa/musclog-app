@@ -161,7 +161,7 @@ export function HomeSupplementPrompt({
               color={theme.colors.status.brandVivid}
               style={{ flexShrink: 0 }}
             />
-            <Text className="flex-1 text-xs font-bold uppercase tracking-wider text-text-secondary">
+            <Text className="flex-1 text-xs font-bold text-text-secondary">
               {t('bodyMetrics.addEntry.supplementQuestionWithName', {
                 name: currentSupplement?.name ?? '',
               })}

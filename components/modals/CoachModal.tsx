@@ -1,7 +1,6 @@
 import NetInfo from '@react-native-community/netinfo';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
@@ -99,25 +98,6 @@ const getConversationContextBackgroundColor = (
       return theme.colors.accent.primary20;
     default:
       return 'transparent';
-  }
-};
-
-const getConversationContextBubbleGradient = (
-  conversationContext: string,
-  theme: Theme
-): readonly [string, string, ...string[]] => {
-  switch (conversationContext) {
-    case 'general':
-      // Indigo to purple gradient for general context
-      return theme.colors.gradients.userBubble;
-    case 'exercise':
-      // Blue to emerald gradient for exercise context
-      return theme.colors.gradients.blueEmerald;
-    case 'nutrition':
-      // Green to jade gradient for nutrition context (current default)
-      return theme.colors.gradients.celebrationGlow;
-    default:
-      return theme.colors.gradients.userBubble;
   }
 };
 
@@ -283,7 +263,6 @@ const renderBubble = (
   const styles = getStyles(theme);
 
   if (isUser) {
-    const bubbleGradient = getConversationContextBubbleGradient(conversationContext, theme);
     return (
       <Pressable
         style={styles.userBubbleContainer}
@@ -292,14 +271,9 @@ const renderBubble = (
       >
         {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text ? (
-          <LinearGradient
-            colors={bubbleGradient as readonly [string, string, ...string[]]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.userBubbleGradient}
-          >
+          <View style={[styles.userBubble, { backgroundColor: theme.colors.accent.primary }]}>
             {renderMessageText(props, theme)}
-          </LinearGradient>
+          </View>
         ) : null}
         {!!currentMessage?.workout ? renderCustomView(props) : null}
         {!!currentMessage?.createdAt ? (
@@ -966,7 +940,6 @@ export function CoachModal({
             {
               icon: Copy,
               iconColor: theme.colors.text.primary,
-              iconBgColor: theme.colors.background.iconDarker,
               title: t('coach.message.copy'),
               description: t('coach.message.copyDesc'),
               onPress: async () => {
@@ -978,7 +951,6 @@ export function CoachModal({
             {
               icon: Share2,
               iconColor: theme.colors.text.primary,
-              iconBgColor: theme.colors.background.iconDarker,
               title: t('coach.message.share'),
               description: t('coach.message.shareDesc'),
               onPress: () => {
@@ -989,11 +961,9 @@ export function CoachModal({
             {
               icon: Trash2,
               iconColor: theme.colors.status.error50,
-              iconBgColor: theme.colors.status.error10,
               title: t('coach.message.delete'),
               description: t('coach.message.deleteDesc'),
               titleColor: theme.colors.status.error50,
-              descriptionColor: theme.colors.status.error50,
               onPress: () => {
                 setMessageToDelete(selectedMessage);
                 setSelectedMessage(null);
@@ -1131,7 +1101,6 @@ export function CoachModal({
       {
         icon: SlidersHorizontal,
         iconColor: theme.colors.accent.primary,
-        iconBgColor: theme.colors.accent.primary10,
         title: t('coach.menu.quickSettings'),
         description: t('coach.menu.quickSettingsDesc'),
         onPress: handleQuickSettingsPress,
@@ -1139,7 +1108,6 @@ export function CoachModal({
       {
         icon: Share2,
         iconColor: theme.colors.text.primary,
-        iconBgColor: theme.colors.background.iconDarker,
         title: t('coach.menu.shareHistory'),
         description: t('coach.menu.shareHistoryDesc'),
         onPress: handleShareHistory,
@@ -1147,11 +1115,9 @@ export function CoachModal({
       {
         icon: Trash2,
         iconColor: theme.colors.status.error50,
-        iconBgColor: theme.colors.status.error10,
         title: t('coach.menu.clearHistory'),
         description: t('coach.menu.clearHistoryDesc'),
         titleColor: theme.colors.status.error50,
-        descriptionColor: theme.colors.status.error50,
         onPress: handleClearHistoryPress,
       },
     ],
@@ -1600,7 +1566,7 @@ const getStyles = (theme: Theme) =>
       marginLeft: 'auto',
       alignItems: 'flex-end',
     },
-    userBubbleGradient: {
+    userBubble: {
       paddingHorizontal: theme.spacing.padding.base,
       paddingVertical: theme.spacing.padding.md,
       borderRadius: theme.borderRadius.xl,

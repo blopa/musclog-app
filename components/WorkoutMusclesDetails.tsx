@@ -58,7 +58,7 @@ export function WorkoutMusclesDetails({ muscleGroups, captureRef }: WorkoutMuscl
       <View ref={captureRef} collapsable={false} className="p-4">
         {hasData ? (
           <>
-            <Text className="mb-1 text-center text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
+            <Text className="mb-1 text-center text-xs font-bold text-text-tertiary">
               {t('workoutDetail.muscleBalance')}
             </Text>
             <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />

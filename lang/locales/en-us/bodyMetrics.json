@@ -59,7 +59,7 @@
       }
     },
     "current": {
-      "label": "CURRENT"
+      "label": "Current"
     },
     "history": {
       "title": "History",
@@ -75,12 +75,12 @@
       "filters": {
         "title": "Filter History",
         "sortOrder": {
-          "title": "SORT ORDER",
+          "title": "Sort order",
           "newestFirst": "Newest First",
           "oldestFirst": "Oldest First"
         },
         "trend": {
-          "title": "TREND",
+          "title": "Trend",
           "all": "All",
           "increased": "Increased",
           "decreased": "Decreased",

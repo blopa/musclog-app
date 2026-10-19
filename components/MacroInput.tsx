@@ -91,9 +91,7 @@ export function MacroInput({
       }
     >
       <View className="mb-1 flex-row items-start justify-between">
-        <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-          {label}
-        </Text>
+        <Text className="text-xs font-bold text-text-secondary">{label}</Text>
         {topRightElement}
       </View>
       <RNTextInput

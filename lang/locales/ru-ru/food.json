@@ -280,7 +280,7 @@
       "aiCamera": {
         "title": "ИИ-камера",
         "description": "Мгновенное распознавание и оценка макросов",
-        "badge": "НОВОЕ"
+        "badge": "Новое"
       },
       "scanBarcode": {
         "title": "Сканировать штрих-код",
@@ -468,7 +468,7 @@
       "uploadFromGallery": "Выбрать из галереи",
       "barcodeTextSearchTitle": "Поиск по штрихкоду",
       "barcodeTextSearchDescription": "Найдите продукт, введя штрихкод, напечатанный на упаковке.",
-      "barcodeTextSearchLabel": "ШТРИХКОД",
+      "barcodeTextSearchLabel": "Штрихкод",
       "barcodeTextSearchPlaceholder": "Введите номер штрихкода",
       "barcodeTextSearchSubmit": "Найти продукт",
       "barcodeTextSearchRequired": "Введите штрихкод",
@@ -481,9 +481,9 @@
     },
     "aiNutritionContext": {
       "title": "Добавить контекст для ИИ",
-      "describeYourMeal": "ОПИШИТЕ ВАШ ПРИЁМ ПИЩИ",
+      "describeYourMeal": "Опишите ваш приём пищи",
       "placeholder": "например, Домашнее блюдо с оливковым маслом, около 2 чашек макарон...",
-      "quickTags": "БЫСТРЫЕ ТЕГИ",
+      "quickTags": "Быстрые теги",
       "quickTagHighProtein": "Высокобелковый",
       "quickTagLowCarb": "Низкоуглеводный",
       "quickTagLargeServing": "Большая порция",

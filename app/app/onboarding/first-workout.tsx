@@ -369,7 +369,7 @@ export default function FirstWorkoutScreen() {
             {!template ? (
               <View className="mt-8 gap-3">
                 <Text
-                  className="font-bold uppercase tracking-wider"
+                  className="font-bold"
                   style={{
                     color: theme.colors.text.tertiary,
                     fontSize: theme.typography.fontSize.xs,

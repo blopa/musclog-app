@@ -130,7 +130,7 @@ export function CycleCalendar({
       <View className="flex-row">
         {weekdays.map((d) => (
           <View key={d.getDay()} style={{ width: '14.2857%' }} className="items-center pb-1">
-            <Text className="text-[11px] font-bold uppercase text-text-tertiary">
+            <Text className="text-xs font-bold text-text-tertiary">
               {new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(d)}
             </Text>
           </View>

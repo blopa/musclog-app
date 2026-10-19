@@ -70,13 +70,13 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
       {/* Labels */}
       <View className="flex-row justify-between">
         <Text
-          className="font-medium uppercase tracking-wider text-text-secondary"
+          className="font-medium text-text-secondary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {leftLabel}
         </Text>
         <Text
-          className="font-medium uppercase tracking-wider text-text-secondary"
+          className="font-medium text-text-secondary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {rightLabel}

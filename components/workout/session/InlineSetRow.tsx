@@ -31,7 +31,7 @@ function useCompactSetTable() {
 export function SetTableHeader({ weightUnit }: { weightUnit: string }) {
   const { t } = useTranslation();
   const compact = useCompactSetTable();
-  const label = 'text-xs font-bold uppercase tracking-wider text-text-tertiary';
+  const label = 'text-xs font-bold text-text-tertiary';
   return (
     <View className="flex-row items-center gap-2 px-1" accessibilityElementsHidden>
       <Text className={label} style={{ width: SET_TABLE_COLUMNS.set, textAlign: 'center' }}>

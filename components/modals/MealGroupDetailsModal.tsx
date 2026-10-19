@@ -89,7 +89,7 @@ export function MealGroupDetailsModal({
         {/* Totals summary card */}
         <GenericCard variant="raised">
           <View className="p-5">
-            <Text className="mb-4 text-xs font-medium uppercase tracking-wider text-text-secondary">
+            <Text className="mb-4 text-xs font-medium text-text-secondary">
               {t('food.mealGroup.totalNutrients')}
             </Text>
             <View className="gap-2">
@@ -122,7 +122,7 @@ export function MealGroupDetailsModal({
         </GenericCard>
 
         {/* Individual food items */}
-        <Text className="mb-3 mt-6 text-xs font-medium uppercase tracking-wider text-text-secondary">
+        <Text className="mb-3 mt-6 text-xs font-medium text-text-secondary">
           {t('food.mealGroup.ingredients')}
         </Text>
 

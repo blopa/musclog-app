@@ -2,12 +2,12 @@
   "notifications": {
     "header": {
       "title": "Notificações",
-      "clearAll": "LIMPAR TUDO"
+      "clearAll": "Limpar tudo"
     },
     "sections": {
-      "today": "HOJE",
-      "yesterday": "ONTEM",
-      "earlier": "ANTERIOR"
+      "today": "Hoje",
+      "yesterday": "Ontem",
+      "earlier": "Anterior"
     },
     "channels": {
       "default": "Padrão",

@@ -153,7 +153,7 @@ export function SpiderChart({
           ) : null}
           {subtitle != null ? (
             <Text
-              className="mt-1 text-sm uppercase tracking-widest text-text-tertiary"
+              className="mt-1 text-sm text-text-tertiary"
               style={{
                 fontSize: theme.typography?.fontSize?.sm ?? 14,
                 color: mutedColor,
@@ -259,7 +259,6 @@ export function SpiderChart({
               <Text
                 style={{
                   fontSize: theme.typography.fontSize.xxs,
-                  textTransform: 'uppercase',
                   color: mutedColor,
                   marginTop: theme.spacing.margin.xs,
                 }}
@@ -301,7 +300,6 @@ export function SpiderChart({
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    textTransform: 'uppercase',
                     color: mutedColor,
                   }}
                 >
@@ -340,7 +338,6 @@ export function SpiderChart({
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    textTransform: 'uppercase',
                     color: mutedColor,
                   }}
                 >

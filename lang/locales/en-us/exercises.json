@@ -65,8 +65,8 @@
       }
     },
     "typeTags": {
-      "bodyweight": "BODYWEIGHT",
-      "equipment": "EQUIPMENT"
+      "bodyweight": "Bodyweight",
+      "equipment": "Equipment"
     },
     "emptyGroupMessage": "Tap to view {{muscleGroup}} exercises.",
     "createExercise": {
@@ -119,14 +119,14 @@
       }
     },
     "viewExercise": {
-      "watchTechnique": "WATCH TECHNIQUE",
+      "watchTechnique": "Watch technique",
       "primaryMuscle": "Primary Muscle",
       "equipment": "Equipment",
       "mechanic": "Mechanic",
       "personalBest": "Personal Best",
       "avgFrequency": "Avg. Frequency",
       "workoutsUsingThis": "Workouts Using This",
-      "templates": "TEMPLATES",
+      "templates": "Templates",
       "exerciseOptions": "Exercise Options",
       "editExercise": "Edit Exercise",
       "editExerciseDescription": "Modify exercise details",

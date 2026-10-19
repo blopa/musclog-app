@@ -265,14 +265,14 @@
       "missingData": "Vul eerst je fitnessgegevens in zodat we je plan kunnen berekenen."
     },
     "personalizedPreferences": {
-      "nameLabel": "HOE MOETEN WE JE NOEMEN?",
+      "nameLabel": "Hoe moeten we je noemen?",
       "namePlaceholder": "Voer je naam in (optioneel)"
     },
     "personalizedExperience": {
       "title": "Wat is je ervaringsniveau?",
       "subtitle": "Dit helpt ons trainingsaanbevelingen op jouw niveau af te stemmen.",
-      "experienceLabel": "TRAININGSERVARING",
-      "activityLevelLabel": "ACTIVITEITSNIVEAU",
+      "experienceLabel": "Trainingservaring",
+      "activityLevelLabel": "Activiteitsniveau",
       "beginner": "Beginner",
       "beginnerDesc": "Minder dan 1 jaar training",
       "intermediate": "Gemiddeld",
@@ -304,7 +304,7 @@
     "trainingSetup": {
       "title": "Hoe train je?",
       "subtitle": "Een paar snelle antwoorden stellen je sportschool en eerste training in.",
-      "locationLabel": "WAAR JE TRAINT",
+      "locationLabel": "Waar je traint",
       "location": {
         "gym": "Sportschool",
         "gymDesc": "Halters, machines en kabels",
@@ -313,15 +313,15 @@
         "minimal": "Minimaal",
         "minimalDesc": "Alleen je lichaam en misschien een band"
       },
-      "experienceLabel": "ERVARING",
+      "experienceLabel": "Ervaring",
       "experience": {
         "beginner": "Beginner",
         "intermediate": "Gemiddeld",
         "advanced": "Gevorderd"
       },
-      "daysLabel": "DAGEN PER WEEK",
+      "daysLabel": "Dagen per week",
       "daysMax": "{{count}}+",
-      "helpLabel": "GEWICHTSSUGGESTIES",
+      "helpLabel": "Gewichtssuggesties",
       "help": {
         "suggest": "Stel mijn gewichten voor",
         "suggestDesc": "Doelen gaan omhoog als je je herhalingen haalt en de app legt uit waarom",

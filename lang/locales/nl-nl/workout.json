@@ -32,7 +32,7 @@
     },
     "exercises": "{{count}} oefeningen",
     "workoutSequence": "Workoutvolgorde",
-    "skipped": "OVERGESLAGEN",
+    "skipped": "Overgeslagen",
     "startFromExercise": {
       "title": "Starten vanaf oefening",
       "message": "Wil je de workout starten vanaf {{exerciseName}}?",

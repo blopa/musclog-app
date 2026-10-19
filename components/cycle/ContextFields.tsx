@@ -206,8 +206,7 @@ export function ContextFields({
     title: t(LIFE_STAGE[stage].title),
     description: t(LIFE_STAGE[stage].description),
     icon: LIFE_STAGE[stage].icon,
-    iconColor: stageColors(stage).color,
-    iconBgColor: stageColors(stage).bg,
+    selected: stage === lifeStage,
     onPress: () => {
       onLifeStageChange(stage);
       setMenu(null);
@@ -217,8 +216,7 @@ export function ContextFields({
     title: t(CONTRACEPTION[method].title),
     description: t(CONTRACEPTION[method].description),
     icon: CONTRACEPTION[method].icon,
-    iconColor: theme.colors.accent.primary,
-    iconBgColor: theme.colors.accent.primary10,
+    selected: method === contraception,
     onPress: () => {
       onContraceptionChange(method);
       setMenu(null);

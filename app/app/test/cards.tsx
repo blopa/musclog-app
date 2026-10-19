@@ -49,6 +49,7 @@ import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import { WorkoutStatCard } from '@/components/cards/WorkoutStatCard';
 import { WorkoutSummaryStatsCard } from '@/components/cards/WorkoutSummaryStatsCard';
 import { RestTimer } from '@/components/RestTimer';
+import { ListGroup } from '@/components/theme/ListGroup';
 import { UpNextLabel } from '@/components/UpNextLabel';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -518,12 +519,14 @@ export default function CardsTestScreen() {
         </TestSection>
 
         <TestSection title="Settings" subtitle="App settings overview">
-          <SettingsCard
-            icon={<Sparkles size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-            title="Settings"
-            subtitle="Manage your app settings."
-            onPress={() => console.log('Settings pressed')}
-          />
+          <ListGroup>
+            <SettingsCard
+              icon={<Sparkles size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title="Settings"
+              subtitle="Manage your app settings."
+              onPress={() => console.log('Settings pressed')}
+            />
+          </ListGroup>
         </TestSection>
 
         <TestSection title="Health Categories" subtitle="Test reusable health category cards">

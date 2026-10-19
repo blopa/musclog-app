@@ -88,10 +88,7 @@ export function PlateCalculatorSheet({
         ) : null}
         {hasPlates ? (
           <View className="gap-3">
-            <Text
-              className="text-xs font-semibold uppercase tracking-wide"
-              style={{ color: theme.colors.text.secondary }}
-            >
+            <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
               {t('workoutSettings.plateCalculator.perSide')}
             </Text>
             <View

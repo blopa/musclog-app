@@ -296,7 +296,7 @@ export function FoodNutritionSectionCard({
 
           {showAdditionalNutrition ? (
             <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-              <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
+              <Text className="mb-3 text-sm font-bold text-text-secondary">
                 {t('food.foodDetails.additionalNutrition')}
               </Text>
               <View className="gap-2">

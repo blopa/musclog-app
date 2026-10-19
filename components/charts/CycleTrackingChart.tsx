@@ -121,10 +121,7 @@ export function CycleTrackingChart({
               borderColor: theme.colors.border.light,
             }}
           >
-            <Text
-              className="text-[10px] uppercase tracking-tighter text-text-tertiary"
-              style={{ fontSize: 10 }}
-            >
+            <Text className="text-xs text-text-tertiary" style={{ fontSize: 10 }}>
               {badge.title}
             </Text>
             <Text
@@ -215,7 +212,6 @@ export function CycleTrackingChart({
             style={{
               fontSize: 11,
               fontWeight: '700',
-              textTransform: 'uppercase',
               color: seg.color,
             }}
           >

@@ -520,7 +520,7 @@
         "note": "Kolom notities (optioneel)"
       },
       "dateOrder": {
-        "iso": "JJJJ-MM-DD",
+        "iso": "Jjjj-MM-DD",
         "dmy": "Dag/maand/jaar",
         "mdy": "Maand/dag/jaar"
       },

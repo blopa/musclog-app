@@ -30,7 +30,6 @@ export function PastWorkoutBottomMenu({
     {
       icon: List,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workoutDetails.preview'),
       description: t('workoutDetails.previewDescription'),
       onPress: () => {
@@ -41,7 +40,6 @@ export function PastWorkoutBottomMenu({
     {
       icon: Pencil,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workoutDetails.edit'),
       description: t('workoutDetails.editDescription'),
       onPress: () => {
@@ -52,7 +50,6 @@ export function PastWorkoutBottomMenu({
     {
       icon: Share2,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workoutDetails.share'),
       description: t('workoutDetails.shareDescription'),
       onPress: () => {
@@ -65,11 +62,9 @@ export function PastWorkoutBottomMenu({
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
             title: t('workoutDetails.delete'),
             description: t('workoutDetails.deleteDescription'),
             titleColor: theme.colors.status.error,
-            descriptionColor: theme.colors.status.error,
             onPress: () => {
               onClose();
               onDelete?.();

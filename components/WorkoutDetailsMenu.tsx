@@ -35,7 +35,6 @@ export function WorkoutDetailsMenu({
     {
       icon: Eye,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workoutDetails.preview'),
       description: t('workoutDetails.previewDescription'),
       onPress: () => onPreview?.(),
@@ -43,7 +42,6 @@ export function WorkoutDetailsMenu({
     {
       icon: Pencil,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workoutDetails.edit'),
       description: t('workoutDetails.editDescription'),
       onPress: () => onEdit?.(),
@@ -51,7 +49,6 @@ export function WorkoutDetailsMenu({
     {
       icon: Copy,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workoutDetails.duplicate'),
       description: t('workoutDetails.duplicateDescription'),
       onPress: () => onDuplicate?.(),
@@ -59,7 +56,6 @@ export function WorkoutDetailsMenu({
     {
       icon: FolderPlus,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workouts.plans.addToPlan'),
       description: t('workouts.plans.addToPlanDescription'),
       onPress: () => onAddToPlan?.(),
@@ -67,7 +63,6 @@ export function WorkoutDetailsMenu({
     {
       icon: Share2,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workoutDetails.share'),
       description: t('workoutDetails.shareDescription'),
       onPress: () => onShare?.(),
@@ -75,11 +70,9 @@ export function WorkoutDetailsMenu({
     {
       icon: Trash2,
       iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
       title: t('workoutDetails.delete'),
       description: t('workoutDetails.deleteDescription'),
       titleColor: theme.colors.status.error,
-      descriptionColor: theme.colors.status.error,
       onPress: () => onDelete?.(),
     },
   ];

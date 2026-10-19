@@ -247,7 +247,7 @@ export default function CycleScreen() {
                   {cycleDay != null && !guidance.hidePeriodActions ? (
                     <View className="mb-4 flex-row items-center justify-between">
                       <View className="rounded-2xl bg-bg-overlay px-4 py-3">
-                        <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                        <Text className="text-xs font-bold text-text-tertiary">
                           {t('focus.day')}
                         </Text>
                         <Text className="text-2xl font-black text-accent-primary">
@@ -260,7 +260,7 @@ export default function CycleScreen() {
                         ) : null}
                       </View>
                       <View className="items-end">
-                        <Text className="text-sm font-bold uppercase tracking-widest text-accent-primary">
+                        <Text className="text-sm font-bold text-accent-primary">
                           {t('focus.currentPhase')}
                         </Text>
                         <Text className="text-2xl font-black text-text-primary">

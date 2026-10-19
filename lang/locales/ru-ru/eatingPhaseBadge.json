@@ -1,8 +1,8 @@
 {
   "eatingPhaseBadge": {
-    "cutting": "СУШКА",
-    "maintenance": "ПОДДЕРЖАНИЕ",
-    "bulking": "НАБОР",
-    "lean-bulk": "ЧИСТЫЙ НАБОР"
+    "cutting": "Сушка",
+    "maintenance": "Поддержание",
+    "bulking": "Набор",
+    "lean-bulk": "Чистый набор"
   }
 }

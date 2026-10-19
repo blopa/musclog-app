@@ -491,7 +491,7 @@ export function WorkoutSessionHistoryModal({
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text
-                className="mb-0.5 block text-sm font-bold uppercase tracking-wider"
+                className="mb-0.5 block text-sm font-bold"
                 style={{ color: theme.colors.accent.primary }}
               >
                 {isPreview

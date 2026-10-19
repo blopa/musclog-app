@@ -4,8 +4,8 @@
     "nutritionAndBodyTab": "Nutrition & Body",
     "fitnessAndExerciseTab": "Fitness & Exercise",
     "subtitle": "Track your progress and history.",
-    "currentGoals": "CURRENT GOALS",
-    "history": "GOALS HISTORY",
+    "currentGoals": "Current goals",
+    "history": "Goals history",
     "newGoal": "New Goal",
     "createGoalDesc": "Set new nutrition targets and macros",
     "createCheckin": "Create Check-in",
@@ -96,7 +96,7 @@
       "subtitleFormat": "Target {{targetWeight}} {{unit}} • {{targetBodyFat}}% body fat",
       "checkinDate": "Check-in Date"
     },
-    "exerciseGoals": "EXERCISE GOALS",
+    "exerciseGoals": "Exercise goals",
     "exerciseGoalsTitle": "Strength & Consistency",
     "exerciseGoalsSubtitle": "Track 1RM targets and workout frequency"
   }

@@ -120,8 +120,8 @@
       "clearFilters": "Очистить фильтры",
       "applyFilters": "Применить фильтры",
       "workoutType": "Тип тренировки",
-      "targetMuscles": "ЦЕЛЕВЫЕ МЫШЦЫ",
-      "duration": "ДЛИТЕЛЬНОСТЬ",
+      "targetMuscles": "Целевые мышцы",
+      "duration": "Длительность",
       "upTo": "До {{duration}}",
       "workoutTypes": {
         "strength": "Силовые",

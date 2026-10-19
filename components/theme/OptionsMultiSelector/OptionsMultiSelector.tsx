@@ -451,8 +451,6 @@ export function OptionsMultiSelector<T extends string | number>({
             fontSize: theme.typography.fontSize.xs,
             fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.secondary,
-            textTransform: 'uppercase',
-            letterSpacing: theme.typography.letterSpacing.extraWide,
           }}
         >
           {title}

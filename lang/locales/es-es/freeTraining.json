@@ -5,25 +5,25 @@
     "title": "Entrenamiento Libre",
     "titleSession": "Sesión",
     "subtitle": "Construye tu entrenamiento sobre la marcha. Sin plantillas, solo progreso.",
-    "addFirstExercise": "AÑADIR PRIMER EJERCICIO",
+    "addFirstExercise": "Añadir primer ejercicio",
     "tip": "Consejo: Puedes añadir más ejercicios en cualquier momento.",
     "startFreeTraining": "Iniciar Entrenamiento Libre",
     "startFreeTrainingSubtitle": "Construye tu entrenamiento sobre la marcha. Sin plantillas, solo progreso.",
-    "duration": "DURACIÓN",
-    "calories": "CALORÍAS",
-    "volume": "VOLUMEN",
+    "duration": "Duración",
+    "calories": "Calorías",
+    "volume": "Volumen",
     "inProgress": "En Curso",
     "addExercise": {
       "title": "Añadir Ejercicio",
-      "numberOfSets": "NÚMERO DE SERIES",
-      "addToWorkout": "AÑADIR AL ENTRENAMIENTO",
+      "numberOfSets": "Número de series",
+      "addToWorkout": "Añadir al entrenamiento",
       "menuDescription": "Añadir ejercicios y series a esta sesión"
     },
     "exerciseComplete": {
       "title": "¡Buen trabajo!",
       "subtitle": "Ejercicio completado. ¿Listo para más?",
       "setsCompleted": "{{count}} series completadas",
-      "totalVolume": "VOLUMEN TOTAL",
+      "totalVolume": "Volumen total",
       "addNextExercise": "Añadir siguiente ejercicio",
       "finishWorkout": "Terminar entrenamiento"
     }

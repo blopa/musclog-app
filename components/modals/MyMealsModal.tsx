@@ -678,7 +678,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: Utensils,
                 iconColor: theme.colors.text.onAccent,
-                iconBgColor: theme.colors.accent.primary,
                 title: t('food.actions.track'),
                 description: t('meals.logMeal'),
                 onPress: () => handleTrackMeal(menuMealId),
@@ -686,7 +685,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: Pencil,
                 iconColor: theme.colors.text.primary,
-                iconBgColor: theme.colors.background.iconDarker,
                 title: t('food.meals.manageMealData.editMeal'),
                 description: t('food.meals.manageMealData.editMealDesc'),
                 onPress: () => handleEditMeal(menuMealId),
@@ -694,7 +692,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: Share2,
                 iconColor: theme.colors.text.primary,
-                iconBgColor: theme.colors.background.iconDarker,
                 title: t('food.meals.manageMealData.shareMealAsRecipe'),
                 description: t('food.meals.manageMealData.shareMealAsRecipeDesc'),
                 onPress: () => {
@@ -704,7 +701,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: QrCode,
                 iconColor: theme.colors.accent.primary,
-                iconBgColor: theme.colors.accent.primary10,
                 title: t('food.meals.manageMealData.sendToPhone'),
                 description: t('food.meals.manageMealData.sendToPhoneDesc'),
                 onPress: () => handleSendMealToPhone(menuMealId),
@@ -712,7 +708,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: Trash2,
                 iconColor: theme.colors.status.error,
-                iconBgColor: theme.colors.status.error20,
                 title: t('food.meals.manageMealData.deleteMeal'),
                 description: t('food.meals.manageMealData.deleteMealDesc'),
                 titleColor: theme.colors.status.error,

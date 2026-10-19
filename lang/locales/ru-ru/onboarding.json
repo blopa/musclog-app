@@ -265,14 +265,14 @@
       "missingData": "Пожалуйста, сначала заполните данные о фитнесе, чтобы мы могли рассчитать ваш план."
     },
     "personalizedPreferences": {
-      "nameLabel": "КАК ВАС НАЗЫВАТЬ?",
+      "nameLabel": "Как вас называть?",
       "namePlaceholder": "Введите имя (необязательно)"
     },
     "personalizedExperience": {
       "title": "Каков ваш опыт?",
       "subtitle": "Это помогает нам адаптировать рекомендации по тренировкам к вашему уровню.",
-      "experienceLabel": "ОПЫТ ТРЕНИРОВОК",
-      "activityLevelLabel": "УРОВЕНЬ АКТИВНОСТИ",
+      "experienceLabel": "Опыт тренировок",
+      "activityLevelLabel": "Уровень активности",
       "beginner": "Начинающий",
       "beginnerDesc": "Менее 1 года тренировок",
       "intermediate": "Средний",
@@ -304,7 +304,7 @@
     "trainingSetup": {
       "title": "Как вы тренируетесь?",
       "subtitle": "Несколько быстрых ответов настроят ваш зал и первую тренировку.",
-      "locationLabel": "ГДЕ ВЫ ТРЕНИРУЕТЕСЬ",
+      "locationLabel": "Где вы тренируетесь",
       "location": {
         "gym": "Зал",
         "gymDesc": "Штанги, тренажёры и блоки",
@@ -313,15 +313,15 @@
         "minimal": "Минимум",
         "minimalDesc": "Только ваше тело и, возможно, резинка"
       },
-      "experienceLabel": "ОПЫТ",
+      "experienceLabel": "Опыт",
       "experience": {
         "beginner": "Новичок",
         "intermediate": "Средний",
         "advanced": "Продвинутый"
       },
-      "daysLabel": "ДНЕЙ В НЕДЕЛЮ",
+      "daysLabel": "Дней в неделю",
       "daysMax": "{{count}}+",
-      "helpLabel": "ПОДСКАЗКИ ПО ВЕСАМ",
+      "helpLabel": "Подсказки по весам",
       "help": {
         "suggest": "Предлагать веса",
         "suggestDesc": "Цели растут, когда вы выполняете повторения, а приложение объясняет почему",

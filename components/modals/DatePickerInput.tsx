@@ -108,7 +108,7 @@ export function DatePickerInput({
   return (
     <View className={`min-w-0 ${className ?? ''}`}>
       {!hideLabel ? (
-        <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="mb-2 text-xs font-bold text-text-secondary">
           {label ?? t('food.foodDetails.date')}
         </Text>
       ) : null}

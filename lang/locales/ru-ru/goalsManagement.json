@@ -4,8 +4,8 @@
     "nutritionAndBodyTab": "Питание и тело",
     "fitnessAndExerciseTab": "Фитнес и тренировки",
     "subtitle": "Отслеживайте прогресс и историю.",
-    "currentGoals": "ТЕКУЩИЕ ЦЕЛИ",
-    "history": "ИСТОРИЯ ЦЕЛЕЙ",
+    "currentGoals": "Текущие цели",
+    "history": "История целей",
     "newGoal": "Новая цель",
     "createGoalDesc": "Установить новые целевые макросы и калории",
     "createCheckin": "Создать отметку",
@@ -96,7 +96,7 @@
       "subtitleFormat": "Цель {{targetWeight}} {{unit}} • {{targetBodyFat}}% жировой массы",
       "checkinDate": "Дата отметки"
     },
-    "exerciseGoals": "ЦЕЛИ ПО ТРЕНИРОВКАМ",
+    "exerciseGoals": "Цели по тренировкам",
     "exerciseGoalsTitle": "Сила и стабильность",
     "exerciseGoalsSubtitle": "Отслеживайте целевые показатели 1ПМ и частоту тренировок"
   }

@@ -39,9 +39,7 @@ export function GuidanceBadgeLine({
   return (
     <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-2">
       <View className={`rounded-full px-2.5 py-1 ${badge.surface}`}>
-        <Text className={`text-xs font-bold uppercase ${badge.text}`}>
-          {t(GUIDANCE_STATE_KEYS[state])}
-        </Text>
+        <Text className={`text-xs font-bold ${badge.text}`}>{t(GUIDANCE_STATE_KEYS[state])}</Text>
       </View>
       <Text className="shrink text-sm font-semibold text-text-primary">
         {t(PROGRESSION_METHOD_KEYS[rule?.type ?? 'automatic'])}

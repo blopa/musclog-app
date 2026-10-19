@@ -160,10 +160,7 @@ export const StepperInput: FC<StepperInputProps> = ({
 
   return (
     <View className="flex flex-col gap-2">
-      <Text
-        className="text-xs font-bold uppercase tracking-tighter"
-        style={{ color: theme.colors.accent.primary }}
-      >
+      <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
         {label}
       </Text>
       <View className="flex flex-row items-center gap-2 overflow-hidden">

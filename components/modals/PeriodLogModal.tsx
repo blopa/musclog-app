@@ -142,7 +142,7 @@ export function PeriodLogModal({
             className="rounded-xl px-4 py-3"
             style={{ backgroundColor: theme.colors.background.card }}
           >
-            <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+            <Text className="text-xs font-semibold text-text-secondary">
               {t('cycle.periodLog.startedOn')}
             </Text>
             <Text className="mt-1 text-base font-bold text-text-primary">

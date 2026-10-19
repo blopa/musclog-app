@@ -150,10 +150,7 @@ export default function PersonalizedExperienceScreen() {
 
             {/* Training Experience */}
             <View className="mb-8 gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.personalizedExperience.experienceLabel')}
               </Text>
 
@@ -234,10 +231,7 @@ export default function PersonalizedExperienceScreen() {
 
             {/* Activity Level */}
             <View className="gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.personalizedExperience.activityLevelLabel')}
               </Text>
 

@@ -280,7 +280,7 @@
       "aiCamera": {
         "title": "AI-camera",
         "description": "Directe herkenning en macro-schatting",
-        "badge": "NIEUW"
+        "badge": "Nieuw"
       },
       "scanBarcode": {
         "title": "Barcode scannen",
@@ -468,7 +468,7 @@
       "uploadFromGallery": "Kies uit galerij",
       "barcodeTextSearchTitle": "Barcode zoeken",
       "barcodeTextSearchDescription": "Zoek een voedingsmiddel door de barcode op de verpakking in te typen.",
-      "barcodeTextSearchLabel": "BARCODE",
+      "barcodeTextSearchLabel": "Barcode",
       "barcodeTextSearchPlaceholder": "Voer barcodenummer in",
       "barcodeTextSearchSubmit": "Voeding zoeken",
       "barcodeTextSearchRequired": "Voer een barcode in",
@@ -481,9 +481,9 @@
     },
     "aiNutritionContext": {
       "title": "Context toevoegen voor AI",
-      "describeYourMeal": "BESCHRIJF JE MAALTIJD",
+      "describeYourMeal": "Beschrijf je maaltijd",
       "placeholder": "bijv. Dit is een zelfgemaakt gerecht met olijfol, ongeveer 2 kopjes pasta...",
-      "quickTags": "SNELLE TAGS",
+      "quickTags": "Snelle tags",
       "quickTagHighProtein": "Rijk aan eiwitten",
       "quickTagLowCarb": "Koolhydraatarm",
       "quickTagLargeServing": "Grote portie",

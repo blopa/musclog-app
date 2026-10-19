@@ -99,9 +99,7 @@ export function FoodInfoCard({
                     useGrouping: false,
                   })}
             </Text>
-            <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-              {t('food.common.kcal')}
-            </Text>
+            <Text className="text-xs font-bold text-text-secondary">{t('food.common.kcal')}</Text>
           </View>
         </View>
 
@@ -139,7 +137,7 @@ export function FoodInfoCard({
             <View className="mb-2 flex-row gap-3">
               <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-indigo-500 opacity-50" />
-                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                <Text className="mb-1 text-xs font-medium text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
                 <Text
@@ -153,7 +151,7 @@ export function FoodInfoCard({
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-emerald-500 opacity-50" />
-                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                <Text className="mb-1 text-xs font-medium text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                 </Text>
                 <Text
@@ -167,7 +165,7 @@ export function FoodInfoCard({
               </View>
               <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-yellow-500 opacity-50" />
-                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                <Text className="mb-1 text-xs font-medium text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
                 </Text>
                 <Text

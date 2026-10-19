@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { ReactNode } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 
@@ -127,21 +126,13 @@ export function SegmentedControl({
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
             {isSelected ? (
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+              <View
                 style={{
                   flex: 1,
                   borderRadius: segmentBorderRadius,
-                  overflow: 'hidden',
+                  backgroundColor: theme.colors.accent.primary,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  shadowColor: theme.colors.accent.primary,
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 4,
-                  elevation: 3,
                 }}
               >
                 <View className="flex-row items-center justify-center gap-1.5">
@@ -150,7 +141,7 @@ export function SegmentedControl({
                     {option.label}
                   </Text>
                 </View>
-              </LinearGradient>
+              </View>
             ) : (
               <View className="flex-row items-center justify-center gap-1.5">
                 {renderIcon(option, isSelected)}

@@ -316,7 +316,6 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
           {
             icon: Plus,
             iconColor: theme.colors.text.onAccent,
-            iconBgColor: theme.colors.accent.primary,
             title: t('settings.advancedSettings.addSupplement'),
             description: t('settings.advancedSettings.addSupplementDescription'),
             onPress: openCreateModal,
@@ -332,7 +331,6 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
           {
             icon: Pencil,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.background.iconDarker,
             title: t('settings.advancedSettings.editSupplement'),
             description: t('settings.advancedSettings.editSupplementDescription'),
             onPress: () => {
@@ -344,7 +342,6 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
             title: t('common.delete'),
             description: t('settings.advancedSettings.deleteSupplementDescription'),
             titleColor: theme.colors.status.error,

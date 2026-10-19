@@ -263,7 +263,7 @@ export function DailySummaryCard({
 
                   <View className="flex-col">
                     <Text
-                      className="font-bold uppercase"
+                      className="font-bold"
                       style={{
                         fontSize: theme.typography.fontSize.sm,
                         color: theme.colors.colorfulCard.ink70,
@@ -273,7 +273,7 @@ export function DailySummaryCard({
                       {`/ ${formatInteger(Math.round(calories.goal))}`}
                     </Text>
                     <Text
-                      className="font-bold uppercase"
+                      className="font-bold"
                       style={{
                         fontSize: theme.typography.fontSize.xs,
                         color: theme.colors.colorfulCard.ink70,
@@ -363,7 +363,7 @@ export function DailySummaryCard({
                     {/* Label above the figure: side by side they fought for width and the label truncated. */}
                     <View className="gap-0.5">
                       <Text
-                        className="font-bold uppercase"
+                        className="font-bold"
                         numberOfLines={1}
                         style={{
                           fontSize: theme.typography.fontSize.xxs,
@@ -479,7 +479,7 @@ export function DailySummaryCard({
               {/* Header */}
               <View className="flex-row items-center justify-between">
                 <Text
-                  className="font-bold uppercase tracking-wider"
+                  className="font-bold"
                   style={{
                     fontSize: theme.typography.fontSize.xs,
                     color: theme.colors.colorfulCard.ink,
@@ -502,7 +502,7 @@ export function DailySummaryCard({
                   {intuitiveMode ? '00' : formatInteger(Math.round(weeklyAverages!.calories))}
                 </Text>
                 <Text
-                  className="mb-1.5 font-bold uppercase"
+                  className="mb-1.5 font-bold"
                   style={{
                     fontSize: theme.typography.fontSize.lg,
                     color: theme.colors.colorfulCard.ink70,

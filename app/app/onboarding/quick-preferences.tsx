@@ -80,10 +80,7 @@ export default function QuickPreferencesScreen() {
 
             {/* Unit System */}
             <View className="mb-8 gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickPreferences.unitSystem').toUpperCase()}
               </Text>
               <SegmentedControl
@@ -99,10 +96,7 @@ export default function QuickPreferencesScreen() {
 
             {/* Gender */}
             <View className="gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickPreferences.gender').toUpperCase()}
               </Text>
 

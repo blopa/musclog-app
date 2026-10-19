@@ -169,10 +169,7 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
     >
       <View className="mb-6 mt-6 gap-6 px-4" testID="log-cardio-form">
         <View>
-          <Text
-            className="mb-3 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="mb-3 text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
             {t('cardio.activity')}
           </Text>
           <FilterTabs
@@ -214,10 +211,7 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
         />
 
         <View className="gap-4">
-          <Text
-            className="text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
             {t('cardio.duration')}
           </Text>
           <StepperInput

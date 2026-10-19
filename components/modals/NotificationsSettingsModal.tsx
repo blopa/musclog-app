@@ -233,10 +233,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
 
   const sectionTitle = (title: string, hint?: string) => (
     <View className="gap-1 px-8">
-      <Text
-        className="text-xs font-bold uppercase tracking-wider"
-        style={{ color: theme.colors.text.secondary }}
-      >
+      <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
         {title}
       </Text>
       {hint ? (

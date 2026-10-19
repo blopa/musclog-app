@@ -61,9 +61,7 @@ function ScoreCard({ label, score }: { label: string; score: NutritionQualitySco
         borderColor: theme.colors.background.ink5,
       }}
     >
-      <Text className="mb-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
-        {label}
-      </Text>
+      <Text className="mb-4 text-xs font-bold text-text-secondary">{label}</Text>
       <View
         style={{
           backgroundColor: colors.bg,
@@ -113,7 +111,7 @@ function NovaRow({ group, description }: { group: number; description: string })
       </View>
 
       <Text
-        className="text-xs font-bold uppercase leading-tight text-text-secondary"
+        className="text-xs font-bold leading-tight text-text-secondary"
         style={{ maxWidth: 48 }}
       >
         {t('food.logDetails.novaGroup').replace(' ', '\n')}
@@ -166,7 +164,7 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
         <Tag size={18} color={theme.colors.text.secondary} />
       </View>
 
-      <Text className="text-xs font-bold uppercase text-text-secondary">
+      <Text className="text-xs font-bold text-text-secondary">
         {t('food.logDetails.foodLabels')}
       </Text>
 

@@ -113,8 +113,8 @@ export function WorkoutSummaryCelebration({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const gradientCtaStr = `linear-gradient(90deg, ${theme.colors.gradients.cta[0]}, ${theme.colors.gradients.cta[1]})`;
-  const workoutStatsStr = `linear-gradient(90deg, ${theme.colors.gradients.workoutStats[0]}, ${theme.colors.gradients.workoutStats[1]})`;
+  const gradientCtaStr = theme.colors.accent.primary;
+  const workoutStatsStr = theme.colors.accent.primary;
 
   const { value: timeValue, suffix: timeSuffix } = splitDurationLabel(totalTime);
   const volumeValue = volume.replace(/\s*(kg|g|lbs?)/i, '').trim();
@@ -339,7 +339,6 @@ export function WorkoutSummaryCelebration({
             opacity: isGetFeedbackLoading ? 0.6 : 1,
             marginBottom: theme.spacing.padding.base,
             boxSizing: 'border-box',
-            letterSpacing: '0.05em',
           }}
         >
           <MessageCircle size={theme.iconSize.md} color={theme.colors.text.primary} />
@@ -371,7 +370,6 @@ export function WorkoutSummaryCelebration({
           cursor: 'pointer',
           marginBottom: theme.spacing.padding.base,
           boxSizing: 'border-box',
-          letterSpacing: '0.05em',
         }}
       >
         <Home size={theme.iconSize.md} color={theme.colors.text.alwaysWhite} />
@@ -389,8 +387,6 @@ export function WorkoutSummaryCelebration({
             color: theme.colors.text.tertiary,
             fontSize: theme.typography.fontSize.xs,
             fontWeight: theme.typography.fontWeight.medium,
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
             padding: theme.spacing.padding.sm,
           }}
         >

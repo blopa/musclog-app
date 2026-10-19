@@ -268,7 +268,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             }}
           >
             <Text
-              className="text-center text-2xl font-black uppercase leading-7 tracking-tighter text-text-primary"
+              className="text-center text-2xl font-black leading-7 text-text-primary"
               style={{ fontSize: 28 }}
             >
               {status ? t(`nutrition.checkin.${status}`).replace(' ', '\n') : '---'}
@@ -320,7 +320,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         >
           <View className="flex-row justify-between">
             <View>
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold text-text-tertiary">
                 {t('nutrition.checkin.weightTrend')}
               </Text>
               <View className="mt-1 flex-row items-baseline">
@@ -343,7 +343,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </View>
             </View>
             <View className="items-end">
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold text-text-tertiary">
                 {t('nutrition.checkin.target')}
               </Text>
               <Text className="mt-1 text-xl font-bold text-text-primary">
@@ -388,10 +388,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             className="rounded-full px-3 py-1"
             style={{ backgroundColor: theme.colors.background.card }}
           >
-            <Text
-              className="text-xs font-bold uppercase"
-              style={{ color: theme.colors.accent.primary }}
-            >
+            <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
               {t('nutrition.checkin.weekProgress', {
                 current: weekInfo.current,
                 total: weekInfo.total,
@@ -451,7 +448,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold text-text-tertiary">
                 {t('nutrition.checkin.avgIntake')}
               </Text>
               <Text
@@ -470,7 +467,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold text-text-tertiary">
                 {t('nutrition.checkin.consistency')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">
@@ -491,7 +488,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold text-text-tertiary">
                 {t('nutrition.checkin.avgBodyFat')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">
@@ -513,7 +510,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-bold text-text-tertiary">
                 {t('nutrition.checkin.activeMinutes')}
               </Text>
               <Text className="mt-1 text-xl font-black text-text-primary">

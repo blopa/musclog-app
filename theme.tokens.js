@@ -139,14 +139,16 @@ function createColors(palette) {
     surfacePurpleTint: mixHex(palette.surfaceBase, palette.statusPurple, 0.33), // was #3d3162
     surfaceBrandTint: mixHex(palette.surfaceBase, palette.brandPrimary, 0.39), // was #0d4a2d
     surfaceNotification: mixHex(palette.surfaceBase, palette.brandPrimary, 0.15), // was #132a1e
+    // A single-hue tonal ramp, deep brand -> brand -> vivid brand. It used to start on
+    // `statusIndigo`, which put the same periwinkle sweep at the top of Home in every theme.
     colorfulCardStart: mixHex(
       palette.surfaceCard,
-      palette.statusIndigo,
+      palette.brandDeep,
       palette.colorfulCardBlend.start
     ),
     colorfulCardMiddle: mixHex(
       palette.surfaceCard,
-      palette.brandDeep,
+      palette.brandPrimary,
       palette.colorfulCardBlend.middle
     ),
     colorfulCardEnd: mixHex(palette.surfaceCard, palette.brandVivid, palette.colorfulCardBlend.end),
@@ -527,26 +529,20 @@ function createThemeColors(colors) {
     gradients: {
       accent: [colors.brandVivid, colors.accentGradientEnd],
       button: [colors.surfaceTint, colors.surfaceCard],
-      progress: [colors.statusIndigo, colors.brandDeep, colors.brandVivid],
+      progress: [colors.brandDeep, colors.brandPrimary, colors.brandVivid],
       colorfulCard: [colors.colorfulCardStart, colors.colorfulCardMiddle, colors.colorfulCardEnd],
       // DESIGN.md: a primary action is emerald or the approved emerald-to-teal gradient. It was
       // indigo-to-green, which DESIGN.md does not allow, so it now uses the accent stops.
       cta: [colors.brandVivid, colors.accentGradientEnd],
-      userBubble: [colors.brandPrimary, colors.brandVivid], // User message bubble gradient
-      // Background gradient for nutrition-context coach messages.
-      celebrationGlow: [colors.brandPale, colors.textPrimary, colors.brandBright],
-      workoutStats: [colors.statusIndigo, colors.brandPrimary, colors.brandVivid], // Workout stats gradient
       // Fades the screen behind the session sheet — follows the theme surface.
       workoutSessionOverlay: [
         colors.surfaceBaseAlpha95,
         colors.surfaceBaseAlpha85,
         colors.surfaceBaseAlpha70,
       ],
-      blueEmerald: [colors.statusInfo, colors.brandVivid], // Blue to emerald gradient
       overlayDark: ['transparent', colors.surfaceWashBrandDeep, colors.surfaceTint], // Dark overlay gradient
       // Camera scrim: sits over a live preview, so it darkens in every theme.
       cameraOverlay: [colors.scrimAlpha60, 'transparent', colors.scrimAlpha90],
-      landingBackground: [colors.surfaceBase, colors.surfaceBase, colors.surfaceBase], // Landing page background gradient
     },
   };
 }

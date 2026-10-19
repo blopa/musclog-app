@@ -160,7 +160,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
       <View className="gap-6 p-4">
         {/* ── Saved sensors ───────────────────────────── */}
         <View>
-          <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="mb-3 text-xs font-bold text-text-tertiary">
             {t('settings.bleDevices.savedSensors')}
           </Text>
 
@@ -316,7 +316,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
 
         {/* ── Recording settings ──────────────────────── */}
         <View>
-          <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="mb-3 text-xs font-bold text-text-tertiary">
             {t('settings.bleDevices.recordingSettings')}
           </Text>
           <ToggleInput
@@ -334,7 +334,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
 
         {/* ── Discover new sensors ────────────────────── */}
         <View>
-          <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="mb-3 text-xs font-bold text-text-tertiary">
             {t('settings.bleDevices.foundSensors')}
           </Text>
 

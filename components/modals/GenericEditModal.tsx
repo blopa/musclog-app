@@ -152,7 +152,6 @@ export function GenericEditModal({
       return {
         icon: Circle,
         iconColor: colorScheme.color,
-        iconBgColor: colorScheme.bg,
         title,
         description,
         onPress: () => onSelect(option.value),

@@ -280,7 +280,7 @@
       "aiCamera": {
         "title": "Cámara IA",
         "description": "Reconocimiento instantáneo y estimación de macros",
-        "badge": "NUEVO"
+        "badge": "Nuevo"
       },
       "scanBarcode": {
         "title": "Escanear Código de Barras",
@@ -468,7 +468,7 @@
       "uploadFromGallery": "Elegir de la galería",
       "barcodeTextSearchTitle": "Buscar código de barras",
       "barcodeTextSearchDescription": "Busca un alimento escribiendo el código de barras impreso en el envase.",
-      "barcodeTextSearchLabel": "CÓDIGO DE BARRAS",
+      "barcodeTextSearchLabel": "Código de barras",
       "barcodeTextSearchPlaceholder": "Introduce el número del código",
       "barcodeTextSearchSubmit": "Buscar alimento",
       "barcodeTextSearchRequired": "Introduce un código de barras",
@@ -481,9 +481,9 @@
     },
     "aiNutritionContext": {
       "title": "Añadir Contexto para la IA",
-      "describeYourMeal": "DESCRIBE TU COMIDA",
+      "describeYourMeal": "Describe tu comida",
       "placeholder": "ej. Este es un plato casero con aceite de oliva, unas 2 tazas de pasta...",
-      "quickTags": "ETIQUETAS RÁPIDAS",
+      "quickTags": "Etiquetas rápidas",
       "quickTagHighProtein": "Alta Proteína",
       "quickTagLowCarb": "Baja en Carbos",
       "quickTagLargeServing": "Porción Grande",

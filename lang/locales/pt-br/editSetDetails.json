@@ -2,9 +2,9 @@
   "editSetDetails": {
     "title": "Editar Detalhes da Série",
     "subtitle": "Modificar metas para {{setLabel}}",
-    "partialReps": "REPETIÇÕES PARCIAIS",
-    "cancel": "CANCELAR",
-    "saveChanges": "SALVAR ALTERAÇÕES",
+    "partialReps": "Repetições parciais",
+    "cancel": "Cancelar",
+    "saveChanges": "Salvar alterações",
     "repsInReserve": "Repetições em Reserva"
   }
 }

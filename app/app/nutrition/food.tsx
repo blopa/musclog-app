@@ -16,7 +16,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
@@ -62,8 +62,9 @@ import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
-import { TargetModeRow } from '@/components/weeklyReview/TargetModeRow';
+import { targetModeSummary } from '@/components/weeklyReview/targetModeLabel';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
+import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -183,7 +184,7 @@ const applyMealAction = async (
 
 export default function FoodScreen() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatInteger, locale: appLocale } = useFormatAppNumber();
   const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay, enableFastedDay } =
     useSettings();
@@ -600,8 +601,9 @@ export default function FoodScreen() {
   // Brand-new users stay on the global empty-diary onboarding card instead of the fasting-day
   // affordance; once there's any food history, empty selected days can offer fasting actions.
   const showTrackedDayContent = !hasNoFood;
-  // Food shows the review card when a week is waiting, and wherever the target line below is not
-  // drawn (empty and fasting days); otherwise that line is the one-tap way in.
+  // Food shows the review card when a week is waiting, and on days without a summary card (empty
+  // and fasting days); otherwise the way in is the summary card's menu, which also says where
+  // today's targets come from.
   const reviewStatus = useWeeklyReviewStatus();
   const showReviewCard =
     !!reviewStatus?.ready || !resolvedMacros || !showTrackedDayContent || isFastedDayView;
@@ -910,7 +912,6 @@ export default function FoodScreen() {
   const sendToPhoneMenuItem = (descriptionKey: string, onPress: () => void) => ({
     icon: QrCode,
     iconColor: theme.colors.status.purple,
-    iconBgColor: theme.colors.status.purple10,
     title: t('food.actions.sendToPhone'),
     description: t(descriptionKey),
     onPress,
@@ -920,7 +921,6 @@ export default function FoodScreen() {
     {
       icon: Edit,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('food.actions.edit'),
       description: t('food.actions.editDesc'),
       onPress: openEdit,
@@ -928,7 +928,6 @@ export default function FoodScreen() {
     {
       icon: Copy,
       iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
       title: t('food.actions.duplicate'),
       description: t('food.actions.duplicateDesc'),
       onPress: openDuplicate,
@@ -936,7 +935,6 @@ export default function FoodScreen() {
     {
       icon: ArrowRight,
       iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
       title: t('food.actions.move'),
       description: t('food.actions.moveDesc'),
       onPress: openMove,
@@ -944,7 +942,6 @@ export default function FoodScreen() {
     {
       icon: Scissors,
       iconColor: theme.colors.status.warning,
-      iconBgColor: theme.colors.status.warning10,
       title: t('food.actions.split'),
       description: t('food.actions.splitDesc'),
       onPress: openSplit,
@@ -952,7 +949,6 @@ export default function FoodScreen() {
     {
       icon: UtensilsCrossed,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('food.actions.createMeal'),
       description: t('food.actions.createMealDesc'),
       onPress: handleFoodCreateMeal,
@@ -965,7 +961,6 @@ export default function FoodScreen() {
     {
       icon: Save,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('food.mealGroup.saveForLater'),
       description: t('food.mealGroup.saveForLaterDesc'),
       onPress: () => {
@@ -980,7 +975,6 @@ export default function FoodScreen() {
     {
       icon: Trash2,
       iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
       title: t('food.actions.delete'),
       description: t('food.actions.deleteDesc'),
       onPress: openDeleteConfirm,
@@ -1356,7 +1350,6 @@ export default function FoodScreen() {
           {
             icon: Sparkles,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('food.actions.getMealInsights'),
             description: t('food.actions.getMealInsightsDesc'),
             onPress: handleGetMealInsights,
@@ -1366,7 +1359,6 @@ export default function FoodScreen() {
     {
       icon: UtensilsCrossed,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('food.actions.createMeal'),
       description: t('food.actions.createMealDesc'),
       onPress: handleCreateMealFromFood,
@@ -1374,7 +1366,6 @@ export default function FoodScreen() {
     {
       icon: Scale,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('food.actions.scaleMealPortion'),
       description: t('food.actions.scaleMealPortionDesc'),
       onPress: handleScaleMealPortion,
@@ -1384,7 +1375,6 @@ export default function FoodScreen() {
           {
             icon: GitMerge,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('food.actions.mergeDuplicates'),
             description: t('food.actions.mergeDuplicatesDesc'),
             onPress: handleMergeDuplicates,
@@ -1394,7 +1384,6 @@ export default function FoodScreen() {
     {
       icon: Copy,
       iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
       title: t('food.actions.copyToAnotherDay'),
       description: t('food.actions.copyToAnotherDayDesc'),
       onPress: handleCopyMealToAnotherDay,
@@ -1402,7 +1391,6 @@ export default function FoodScreen() {
     {
       icon: ArrowRight,
       iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
       title: t('food.actions.moveToAnotherDay'),
       description: t('food.actions.moveToAnotherDayDesc'),
       onPress: handleMoveMealToAnotherDay,
@@ -1410,7 +1398,6 @@ export default function FoodScreen() {
     {
       icon: Scissors,
       iconColor: theme.colors.status.warning,
-      iconBgColor: theme.colors.status.warning10,
       title: t('food.actions.splitMeal'),
       description: t('food.actions.splitMealDesc'),
       onPress: handleSplitMeal,
@@ -1419,7 +1406,6 @@ export default function FoodScreen() {
     {
       icon: Save,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('food.mealGroup.saveForLater'),
       description: t('food.mealGroup.saveForLaterDesc'),
       onPress: () => {
@@ -1438,7 +1424,6 @@ export default function FoodScreen() {
     {
       icon: Trash2,
       iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
       title: t('food.actions.deleteAll'),
       description: t('food.actions.deleteAllDesc'),
       onPress: handleDeleteAllMeal,
@@ -1451,7 +1436,6 @@ export default function FoodScreen() {
           {
             icon: Sparkles,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('food.actions.getMealInsights'),
             description: t('food.actions.getMealInsightsDesc'),
             onPress: handleMealGroupGetInsights,
@@ -1461,7 +1445,6 @@ export default function FoodScreen() {
     {
       icon: Scale,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('food.actions.scaleMealPortion'),
       description: t('food.actions.scaleMealPortionDesc'),
       onPress: handleMealGroupScalePortion,
@@ -1469,7 +1452,6 @@ export default function FoodScreen() {
     {
       icon: Copy,
       iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
       title: t('food.actions.copyToAnotherDay'),
       description: t('food.actions.copyToAnotherDayDesc'),
       onPress: handleMealGroupCopy,
@@ -1477,7 +1459,6 @@ export default function FoodScreen() {
     {
       icon: ArrowRight,
       iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
       title: t('food.actions.moveToAnotherDay'),
       description: t('food.actions.moveToAnotherDayDesc'),
       onPress: handleMealGroupMove,
@@ -1485,7 +1466,6 @@ export default function FoodScreen() {
     {
       icon: Scissors,
       iconColor: theme.colors.status.warning,
-      iconBgColor: theme.colors.status.warning10,
       title: t('food.actions.splitMeal'),
       description: t('food.actions.splitMealDesc'),
       onPress: handleMealGroupSplit,
@@ -1494,7 +1474,6 @@ export default function FoodScreen() {
     {
       icon: Save,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('food.mealGroup.saveForLater'),
       description: t('food.mealGroup.saveForLaterDesc'),
       onPress: () => {
@@ -1512,7 +1491,6 @@ export default function FoodScreen() {
     {
       icon: Trash2,
       iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
       title: t('food.actions.deleteAll'),
       description: t('food.actions.deleteAllDesc'),
       titleColor: theme.colors.status.error,
@@ -1624,26 +1602,6 @@ export default function FoodScreen() {
               {!isScreenLoading && showTrackedDayContent && !isFastedDayView ? (
                 <AnimatedContent key="tracking" style={{ gap: theme.spacing.gap['xl'] }}>
                   <>
-                    {resolvedMacros && !showReviewCard ? (
-                      <TargetModeRow
-                        mode={resolvedMacros.mode}
-                        effectiveFrom={resolvedMacros.effectiveFrom}
-                      />
-                    ) : null}
-                    {/* Daily Summary Card */}
-                    {nutritionGoal?.isDynamic ? (
-                      <View
-                        className="mb-1 self-start rounded-full px-2 py-0.5"
-                        style={{ backgroundColor: theme.colors.status.brandVivid20 }}
-                      >
-                        <Text
-                          className="text-xs font-semibold"
-                          style={{ color: theme.colors.status.brandBright }}
-                        >
-                          {t('nutritionGoals.dynamicBadge')}
-                        </Text>
-                      </View>
-                    ) : null}
                     <DailySummaryCard
                       calories={{
                         consumed: caloriesData.consumed,
@@ -1677,6 +1635,8 @@ export default function FoodScreen() {
                       menuButton={
                         <MenuButton
                           onPress={screenModals.dailySummaryMenu.open}
+                          accessibilityLabel={t('dailySummaryCard.dailySummary')}
+                          testID="daily-summary-menu"
                           size="sm"
                           color={theme.colors.text.primary}
                         />
@@ -1960,6 +1920,19 @@ export default function FoodScreen() {
           showEditCurrentGoal={currentNutritionGoal != null}
           onCopyDayFromHistoryPress={screenModals.copyDay.open}
           onSendDayToPhonePress={logs.length > 0 ? handleSendDayToPhone : undefined}
+          weeklyReview={
+            resolvedMacros
+              ? {
+                  onPress: () => router.push(WEEKLY_REVIEW_ROUTE),
+                  targetsSummary: targetModeSummary(
+                    t,
+                    i18n.resolvedLanguage ?? i18n.language,
+                    resolvedMacros.mode,
+                    resolvedMacros.effectiveFrom
+                  ),
+                }
+              : undefined
+          }
         />
 
         <CopyDayFromHistoryModal

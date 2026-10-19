@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -93,13 +92,11 @@ export function CaloriesRemainingCard({
           className="mb-6 h-3 overflow-hidden rounded-full"
           style={{ backgroundColor: theme.colors.background.raised50 }}
         >
-          <LinearGradient
-            colors={theme.colors.gradients.progress}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+          <View
             style={{
               height: '100%',
               borderRadius: theme.borderRadius.full,
+              backgroundColor: theme.colors.accent.primary,
               width: `${calories.percentage}%`,
             }}
           />

@@ -73,9 +73,9 @@ export function StatStrip({ className, items, palette }: StatStripProps) {
         the row still reads across.
       */}
       <Text
-        className="mt-1 text-center text-[10px] font-semibold uppercase"
+        className="mt-1 text-center text-xs font-semibold"
         numberOfLines={2}
-        style={{ color: palette.label, letterSpacing: 0.7 }}
+        style={{ color: palette.label }}
       >
         {item.label}
       </Text>

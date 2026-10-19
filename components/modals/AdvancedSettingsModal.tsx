@@ -5,7 +5,6 @@ import {
   AlignLeft,
   BrainCircuit,
   Bug,
-  ChevronRight,
   Coffee,
   Droplets,
   Dumbbell,
@@ -14,9 +13,11 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import { SettingsCard } from '@/components/cards/SettingsCard';
+import { ListGroup } from '@/components/theme/ListGroup';
+import { SectionLabel } from '@/components/theme/SectionLabel';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -362,36 +363,25 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Reminders Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.advancedSettings.reminders')}
-          </Text>
+          </SectionLabel>
           <ToggleInput items={dailyMoodPromptItems} />
-          <SettingsCard
-            icon={<Pill size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-            iconContainerStyle={{
-              width: theme.size['10'],
-              height: theme.size['10'],
-              borderRadius: theme.borderRadius.sm,
-              backgroundColor: theme.colors.accent.primary20,
-            }}
-            title={t('settings.advancedSettings.manageSupplements')}
-            subtitle={t('settings.advancedSettings.manageSupplementsSubtitle')}
-            onPress={() => setShowManageSupplementsModal(true)}
-            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-          />
+          <ListGroup>
+            <SettingsCard
+              icon={<Pill size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title={t('settings.advancedSettings.manageSupplements')}
+              subtitle={t('settings.advancedSettings.manageSupplementsSubtitle')}
+              onPress={() => setShowManageSupplementsModal(true)}
+            />
+          </ListGroup>
         </View>
 
         {/* Privacy & Diagnostics Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.advancedSettings.privacyDiagnostics')}
-          </Text>
+          </SectionLabel>
           <ToggleInput items={bugReportItems} />
           <View className="mt-4" />
           <ToggleInput items={behaviorItems} />
@@ -399,12 +389,9 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
 
         {/* Workouts Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.advancedSettings.workouts')}
-          </Text>
+          </SectionLabel>
           <ToggleInput
             items={[
               {
@@ -435,23 +422,15 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
 
         {/* Charts Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
-            {t('settings.advancedSettings.charts')}
-          </Text>
+          <SectionLabel className="mb-2 px-1">{t('settings.advancedSettings.charts')}</SectionLabel>
           <ToggleInput items={chartTooltipPositionItems} />
         </View>
 
         {/* Nutrition Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.advancedSettings.nutrition')}
-          </Text>
+          </SectionLabel>
           <ToggleInput items={nutritionItems} />
         </View>
 

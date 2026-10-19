@@ -520,7 +520,7 @@
         "note": "Columna de notas (opcional)"
       },
       "dateOrder": {
-        "iso": "AAAA-MM-DD",
+        "iso": "Aaaa-MM-DD",
         "dmy": "Día/mes/año",
         "mdy": "Mes/día/año"
       },

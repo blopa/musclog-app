@@ -61,7 +61,7 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
         <View className="mb-1 flex-row items-center justify-between">
           <Text className="text-xs font-semibold text-text-secondary">{dateRange}</Text>
           <View className="bg-surface-variant rounded-full px-2 py-0.5">
-            <Text className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+            <Text className="text-xs font-bold text-text-secondary">
               {t(`exerciseGoals.goalTypes.${goal.goalType}`)}
             </Text>
           </View>

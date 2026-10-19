@@ -52,7 +52,7 @@
     "unknownFood": "Desconocido",
     "generateAI": {
       "title": "Generar Comidas con IA",
-      "describeLabel": "DESCRIBE TUS PREFERENCIAS",
+      "describeLabel": "Describe tus preferencias",
       "preferencesLabel": "Preferencias",
       "placeholder": "ej. Comidas ricas en proteínas para ganar músculo, prefiero pollo y arroz, evitar lácteos...",
       "applyLabel": "Generar Comidas",

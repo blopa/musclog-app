@@ -199,7 +199,7 @@ export default function EditWorkoutMetadataModal({
             className="items-center justify-center rounded-2xl p-6"
             style={{ backgroundColor: theme.colors.background.ink5 }}
           >
-            <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+            <Text className="text-xs font-bold text-text-tertiary">
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="mt-1 flex-row items-baseline gap-1">
@@ -258,7 +258,7 @@ export default function EditWorkoutMetadataModal({
             <>
               <SectionDivider />
               <View>
-                <Text className="mb-4 text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                <Text className="mb-4 text-xs font-bold text-text-tertiary">
                   {t('workoutDetail.reorderTitle')}
                 </Text>
                 <OptionsMultiSelector

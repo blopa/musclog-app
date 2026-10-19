@@ -184,8 +184,6 @@ export default function CreateWorkoutModal({
               fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}
@@ -357,8 +355,6 @@ export default function CreateWorkoutModal({
               fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}
@@ -412,8 +408,6 @@ export default function CreateWorkoutModal({
               fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}
@@ -504,8 +498,6 @@ export default function CreateWorkoutModal({
               fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}

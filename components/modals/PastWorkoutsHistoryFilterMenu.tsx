@@ -238,8 +238,6 @@ export function PastWorkoutsHistoryFilterMenu({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}
           >
@@ -261,8 +259,6 @@ export function PastWorkoutsHistoryFilterMenu({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}
           >
@@ -283,8 +279,6 @@ export function PastWorkoutsHistoryFilterMenu({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}
           >
@@ -343,8 +337,6 @@ export function PastWorkoutsHistoryFilterMenu({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
               }}
             >
               {t('pastWorkoutHistory.filters.minDuration') || 'MIN. DURATION'}

@@ -134,7 +134,6 @@ export default function ProgressScreen() {
         router.navigate('/app/settings');
       },
       iconColor: theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
     },
     {
       title: t('progress.manageNutrition'),
@@ -145,7 +144,6 @@ export default function ProgressScreen() {
         setAdvancedSettingsVisible(true);
       },
       iconColor: theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
     },
     {
       title: t('progress.listMeasurements'),
@@ -155,7 +153,6 @@ export default function ProgressScreen() {
         router.navigate('/app/profile');
       },
       iconColor: theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
     },
     {
       title: t('progress.syncHealthConnect'),
@@ -163,7 +160,6 @@ export default function ProgressScreen() {
       icon: RefreshCw,
       onPress: isSyncing ? () => {} : handleSync,
       iconColor: isSyncing ? theme.colors.text.secondary : theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
     },
   ];
 

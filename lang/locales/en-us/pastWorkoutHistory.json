@@ -19,8 +19,8 @@
     },
     "filters": {
       "title": "Filter Workouts",
-      "workoutType": "WORKOUT TYPE",
-      "minDuration": "MIN. DURATION",
+      "workoutType": "Workout type",
+      "minDuration": "Min. duration",
       "reset": "Reset",
       "applyFilters": "Apply Filters",
       "durationFormats": {
@@ -37,13 +37,13 @@
         "yoga": "Yoga"
       },
       "dateRange": {
-        "title": "DATE RANGE",
+        "title": "Date range",
         "30days": "Last 30 Days",
         "90days": "Last 90 Days",
         "custom": "Custom"
       },
       "muscleGroups": {
-        "title": "MUSCLE GROUP (MULTI-SELECT)",
+        "title": "Muscle group (multi-select)",
         "chest": "Chest",
         "back": "Back",
         "legs": "Legs",

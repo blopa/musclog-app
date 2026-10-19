@@ -61,8 +61,6 @@ export function MealInsightsModal({
                 color: theme.colors.text.secondary,
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: '500',
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
               }}
             >
               {t('food.mealInsights.contextInputLabel')}

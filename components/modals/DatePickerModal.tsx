@@ -169,7 +169,7 @@ export function DatePickerModal({
         >
           {/* Title Section */}
           <View className="px-4 pb-6 pt-2">
-            <Text className="mb-1 text-sm font-semibold uppercase tracking-wider text-accent-primary">
+            <Text className="mb-1 text-sm font-semibold text-accent-primary">
               {t('datePicker.selectDate')}
             </Text>
             <Text
@@ -211,7 +211,7 @@ export function DatePickerModal({
               <View className="mb-4 flex-row">
                 {weekDayLetters.map((day, index) => (
                   <View key={index} className="flex-1">
-                    <Text className="text-center text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                    <Text className="text-center text-xs font-semibold text-text-secondary">
                       {day}
                     </Text>
                   </View>
@@ -381,7 +381,7 @@ export function DatePickerModal({
 
               {/* Month Grid */}
               <View className="mb-6">
-                <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                <Text className="mb-3 text-sm font-semibold text-text-secondary">
                   {t('datePicker.month')}
                 </Text>
                 <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
@@ -421,7 +421,7 @@ export function DatePickerModal({
 
               {/* Year List */}
               <View>
-                <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                <Text className="mb-3 text-sm font-semibold text-text-secondary">
                   {t('datePicker.year')}
                 </Text>
                 <ScrollView

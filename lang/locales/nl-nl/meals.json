@@ -52,7 +52,7 @@
     "unknownFood": "Onbekend",
     "generateAI": {
       "title": "Maaltijden genereren met AI",
-      "describeLabel": "BESCHRIJF JE VOORKEUREN",
+      "describeLabel": "Beschrijf je voorkeuren",
       "preferencesLabel": "Voorkeuren",
       "placeholder": "bijv. Eiwitrijke maaltijden voor spieropbouw, ik heb voorkeur voor kip en rijst, vermijd zuivel...",
       "applyLabel": "Maaltijden genereren",

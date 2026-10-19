@@ -32,7 +32,7 @@
     },
     "exercises": "{{count}} Ejercicios",
     "workoutSequence": "Secuencia de Entrenamiento",
-    "skipped": "OMITIDO",
+    "skipped": "Omitido",
     "startFromExercise": {
       "title": "Iniciar desde Ejercicio",
       "message": "¿Quieres iniciar el entrenamiento desde {{exerciseName}}?",

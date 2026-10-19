@@ -98,7 +98,7 @@ function StepperField({
   return (
     <View className="flex-1 items-center gap-2 rounded-2xl border border-border-light bg-bg-card p-3">
       <View className="flex-row items-center gap-1">
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="text-xs font-bold text-text-secondary">
           {label}
           {unit ? <Text className="font-medium normal-case">{` (${unit})`}</Text> : null}
         </Text>

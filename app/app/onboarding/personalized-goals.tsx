@@ -107,10 +107,7 @@ export default function PersonalizedGoalsScreen() {
 
             {/* Fitness Focus */}
             <View className="mb-8 gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickGoals.fitnessFocus').toUpperCase()}
               </Text>
 
@@ -178,7 +175,7 @@ export default function PersonalizedGoalsScreen() {
             <View className="gap-3">
               <View className="flex-row items-center gap-1">
                 <Text
-                  className="text-xs font-semibold tracking-widest"
+                  className="text-xs font-semibold"
                   style={{ color: theme.colors.text.tertiary }}
                 >
                   {t('onboarding.quickGoals.weightGoal').toUpperCase()}

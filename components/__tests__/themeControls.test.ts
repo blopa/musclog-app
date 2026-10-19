@@ -56,7 +56,6 @@ const THEMED_FILES = [
   'components/modals/SmartCameraShell.tsx',
   'components/modals/WorkoutSettingsModal.tsx',
   'components/weeklyReview/NutritionReviewSection.tsx',
-  'components/weeklyReview/TargetModeRow.tsx',
   'components/weeklyReview/TrainingReviewSection.tsx',
   'components/workout/ExerciseAliasesSection.tsx',
   'components/workout/ExerciseRestrictionSection.tsx',
@@ -76,7 +75,8 @@ const RAW_TEXT_INPUT = /import\s*\{[^}]*\bTextInput\b[^}]*\}\s*from\s*'react-nat
 describe('theme controls', () => {
   it('pairs segmented labels with the ink for their actual background', () => {
     const source = code('components/theme/SegmentedControl.tsx');
-    expect(source).toContain('colors={theme.colors.gradients.cta}');
+    expect(source).toContain('backgroundColor: theme.colors.accent.primary');
+    expect(source).not.toContain('LinearGradient');
     expect(source).toContain('font-bold text-text-on-accent');
     expect(source).toContain('font-bold text-text-secondary');
     expect(source).not.toContain('text-text-tertiary');
@@ -86,7 +86,9 @@ describe('theme controls', () => {
     // `elevated` and `outline` drew the selected segment as `bg-card` on the `bg-cardElevated`
     // track, which was barely distinguishable from the unselected options.
     const source = code('components/theme/SegmentedControl.tsx');
-    expect(source).toMatch(/\{isSelected \? \(\s*<LinearGradient/);
+    expect(source).toMatch(
+      /\{isSelected \? \(\s*<View\s+style=\{\{[^}]*backgroundColor: theme.colors.accent.primary/
+    );
     expect(source).not.toContain('bg-bg-card ');
     expect(source).not.toMatch(/variant === 'gradient' && isSelected/);
   });

@@ -141,8 +141,6 @@ export function BodyMetricsHistoryFilterMenu({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}
           >
@@ -163,8 +161,6 @@ export function BodyMetricsHistoryFilterMenu({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}
           >

@@ -52,7 +52,7 @@
     "unknownFood": "Unknown",
     "generateAI": {
       "title": "Generate Meals with AI",
-      "describeLabel": "DESCRIBE YOUR PREFERENCES",
+      "describeLabel": "Describe your preferences",
       "preferencesLabel": "Preferences",
       "placeholder": "e.g. High protein meals for muscle building, I prefer chicken and rice, avoid dairy...",
       "applyLabel": "Generate Meals",

@@ -26,7 +26,7 @@ export function OpticalFoodSharePreview({ summary }: OpticalFoodSharePreviewProp
       </View>
 
       <View className="gap-1">
-        <Text className="text-xs uppercase text-text-tertiary">
+        <Text className="text-xs text-text-tertiary">
           {t(
             summary.nutritionBasis === 'per_serving'
               ? 'opticalTransfer.share.foodPerServing'

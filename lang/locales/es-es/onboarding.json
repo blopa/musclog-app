@@ -265,14 +265,14 @@
       "missingData": "Por favor, completa tus detalles de fitness primero para que podamos calcular tu plan."
     },
     "personalizedPreferences": {
-      "nameLabel": "¿CÓMO DEBERÍAMOS LLAMARTE?",
+      "nameLabel": "¿Cómo deberíamos llamarte?",
       "namePlaceholder": "Ingresa tu nombre (opcional)"
     },
     "personalizedExperience": {
       "title": "¿Cuál es tu experiencia?",
       "subtitle": "Esto nos ayuda a adaptar las sugerencias de entrenamiento a tu nivel.",
-      "experienceLabel": "EXPERIENCIA DE ENTRENAMIENTO",
-      "activityLevelLabel": "NIVEL DE ACTIVIDAD",
+      "experienceLabel": "Experiencia de entrenamiento",
+      "activityLevelLabel": "Nivel de actividad",
       "beginner": "Principiante",
       "beginnerDesc": "Menos de 1 año de entrenamiento",
       "intermediate": "Intermedio",
@@ -304,7 +304,7 @@
     "trainingSetup": {
       "title": "¿Cómo entrenas?",
       "subtitle": "Unas respuestas rápidas preparan tu gimnasio y tu primer entrenamiento.",
-      "locationLabel": "DÓNDE ENTRENAS",
+      "locationLabel": "Dónde entrenas",
       "location": {
         "gym": "Gimnasio",
         "gymDesc": "Barras, máquinas y poleas",
@@ -313,15 +313,15 @@
         "minimal": "Mínimo",
         "minimalDesc": "Solo tu cuerpo y quizá una banda"
       },
-      "experienceLabel": "EXPERIENCIA",
+      "experienceLabel": "Experiencia",
       "experience": {
         "beginner": "Principiante",
         "intermediate": "Intermedio",
         "advanced": "Avanzado"
       },
-      "daysLabel": "DÍAS POR SEMANA",
+      "daysLabel": "Días por semana",
       "daysMax": "{{count}}+",
-      "helpLabel": "SUGERENCIAS DE CARGA",
+      "helpLabel": "Sugerencias de carga",
       "help": {
         "suggest": "Sugerir mis pesos",
         "suggestDesc": "Los objetivos suben cuando completas tus repeticiones y la app te explica por qué",

@@ -1,44 +1,17 @@
-import { ChevronRight } from 'lucide-react-native';
-import { ComponentType } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import type { ComponentType } from 'react';
 
-import { useTheme } from '@/hooks/useTheme';
-import { addOpacityToHex } from '@/theme';
+import { ListRow } from '@/components/theme/ListRow';
 
 type ManagementItemProps = {
   title: string;
   description: string;
   icon: ComponentType<{ size: number; color: string }>;
-  iconColor: string;
   onPress?: () => void;
 };
 
-export function ManagementItem({
-  title,
-  description,
-  icon: Icon,
-  iconColor,
-  onPress,
-}: ManagementItemProps) {
-  const theme = useTheme();
+/** One entry of the Profile "Management" list. A row of a `ListGroup`. */
+export function ManagementItem({ title, description, icon, onPress }: ManagementItemProps) {
   return (
-    <Pressable
-      className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
-      onPress={onPress}
-    >
-      <View
-        className="h-12 w-12 items-center justify-center rounded-xl"
-        style={{
-          backgroundColor: addOpacityToHex(iconColor, theme.colors.opacity.subtle),
-        }}
-      >
-        <Icon size={theme.iconSize.md} color={iconColor} />
-      </View>
-      <View className="flex-1">
-        <Text className="text-lg font-semibold text-text-primary">{title}</Text>
-        <Text className="mt-0.5 text-sm text-text-secondary">{description}</Text>
-      </View>
-      <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
-    </Pressable>
+    <ListRow variant="grouped" icon={icon} title={title} subtitle={description} onPress={onPress} />
   );
 }

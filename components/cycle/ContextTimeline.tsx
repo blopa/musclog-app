@@ -23,7 +23,7 @@ export function ContextTimeline({ contexts, onEdit }: ContextTimelineProps) {
 
   return (
     <View className="mt-6 gap-3">
-      <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+      <Text className="text-xs font-bold text-text-tertiary">
         {t('cycle.context.timelineTitle')}
       </Text>
       {[...contexts]

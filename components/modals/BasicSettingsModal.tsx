@@ -17,6 +17,7 @@ import { Text, View } from 'react-native';
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { Button } from '@/components/theme/Button';
+import { ListGroup } from '@/components/theme/ListGroup';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
@@ -73,7 +74,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
           {
             icon: Search,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('settings.basicSettings.foodSearchBoth'),
             description: t('settings.basicSettings.foodSearchBothDescription'),
             onPress: () => handleFoodSearchSourceChange('both'),
@@ -83,7 +83,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     {
       icon: Globe,
       iconColor: theme.colors.status.info,
-      iconBgColor: theme.colors.status.info10,
       title: t('settings.basicSettings.foodSearchOpenFoodFacts'),
       description: t('settings.basicSettings.foodSearchOpenFoodFactsDescription'),
       onPress: () => handleFoodSearchSourceChange('openfood'),
@@ -93,7 +92,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
           {
             icon: Leaf,
             iconColor: theme.colors.status.success,
-            iconBgColor: theme.colors.status.brandVivid10,
             title: t('settings.basicSettings.foodSearchUSDA'),
             description: t('settings.basicSettings.foodSearchUSDADescription'),
             onPress: () => handleFoodSearchSourceChange('usda'),
@@ -103,7 +101,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     {
       icon: Dumbbell,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
       title: t('settings.basicSettings.foodSearchMusclog'),
       description: t('settings.basicSettings.foodSearchMusclogDescription'),
       onPress: () => handleFoodSearchSourceChange('musclog'),
@@ -111,7 +108,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     {
       icon: Scale,
       iconColor: theme.colors.text.secondary,
-      iconBgColor: theme.colors.background.card,
       title: t('settings.basicSettings.foodSearchNone'),
       description: t('settings.basicSettings.foodSearchNoneDescription'),
       onPress: () => handleFoodSearchSourceChange('none'),
@@ -136,8 +132,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
 
   const languageMenuItems: BottomPopUpMenuItem[] = AVAILABLE_LANGUAGES.map((lang) => ({
     icon: Languages,
-    iconColor: theme.colors.accent.primary,
-    iconBgColor: theme.colors.accent.primary10,
+    selected: lang === (language ?? EN_US),
     title: languageLabels[lang] ?? lang,
     description: lang,
     onPress: () => {
@@ -243,23 +238,25 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
           <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.basicSettings.localization')}
           </Text>
-          <SettingsCard
-            title={t('settings.basicSettings.language')}
-            subtitle={t('settings.basicSettings.languageSubtitle')}
-            onPress={() => setLanguageMenuVisible(true)}
-            icon={<Languages size={theme.iconSize.xl} color={theme.colors.text.primary} />}
-            rightIcon={
-              <View className="flex-row items-center gap-2">
-                <Text
-                  className="text-sm font-medium"
-                  style={{ color: theme.colors.accent.primary }}
-                >
-                  {currentLanguageLabel}
-                </Text>
-                <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-              </View>
-            }
-          />
+          <ListGroup>
+            <SettingsCard
+              title={t('settings.basicSettings.language')}
+              subtitle={t('settings.basicSettings.languageSubtitle')}
+              onPress={() => setLanguageMenuVisible(true)}
+              icon={<Languages size={theme.iconSize.xl} color={theme.colors.text.primary} />}
+              rightIcon={
+                <View className="flex-row items-center gap-2">
+                  <Text
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.accent.primary }}
+                  >
+                    {currentLanguageLabel}
+                  </Text>
+                  <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                </View>
+              }
+            />
+          </ListGroup>
         </View>
 
         {/* Integrations Section */}

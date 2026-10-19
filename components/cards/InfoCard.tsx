@@ -119,10 +119,7 @@ export function InfoCard({
           ) : (
             <>
               <View className="flex-row items-center justify-between">
-                <Text
-                  className="font-bold uppercase tracking-wider"
-                  style={{ color: accentColor, fontSize }}
-                >
+                <Text className="font-bold" style={{ color: accentColor, fontSize }}>
                   {label}
                 </Text>
                 {onDismiss ? (

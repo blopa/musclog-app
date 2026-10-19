@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { X } from 'lucide-react-native';
-import { createElement, ReactNode, useCallback, useState } from 'react';
+import { createElement, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -15,11 +15,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
+import { ListGroup } from '@/components/theme/ListGroup';
+import { ListRow } from '@/components/theme/ListRow';
 import { Modal } from '@/components/theme/Modal';
 import { type NavItemKey, type NavItemKeyList } from '@/constants/settings';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
-import type { Theme } from '@/theme';
 import { AvatarColor } from '@/types/AvatarColor';
 import { AvatarIcon } from '@/types/AvatarIcon';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
@@ -59,42 +60,11 @@ const USER_MENU_ORDER = [
   'settings',
 ] as const satisfies NavItemKeyList;
 
-/** Icon tint per destination — this menu's own styling, unlike the icon itself. */
-const MENU_ICON_COLOR: Record<NavItemKey, (theme: Theme) => string> = {
-  profile: (theme) => theme.colors.accent.primary,
-  progress: (theme) => theme.colors.accent.secondary,
-  cycle: (theme) => theme.colors.status.purple40,
-  workouts: (theme) => theme.colors.accent.primary,
-  food: (theme) => theme.colors.accent.secondary,
-  checkin: (theme) => theme.colors.accent.secondary,
-  notes: (theme) => theme.colors.accent.secondary,
-  coach: (theme) => theme.colors.text.secondary,
-  settings: (theme) => theme.colors.text.secondary,
-};
-
-type MenuItemProps = {
-  icon: ReactNode;
-  label: string;
-  onPress: () => void;
-  isLoading?: boolean;
-};
-
-function MenuItem({ icon, label, onPress, isLoading }: MenuItemProps) {
+/** The coach carries an unread badge, so it draws its own icon rather than the plain glyph. */
+function CoachMenuIcon({ size, color }: { size: number; color: string }) {
   const theme = useTheme();
 
-  return (
-    <Pressable
-      className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
-      onPress={onPress}
-      disabled={isLoading}
-    >
-      <View className="bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full">
-        {icon}
-      </View>
-      <Text className="flex-1 text-lg font-semibold text-text-primary">{label}</Text>
-      {isLoading ? <ActivityIndicator size="small" color={theme.colors.accent.primary} /> : null}
-    </Pressable>
-  );
+  return <CoachUnreadBadgeIcon color={color} size={size} strokeWidth={theme.borderWidth.medium} />;
 }
 
 export function UserMenuModal({
@@ -115,6 +85,8 @@ export function UserMenuModal({
 
   const isInNav = (item: string) =>
     rawSlots[1] === item || rawSlots[2] === item || rawSlots[3] === item;
+
+  const spinner = <ActivityIndicator size="small" color={theme.colors.accent.primary} />;
 
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
@@ -161,18 +133,7 @@ export function UserMenuModal({
       return {
         item,
         label: t(menuLabelKey),
-        // The coach carries an unread badge, so it draws its own icon rather than the plain
-        // lucide glyph every other destination uses.
-        icon:
-          item === 'coach' ? (
-            <CoachUnreadBadgeIcon
-              color={theme.colors.text.secondary}
-              size={theme.iconSize.md}
-              strokeWidth={theme.borderWidth.medium}
-            />
-          ) : (
-            <Icon size={theme.iconSize.md} color={MENU_ICON_COLOR[item](theme)} />
-          ),
+        icon: item === 'coach' ? CoachMenuIcon : Icon,
         onPress: () => navigateAndClose(item, navigate),
       };
     })
@@ -256,33 +217,33 @@ export function UserMenuModal({
             </View>
 
             {/* Menu Items */}
-            <View className="gap-3 p-6">
-              {menuItems.map(({ item, label, icon, onPress }) => (
-                <MenuItem
-                  key={item}
-                  icon={icon}
-                  label={label}
-                  isLoading={loadingItem === item}
-                  onPress={onPress}
-                />
-              ))}
+            <View className="p-6">
+              <ListGroup>
+                {menuItems.map(({ item, label, icon, onPress }) => (
+                  <ListRow
+                    key={item}
+                    variant="grouped"
+                    icon={icon}
+                    title={label}
+                    trailing={loadingItem === item ? spinner : null}
+                    disabled={loadingItem === item}
+                    onPress={onPress}
+                  />
+                ))}
 
-              {onDebugMenuPress ? (
-                <Pressable
-                  className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
-                  disabled={loadingItem === 'debug'}
-                  onPress={() => {
-                    navigateAndClose('debug', onDebugMenuPress);
-                  }}
-                >
-                  <Text className="flex-1 text-lg font-semibold text-text-primary">
-                    {t('userMenu.debugPage')}
-                  </Text>
-                  {loadingItem === 'debug' ? (
-                    <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                  ) : null}
-                </Pressable>
-              ) : null}
+                {onDebugMenuPress ? (
+                  <ListRow
+                    key="debug"
+                    variant="grouped"
+                    title={t('userMenu.debugPage')}
+                    trailing={loadingItem === 'debug' ? spinner : null}
+                    disabled={loadingItem === 'debug'}
+                    onPress={() => {
+                      navigateAndClose('debug', onDebugMenuPress);
+                    }}
+                  />
+                ) : null}
+              </ListGroup>
             </View>
 
             {/* Top safe area spacing */}

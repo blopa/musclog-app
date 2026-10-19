@@ -32,7 +32,7 @@
     },
     "exercises": "{{count}} Exercícios",
     "workoutSequence": "Sequência do Treino",
-    "skipped": "PULADO",
+    "skipped": "Pulado",
     "startFromExercise": {
       "title": "Iniciar do Exercício",
       "message": "Você quer iniciar o treino a partir de {{exerciseName}}?",

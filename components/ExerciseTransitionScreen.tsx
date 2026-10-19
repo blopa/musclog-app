@@ -52,7 +52,7 @@ export function ExerciseTransitionScreen({
           {totalTime}
         </Text>
         <Text
-          className="mt-1.5 text-xs font-semibold uppercase tracking-widest"
+          className="mt-1.5 text-xs font-semibold"
           style={{ color: theme.colors.accent.primary }}
         >
           {t('exerciseTransition.totalTime')}
@@ -91,10 +91,7 @@ export function ExerciseTransitionScreen({
         {/* Up Next Divider */}
         <View className="mt-2 flex-row items-center gap-4">
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
-          <Text
-            className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
             {t('exerciseTransition.upNext')}
           </Text>
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
@@ -135,7 +132,7 @@ export function ExerciseTransitionScreen({
                   {nextExercise.name}
                 </Text>
                 <Text
-                  className="text-sm font-semibold uppercase tracking-wide"
+                  className="text-sm font-semibold"
                   style={{
                     color: theme.colors.accent.primary,
                     textShadowColor: theme.colors.overlay.scrim60,
@@ -159,7 +156,7 @@ export function ExerciseTransitionScreen({
               >
                 <View className="flex flex-col">
                   <Text
-                    className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
+                    className="mb-1 text-xs font-semibold"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     {t('exerciseTransition.target')}
@@ -203,7 +200,7 @@ export function ExerciseTransitionScreen({
                 </View>
                 <View className="flex flex-col items-end">
                   <Text
-                    className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
+                    className="mb-1 text-xs font-semibold"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     {t('exerciseTransition.rest')}
@@ -225,7 +222,7 @@ export function ExerciseTransitionScreen({
               {/* Equipment */}
               <View className="flex flex-col gap-2">
                 <Text
-                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  className="text-xs font-semibold"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   {t('exerciseTransition.equipment')}

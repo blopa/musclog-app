@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Apple, Dumbbell, Heart, Scale, Shield } from 'lucide-react-native';
 import { useWindowDimensions, View } from 'react-native';
 
@@ -50,11 +49,9 @@ export function HealthConnectIllustration() {
           height: illustrationSize,
         }}
       >
-        <LinearGradient
-          colors={[theme.colors.status.indigo, theme.colors.status.brandBright]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+        <View
           style={{
+            backgroundColor: theme.colors.accent.primary,
             width: '100%',
             height: '100%',
             borderRadius: theme.borderRadius['3xl'],
@@ -69,7 +66,7 @@ export function HealthConnectIllustration() {
             color={theme.colors.text.primary}
             strokeWidth={theme.strokeWidth.medium}
           />
-        </LinearGradient>
+        </View>
       </View>
 
       {/* Floating Icons - Simplified without background cards */}

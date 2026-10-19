@@ -231,14 +231,14 @@
       "continue": "Continue"
     },
     "personalizedPreferences": {
-      "nameLabel": "WHAT SHOULD WE CALL YOU?",
+      "nameLabel": "What should we call you?",
       "namePlaceholder": "Enter your name (optional)"
     },
     "personalizedExperience": {
       "title": "What's your experience?",
       "subtitle": "This helps us tailor workout suggestions to your level.",
-      "experienceLabel": "TRAINING EXPERIENCE",
-      "activityLevelLabel": "ACTIVITY LEVEL",
+      "experienceLabel": "Training experience",
+      "activityLevelLabel": "Activity level",
       "beginner": "Beginner",
       "beginnerDesc": "Less than 1 year of training",
       "intermediate": "Intermediate",
@@ -304,7 +304,7 @@
     "trainingSetup": {
       "title": "How do you train?",
       "subtitle": "A few quick answers set up your gym and your first workout.",
-      "locationLabel": "WHERE YOU TRAIN",
+      "locationLabel": "Where you train",
       "location": {
         "gym": "Gym",
         "gymDesc": "Barbells, machines and cables",
@@ -313,15 +313,15 @@
         "minimal": "Minimal",
         "minimalDesc": "Just your body and maybe a band"
       },
-      "experienceLabel": "EXPERIENCE",
+      "experienceLabel": "Experience",
       "experience": {
         "beginner": "Beginner",
         "intermediate": "Intermediate",
         "advanced": "Advanced"
       },
-      "daysLabel": "DAYS PER WEEK",
+      "daysLabel": "Days per week",
       "daysMax": "{{count}}+",
-      "helpLabel": "LOAD SUGGESTIONS",
+      "helpLabel": "Load suggestions",
       "help": {
         "suggest": "Suggest my weights",
         "suggestDesc": "Targets move up when you hit your reps, and the app explains why",

@@ -99,7 +99,7 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
       },
       // A flat gradient: every stop collapses to `surfaceCard`, so the summary
       // card renders as an ordinary card without the component branching on a
-      // presentation flag. See `gradients.landingBackground` for the same idiom.
+      // presentation flag.
       colorfulCardBlend: { start: 0, middle: 0, end: 0 },
       colorfulCardUsesSurfaceInk: true,
     },

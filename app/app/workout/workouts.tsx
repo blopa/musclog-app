@@ -628,7 +628,6 @@ export default function WorkoutsScreen() {
             {
               icon: Pencil,
               iconColor: theme.colors.text.primary,
-              iconBgColor: theme.colors.text.primary20,
               title: t('workouts.plans.editTitle'),
               description: t('workouts.plans.editDescription'),
               onPress: () => {
@@ -640,11 +639,9 @@ export default function WorkoutsScreen() {
             {
               icon: Trash2,
               iconColor: theme.colors.status.error,
-              iconBgColor: theme.colors.status.error20,
               title: t('workouts.plans.deleteTitle'),
               description: t('workouts.plans.deleteDescription'),
               titleColor: theme.colors.status.error,
-              descriptionColor: theme.colors.status.error,
               onPress: () => {
                 setIsPlanMenuVisible(false);
                 setIsDeletePlanConfirmationVisible(true);
@@ -661,7 +658,6 @@ export default function WorkoutsScreen() {
             {
               icon: Layers3,
               iconColor: theme.colors.accent.primary,
-              iconBgColor: `${theme.colors.accent.primary}20`,
               title: t('workouts.plans.createTitle'),
               description: t('workouts.plans.createDescription'),
               onPress: () => {
@@ -672,7 +668,6 @@ export default function WorkoutsScreen() {
             {
               icon: Plus,
               iconColor: theme.colors.accent.primary,
-              iconBgColor: `${theme.colors.accent.primary}20`,
               title: t('workouts.createTemplate.title'),
               description: t('workouts.createTemplate.description'),
               onPress: () => {
@@ -682,7 +677,6 @@ export default function WorkoutsScreen() {
             {
               icon: Footprints,
               iconColor: theme.colors.accent.primary,
-              iconBgColor: `${theme.colors.accent.primary}20`,
               title: t('cardio.menuItem'),
               description: t('cardio.subtitle'),
               onPress: () => {
@@ -692,7 +686,6 @@ export default function WorkoutsScreen() {
             {
               icon: Target,
               iconColor: theme.colors.accent.secondary,
-              iconBgColor: `${theme.colors.accent.secondary}20`,
               title: t('exerciseGoals.title'),
               description: t('goalsManagement.exerciseGoalsSubtitle'),
               onPress: () => {

@@ -32,7 +32,7 @@
     },
     "exercises": "{{count}} упражнений",
     "workoutSequence": "Последовательность тренировки",
-    "skipped": "ПРОПУЩЕНО",
+    "skipped": "Пропущено",
     "startFromExercise": {
       "title": "Начать с упражнения",
       "message": "Хотите начать тренировку с {{exerciseName}}?",

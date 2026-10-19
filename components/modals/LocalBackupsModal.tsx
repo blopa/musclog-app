@@ -206,9 +206,6 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     {
       icon: (props) => <MaterialIcons name="share" {...props} />,
       iconColor: canExport ? theme.colors.text.primary : theme.colors.text.tertiary,
-      iconBgColor: canExport
-        ? theme.colors.background.iconDarker
-        : theme.colors.background.neutralWash,
       title: t('settings.advancedSettings.localBackups.export'),
       description: canExport ? '' : t('settings.advancedSettings.localBackups.exportDisabled'),
       onPress: canExport ? handleExport : () => {},
@@ -216,7 +213,6 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     {
       icon: (props) => <MaterialIcons name="restore" {...props} />,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.background.iconDarker,
       title: t('settings.advancedSettings.localBackups.restore'),
       description: '',
       onPress: handleRestore,
@@ -224,7 +220,6 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     {
       icon: (props) => <MaterialIcons name="delete" {...props} />,
       iconColor: theme.colors.status.error50,
-      iconBgColor: theme.colors.status.error10,
       title: t('settings.advancedSettings.localBackups.delete'),
       description: '',
       onPress: handleDelete,

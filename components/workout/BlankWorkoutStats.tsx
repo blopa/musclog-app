@@ -45,7 +45,7 @@ export function BlankWorkoutStats({
       <View className="items-center">
         <Clock size={theme.iconSize.md} color={theme.colors.text.secondary} />
         <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          className="mt-1 text-xs font-semibold text-text-secondary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('freeTraining.duration')}
@@ -55,7 +55,7 @@ export function BlankWorkoutStats({
       <View className="items-center">
         <Flame size={theme.iconSize.md} color={theme.colors.text.secondary} />
         <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          className="mt-1 text-xs font-semibold text-text-secondary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('freeTraining.calories')}
@@ -67,7 +67,7 @@ export function BlankWorkoutStats({
       <View className="items-center">
         <BarChart3 size={theme.iconSize.md} color={theme.colors.text.secondary} />
         <Text
-          className="mt-1 text-xs font-semibold uppercase tracking-wider text-text-secondary"
+          className="mt-1 text-xs font-semibold text-text-secondary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('freeTraining.volume')}

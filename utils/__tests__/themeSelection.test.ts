@@ -93,6 +93,11 @@ describe('named theme selection', () => {
       'onboardingAmbient',
       'inkSubtle',
       'backdrop90',
+      'userBubble',
+      'celebrationGlow',
+      'blueEmerald',
+      'landingBackground',
+      'workoutStats',
     ];
     for (const themeId of THEME_IDS) {
       for (const key of retired) {

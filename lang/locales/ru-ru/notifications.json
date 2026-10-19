@@ -2,12 +2,12 @@
   "notifications": {
     "header": {
       "title": "Уведомления",
-      "clearAll": "ОЧИСТИТЬ ВСЕ"
+      "clearAll": "Очистить все"
     },
     "sections": {
-      "today": "СЕГОДНЯ",
-      "yesterday": "ВЧЕРА",
-      "earlier": "РАНЕЕ"
+      "today": "Сегодня",
+      "yesterday": "Вчера",
+      "earlier": "Ранее"
     },
     "channels": {
       "default": "По умолчанию",

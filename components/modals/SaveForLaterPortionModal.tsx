@@ -98,10 +98,7 @@ export function SaveForLaterPortionModal({
         style={{ opacity: isBusy ? 0.65 : 1 }}
       >
         <View className="flex-row items-center justify-between">
-          <Text
-            className="text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
             {t('food.mealGroup.saveForLaterPercentageLabel')}
           </Text>
           <Text
