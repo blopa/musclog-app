@@ -341,8 +341,10 @@ pattern across eight files and added nothing over the surface color.
 
 ### Home
 
-Home opens on the day it is about: a date heading ("Monday, Oct 19") on the left and the avatar on
-the right, which is the way into the account menu and carries an accessible label. No time-of-day
+Home opens on the day it is about: the avatar on the left and a date heading ("Monday, Oct 19")
+aligned to the right.
+The avatar is the way into the account menu and carries an accessible label; it stays on the left
+so it lines up with the avatar the account menu itself opens with. No time-of-day
 greeting and no version string; the version lives in Settings > About. The home action tiles are
 compact (about 96pt, the icon above a short label, `rounded-2xl`), with no tinted icon circle and
 no faded watermark copy of the icon; the selection, picker and reconciliation rules in `AGENTS.md`

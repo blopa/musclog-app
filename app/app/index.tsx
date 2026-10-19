@@ -385,65 +385,64 @@ export default function HomeScreen() {
       <WhatsNewAutoPrompt suppressed={widgetCameraLaunch} />
       {showConfetti ? <ConfettiOverlay /> : null}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Header: the day this screen is about, and the avatar as the way into the account menu.
-            A time-of-day greeting and the version string used to sit here; the version lives in
-            Settings > About. */}
-        <View className="flex-row items-center justify-between gap-3 px-4 py-5">
+        {/* Header: the avatar as the way into the account menu, then the day this screen is
+            about. The avatar sits on the left so it lines up with the avatar the account menu
+            opens with. A time-of-day greeting and the version string used to sit here; the
+            version lives in Settings > About. */}
+        <View className="flex-row items-center gap-3 px-4 py-5">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('home.accountMenu')}
+            className="active:opacity-70"
+            onPress={() => setIsUserMenuVisible(true)}
+            testID="home-account-menu"
+          >
+            {isLoadingUser ? (
+              <SkeletonLoader width={44} height={44} borderRadius={22} />
+            ) : (
+              <AnimatedContent>
+                <View
+                  className="h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2"
+                  style={{
+                    borderColor: avatar ? avatar.color : theme.colors.accent.primary,
+                    backgroundColor: avatar
+                      ? avatar.backgroundColor
+                      : theme.colors.background.imageLight,
+                  }}
+                >
+                  {avatar ? (
+                    createElement(avatar.IconComponent, {
+                      size: theme.iconSize.lg,
+                      color: avatar.color,
+                    })
+                  ) : (
+                    <Text className="text-base font-bold text-text-primary">
+                      {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
+                    </Text>
+                  )}
+                </View>
+              </AnimatedContent>
+            )}
+          </Pressable>
           <Text
             accessibilityRole="header"
-            className="min-w-0 flex-1 text-2xl font-bold text-text-primary"
+            className="min-w-0 flex-1 text-right text-2xl font-bold text-text-primary"
             numberOfLines={1}
           >
             {headerDate}
           </Text>
-          <View className="flex-row items-center gap-2">
-            {SHOW_NOTIFICATIONS ? (
-              <Pressable
-                className="relative rounded-full bg-bg-overlay p-3"
-                onPress={() => setIsNotificationsVisible(true)}
-              >
-                <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-                <View
-                  className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: theme.colors.status.notificationBadge }}
-                />
-              </Pressable>
-            ) : null}
+          {SHOW_NOTIFICATIONS ? (
             <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t('home.accountMenu')}
-              className="active:opacity-70"
-              onPress={() => setIsUserMenuVisible(true)}
-              testID="home-account-menu"
+              className="relative rounded-full bg-bg-overlay p-3"
+              onPress={() => setIsNotificationsVisible(true)}
             >
-              {isLoadingUser ? (
-                <SkeletonLoader width={44} height={44} borderRadius={22} />
-              ) : (
-                <AnimatedContent>
-                  <View
-                    className="h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2"
-                    style={{
-                      borderColor: avatar ? avatar.color : theme.colors.accent.primary,
-                      backgroundColor: avatar
-                        ? avatar.backgroundColor
-                        : theme.colors.background.imageLight,
-                    }}
-                  >
-                    {avatar ? (
-                      createElement(avatar.IconComponent, {
-                        size: theme.iconSize.lg,
-                        color: avatar.color,
-                      })
-                    ) : (
-                      <Text className="text-base font-bold text-text-primary">
-                        {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
-                      </Text>
-                    )}
-                  </View>
-                </AnimatedContent>
-              )}
+              <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
+              <View
+                className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: theme.colors.status.notificationBadge }}
+              />
             </Pressable>
-          </View>
+          ) : null}
         </View>
 
         <View className="mx-4 mb-4">
