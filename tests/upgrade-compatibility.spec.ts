@@ -100,15 +100,15 @@ test.describe('SDK 58 compatibility', () => {
     await page.goto(`${base}/app/nutrition/food`);
     // A fresh database has no food logged, so the diary shows its empty state instead of the
     // scan buttons.
-    await expect(page.getByRole('button', { name: 'Log Your Meal' })).toBeVisible({
+    await expect(page.getByRole('button', { name: 'Log your meal' })).toBeVisible({
       timeout: 30000,
     });
     await page.goto(`${base}/app/workout/workouts`);
-    await expect(page.getByText('My Workouts', { exact: true }).first()).toBeVisible({
+    await expect(page.getByText('My workouts', { exact: true }).first()).toBeVisible({
       timeout: 30000,
     });
     await page.reload();
-    await expect(page.getByText('My Workouts', { exact: true }).first()).toBeVisible({
+    await expect(page.getByText('My workouts', { exact: true }).first()).toBeVisible({
       timeout: 30000,
     });
   });
