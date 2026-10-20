@@ -3,6 +3,27 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Giant logo flashing on boot: the splash's classes did not exist yet (October 2026)
+
+### Symptom
+
+For a moment after the native splash, Android showed `assets/logo.png` blown up far past the screen
+edges on the dark boot background.
+
+### Cause
+
+`SplashLoading` sized the logo with `className="h-24 w-24"`. The root `/` route (`app/index.tsx`)
+renders it before `app/app/_layout.tsx` — the only native importer of `global.css` — has been
+evaluated, so NativeWind had no rules for those classes and the 1024px image drew at its intrinsic
+size.
+
+### Fix
+
+`SplashLoading` uses inline styles only (like `BootProgressBar` and the root layout, which render at
+the same moment) and shows the default theme's app icon at a fixed 128pt. Pinned by
+`components/__tests__/splashLoading.test.ts`. Anything rendered from `app/_layout.tsx` or
+`app/index.tsx` must not rely on `className`.
+
 ## Raw translation keys in the live session: equipment labels built at runtime (October 2026)
 
 ### Symptom
