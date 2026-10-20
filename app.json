@@ -2,10 +2,14 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.14.2",
+    "version": "2.14.3",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "web": {
       "output": "static",
       "favicon": "./assets/favicon.png"
@@ -22,7 +26,10 @@
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
-      ["expo-router", {}],
+      [
+        "expo-router",
+        {}
+      ],
       [
         "expo-splash-screen",
         {
@@ -65,7 +72,11 @@
         {
           "android": {
             "minSdkVersion": 26,
-            "buildArchs": ["armeabi-v7a", "arm64-v8a", "x86_64"],
+            "buildArchs": [
+              "armeabi-v7a",
+              "arm64-v8a",
+              "x86_64"
+            ],
             "enableMinifyInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true
           },
@@ -104,7 +115,10 @@
               "displayName": "Nutrition Progress",
               "description": "Shows daily nutrition progress",
               "ios": {
-                "supportedFamilies": ["systemSmall", "systemMedium"],
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium"
+                ],
                 "initialLayout": "widgets/NutritionWidget.tsx"
               },
               "android": {
@@ -121,7 +135,9 @@
               "displayName": "Smart Camera",
               "description": "Open Smart Camera",
               "ios": {
-                "supportedFamilies": ["systemSmall"],
+                "supportedFamilies": [
+                  "systemSmall"
+                ],
                 "initialLayout": "widgets/SmartCameraWidget.tsx"
               },
               "android": {
@@ -138,7 +154,9 @@
               "displayName": "Cycle",
               "description": "Shows your cycle day. Private by default.",
               "ios": {
-                "supportedFamilies": ["systemSmall"],
+                "supportedFamilies": [
+                  "systemSmall"
+                ],
                 "initialLayout": "widgets/CycleWidget.tsx"
               },
               "android": {
@@ -167,7 +185,9 @@
         "react-native-ble-plx",
         {
           "isBackgroundEnabled": false,
-          "modes": ["central"],
+          "modes": [
+            "central"
+          ],
           "neverForLocation": true,
           "bluetoothAlwaysPermission": "Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors"
         }
@@ -176,13 +196,15 @@
     ],
     "orientation": "default",
     "icon": "./assets/theme-icons/icon-bg-kinetic-depth.png",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "icon": "./assets/theme-icons/opaque/icon-bg-kinetic-depth.png",
       "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "315",
+      "buildNumber": "316",
       "entitlements": {
         "com.apple.developer.usernotifications.time-sensitive": true
       },
@@ -191,13 +213,16 @@
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
         "NSLocationWhenInUseUsageDescription": "Musclog does not use your location. This permission string is required because a bundled SDK references location APIs.",
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 315,
+      "versionCode": 316,
       "adaptiveIcon": {
         "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
         "backgroundColor": "#091310"
