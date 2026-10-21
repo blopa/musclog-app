@@ -82,6 +82,32 @@ export const DEFAULT_PILL_SCHEDULE: Omit<PillSchedule, 'packStart'> = {
   breakDays: 7,
 };
 
+/** Shared opt-ins for newly planned reminders and copies already snoozed with the OS. */
+function isReminderEnabled(
+  kind: CycleReminderKind,
+  prefs: CycleReminderPreferences,
+  backupDays: number
+): boolean {
+  switch (kind) {
+    case 'period-start':
+      return prefs.period;
+    case 'period-due':
+      return prefs.due === true;
+    case 'period-late':
+      return prefs.late === true;
+    case 'fertile-window':
+      return prefs.fertility;
+    case 'daily-log':
+      return prefs.daily;
+    case 'end-check':
+      return prefs.endCheck;
+    case 'pill':
+      return prefs.pill?.enabled === true;
+    case 'backup':
+      return backupDays > 0;
+  }
+}
+
 /** Whether a pause is in force at `nowMs`. `until: null` pauses until the person resumes. */
 export function isPaused(prefs: CycleReminderPreferences, nowMs: number): boolean {
   const pause = prefs.pause;
@@ -121,6 +147,8 @@ export function planCycleReminders(
   } = {}
 ): CycleReminder[] {
   const prefs = { ...DEFAULT_CYCLE_REMINDERS, ...options.preferences };
+  const enabled = (kind: CycleReminderKind) =>
+    isReminderEnabled(kind, prefs, options.backupDays ?? 0);
   const atTime = (ms: number, hour = prefs.hour, minute = prefs.minute) => {
     const date = new Date(ms);
     date.setHours(hour, minute, 0, 0);
@@ -141,7 +169,7 @@ export function planCycleReminders(
     prediction.latest != null
   ) {
     const range = { from: prediction.earliest, to: prediction.latest };
-    if (prefs.period) {
+    if (enabled('period-start')) {
       reminders.push({
         kind: 'period-start',
         date: atTime(addCalendarDays(prediction.earliest, -prefs.leadDays)),
@@ -149,12 +177,12 @@ export function planCycleReminders(
       });
     }
 
-    if (prefs.due && prediction.mostLikely != null) {
+    if (enabled('period-due') && prediction.mostLikely != null) {
       reminders.push({ kind: 'period-due', date: atTime(prediction.mostLikely), range });
     }
 
     // The day after the latest plausible start: "longer than your recent pattern", never "late".
-    if (prefs.late) {
+    if (enabled('period-late')) {
       reminders.push({
         kind: 'period-late',
         date: atTime(addCalendarDays(prediction.latest, 1)),
@@ -162,7 +190,7 @@ export function planCycleReminders(
       });
     }
 
-    if (prefs.fertility && timeline?.fertileEstimate) {
+    if (enabled('fertile-window') && timeline?.fertileEstimate) {
       reminders.push({
         kind: 'fertile-window',
         date: atTime(timeline.fertileEstimate.start),
@@ -171,7 +199,7 @@ export function planCycleReminders(
     }
   }
 
-  if (prefs.daily) {
+  if (enabled('daily-log')) {
     reminders.push({
       kind: 'daily-log',
       date: nextAt(prefs.hour, prefs.minute),
@@ -179,7 +207,7 @@ export function planCycleReminders(
     });
   }
 
-  if (prefs.endCheck && options.activePeriod && options.activePeriod.endDate == null) {
+  if (enabled('end-check') && options.activePeriod && options.activePeriod.endDate == null) {
     const check = atTime(addCalendarDays(options.activePeriod.startDate, 7));
     reminders.push({
       kind: 'end-check',
@@ -187,7 +215,7 @@ export function planCycleReminders(
     });
   }
 
-  if ((options.backupDays ?? 0) > 0) {
+  if (enabled('backup')) {
     const due = atTime(
       addCalendarDays(options.lastBackup ?? nowMs, options.lastBackup ? options.backupDays! : 0)
     );
@@ -198,7 +226,7 @@ export function planCycleReminders(
   }
 
   const pill = prefs.pill;
-  if (pill?.enabled) {
+  if (pill && enabled('pill')) {
     if (pill.breakDays === 0 && pill.packStart <= nowMs) {
       reminders.push({ kind: 'pill', date: nextAt(pill.hour, pill.minute), repeatsDaily: true });
     } else {
@@ -258,10 +286,15 @@ export function isSnoozeStillValid(
   state: {
     timeline: CycleTimeline | null;
     preferences?: CycleReminderPreferences;
+    backupDays?: number;
     nowMs: number;
   }
 ): boolean {
   const prefs = { ...DEFAULT_CYCLE_REMINDERS, ...state.preferences };
+  if (!isReminderEnabled(kind, prefs, state.backupDays ?? 0)) {
+    return false;
+  }
+
   if (isPaused(prefs, state.nowMs) && !PAUSE_EXEMPT.has(kind)) {
     return false;
   }
@@ -279,5 +312,5 @@ export function isSnoozeStillValid(
     return false;
   }
 
-  return kind === 'fertile-window' ? prefs.fertility : true;
+  return true;
 }

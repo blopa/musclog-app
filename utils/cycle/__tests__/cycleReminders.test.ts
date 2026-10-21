@@ -189,7 +189,15 @@ describe('cycleReminderContent', () => {
 describe('isSnoozeStillValid', () => {
   const state = (over: Partial<Parameters<typeof isSnoozeStillValid>[1]> = {}) => ({
     timeline: timeline(),
-    preferences: { ...DEFAULT_CYCLE_REMINDERS },
+    preferences: {
+      ...DEFAULT_CYCLE_REMINDERS,
+      due: true,
+      late: true,
+      daily: true,
+      endCheck: true,
+      pill: { enabled: true, hour: 21, minute: 0, packStart: day(1), activeDays: 21, breakDays: 7 },
+    },
+    backupDays: 30,
     nowMs: NOW,
     ...over,
   });
@@ -235,14 +243,59 @@ describe('isSnoozeStillValid', () => {
   });
 
   it('lets a pause silence a snoozed reminder, except the pill', () => {
-    const paused = { ...DEFAULT_CYCLE_REMINDERS, pause: { until: null } };
+    const paused = { ...state().preferences, pause: { until: null } };
     expect(isSnoozeStillValid('daily-log', state({ preferences: paused }))).toBe(false);
     expect(isSnoozeStillValid('period-start', state({ preferences: paused }))).toBe(false);
     expect(isSnoozeStillValid('pill', state({ preferences: paused }))).toBe(true);
   });
 
+  it.each([
+    ['period-start', 'period'],
+    ['period-due', 'due'],
+    ['period-late', 'late'],
+    ['fertile-window', 'fertility'],
+    ['daily-log', 'daily'],
+    ['end-check', 'endCheck'],
+  ] as const)('drops a snoozed %s after its switch is disabled', (kind, field) => {
+    const preferences = { ...state().preferences, [field]: false };
+    expect(isSnoozeStillValid(kind, state({ preferences }))).toBe(false);
+    expect(planCycleReminders(timeline(), NOW, { preferences }).some((r) => r.kind === kind)).toBe(
+      false
+    );
+  });
+
+  it('drops pill snoozes when its schedule is disabled or removed', () => {
+    const preferences = state().preferences;
+    expect(
+      isSnoozeStillValid(
+        'pill',
+        state({
+          preferences: {
+            ...preferences,
+            pill: { ...preferences.pill, enabled: false },
+          },
+        })
+      )
+    ).toBe(false);
+    expect(
+      isSnoozeStillValid(
+        'pill',
+        state({
+          preferences: {
+            ...preferences,
+            pill: undefined,
+          },
+        })
+      )
+    ).toBe(false);
+  });
+
+  it('drops backup snoozes when backup reminders are disabled', () => {
+    expect(isSnoozeStillValid('backup', state({ backupDays: 0 }))).toBe(false);
+  });
+
   it('ignores a pause that has ended', () => {
-    const ended = { ...DEFAULT_CYCLE_REMINDERS, pause: { until: NOW - 1 } };
+    const ended = { ...state().preferences, pause: { until: NOW - 1 } };
     expect(isSnoozeStillValid('daily-log', state({ preferences: ended }))).toBe(true);
   });
 });

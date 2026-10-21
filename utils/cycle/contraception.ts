@@ -1,4 +1,5 @@
 import type { ContraceptionMethod, CycleContextDto, CycleLifeStage } from './types';
+import { CONTRACEPTION_METHOD_KEYS } from './types';
 
 export interface ContraceptionTraits {
   hormonal: 'yes' | 'no' | 'unknown';
@@ -26,7 +27,7 @@ export const CONTRACEPTION_TRAITS: Record<ContraceptionMethod, ContraceptionTrai
   other: { hormonal: 'unknown', ovulationSuppressed: 'sometimes' },
 };
 
-export const CONTRACEPTION_METHODS = Object.keys(CONTRACEPTION_TRAITS) as ContraceptionMethod[];
+export const CONTRACEPTION_METHODS = CONTRACEPTION_METHOD_KEYS;
 
 export const DEFAULT_CONTEXT: Pick<CycleContextDto, 'lifeStage' | 'contraception'> = {
   lifeStage: 'regular',

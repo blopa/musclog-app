@@ -116,31 +116,35 @@ export interface CycleObservations {
   customLabels?: Record<string, string>;
 }
 
-export type ContraceptionMethod =
-  | 'none'
-  | 'combined_pill'
-  | 'progestin_pill'
-  | 'pill_unspecified'
-  | 'hormonal_iud'
-  | 'copper_iud'
-  | 'iud_unspecified'
-  | 'implant'
-  | 'patch'
-  | 'ring'
-  | 'injection'
-  | 'other';
+export const CONTRACEPTION_METHOD_KEYS = [
+  'none',
+  'combined_pill',
+  'progestin_pill',
+  'pill_unspecified',
+  'hormonal_iud',
+  'copper_iud',
+  'iud_unspecified',
+  'implant',
+  'patch',
+  'ring',
+  'injection',
+  'other',
+] as const;
+export type ContraceptionMethod = (typeof CONTRACEPTION_METHOD_KEYS)[number];
 
-export type CycleLifeStage =
-  | 'regular'
-  | 'pcos'
-  | 'perimenopause'
-  | 'postpartum'
-  | 'post_pill'
-  | 'no_bleeding'
-  | 'pregnancy'
-  | 'pregnancy_loss'
-  | 'hysterectomy'
-  | 'menopause';
+export const CYCLE_LIFE_STAGES = [
+  'regular',
+  'pcos',
+  'perimenopause',
+  'postpartum',
+  'post_pill',
+  'no_bleeding',
+  'pregnancy',
+  'pregnancy_loss',
+  'hysterectomy',
+  'menopause',
+] as const;
+export type CycleLifeStage = (typeof CYCLE_LIFE_STAGES)[number];
 
 export interface CycleContextDto {
   id: string;

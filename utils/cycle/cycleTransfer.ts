@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-import { CONTRACEPTION_METHODS } from './contraception';
 import { csvDate } from './cycleCsv';
 import type { MoodPoint } from './cycleInsights';
 import { BLEEDING_LEVELS } from './dayLog';
 import { assertValidPeriod } from './periodRules';
 import { cycleConfigSchema, observationsSchema } from './preferences';
 import type { CycleConfig, CycleContextDto, CycleDayLogDto, CyclePeriodDto } from './types';
+import { CONTRACEPTION_METHOD_KEYS, CYCLE_LIFE_STAGES } from './types';
 
 /** Wire dates are local calendar dates, never instants tied to the exporting device's timezone. */
 export function parseCycleDate(value: string): number {
@@ -78,24 +78,8 @@ const dayTransferSchema = z
 const contextTransferSchema = z
   .object({
     effectiveFrom: date,
-    lifeStage: z.enum([
-      'regular',
-      'pcos',
-      'perimenopause',
-      'postpartum',
-      'post_pill',
-      'no_bleeding',
-      'pregnancy',
-      'pregnancy_loss',
-      'hysterectomy',
-      'menopause',
-    ]),
-    contraception: z.enum(
-      CONTRACEPTION_METHODS as [
-        (typeof CONTRACEPTION_METHODS)[number],
-        ...typeof CONTRACEPTION_METHODS,
-      ]
-    ),
+    lifeStage: z.enum(CYCLE_LIFE_STAGES),
+    contraception: z.enum(CONTRACEPTION_METHOD_KEYS),
     note,
   })
   .strict();

@@ -93,20 +93,22 @@ export function WidgetSync() {
     }
 
     const palette = widgetPalette(theme.colors);
-    const queue = createWidgetRefreshQueue(
+    const report = (error: unknown) => {
+      void handleError(error, 'widgets.refresh', { showSnackbar: false });
+    };
+
+    const nutritionQueue = createWidgetRefreshQueue(
       async () => {
         await waitForDbReady();
         const date = new Date();
-        const [nutrients, goal, imageUri, cycleInputs] = await Promise.all([
+        const [nutrients, goal] = await Promise.all([
           NutritionService.getDailyNutrients(date),
           NutritionGoalService.getGoalForDate(date),
-          sharedCameraImage(),
-          readCycleInputs(),
         ]);
         const resolved = goal ? ((await NutritionTargetService.resolve(goal, date)) ?? goal) : null;
         return {
           date,
-          nutrition: buildNutritionWidgetSnapshot({
+          snapshot: buildNutritionWidgetSnapshot({
             date,
             nutrients,
             goal: resolved,
@@ -114,52 +116,86 @@ export function WidgetSync() {
             locale,
             translate: (key) => t(key),
           }),
-          camera: { label: t('widgets.smartCamera'), palette, imageUri, url: CAMERA_WIDGET_URL },
-          cycle: buildCycleWidgetSnapshot({
-            inputs: cycleInputs,
+        };
+      },
+      ({ date, snapshot }) => {
+        if (Platform.OS === 'ios') {
+          const midnight = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+          NutritionWidget.updateTimeline([
+            { date, props: snapshot },
+            { date: midnight, props: expiredWidgetSnapshot(snapshot) },
+          ]);
+        } else {
+          NutritionWidget.updateSnapshot(snapshot);
+        }
+      },
+      report
+    );
+    const cycleQueue = createWidgetRefreshQueue(
+      async () => {
+        await waitForDbReady();
+        return {
+          date: new Date(),
+          snapshot: buildCycleWidgetSnapshot({
+            inputs: await readCycleInputs(),
             palette,
             locale,
             translate: (key, options) => t(key, options),
           }),
         };
       },
-      ({ date, nutrition, camera, cycle }) => {
-        SmartCameraWidget.updateSnapshot(camera);
+      ({ date, snapshot }) => {
         if (Platform.OS === 'ios') {
           const midnight = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-          NutritionWidget.updateTimeline([
-            { date, props: nutrition },
-            { date: midnight, props: expiredWidgetSnapshot(nutrition) },
-          ]);
           CycleWidget.updateTimeline([
-            { date, props: cycle },
-            { date: midnight, props: expiredCycleWidgetSnapshot(cycle) },
+            { date, props: snapshot },
+            { date: midnight, props: expiredCycleWidgetSnapshot(snapshot) },
           ]);
         } else {
-          NutritionWidget.updateSnapshot(nutrition);
-          CycleWidget.updateSnapshot(cycle);
+          CycleWidget.updateSnapshot(snapshot);
         }
       },
-      (error) => {
-        void handleError(error, 'widgets.refresh', { showSnackbar: false });
-      }
+      report
     );
+    const cameraQueue = createWidgetRefreshQueue(
+      sharedCameraImage,
+      (imageUri) =>
+        SmartCameraWidget.updateSnapshot({
+          label: t('widgets.smartCamera'),
+          palette,
+          imageUri,
+          url: CAMERA_WIDGET_URL,
+        }),
+      report
+    );
+    const refresh = () => {
+      void nutritionQueue.refresh();
+      void cycleQueue.refresh();
+      void cameraQueue.refresh();
+    };
+
+    const dispose = () => {
+      nutritionQueue.dispose();
+      cycleQueue.dispose();
+      cameraQueue.dispose();
+    };
+
     const unsubscribe = widgetEvents.onNutritionWidgetUpdate(() => {
-      void queue.refresh();
+      void nutritionQueue.refresh();
     });
     const unsubscribeCycle = subscribeToCycleChanges(() => {
-      void queue.refresh();
+      void cycleQueue.refresh();
     });
-    const unsubscribeReset = widgetEvents.onReset(queue.dispose);
+    const unsubscribeReset = widgetEvents.onReset(dispose);
     const subscription = AppState.addEventListener('change', (state) => {
       if (state === 'active') {
-        void queue.refresh();
+        refresh();
       }
     });
-    void queue.refresh();
+    refresh();
 
     return () => {
-      queue.dispose();
+      dispose();
       unsubscribe();
       unsubscribeCycle();
       unsubscribeReset();

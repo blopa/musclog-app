@@ -249,7 +249,7 @@ export class CycleNotificationService {
     });
     const locale = i18n.resolvedLanguage ?? i18n.language;
     await CycleNotificationService.pruneSnoozedReminders(
-      { timeline, preferences: config.reminders, nowMs },
+      { timeline, preferences: config.reminders, backupDays: config.backupReminderDays, nowMs },
       scheduled
     );
 

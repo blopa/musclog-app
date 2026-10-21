@@ -8,14 +8,13 @@ import type CycleDayLog from '@/database/models/CycleDayLog';
 import type CyclePeriod from '@/database/models/CyclePeriod';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import type {
-  ContraceptionMethod,
   CycleConfig,
   CycleContextDto,
   CycleDayLogDto,
-  CycleLifeStage,
   CycleObservations,
   CyclePeriodDto,
 } from '@/utils/cycle/types';
+import { CONTRACEPTION_METHOD_KEYS, CYCLE_LIFE_STAGES } from '@/utils/cycle/types';
 
 export const DEFAULT_CYCLE_CONFIG: CycleConfig = {
   fallbackCycleLength: 28,
@@ -29,9 +28,8 @@ export type ContextPayload = Omit<CycleContextDto, 'id' | 'cycleId'>;
 
 /**
  * Decrypted JSON is checked before it becomes a DTO: a damaged or hand-edited row is skipped like
- * an undecryptable one instead of reaching the model with `NaN` dates. Deliberately lenient where
- * a NEWER build may have written something this one does not know (an extra key, a new life
- * stage): structure is enforced, vocabulary is not.
+ * an undecryptable one instead of reaching the model with `NaN` dates. Unknown keys are ignored,
+ * but vocabulary must be supported before a DTO reaches consumers with exhaustive lookup tables.
  */
 const periodPayloadSchema = z.object({
   startDate: z.number().finite(),
@@ -69,29 +67,34 @@ const dayLogPayloadSchema = z.object({
 const contextPayloadSchema = z.object({
   effectiveFrom: z.number().finite(),
   timezone: z.string().optional(),
-  lifeStage: z.string(),
-  contraception: z.string(),
+  lifeStage: z.enum(CYCLE_LIFE_STAGES),
+  contraception: z.enum(CONTRACEPTION_METHOD_KEYS),
   note: z.string().optional(),
 });
 
 // Decrypting a year of daily logs on every database emission would dominate the screen, and a
 // cache also compares the ciphertext: two edits can share a millisecond timestamp. Each id
 // keeps only its latest decrypted version.
-const dtoCache = new Map<string, { payload: string; updatedAt: number; dto: unknown }>();
+const dtoCache = new Map<string, { payload: string; updatedAt: number; dto: Promise<unknown> }>();
 
-async function decryptCached<S extends z.ZodTypeAny, D>(
+function decryptCached<S extends z.ZodTypeAny, D>(
   record: { id: string; updatedAt: number; payload: string },
   schema: S,
   build: (payload: z.infer<S>) => D
 ): Promise<D | null> {
-  const cached = dtoCache.get(record.id);
-  if (cached && cached.payload === record.payload && cached.updatedAt === record.updatedAt) {
-    return (cached.dto as D | null) ?? null;
+  const { id, payload, updatedAt } = record;
+  const cached = dtoCache.get(id);
+  if (cached && cached.payload === payload && cached.updatedAt === updatedAt) {
+    return cached.dto as Promise<D | null>;
   }
 
-  const parsed = schema.safeParse(await decryptCyclePayload<object>(record.payload));
-  const dto = parsed.success ? build(parsed.data) : null;
-  dtoCache.set(record.id, { payload: record.payload, updatedAt: record.updatedAt, dto });
+  // Register the in-flight read before awaiting. Older decryptions can then finish without
+  // overwriting a newer version or repopulating a cache cleared during deletion.
+  const dto = decryptCyclePayload<object>(payload).then((decrypted) => {
+    const parsed = schema.safeParse(decrypted);
+    return parsed.success ? build(parsed.data) : null;
+  });
+  dtoCache.set(id, { payload, updatedAt, dto });
 
   return dto;
 }
@@ -101,12 +104,14 @@ export function clearCycleDtoCache(): void {
 }
 
 export function toPeriodDto(record: CyclePeriod): Promise<CyclePeriodDto | null> {
+  const { id, cycleId } = record;
+
   return decryptCached(record, periodPayloadSchema, (p): CyclePeriodDto => {
     const endDate = p.endDate ?? null;
 
     return {
-      id: record.id,
-      cycleId: record.cycleId,
+      id,
+      cycleId,
       startDate: p.startDate,
       endDate,
       endKind: p.endKind ?? (endDate == null ? 'open' : 'logged'),
@@ -119,8 +124,10 @@ export function toPeriodDto(record: CyclePeriod): Promise<CyclePeriodDto | null>
 }
 
 export function toDayLogDto(record: CycleDayLog): Promise<CycleDayLogDto | null> {
+  const { id } = record;
+
   return decryptCached(record, dayLogPayloadSchema, (p): CycleDayLogDto => ({
-    id: record.id,
+    id,
     date: p.date,
     timezone: p.timezone ?? '',
     bleeding: p.bleeding ?? null,
@@ -134,13 +141,15 @@ export function toDayLogDto(record: CycleDayLog): Promise<CycleDayLogDto | null>
 }
 
 export function toContextDto(record: CycleContext): Promise<CycleContextDto | null> {
+  const { id, cycleId } = record;
+
   return decryptCached(record, contextPayloadSchema, (p): CycleContextDto => ({
-    id: record.id,
-    cycleId: record.cycleId,
+    id,
+    cycleId,
     effectiveFrom: p.effectiveFrom,
     timezone: p.timezone ?? '',
-    lifeStage: p.lifeStage as CycleLifeStage,
-    contraception: p.contraception as ContraceptionMethod,
+    lifeStage: p.lifeStage,
+    contraception: p.contraception,
     note: p.note ?? '',
   }));
 }

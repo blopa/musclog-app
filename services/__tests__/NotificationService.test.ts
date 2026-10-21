@@ -10,6 +10,7 @@ import { SettingsService } from '@/database/services/SettingsService';
 import { CycleNotificationService } from '@/services/CycleNotificationService';
 import { NotificationService } from '@/services/NotificationService';
 import { NutritionNotificationService } from '@/services/NutritionNotificationService';
+import { DEFAULT_CYCLE_REMINDERS } from '@/utils/cycle/cycleReminders';
 import { DEFAULT_NOTIFICATION_PREFERENCES } from '@/utils/notificationPolicy';
 import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 
@@ -405,6 +406,11 @@ describe('cycle reminder buttons', () => {
   };
 
   function arrange(scheduled: unknown[] = []) {
+    config.mockResolvedValue({
+      fallbackCycleLength: 28,
+      fallbackPeriodDuration: 5,
+      reminders: { ...DEFAULT_CYCLE_REMINDERS, pill },
+    });
     mockSettingsService.getNotifications.mockResolvedValue(true);
     (mockSettingsService.getNotificationsMenstrualCycle as jest.Mock).mockResolvedValue(true);
     Object.assign(mockSettingsService, {
@@ -490,7 +496,7 @@ describe('cycle reminder buttons', () => {
     expect(cancelled).not.toContain('snooze-period-start');
   });
 
-  it('drops a snoozed reminder a pause now silences, but never the pill', async () => {
+  it('drops a snoozed reminder a pause now silences, while retaining an enabled pill reminder', async () => {
     arrange([snoozed('pill'), snoozed('period-start'), snoozed('daily-log')]);
     config.mockResolvedValue({
       fallbackCycleLength: 28,
@@ -501,8 +507,9 @@ describe('cycle reminder buttons', () => {
         leadDays: 2,
         period: true,
         fertility: false,
-        daily: false,
+        daily: true,
         endCheck: false,
+        pill,
         pause: { until: null },
       },
     });
@@ -512,6 +519,49 @@ describe('cycle reminder buttons', () => {
     );
     expect(cancelled).toEqual(expect.arrayContaining(['snooze-period-start', 'snooze-daily-log']));
     expect(cancelled).not.toContain('snooze-pill');
+  });
+
+  it('cancels OS snoozes for every reminder kind whose individual switch was disabled', async () => {
+    const kinds = [
+      'period-start',
+      'period-due',
+      'period-late',
+      'fertile-window',
+      'daily-log',
+      'end-check',
+      'pill',
+      'backup',
+    ];
+    arrange(kinds.map((kind) => snoozed(kind)));
+    config.mockResolvedValue({
+      fallbackCycleLength: 28,
+      fallbackPeriodDuration: 5,
+      backupReminderDays: 0,
+      reminders: {
+        ...DEFAULT_CYCLE_REMINDERS,
+        period: false,
+        fertility: false,
+        pill: { ...pill, enabled: false },
+      },
+    });
+    await CycleNotificationService.scheduleMenstrualCycleNotifications();
+    const cancelled = mockNotifications.cancelScheduledNotificationAsync.mock.calls.map(
+      ([id]) => id
+    );
+    expect(cancelled).toEqual(expect.arrayContaining(kinds.map((kind) => `snooze-${kind}`)));
+  });
+
+  it('retains backup snoozes while backup reminders are enabled', async () => {
+    arrange([snoozed('backup')]);
+    config.mockResolvedValue({
+      fallbackCycleLength: 28,
+      fallbackPeriodDuration: 5,
+      backupReminderDays: 30,
+    });
+    await CycleNotificationService.scheduleMenstrualCycleNotifications();
+    expect(mockNotifications.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith(
+      'snooze-backup'
+    );
   });
 
   it('drops every snoozed reminder when cycle reminders are turned off', async () => {
