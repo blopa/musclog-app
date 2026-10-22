@@ -28,6 +28,7 @@ jest.mock('expo-asset', () => ({ Asset: {} }));
 jest.mock('expo-file-system', () => ({ File: jest.fn() }));
 jest.mock('expo-widgets', () => ({ widgetsDirectory: null }));
 jest.mock('react-i18next', () => ({
+  initReactI18next: { type: '3rdParty', init: () => {} },
   useTranslation: () => ({
     t: mockTranslate,
     i18n: { resolvedLanguage: mockLocale, language: mockLocale },
@@ -97,7 +98,8 @@ it('waits for settings and publishes resolved targets with a midnight expiration
   const entries = (NutritionWidget.updateTimeline as jest.Mock).mock.calls[0][0];
   expect(entries[0].props.calorieTarget).toContain('2000');
   expect(entries[1].date.getHours()).toBe(0);
-  expect(entries[1].props.message).toBe('widgets.refresh');
+  expect(entries[0].props.state).toBe('ready');
+  expect(entries[1].props.state).toBe('stale');
   expect(entries[0].props.palette.background).toBe('#001122');
   unmount();
 });

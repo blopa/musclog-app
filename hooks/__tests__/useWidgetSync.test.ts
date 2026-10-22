@@ -29,6 +29,7 @@ jest.mock('expo-file-system', () => ({ File: {} }));
 jest.mock('expo-widgets', () => ({ widgetsDirectory: null }));
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: mockTranslate, i18n: { language: 'en-US' } }),
+  initReactI18next: { type: '3rdParty', init: () => {} },
 }));
 jest.mock('@/context/ThemeContext', () => ({ useThemeContext: () => ({ theme: mockTheme }) }));
 jest.mock('@/hooks/useLocalToday', () => ({ useLocalToday: () => 0 }));
