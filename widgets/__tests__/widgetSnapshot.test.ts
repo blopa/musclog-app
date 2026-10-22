@@ -31,10 +31,8 @@ describe('nutrition widget snapshots', () => {
 
   it('uses digestible carbs and the resolved goals for finite, bounded progress', () => {
     const snapshot = buildNutritionWidgetSnapshot(input);
-    expect(snapshot.dateKey).toBe('2026-10-17');
+    expect(snapshot.state).toBe('ready');
     expect(snapshot.calorieProgress).toBe(0.5);
-    expect(snapshot.totals).toEqual({ calories: 900, protein: 40, carbs: 100, fat: 20 });
-    expect(snapshot.hasGoal).toBe(true);
     expect(snapshot.macros.map((macro) => macro.progress)).toEqual([0.5, 0.5, 0.5]);
     expect(snapshot.macros[1].value).toBe('100 g');
     expect(JSON.parse(JSON.stringify(snapshot))).toEqual(snapshot);
@@ -48,7 +46,6 @@ describe('nutrition widget snapshots', () => {
   it('keeps actual totals when there is no goal without fabricating a zero target', () => {
     const snapshot = buildNutritionWidgetSnapshot({ ...input, goal: null });
     expect(snapshot.calories).toBe('900');
-    expect(snapshot.hasGoal).toBe(false);
     expect(snapshot.calorieTarget).toBe('common.kcal');
     expect(snapshot.macros.every((macro) => macro.progress === 0)).toBe(true);
   });
@@ -70,9 +67,10 @@ describe('nutrition widget snapshots', () => {
   it('expires to a refresh prompt instead of relabeling yesterday’s values as current', () => {
     const snapshot = buildNutritionWidgetSnapshot(input);
     const expired = expiredWidgetSnapshot(snapshot);
-    expect(expired.message).toBe('widgets.refresh');
+    expect(expired.state).toBe('stale');
+    expect(expired.refreshMessage).toBe('widgets.refresh');
     expect(expired.calories).toBe('—');
     expect(expired.macros).toEqual([]);
-    expect(expired.dateKey).toBe(snapshot.dateKey);
+    expect(expired.dateLabel).toBe(snapshot.dateLabel);
   });
 });

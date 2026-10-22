@@ -12,8 +12,8 @@ import { createWidget } from 'expo-widgets';
 
 import { type CycleWidgetSnapshot, INITIAL_CYCLE_SNAPSHOT } from './cycleWidgetSnapshot';
 
-// With nothing to show (the private default) `value` is empty and the widget is only a quiet
-// brand shortcut, so the layout never hints at what the app tracks.
+// Outside the `day` state the widget is only a quiet brand shortcut, so the layout never hints at
+// what the app tracks.
 function CycleWidget(props: CycleWidgetSnapshot) {
   'widget';
   const { palette } = props;
@@ -31,7 +31,7 @@ function CycleWidget(props: CycleWidgetSnapshot) {
           {props.title}
         </Text>
         <Spacer />
-        {props.value ? (
+        {props.state === 'day' ? (
           <VStack alignment="leading" spacing={0}>
             <Text
               modifiers={[

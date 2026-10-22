@@ -12,6 +12,7 @@ import { NutritionService } from '@/database/services/NutritionService';
 import { NutritionTargetService } from '@/database/services/NutritionTargetService';
 import { useLocalToday } from '@/hooks/useLocalToday';
 import { useSettings } from '@/hooks/useSettings';
+import { localNextDayStartMsFromDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { widgetEvents } from '@/utils/widgetEvents';
 
@@ -50,12 +51,38 @@ async function readCycleInputs(): Promise<CycleWidgetInputs> {
   }
 }
 
-let cameraImage: Promise<string | null> | undefined;
+type DailyWidget<T> = {
+  updateSnapshot: (props: T) => void;
+  updateTimeline: (entries: { date: Date; props: T }[]) => void;
+};
 
-function sharedCameraImage(): Promise<string | null> {
+/**
+ * iOS keeps a timeline, so it also gets the entry that replaces today's figures at midnight;
+ * Android has no timeline and is refreshed again by the day change.
+ */
+function publishDaily<T>(
+  widget: DailyWidget<T>,
+  date: Date,
+  snapshot: T,
+  expire: (snapshot: T) => T
+) {
+  if (Platform.OS === 'ios') {
+    widget.updateTimeline([
+      { date, props: snapshot },
+      { date: new Date(localNextDayStartMsFromDate(date)), props: expire(snapshot) },
+    ]);
+  } else {
+    widget.updateSnapshot(snapshot);
+  }
+}
+
+let cameraImage: Promise<string> | undefined;
+
+/** The artwork's file URI, or `''` when there is none: a snapshot never carries a null. */
+function sharedCameraImage(): Promise<string> {
   cameraImage ??= (async () => {
     if (!widgetsDirectory) {
-      return null;
+      return '';
     }
 
     const asset = await Asset.fromModule(require('../assets/camera-widget.png')).downloadAsync();
@@ -64,11 +91,11 @@ function sharedCameraImage(): Promise<string | null> {
       new File(asset.localUri).copy(destination);
     }
 
-    return destination.exists ? destination.uri : null;
+    return destination.exists ? destination.uri : '';
   })().catch((error) => {
     cameraImage = undefined;
     void handleError(error, 'widgets.cameraArtwork', { showSnackbar: false });
-    return null;
+    return '';
   });
 
   return cameraImage;
@@ -118,17 +145,7 @@ export function WidgetSync() {
           }),
         };
       },
-      ({ date, snapshot }) => {
-        if (Platform.OS === 'ios') {
-          const midnight = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-          NutritionWidget.updateTimeline([
-            { date, props: snapshot },
-            { date: midnight, props: expiredWidgetSnapshot(snapshot) },
-          ]);
-        } else {
-          NutritionWidget.updateSnapshot(snapshot);
-        }
-      },
+      ({ date, snapshot }) => publishDaily(NutritionWidget, date, snapshot, expiredWidgetSnapshot),
       report
     );
     const cycleQueue = createWidgetRefreshQueue(
@@ -144,17 +161,7 @@ export function WidgetSync() {
           }),
         };
       },
-      ({ date, snapshot }) => {
-        if (Platform.OS === 'ios') {
-          const midnight = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
-          CycleWidget.updateTimeline([
-            { date, props: snapshot },
-            { date: midnight, props: expiredCycleWidgetSnapshot(snapshot) },
-          ]);
-        } else {
-          CycleWidget.updateSnapshot(snapshot);
-        }
-      },
+      ({ date, snapshot }) => publishDaily(CycleWidget, date, snapshot, expiredCycleWidgetSnapshot),
       report
     );
     const cameraQueue = createWidgetRefreshQueue(
@@ -163,7 +170,7 @@ export function WidgetSync() {
         SmartCameraWidget.updateSnapshot({
           label: t('widgets.smartCamera'),
           palette,
-          imageUri: imageUri ?? '',
+          imageUri,
           url: CAMERA_WIDGET_URL,
         }),
       report

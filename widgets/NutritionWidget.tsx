@@ -22,36 +22,15 @@ function NutritionWidget(props: NutritionWidgetSnapshot, environment: WidgetEnvi
   const { palette } = props;
   const isMedium = environment.widgetFamily === 'systemMedium';
   const ringSize = isMedium ? 104 : 96;
+  // The gauge is drawn smaller than the ring box and scaled back up by the inverse, which keeps
+  // its stroke thin.
+  const gaugeInset = 0.7;
 
-  const background = containerBackground(palette.background, 'widget');
-  const open = widgetURL(props.url);
-
-  if (props.message) {
-    return (
-      <Link destination={props.url} modifiers={[background, open]}>
-        <VStack
-          alignment="leading"
-          spacing={4}
-          modifiers={[frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'leading' })]}
-        >
-          <Text
-            modifiers={[font({ size: 12, weight: 'semibold' }), foregroundStyle(palette.accent)]}
-          >
-            {props.dateLabel}
-          </Text>
-          <Spacer />
-          <Text
-            modifiers={[
-              font({ size: 15, weight: 'semibold', design: 'rounded' }),
-              foregroundStyle(palette.text),
-            ]}
-          >
-            {props.message}
-          </Text>
-        </VStack>
-      </Link>
-    );
-  }
+  const dateLabel = (color: string) => (
+    <Text modifiers={[font({ size: 12, weight: 'semibold' }), foregroundStyle(color)]}>
+      {props.dateLabel}
+    </Text>
+  );
 
   // The gauge draws only the ring; its own value label is not rendered by the widget runtime.
   const ring = (
@@ -63,8 +42,8 @@ function NutritionWidget(props: NutritionWidgetSnapshot, environment: WidgetEnvi
         modifiers={[
           gaugeStyle('circularCapacity'),
           tint(palette.accent),
-          frame({ width: ringSize * 0.7, height: ringSize * 0.7 }),
-          scaleEffect(1.43),
+          frame({ width: ringSize * gaugeInset, height: ringSize * gaugeInset }),
+          scaleEffect(1 / gaugeInset),
         ]}
       />
       <VStack spacing={0} modifiers={[frame({ width: ringSize - 28 })]}>
@@ -92,19 +71,36 @@ function NutritionWidget(props: NutritionWidgetSnapshot, environment: WidgetEnvi
     </ZStack>
   );
 
-  if (!isMedium) {
-    return (
-      <Link destination={props.url} modifiers={[background, open]}>
+  const body = () => {
+    if (props.state === 'stale') {
+      return (
+        <VStack
+          alignment="leading"
+          spacing={4}
+          modifiers={[frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'leading' })]}
+        >
+          {dateLabel(palette.accent)}
+          <Spacer />
+          <Text
+            modifiers={[
+              font({ size: 15, weight: 'semibold', design: 'rounded' }),
+              foregroundStyle(palette.text),
+            ]}
+          >
+            {props.refreshMessage}
+          </Text>
+        </VStack>
+      );
+    }
+
+    if (!isMedium) {
+      return (
         <VStack
           alignment="leading"
           spacing={0}
           modifiers={[frame({ maxWidth: Infinity, maxHeight: Infinity })]}
         >
-          <Text
-            modifiers={[font({ size: 12, weight: 'semibold' }), foregroundStyle(palette.secondary)]}
-          >
-            {props.dateLabel}
-          </Text>
+          {dateLabel(palette.secondary)}
           <Spacer />
           <HStack>
             <Spacer />
@@ -113,19 +109,13 @@ function NutritionWidget(props: NutritionWidgetSnapshot, environment: WidgetEnvi
           </HStack>
           <Spacer />
         </VStack>
-      </Link>
-    );
-  }
+      );
+    }
 
-  return (
-    <Link destination={props.url} modifiers={[background, open]}>
+    return (
       <HStack spacing={16} modifiers={[frame({ maxWidth: Infinity, maxHeight: Infinity })]}>
         <VStack alignment="leading" spacing={0}>
-          <Text
-            modifiers={[font({ size: 12, weight: 'semibold' }), foregroundStyle(palette.secondary)]}
-          >
-            {props.dateLabel}
-          </Text>
+          {dateLabel(palette.secondary)}
           <Spacer />
           {ring}
           <Spacer />
@@ -157,6 +147,15 @@ function NutritionWidget(props: NutritionWidgetSnapshot, environment: WidgetEnvi
           ))}
         </VStack>
       </HStack>
+    );
+  };
+
+  return (
+    <Link
+      destination={props.url}
+      modifiers={[containerBackground(palette.background, 'widget'), widgetURL(props.url)]}
+    >
+      {body()}
     </Link>
   );
 }

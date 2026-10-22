@@ -20,7 +20,7 @@ artwork could not be copied.
 
 ### Fix
 
-Widget snapshots never contain `null`: `targets` became the boolean `hasGoal` and `imageUri` is `''`
+Widget snapshots never contain `null`: the nullable `targets` object was removed (nothing rendered it) and `imageUri` is `''`
 when there is no artwork. `widgets/__tests__/widgetSnapshot.test.ts` walks the initial and built
 snapshots for nulls. Any new snapshot field must be a string, number, boolean, array or object.
 

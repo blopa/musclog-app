@@ -18,8 +18,9 @@ import { createWidget } from 'expo-widgets';
 import { INITIAL_NUTRITION_SNAPSHOT, type NutritionWidgetSnapshot } from './widgetSnapshot';
 
 // The widget runtime has no weights, so the row is laid out in fixed dp widths that fit the 4x1
-// footprint declared in app.json (about 264dp wide in total, so it also fits narrow phones). The root must stay a Button: it is the interaction target the
-// native provider turns into the deep link.
+// footprint declared in app.json (266dp including padding, so it also fits narrow phones; the
+// layout test holds it to MAX_ROW_DP). The root must stay a Button: it is the interaction target
+// the native provider turns into the deep link.
 function NutritionWidget(props: NutritionWidgetSnapshot) {
   'widget';
   const { palette } = props;
@@ -28,7 +29,7 @@ function NutritionWidget(props: NutritionWidgetSnapshot) {
       colors={{ containerColor: palette.background, contentColor: palette.text }}
       modifiers={[fillMaxSize(), cornerRadius(24)]}
     >
-      {props.message ? (
+      {props.state === 'stale' ? (
         <Column
           verticalArrangement="center"
           horizontalAlignment="start"
@@ -38,7 +39,7 @@ function NutritionWidget(props: NutritionWidgetSnapshot) {
             {props.dateLabel}
           </Text>
           <Text style={{ fontSize: 14, fontWeight: 'bold' }} color={palette.text}>
-            {props.message}
+            {props.refreshMessage}
           </Text>
         </Column>
       ) : (

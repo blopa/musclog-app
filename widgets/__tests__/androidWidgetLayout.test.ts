@@ -5,7 +5,7 @@ type Node = { name: string; props: Record<string, unknown>; children: Node[] };
 
 // The Android widget runtime (expo-widgets' ExpoWidgetEmittableTree) converts only these views and
 // silently ignores any other modifier, so a layout that leans on one renders differently than written.
-const SUPPORTED_VIEWS = new Set([
+const mockSupportedViews = [
   'Box',
   'Button',
   'Column',
@@ -14,7 +14,10 @@ const SUPPORTED_VIEWS = new Set([
   'Row',
   'Spacer',
   'Text',
-]);
+];
+const SUPPORTED_VIEWS = new Set(mockSupportedViews);
+// The 4x1 nutrition footprint on a narrow phone, in dp.
+const MAX_ROW_DP = 270;
 const SUPPORTED_MODIFIERS = new Set([
   'background',
   'cornerRadius',
@@ -43,11 +46,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
         .filter((child) => typeof child === 'object' && child !== null) as Node[],
     });
 
-  return Object.fromEntries(
-    ['Box', 'Button', 'Column', 'Image', 'LinearProgressIndicator', 'Row', 'Spacer', 'Text'].map(
-      (name) => [name, view(name)]
-    )
-  );
+  return Object.fromEntries(mockSupportedViews.map((name) => [name, view(name)]));
 });
 jest.mock('expo-widgets', () => ({
   createWidget: (_name: string, layout: unknown) => layout,
@@ -81,11 +80,10 @@ const layouts = {
 const palette = INITIAL_NUTRITION_SNAPSHOT.palette;
 const nutrition = {
   ...INITIAL_NUTRITION_SNAPSHOT,
-  hasGoal: true,
   calories: '1,300',
   calorieTarget: '/ 2,500 kcal',
   calorieProgress: 0.52,
-  message: '',
+  state: 'ready',
   macros: [
     { label: 'Protein', value: '132 g', progress: 0.7, color: palette.protein },
     { label: 'Carbs', value: '99 g', progress: 0.3, color: palette.carbs },
@@ -101,7 +99,14 @@ const cases: [string, keyof typeof layouts, object][] = [
   [
     'cycle with a day count',
     'Cycle',
-    { ...INITIAL_CYCLE_SNAPSHOT, title: 'Cycle', value: '12', caption: 'Day', detail: 'Oct 28' },
+    {
+      ...INITIAL_CYCLE_SNAPSHOT,
+      state: 'day',
+      title: 'Cycle',
+      value: '12',
+      caption: 'Day',
+      detail: 'Oct 28',
+    },
   ],
 ];
 
@@ -129,6 +134,8 @@ describe('Android widget layouts', () => {
   it('keeps the 4x1 nutrition row narrow enough for small phones', () => {
     const root = layouts.Nutrition()(nutrition);
     const row = root.children[0];
+    // A fixed width wins; otherwise a Row adds its children up and anything else is as wide as
+    // its widest child.
     const widthOf = (node: Node): number => {
       const modifiers = (node.props.modifiers ?? []) as { $type: string; width?: number }[];
       const fixed = modifiers.find((modifier) => modifier.$type === 'width');
@@ -136,12 +143,14 @@ describe('Android widget layouts', () => {
         return fixed.width;
       }
 
-      return node.children.reduce((sum, child) => sum + widthOf(child), 0);
+      const widths = node.children.map(widthOf);
+
+      return node.name === 'Row' ? widths.reduce((a, b) => a + b, 0) : Math.max(0, ...widths);
     };
     const padding = ((row.props.modifiers ?? []) as { $type: string; all?: number }[]).find(
       (modifier) => modifier.$type === 'paddingAll'
     )?.all;
 
-    expect(widthOf(row) + 2 * (padding ?? 0)).toBeLessThanOrEqual(280);
+    expect(widthOf(row) + 2 * (padding ?? 0)).toBeLessThanOrEqual(MAX_ROW_DP);
   });
 });

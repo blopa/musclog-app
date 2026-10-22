@@ -10,8 +10,7 @@ import { createWidget } from 'expo-widgets';
 
 import { type CycleWidgetSnapshot, INITIAL_CYCLE_SNAPSHOT } from './cycleWidgetSnapshot';
 
-// With nothing it may show (the private default) `value` is empty and this is only a quiet brand
-// shortcut. The root must stay a Button: it is the interaction target behind the deep link.
+// Outside the `day` state this is only a quiet brand shortcut. The root must stay a Button: it is the interaction target behind the deep link.
 function CycleWidget(props: CycleWidgetSnapshot) {
   'widget';
   const { palette } = props;
@@ -29,7 +28,7 @@ function CycleWidget(props: CycleWidgetSnapshot) {
           {props.title}
         </Text>
         <Spacer modifiers={[height(2)]} />
-        {props.value ? (
+        {props.state === 'day' ? (
           <Row verticalAlignment="bottom">
             <Text style={{ fontSize: 30, fontWeight: 'bold' }} color={palette.text}>
               {props.value}
@@ -44,7 +43,7 @@ function CycleWidget(props: CycleWidgetSnapshot) {
             {props.caption}
           </Text>
         )}
-        {props.detail ? (
+        {props.state === 'day' && props.detail !== '' ? (
           <Text style={{ fontSize: 10, fontWeight: 'bold' }} color={palette.accent}>
             {props.detail}
           </Text>

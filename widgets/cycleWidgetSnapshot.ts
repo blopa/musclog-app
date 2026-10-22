@@ -6,9 +6,15 @@ import { formatAppInteger } from '@/utils/formatAppNumber';
 
 import { INITIAL_WIDGET_PALETTE, type WidgetPalette } from './widgetSnapshot';
 
+/**
+ * `day` shows the day count; `private` is the quiet brand shortcut; `stale` asks to open the app.
+ * Only `day` carries a `value` or `detail`, and only `day` shows them.
+ */
+export type CycleWidgetState = 'day' | 'private' | 'stale';
+
 export type CycleWidgetSnapshot = {
+  state: CycleWidgetState;
   title: string;
-  /** The day count; empty whenever the widget has nothing it may show. */
   value: string;
   caption: string;
   /** The estimate line, detailed style only. */
@@ -31,6 +37,7 @@ export const CYCLE_WIDGET_URL = 'com.werules.logger://?action=open-cycle';
 const NEUTRAL_TITLE = 'Musclog';
 
 export const INITIAL_CYCLE_SNAPSHOT: CycleWidgetSnapshot = {
+  state: 'stale',
   title: NEUTRAL_TITLE,
   value: '',
   caption: 'Open Musclog to refresh',
@@ -119,21 +126,22 @@ export function buildCycleWidgetSnapshot({
   };
   const style = effectiveCycleWidgetStyle(inputs.lockScopes, inputs.style);
   if (style === 'discreet') {
-    return { ...base, caption: translate('widgets.cycle.privateCaption') };
+    return { ...base, state: 'private', caption: translate('widgets.cycle.privateCaption') };
   }
 
   const { cycle } = inputs;
   if (!cycle || cycle.timeline.elapsedDay == null) {
-    return { ...base, caption: refreshMessage };
+    return { ...base, state: 'stale', caption: refreshMessage };
   }
 
   const value = formatAppInteger(locale, cycle.timeline.elapsedDay);
   if (style === 'subtle') {
-    return { ...base, value, caption: translate('widgets.cycle.day') };
+    return { ...base, state: 'day', value, caption: translate('widgets.cycle.day') };
   }
 
   return {
     ...base,
+    state: 'day',
     title: translate('widgets.cycle.title'),
     value,
     caption: translate('widgets.cycle.day'),
@@ -143,12 +151,13 @@ export function buildCycleWidgetSnapshot({
 
 /** What the home screen keeps after midnight: yesterday's day count is no longer true. */
 export function expiredCycleWidgetSnapshot(snapshot: CycleWidgetSnapshot): CycleWidgetSnapshot {
-  if (snapshot.value === '') {
+  if (snapshot.state !== 'day') {
     return snapshot;
   }
 
   return {
     ...snapshot,
+    state: 'stale',
     title: NEUTRAL_TITLE,
     value: '',
     detail: '',

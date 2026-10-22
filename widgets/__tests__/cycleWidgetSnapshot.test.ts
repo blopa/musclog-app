@@ -83,6 +83,7 @@ describe('effectiveCycleWidgetStyle', () => {
 describe('buildCycleWidgetSnapshot', () => {
   it('shows nothing about the cycle in the discreet style, even with data to show', () => {
     const snapshot = build(inputs({ style: 'discreet' }));
+    expect(snapshot.state).toBe('private');
     expect(snapshot.value).toBe('');
     expect(snapshot.detail).toBe('');
     expect(snapshot.title).toBe('Musclog');
@@ -101,7 +102,12 @@ describe('buildCycleWidgetSnapshot', () => {
 
   it('shows only the day number in the subtle style', () => {
     const snapshot = build(inputs({ style: 'subtle' }));
-    expect(snapshot).toMatchObject({ title: 'Musclog', value: '14', caption: 'widgets.cycle.day' });
+    expect(snapshot).toMatchObject({
+      state: 'day',
+      title: 'Musclog',
+      value: '14',
+      caption: 'widgets.cycle.day',
+    });
     expect(snapshot.detail).toBe('');
   });
 
@@ -151,6 +157,7 @@ describe('buildCycleWidgetSnapshot', () => {
     ['no logged period', { timeline: { ...timeline(), elapsedDay: null }, activePeriod: null }],
   ])('asks to open the app with %s', (_name, cycle) => {
     const snapshot = build({ lockScopes: [], style: 'detailed', cycle });
+    expect(snapshot.state).toBe('stale');
     expect(snapshot.value).toBe('');
     expect(snapshot.caption).toBe('widgets.refresh');
   });
@@ -170,6 +177,7 @@ describe('expiredCycleWidgetSnapshot', () => {
   it('drops yesterday’s day count and estimate', () => {
     const expired = expiredCycleWidgetSnapshot(build(inputs()));
     expect(expired).toMatchObject({
+      state: 'stale',
       title: 'Musclog',
       value: '',
       detail: '',

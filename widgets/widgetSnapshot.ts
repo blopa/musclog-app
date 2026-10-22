@@ -17,18 +17,17 @@ export type WidgetPalette = {
   fat: string;
 };
 
+/** `stale` shows only `refreshMessage`: no values yet, or yesterday's after midnight. */
+export type NutritionWidgetState = 'ready' | 'stale';
+
 export type NutritionWidgetSnapshot = {
-  dateKey: string;
+  state: NutritionWidgetState;
   dateLabel: string;
-  totals: { calories: number; protein: number; carbs: number; fat: number };
-  /** Whether a goal exists. Never a nullable object: a JS null reaches UserDefaults as NSNull, which it rejects. */
-  hasGoal: boolean;
   calories: string;
   calorieTarget: string;
   calorieProgress: number;
   macros: { label: string; value: string; progress: number; color: string }[];
   palette: WidgetPalette;
-  message: string;
   refreshMessage: string;
   url: string;
 };
@@ -59,16 +58,13 @@ export const INITIAL_WIDGET_PALETTE = widgetPalette(themeColorsById[DEFAULT_THEM
 export const NUTRITION_WIDGET_URL = 'com.werules.logger://?action=open-nutrition';
 export const CAMERA_WIDGET_URL = 'com.werules.logger://?action=open-camera';
 export const INITIAL_NUTRITION_SNAPSHOT: NutritionWidgetSnapshot = {
-  dateKey: '',
+  state: 'stale',
   dateLabel: 'Musclog',
-  totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
-  hasGoal: false,
   calories: '—',
   calorieTarget: '',
   calorieProgress: 0,
   macros: [],
   palette: INITIAL_WIDGET_PALETTE,
-  message: 'Open Musclog to refresh',
   refreshMessage: 'Open Musclog to refresh',
   url: NUTRITION_WIDGET_URL,
 };
@@ -113,15 +109,8 @@ export function buildNutritionWidgetSnapshot({
   ] as const;
 
   return {
-    dateKey: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+    state: 'ready',
     dateLabel: new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(date),
-    totals: {
-      calories: nonNegative(nutrients.calories),
-      protein: nonNegative(nutrients.protein),
-      carbs: nonNegative(carbs),
-      fat: nonNegative(nutrients.fat),
-    },
-    hasGoal: goal != null,
     calories: formatAppInteger(locale, Math.round(nonNegative(nutrients.calories))),
     calorieTarget: goal
       ? `/ ${formatAppInteger(locale, Math.round(nonNegative(goal.totalCalories)))} ${translate('common.kcal')}`
@@ -134,7 +123,6 @@ export function buildNutritionWidgetSnapshot({
       color: palette[key],
     })),
     palette,
-    message: '',
     refreshMessage: translate('widgets.refresh'),
     url: NUTRITION_WIDGET_URL,
   };
@@ -143,10 +131,10 @@ export function buildNutritionWidgetSnapshot({
 export function expiredWidgetSnapshot(snapshot: NutritionWidgetSnapshot): NutritionWidgetSnapshot {
   return {
     ...snapshot,
+    state: 'stale',
     calories: '—',
     calorieTarget: '',
     calorieProgress: 0,
     macros: [],
-    message: snapshot.refreshMessage,
   };
 }
