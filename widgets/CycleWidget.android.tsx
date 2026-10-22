@@ -43,11 +43,6 @@ function CycleWidget(props: CycleWidgetSnapshot) {
             {props.caption}
           </Text>
         )}
-        {props.state === 'day' && props.detail !== '' ? (
-          <Text style={{ fontSize: 10, fontWeight: 'bold' }} color={palette.accent}>
-            {props.detail}
-          </Text>
-        ) : null}
       </Column>
     </Button>
   );

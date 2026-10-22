@@ -15,7 +15,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Compact quick-action tiles, configurable in Appearance and home settings: pick two to four of Start workout, Track food, Scan barcode, AI photo, My meals and Add note, and they appear in the order you pick them
 - Recent foods and recent workouts previews
 - Weekly Review below Home actions: a compact card while a week is waiting, otherwise a one-line entry naming the next review, plus a prominent Resume card while a workout is active
-- Android and iOS home screen widgets: Nutrition Progress, Smart Camera and a read-only Cycle widget, following the app palette and language. The Cycle widget is private by default ("Tap to open") and shows the cycle day, or day plus the estimated range, only in the subtle/detailed notification styles and never while an app lock is on. Nutrition shows dated calorie and macro progress as a calorie ring beside a bar per macro (a 4×2 widget on Android, matching the iOS medium widget); iOS expires old-day values to a refresh prompt. Android users re-add widgets once after the Expo Widgets migration.
+- Android and iOS home screen widgets: Nutrition Progress, Smart Camera and a read-only Cycle widget, following the app palette and language. The Cycle widget shows the cycle day under the Musclog brand line, never what it is counting; a cycle or whole-app lock turns it into a private "Tap to open" shortcut. Nutrition shows dated calorie and macro progress as a calorie ring beside a bar per macro (a 4×2 widget on Android, matching the iOS medium widget); iOS expires old-day values to a refresh prompt. Android users re-add widgets once after the Expo Widgets migration.
 
 ---
 

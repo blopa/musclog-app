@@ -24,6 +24,29 @@ Widget snapshots never contain `null`: the nullable `targets` object was removed
 when there is no artwork. `widgets/__tests__/widgetSnapshot.test.ts` walks the initial and built
 snapshots for nulls. Any new snapshot field must be a string, number, boolean, array or object.
 
+## iOS camera widget never showed its artwork: the image was larger than the widget (October 2026)
+
+### Symptom
+
+The iOS Smart Camera widget kept showing an older layout (or an SF Symbol) instead of the artwork,
+with no error in the app.
+
+### Cause
+
+`assets/camera-widget.png` was 1033×1024 px. WidgetKit archives each rendered entry and rejects any
+image larger than the widget itself (`WidgetArchiver.ArchivingError.imageTooLarge`, about
+1073×976 px for a small widget on a 3x phone), so every timeline request failed and the home screen
+kept the last render that had succeeded. The error only appears in the extension's log
+(`log show --predicate 'process == "ExpoWidgetsTarget"'`). Separately, `WidgetSync` copied the
+artwork into the App Group only when the file was missing, so a replaced asset never reached an
+install that already held the old copy.
+
+### Fix
+
+The artwork is 512 px and `widgets/__tests__/widgetConfiguration.test.ts` fails above that.
+`sharedCameraImage` replaces the copy on every launch and checks a fresh `File` handle afterwards (the
+original handle still reports the state from before `delete()`).
+
 ## Giant logo flashing on boot: the splash's classes did not exist yet (October 2026)
 
 ### Symptom

@@ -34,11 +34,7 @@ import {
 } from './widgetSnapshot';
 
 /** What to publish when the cycle records cannot be read: nothing, never the previous values. */
-const UNREADABLE_CYCLE_INPUTS: CycleWidgetInputs = {
-  lockScopes: ['app'],
-  style: 'discreet',
-  cycle: null,
-};
+const UNREADABLE_CYCLE_INPUTS: CycleWidgetInputs = { lockScopes: ['app'], elapsedDay: null };
 
 async function readCycleInputs(): Promise<CycleWidgetInputs> {
   try {
@@ -86,12 +82,21 @@ function sharedCameraImage(): Promise<string> {
     }
 
     const asset = await Asset.fromModule(require('../assets/camera-widget.png')).downloadAsync();
+    // Replaced once per launch rather than only when missing, so a changed artwork reaches
+    // installs that already hold the old file (a 1024px copy once broke the iOS tile for good).
     const destination = new File(widgetsDirectory, 'smart-camera.png');
-    if (!destination.exists && asset.localUri) {
+    if (asset.localUri) {
+      if (destination.exists) {
+        destination.delete();
+      }
+
       new File(asset.localUri).copy(destination);
     }
 
-    return destination.exists ? destination.uri : '';
+    // A fresh handle: the one above still reports the state from before delete() and copy().
+    const copied = new File(widgetsDirectory, 'smart-camera.png');
+
+    return copied.exists ? copied.uri : '';
   })().catch((error) => {
     cameraImage = undefined;
     void handleError(error, 'widgets.cameraArtwork', { showSnackbar: false });
@@ -103,13 +108,7 @@ function sharedCameraImage(): Promise<string> {
 
 export function WidgetSync() {
   const { theme } = useThemeContext();
-  const {
-    isLoading,
-    appLockScopes,
-    cycleNotificationStyle,
-    cycleShowPredictions,
-    cycleShowFertility,
-  } = useSettings();
+  const { isLoading, appLockScopes } = useSettings();
   const { i18n, t } = useTranslation();
   const today = useLocalToday();
   const locale = i18n.resolvedLanguage ?? i18n.language;
@@ -157,7 +156,7 @@ export function WidgetSync() {
             inputs: await readCycleInputs(),
             palette,
             locale,
-            translate: (key, options) => t(key, options),
+            translate: (key) => t(key),
           }),
         };
       },
@@ -208,19 +207,9 @@ export function WidgetSync() {
       unsubscribeReset();
       subscription.remove();
     };
-    // The lock and the style decide what the cycle widget may say, so a change to either must
-    // re-publish it at once rather than at the next foreground.
-  }, [
-    isLoading,
-    locale,
-    t,
-    theme,
-    today,
-    appLockScopes,
-    cycleNotificationStyle,
-    cycleShowPredictions,
-    cycleShowFertility,
-  ]);
+    // The lock decides whether the cycle widget may show the day, so a change to it must
+    // re-publish at once rather than at the next foreground.
+  }, [isLoading, locale, t, theme, today, appLockScopes]);
 
   return null;
 }

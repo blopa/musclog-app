@@ -44,3 +44,14 @@ it('configures both platforms, previews, identities, and existing compact Androi
     expect(readFileSync(join(root, path), 'utf8')).toContain(config.groupIdentifier);
   }
 });
+
+// WidgetKit refuses to archive an image larger than the widget itself
+// (`ArchivingError.imageTooLarge`) and silently keeps the last good render, so the camera tile's
+// artwork must stay well under a small widget's pixel size (about 1073x976 px on a 3x phone).
+it('keeps the camera widget artwork small enough for WidgetKit to archive', () => {
+  const png = readFileSync(join(root, 'assets/camera-widget.png'));
+  const width = png.readUInt32BE(16);
+  const height = png.readUInt32BE(20);
+
+  expect(Math.max(width, height)).toBeLessThanOrEqual(512);
+});

@@ -1,52 +1,42 @@
-import { Image, Link, RoundedRectangle, Spacer, Text, VStack, ZStack } from '@expo/ui/swift-ui';
+import { Image, Link } from '@expo/ui/swift-ui';
 import {
+  accessibilityLabel,
+  aspectRatio,
   containerBackground,
-  font,
-  foregroundStyle,
   frame,
-  lineLimit,
-  minimumScaleFactor,
-  opacity,
+  resizable,
   widgetURL,
 } from '@expo/ui/swift-ui/modifiers';
 import { createWidget } from 'expo-widgets';
 
 import { type CameraWidgetSnapshot, INITIAL_CAMERA_SNAPSHOT } from './widgetSnapshot';
 
-// iOS draws the shortcut from an SF Symbol rather than the bitmap Android uses, so it follows the
-// theme accent and never depends on a file in the shared container being readable.
+// A shortcut, not a dashboard: like an app icon, the tile is the artwork and nothing else (the
+// system already prints the app's name under it). The artwork is drawn for a white page, so the
+// tile is white whatever the theme. Until the artwork has been copied to the shared container the
+// tile falls back to the accent with a white SF Symbol, which still reads as the camera.
 function SmartCameraWidget(props: CameraWidgetSnapshot) {
   'widget';
-  const { palette } = props;
+  const hasArtwork = props.imageUri !== '';
+  const fill = frame({ maxWidth: Infinity, maxHeight: Infinity });
+
   return (
     <Link
       destination={props.url}
-      modifiers={[containerBackground(palette.background, 'widget'), widgetURL(props.url)]}
+      modifiers={[
+        containerBackground(hasArtwork ? '#FFFFFF' : props.palette.accent, 'widget'),
+        widgetURL(props.url),
+        accessibilityLabel(props.label),
+      ]}
     >
-      <VStack
-        alignment="leading"
-        spacing={0}
-        modifiers={[frame({ maxWidth: Infinity, maxHeight: Infinity, alignment: 'leading' })]}
-      >
-        <ZStack alignment="center" modifiers={[frame({ width: 52, height: 52 })]}>
-          <RoundedRectangle
-            cornerRadius={16}
-            modifiers={[foregroundStyle(palette.accent), opacity(0.16)]}
-          />
-          <Image systemName="barcode.viewfinder" size={28} color={palette.accent} />
-        </ZStack>
-        <Spacer />
-        <Text
-          modifiers={[
-            font({ size: 17, weight: 'bold', design: 'rounded' }),
-            foregroundStyle(palette.text),
-            lineLimit(2),
-            minimumScaleFactor(0.8),
-          ]}
-        >
-          {props.label}
-        </Text>
-      </VStack>
+      {hasArtwork ? (
+        <Image
+          uiImage={props.imageUri}
+          modifiers={[resizable(), aspectRatio({ contentMode: 'fit' }), fill]}
+        />
+      ) : (
+        <Image systemName="barcode.viewfinder" size={64} color="#FFFFFF" modifiers={[fill]} />
+      )}
     </Link>
   );
 }

@@ -9,43 +9,40 @@ import {
 import { SettingsService } from '@/database/services/SettingsService';
 import { buildCycleSnapshot } from '@/utils/cycle/cycleSnapshot';
 
-import { type CycleWidgetInputs, cycleWidgetNeedsRecords } from './cycleWidgetSnapshot';
+import { type CycleWidgetInputs, cycleWidgetMayShowDay } from './cycleWidgetSnapshot';
 
 /**
- * Reads what the cycle widget may show. The lock and the style are read first and the encrypted
- * records only when they would be used, so with the defaults (discreet) nothing is decrypted.
+ * Reads what the cycle widget may show. The lock is read first and the encrypted records only when
+ * the day count may be shown, so under a cycle or whole-app lock nothing is decrypted.
  */
 export async function loadCycleWidgetInputs(): Promise<CycleWidgetInputs> {
-  const [lockScopes, style] = await Promise.all([
-    SettingsService.get(SETTINGS.appLockScopes),
-    SettingsService.get(SETTINGS.cycleNotificationStyle),
-  ]);
-  if (!cycleWidgetNeedsRecords(lockScopes, style)) {
-    return { lockScopes, style, cycle: null };
+  const lockScopes = await SettingsService.get(SETTINGS.appLockScopes);
+  if (!cycleWidgetMayShowDay(lockScopes)) {
+    return { lockScopes, elapsedDay: null };
   }
 
   const cycle = (await CycleRepository.cycles().fetch()).find((c) => c.isActive);
   if (!cycle) {
-    return { lockScopes, style, cycle: null };
+    return { lockScopes, elapsedDay: null };
   }
 
-  const [periods, contexts, config, showPredictions, showFertility] = await Promise.all([
+  const [periods, contexts, config] = await Promise.all([
     CycleRepository.periods(cycle.id).fetch().then(readPeriods),
     CycleRepository.contexts(cycle.id).fetch().then(readContexts),
     readCycleConfig(cycle),
-    SettingsService.get(SETTINGS.cycleShowPredictions),
-    SettingsService.get(SETTINGS.cycleShowFertility),
   ]);
-  const { timeline, activePeriod } = buildCycleSnapshot({
+  // The day count does not depend on predictions, so none are computed for a surface that never
+  // shows them.
+  const { timeline } = buildCycleSnapshot({
     periods,
     contexts,
     config,
     nowMs: Date.now(),
-    showPredictions,
-    showFertility,
+    showPredictions: false,
+    showFertility: false,
   });
 
-  return { lockScopes, style, cycle: { timeline, activePeriod } };
+  return { lockScopes, elapsedDay: timeline.elapsedDay };
 }
 
 /** Calls `listener` after any write to the tables the widget is derived from (imports included). */

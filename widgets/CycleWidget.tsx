@@ -48,18 +48,6 @@ function CycleWidget(props: CycleWidgetSnapshot) {
             >
               {props.caption}
             </Text>
-            {props.detail ? (
-              <Text
-                modifiers={[
-                  font({ size: 12, weight: 'semibold' }),
-                  foregroundStyle(palette.accent),
-                  lineLimit(2),
-                  minimumScaleFactor(0.8),
-                ]}
-              >
-                {props.detail}
-              </Text>
-            ) : null}
           </VStack>
         ) : (
           <HStack>

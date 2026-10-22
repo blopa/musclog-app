@@ -74,7 +74,7 @@ jest.mock('@/widgets/CycleWidget', () => ({
   default: { updateTimeline: jest.fn(), updateSnapshot: jest.fn() },
 }));
 jest.mock('@/widgets/cycleWidgetData', () => ({
-  loadCycleWidgetInputs: jest.fn(async () => ({ lockScopes: [], style: 'discreet', cycle: null })),
+  loadCycleWidgetInputs: jest.fn(async () => ({ lockScopes: ['cycle'], elapsedDay: null })),
   subscribeToCycleChanges: jest.fn(() => jest.fn()),
 }));
 jest.mock('@/widgets/SmartCameraWidget', () => ({
@@ -160,7 +160,7 @@ describe('cycle widget', () => {
     await waitFor(() => expect(CycleWidget.updateTimeline).toHaveBeenCalledTimes(1));
     const [{ props }] = (CycleWidget.updateTimeline as jest.Mock).mock.calls[0][0];
     expect(props.value).toBe('');
-    expect(props.detail).toBe('');
+    expect(props.state).toBe('private');
     unmount();
   });
 });

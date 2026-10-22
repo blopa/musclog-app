@@ -16,7 +16,6 @@ const mockTheme = { colors: {} };
 let mockSettings = {
   isLoading: false,
   appLockScopes: [] as string[],
-  cycleNotificationStyle: 'detailed',
 };
 
 jest.mock('react-native', () => ({
@@ -75,17 +74,13 @@ jest.mock('@/widgets/widgetSnapshot', () => ({
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockSettings = { isLoading: false, appLockScopes: [], cycleNotificationStyle: 'detailed' };
-  mockReadCycleInputs.mockResolvedValue({
-    lockScopes: [],
-    style: 'detailed',
-    cycle: { timeline: { elapsedDay: 12, prediction: { state: 'hidden' } }, activePeriod: null },
-  });
+  mockSettings = { isLoading: false, appLockScopes: [] };
+  mockReadCycleInputs.mockResolvedValue({ lockScopes: [], elapsedDay: 12 });
   jest.mocked(NutritionService.getDailyNutrients).mockResolvedValue({} as never);
 });
 
 it.each(['android', 'ios'])(
-  'hides cycle details despite nutrition failure on %s',
+  'hides the cycle day under a lock despite nutrition failure on %s',
   async (platform) => {
     const { Platform } = jest.requireMock('react-native');
     Platform.OS = platform;
@@ -99,15 +94,11 @@ it.each(['android', 'ios'])(
     jest
       .mocked(NutritionService.getDailyNutrients)
       .mockRejectedValue(new Error('nutrition failed'));
-    mockReadCycleInputs.mockResolvedValue({
-      lockScopes: ['cycle'],
-      style: 'detailed',
-      cycle: null,
-    });
+    mockReadCycleInputs.mockResolvedValue({ lockScopes: ['cycle'], elapsedDay: null });
     mockSettings = { ...mockSettings, appLockScopes: ['cycle'] };
     view.rerender(createElement(WidgetSync));
     await waitFor(() => expect(latestCycle()?.value).toBe(''));
-    expect(latestCycle().detail).toBe('');
+    expect(latestCycle().state).toBe('private');
   }
 );
 
@@ -119,7 +110,7 @@ it('publishes the private fallback while nutrition never finishes', async () => 
   render(createElement(WidgetSync));
   await waitFor(() =>
     expect(mockCycleSnapshot).toHaveBeenCalledWith(
-      expect.objectContaining({ value: '', detail: '', caption: 'widgets.cycle.privateCaption' })
+      expect.objectContaining({ value: '', caption: 'widgets.cycle.privateCaption' })
     )
   );
   expect(mockNutritionSnapshot).not.toHaveBeenCalled();
