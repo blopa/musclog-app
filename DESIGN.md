@@ -465,7 +465,7 @@ Weekly Review leads with the week and a Training / Nutrition progress pair, then
 
 Nutrition Progress shows the data date, consumed/target calories, and protein, digestible-carbohydrate,
 and fat progress. Bars are bounded to 0–100%; missing goals never appear as fabricated zero targets.
-Android retains the compact 4×1 nutrition and 1×1 camera sizes. iOS supports small/medium nutrition
+Android Nutrition is 4×2 (the iOS medium footprint) and the camera 1×1. iOS supports small/medium nutrition
 and a small camera widget. Colors and translated copy are supplied from the app’s selected palette
 and language, respecting iOS tinting. Empty/initial widgets invite opening Musclog; cached values
 retain their date, and the iOS midnight timeline replaces expired values with a refresh prompt.
@@ -476,9 +476,14 @@ a progress ring (small: ring only; medium: ring beside one labelled bar per macr
 shortcut is an accent-tinted symbol tile with its label, and Cycle shows the day count large with the
 caption beneath, or only the brand line and a quiet arrow while private. Widget layouts are
 serialized and evaluated in the extension, so a layout function may use only its imports and locals,
-and `widgetFamily` from the environment chooses small versus medium. Android uses the same hierarchy
-in fixed dp widths because the widget runtime ignores weights; its root stays a button because that is
-the interaction target behind the deep link. The 4×1 Nutrition row totals about 264dp so it fits narrow
-phones, and the camera artwork sits on a white tile because it is drawn for a white page.
-`widgets/__tests__/androidWidgetLayout.test.ts` evaluates each Android layout and fails on a view or
-modifier the runtime would silently ignore (such as `weight`) or a row wider than 280dp.
+and `widgetFamily` from the environment chooses small versus medium. Android Nutrition mirrors the iOS
+medium layout — date over a calorie ring, then a labelled bar per macro on a translucent `track` —
+and its root stays a button because that is the interaction target behind the deep link. The widget
+runtime ignores weights, so the ring column has a fixed width and the macro column, as the row's last
+child, fills the rest; a value is pushed to the far edge by stacking a full-width, end-aligned row over
+its label in a `Box`. The runtime draws a ring at a fixed 32dp and ignores its `strokeWidth`: the
+box-filling, thin, 12-o'clock-start ring comes from `plugins/withWidgetProgressRing.js`, which
+overrides peek-glance's `peek_determinate_circular_progress` layout and drawable by resource name. The camera artwork sits on a white tile
+because it is drawn for a white page. `widgets/__tests__/androidWidgetLayout.test.ts` evaluates each
+Android layout and fails on a view or modifier the runtime would silently ignore (such as `weight`) or
+a macro column left narrower than 110dp on the 250dp minimum footprint.

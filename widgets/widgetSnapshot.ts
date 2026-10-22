@@ -15,6 +15,8 @@ export type WidgetPalette = {
   protein: string;
   carbs: string;
   fat: string;
+  /** The unfilled part of a progress ring or bar: `text` at low alpha, so it suits every palette. */
+  track: string;
 };
 
 /** `stale` shows only `refreshMessage`: no values yet, or yesterday's after midnight. */
@@ -40,6 +42,13 @@ export type CameraWidgetSnapshot = {
   url: string;
 };
 
+// Every palette color is `#rrggbb`; the widget runtimes read `#rrggbbaa` in CSS byte order.
+const TRACK_ALPHA = '1f';
+
+export function widgetTrackColor(text: string): string {
+  return /^#[0-9a-f]{6}$/i.test(text) ? `${text}${TRACK_ALPHA}` : text;
+}
+
 export function widgetPalette(
   colors: Pick<Theme['colors'], 'background' | 'text' | 'accent' | 'macros'>
 ): WidgetPalette {
@@ -51,6 +60,7 @@ export function widgetPalette(
     protein: colors.macros.protein.bg,
     carbs: colors.macros.carbs.bg,
     fat: colors.macros.fat.bg,
+    track: widgetTrackColor(colors.text.primary),
   };
 }
 

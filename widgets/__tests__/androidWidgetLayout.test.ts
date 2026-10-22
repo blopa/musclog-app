@@ -8,6 +8,7 @@ type Node = { name: string; props: Record<string, unknown>; children: Node[] };
 const mockSupportedViews = [
   'Box',
   'Button',
+  'CircularProgressIndicator',
   'Column',
   'Image',
   'LinearProgressIndicator',
@@ -16,8 +17,10 @@ const mockSupportedViews = [
   'Text',
 ];
 const SUPPORTED_VIEWS = new Set(mockSupportedViews);
-// The 4x1 nutrition footprint on a narrow phone, in dp.
-const MAX_ROW_DP = 270;
+// The nutrition widget's declared minWidth in app.json, in dp: the narrowest it can be placed.
+const NUTRITION_MIN_WIDTH_DP = 250;
+// Room the macro column needs for a label, its value and a readable bar.
+const MIN_MACRO_COLUMN_DP = 110;
 const SUPPORTED_MODIFIERS = new Set([
   'background',
   'cornerRadius',
@@ -131,26 +134,41 @@ describe('Android widget layouts', () => {
     }
   );
 
-  it('keeps the 4x1 nutrition row narrow enough for small phones', () => {
+  it('leaves the macro column room to fill on the narrowest 4x2 footprint', () => {
     const root = layouts.Nutrition()(nutrition);
     const row = root.children[0];
-    // A fixed width wins; otherwise a Row adds its children up and anything else is as wide as
-    // its widest child.
-    const widthOf = (node: Node): number => {
-      const modifiers = (node.props.modifiers ?? []) as { $type: string; width?: number }[];
-      const fixed = modifiers.find((modifier) => modifier.$type === 'width');
-      if (fixed?.width != null) {
-        return fixed.width;
+    type Modifier = { $type: string; width?: number; all?: number };
+    const modifiersOf = (node: Node) => (node.props.modifiers ?? []) as Modifier[];
+    const fixedWidth = (node: Node) =>
+      modifiersOf(node).find((modifier) => modifier.$type === 'width')?.width;
+    const padding = modifiersOf(row).find((modifier) => modifier.$type === 'paddingAll')?.all ?? 0;
+    const macroColumn = row.children[row.children.length - 1];
+    const fixed = row.children.slice(0, -1).map(fixedWidth);
+
+    // The runtime has no weights: everything before the macro column is a fixed width, and the
+    // column, as the last child, takes what is left.
+    expect(fixed.every((value) => typeof value === 'number')).toBe(true);
+    expect(modifiersOf(macroColumn).some((modifier) => modifier.$type === 'fillMaxWidth')).toBe(
+      true
+    );
+    const used = 2 * padding + (fixed as number[]).reduce((a, b) => a + b, 0);
+    expect(NUTRITION_MIN_WIDTH_DP - used).toBeGreaterThanOrEqual(MIN_MACRO_COLUMN_DP);
+    expect(macroColumn.children).toHaveLength(nutrition.macros.length);
+  });
+
+  it('draws the calories on a ring tinted from the palette', () => {
+    const rings: Node[] = [];
+    walk(layouts.Nutrition()(nutrition), (node) => {
+      if (node.name === 'CircularProgressIndicator') {
+        rings.push(node);
       }
+    });
 
-      const widths = node.children.map(widthOf);
-
-      return node.name === 'Row' ? widths.reduce((a, b) => a + b, 0) : Math.max(0, ...widths);
-    };
-    const padding = ((row.props.modifiers ?? []) as { $type: string; all?: number }[]).find(
-      (modifier) => modifier.$type === 'paddingAll'
-    )?.all;
-
-    expect(widthOf(row) + 2 * (padding ?? 0)).toBeLessThanOrEqual(MAX_ROW_DP);
+    expect(rings).toHaveLength(1);
+    expect(rings[0].props).toMatchObject({
+      progress: nutrition.calorieProgress,
+      color: palette.accent,
+      trackColor: palette.track,
+    });
   });
 });

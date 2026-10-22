@@ -17,7 +17,13 @@ it('configures both platforms, previews, identities, and existing compact Androi
     'SmartCamera',
     'Cycle',
   ]);
-  expect(config.widgets[0].android).toMatchObject({ targetCellWidth: 4, targetCellHeight: 1 });
+  // The nutrition ring needs two rows; this matches the iOS medium family.
+  expect(config.widgets[0].android).toMatchObject({
+    minWidth: 250,
+    minHeight: 110,
+    targetCellWidth: 4,
+    targetCellHeight: 2,
+  });
   expect(config.widgets[1].android).toMatchObject({ targetCellWidth: 1, targetCellHeight: 1 });
   expect(config.widgets[2].android).toMatchObject({ targetCellWidth: 2, targetCellHeight: 1 });
   expect(config.widgets[0].ios.supportedFamilies).toEqual(['systemSmall', 'systemMedium']);

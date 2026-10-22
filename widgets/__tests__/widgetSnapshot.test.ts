@@ -5,6 +5,7 @@ import {
   INITIAL_NUTRITION_SNAPSHOT,
   INITIAL_WIDGET_PALETTE,
   widgetProgress,
+  widgetTrackColor,
 } from '../widgetSnapshot';
 
 const date = new Date(2026, 9, 17, 12);
@@ -48,6 +49,13 @@ describe('nutrition widget snapshots', () => {
     expect(snapshot.calories).toBe('900');
     expect(snapshot.calorieTarget).toBe('common.kcal');
     expect(snapshot.macros.every((macro) => macro.progress === 0)).toBe(true);
+  });
+
+  it('derives a translucent track from the text color', () => {
+    expect(widgetTrackColor('#0f1a16')).toBe('#0f1a161f');
+    // Anything that is not plain #rrggbb is passed through rather than corrupted.
+    expect(widgetTrackColor('rgba(1, 2, 3, 0.5)')).toBe('rgba(1, 2, 3, 0.5)');
+    expect(INITIAL_WIDGET_PALETTE.track).toBe(`${INITIAL_WIDGET_PALETTE.text}1f`);
   });
 
   it('publishes translated copy, the selected palette, and a localized date', () => {
