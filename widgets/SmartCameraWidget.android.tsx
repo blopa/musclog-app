@@ -1,11 +1,12 @@
-import { Button, Column, Image, Text } from '@expo/ui/jetpack-compose';
-import { cornerRadius, fillMaxSize, size } from '@expo/ui/jetpack-compose/modifiers';
+import { Box, Button, Column, Image, Text } from '@expo/ui/jetpack-compose';
+import { background, cornerRadius, fillMaxSize, size } from '@expo/ui/jetpack-compose/modifiers';
 import { createWidget } from 'expo-widgets';
 
 import { type CameraWidgetSnapshot, INITIAL_CAMERA_SNAPSHOT } from './widgetSnapshot';
 
-// The root must stay a Button: it is the interaction target the native provider turns into the
-// deep link. The artwork sits on the theme background; the label is the fallback without it.
+// The artwork is drawn for a white page, so it sits on a white rounded tile instead of the theme
+// background: it stays legible in every palette. The root must stay a Button: it is the interaction
+// target the native provider turns into the deep link.
 function SmartCameraWidget(props: CameraWidgetSnapshot) {
   'widget';
   const { palette } = props;
@@ -16,11 +17,16 @@ function SmartCameraWidget(props: CameraWidgetSnapshot) {
     >
       <Column verticalArrangement="center" horizontalAlignment="center" modifiers={[fillMaxSize()]}>
         {props.imageUri ? (
-          <Image
-            source={{ uri: props.imageUri }}
-            contentDescription={props.label}
-            modifiers={[size(52, 52)]}
-          />
+          <Box
+            contentAlignment="center"
+            modifiers={[size(54, 54), cornerRadius(16), background('#FFFFFF')]}
+          >
+            <Image
+              source={{ uri: props.imageUri }}
+              contentDescription={props.label}
+              modifiers={[size(44, 44)]}
+            />
+          </Box>
         ) : (
           <Text style={{ fontSize: 12, fontWeight: 'bold' }} color={palette.accent}>
             {props.label}

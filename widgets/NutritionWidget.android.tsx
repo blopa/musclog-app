@@ -18,7 +18,7 @@ import { createWidget } from 'expo-widgets';
 import { INITIAL_NUTRITION_SNAPSHOT, type NutritionWidgetSnapshot } from './widgetSnapshot';
 
 // The widget runtime has no weights, so the row is laid out in fixed dp widths that fit the 4x1
-// footprint declared in app.json. The root must stay a Button: it is the interaction target the
+// footprint declared in app.json (about 264dp wide in total, so it also fits narrow phones). The root must stay a Button: it is the interaction target the
 // native provider turns into the deep link.
 function NutritionWidget(props: NutritionWidgetSnapshot) {
   'widget';
@@ -32,7 +32,7 @@ function NutritionWidget(props: NutritionWidgetSnapshot) {
         <Column
           verticalArrangement="center"
           horizontalAlignment="start"
-          modifiers={[fillMaxSize(), paddingAll(14)]}
+          modifiers={[fillMaxSize(), paddingAll(12)]}
         >
           <Text style={{ fontSize: 11, fontWeight: 'bold' }} color={palette.accent}>
             {props.dateLabel}
@@ -45,13 +45,13 @@ function NutritionWidget(props: NutritionWidgetSnapshot) {
         <Row
           verticalAlignment="center"
           horizontalArrangement="start"
-          modifiers={[fillMaxSize(), paddingAll(14)]}
+          modifiers={[fillMaxSize(), paddingAll(12)]}
         >
-          <Column verticalArrangement="center" horizontalAlignment="start" modifiers={[width(88)]}>
+          <Column verticalArrangement="center" horizontalAlignment="start" modifiers={[width(76)]}>
             <Text style={{ fontSize: 11, fontWeight: 'bold' }} color={palette.secondary}>
               {props.dateLabel}
             </Text>
-            <Text style={{ fontSize: 28, fontWeight: 'bold' }} color={palette.text}>
+            <Text style={{ fontSize: 26, fontWeight: 'bold' }} color={palette.text}>
               {props.calories}
             </Text>
             <Text style={{ fontSize: 10 }} color={palette.secondary}>
@@ -61,31 +61,31 @@ function NutritionWidget(props: NutritionWidgetSnapshot) {
             <LinearProgressIndicator
               progress={props.calorieProgress}
               color={palette.accent}
-              modifiers={[width(80)]}
+              modifiers={[width(70)]}
             />
           </Column>
-          <Spacer modifiers={[width(14)]} />
+          <Spacer modifiers={[width(10)]} />
           {props.macros.map((macro) => (
             <Row key={macro.label} verticalAlignment="center">
               <Column
                 verticalArrangement="center"
                 horizontalAlignment="start"
-                modifiers={[width(50)]}
+                modifiers={[width(46)]}
               >
                 <Text style={{ fontSize: 10 }} color={palette.secondary}>
                   {macro.label}
                 </Text>
-                <Text style={{ fontSize: 14, fontWeight: 'bold' }} color={palette.text}>
+                <Text style={{ fontSize: 13, fontWeight: 'bold' }} color={palette.text}>
                   {macro.value}
                 </Text>
                 <Spacer modifiers={[height(4)]} />
                 <LinearProgressIndicator
                   progress={macro.progress}
                   color={macro.color}
-                  modifiers={[width(44)]}
+                  modifiers={[width(40)]}
                 />
               </Column>
-              <Spacer modifiers={[width(8)]} />
+              <Spacer modifiers={[width(6)]} />
             </Row>
           ))}
         </Row>

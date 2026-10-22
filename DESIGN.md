@@ -478,4 +478,7 @@ caption beneath, or only the brand line and a quiet arrow while private. Widget 
 serialized and evaluated in the extension, so a layout function may use only its imports and locals,
 and `widgetFamily` from the environment chooses small versus medium. Android uses the same hierarchy
 in fixed dp widths because the widget runtime ignores weights; its root stays a button because that is
-the interaction target behind the deep link.
+the interaction target behind the deep link. The 4×1 Nutrition row totals about 264dp so it fits narrow
+phones, and the camera artwork sits on a white tile because it is drawn for a white page.
+`widgets/__tests__/androidWidgetLayout.test.ts` evaluates each Android layout and fails on a view or
+modifier the runtime would silently ignore (such as `weight`) or a row wider than 280dp.
