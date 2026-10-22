@@ -3,6 +3,27 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## iOS widgets crashed the app at boot: a `null` in a widget snapshot (October 2026)
+
+### Symptom
+
+On an iOS build the app stopped on a red "Exception in HostFunction: <unknown>" thrown from
+`createWidget(...)`, before any screen rendered.
+
+### Cause
+
+`expo-widgets` stores a widget's initial props and every timeline entry in the shared App Group
+`UserDefaults`, which only accepts property-list values. A JS `null` reaches it as `NSNull`, which
+it rejects. `INITIAL_NUTRITION_SNAPSHOT.targets` and `INITIAL_CAMERA_SNAPSHOT.imageUri` were `null`,
+and so was the published `targets` whenever there was no goal and `imageUri` whenever the camera
+artwork could not be copied.
+
+### Fix
+
+Widget snapshots never contain `null`: `targets` became the boolean `hasGoal` and `imageUri` is `''`
+when there is no artwork. `widgets/__tests__/widgetSnapshot.test.ts` walks the initial and built
+snapshots for nulls. Any new snapshot field must be a string, number, boolean, array or object.
+
 ## Giant logo flashing on boot: the splash's classes did not exist yet (October 2026)
 
 ### Symptom

@@ -470,3 +470,12 @@ and a small camera widget. Colors and translated copy are supplied from the appâ
 and language, respecting iOS tinting. Empty/initial widgets invite opening Musclog; cached values
 retain their date, and the iOS midnight timeline replaces expired values with a refresh prompt.
 Widget timelines and foreground refresh are subject to the operating systemâ€™s rendering schedule.
+
+Widgets are left-aligned and lead with one large figure. iOS Nutrition draws the calorie figure inside
+a progress ring (small: ring only; medium: ring beside one labelled bar per macro), the camera
+shortcut is an accent-tinted symbol tile with its label, and Cycle shows the day count large with the
+caption beneath, or only the brand line and a quiet arrow while private. Widget layouts are
+serialized and evaluated in the extension, so a layout function may use only its imports and locals,
+and `widgetFamily` from the environment chooses small versus medium. Android uses the same hierarchy
+in fixed dp widths because the widget runtime ignores weights; its root stays a button because that is
+the interaction target behind the deep link.

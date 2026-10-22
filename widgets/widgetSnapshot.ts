@@ -21,7 +21,8 @@ export type NutritionWidgetSnapshot = {
   dateKey: string;
   dateLabel: string;
   totals: { calories: number; protein: number; carbs: number; fat: number };
-  targets: { calories: number; protein: number; carbs: number; fat: number } | null;
+  /** Whether a goal exists. Never a nullable object: a JS null reaches UserDefaults as NSNull, which it rejects. */
+  hasGoal: boolean;
   calories: string;
   calorieTarget: string;
   calorieProgress: number;
@@ -35,7 +36,8 @@ export type NutritionWidgetSnapshot = {
 export type CameraWidgetSnapshot = {
   label: string;
   palette: WidgetPalette;
-  imageUri: string | null;
+  /** Empty when there is no artwork; never null, which UserDefaults rejects as NSNull. */
+  imageUri: string;
   url: string;
 };
 
@@ -60,7 +62,7 @@ export const INITIAL_NUTRITION_SNAPSHOT: NutritionWidgetSnapshot = {
   dateKey: '',
   dateLabel: 'Musclog',
   totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
-  targets: null,
+  hasGoal: false,
   calories: '—',
   calorieTarget: '',
   calorieProgress: 0,
@@ -73,7 +75,7 @@ export const INITIAL_NUTRITION_SNAPSHOT: NutritionWidgetSnapshot = {
 export const INITIAL_CAMERA_SNAPSHOT: CameraWidgetSnapshot = {
   label: 'Smart Camera',
   palette: INITIAL_WIDGET_PALETTE,
-  imageUri: null,
+  imageUri: '',
   url: CAMERA_WIDGET_URL,
 };
 
@@ -119,14 +121,7 @@ export function buildNutritionWidgetSnapshot({
       carbs: nonNegative(carbs),
       fat: nonNegative(nutrients.fat),
     },
-    targets: goal
-      ? {
-          calories: nonNegative(goal.totalCalories),
-          protein: nonNegative(goal.protein),
-          carbs: nonNegative(goal.carbs),
-          fat: nonNegative(goal.fats),
-        }
-      : null,
+    hasGoal: goal != null,
     calories: formatAppInteger(locale, Math.round(nonNegative(nutrients.calories))),
     calorieTarget: goal
       ? `/ ${formatAppInteger(locale, Math.round(nonNegative(goal.totalCalories)))} ${translate('common.kcal')}`

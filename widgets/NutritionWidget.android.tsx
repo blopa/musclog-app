@@ -1,63 +1,95 @@
-import { Button, Column, LinearProgressIndicator, Row, Text } from '@expo/ui/jetpack-compose';
+import {
+  Button,
+  Column,
+  LinearProgressIndicator,
+  Row,
+  Spacer,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import {
   cornerRadius,
   fillMaxSize,
-  fillMaxWidth,
+  height,
   paddingAll,
-  weight,
+  width,
 } from '@expo/ui/jetpack-compose/modifiers';
 import { createWidget } from 'expo-widgets';
 
 import { INITIAL_NUTRITION_SNAPSHOT, type NutritionWidgetSnapshot } from './widgetSnapshot';
 
+// The widget runtime has no weights, so the row is laid out in fixed dp widths that fit the 4x1
+// footprint declared in app.json. The root must stay a Button: it is the interaction target the
+// native provider turns into the deep link.
 function NutritionWidget(props: NutritionWidgetSnapshot) {
   'widget';
+  const { palette } = props;
   return (
     <Button
-      colors={{ containerColor: props.palette.background, contentColor: props.palette.text }}
-      modifiers={[fillMaxSize(), cornerRadius(16)]}
+      colors={{ containerColor: palette.background, contentColor: palette.text }}
+      modifiers={[fillMaxSize(), cornerRadius(24)]}
     >
-      <Column modifiers={[fillMaxSize(), paddingAll(8)]}>
-        <Row modifiers={[fillMaxWidth()]}>
-          <Text style={{ fontSize: 10 }} color={props.palette.secondary} modifiers={[weight(1)]}>
+      {props.message ? (
+        <Column
+          verticalArrangement="center"
+          horizontalAlignment="start"
+          modifiers={[fillMaxSize(), paddingAll(14)]}
+        >
+          <Text style={{ fontSize: 11, fontWeight: 'bold' }} color={palette.accent}>
             {props.dateLabel}
           </Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold' }} color={props.palette.text}>
-            {props.calories}
-          </Text>
-          <Text style={{ fontSize: 10 }} color={props.palette.secondary}>
-            {props.calorieTarget}
-          </Text>
-        </Row>
-        {props.message ? (
-          <Text style={{ fontSize: 11 }} color={props.palette.secondary}>
+          <Text style={{ fontSize: 14, fontWeight: 'bold' }} color={palette.text}>
             {props.message}
           </Text>
-        ) : (
-          <Column modifiers={[fillMaxWidth()]}>
+        </Column>
+      ) : (
+        <Row
+          verticalAlignment="center"
+          horizontalArrangement="start"
+          modifiers={[fillMaxSize(), paddingAll(14)]}
+        >
+          <Column verticalArrangement="center" horizontalAlignment="start" modifiers={[width(88)]}>
+            <Text style={{ fontSize: 11, fontWeight: 'bold' }} color={palette.secondary}>
+              {props.dateLabel}
+            </Text>
+            <Text style={{ fontSize: 28, fontWeight: 'bold' }} color={palette.text}>
+              {props.calories}
+            </Text>
+            <Text style={{ fontSize: 10 }} color={palette.secondary}>
+              {props.calorieTarget}
+            </Text>
+            <Spacer modifiers={[height(4)]} />
             <LinearProgressIndicator
               progress={props.calorieProgress}
-              color={props.palette.accent}
-              modifiers={[fillMaxWidth()]}
+              color={palette.accent}
+              modifiers={[width(80)]}
             />
-            <Row modifiers={[fillMaxWidth()]}>
-              {props.macros.map((macro) => (
-                <Column key={macro.label} modifiers={[weight(1)]}>
-                  <Text
-                    style={{ fontSize: 9 }}
-                    color={props.palette.secondary}
-                  >{`${macro.label} ${macro.value}`}</Text>
-                  <LinearProgressIndicator
-                    progress={macro.progress}
-                    color={macro.color}
-                    modifiers={[fillMaxWidth()]}
-                  />
-                </Column>
-              ))}
-            </Row>
           </Column>
-        )}
-      </Column>
+          <Spacer modifiers={[width(14)]} />
+          {props.macros.map((macro) => (
+            <Row key={macro.label} verticalAlignment="center">
+              <Column
+                verticalArrangement="center"
+                horizontalAlignment="start"
+                modifiers={[width(50)]}
+              >
+                <Text style={{ fontSize: 10 }} color={palette.secondary}>
+                  {macro.label}
+                </Text>
+                <Text style={{ fontSize: 14, fontWeight: 'bold' }} color={palette.text}>
+                  {macro.value}
+                </Text>
+                <Spacer modifiers={[height(4)]} />
+                <LinearProgressIndicator
+                  progress={macro.progress}
+                  color={macro.color}
+                  modifiers={[width(44)]}
+                />
+              </Column>
+              <Spacer modifiers={[width(8)]} />
+            </Row>
+          ))}
+        </Row>
+      )}
     </Button>
   );
 }

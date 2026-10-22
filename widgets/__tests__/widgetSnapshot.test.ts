@@ -1,6 +1,8 @@
 import {
   buildNutritionWidgetSnapshot,
   expiredWidgetSnapshot,
+  INITIAL_CAMERA_SNAPSHOT,
+  INITIAL_NUTRITION_SNAPSHOT,
   INITIAL_WIDGET_PALETTE,
   widgetProgress,
 } from '../widgetSnapshot';
@@ -15,13 +17,24 @@ const input = {
   translate: (key: string) => key,
 };
 
+const containsNull = (value: unknown): boolean =>
+  value === null ||
+  (typeof value === 'object' && Object.values(value as object).some((item) => containsNull(item)));
+
 describe('nutrition widget snapshots', () => {
+  it('never carries a null, which iOS UserDefaults rejects as NSNull', () => {
+    expect(containsNull(INITIAL_NUTRITION_SNAPSHOT)).toBe(false);
+    expect(containsNull(INITIAL_CAMERA_SNAPSHOT)).toBe(false);
+    expect(containsNull(buildNutritionWidgetSnapshot(input))).toBe(false);
+    expect(containsNull(buildNutritionWidgetSnapshot({ ...input, goal: null }))).toBe(false);
+  });
+
   it('uses digestible carbs and the resolved goals for finite, bounded progress', () => {
     const snapshot = buildNutritionWidgetSnapshot(input);
     expect(snapshot.dateKey).toBe('2026-10-17');
     expect(snapshot.calorieProgress).toBe(0.5);
     expect(snapshot.totals).toEqual({ calories: 900, protein: 40, carbs: 100, fat: 20 });
-    expect(snapshot.targets).toEqual({ calories: 1800, protein: 80, carbs: 200, fat: 40 });
+    expect(snapshot.hasGoal).toBe(true);
     expect(snapshot.macros.map((macro) => macro.progress)).toEqual([0.5, 0.5, 0.5]);
     expect(snapshot.macros[1].value).toBe('100 g');
     expect(JSON.parse(JSON.stringify(snapshot))).toEqual(snapshot);
@@ -35,7 +48,7 @@ describe('nutrition widget snapshots', () => {
   it('keeps actual totals when there is no goal without fabricating a zero target', () => {
     const snapshot = buildNutritionWidgetSnapshot({ ...input, goal: null });
     expect(snapshot.calories).toBe('900');
-    expect(snapshot.targets).toBeNull();
+    expect(snapshot.hasGoal).toBe(false);
     expect(snapshot.calorieTarget).toBe('common.kcal');
     expect(snapshot.macros.every((macro) => macro.progress === 0)).toBe(true);
   });

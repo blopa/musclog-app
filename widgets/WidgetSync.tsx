@@ -163,7 +163,7 @@ export function WidgetSync() {
         SmartCameraWidget.updateSnapshot({
           label: t('widgets.smartCamera'),
           palette,
-          imageUri,
+          imageUri: imageUri ?? '',
           url: CAMERA_WIDGET_URL,
         }),
       report

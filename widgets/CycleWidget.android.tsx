@@ -1,30 +1,51 @@
-import { Button, Column, Text } from '@expo/ui/jetpack-compose';
-import { cornerRadius, fillMaxSize, paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+import { Button, Column, Row, Spacer, Text } from '@expo/ui/jetpack-compose';
+import {
+  cornerRadius,
+  fillMaxSize,
+  height,
+  paddingAll,
+  width,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { createWidget } from 'expo-widgets';
 
 import { type CycleWidgetSnapshot, INITIAL_CYCLE_SNAPSHOT } from './cycleWidgetSnapshot';
 
+// With nothing it may show (the private default) `value` is empty and this is only a quiet brand
+// shortcut. The root must stay a Button: it is the interaction target behind the deep link.
 function CycleWidget(props: CycleWidgetSnapshot) {
   'widget';
+  const { palette } = props;
   return (
     <Button
-      colors={{ containerColor: props.palette.background, contentColor: props.palette.text }}
-      modifiers={[fillMaxSize(), cornerRadius(16)]}
+      colors={{ containerColor: palette.background, contentColor: palette.text }}
+      modifiers={[fillMaxSize(), cornerRadius(24)]}
     >
-      <Column modifiers={[fillMaxSize(), paddingAll(8)]}>
-        <Text style={{ fontSize: 10 }} color={props.palette.secondary}>
+      <Column
+        verticalArrangement="center"
+        horizontalAlignment="start"
+        modifiers={[fillMaxSize(), paddingAll(14)]}
+      >
+        <Text style={{ fontSize: 11, fontWeight: 'bold' }} color={palette.accent}>
           {props.title}
         </Text>
+        <Spacer modifiers={[height(2)]} />
         {props.value ? (
-          <Text style={{ fontSize: 24, fontWeight: 'bold' }} color={props.palette.text}>
-            {props.value}
+          <Row verticalAlignment="bottom">
+            <Text style={{ fontSize: 30, fontWeight: 'bold' }} color={palette.text}>
+              {props.value}
+            </Text>
+            <Spacer modifiers={[width(6)]} />
+            <Text style={{ fontSize: 12 }} color={palette.secondary}>
+              {props.caption}
+            </Text>
+          </Row>
+        ) : (
+          <Text style={{ fontSize: 13, fontWeight: 'bold' }} color={palette.text}>
+            {props.caption}
           </Text>
-        ) : null}
-        <Text style={{ fontSize: 11 }} color={props.palette.secondary}>
-          {props.caption}
-        </Text>
+        )}
         {props.detail ? (
-          <Text style={{ fontSize: 10 }} color={props.palette.accent}>
+          <Text style={{ fontSize: 10, fontWeight: 'bold' }} color={palette.accent}>
             {props.detail}
           </Text>
         ) : null}
