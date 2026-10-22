@@ -4,8 +4,7 @@
     "smartCamera": "Умная камера",
     "cycle": {
       "day": "День",
-      "privateCaption": "Нажмите, чтобы открыть",
-      "title": "Цикл"
+      "privateCaption": "Нажмите, чтобы открыть"
     }
   }
 }

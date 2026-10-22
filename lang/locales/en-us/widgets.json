@@ -4,8 +4,7 @@
     "smartCamera": "Smart camera",
     "cycle": {
       "day": "Day",
-      "privateCaption": "Tap to open",
-      "title": "Cycle"
+      "privateCaption": "Tap to open"
     }
   }
 }

@@ -1,14 +1,12 @@
-import type { AppLockScope, CycleNotificationStyle } from '@/constants/settings';
+import type { AppLockScope } from '@/constants/settings';
 import { isCycleLockProtected } from '@/utils/appLockState';
-import type { CycleTimeline } from '@/utils/cycle/cycleTimeline';
-import type { CyclePeriodDto } from '@/utils/cycle/types';
 import { formatAppInteger } from '@/utils/formatAppNumber';
 
 import { INITIAL_WIDGET_PALETTE, type WidgetPalette } from './widgetSnapshot';
 
 /**
- * `day` shows the day count; `private` is the quiet brand shortcut; `stale` asks to open the app.
- * Only `day` carries a `value` or `detail`, and only `day` shows them.
+ * `day` shows the day count; `private` is the quiet brand shortcut a lock leaves; `stale` asks to
+ * open the app. Only `day` carries a `value`, and only `day` shows it.
  */
 export type CycleWidgetState = 'day' | 'private' | 'stale';
 
@@ -17,23 +15,20 @@ export type CycleWidgetSnapshot = {
   title: string;
   value: string;
   caption: string;
-  /** The estimate line, detailed style only. */
-  detail: string;
   palette: WidgetPalette;
   refreshMessage: string;
   url: string;
 };
 
-/** What the loader read; `cycle` is null when it was not allowed to, or there is nothing to read. */
+/** What the loader read; `elapsedDay` is null when it was not allowed to, or there is no period. */
 export type CycleWidgetInputs = {
   lockScopes: readonly AppLockScope[];
-  style: CycleNotificationStyle;
-  cycle: { timeline: CycleTimeline; activePeriod: CyclePeriodDto | null } | null;
+  elapsedDay: number | null;
 };
 
 export const CYCLE_WIDGET_URL = 'com.werules.logger://?action=open-cycle';
 
-/** The widget's brand line when it must not say what it is about; same as the discreet notification. */
+/** The widget's brand line; it never names what the widget is about. */
 const NEUTRAL_TITLE = 'Musclog';
 
 export const INITIAL_CYCLE_SNAPSHOT: CycleWidgetSnapshot = {
@@ -41,67 +36,19 @@ export const INITIAL_CYCLE_SNAPSHOT: CycleWidgetSnapshot = {
   title: NEUTRAL_TITLE,
   value: '',
   caption: 'Open Musclog to refresh',
-  detail: '',
   palette: INITIAL_WIDGET_PALETTE,
   refreshMessage: 'Open Musclog to refresh',
   url: CYCLE_WIDGET_URL,
 };
 
 /**
- * How much the widget may say. A home screen is readable without unlocking the phone, let alone
- * the app, so ANY app lock forces the neutral style no matter what the person picked; the style
- * only decides anything while no lock is on. The whole-app lock counts too, and the locks on the
- * workout, nutrition and progress areas do not: `scopeRequiresLock` answers "does this SCREEN
- * ask", but a widget is not a screen.
+ * Whether the widget may show the day count. A home screen is readable without unlocking the
+ * phone, let alone the app, so a cycle or whole-app lock hides it; the locks on the workout,
+ * nutrition and progress areas do not. `scopeRequiresLock` answers "does this SCREEN ask", but a
+ * widget is not a screen.
  */
-export function effectiveCycleWidgetStyle(
-  lockScopes: readonly AppLockScope[],
-  style: CycleNotificationStyle
-): CycleNotificationStyle {
-  return isCycleLockProtected(lockScopes) ? 'discreet' : style;
-}
-
-/** Whether the loader needs to read (and decrypt) cycle records at all. */
-export function cycleWidgetNeedsRecords(
-  lockScopes: readonly AppLockScope[],
-  style: CycleNotificationStyle
-): boolean {
-  return effectiveCycleWidgetStyle(lockScopes, style) !== 'discreet';
-}
-
-type Translate = (key: string, options?: Record<string, unknown>) => string;
-
-function estimateLine(
-  { timeline, activePeriod }: NonNullable<CycleWidgetInputs['cycle']>,
-  locale: string,
-  translate: Translate
-): string {
-  const { prediction } = timeline;
-  // The same states the cycle screen shows a date for; while a period is going the next one is
-  // not the news.
-  if (activePeriod) {
-    return '';
-  }
-
-  if (prediction.state === 'late') {
-    return translate('cycle.late.title', { count: prediction.daysLate });
-  }
-
-  if (
-    (prediction.state === 'upcoming' || prediction.state === 'window') &&
-    prediction.earliest != null &&
-    prediction.latest != null
-  ) {
-    const format = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' });
-    const from = format.format(prediction.earliest);
-    const to = format.format(prediction.latest);
-
-    return from === to
-      ? translate('cycle.prediction.likelyDate', { date: from })
-      : translate('cycle.prediction.likelyRange', { from, to });
-  }
-
-  return '';
+export function cycleWidgetMayShowDay(lockScopes: readonly AppLockScope[]): boolean {
+  return !isCycleLockProtected(lockScopes);
 }
 
 export function buildCycleWidgetSnapshot({
@@ -113,39 +60,23 @@ export function buildCycleWidgetSnapshot({
   inputs: CycleWidgetInputs;
   palette: WidgetPalette;
   locale: string;
-  translate: Translate;
+  translate: (key: string) => string;
 }): CycleWidgetSnapshot {
   const refreshMessage = translate('widgets.refresh');
-  const base = {
-    title: NEUTRAL_TITLE,
-    value: '',
-    detail: '',
-    palette,
-    refreshMessage,
-    url: CYCLE_WIDGET_URL,
-  };
-  const style = effectiveCycleWidgetStyle(inputs.lockScopes, inputs.style);
-  if (style === 'discreet') {
+  const base = { title: NEUTRAL_TITLE, value: '', palette, refreshMessage, url: CYCLE_WIDGET_URL };
+  if (!cycleWidgetMayShowDay(inputs.lockScopes)) {
     return { ...base, state: 'private', caption: translate('widgets.cycle.privateCaption') };
   }
 
-  const { cycle } = inputs;
-  if (!cycle || cycle.timeline.elapsedDay == null) {
+  if (inputs.elapsedDay == null) {
     return { ...base, state: 'stale', caption: refreshMessage };
-  }
-
-  const value = formatAppInteger(locale, cycle.timeline.elapsedDay);
-  if (style === 'subtle') {
-    return { ...base, state: 'day', value, caption: translate('widgets.cycle.day') };
   }
 
   return {
     ...base,
     state: 'day',
-    title: translate('widgets.cycle.title'),
-    value,
+    value: formatAppInteger(locale, inputs.elapsedDay),
     caption: translate('widgets.cycle.day'),
-    detail: estimateLine(cycle, locale, translate),
   };
 }
 
@@ -155,12 +86,5 @@ export function expiredCycleWidgetSnapshot(snapshot: CycleWidgetSnapshot): Cycle
     return snapshot;
   }
 
-  return {
-    ...snapshot,
-    state: 'stale',
-    title: NEUTRAL_TITLE,
-    value: '',
-    detail: '',
-    caption: snapshot.refreshMessage,
-  };
+  return { ...snapshot, state: 'stale', value: '', caption: snapshot.refreshMessage };
 }

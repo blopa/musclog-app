@@ -473,12 +473,14 @@ Widget timelines and foreground refresh are subject to the operating system’s 
 
 Widgets are left-aligned and lead with one large figure. iOS Nutrition draws the calorie figure inside
 a progress ring (small: ring only; medium: ring beside one labelled bar per macro), the camera
-shortcut is an accent-tinted symbol tile with its label, and Cycle shows the day count large with the
-caption beneath, or only the brand line and a quiet arrow while private. Widget layouts are
+shortcut is the camera artwork alone on a white tile, like an app icon (accent tile with a white
+symbol until the artwork is copied), and Cycle shows the day count large under the
+brand line, or only the brand line and a quiet arrow while a cycle or whole-app lock is on. Widget layouts are
 serialized and evaluated in the extension, so a layout function may use only its imports and locals,
 and `widgetFamily` from the environment chooses small versus medium. Android uses the same hierarchy
 in fixed dp widths because the widget runtime ignores weights; its root stays a button because that is
-the interaction target behind the deep link. The 4×1 Nutrition row totals about 264dp so it fits narrow
+the interaction target behind the deep link. The 4×1 Nutrition row totals 266dp so it fits narrow
 phones, and the camera artwork sits on a white tile because it is drawn for a white page.
 `widgets/__tests__/androidWidgetLayout.test.ts` evaluates each Android layout and fails on a view or
-modifier the runtime would silently ignore (such as `weight`) or a row wider than 280dp.
+modifier the runtime would silently ignore (such as `weight`) or a row wider than 270dp. The camera artwork is at most 512px: WidgetKit refuses
+to archive an image larger than the widget (`imageTooLarge`) and keeps showing the last good render.
