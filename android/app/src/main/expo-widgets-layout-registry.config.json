@@ -7,6 +7,10 @@
     {
       "name": "SmartCamera",
       "initialLayout": "widgets/SmartCameraWidget.android.tsx"
+    },
+    {
+      "name": "Cycle",
+      "initialLayout": "widgets/CycleWidget.android.tsx"
     }
   ]
 }

@@ -88,6 +88,14 @@
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/smart_camera_info"/>
       <meta-data android:name="expo.modules.widgets.NAME" android:value="SmartCamera"/>
     </receiver>
+    <receiver android:name=".CycleProvider" android:exported="true" android:label="@string/cycle_display_name">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="expo.modules.widgets.ACTION_WIDGET_INTERACTION"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/cycle_info"/>
+      <meta-data android:name="expo.modules.widgets.NAME" android:value="Cycle"/>
+    </receiver>
     <activity-alias android:name="ViewPermissionUsageActivity" android:exported="true" android:targetActivity=".MainActivity" android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
       <intent-filter>
         <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>
