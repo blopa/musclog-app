@@ -13,6 +13,8 @@ type MoodSelectorCardProps = {
   onChange: (value: number) => void;
   /** `default` shows icon mood chips only; `enhanced` adds the slider above them. */
   variant?: 'default' | 'enhanced';
+  /** Tighter padding and smaller icons, for the home prompt. */
+  compact?: boolean;
 };
 
 const MOOD_ICONS: LucideIcon[] = [Frown, Annoyed, Meh, Smile, Laugh];
@@ -22,20 +24,18 @@ export function MoodSelectorCard({
   onChange,
   variant = 'default',
   disabled = false,
+  compact = false,
 }: MoodSelectorCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
   return (
     <GenericCard variant="flat">
-      <View className="p-4">
-        <View className="mb-6 flex-row items-start justify-between gap-2">
-          <View className="flex-1 flex-row items-start gap-3" style={{ minWidth: 0 }}>
-            <Smile
-              size={theme.iconSize.xl}
-              color={theme.colors.text.tertiary}
-              style={{ flexShrink: 0 }}
-            />
+      <View className={compact ? 'px-3 py-2.5' : 'p-4'}>
+        <View
+          className={`${compact ? 'mb-2' : 'mb-6'} flex-row items-center justify-between gap-2`}
+        >
+          <View className="flex-1 flex-row items-center gap-3" style={{ minWidth: 0 }}>
             <Text className="flex-1 text-xs font-bold text-text-secondary">
               {t('bodyMetrics.addEntry.moodQuestion')}
             </Text>
@@ -80,10 +80,10 @@ export function MoodSelectorCard({
                   accessibilityRole="button"
                   accessibilityLabel={t(`bodyMetrics.addEntry.moods.${moodValue}`)}
                   accessibilityState={{ selected: isSelected, disabled }}
-                  className="flex-col items-center gap-1"
+                  className={`flex-col items-center ${compact ? 'gap-0.5' : 'gap-1'}`}
                 >
                   <MoodIcon
-                    size={theme.iconSize.xl}
+                    size={compact ? theme.iconSize.lg : theme.iconSize.xl}
                     color={isSelected ? theme.colors.accent.primary : theme.colors.text.tertiary}
                     strokeWidth={isSelected ? 2.5 : 2}
                   />

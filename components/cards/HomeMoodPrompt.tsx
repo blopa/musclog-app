@@ -116,7 +116,7 @@ export function HomeMoodPrompt({ onVisibilityChange }: HomeMoodPromptProps) {
 
   return (
     <Animated.View style={animatedStyle}>
-      <MoodSelectorCard value={mood ?? 2} onChange={(val) => setMood(val)} />
+      <MoodSelectorCard compact value={mood ?? 2} onChange={(val) => setMood(val)} />
       {mood !== null ? (
         <View className="mt-3">
           <Button
