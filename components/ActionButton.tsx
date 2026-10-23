@@ -24,7 +24,7 @@ type ActionButtonProps = {
 };
 
 /**
- * A compact home tile: the icon above a short label, nothing else. It used to be a 180px card
+ * A compact home tile: the icon beside a short label, vertically centred, nothing else. It used to be a 180px card
  * with a tinted icon circle and a faded watermark copy of the same icon, which took a quarter of
  * the first screen to repeat destinations the tab bar already offers.
  */
@@ -51,7 +51,7 @@ export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonP
       accessibilityRole="button"
       // The label carries a deliberate line break for the tile; a screen reader reads one phrase.
       accessibilityLabel={label.replace(/\n/g, ' ')}
-      className="w-full justify-between gap-3 rounded-2xl p-4 active:opacity-80"
+      className="w-full flex-row items-center gap-4 rounded-2xl px-5 py-4 active:opacity-80"
       style={{ minHeight: theme.size['96'], backgroundColor: config.bgColor }}
       onPress={onPress}
     >
@@ -60,7 +60,7 @@ export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonP
         color={config.iconColor}
         strokeWidth={theme.strokeWidth.medium}
       />
-      <Text className={`text-base font-bold leading-tight ${config.textColor}`}>{label}</Text>
+      <Text className={`flex-1 text-lg font-bold leading-tight ${config.textColor}`}>{label}</Text>
     </Pressable>
   );
 }
