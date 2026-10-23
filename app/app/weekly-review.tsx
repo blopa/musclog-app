@@ -16,6 +16,7 @@ import { NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { ListRow } from '@/components/theme/ListRow';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { WeekdayChoiceChips } from '@/components/WeekdayChoiceChips';
@@ -320,6 +321,19 @@ export default function WeeklyReviewScreen() {
 
   return (
     <MasterLayout>
+      <ScreenHeader
+        title={t('weeklyReview.title')}
+        destination="checkin"
+        lockArea={WEEKLY_REVIEW_LOCK_AREAS}
+        subtitle={
+          data
+            ? t('weeklyReview.period', {
+                start: formatDate(data.period.start),
+                end: formatDate(data.period.end - 1),
+              })
+            : undefined
+        }
+      />
       <AreaLockGate area={WEEKLY_REVIEW_LOCK_AREAS}>
         <KeyboardAwareScrollView
           bottomOffset={16}
@@ -327,22 +341,9 @@ export default function WeeklyReviewScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View className="gap-5" testID="weekly-review">
-            <View className="gap-1">
-              <Text className="text-3xl font-bold text-text-primary">
-                {t('weeklyReview.title')}
-              </Text>
-              {data ? (
-                <>
-                  <Text className="text-base font-semibold text-text-secondary">
-                    {t('weeklyReview.period', {
-                      start: formatDate(data.period.start),
-                      end: formatDate(data.period.end - 1),
-                    })}
-                  </Text>
-                  <Text className="text-xs text-text-tertiary">{t('weeklyReview.periodHint')}</Text>
-                </>
-              ) : null}
-            </View>
+            {data ? (
+              <Text className="text-xs text-text-tertiary">{t('weeklyReview.periodHint')}</Text>
+            ) : null}
             {viewingLatest ? null : (
               <Chip
                 variant="solid"

@@ -245,6 +245,7 @@ appropriate, or both. Pick by what the control is, not by how it looks today:
 | A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`; `grouped` inside a `ListGroup`)              |
 | A list of settings, menu items or destinations                          | `ListGroup` of `ListRow variant="grouped"` (or `SettingsCard` rows)        |
 | A small heading above a group of content                                | `SectionLabel`                                                             |
+| A screen's title, back button and header actions                        | `ScreenHeader` (see Screen headers)                                        |
 | Two to five mutually exclusive options shown side by side               | `SegmentedControl` — one form per screen (see below)                       |
 | A number the user types, kept as their own text                         | `NumericTextField` (`hero` / `field` / `cell`)                             |
 | A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
@@ -289,6 +290,33 @@ Radio controls (`OptionsSelector` and `Chip`) expose `aria-checked` explicitly a
 accessibility state; React Native Web does not translate `accessibilityState.checked` by itself.
 Switches need an accessible label. The shared `WeekdayChoiceChips` uses abbreviated day labels
 visually and full weekday names for assistive technology.
+
+### Screen headers
+
+Every screen header is `components/theme/ScreenHeader.tsx`, rendered inside `MasterLayout` (which
+owns the top inset) and above the screen's scroll view, so the way back never scrolls away. It has
+two forms:
+
+- **root**: a large (`3xl`) title with trailing actions, for a screen that is one of the bottom
+  bar's slots right now. The highlighted tab already says where you are.
+- **pushed**: a back button, an `xl` title and trailing actions, for every other screen. Back goes
+  to the previous screen, or to Home when the screen was opened cold (a deep link, a reload).
+
+A screen that shows the bottom bar passes its `destination` and the header picks the form from the
+user's slots (`resolveScreenHeaderForm`), since the same screen can be a tab for one person and a
+pushed screen for another. A screen that hides the bar (Progress, Settings) passes none and is
+always pushed. Trailing actions are ghost `IconButton`s or `MenuButton`s with an accessible label.
+`subtitle` is one line on where in the screen's content you are (Cycle's phase, the reviewed
+week); `center` replaces the title with a control that already says that (Food's day navigator),
+while the title stays the screen-reader heading. The header sits outside `AreaLockGate`, so back
+works behind a lock; pass `lockArea` and it shows only the title and back while that area is
+locked. Do not hand-roll a screen title or back arrow; `deslopGuards.test.ts` lists the screens on
+it.
+
+Lists whose length is not bounded (histories, search, saved meals) are a `FlatList` or
+`SectionList` that loads the next page from `onEndReached`, never a `ScrollView` with a "Load more"
+button. A list made of several separately paginated sections (food search) pages only its last
+section on scroll and gives each section above it an inline "Load more from …" row.
 
 ### Cards and modals
 

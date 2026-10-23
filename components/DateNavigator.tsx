@@ -11,9 +11,11 @@ import { DatePickerModal } from './modals/DatePickerModal';
 type DateNavigatorProps = {
   selectedDate: Date;
   onDateChange: (date: Date) => void | Promise<void>;
+  /** Drops the outer padding, for the `center` slot of `ScreenHeader`, which pads itself. */
+  compact?: boolean;
 };
 
-export function DateNavigator({ selectedDate, onDateChange }: DateNavigatorProps) {
+export function DateNavigator({ selectedDate, onDateChange, compact = false }: DateNavigatorProps) {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const theme = useTheme();
 
@@ -27,7 +29,7 @@ export function DateNavigator({ selectedDate, onDateChange }: DateNavigatorProps
 
   return (
     <>
-      <View className="flex-row items-center justify-between px-4 py-4">
+      <View className={`flex-row items-center justify-between ${compact ? '' : 'px-4 py-4'}`}>
         <Pressable
           onPress={goToPreviousDay}
           className="rounded-lg p-3 active:bg-bg-secondary"

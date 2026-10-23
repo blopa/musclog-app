@@ -121,7 +121,7 @@
       "category": "navigation",
       "phase": 8,
       "summary": "Profile, Cycle, Notes hand-roll their titles with no back affordance and no selected tab; Progress alone uses the native stack header, so screen headers are inconsistent",
-      "status": "open"
+      "status": "fixed"
     },
     {
       "id": "FINDING-013",
@@ -156,7 +156,7 @@
       "tell": 13,
       "phase": 9,
       "summary": "ScrollView-of-map + Load more on history and search lists; only 4 files virtualize",
-      "status": "partial"
+      "status": "fixed"
     },
     {
       "id": "FINDING-017",
@@ -246,11 +246,11 @@
     "native Android/iOS rendering (carried forward: needs a release build on a device; no device available when Phase 10 was prepared)",
     "keyboard avoidance on device (carried forward: device only)",
     "splash to first screen (carried forward: device only)",
-    "scroll performance on long lists (carried forward: device only; FINDING-016 still partial, Phase 9)",
-    "1.3x / 2.0x font scale (code half done: MAX_CHROME_FONT_SCALE caps tab labels, Button and StatStrip, pinned by chromeFontScale.test.ts; ScreenHeader does not exist until Phase 8; on-device check still needed)",
+    "scroll performance on long lists (carried forward: device only; FINDING-016 fixed in code, every unbounded list is a FlatList/SectionList that pages on scroll)",
+    "1.3x / 2.0x font scale (code half done: MAX_CHROME_FONT_SCALE caps tab labels, Button, StatStrip and ScreenHeader, pinned by chromeFontScale.test.ts; on-device check still needed)",
     "Android edge-to-edge insets (carried forward: device only)",
     "Android press feedback (code half done: android_ripple now on Button, ListRow, SettingsCard, MealTypeButton; on-device check still needed)",
-    "iOS swipe-back on screens with custom headers (carried forward: device only; FINDING-012 still open, Phase 8)",
+    "iOS swipe-back on screens with custom headers (carried forward: device only; FINDING-012 fixed, every listed screen renders ScreenHeader with a back button when pushed)",
     "Light / Varia themes beyond Home, Food, Workouts, Settings; Volt captured only as skeletons; Blush and Shock not captured (carried forward: needs a manual theme sweep)"
   ]
 }

@@ -30,8 +30,10 @@ import {
 import { EditPersonalInfoModal } from '@/components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { IconButton } from '@/components/theme/IconButton';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { type Gender } from '@/database/models';
 import { UserService } from '@/database/services/UserService';
@@ -322,6 +324,18 @@ export default function ProfileScreen() {
 
   return (
     <MasterLayout>
+      <ScreenHeader
+        title={t('profile.header.title')}
+        destination="profile"
+        actions={
+          <IconButton
+            icon={Settings}
+            variant="ghost"
+            accessibilityLabel={t('settings.title')}
+            onPress={() => router.navigate('/app/settings')}
+          />
+        }
+      />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Syncing Indicator */}
         {isSyncing ? (
@@ -329,19 +343,9 @@ export default function ProfileScreen() {
             <ProgressIndicator message={t('profile.syncing.healthKit')} />
           </View>
         ) : null}
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-6">
-          <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
-          <Pressable
-            className="active:bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
-            onPress={() => router.navigate('/app/settings')}
-          >
-            <Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />
-          </Pressable>
-        </View>
 
         {/* User Profile Section */}
-        <View className="mb-8 items-center">
+        <View className="mb-8 mt-6 items-center">
           {isLoadingUser ? (
             <View className="items-center gap-3">
               <SkeletonLoader width={128} height={128} borderRadius={64} />

@@ -21,6 +21,7 @@ describe('chrome font scale cap', () => {
     ['NavigationMenu', ['components', 'NavigationMenu.tsx'], 1],
     ['StatStrip', ['components', 'StatStrip.tsx'], 3],
     ['Button', ['components', 'theme', 'Button.tsx'], 1],
+    ['ScreenHeader', ['components', 'theme', 'ScreenHeader.tsx'], 2],
   ] as const)('%s caps every fixed-height label', (_name, path, count) => {
     const text = source(...path);
     const uses = text.match(/maxFontSizeMultiplier=\{MAX_CHROME_FONT_SCALE\}/g) ?? [];

@@ -617,6 +617,14 @@ new screens.
 **Risk and rollback.** Medium: touches many route files. Depends on Phase 4 for the label style
 used in subtitles.
 
+**Status.** Done. `components/theme/ScreenHeader.tsx` is on all eight screens. Root or pushed is
+not fixed per screen: it depends on whether the screen is in one of the user's bottom-bar slots
+(`resolveScreenHeaderForm`), because slots are configurable and Profile can be either. Food is a
+root whose day navigator fills the `center` slot. The header sits outside each screen's
+`AreaLockGate`, so back works behind a lock, and hides its subtitle and actions while that area is
+locked. Back falls back to Home when there is no history. Pinned by
+`components/__tests__/screenHeaderForm.test.ts` and the Phase 8 block in `deslopGuards.test.ts`.
+
 **Release note.** "Consistent screen headers with a back button where you need one."
 
 ---
@@ -645,7 +653,7 @@ release Android build without blank cells or dropped frames.
 **Risk and rollback.** Medium: pagination behavior changes. Keep the existing tests for the
 history and search hooks green, and add one per converted list for "next page loads on scroll".
 
-**Status.** Done for `PastWorkoutsHistoryModal` (`SectionList`), `BodyMetricsHistoryModal` and `MyMealsModal` (`FlatList`, `onEndReached` paging, "Load more" buttons gone). **`FoodSearchModal` is still open**: it stacks three independently paginated sources (local, API, USDA), error banners and the favorites/meals/recent tabs in one `ScrollView`, so virtualizing it needs a flat row model first. The `loadMore` translation keys of the three converted lists are now unused.
+**Status.** Done. `PastWorkoutsHistoryModal` (`SectionList`), `BodyMetricsHistoryModal` and `MyMealsModal` (`FlatList`, `onEndReached` paging, "Load more" buttons gone). `FoodSearchModal` renders a `FlatList` over a flat row model (`components/modals/foodSearchRows.ts`, pure, pinned by `foodSearchRows.test.ts`). It stacks up to three paginated sources, and only the last one can page on scroll: the end of a middle section is never the end of the list. So the tail section loads from `onEndReached`, and a section above it keeps an inline "Load more from …" row. A source's error now follows the pages it already loaded instead of replacing them. The `loadMore` translation keys of the first three converted lists are unused; `loadMoreFavorites` and `loadMoreMeals` were removed with this change.
 
 **Release note.** "Faster history and search lists."
 

@@ -1,4 +1,4 @@
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { RefreshCw, Ruler, Scale, Utensils } from 'lucide-react-native';
 import { startTransition, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,7 @@ import { VolumeCaloriesChart } from '@/components/progress/VolumeCaloriesChart';
 import { WorkoutCharts } from '@/components/progress/WorkoutCharts';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { ChartTooltipProvider, useChartTooltip } from '@/context/ChartTooltipContext';
 import { useAiEnabled } from '@/hooks/useAiEnabled';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
@@ -165,19 +166,17 @@ export default function ProgressScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
+      <ScreenHeader
+        title={t('progress.title')}
+        lockArea="progress"
+        actions={
+          <MenuButton
+            onPress={() => setShowMenu(true)}
+            accessibilityLabel={t('progress.quickActions')}
+          />
+        }
+      />
       <AreaLockGate area="progress">
-        <Stack.Screen
-          options={{
-            title: t('progress.title'),
-            headerRight: () => <MenuButton onPress={() => setShowMenu(true)} />,
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: theme.colors.background.primary,
-            },
-            headerTintColor: theme.colors.text.primary,
-            headerShadowVisible: false,
-          }}
-        />
         <ChartTooltipProvider tooltipPosition={chartTooltipPosition}>
           <ProgressScreenContent
             allAggregationData={allAggregationData}

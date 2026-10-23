@@ -4,9 +4,8 @@ import { join } from 'path';
 const root = join(__dirname, '..', '..');
 
 // Source checks follow the existing component suites: Jest has no screen-rendering harness.
+// Screen titles (Workouts, Notes, …) come from `ScreenHeader`, checked at the end of this file.
 const headings = [
-  ['app/app/workout/workouts.tsx', 'workouts.title'],
-  ['app/app/notes.tsx', 'notes.title'],
   ['app/app/onboarding/health-connect.tsx', 'onboarding.healthConnect.health'],
   ['components/RestOverTitle.tsx', 'restOver.over'],
   ['components/WorkoutSummaryHeader.tsx', 'workoutSummary.youCrushedIt'],
@@ -23,6 +22,15 @@ describe('solid app heading text', () => {
 
     expect(element).toBeDefined();
     expect(element).toContain('color: theme.colors.text.primary');
+    expect(source).not.toMatch(/GradientText|BackgroundClip|TextFillColor|backgroundClip/);
+  });
+
+  it('draws every screen title in ScreenHeader with readable theme ink', () => {
+    const source = readFileSync(join(root, 'components/theme/ScreenHeader.tsx'), 'utf8');
+    const title = source.match(/<Text\b[^>]*>\s*\{title\}\s*<\/Text>/g)?.at(-1);
+
+    expect(title).toBeDefined();
+    expect(title).toContain('color: theme.colors.text.primary');
     expect(source).not.toMatch(/GradientText|BackgroundClip|TextFillColor|backgroundClip/);
   });
 });

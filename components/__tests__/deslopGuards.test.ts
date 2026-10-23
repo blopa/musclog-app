@@ -463,6 +463,50 @@ describe('Phase 7: copy', () => {
 });
 
 /**
+ * Phase 8: one header component. Every screen says what it is and, when it was reached from
+ * somewhere, how to get back, in the same place and style. A screen that shows the bottom bar
+ * names its `destination`, so the header knows when the bar already answers "where am I".
+ */
+describe('Phase 8: screen headers and wayfinding', () => {
+  const SCREENS: [string, string | null, string | null][] = [
+    // [route file, destination it names (null: hides the bar), lockArea it passes (null: ungated)]
+    ['app/app/settings.tsx', null, null],
+    ['app/app/progress.tsx', null, '"progress"'],
+    ['app/app/profile.tsx', 'profile', null],
+    ['app/app/notes.tsx', 'notes', null],
+    ['app/app/cycle.tsx', 'cycle', '"cycle"'],
+    ['app/app/weekly-review.tsx', 'checkin', '{WEEKLY_REVIEW_LOCK_AREAS}'],
+    ['app/app/workout/workouts.tsx', 'workouts', '"workout"'],
+    ['app/app/nutrition/food.tsx', 'food', '"nutrition"'],
+  ];
+
+  it.each(SCREENS)('%s renders ScreenHeader', (file, destination, lockArea) => {
+    const source = stripComments(readFileSync(join(root, file), 'utf8'));
+    expect(source.match(/<ScreenHeader\b/g)).toHaveLength(1);
+    if (destination) {
+      expect(source).toContain(`destination="${destination}"`);
+    } else {
+      expect(source).not.toMatch(/\bdestination=/);
+    }
+
+    if (lockArea) {
+      // Outside the gate, so the way back works behind the lock, and told which area it holds.
+      expect(source).toContain(`lockArea=${lockArea}`);
+      expect(source.indexOf('<ScreenHeader')).toBeLessThan(source.indexOf('<AreaLockGate'));
+    }
+  });
+
+  it.each(SCREENS)('%s hand-rolls no screen title or back button', (file) => {
+    const source = stripComments(readFileSync(join(root, file), 'utf8'));
+    expect(source).not.toMatch(/\btext-4xl\b|fontSize\['4xl'\]|\bArrowLeft\b/);
+  });
+
+  it('no screen turns the native stack header back on', () => {
+    expect(occurrences(/headerShown:\s*true/g)).toEqual([]);
+  });
+});
+
+/**
  * Phase 9: lists whose length is not bounded are virtualized and page on scroll. These screens
  * once rendered `ScrollView` + `.map()` with a "Load more" button.
  */
@@ -471,13 +515,21 @@ describe('virtualized paginated lists', () => {
     ['components/modals/PastWorkoutsHistoryModal.tsx', 'SectionList'],
     ['components/modals/BodyMetricsHistoryModal.tsx', 'FlatList'],
     ['components/modals/MyMealsModal.tsx', 'FlatList'],
+    ['components/modals/FoodSearchModal.tsx', 'FlatList'],
   ];
 
   it.each(VIRTUALIZED)('%s renders a %s that loads the next page on scroll', (file, list) => {
     const source = readFileSync(join(root, file), 'utf8');
     expect(source).toContain(`<${list}`);
     expect(source).toContain('onEndReached=');
-    expect(source).not.toMatch(/\bScrollView\b/);
-    expect(source).not.toMatch(/Button[^>]*onPress=\{(loadMore|loadMoreWorkouts)\}/);
+    // A horizontal ScrollView (a tab bar) holds a handful of items; a vertical one is the list.
+    expect(source.match(/<ScrollView\b(?![^>]*\bhorizontal\b)/g)).toBeNull();
+    expect(source).not.toMatch(/Button[^>]*onPress=\{loadMore\w*\}/);
+  });
+
+  it('pages the food search tail on scroll and offers "show more" only above it', () => {
+    const rows = readFileSync(join(root, 'components/modals/foodSearchRows.ts'), 'utf8');
+    expect(rows).not.toMatch(/from 'react-native'/);
+    expect(rows).not.toMatch(/loadMoreFavorites|loadMoreMeals/);
   });
 });

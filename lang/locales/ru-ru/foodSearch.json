@@ -31,8 +31,6 @@
     "loadMoreLocal": "Загрузить ещё локальные продукты",
     "loadMoreAPI": "Загрузить ещё из Open Food Facts",
     "loadMoreUSDA": "Загрузить ещё из USDA",
-    "loadMoreMeals": "Загрузить ещё приёмы пищи",
-    "loadMoreFavorites": "Загрузить ещё избранные продукты",
     "loadingMeals": "Загрузка приёмов пищи...",
     "noResultsFor": "Результатов по запросу «{{query}}» не найдено",
     "trySomethingElse": "Попробуйте другой запрос или создайте пользовательский продукт",

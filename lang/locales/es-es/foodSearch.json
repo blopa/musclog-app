@@ -31,8 +31,6 @@
     "loadMoreLocal": "Cargar más alimentos locales",
     "loadMoreAPI": "Cargar más de Open Food Facts",
     "loadMoreUSDA": "Cargar más de USDA",
-    "loadMoreMeals": "Cargar más comidas",
-    "loadMoreFavorites": "Cargar más alimentos favoritos",
     "loadingMeals": "Cargando comidas...",
     "noResultsFor": "No se encontraron resultados para \"{{query}}\"",
     "trySomethingElse": "Prueba buscando otra cosa o crea un alimento personalizado",

@@ -1,9 +1,7 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
-import { useRouter } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
 import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { HelpAndFeedbackCard } from '@/components/cards/HelpAndFeedbackCard';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
@@ -22,6 +20,7 @@ import { VisualSettingsModal } from '@/components/modals/VisualSettingsModal';
 import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { ListGroup } from '@/components/theme/ListGroup';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -32,7 +31,6 @@ type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 export default function SettingsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
   const {
     googleGeminiApiKey,
     googleGeminiModel,
@@ -96,23 +94,7 @@ export default function SettingsScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <View className="border-b border-border-light bg-bg-primary">
-        <View className="flex-row items-center gap-4 px-4 py-4">
-          <Pressable
-            className="-ml-2 rounded-full p-2"
-            onPress={() => {
-              router.navigate('/app');
-            }}
-          >
-            <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
-          </Pressable>
-          <View className="flex-1">
-            <Text className="text-xl font-bold tracking-tight text-text-primary">
-              {t('settings.title')}
-            </Text>
-          </View>
-        </View>
-      </View>
+      <ScreenHeader title={t('settings.title')} />
       <ScrollView
         style={{
           flex: 1,

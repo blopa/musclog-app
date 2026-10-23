@@ -24,6 +24,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TRACK_MEAL } from '@/constants/chat';
 import type Note from '@/database/models/Note';
 import { NoteService } from '@/database/services/NoteService';
@@ -205,28 +206,23 @@ export default function NotesScreen() {
 
   return (
     <MasterLayout>
+      <ScreenHeader
+        title={t('notes.title')}
+        destination="notes"
+        actions={
+          <MenuButton
+            onPress={() => setIsScreenMenuVisible(true)}
+            accessibilityLabel={t('notes.screenMenu.title')}
+          />
+        }
+      />
       <KeyboardAwareScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
         bottomOffset={16}
       >
         <AnimatedContent>
-          <View className="px-4 py-6">
-            <View className="flex-row items-center justify-between">
-              <Text
-                style={{
-                  color: theme.colors.text.primary,
-                  fontSize: theme.typography.fontSize['4xl'],
-                  fontWeight: theme.typography.fontWeight.bold,
-                }}
-              >
-                {t('notes.title')}
-              </Text>
-              <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
-            </View>
-          </View>
-
-          <View className="px-4">
+          <View className="px-4 pt-6">
             {!isLoading && notes.length === 0 ? (
               <EmptyStateCard
                 icon={StickyNote}

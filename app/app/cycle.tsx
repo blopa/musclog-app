@@ -32,6 +32,7 @@ import { PhaseWheel } from '@/components/PhaseWheel';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
 import { IconButton } from '@/components/theme/IconButton';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextButton } from '@/components/theme/TextButton';
 import { CYCLE_PHASE_LABEL_KEYS, type PeriodLogMode } from '@/constants/cycle';
@@ -178,6 +179,37 @@ export default function CycleScreen() {
 
   return (
     <MasterLayout>
+      {/* One short title with where the cycle is as its subtitle. The day itself is shown once,
+          inside the wheel; a "15/28" badge up here repeated it. */}
+      <ScreenHeader
+        title={t('cycle.title')}
+        destination="cycle"
+        lockArea="cycle"
+        subtitle={
+          cycle && !guidance.hidePeriodActions && (currentPhase || isOverdue) ? (
+            <View className="mt-0.5">
+              {cycleDay != null && currentPhase ? (
+                <Text numberOfLines={1} className="text-sm font-semibold text-accent-primary">
+                  {t(CYCLE_PHASE_LABEL_KEYS[currentPhase])}
+                </Text>
+              ) : null}
+              {isOverdue ? (
+                <Text numberOfLines={1} className="text-sm text-text-tertiary">
+                  {t('cycle.periodNotLogged')}
+                </Text>
+              ) : null}
+            </View>
+          ) : null
+        }
+        actions={
+          <IconButton
+            icon={Settings}
+            variant="ghost"
+            accessibilityLabel={t('cycle.settings.title')}
+            onPress={() => setPanel({ kind: 'settings' })}
+          />
+        }
+      />
       <AreaLockGate area="cycle">
         <KeyboardAwareScrollView
           bottomOffset={16}
@@ -185,36 +217,7 @@ export default function CycleScreen() {
           showsVerticalScrollIndicator={false}
         >
           <AnimatedContent>
-            <View className="px-4 py-8">
-              {/* One short title with where the cycle is as its subtitle. The day itself is shown once,
-                  inside the wheel; a "15/28" badge up here repeated it. */}
-              <View className="mb-6 flex-row items-center justify-between gap-3">
-                <View className="min-w-0 flex-1">
-                  <Text
-                    accessibilityRole="header"
-                    className="text-4xl font-black text-text-primary"
-                    numberOfLines={1}
-                  >
-                    {t('cycle.title')}
-                  </Text>
-                  {cycle && cycleDay != null && !guidance.hidePeriodActions && currentPhase ? (
-                    <Text className="mt-1 text-base font-semibold text-accent-primary">
-                      {t(CYCLE_PHASE_LABEL_KEYS[currentPhase])}
-                    </Text>
-                  ) : null}
-                  {cycle && isOverdue && !guidance.hidePeriodActions ? (
-                    <Text className="mt-1 text-sm text-text-tertiary">
-                      {t('cycle.periodNotLogged')}
-                    </Text>
-                  ) : null}
-                </View>
-                <IconButton
-                  icon={Settings}
-                  accessibilityLabel={t('cycle.settings.title')}
-                  onPress={() => setPanel({ kind: 'settings' })}
-                />
-              </View>
-
+            <View className="px-4 pb-8 pt-6">
               {!cycle ? (
                 <View className="mb-8 items-center rounded-2xl bg-bg-overlay p-8">
                   <CalendarHeart size={40} color={theme.colors.text.secondary} />

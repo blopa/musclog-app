@@ -337,3 +337,5 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Skeleton loaders and progress indicators throughout
 - Helpful empty state messages when no data exists
 - Safety confirmation modals for destructive actions
+- One consistent screen header: a screen in your bottom bar shows a large title, and any other screen (Profile, Cycle, Notes, Progress, Weekly Review, Settings, or a tab you moved out of the bar) shows a back button. Back still works while that area is behind the app lock
+- Long lists (workout history, body metrics history, saved meals, food search) load the next page as you scroll instead of behind a "Load more" button; in food search, a source with more results above another source keeps an inline "Load more" row

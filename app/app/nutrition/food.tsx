@@ -61,6 +61,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { targetModeSummary } from '@/components/weeklyReview/targetModeLabel';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
@@ -1500,12 +1501,16 @@ export default function FoodScreen() {
 
   return (
     <MasterLayout>
+      <ScreenHeader
+        title={t('home.navigation.food')}
+        destination="food"
+        lockArea="nutrition"
+        center={
+          <DateNavigator compact selectedDate={selectedDate} onDateChange={setSelectedDate} />
+        }
+      />
       <AreaLockGate area="nutrition">
         <View className="flex-1 bg-bg-primary">
-          <View className="border-b border-border-dark bg-bg-primary">
-            <DateNavigator selectedDate={selectedDate} onDateChange={setSelectedDate} />
-          </View>
-
           {/* Main Content */}
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <View className="gap-6 px-4 pt-6">

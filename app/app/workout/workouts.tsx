@@ -2,7 +2,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Footprints, Layers3, Pencil, Plus, Search, Target, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
@@ -20,6 +20,7 @@ import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { LogCardioModal } from '@/components/modals/LogCardioModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TextInput } from '@/components/theme/TextInput';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
@@ -303,6 +304,17 @@ export default function WorkoutsScreen() {
 
   return (
     <MasterLayout>
+      <ScreenHeader
+        title={t('workouts.title')}
+        destination="workouts"
+        lockArea="workout"
+        actions={
+          <MenuButton
+            onPress={() => setIsScreenMenuVisible(true)}
+            accessibilityLabel={t('workouts.title')}
+          />
+        }
+      />
       <AreaLockGate area="workout">
         {showConfetti ? <ConfettiOverlay /> : null}
         <View className="flex-1">
@@ -311,22 +323,7 @@ export default function WorkoutsScreen() {
             showsVerticalScrollIndicator={false}
             bottomOffset={16}
           >
-            {/* Header */}
             <View className="px-4 py-6">
-              <View className="flex-row items-center justify-between">
-                <Text
-                  style={{
-                    color: theme.colors.text.primary,
-                    fontSize: theme.typography.fontSize['4xl'],
-                    fontWeight: theme.typography.fontWeight.bold,
-                  }}
-                >
-                  {t('workouts.title')}
-                </Text>
-                <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
-              </View>
-              {/* Add spacing below header */}
-              <View style={{ height: theme.spacing.gap.lg }} />
               <View className="mb-4 gap-3">
                 <WorkoutTodayCard
                   onDiscard={() => setIsDiscardInterruptedConfirmVisible(true)}
