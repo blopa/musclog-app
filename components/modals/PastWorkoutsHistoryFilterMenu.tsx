@@ -102,10 +102,15 @@ export function PastWorkoutsHistoryFilterMenu({
       {
         label: t('pastWorkoutHistory.filters.dateRange.custom') || 'Custom',
         value: 'custom',
-        icon: <Calendar size={theme.iconSize.sm} color={theme.colors.text.secondary} />,
+        icon: (selected: boolean) => (
+          <Calendar
+            size={theme.iconSize.sm}
+            color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
+          />
+        ),
       },
     ],
-    [t, theme.colors.text.secondary, theme.iconSize.sm]
+    [t, theme.colors.text.onAccent, theme.colors.text.secondary, theme.iconSize.sm]
   );
 
   const muscleGroups = useMemo(
@@ -233,8 +238,6 @@ export function PastWorkoutsHistoryFilterMenu({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}
           >
@@ -256,8 +259,6 @@ export function PastWorkoutsHistoryFilterMenu({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}
           >
@@ -278,8 +279,6 @@ export function PastWorkoutsHistoryFilterMenu({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
             }}
           >
@@ -338,8 +337,6 @@ export function PastWorkoutsHistoryFilterMenu({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
               }}
             >
               {t('pastWorkoutHistory.filters.minDuration') || 'MIN. DURATION'}

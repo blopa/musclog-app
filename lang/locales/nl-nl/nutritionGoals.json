@@ -58,7 +58,7 @@
       "manualTipsTitle": "Je bent helemaal klaar",
       "manualTipsDescription": "Begin met het loggen van maaltijden om je voortgang bij te houden. Je kunt deze doelen op elk moment wijzigen in de Instellingen.",
       "dailyCalorieTarget": "Dagelijks caloriedoel",
-      "kcal": "KCAL",
+      "kcal": "kcal",
       "protein": "Eiwit",
       "carbs": "Koolh",
       "fats": "Vetten",
@@ -75,7 +75,7 @@
       "dailySurplus": "Dagelijks overschot: {{kcal}} kcal",
       "projectionFat": "Vet: {{value}} {{unit}}",
       "projectionLean": "Vetvrije massa: {{value}} {{unit}}",
-      "leanMassClarification": "Vetvrije massa omvat water, glycogeen en ander niet-vetweefsel — niet alleen spieren.",
+      "leanMassClarification": "Vetvrije massa omvat water, glycogeen en ander niet-vetweefsel, niet alleen spieren.",
       "formulasBasedOn": "Gebaseerd op het Hall/Forbes lichaamssamenstellingsmodel & metaboliseerbare energie (Int J Obes 2008; Br J Nutr 2007).",
       "macroSourcesNote": "Macrodoelen gebaseerd op IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016), en Helms et al. (2014).",
       "goalLabels": {
@@ -129,6 +129,16 @@
       }
     },
     "goalMode": "Doelmodus",
+    "modeOptions": {
+      "manual": "Handmatig",
+      "daily": "Dagelijks",
+      "weekly": "Wekelijks"
+    },
+    "modeHints": {
+      "manual": "Stel zelf je doelen in. Ze blijven gelijk totdat je ze aanpast.",
+      "daily": "Je doelen worden elke dag automatisch bijgewerkt op basis van je gegevens en je streefdatum.",
+      "weekly": "Beoordeel je doelen elke week en keur ze goed. Ze blijven gelijk tussen de evaluaties."
+    },
     "manual": "Handmatig",
     "dynamic": "Dynamisch",
     "dynamicInfo": "Dagelijkse doelen worden elke dag automatisch berekend op basis van je huidige gegevens en je doelplanning. Je huidige caloriedoel is {{kcal}} kcal.",

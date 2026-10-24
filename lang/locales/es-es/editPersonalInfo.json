@@ -6,7 +6,7 @@
     "emailAddress": "Correo Electrónico",
     "emailPlaceholder": "ej. alex@ejemplo.com",
     "dateOfBirth": "Fecha de Nacimiento",
-    "dateOfBirthPlaceholder": "DD/MM/AAAA",
+    "dateOfBirthPlaceholder": "DD/MM/aaaa",
     "gender": "Género",
     "male": "Masculino",
     "female": "Femenino",

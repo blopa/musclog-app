@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { GymService } from '@/database/services/GymService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { defaultBarWeightKg, defaultPlates, defaultWeightIncrementKg } from '@/utils/gym';
@@ -11,7 +12,7 @@ import { equipmentForLocation, type TrainingSetupData } from '@/utils/onboarding
  * none, so backing out of the flow and finishing it again does not stack gyms.
  */
 export async function applyTrainingSetup(data: TrainingSetupData): Promise<void> {
-  await SettingsService.setWorkoutAutonomy(data.autonomy);
+  await SettingsService.set(SETTINGS.workoutAutonomy, data.autonomy);
 
   if ((await GymService.getGyms()).length > 0) {
     return;

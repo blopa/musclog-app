@@ -1,5 +1,3 @@
-'use client';
-
 import {
   BookOpen,
   ChevronDown,
@@ -21,8 +19,10 @@ import {
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { FaqPageJsonLd, type FaqPageJsonLdItem } from '@/components/website/WebsiteStructuredData';
 import { SUPPORT_MAILTO_URL } from '@/constants/misc';
+('use client');
 
 // ---------------------------------------------------------------------------
 // Types
@@ -433,4 +433,8 @@ export default function Faq() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('faq');
 }

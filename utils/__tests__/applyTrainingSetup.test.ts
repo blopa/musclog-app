@@ -1,3 +1,4 @@
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { GymService } from '@/database/services/GymService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { applyTrainingSetup } from '@/utils/applyTrainingSetup';
@@ -10,7 +11,7 @@ jest.mock('@/database/services/GymService', () => ({
   GymService: { getGyms: jest.fn(), createGym: jest.fn() },
 }));
 jest.mock('@/database/services/SettingsService', () => ({
-  SettingsService: { setWorkoutAutonomy: jest.fn(), getUnits: jest.fn() },
+  SettingsService: { set: jest.fn(), getUnits: jest.fn() },
 }));
 
 const gyms = GymService as jest.Mocked<typeof GymService>;
@@ -26,7 +27,7 @@ describe('applyTrainingSetup', () => {
   it('saves the load-suggestion choice and creates an active gym', async () => {
     await applyTrainingSetup({ location: 'gym', daysPerWeek: 3, autonomy: 'manual' });
 
-    expect(settings.setWorkoutAutonomy).toHaveBeenCalledWith('manual');
+    expect(settings.set).toHaveBeenCalledWith(SETTINGS.workoutAutonomy, 'manual');
     expect(gyms.createGym).toHaveBeenCalledTimes(1);
     const [input, options] = gyms.createGym.mock.calls[0];
     expect(options).toEqual({ makeActive: true });
@@ -51,7 +52,7 @@ describe('applyTrainingSetup', () => {
 
     await applyTrainingSetup({ location: 'gym', daysPerWeek: 3, autonomy: 'suggest' });
 
-    expect(settings.setWorkoutAutonomy).toHaveBeenCalledWith('suggest');
+    expect(settings.set).toHaveBeenCalledWith(SETTINGS.workoutAutonomy, 'suggest');
     expect(gyms.createGym).not.toHaveBeenCalled();
   });
 });

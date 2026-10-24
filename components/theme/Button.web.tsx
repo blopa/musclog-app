@@ -7,7 +7,15 @@ import { Theme } from '@/theme';
 type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 type ThemeButtonVariant =
-  'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
+  | 'accent'
+  | 'discard'
+  | 'outline'
+  | 'secondary'
+  | 'secondaryGradient'
+  | 'dashed'
+  | 'gradientCta'
+  | 'rose'
+  | 'roseOutline';
 
 type ThemeButtonProps = {
   label: string;
@@ -32,7 +40,7 @@ const getSizeConfig = (theme: Theme) => ({
     paddingHorizontal: theme.spacing.padding.base,
     borderRadius: theme.borderRadius.md,
     fontSize: theme.typography.fontSize.xs,
-    fontWeight: theme.typography.fontWeight.bold,
+    fontWeight: theme.typography.fontWeight.semibold,
     iconSize: theme.iconSize.xs,
     gap: theme.spacing.gap.xs,
     minHeight: theme.spacing.padding.sm * 2 + theme.typography.fontSize.xs * 1.5,
@@ -40,9 +48,9 @@ const getSizeConfig = (theme: Theme) => ({
   sm: {
     paddingVertical: theme.spacing.padding.md,
     paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: theme.borderRadius.md,
     fontSize: theme.typography.fontSize.sm,
-    fontWeight: theme.typography.fontWeight.bold,
+    fontWeight: theme.typography.fontWeight.semibold,
     iconSize: theme.iconSize.sm,
     gap: theme.spacing.gap.sm,
     minHeight: theme.spacing.padding.md * 2 + theme.typography.fontSize.sm * 1.5,
@@ -50,7 +58,7 @@ const getSizeConfig = (theme: Theme) => ({
   md: {
     paddingVertical: theme.spacing.padding.base,
     paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius.xl,
+    borderRadius: theme.borderRadius.lg,
     fontSize: theme.typography.fontSize.base,
     fontWeight: theme.typography.fontWeight.bold,
     iconSize: theme.iconSize.md,
@@ -60,7 +68,7 @@ const getSizeConfig = (theme: Theme) => ({
   lg: {
     paddingVertical: theme.spacing.padding.lg,
     paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius['2xl'],
+    borderRadius: theme.borderRadius.lg,
     fontSize: theme.typography.fontSize.xl,
     fontWeight: theme.typography.fontWeight.bold,
     iconSize: theme.iconSize.lg,
@@ -70,7 +78,7 @@ const getSizeConfig = (theme: Theme) => ({
   xl: {
     paddingVertical: theme.spacing.padding.xl,
     paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius['2xl'],
+    borderRadius: theme.borderRadius.lg,
     fontSize: theme.typography.fontSize.xl,
     fontWeight: theme.typography.fontWeight.bold,
     iconSize: theme.iconSize.lg,
@@ -90,6 +98,7 @@ function getBackground(theme: Theme, variant: ThemeButtonVariant, isDisabled: bo
     case 'gradientCta':
       return g(theme.colors.gradients.cta);
     case 'discard':
+    case 'rose':
       return theme.colors.rose.brand;
     case 'secondaryGradient':
       return g(theme.colors.gradients.button);
@@ -97,9 +106,11 @@ function getBackground(theme: Theme, variant: ThemeButtonVariant, isDisabled: bo
       return theme.colors.background.overlay;
     case 'outline':
     case 'dashed':
+    case 'roseOutline':
       return 'transparent';
     default:
-      return g(theme.colors.gradients.accent);
+      // `accent` is a solid fill; the gradient belongs to `gradientCta` alone.
+      return theme.colors.accent.primary;
   }
 }
 
@@ -110,6 +121,14 @@ function getTextColor(theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
 
   if (variant === 'outline') {
     return theme.colors.text.secondary;
+  }
+
+  if (variant === 'roseOutline') {
+    return theme.colors.rose.brand;
+  }
+
+  if (variant === 'accent') {
+    return theme.colors.text.onAccent;
   }
 
   if (variant === 'dashed') {
@@ -134,6 +153,14 @@ function getBorder(
       borderWidth: theme.borderWidth.medium,
       borderStyle: 'solid',
       borderColor: theme.colors.background.ink10,
+    };
+  }
+
+  if (variant === 'roseOutline') {
+    return {
+      borderWidth: theme.borderWidth.medium,
+      borderStyle: 'solid',
+      borderColor: theme.colors.rose.brand,
     };
   }
 
@@ -283,7 +310,6 @@ export function Button({
     borderColor: border.borderColor,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? 0.5 : 1,
-    letterSpacing: '0.05em',
     textAlign: 'center',
     overflow: 'hidden',
     boxSizing: 'border-box',

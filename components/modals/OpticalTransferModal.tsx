@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { Platform, Text, View } from 'react-native';
 
 import { SettingsCard } from '@/components/cards/SettingsCard';
+import { ListGroup } from '@/components/theme/ListGroup';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
@@ -44,15 +45,6 @@ export function OpticalTransferModal({ visible, onClose }: OpticalTransferModalP
   const passphraseRequired = Boolean(requireExportEncryption);
   const canSend = !passphraseRequired || passphrase.length > 0;
 
-  const iconContainerStyle = {
-    alignItems: 'center' as const,
-    backgroundColor: theme.colors.accent.primary20,
-    borderRadius: theme.borderRadius.sm,
-    height: theme.size['16'],
-    justifyContent: 'center' as const,
-    width: theme.size['16'],
-  };
-
   return (
     <FullScreenModal
       onClose={onClose}
@@ -64,20 +56,20 @@ export function OpticalTransferModal({ visible, onClose }: OpticalTransferModalP
         <Text className="text-sm text-text-secondary">{t('opticalTransfer.explainer')}</Text>
 
         <View className="gap-3">
-          <SettingsCard
-            icon={<Send color={theme.colors.accent.primary} size={theme.iconSize.xl} />}
-            iconContainerStyle={iconContainerStyle}
-            onPress={() => canSend && setSendVisible(true)}
-            subtitle={t('opticalTransfer.sendCardSubtitle')}
-            title={t('opticalTransfer.sendCard')}
-          />
-          <SettingsCard
-            icon={<ScanLine color={theme.colors.accent.primary} size={theme.iconSize.xl} />}
-            iconContainerStyle={iconContainerStyle}
-            onPress={() => setReceiveVisible(true)}
-            subtitle={t('opticalTransfer.receiveCardSubtitle')}
-            title={t('opticalTransfer.receiveCard')}
-          />
+          <ListGroup>
+            <SettingsCard
+              icon={<Send color={theme.colors.accent.primary} size={theme.iconSize.xl} />}
+              onPress={() => canSend && setSendVisible(true)}
+              subtitle={t('opticalTransfer.sendCardSubtitle')}
+              title={t('opticalTransfer.sendCard')}
+            />
+            <SettingsCard
+              icon={<ScanLine color={theme.colors.accent.primary} size={theme.iconSize.xl} />}
+              onPress={() => setReceiveVisible(true)}
+              subtitle={t('opticalTransfer.receiveCardSubtitle')}
+              title={t('opticalTransfer.receiveCard')}
+            />
+          </ListGroup>
         </View>
 
         <View className="gap-2">

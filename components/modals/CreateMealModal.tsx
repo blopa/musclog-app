@@ -13,6 +13,7 @@ import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { StepperInput } from '@/components/theme/StepperInput';
+import { TextButton } from '@/components/theme/TextButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models';
@@ -879,8 +880,6 @@ export function CreateMealModal({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
               }}
             >
               {t('food.createMeal.ingredients', { count: ingredients.length })}
@@ -992,20 +991,31 @@ export function CreateMealModal({
               ))
             )}
 
-            <Button
-              variant="dashed"
-              size="sm"
-              width="full"
-              icon={Plus}
-              iconBgColor={theme.colors.background.secondaryDark}
-              label={
-                isQuickTrack
-                  ? t('food.quickTrackMeal.addIngredient')
-                  : t('food.createMeal.addFoodItem')
-              }
-              onPress={() => setIsAddFoodVisible(true)}
-              style={{ marginTop: theme.spacing.padding.sm }}
-            />
+            {ingredients.length === 0 ? (
+              <Button
+                variant="dashed"
+                size="sm"
+                width="full"
+                icon={Plus}
+                label={
+                  isQuickTrack
+                    ? t('food.quickTrackMeal.addIngredient')
+                    : t('food.createMeal.addFoodItem')
+                }
+                onPress={() => setIsAddFoodVisible(true)}
+                style={{ marginTop: theme.spacing.padding.sm }}
+              />
+            ) : (
+              <TextButton
+                label={
+                  isQuickTrack
+                    ? t('food.quickTrackMeal.addIngredient')
+                    : t('food.createMeal.addFoodItem')
+                }
+                icon={Plus}
+                onPress={() => setIsAddFoodVisible(true)}
+              />
+            )}
           </View>
         </View>
 
@@ -1183,7 +1193,6 @@ export function CreateMealModal({
             {
               icon: Trash2,
               iconColor: theme.colors.status.error,
-              iconBgColor: theme.colors.status.error20,
               title: t('food.meals.manageMealData.deleteMeal'),
               description: t('food.meals.manageMealData.deleteMealDesc'),
               titleColor: theme.colors.status.error,

@@ -166,7 +166,6 @@ export function CurrentExerciseGoalCard({
           {
             icon: RefreshCw,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('exerciseGoals.detail.recalculateBaseline'),
             description: '',
             onPress: handleRecalculate,
@@ -178,7 +177,6 @@ export function CurrentExerciseGoalCard({
           {
             icon: Eye,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('exerciseGoals.detail.viewDetails'),
             description: '',
             onPress: onViewDetails,
@@ -190,7 +188,6 @@ export function CurrentExerciseGoalCard({
           {
             icon: Pencil,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('common.edit'),
             description: '',
             onPress: onEdit,
@@ -202,7 +199,6 @@ export function CurrentExerciseGoalCard({
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error10,
             title: t('exerciseGoals.deleteGoal'),
             description: t('exerciseGoals.deleteGoalMessage'),
             titleColor: theme.colors.status.error,

@@ -2,72 +2,111 @@
   "notifications": {
     "header": {
       "title": "Notifications",
-      "clearAll": "CLEAR ALL"
+      "clearAll": "Clear all"
     },
     "sections": {
-      "today": "TODAY",
-      "yesterday": "YESTERDAY",
-      "earlier": "EARLIER"
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "earlier": "Earlier"
     },
     "channels": {
       "default": "Default",
-      "activeWorkout": "Active Workout"
+      "activeWorkout": "Active workout",
+      "cycle": "Cycle reminders",
+      "restTimer": "Rest timer",
+      "workoutReminders": "Workout reminders",
+      "restTimerQuiet": "Rest timer (no sound)"
     },
-    "startNow": "Start Now",
+    "startNow": "Start now",
     "types": {
       "aiInsight": {
-        "title": "AI Insight",
+        "title": "AI insight",
         "description": "Based on your recent lifts, try increasing your protein intake by 15g today for optimal recovery."
       },
       "workoutReminder": {
-        "title": "Workout Reminder",
+        "title": "Workout reminder",
         "description": "Ready for {{workoutName}}? Scheduled for {{time}} today."
       },
       "workoutCompleted": {
-        "title": "Workout Completed!",
+        "title": "Workout completed",
         "description": "Great job crushing {{workoutName}}. You burned {{calories}} kcal."
       },
       "kudosReceived": {
-        "title": "Kudos Received",
+        "title": "Kudos received",
         "description": "{{name}} and {{count}} others liked your recent milestone: \"{{milestone}}\""
       },
       "weeklyReport": {
-        "title": "Weekly Report Ready",
+        "title": "Weekly report ready",
         "description": "Your progress report for last week is available. Check your stats."
       },
       "activeWorkout": {
         "title": "Workout: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
-        "bodyNoExercise": "{{totalTime}}"
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Workout in progress"
       },
       "workoutReminderMorning": {
-        "title": "Workout Reminder",
+        "title": "Workout reminder",
         "body": "Ready to crush your {{workoutName}} workout today??"
       },
       "nutritionOverview": {
-        "title": "Daily Nutrition Overview",
-        "body": "Check how your nutrition aligned with your goals today!"
+        "title": "Daily nutrition overview",
+        "body": "See how today's nutrition compared with your goals."
       },
       "nutritionCheckin": {
-        "title": "Weekly Progress Check-in",
+        "title": "Weekly progress check-in",
         "body": "It's time for your weekly nutrition check-in! Let's see how you've done."
       },
       "periodPrediction": {
-        "title": "Period Prediction",
-        "body": "Your period is predicted to start in 2 days. Get ready!"
+        "title": "Period prediction",
+        "body": "Your period may start in a few days, based on your recent cycles."
       },
       "fertileWindow": {
-        "title": "Fertile Window",
-        "body": "Your fertile window is starting! Useful for tracking your energy levels."
+        "title": "Fertile window",
+        "body": "Your estimated fertile window may begin soon. It's a calendar estimate, not confirmation of ovulation."
       },
       "restTimerAlert": {
-        "title": "Rest Over - Back to Work!",
-        "body": "Your rest period is up. Time to crush the next set!"
+        "title": "Rest over",
+        "body": "Your rest is up. Time for the next set."
       },
       "workoutDurationWarning": {
-        "title": "Still Working Out?",
-        "body": "Your session has been running for 5 hours. Don't forget to finish it in Musclog!"
+        "title": "Still working out?",
+        "body": "Your session has been running for 5 hours. Remember to finish it in Musclog."
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "You have an update."
+      },
+      "unfinishedWorkout": {
+        "title": "Finish your workout?",
+        "body": "{{workoutName}} is still open. Finish and log it when you're done."
+      },
+      "goalAtRisk": {
+        "title": "Weekly goal at risk",
+        "body": "Workouts left to hit your weekly goal: {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Almost ready",
+        "body": "{{seconds}} seconds of rest left."
+      },
+      "workTimerAlert": {
+        "title": "Time's up",
+        "body": "Your timed set is done."
       }
+    },
+    "actions": {
+      "addRest": "+{{seconds}}s rest",
+      "nextSet": "Next set",
+      "snooze": "Snooze 1h",
+      "done": "Done",
+      "later": "Later",
+      "skip": "Skip"
+    },
+    "restPrompt": {
+      "title": "Rest timer alerts?",
+      "message": "Your rest timer is running. Want an alert if you lock your phone or switch apps?",
+      "confirm": "Enable alerts",
+      "cancel": "Not now"
     }
   }
 }

@@ -54,9 +54,9 @@ for (const file of allFiles) {
 
 // --- REPORT ---
 if (colorOccurrences.length === 0) {
-  console.log('✅ No hardcoded colors found!');
+  console.log('[OK] No hardcoded colors found!');
 } else {
-  console.log(`🎨 Found hardcoded colors in ${colorOccurrences.length} files:\n`);
+  console.log(`Found hardcoded colors in ${colorOccurrences.length} files:\n`);
   colorOccurrences.forEach(({ file, colors }) => {
     console.log(file);
     console.log('  ', colors.join(', '), '\n');

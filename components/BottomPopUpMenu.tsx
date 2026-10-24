@@ -1,19 +1,31 @@
 import { ChevronRight } from 'lucide-react-native';
 import { ComponentType, ReactNode } from 'react';
-import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
+import { ListGroup } from '@/components/theme/ListGroup';
+import { ListRow } from '@/components/theme/ListRow';
 import { useTheme } from '@/hooks/useTheme';
 
 import { BottomPopUp } from './BottomPopUp';
 
 export type BottomPopUpMenuItem = {
   icon: ComponentType<{ size: number; color: string }>;
-  iconColor: string;
-  iconBgColor: string;
+  /** Removed in Phase 3: menu icons are naked. Typed `never` so a leftover fails the build. */
+  iconBgColor?: never;
+  /** Only read to recognize a destructive item (the error color); other icons are neutral. */
+  iconColor?: string;
   title: string;
-  description: string;
+  /** One line under the title. Leave it out when it would only restate the title. */
+  description?: string;
   titleColor?: string;
-  descriptionColor?: string;
+  /** Show a chevron: the item pushes a screen or opens a sheet with more choices. */
+  showChevron?: boolean;
+  /**
+   * Makes the menu a picker: `true` marks the current choice (accent icon and a check), `false`
+   * an unpicked one. Leave it out on an ordinary action.
+   */
+  selected?: boolean;
+  testID?: string;
   onPress: () => void;
   /** When true, the menu will not automatically close when this item is pressed */
   keepOpenOnPress?: boolean;
@@ -36,49 +48,12 @@ type BottomPopUpMenuProps = {
   loadingTitle?: string;
 };
 
-type OptionItemProps = BottomPopUpMenuItem;
-
-function OptionItem({
-  icon: Icon,
-  iconColor,
-  iconBgColor,
-  title,
-  description,
-  titleColor,
-  descriptionColor,
-  onPress,
-}: OptionItemProps) {
-  const theme = useTheme();
-  // On Android, Pressable inside ScrollView often needs two taps because ScrollView captures the first touch.
-  // unstable_pressDelay lets the first tap register (press fires after delay if no scroll).
-  const pressableProps =
-    Platform.OS === 'android' ? { onPress, unstable_pressDelay: 130 as const } : { onPress };
-
-  return (
-    <Pressable className="flex-row items-center gap-4 py-3 active:opacity-70" {...pressableProps}>
-      <View
-        className="h-12 w-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: iconBgColor || theme.colors.background.iconDarker }}
-      >
-        <Icon size={theme.iconSize.md} color={iconColor || theme.colors.accent.secondary} />
-      </View>
-      <View className="flex-1">
-        <Text
-          className="text-lg font-bold"
-          style={{ color: titleColor || theme.colors.text.primary }}
-        >
-          {title}
-        </Text>
-        <Text
-          className="mt-0.5 text-sm"
-          style={{ color: descriptionColor || theme.colors.text.secondary }}
-        >
-          {description}
-        </Text>
-      </View>
-      <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
-    </Pressable>
-  );
+/** Destructive items sit at the end of the list, in the error color. */
+function orderMenuItems(
+  items: BottomPopUpMenuItem[],
+  isDestructive: (item: BottomPopUpMenuItem) => boolean
+): BottomPopUpMenuItem[] {
+  return [...items.filter((item) => !isDestructive(item)), ...items.filter(isDestructive)];
 }
 
 export function BottomPopUpMenu({
@@ -96,6 +71,19 @@ export function BottomPopUpMenu({
   loadingTitle,
 }: BottomPopUpMenuProps) {
   const theme = useTheme();
+  const isDestructive = (item: BottomPopUpMenuItem) =>
+    item.titleColor === theme.colors.status.error || item.iconColor === theme.colors.status.error;
+
+  const trailingFor = (item: BottomPopUpMenuItem) => {
+    if (item.selected !== undefined) {
+      // A picker row: ListRow draws the check on the picked row, nothing on the others.
+      return item.selected ? undefined : null;
+    }
+
+    return item.showChevron ? (
+      <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+    ) : null;
+  };
 
   return (
     <BottomPopUp
@@ -120,24 +108,28 @@ export function BottomPopUpMenu({
       ) : (
         children ||
         (items && (
-          <View className="p-6">
-            {items.map((item, index) => (
-              <View
-                key={index}
-                style={
-                  index < items.length - 1
-                    ? { borderBottomWidth: 1, borderBottomColor: theme.colors.background.ink10 }
-                    : undefined
-                }
-              >
-                <OptionItem
+          // The list is the sheet: it bleeds through BottomPopUp's 24pt content padding so the
+          // rows and their press highlight span the sheet, while the row content stays on the
+          // title's line.
+          <View
+            style={{
+              marginHorizontal: -theme.spacing.padding.xl,
+              marginTop: -theme.spacing.padding.md,
+            }}
+          >
+            <ListGroup flush>
+              {orderMenuItems(items, isDestructive).map((item, index) => (
+                <ListRow
+                  key={`${item.title}-${index}`}
+                  variant="grouped"
                   icon={item.icon}
-                  iconColor={item.iconColor}
-                  iconBgColor={item.iconBgColor}
+                  iconColor={isDestructive(item) ? theme.colors.status.error : undefined}
                   title={item.title}
-                  description={item.description}
                   titleColor={item.titleColor}
-                  descriptionColor={item.descriptionColor}
+                  subtitle={item.description}
+                  selected={item.selected}
+                  testID={item.testID}
+                  trailing={trailingFor(item)}
                   onPress={() => {
                     if (!item.keepOpenOnPress) {
                       onClose?.();
@@ -146,8 +138,8 @@ export function BottomPopUpMenu({
                     item.onPress();
                   }}
                 />
-              </View>
-            ))}
+              ))}
+            </ListGroup>
           </View>
         ))
       )}

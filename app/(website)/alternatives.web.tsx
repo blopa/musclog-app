@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Activity,
   Award,
@@ -27,7 +25,9 @@ import {
   MUTED,
   ON_BRAND,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
+('use client');
 
 // ---------------------------------------------------------------------------
 // Language-independent comparison data.
@@ -70,7 +70,6 @@ interface Row {
   // `inverse` rows (e.g. "Ads in free version") flip polarity: a filled status
   // is a downside, so they render as Yes/Some/No text pills instead of icons.
   inverse?: boolean;
-  emoji?: string; // decorative suffix on Musclog's cell (Game Boy row)
 }
 
 interface Section {
@@ -299,13 +298,13 @@ const SECTIONS: Section[] = [
       { id: 'customPrompts', cells: [F, N, N, N, N, [P, 'personalitiesFiles'], N, N, N] },
       { id: 'byoApiKey', cells: [F, N, N, N, N, N, N, N, N] },
       { id: 'localModels', cells: [F, N, N, N, N, N, N, N, N] },
-      { id: 'gameboy', emoji: '😎', cells: [F, N, N, N, N, N, N, N, N] },
+      { id: 'gameboy', cells: [F, N, N, N, N, N, N, N, N] },
     ],
   },
 ];
 
 // Category-winner table: label key -> winning app name (proper noun) + accent.
-const WINNERS: { id: string; app: string; musclog?: boolean; emoji?: string }[] = [
+const WINNERS: { id: string; app: string; musclog?: boolean }[] = [
   { id: 'overallCoverage', app: 'Musclog', musclog: true },
   { id: 'privacyOwnership', app: 'Musclog', musclog: true },
   { id: 'freeOpenSource', app: 'Musclog', musclog: true },
@@ -318,7 +317,7 @@ const WINNERS: { id: string; app: string; musclog?: boolean; emoji?: string }[] 
   { id: 'socialLifting', app: 'Hevy' },
   { id: 'mealPlan', app: 'Lifesum' },
   { id: 'liftingProgramme', app: 'MacroFactor Workouts' },
-  { id: 'gameboy', app: 'Musclog', musclog: true, emoji: '😎' },
+  { id: 'gameboy', app: 'Musclog', musclog: true },
 ];
 
 // ---------------------------------------------------------------------------
@@ -554,7 +553,6 @@ export default function Alternatives() {
                       >
                         {w.musclog ? <Award size={14} color={BRAND_GREEN_BRIGHT} /> : null}
                         {w.app}
-                        {w.emoji ? <span>{w.emoji}</span> : null}
                       </span>
                     </td>
                   </tr>
@@ -709,9 +707,6 @@ function SectionTable({
                           {t(`notes.${noteKey}`)}
                         </span>
                       ) : null}
-                      {row.emoji && app.highlight ? (
-                        <span className="text-sm leading-none">{row.emoji}</span>
-                      ) : null}
                     </div>
                   </td>
                 );
@@ -722,4 +717,8 @@ function SectionTable({
       </table>
     </div>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('alternatives');
 }

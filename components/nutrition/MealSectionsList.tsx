@@ -64,6 +64,7 @@ export function MealSectionsList({
             totalFat={totals?.fat || 0}
             onAddFood={() => onAddFood(type)}
             intuitiveMode={intuitiveMode}
+            hasItems={hasItems}
             menuButton={
               hasItems ? (
                 <MenuButton

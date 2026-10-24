@@ -34,7 +34,7 @@ export function WorkoutTimeTracker({
         <Text className="text-5xl font-bold tracking-tight text-text-primary">
           {formatDuration(time.hours, time.minutes, time.seconds)}
         </Text>
-        <Text className="mt-1 text-sm font-semibold tracking-wider text-accent-primary">
+        <Text className="mt-1 text-sm font-semibold text-accent-primary">
           {t('workoutSession.totalTime')}
         </Text>
       </View>

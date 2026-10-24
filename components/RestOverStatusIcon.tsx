@@ -1,50 +1,18 @@
 import { AlertCircle, Dumbbell } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
-import { Animated, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
 export function RestOverStatusIcon() {
   const theme = useTheme();
-  const [glowAnim] = useState(() => new Animated.Value(1));
-
-  useEffect(() => {
-    // Glow pulse animation
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1.1,
-          duration: 3000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 3000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [glowAnim]);
 
   return (
     <View className="relative mb-4 items-center justify-center">
-      <Animated.View
-        className="absolute inset-0 rounded-full"
-        style={{
-          backgroundColor: theme.colors.status.brandVivid20,
-          transform: [{ scale: glowAnim }],
-        }}
-      />
       <View
         className="relative z-10 h-24 w-24 items-center justify-center rounded-full border"
         style={{
           backgroundColor: theme.colors.background.secondaryDark,
           borderColor: theme.colors.status.brandVivid20,
-          shadowColor: theme.colors.accent.primary,
-          shadowOffset: theme.shadowOffset.zero,
-          shadowOpacity: theme.shadowOpacity.medium,
-          shadowRadius: theme.shadowRadius.xl,
-          elevation: theme.elevation['2xl'],
         }}
       >
         <Dumbbell

@@ -22,10 +22,7 @@ const Macro = ({ label, value, color, intuitiveMode = false }: MacroProps) => {
 
   return (
     <View className="flex-col gap-y-0.5">
-      <Text
-        className="font-bold uppercase"
-        style={{ color, fontSize: theme.typography.fontSize.xs }}
-      >
+      <Text className="font-bold" style={{ color, fontSize: theme.typography.fontSize.xs }}>
         {label}
       </Text>
       <Text

@@ -20,7 +20,7 @@ import {
 } from 'react-share';
 
 import { BODY_TEXT_SOFT, ink } from './websiteColors';
-import { absoluteUrl, SEO_IMAGE_URL } from './WebsiteSeo';
+import { absoluteUrl, SEO_IMAGE_URL } from './websiteMetadata';
 
 /**
  * Every icon is drawn monochrome — a transparent background plus `currentColor` on the glyph — so

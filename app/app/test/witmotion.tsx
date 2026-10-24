@@ -1006,7 +1006,7 @@ export default function WitMotionTestScreen() {
                 <Text className="mt-1 text-xs text-text-tertiary">
                   {pipelineResult.candidateSegments} candidates · {pipelineResult.classifiedAsRep}{' '}
                   classified
-                  {pipelineResult.error ? `  ⚠ ${pipelineResult.error}` : ''}
+                  {pipelineResult.error ? `  Warning: ${pipelineResult.error}` : ''}
                 </Text>
               ) : null}
             </View>

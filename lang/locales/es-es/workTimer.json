@@ -1,0 +1,11 @@
+{
+  "workTimer": {
+    "label": "Temporizador de serie",
+    "open": "Temporizador",
+    "start": "Iniciar",
+    "stop": "Detener",
+    "close": "Cerrar",
+    "minus5": "-5 s",
+    "plus5": "+5 s"
+  }
+}

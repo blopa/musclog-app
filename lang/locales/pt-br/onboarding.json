@@ -40,13 +40,13 @@
     },
     "cycleSetup": {
       "title": "Configuração do Rastreamento do Ciclo",
-      "description": "Aprenderemos seu ciclo à medida que você registrar — não precisa saber suas médias de antemão.",
+      "description": "Aprenderemos seu ciclo à medida que você registrar, não precisa saber suas médias de antemão.",
       "anchor": {
         "title": "Última Menstruação",
-        "description": "Quando sua última menstruação começou? Uma estimativa aproximada está ótima — você pode atualizar depois.",
+        "description": "Quando sua última menstruação começou? Uma estimativa aproximada está ótima. Você pode atualizar depois.",
         "tapToSelect": "Toque para selecionar uma data",
         "iDontKnow": "Não sei / pular",
-        "skipInstead": "Limpar data — não tenho certeza"
+        "skipInstead": "Limpar data (não tenho certeza)"
       },
       "length": {
         "cycleLength": "Duração do ciclo",
@@ -54,18 +54,32 @@
         "periodDurationLabel": "Menstruação"
       },
       "birthControl": {
-        "title": "Anticoncepcional Hormonal",
-        "description": "Você está usando algum anticoncepcional hormonal? Isso afeta as previsões de fase hormonal.",
+        "title": "Anticoncepcional",
+        "description": "Você usa algum método anticoncepcional? Métodos hormonais podem mudar o comportamento do seu ciclo.",
         "none": "Nenhum",
-        "noneDescription": "Sem contracepção hormonal.",
+        "noneDescription": "Sem anticoncepção.",
         "pill": "Pílula",
         "pillDescription": "Pílula contraceptiva oral diária.",
-        "iud": "DIU",
-        "iudDescription": "Dispositivo intrauterino (hormonal ou cobre).",
+        "iud": "DIU (tipo não informado)",
+        "iudDescription": "Escolha hormonal ou de cobre para ser específica.",
         "implant": "Implante",
         "implantDescription": "Implante hormonal subcutâneo.",
         "other": "Outro",
-        "otherDescription": "Outra forma de contracepção."
+        "otherDescription": "Outra forma de contracepção.",
+        "hormonalIud": "DIU hormonal",
+        "hormonalIudDescription": "Dispositivo intrauterino que libera hormônios.",
+        "copperIud": "DIU de cobre",
+        "copperIudDescription": "Dispositivo intrauterino sem hormônios.",
+        "patch": "Adesivo",
+        "patchDescription": "Adesivo hormonal na pele.",
+        "ring": "Anel vaginal",
+        "ringDescription": "Anel vaginal hormonal.",
+        "shot": "Injeção",
+        "shotDescription": "Injeção anticoncepcional hormonal.",
+        "combinedPill": "Pílula combinada",
+        "combinedPillDescription": "Pílula diária com estrogênio e progestágeno.",
+        "progestinPill": "Pílula só de progestágeno",
+        "progestinPillDescription": "Pílula diária sem estrogênio."
       },
       "lifeStage": {
         "title": "Contexto do Ciclo",
@@ -78,7 +92,9 @@
         "postpartum": "Pós-parto",
         "postpartumDescription": "Tive um bebê no último ano.",
         "postPill": "Parei o anticoncepcional recentemente",
-        "postPillDescription": "Parei o anticoncepcional hormonal recentemente e meu ciclo ainda pode estar se ajustando."
+        "postPillDescription": "Parei o anticoncepcional hormonal recentemente e meu ciclo ainda pode estar se ajustando.",
+        "noBleeding": "Acompanhamento sem sangramento",
+        "noBleedingDescription": "Não menstruo (por exemplo após cirurgia ou com hormônios que suprimem) mas quero acompanhar como me sinto."
       },
       "goal": {
         "title": "Meta de Sincronização",
@@ -93,7 +109,9 @@
       "pastPeriods": {
         "title": "Períodos Passados (Opcional)",
         "description": "Adicionar datas de períodos passados ajuda o app a aprender a duração do seu ciclo e fazer melhores previsões de imediato.",
-        "addPastPeriod": "Adicionar um período passado"
+        "addPastPeriod": "Adicionar um período passado",
+        "duplicate": "Esse dia já está na lista.",
+        "remove": "Remover esta menstruação"
       },
       "errors": {
         "futureDate": "As datas da menstruação não podem estar no futuro.",
@@ -144,7 +162,7 @@
       "description": "Acompanhe seu progresso com insights baseados em dados e alcance seus objetivos de fitness.",
       "viewTerms": "Ver Termos",
       "preparingApp": "Preparando o app para você...",
-      "migratingPreamble": "Atualizando do Musclog anterior — estamos trazendo seus dados.",
+      "migratingPreamble": "Atualizando do Musclog anterior. Estamos trazendo seus dados.",
       "migratingData": "Migrando seus dados...",
       "migratingStep": "Migrando {{step}}...",
       "migrationSteps": {
@@ -168,10 +186,10 @@
       "importOptically": "Importar dados de outro celular",
       "storedLocally": "Todos os dados armazenados localmente no seu dispositivo",
       "personalizedSetup": "Configuração Personalizada",
-      "personalizedSetupSteps": "8 etapas",
+      "personalizedSetupSteps": "10 etapas",
       "personalizedSetupSubtitle": "Obtenha TDEE preciso, macros e recomendações personalizadas",
       "quickSetup": "Configuração Rápida",
-      "quickSetupSteps": "5 etapas",
+      "quickSetupSteps": "7 etapas",
       "quickSetupSubtitle": "Configuração básica, você pode personalizar depois"
     },
     "quickPreferences": {
@@ -247,14 +265,14 @@
       "missingData": "Por favor, complete seus detalhes de fitness primeiro para que possamos calcular seu plano."
     },
     "personalizedPreferences": {
-      "nameLabel": "COMO DEVEMOS TE CHAMAR?",
+      "nameLabel": "Como devemos te chamar?",
       "namePlaceholder": "Digite seu nome (opcional)"
     },
     "personalizedExperience": {
       "title": "Qual é a sua experiência?",
       "subtitle": "Isso nos ajuda a adaptar as sugestões de treino ao seu nível.",
-      "experienceLabel": "EXPERIÊNCIA DE TREINO",
-      "activityLevelLabel": "NÍVEL DE ATIVIDADE",
+      "experienceLabel": "Experiência de treino",
+      "activityLevelLabel": "Nível de atividade",
       "beginner": "Iniciante",
       "beginnerDesc": "Menos de 1 ano de treino",
       "intermediate": "Intermediário",
@@ -286,7 +304,7 @@
     "trainingSetup": {
       "title": "Como você treina?",
       "subtitle": "Algumas respostas rápidas preparam sua academia e seu primeiro treino.",
-      "locationLabel": "ONDE VOCÊ TREINA",
+      "locationLabel": "Onde você treina",
       "location": {
         "gym": "Academia",
         "gymDesc": "Barras, máquinas e polias",
@@ -295,15 +313,15 @@
         "minimal": "Mínimo",
         "minimalDesc": "Só o seu corpo e talvez um elástico"
       },
-      "experienceLabel": "EXPERIÊNCIA",
+      "experienceLabel": "Experiência",
       "experience": {
         "beginner": "Iniciante",
         "intermediate": "Intermediário",
         "advanced": "Avançado"
       },
-      "daysLabel": "DIAS POR SEMANA",
+      "daysLabel": "Dias por semana",
       "daysMax": "{{count}}+",
-      "helpLabel": "SUGESTÕES DE CARGA",
+      "helpLabel": "Sugestões de carga",
       "help": {
         "suggest": "Sugerir meus pesos",
         "suggestDesc": "As metas sobem quando você bate suas repetições e o app explica o motivo",
@@ -329,7 +347,9 @@
       "editHint": "Mude exercícios, séries ou regras quando quiser.",
       "emptyTitle": "Comece com um treino vazio",
       "emptyDescription": "Os planos da biblioteca são feitos para equipamentos de academia, então vamos pulá-los. Adicione exercícios durante o treino ou veja planos depois.",
-      "startNow": "Adicionar e começar",
+      "addPlan": "Adicionar plano",
+      "dayLabel": "Dia {{day}}",
+      "dayExercises": "{{count}} exercícios",
       "startEmpty": "Iniciar treino vazio",
       "notNow": "Agora não",
       "howTitle": "Como funciona",
@@ -339,7 +359,7 @@
       "stepLogBody": "Informe carga e repetições e o cronômetro de descanso inicia sozinho.",
       "stepNextTitle": "Mais inteligente da próxima vez",
       "stepNextBody": "Lembramos seus números e sugerimos a próxima carga.",
-      "planHint": "Pronto para começar? Toque em \"{{action}}\" para adicionar este plano ao seu perfil e iniciar seu primeiro treino agora mesmo, ou toque em \"{{later}}\" para fazer isso depois."
+      "planHint": "Toque em \"{{action}}\" para adicionar este plano ao seu perfil, ou em \"{{later}}\" para escolher um treino depois."
     }
   }
 }

@@ -56,7 +56,6 @@ const THEMED_FILES = [
   'components/modals/SmartCameraShell.tsx',
   'components/modals/WorkoutSettingsModal.tsx',
   'components/weeklyReview/NutritionReviewSection.tsx',
-  'components/weeklyReview/TargetModeRow.tsx',
   'components/weeklyReview/TrainingReviewSection.tsx',
   'components/workout/ExerciseAliasesSection.tsx',
   'components/workout/ExerciseRestrictionSection.tsx',
@@ -74,6 +73,69 @@ const THEMED_FILES = [
 const RAW_TEXT_INPUT = /import\s*\{[^}]*\bTextInput\b[^}]*\}\s*from\s*'react-native'/;
 
 describe('theme controls', () => {
+  it('pairs segmented labels with the ink for their actual background', () => {
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source).toContain('backgroundColor: theme.colors.accent.primary');
+    expect(source).not.toContain('LinearGradient');
+    expect(source).toContain('font-bold text-text-on-accent');
+    expect(source).toContain('font-bold text-text-secondary');
+    expect(source).not.toContain('text-text-tertiary');
+  });
+
+  it('marks the selected segment with the accent in every full-width variant', () => {
+    // `elevated` and `outline` drew the selected segment as `bg-card` on the `bg-cardElevated`
+    // track, which was barely distinguishable from the unselected options.
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source).toMatch(
+      /\{isSelected \? \(\s*<View\s+style=\{\{[^}]*backgroundColor: theme.colors.accent.primary/
+    );
+    expect(source).not.toContain('bg-bg-card ');
+    expect(source).not.toMatch(/variant === 'gradient' && isSelected/);
+  });
+
+  it.each([
+    'components/EditPhysicalStatsBody.tsx',
+    'components/modals/BasicSettingsModal.tsx',
+    'components/modals/CoachModal.tsx',
+    'components/modals/CreateWorkoutModal.tsx',
+    'components/modals/PastWorkoutsHistoryFilterMenu.tsx',
+  ])('%s inks its segment icons for the accent fill', (path) => {
+    // A static accent or primary-ink icon vanishes on the selected segment's accent fill.
+    const source = code(path);
+    expect(source).toMatch(/icon: \(selected: boolean\) =>/);
+    expect(source).toContain('selected ? theme.colors.text.onAccent : theme.colors.text.secondary');
+  });
+
+  it('announces every segment as a radio, whatever the variant', () => {
+    // The pill was a radiogroup while the full-width variants were buttons, so the same control
+    // read as two different things to a screen reader.
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source.match(/accessibilityRole="radiogroup"/g)).toHaveLength(2);
+    expect(source.match(/accessibilityRole="radio"/g)).toHaveLength(2);
+    expect(source).not.toContain('accessibilityRole="button"');
+    expect(source.match(/checked: isSelected/g)).toHaveLength(2);
+  });
+
+  it('uses the full-width pill for every setting value in the notification settings', () => {
+    // A form of settings mixed four pills with one full-width elevated control, which looks like
+    // a view switcher and made the same kind of choice look like two; and pills that hugged their
+    // options left a ragged edge beside the full-width cards (see DESIGN.md → Buttons).
+    const source = code('components/modals/NotificationsSettingsModal.tsx');
+    const controls = source.split('<SegmentedControl').slice(1);
+    expect(controls.length).toBeGreaterThan(0);
+    for (const control of controls) {
+      const props = control.slice(0, control.indexOf('/>'));
+      expect(props).toContain('variant="pill"');
+      expect(props).toMatch(/\bfullWidth\b/);
+    }
+  });
+
+  it('stretches a fullWidth pill and shares the track between its options', () => {
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source).toContain("fullWidth ? 'self-stretch' : 'self-start'");
+    expect(source).toContain("fullWidth ? 'flex-1 justify-center' : ''");
+  });
+
   it.each(THEMED_FILES)('%s builds its controls from components/theme', (path) => {
     const source = code(path);
     expect(source).not.toContain('<Pressable');

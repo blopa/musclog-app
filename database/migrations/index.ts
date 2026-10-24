@@ -34,6 +34,7 @@ import migrationV32 from '@/database/migrations/2026/10/migration-v32';
 import migrationV33 from '@/database/migrations/2026/10/migration-v33';
 import migrationV34 from '@/database/migrations/2026/10/migration-v34';
 import migrationV35 from '@/database/migrations/2026/10/migration-v35';
+import migrationV36 from '@/database/migrations/2026/10/migration-v36';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -158,5 +159,7 @@ export const migrations = schemaMigrations({
     migrationV34,
     // Version 35: Per-exercise bodyweight rep ceiling (exercise_user_settings.rep_ceiling).
     migrationV35,
+    // Version 36: Encrypted cycle records (cycle_periods, cycle_day_logs, cycle_contexts).
+    migrationV36,
   ],
 });

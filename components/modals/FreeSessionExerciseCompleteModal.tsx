@@ -108,10 +108,7 @@ export function FreeSessionExerciseCompleteModal({
       <View className="flex-1 px-4">
         <View className="flex-row items-center justify-between pb-4 pt-2">
           <View className="flex-1 items-center justify-center px-2">
-            <Text
-              className="text-[14px] font-bold uppercase tracking-widest"
-              style={{ color: emerald }}
-            >
+            <Text className="text-[14px] font-bold" style={{ color: emerald }}>
               {t('freeTraining.inProgress')}
             </Text>
           </View>
@@ -225,7 +222,7 @@ export function FreeSessionExerciseCompleteModal({
                 </View>
                 <View className="mt-1 border-t pt-3" style={{ borderColor: borderDark }}>
                   <Text
-                    className="mb-1 text-xs font-semibold uppercase tracking-wider"
+                    className="mb-1 text-xs font-semibold"
                     style={{ color: textMuted, fontSize: theme.typography.fontSize.xs }}
                   >
                     {t('freeTraining.exerciseComplete.totalVolume')}

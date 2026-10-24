@@ -1,8 +1,8 @@
 import {
+  Clock,
   Copy,
   History,
   Pencil,
-  Sparkles,
   StickyNote,
   Trash2,
   UtensilsCrossed,
@@ -16,7 +16,6 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPo
 import { NoteCard } from '@/components/cards/NoteCard';
 import { NoteRow } from '@/components/cards/NoteRow';
 import { useCoach } from '@/components/CoachContext';
-import { GradientText } from '@/components/GradientText';
 import { MasterLayout } from '@/components/MasterLayout';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { GenericEditModal } from '@/components/modals/GenericEditModal';
@@ -25,6 +24,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TRACK_MEAL } from '@/constants/chat';
 import type Note from '@/database/models/Note';
 import { NoteService } from '@/database/services/NoteService';
@@ -168,7 +168,6 @@ export default function NotesScreen() {
       {
         icon: Pencil,
         iconColor: theme.colors.accent.primary,
-        iconBgColor: theme.colors.accent.primary10,
         title: t('notes.noteMenu.edit'),
         description: t('notes.noteMenu.editDescription'),
         onPress: () => setEditingNote(note),
@@ -176,7 +175,6 @@ export default function NotesScreen() {
       {
         icon: Copy,
         iconColor: theme.colors.accent.primary,
-        iconBgColor: theme.colors.accent.primary10,
         title: t('notes.noteMenu.duplicate'),
         description: t('notes.noteMenu.duplicateDescription'),
         onPress: () => void handleDuplicateNote(note),
@@ -189,7 +187,6 @@ export default function NotesScreen() {
             {
               icon: UtensilsCrossed,
               iconColor: theme.colors.accent.primary,
-              iconBgColor: theme.colors.accent.primary10,
               title: t('notes.noteMenu.track'),
               description: t('notes.noteMenu.trackDescription'),
               onPress: () => handleTrackNote(note),
@@ -199,7 +196,6 @@ export default function NotesScreen() {
       {
         icon: Trash2,
         iconColor: theme.colors.status.error,
-        iconBgColor: theme.colors.status.error10,
         titleColor: theme.colors.status.error,
         title: t('notes.noteMenu.delete'),
         description: t('notes.noteMenu.deleteDescription'),
@@ -210,28 +206,23 @@ export default function NotesScreen() {
 
   return (
     <MasterLayout>
+      <ScreenHeader
+        title={t('notes.title')}
+        destination="notes"
+        actions={
+          <MenuButton
+            onPress={() => setIsScreenMenuVisible(true)}
+            accessibilityLabel={t('notes.screenMenu.title')}
+          />
+        }
+      />
       <KeyboardAwareScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
         bottomOffset={16}
       >
         <AnimatedContent>
-          <View className="px-4 py-6">
-            <View className="flex-row items-center justify-between">
-              <GradientText
-                colors={theme.colors.gradients.workoutsTitle}
-                style={{
-                  fontSize: theme.typography.fontSize['4xl'],
-                  fontWeight: theme.typography.fontWeight.bold,
-                }}
-              >
-                {t('notes.title')}
-              </GradientText>
-              <MenuButton onPress={() => setIsScreenMenuVisible(true)} />
-            </View>
-          </View>
-
-          <View className="px-4">
+          <View className="px-4 pt-6">
             {!isLoading && notes.length === 0 ? (
               <EmptyStateCard
                 icon={StickyNote}
@@ -239,6 +230,7 @@ export default function NotesScreen() {
                 description={t('emptyStates.notes.description')}
                 buttonLabel={t('emptyStates.notes.buttonLabel')}
                 buttonVariant="gradientCta"
+                bare
                 onButtonPress={() => setIsCreateVisible(true)}
               />
             ) : null}
@@ -246,8 +238,8 @@ export default function NotesScreen() {
             {latest.length > 0 ? (
               <View className="mb-8">
                 <View className="mb-4 flex-row items-center gap-2">
-                  <Sparkles size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-                  <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                  <Clock size={theme.iconSize.sm} color={theme.colors.text.secondary} />
+                  <Text className="text-sm font-semibold text-text-secondary">
                     {t('notes.sections.latest')}
                   </Text>
                 </View>
@@ -269,7 +261,7 @@ export default function NotesScreen() {
               <View>
                 <View className="mb-4 flex-row items-center gap-2">
                   <History size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-                  <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                  <Text className="text-sm font-semibold text-text-secondary">
                     {t('notes.sections.earlier')}
                   </Text>
                 </View>
@@ -313,7 +305,6 @@ export default function NotesScreen() {
           {
             icon: StickyNote,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('notes.screenMenu.create'),
             description: t('notes.screenMenu.createDescription'),
             onPress: () => setIsCreateVisible(true),

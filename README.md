@@ -96,18 +96,28 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ### 🌙 Menstrual Cycle Tracking
 
-- Track cycle phases: menstrual, follicular, ovulation, and luteal
-- Predict next period and fertile window
-- Adjust workout intensity automatically based on current cycle phase
-- Support for hormonal and non-hormonal birth control types
-- Toggle cycle tracking on or off at any time
+- Track bleeding and symptoms or keep a symptom-only journal; choose your goals, custom symptoms, favorite quick actions and optional daily fields
+- Log periods, bleeding, symptoms with severity, pain, energy and shared mood; period deletion has undo, and clearing a daily log explicitly clears that day’s shared mood
+- Calendar, period history and cycle-day comparisons with symptom filters; recorded values, missing days and estimates remain distinct
+- Next-period estimate as a range with an explained confidence level; overdue periods are stated plainly, and predictions can be hidden
+- Optional, off-by-default fertile-window estimate, always labelled as not contraception
+- Birth control and life stage change what is shown (for example, no predicted date on a method that suppresses ovulation)
+- Patterns drawn only from your own records, with the days behind each one; no phase-based workout prescriptions
+- Cycle records are encrypted on the device, with an optional lock, discreet reminders, CSV/JSON exports and an appointment PDF including shared mood
+- Encrypted cycle backups and an import preview that merges records with explicit conflict choices; full-app backup and restore remain available from cycle settings
+- Unknown-length setup, confirmed long-cycle correction, sparse-history uncertainty and retrospective prediction checks
+- Symptoms-only trends/search, custom rating scales, daily-life impact, optional diary presets and quiet pregnancy/loss/surgery/menopause contexts
+- Reminders that explain themselves: a range-based period heads-up, optional due-day and neutral "longer than usual" notes, a pack-aware pill reminder, a daily check-in, a pause, three lock-screen wording levels with a live preview, and a delivery check with a test notification
+- Restore-first import, external CSV mapping, selected-field file sharing and explicit native cycle health-store imports/exports
+- Manual password-protected backup files with restore preview and optional backup reminders; no automatic cloud uploads
+- Pause tracking without losing history, or permanently delete all cycle data
 
 ### 📈 Progress & Insights
 
 - Visualize fitness progress with charts and graphs
 - Track body metrics with a smoothed weight trend, editable scale readings, body fat %, and custom measurements
 - Daily and weekly AI-generated insights on workouts and nutrition
-- **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and cycle phase over time
+- **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and days around recorded periods over time
 
 ### 🧠 AI Coach
 
@@ -168,7 +178,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 |                | @kingstinct/react-native-healthkit (iOS)                             |
 | Localization   | i18next + react-i18next                                              |
 | Animations     | React Native Reanimated 4                                            |
-| Widgets        | react-native-android-widget                                          |
+| Widgets        | expo-widgets + Expo UI (Android and iOS)                             |
 | Chat UI        | react-native-gifted-chat                                             |
 | Validation     | Zod                                                                  |
 | Error Tracking | Sentry                                                               |
@@ -195,7 +205,7 @@ musclog/
 ├── gameboy/                    # Musclog GB ROM source and build tools
 ├── public/                     # Website assets and generated SEO outputs
 ├── scripts/                    # Build, generation, validation, and maintenance scripts
-└── widgets/                    # Android Nutrition and Smart Camera widgets
+└── widgets/                    # Android/iOS Nutrition and Smart Camera widgets
 ```
 
 ---
@@ -276,6 +286,22 @@ npm run screenshots               # Build web and capture Playwright screenshots
 npm run start-clear               # Start Expo with a cleared cache
 ```
 
+Screenshot runs default to `kinetic-depth`. Select a palette with an environment variable:
+
+```bash
+MUSCLOG_SCREENSHOT_THEME=kinetic-light npm run screenshots
+# Reuse an existing web build and capture only one device size:
+MUSCLOG_SCREENSHOT_THEME=kinetic-shock npm run playwright-runner -- tests/screenshot-automation.spec.ts --project=portrait-6.7
+```
+
+Valid themes are `kinetic-depth`, `kinetic-light`, `kinetic-shock`, `kinetic-volt`,
+`kinetic-blush`, and `kinetic-varia`. Images are saved under
+`screenshots/app-store/<theme>/<device>/`. The screenshot suite enables reduced
+motion, which disables web confetti for every screen and modal. Screenshot commands
+run only the capture suite; SDK compatibility tests remain available separately.
+They use `npm run screenshots:build` to enable the modal fixture in the web export.
+Normal production builds keep test routes disabled.
+
 ---
 
 ## Building for Production
@@ -331,3 +357,9 @@ The bundled exercise data and photos come from [free-exercise-db](https://github
 - [Expo Documentation](https://docs.expo.dev/)
 - [WatermelonDB Documentation](https://watermelondb.dev/)
 - [NativeWind Documentation](https://www.nativewind.dev/)
+
+SDK 58 verification: `npm run check-widget-bundles` builds and executes both isolated widget
+runtimes. After `npm run build-android-web`, `npm run test:upgrade:web` checks exported SEO,
+blog navigation, public controls, and fresh app seeding in Chromium. Set `MUSCLOG_TEST_PORT`
+when another local test server is already running. The iOS widget extension requires App Groups
+on both app identifiers and matching signing profiles.

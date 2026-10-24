@@ -1,24 +1,16 @@
 import { ExternalLink } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Linking,
-  Platform,
-  Pressable,
-  type StyleProp,
-  Text,
-  View,
-  type ViewStyle,
-} from 'react-native';
+import { Linking, Platform, type StyleProp, View, type ViewStyle } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
+import { ListGroup } from '@/components/theme/ListGroup';
+import { ListRow } from '@/components/theme/ListRow';
 import { SUPPORT_PROJECT_DONATION_URL } from '@/constants/misc';
 import { useTheme } from '@/hooks/useTheme';
 import { getAppBuildInfo } from '@/utils/appBuildInfo';
 import { formatAppVersion } from '@/utils/appVersionLabel';
 import { isSupportProjectListLinkVisible } from '@/utils/supportProjectInstallSource';
-
-import { GenericCard } from './GenericCard';
 
 const buildInfo = getAppBuildInfo();
 
@@ -49,137 +41,36 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
     }
   }, []);
 
-  const divider = (
-    <View
-      style={{
-        height: theme.borderWidth.thin,
-        backgroundColor: theme.colors.border.light,
-        marginVertical: theme.spacing.padding.sm,
-      }}
-    />
-  );
+  const openLink = (url: string) => {
+    Linking.openURL(url).catch(() => {});
+  };
 
-  const linkRowStyle = ({ pressed }: { pressed: boolean }) => [
-    {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      paddingVertical: theme.spacing.padding.md,
-      paddingRight: theme.size.xl + theme.spacing.padding.sm,
-      paddingHorizontal: 0,
-      paddingLeft: 0,
-      backgroundColor: pressed ? theme.colors.background.overlay : 'transparent',
-      borderRadius: theme.borderRadius.sm,
-    },
-  ];
-
-  const linkIconSlot = (
-    <View
-      style={{
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        bottom: 0,
-        width: theme.size.xl,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-      pointerEvents="none"
-    >
-      <ExternalLink size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-    </View>
-  );
-
-  const showSupportLink = supportHref !== null;
+  const externalCue = <ExternalLink size={theme.iconSize.md} color={theme.colors.text.tertiary} />;
 
   return (
-    <View style={{ marginBottom: theme.spacing.padding.sm, width: '100%', ...containerStyle }}>
-      <GenericCard variant="flat">
-        <View
-          style={{
-            width: '100%',
-            paddingHorizontal: theme.spacing.padding.base,
-            paddingTop: theme.spacing.padding.sm,
-            paddingBottom: theme.spacing.padding.sm,
-          }}
-        >
-          <Pressable
-            style={linkRowStyle}
-            onPress={() => Linking.openURL('https://musclog.app/terms')}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.primary,
-              }}
-              numberOfLines={1}
-            >
-              {t('settings.termsOfService')}
-            </Text>
-            {linkIconSlot}
-          </Pressable>
-
-          {divider}
-
-          <Pressable
-            style={linkRowStyle}
-            onPress={() => Linking.openURL('https://musclog.app/privacy')}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.primary,
-              }}
-              numberOfLines={1}
-            >
-              {t('settings.privacyPolicy')}
-            </Text>
-            {linkIconSlot}
-          </Pressable>
-
-          {showSupportLink ? (
-            <>
-              {divider}
-              <Pressable
-                style={linkRowStyle}
-                onPress={() => {
-                  Linking.openURL(supportHref).catch(() => {});
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: theme.typography.fontSize.base,
-                    color: theme.colors.text.primary,
-                  }}
-                  numberOfLines={1}
-                >
-                  {t('settings.supportProject.title')}
-                </Text>
-                {linkIconSlot}
-              </Pressable>
-            </>
-          ) : null}
-
-          {divider}
-
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingVertical: theme.spacing.padding.md,
-              paddingHorizontal: 0,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.secondary,
-              }}
-            >
-              Musclog v{formatAppVersion(buildInfo)}
-            </Text>
-          </View>
-        </View>
-      </GenericCard>
+    <View style={{ width: '100%', ...containerStyle }}>
+      <ListGroup footer={`Musclog v${formatAppVersion(buildInfo)}`}>
+        <ListRow
+          variant="grouped"
+          title={t('settings.termsOfService')}
+          trailing={externalCue}
+          onPress={() => openLink('https://musclog.app/terms')}
+        />
+        <ListRow
+          variant="grouped"
+          title={t('settings.privacyPolicy')}
+          trailing={externalCue}
+          onPress={() => openLink('https://musclog.app/privacy')}
+        />
+        {supportHref !== null ? (
+          <ListRow
+            variant="grouped"
+            title={t('settings.supportProject.title')}
+            trailing={externalCue}
+            onPress={() => openLink(supportHref)}
+          />
+        ) : null}
+      </ListGroup>
     </View>
   );
 }

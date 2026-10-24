@@ -1,10 +1,6 @@
 {
   "home": {
-    "greeting": {
-      "goodMorning": "Доброе утро",
-      "goodAfternoon": "Добрый день",
-      "goodEvening": "Добрый вечер"
-    },
+    "accountMenu": "Открыть меню аккаунта",
     "actions": {
       "startWorkout": "Начать\nтренировку",
       "trackFood": "Записать\nеду",

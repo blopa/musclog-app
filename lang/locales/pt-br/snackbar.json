@@ -1,7 +1,7 @@
 {
   "snackbar": {
     "view": "VER",
-    "retry": "TENTAR NOVAMENTE",
+    "retry": "Tentar novamente",
     "ok": "OK",
     "syncedRecords_one": "Sincronizado {{count}} registro de saúde.",
     "syncedRecords_other": "Sincronizados {{count}} registros de saúde.",

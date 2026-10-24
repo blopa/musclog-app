@@ -14,6 +14,9 @@ type MenuButtonProps = {
   color?: string;
   className?: string;
   style?: ViewStyle;
+  /** What the menu is for ("Day summary options"); a kebab glyph says nothing to a screen reader. */
+  accessibilityLabel?: string;
+  testID?: string;
 };
 
 const getSizeConfig = (theme: Theme) => {
@@ -43,6 +46,8 @@ export function MenuButton({
   color,
   className = '',
   style,
+  accessibilityLabel,
+  testID,
 }: MenuButtonProps) {
   const theme = useTheme();
   const sizeConfig = getSizeConfig(theme);
@@ -60,6 +65,9 @@ export function MenuButton({
       onPress={onPress}
       style={style}
       hitSlop={12}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      testID={testID}
     >
       <Icon size={config.iconSize} color={iconColor} />
     </Pressable>

@@ -66,7 +66,7 @@ jest.mock('expo-file-system', () => {
       return new Directory(this.uri.slice(0, this.uri.lastIndexOf('/')));
     }
 
-    write(text: string, options?: { append?: boolean }) {
+    writeSync(text: string, options?: { append?: boolean }) {
       const existing = options?.append ? (mockFs.get(this.uri)?.content ?? '') : '';
       mockFs.set(this.uri, { content: existing + text });
     }
@@ -79,7 +79,7 @@ jest.mock('expo-file-system', () => {
       const bytes = new TextEncoder().encode(mockFs.get(this.uri)?.content ?? '');
       let offset = 0;
       return {
-        readBytes(count: number) {
+        readBytesSync(count: number) {
           const chunk = bytes.slice(offset, offset + count);
           offset += chunk.length;
           return chunk;
@@ -295,7 +295,7 @@ describe('bleWorkoutDataStorage', () => {
     it('emits a valid empty samples array when the NDJSON temp file has no lines', async () => {
       mockDirs.add(`${TRACKING_DIR}/session-empty`);
       const samplesFile = new File(`${TRACKING_DIR}/session-empty`, 'samples.ndjson');
-      samplesFile.write('', { append: false });
+      samplesFile.writeSync('', { append: false });
 
       const uri = await saveBleWorkoutFile({ ...metadata(), samplesFile });
 
@@ -567,7 +567,7 @@ describe('bleWorkoutDataStorage', () => {
 function makeNdjsonFile(samples: BleWorkoutSample[]) {
   mockDirs.add(`${TRACKING_DIR}/session-tmp`);
   const file = new File(new Directory(`${TRACKING_DIR}/session-tmp`), 'samples.ndjson');
-  file.write('', { append: false });
+  file.writeSync('', { append: false });
   appendBleWorkoutSamplesToNdjsonFile(file, samples);
   return file;
 }

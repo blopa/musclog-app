@@ -3,6 +3,7 @@ import * as Localization from 'expo-localization';
 import { Platform } from 'react-native';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import {
   ALL_CONFETTI_ACTIVITIES,
   CONFETTI_INTERACTIONS_KEY,
@@ -348,7 +349,7 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     // even when the user intended metric.
     const defaultUnits = getDefaultUnits();
     await SettingsService.setUnits(defaultUnits);
-    await SettingsService.setWorkoutView('inline');
+    await SettingsService.set(SETTINGS.workoutView, 'inline');
 
     // Default the manual-entry carbs convention from units: imperial users read US labels
     // (Total Carbohydrate includes fiber) → include fiber; metric users read EU labels

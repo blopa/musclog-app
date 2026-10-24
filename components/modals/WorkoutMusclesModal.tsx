@@ -107,8 +107,6 @@ export function WorkoutMusclesModal({
             color: theme.colors.text.tertiary,
             fontSize: 11,
             fontWeight: '700',
-            textTransform: 'uppercase',
-            letterSpacing: 1.2,
           }}
         >
           {t('workoutDetail.repMotion')}

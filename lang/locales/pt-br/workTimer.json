@@ -1,0 +1,11 @@
+{
+  "workTimer": {
+    "label": "Cronômetro da série",
+    "open": "Cronômetro",
+    "start": "Iniciar",
+    "stop": "Parar",
+    "close": "Fechar",
+    "minus5": "-5 s",
+    "plus5": "+5 s"
+  }
+}

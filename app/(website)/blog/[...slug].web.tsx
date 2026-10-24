@@ -1,9 +1,11 @@
 import { Link, useLoaderData } from 'expo-router';
+import type { GenerateMetadataFunction } from 'expo-router/server';
 import { createStaticLoader } from 'expo-router/server';
 import { ArrowLeft, CalendarDays, Folder, Languages, Tags } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { BlogPostShare } from '@/components/website/BlogPostShare';
+import { blogPostPath } from '@/components/website/blogRoutes';
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT_SOFT,
@@ -12,6 +14,7 @@ import {
   brandBright,
   hue,
 } from '@/components/website/websiteColors';
+import { metadataForPage, websiteCopy } from '@/components/website/websiteMetadata';
 import { BlogPostSeo } from '@/components/website/WebsiteSeo';
 import { BlogPostingJsonLd } from '@/components/website/WebsiteStructuredData';
 
@@ -40,7 +43,7 @@ export default function BlogPostPage() {
   const post = useLoaderData<typeof loader>();
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const canonicalPath = `/blog/${post.slug}`;
+  const canonicalPath = blogPostPath(post.slug);
   const category = t(`categories.${post.category}`);
   // The site chrome is translated, the posts themselves are not — so every non-English reader gets
   // told that up front, in their own language, instead of hitting a wall of English mid-scroll.
@@ -164,3 +167,19 @@ export default function BlogPostPage() {
     </>
   );
 }
+
+export const generateMetadata: GenerateMetadataFunction = async (_request, params) => {
+  const { loadBlogPostForRoute } = await import('@/utils/blogPosts.server');
+  const post = await loadBlogPostForRoute(params.slug);
+  const copy = websiteCopy();
+  return metadataForPage({
+    title: `${post.title} | ${copy.seo.siteName}`,
+    description: post.excerpt || post.title,
+    canonicalPath: blogPostPath(post.slug),
+    date: post.date,
+    category:
+      copy.blog.categories[post.category as keyof typeof copy.blog.categories] ?? post.category,
+    tags: post.tags,
+    keywords: [copy.seo.keywords, ...post.tags].join(', '),
+  });
+};

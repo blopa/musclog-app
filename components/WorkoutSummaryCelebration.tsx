@@ -1,10 +1,9 @@
 import { Home, MessageCircle, Trophy } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './cards/GenericCard';
@@ -41,33 +40,7 @@ export function WorkoutSummaryCelebration({
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
-  const [glowAnim1] = useState(() => new Animated.Value(0.6));
-  const [glowAnim2] = useState(() => new Animated.Value(0.6));
-
-  useEffect(() => {
-    // Glow pulse animations
-    const createGlowPulse = (anim: Animated.Value, delay: number = 0) => {
-      return Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(anim, {
-            toValue: 0.8,
-            duration: 1500,
-            useNativeDriver: false,
-          }),
-          Animated.timing(anim, {
-            toValue: 0.6,
-            duration: 1500,
-            useNativeDriver: false,
-          }),
-        ])
-      );
-    };
-
-    createGlowPulse(glowAnim1).start();
-    createGlowPulse(glowAnim2, 750).start();
-  }, [glowAnim1, glowAnim2]);
+  const insets = useAppSafeAreaInsets();
 
   // Web-specific styles for proper viewport positioning
   const webModalStyle =
@@ -94,52 +67,13 @@ export function WorkoutSummaryCelebration({
         style={[
           webModalStyle,
           {
-            // Ensure absolutely positioned background blobs are clipped
-            position: 'relative',
-            overflow: 'hidden',
             paddingTop: Platform.OS !== 'web' ? insets.top : 0,
             paddingBottom:
               Platform.OS !== 'web' ? Math.max(insets.bottom, theme.spacing.padding.base) : 0,
           },
         ]}
       >
-        {/* Background layer (absolutely positioned, non-interactive) */}
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 0,
-            pointerEvents: 'none',
-          }}
-        >
-          <Animated.View
-            className="absolute left-1/2 top-1/4 rounded-full blur-3xl"
-            style={{
-              height: theme.size['256'],
-              width: theme.size['256'],
-              backgroundColor: theme.colors.status.indigo10,
-              borderRadius: theme.size['256'] / 2,
-              transform: [{ translateX: -theme.size['32'] }, { translateY: -theme.size['32'] }],
-              opacity: glowAnim1,
-            }}
-          />
-          <Animated.View
-            className="absolute left-1/2 top-1/3 rounded-full blur-3xl"
-            style={{
-              height: theme.size['48'],
-              width: theme.size['48'],
-              backgroundColor: theme.colors.status.brandVivid20,
-              borderRadius: theme.size['48'] / 2,
-              transform: [{ translateX: -theme.size['24'] }, { translateY: -theme.size['24'] }],
-              opacity: glowAnim2,
-            }}
-          />
-        </View>
-
-        <View className="flex-1 items-center justify-center px-6 py-8" style={{ zIndex: 1 }}>
+        <View className="flex-1 items-center justify-center px-6 py-8">
           <WorkoutSummaryTrophy />
           <WorkoutSummaryHeader />
           <WorkoutSummaryStatsCard
@@ -228,7 +162,7 @@ export function WorkoutSummaryCelebration({
 
           {/* Share Summary Link */}
           <Pressable onPress={onShareSummary}>
-            <Text className="text-center text-xs font-medium uppercase tracking-wider text-text-tertiary">
+            <Text className="text-center text-xs font-medium text-text-tertiary">
               {t('workoutSummary.shareSummary')}
             </Text>
           </Pressable>

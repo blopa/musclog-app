@@ -20,6 +20,28 @@ describe('onboarding training flow wiring', () => {
     expect(read('app/app/onboarding/personalized-preferences.tsx')).toContain('quickTotal=10');
   });
 
+  it('advertises the flow totals on the landing page in every locale', () => {
+    const localesDir = path.join(__dirname, '../../lang/locales');
+    const quickTotal = read('app/app/onboarding/quick-preferences.tsx').match(
+      /quickTotal=(\d+)/
+    )![1];
+    const personalizedTotal = read('app/app/onboarding/personalized-preferences.tsx').match(
+      /quickTotal=(\d+)/
+    )![1];
+
+    for (const locale of fs.readdirSync(localesDir, { withFileTypes: true })) {
+      if (!locale.isDirectory()) {
+        continue;
+      }
+
+      const { onboarding } = JSON.parse(read(`lang/locales/${locale.name}/onboarding.json`));
+      expect(onboarding.landing.quickSetupSteps).toMatch(new RegExp(`^${quickTotal}\\s`));
+      expect(onboarding.landing.personalizedSetupSteps).toMatch(
+        new RegExp(`^${personalizedTotal}\\s`)
+      );
+    }
+  });
+
   it('counts the first workout as the final step of each setup', () => {
     const results = read('app/app/onboarding/nutrition-goals-results.tsx');
     expect(results).toContain('current={6} total={7}');

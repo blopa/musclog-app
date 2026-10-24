@@ -209,7 +209,7 @@ export function HomeWaterPrompt({
               color={theme.colors.status.info}
               style={{ flexShrink: 0 }}
             />
-            <Text className="flex-1 text-xs font-bold uppercase tracking-wider text-text-secondary">
+            <Text className="flex-1 text-xs font-bold text-text-secondary">
               {t('bodyMetrics.addEntry.waterQuestionWithAmount', {
                 amount: formattedWaterIntake,
               })}
@@ -231,7 +231,7 @@ export function HomeWaterPrompt({
               label={t('bodyMetrics.addEntry.yes')}
               onPress={() => handleAnswer(1)}
               icon={CheckCircle2}
-              variant="gradientCta"
+              variant="accent"
               size="sm"
               width="flex-1"
               loading={isSaving}

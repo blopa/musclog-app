@@ -12,7 +12,7 @@
     "circadianModal": {
       "title": "Ciencia de la Quema de Calorías",
       "subtitle": "Modelo metabólico circadiano · En vivo",
-      "liveCounter": "QUEMADAS HOY · EN VIVO",
+      "liveCounter": "Quemadas hoy · en vivo",
       "perHour": "kcal / h",
       "perMinute": "kcal / min",
       "perSecond": "kcal / seg",
@@ -31,7 +31,7 @@
         "nadir": "Punto mínimo biológico. La temperatura corporal central y el gasto energético en reposo alcanzan su mínimo en 24 horas alrededor de las 5 AM, alineados con el nadir circadiano.",
         "morning": "Aumento metabólico brusco al despertar. Simplemente estar de pie añade ~10% a la línea base. El efecto térmico del desayuno es hasta 2,5× más potente que una comida nocturna idéntica.",
         "midday": "El metabolismo se mantiene cerca de su punto diario alto. El almuerzo genera otro pico de efecto térmico y el movimiento espontáneo (NEAT) mantiene el gasto estable.",
-        "peak": "Pico circadiano del gasto energético en reposo alrededor de las 17h — aproximadamente 10% por encima del nadir matutino incluso en reposo completo. El ejercicio estructurado en esta ventana amplifica significativamente la quema.",
+        "peak": "Pico circadiano del gasto energético en reposo alrededor de las 17h, aproximadamente 10% por encima del nadir matutino incluso en reposo completo. El ejercicio estructurado en esta ventana amplifica significativamente la quema.",
         "evening": "El efecto térmico de la cena está significativamente atenuado respecto al desayuno. A medida que el reloj biológico enfría la temperatura corporal, el metabolismo desciende hacia la línea base nocturna."
       }
     },
@@ -45,8 +45,8 @@
     },
     "metabolicSummary": "Resumen Metabólico",
     "currentTdee": "TDEE Actual",
-    "basedOnRecentActivity": "BASADO EN ACTIVIDAD Y NUTRICIÓN RECIENTES",
-    "basedOnActivityLevel": "BASADO EN NIVEL DE ACTIVIDAD Y ESTADÍSTICAS",
+    "basedOnRecentActivity": "Basado en actividad y nutrición recientes",
+    "basedOnActivityLevel": "Basado en nivel de actividad y estadísticas",
     "kcalPerDay": "kcal/día",
     "kcal": "kcal",
     "title": "Progreso",
@@ -143,6 +143,11 @@
     "proteinIntake": "Ingesta de Proteínas",
     "proteinVsWeightChange": "Proteína vs Cambio de Peso ({{unit}})",
     "chartExported": "Gráfico guardado",
-    "chartExportFailed": "Error al exportar el gráfico"
+    "chartExportFailed": "Error al exportar el gráfico",
+    "cycleBand": {
+      "period": "Periodo registrado",
+      "before": "Días antes",
+      "other": "Otros días"
+    }
   }
 }

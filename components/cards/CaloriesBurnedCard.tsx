@@ -67,10 +67,7 @@ export function CaloriesBurnedCard() {
           </View>
 
           <View className="mt-2 flex-row items-center justify-between">
-            <Text
-              className="text-[10px] font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.text.secondary }}
-            >
+            <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
               {t('progress.caloriesBurnedProgress', {
                 percent: Math.round(dayProgress * 100),
               })}

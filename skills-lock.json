@@ -7,6 +7,12 @@
       "skillPath": "skills/agent-device/SKILL.md",
       "computedHash": "3187ae73a1a8b055e20630d64c86e5bb7576341b495c9a755f5e3ec7927c0302"
     },
+    "deslop-ui": {
+      "source": "kmaida/deslop-skills",
+      "sourceType": "github",
+      "skillPath": "deslop-ui/SKILL.md",
+      "computedHash": "e587f4c03b4ff5537089c2b8ac3468a25ed7544d7942e836cd2cbb0247e52b39"
+    },
     "dogfood": {
       "source": "callstack/agent-device",
       "sourceType": "github",

@@ -206,7 +206,7 @@
       "scaleMealPortion": "Ajustar porção da refeição",
       "scaleMealPortionDesc": "Aumentar ou diminuir o total em gramas; todos os alimentos escalam juntos",
       "scaleMealPortionModalTitle": "Ajustar porção da refeição",
-      "scaleMealPortionModalSubtitle": "Total em gramas desta refeição — cada alimento é escalado proporcionalmente",
+      "scaleMealPortionModalSubtitle": "Total em gramas desta refeição. Cada alimento é escalado proporcionalmente",
       "scaleMealPortionSuccess": "Porções da refeição atualizadas",
       "scaleMealPortionError": "Falha ao atualizar as porções da refeição",
       "scaleMealPortionInvalid": "Informe pelo menos 1 g",
@@ -280,7 +280,7 @@
       "aiCamera": {
         "title": "Câmera IA",
         "description": "Reconhecimento instantâneo e estimativa de macros",
-        "badge": "NOVO"
+        "badge": "Novo"
       },
       "scanBarcode": {
         "title": "Escanear Código de Barras",
@@ -288,7 +288,7 @@
       },
       "searchFood": {
         "title": "Pesquisar Alimento",
-        "description": "Pesquise nosso banco de dados com 2M+ itens"
+        "description": "Pesquise em bancos de alimentos e nos seus próprios alimentos"
       },
       "createCustomFood": "Criar Alimento Personalizado",
       "trackCustomMeal": "Registrar Refeição",
@@ -382,7 +382,7 @@
       "zinc": "Zinco",
       "loadingDetails": "Carregando detalhes...",
       "loadingMoreDetails": "Carregando mais detalhes...",
-      "successMessage": "Alimento registrado com sucesso!",
+      "successMessage": "Alimento registrado.",
       "errorMessage": "Falha ao registrar alimento. Por favor, tente novamente.",
       "updateFood": "Atualizar Alimento",
       "sourceOpenFood": "Open Food Facts",
@@ -427,7 +427,7 @@
       "estimated": "Estimado",
       "mealName": "Nome da Refeição",
       "mealNamePlaceholder": "ex: Smoothie Pós-Treino",
-      "mealDescriptionPlaceholder": "Opcional — notas de preparo, quando costuma comer, etc.",
+      "mealDescriptionPlaceholder": "Opcional: notas de preparo, quando costuma comer, etc.",
       "ingredients": "Ingredientes ({{count}})",
       "addPhoto": "Adicionar foto",
       "editList": "Editar Lista",
@@ -439,7 +439,7 @@
       "ingredientsRequired": "Por favor, adicione pelo menos um ingrediente",
       "saveFailed": "Falha ao salvar refeição. Por favor, tente novamente.",
       "preparedWeight": "Peso preparado ({{unit}})",
-      "preparedWeightHelper": "Opcional — peso após o cozimento"
+      "preparedWeightHelper": "Opcional: peso após o cozimento"
     },
     "aiCamera": {
       "requestingPermission": "Solicitando permissão da câmera...",
@@ -468,22 +468,22 @@
       "uploadFromGallery": "Escolher da galeria",
       "barcodeTextSearchTitle": "Buscar código de barras",
       "barcodeTextSearchDescription": "Busque um alimento digitando o código de barras impresso na embalagem.",
-      "barcodeTextSearchLabel": "CÓDIGO DE BARRAS",
+      "barcodeTextSearchLabel": "Código de barras",
       "barcodeTextSearchPlaceholder": "Digite o número do código",
       "barcodeTextSearchSubmit": "Buscar alimento",
       "barcodeTextSearchRequired": "Digite um código de barras",
       "aiAnalysisFailed": "Falha na análise da IA. Por favor, tente novamente.",
       "aiNotConfigured": "A IA não está configurada. Adicione uma chave de API do Gemini ou OpenAI em Configurações.",
       "onDeviceNotSupported": "A análise de fotos de refeições não está disponível com Apple Intelligence. Por favor, configure OpenAI ou Gemini em Configurações.",
-      "mealLoggedSuccess": "Refeição registrada com sucesso!",
+      "mealLoggedSuccess": "Refeição registrada.",
       "mealLoggingFailed": "Falha ao registrar refeição. Por favor, tente novamente.",
       "analysisSuccess": "{{name}}: {{kcal}} kcal, P {{protein}}g C {{carbs}}g F {{fat}}g"
     },
     "aiNutritionContext": {
       "title": "Adicionar Contexto para IA",
-      "describeYourMeal": "DESCREVA SUA REFEIÇÃO",
+      "describeYourMeal": "Descreva sua refeição",
       "placeholder": "ex: Este é um prato caseiro com azeite, cerca de 2 xícaras de macarrão...",
-      "quickTags": "ETIQUETAS RÁPIDAS",
+      "quickTags": "Etiquetas rápidas",
       "quickTagHighProtein": "Alto em Proteína",
       "quickTagLowCarb": "Baixo Carb",
       "quickTagLargeServing": "Porção Grande",

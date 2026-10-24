@@ -84,3 +84,30 @@ describe('getExerciseTypeTranslationKey / getMechanicTypeTranslationKey', () => 
     expect(getMechanicTypeTranslationKey(null)).toBe('workout.exerciseTypes.other');
   });
 });
+
+describe('exercise type labels', () => {
+  // The key is built at runtime, so `npm run check-translations` cannot see a missing label.
+  const catalogue = require('@/data/exercisesData.json') as {
+    equipmentType?: string | null;
+    mechanicType?: string | null;
+  }[];
+  const locales = ['en-us', 'es-es', 'nl-nl', 'pt-br', 'ru-ru'];
+
+  it.each(locales)('%s labels every catalogue equipment and mechanic type', (locale) => {
+    const { workout } = require(`@/lang/locales/${locale}/workout.json`) as {
+      workout: { exerciseTypes: Record<string, string> };
+    };
+    const values = new Set<string>();
+    for (const exercise of catalogue) {
+      if (exercise.equipmentType) values.add(exercise.equipmentType);
+      if (exercise.mechanicType) values.add(exercise.mechanicType);
+    }
+
+    const missing = [...values].filter((value) => {
+      const key = getExerciseTypeTranslationKey(value).replace('workout.exerciseTypes.', '');
+      return !workout.exerciseTypes[key];
+    });
+
+    expect(missing).toEqual([]);
+  });
+});

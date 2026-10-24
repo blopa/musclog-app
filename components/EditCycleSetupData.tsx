@@ -1,49 +1,42 @@
 import { subWeeks } from 'date-fns';
-import {
-  Activity,
-  Baby,
-  CheckCircle2,
-  HelpCircle,
-  Pill,
-  ShieldOff,
-  Syringe,
-  Target,
-  Zap,
-} from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { type BirthControlType, type LifeStage } from '@/database/models';
-import { SyncGoal } from '@/database/models/MenstrualCycle';
+import { ContextFields } from '@/components/cycle/ContextFields';
+import { CycleGoals } from '@/components/cycle/CycleGoals';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate } from '@/utils/calendarDate';
+import type { ContraceptionMethod, CycleGoal, CycleLifeStage } from '@/utils/cycle/types';
 
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from './BottomPopUpMenu';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
+import { Chip } from './theme/Chip';
 import { NumericInput } from './theme/NumericInput';
-import { PickerButton } from './theme/PickerButton';
 
 export type CycleSetupData = {
   lastPeriodStartDate: Date | null;
   cycleLength: number;
+  cycleLengthKnown?: boolean;
   periodDuration: number;
-  birthControlType: BirthControlType | 'none';
-  syncGoal: SyncGoal;
-  lifeStage: LifeStage;
+  contraception: ContraceptionMethod;
+  lifeStage: CycleLifeStage;
+  goals?: CycleGoal[];
 };
 
 type EditCycleSetupDataProps = {
   initialData?: Partial<CycleSetupData>;
   onFormChange?: (data: Partial<CycleSetupData>) => void;
   showDatePicker?: boolean;
+  /** Life stage and contraception are changed through the context history, not on this form. */
+  showContext?: boolean;
 };
 
 export function EditCycleSetupData({
   initialData,
   onFormChange,
   showDatePicker = true,
+  showContext = true,
 }: EditCycleSetupDataProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -53,176 +46,41 @@ export function EditCycleSetupData({
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [cycleLength, setCycleLength] = useState(initialData?.cycleLength ?? 28);
+  const [cycleLengthKnown, setCycleLengthKnown] = useState(initialData?.cycleLengthKnown ?? true);
   const [periodDuration, setPeriodDuration] = useState(initialData?.periodDuration ?? 5);
-  const [selectedBirthControl, setSelectedBirthControl] = useState<BirthControlType | 'none'>(
-    initialData?.birthControlType ?? 'none'
+  const [contraception, setContraception] = useState<ContraceptionMethod>(
+    initialData?.contraception ?? 'none'
   );
-  const [isBirthControlPickerVisible, setIsBirthControlPickerVisible] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState<SyncGoal>(
-    initialData?.syncGoal ?? 'performance'
-  );
-  const [isGoalPickerVisible, setIsGoalPickerVisible] = useState(false);
-  const [selectedLifeStage, setSelectedLifeStage] = useState<LifeStage>(
-    initialData?.lifeStage ?? 'regular'
-  );
-  const [isLifeStagePickerVisible, setIsLifeStagePickerVisible] = useState(false);
+  const [lifeStage, setLifeStage] = useState<CycleLifeStage>(initialData?.lifeStage ?? 'regular');
+
+  const [goals, setGoals] = useState<CycleGoal[]>(initialData?.goals ?? []);
 
   useEffect(() => {
     onFormChange?.({
       lastPeriodStartDate: selectedDate,
       cycleLength,
+      cycleLengthKnown,
       periodDuration,
-      birthControlType: selectedBirthControl,
-      syncGoal: selectedGoal,
-      lifeStage: selectedLifeStage,
+      contraception,
+      lifeStage,
+      goals,
     });
   }, [
     selectedDate,
+    cycleLengthKnown,
     cycleLength,
     periodDuration,
-    selectedBirthControl,
-    selectedGoal,
-    selectedLifeStage,
+    contraception,
+    lifeStage,
+    goals,
     onFormChange,
   ]);
-
-  const birthControlOptions: (BottomPopUpMenuItem & { value: BirthControlType | 'none' })[] = [
-    {
-      value: 'none',
-      title: t('onboarding.cycleSetup.birthControl.none'),
-      description: t('onboarding.cycleSetup.birthControl.noneDescription'),
-      icon: CheckCircle2,
-      iconColor: theme.colors.status.success,
-      iconBgColor: theme.colors.status.success20,
-      onPress: () => setSelectedBirthControl('none'),
-    },
-    {
-      value: 'pill',
-      title: t('onboarding.cycleSetup.birthControl.pill'),
-      description: t('onboarding.cycleSetup.birthControl.pillDescription'),
-      icon: Pill,
-      iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
-      onPress: () => setSelectedBirthControl('pill'),
-    },
-    {
-      value: 'iud',
-      title: t('onboarding.cycleSetup.birthControl.iud'),
-      description: t('onboarding.cycleSetup.birthControl.iudDescription'),
-      icon: ShieldOff,
-      iconColor: theme.colors.status.info,
-      iconBgColor: theme.colors.status.info10,
-      onPress: () => setSelectedBirthControl('iud'),
-    },
-    {
-      value: 'implant',
-      title: t('onboarding.cycleSetup.birthControl.implant'),
-      description: t('onboarding.cycleSetup.birthControl.implantDescription'),
-      icon: Syringe,
-      iconColor: theme.colors.status.warning,
-      iconBgColor: theme.colors.status.warning10,
-      onPress: () => setSelectedBirthControl('implant'),
-    },
-    {
-      value: 'other',
-      title: t('onboarding.cycleSetup.birthControl.other'),
-      description: t('onboarding.cycleSetup.birthControl.otherDescription'),
-      icon: HelpCircle,
-      iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
-      onPress: () => setSelectedBirthControl('other'),
-    },
-  ];
-
-  const goalOptions: (BottomPopUpMenuItem & { value: SyncGoal })[] = [
-    {
-      value: 'performance',
-      title: t('onboarding.cycleSetup.goal.performance'),
-      description: t('onboarding.cycleSetup.goal.performanceDescription'),
-      icon: Target,
-      iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
-      onPress: () => setSelectedGoal('performance'),
-    },
-    {
-      value: 'symptoms',
-      title: t('onboarding.cycleSetup.goal.symptoms'),
-      description: t('onboarding.cycleSetup.goal.symptomsDescription'),
-      icon: Activity,
-      iconColor: theme.colors.rose.brand,
-      iconBgColor: theme.colors.rose.brand10,
-      onPress: () => setSelectedGoal('symptoms'),
-    },
-    {
-      value: 'energy',
-      title: t('onboarding.cycleSetup.goal.energy'),
-      description: t('onboarding.cycleSetup.goal.energyDescription'),
-      icon: Zap,
-      iconColor: theme.colors.status.warning,
-      iconBgColor: theme.colors.status.warning10,
-      onPress: () => setSelectedGoal('energy'),
-    },
-  ];
-
-  const lifeStageOptions: (BottomPopUpMenuItem & { value: LifeStage })[] = [
-    {
-      value: 'regular',
-      title: t('onboarding.cycleSetup.lifeStage.regular'),
-      description: t('onboarding.cycleSetup.lifeStage.regularDescription'),
-      icon: CheckCircle2,
-      iconColor: theme.colors.status.success,
-      iconBgColor: theme.colors.status.success20,
-      onPress: () => setSelectedLifeStage('regular'),
-    },
-    {
-      value: 'pcos',
-      title: t('onboarding.cycleSetup.lifeStage.pcos'),
-      description: t('onboarding.cycleSetup.lifeStage.pcosDescription'),
-      icon: Activity,
-      iconColor: theme.colors.status.warning,
-      iconBgColor: theme.colors.status.warning10,
-      onPress: () => setSelectedLifeStage('pcos'),
-    },
-    {
-      value: 'perimenopause',
-      title: t('onboarding.cycleSetup.lifeStage.perimenopause'),
-      description: t('onboarding.cycleSetup.lifeStage.perimenopauseDescription'),
-      icon: Zap,
-      iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
-      onPress: () => setSelectedLifeStage('perimenopause'),
-    },
-    {
-      value: 'postpartum',
-      title: t('onboarding.cycleSetup.lifeStage.postpartum'),
-      description: t('onboarding.cycleSetup.lifeStage.postpartumDescription'),
-      icon: Baby,
-      iconColor: theme.colors.rose.brand,
-      iconBgColor: theme.colors.rose.brand10,
-      onPress: () => setSelectedLifeStage('postpartum'),
-    },
-    {
-      value: 'post_pill',
-      title: t('onboarding.cycleSetup.lifeStage.postPill'),
-      description: t('onboarding.cycleSetup.lifeStage.postPillDescription'),
-      icon: Pill,
-      iconColor: theme.colors.status.info,
-      iconBgColor: theme.colors.status.info10,
-      onPress: () => setSelectedLifeStage('post_pill'),
-    },
-  ];
-
-  const selectedBC = birthControlOptions.find((o) => o.value === selectedBirthControl)!;
-  const SelectedBCIcon = selectedBC.icon;
-  const selectedGoalOption = goalOptions.find((g) => g.value === selectedGoal)!;
-  const SelectedGoalIcon = selectedGoalOption.icon;
-  const selectedLifeStageOption = lifeStageOptions.find((o) => o.value === selectedLifeStage)!;
-  const SelectedLifeStageIcon = selectedLifeStageOption.icon;
 
   return (
     <>
       <View className="gap-6">
-        {showDatePicker ? (
+        {showContext ? <CycleGoals value={goals} onChange={setGoals} /> : null}
+        {showDatePicker && lifeStage !== 'no_bleeding' ? (
           <View>
             {selectedDate != null ? (
               <DatePickerInput
@@ -256,73 +114,47 @@ export function EditCycleSetupData({
           </View>
         ) : null}
 
-        {/* Cycle lengths */}
-        <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
-            {t('onboarding.cycleSetup.length.cycleLength')}
-          </Text>
-          <View className="flex-row gap-4">
-            <NumericInput
-              label={t('onboarding.cycleSetup.length.cycleLengthLabel')}
-              value={cycleLength.toString()}
-              onChangeText={(value) => setCycleLength(parseInt(value, 10) || 0)}
-              onIncrement={() => setCycleLength((value) => Math.min(45, value + 1))}
-              onDecrement={() => setCycleLength((value) => Math.max(15, value - 1))}
-              unit={t('common.days.label')}
+        {/* Usual lengths are unnecessary for symptom-only setup. */}
+        {lifeStage !== 'no_bleeding' || !showContext ? (
+          <View>
+            <Text className="mb-3 text-base font-semibold text-text-secondary">
+              {t('onboarding.cycleSetup.length.cycleLength')}
+            </Text>
+            <Chip
+              label={t('cycle.complete.unknownLength')}
+              selected={!cycleLengthKnown}
+              role="checkbox"
+              onPress={() => setCycleLengthKnown(!cycleLengthKnown)}
             />
-            <NumericInput
-              label={t('onboarding.cycleSetup.length.periodDurationLabel')}
-              value={periodDuration.toString()}
-              onChangeText={(value) => setPeriodDuration(parseInt(value, 10) || 0)}
-              onIncrement={() => setPeriodDuration((value) => Math.min(10, value + 1))}
-              onDecrement={() => setPeriodDuration((value) => Math.max(1, value - 1))}
-              unit={t('common.days.label')}
-            />
-          </View>
-        </View>
-
-        {/* Life stage */}
-        <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
-            {t('onboarding.cycleSetup.lifeStage.title')}
-          </Text>
-          <PickerButton
-            label={selectedLifeStageOption.title}
-            icon={
-              <SelectedLifeStageIcon
-                size={theme.iconSize.lg}
-                color={selectedLifeStageOption.iconColor}
+            <View className="mt-3 flex-row gap-4">
+              <NumericInput
+                label={t('onboarding.cycleSetup.length.cycleLengthLabel')}
+                value={cycleLength.toString()}
+                onChangeText={(value) => setCycleLength(parseInt(value, 10) || 0)}
+                onIncrement={() => setCycleLength((value) => Math.min(120, value + 1))}
+                onDecrement={() => setCycleLength((value) => Math.max(15, value - 1))}
+                unit={t('common.days.label')}
               />
-            }
-            onPress={() => setIsLifeStagePickerVisible(true)}
-          />
-        </View>
+              <NumericInput
+                label={t('onboarding.cycleSetup.length.periodDurationLabel')}
+                value={periodDuration.toString()}
+                onChangeText={(value) => setPeriodDuration(parseInt(value, 10) || 0)}
+                onIncrement={() => setPeriodDuration((value) => Math.min(30, value + 1))}
+                onDecrement={() => setPeriodDuration((value) => Math.max(1, value - 1))}
+                unit={t('common.days.label')}
+              />
+            </View>
+          </View>
+        ) : null}
 
-        {/* Birth control */}
-        <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
-            {t('onboarding.cycleSetup.birthControl.title')}
-          </Text>
-          <PickerButton
-            label={selectedBC.title}
-            icon={<SelectedBCIcon size={theme.iconSize.lg} color={selectedBC.iconColor} />}
-            onPress={() => setIsBirthControlPickerVisible(true)}
+        {showContext ? (
+          <ContextFields
+            lifeStage={lifeStage}
+            contraception={contraception}
+            onLifeStageChange={setLifeStage}
+            onContraceptionChange={setContraception}
           />
-        </View>
-
-        {/* Sync goal */}
-        <View>
-          <Text className="mb-3 text-base font-semibold text-text-secondary">
-            {t('onboarding.cycleSetup.goal.title')}
-          </Text>
-          <PickerButton
-            label={selectedGoalOption.title}
-            icon={
-              <SelectedGoalIcon size={theme.iconSize.lg} color={selectedGoalOption.iconColor} />
-            }
-            onPress={() => setIsGoalPickerVisible(true)}
-          />
-        </View>
+        ) : null}
       </View>
 
       <DatePickerModal
@@ -349,45 +181,6 @@ export function EditCycleSetupData({
             date: localCalendarDayDate(subWeeks(new Date(), 4)),
           },
         ]}
-      />
-
-      <BottomPopUpMenu
-        visible={isLifeStagePickerVisible}
-        onClose={() => setIsLifeStagePickerVisible(false)}
-        title={t('onboarding.cycleSetup.lifeStage.title')}
-        items={lifeStageOptions.map((o) => ({
-          ...o,
-          onPress: () => {
-            o.onPress();
-            setIsLifeStagePickerVisible(false);
-          },
-        }))}
-      />
-
-      <BottomPopUpMenu
-        visible={isBirthControlPickerVisible}
-        onClose={() => setIsBirthControlPickerVisible(false)}
-        title={t('onboarding.cycleSetup.birthControl.title')}
-        items={birthControlOptions.map((o) => ({
-          ...o,
-          onPress: () => {
-            o.onPress();
-            setIsBirthControlPickerVisible(false);
-          },
-        }))}
-      />
-
-      <BottomPopUpMenu
-        visible={isGoalPickerVisible}
-        onClose={() => setIsGoalPickerVisible(false)}
-        title={t('onboarding.cycleSetup.goal.title')}
-        items={goalOptions.map((g) => ({
-          ...g,
-          onPress: () => {
-            g.onPress();
-            setIsGoalPickerVisible(false);
-          },
-        }))}
       />
     </>
   );

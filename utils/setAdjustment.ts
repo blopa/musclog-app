@@ -1,6 +1,6 @@
 import type { ProgressionMode } from '@/constants/settings';
 
-import type { ProgressionRule } from './progressionRules';
+import type { ProgressionRule } from './progressionRuleSchema';
 import { sameLoad, WEIGHT_EPSILON } from './sameLoad';
 import {
   calculateAverage1RM,

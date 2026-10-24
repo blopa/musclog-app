@@ -32,8 +32,8 @@ import PastWorkoutsHistoryModal from '@/components/modals/PastWorkoutsHistoryMod
 import { UserMenuModal } from '@/components/modals/UserMenuModal';
 import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
-import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { TextButton } from '@/components/theme/TextButton';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { WhatsNewAutoPrompt } from '@/components/whatsNew/WhatsNewAutoPrompt';
 import { WorkoutTodayCard } from '@/components/workout/WorkoutTodayCard';
@@ -53,7 +53,6 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
-import packageJson from '@/package.json';
 import { refreshDailyStepsIfStale } from '@/services/dailyStepsRefresh';
 import { isProduction } from '@/utils/app';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
@@ -94,7 +93,7 @@ type GoalsManagementTab = (typeof GOALS_MANAGEMENT_TAB)[keyof typeof GOALS_MANAG
 export default function HomeScreen() {
   const [widgetCameraLaunch] = useState(() => global.__PENDING_WIDGET_ACTION === 'open-camera');
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { defaults: nutritionGoalsDefaults, planData } = useDefaultNutritionGoals();
@@ -193,17 +192,17 @@ export default function HomeScreen() {
     mealType: MealType;
   } | null>(null);
 
-  // Get time-based greeting
-  const getTimeBasedGreeting = useCallback(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      return t('home.greeting.goodMorning');
-    } else if (hour < 18) {
-      return t('home.greeting.goodAfternoon');
-    } else {
-      return t('home.greeting.goodEvening');
-    }
-  }, [t]);
+  const locale = i18n.resolvedLanguage ?? i18n.language;
+  const headerDate = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, { weekday: 'long', month: 'short', day: 'numeric' }).format(
+        today
+      ),
+    [locale, today]
+  );
+  const avatar = dbUser?.avatarIcon
+    ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
+    : null;
 
   // Use reactive hook for recent workouts - only load when visible
   const { workouts: recentWorkouts, isLoading: isLoadingRecent } = useWorkoutHistory({
@@ -386,91 +385,64 @@ export default function HomeScreen() {
       <WhatsNewAutoPrompt suppressed={widgetCameraLaunch} />
       {showConfetti ? <ConfettiOverlay /> : null}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-6">
+        {/* Header: the avatar as the way into the account menu, then the day this screen is
+            about. The avatar sits on the left so it lines up with the avatar the account menu
+            opens with. A time-of-day greeting and the version string used to sit here; the
+            version lives in Settings > About. */}
+        <View className="flex-row items-center gap-3 px-4 py-5">
           <Pressable
-            className="flex-row items-center gap-3"
+            accessibilityRole="button"
+            accessibilityLabel={t('home.accountMenu')}
+            className="active:opacity-70"
             onPress={() => setIsUserMenuVisible(true)}
+            testID="home-account-menu"
           >
             {isLoadingUser ? (
-              <>
-                <SkeletonLoader width={56} height={56} borderRadius={28} />
-                <View className="gap-2">
-                  <SkeletonLoader width={80} height={12} />
-                  <SkeletonLoader width={120} height={20} />
-                </View>
-              </>
+              <SkeletonLoader width={44} height={44} borderRadius={22} />
             ) : (
-              <AnimatedContent style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <>
-                  <View className="relative">
-                    <View
-                      className="h-14 w-14 overflow-hidden rounded-full border-4"
-                      style={{
-                        borderColor: dbUser
-                          ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                              .color
-                          : theme.colors.accent.primary,
-                        backgroundColor: dbUser
-                          ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                              .backgroundColor
-                          : theme.colors.accent.primary20,
-                      }}
-                    >
-                      {dbUser?.avatarIcon ? (
-                        <View className="h-full w-full items-center justify-center rounded-full">
-                          {createElement(
-                            getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
-                              .IconComponent,
-                            {
-                              size: 24,
-                              color: getAvatarDisplayProps(
-                                theme,
-                                dbUser.avatarIcon,
-                                dbUser.avatarColor
-                              ).color,
-                            }
-                          )}
-                        </View>
-                      ) : (
-                        <View
-                          className="h-full w-full items-center justify-center rounded-full"
-                          style={{ backgroundColor: theme.colors.background.imageLight }}
-                        >
-                          <Text className="text-lg font-bold text-text-primary">
-                            {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                  <View>
-                    <Text className="text-sm text-text-secondary">{getTimeBasedGreeting()}</Text>
-                    <Text className="text-xl font-bold text-text-primary">
-                      {dbUser?.fullName || 'Guest'}
+              <AnimatedContent>
+                <View
+                  className="h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2"
+                  style={{
+                    borderColor: avatar ? avatar.color : theme.colors.accent.primary,
+                    backgroundColor: avatar
+                      ? avatar.backgroundColor
+                      : theme.colors.background.imageLight,
+                  }}
+                >
+                  {avatar ? (
+                    createElement(avatar.IconComponent, {
+                      size: theme.iconSize.lg,
+                      color: avatar.color,
+                    })
+                  ) : (
+                    <Text className="text-base font-bold text-text-primary">
+                      {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
                     </Text>
-                  </View>
-                </>
+                  )}
+                </View>
               </AnimatedContent>
             )}
           </Pressable>
-          <View className="items-end gap-2">
-            <Text className="text-xs text-text-secondary opacity-40">
-              {`Musclog v${packageJson.version}`}
-            </Text>
-            {SHOW_NOTIFICATIONS ? (
-              <Pressable
-                className="relative rounded-full bg-bg-overlay p-3"
-                onPress={() => setIsNotificationsVisible(true)}
-              >
-                <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
-                <View
-                  className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: theme.colors.status.notificationBadge }}
-                />
-              </Pressable>
-            ) : null}
-          </View>
+          <Text
+            accessibilityRole="header"
+            className="min-w-0 flex-1 text-right text-2xl font-bold text-text-primary"
+            numberOfLines={1}
+          >
+            {headerDate}
+          </Text>
+          {SHOW_NOTIFICATIONS ? (
+            <Pressable
+              className="relative rounded-full bg-bg-overlay p-3"
+              onPress={() => setIsNotificationsVisible(true)}
+            >
+              <Bell size={theme.iconSize.md} color={theme.colors.text.primary} />
+              <View
+                className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: theme.colors.status.notificationBadge }}
+              />
+            </Pressable>
+          ) : null}
         </View>
 
         <View className="mx-4 mb-4">
@@ -522,7 +494,7 @@ export default function HomeScreen() {
         {/* Action Buttons */}
         <HomeActionsRow selected={homeActions} onActionPress={(key) => homeActionHandlers[key]()} />
         <View className="mx-4 mb-6">
-          <WeeklyReviewCard />
+          <WeeklyReviewCard compact quietUntilReady />
         </View>
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
@@ -603,15 +575,12 @@ export default function HomeScreen() {
                   />
                 ))}
 
-                {/* Add Food Button - only show if there's at least one item */}
-                {recentNutritionLogs.length > 0 ? (
-                  <DashedButton
-                    label={t('food.meals.addFood')}
-                    onPress={() => setIsAddFoodVisible(true)}
-                    size="sm"
-                    icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
-                  />
-                ) : null}
+                {/* A filled list: adding more is a quiet text action, not another dashed slot. */}
+                <TextButton
+                  label={t('food.meals.addFood')}
+                  icon={Plus}
+                  onPress={() => setIsAddFoodVisible(true)}
+                />
               </View>
             </AnimatedContent>
           )}
@@ -679,15 +648,11 @@ export default function HomeScreen() {
                   />
                 ))}
 
-                {/* Start Workout Button - only show if there's at least one workout */}
-                {recentWorkouts.length > 0 ? (
-                  <DashedButton
-                    label={t('startWorkout.label')}
-                    onPress={() => router.navigate('/app/workout/workouts')}
-                    size="sm"
-                    icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
-                  />
-                ) : null}
+                <TextButton
+                  label={t('startWorkout.label')}
+                  icon={Plus}
+                  onPress={() => router.navigate('/app/workout/workouts')}
+                />
               </View>
             </AnimatedContent>
           )}

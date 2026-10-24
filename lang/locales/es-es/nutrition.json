@@ -48,16 +48,16 @@
       "onTrack": "En Camino",
       "ahead": "Adelantado",
       "behind": "Atrasado",
-      "noCheckinFoundDesc": "No tienes ninguna revisión programada para hoy. ¡Vuelve en tu próximo día de revisión programado!",
+      "noCheckinFoundDesc": "No tienes ninguna revisión programada para hoy. Vuelve en tu próximo día de revisión programado.",
       "headline": {
-        "onTrack": "¡Se ve Genial!",
-        "ahead": "¡Acelerando!",
+        "onTrack": "Vas bien",
+        "ahead": "Por delante del plan",
         "behind": "Espacio para Mejorar"
       },
       "subtext": {
         "onTrack": "Has mantenido un ritmo constante esta semana. Sigue esforzándote hacia tus objetivos.",
         "ahead": "¡Vas por delante de tus objetivos de peso! Gran trabajo en la consistencia.",
-        "behind": "Tuviste algunas fluctuaciones esta semana, pero la consistencia es la clave. ¡Volvamos al camino!"
+        "behind": "Tus números variaron esta semana. Registrar con constancia los estabilizará."
       },
       "weightTrend": "Tendencia de Peso",
       "target": "Objetivo",

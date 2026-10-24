@@ -37,6 +37,7 @@ import {
   MIN_HOME_ACTIONS,
   parseHomeActions,
 } from '@/constants/homeActions';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -44,6 +45,7 @@ import {
   THEME_IDS,
   type ThemeOption,
 } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
 import SettingsService from '@/database/services/SettingsService';
 import { useAvailableHomeActions } from '@/hooks/useAvailableHomeActions';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
@@ -108,6 +110,7 @@ function selectedToBinary(selected: MacroKey[]): string {
 export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
@@ -161,7 +164,9 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     // row is what re-themes the app.
     await SettingsService.setTheme(option);
     // Only a manual pick moves the launcher icon (see services/themeAppIcon.ts).
-    await syncAppIconWithTheme(option);
+    if (await syncAppIconWithTheme(option)) {
+      showSnackbar('success', t('settings.theme.iconAppliesLater'));
+    }
   };
 
   const handleHomeSummaryCardChange = async (card: HomeSummaryCard) => {
@@ -233,8 +238,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     activeSlot !== null
       ? NAV_ITEM_KEYS.filter((item) => isNavItemAvailable(item, isCycleActive)).map((item) => ({
           icon: NAV_DESTINATIONS[item].icon,
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: currentSlots[activeSlot] === item,
           title: getItemLabel(item),
           description: getItemDescription(item),
           onPress: () => {
@@ -266,16 +270,16 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.visualSettings.title')}>
-      <View className="gap-2 py-6">
+      <View className="gap-8 py-6">
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.homeActions.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.homeActions.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -290,10 +294,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.theme.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.theme.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -308,10 +312,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.visualSettings.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.visualSettings.sectionSubtitle')}
           </Text>
 
@@ -325,10 +329,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.nutritionDisplay.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.nutritionDisplay.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -343,10 +347,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
             {t('settings.homeSummaryCard.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.homeSummaryCard.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -364,7 +368,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
                   label: t('settings.homeDailyStats.showHomeSteps.title'),
                   subtitle: t('settings.homeDailyStats.showHomeSteps.description'),
                   value: showHomeSteps,
-                  onValueChange: (v: boolean) => void SettingsService.setShowHomeSteps(v),
+                  onValueChange: (v: boolean) =>
+                    void SettingsService.set(SETTINGS.showHomeSteps, v),
                 },
               ]}
             />
@@ -421,8 +426,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         subtitle={t('settings.theme.popupSubtitle')}
         items={THEME_OPTIONS.map((option) => ({
           icon: THEME_ICON[option],
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: option === themePreference,
           title: t(`settings.theme.options.${option}.label`),
           description: t(`settings.theme.options.${option}.description`),
           onPress: () => handleThemeChange(option),
@@ -435,8 +439,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         subtitle={t('settings.homeSummaryCard.popupSubtitle')}
         items={HOME_SUMMARY_CARD_OPTIONS.map((card) => ({
           icon: HOME_SUMMARY_CARD_ICON[card],
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: card === homeSummaryCard,
           title: t(`settings.homeSummaryCard.options.${card}.label`),
           description: t(`settings.homeSummaryCard.options.${card}.description`),
           onPress: () => handleHomeSummaryCardChange(card),

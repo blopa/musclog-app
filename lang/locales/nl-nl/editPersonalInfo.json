@@ -6,7 +6,7 @@
     "emailAddress": "E-mailadres",
     "emailPlaceholder": "bijv. alex@voorbeeld.nl",
     "dateOfBirth": "Geboortedatum",
-    "dateOfBirthPlaceholder": "DD-MM-JJJJ",
+    "dateOfBirthPlaceholder": "DD-MM-jjjj",
     "gender": "Geslacht",
     "male": "Man",
     "female": "Vrouw",

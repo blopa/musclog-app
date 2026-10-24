@@ -1,7 +1,7 @@
 {
   "snackbar": {
-    "view": "VIEW",
-    "retry": "RETRY",
+    "view": "View",
+    "retry": "Retry",
     "ok": "OK",
     "syncedRecords_one": "Synced {{count}} health record.",
     "syncedRecords_other": "Synced {{count}} health records.",

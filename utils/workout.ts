@@ -10,7 +10,7 @@ import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { Theme } from '@/theme';
 
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
-import type { ProgressionRule } from './progressionRules';
+import type { ProgressionRule } from './progressionRuleSchema';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 import { dayNameToIndex } from './weekdays';
@@ -329,11 +329,11 @@ export function transformExercisesToOptions(
 ): SelectorOption<string>[] {
   return exercisesInWorkout.map((ex) => {
     const row = formatExerciseListRowMeta(ex.sets, ex.reps, ex.weight, ex.isBodyweight, units);
-    const description = ex.notes ? `${row.description} • 📝` : row.description;
     return {
       id: ex.id,
       label: ex.label,
-      description,
+      description: row.description,
+      hasNotes: Boolean(ex.notes),
       trailingHighlight: row.trailingHighlight,
       icon: ex.icon,
       iconBgColor: ex.iconBgColor,

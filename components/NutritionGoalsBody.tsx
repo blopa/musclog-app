@@ -1,6 +1,5 @@
 import convert from 'convert';
 import { differenceInCalendarDays } from 'date-fns';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   Activity,
   Beef,
@@ -17,6 +16,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TextInputInstance } from 'react-native';
 import {
   ActivityIndicator,
   Platform,
@@ -224,7 +224,7 @@ function MacrosDistributionChart({
 
   return (
     <View className="items-center py-10">
-      <Text className="mb-6 text-sm font-semibold uppercase tracking-widest text-text-secondary opacity-60">
+      <Text className="mb-6 text-sm font-semibold text-text-secondary opacity-60">
         {t('nutritionGoals.macrosDistribution')}
       </Text>
 
@@ -335,7 +335,7 @@ export function NutritionGoalsBody({
   const [calorieInputValue, setCalorieInputValue] = useState(() =>
     initialGoals.totalCalories.toString()
   );
-  const calorieInputRef = useRef<TextInput>(null);
+  const calorieInputRef = useRef<TextInputInstance>(null);
 
   const preciseMacros = useRef({
     protein: initialGoals.protein,
@@ -1009,22 +1009,25 @@ export function NutritionGoalsBody({
           <Text className="mb-2 text-sm text-text-secondary">{t('nutritionGoals.subtitle')}</Text>
         ) : null}
 
-        {/* Goal Mode: Manual / Dynamic */}
+        {/* Goal mode */}
         <View className="gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
             {t('nutritionGoals.goalMode')}
           </Text>
           <SegmentedControl
             options={[
-              { label: t('nutritionGoals.manual'), value: 'manual' },
-              { label: t('weeklyReview.modes.daily'), value: 'daily' },
-              { label: t('weeklyReview.modes.weekly'), value: 'weekly' },
+              { label: t('nutritionGoals.modeOptions.manual'), value: 'manual' },
+              { label: t('nutritionGoals.modeOptions.daily'), value: 'daily' },
+              { label: t('nutritionGoals.modeOptions.weekly'), value: 'weekly' },
             ]}
             value={targetMode}
             onValueChange={(val) =>
               setTargetMode(val === 'weekly' ? 'weekly' : val === 'daily' ? 'daily' : 'manual')
             }
           />
+          <Text className="px-1 text-sm text-text-secondary">
+            {t(`nutritionGoals.modeHints.${targetMode}`)}
+          </Text>
         </View>
 
         {/* Dynamic mode info callout */}
@@ -1053,14 +1056,8 @@ export function NutritionGoalsBody({
               backgroundColor: theme.colors.background.cardElevated,
             }}
           >
-            <LinearGradient
-              colors={[theme.colors.status.indigo10, theme.colors.accent.secondary10]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ position: 'absolute', inset: 0 }}
-            />
             <View className="relative z-10 items-center">
-              <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+              <Text className="mb-1 text-xs font-medium text-text-secondary">
                 {t('nutritionGoals.totalDailyCalories')}
               </Text>
               <View className="w-full flex-row items-center justify-center gap-6">
@@ -1110,7 +1107,7 @@ export function NutritionGoalsBody({
                       </Text>
                     </Pressable>
                   )}
-                  <Text className="text-lg font-semibold uppercase text-accent-primary">
+                  <Text className="text-lg font-semibold text-accent-primary">
                     {t('food.common.kcal')}
                   </Text>
                 </View>
@@ -1252,7 +1249,7 @@ export function NutritionGoalsBody({
         {!isDynamic ? (
           <>
             <Text
-              className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+              className="mb-2 mt-8 font-bold text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xs }}
             >
               {t('nutritionGoals.dailyMacroTargets')}
@@ -1383,7 +1380,7 @@ export function NutritionGoalsBody({
 
         {/* Target Body Metrics */}
         <Text
-          className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+          className="mb-2 mt-8 font-bold text-text-secondary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('nutritionGoals.targetBodyMetrics')}

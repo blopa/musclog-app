@@ -57,7 +57,7 @@ export function EatingPhaseBadge({
 
   return (
     <View
-      className={`rounded px-2 ${showBorder ? 'border' : ''} uppercase`}
+      className={`rounded px-2 ${showBorder ? 'border' : ''}`}
       style={{
         backgroundColor,
         paddingVertical: paddingY,

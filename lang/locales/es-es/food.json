@@ -206,7 +206,7 @@
       "scaleMealPortion": "Ajustar tamaño de la porción de la comida",
       "scaleMealPortionDesc": "Aumentar o disminuir los gramos totales; todos los alimentos se escalan juntos",
       "scaleMealPortionModalTitle": "Ajustar tamaño de la porción de la comida",
-      "scaleMealPortionModalSubtitle": "Gramos totales para esta comida — cada alimento se escala proporcionalmente",
+      "scaleMealPortionModalSubtitle": "Gramos totales para esta comida. Cada alimento se escala proporcionalmente",
       "scaleMealPortionSuccess": "Porciones de la comida actualizadas",
       "scaleMealPortionError": "Error al actualizar las porciones de la comida",
       "scaleMealPortionInvalid": "Introduce al menos 1 g",
@@ -280,7 +280,7 @@
       "aiCamera": {
         "title": "Cámara IA",
         "description": "Reconocimiento instantáneo y estimación de macros",
-        "badge": "NUEVO"
+        "badge": "Nuevo"
       },
       "scanBarcode": {
         "title": "Escanear Código de Barras",
@@ -288,7 +288,7 @@
       },
       "searchFood": {
         "title": "Buscar Alimento",
-        "description": "Busca en nuestra base de datos de más de 2 millones de artículos"
+        "description": "Busca en bases de datos de alimentos y en tus propios alimentos"
       },
       "createCustomFood": "Crear Alimento Personalizado",
       "trackCustomMeal": "Registrar Comida",
@@ -382,7 +382,7 @@
       "zinc": "Zinc",
       "loadingDetails": "Cargando detalles...",
       "loadingMoreDetails": "Cargando más detalles...",
-      "successMessage": "¡Alimento registrado con éxito!",
+      "successMessage": "Alimento registrado.",
       "errorMessage": "Error al registrar el alimento. Por favor, inténtalo de nuevo.",
       "updateFood": "Actualizar Alimento",
       "sourceOpenFood": "Open Food Facts",
@@ -427,7 +427,7 @@
       "estimated": "Estimado",
       "mealName": "Nombre de la Comida",
       "mealNamePlaceholder": "ej. Smoothie Post-Entrenamiento",
-      "mealDescriptionPlaceholder": "Opcional — notas de preparación, cuándo comes esto, etc.",
+      "mealDescriptionPlaceholder": "Opcional: notas de preparación, cuándo comes esto, etc.",
       "ingredients": "Ingredientes ({{count}})",
       "addPhoto": "Añadir foto",
       "editList": "Editar Lista",
@@ -439,7 +439,7 @@
       "ingredientsRequired": "Por favor, añade al menos un ingrediente",
       "saveFailed": "Error al guardar la comida. Por favor, inténtalo de nuevo.",
       "preparedWeight": "Peso preparado ({{unit}})",
-      "preparedWeightHelper": "Opcional — peso después de cocinar"
+      "preparedWeightHelper": "Opcional: peso después de cocinar"
     },
     "aiCamera": {
       "requestingPermission": "Solicitando permiso para la cámara...",
@@ -468,22 +468,22 @@
       "uploadFromGallery": "Elegir de la galería",
       "barcodeTextSearchTitle": "Buscar código de barras",
       "barcodeTextSearchDescription": "Busca un alimento escribiendo el código de barras impreso en el envase.",
-      "barcodeTextSearchLabel": "CÓDIGO DE BARRAS",
+      "barcodeTextSearchLabel": "Código de barras",
       "barcodeTextSearchPlaceholder": "Introduce el número del código",
       "barcodeTextSearchSubmit": "Buscar alimento",
       "barcodeTextSearchRequired": "Introduce un código de barras",
       "aiAnalysisFailed": "El análisis por IA falló. Por favor, inténtalo de nuevo.",
       "aiNotConfigured": "La IA no está configurada. Añade una clave API de Gemini o OpenAI en Ajustes.",
       "onDeviceNotSupported": "El análisis de fotos de comidas no está disponible con Apple Intelligence. Por favor, configura OpenAI o Gemini en los Ajustes.",
-      "mealLoggedSuccess": "¡Comida registrada con éxito!",
+      "mealLoggedSuccess": "Comida registrada.",
       "mealLoggingFailed": "Error al registrar la comida. Por favor, inténtalo de nuevo.",
       "analysisSuccess": "{{name}}: {{kcal}} kcal, P {{protein}}g C {{carbs}}g G {{fat}}g"
     },
     "aiNutritionContext": {
       "title": "Añadir Contexto para la IA",
-      "describeYourMeal": "DESCRIBE TU COMIDA",
+      "describeYourMeal": "Describe tu comida",
       "placeholder": "ej. Este es un plato casero con aceite de oliva, unas 2 tazas de pasta...",
-      "quickTags": "ETIQUETAS RÁPIDAS",
+      "quickTags": "Etiquetas rápidas",
       "quickTagHighProtein": "Alta Proteína",
       "quickTagLowCarb": "Baja en Carbos",
       "quickTagLargeServing": "Porción Grande",

@@ -78,6 +78,13 @@ describe('computeStartTarget', () => {
       });
     });
 
+    it('deloads when most sets hit failure even though the average is above zero', () => {
+      // Sets at 2, 0, 0 in reserve average 0.67, but two of three were ground to failure.
+      expect(
+        target({ last: { ...last(100, 8, 0.67), failed: true }, failedBefore: true })
+      ).toMatchObject({ weightKg: 90, kind: 'deload' });
+    });
+
     it('never deloads below zero', () => {
       expect(target({ last: last(1, 8, 0), failedBefore: true, incrementKg: 2.5 }).weightKg).toBe(
         0
@@ -162,16 +169,16 @@ describe('computeStartTarget without rated effort', () => {
       weightKg: 100,
       reps: 6,
       kind: 'progression',
-      rule: { kind: 'range', outcome: 'add_reps', repMin: 5, repMax: 7 },
+      rule: { kind: 'range', outcome: 'add_reps', repMin: 5, repMax: 6 },
     });
   });
 
   it('adds load and restarts at the plan reps once the top of the range is reached', () => {
-    expect(unrated(7)).toEqual({
+    expect(unrated(6)).toEqual({
       weightKg: 103,
       reps: 5,
       kind: 'progression',
-      rule: { kind: 'range', outcome: 'add_weight', repMin: 5, repMax: 7 },
+      rule: { kind: 'range', outcome: 'add_weight', repMin: 5, repMax: 6 },
     });
   });
 
@@ -204,7 +211,8 @@ describe('computeStartTarget without rated effort', () => {
 
 describe('repsFirstRange', () => {
   it('anchors on the plan when there is one, and on the generic range otherwise', () => {
-    expect(repsFirstRange(true, 5)).toEqual({ minReps: 5, maxReps: 7 });
+    expect(repsFirstRange(true, 5)).toEqual({ minReps: 5, maxReps: 6 });
+    expect(repsFirstRange(true, 8)).toEqual({ minReps: 8, maxReps: 10 });
     expect(repsFirstRange(true)).toEqual({ minReps: 8, maxReps: 12 });
     expect(repsFirstRange(false, 0)).toEqual({ minReps: 12, maxReps: 16 });
   });
@@ -379,6 +387,40 @@ describe('session completeness and the weakest set', () => {
       last: { weightKg: 60, reps: 12, lowestReps: 12, averageRepsInReserve: 0, rirRecorded: false },
     });
     expect(result).toMatchObject({ weightKg: 62.5, reps: 10, kind: 'progression' });
+  });
+
+  it('climbs a rated session from its weakest set too, not the first', () => {
+    // 12 / 11 / 10 against a 10–12 range: only the first set reached the top, so the load stays and
+    // the next target is one rep above the weakest set — the same rule the unrated path follows.
+    const rated = computeStartTarget({
+      ...base,
+      planReps: 10,
+      last: { weightKg: 60, reps: 12, lowestReps: 10, averageRepsInReserve: 2, rirRecorded: true },
+    });
+    expect(rated).toEqual({ weightKg: 60, reps: 11, kind: 'progression' });
+
+    const unrated = computeStartTarget({
+      ...base,
+      planReps: 10,
+      last: { weightKg: 60, reps: 12, lowestReps: 10, averageRepsInReserve: 0, rirRecorded: false },
+    });
+    expect(unrated).toMatchObject({ weightKg: rated.weightKg, reps: rated.reps });
+  });
+
+  it('adds weight to a rated session only when every set reached the top of the range', () => {
+    expect(
+      computeStartTarget({
+        ...base,
+        planReps: 10,
+        last: {
+          weightKg: 60,
+          reps: 12,
+          lowestReps: 12,
+          averageRepsInReserve: 2,
+          rirRecorded: true,
+        },
+      })
+    ).toEqual({ weightKg: 62.5, reps: 10, kind: 'progression' });
   });
 
   it('keeps adding reps instead of a step that is a large share of a light load', () => {

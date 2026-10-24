@@ -42,6 +42,11 @@ function totalBlogPages(postCount, postsPerPage = BLOG_POSTS_PER_PAGE) {
   return Math.max(1, Math.ceil(postCount / postsPerPage));
 }
 
+/** The canonical URL of a validated post slug. */
+function blogPostPath(slug) {
+  return `/blog/${slug}`;
+}
+
 /** `/blog`, `/blog/page/2`, … */
 function blogPagePath(page) {
   return page === 1 ? '/blog' : `/blog/page/${page}`;
@@ -74,6 +79,7 @@ module.exports = {
   blogCategoryPath,
   blogListingPath,
   blogPagePath,
+  blogPostPath,
   blogPagePathsAfterFirst,
   SAFE_CATEGORY_KEY,
   SAFE_SLUG_SEGMENT,

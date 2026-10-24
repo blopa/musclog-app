@@ -248,7 +248,6 @@ export function SavedForLaterModal({
           {
             icon: Utensils,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('food.mealGroup.savedForLaterModal.trackThisMeal'),
             description: t('food.mealGroup.savedForLaterModal.trackThisMealDesc'),
             onPress: handleTrackPress,
@@ -256,7 +255,6 @@ export function SavedForLaterModal({
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
             title: t('food.mealGroup.savedForLaterModal.deleteMeal'),
             description: t('food.mealGroup.savedForLaterModal.deleteMealDesc'),
             onPress: handleDeletePress,

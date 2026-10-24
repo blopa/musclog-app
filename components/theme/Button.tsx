@@ -11,6 +11,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import { useTheme } from '@/hooks/useTheme';
 import { Theme } from '@/theme';
 
@@ -18,8 +19,20 @@ type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 
+/**
+ * `rose` / `roseOutline` are the cycle area's period actions ("My period started" / "ended"):
+ * the brand's rose without `discard`'s destructive meaning.
+ */
 type ThemeButtonVariant =
-  'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
+  | 'accent'
+  | 'discard'
+  | 'outline'
+  | 'secondary'
+  | 'secondaryGradient'
+  | 'dashed'
+  | 'gradientCta'
+  | 'rose'
+  | 'roseOutline';
 
 type ThemeButtonProps = {
   label: string;
@@ -45,46 +58,46 @@ const getSizeConfig = (theme: Theme) => {
       paddingVertical: theme.spacing.padding.sm,
       borderRadius: theme.borderRadius.md,
       fontSize: theme.typography.fontSize.xs,
-      fontWeight: theme.typography.fontWeight.bold,
+      fontWeight: theme.typography.fontWeight.semibold,
       iconSize: theme.iconSize.xs,
       gap: theme.spacing.gap.xs,
       shadow: theme.shadows.sm,
     },
     sm: {
       paddingVertical: theme.spacing.padding.md,
-      borderRadius: theme.borderRadius.lg,
+      borderRadius: theme.borderRadius.md,
       fontSize: theme.typography.fontSize.sm,
-      fontWeight: theme.typography.fontWeight.bold,
+      fontWeight: theme.typography.fontWeight.semibold,
       iconSize: theme.iconSize.sm,
       gap: theme.spacing.gap.sm,
       shadow: theme.shadows.md,
     },
     md: {
       paddingVertical: theme.spacing.padding.base,
-      borderRadius: theme.borderRadius.xl,
+      borderRadius: theme.borderRadius.lg,
       fontSize: theme.typography.fontSize.base,
       fontWeight: theme.typography.fontWeight.bold,
       iconSize: theme.iconSize.md,
       gap: theme.spacing.gap.md,
-      shadow: theme.shadows.accentGlow,
+      shadow: theme.shadows.none,
     },
     lg: {
       paddingVertical: theme.spacing.padding.lg,
-      borderRadius: theme.borderRadius['2xl'],
+      borderRadius: theme.borderRadius.lg,
       fontSize: theme.typography.fontSize.xl,
       fontWeight: theme.typography.fontWeight.bold,
       iconSize: theme.iconSize.lg,
       gap: theme.spacing.gap.md,
-      shadow: theme.shadows.accentGlowLarge,
+      shadow: theme.shadows.none,
     },
     xl: {
       paddingVertical: theme.spacing.padding.xl,
-      borderRadius: theme.borderRadius['2xl'],
+      borderRadius: theme.borderRadius.lg,
       fontSize: theme.typography.fontSize.xl,
       fontWeight: theme.typography.fontWeight.bold,
       iconSize: theme.iconSize.lg,
       gap: theme.spacing.gap.md,
-      shadow: theme.shadows.accentGlowLarge,
+      shadow: theme.shadows.none,
     },
   };
 };
@@ -109,13 +122,15 @@ const getGradientColors = (
     case 'gradientCta':
       return theme.colors.gradients.cta;
     case 'discard':
+    case 'rose':
       return [theme.colors.rose.brand, theme.colors.rose.brand] as const;
     case 'secondaryGradient':
       return theme.colors.gradients.button;
     case 'secondary':
       return [theme.colors.background.overlay, theme.colors.background.overlay] as const;
     default:
-      return theme.colors.gradients.accent;
+      // `accent` is a solid fill; the gradient is `gradientCta`'s, the one primary action per screen.
+      return [theme.colors.accent.primary, theme.colors.accent.primary] as const;
   }
 };
 
@@ -128,11 +143,15 @@ const getTextColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
     case 'outline':
     case 'dashed':
       return theme.colors.text.secondary;
+    case 'roseOutline':
+      return theme.colors.rose.brand;
     // `secondaryGradient` fills with `gradients.button`, which is a SURFACE gradient
     // rather than a colourful one, so its label is on-surface ink like `secondary`.
     case 'secondary':
     case 'secondaryGradient':
       return theme.colors.text.primary;
+    case 'accent':
+      return theme.colors.text.onAccent;
     default:
       break;
   }
@@ -149,10 +168,14 @@ const getIconColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
     case 'outline':
     case 'dashed':
       return theme.colors.text.secondary;
+    case 'roseOutline':
+      return theme.colors.rose.brand;
     case 'secondary':
       return theme.colors.accent.secondary;
     case 'secondaryGradient':
       return theme.colors.text.primary;
+    case 'accent':
+      return theme.colors.text.onAccent;
     default:
       break;
   }
@@ -176,9 +199,10 @@ const getShadowStyle = (
     case 'secondaryGradient':
     case 'dashed':
     case 'gradientCta':
-      return theme.shadows.none;
+    case 'roseOutline':
     case 'discard':
-      return theme.shadows.roseGlow;
+    case 'rose':
+      return theme.shadows.none;
     default:
       return configShadow;
   }
@@ -190,7 +214,7 @@ const getOutlineBackgroundColor = (
   isDisabled: boolean,
   isPressed: boolean
 ): string | undefined => {
-  if (variant !== 'outline' || isDisabled) {
+  if ((variant !== 'outline' && variant !== 'roseOutline') || isDisabled) {
     return undefined;
   }
 
@@ -201,6 +225,7 @@ const getBorderWidth = (theme: Theme, variant: ThemeButtonVariant): number => {
   switch (variant) {
     case 'outline':
     case 'dashed':
+    case 'roseOutline':
       return theme.borderWidth.medium;
     case 'secondary':
     case 'secondaryGradient':
@@ -214,6 +239,8 @@ const getBorderColor = (theme: Theme, variant: ThemeButtonVariant): string => {
   switch (variant) {
     case 'outline':
       return theme.colors.background.ink10;
+    case 'roseOutline':
+      return theme.colors.rose.brand;
     case 'dashed':
       return theme.colors.border.dashed;
     case 'secondaryGradient':
@@ -253,6 +280,9 @@ export function Button({
   const isSecondaryVariant = variant === 'secondary';
   const isSecondaryGradientVariant = variant === 'secondaryGradient';
   const isDashedVariant = variant === 'dashed';
+  // Drawn as a plain bordered/filled view rather than over a gradient.
+  const isFlatVariant =
+    isOutlineVariant || isSecondaryVariant || isDashedVariant || variant === 'roseOutline';
   const isGradientCtaVariant = variant === 'gradientCta';
   const isDisabled = disabled || loading;
 
@@ -327,7 +357,6 @@ export function Button({
 
   const textElement = (
     <Text
-      className="tracking-wide"
       style={{
         fontSize: config.fontSize,
         fontWeight: config.fontWeight,
@@ -335,6 +364,7 @@ export function Button({
         textAlign: 'center',
         flexShrink: 1,
       }}
+      maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
       numberOfLines={2}
       ellipsizeMode="tail"
     >
@@ -429,7 +459,7 @@ export function Button({
         accessibilityState={{ disabled: true }}
         testID={testID}
       >
-        {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
+        {isFlatVariant ? (
           <View
             style={{
               borderRadius: config.borderRadius,
@@ -494,9 +524,13 @@ export function Button({
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       disabled={false}
-      {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
+      {...(Platform.OS === 'android' && {
+        unstable_pressDelay: 130,
+        // Bounded to the button's own radius by the `overflow: hidden` on `buttonStyle`.
+        android_ripple: { color: theme.colors.background.ink10, borderless: false },
+      })}
     >
-      {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
+      {isFlatVariant ? (
         <View
           style={{
             borderRadius: config.borderRadius,

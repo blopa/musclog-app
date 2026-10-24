@@ -2,8 +2,8 @@
   "workoutHistory": {
     "title": "Historial de Sesiones",
     "previewTitle": "Vista Previa del Entrenamiento",
-    "workoutInProgress": "ENTRENAMIENTO EN CURSO",
-    "previewSubtitle": "VISTA PREVIA",
+    "workoutInProgress": "Entrenamiento en curso",
+    "previewSubtitle": "Vista previa",
     "duration": "Duración",
     "volume": "Vol",
     "setsDone": "Series Hechas",

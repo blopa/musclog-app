@@ -33,7 +33,7 @@ export function SetDetailsSheet({
   const { t } = useTranslation();
   const field = (key: 'rir' | 'rpe' | 'partials', label: string, hint?: string) => (
     <View className="min-w-24 flex-1 gap-1">
-      <Text className="text-xs font-semibold uppercase text-text-secondary">{label}</Text>
+      <Text className="text-xs font-semibold text-text-secondary">{label}</Text>
       <NumericTextField
         accessibilityLabel={label}
         value={draft[key] ?? ''}
@@ -50,7 +50,7 @@ export function SetDetailsSheet({
       <View className="gap-5 pb-6">
         <View className="flex-row flex-wrap gap-3">
           {field('rir', t('trainingFlow.rirLabel'), t('trainingFlow.rirHint'))}
-          {field('rpe', t('trainingFlow.rpe'))}
+          {field('rpe', t('trainingFlow.rpe'), t('trainingFlow.rpeHint'))}
           {field('partials', t('trainingFlow.partials'))}
         </View>
         {canSkip ? (

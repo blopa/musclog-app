@@ -69,7 +69,7 @@ export function WorkoutSummaryProgression({ logId }: { logId: string }) {
               >
                 <Trophy size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View className="min-w-0 flex-1">
-                  <Text className="text-xs font-bold uppercase tracking-wider text-accent-primary">
+                  <Text className="text-xs font-bold text-accent-primary">
                     {t('trainingFlow.newRecord', { type: t(PR_TYPE_KEYS[record.type]) })}
                   </Text>
                   <Text className="text-base font-bold text-text-primary" numberOfLines={1}>

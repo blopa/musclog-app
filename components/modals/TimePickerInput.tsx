@@ -96,7 +96,7 @@ export function TimePickerInput({
   return (
     <View className={className}>
       {!hideLabel ? (
-        <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="mb-2 text-xs font-bold text-text-secondary">
           {label ?? t('food.foodDetails.time')}
         </Text>
       ) : null}

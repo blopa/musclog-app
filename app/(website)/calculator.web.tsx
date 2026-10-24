@@ -1,5 +1,3 @@
-'use client';
-
 import { BarChart3, ChevronDown, Zap } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +20,7 @@ import {
   scrim,
   surface,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { CALORIES_FOR_CARBS, CALORIES_FOR_FAT, CALORIES_FOR_PROTEIN } from '@/constants/nutrition';
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models';
 import {
@@ -30,6 +29,7 @@ import {
   ffmiFromWeightHeightAndBodyFat,
   isValidBodyFat,
 } from '@/utils/nutritionCalculator';
+('use client');
 
 const CARD_BG = ink(0.03);
 const CARD_BORDER = ink(0.1);
@@ -753,4 +753,8 @@ export default function Calculator() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('calculator');
 }

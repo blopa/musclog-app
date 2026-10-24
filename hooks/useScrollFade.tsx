@@ -1,13 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronDown } from 'lucide-react-native';
 import { useRef, useState } from 'react';
+import type { ScrollViewInstance } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native';
 
 import { useTheme } from './useTheme';
 
 export function useScrollFade() {
   const theme = useTheme();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [isScrollable, setIsScrollable] = useState(false);
   const layoutHeightRef = useRef(0);

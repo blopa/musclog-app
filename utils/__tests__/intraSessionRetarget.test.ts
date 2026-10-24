@@ -1,5 +1,5 @@
 import { selectRetargets } from '@/utils/intraSessionRetarget';
-import { parseProgressionRule } from '@/utils/progressionRules';
+import { parseProgressionRule } from '@/utils/progressionRuleSchema';
 import { serializeSetPrescription } from '@/utils/setPrescription';
 
 const set = (id: string, setOrder: number, status: string, extra: Record<string, unknown> = {}) =>

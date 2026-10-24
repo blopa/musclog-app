@@ -34,11 +34,10 @@ import {
   isLargeCalorieChange,
   nutritionReason,
 } from './nutritionReason';
+import { TARGET_FIELDS, type TargetField } from './targetsDraft';
 import { ReviewSectionHeader } from './TrainingReviewSection';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
-
-export const MACRO_FIELDS = ['totalCalories', 'protein', 'carbs', 'fats', 'fiber'] as const;
 
 export const MACRO_LABEL_KEYS = {
   totalCalories: 'weeklyReview.macros.totalCalories',
@@ -46,7 +45,7 @@ export const MACRO_LABEL_KEYS = {
   carbs: 'weeklyReview.macros.carbs',
   fats: 'weeklyReview.macros.fats',
   fiber: 'weeklyReview.macros.fiber',
-} as const satisfies Record<(typeof MACRO_FIELDS)[number], string>;
+} as const satisfies Record<TargetField, string>;
 
 const MODE_KEYS = {
   manual: 'weeklyReview.modes.manual',
@@ -317,9 +316,7 @@ export function NutritionReviewSection({
       testID="review-nutrition"
     >
       <ReviewSectionHeader title={t('weeklyReview.nutrition')} icon={Utensils} done={decided} />
-      <Text className="text-xs font-semibold uppercase tracking-wider text-accent-primary">
-        {t(MODE_KEYS[mode])}
-      </Text>
+      <Text className="text-xs font-semibold text-accent-primary">{t(MODE_KEYS[mode])}</Text>
 
       <StatStrip
         items={[
@@ -356,19 +353,19 @@ export function NutritionReviewSection({
 
       <View className="overflow-hidden rounded-xl border border-border-light">
         <View className="flex-row bg-bg-overlay px-3 py-2">
-          <Text className="flex-1 text-xs font-bold uppercase text-text-tertiary">
+          <Text className="flex-1 text-xs font-bold text-text-tertiary">
             {t('weeklyReview.target')}
           </Text>
-          <Text className="w-20 text-right text-xs font-bold uppercase text-text-tertiary">
+          <Text className="w-20 text-right text-xs font-bold text-text-tertiary">
             {t('weeklyReview.currentShort')}
           </Text>
           <Text
-            className={`w-28 text-right text-xs font-bold uppercase ${estimate ? 'text-text-tertiary' : 'text-accent-primary'}`}
+            className={`w-28 text-right text-xs font-bold ${estimate ? 'text-text-tertiary' : 'text-accent-primary'}`}
           >
             {t(recommendedColumnKey)}
           </Text>
         </View>
-        {MACRO_FIELDS.map((field, index) => {
+        {TARGET_FIELDS.map((field, index) => {
           const current = data.current![field];
           const next = shownRecommendation?.[field] ?? current;
           const delta = Math.round(next) - Math.round(current);
@@ -511,7 +508,7 @@ function NutritionEmptyState({
         done={reviewable ? decided : null}
       />
       <View className="gap-2">
-        <Text className="text-xs font-semibold uppercase tracking-wider text-accent-primary">
+        <Text className="text-xs font-semibold text-accent-primary">
           {t('weeklyReview.empty.currentTargets')}
         </Text>
         <StatStrip

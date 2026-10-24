@@ -1,9 +1,9 @@
 {
   "errors": {
     "connectionTimeout": {
-      "title": "Connection Timeout",
+      "title": "Connection timeout",
       "description": "We couldn't reach the Musclog servers. Please check your internet connection.",
-      "tryAgain": "Try Again"
+      "tryAgain": "Try again"
     },
     "failedToLoadData": "Failed to load data",
     "somethingWentWrong": "Something went wrong",
@@ -13,9 +13,9 @@
     "aiProcessingError": "Sorry, I had trouble processing that request. Please try again in a moment.",
     "aiProcessingErrorTitle": "Error processing request",
     "gatewayDailyLimitError": "Daily free AI limit reached. Try again tomorrow or add your own API key in AI Settings.",
-    "gatewayDailyLimitErrorTitle": "Daily Limit Reached",
+    "gatewayDailyLimitErrorTitle": "Daily limit reached",
     "databaseError": {
-      "title": "Database Error",
+      "title": "Database error",
       "description": "A database error occurred. Error reporting has been enabled to help resolve this issue."
     },
     "aiInvalidApiKey": "Your {{provider}} API key was rejected. Check it in AI settings.",

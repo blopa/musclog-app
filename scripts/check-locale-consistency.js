@@ -83,7 +83,7 @@ function loadJsonFile(localeDir, filename) {
     const content = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(content);
   } catch (error) {
-    console.error(`❌ Error reading ${filePath}: ${error.message}`);
+    console.error(`[ERROR] Error reading ${filePath}: ${error.message}`);
     return null;
   }
 }
@@ -103,17 +103,17 @@ function findMissingKeys(sourceKeys, targetKeys) {
  * Main function to run the consistency check
  */
 function run() {
-  console.log('🔍 Checking translation consistency across locales...\n');
+  console.log('Checking translation consistency across locales...\n');
 
   const locales = getLocaleDirectories();
 
   if (locales.length < 2) {
-    console.log('⚠️  Need at least 2 locale directories to compare.');
+    console.log('[WARN] Need at least 2 locale directories to compare.');
     console.log(`   Found: ${locales.join(', ') || 'none'}`);
     process.exit(0);
   }
 
-  console.log(`📁 Found ${locales.length} locales: ${locales.join(', ')}\n`);
+  console.log(`Found ${locales.length} locales: ${locales.join(', ')}\n`);
 
   // Get all unique JSON filenames across all locales
   const allJsonFiles = new Set();
@@ -124,14 +124,14 @@ function run() {
 
   const sortedJsonFiles = [...allJsonFiles].sort();
 
-  console.log(`📄 Found ${sortedJsonFiles.length} unique JSON files:\n`);
+  console.log(`Found ${sortedJsonFiles.length} unique JSON files:\n`);
 
   let hasErrors = false;
   const missingKeysReport = [];
   const extraKeysReport = [];
 
   for (const jsonFile of sortedJsonFiles) {
-    console.log(`▶️  Checking: ${jsonFile}`);
+    console.log(`Checking: ${jsonFile}`);
 
     // Load all locale versions of this file
     const localeData = {};
@@ -148,7 +148,7 @@ function run() {
     const availableLocales = Object.keys(localeData);
 
     if (availableLocales.length < 2) {
-      console.log(`   ⚠️  Only found in: ${availableLocales.join(', ') || 'none'}`);
+      console.log(`   [WARN] Only found in: ${availableLocales.join(', ') || 'none'}`);
       console.log('');
       continue;
     }
@@ -181,12 +181,12 @@ function run() {
 
     // Report results for this file
     if (fileMissingKeys.length === 0 && fileExtraKeys.length === 0) {
-      console.log(`   ✅ All locales have matching keys (${sortedAllKeys.length} keys)`);
+      console.log(`   [OK] All locales have matching keys (${sortedAllKeys.length} keys)`);
     } else {
       hasErrors = true;
 
       if (fileMissingKeys.length > 0) {
-        console.log(`   ❌ Missing keys found:`);
+        console.log(`   [ERROR] Missing keys found:`);
         for (const { locale, missing } of fileMissingKeys) {
           console.log(`      ${locale}: ${missing.length} missing`);
           for (const key of missing) {
@@ -198,7 +198,7 @@ function run() {
       }
 
       if (fileExtraKeys.length > 0) {
-        console.log(`   ⚠️  Extra keys found (not in other locales):`);
+        console.log(`   [WARN] Extra keys found (not in other locales):`);
         for (const { locale, extra } of fileExtraKeys) {
           console.log(`      ${locale}: ${extra.length} extra`);
           for (const key of extra) {
@@ -215,11 +215,11 @@ function run() {
 
   // Final summary
   console.log('='.repeat(60));
-  console.log('📊 MISSING KEYS');
+  console.log('MISSING KEYS');
   console.log('='.repeat(60));
 
   if (!hasErrors) {
-    console.log('✅ All translation files are consistent across all locales!');
+    console.log('[OK] All translation files are consistent across all locales!');
   } else {
     for (const { file, locale, keys } of missingKeysReport) {
       for (const key of keys) {
@@ -234,7 +234,7 @@ function run() {
 // Show help if requested
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   console.log(`
-🔍 Locale Consistency Checker
+Locale Consistency Checker
 
 Checks that all translation keys (including nested ones) exist consistently
 across all locale directories in lang/locales/.

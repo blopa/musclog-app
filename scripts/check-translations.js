@@ -30,6 +30,9 @@ const CONFIG = {
     '../components/**/*.ts',
     '../types/**/*.ts',
     '../services/**/*.ts',
+    // Label tables (`Record<…, string>` of whole keys) live in constants/ too.
+    '../constants/**/*.ts',
+    '../context/**/*.tsx',
     '../data/whatsNew/*.json',
   ],
   ignorePatterns: [
@@ -65,7 +68,7 @@ class TranslationScanner {
         ...CONFIG.sharedLocaleFiles,
       ];
       if (files.length === 0) {
-        console.error('✗ No JSON files found in', CONFIG.localeDir);
+        console.error('[ERROR] No JSON files found in', CONFIG.localeDir);
         process.exit(1);
       }
 
@@ -79,10 +82,10 @@ class TranslationScanner {
       }
 
       console.log(
-        `✓ Loaded ${this.existingKeys.size} existing translation keys from ${files.length} files`
+        `Loaded ${this.existingKeys.size} existing translation keys from ${files.length} files`
       );
     } catch (error) {
-      console.error('✗ Error loading translation files:', error.message);
+      console.error('[ERROR] Error loading translation files:', error.message);
       process.exit(1);
     }
   }
@@ -320,7 +323,7 @@ class TranslationScanner {
 
       return fileKeys;
     } catch (error) {
-      console.error(`✗ Error reading file ${filePath}:`, error.message);
+      console.error(`[ERROR] Error reading file ${filePath}:`, error.message);
       this.scanErrors.push({ filePath, error });
       return new Set();
     }
@@ -329,7 +332,7 @@ class TranslationScanner {
   // Scan all files for translation usage
   scanFiles() {
     const files = this.findFilesToScan();
-    console.log(`📁 Scanning ${files.length} TSX files...`);
+    console.log(`Scanning ${files.length} TSX files...`);
 
     for (const filePath of files) {
       const keys = this.extractKeysFromFile(filePath);
@@ -342,7 +345,7 @@ class TranslationScanner {
       }
     }
 
-    console.log(`✓ Found ${this.usedKeys.size} translation keys in code`);
+    console.log(`[OK] Found ${this.usedKeys.size} translation keys in code`);
   }
 
   // Find missing translations
@@ -422,7 +425,7 @@ class TranslationScanner {
     const unusedKeys = [...this.existingKeys].filter((key) => !this.usedKeys.has(key));
 
     if (unusedKeys.length === 0) {
-      console.log('\n✅ No unused translations to remove.');
+      console.log('\n[OK] No unused translations to remove.');
       return;
     }
 
@@ -451,11 +454,11 @@ class TranslationScanner {
       }
 
       console.log(
-        `\n🧹 Removed ${unusedKeys.length} unused translations from ${keysByFile.size} file(s)`
+        `\nRemoved ${unusedKeys.length} unused translations from ${keysByFile.size} file(s)`
       );
-      console.log('📝 Original files have been overwritten.');
+      console.log('Original files have been overwritten.');
     } catch (error) {
-      console.error('✗ Error cleaning up translations:', error.message);
+      console.error('[ERROR] Error cleaning up translations:', error.message);
     }
   }
 
@@ -482,16 +485,16 @@ class TranslationScanner {
   }
   generateReport() {
     console.log('\n' + '='.repeat(60));
-    console.log('🔍 TRANSLATION SCAN REPORT');
+    console.log('TRANSLATION SCAN REPORT');
     console.log('='.repeat(60));
 
-    console.log(`\n📊 SUMMARY:`);
+    console.log(`\nSUMMARY:`);
     console.log(`   • Existing translations: ${this.existingKeys.size}`);
     console.log(`   • Used translations in code: ${this.usedKeys.size}`);
     console.log(`   • Missing translations: ${this.missingKeys.size}`);
 
     if (this.missingKeys.size > 0) {
-      console.log(`\n❌ MISSING TRANSLATIONS (${this.missingKeys.size}):`);
+      console.log(`\n[ERROR] MISSING TRANSLATIONS (${this.missingKeys.size}):`);
       console.log('─'.repeat(40));
 
       // Group missing keys by file for better context
@@ -511,13 +514,13 @@ class TranslationScanner {
 
       for (const [filePath, missingInfos] of missingByFile) {
         const relativePath = path.relative(process.cwd(), filePath);
-        console.log(`\n📄 ${relativePath}:`);
+        console.log(`\n${relativePath}:`);
         for (const { key, line } of missingInfos) {
           console.log(`   • ${key} (line ${line})`);
         }
       }
 
-      console.log('\n💡 SUGGESTED ADDITIONS (per-namespace in lang/locales/en-us/*.json):');
+      console.log('\nSUGGESTED ADDITIONS (per-namespace in lang/locales/en-us/*.json):');
       console.log('{');
 
       const sortedMissing = Array.from(this.missingKeys)
@@ -550,14 +553,14 @@ class TranslationScanner {
             const filePath = this.namespaceToFile.get(namespace);
             if (!filePath) {
               console.log(
-                `\n⚠️  No locale file for namespace "${namespace}". Add keys manually or create ${path.join(CONFIG.localeDir, namespace + '.json')}.`
+                `\n[WARN] No locale file for namespace "${namespace}". Add keys manually or create ${path.join(CONFIG.localeDir, namespace + '.json')}.`
               );
               continue;
             }
 
             const backupPath = `${filePath}.bak.${Date.now()}`;
             fs.copyFileSync(filePath, backupPath);
-            console.log(`\n🔁 Backup: ${path.relative(process.cwd(), backupPath)}`);
+            console.log(`\nBackup: ${path.relative(process.cwd(), backupPath)}`);
 
             const content = fs.readFileSync(filePath, 'utf8');
             const data = JSON.parse(content);
@@ -599,31 +602,31 @@ class TranslationScanner {
 
           if (addedCount > 0) {
             console.log(
-              `\n✅ Added ${addedCount} missing key(s) to locale files in ${CONFIG.localeDir}`
+              `\nAdded ${addedCount} missing key(s) to locale files in ${CONFIG.localeDir}`
             );
           }
         } catch (err) {
-          console.error('✗ Failed to add missing keys to locale files:', err.message || err);
+          console.error('[ERROR] Failed to add missing keys to locale files:', err.message || err);
         }
       } else {
         console.log(
-          '\nℹ️  Missing keys not added. Re-run with --add-missing or -a to auto-insert them into the locale files.'
+          '\n[INFO] Missing keys not added. Re-run with --add-missing or -a to auto-insert them into the locale files.'
         );
       }
     } else {
-      console.log('\n✅ All translations found! No missing keys detected.');
+      console.log('\n[OK] All translations found! No missing keys detected.');
     }
 
     // Find unused translations
     const unusedKeys = [...this.existingKeys].filter((key) => !this.usedKeys.has(key));
     if (unusedKeys.length > 0) {
-      console.log(`\n⚠️  UNUSED TRANSLATIONS (${unusedKeys.length}):`);
+      console.log(`\n[WARN] UNUSED TRANSLATIONS (${unusedKeys.length}):`);
       console.log('─'.repeat(40));
       for (const key of unusedKeys.sort()) {
         console.log(`   • ${key}`);
       }
 
-      console.log('\n💡 Consider removing these unused keys to keep your translation file clean.');
+      console.log('\nConsider removing these unused keys to keep your translation file clean.');
     }
 
     console.log('\n' + '='.repeat(60));
@@ -652,7 +655,7 @@ class TranslationScanner {
 
   // Run the complete scan
   run() {
-    console.log('🚀 Starting translation scan...\n');
+    console.log('Starting translation scan...\n');
 
     this.loadExistingTranslations();
     this.scanFiles();
@@ -681,7 +684,7 @@ function parseArgs() {
 
   if (args.includes('--help') || args.includes('-h')) {
     console.log(`
-🔍 Translation Scanner
+Translation Scanner
 
 Usage: node scripts/check-translations.js [options]
 
@@ -707,7 +710,7 @@ Examples:
 try {
   require.resolve('glob');
 } catch (_err) {
-  console.error('❌ "glob" package is required. Please install it with:');
+  console.error('[ERROR] "glob" package is required. Please install it with:');
   console.error('   npm install glob');
   console.error('   or yarn add glob');
   process.exit(1);

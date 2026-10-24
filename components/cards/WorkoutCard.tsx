@@ -93,7 +93,7 @@ export function WorkoutCard({
             {formattedLastCompleted ? (
               <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-accent-primary/20 px-3 py-1">
                 <Clock size={theme.iconSize.xs} color={theme.colors.accent.primary} />
-                <Text className="text-xs font-bold uppercase text-accent-primary">
+                <Text className="text-xs font-bold text-accent-primary">
                   {formattedLastCompleted}
                 </Text>
               </View>

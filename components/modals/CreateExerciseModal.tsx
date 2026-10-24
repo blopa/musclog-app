@@ -157,10 +157,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
   const pickerMenuItems = PRIMARY_MUSCLES.map((muscle) => ({
     icon: Dumbbell,
-    iconColor: theme.colors.text.primary,
-    iconBgColor: theme.colors.text.primary20,
+    selected: muscle.value === primaryMuscle,
     title: muscle.label,
-    description: '',
     onPress: () => handleSelectPrimaryMuscle(muscle.value),
   }));
 

@@ -140,7 +140,7 @@ export function NutritionGoalsTabContent({
           <View className="mb-8">
             <View className="mb-3">
               <Text
-                className="font-bold uppercase tracking-widest text-text-secondary"
+                className="font-bold text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('goalsManagement.currentGoals')}
@@ -161,7 +161,7 @@ export function NutritionGoalsTabContent({
         {historyWithRaw.length > 0 ? (
           <View className="mb-6">
             <Text
-              className="mb-6 font-bold uppercase tracking-widest text-text-secondary"
+              className="mb-6 font-bold text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xs }}
             >
               {t('goalsManagement.history')}

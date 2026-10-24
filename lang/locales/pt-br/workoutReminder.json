@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "Por que recebi isto?",
+      "thisWorkout": "este treino",
+      "setting": "Os lembretes de treino estão ativados e {{workout}} está planejado para {{day}}.",
+      "settingNoDay": "Os lembretes de treino estão ativados e {{workout}} está no seu plano.",
+      "fromPlan": "Esse dia vem de um plano de treino.",
+      "fromSchedule": "Esse dia vem do horário que você definiu no treino.",
+      "timing": "O lembrete está marcado para {{time}}, o horário planejado.",
+      "timingLead": "Ele chega {{minutes}} minutos antes do horário planejado, {{time}}.",
+      "pause": "Pausar todos os lembretes por {{days}} dias",
+      "paused": "Lembretes pausados por {{days}} dias.",
+      "turnOff": "Desativar os lembretes de treino",
+      "turnedOff": "Os lembretes de treino estão desativados.",
+      "settings": "Configurações de notificações",
+      "failed": "Não foi possível alterar os lembretes. Tente novamente."
+    }
+  }
+}

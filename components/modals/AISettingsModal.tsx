@@ -17,6 +17,7 @@ import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SecretInput } from '@/components/theme/SecretInput';
+import { SectionLabel } from '@/components/theme/SectionLabel';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
@@ -102,10 +103,7 @@ function AIIntegrationCard({
 
   return (
     <View>
-      <Text
-        className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-        style={{ color: sectionTitleColor }}
-      >
+      <Text className="mb-2 px-5 text-xs font-bold" style={{ color: sectionTitleColor }}>
         {sectionTitle}
       </Text>
 
@@ -523,8 +521,7 @@ export function AISettingsModal({
 
   const geminiModelMenuItems: BottomPopUpMenuItem[] = Object.values(GEMINI_MODELS).map((model) => ({
     icon: Bot,
-    iconColor: theme.colors.status.info,
-    iconBgColor: theme.colors.status.info10,
+    selected: model.model === geminiModel,
     title: model.model,
     description: `Google Gemini ${model.model}`,
     onPress: () => onGeminiModelPress?.(model.model),
@@ -532,8 +529,7 @@ export function AISettingsModal({
 
   const openAiModelMenuItems: BottomPopUpMenuItem[] = Object.values(OPENAI_MODELS).map((model) => ({
     icon: Bot,
-    iconColor: theme.colors.status.indigo,
-    iconBgColor: theme.colors.status.indigo10,
+    selected: model.model === openAiModel,
     title: model.model,
     description: `OpenAI ${model.model}`,
     onPress: () => onOpenAiModelPress?.(model.model),
@@ -545,10 +541,7 @@ export function AISettingsModal({
         {/* Musclog Free Tier Section — hidden on web production builds (CORS/quota constraints) */}
         {musclogGatewayAvailable ? (
           <View className="gap-3">
-            <Text
-              className="px-5 text-xs font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.accent.primary }}
-            >
+            <Text className="px-5 text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
               {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
             </Text>
             <ToggleInput
@@ -674,7 +667,7 @@ export function AISettingsModal({
             {Platform.OS === 'ios' && isOnDeviceCapable ? (
               <View className="gap-3">
                 <Text
-                  className="px-5 text-xs font-bold uppercase tracking-wider"
+                  className="px-5 text-xs font-bold"
                   style={{ color: theme.colors.accent.primary }}
                 >
                   {t('settings.aiSettings.onDeviceAi.sectionTitle')}
@@ -718,23 +711,17 @@ export function AISettingsModal({
 
         {/* Insights & Alerts Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.insightsAlerts')}
-          </Text>
+          </SectionLabel>
           <ToggleInput items={insightsItems} />
         </View>
 
         {/* Memory Settings Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.memorySettings')}
-          </Text>
+          </SectionLabel>
           <View className="mb-3">
             <ToggleInput
               items={[
@@ -793,12 +780,9 @@ export function AISettingsModal({
 
         {/* Image Processing Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.imageProcessing')}
-          </Text>
+          </SectionLabel>
           <ToggleInput
             items={[
               {
@@ -855,12 +839,9 @@ export function AISettingsModal({
 
         {/* Custom Prompts Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.customPrompts')}
-          </Text>
+          </SectionLabel>
           <Pressable
             onPress={() => setIsCustomPromptsVisible(true)}
             className="overflow-hidden rounded-lg border bg-bg-card active:bg-bg-overlay"

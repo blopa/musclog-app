@@ -1,9 +1,17 @@
 {
   "settings": {
     "title": "Ajustes",
-    "configuration": "Configuración",
+    "groups": {
+      "you": "Tú",
+      "app": "App",
+      "training": "Entrenamiento",
+      "nutritionHealth": "Nutrición y salud",
+      "ai": "IA",
+      "data": "Datos",
+      "about": "Acerca de"
+    },
     "basicSettings": {
-      "title": "Ajustes Básicos",
+      "title": "Perfil y unidades",
       "subtitle": "Perfil, unidades y preferencias",
       "localization": "Localización",
       "language": "Idioma",
@@ -39,7 +47,7 @@
       "records": "registros",
       "migrated": "migrados",
       "tablesFound": "Tablas Encontradas:",
-      "successful": "¡Migración Exitosa!",
+      "successful": "Migración completada",
       "failed": "Migración Fallida",
       "error": "Error: {{error}}",
       "clickToCheck": "Haz clic en Comprobar Datos de Migración para ver qué se puede migrar",
@@ -58,9 +66,9 @@
       }
     },
     "advancedSettings": {
-      "title": "Ajustes de Datos Locales",
+      "title": "Copias y datos",
       "subtitle": "Exportación de datos, integraciones, caché",
-      "dataPortability": "PORTABILIDAD DE DATOS",
+      "dataPortability": "Portabilidad de datos",
       "exportFitnessData": "Exportar Datos de Fitness",
       "exportFitnessDataSubtitle": "Descargar una copia de seguridad completa (JSON)",
       "importFitnessData": "Importar Datos de Fitness",
@@ -84,7 +92,8 @@
         "deleteConfirmMessage": "¿Estás seguro de que deseas eliminar este archivo de copia de seguridad? Esta acción no se puede deshacer.",
         "restoreConfirmTitle": "¿Restaurar Base de Datos?",
         "restoreConfirmMessage": "Esto reemplazará todos los datos actuales con los datos de esta copia de seguridad. La app se recargará después de la restauración.",
-        "restoreSuccess": "Base de datos restaurada con éxito"
+        "restoreSuccess": "Base de datos restaurada con éxito",
+        "cycleEncryptionBackup": "Antes de cifrar los datos del ciclo"
       },
       "confirmExport": "Confirmar Exportación",
       "confirmImport": "Confirmar Importación",
@@ -111,10 +120,10 @@
       "exportFailedMessage": "Ocurrió un error al exportar. Por favor, inténtalo de nuevo.",
       "importFailedMessage": "Ocurrió un error al importar. Por favor, comprueba el archivo e inténtalo de nuevo.",
       "importSuccessMessage": "Datos importados con éxito",
-      "privacyDiagnostics": "PRIVACIDAD Y DIAGNÓSTICOS",
+      "privacyDiagnostics": "Privacidad y diagnósticos",
       "anonymousBugReport": "Informe de Errores Anónimo",
       "anonymousBugReportSubtitle": "Ayuda a mejorar Musclog enviando registros de fallos",
-      "reminders": "RECORDATORIOS",
+      "reminders": "Recordatorios",
       "dailyMoodPrompt": "Aviso Diario de Estado de Ánimo",
       "dailyMoodPromptSubtitle": "Mostrar un selector de estado de ánimo en la pantalla de inicio si aún no se ha registrado hoy",
       "dailyWaterPrompt": "Recordatorio Diario de Agua",
@@ -137,7 +146,7 @@
       "showWeightPredictionSubtitle": "Mostrar una tarjeta de peso predicho en la pantalla de perfil cuando no se haya registrado peso durante 4 días",
       "intuitiveEatingMode": "Modo de Seguimiento Intuitivo",
       "intuitiveEatingModeSubtitle": "Ocultar cantidades registradas en la tarjeta de resumen diario, mostrando ?? en lugar de valores exactos",
-      "nutrition": "NUTRICIÓN",
+      "nutrition": "Nutrición",
       "disableMinimumCalories": "Desactivar el mínimo de calorías",
       "disableMinimumCaloriesSubtitle": "Permitir objetivos de calorías por debajo de los mínimos predeterminados de 1200 / 1500 kcal",
       "useBfForCalculations": "Usar Grasa Corporal para Cálculos",
@@ -150,17 +159,17 @@
       "disableMinimumCaloriesConfirmMessage": "Esto elimina las protecciones mínimas de calorías predeterminadas de Musclog y permite objetivos tan bajos como 0 kcal.",
       "disableMinimumCaloriesWarning": "No se recomienda bajar de los requerimientos mínimos de calorías y puede no ser seguro. Al activar esto, confirmas que actúas bajo tu propia responsabilidad, que Musclog no recomienda bajar de esos mínimos y que entiendes los riesgos antes de continuar.",
       "disableMinimumCaloriesConfirmButton": "Lo Entiendo",
-      "charts": "GRÁFICOS",
+      "charts": "Gráficos",
       "chartTooltipLeft": "Información a la Izquierda",
       "chartTooltipLeftSubtitle": "Mostrar la información de los gráficos arriba a la izquierda en lugar de a la derecha",
-      "workouts": "ENTRENAMIENTOS",
+      "workouts": "Entrenamientos",
       "progressionModeWeightFirst": "Priorizar Progresión de Peso",
       "progressionModeWeightFirstSubtitle": "Aumentar el peso directamente cuando el RIR sea alto, en lugar de añadir repeticiones",
       "enableAdvancedDataManagement": "Habilitar Gestión de Datos Avanzada",
-      "enableAdvancedDataManagementSubtitle": "Desbloquea el acceso directo a los datos de tu app — solo para usuarios avanzados",
+      "enableAdvancedDataManagementSubtitle": "Desbloquea el acceso directo a los datos de tu app (solo para usuarios avanzados)",
       "enableAdvancedDataManagementConfirmTitle": "Solo Usuarios Avanzados",
-      "enableAdvancedDataManagementConfirmMessage": "Esto es solo para usuarios avanzados. Jugar con los datos aquí puede romper tu app de forma irreparable — úsalo solo si sabes lo que haces.",
-      "dataManagement": "GESTIÓN DE DATOS",
+      "enableAdvancedDataManagementConfirmMessage": "Esto es solo para usuarios avanzados. Jugar con los datos aquí puede romper tu app de forma irreparable. Úsalo solo si sabes lo que haces.",
+      "dataManagement": "Gestión de datos",
       "manageFoodData": "Gestionar Datos de Alimentos",
       "manageFoodDataSubtitle": "Ver, editar o eliminar tus entradas de alimentos personalizados",
       "manageNutritionLogsData": "Gestionar Datos de Registros de Nutrición",
@@ -190,7 +199,7 @@
       "clearAppDataAuthPrompt": "Autentícate para eliminar todos los datos de la app",
       "clearAppDataFailedMessage": "Se produjo un error al borrar los datos de la app. Inténtalo de nuevo.",
       "openSettingsFailedMessage": "No se pudieron abrir los ajustes de la app. Por favor, ábrelos manualmente.",
-      "dangerZone": "ZONA DE PELIGRO",
+      "dangerZone": "Zona de peligro",
       "opticalTransfer": "Transferencia óptica",
       "opticalTransferSubtitle": "Lleva tus datos a otro móvil con luz"
     },
@@ -202,20 +211,20 @@
       "title": "Ajustes de IA",
       "save": "Guardar",
       "saved": "Guardado",
-      "googleGeminiIntegration": "INTEGRACIÓN CON GOOGLE GEMINI",
-      "googleGeminiApiKey": "CLAVE API DE GOOGLE GEMINI",
+      "googleGeminiIntegration": "Integración con Google Gemini",
+      "googleGeminiApiKey": "Clave API de Google Gemini",
       "apiKeyPlaceholder": "Pega tu clave API aquí",
       "apiKeyHelper": "Se requiere una clave API de Gemini para usar Google Gemini. Consigue una en Google AI Studio.",
-      "openAiIntegration": "INTEGRACIÓN CON OPENAI",
-      "openAiApiKey": "CLAVE API DE OPENAI",
-      "insightsAlerts": "INFORMACIÓN Y ALERTAS",
+      "openAiIntegration": "Integración con OpenAI",
+      "openAiApiKey": "Clave API de OpenAI",
+      "insightsAlerts": "Información y alertas",
       "enableGoogleGemini": "Habilitar Google Gemini",
       "dailyNutritionInsights": "Información Diaria de Nutrición",
       "dailyNutritionInsightsSubtitle": "Resumen matutino basado en los registros",
       "workoutInsights": "Información de Entrenamiento",
       "workoutInsightsSubtitle": "Análisis post-entrenamiento",
       "enableOpenAi": "Habilitar OpenAI",
-      "localLlmIntegration": "INTEGRACIÓN CON LLM LOCAL",
+      "localLlmIntegration": "Integración con LLM local",
       "enableLocalLlm": "Habilitar LLM Local",
       "localLlmBaseUrl": "URL Base del LLM Local",
       "localLlmModel": "Modelo del LLM Local",
@@ -230,10 +239,10 @@
       "selectOpenAiModel": "Seleccionar modelo de OpenAI",
       "selectOpenAiModelSubtitle": "Selecciona el modelo que usarán todas las funciones de IA",
       "subtitle": "Ajustes para toda la IA utilizada en esta app",
-      "imageProcessing": "PROCESAMIENTO DE IMÁGENES",
+      "imageProcessing": "Procesamiento de imágenes",
       "useOcrBeforeAi": "Usar OCR antes de enviar a la IA",
       "useOcrBeforeAiSubtitle": "Procesar imágenes localmente con OCR y enviar texto en su lugar",
-      "useOcrBeforeAiOnDeviceSubtitle": "Requerido para Apple Intelligence — el OCR convierte las imágenes en texto antes de enviarlas.",
+      "useOcrBeforeAiOnDeviceSubtitle": "Requerido para Apple Intelligence. El OCR convierte las imágenes en texto antes de enviarlas.",
       "sendFoundationFoodsToLlm": "Enviar Alimentos Base a la IA",
       "sendFoundationFoodsToLlmSubtitle": "Mejorar la coincidencia de ingredientes usando la base de datos de alimentos base",
       "getOpenAiKey": "Conseguir Clave de OpenAI",
@@ -254,7 +263,7 @@
       "promptContextGeneral": "General",
       "promptContextNutrition": "Nutrición",
       "promptContextExercise": "Ejercicio",
-      "memorySettings": "AJUSTES DE MEMORIA",
+      "memorySettings": "Ajustes de memoria",
       "useThinkingMode": "Usar modo de razonamiento",
       "useThinkingModeSubtitle": "Permitir que los proveedores de IA usen razonamiento más profundo cuando sea compatible. Esto consume más tokens y puede aumentar el costo.",
       "maxAiMemories": "Máximo de Memorias de IA",
@@ -278,7 +287,7 @@
       "workoutHistoryDaysNoneDescription": "No enviar historial de entrenamientos a la IA",
       "workoutHistoryDaysOptionDescription": "Enviar los últimos {{days}} días de entrenamientos a la IA",
       "onDeviceAi": {
-        "sectionTitle": "APPLE INTELLIGENCE",
+        "sectionTitle": "Apple Intelligence",
         "toggle": "Usar Apple Intelligence",
         "toggleSubtitle": "Procesar solicitudes de IA en el dispositivo usando modelos de Apple. Sin necesidad de clave API.",
         "toggleSubtitleNotReady": "Apple Intelligence no está disponible en este dispositivo. Requiere iPhone 15 Pro o posterior con iOS 26 y Apple Intelligence habilitado.",
@@ -286,7 +295,7 @@
         "foundationFoodsDisabled": "La inyección de alimentos base está desactivada para la IA en el dispositivo para ahorrar memoria."
       },
       "musclogFreeTier": {
-        "sectionTitle": "NIVEL GRATUITO DE MUSCLOG",
+        "sectionTitle": "Nivel gratuito de Musclog",
         "toggle": "Usar LLM del Nivel Gratuito de Musclog",
         "toggleSubtitle": "Accede a funciones de IA sin clave API. Sujeto a un límite diario de solicitudes.",
         "activeNote": "El nivel gratuito está activo. No se usarán tus propias claves API."
@@ -295,7 +304,7 @@
       "testingKey": "Probando…"
     },
     "visualSettings": {
-      "title": "Interfaz",
+      "title": "Apariencia e inicio",
       "subtitle": "Personalizar la interfaz de la app",
       "sectionTitle": "Barra de Navegación",
       "sectionSubtitle": "Elige qué accesos directos aparecen en la barra inferior. Inicio y Cámara son siempre fijos.",
@@ -303,7 +312,7 @@
       "slot2Label": "Espacio 2 (derecha de cámara)",
       "slot3Label": "Espacio 3 (extremo derecho)",
       "selectItem": "Elige un acceso directo para este espacio",
-      "currentlyInSlot": "Actualmente en el espacio {{slot}} — se intercambiará",
+      "currentlyInSlot": "Actualmente en el espacio {{slot}} (se intercambiará)",
       "navItems": {
         "workouts": "Entrenamientos",
         "food": "Comida",
@@ -346,7 +355,62 @@
       "restTimer": "Alertas de Temporizador de Descanso",
       "restTimerSubtitle": "Recibe una notificación cuando termine tu tiempo de descanso",
       "workoutDuration": "Aviso de Entrenamiento Largo",
-      "workoutDurationSubtitle": "Alerta si tu sesión dura más de 5 horas"
+      "workoutDurationSubtitle": "Alerta si tu sesión dura más de 5 horas",
+      "restTimerRepeat": "Repetir alerta de descanso",
+      "restTimerRepeatSubtitle": "Avísame una vez más un minuto después si no he empezado la siguiente serie",
+      "unfinishedWorkout": "Recordatorio de entrenamiento sin terminar",
+      "unfinishedWorkoutSubtitle": "Avísame 45 minutos después de mi última serie si olvidé terminar",
+      "goalAtRisk": "Objetivo semanal en riesgo",
+      "goalAtRiskSubtitle": "Avísame cuando mi objetivo semanal de entrenamientos se retrase",
+      "weeklyReview": "Revisión semanal",
+      "weeklyReviewSubtitle": "Recordatorio cuando tu revisión semanal esté lista",
+      "lockScreen": "Detalles en la pantalla de bloqueo",
+      "lockScreenOptions": {
+        "full": "Todos los detalles",
+        "minimal": "Mínimo"
+      },
+      "sections": {
+        "session": "Durante el entrenamiento",
+        "plan": "Tu plan de entrenamiento",
+        "reports": "Informes y comida",
+        "quiet": "Horas de silencio y pausa",
+        "delivery": "Entrega"
+      },
+      "accountability": {
+        "structured": "Estructurado",
+        "gentle": "Suave",
+        "flexible": "Flexible"
+      },
+      "accountabilityHints": {
+        "structured": "Recuérdame en mis días de entrenamiento planificados.",
+        "gentle": "Solo avísame cuando mi objetivo semanal se retrase.",
+        "flexible": "Nunca me avises. Solo muestra lo siguiente."
+      },
+      "reminderLead": "Recordarme antes del entrenamiento",
+      "leadOnTime": "A la hora",
+      "leadMinutes": "{{minutes}} min",
+      "quietHours": "Horas de silencio",
+      "quietHoursSubtitle": "Sin recordatorios durante este intervalo",
+      "quietExempt": "Las alertas de descanso y tu entrenamiento activo nunca se silencian.",
+      "quietFrom": "Desde",
+      "quietUntil": "Hasta",
+      "pause": "Pausar recordatorios",
+      "pauseOptions": {
+        "off": "No",
+        "days3": "3 días",
+        "week": "1 semana"
+      },
+      "deliveryStatus": "Permiso: {{permission}} · {{pending}} programadas",
+      "permission": {
+        "granted": "permitido",
+        "denied": "bloqueado",
+        "undetermined": "aún no solicitado",
+        "unsupported": "no compatible"
+      },
+      "testAlert": "Enviar alerta de descanso de prueba",
+      "openSystemSettings": "Abrir ajustes de notificaciones del sistema",
+      "updateInterval": "Actualizar el reloj del entrenamiento cada",
+      "updateIntervalOption": "{{seconds}} s"
     },
     "supportProject": {
       "title": "Apoyar el Proyecto"
@@ -355,7 +419,7 @@
     "termsOfService": "Términos del Servicio",
     "privacyPolicy": "Política de Privacidad",
     "appBehaviorSettings": {
-      "title": "Preferencias de la App",
+      "title": "Preferencias de seguimiento",
       "subtitle": "Preferencias de entrenamiento, nutrición y gráficos"
     },
     "bleDevices": {
@@ -460,7 +524,8 @@
           "label": "Kinetic Varia",
           "description": "Superficies violeta profundo con acentos naranja"
         }
-      }
+      },
+      "iconAppliesLater": "El icono de la app cambiará cuando salgas de ella."
     },
     "workoutSettings": {
       "title": "Ajustes de entrenamiento",

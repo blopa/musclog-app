@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "¿Por qué recibí esto?",
+      "thisWorkout": "este entrenamiento",
+      "setting": "Los recordatorios de entrenamiento están activados y {{workout}} está planificado para el {{day}}.",
+      "settingNoDay": "Los recordatorios de entrenamiento están activados y {{workout}} está en tu plan.",
+      "fromPlan": "Ese día viene de un plan de entrenamiento.",
+      "fromSchedule": "Ese día viene del horario que configuraste en el entrenamiento.",
+      "timing": "El recordatorio está fijado a las {{time}}, la hora planificada.",
+      "timingLead": "Llega {{minutes}} minutos antes de la hora planificada, las {{time}}.",
+      "pause": "Pausar todos los recordatorios {{days}} días",
+      "paused": "Recordatorios en pausa durante {{days}} días.",
+      "turnOff": "Desactivar los recordatorios de entrenamiento",
+      "turnedOff": "Los recordatorios de entrenamiento están desactivados.",
+      "settings": "Ajustes de notificaciones",
+      "failed": "No se pudieron cambiar los recordatorios. Inténtalo de nuevo."
+    }
+  }
+}

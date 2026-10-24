@@ -26,12 +26,12 @@
     "analyzeProgressPrompt": "Ik analyseer je recente workouts. Zijn er opmerkingen die je wilt delen voordat ik begin?",
     "nutritionCheckPrompt": "Ik bekijk je voeding van de afgelopen 7 dagen. Zijn er opmerkingen die je wilt toevoegen voordat ik begin?",
     "trackMealPrompt": "Vertel me wat je hebt gegeten (je kunt zelfs een foto sturen!), en ik zal de macro's schatten en het voor je bijhouden.",
-    "welcomeMessage": "Hello. Mijn naam is Loggy, ik ben je AI Fitness Coach. Ik ben hier om je te helpen je fitnessdoelen te bereiken, je voortgang bij te houden en gepersonaliseerde begeleiding te bieden. Voel je vrij om me alles te vragen over workouts, voeding of je fitnessreis!",
-    "welcomeMessageExercise": "Hallo! Ik ben Loggy. Ik ben hier om je te helpen met je training, of het nu gaat om het maken van een nieuw workoutplan, het controleren van je vorm of het analyseren van je voortgang. Wat staat er vandaag op je trainingsschema?",
-    "welcomeMessageNutrition": "Hoi! Ik ben Loggy. Ik kan je helpen om op de hoogte te blijven van je voeding door je maaltijden bij te houden, macro's te schatten en voedingsinzichten te geven. Vertel me over je recente maaltijden of stel me voedingsvragen!",
+    "welcomeMessage": "Hoi, ik ben Loggy, je AI-coach. Vraag me alles over je workouts, voeding of voortgang.",
+    "welcomeMessageExercise": "Hoi, ik ben Loggy. Vraag me een workoutplan te maken, je techniek te checken of je voortgang te analyseren.",
+    "welcomeMessageNutrition": "Hoi, ik ben Loggy. Vertel me wat je hebt gegeten en ik schat de macro's, of stel me een voedingsvraag.",
     "insights": {
-      "noNutritionLogs": "Ik kan geen voedingsinzichten geven omdat je de afgelopen 7 dagen geen maaltijden hebt bijgehouden. Begin met het loggen van je eten om persoonlijke feedback te krijgen!",
-      "noWorkoutLogs": "Ik kan geen workout-inzichten geven omdat je de afgelopen 7 dagen geen workouts hebt voltooid. Kom in beweging en ik sta klaar om je training te analyseren!"
+      "noNutritionLogs": "Ik kan nog geen voedingsinzichten geven omdat je de afgelopen 7 dagen geen maaltijden hebt bijgehouden. Log je eten en ik geef je feedback.",
+      "noWorkoutLogs": "Ik kan nog geen workout-inzichten geven omdat je de afgelopen 7 dagen geen workout hebt voltooid. Rond er een af en ik analyseer je training."
     },
     "errors": {
       "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen.",
@@ -55,7 +55,7 @@
       "workoutPlanGeneratedWithName": "Ik heb {{planName}} met {{count}} workouts voor je gemaakt! 💪 {{description}}",
       "mealPlanGenerated": "Ik heb een maaltijdplan van 3 dagen met {{count}} maaltijden voor je gemaakt! 🥗 {{description}}",
       "trackMealSuccess": "Ik heb {{count}} ingrediënten bijgehouden voor je maaltijd: {{ingredients}}. Totaal: {{calories}} kcal.",
-      "trackMealReady": "Ik heb {{count}} maaltijd(en) geanalyseerd: {{meals}} (totaal {{calories}} kcal). Tik op een maaltijd om deze te bekijken en te loggen!",
+      "trackMealReady": "Ik heb {{count}} maaltijd(en) geanalyseerd: {{meals}} (totaal {{calories}} kcal). Tik op een maaltijd om deze te bekijken en te loggen.",
       "historyCleared": "Chatgeschiedenis gewist."
     },
     "aiInstructions": {

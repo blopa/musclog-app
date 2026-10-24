@@ -1,4 +1,4 @@
-import { Calculator, PenLine, Sparkles } from 'lucide-react-native';
+import { Calculator, ListChecks, PenLine } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -44,7 +44,7 @@ export function GoalCreationMethodModal({
 
         {/* Guided option — recommended */}
         <GoalOptionItem
-          icon={<Sparkles size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+          icon={<ListChecks size={theme.iconSize.md} color={theme.colors.accent.primary} />}
           title={t('goalsManagement.goalCreationMethod.guidedTitle')}
           description={t('goalsManagement.goalCreationMethod.guidedDescription')}
           onPress={onSelectGuided}

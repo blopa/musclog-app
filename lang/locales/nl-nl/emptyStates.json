@@ -17,12 +17,12 @@
     },
     "food": {
       "title": "Niets gelogd vandaag",
-      "description": "Voed je lichaam!",
+      "description": "Maaltijden die je vandaag logt, verschijnen hier.",
       "button": "Log"
     },
     "notes": {
       "title": "Nog geen notities",
-      "description": "Schrijf op wat je maakt — 70 g broccoli, een recept-idee — en log het wanneer je er klaar voor bent.",
+      "description": "Schrijf op wat je kookt, zoals 70 g broccoli of een receptidee, en log het wanneer je er klaar voor bent.",
       "buttonLabel": "Schrijf je eerste notitie"
     }
   }

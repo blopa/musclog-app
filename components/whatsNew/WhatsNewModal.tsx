@@ -1,6 +1,7 @@
 import { X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import { AccessibilityInfo, ScrollView, Text, View } from 'react-native';
 
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
@@ -66,7 +67,7 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
   const [closing, setClosing] = useState(false);
   const [closeFailed, setCloseFailed] = useSubModalState(visible, false);
   const closingRef = useRef(false);
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const choices = useWhatsNewChoiceValues(visible && activeAction === null);
   const busy = closing || Object.values(choices.saving).some(Boolean);
   const total = flow.pages.length + 1;

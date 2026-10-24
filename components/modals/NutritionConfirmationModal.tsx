@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { NutritionEntry } from '@/utils/coachAI';
@@ -29,7 +29,7 @@ export function NutritionConfirmationModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
 
   const totals = useMemo(() => calculateNutritionTotals(entries), [entries]);
 

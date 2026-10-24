@@ -1,23 +1,19 @@
 {
   "home": {
-    "greeting": {
-      "goodMorning": "Good Morning",
-      "goodAfternoon": "Good Afternoon",
-      "goodEvening": "Good Evening"
-    },
+    "accountMenu": "Open account menu",
     "actions": {
-      "startWorkout": "Start\nWorkout",
-      "trackFood": "Track\nFood",
-      "scanBarcode": "Scan\nBarcode",
-      "aiPhoto": "AI\nPhoto",
-      "myMeals": "My\nMeals",
-      "addNote": "Add\nNote",
-      "logCardio": "Log\nWalk/Run"
+      "startWorkout": "Start\nworkout",
+      "trackFood": "Track\nfood",
+      "scanBarcode": "Scan\nbarcode",
+      "aiPhoto": "AI\nphoto",
+      "myMeals": "My\nmeals",
+      "addNote": "Add\nnote",
+      "logCardio": "Log\nwalk/run"
     },
     "sections": {
-      "recentWorkouts": "Recent Workouts",
-      "recentFoods": "Recent Foods",
-      "dailySummary": "Daily Summary"
+      "recentWorkouts": "Recent workouts",
+      "recentFoods": "Recent foods",
+      "dailySummary": "Daily summary"
     },
     "activityRings": {
       "move": "Move",

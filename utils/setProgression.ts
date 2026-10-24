@@ -20,6 +20,12 @@ export interface LastWorkingSession {
   complete?: boolean;
   /** Average reps in reserve across ALL its working sets. */
   averageRepsInReserve: number;
+  /**
+   * At least half of its rated working sets ended with nothing in reserve. An average of exactly 0
+   * misses a session that was ground to failure on the last sets after easier first ones; absent
+   * means "judge by the average".
+   */
+  failed?: boolean;
   rirRecorded?: boolean;
 }
 
@@ -73,15 +79,13 @@ export interface StartTarget {
 const COMPOUND_BASE_REPS = 10;
 const ISOLATION_BASE_REPS = 14;
 const REP_RANGE_HALF_WIDTH = 2;
-/** With a plan, reps climb this far above the planned reps before the load goes up instead. */
-const PLAN_REP_HEADROOM = 2;
 /**
- * Reps in reserve at or above which last time met its target and the load can move on. This is the
- * target the live session holds sets at (`DEFAULT_TARGET_REPS_IN_RESERVE`): waiting for 3 meant a
- * lifter who trained exactly as prescribed, at 1–2 in reserve, was told to repeat forever.
+ * With a plan, reps climb this far above the planned reps before the load goes up instead. A
+ * strength block (6 reps or fewer) gets one rep of headroom: climbing a 5 to a 7 spends a session
+ * on reps in a range where the load, not the volume, is what the lifter is training.
  */
-const PROGRESS_REPS_IN_RESERVE = DEFAULT_TARGET_REPS_IN_RESERVE;
-
+const STRENGTH_PLAN_REPS = 6;
+const planRepHeadroom = (planReps: number) => (planReps <= STRENGTH_PLAN_REPS ? 1 : 2);
 /**
  * A load step bigger than this share of the current load is too coarse to progress by: +2.5 kg on a
  * 6 kg lateral raise is a 40% jump. Such an exercise keeps climbing reps instead.
@@ -159,19 +163,13 @@ export function repsFirstRange(
   planReps?: number
 ): { minReps: number; maxReps: number } {
   if (planReps != null && planReps > 0) {
-    return { minReps: planReps, maxReps: planReps + PLAN_REP_HEADROOM };
+    return { minReps: planReps, maxReps: planReps + planRepHeadroom(planReps) };
   }
 
   const baseReps = defaultRepsFor(isCompound);
   return { minReps: baseReps - REP_RANGE_HALF_WIDTH, maxReps: baseReps + REP_RANGE_HALF_WIDTH };
 }
 
-/**
- * Progression for a session whose effort was never rated. Reps in reserve is optional, and without
- * it the only evidence is the reps themselves, so this is double progression: climb the plan's rep
- * range, then add load. Without a plan to anchor the range (an exercise added mid-session) there is
- * nothing to judge the reps against, so the load holds.
- */
 /**
  * The next reps for an unloaded bodyweight exercise that earned a progression: one more rep, up to
  * its ceiling. At the ceiling the reps hold and the explanation says how to keep progressing.
@@ -193,6 +191,12 @@ function bodyweightRepTarget(
   return { weightKg: last.weightKg, reps: fromReps + 1, kind: 'progression' };
 }
 
+/**
+ * Progression for a session whose effort was never rated. Reps in reserve is optional, and without
+ * it the only evidence is the reps themselves, so this is double progression: climb the plan's rep
+ * range, then add load. Without a plan to anchor the range (an exercise added mid-session) there is
+ * nothing to judge the reps against, so the load holds.
+ */
 function computeUnratedTarget({
   last,
   planReps,
@@ -271,13 +275,20 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
     return computeUnratedTarget(input);
   }
 
-  const hitPlan = planReps == null || (last.lowestReps ?? last.reps) >= planReps;
-  if (averageRir >= PROGRESS_REPS_IN_RESERVE && hitPlan) {
+  // Like the unrated path, the session is judged by its weakest set: a 12/11/10 session has not
+  // reached the top of a 10–12 range just because its first set did.
+  const worstReps = last.lowestReps ?? last.reps;
+  const hitPlan = planReps == null || worstReps >= planReps;
+  // Reps in reserve at or above the live session's own target means last time met it: waiting for 3
+  // left a lifter who trained exactly as prescribed, at 1–2 in reserve, repeating forever.
+  if (averageRir >= DEFAULT_TARGET_REPS_IN_RESERVE && hitPlan) {
     if (repCeiling != null) {
-      return bodyweightRepTarget(last, last.reps, repCeiling);
+      return bodyweightRepTarget(last, worstReps, repCeiling);
     }
 
-    if (progressionMode === 'weight_first' && loadStepIsUsable(last.weightKg, incrementKg)) {
+    const { minReps, maxReps } = repsFirstRange(isCompound, planReps);
+    const canAddLoad = loadStepIsUsable(last.weightKg, incrementKg);
+    if (progressionMode === 'weight_first' && canAddLoad) {
       return {
         weightKg: roundLoad(last.weightKg + incrementKg),
         reps: last.reps,
@@ -285,20 +296,15 @@ export function computeStartTarget(input: StartTargetInput): StartTarget {
       };
     }
 
-    const { minReps, maxReps } = repsFirstRange(isCompound, planReps);
-    if (last.reps < maxReps) {
-      return { weightKg: last.weightKg, reps: last.reps + 1, kind: 'progression' };
-    }
-
-    if (!loadStepIsUsable(last.weightKg, incrementKg)) {
-      // No sensible load step for this load: keep adding reps past the range.
-      return { weightKg: last.weightKg, reps: last.reps + 1, kind: 'progression' };
+    // Climb the range; with no sensible load step for this load, keep adding reps past it.
+    if (worstReps < maxReps || !canAddLoad) {
+      return { weightKg: last.weightKg, reps: worstReps + 1, kind: 'progression' };
     }
 
     return { weightKg: roundLoad(last.weightKg + incrementKg), reps: minReps, kind: 'progression' };
   }
 
-  if ((averageRir === 0 && failedBefore) || (!hitPlan && missedPlanBefore)) {
+  if (((last.failed ?? averageRir === 0) && failedBefore) || (!hitPlan && missedPlanBefore)) {
     const weightKg = deloadedLoad(last.weightKg, { incrementKg, roundLoad });
     // Nothing lighter to go to (an unloaded or already-lightest exercise): it is a repeat, not a
     // deload the numbers do not show.

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
 import ConfettiOverlay from '@/components/ConfettiOverlay';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { WorkoutSessionFeedback } from '@/components/workout/WorkoutSessionFeedback';
@@ -62,6 +63,7 @@ export default function WorkoutSummaryScreen() {
   // Consumed on read, so it is offered exactly once.
   useEffect(() => {
     let cancelled = false;
+    // TODO: avoid IIFE
     (async () => {
       try {
         if ((await AsyncStorage.getItem(HEALTH_CONNECT_PROMPT_PENDING)) === 'true') {
@@ -240,11 +242,11 @@ export default function WorkoutSummaryScreen() {
     const lines = [
       t('workoutSummary.shareText'),
       '',
-      `⏱ ${totalTime}`,
-      `🏋️ ${volume}`,
+      `${t('workoutSummary.duration')}: ${totalTime}`,
+      `${t('workoutSummary.volume')}: ${volume}`,
       ...(caloriesBurned > 0
         ? [
-            `🔥 ${t('common.amount_kcal', {
+            `${t('workoutSummary.caloriesBurned')}: ${t('common.amount_kcal', {
               amount: formatAppInteger(locale, caloriesBurned),
             })}`,
           ]
@@ -320,7 +322,7 @@ export default function WorkoutSummaryScreen() {
   }
 
   return (
-    <>
+    <AreaLockGate area="workout">
       <WorkoutSummaryCelebration
         onGoHome={handleGoHome}
         onShareSummary={handleShareSummary}
@@ -351,6 +353,6 @@ export default function WorkoutSummaryScreen() {
         cancelLabel={t('workout.summary.healthPrompt.later')}
         variant="primary"
       />
-    </>
+    </AreaLockGate>
   );
 }

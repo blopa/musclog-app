@@ -113,9 +113,8 @@ export function WorkoutSummaryCelebration({
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const gradientCtaStr = `linear-gradient(90deg, ${theme.colors.gradients.cta[0]}, ${theme.colors.gradients.cta[1]})`;
-  const celebrationGlowStr = `linear-gradient(90deg, ${theme.colors.gradients.celebrationGlow[0]}, ${theme.colors.gradients.celebrationGlow[1]})`;
-  const workoutStatsStr = `linear-gradient(90deg, ${theme.colors.gradients.workoutStats[0]}, ${theme.colors.gradients.workoutStats[1]})`;
+  const gradientCtaStr = theme.colors.accent.primary;
+  const workoutStatsStr = theme.colors.accent.primary;
 
   const { value: timeValue, suffix: timeSuffix } = splitDurationLabel(totalTime);
   const volumeValue = volume.replace(/\s*(kg|g|lbs?)/i, '').trim();
@@ -136,38 +135,6 @@ export function WorkoutSummaryCelebration({
         boxSizing: 'border-box',
       }}
     >
-      {/* Background glows */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '25%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 256,
-          height: 256,
-          borderRadius: 128,
-          backgroundColor: theme.colors.status.indigo10,
-          filter: 'blur(48px)',
-          opacity: 0.7,
-          pointerEvents: 'none',
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          top: '33%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 192,
-          height: 192,
-          borderRadius: 96,
-          backgroundColor: theme.colors.status.brandVivid20,
-          filter: 'blur(48px)',
-          opacity: 0.6,
-          pointerEvents: 'none',
-        }}
-      />
-
       {/* Trophy */}
       <div style={{ position: 'relative', marginBottom: 32 }}>
         <div
@@ -221,10 +188,7 @@ export function WorkoutSummaryCelebration({
           textAlign: 'center',
           letterSpacing: theme.typography.letterSpacing.tight,
           marginBottom: theme.spacing.padding.sm,
-          background: celebrationGlowStr,
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
+          color: theme.colors.text.primary,
         }}
       >
         {t('workoutSummary.youCrushedIt')}
@@ -343,7 +307,6 @@ export function WorkoutSummaryCelebration({
             opacity: isGetFeedbackLoading ? 0.6 : 1,
             marginBottom: theme.spacing.padding.base,
             boxSizing: 'border-box',
-            letterSpacing: '0.05em',
           }}
         >
           <MessageCircle size={theme.iconSize.md} color={theme.colors.text.primary} />
@@ -375,7 +338,6 @@ export function WorkoutSummaryCelebration({
           cursor: 'pointer',
           marginBottom: theme.spacing.padding.base,
           boxSizing: 'border-box',
-          letterSpacing: '0.05em',
         }}
       >
         <Home size={theme.iconSize.md} color={theme.colors.text.alwaysWhite} />
@@ -393,8 +355,6 @@ export function WorkoutSummaryCelebration({
             color: theme.colors.text.tertiary,
             fontSize: theme.typography.fontSize.xs,
             fontWeight: theme.typography.fontWeight.medium,
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
             padding: theme.spacing.padding.sm,
           }}
         >

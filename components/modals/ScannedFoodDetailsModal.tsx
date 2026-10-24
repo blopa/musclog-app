@@ -713,7 +713,7 @@ export function ScannedFoodDetailsModal({
                 </Text>
               </View>
 
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+              <Text className="text-xs font-bold text-text-secondary">
                 {t('food.foodDetails.macrosPer100g')}
               </Text>
 

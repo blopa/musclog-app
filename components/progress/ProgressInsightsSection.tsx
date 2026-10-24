@@ -16,7 +16,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
 
   const renderStat = (label: string, value: string, colorClass: string) => (
     <View className="flex-1 items-center justify-center p-2">
-      <Text className="text-[10px] uppercase tracking-wider text-text-tertiary">{label}</Text>
+      <Text className="text-xs text-text-tertiary">{label}</Text>
       <Text className={`text-lg font-bold ${colorClass}`}>{value}</Text>
     </View>
   );
@@ -38,11 +38,11 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
             <Text className="mb-1 ml-2 mt-2 text-sm font-bold text-text-primary">
               {t('progress.averageIntakeTitle')}
             </Text>
-            <Text className="mb-2 ml-2 text-[10px] uppercase tracking-wider text-text-tertiary">
+            <Text className="mb-2 ml-2 text-xs text-text-tertiary">
               {t('progress.averageIntakeSubtitle', { count: avg.dayCount })}
             </Text>
             <View className="border-b border-border-light py-3">
-              <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
+              <Text className="text-center text-xs text-text-tertiary">
                 {t('progress.nutritionView.calories')}
               </Text>
               <Text className="text-center text-xl font-bold text-accent-primary">
@@ -83,25 +83,25 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
           <View className="flex-row flex-wrap">
             {hasEmpiricalTdee ? (
               <View className="flex-1 items-center justify-center border-r border-border-light p-2">
-                <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
+                <Text className="text-center text-xs text-text-tertiary">
                   {t('progress.empiricalTdee')}
                 </Text>
                 <Text className="text-lg font-bold text-accent-primary">
                   {formatInteger(Math.round(insights.empiricalTdee))}
                 </Text>
-                <Text className="text-center text-[8px] uppercase text-text-tertiary">
+                <Text className="text-center text-[8px] text-text-tertiary">
                   {t('progress.basedOnRecentActivity')}
                 </Text>
               </View>
             ) : null}
             <View className="flex-1 items-center justify-center p-2">
-              <Text className="text-center text-[10px] uppercase tracking-wider text-text-tertiary">
+              <Text className="text-center text-xs text-text-tertiary">
                 {t('progress.statisticalTdee')}
               </Text>
               <Text className="text-lg font-bold text-accent-secondary">
                 {formatInteger(Math.round(insights.statisticalTdee))}
               </Text>
-              <Text className="text-center text-[8px] uppercase text-text-tertiary">
+              <Text className="text-center text-[8px] text-text-tertiary">
                 {t('progress.basedOnActivityLevel')}
               </Text>
             </View>

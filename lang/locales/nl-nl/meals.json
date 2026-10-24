@@ -52,11 +52,11 @@
     "unknownFood": "Onbekend",
     "generateAI": {
       "title": "Maaltijden genereren met AI",
-      "describeLabel": "BESCHRIJF JE VOORKEUREN",
+      "describeLabel": "Beschrijf je voorkeuren",
       "preferencesLabel": "Voorkeuren",
       "placeholder": "bijv. Eiwitrijke maaltijden voor spieropbouw, ik heb voorkeur voor kip en rijst, vermijd zuivel...",
       "applyLabel": "Maaltijden genereren",
-      "successMessage": "Maaltijd succesvol gemaakt!",
+      "successMessage": "Maaltijd gemaakt.",
       "errorMessage": "Kon geen maaltijden genereren. Probeer het opnieuw.",
       "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de instellingen.",
       "generating": "Maaltijden genereren..."
@@ -77,7 +77,7 @@
       "descriptionLabel": "Beschrijving (optioneel)",
       "descriptionPlaceholder": "bijv. Eiwitrijke maaltijd met kip en rijst",
       "nutritionBasisLabel": "Voedingsbasis",
-      "savedSuccess": "Maaltijd succesvol opgeslagen!"
+      "savedSuccess": "Maaltijd opgeslagen."
     }
   }
 }

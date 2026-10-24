@@ -206,7 +206,7 @@
       "scaleMealPortion": "Изменить размер порции приёма пищи",
       "scaleMealPortionDesc": "Увеличить или уменьшить общий вес; все продукты масштабируются вместе",
       "scaleMealPortionModalTitle": "Изменить размер порции приёма пищи",
-      "scaleMealPortionModalSubtitle": "Общий вес этого приёма пищи — каждый продукт масштабируется пропорционально",
+      "scaleMealPortionModalSubtitle": "Общий вес этого приёма пищи. Каждый продукт масштабируется пропорционально",
       "scaleMealPortionSuccess": "Порции приёма пищи обновлены",
       "scaleMealPortionError": "Не удалось обновить порции приёма пищи",
       "scaleMealPortionInvalid": "Введите не менее 1 г",
@@ -280,7 +280,7 @@
       "aiCamera": {
         "title": "ИИ-камера",
         "description": "Мгновенное распознавание и оценка макросов",
-        "badge": "НОВОЕ"
+        "badge": "Новое"
       },
       "scanBarcode": {
         "title": "Сканировать штрих-код",
@@ -288,7 +288,7 @@
       },
       "searchFood": {
         "title": "Поиск продукта",
-        "description": "Поиск в нашей базе данных из 2М+ позиций"
+        "description": "Поиск по базам продуктов и вашим продуктам"
       },
       "createCustomFood": "Создать пользовательский продукт",
       "trackCustomMeal": "Записать приём пищи",
@@ -382,7 +382,7 @@
       "zinc": "Цинк",
       "loadingDetails": "Загрузка деталей...",
       "loadingMoreDetails": "Загрузка дополнительных деталей...",
-      "successMessage": "Продукт успешно записан!",
+      "successMessage": "Продукт записан.",
       "errorMessage": "Не удалось записать продукт. Пожалуйста, попробуйте снова.",
       "updateFood": "Обновить продукт",
       "sourceOpenFood": "Open Food Facts",
@@ -427,7 +427,7 @@
       "estimated": "Оценочно",
       "mealName": "Название приёма пищи",
       "mealNamePlaceholder": "например, Смузи после тренировки",
-      "mealDescriptionPlaceholder": "Необязательно — заметки о приготовлении, когда обычно едите и т. п.",
+      "mealDescriptionPlaceholder": "Необязательно: заметки о приготовлении, когда обычно едите и т. п.",
       "ingredients": "Ингредиенты ({{count}})",
       "addPhoto": "Добавить фото",
       "editList": "Редактировать список",
@@ -439,7 +439,7 @@
       "ingredientsRequired": "Пожалуйста, добавьте хотя бы один ингредиент",
       "saveFailed": "Не удалось сохранить приём пищи. Пожалуйста, попробуйте снова.",
       "preparedWeight": "Готовый вес ({{unit}})",
-      "preparedWeightHelper": "Необязательно — вес после приготовления"
+      "preparedWeightHelper": "Необязательно: вес после приготовления"
     },
     "aiCamera": {
       "requestingPermission": "Запрос разрешения на камеру...",
@@ -468,22 +468,22 @@
       "uploadFromGallery": "Выбрать из галереи",
       "barcodeTextSearchTitle": "Поиск по штрихкоду",
       "barcodeTextSearchDescription": "Найдите продукт, введя штрихкод, напечатанный на упаковке.",
-      "barcodeTextSearchLabel": "ШТРИХКОД",
+      "barcodeTextSearchLabel": "Штрихкод",
       "barcodeTextSearchPlaceholder": "Введите номер штрихкода",
       "barcodeTextSearchSubmit": "Найти продукт",
       "barcodeTextSearchRequired": "Введите штрихкод",
       "aiAnalysisFailed": "Анализ ИИ не удался. Пожалуйста, попробуйте снова.",
       "aiNotConfigured": "ИИ не настроен. Добавьте API-ключ Gemini или OpenAI в Настройках.",
       "onDeviceNotSupported": "Анализ фото блюд недоступен в Apple Intelligence. Пожалуйста, настройте OpenAI или Gemini в Настройках.",
-      "mealLoggedSuccess": "Приём пищи успешно записан!",
+      "mealLoggedSuccess": "Приём пищи записан.",
       "mealLoggingFailed": "Не удалось записать приём пищи. Пожалуйста, попробуйте снова.",
       "analysisSuccess": "{{name}}: {{kcal}} ккал, Б {{protein}}г У {{carbs}}г Ж {{fat}}г"
     },
     "aiNutritionContext": {
       "title": "Добавить контекст для ИИ",
-      "describeYourMeal": "ОПИШИТЕ ВАШ ПРИЁМ ПИЩИ",
+      "describeYourMeal": "Опишите ваш приём пищи",
       "placeholder": "например, Домашнее блюдо с оливковым маслом, около 2 чашек макарон...",
-      "quickTags": "БЫСТРЫЕ ТЕГИ",
+      "quickTags": "Быстрые теги",
       "quickTagHighProtein": "Высокобелковый",
       "quickTagLowCarb": "Низкоуглеводный",
       "quickTagLargeServing": "Большая порция",

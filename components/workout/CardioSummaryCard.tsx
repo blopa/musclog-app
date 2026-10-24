@@ -36,16 +36,12 @@ export function CardioSummaryCard({ activity, distance, pace }: CardioSummaryCar
       </View>
       <View className="flex-1 flex-row justify-between">
         <View>
-          <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
-            {t('cardio.distance')}
-          </Text>
+          <Text className="text-xs font-bold text-text-tertiary">{t('cardio.distance')}</Text>
           <Text className="text-2xl font-bold text-text-primary">{distance}</Text>
         </View>
         {pace ? (
           <View className="items-end">
-            <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
-              {t('cardio.pace')}
-            </Text>
+            <Text className="text-xs font-bold text-text-tertiary">{t('cardio.pace')}</Text>
             <Text className="text-2xl font-bold text-text-primary">{pace}</Text>
           </View>
         ) : null}

@@ -1,6 +1,7 @@
 import { LucideIcon, Minus, Plus } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TextInputInstance } from 'react-native';
 import { Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -62,7 +63,7 @@ export function StepperInlineInput({
 
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(() => formatValue(value));
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
 
   useEffect(() => {
     if (!editing) {

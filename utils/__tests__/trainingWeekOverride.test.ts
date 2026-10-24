@@ -1,4 +1,4 @@
-import { planWeekOverride } from '@/utils/trainingWeekOverride';
+import { applyWeekOverride, planWeekOverride } from '@/utils/trainingWeekOverride';
 
 const step = { incrementKg: 2.5, roundLoad: (kg: number) => Math.round(kg / 2.5) * 2.5 };
 const planned = (n: number, weight = 60, reps = 8) =>
@@ -94,5 +94,22 @@ describe('planWeekOverride', () => {
     expect(
       planWeekOverride({ kind: 'repeat', planned: planned(2), last: [], step }).changes
     ).toEqual([]);
+  });
+});
+
+describe('applyWeekOverride', () => {
+  it('returns the planned sets as the override leaves them: moved numbers, dropped sets gone', () => {
+    const sets = planned(4);
+    const plan = planWeekOverride({ kind: 'lighter', planned: sets, last: last(100), step });
+    expect(applyWeekOverride(sets, plan)).toEqual([
+      { id: 's1', weight: 90, reps: 8 },
+      { id: 's2', weight: 90, reps: 8 },
+      { id: 's3', weight: 90, reps: 8 },
+    ]);
+  });
+
+  it('leaves a set without a change as planned', () => {
+    const sets = planned(2);
+    expect(applyWeekOverride(sets, { changes: [], dropSetIds: [] })).toEqual(sets);
   });
 });

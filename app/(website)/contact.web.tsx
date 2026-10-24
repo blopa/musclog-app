@@ -1,5 +1,3 @@
-'use client';
-
 import { ExternalLink, Mail, MessageSquare, Send, Shield } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +11,9 @@ import {
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { DISCORD_INVITE_URL, GITHUB_REPO_URL, SUPPORT_MAILTO_URL } from '@/constants/misc';
+('use client');
 
 interface FormState {
   email: string;
@@ -331,4 +331,8 @@ export default function Contact() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('contact');
 }

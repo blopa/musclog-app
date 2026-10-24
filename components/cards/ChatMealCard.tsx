@@ -61,10 +61,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
     >
       {/* Summary header */}
       <View className="flex-row items-baseline justify-between px-4 pb-2 pt-4">
-        <Text
-          className="text-xs font-bold uppercase tracking-wider"
-          style={{ color: theme.colors.text.tertiary }}
-        >
+        <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
           {t('meals.chatMealCard.mealCount', { count: meals.length })}
         </Text>
         <View className="flex-row items-baseline gap-1">
@@ -94,10 +91,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
           <View className="px-4 py-3">
             {/* Meal type label + calories */}
             <View className="mb-2 flex-row items-baseline justify-between">
-              <Text
-                className="text-xs font-bold uppercase tracking-wider"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
                 {getMealLabel(meal.mealType)}
               </Text>
               <Text
@@ -118,10 +112,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
               style={{ backgroundColor: theme.colors.background.primary }}
             >
               <View className="flex-1 items-center">
-                <Text
-                  className="text-[10px] font-bold uppercase"
-                  style={{ color: theme.colors.text.tertiary }}
-                >
+                <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
                   P
                 </Text>
                 <Text
@@ -140,10 +131,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
               <View className="h-5 w-px" style={{ backgroundColor: theme.colors.border.light }} />
 
               <View className="flex-1 items-center">
-                <Text
-                  className="text-[10px] font-bold uppercase"
-                  style={{ color: theme.colors.text.tertiary }}
-                >
+                <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
                   C
                 </Text>
                 <Text
@@ -162,10 +150,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
               <View className="h-5 w-px" style={{ backgroundColor: theme.colors.border.light }} />
 
               <View className="flex-1 items-center">
-                <Text
-                  className="text-[10px] font-bold uppercase"
-                  style={{ color: theme.colors.text.tertiary }}
-                >
+                <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
                   F
                 </Text>
                 <Text

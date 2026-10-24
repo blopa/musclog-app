@@ -110,7 +110,6 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
     description: string;
     icon: typeof Activity;
     iconColor: string;
-    iconBgColor: string;
   }[] = [
     {
       value: 'hypertrophy',
@@ -118,7 +117,6 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
       description: t('editFitnessDetails.fitnessGoalDescriptions.hypertrophy'),
       icon: Activity,
       iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
     },
     {
       value: 'strength',
@@ -126,7 +124,6 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
       description: t('editFitnessDetails.fitnessGoalDescriptions.strength'),
       icon: Zap,
       iconColor: theme.colors.status.warning,
-      iconBgColor: theme.colors.status.warning10,
     },
     {
       value: 'endurance',
@@ -134,7 +131,6 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
       description: t('editFitnessDetails.fitnessGoalDescriptions.endurance'),
       icon: Timer,
       iconColor: theme.colors.status.info,
-      iconBgColor: theme.colors.status.info10,
     },
     {
       value: 'weight_loss',
@@ -142,7 +138,6 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
       description: t('editFitnessDetails.fitnessGoalDescriptions.weightLoss'),
       icon: Target,
       iconColor: theme.colors.rose.brand,
-      iconBgColor: theme.colors.rose.brand10,
     },
     {
       value: 'general',
@@ -150,7 +145,6 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
       description: t('editFitnessDetails.fitnessGoalDescriptions.general'),
       icon: Heart,
       iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple20,
     },
   ];
 
@@ -266,6 +260,7 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
         subtitle={t('editFitnessDetails.selectGoalSubtitle')}
         items={fitnessGoalOptions.map((option) => ({
           ...option,
+          selected: option.value === fitnessGoal,
           onPress: () => {
             setFitnessGoal(option.value);
             setIsGoalPickerVisible(false);

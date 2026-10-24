@@ -8,7 +8,7 @@ import {
 } from '@/database/services/ExerciseUserSettingsService';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useSettings } from '@/hooks/useSettings';
-import { DEFAULT_BODYWEIGHT_REP_CEILING, resolveRepCeiling } from '@/utils/bodyweightRepCeiling';
+import { type BodyweightRepCeiling, storedRepCeiling } from '@/utils/bodyweightRepCeiling';
 import {
   isWeightUnitOverride,
   resolveWeightUnits,
@@ -20,8 +20,12 @@ const SETTINGS_COLUMNS = ['weight_unit', 'note', 'rep_ceiling', 'updated_at'];
 export interface ExerciseSettingsView {
   weightUnit: WeightUnitOverride | undefined;
   note: string | undefined;
-  /** The reps an unloaded bodyweight exercise climbs to (the default when none was picked). */
-  repCeiling: number;
+  /**
+   * The reps the user picked for an unloaded bodyweight exercise to climb to, or `undefined` when
+   * they have not picked one — the default depends on the movement (`defaultRepCeilingFor`), which
+   * this hook does not know.
+   */
+  repCeiling: BodyweightRepCeiling | undefined;
 }
 
 export interface UseExerciseUserSettingsResult {
@@ -42,7 +46,7 @@ export interface UseExerciseUserSettingsResult {
 const NO_SETTINGS: ExerciseSettingsView = {
   weightUnit: undefined,
   note: undefined,
-  repCeiling: DEFAULT_BODYWEIGHT_REP_CEILING,
+  repCeiling: undefined,
 };
 
 /**
@@ -93,7 +97,7 @@ export function useExerciseUserSettings(): UseExerciseUserSettingsResult {
       byExercise.set(row.exerciseId, {
         weightUnit,
         note: row.note ?? undefined,
-        repCeiling: resolveRepCeiling(row.repCeiling),
+        repCeiling: storedRepCeiling(row.repCeiling),
       });
     }
 

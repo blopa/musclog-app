@@ -105,7 +105,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
           yDomain={[0, maxY]}
         />
         <View className="mt-4 px-2">
-          <Text className="mb-2 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="mb-2 text-xs font-bold text-text-tertiary">
             {t('progress.muscleGroupVolumeOverlay')}
           </Text>
           <View className="flex-row flex-wrap gap-4">

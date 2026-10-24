@@ -1,9 +1,9 @@
 {
   "workoutDetails": {
     "subtitle": "Manage this workout",
-    "preview": "Preview Workout",
+    "preview": "Preview workout",
     "previewDescription": "View full workout details",
-    "edit": "Edit Workout",
+    "edit": "Edit workout",
     "editDescription": "Modify exercises and sets",
     "duplicate": "Duplicate",
     "duplicateDescription": "Create a copy of this workout",

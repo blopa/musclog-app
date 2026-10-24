@@ -1,16 +1,15 @@
 import { Search, SlidersHorizontal, Trophy } from 'lucide-react-native';
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, SectionList, Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
-import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { type MuscleGroup } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
-import { type WorkoutHistoryItem, WorkoutHistorySection } from '@/utils/workoutHistory';
+import { type WorkoutHistoryItem } from '@/utils/workoutHistory';
 
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
@@ -176,6 +175,10 @@ function EmptyState({ hasSearchQuery }: EmptyStateProps) {
   );
 }
 
+function ItemSeparator() {
+  return <View className="h-3" />;
+}
+
 // Workout Card Component
 type WorkoutCardProps = {
   workout: WorkoutHistoryItem;
@@ -242,8 +245,6 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
                     fontSize: theme.typography.fontSize.xxs,
                     fontWeight: theme.typography.fontWeight.bold,
                     color: theme.colors.status.brandBright,
-                    textTransform: 'uppercase',
-                    letterSpacing: theme.typography.letterSpacing.wider,
                   }}
                 >
                   {workout.prCount === 1
@@ -294,68 +295,36 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
   );
 }
 
-// Workout Month Section Component
-type WorkoutMonthSectionProps = {
-  section: WorkoutHistorySection;
-  isLastMonth: boolean;
-  onWorkoutPress: (workoutId: string) => void;
-};
-
-function WorkoutMonthSection({ section, isLastMonth, onWorkoutPress }: WorkoutMonthSectionProps) {
+// Month heading rendered as a SectionList section header
+function MonthHeader({ title, isLastMonth }: { title: string; isLastMonth: boolean }) {
   const theme = useTheme();
-  return (
-    <View>
-      <Text
-        className="mb-3 px-1 font-bold uppercase tracking-widest"
-        style={{
-          fontSize: theme.typography.fontSize.xs,
-          color: theme.colors.text.secondary,
-          opacity: isLastMonth ? 0.8 : 1,
-        }}
-      >
-        {section.month}
-      </Text>
 
-      <View className="flex-col gap-3">
-        {section.workouts.map((workout) => (
-          <WorkoutCard
-            key={workout.id}
-            workout={workout}
-            opacity={isLastMonth ? 0.8 : 1}
-            onPress={() => onWorkoutPress(workout.id)}
-          />
-        ))}
-      </View>
+  return (
+    <Text
+      className="px-5 pb-3 pt-6 font-bold"
+      style={{
+        fontSize: theme.typography.fontSize.xs,
+        color: theme.colors.text.secondary,
+        opacity: isLastMonth ? 0.8 : 1,
+      }}
+    >
+      {title}
+    </Text>
+  );
+}
+
+// Footer shown while the next page is loading
+function LoadingMoreFooter({ isLoadingMore }: { isLoadingMore: boolean }) {
+  const theme = useTheme();
+
+  return (
+    <View className="items-center py-6">
+      {isLoadingMore ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
     </View>
   );
 }
 
-// Load More Button Component
-type LoadMoreButtonProps = {
-  isLoadingMore: boolean;
-  onPress: () => void;
-};
-
-function LoadMoreButton({ isLoadingMore, onPress }: LoadMoreButtonProps) {
-  const theme = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <View className="py-4">
-      <Button
-        label={
-          isLoadingMore ? t('pastWorkoutHistory.loadingMore') : t('pastWorkoutHistory.loadMore')
-        }
-        onPress={onPress}
-        size="sm"
-        variant="outline"
-        disabled={isLoadingMore}
-        loading={isLoadingMore}
-        width="full"
-      />
-    </View>
-  );
-}
+const MemoWorkoutCard = memo(WorkoutCard);
 
 function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
@@ -392,6 +361,45 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
     visible,
   });
 
+  const listSections = useMemo(
+    () =>
+      workoutHistoryData.map((section, index) => ({
+        key: section.monthKey,
+        title: section.month,
+        isLastMonth: index === workoutHistoryData.length - 1,
+        data: section.workouts,
+      })),
+    [workoutHistoryData]
+  );
+
+  const keyExtractor = useCallback((workout: WorkoutHistoryItem) => workout.id, []);
+
+  const renderWorkout = useCallback(
+    ({ item, section }: { item: WorkoutHistoryItem; section: { isLastMonth: boolean } }) => (
+      <View className="px-4">
+        <MemoWorkoutCard
+          workout={item}
+          opacity={section.isLastMonth ? 0.8 : 1}
+          onPress={() => setSelectedWorkoutId(item.id)}
+        />
+      </View>
+    ),
+    []
+  );
+
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: { title: string; isLastMonth: boolean } }) => (
+      <MonthHeader title={section.title} isLastMonth={section.isLastMonth} />
+    ),
+    []
+  );
+
+  const handleEndReached = useCallback(() => {
+    if (hasMore && !searchQuery && !isLoadingMore) {
+      loadMoreWorkouts();
+    }
+  }, [hasMore, searchQuery, isLoadingMore, loadMoreWorkouts]);
+
   return (
     <FullScreenModal
       visible={visible}
@@ -406,28 +414,25 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
           onFilterPress={() => setIsFilterMenuVisible(true)}
         />
 
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          {isLoading ? (
-            <WorkoutHistorySkeleton />
-          ) : workoutHistoryData.length === 0 ? (
-            <EmptyState hasSearchQuery={!!searchQuery} />
-          ) : (
-            <View className="flex-1 gap-6 p-4">
-              {workoutHistoryData.map((section, sectionIndex) => (
-                <WorkoutMonthSection
-                  key={section.monthKey}
-                  section={section}
-                  isLastMonth={sectionIndex === workoutHistoryData.length - 1}
-                  onWorkoutPress={setSelectedWorkoutId}
-                />
-              ))}
-
-              {hasMore && !searchQuery ? (
-                <LoadMoreButton isLoadingMore={isLoadingMore} onPress={loadMoreWorkouts} />
-              ) : null}
-            </View>
-          )}
-        </ScrollView>
+        {isLoading ? (
+          <WorkoutHistorySkeleton />
+        ) : workoutHistoryData.length === 0 ? (
+          <EmptyState hasSearchQuery={!!searchQuery} />
+        ) : (
+          <SectionList
+            className="flex-1"
+            sections={listSections}
+            keyExtractor={keyExtractor}
+            renderItem={renderWorkout}
+            renderSectionHeader={renderSectionHeader}
+            ItemSeparatorComponent={ItemSeparator}
+            stickySectionHeadersEnabled={false}
+            showsVerticalScrollIndicator={false}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={<LoadingMoreFooter isLoadingMore={isLoadingMore} />}
+          />
+        )}
       </View>
 
       {/* Filter Menu */}

@@ -52,11 +52,11 @@
     "unknownFood": "Desconhecido",
     "generateAI": {
       "title": "Gerar Refeições com IA",
-      "describeLabel": "DESCREVA SUAS PREFERÊNCIAS",
+      "describeLabel": "Descreva suas preferências",
       "preferencesLabel": "Preferências",
       "placeholder": "ex: Refeições ricas em proteína para ganho muscular, prefiro frango e arroz, sem laticínios...",
       "applyLabel": "Gerar Refeições",
-      "successMessage": "Refeição criada com sucesso!",
+      "successMessage": "Refeição criada.",
       "errorMessage": "Não foi possível gerar refeições. Por favor, tente novamente.",
       "aiNotConfigured": "Os recursos de IA não estão configurados. Adicione uma chave de API do Gemini ou OpenAI nas Configurações.",
       "generating": "Gerando refeições..."
@@ -77,7 +77,7 @@
       "descriptionLabel": "Descrição (opcional)",
       "descriptionPlaceholder": "ex: Refeição rica em proteína com frango e arroz",
       "nutritionBasisLabel": "Base Nutricional",
-      "savedSuccess": "Refeição salva com sucesso!"
+      "savedSuccess": "Refeição salva."
     }
   }
 }

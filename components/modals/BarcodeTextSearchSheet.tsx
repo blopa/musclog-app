@@ -1,7 +1,6 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { ScanBarcode, Search } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, TextInput as RNTextInput, View } from 'react-native';
+import { Pressable, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { useTheme } from '@/hooks/useTheme';
@@ -42,7 +41,7 @@ export function BarcodeTextSearchSheet({
       }
     >
       <View className="pt-2">
-        <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
+        <Text className="mb-2 ml-1 text-xs font-bold text-text-secondary">
           {t('food.aiCamera.barcodeTextSearchLabel')}
         </Text>
         <View
@@ -74,19 +73,13 @@ export function BarcodeTextSearchSheet({
         <Pressable
           onPress={onSubmit}
           className="rounded-xl px-6 py-4 active:scale-[0.98]"
-          style={{ overflow: 'hidden' }}
+          style={{ backgroundColor: theme.colors.accent.primary }}
         >
-          <LinearGradient
-            colors={theme.colors.gradients.cta}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={StyleSheet.absoluteFill}
-          />
           <View className="flex-row items-center justify-center gap-2">
-            <Text className="text-sm font-bold text-text-primary">
+            <Text className="text-sm font-bold" style={{ color: theme.colors.text.onAccent }}>
               {t('food.aiCamera.barcodeTextSearchSubmit')}
             </Text>
-            <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
+            <Search size={theme.iconSize.md} color={theme.colors.text.onAccent} />
           </View>
         </Pressable>
       </View>

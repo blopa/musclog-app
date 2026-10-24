@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -75,10 +74,7 @@ export function AINutritionTrackingContextModal({
             backgroundColor: 'transparent',
           }}
         >
-          <LinearGradient
-            colors={theme.colors.gradients.cta}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <View
             style={{
               position: 'absolute',
               top: 0,
@@ -86,17 +82,17 @@ export function AINutritionTrackingContextModal({
               right: 0,
               bottom: 0,
               borderRadius: 12,
-              overflow: 'hidden',
+              backgroundColor: theme.colors.accent.primary,
             }}
           />
-          <Sparkles size={theme.iconSize.xl} color={theme.colors.text.primary} />
+          <Sparkles size={theme.iconSize.xl} color={theme.colors.text.onAccent} />
         </View>
       }
     >
       <View className="pt-2">
         {/* Describe Your Meal Section */}
         <View className="mb-6">
-          <Text className="mb-2 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
+          <Text className="mb-2 ml-1 text-xs font-bold text-text-secondary">
             {describeLabel ?? t('food.aiNutritionContext.describeYourMeal')}
           </Text>
           <View
@@ -130,7 +126,7 @@ export function AINutritionTrackingContextModal({
 
         {/* Quick Tags Section */}
         <View className="mb-8">
-          <Text className="mb-3 ml-1 text-xs font-bold uppercase tracking-widest text-text-secondary">
+          <Text className="mb-3 ml-1 text-xs font-bold text-text-secondary">
             {t('food.aiNutritionContext.quickTags')}
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -178,27 +174,13 @@ export function AINutritionTrackingContextModal({
             onPress={handleApply}
             className="flex-[2] rounded-xl px-6 py-4 active:scale-[0.98]"
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
-            style={{
-              overflow: 'hidden',
-            }}
+            style={{ backgroundColor: theme.colors.accent.primary }}
           >
-            <LinearGradient
-              colors={theme.colors.gradients.cta}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-              }}
-            />
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="text-sm font-bold text-text-primary">
+              <Text className="text-sm font-bold" style={{ color: theme.colors.text.onAccent }}>
                 {applyLabel ?? t('food.aiNutritionContext.applyContext')}
               </Text>
-              <CheckCircle size={theme.iconSize.md} color={theme.colors.text.primary} />
+              <CheckCircle size={theme.iconSize.md} color={theme.colors.text.onAccent} />
             </View>
           </Pressable>
         </View>

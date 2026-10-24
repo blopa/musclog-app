@@ -120,8 +120,8 @@
       "clearFilters": "Filters wissen",
       "applyFilters": "Filters toepassen",
       "workoutType": "Workouttype",
-      "targetMuscles": "DOELSPIEREN",
-      "duration": "DUUR",
+      "targetMuscles": "Doelspieren",
+      "duration": "Duur",
       "upTo": "Tot {{duration}}",
       "workoutTypes": {
         "strength": "Kracht",
@@ -209,7 +209,7 @@
       "successMessageWithPlan": "{{planName}} gemaakt met {{count}} workouts"
     },
     "aiGeneration": {
-      "comingSoon": "AI workout-generatie komt binnenkort!",
+      "comingSoon": "AI-workoutgeneratie komt binnenkort.",
       "title": "Genereren met AI",
       "subtitle": "Vertel ons over je doelen en we bouwen een gepersonaliseerd workout-plan",
       "preferencesLabel": "Je voorkeuren",
@@ -220,7 +220,7 @@
       "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen."
     },
     "templateBrowser": {
-      "comingSoon": "Sjabloon-browser komt binnenkort!"
+      "comingSoon": "Sjabloonbrowser komt binnenkort."
     },
     "interruptedSession": {
       "description": "Je hebt een workout in uitvoering.",

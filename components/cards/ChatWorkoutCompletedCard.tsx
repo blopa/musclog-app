@@ -70,28 +70,19 @@ export function ChatWorkoutCompletedCard({
       {/* Stats */}
       <View className="flex-row p-4">
         <View className="flex-1">
-          <Text
-            className="text-[10px] font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.tertiary }}
-          >
+          <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
             {t('workoutSummary.volume')}
           </Text>
           <Text className="mt-0.5 text-sm font-bold text-text-primary">{volume}</Text>
         </View>
         <View className="flex-1">
-          <Text
-            className="text-[10px] font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.tertiary }}
-          >
+          <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
             {t('workoutSummary.duration')}
           </Text>
           <Text className="mt-0.5 text-sm font-bold text-text-primary">{duration}</Text>
         </View>
         <View className="flex-1">
-          <Text
-            className="text-[10px] font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.tertiary }}
-          >
+          <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
             {t('workoutSummary.newPRs')}
           </Text>
           <Text

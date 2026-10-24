@@ -187,7 +187,7 @@ export function ExerciseGoalDetailModal({
                 className="min-w-[45%] flex-1 rounded-xl p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="text-xs font-bold text-text-tertiary">
                   {t('exerciseGoals.card.target')}
                 </Text>
                 <Text className="mt-1 text-lg font-bold text-text-primary">
@@ -199,7 +199,7 @@ export function ExerciseGoalDetailModal({
                 className="min-w-[45%] flex-1 rounded-xl p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="text-xs font-bold text-text-tertiary">
                   {t('exerciseGoals.card.currentEstimate')}
                 </Text>
                 <Text className="mt-1 text-lg font-bold text-text-primary">
@@ -213,7 +213,7 @@ export function ExerciseGoalDetailModal({
                 className="min-w-[45%] flex-1 rounded-xl p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="text-xs font-bold text-text-tertiary">
                   {t('exerciseGoals.detail.progress')}
                 </Text>
                 <Text className="mt-1 text-lg font-bold text-accent-primary">
@@ -225,7 +225,7 @@ export function ExerciseGoalDetailModal({
                 className="min-w-[45%] flex-1 rounded-xl p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="text-xs font-bold text-text-tertiary">
                   {t('exerciseGoals.detail.baseline')}
                 </Text>
                 <Text className="mt-1 text-lg font-bold text-text-primary">
@@ -337,7 +337,7 @@ export function ExerciseGoalDetailModal({
                 className="min-w-[45%] flex-1 rounded-xl p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="text-xs font-bold text-text-tertiary">
                   {t('exerciseGoals.creation.sessionsPerWeek')}
                 </Text>
                 <Text className="mt-1 text-lg font-bold text-text-primary">
@@ -349,7 +349,7 @@ export function ExerciseGoalDetailModal({
                 className="min-w-[45%] flex-1 rounded-xl p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="text-xs font-bold text-text-tertiary">
                   {t('exerciseGoals.card.sessionsThisWeek', {
                     count: sessionsThisWeek,
                     target: goal.targetSessionsPerWeek ?? 0,

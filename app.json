@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.13.1",
+    "version": "2.14.5",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": [
@@ -19,13 +19,8 @@
       "baseUrl": "/"
     },
     "plugins": [
-      [
-        "./plugins/withGradleVersion",
-        {
-          "version": "8.13"
-        }
-      ],
       "./plugins/withGradleJvmArgs",
+      "./plugins/withNativeBuildJobPools",
       "./plugins/withIosSimulatorBuildFix",
       "./plugins/withThemeAppIcons",
       "expo-system-ui",
@@ -33,9 +28,7 @@
       "expo-localization",
       [
         "expo-router",
-        {
-          "unstable_useServerDataLoaders": true
-        }
+        {}
       ],
       [
         "expo-splash-screen",
@@ -82,7 +75,6 @@
             "buildArchs": [
               "armeabi-v7a",
               "arm64-v8a",
-              "x86",
               "x86_64"
             ],
             "enableMinifyInReleaseBuilds": true,
@@ -111,39 +103,81 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
         }
       ],
+      "./plugins/withWidgetDeepLinks",
+      "./plugins/withWidgetProgressRing",
       [
-        "react-native-android-widget",
+        "expo-widgets",
         {
-          "fonts": [
-            "./assets/fonts/material.ttf"
-          ],
+          "bundleIdentifier": "com.werules.logger.ExpoWidgetsTarget",
+          "groupIdentifier": "group.com.werules.logger",
           "widgets": [
             {
-              "name": "SmartCamera",
-              "label": "Smart Camera",
-              "minWidth": "60dp",
-              "minHeight": "60dp",
-              "targetCellWidth": 1,
-              "targetCellHeight": 1,
-              "description": "Open Smart Camera"
+              "name": "Nutrition",
+              "displayName": "Nutrition Progress",
+              "description": "Shows daily nutrition progress",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium"
+                ],
+                "initialLayout": "widgets/NutritionWidget.tsx"
+              },
+              "android": {
+                "minWidth": 250,
+                "minHeight": 110,
+                "targetCellWidth": 4,
+                "targetCellHeight": 2,
+                "resizeMode": "none",
+                "initialLayout": "widgets/NutritionWidget.android.tsx"
+              }
             },
             {
-              "name": "Nutrition",
-              "label": "Nutrition Progress",
-              "minWidth": "180dp",
-              "minHeight": "60dp",
-              "targetCellWidth": 4,
-              "targetCellHeight": 1,
-              "description": "Shows daily nutrition progress"
+              "name": "SmartCamera",
+              "displayName": "Smart Camera",
+              "description": "Open Smart Camera",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall"
+                ],
+                "initialLayout": "widgets/SmartCameraWidget.tsx"
+              },
+              "android": {
+                "minWidth": 60,
+                "minHeight": 60,
+                "targetCellWidth": 1,
+                "targetCellHeight": 1,
+                "resizeMode": "none",
+                "initialLayout": "widgets/SmartCameraWidget.android.tsx"
+              }
+            },
+            {
+              "name": "Cycle",
+              "displayName": "Cycle",
+              "description": "Shows your cycle day. Private by default.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall"
+                ],
+                "initialLayout": "widgets/CycleWidget.tsx"
+              },
+              "android": {
+                "minWidth": 110,
+                "minHeight": 60,
+                "targetCellWidth": 2,
+                "targetCellHeight": 1,
+                "resizeMode": "none",
+                "initialLayout": "widgets/CycleWidget.android.tsx"
+              }
             }
-          ]
+          ],
+          "enableAndroid": true
         }
       ],
       [
         "@kingstinct/react-native-healthkit",
         {
-          "NSHealthShareUsageDescription": "Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.",
-          "NSHealthUpdateUsageDescription": "Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync."
+          "NSHealthShareUsageDescription": "Musclog reads workouts, nutrition and body measurements, and optionally menstrual bleeding and basal temperature when you request a cycle import.",
+          "NSHealthUpdateUsageDescription": "Musclog writes workouts, nutrition and body metrics, and optionally your manually logged bleeding and basal temperature when you request a cycle export."
         }
       ],
       "expo-secure-store",
@@ -159,7 +193,8 @@
           "bluetoothAlwaysPermission": "Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors"
         }
       ],
-      "@react-native-vector-icons/material-icons"
+      "@react-native-vector-icons/material-icons",
+      "expo-sharing"
     ],
     "orientation": "default",
     "icon": "./assets/theme-icons/icon-bg-kinetic-depth.png",
@@ -171,7 +206,10 @@
       "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "311",
+      "buildNumber": "318",
+      "entitlements": {
+        "com.apple.developer.usernotifications.time-sensitive": true
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
@@ -186,7 +224,7 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 311,
+      "versionCode": 318,
       "adaptiveIcon": {
         "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
         "backgroundColor": "#091310"
@@ -198,6 +236,7 @@
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.WAKE_LOCK",
         "android.permission.POST_NOTIFICATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.VIBRATE",
         "android.permission.health.READ_HEIGHT",
         "android.permission.health.WRITE_HEIGHT",
@@ -214,7 +253,13 @@
         "android.permission.health.WRITE_DISTANCE",
         "android.permission.health.READ_LEAN_BODY_MASS",
         "android.permission.health.WRITE_LEAN_BODY_MASS",
-        "android.permission.health.READ_HEALTH_DATA_HISTORY"
+        "android.permission.health.READ_HEALTH_DATA_HISTORY",
+        "android.permission.health.READ_MENSTRUATION",
+        "android.permission.health.WRITE_MENSTRUATION",
+        "android.permission.health.READ_BASAL_BODY_TEMPERATURE",
+        "android.permission.health.WRITE_BASAL_BODY_TEMPERATURE",
+        "android.permission.health.READ_INTERMENSTRUAL_BLEEDING",
+        "android.permission.health.WRITE_INTERMENSTRUAL_BLEEDING"
       ]
     },
     "extra": {

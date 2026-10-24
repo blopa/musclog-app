@@ -1,5 +1,6 @@
 import { toPng } from 'html-to-image';
 import { useCallback, useRef, useState } from 'react';
+import type { ViewInstance } from 'react-native';
 import { View } from 'react-native';
 
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
@@ -20,7 +21,7 @@ function waitForNextFrame(): Promise<void> {
 
 export function useChartCapture() {
   const theme = useTheme();
-  const captureRef = useRef<View>(null);
+  const captureRef = useRef<ViewInstance>(null);
   const [isCapturing, setIsCapturing] = useState(false);
 
   const captureAndShare = useCallback(

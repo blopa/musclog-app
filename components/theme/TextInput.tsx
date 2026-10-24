@@ -6,6 +6,7 @@ import {
   Platform,
   Text,
   TextInput as RNTextInput,
+  type TextInputInstance,
   View,
 } from 'react-native';
 
@@ -20,6 +21,7 @@ type TestInputProps = {
   inputMode?: InputModeOptions;
   icon?: ReactNode;
   secureTextEntry?: boolean;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   required?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
@@ -27,6 +29,7 @@ type TestInputProps = {
   multiline?: boolean;
   numberOfLines?: number;
   editable?: boolean;
+  maxLength?: number;
 };
 
 const ANIMATION_DURATION = 100;
@@ -36,7 +39,7 @@ const ANIMATION_DURATION = 100;
  * On web, uses focus-within CSS. On native, uses Animated.Value updated via onFocus/onBlur.
  * This is a "native" React Native approach without useState/useReducer/useRef hooks.
  */
-export const TextInput = forwardRef<RNTextInput, TestInputProps>(
+export const TextInput = forwardRef<TextInputInstance, TestInputProps>(
   (
     {
       label,
@@ -47,6 +50,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
       keyboardType = 'default',
       icon,
       secureTextEntry,
+      autoCapitalize,
       onFocus,
       onBlur,
       required = false,
@@ -54,11 +58,12 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
       multiline = false,
       numberOfLines = 4,
       editable = true,
+      maxLength,
     },
     ref
   ) => {
     const theme = useTheme();
-    const inputRef = useRef<RNTextInput>(null);
+    const inputRef = useRef<TextInputInstance>(null);
 
     useImperativeHandle(ref, () => inputRef.current!);
 
@@ -125,6 +130,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
           >
             <RNTextInput
               ref={inputRef}
+              accessibilityLabel={typeof label === 'string' ? label : undefined}
               className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
               placeholder={placeholder}
               placeholderTextColor={theme.colors.text.tertiary}
@@ -133,6 +139,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               inputMode={inputMode}
               keyboardType={keyboardType}
               secureTextEntry={secureTextEntry}
+              autoCapitalize={autoCapitalize}
               onFocus={() => {
                 handleFocus();
                 if (Platform.OS === 'android' && selectTextOnFocus) {
@@ -146,6 +153,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               numberOfLines={multiline ? numberOfLines : undefined}
               textAlignVertical={multiline ? 'top' : 'center'}
               editable={editable}
+              maxLength={maxLength}
             />
             {icon ? (
               <View
@@ -176,6 +184,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
           >
             <RNTextInput
               ref={inputRef}
+              accessibilityLabel={typeof label === 'string' ? label : undefined}
               className="flex-1 border-none bg-transparent p-0 pr-10 text-text-primary"
               placeholder={placeholder}
               placeholderTextColor={theme.colors.text.tertiary}
@@ -184,6 +193,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               inputMode={inputMode}
               keyboardType={keyboardType}
               secureTextEntry={secureTextEntry}
+              autoCapitalize={autoCapitalize}
               onFocus={() => {
                 handleFocus();
                 if (Platform.OS === 'android' && selectTextOnFocus) {
@@ -197,6 +207,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               numberOfLines={multiline ? numberOfLines : undefined}
               textAlignVertical={multiline ? 'top' : 'center'}
               editable={editable}
+              maxLength={maxLength}
             />
             {icon ? (
               <View

@@ -20,10 +20,10 @@ import { setMirroredThemePreference } from '@/utils/themeMirror';
 
 const THEME_OPTIONS = ['system', ...THEME_IDS] as const satisfies readonly ThemeOption[];
 const LANGUAGES = [
-  { code: 'en-us', flag: '🇬🇧', label: 'English' },
-  { code: 'es-es', flag: '🇪🇸', label: 'Español' },
-  { code: 'nl-nl', flag: '🇳🇱', label: 'Nederlands' },
-  { code: 'pt-br', flag: '🇧🇷', label: 'Português' },
+  { code: 'en-us', badge: 'EN', label: 'English' },
+  { code: 'es-es', badge: 'ES', label: 'Español' },
+  { code: 'nl-nl', badge: 'NL', label: 'Nederlands' },
+  { code: 'pt-br', badge: 'PT', label: 'Português' },
 ];
 
 function PreferenceOption({
@@ -245,7 +245,7 @@ export function WebsitePreferences() {
                   className="flex flex-col gap-1"
                 >
                   {activeTab === 'language'
-                    ? LANGUAGES.map(({ code, label, flag }) => (
+                    ? LANGUAGES.map(({ code, label, badge }) => (
                         <PreferenceOption
                           key={code}
                           name={`${id}-language`}
@@ -263,8 +263,11 @@ export function WebsitePreferences() {
                               );
                           }}
                         >
-                          <span aria-hidden="true" className="w-6 text-xl leading-none">
-                            {flag}
+                          <span
+                            aria-hidden="true"
+                            className="w-7 text-center text-xs font-bold leading-none tracking-wide"
+                          >
+                            {badge}
                           </span>
                         </PreferenceOption>
                       ))

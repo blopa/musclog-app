@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ChevronRight, Copy, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
+import { Copy, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Linking, Text, View } from 'react-native';
@@ -12,6 +12,7 @@ import { GenericCard } from '@/components/cards/GenericCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
+import { ListGroup } from '@/components/theme/ListGroup';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { ExerciseAliasesSection } from '@/components/workout/ExerciseAliasesSection';
 import { ExerciseRestrictionSection } from '@/components/workout/ExerciseRestrictionSection';
@@ -28,6 +29,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { defaultRepCeilingFor } from '@/utils/bodyweightRepCeiling';
 import {
   getPaddedYDomain,
   getTimeSeriesXDomain,
@@ -383,7 +385,6 @@ export default function ViewExerciseModal({
     {
       icon: Pencil,
       iconColor: theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
       title: t('exercises.viewExercise.editExercise'),
       description: t('exercises.viewExercise.editExerciseDescription'),
       onPress: handleEdit,
@@ -391,7 +392,6 @@ export default function ViewExerciseModal({
     {
       icon: Share2,
       iconColor: theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
       title: t('exercises.viewExercise.share'),
       description: t('exercises.viewExercise.shareDescription'),
       onPress: handleShare,
@@ -399,7 +399,6 @@ export default function ViewExerciseModal({
     {
       icon: Copy,
       iconColor: theme.colors.accent.secondary,
-      iconBgColor: theme.colors.background.iconDarker,
       title: t('exercises.viewExercise.duplicate'),
       description: t('exercises.viewExercise.duplicateDescription'),
       onPress: handleDuplicate,
@@ -409,11 +408,9 @@ export default function ViewExerciseModal({
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
             title: t('exercises.viewExercise.delete'),
             description: t('exercises.viewExercise.deleteDescription'),
             titleColor: theme.colors.status.error,
-            descriptionColor: theme.colors.status.error,
             onPress: handleDeletePress,
           } satisfies BottomPopUpMenuItem,
         ]
@@ -429,11 +426,6 @@ export default function ViewExerciseModal({
       : '—';
   const mechanic =
     exercise?.mechanicType != null ? t(getExerciseTypeTranslationKey(exercise.mechanicType)) : '—';
-
-  const workoutsWithTheme = workouts.map((w) => ({
-    ...w,
-    iconGradient: [theme.colors.status.indigo, theme.colors.status.indigo] as const,
-  }));
 
   const oneRepMaxTrendSummary = () => {
     if (trendSummary.kind === 'none') {
@@ -532,11 +524,9 @@ export default function ViewExerciseModal({
                 {displayName}
               </Text>
               <View className="mb-6 flex-row flex-wrap gap-3">
-                <LinearGradient
-                  colors={theme.colors.gradients.blueEmerald}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
+                <View
                   style={{
+                    backgroundColor: theme.colors.accent.primary,
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 8,
@@ -547,7 +537,7 @@ export default function ViewExerciseModal({
                   }}
                 >
                   <Text
-                    className="text-xs font-medium uppercase tracking-wide"
+                    className="text-xs font-medium"
                     style={{ color: theme.colors.overlay.ink80 }}
                   >
                     {t('exercises.viewExercise.primaryMuscle')}
@@ -555,7 +545,7 @@ export default function ViewExerciseModal({
                   <Text className="font-bold" style={{ color: theme.colors.text.primary }}>
                     {primaryMuscle}
                   </Text>
-                </LinearGradient>
+                </View>
                 <View
                   className="flex-row items-center gap-2 rounded-full border px-4 py-2"
                   style={{
@@ -564,7 +554,7 @@ export default function ViewExerciseModal({
                   }}
                 >
                   <Text
-                    className="text-xs font-medium uppercase tracking-wide"
+                    className="text-xs font-medium"
                     style={{ color: theme.colors.overlay.ink80 }}
                   >
                     {t('exercises.viewExercise.equipment')}
@@ -581,7 +571,7 @@ export default function ViewExerciseModal({
                   }}
                 >
                   <Text
-                    className="text-xs font-medium uppercase tracking-wide"
+                    className="text-xs font-medium"
                     style={{ color: theme.colors.overlay.ink80 }}
                   >
                     {t('exercises.viewExercise.mechanic')}
@@ -598,7 +588,7 @@ export default function ViewExerciseModal({
             <GenericCard variant="flat" fill>
               <View className="p-6">
                 <Text
-                  className="mb-2 text-xs font-medium uppercase tracking-wide"
+                  className="mb-2 text-xs font-medium"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   {t('exercises.viewExercise.personalBest')}
@@ -623,7 +613,7 @@ export default function ViewExerciseModal({
             <GenericCard variant="flat" fill>
               <View className="p-6">
                 <Text
-                  className="mb-2 text-xs font-medium uppercase tracking-wide"
+                  className="mb-2 text-xs font-medium"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   {t('exercises.viewExercise.avgFrequency')}
@@ -650,6 +640,7 @@ export default function ViewExerciseModal({
           <ExerciseUserSettingsSection
             exerciseId={exercise.id}
             isBodyweight={exercise.equipmentType === 'bodyweight'}
+            defaultRepCeiling={defaultRepCeilingFor(exercise.loadMultiplier)}
           />
 
           <ExerciseRestrictionSection exerciseId={exercise.id} />
@@ -706,49 +697,23 @@ export default function ViewExerciseModal({
                   className="text-xs font-bold"
                   style={{ color: theme.colors.accent.secondary }}
                 >
-                  {workoutsWithTheme.length} {t('exercises.viewExercise.templates')}
+                  {workouts.length} {t('exercises.viewExercise.templates')}
                 </Text>
               </View>
             </View>
-            <View style={{ gap: theme.spacing.gap.md }}>
-              {workoutsWithTheme.map((workout) => (
+            <ListGroup>
+              {workouts.map((workout) => (
                 <SettingsCard
                   key={workout.id}
                   icon={
-                    <LinearGradient
-                      colors={workout.iconGradient}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: theme.borderRadius['2xl'],
-                        overflow: 'hidden',
-                      }}
-                    >
-                      <workout.icon
-                        size={theme.iconSize['3xl']}
-                        color={theme.colors.text.primary}
-                        fill="none"
-                      />
-                    </LinearGradient>
+                    <workout.icon size={theme.iconSize.md} color={theme.colors.text.secondary} />
                   }
                   title={workout.name}
                   subtitle={workout.subtitle}
                   onPress={() => handleWorkoutPress(workout.id)}
-                  rightIcon={
-                    <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.secondary} />
-                  }
-                  iconContainerStyle={{
-                    width: theme.size['16'],
-                    height: theme.size['16'],
-                    borderRadius: theme.borderRadius['2xl'],
-                    padding: theme.spacing.padding.zero,
-                    overflow: 'hidden',
-                  }}
                 />
               ))}
-            </View>
+            </ListGroup>
           </View>
           <View style={{ height: theme.size['100'] }} />
         </KeyboardAwareScrollView>

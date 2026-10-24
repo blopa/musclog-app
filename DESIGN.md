@@ -38,9 +38,13 @@ Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, 
 white or the regular on-surface ink.
 
 The Daily Summary card always renders the `colorful-gradient` background; a theme says how that
-should read through `gradients.colorfulCard` alone. The three dark palettes and Kinetic Blush keep a
-saturated sweep; Kinetic Light collapses its stops to the flat card surface, which renders exactly
-like an ordinary card (`gradients.landingBackground` uses the same flat-gradient idiom). The component must not derive this presentation decision from `themeMode`; another
+should read through `gradients.colorfulCard` alone. The ramp is single-hue: `brandDeep` → `brandPrimary`
+→ `brandVivid`, each mixed with `surfaceCard` by the theme's `colorfulCardBlend`, so every theme's
+hero belongs to its own palette. It used to start on `statusIndigo`, which opened Home with the same
+periwinkle sweep in every theme, orange Varia included; `utils/__tests__/dailySummaryCardTheme.test.ts`
+now fails if a stop drifts more than 25° of hue from the theme's accent. The dark palettes and
+Kinetic Blush keep a saturated sweep; Kinetic Light collapses its stops to the flat card surface,
+which renders exactly like an ordinary card. The component must not derive this presentation decision from `themeMode`; another
 light theme may legitimately choose a gradient — Kinetic Blush does. Its foreground uses the matching
 `colorfulCard` ink tokens: white in Kinetic Depth and Kinetic Shock, warm black in Kinetic Volt, and opaque deep
 green-slate in Kinetic Light.
@@ -151,6 +155,10 @@ least WCAG AA contrast for normal text.
 
 ## Typography
 
+App headings and display text use solid `text.primary` ink across all themes, including Workouts,
+Notes, Health Connect onboarding, workout summaries, and rest-complete messages. Do not use
+gradient-filled glyphs.
+
 The app currently relies mainly on platform/system fonts; do not document an unbundled typeface as
 part of the brand. The token scale is:
 
@@ -164,6 +172,15 @@ part of the brand. The token scale is:
 | `2xl`–`5xl` | 24–48 | Screen headings and primary stats |
 | `6xl`–`8xl` | 60–96 | Rare hero values                  |
 
+**Labels are sentence case.** A small heading above a group of content is `SectionLabel`
+(`text-sm font-semibold text-text-secondary`, optional `tone="accent"` for the one live-state label
+on a screen, optional icon). Tracked all-caps is reserved for unit and weekday abbreviations;
+everything else — eyebrows, column headers, badges, button labels, menu titles — is sentence case
+with no letter-spacing, in the copy as well as the classes (`"DATA PORTABILITY"` is now
+`"Data portability"`). Units are lowercase: `kcal`, not `Kcal` or `KCAL`. Sentence-case labels are
+wider than tracked caps in Russian and Dutch, so let them wrap rather than truncate.
+`deslopGuards.test.ts` holds `uppercase`, wide `tracking-*` and all-caps en-us copy at zero.
+
 Use large numeric type for the one value a card is meant to communicate. Preserve readable labels
 and units; a large number without context is not a useful hierarchy.
 
@@ -171,6 +188,12 @@ and units; a large number without context is not a useful hierarchy.
 
 Spacing follows a 4-point base scale: 4, 8, 12, 16, 20, 24, 32, and 48. Use
 `theme.spacing.padding`, `.gap`, and `.margin` instead of introducing near-duplicate literals.
+
+Onboarding content uses a 24-point horizontal inset (`px-6`). In cycle setup, keep the
+horizontal inset and top padding on an inner `View` inside `KeyboardAwareScrollView`,
+so the heading and every form section align with the bottom action button on web and native.
+The shared cycle setup form leaves 12 points (`mt-3`) between the unknown-cycle-length
+option and the cycle/period numeric inputs.
 
 Standard radii are 12 for inputs/general controls, 16 for primary cards, and `full` for circular or
 pill elements. Borders should be subtle; surface separation should usually come from tonal layering
@@ -184,13 +207,28 @@ clipped by the parent; see `FIXES.md`.
 
 ### Buttons
 
-- Primary: emerald or the approved emerald-to-teal gradient, with high-contrast text. The
-  `gradientCta` button variant draws `gradients.cta`, which is that emerald-to-teal gradient (the
-  same stops as `gradients.accent`); it was indigo-to-green, which this rule does not allow.
+- Primary: a flat `accent.primary` fill (`variant="accent"`, the default) with `text.onAccent`.
+  The gradient belongs to `gradientCta`, which draws `gradients.cta` and is the ONE primary action
+  of a screen; a screen that would show two demotes the second to `accent`. Both keep `text.onAccent`
+  at least 4.5:1 (the token generator blends an unsafe deep stop towards the vivid stop). Buttons
+  carry no shadow or glow, and their labels are never letter-spaced (tracking made "Scan Barcode"
+  wrap). Selected options in a list signal selection with the 2px accent border and a check, not a
+  halo. Every segmented control variant marks its selected segment with a solid `accent.primary`
+  fill and `text.onAccent` (decision D1 of the de-slop plan: the gradient is `gradientCta`'s
+  alone), and `text.secondary` for unselected options. A segment icon that changes colour uses the
+  render-function form, `(selected) => …`, with those two inks — a static accent icon vanishes on
+  the selected fill.
+- Button radius: `xs` and `sm` use 12 (`borderRadius.md`), `md` and up use 16 (`borderRadius.lg`).
+  The scale: 8 for chips inside dense rows, 12 for inputs and small buttons, 16 for cards, sheets
+  and regular buttons, `full` only for circles, avatars and true pills (filter chips, the pill
+  segmented control). Android buttons show a ripple bounded to the button.
 - One primary action per screen. When a screen has a hero (the Workouts screen's Today card), the
   cards below it use their standard, secondary treatment rather than a second filled button.
 - Secondary: low-emphasis surface or outline treatment.
 - Destructive: red/rose and explicit action copy.
+- Cycle period actions ("My period started" / "ended") use `Button`'s `rose` / `roseOutline`
+  variants: the brand rose without `discard`'s destructive meaning. They were hand-rolled
+  `TouchableOpacity`s before.
 - Disabled: visually subdued and non-interactive; never communicate disabled state by opacity alone
   when the label would become unreadable.
 
@@ -204,11 +242,25 @@ appropriate, or both. Pick by what the control is, not by how it looks today:
 | Text-only secondary action ("Show all", "Edit goal", a quiet "Discard") | `TextButton` (`tone`: `accent` / `danger` / `muted`)                       |
 | Icon-only action (steppers, prev/next, back, more, remove ×)            | `IconButton` (`filled` / `elevated` / `ghost`; `media` over a photo)       |
 | One choice among several, or a compact action pill                      | `Chip` (`outline` for choices, `solid` for actions and the weekday picker) |
-| A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`)                                              |
-| Two or three mutually exclusive views                                   | `SegmentedControl` (`pill` when it sits inline beside other content)       |
+| A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`; `grouped` inside a `ListGroup`)              |
+| A list of settings, menu items or destinations                          | `ListGroup` of `ListRow variant="grouped"` (or `SettingsCard` rows)        |
+| A small heading above a group of content                                | `SectionLabel`                                                             |
+| A screen's title, back button and header actions                        | `ScreenHeader` (see Screen headers)                                        |
+| Two to five mutually exclusive options shown side by side               | `SegmentedControl` — one form per screen (see below)                       |
 | A number the user types, kept as their own text                         | `NumericTextField` (`hero` / `field` / `cell`)                             |
 | A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
 | A search box or any labeled text field                                  | `TextInput` (`label=""` + a `Search` icon for search); never a raw input   |
+
+**`SegmentedControl`: full width or `pill`, never both on one screen.** The full-width variants
+(`elevated`, `outline`, `gradient` differ only in their track) are for a choice that switches what
+a screen shows or is the main field of a form or sheet. `pill` is for a choice that sits inline
+beside other content (the workout session's view toggle), where it hugs its options, or a
+secondary preference in a list of settings (every choice in the notification settings), where it
+takes `fullWidth` so it lines up with the cards and toggles around it — a hugging pill there
+leaves a ragged right edge. The notification settings once mixed four
+pills with one full-width control, which looked like a view switcher and made the same kind of
+choice read as two different controls. Every variant is a `radiogroup` of `radio`s for screen
+readers.
 
 A raw `Pressable` is right only for a composite surface that is itself the control — a card, a table
 cell (the set table's number, previous and check cells), a thumbnail, a radio card that hosts its own
@@ -216,10 +268,55 @@ fields (`ProgressionRuleEditor`), a row whose whole surface toggles a panel (`Re
 `GuidanceSummary`) — never for something one of these already draws. `components/__tests__/themeControls.test.ts`
 lists the screens that have been moved onto them.
 
+**Lists are grouped, not a card per row.** `ListGroup` is one rounded (16) surface holding rows
+separated by hairlines, with an optional `SectionLabel` title above and footer text below; the rows
+draw no surface of their own. A row's icon is naked (20px, `text.secondary`): no tinted square or
+circle behind it, and no per-row color — the rainbow of chips the menus used to carry encoded
+nothing. The icon turns `accent.primary` only on the picked choice of a picker (`selected`), and
+`status.error` on a destructive row, which also moves to the end of the list. **A chevron means the
+row pushes a screen or opens a sheet with more choices** (`showChevron` on a `BottomPopUpMenu`
+item); a row that acts immediately (Delete, Duplicate, Share) has none, and a picker row shows a
+check on its current choice instead. `BottomPopUpMenu` renders its items this way, `SettingsCard`
+is a row (stack it inside a `ListGroup`), and Settings, the Profile management list, the account
+menu and the Add Food tracking methods all use it. A menu item's `iconBgColor` is typed `never`, so
+a leftover tint fails the build. A list that IS the sheet or menu (`BottomPopUpMenu`, the
+account menu) is `ListGroup flush`: no surface of its own, rows bleed through the sheet's 24pt
+padding so the press highlight spans the sheet, and each row pads its content by 24 so the icons
+and titles sit on the sheet title's line. Do not draw a rounded group inside a sheet — a card
+inside the sheet's own padding read as inset twice. The rounded `ListGroup` is for lists on a
+screen (Settings, the Profile management list).
+
 Radio controls (`OptionsSelector` and `Chip`) expose `aria-checked` explicitly as well as native
 accessibility state; React Native Web does not translate `accessibilityState.checked` by itself.
 Switches need an accessible label. The shared `WeekdayChoiceChips` uses abbreviated day labels
 visually and full weekday names for assistive technology.
+
+### Screen headers
+
+Every screen header is `components/theme/ScreenHeader.tsx`, rendered inside `MasterLayout` (which
+owns the top inset) and above the screen's scroll view, so the way back never scrolls away. It has
+two forms:
+
+- **root**: a large (`3xl`) title with trailing actions, for a screen that is one of the bottom
+  bar's slots right now. The highlighted tab already says where you are.
+- **pushed**: a back button, an `xl` title and trailing actions, for every other screen. Back goes
+  to the previous screen, or to Home when the screen was opened cold (a deep link, a reload).
+
+A screen that shows the bottom bar passes its `destination` and the header picks the form from the
+user's slots (`resolveScreenHeaderForm`), since the same screen can be a tab for one person and a
+pushed screen for another. A screen that hides the bar (Progress, Settings) passes none and is
+always pushed. Trailing actions are ghost `IconButton`s or `MenuButton`s with an accessible label.
+`subtitle` is one line on where in the screen's content you are (Cycle's phase, the reviewed
+week); `center` replaces the title with a control that already says that (Food's day navigator),
+while the title stays the screen-reader heading. The header sits outside `AreaLockGate`, so back
+works behind a lock; pass `lockArea` and it shows only the title and back while that area is
+locked. Do not hand-roll a screen title or back arrow; `deslopGuards.test.ts` lists the screens on
+it.
+
+Lists whose length is not bounded (histories, search, saved meals) are a `FlatList` or
+`SectionList` that loads the next page from `onEndReached`, never a `ScrollView` with a "Load more"
+button. A list made of several separately paginated sections (food search) pages only its last
+section on scroll and gives each section above it an inline "Load more from …" row.
 
 ### Cards and modals
 
@@ -239,6 +336,14 @@ exception — see `components/cards/cardSurface.ts` for the resolver and
 - **`hero`** — the `colorfulCard` gradient fill. Reserved for `DailySummaryCard`; do not add a
   second consumer without updating this section.
 
+**Gradients carry meaning or they go.** A `LinearGradient` is allowed for a photo or camera scrim,
+a fade to the surface behind it (sticky footers, collapsed previews, filter rows), the `hero` card,
+the slider track, and the one `gradientCta` button. Washes, icon tiles, chat bubbles, progress
+fills and summary panels are flat: the token they imitated (`accent.primary`, `accent.primary10`,
+`background.card`). `gradients.cta` is read only inside `components/theme/`; a hand-rolled gradient
+button goes through `Button`. `components/__tests__/deslopGuards.test.ts` holds the file allowlist,
+so a new gradient fails CI until it is added there with a reason.
+
 One radius throughout: `theme.borderRadius.lg` (16), the same value as Tailwind's `rounded-2xl`.
 Do not introduce a third style, a per-card radius, or a gradient card fill outside `hero` — a
 `GenericCard` call covers the case, and a hand-rolled surface should be migrated to it rather than
@@ -246,7 +351,7 @@ copied.
 
 A row of small figures read side by side — today's energy under the home card, the weekly-average
 macros inside it — is always `components/StatStrip.tsx`: hairline-divided cells, the number first
-and its uppercase label under it. The component reads no theme of its own; the caller passes a
+and its sentence-case label under it (`text-xs`, no tracking). The component reads no theme of its own; the caller passes a
 `StatStripPalette` so the same row works on a plain card and on the hero gradient. Do not draw a
 second variant of this row.
 
@@ -261,6 +366,45 @@ that opens another modal must follow the presenter rules in `FIXES.md`; visual n
 tree ownership are separate concerns. Modal headers sit on the modal's own surface — none of the
 shared shells route a header through a gradient; a purple-to-transparent wash was a copy-pasted
 pattern across eight files and added nothing over the surface color.
+
+### Home
+
+Home opens on the day it is about: the avatar on the left and a date heading ("Monday, Oct 19")
+aligned to the right.
+The avatar is the way into the account menu and carries an accessible label; it stays on the left
+so it lines up with the avatar the account menu itself opens with. No time-of-day
+greeting and no version string; the version lives in Settings > About. The home action tiles are
+compact (about 96pt, the icon above a short label, `rounded-2xl`), with no tinted icon circle and
+no faded watermark copy of the icon; the selection, picker and reconciliation rules in `AGENTS.md`
+are unchanged. Home shows a compact Weekly Review card while a week is waiting (or half
+reviewed); otherwise it is one line naming the next review (`WeeklyReviewCard compact quietUntilReady`).
+Cycle shows the cycle day once, inside the wheel, with a one-word title and the phase as its
+subtitle.
+
+### Empty states, decoration and motion
+
+- An empty state is a plain icon (40 to 48pt, `text.tertiary`, no tinted circle), one line on
+  what belongs here, one on how to add it, and a `secondary` button. `gradientCta` only when the
+  empty state is the screen and its button is that screen's one primary action. When the empty
+  state is the whole screen (Notes), pass `bare` so there is no card around the only thing on the
+  page.
+- A dashed outline means "this slot is empty, fill it": an empty meal, a list with no sets yet.
+  Under a list that already has entries, "Add …" is a `TextButton` with a plus icon, not another
+  dashed bar.
+- No decoration that conveys nothing: no background blobs or blurred glows, no floating icon
+  clusters around an illustration, no gradient icon tiles. Onboarding shows the real app mark
+  (`assets/logo.png`), not a placeholder glyph.
+- App-owned visuals are Lucide icons, never emoji: moods, equipment, source headings and the notes
+  marker are icons sized and tinted from theme tokens, and data strings (such as an exercise row's
+  description) stay plain text, with a flag like `hasNotes` telling the UI which icon to draw.
+  Translations carry no emoji either, and shared text (the workout summary) uses translated
+  labels. Coach messages (`coach.json`, `utils/prompts.ts`) and user-authored text keep theirs.
+- Decorative loops are not allowed. An infinite animation is a progress indicator (a spinner, a
+  skeleton) and runs on the native driver; a pulsing glow, a floating trophy or a pulsing "live"
+  dot is removed rather than moved to another thread. `TextInput`'s border colour is the one
+  JS-driven animation, because colour cannot use the native driver.
+  `deslopGuards.test.ts` holds the loop allowlist, `useNativeDriver: false`, blur and the dashed
+  count.
 
 ### Inputs
 
@@ -285,9 +429,20 @@ pattern across eight files and added nothing over the surface color.
 
 - Performance-oriented without gender stereotypes or bodybuilding clichés.
 - Direct and calm. Avoid guilt, punishment, and alarmist red states for ordinary target variance.
+- Sentence case for headings, buttons and menu items ("Track by meal type", "Create workout
+  template"). Proper nouns keep their capitals (Health Connect, Open Food Facts, Weekly Review,
+  theme names).
+- No em dashes in copy: use a comma, a colon, parentheses or two sentences. The dash survives only
+  as a value placeholder (an empty pace, the "not logged" mark in a legend).
+- No exclamation marks except a genuine celebration (a goal achieved). Confirmations read flat
+  ("Meal saved."), and the UI makes no marketing claims ("2M+ items").
+- Sparkles means AI. It marks an AI affordance (already gated on `isAiConfigured`) and nothing
+  else: automatic targets use a trend icon, What's new a megaphone.
 - Explain AI estimates and calculated health metrics at the point of use.
 - Keep core logging fast and usable offline; optional AI should not block a manual path.
-- Menstrual-cycle and recovery guidance should be framed as context, not deterministic instruction.
+- Menstrual-cycle guidance is context, not instruction. The app never prescribes training from a cycle phase (the evidence does not support universal rules); it reports observations from the person's own records, always with how many cycles they rest on and the days behind them.
+- A modeled value shows its uncertainty (a range and a confidence line), and a logged fact is never drawn the same way as an estimate.
+- Cycle calendars never rely on color alone: each kind of mark has its own shape (filled, outlined, dashed, bar, dot), a word in the legend, and a spoken description per day.
 
 ## Website
 
@@ -320,6 +475,46 @@ The session follows a set table, not a form. **Inline**: one card per exercise �
 
 "Why?" is a sheet, not a stack of buttons: method and reason first, then a small inputs table (rule, plan, last time, today), then action rows with icons and one-line hints (Use the plan's, Plate calculator, Edit gym, Edit workout and rules; Edit target only when the equipment cannot build the load). The rule editor is the same pattern: radio cards that each explain their method in a sentence, with the chosen card expanding to its settings. An exercise row in the workout editor names its rule and opens that sheet on tap.
 
-Home shows a compact permanent Weekly Review card below actions, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due and otherwise the "Weekly targets · since …" line, which is itself the way in. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
+Home shows the Weekly Review card below actions while a week is waiting, and a one-line entry naming the next review otherwise, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due (and on empty or fasting days); otherwise the way in is the "Weekly Review" item of the summary card's menu, whose supporting line says where today's targets come from ("Daily automatic targets · since …"). The targets chip and the "Dynamic" badge that used to sit above the card took a fifth of the first screen to say what that one line says. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
 
 Weekly Review leads with the week and a Training / Nutrition progress pair, then the two sections. Training: a `StatStrip` (workouts, working sets, volume in the user's unit), the week's workouts, records as trophy rows, and "Next up" with preview and editor actions; upcoming targets are collapsed by default. Nutrition: a `StatStrip` of the evidence (trend weight, food days, weigh-ins), a Current / Recommended table with signed deltas, the reason, then one gradient "Apply targets starting tomorrow" over "Keep current" and "Edit". Missing evidence makes "Keep targets while collecting data" the primary action with shortcuts to log. Review day and reminder live in a settings card below, history last. Opening or canceling a sheet never acknowledges a review. Training acknowledgement never gates progression. Respect themes, exercise units, local decimal separators, safe areas and keyboard clearance.
+
+### Cycle journal completion
+
+- Keep daily logging first; optional presets add fields progressively and preserve existing favorites. Daily-life impact uses labelled choices, and missing observations remain distinct from explicit zero/none.
+- Unknown cycle length never displays a fallback denominator or a precise date as personal knowledge. Historical prediction ranges and retrospective checks state that they are heuristic, not medical validation.
+- Trends are available without bleeding dates. Plots use separate recorded points rather than joining missing days; the accompanying dated values are accessible and editable. Search stays on-device and says that all words must match.
+- Pregnancy/loss/surgery/menopause contexts use quiet, neutral wording and retain history. Educational links name NHS/RCOG and identify English content; avoid diagnostic conclusions and phase-based prescriptions.
+- Restore is available before setup. Import mapping previews before any write, rejects ambiguity, and keeps the user's selected column names on error. Sharing starts with no fields selected and clearly describes a readable, non-revocable static file.
+- Health imports show source alongside values and never masquerade as manual logs. Health exports explain the receiving store and the explicitly omitted sensitive fields before confirmation.
+- Backups are manual: explain the encryption-password recovery requirement, last-prepared status and the need to save the file outside the app. Optional reminders never create or upload backups.
+
+## Home screen widgets
+
+Nutrition Progress shows the data date, consumed/target calories, and protein, digestible-carbohydrate,
+and fat progress. Bars are bounded to 0–100%; missing goals never appear as fabricated zero targets.
+Android Nutrition is 4×2 (the iOS medium footprint) and the camera 1×1. iOS supports small/medium nutrition
+and a small camera widget. Colors and translated copy are supplied from the app’s selected palette
+and language, respecting iOS tinting. Empty/initial widgets invite opening Musclog; cached values
+retain their date, and the iOS midnight timeline replaces expired values with a refresh prompt.
+Widget timelines and foreground refresh are subject to the operating system’s rendering schedule.
+
+Widgets are left-aligned and lead with one large figure. iOS Nutrition draws the calorie figure inside
+a progress ring (small: ring only; medium: ring beside one labelled bar per macro), the camera
+shortcut is the camera artwork alone on a white tile, like an app icon (accent tile with a white
+symbol until the artwork is copied), and Cycle shows the day count large under the
+brand line, or only the brand line and a quiet arrow while a cycle or whole-app lock is on. Widget layouts are
+serialized and evaluated in the extension, so a layout function may use only its imports and locals,
+and `widgetFamily` from the environment chooses small versus medium. Android Nutrition mirrors the iOS
+medium layout — date over a calorie ring, then a labelled bar per macro on a translucent `track` —
+and its root stays a button because that is the interaction target behind the deep link. The widget
+runtime ignores weights, so the ring column has a fixed width and the macro column, as the row's last
+child, fills the rest; a value is pushed to the far edge by stacking a full-width, end-aligned row over
+its label in a `Box`. The runtime draws a ring at a fixed 32dp and ignores its `strokeWidth`: the
+box-filling, thin, 12-o'clock-start ring comes from `plugins/withWidgetProgressRing.js`, which
+overrides peek-glance's `peek_determinate_circular_progress` layout and drawable by resource name. The camera artwork sits on a white tile
+because it is drawn for a white page. `widgets/__tests__/androidWidgetLayout.test.ts` evaluates each
+Android layout and fails on a view or modifier the runtime would silently ignore (such as `weight`) or
+a macro column left narrower than 110dp on the 250dp minimum footprint.
+The camera artwork is at most 512px: WidgetKit refuses
+to archive an image larger than the widget (`imageTooLarge`) and keeps showing the last good render.

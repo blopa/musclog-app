@@ -1,3 +1,4 @@
+import { settingsGetMock } from './settingsGetMock';
 import { database } from '@/database/database-instance';
 import { GymService } from '@/database/services/GymService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -206,7 +207,9 @@ describe('WorkoutProgressionService', () => {
     ];
 
     beforeEach(() => {
-      jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('suggest');
+      jest
+        .spyOn(SettingsService, 'get')
+        .mockImplementation(settingsGetMock({ workoutAutonomy: 'suggest' }));
       jest.spyOn(SettingsService, 'getProgressionMode').mockResolvedValue('weight_first');
       jest.spyOn(SettingsService, 'getUnits').mockResolvedValue('metric');
       jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(null);
@@ -239,7 +242,7 @@ describe('WorkoutProgressionService', () => {
       expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
     });
 
-    it('progresses an exercise shown in pounds in whole pounds, even on a metric account', async () => {
+    it('progresses a barbell lift shown in pounds on the pound plate grid, even on a metric account', async () => {
       const sets = [planned('s1', { weight: 60 })];
       installHistory({
         sets,
@@ -249,9 +252,10 @@ describe('WorkoutProgressionService', () => {
 
       await WorkoutProgressionService.applyStartProgression('wl-1');
 
-      // 62 kg (136.69 lb) + the 5 lb step = 141.69 lb → 142 lb. A metric rounding would have
-      // stored 65 kg, which this lifter would read as 143.3 lb.
-      expect(kgToDisplay(sets[0].weight, 'imperial')).toBeCloseTo(142, 6);
+      // 62 kg (136.69 lb) + the 5 lb step = 141.69 lb → 140 lb: a bar loads in pairs of 2.5 lb
+      // plates, so 142 cannot be built. A metric rounding would have stored 65 kg, which this lifter
+      // would read as 143.3 lb.
+      expect(kgToDisplay(sets[0].weight, 'imperial')).toBeCloseTo(140, 6);
     });
 
     it('reads history before opening the writer, so the write lock is not held across it', async () => {
@@ -279,7 +283,9 @@ describe('WorkoutProgressionService', () => {
     });
 
     it('does nothing in manual mode: the plan is copied exactly as it always was', async () => {
-      jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('manual');
+      jest
+        .spyOn(SettingsService, 'get')
+        .mockImplementation(settingsGetMock({ workoutAutonomy: 'manual' }));
       const sets = [planned('s1')];
       installHistory({ sets, previousSets: lastSession(62, 4) });
 
@@ -577,7 +583,9 @@ describe('WorkoutProgressionService', () => {
       });
 
       it('applies in manual mode, because the user chose it', async () => {
-        jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('manual');
+        jest
+          .spyOn(SettingsService, 'get')
+          .mockImplementation(settingsGetMock({ workoutAutonomy: 'manual' }));
         const sets = four();
         installHistory({ sets, previousSets: lastSession(62, 1) });
         installWeek('lighter');

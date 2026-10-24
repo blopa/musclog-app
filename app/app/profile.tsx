@@ -30,11 +30,15 @@ import {
 import { EditPersonalInfoModal } from '@/components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { IconButton } from '@/components/theme/IconButton';
+import { ListGroup } from '@/components/theme/ListGroup';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { type Gender } from '@/database/models';
 import { UserService } from '@/database/services/UserService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
@@ -43,6 +47,7 @@ import { useUserMetrics } from '@/hooks/useUserMetrics';
 import { useWeightPrediction } from '@/hooks/useWeightPrediction';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { calculateBMIWithStatus } from '@/utils/bmiHelper';
+import { resolveTrackingToggle } from '@/utils/cycle/trackingToggle';
 import {
   formatDateOfBirthFromTimestamp,
   persistFitnessDetails,
@@ -105,6 +110,12 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const {
+    isActive: isCycleActive,
+    pausedCycle,
+    deactivateTracking,
+    resumeTracking,
+  } = useMenstrualCycle();
   const { units, weightUnit, heightUnit, showWeightPrediction } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
@@ -123,24 +134,21 @@ export default function ProfileScreen() {
         titleKey: 'profile.managementItems.editPersonal',
         descriptionKey: 'profile.managementItems.editPersonalDesc',
         icon: User,
-        iconColor: theme.colors.accent.primary,
       },
       {
         id: 'fitness',
         titleKey: 'profile.managementItems.editFitness',
         descriptionKey: 'profile.managementItems.editFitnessDesc',
         icon: Dumbbell,
-        iconColor: theme.colors.status.purple,
       },
       {
         id: 'preferences',
         titleKey: 'profile.managementItems.appPreferences',
         descriptionKey: 'profile.managementItems.appPreferencesDesc',
         icon: List,
-        iconColor: theme.colors.text.secondary,
       },
     ],
-    [theme]
+    []
   );
 
   useEffect(() => {
@@ -280,6 +288,23 @@ export default function ProfileScreen() {
         avatarIcon: data.avatarIcon || null,
         avatarColor: data.avatarColor || null,
       });
+
+      const trackingAction = resolveTrackingToggle({
+        requested: data.trackCycle,
+        isActive: isCycleActive,
+        hasPausedCycle: pausedCycle != null,
+      });
+      if (trackingAction === 'pause') {
+        // Pausing keeps every record; turning it back on resumes the same history.
+        await deactivateTracking();
+      } else if (trackingAction === 'resume') {
+        await resumeTracking();
+      } else if (trackingAction === 'setup') {
+        router.navigate({
+          pathname: '/app/onboarding/cycle-setup',
+          params: { nextRoute: encodeURIComponent('/app/profile') },
+        } as never);
+      }
     } catch (err) {
       handleError(err, 'profile.handleSavePersonalInfo', {
         snackbarMessage: t('errors.somethingWentWrong'),
@@ -299,6 +324,18 @@ export default function ProfileScreen() {
 
   return (
     <MasterLayout>
+      <ScreenHeader
+        title={t('profile.header.title')}
+        destination="profile"
+        actions={
+          <IconButton
+            icon={Settings}
+            variant="ghost"
+            accessibilityLabel={t('settings.title')}
+            onPress={() => router.navigate('/app/settings')}
+          />
+        }
+      />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Syncing Indicator */}
         {isSyncing ? (
@@ -306,19 +343,9 @@ export default function ProfileScreen() {
             <ProgressIndicator message={t('profile.syncing.healthKit')} />
           </View>
         ) : null}
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-6">
-          <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
-          <Pressable
-            className="active:bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
-            onPress={() => router.navigate('/app/settings')}
-          >
-            <Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />
-          </Pressable>
-        </View>
 
         {/* User Profile Section */}
-        <View className="mb-8 items-center">
+        <View className="mb-8 mt-6 items-center">
           {isLoadingUser ? (
             <View className="items-center gap-3">
               <SkeletonLoader width={128} height={128} borderRadius={64} />
@@ -405,7 +432,6 @@ export default function ProfileScreen() {
                   flexDirection: 'row',
                   flexWrap: 'wrap',
                   width: '100%',
-                  marginHorizontal: -8,
                 }}
               >
                 {stats.map((stat) => (
@@ -463,14 +489,13 @@ export default function ProfileScreen() {
           <Text className="mb-4 text-2xl font-bold text-text-primary">
             {t('profile.management')}
           </Text>
-          <View className="gap-3">
+          <ListGroup>
             {managementItems.map((item) => (
               <ManagementItem
                 key={item.id}
                 title={t(item.titleKey)}
                 description={t(item.descriptionKey)}
                 icon={item.icon}
-                iconColor={item.iconColor}
                 onPress={() => {
                   if (item.id === 'personal') {
                     setIsEditPersonalVisible(true);
@@ -482,7 +507,7 @@ export default function ProfileScreen() {
                 }}
               />
             ))}
-          </View>
+          </ListGroup>
         </View>
 
         {/* Bottom spacing for navigation */}
@@ -510,6 +535,7 @@ export default function ProfileScreen() {
                 gender: dbUser.gender,
                 avatarIcon: dbUser.avatarIcon,
                 avatarColor: dbUser.avatarColor,
+                trackCycle: isCycleActive,
               }
             : undefined
         }

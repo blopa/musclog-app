@@ -223,9 +223,7 @@ export function TrainingReviewSection({
 
       {recordRows.length ? (
         <View className="gap-2">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-            {t('weeklyReview.records')}
-          </Text>
+          <Text className="text-xs font-bold text-text-secondary">{t('weeklyReview.records')}</Text>
           {(showAllRecords ? recordRows : recordRows.slice(0, VISIBLE_RECORDS)).map((record) => (
             <View
               key={record.exerciseId}
@@ -261,9 +259,7 @@ export function TrainingReviewSection({
 
       {training.next ? (
         <View className="gap-3 rounded-xl border border-border-light p-3">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-            {t('weeklyReview.nextUp')}
-          </Text>
+          <Text className="text-xs font-bold text-text-secondary">{t('weeklyReview.nextUp')}</Text>
           <Text className="text-base font-bold text-text-primary">
             {training.next.template.name}
           </Text>
@@ -308,7 +304,7 @@ export function TrainingReviewSection({
 
       {reviewable ? (
         <View className="gap-2" testID="review-training-goals">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="text-xs font-bold text-text-secondary">
             {t('weeklyReview.goals.title')}
           </Text>
           {verdicts.length ? (
@@ -348,7 +344,7 @@ export function TrainingReviewSection({
 
       {decided ? (
         <View className="gap-1 rounded-xl bg-bg-overlay p-3" testID="review-training-decided">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="text-xs font-bold text-text-secondary">
             {t('weeklyReview.trainingDecision.title')}
           </Text>
           <Text className="text-base font-bold text-text-primary">
@@ -364,7 +360,7 @@ export function TrainingReviewSection({
 
       {training.canDecide && !decided ? (
         <View className="gap-3" testID="review-training-decision">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="text-xs font-bold text-text-secondary">
             {t('weeklyReview.trainingDecision.title')}
           </Text>
           <Text className="text-xs text-text-tertiary">{t('weeklyReview.trainingHint')}</Text>

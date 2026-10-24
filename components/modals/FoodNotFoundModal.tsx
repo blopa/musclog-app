@@ -1,5 +1,4 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { AlertTriangle, ChevronRight, Edit, Search } from 'lucide-react-native';
+import { AlertTriangle, Camera, ChevronRight, Edit, Search } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -52,11 +51,9 @@ export function FoodNotFoundModal({
             }}
             className="overflow-hidden rounded-2xl"
           >
-            <LinearGradient
-              colors={theme.colors.gradients.cta}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+            <View
               style={{
+                backgroundColor: theme.colors.accent.primary,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 16,
@@ -64,18 +61,18 @@ export function FoodNotFoundModal({
               }}
             >
               <View className="h-12 w-12 items-center justify-center rounded-lg bg-text-always-white/20">
-                <Text className="text-2xl">✨</Text>
+                <Camera size={theme.iconSize.xl} color={theme.colors.text.onAccent} />
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-bold text-text-always-white">
+                <Text className="text-lg font-bold" style={{ color: theme.colors.text.onAccent }}>
                   {t('nutrition.tryAICamera')}
                 </Text>
-                <Text className="text-xs text-text-always-white/80">
+                <Text className="text-xs" style={{ color: theme.colors.text.onAccent }}>
                   {t('nutrition.tryAICameraDesc')}
                 </Text>
               </View>
-              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.alwaysWhite} />
-            </LinearGradient>
+              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.onAccent} />
+            </View>
           </Pressable>
         ) : null}
 
@@ -108,10 +105,7 @@ export function FoodNotFoundModal({
           className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
         >
           <View className="h-12 w-12 items-center justify-center rounded-lg bg-ink/10">
-            <Edit
-              size={theme.iconSize.md}
-              color={theme.colors.gradients.accent?.[0] || theme.colors.status.indigo}
-            />
+            <Edit size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
             <Text className="text-lg font-bold text-text-primary">

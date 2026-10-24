@@ -1,10 +1,12 @@
 import {
   isWhatsNewSettingValue,
   WHATS_NEW_ACTIONS,
+  WHATS_NEW_CONDITIONS,
   WHATS_NEW_ICONS,
   WHATS_NEW_SETTING_CATALOG,
   WHATS_NEW_SETTINGS,
   type WhatsNewAction,
+  type WhatsNewCondition,
   type WhatsNewIconName,
   type WhatsNewSetting,
 } from './catalog';
@@ -32,7 +34,8 @@ export type WhatsNewBlock = BlockBase &
     | { type: 'featureList'; titleKey?: WhatsNewKey; items: WhatsNewFeature[] }
     | (Copy & { type: 'action'; action: WhatsNewAction; labelKey: WhatsNewKey })
   );
-export type WhatsNewPage = BlockBase & { blocks: WhatsNewBlock[] };
+/** `requires` shows the page only to people for whom that condition holds. */
+export type WhatsNewPage = BlockBase & { blocks: WhatsNewBlock[]; requires?: WhatsNewCondition };
 export type WhatsNewRelease = { version: string; pages: WhatsNewPage[] };
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -245,8 +248,13 @@ export function parseWhatsNewRelease(
         return;
       }
 
-      properties(page, ['id', 'blocks', 'supersededIn'], path);
+      properties(page, ['id', 'blocks', 'supersededIn', 'requires'], path);
       if (!base(page, pageIds, path)) {
+        return;
+      }
+
+      if (page.requires !== undefined && !contains(WHATS_NEW_CONDITIONS, page.requires)) {
+        issue(path, 'unknown requires condition');
         return;
       }
 
@@ -268,6 +276,7 @@ export function parseWhatsNewRelease(
         id: page.id as string,
         blocks,
         ...(page.supersededIn ? { supersededIn: page.supersededIn as string } : {}),
+        ...(page.requires ? { requires: page.requires as WhatsNewCondition } : {}),
       });
     });
   }

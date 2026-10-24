@@ -4,8 +4,8 @@
     "nutritionAndBodyTab": "Nutrição e Corpo",
     "fitnessAndExerciseTab": "Fitness e Exercício",
     "subtitle": "Acompanhe seu progresso e histórico.",
-    "currentGoals": "METAS ATUAIS",
-    "history": "HISTÓRICO DE METAS",
+    "currentGoals": "Metas atuais",
+    "history": "Histórico de metas",
     "newGoal": "Nova Meta",
     "createGoalDesc": "Defina novos objetivos de nutrição e macros",
     "createCheckin": "Criar Check-in",
@@ -96,7 +96,7 @@
       "subtitleFormat": "Meta {{targetWeight}} {{unit}} • {{targetBodyFat}}% gordura corporal",
       "checkinDate": "Data do Check-in"
     },
-    "exerciseGoals": "METAS DE EXERCÍCIO",
+    "exerciseGoals": "Metas de exercício",
     "exerciseGoalsTitle": "Força e Constância",
     "exerciseGoalsSubtitle": "Acompanhe metas de 1RM e frequência de treinos"
   }

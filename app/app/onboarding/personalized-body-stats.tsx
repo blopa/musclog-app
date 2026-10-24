@@ -278,10 +278,7 @@ export default function PersonalizedBodyStatsScreen() {
 
             {/* Birthday */}
             <View className="gap-2">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickBodyStats.birthday').toUpperCase()}
               </Text>
               <DatePickerInput
@@ -301,10 +298,7 @@ export default function PersonalizedBodyStatsScreen() {
 
             {/* Body Fat % */}
             <View className="gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickBodyStats.bodyFat').toUpperCase()}
               </Text>
               <Text

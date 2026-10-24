@@ -159,7 +159,7 @@ const server = http.createServer((req, res) => {
     });
 
     proxyReq.on('error', (err) => {
-      console.error(`✗ Proxy error for ${targetUrl}:`, err.message);
+      console.error(`[ERROR] Proxy error for ${targetUrl}:`, err.message);
       if (!res.headersSent) {
         res.writeHead(502, { 'Content-Type': 'text/plain', ...getCorsHeaders(req) });
       }

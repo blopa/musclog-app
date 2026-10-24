@@ -1128,7 +1128,6 @@ export function DataLogModal({
       menuItems.push({
         icon: FavoriteIcon,
         iconColor: theme.colors.text.primary,
-        iconBgColor: theme.colors.background.iconDarker,
         title: selectedItem.isFavorite
           ? translations.favoriteRemoveTitle
           : translations.favoriteAddTitle,
@@ -1159,7 +1158,6 @@ export function DataLogModal({
       menuItems.push({
         icon: EditIcon,
         iconColor: theme.colors.text.primary,
-        iconBgColor: theme.colors.background.iconDarker,
         title: translations.editTitle,
         description: translations.editDesc,
         onPress: handleEdit,
@@ -1171,7 +1169,6 @@ export function DataLogModal({
       menuItems.push({
         icon: RegenerateIcon,
         iconColor: theme.colors.text.primary,
-        iconBgColor: theme.colors.background.iconDarker,
         title: t('goalsManagement.manageGoalData.regenerateCheckins'),
         description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
         onPress: handleRegenerateCheckins,
@@ -1193,7 +1190,6 @@ export function DataLogModal({
       menuItems.push({
         icon: DuplicateIcon,
         iconColor: theme.colors.text.primary,
-        iconBgColor: theme.colors.background.iconDarker,
         title: translations.duplicateTitle,
         description: translations.duplicateDesc,
         onPress: handleDuplicate,
@@ -1205,7 +1201,6 @@ export function DataLogModal({
       menuItems.push({
         icon: DeleteIcon,
         iconColor: theme.colors.status.error50,
-        iconBgColor: theme.colors.status.error10,
         title: translations.deleteTitle,
         description: translations.deleteDesc,
         onPress: handleDelete,
@@ -1234,7 +1229,7 @@ export function DataLogModal({
                 <MaterialIcons name="star" size={16} color={theme.colors.accent.secondary} />
               ) : null}
             </View>
-            <Text className="text-sm font-medium tracking-wider text-text-secondary">
+            <Text className="text-sm font-medium text-text-secondary">
               {translations.formatItemSubtitle
                 ? translations.formatItemSubtitle(item)
                 : translations.formatCaloriesMacros({
@@ -1282,7 +1277,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('food.createMeal.title'),
           description: t('food.createMeal.description'),
           onPress: () => {
@@ -1295,7 +1289,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('food.createFood.title'),
           description: t('food.createFood.description'),
           onPress: () => {
@@ -1308,7 +1301,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('food.createPortion.title'),
           description: t('food.createPortion.description'),
           onPress: () => {
@@ -1321,7 +1313,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('exercises.createExercise.title'),
           description: t('exercises.createExercise.description'),
           onPress: () => {
@@ -1334,7 +1325,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('workouts.createTemplate.title'),
           description: t('workouts.createTemplate.description'),
           onPress: () => {
@@ -1347,7 +1337,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('bodyMetrics.addEntry.title'),
           description: t('bodyMetrics.addEntry.description'),
           onPress: () => {
@@ -1363,7 +1352,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('goalsManagement.newGoal'),
           description: t('goalsManagement.createGoalDesc'),
           onPress: () => {
@@ -1376,7 +1364,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('goalsManagement.createCheckin'),
           description: t('goalsManagement.createCheckinDesc'),
           onPress: () => {
@@ -1392,7 +1379,6 @@ export function DataLogModal({
         menuItems.push({
           icon: CreateIcon,
           iconColor: theme.colors.text.primary,
-          iconBgColor: theme.colors.background.iconDarker,
           title: t('coach.chatMessages.createMessage'),
           description: t('coach.chatMessages.createMessageDesc'),
           onPress: () => {
@@ -1417,105 +1403,105 @@ export function DataLogModal({
       headerRight={renderHeaderRight()}
       scrollable={false}
     >
-      <KeyboardAwareScrollView className="mt-6 flex flex-col gap-3 px-4" bottomOffset={16}>
-        {/* Search Bar */}
-        <View className="relative">
-          <TextInput
-            label=""
-            value={searchQuery}
-            onChangeText={onSearchQueryChange}
-            placeholder={translations.searchPlaceholder}
-            icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
-          />
-        </View>
+      <KeyboardAwareScrollView className="flex-1" bottomOffset={16}>
+        <View className="mt-6 flex flex-col gap-3 px-4">
+          {/* Search Bar */}
+          <View className="relative">
+            <TextInput
+              label=""
+              value={searchQuery}
+              onChangeText={onSearchQueryChange}
+              placeholder={translations.searchPlaceholder}
+              icon={<MaterialIcons name="search" size={20} color={theme.colors.text.tertiary} />}
+            />
+          </View>
 
-        {/* Item List */}
-        <View className="mt-6 flex flex-col gap-3">
-          {isLoading ? (
-            <View className="flex flex-col gap-4">
-              <SkeletonLoader width={80} height={16} className="mb-2" />
-              {[1, 2, 3].map((i) => (
-                <View
-                  key={i}
-                  className="rounded-lg border p-4"
-                  style={{
-                    backgroundColor: theme.colors.background.card,
-                    borderColor: theme.colors.background.ink5,
-                  }}
-                >
-                  <View className="flex-row items-center gap-4">
-                    <SkeletonLoader width={40} height={40} borderRadius={20} />
-                    <View className="flex-1 gap-2">
-                      <SkeletonLoader width="70%" height={16} />
-                      <SkeletonLoader width="50%" height={14} />
+          {/* Item List */}
+          <View className="mt-6 flex flex-col gap-3">
+            {isLoading ? (
+              <View className="flex flex-col gap-4">
+                <SkeletonLoader width={80} height={16} className="mb-2" />
+                {[1, 2, 3].map((i) => (
+                  <View
+                    key={i}
+                    className="rounded-lg border p-4"
+                    style={{
+                      backgroundColor: theme.colors.background.card,
+                      borderColor: theme.colors.background.ink5,
+                    }}
+                  >
+                    <View className="flex-row items-center gap-4">
+                      <SkeletonLoader width={40} height={40} borderRadius={20} />
+                      <View className="flex-1 gap-2">
+                        <SkeletonLoader width="70%" height={16} />
+                        <SkeletonLoader width="50%" height={14} />
+                      </View>
                     </View>
                   </View>
-                </View>
-              ))}
-            </View>
-          ) : typedDayGroups.length === 0 ? (
-            <View
-              className="items-center justify-center py-12"
-              style={{ backgroundColor: theme.colors.background.card }}
-            >
-              <MaterialIcons
-                name={getEmptyStateIconName(variant)}
-                size={48}
-                color={theme.colors.text.tertiary}
-              />
-              <Text
-                className="mt-3 text-center text-base font-medium"
-                style={{ color: theme.colors.text.secondary }}
-              >
-                {translations.noItemsText}
-              </Text>
-              <Text
-                className="mt-1 text-center text-sm"
-                style={{ color: theme.colors.text.tertiary }}
-              >
-                {translations.noItemsDesc}
-              </Text>
-            </View>
-          ) : (
-            typedDayGroups.map((dayData) => (
-              <View
-                key={`${dayData.date}-${dayData.dateTimestamp}`}
-                className="flex flex-col gap-2"
-              >
-                <View>
-                  <Text className="text-sm font-bold uppercase tracking-wider text-text-secondary">
-                    {dayData.date}
-                  </Text>
-                </View>
-                <View className="flex flex-col gap-2">{dayData.items.map(renderItem)}</View>
+                ))}
               </View>
-            ))
-          )}
+            ) : typedDayGroups.length === 0 ? (
+              <View
+                className="items-center justify-center py-12"
+                style={{ backgroundColor: theme.colors.background.card }}
+              >
+                <MaterialIcons
+                  name={getEmptyStateIconName(variant)}
+                  size={48}
+                  color={theme.colors.text.tertiary}
+                />
+                <Text
+                  className="mt-3 text-center text-base font-medium"
+                  style={{ color: theme.colors.text.secondary }}
+                >
+                  {translations.noItemsText}
+                </Text>
+                <Text
+                  className="mt-1 text-center text-sm"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
+                  {translations.noItemsDesc}
+                </Text>
+              </View>
+            ) : (
+              typedDayGroups.map((dayData) => (
+                <View
+                  key={`${dayData.date}-${dayData.dateTimestamp}`}
+                  className="flex flex-col gap-2"
+                >
+                  <View>
+                    <Text className="text-sm font-bold text-text-secondary">{dayData.date}</Text>
+                  </View>
+                  <View className="flex flex-col gap-2">{dayData.items.map(renderItem)}</View>
+                </View>
+              ))
+            )}
 
-          {!isLoading && hasMore ? (
-            <View className="py-4">
-              <Button
-                label={loadingLabel}
-                variant="outline"
-                size="sm"
-                width="full"
-                disabled={isLoadingMore}
-                loading={isLoadingMore}
-                onPress={loadMore}
-              />
+            {!isLoading && hasMore ? (
+              <View className="py-4">
+                <Button
+                  label={loadingLabel}
+                  variant="outline"
+                  size="sm"
+                  width="full"
+                  disabled={isLoadingMore}
+                  loading={isLoadingMore}
+                  onPress={loadMore}
+                />
+              </View>
+            ) : null}
+          </View>
+
+          {/* End of history indicator */}
+          {!isLoading && typedDayGroups.length > 0 && !hasMore ? (
+            <View className="mt-12 flex flex-col items-center justify-center opacity-40">
+              <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
+              <Text className="mt-2 text-sm font-medium text-text-tertiary">
+                {translations.endOfHistoryText}
+              </Text>
             </View>
           ) : null}
         </View>
-
-        {/* End of history indicator */}
-        {!isLoading && typedDayGroups.length > 0 && !hasMore ? (
-          <View className="mt-12 flex flex-col items-center justify-center opacity-40">
-            <MaterialIcons name="history" size={48} color={theme.colors.text.tertiary} />
-            <Text className="mt-2 text-sm font-medium text-text-tertiary">
-              {translations.endOfHistoryText}
-            </Text>
-          </View>
-        ) : null}
       </KeyboardAwareScrollView>
 
       <BottomPopUpMenu

@@ -1,8 +1,8 @@
 import { ReactNode, useCallback } from 'react';
 import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSmartCamera } from '@/context/SmartCameraContext';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useTheme } from '@/hooks/useTheme';
 
 import { useCoach } from './CoachContext';
@@ -17,7 +17,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
   const theme = useTheme();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
 
   // Stable reference so NavigationMenu (wrapped in memo) does not re-render
   // when this layout re-renders due to screen state changes.

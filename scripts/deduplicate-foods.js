@@ -358,10 +358,10 @@ function main() {
     console.log(`Writing output file: ${outputFile}`);
     fs.writeFileSync(outputFile, JSON.stringify(deduplicatedData, null, 2));
 
-    console.log('✅ Food deduplication completed successfully!');
-    console.log(`📊 Summary: ${deduplicator.duplicatesRemoved} duplicate foods removed`);
+    console.log('[OK] Food deduplication completed successfully!');
+    console.log(`Summary: ${deduplicator.duplicatesRemoved} duplicate foods removed`);
   } catch (error) {
-    console.error('❌ Error during deduplication:', error.message);
+    console.error('[ERROR] Error during deduplication:', error.message);
     process.exit(1);
   }
 }

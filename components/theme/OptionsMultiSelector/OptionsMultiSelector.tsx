@@ -1,4 +1,4 @@
-import { Check, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { Check, ChevronDown, ChevronUp, StickyNote } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -314,7 +314,7 @@ export function OptionsMultiSelector<T extends string | number>({
         <View style={{ flex: 1 }}>
           <Pressable
             onPress={() => (showCheckboxes ? toggle(option.id) : onOptionPress?.(option.id))}
-            disabled={!showCheckboxes ? !onOptionPress : null}
+            disabled={!showCheckboxes ? !onOptionPress : false}
             style={{ flex: 1 }}
           >
             {({ pressed }) => (
@@ -335,7 +335,6 @@ export function OptionsMultiSelector<T extends string | number>({
                   backgroundColor:
                     hasGroups && groupColor ? groupColor + '08' : theme.colors.background.card,
                   transform: [{ scale: pressed && !disablePressAnimation ? 0.98 : 1 }],
-                  ...(selected ? theme.shadows.accentGlow : {}),
                 }}
               >
                 <View
@@ -369,15 +368,31 @@ export function OptionsMultiSelector<T extends string | number>({
                     >
                       {option.label}
                     </Text>
-                    <Text
+                    <View
                       style={{
-                        fontSize: theme.typography.fontSize.xs,
-                        color: theme.colors.text.secondary,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: theme.spacing.gap.xs,
                         marginTop: theme.spacing.padding.xsHalf,
                       }}
                     >
-                      {option.description}
-                    </Text>
+                      <Text
+                        style={{
+                          flexShrink: 1,
+                          fontSize: theme.typography.fontSize.xs,
+                          color: theme.colors.text.secondary,
+                        }}
+                      >
+                        {option.description}
+                      </Text>
+                      {option.hasNotes ? (
+                        <StickyNote
+                          size={theme.iconSize.xs}
+                          color={theme.colors.text.secondary}
+                          accessibilityLabel={t('workoutDetail.notes')}
+                        />
+                      ) : null}
+                    </View>
                   </View>
                 </View>
                 <View
@@ -452,8 +467,6 @@ export function OptionsMultiSelector<T extends string | number>({
             fontSize: theme.typography.fontSize.xs,
             fontWeight: theme.typography.fontWeight.bold,
             color: theme.colors.text.secondary,
-            textTransform: 'uppercase',
-            letterSpacing: theme.typography.letterSpacing.extraWide,
           }}
         >
           {title}

@@ -171,12 +171,15 @@ describe('bodyweight rep ceiling', () => {
     expect(live()[0]).toMatchObject({ note: 'full lockout', repCeiling: 35 });
   });
 
-  it('does not store the default: picking 25 is the same as having no row', async () => {
+  it('stores an explicit pick even when it equals the default: defaults depend on the movement', async () => {
+    // A lifter who chose 25 for pull-ups (default 15) must keep 25, so the pick itself is the row.
     await ExerciseUserSettingsService.setRepCeiling('ex-1', 25);
-    expect(database.batch).not.toHaveBeenCalled();
+    expect(live()[0].repCeiling).toBe(25);
+  });
 
+  it('retires the row when the ceiling is cleared and nothing else is set', async () => {
     mockState.rows = [row({ repCeiling: 40 })];
-    await ExerciseUserSettingsService.setRepCeiling('ex-1', 25);
+    await ExerciseUserSettingsService.setRepCeiling('ex-1', null);
     expect(live()).toHaveLength(0);
   });
 
@@ -185,7 +188,7 @@ describe('bodyweight rep ceiling', () => {
     expect(live()[0].repCeiling).toBeUndefined();
   });
 
-  it('resolves every exercise’s ceiling in one read, defaulting to 25', async () => {
+  it('resolves every exercise’s ceiling in one read, defaulting by how much body it moves', async () => {
     mockState.rows = [
       row({ exerciseId: 'dips', repCeiling: 30 }),
       row({ exerciseId: 'odd', repCeiling: 99 }),
@@ -196,8 +199,9 @@ describe('bodyweight rep ceiling', () => {
 
     const { repCeilingFor } = await ExerciseUserSettingsService.getResolvers(null);
 
-    expect(repCeilingFor('dips')).toBe(30);
-    expect(repCeilingFor('odd')).toBe(25);
-    expect(repCeilingFor('push-ups')).toBe(25);
+    expect(repCeilingFor({ id: 'dips', loadMultiplier: 0.99 })).toBe(30);
+    expect(repCeilingFor({ id: 'odd', loadMultiplier: 0.7 })).toBe(25);
+    expect(repCeilingFor({ id: 'push-ups', loadMultiplier: 0.7 })).toBe(25);
+    expect(repCeilingFor({ id: 'pull-ups', loadMultiplier: 0.99 })).toBe(15);
   });
 });

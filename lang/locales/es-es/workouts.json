@@ -120,8 +120,8 @@
       "clearFilters": "Borrar Filtros",
       "applyFilters": "Aplicar Filtros",
       "workoutType": "Tipo de Entrenamiento",
-      "targetMuscles": "MÚSCULOS OBJETIVO",
-      "duration": "DURACIÓN",
+      "targetMuscles": "Músculos objetivo",
+      "duration": "Duración",
       "upTo": "Hasta {{duration}}",
       "workoutTypes": {
         "strength": "Fuerza",
@@ -209,7 +209,7 @@
       "successMessageWithPlan": "{{planName}} creado con {{count}} entrenamientos"
     },
     "aiGeneration": {
-      "comingSoon": "¡La generación de entrenamientos por IA llegará pronto!",
+      "comingSoon": "La generación de entrenamientos con IA llegará pronto.",
       "title": "Generar con IA",
       "subtitle": "Cuéntanos sobre tus objetivos y crearemos un plan de entrenamiento personalizado",
       "preferencesLabel": "Tus preferencias",
@@ -220,7 +220,7 @@
       "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes."
     },
     "templateBrowser": {
-      "comingSoon": "¡El explorador de plantillas llegará pronto!"
+      "comingSoon": "El explorador de plantillas llegará pronto."
     },
     "interruptedSession": {
       "description": "Tienes un entrenamiento en curso.",

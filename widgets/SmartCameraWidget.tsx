@@ -1,32 +1,44 @@
-import { FlexWidget, ImageWidget } from 'react-native-android-widget';
+import { Image, Link } from '@expo/ui/swift-ui';
+import {
+  accessibilityLabel,
+  aspectRatio,
+  containerBackground,
+  frame,
+  resizable,
+  widgetURL,
+} from '@expo/ui/swift-ui/modifiers';
+import { createWidget } from 'expo-widgets';
 
-import { darkTheme } from '@/theme'; // TODO: figure out how to get the current theme instead
+import { type CameraWidgetSnapshot, INITIAL_CAMERA_SNAPSHOT } from './widgetSnapshot';
 
-export function SmartCameraWidget() {
-  // Use dark theme colors for widget as per requirements.
-  // this will not dynamically update if the theme is changed.
-  const theme = darkTheme;
+// A shortcut, not a dashboard: like an app icon, the tile is the artwork and nothing else (the
+// system already prints the app's name under it). The artwork is drawn for a white page, so the
+// tile is white whatever the theme. Until the artwork has been copied to the shared container the
+// tile falls back to the accent with a white SF Symbol, which still reads as the camera.
+function SmartCameraWidget(props: CameraWidgetSnapshot) {
+  'widget';
+  const hasArtwork = props.imageUri !== '';
+  const fill = frame({ maxWidth: Infinity, maxHeight: Infinity });
 
   return (
-    <FlexWidget
-      style={{
-        height: 'match_parent',
-        width: 'match_parent',
-        justifyContent: 'center',
-        alignItems: 'center',
-        // backgroundColor: theme.colors.background.primary as ColorProp,
-        borderRadius: theme.borderRadius.xl,
-      }}
-      clickAction="OPEN_URI"
-      clickActionData={{
-        uri: 'com.werules.logger://?action=open-camera',
-      }}
+    <Link
+      destination={props.url}
+      modifiers={[
+        containerBackground(hasArtwork ? '#FFFFFF' : props.palette.accent, 'widget'),
+        widgetURL(props.url),
+        accessibilityLabel(props.label),
+      ]}
     >
-      <ImageWidget
-        image={require('../assets/camera-widget.png')}
-        imageWidth={256}
-        imageHeight={256}
-      />
-    </FlexWidget>
+      {hasArtwork ? (
+        <Image
+          uiImage={props.imageUri}
+          modifiers={[resizable(), aspectRatio({ contentMode: 'fit' }), fill]}
+        />
+      ) : (
+        <Image systemName="barcode.viewfinder" size={64} color="#FFFFFF" modifiers={[fill]} />
+      )}
+    </Link>
   );
 }
+
+export default createWidget('SmartCamera', SmartCameraWidget, INITIAL_CAMERA_SNAPSHOT);

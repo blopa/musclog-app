@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Pressable, type StyleProp, Text, type TextStyle, View } from 'react-native';
 
+import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
+
 /**
  * One cell of a stat strip. The value arrives already formatted for the active locale —
  * the strip draws numbers, it never formats them.
@@ -56,13 +58,18 @@ export function StatStrip({ className, items, palette }: StatStripProps) {
         {item.icon ?? null}
         <Text
           className="text-[15px] font-semibold"
+          maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
           numberOfLines={1}
           style={[{ color: item.valueColor }, item.valueStyle]}
         >
           {item.value}
         </Text>
         {item.unit ? (
-          <Text className="ml-1 text-[10px] font-medium" style={{ color: palette.unit }}>
+          <Text
+            className="ml-1 text-[10px] font-medium"
+            maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+            style={{ color: palette.unit }}
+          >
             {item.unit}
           </Text>
         ) : null}
@@ -73,9 +80,10 @@ export function StatStrip({ className, items, palette }: StatStripProps) {
         the row still reads across.
       */}
       <Text
-        className="mt-1 text-center text-[10px] font-semibold uppercase"
+        className="mt-1 text-center text-xs font-semibold"
+        maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
         numberOfLines={2}
-        style={{ color: palette.label, letterSpacing: 0.7 }}
+        style={{ color: palette.label }}
       >
         {item.label}
       </Text>

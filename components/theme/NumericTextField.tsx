@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import type { TextInputInstance } from 'react-native';
 import { Platform, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -28,6 +29,11 @@ type NumericTextFieldProps = {
    * underline, so it reads without color too.
    */
   marked?: boolean;
+  /**
+   * The value cannot be saved as typed (an emptied weight, zero reps): an error-coloured outline,
+   * so the field to fix is visible next to the message that names it.
+   */
+  invalid?: boolean;
   /** Draw the field's own surface. Defaults to on for `field` and `cell`, off for `hero`. */
   surface?: boolean;
   editable?: boolean;
@@ -54,12 +60,13 @@ export function NumericTextField({
   integer = false,
   placeholder,
   marked = false,
+  invalid = false,
   surface = size !== 'hero',
   editable = true,
   testID,
 }: NumericTextFieldProps) {
   const theme = useTheme();
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const [focused, setFocused] = useState(false);
 
   const metrics = {
@@ -79,6 +86,9 @@ export function NumericTextField({
         backgroundColor: surface ? theme.colors.background.cardElevated : 'transparent',
         borderBottomWidth: marked ? theme.borderWidth.medium : 0,
         borderBottomColor: theme.colors.accent.primary,
+        ...(invalid
+          ? { borderWidth: theme.borderWidth.medium, borderColor: theme.colors.status.error }
+          : {}),
       }}
     >
       <TextInput

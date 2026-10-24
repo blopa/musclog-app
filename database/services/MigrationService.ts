@@ -1911,9 +1911,9 @@ export class MigrationService {
       if (!isProduction()) {
         try {
           const tables = await this.getOldDatabaseTables();
-          console.log('🔍 Old database tables:', tables);
+          console.log('Old database tables:', tables);
         } catch (error) {
-          console.log('🔍 Could not retrieve old database tables:', error);
+          console.log('Could not retrieve old database tables:', error);
         }
       }
 

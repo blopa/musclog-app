@@ -9,7 +9,7 @@
       "emptyData": "Please paste or enter workout data.",
       "formatInfo": "Paste or type your workout log (e.g. from a note or app). AI will parse it and create sessions.",
       "import": "Import",
-      "importWorkouts": "Import Workouts",
+      "importWorkouts": "Import workouts",
       "instructions": "Paste your workout data below. Supported: free text, bullet lists, or structured logs.",
       "pasteWorkoutDataPlaceholder": "Paste workout data here...",
       "processing": "Processing...",
@@ -17,11 +17,11 @@
       "processingFailed": "Could not process the data. Please check the format and try again.",
       "supportedFormats": "Supported formats"
     },
-    "sessionOverview": "Session Overview",
-    "startWorkout": "Start Workout",
-    "resumeSession": "Resume Session",
+    "sessionOverview": "Session overview",
+    "startWorkout": "Start workout",
+    "resumeSession": "Resume session",
     "workout": "Workout",
-    "inProgress": "In Progress",
+    "inProgress": "In progress",
     "type": {
       "strength": "Strength",
       "cardio": "Cardio",
@@ -30,13 +30,13 @@
       "other": "Other",
       "free": "Free"
     },
-    "exercises": "{{count}} Exercises",
-    "workoutSequence": "Workout Sequence",
-    "skipped": "SKIPPED",
+    "exercises": "{{count}} exercises",
+    "workoutSequence": "Workout sequence",
+    "skipped": "Skipped",
     "startFromExercise": {
-      "title": "Start from Exercise",
+      "title": "Start from exercise",
       "message": "Do you want to start the workout from {{exerciseName}}?",
-      "confirm": "Start from Here",
+      "confirm": "Start from here",
       "cancel": "Cancel"
     },
     "summary": {
@@ -61,7 +61,7 @@
       "core": "Core",
       "abdomen": "Abdomen",
       "glutes": "Glutes",
-      "fullBody": "Full Body",
+      "fullBody": "Full body",
       "biceps": "Biceps",
       "triceps": "Triceps",
       "forearms": "Forearms",
@@ -69,7 +69,7 @@
       "quads": "Quads",
       "hamstrings": "Hamstrings",
       "calves": "Calves",
-      "full_body": "Full Body",
+      "full_body": "Full body",
       "cardio": "Cardio",
       "other": "Other"
     },
@@ -82,9 +82,14 @@
       "barbell": "Barbell",
       "cable": "Cable",
       "kettlebell": "Kettlebell",
-      "resistance_band": "Resistance Band",
-      "medicine_ball": "Medicine Ball",
-      "smith_machine": "Smith Machine",
+      "resistance_band": "Resistance band",
+      "medicine_ball": "Medicine ball",
+      "smith_machine": "Smith machine",
+      "plate_machine": "Plate loaded machine",
+      "cardio": "Cardio",
+      "stretching": "Stretching",
+      "plyometric": "Plyometric",
+      "mobility": "Mobility",
       "other": "Other"
     }
   }

@@ -80,7 +80,7 @@ function ExerciseListItem({
             }`}
           >
             <Text
-              className="font-bold uppercase tracking-wider"
+              className="font-bold"
               style={{
                 fontSize: theme.typography.fontSize.xs,
                 color:
@@ -225,106 +225,108 @@ export default function ExercisesModal({
       scrollable={false}
     >
       <KeyboardAwareScrollView
-        className="flex-1 px-4 pb-32"
+        className="flex-1"
         showsVerticalScrollIndicator={false}
         bottomOffset={16}
       >
-        <View className="py-3">
-          {/* Search Input (themed) */}
+        <View className="px-4 pb-32">
           <View className="py-3">
-            <TextInput
-              label=""
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder={t('exercises.searchPlaceholder')}
-              icon={<Search size={theme.iconSize.md} color={theme.colors.status.brandPale} />}
-            />
+            {/* Search Input (themed) */}
+            <View className="py-3">
+              <TextInput
+                label=""
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder={t('exercises.searchPlaceholder')}
+                icon={<Search size={theme.iconSize.md} color={theme.colors.status.brandPale} />}
+              />
+            </View>
           </View>
-        </View>
 
-        {isLoading ? (
-          // Loading skeleton
-          <>
-            {[1, 2, 3, 4].map((i) => (
-              <View
-                key={i}
-                className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card"
-              >
-                <View className="flex-row items-center justify-between px-4 py-4">
-                  <View className="flex-row items-center gap-3">
+          {isLoading ? (
+            // Loading skeleton
+            <>
+              {[1, 2, 3, 4].map((i) => (
+                <View
+                  key={i}
+                  className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card"
+                >
+                  <View className="flex-row items-center justify-between px-4 py-4">
+                    <View className="flex-row items-center gap-3">
+                      <SkeletonLoader
+                        width={theme.size.lg}
+                        height={theme.size.lg}
+                        borderRadius={theme.borderRadius.full}
+                      />
+                      <SkeletonLoader width={theme.size['120']} height={theme.size['5']} />
+                    </View>
                     <SkeletonLoader
                       width={theme.size.lg}
                       height={theme.size.lg}
                       borderRadius={theme.borderRadius.full}
                     />
-                    <SkeletonLoader width={theme.size['120']} height={theme.size['5']} />
                   </View>
-                  <SkeletonLoader
-                    width={theme.size.lg}
-                    height={theme.size.lg}
-                    borderRadius={theme.borderRadius.full}
-                  />
                 </View>
-              </View>
-            ))}
-          </>
-        ) : (
-          Object.keys(exercisesByGroup)
-            .sort()
-            .map((group) => {
-              const config = MUSCLE_GROUP_CONFIG[group] || {
-                name: group.charAt(0).toUpperCase() + group.slice(1),
-                icon: Dumbbell,
-              };
-              const groupExercises = exercisesByGroup[group];
+              ))}
+            </>
+          ) : (
+            Object.keys(exercisesByGroup)
+              .sort()
+              .map((group) => {
+                const config = MUSCLE_GROUP_CONFIG[group] || {
+                  name: group.charAt(0).toUpperCase() + group.slice(1),
+                  icon: Dumbbell,
+                };
+                const groupExercises = exercisesByGroup[group];
 
-              return (
-                <Accordion
-                  key={group}
-                  title={config.name}
-                  count={groupExercises.length}
-                  icon={config.icon}
-                  isOpen={openAccordions[group] || false}
-                  onToggle={() => toggleAccordion(group)}
-                >
-                  {groupExercises.length === 0 ? (
-                    <View className="border-t border-border-dark px-4 py-2">
-                      <Text className="text-sm" style={{ color: theme.colors.status.brandPale }}>
-                        {t('exercises.emptyGroupMessage', {
-                          muscleGroup: config.name.toLowerCase(),
-                        })}
-                      </Text>
-                    </View>
-                  ) : (
-                    groupExercises.map((exercise) => (
-                      <ExerciseListItem
-                        key={exercise.id}
-                        name={exercise.name}
-                        type={exercise.type}
-                        imageUrl={getExerciseImageUrl(exercise)}
-                        onPress={() => handleExercisePress(exercise)}
-                        getTypeTagLabel={getExerciseTypeTag}
-                      />
-                    ))
-                  )}
-                </Accordion>
-              );
-            })
-        )}
+                return (
+                  <Accordion
+                    key={group}
+                    title={config.name}
+                    count={groupExercises.length}
+                    icon={config.icon}
+                    isOpen={openAccordions[group] || false}
+                    onToggle={() => toggleAccordion(group)}
+                  >
+                    {groupExercises.length === 0 ? (
+                      <View className="border-t border-border-dark px-4 py-2">
+                        <Text className="text-sm" style={{ color: theme.colors.status.brandPale }}>
+                          {t('exercises.emptyGroupMessage', {
+                            muscleGroup: config.name.toLowerCase(),
+                          })}
+                        </Text>
+                      </View>
+                    ) : (
+                      groupExercises.map((exercise) => (
+                        <ExerciseListItem
+                          key={exercise.id}
+                          name={exercise.name}
+                          type={exercise.type}
+                          imageUrl={getExerciseImageUrl(exercise)}
+                          onPress={() => handleExercisePress(exercise)}
+                          getTypeTagLabel={getExerciseTypeTag}
+                        />
+                      ))
+                    )}
+                  </Accordion>
+                );
+              })
+          )}
 
-        {hasMore && !isLoading ? (
-          <View className="py-4">
-            <Button
-              label={isLoadingMore ? t('common.loading') : t('common.loadMore')}
-              variant="outline"
-              size="md"
-              width="full"
-              onPress={loadMore}
-              disabled={isLoadingMore}
-              loading={isLoadingMore}
-            />
-          </View>
-        ) : null}
+          {hasMore && !isLoading ? (
+            <View className="py-4">
+              <Button
+                label={isLoadingMore ? t('common.loading') : t('common.loadMore')}
+                variant="outline"
+                size="md"
+                width="full"
+                onPress={loadMore}
+                disabled={isLoadingMore}
+                loading={isLoadingMore}
+              />
+            </View>
+          ) : null}
+        </View>
       </KeyboardAwareScrollView>
 
       <ViewExerciseModal

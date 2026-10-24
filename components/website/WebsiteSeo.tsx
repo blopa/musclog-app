@@ -2,68 +2,61 @@ import { usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import { useTranslation } from 'react-i18next';
 
+import {
+  absoluteUrl,
+  fixedPageSeo,
+  metadataForPage,
+  type PageSeo,
+  SEO_IMAGE_URL,
+  websiteCopy,
+  type WebsiteSeoRouteKey,
+} from './websiteMetadata';
 import websiteRoutes from './websiteRoutes.json';
 
-const SITE_ORIGIN = 'https://musclog.app';
-const SEO_IMAGE_PATH = '/images/seo-image.png';
-const SEO_IMAGE_WIDTH = '1224';
-const SEO_IMAGE_HEIGHT = '741';
-
-export type WebsiteSeoRouteKey = keyof typeof websiteRoutes;
-
-interface WebsiteRoute {
-  /** Canonical path, e.g. `/faq`. */
-  path: string;
-  /** `robots` directive; indexable routes omit it and get `index, follow`. */
-  robots?: string;
-}
-
-/**
- * The website's route registry, widened to its contract once here so nothing
- * downstream deals with the raw JSON shape. `websiteRoutes.json` is also read
- * by `scripts/generate-web-seo-files.js` (robots.txt / sitemap.xml / llms.txt),
- * which is the point: adding a public route is a single edit there, not the
- * same list maintained in four places.
- */
-const WEBSITE_ROUTES: Record<WebsiteSeoRouteKey, WebsiteRoute> = websiteRoutes;
-
-const OG_LOCALE_BY_LANGUAGE: Record<string, string> = {
-  'en-us': 'en_US',
-  'es-es': 'es_ES',
-  'nl-nl': 'nl_NL',
-  'pt-br': 'pt_BR',
-  'ru-ru': 'ru_RU',
-};
-
 const ROUTE_KEY_BY_PATH: Record<string, WebsiteSeoRouteKey> = {
-  // Inverse of the registry, derived so a new route only needs its JSON entry.
-  ...(Object.fromEntries(
-    Object.entries(WEBSITE_ROUTES).map(([key, route]) => [route.path, key])
-  ) as Record<string, WebsiteSeoRouteKey>),
-  // Expo Router may expose the home screen under /home as well as /.
+  ...Object.fromEntries(Object.entries(websiteRoutes).map(([key, route]) => [route.path, key])),
   '/home': 'home',
-};
+} as Record<string, WebsiteSeoRouteKey>;
 
-export function absoluteUrl(path: string): string {
-  if (/^https?:\/\//i.test(path)) {
-    return path;
-  }
-
-  return `${SITE_ORIGIN}${path.startsWith('/') ? path : `/${path}`}`;
-}
-
-/**
- * The sharing/preview image, absolute. Exported because anything that hands a page URL to a third
- * party (the blog post share row) needs the same image these meta tags advertise.
- */
-export const SEO_IMAGE_URL = absoluteUrl(SEO_IMAGE_PATH);
-
-function ogLocaleForLanguage(language: string | undefined): string {
-  if (language == null) {
-    return OG_LOCALE_BY_LANGUAGE['en-us'];
-  }
-
-  return OG_LOCALE_BY_LANGUAGE[language.toLowerCase()] ?? OG_LOCALE_BY_LANGUAGE['en-us'];
+function PageMetadata({ page }: { page: PageSeo }) {
+  const { i18n } = useTranslation();
+  const language = i18n.resolvedLanguage ?? i18n.language;
+  const metadata = metadataForPage(page, language);
+  const og = metadata.openGraph!;
+  return (
+    <Head>
+      <title>{page.title}</title>
+      <meta name="description" content={page.description} />
+      <meta name="keywords" content={page.keywords ?? websiteCopy(language).seo.keywords} />
+      <meta name="robots" content={page.robots ?? 'index, follow'} />
+      <link rel="canonical" href={absoluteUrl(page.canonicalPath)} />
+      <meta property="og:type" content={og.type} />
+      <meta property="og:site_name" content={og.siteName} />
+      <meta property="og:locale" content={og.locale} />
+      {og.alternateLocale?.map((locale) => (
+        <meta key={locale} property="og:locale:alternate" content={locale} />
+      ))}
+      <meta property="og:title" content={og.title} />
+      <meta property="og:description" content={page.description} />
+      <meta property="og:url" content={og.url} />
+      <meta property="og:image" content={SEO_IMAGE_URL} />
+      <meta property="og:image:secure_url" content={SEO_IMAGE_URL} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1224" />
+      <meta property="og:image:height" content="741" />
+      <meta property="og:image:alt" content={websiteCopy(language).seo.imageAlt} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={page.title} />
+      <meta name="twitter:description" content={page.description} />
+      <meta name="twitter:image" content={SEO_IMAGE_URL} />
+      <meta name="twitter:image:alt" content={websiteCopy(language).seo.imageAlt} />
+      {page.date ? <meta property="article:published_time" content={og.publishedTime} /> : null}
+      {page.date ? <meta property="article:section" content={page.category} /> : null}
+      {page.tags?.map((tag) => (
+        <meta key={tag} property="article:tag" content={tag} />
+      ))}
+    </Head>
+  );
 }
 
 function normalizePathname(pathname: string | null | undefined): string {
@@ -97,47 +90,11 @@ export function WebsiteSeo({
   canonicalPath?: string;
   routeKey: WebsiteSeoRouteKey;
 }) {
-  const { i18n, t } = useTranslation();
-  const title = t(`website.seo.routes.${routeKey}.title`);
-  const description = t(`website.seo.routes.${routeKey}.description`);
-  const siteName = t('website.seo.siteName');
-  const imageAlt = t('website.seo.imageAlt');
-  const keywords = t('website.seo.keywords');
-  const pageUrl = absoluteUrl(canonicalPath ?? WEBSITE_ROUTES[routeKey].path);
-  const robots = WEBSITE_ROUTES[routeKey].robots ?? 'index, follow';
-  const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
-  const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
-
+  const { i18n } = useTranslation();
   return (
-    <Head>
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
-      <meta name="robots" content={robots} />
-      <link rel="canonical" href={pageUrl} />
-
-      <meta property="og:type" content="website" />
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:locale" content={locale} />
-      {alternateLocales.map((alt) => (
-        <meta key={alt} property="og:locale:alternate" content={alt} />
-      ))}
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={pageUrl} />
-      <meta property="og:image" content={SEO_IMAGE_URL} />
-      <meta property="og:image:secure_url" content={SEO_IMAGE_URL} />
-      <meta property="og:image:type" content="image/png" />
-      <meta property="og:image:width" content={SEO_IMAGE_WIDTH} />
-      <meta property="og:image:height" content={SEO_IMAGE_HEIGHT} />
-      <meta property="og:image:alt" content={imageAlt} />
-
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={SEO_IMAGE_URL} />
-      <meta name="twitter:image:alt" content={imageAlt} />
-    </Head>
+    <PageMetadata
+      page={fixedPageSeo(routeKey, i18n.resolvedLanguage ?? i18n.language, canonicalPath)}
+    />
   );
 }
 
@@ -148,115 +105,36 @@ export interface BlogCategorySeoProps {
   title: string;
 }
 
-export function BlogCategorySeo({
-  canonicalPath,
-  category,
-  description,
-  title,
-}: BlogCategorySeoProps) {
-  const { i18n, t } = useTranslation();
-  const siteName = t('website.seo.siteName');
-  const imageAlt = t('website.seo.imageAlt');
-  const pageTitle = `${title} | ${siteName}`;
-  const pageUrl = absoluteUrl(canonicalPath);
-  const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
-  const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
-  const keywords = `${t('website.seo.keywords')}, ${category}`;
-
+export function BlogCategorySeo(props: BlogCategorySeoProps) {
+  const { i18n } = useTranslation();
+  const copy = websiteCopy(i18n.resolvedLanguage ?? i18n.language);
   return (
-    <Head>
-      <title>{pageTitle}</title>
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
-      <meta name="robots" content="index, follow" />
-      <link rel="canonical" href={pageUrl} />
-
-      <meta property="og:type" content="website" />
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:locale" content={locale} />
-      {alternateLocales.map((alt) => (
-        <meta key={alt} property="og:locale:alternate" content={alt} />
-      ))}
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={pageUrl} />
-      <meta property="og:image" content={SEO_IMAGE_URL} />
-      <meta property="og:image:secure_url" content={SEO_IMAGE_URL} />
-      <meta property="og:image:type" content="image/png" />
-      <meta property="og:image:width" content={SEO_IMAGE_WIDTH} />
-      <meta property="og:image:height" content={SEO_IMAGE_HEIGHT} />
-      <meta property="og:image:alt" content={imageAlt} />
-
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={SEO_IMAGE_URL} />
-      <meta name="twitter:image:alt" content={imageAlt} />
-    </Head>
+    <PageMetadata
+      page={{
+        ...props,
+        title: `${props.title} | ${copy.seo.siteName}`,
+        keywords: `${copy.seo.keywords}, ${props.category}`,
+      }}
+    />
   );
 }
 
-export interface BlogPostSeoProps {
-  canonicalPath: string;
-  category: string;
+export interface BlogPostSeoProps extends BlogCategorySeoProps {
   date: string;
-  description: string;
   tags: string[];
-  title: string;
 }
 
-export function BlogPostSeo({
-  canonicalPath,
-  category,
-  date,
-  description,
-  tags,
-  title,
-}: BlogPostSeoProps) {
-  const { i18n, t } = useTranslation();
-  const siteName = t('website.seo.siteName');
-  const imageAlt = t('website.seo.imageAlt');
-  const pageTitle = `${title} | ${siteName}`;
-  const pageDescription = description || title;
-  const pageUrl = absoluteUrl(canonicalPath);
-  const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
-  const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
-  const keywords = [t('website.seo.keywords'), ...tags].join(', ');
-
+export function BlogPostSeo(props: BlogPostSeoProps) {
+  const { i18n } = useTranslation();
+  const copy = websiteCopy(i18n.resolvedLanguage ?? i18n.language);
   return (
-    <Head>
-      <title>{pageTitle}</title>
-      <meta name="description" content={pageDescription} />
-      <meta name="keywords" content={keywords} />
-      <meta name="robots" content="index, follow" />
-      <link rel="canonical" href={pageUrl} />
-
-      <meta property="og:type" content="article" />
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:locale" content={locale} />
-      {alternateLocales.map((alt) => (
-        <meta key={alt} property="og:locale:alternate" content={alt} />
-      ))}
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={pageDescription} />
-      <meta property="og:url" content={pageUrl} />
-      <meta property="og:image" content={SEO_IMAGE_URL} />
-      <meta property="og:image:secure_url" content={SEO_IMAGE_URL} />
-      <meta property="og:image:type" content="image/png" />
-      <meta property="og:image:width" content={SEO_IMAGE_WIDTH} />
-      <meta property="og:image:height" content={SEO_IMAGE_HEIGHT} />
-      <meta property="og:image:alt" content={imageAlt} />
-      <meta property="article:published_time" content={`${date}T00:00:00.000Z`} />
-      <meta property="article:section" content={category} />
-      {tags.map((tag) => (
-        <meta key={tag} property="article:tag" content={tag} />
-      ))}
-
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={pageDescription} />
-      <meta name="twitter:image" content={SEO_IMAGE_URL} />
-      <meta name="twitter:image:alt" content={imageAlt} />
-    </Head>
+    <PageMetadata
+      page={{
+        ...props,
+        title: `${props.title} | ${copy.seo.siteName}`,
+        description: props.description || props.title,
+        keywords: [copy.seo.keywords, ...props.tags].join(', '),
+      }}
+    />
   );
 }

@@ -12,7 +12,7 @@ import { Platform } from 'react-native';
  *
  * The database filename is always `${DATABASE_NAME}.db` (WatermelonDB appends ".db" itself).
  *
- * ⚠️ DANGER: do NOT use this to open `musclog.db` with expo-sqlite while the app
+ * [WARN] DANGER: do NOT use this to open `musclog.db` with expo-sqlite while the app
  * is running. A second SQLite library closing its connection unlinks the live
  * WAL and silently loses committed data (see FIXES.md). The
  * only sanctioned raw open is the pre-adapter capture in preMigrationCapture.ts;
