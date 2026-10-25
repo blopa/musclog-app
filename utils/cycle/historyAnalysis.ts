@@ -114,15 +114,27 @@ export function summarizeWindow(logs: CycleDayLogDto[], from: number, to: number
   };
 }
 
+export interface PredictionEvaluation {
+  checked: number;
+  hits: number;
+  meanErrorDays: number | null;
+  /**
+   * Average number of days the predicted window spans, inclusive. A wider window always hits more
+   * often, so a hit rate means nothing without it.
+   */
+  meanWindowDays: number | null;
+}
+
 /** Retrospective one-step evaluation; each window uses only earlier starts. Not clinical validation. */
 export function evaluatePredictions(
   periods: CyclePeriodDto[],
   history: CycleHistoryEntry[],
   config: CycleConfig
-) {
+): PredictionEvaluation {
   const sorted = [...periods].sort((a, b) => a.startDate - b.startDate);
   let hits = 0;
   const errors: number[] = [];
+  const widths: number[] = [];
   for (let i = 3; i < sorted.length; i++) {
     const previous = sorted.slice(0, i);
     const training = buildCycleHistory(previous, (start) => {
@@ -142,6 +154,7 @@ export function evaluatePredictions(
       avgCycleLength: config.fallbackCycleLength,
       cycleLengthKnown: config.cycleLengthKnown,
     });
+
     if (stats.usableCount < 2) {
       continue;
     }
@@ -149,6 +162,7 @@ export function evaluatePredictions(
     const prediction = computeCycleTimeline(previous, stats, {
       today: previous[previous.length - 1].startDate,
     }).prediction;
+
     if (prediction.earliest == null || prediction.latest == null || prediction.mostLikely == null) {
       continue;
     }
@@ -159,11 +173,16 @@ export function evaluatePredictions(
     }
 
     errors.push(Math.abs(Math.round((actual - prediction.mostLikely) / MS_PER_SOLAR_DAY)));
+    widths.push(Math.round((prediction.latest - prediction.earliest) / MS_PER_SOLAR_DAY) + 1);
   }
+
+  const mean = (values: number[]) =>
+    values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
 
   return {
     checked: errors.length,
     hits,
-    meanErrorDays: errors.length ? errors.reduce((a, b) => a + b, 0) / errors.length : null,
+    meanErrorDays: mean(errors),
+    meanWindowDays: mean(widths),
   };
 }

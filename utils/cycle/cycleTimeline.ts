@@ -119,7 +119,7 @@ export function computeCycleTimeline(
     (acc, p) => (p.startDate <= today && (!acc || p.startDate > acc.startDate) ? p : acc),
     null
   );
-  const cycleLength = stats.medianLength;
+  const cycleLength = stats.predictedLength;
 
   if (!latest || (stats.usableCount === 0 && stats.fallbackKnown === false)) {
     let emptyState: PredictionState = 'insufficient';
@@ -147,22 +147,12 @@ export function computeCycleTimeline(
 
   const offset = dayDiff(latest.startDate, today);
   const mostLikely = addCalendarDays(latest.startDate, cycleLength);
-  // Sparse histories are deliberately broad. This heuristic is not a probability interval.
-  let padding = 1;
-  if (stats.usableCount < 3) {
-    padding = 7;
-  } else if (stats.usableCount < 5) {
-    padding = 3;
-  }
-
+  // The window's width is decided once, in `computePredictionStats`. It is not a probability interval.
   const earliest = addCalendarDays(
     latest.startDate,
-    Math.max(15, Math.min(stats.rangeLow, cycleLength - padding))
+    Math.max(15, cycleLength + stats.window.earlyDays)
   );
-  const latestDate = addCalendarDays(
-    latest.startDate,
-    Math.max(stats.rangeHigh, cycleLength + padding)
-  );
+  const latestDate = addCalendarDays(latest.startDate, cycleLength + stats.window.lateDays);
 
   let state: PredictionState;
   let daysLate = 0;

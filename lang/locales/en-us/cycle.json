@@ -303,6 +303,7 @@
       "basis": "Based on your last {{cycles}} cycle · median {{median}} days · range {{low}}–{{high}}",
       "basis_plural": "Based on your last {{cycles}} cycles · median {{median}} days · range {{low}}–{{high}}",
       "basisNone": "No usable cycles yet, so the estimate uses your usual length of {{days}} days.",
+      "recentWeighted": "Recent cycles count more, so the estimate uses {{days}} days.",
       "excludedCount": "{{cycles}} cycle is not used (see below).",
       "excludedCount_plural": "{{cycles}} cycles are not used (see below).",
       "cycleUsed": "Used for predictions",

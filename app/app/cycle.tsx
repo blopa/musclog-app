@@ -115,7 +115,7 @@ export default function CycleScreen() {
   const day = localDayStartMs(selectedDate);
   const cycleDay = timeline?.elapsedDay ?? null;
   const currentPhase = timeline?.currentPhase ?? null;
-  const avgCycleLength = predictionStats.medianLength;
+  const avgCycleLength = predictionStats.predictedLength;
   const isOverdue = timeline?.prediction.state === 'late';
   const latestStart = periods.reduce((max, p) => Math.max(max, p.startDate), 0);
   const showFertile = cycleShowFertility && timeline?.fertileEstimate != null;

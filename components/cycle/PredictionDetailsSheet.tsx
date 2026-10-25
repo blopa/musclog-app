@@ -60,6 +60,13 @@ export function PredictionDetailsSheet({ visible, onClose }: PredictionDetailsSh
               })
             : t('cycle.prediction.basisNone', { days: formatInteger(stats.medianLength) })}
         </Text>
+        {stats.usableCount > 0 && stats.predictedLength !== stats.medianLength ? (
+          <Text className="text-sm text-text-secondary">
+            {t('cycle.prediction.recentWeighted', {
+              days: formatInteger(stats.predictedLength),
+            })}
+          </Text>
+        ) : null}
         <Text className="text-xs text-text-secondary">{t('cycle.complete.rangeHeuristic')}</Text>
         {evaluation.checked > 0 ? (
           <Text className="text-sm text-text-secondary">

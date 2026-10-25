@@ -303,6 +303,7 @@
       "basis": "Gebaseerd op je laatste {{cycles}} cyclus · mediaan {{median}} dagen · bereik {{low}}–{{high}}",
       "basis_plural": "Gebaseerd op je laatste {{cycles}} cycli · mediaan {{median}} dagen · bereik {{low}}–{{high}}",
       "basisNone": "Nog geen bruikbare cycli, dus de schatting gebruikt je gebruikelijke duur van {{days}} dagen.",
+      "recentWeighted": "Recente cycli tellen zwaarder, dus de schatting gaat uit van {{days}} dagen.",
       "excludedCount": "{{cycles}} cyclus wordt niet gebruikt (zie hieronder).",
       "excludedCount_plural": "{{cycles}} cycli worden niet gebruikt (zie hieronder).",
       "cycleUsed": "Gebruikt voor voorspellingen",

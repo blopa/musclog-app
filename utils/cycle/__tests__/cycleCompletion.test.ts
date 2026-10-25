@@ -77,6 +77,8 @@ describe('cycle corrections and uncertainty', () => {
       checked: 2,
       hits: 2,
       meanErrorDays: 0,
+      // Two usable cycles: day 21–35 (15 days); three: day 25–31 (7 days).
+      meanWindowDays: 11,
     });
   });
   it.each(['pregnancy', 'pregnancy_loss', 'menopause', 'hysterectomy'] as const)(

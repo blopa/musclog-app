@@ -69,6 +69,21 @@ export const REGULAR_SPREAD_MAX_DAYS = 9;
 export const HIGHLY_VARIABLE_SPREAD_DAYS = 20;
 export const MIN_CYCLES_MODERATE_CONFIDENCE = 2;
 export const MIN_CYCLES_HIGH_CONFIDENCE = 4;
+/**
+ * From this many usable cycles, the single cycle farthest from the median is left out of the
+ * variability spread, so one unusual month does not mark otherwise steady cycles as variable for
+ * a year. With fewer, one odd cycle cannot be told apart from genuine variation.
+ */
+export const MIN_CYCLES_TO_DISCOUNT_OUTLIER = 6;
+/** The predicted length weights each older cycle less; a cycle this many back counts half. */
+export const RECENT_CYCLE_HALF_LIFE = 6;
+/**
+ * Usable cycles needed before the prediction window's extra margin drops from 7 to 3 days, and
+ * from 3 to 1. Deliberately not the confidence thresholds above: moving these to 2 and 4 narrowed
+ * windows by half a day but missed about 2% more starts in the prediction benchmark.
+ */
+export const MIN_CYCLES_MEDIUM_WINDOW_MARGIN = 3;
+export const MIN_CYCLES_SMALL_WINDOW_MARGIN = 5;
 /** The luteal phase (ovulation to next period) is the steadiest part of the cycle. */
 export const LUTEAL_PHASE_DAYS = 14;
 export const OVULATORY_HALF_WINDOW_DAYS = 2;

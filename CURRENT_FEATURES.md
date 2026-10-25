@@ -156,6 +156,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 **Predictions that say what they know**
 
 - Next period as a range with confidence based on usable cycles and how much they vary; "how is this calculated?" shows the cycles used and why any were not
+- The predicted date leans on recent cycles, so a lasting change (after stopping a hormonal method, or cycles shortening with age) is followed within a few cycles; the details say so whenever this differs from the plain median. One unusual cycle among six or more does not mark otherwise steady cycles as variable
 - The day counter keeps counting from the last logged start; an overdue period reads "later than your usual range"; predictions can be hidden while logging continues
 - Fertile-window estimate is opt-in (off by default), explained before it is enabled, and always shown with a not-contraception note
 - Birth control (combined or progestin pill, hormonal or copper IUD, implant, patch, ring, injection) and life stage (including postpartum, perimenopause, PCOS and tracking without bleeding) are a dated history; they decide which predictions exist, and cycles under a hormonal method or postpartum are not counted

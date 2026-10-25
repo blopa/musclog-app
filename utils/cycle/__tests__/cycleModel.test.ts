@@ -1,7 +1,7 @@
 import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 import { buildCycleHistory } from '../cycleHistory';
-import { computePredictionStats } from '../cycleStats';
+import { computePredictionStats, weightedMedian } from '../cycleStats';
 import { buildCycleSnapshot } from '../cycleSnapshot';
 import { buildPhaseSegments, computeCycleTimeline } from '../cycleTimeline';
 import type { CyclePeriodInput } from '../types';
@@ -11,6 +11,11 @@ const BASE = Date.UTC(2024, 0, 1);
 const day = (n: number) => BASE + n * D;
 const periodsAt = (...starts: number[]): CyclePeriodInput[] =>
   starts.map((s) => ({ startDate: day(s), endDate: day(s + 4), endKind: 'logged' }));
+const periodsWithLengths = (...lengths: number[]): CyclePeriodInput[] => {
+  let start = 0;
+
+  return periodsAt(0, ...lengths.map((length) => (start += length)));
+};
 
 describe('buildCycleHistory', () => {
   it('keeps long cycles visible instead of dropping them', () => {
@@ -89,7 +94,53 @@ describe('computePredictionStats', () => {
   it('falls back to the configured length with a single period', () => {
     const stats = computePredictionStats(buildCycleHistory(periodsAt(0)), { avgCycleLength: 32 });
     expect(stats.medianLength).toBe(32);
+    expect(stats.predictedLength).toBe(32);
     expect(stats.confidence).toBe('low');
+  });
+
+  it('centres the prediction on recent cycles after a lasting change', () => {
+    const periods = periodsWithLengths(35, 35, 35, 35, 35, 35, 28, 28, 28, 28);
+    const stats = computePredictionStats(buildCycleHistory(periods));
+    expect(stats.medianLength).toBe(35);
+    expect(stats.predictedLength).toBe(28);
+
+    const lastStart = periods[periods.length - 1].startDate;
+    const timeline = computeCycleTimeline(periods, stats, { today: lastStart + D });
+    expect(timeline.cycleLength).toBe(28);
+    expect(Math.round((timeline.prediction.mostLikely! - lastStart) / D)).toBe(28);
+  });
+
+  it('predicts the plain median while cycles are steady', () => {
+    const stats = computePredictionStats(
+      buildCycleHistory(periodsWithLengths(28, 30, 29, 28, 31, 29))
+    );
+    expect(stats.predictedLength).toBe(stats.medianLength);
+  });
+
+  it('does not let one unusual cycle among six or more mark steady cycles as variable', () => {
+    const stats = computePredictionStats(
+      buildCycleHistory(periodsWithLengths(28, 28, 29, 28, 40, 28))
+    );
+    expect(stats.variability).toBe('regular');
+    expect(stats.confidence).toBe('high');
+    // The longest cycle is still reported as it happened.
+    expect(stats.rangeHigh).toBe(40);
+  });
+
+  it('counts an unusual cycle when there are too few to tell it from variation', () => {
+    const stats = computePredictionStats(buildCycleHistory(periodsWithLengths(28, 29, 28, 40, 28)));
+    expect(stats.variability).toBe('variable');
+  });
+});
+
+describe('weightedMedian', () => {
+  it('equals the plain median with equal weights', () => {
+    expect(weightedMedian([30, 28, 29], [1, 1, 1])).toBe(29);
+    expect(weightedMedian([28, 30, 29, 31], [1, 1, 1, 1])).toBe(29.5);
+  });
+
+  it('moves towards the heavier values', () => {
+    expect(weightedMedian([28, 35, 36], [5, 1, 1])).toBe(28);
   });
 });
 
