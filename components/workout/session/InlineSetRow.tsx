@@ -111,7 +111,7 @@ export function InlineSetRow({
     surface = 'border-accent-primary bg-bg-secondary';
   }
 
-  const input = (field: SetDraftField, label: string, width: number) => (
+  const input = (field: 'weight' | 'reps', label: string, width: number) => (
     <NumericTextField
       size="cell"
       width={width}

@@ -5,6 +5,7 @@ import {
   linkEffortPatch,
   liveWeightKg,
   reconcileWeightDraft,
+  effortDraftProblems,
   setDraftProblem,
   stampWeightPatch,
   stepInput,
@@ -220,5 +221,36 @@ describe('liveWeightKg with a stamped draft', () => {
       weightLocale: 'en-US',
     };
     expect(liveWeightKg(set(), typed, 'imperial', 'en-US')).toBe(100);
+  });
+});
+
+describe('effort field ranges', () => {
+  const base = { weight: '60', reps: '8' };
+
+  it('accepts empty fields and in-range values', () => {
+    expect(effortDraftProblems(base, 'en-US')).toEqual([]);
+    expect(effortDraftProblems({ ...base, rir: '0', rpe: '10', partials: '3' }, 'en-US')).toEqual(
+      []
+    );
+    expect(effortDraftProblems({ ...base, rir: '1.5', rpe: '8.5' }, 'en-US')).toEqual([]);
+    expect(effortDraftProblems({ ...base, rir: '1,5', rpe: '8,5' }, 'nl-NL')).toEqual([]);
+  });
+
+  it('refuses values outside the scale instead of storing them', () => {
+    expect(effortDraftProblems({ ...base, rpe: '400' }, 'en-US')).toEqual(['rpe']);
+    expect(effortDraftProblems({ ...base, rpe: '0' }, 'en-US')).toEqual(['rpe']);
+    expect(effortDraftProblems({ ...base, rir: '10' }, 'en-US')).toEqual(['rir']);
+    expect(effortDraftProblems({ ...base, rir: '-1' }, 'en-US')).toEqual(['rir']);
+    expect(effortDraftProblems({ ...base, rir: 'abc' }, 'en-US')).toEqual(['rir']);
+  });
+
+  it('wants whole, bounded partial reps', () => {
+    expect(effortDraftProblems({ ...base, partials: '2.5' }, 'en-US')).toEqual(['partials']);
+    expect(effortDraftProblems({ ...base, partials: '1000' }, 'en-US')).toEqual(['partials']);
+  });
+
+  it('blocks completing a set, after weight and reps are checked', () => {
+    expect(setDraftProblem({ ...base, rpe: '400' }, 'en-US')).toBe('rpe');
+    expect(setDraftProblem({ ...base, reps: '', rpe: '400' }, 'en-US')).toBe('reps');
   });
 });

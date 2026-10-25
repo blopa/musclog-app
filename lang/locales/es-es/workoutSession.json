@@ -213,6 +213,9 @@
     "rpeHint": "Misma escala que RIR: RPE 10 es no dejar nada",
     "invalidWeight": "Introduce el peso que levantaste (0 si solo peso corporal).",
     "invalidReps": "Introduce las repeticiones que hiciste o salta la serie.",
+    "invalidRir": "Las repeticiones en reserva son un número de 0 a 9.",
+    "invalidRpe": "El RPE es un número de 1 a 10.",
+    "invalidPartials": "Las repeticiones parciales son un número entero de 0 a 999.",
     "skipSet": "Saltar esta serie",
     "done": "Hecho",
     "columns": {

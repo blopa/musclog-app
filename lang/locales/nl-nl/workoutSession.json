@@ -213,6 +213,9 @@
     "rpeHint": "Zelfde schaal als RIR: RPE 10 is niets meer over",
     "invalidWeight": "Vul het gewicht in dat je tilde (0 voor alleen lichaamsgewicht).",
     "invalidReps": "Vul de herhalingen in die je deed, of sla de set over.",
+    "invalidRir": "Herhalingen in reserve is een getal van 0 tot 9.",
+    "invalidRpe": "RPE is een getal van 1 tot 10.",
+    "invalidPartials": "Gedeeltelijke herhalingen is een geheel getal van 0 tot 999.",
     "skipSet": "Deze set overslaan",
     "done": "Klaar",
     "columns": {

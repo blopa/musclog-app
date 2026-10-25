@@ -58,6 +58,9 @@ import { WorkTimerBar } from './session/WorkTimerBar';
 const INVALID_FIELD_KEYS = {
   weight: 'trainingFlow.invalidWeight',
   reps: 'trainingFlow.invalidReps',
+  rir: 'trainingFlow.invalidRir',
+  rpe: 'trainingFlow.invalidRpe',
+  partials: 'trainingFlow.invalidPartials',
 } as const satisfies Record<SetDraftField, string>;
 
 type Controller = ReturnType<typeof useWorkoutSessionController>;
@@ -185,6 +188,11 @@ export function WorkoutTrainingView({
     if (invalid) {
       setProblem({ setId, field: invalid });
       showSnackbar('error', t(INVALID_FIELD_KEYS[invalid]));
+      if (invalid === 'rir' || invalid === 'rpe' || invalid === 'partials') {
+        // These fields live in the details sheet, so the outline has to be shown there.
+        setDetailsSetId(setId);
+      }
+
       return;
     }
 
@@ -527,6 +535,7 @@ export function WorkoutTrainingView({
               : t('trainingFlow.setLabel', { number: formatInteger(detailsRow.workingNumber) })
           }
           draft={valuesFor(detailsSet.id)}
+          locale={locale}
           editable={detailsSet.completionStatus !== 'performed'}
           canSkip={detailsSet.completionStatus === 'planned'}
           busy={controller.busy}

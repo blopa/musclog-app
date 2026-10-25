@@ -213,6 +213,9 @@
     "rpeHint": "Mesma escala do RIR: RPE 10 é não sobrar nada",
     "invalidWeight": "Informe o peso que você levantou (0 para só peso corporal).",
     "invalidReps": "Informe as repetições que você fez ou pule a série.",
+    "invalidRir": "As repetições em reserva são um número de 0 a 9.",
+    "invalidRpe": "O RPE é um número de 1 a 10.",
+    "invalidPartials": "As repetições parciais são um número inteiro de 0 a 999.",
     "skipSet": "Pular esta série",
     "done": "Concluído",
     "columns": {
