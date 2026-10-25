@@ -24,8 +24,8 @@ implementation_artifacts = "{project-root}/_bmad-output/implementation-artifacts
 project_knowledge = "{project-root}/docs"
 
 [modules.bmb]
-bmad_builder_output_folder = "{project-root}/skills"
-bmad_builder_reports = "{project-root}/skills/reports"
+bmad_builder_output_folder = "{project-root}/.agents/skills"
+bmad_builder_reports = "{project-root}/_bmad-output/builder-reports"
 
 [agents.bmad-agent-analyst]
 module = "bmm"
