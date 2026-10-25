@@ -343,12 +343,10 @@ export function GuidedExerciseView({
           iconColor={theme.colors.text.secondary}
           title={t('trainingFlow.details')}
           onPress={onDetails}
-          trailing={
-            <Text className="text-sm text-text-secondary">
-              {values.rir?.trim()
-                ? t('trainingFlow.rir', { value: values.rir })
-                : t('trainingFlow.unrated')}
-            </Text>
+          value={
+            values.rir?.trim()
+              ? t('trainingFlow.rir', { value: values.rir })
+              : t('trainingFlow.unrated')
           }
         />
 

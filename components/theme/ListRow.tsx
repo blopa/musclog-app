@@ -25,7 +25,13 @@ type ListRowProps = {
   iconColor?: string;
   /** Overrides the title color (a destructive row uses the error color). */
   titleColor?: string;
-  /** Replaces the default chevron (a play icon, a value). `null` shows nothing. */
+  /**
+   * The row's current value ("Unrated", "RIR 2"), shown before the chevron. Use this rather than
+   * `trailing` for a row that opens something: `trailing` replaces the chevron, and a value with
+   * no chevron next to it reads as a label, not as something to tap.
+   */
+  value?: string;
+  /** Replaces the default chevron (a play icon, a spinner). `null` shows nothing. */
   trailing?: ReactNode | null;
   variant?: ListRowVariant;
   /**
@@ -48,6 +54,7 @@ export function ListRow({
   icon: Icon,
   iconColor,
   titleColor,
+  value,
   trailing,
   variant = 'filled',
   selected,
@@ -127,6 +134,11 @@ export function ListRow({
           </Text>
         ) : null}
       </View>
+      {value ? (
+        <Text className="shrink-0 text-sm text-text-secondary" numberOfLines={1}>
+          {value}
+        </Text>
+      ) : null}
       {trailing === undefined ? defaultTrailing : trailing}
     </Pressable>
   );

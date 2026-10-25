@@ -41,6 +41,39 @@ describe('NumericTextField', () => {
     expect(source).toContain('pointerEvents="none"');
     expect(source).toContain('importantForAccessibility="no-hide-descendants"');
   });
+
+  it('outlines its surface instead of relying on a fill that can match the sheet', () => {
+    // The set-details sheet is painted `cardElevated`, which was also the field's only surface,
+    // so its effort inputs had no visible edge. A surfaced field is outlined like `TextInput`,
+    // the outline turns accent while focused, and a `field` uses `TextInput`'s `card` fill.
+    expect(source).toMatch(/surface \? theme\.colors\.background\.ink10/);
+    expect(source).toMatch(
+      /focused && surface\)\s*\{\s*borderColor = theme\.colors\.accent\.primary/
+    );
+    expect(source).toMatch(/size === 'field' \? theme\.colors\.background\.card :/);
+    expect(source).toMatch(/borderWidth: theme\.borderWidth\.medium,/);
+  });
+});
+
+describe('ListRow', () => {
+  const source = code('components/theme/ListRow.tsx');
+
+  it('shows a value next to the chevron rather than in its place', () => {
+    // `trailing` replaces the chevron; the effort row passed its value there and lost the only cue
+    // that it opens a sheet. `value` renders before whatever trailing cue the row keeps.
+    const valueAt = source.indexOf('{value ? (');
+    const trailingAt = source.indexOf('{trailing === undefined ? defaultTrailing : trailing}');
+    expect(valueAt).toBeGreaterThanOrEqual(0);
+    expect(trailingAt).toBeGreaterThan(valueAt);
+  });
+
+  it.each(['components/workout/session/GuidedExerciseView.tsx'])(
+    '%s keeps the chevron on rows that show a value',
+    (path) => {
+      // A text value handed to `trailing` is the pattern that hid the "Effort and details" tap cue.
+      expect(code(path)).not.toMatch(/trailing=\{\s*<Text/);
+    }
+  );
 });
 
 /**

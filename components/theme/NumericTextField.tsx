@@ -76,6 +76,23 @@ export function NumericTextField({
   }[size];
   const showPlaceholder = placeholder != null && value === '' && !focused;
 
+  // A field with a surface is outlined like every other input (`TextInput`, `PickerButton`): a
+  // fill alone vanished wherever it matched what was behind it. A `field` sat on a sheet painted in
+  // `cardElevated` — its own fill — so the set-details effort fields read as loose labels. It
+  // takes `TextInput`'s `card` fill instead; a `cell` keeps `cardElevated`, the contrasting fill on
+  // the `card` the set table lives on.
+  let borderColor = surface ? theme.colors.background.ink10 : 'transparent';
+  if (invalid) {
+    borderColor = theme.colors.status.error;
+  } else if (focused && surface) {
+    borderColor = theme.colors.accent.primary;
+  }
+
+  let fill = 'transparent';
+  if (surface) {
+    fill = size === 'field' ? theme.colors.background.card : theme.colors.background.cardElevated;
+  }
+
   return (
     <View
       style={{
@@ -83,12 +100,12 @@ export function NumericTextField({
         minHeight: metrics.minHeight,
         justifyContent: 'center',
         borderRadius: theme.borderRadius.md,
-        backgroundColor: surface ? theme.colors.background.cardElevated : 'transparent',
-        borderBottomWidth: marked ? theme.borderWidth.medium : 0,
-        borderBottomColor: theme.colors.accent.primary,
-        ...(invalid
-          ? { borderWidth: theme.borderWidth.medium, borderColor: theme.colors.status.error }
-          : {}),
+        backgroundColor: fill,
+        // A constant width, so focusing or marking a field never shifts its neighbours.
+        borderWidth: theme.borderWidth.medium,
+        borderColor,
+        // Marked reads by the underline as well as the accent ink, so it survives without color.
+        borderBottomColor: marked && !invalid ? theme.colors.accent.primary : borderColor,
       }}
     >
       <TextInput

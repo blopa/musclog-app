@@ -276,7 +276,9 @@ nothing. The icon turns `accent.primary` only on the picked choice of a picker (
 `status.error` on a destructive row, which also moves to the end of the list. **A chevron means the
 row pushes a screen or opens a sheet with more choices** (`showChevron` on a `BottomPopUpMenu`
 item); a row that acts immediately (Delete, Duplicate, Share) has none, and a picker row shows a
-check on its current choice instead. `BottomPopUpMenu` renders its items this way, `SettingsCard`
+check on its current choice instead. A row that shows its current value ("Unrated") passes it as
+`ListRow`'s `value`, which sits before the chevron; `trailing` replaces the chevron, and a value in
+its place reads as a label (the workout's "Effort and details" row did exactly that). `BottomPopUpMenu` renders its items this way, `SettingsCard`
 is a row (stack it inside a `ListGroup`), and Settings, the Profile management list, the account
 menu and the Add Food tracking methods all use it. A menu item's `iconBgColor` is typed `never`, so
 a leftover tint fails the build. A list that IS the sheet or menu (`BottomPopUpMenu`, the
@@ -412,6 +414,10 @@ subtitle.
 - A centered input never gets a native `placeholder`: on Android it put the caret at the far edge
   of an empty field on first focus. `NumericTextField` draws its placeholder as an overlay and hides
   it while focused; reuse it rather than re-centering a raw `TextInput`.
+- **An input is outlined, never a fill alone.** `TextInput`, `PickerButton`, `NumericInput` and a
+  surfaced `NumericTextField` all draw an `ink/10` border (accent while focused). A fill is no edge
+  where it matches what is behind it: sheets are `cardElevated`, which was `NumericTextField`'s
+  only surface, so the set-details effort fields rendered as floating labels.
 - Store metric values and convert only at the display/input boundary.
 - Keep units next to values and use the unit helpers; never hardcode `kg`, `lb`, `g`, or `oz`.
 - Error text should explain how to recover, not just state that input is invalid.
