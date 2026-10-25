@@ -89,7 +89,9 @@ export function SegmentedControl({
             >
               {renderIcon(option, isSelected)}
               <Text
-                className={`min-w-0 shrink text-center text-sm font-semibold ${isSelected ? 'text-text-on-accent' : 'text-text-secondary'}`}
+                // Android pads the glyph box asymmetrically, which sat the label below the icon.
+                style={{ includeFontPadding: false, textAlignVertical: 'center' }}
+                className={`min-w-0 shrink text-center text-sm font-semibold leading-5 ${isSelected ? 'text-text-on-accent' : 'text-text-secondary'}`}
               >
                 {option.label}
               </Text>
