@@ -252,13 +252,12 @@ export const NavigationMenu = memo(function NavigationMenu({
           style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
           onPress={onCameraPress}
         >
-          {/* A flat circle: the one round control in the bar, with no glow behind it. */}
           <View
-            className="items-center justify-center rounded-full"
+            className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
             style={[
               isSmallScreen
-                ? { width: screenWidth * 0.15, height: screenWidth * 0.15 }
-                : { width: theme.size['14'], height: theme.size['14'] },
+                ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
+                : { width: 80, height: 80 },
               {
                 backgroundColor: cameraFabActive
                   ? theme.colors.accent.primary
@@ -267,7 +266,7 @@ export const NavigationMenu = memo(function NavigationMenu({
             ]}
           >
             <Camera
-              size={isSmallScreen ? theme.iconSize.md : theme.iconSize.lg}
+              size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
               color={theme.colors.background.secondaryDark}
               strokeWidth={theme.strokeWidth.medium}
             />
