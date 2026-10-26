@@ -1,9 +1,8 @@
 import { Coffee } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { ActivityIndicator, Text } from 'react-native';
 
-import { GenericCard } from '@/components/cards/GenericCard';
-import { Button } from '@/components/theme/Button';
+import { ListRow } from '@/components/theme/ListRow';
 import { useTheme } from '@/hooks/useTheme';
 
 type FastingDayCardProps = {
@@ -16,7 +15,8 @@ type FastingDayCardProps = {
 /**
  * Shown in the food diary when the selected day has no logged food and the fasting-day feature
  * is enabled. Lets the user flag the day as an intentional fast (a real 0-kcal day) or clear the
- * flag. Marking is confirmed by the caller via a ConfirmationModal.
+ * flag. Marking is confirmed by the caller via a ConfirmationModal; unmarking is not, so the
+ * fasted row says "Unmark" where the chevron would be rather than relying on the row tap alone.
  */
 export function FastingDayCard({
   isFasted,
@@ -27,37 +27,31 @@ export function FastingDayCard({
   const theme = useTheme();
   const { t } = useTranslation();
 
+  let trailing;
+  if (loading) {
+    trailing = <ActivityIndicator size="small" color={theme.colors.text.tertiary} />;
+  } else if (isFasted) {
+    // A label, not a TextButton: the row is already the button, and a nested one is invalid on web.
+    trailing = (
+      <Text className="shrink-0 text-sm font-semibold text-accent-primary">
+        {t('food.fastingDay.unmarkShort')}
+      </Text>
+    );
+  }
+
   return (
-    <GenericCard variant="flat">
-      <View className="flex-col items-center gap-4 p-6">
-        <View
-          className="h-16 w-16 items-center justify-center rounded-full"
-          style={{ backgroundColor: theme.colors.status.brandVivid20 }}
-        >
-          <Coffee size={theme.iconSize['3xl']} color={theme.colors.status.brandBright} />
-        </View>
-
-        <View className="flex-col items-center gap-1" style={{ maxWidth: theme.maxWidth['480'] }}>
-          <Text className="text-center text-lg font-semibold leading-tight text-text-primary">
-            {isFasted ? t('food.fastingDay.fastedTitle') : t('food.fastingDay.markTitle')}
-          </Text>
-          <Text className="text-center text-sm font-normal leading-relaxed text-text-secondary">
-            {isFasted
-              ? t('food.fastingDay.fastedDescription')
-              : t('food.fastingDay.markDescription')}
-          </Text>
-        </View>
-
-        <Button
-          label={isFasted ? t('food.fastingDay.unmarkButton') : t('food.fastingDay.markButton')}
-          icon={Coffee}
-          variant={isFasted ? 'secondary' : 'secondaryGradient'}
-          width="full"
-          size="md"
-          loading={loading}
-          onPress={isFasted ? onUnmark : onMark}
-        />
-      </View>
-    </GenericCard>
+    <ListRow
+      variant="card"
+      icon={Coffee}
+      iconColor={theme.colors.status.brandBright}
+      title={isFasted ? t('food.fastingDay.fastedTitle') : t('food.fastingDay.markButton')}
+      subtitle={
+        isFasted ? t('food.fastingDay.fastedDescription') : t('food.fastingDay.markDescription')
+      }
+      accessibilityLabel={isFasted ? t('food.fastingDay.unmarkButton') : undefined}
+      trailing={trailing}
+      disabled={loading}
+      onPress={isFasted ? onUnmark : onMark}
+    />
   );
 }
