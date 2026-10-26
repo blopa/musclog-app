@@ -268,13 +268,13 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             }}
           >
             <Text
-              className="text-center text-2xl font-black leading-7 text-text-primary"
+              className="text-center text-2xl font-bold leading-7 text-text-primary"
               style={{ fontSize: 28 }}
             >
               {status ? t(`nutrition.checkin.${status}`).replace(' ', '\n') : '---'}
             </Text>
           </View>
-          <Text className="mt-8 text-3xl font-black text-text-primary">
+          <Text className="mt-8 text-3xl font-bold tabular-nums text-text-primary">
             {status ? t(`nutrition.checkin.headline.${status}`) : '---'}
           </Text>
           <Text
@@ -288,7 +288,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         {/* Warning if not enough data */}
         {!hasEnoughData ? (
           <View
-            className="mb-8 flex-row items-center gap-3 rounded-2xl border p-4"
+            className="mb-8 flex-row items-center gap-3 rounded-card border p-4"
             style={{
               backgroundColor: theme.colors.status.amber10,
               borderColor: theme.colors.status.amber,
@@ -320,21 +320,21 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         >
           <View className="flex-row justify-between">
             <View>
-              <Text className="text-xs font-bold text-text-tertiary">
+              <Text className="text-xs font-semibold text-text-tertiary">
                 {t('nutrition.checkin.weightTrend')}
               </Text>
               <View className="mt-1 flex-row items-baseline">
-                <Text className="text-3xl font-black text-text-primary">
+                <Text className="text-3xl font-bold tabular-nums text-text-primary">
                   {formatDecimal(displayActualWeight, 1)}
                 </Text>
-                <Text className="ml-1 text-base font-bold text-text-tertiary">
+                <Text className="ml-1 text-base font-semibold text-text-tertiary">
                   {t(weightUnitKey, { value: '' })}
                 </Text>
                 <View
-                  className="ml-3 rounded-md px-2 py-0.5"
+                  className="ml-3 rounded-inner px-2 py-0.5"
                   style={{ backgroundColor: trendColor + '22' }}
                 >
-                  <Text className="text-xs font-bold" style={{ color: trendColor }}>
+                  <Text className="text-xs font-semibold" style={{ color: trendColor }}>
                     {targetWeightDelta > 0 ? '+' : '-'}
                     {formatDecimal(displayTrend, 1)}
                     {t(weightUnitKey, { value: '' })}
@@ -343,7 +343,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </View>
             </View>
             <View className="items-end">
-              <Text className="text-xs font-bold text-text-tertiary">
+              <Text className="text-xs font-semibold text-text-tertiary">
                 {t('nutrition.checkin.target')}
               </Text>
               <Text className="mt-1 text-xl font-bold text-text-primary">
@@ -381,14 +381,14 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
         {/* Weekly Breakdown */}
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-2xl font-black text-text-primary">
+          <Text className="text-lg font-semibold text-text-primary">
             {t('nutrition.checkin.weeklyBreakdown')}
           </Text>
           <View
-            className="rounded-full px-3 py-1"
+            className="rounded-tag px-3 py-1"
             style={{ backgroundColor: theme.colors.background.card }}
           >
-            <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+            <Text className="text-xs font-semibold" style={{ color: theme.colors.accent.primary }}>
               {t('nutrition.checkin.weekProgress', {
                 current: weekInfo.current,
                 total: weekInfo.total,
@@ -441,18 +441,18 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
           <View className="mt-8 flex-row gap-4">
             <View
-              className="flex-1 rounded-2xl p-4"
+              className="flex-1 rounded-card p-4"
               style={{
                 borderWidth: 1,
                 borderColor: theme.colors.border.accent,
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-xs font-bold text-text-tertiary">
+              <Text className="text-xs font-semibold text-text-tertiary">
                 {t('nutrition.checkin.avgIntake')}
               </Text>
               <Text
-                className="mt-1 text-xl font-black text-text-primary"
+                className="mt-1 text-xl font-bold text-text-primary"
                 style={intuitiveEatingMode ? blurFilter(4) : undefined}
               >
                 {intuitiveEatingMode ? '0' : formatInteger(avgCalories)}{' '}
@@ -460,17 +460,17 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </Text>
             </View>
             <View
-              className="flex-1 rounded-2xl p-4"
+              className="flex-1 rounded-card p-4"
               style={{
                 borderWidth: 1,
                 borderColor: theme.colors.border.accent,
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-xs font-bold text-text-tertiary">
+              <Text className="text-xs font-semibold text-text-tertiary">
                 {t('nutrition.checkin.consistency')}
               </Text>
-              <Text className="mt-1 text-xl font-black text-text-primary">
+              <Text className="mt-1 text-xl font-bold text-text-primary">
                 {consistency}%{' '}
                 <Text className="text-xs font-medium text-text-tertiary">
                   {t('nutrition.checkin.rate')}
@@ -481,17 +481,17 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
           <View className="mt-4 flex-row gap-4">
             <View
-              className="flex-1 rounded-2xl p-4"
+              className="flex-1 rounded-card p-4"
               style={{
                 borderWidth: 1,
                 borderColor: theme.colors.border.accent,
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-xs font-bold text-text-tertiary">
+              <Text className="text-xs font-semibold text-text-tertiary">
                 {t('nutrition.checkin.avgBodyFat')}
               </Text>
-              <Text className="mt-1 text-xl font-black text-text-primary">
+              <Text className="mt-1 text-xl font-bold text-text-primary">
                 {avgBodyFat != null ? formatDecimal(avgBodyFat, 1) : '--'}%
               </Text>
               <Text className="mt-1 text-xs font-medium text-text-tertiary">
@@ -503,17 +503,17 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </Text>
             </View>
             <View
-              className="flex-1 rounded-2xl p-4"
+              className="flex-1 rounded-card p-4"
               style={{
                 borderWidth: 1,
                 borderColor: theme.colors.border.accent,
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-xs font-bold text-text-tertiary">
+              <Text className="text-xs font-semibold text-text-tertiary">
                 {t('nutrition.checkin.activeMinutes')}
               </Text>
-              <Text className="mt-1 text-xl font-black text-text-primary">
+              <Text className="mt-1 text-xl font-bold text-text-primary">
                 {formatInteger(activeMinutes)}
               </Text>
               {activeMinutesTrend !== null ? (

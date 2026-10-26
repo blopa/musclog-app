@@ -81,13 +81,13 @@ export function InlineExerciseCard({
     // the card instead of the screen behind it.
     <SurfaceColorProvider color={theme.colors.background.card}>
       <View
-        className={`gap-3 rounded-2xl border bg-bg-card p-4 ${isCurrent ? 'border-accent-primary' : 'border-border-light'}`}
+        className={`gap-3 rounded-card border bg-bg-card p-4 ${isCurrent ? 'border-accent-primary' : 'border-border-light'}`}
         testID={`exercise-card-${block.logExerciseId}`}
       >
         <View className="flex-row items-center gap-3">
           <ExerciseThumbnail exercise={exercise} />
           <View className="min-w-0 flex-1">
-            <Text className="text-lg font-bold text-text-primary" numberOfLines={2}>
+            <Text className="text-base font-semibold text-text-primary" numberOfLines={2}>
               {exercise.name}
             </Text>
             {category ? (
@@ -97,10 +97,10 @@ export function InlineExerciseCard({
             ) : null}
           </View>
           <View
-            className={`rounded-full px-2.5 py-1 ${allDone ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
+            className={`rounded-tag px-2.5 py-1 ${allDone ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
           >
             <Text
-              className={`text-xs font-bold ${allDone ? 'text-text-on-accent' : 'text-text-secondary'}`}
+              className={`text-xs font-semibold tabular-nums ${allDone ? 'text-text-on-accent' : 'text-text-secondary'}`}
             >
               {t('trainingFlow.blockProgress', {
                 done: formatInteger(block.doneCount),

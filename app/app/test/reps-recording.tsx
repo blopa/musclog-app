@@ -77,7 +77,7 @@ function ExercisePickerModal({
       scrollable={true}
     >
       <View className="px-4 py-3">
-        <View className="mb-4 flex-row items-center gap-2 rounded-lg border border-border-light bg-bg-card px-3">
+        <View className="mb-4 flex-row items-center gap-2 rounded-control border border-border-light bg-bg-card px-3">
           <Search size={theme.iconSize.md} color={theme.colors.text.tertiary} />
           <TextInput
             value={searchQuery}
@@ -598,7 +598,7 @@ export default function RepsRecordingScreen() {
         <GenericCard variant="flat">
           <View className="gap-3 p-4">
             <View className="flex-row items-center gap-3">
-              <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
+              <View className="h-10 w-10 items-center justify-center rounded-control bg-bg-card">
                 <Bluetooth size={theme.iconSize.md} color={statusColor} />
               </View>
               <View className="flex-1">
@@ -651,7 +651,7 @@ export default function RepsRecordingScreen() {
                   <Pressable
                     key={device.id}
                     onPress={() => void wit.connect(device)}
-                    className="flex-row items-center justify-between rounded-lg bg-bg-card p-3"
+                    className="flex-row items-center justify-between rounded-control bg-bg-card p-3"
                   >
                     <Text className="font-medium text-text-primary">
                       {device.name ?? 'Unknown'}
@@ -816,7 +816,7 @@ export default function RepsRecordingScreen() {
             ) : (
               <Pressable
                 onPress={() => void handleEnableCamera()}
-                className="items-center justify-center rounded-lg border border-dashed py-8"
+                className="items-center justify-center rounded-control border border-dashed py-8"
                 style={{ borderColor: theme.colors.border.light, gap: 8 }}
               >
                 <Camera size={theme.iconSize.lg} color={theme.colors.accent.primary} />
@@ -830,7 +830,7 @@ export default function RepsRecordingScreen() {
             )}
 
             {isRecording ? (
-              <View className="flex-row items-center gap-4 rounded-lg bg-bg-card p-3">
+              <View className="flex-row items-center gap-4 rounded-control bg-bg-card p-3">
                 <Text className="font-bold" style={{ color: theme.colors.status.error }}>
                   ● REC
                 </Text>
@@ -864,7 +864,10 @@ export default function RepsRecordingScreen() {
               <Text className="text-sm text-text-tertiary">No recordings yet</Text>
             ) : (
               recordings.map((r) => (
-                <View key={r.id} className="flex-row items-start gap-3 rounded-lg bg-bg-card p-3">
+                <View
+                  key={r.id}
+                  className="flex-row items-start gap-3 rounded-control bg-bg-card p-3"
+                >
                   <View className="flex-1">
                     <Text className="font-semibold text-text-primary">
                       {r.exerciseName} — {r.reps} reps

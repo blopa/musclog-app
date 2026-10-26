@@ -87,7 +87,10 @@ export function MealEstimationScreen({
         <View className="p-4">
           {/* Estimated Nutrition Section */}
           <View className="mb-6">
-            <Text className="mb-4 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
+            <Text
+              className="mb-4 text-lg font-semibold"
+              style={{ color: theme.colors.text.primary }}
+            >
               {t('nutrition.createMeal.estimated')} {t('nutrition.createMeal.totalNutrition')}
             </Text>
 
@@ -138,19 +141,19 @@ export function MealEstimationScreen({
                 <View className="flex-row items-center p-3">
                   {/* Item Image */}
                   <View
-                    className="mr-3 h-12 w-12 rounded-lg"
+                    className="mr-3 h-12 w-12 rounded-control"
                     style={{ backgroundColor: theme.colors.background.secondary }}
                   >
                     {item.imageUri ? (
                       <Image
                         source={{ uri: item.imageUri }}
-                        className="h-full w-full rounded-lg"
+                        className="h-full w-full rounded-control"
                         resizeMode="cover"
                       />
                     ) : (
-                      <View className="flex h-full w-full items-center justify-center rounded-lg">
+                      <View className="flex h-full w-full items-center justify-center rounded-control">
                         <Text
-                          className="text-lg font-bold"
+                          className="text-lg font-semibold"
                           style={{ color: theme.colors.text.tertiary }}
                         >
                           {item.name.charAt(0).toUpperCase()}
@@ -177,14 +180,14 @@ export function MealEstimationScreen({
                   <View className="flex-row gap-2">
                     <TouchableOpacity
                       onPress={() => onEditItem(item)}
-                      className="rounded-lg p-2"
+                      className="rounded-control p-2"
                       style={{ backgroundColor: theme.colors.background.secondary }}
                     >
                       <Edit2 size={16} color={theme.colors.text.secondary} />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => onDeleteItem(item.id)}
-                      className="rounded-lg p-2"
+                      className="rounded-control p-2"
                       style={{ backgroundColor: theme.colors.background.secondary }}
                     >
                       <Trash2 size={16} color={theme.colors.status.error} />
@@ -197,7 +200,7 @@ export function MealEstimationScreen({
             {/* Add Item Button */}
             <TouchableOpacity
               onPress={onAddItem}
-              className="mt-3 flex-row items-center justify-center rounded-lg border p-4"
+              className="mt-3 flex-row items-center justify-center rounded-control border p-4"
               style={{
                 borderColor: theme.colors.border.default,
                 backgroundColor: theme.colors.background.secondary,

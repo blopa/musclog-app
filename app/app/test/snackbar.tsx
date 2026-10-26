@@ -74,7 +74,7 @@ export default function SnackbarTestScreen() {
               {/* Success Button */}
               <Pressable
                 onPress={triggerSuccessSnackbar}
-                className="flex-row items-center gap-4 rounded-2xl p-6"
+                className="flex-row items-center gap-4 rounded-card p-6"
                 style={{
                   backgroundColor: theme.colors.background.buttonCard,
                 }}
@@ -100,7 +100,7 @@ export default function SnackbarTestScreen() {
               {/* Error Button */}
               <Pressable
                 onPress={triggerErrorSnackbar}
-                className="flex-row items-center gap-4 rounded-2xl p-6"
+                className="flex-row items-center gap-4 rounded-card p-6"
                 style={{
                   backgroundColor: theme.colors.background.buttonCard,
                 }}
@@ -126,7 +126,7 @@ export default function SnackbarTestScreen() {
               {/* Dual Action Button */}
               <Pressable
                 onPress={triggerDualActionSnackbar}
-                className="flex-row items-center gap-4 rounded-2xl p-6"
+                className="flex-row items-center gap-4 rounded-card p-6"
                 style={{
                   backgroundColor: theme.colors.background.buttonCard,
                 }}

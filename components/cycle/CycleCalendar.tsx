@@ -109,7 +109,7 @@ export function CycleCalendar({
           <ChevronLeft size={22} color={theme.colors.text.secondary} />
         </Pressable>
         <Text
-          className="text-base font-bold capitalize text-text-primary"
+          className="text-base font-semibold capitalize text-text-primary"
           accessibilityRole="header"
         >
           {monthLabel}
@@ -130,7 +130,7 @@ export function CycleCalendar({
       <View className="flex-row">
         {weekdays.map((d) => (
           <View key={d.getDay()} style={{ width: '14.2857%' }} className="items-center pb-1">
-            <Text className="text-xs font-bold text-text-tertiary">
+            <Text className="text-xs font-semibold text-text-tertiary">
               {new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(d)}
             </Text>
           </View>

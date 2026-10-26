@@ -38,7 +38,7 @@ export function CycleHealthSettings() {
 
   return (
     <View className="gap-3">
-      <Text className="text-base font-bold text-text-primary">
+      <Text className="text-base font-semibold text-text-primary">
         {t('cycle.complete.healthTitle')}
       </Text>
       <Text className="text-sm text-text-secondary">{t('cycle.complete.healthHint')}</Text>

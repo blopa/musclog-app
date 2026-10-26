@@ -29,7 +29,10 @@ type ChipProps = {
   testID?: string;
 };
 
-/** A pill-shaped choice or compact action. Always at least 44pt tall. */
+/**
+ * A compact choice or action on the control radius. Drawn 36pt tall and padded out to a 44pt
+ * touch target with `hitSlop`, so a row of chips stays dense without shrinking what you can hit.
+ */
 export function Chip({
   label,
   onPress,
@@ -78,10 +81,11 @@ export function Chip({
       disabled={disabled}
       onPress={onPress}
       testID={testID}
-      className={`min-h-11 min-w-11 flex-row items-center justify-center gap-1.5 rounded-full border px-4 active:opacity-70 ${surface}`}
+      hitSlop={4}
+      className={`min-h-9 min-w-9 flex-row items-center justify-center gap-1.5 rounded-control border px-3 active:opacity-70 ${surface}`}
     >
       {Icon ? <Icon size={theme.iconSize.sm} color={ink} /> : null}
-      <Text className={`text-sm font-semibold ${textClass}`}>{label}</Text>
+      <Text className={`text-sm font-medium ${textClass}`}>{label}</Text>
     </Pressable>
   );
 }

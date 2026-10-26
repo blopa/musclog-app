@@ -51,7 +51,10 @@ describe('NumericTextField', () => {
       /focused && surface\)\s*\{\s*borderColor = theme\.colors\.accent\.primary/
     );
     expect(source).toMatch(/size === 'field' \? theme\.colors\.background\.card :/);
-    expect(source).toMatch(/borderWidth: theme\.borderWidth\.medium,/);
+    // A hairline outline like every input; the bottom edge is the heavier one, constant so that
+    // marking a field (the accent underline) never shifts it.
+    expect(source).toMatch(/borderWidth: theme\.borderWidth\.thin,/);
+    expect(source).toMatch(/borderBottomWidth: theme\.borderWidth\.medium,/);
   });
 });
 
@@ -110,8 +113,8 @@ describe('theme controls', () => {
     const source = code('components/theme/SegmentedControl.tsx');
     expect(source).toContain('backgroundColor: theme.colors.accent.primary');
     expect(source).not.toContain('LinearGradient');
-    expect(source).toContain('font-bold text-text-on-accent');
-    expect(source).toContain('font-bold text-text-secondary');
+    expect(source).toContain('font-semibold text-text-on-accent');
+    expect(source).toContain('font-medium text-text-secondary');
     expect(source).not.toContain('text-text-tertiary');
   });
 

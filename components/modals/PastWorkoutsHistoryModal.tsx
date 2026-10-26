@@ -93,7 +93,7 @@ function WorkoutHistorySkeleton() {
           {[1, 2, 3, 4, 5].map((i) => (
             <View
               key={i}
-              className="rounded-lg border p-4"
+              className="rounded-card border p-4"
               style={{
                 backgroundColor: theme.colors.background.card,
                 borderColor: theme.colors.background.ink5,
@@ -124,7 +124,7 @@ function WorkoutHistorySkeleton() {
                   {[1, 2, 3].map((statIndex) => (
                     <View
                       key={statIndex}
-                      className="flex-1 gap-2 rounded-lg p-2"
+                      className="flex-1 gap-2 rounded-control p-2"
                       style={{ backgroundColor: theme.colors.background.ink5 }}
                     >
                       <SkeletonLoader
@@ -205,7 +205,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
           <View className="flex-row items-start justify-between">
             <View className="flex-row items-center gap-3">
               <View
-                className="h-12 w-12 items-center justify-center rounded-lg"
+                className="h-12 w-12 items-center justify-center rounded-control"
                 style={{
                   backgroundColor: workout.iconBgOpacity,
                 }}
@@ -234,7 +234,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
             </View>
             {workout.prCount ? (
               <View
-                className="flex-row items-center gap-1 rounded px-2 py-0.5"
+                className="flex-row items-center gap-1 rounded-tag px-2 py-0.5"
                 style={{
                   backgroundColor: theme.colors.status.brandBright10,
                 }}
@@ -263,7 +263,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
             {workout.stats.map((stat, statIndex) => (
               <View
                 key={statIndex}
-                className="flex-1 rounded-lg p-2"
+                className="flex-1 rounded-control p-2"
                 style={{
                   backgroundColor: theme.colors.background.ink5,
                 }}

@@ -167,9 +167,9 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
       >
         <View className="px-4 py-6">
           {supplements.length === 0 && !isLoading ? (
-            <View className="items-center rounded-3xl border border-border-light bg-bg-card px-6 py-10">
+            <View className="items-center rounded-card border border-border-light bg-bg-card px-6 py-10">
               <Pill size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
-              <Text className="mt-4 text-center text-base font-bold text-text-primary">
+              <Text className="mt-4 text-center text-base font-semibold text-text-primary">
                 {t('settings.advancedSettings.manageSupplementsEmpty')}
               </Text>
               <View className="mt-6 w-full">
@@ -202,7 +202,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
                           <Pill size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
                         </View>
                         <View className="flex-1">
-                          <Text className="text-base font-bold text-text-primary">
+                          <Text className="text-base font-semibold text-text-primary">
                             {supplement.name}
                           </Text>
                         </View>

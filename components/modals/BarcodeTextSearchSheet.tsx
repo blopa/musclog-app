@@ -33,7 +33,7 @@ export function BarcodeTextSearchSheet({
       maxHeight="55%"
       headerIcon={
         <View
-          className="h-10 w-10 items-center justify-center rounded-xl"
+          className="h-10 w-10 items-center justify-center rounded-control"
           style={{ backgroundColor: theme.colors.background.primary }}
         >
           <ScanBarcode size={theme.iconSize.xl} color={theme.colors.text.primary} />
@@ -41,11 +41,11 @@ export function BarcodeTextSearchSheet({
       }
     >
       <View className="pt-2">
-        <Text className="mb-2 ml-1 text-xs font-bold text-text-secondary">
+        <Text className="mb-2 ml-1 text-xs font-semibold text-text-secondary">
           {t('food.aiCamera.barcodeTextSearchLabel')}
         </Text>
         <View
-          className="mb-6 w-full rounded-lg border px-4 py-3"
+          className="mb-6 w-full rounded-control border px-4 py-3"
           style={{
             backgroundColor: theme.colors.background.primary,
             borderColor: theme.colors.background.ink10,
@@ -72,11 +72,11 @@ export function BarcodeTextSearchSheet({
 
         <Pressable
           onPress={onSubmit}
-          className="rounded-xl px-6 py-4 active:scale-[0.98]"
+          className="rounded-control px-6 py-4 active:scale-[0.98]"
           style={{ backgroundColor: theme.colors.accent.primary }}
         >
           <View className="flex-row items-center justify-center gap-2">
-            <Text className="text-sm font-bold" style={{ color: theme.colors.text.onAccent }}>
+            <Text className="text-sm font-semibold" style={{ color: theme.colors.text.onAccent }}>
               {t('food.aiCamera.barcodeTextSearchSubmit')}
             </Text>
             <Search size={theme.iconSize.md} color={theme.colors.text.onAccent} />

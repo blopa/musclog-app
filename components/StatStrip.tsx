@@ -57,7 +57,7 @@ export function StatStrip({ className, items, palette }: StatStripProps) {
       <View className="flex-row items-center">
         {item.icon ?? null}
         <Text
-          className="text-[15px] font-semibold"
+          className="text-base font-semibold tabular-nums"
           maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
           numberOfLines={1}
           style={[{ color: item.valueColor }, item.valueStyle]}
@@ -80,7 +80,7 @@ export function StatStrip({ className, items, palette }: StatStripProps) {
         the row still reads across.
       */}
       <Text
-        className="mt-1 text-center text-xs font-semibold"
+        className="mt-0.5 text-center text-xs font-medium"
         maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
         numberOfLines={2}
         style={{ color: palette.label }}
@@ -109,7 +109,7 @@ export function StatStrip({ className, items, palette }: StatStripProps) {
 
   return (
     <View
-      className={`flex-row items-stretch overflow-hidden rounded-2xl ${className ?? ''}`}
+      className={`flex-row items-stretch overflow-hidden rounded-card ${className ?? ''}`}
       style={{
         backgroundColor: palette.background,
         borderColor: palette.border,

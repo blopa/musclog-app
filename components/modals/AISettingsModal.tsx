@@ -103,7 +103,7 @@ function AIIntegrationCard({
 
   return (
     <View>
-      <Text className="mb-2 px-5 text-xs font-bold" style={{ color: sectionTitleColor }}>
+      <Text className="mb-2 px-5 text-xs font-semibold" style={{ color: sectionTitleColor }}>
         {sectionTitle}
       </Text>
 
@@ -541,7 +541,10 @@ export function AISettingsModal({
         {/* Musclog Free Tier Section — hidden on web production builds (CORS/quota constraints) */}
         {musclogGatewayAvailable ? (
           <View className="gap-3">
-            <Text className="px-5 text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+            <Text
+              className="px-5 text-xs font-semibold"
+              style={{ color: theme.colors.accent.primary }}
+            >
               {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
             </Text>
             <ToggleInput
@@ -667,7 +670,7 @@ export function AISettingsModal({
             {Platform.OS === 'ios' && isOnDeviceCapable ? (
               <View className="gap-3">
                 <Text
-                  className="px-5 text-xs font-bold"
+                  className="px-5 text-xs font-semibold"
                   style={{ color: theme.colors.accent.primary }}
                 >
                   {t('settings.aiSettings.onDeviceAi.sectionTitle')}
@@ -750,7 +753,7 @@ export function AISettingsModal({
             />
           </View>
           <View
-            className="rounded-lg border bg-bg-card p-4"
+            className="rounded-card border bg-bg-card p-4"
             style={{
               borderColor: theme.colors.border.light,
               borderWidth: theme.borderWidth.thin,
@@ -844,7 +847,7 @@ export function AISettingsModal({
           </SectionLabel>
           <Pressable
             onPress={() => setIsCustomPromptsVisible(true)}
-            className="overflow-hidden rounded-lg border bg-bg-card active:bg-bg-overlay"
+            className="overflow-hidden rounded-control border bg-bg-card active:bg-bg-overlay"
             style={{
               borderColor: theme.colors.border.light,
               borderWidth: theme.borderWidth.thin,

@@ -249,10 +249,7 @@ export default function NutritionGoalsScreen() {
           contentContainerStyle={{ paddingBottom: theme.spacing.padding['4xl'] }}
         >
           <View className="px-6 pb-2 pt-4">
-            <Text
-              className="text-2xl font-bold tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('nutritionGoals.title')}
             </Text>
           </View>

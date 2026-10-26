@@ -94,10 +94,10 @@ export function PredictionDetailsSheet({ visible, onClose }: PredictionDetailsSh
           return (
             <View
               key={row.start}
-              className="flex-row items-center justify-between gap-3 rounded-xl bg-bg-card p-3"
+              className="flex-row items-center justify-between gap-3 rounded-control bg-bg-card p-3"
             >
               <View className="flex-1">
-                <Text className="text-sm font-bold text-text-primary">
+                <Text className="text-sm font-semibold text-text-primary">
                   {date(row.start)}
                   {row.lengthDays != null
                     ? ` · ${t('cycle.history.days', { count: row.lengthDays, days: formatInteger(row.lengthDays) })}`

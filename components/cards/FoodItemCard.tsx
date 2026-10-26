@@ -75,7 +75,7 @@ const MacroItem = ({
     <View className="flex-row items-center gap-1">
       <Icon size={12} color={theme.colors.text.secondary} />
       <Text
-        className="text-xs text-text-secondary"
+        className="text-xs tabular-nums text-text-secondary"
         style={intuitiveMode ? blurFilter(4) : undefined}
       >
         {t('food.macroValueFormat', {
@@ -148,10 +148,10 @@ export const FoodItemCard = memo(function FoodItemCard({
 
   return (
     <GenericCard variant="flat" isPressable={!!onPress} onPress={onPress}>
-      <View className="flex-row items-center gap-4 p-4">
+      <View className="flex-row items-center gap-3 px-4 py-3">
         <View
-          className={`flex-shrink-0 overflow-hidden rounded-xl ${
-            variant === 'compact' ? 'h-12 w-12' : 'h-16 w-16'
+          className={`flex-shrink-0 overflow-hidden rounded-control ${
+            variant === 'compact' ? 'h-10 w-10' : 'h-12 w-12'
           }`}
           style={{ backgroundColor: theme.colors.background.hairline }}
         >
@@ -172,13 +172,13 @@ export const FoodItemCard = memo(function FoodItemCard({
         </View>
         <View className="min-w-0 flex-1">
           <Text
-            className="mb-1 text-lg font-semibold text-text-primary"
+            className="mb-0.5 text-base font-medium text-text-primary"
             numberOfLines={variant === 'compact' ? 1 : 2}
           >
             {name}
           </Text>
           {description && variant === 'default' ? (
-            <Text className="mb-2 truncate text-sm text-text-secondary">{description}</Text>
+            <Text className="mb-1 truncate text-sm text-text-secondary">{description}</Text>
           ) : null}
           <View className="flex-row items-center gap-3">
             <MacroItem icon={LucideScale} value={g} unit={massUnit} />

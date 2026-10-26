@@ -44,7 +44,7 @@ export function CaloriesBurnedCard() {
             </Pressable>
           </View>
 
-          <Text className="text-3xl font-bold tracking-tight text-text-primary">
+          <Text className="text-3xl font-bold tabular-nums text-text-primary">
             {formatInteger(caloriesBurned)}{' '}
             <Text className="text-lg font-normal text-text-secondary">{t('progress.kcal')}</Text>
           </Text>
@@ -67,7 +67,7 @@ export function CaloriesBurnedCard() {
           </View>
 
           <View className="mt-2 flex-row items-center justify-between">
-            <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+            <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
               {t('progress.caloriesBurnedProgress', {
                 percent: Math.round(dayProgress * 100),
               })}

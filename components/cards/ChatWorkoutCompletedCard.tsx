@@ -28,7 +28,7 @@ export function ChatWorkoutCompletedCard({
 
   return (
     <View
-      className="overflow-hidden rounded-2xl rounded-bl-sm"
+      className="overflow-hidden rounded-card rounded-bl-tag"
       style={{
         backgroundColor: theme.colors.background.card,
         borderWidth: theme.borderWidth.thin,
@@ -47,7 +47,9 @@ export function ChatWorkoutCompletedCard({
       >
         <View className="flex-row items-start justify-between">
           <View className="flex-1 pr-3">
-            <Text className="text-lg font-bold leading-tight text-text-primary">{workoutName}</Text>
+            <Text className="text-lg font-semibold leading-tight text-text-primary">
+              {workoutName}
+            </Text>
             <View className="mt-1 flex-row items-center gap-1.5">
               <Trophy size={14} color={theme.colors.accent.primary} />
               <Text
@@ -59,7 +61,7 @@ export function ChatWorkoutCompletedCard({
             </View>
           </View>
           <View
-            className="rounded-lg p-2"
+            className="rounded-control p-2"
             style={{ backgroundColor: theme.colors.status.indigo10 }}
           >
             <ScrollText size={20} color={theme.colors.status.indigo} />
@@ -70,23 +72,23 @@ export function ChatWorkoutCompletedCard({
       {/* Stats */}
       <View className="flex-row p-4">
         <View className="flex-1">
-          <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
             {t('workoutSummary.volume')}
           </Text>
-          <Text className="mt-0.5 text-sm font-bold text-text-primary">{volume}</Text>
+          <Text className="mt-0.5 text-sm font-semibold text-text-primary">{volume}</Text>
         </View>
         <View className="flex-1">
-          <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
             {t('workoutSummary.duration')}
           </Text>
-          <Text className="mt-0.5 text-sm font-bold text-text-primary">{duration}</Text>
+          <Text className="mt-0.5 text-sm font-semibold text-text-primary">{duration}</Text>
         </View>
         <View className="flex-1">
-          <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
             {t('workoutSummary.newPRs')}
           </Text>
           <Text
-            className="mt-0.5 text-sm font-bold"
+            className="mt-0.5 text-sm font-semibold"
             style={{
               color: personalRecords > 0 ? theme.colors.accent.primary : theme.colors.text.primary,
             }}
@@ -102,14 +104,14 @@ export function ChatWorkoutCompletedCard({
           {onViewDetails ? (
             <Pressable
               onPress={onViewDetails}
-              className="w-full flex-row items-center justify-center gap-2 rounded-lg py-2.5 active:scale-95"
+              className="w-full flex-row items-center justify-center gap-2 rounded-control py-2.5 active:scale-95"
               style={{
                 backgroundColor: theme.colors.background.primary,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.border.light,
               }}
             >
-              <Text className="text-sm font-bold text-text-primary">
+              <Text className="text-sm font-semibold text-text-primary">
                 {t('workoutSummary.viewDetails')}
               </Text>
               <ExternalLink size={14} color={theme.colors.text.primary} />
@@ -118,14 +120,17 @@ export function ChatWorkoutCompletedCard({
           {onViewMuscles ? (
             <Pressable
               onPress={onViewMuscles}
-              className="w-full flex-row items-center justify-center gap-2 rounded-lg py-2.5 active:scale-95"
+              className="w-full flex-row items-center justify-center gap-2 rounded-control py-2.5 active:scale-95"
               style={{
                 backgroundColor: theme.colors.accent.primary10,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.accent.primary + '33',
               }}
             >
-              <Text className="text-sm font-bold" style={{ color: theme.colors.accent.primary }}>
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: theme.colors.accent.primary }}
+              >
                 {t('workoutSummary.viewMuscles')}
               </Text>
               <PersonStanding size={14} color={theme.colors.accent.primary} />

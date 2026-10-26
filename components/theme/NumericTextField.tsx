@@ -71,9 +71,12 @@ export function NumericTextField({
 
   const metrics = {
     hero: { fontSize: theme.typography.fontSize['5xl'], minHeight: 64 },
-    field: { fontSize: theme.typography.fontSize.xl, minHeight: 56 },
+    field: { fontSize: theme.typography.fontSize.xl, minHeight: 48 },
     cell: { fontSize: theme.typography.fontSize.lg, minHeight: 44 },
   }[size];
+  // The hero number is the screen's figure; a field or table cell is one value among several.
+  const weight =
+    size === 'hero' ? theme.typography.fontWeight.bold : theme.typography.fontWeight.semibold;
   const showPlaceholder = placeholder != null && value === '' && !focused;
 
   // A field with a surface is outlined like every other input (`TextInput`, `PickerButton`): a
@@ -99,10 +102,12 @@ export function NumericTextField({
         width: width ?? '100%',
         minHeight: metrics.minHeight,
         justifyContent: 'center',
-        borderRadius: theme.borderRadius.md,
+        borderRadius: theme.borderRadius.control,
         backgroundColor: fill,
-        // A constant width, so focusing or marking a field never shifts its neighbours.
-        borderWidth: theme.borderWidth.medium,
+        // Constant widths, so focusing or marking a field never shifts its neighbours. The bottom
+        // edge is the heavier one because it carries the "adjusted" underline.
+        borderWidth: theme.borderWidth.thin,
+        borderBottomWidth: theme.borderWidth.medium,
         borderColor,
         // Marked reads by the underline as well as the accent ink, so it survives without color.
         borderBottomColor: marked && !invalid ? theme.colors.accent.primary : borderColor,
@@ -133,7 +138,8 @@ export function NumericTextField({
           padding: 0,
           color: marked ? theme.colors.accent.primary : theme.colors.text.primary,
           fontSize: metrics.fontSize,
-          fontWeight: theme.typography.fontWeight.bold,
+          fontWeight: weight,
+          fontVariant: ['tabular-nums'],
           textAlign: 'center',
         }}
       />
@@ -148,7 +154,8 @@ export function NumericTextField({
             style={{
               color: theme.colors.text.tertiary,
               fontSize: metrics.fontSize,
-              fontWeight: theme.typography.fontWeight.bold,
+              fontWeight: weight,
+              fontVariant: ['tabular-nums'],
             }}
           >
             {placeholder}

@@ -70,7 +70,7 @@ export function ScreenHeader({
 
   return (
     <View
-      className={`min-h-16 flex-row items-center gap-2 border-b border-border-light bg-bg-primary py-2 ${pushed ? 'pl-2 pr-4' : 'px-4'}`}
+      className={`min-h-14 flex-row items-center gap-2 border-b border-border-light bg-bg-primary py-2 ${pushed ? 'pl-2 pr-4' : 'px-4'}`}
       testID={testID}
     >
       {pushed ? (
@@ -96,7 +96,7 @@ export function ScreenHeader({
             accessibilityRole="header"
             numberOfLines={1}
             maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
-            className={pushed ? 'text-xl font-bold' : 'text-3xl font-bold'}
+            className={pushed ? 'text-lg font-semibold' : 'text-2xl font-bold'}
             style={{ color: theme.colors.text.primary }}
           >
             {title}

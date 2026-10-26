@@ -60,7 +60,7 @@ function ExerciseListItem({
       className="flex-row items-center gap-4 px-4 py-3 active:bg-bg-overlay"
     >
       <View
-        className="h-14 w-14 overflow-hidden rounded-lg bg-bg-card"
+        className="h-14 w-14 overflow-hidden rounded-control bg-bg-card"
         style={{ backgroundColor: theme.colors.background.exerciseCardBackground }}
       >
         <Image
@@ -73,7 +73,7 @@ function ExerciseListItem({
         <Text className="text-base font-medium text-text-primary">{name}</Text>
         <View className="mt-1 flex-row items-center gap-2">
           <View
-            className={`rounded-full px-2 py-0.5 ${
+            className={`rounded-tag px-2 py-0.5 ${
               tag.variant === 'primary'
                 ? 'border border-accent-primary/30 bg-accent-primary/20'
                 : 'border border-border-dark bg-bg-card'
@@ -249,7 +249,7 @@ export default function ExercisesModal({
               {[1, 2, 3, 4].map((i) => (
                 <View
                   key={i}
-                  className="mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card"
+                  className="mb-4 overflow-hidden rounded-control border border-border-dark bg-bg-card"
                 >
                   <View className="flex-row items-center justify-between px-4 py-4">
                     <View className="flex-row items-center gap-3">

@@ -218,7 +218,7 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
     >
       <View className="gap-6 pb-4">
         <View className="gap-2">
-          <Text className="text-base font-bold text-text-primary">
+          <Text className="text-base font-semibold text-text-primary">
             {t(
               guidance.hidePeriodActions
                 ? 'cycle.personalize.unexpectedBleeding'
@@ -238,7 +238,9 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
         </View>
 
         <View className="gap-2">
-          <Text className="text-base font-bold text-text-primary">{t('cycle.symptomsTitle')}</Text>
+          <Text className="text-base font-semibold text-text-primary">
+            {t('cycle.symptomsTitle')}
+          </Text>
           <View className="flex-row flex-wrap gap-2">
             <Chip
               label={t('cycle.daySheet.noSymptoms')}
@@ -270,7 +272,7 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
             onPress={() => update({ showAllSymptoms: !draft.showAllSymptoms })}
           />
           {ratedSymptoms.length > 0 ? (
-            <View className="gap-3 rounded-xl bg-bg-overlay p-3">
+            <View className="gap-3 rounded-control bg-bg-overlay p-3">
               <Text className="text-xs text-text-secondary">
                 {t('cycle.daySheet.severityOptional')}
               </Text>
@@ -303,7 +305,9 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
         </View>
 
         <View className="gap-2">
-          <Text className="text-base font-bold text-text-primary">{t('cycle.daySheet.pain')}</Text>
+          <Text className="text-base font-semibold text-text-primary">
+            {t('cycle.daySheet.pain')}
+          </Text>
           <Text className="text-xs text-text-secondary">{t('cycle.daySheet.painScale')}</Text>
           <View className="flex-row flex-wrap gap-2">
             {PAIN_VALUES.map((value) => (
@@ -318,7 +322,7 @@ export function CycleDaySheet({ visible, onClose, day }: CycleDaySheetProps) {
         </View>
 
         <View className="gap-2">
-          <Text className="text-base font-bold text-text-primary">
+          <Text className="text-base font-semibold text-text-primary">
             {t('cycle.daySheet.energy')}
           </Text>
           <View className="flex-row flex-wrap gap-2">

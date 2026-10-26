@@ -77,25 +77,22 @@ describe('Phase 1: buttons and shape', () => {
   );
 
   it.each(['components/theme/Button.tsx', 'components/theme/Button.web.tsx'])(
-    '%s fills `accent` solid and keeps the gradient for gradientCta',
+    '%s fills every variant flat, from the shared size table',
     (path) => {
       const source = stripComments(readFileSync(join(root, path), 'utf8'));
-      expect(source).not.toMatch(/gradients\.accent\b/);
+      expect(source).not.toMatch(/gradients\.(accent|cta|button)\b|linear-gradient|LinearGradient/);
       expect(source).not.toMatch(/borderRadius\[['"]2xl['"]\]|borderRadius\.xl\b/);
+      expect(source).toMatch(/getButtonMetrics\(theme\)/);
     }
   );
-
-  it('keeps rounded-3xl from spreading (target 0)', () => {
-    expect(total(occurrences(/\brounded-3xl\b/))).toBeLessThanOrEqual(6);
-  });
 
   it('keeps gradientCta, the one primary action per screen, from spreading', () => {
     expect(total(occurrences(/gradientCta/))).toBeLessThanOrEqual(GRADIENT_CTA_CEILING);
   });
 
-  it('draws ActionButton on the 16px card radius', () => {
+  it('draws ActionButton on the control radius', () => {
     const source = stripComments(readFileSync(join(root, 'components/ActionButton.tsx'), 'utf8'));
-    expect(source).not.toMatch(/\brounded-3xl\b/);
+    expect(source).toMatch(/\brounded-control\b/);
   });
 });
 
@@ -116,7 +113,6 @@ const LINEAR_GRADIENT_ALLOWLIST = [
   'components/modals/ExerciseGoalCreationModal.tsx',
   'components/modals/SmartCameraShell.tsx',
   'components/modals/ViewExerciseModal.tsx',
-  'components/theme/Button.tsx',
   'components/theme/Slider.tsx',
   'components/workout/session/ExerciseHeader.tsx',
   'components/workout/session/GuidedExerciseView.tsx',
@@ -531,5 +527,63 @@ describe('virtualized paginated lists', () => {
     const rows = readFileSync(join(root, 'components/modals/foodSearchRows.ts'), 'utf8');
     expect(rows).not.toMatch(/from 'react-native'/);
     expect(rows).not.toMatch(/loadMoreFavorites|loadMoreMeals/);
+  });
+});
+
+/**
+ * Phase 10: geometry and type. Radii are named by role (`theme.shape.js`), the weight ladder stops
+ * at bold, and no app text is squeezed with negative tracking. Each rule is held at zero.
+ */
+describe('Phase 10: geometry and type', () => {
+  it('rounds only by role: tag, inner, control, card, sheet or full', () => {
+    // Size-named radii are rem-based, so they rendered at one size on native and another on web.
+    expect(
+      occurrences(
+        /(?<=["'`\s])-?rounded(?:-(?:t|b|l|r|tl|tr|bl|br))?(?:-(?:sm|md|lg|xl|2xl|3xl))?(?=["'`\s])/g
+      )
+    ).toEqual([]);
+  });
+
+  it('keeps the theme radius tokens on the shared scale', () => {
+    const shape = readFileSync(join(root, 'theme.shape.js'), 'utf8');
+    const tailwind = readFileSync(join(root, 'tailwind.config.js'), 'utf8');
+    expect(shape).toMatch(/control:\s*8\b/);
+    expect(shape).toMatch(/card:\s*12\b/);
+    expect(tailwind).toMatch(/require\('\.\/theme\.shape'\)/);
+  });
+
+  it('never sets text heavier than bold', () => {
+    expect(
+      occurrences(
+        /\bfont-(black|extrabold)\b|fontWeight\.(black|extrabold)\b|fontWeight:\s*['"](800|900)['"]/g
+      )
+    ).toEqual([]);
+  });
+
+  it('sets small text at most semibold', () => {
+    const smallBold =
+      /["'`][^"'`\n]*\btext-(xs|sm|base)\b[^"'`\n]*\bfont-bold\b|["'`][^"'`\n]*\bfont-bold\b[^"'`\n]*\btext-(xs|sm|base)\b/g;
+    expect(occurrences(smallBold)).toEqual([]);
+  });
+
+  it('squeezes no text with negative letter-spacing', () => {
+    expect(occurrences(/\btracking-tight(er)?\b|letterSpacing\.tight\b/g)).toEqual([]);
+  });
+
+  it('draws cards without a drop shadow', () => {
+    const surface = stripComments(
+      readFileSync(join(root, 'components/cards/cardSurface.ts'), 'utf8')
+    );
+    expect(surface).not.toMatch(/shadow/);
+  });
+
+  it('counts down with tabular figures, so a ticking clock does not shift sideways', () => {
+    for (const file of [
+      'components/workout/session/RestTimerBar.tsx',
+      'components/workout/session/WorkTimerBar.tsx',
+      'components/RestTimer.tsx',
+    ]) {
+      expect(readFileSync(join(root, file), 'utf8')).toMatch(/tabular-nums/);
+    }
   });
 });

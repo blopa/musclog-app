@@ -69,7 +69,7 @@ export function MealItemCard({
       <View className="flex-row gap-x-4 p-4">
         <View className="relative">
           <View
-            className="overflow-hidden rounded-lg"
+            className="overflow-hidden rounded-control"
             style={{
               backgroundColor: theme.colors.background.separatorLight,
               height: theme.size[24],
@@ -79,7 +79,7 @@ export function MealItemCard({
             <Image source={image} className="h-full w-full" />
           </View>
           <View
-            className="absolute rounded-full px-2 py-1"
+            className="absolute rounded-tag px-2 py-1"
             style={{
               bottom: theme.offset.badge,
               right: theme.offset.badge,

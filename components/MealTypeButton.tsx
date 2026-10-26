@@ -20,7 +20,7 @@ export function MealTypeButton({ icon: Icon, label, onPress, span = 1 }: MealTyp
       accessibilityLabel={label}
       className={`${
         span === 2 ? 'flex-row' : 'flex-col'
-      } items-center justify-center gap-2 rounded-2xl border border-border-default bg-bg-overlay p-3`}
+      } items-center justify-center gap-2 rounded-card border border-border-default bg-bg-overlay p-3`}
       style={({ pressed }) => ({
         minHeight: theme.size['22'],
         borderColor: pressed ? theme.colors.accent.primary : theme.colors.border.default,

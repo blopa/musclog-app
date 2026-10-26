@@ -137,7 +137,7 @@ export function SmartCameraBottomActions({
   return (
     <View className="flex-row items-center justify-between px-2">
       <Pressable
-        className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
+        className="h-12 w-12 items-center justify-center rounded-control active:scale-95"
         style={[
           {
             backgroundColor: theme.colors.background.neutralWash,

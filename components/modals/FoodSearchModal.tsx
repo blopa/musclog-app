@@ -231,11 +231,11 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
     <View className="mb-3 flex-row items-center justify-between px-1">
       <View className="flex-row items-center gap-2">
         {Icon ? <Icon size={theme.iconSize.sm} color={theme.colors.accent.secondary} /> : null}
-        <Text className="text-xs font-bold text-text-secondary">{title}</Text>
+        <Text className="text-xs font-semibold text-text-secondary">{title}</Text>
       </View>
       {rightAction ? (
         <Pressable onPress={rightAction.onPress} className="p-3">
-          <Text className="text-xs font-bold text-accent-secondary">{rightAction.label}</Text>
+          <Text className="text-xs font-semibold text-accent-secondary">{rightAction.label}</Text>
         </Pressable>
       ) : null}
     </View>
@@ -271,10 +271,10 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
   });
 
   return (
-    <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
+    <Pressable className="flex-row items-center gap-3 rounded-card border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
       {/* Icon/Image */}
       <View
-        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
+        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-control border"
         style={{
           backgroundColor: theme.colors.background.secondaryDark,
           borderColor: 'transparent',
@@ -1120,7 +1120,7 @@ export function FoodSearchModal({
       case 'sourceError':
         return (
           <View
-            className="mb-4 overflow-hidden rounded-xl border"
+            className="mb-4 overflow-hidden rounded-control border"
             style={{
               backgroundColor: theme.colors.status.error10,
               borderColor: theme.colors.status.error + '33',
@@ -1253,7 +1253,7 @@ export function FoodSearchModal({
                 onChangeText={setSearchQuery}
                 onSubmitEditing={triggerNow}
                 returnKeyType="search"
-                className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
+                className="w-full rounded-card border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
                 style={{
                   backgroundColor: theme.colors.background.secondaryDark,
                   borderColor: searchQuery
@@ -1267,7 +1267,7 @@ export function FoodSearchModal({
                 onPress={onBarcodeScanPress}
                 hitSlop={12}
               >
-                <View className="rounded-lg p-1.5">
+                <View className="rounded-control p-1.5">
                   <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
                 </View>
               </Pressable>

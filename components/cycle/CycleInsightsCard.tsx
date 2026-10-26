@@ -36,10 +36,12 @@ export function CycleInsightsCard() {
   const sentence = (insight: Insight) => insightSentence(t, insight, formatInteger);
 
   return (
-    <View className="mb-6 rounded-2xl border-2 border-ink/5 bg-bg-overlay p-5">
+    <View className="mb-6 rounded-card border-2 border-ink/5 bg-bg-overlay p-5">
       <View className="mb-3 flex-row items-center gap-2">
         <Lightbulb size={18} color={theme.colors.accent.primary} />
-        <Text className="text-base font-bold text-text-primary">{t('cycle.insights.title')}</Text>
+        <Text className="text-base font-semibold text-text-primary">
+          {t('cycle.insights.title')}
+        </Text>
       </View>
       <View className="gap-4">
         {insights.slice(0, MAX_SHOWN).map((insight) => (
@@ -89,8 +91,10 @@ function EvidenceList({
     <View className="gap-3 pb-4">
       <Text className="text-sm text-text-secondary">{sentence}</Text>
       {insight.evidence.workoutIds.map((id) => (
-        <View key={id} className="rounded-xl bg-bg-card p-3">
-          <Text className="text-sm font-bold text-text-primary">{sessions[id]?.name ?? id}</Text>
+        <View key={id} className="rounded-control bg-bg-card p-3">
+          <Text className="text-sm font-semibold text-text-primary">
+            {sessions[id]?.name ?? id}
+          </Text>
           {sessions[id] ? (
             <Text className="text-xs text-text-tertiary">{date(sessions[id].date)}</Text>
           ) : null}
@@ -98,8 +102,8 @@ function EvidenceList({
       ))}
       {insight.evidence.workoutIds.length === 0
         ? days.map((day) => (
-            <View key={day} className="rounded-xl bg-bg-card p-3">
-              <Text className="text-sm font-bold text-text-primary">{date(day)}</Text>
+            <View key={day} className="rounded-control bg-bg-card p-3">
+              <Text className="text-sm font-semibold text-text-primary">{date(day)}</Text>
             </View>
           ))
         : null}

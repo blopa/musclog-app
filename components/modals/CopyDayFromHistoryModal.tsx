@@ -130,7 +130,7 @@ export function CopyDayFromHistoryModal({
     return (
       <Pressable
         key={day.dayKey}
-        className="flex-row items-center justify-between rounded-xl border px-4 py-3"
+        className="flex-row items-center justify-between rounded-control border px-4 py-3"
         style={{
           borderColor: isSelected ? theme.colors.accent.primary : theme.colors.background.ink10,
           backgroundColor: isSelected
@@ -170,7 +170,7 @@ export function CopyDayFromHistoryModal({
         onPress={() => toggleItem(item.id)}
       >
         <View
-          className="h-5 w-5 items-center justify-center rounded-md border"
+          className="h-5 w-5 items-center justify-center rounded-inner border"
           style={{
             borderColor: isSelected ? theme.colors.accent.primary : theme.colors.background.ink20,
             backgroundColor: isSelected ? theme.colors.accent.primary10 : 'transparent',
@@ -226,7 +226,7 @@ export function CopyDayFromHistoryModal({
     return (
       <View className="gap-4">
         <View className="flex-row items-center justify-between">
-          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('food.actions.copyDayItemsToCopy')}
           </Text>
           <Pressable onPress={toggleSelectAll}>
@@ -313,7 +313,7 @@ export function CopyDayFromHistoryModal({
         {/* Heads-up: the copy is additive, so say so before the user commits. */}
         {targetDayItemCount > 0 ? (
           <View
-            className="flex-row items-center gap-3 rounded-xl px-4 py-3"
+            className="flex-row items-center gap-3 rounded-control px-4 py-3"
             style={{ backgroundColor: theme.colors.status.info10 }}
           >
             <CalendarDays size={theme.iconSize.sm} color={theme.colors.status.info} />
@@ -331,7 +331,7 @@ export function CopyDayFromHistoryModal({
 
         {/* Recent days that actually have food — faster than hunting through a calendar. */}
         <View className="gap-2">
-          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('food.actions.copyDayRecentDays')}
           </Text>
 

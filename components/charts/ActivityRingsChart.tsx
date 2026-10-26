@@ -155,7 +155,7 @@ export function ActivityRingsChart({
             {centerValue}
           </Text>
           <Text
-            className="mt-1 text-xs font-bold text-text-tertiary"
+            className="mt-1 text-xs font-semibold text-text-tertiary"
             style={{ marginTop: 4, fontSize: 10 }}
           >
             {resolvedCenterLabel}
@@ -191,7 +191,7 @@ export function ActivityRingsChart({
               >
                 {ring.value}
               </Text>
-              <Text className="text-xs text-text-tertiary" style={{ fontSize: 9, marginTop: 2 }}>
+              <Text className="text-xs text-text-tertiary" style={{ fontSize: 10, marginTop: 2 }}>
                 {ring.label}
               </Text>
             </View>

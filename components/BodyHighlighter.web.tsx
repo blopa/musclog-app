@@ -36,13 +36,13 @@ export default function BodyHighlighter({ muscleGroups }: BodyHighlighterProps) 
   return (
     <View className="flex-row items-start justify-center gap-8 py-4">
       <View className="items-center gap-2">
-        <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+        <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
           {t('workoutDetail.frontMuscles')}
         </Text>
         <Body data={data} side="front" scale={1} colors={colors} border="none" />
       </View>
       <View className="items-center gap-2">
-        <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+        <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
           {t('workoutDetail.backMuscles')}
         </Text>
         <Body data={data} side="back" scale={1} colors={colors} border="none" />

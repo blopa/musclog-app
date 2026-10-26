@@ -36,14 +36,14 @@ function RateStat({ label, value }: { label: string; value: string }) {
   const theme = useTheme();
   return (
     <View
-      className="flex-1 items-center rounded-2xl py-3"
+      className="flex-1 items-center rounded-card py-3"
       style={{
         backgroundColor: theme.colors.background.card,
         borderWidth: 1,
         borderColor: theme.colors.background.ink5,
       }}
     >
-      <Text className="text-base font-bold text-text-primary">{value}</Text>
+      <Text className="text-base font-semibold text-text-primary">{value}</Text>
       <Text className="mt-0.5 text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
         {label}
       </Text>
@@ -78,7 +78,7 @@ function PhaseCard({
 
   return (
     <View
-      className="mb-3 overflow-hidden rounded-2xl"
+      className="mb-3 overflow-hidden rounded-card"
       style={{
         backgroundColor: isActive ? bg : theme.colors.background.card,
         borderWidth: 1,
@@ -94,11 +94,11 @@ function PhaseCard({
           <View className="mb-1 flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               {isActive ? <LiveDot /> : null}
-              <Text className="text-sm font-bold text-text-primary">
+              <Text className="text-sm font-semibold text-text-primary">
                 {t(`progress.circadianPhase.${blockKey}`)}
               </Text>
             </View>
-            <View className="rounded-full px-2.5 py-0.5" style={{ backgroundColor: color + '22' }}>
+            <View className="rounded-tag px-2.5 py-0.5" style={{ backgroundColor: color + '22' }}>
               <Text className="text-[10px] font-bold" style={{ color }}>
                 {pct}% · ~{kcalForBlock} kcal
               </Text>
@@ -162,13 +162,13 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
         <View style={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 20 }}>
           <View className="flex-row items-center gap-2">
             <LiveDot />
-            <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+            <Text className="text-xs font-semibold" style={{ color: theme.colors.accent.primary }}>
               {t('progress.circadianModal.liveCounter')}
             </Text>
           </View>
 
           <Text
-            className="mt-2 font-bold tracking-tight text-text-primary"
+            className="mt-2 font-bold text-text-primary"
             style={{ fontSize: 52, lineHeight: 56 }}
           >
             {formatInteger(Math.floor(burned))}
@@ -197,7 +197,10 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
           </View>
 
           {/* ── Phase breakdown ────────────────────────────────── */}
-          <Text className="mb-3 text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+          <Text
+            className="mb-3 text-xs font-semibold"
+            style={{ color: theme.colors.text.secondary }}
+          >
             {t('progress.circadianModal.allPhases')}
           </Text>
 
@@ -207,7 +210,7 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
 
           {/* ── Science note ───────────────────────────────────── */}
           <View
-            className="mt-2 rounded-2xl p-4"
+            className="mt-2 rounded-card p-4"
             style={{
               backgroundColor: theme.colors.background.card,
               borderWidth: 1,

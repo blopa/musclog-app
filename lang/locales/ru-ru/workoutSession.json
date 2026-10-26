@@ -1,7 +1,7 @@
 {
   "workoutSession": {
     "totalTime": "Общее время",
-    "setOf": "ПОДХОД {{current}} ИЗ {{total}}",
+    "setOf": "Подход {{current}} из {{total}}",
     "lastSetForExercise": "Последний подход этого упражнения",
     "weight": "ВЕС",
     "reps": "Повторения",

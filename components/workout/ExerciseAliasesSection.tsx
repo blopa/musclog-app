@@ -98,7 +98,7 @@ export function ExerciseAliasesSection({ exerciseId }: ExerciseAliasesSectionPro
 
   return (
     <View className="px-4 pb-6 pt-2" testID="exercise-aliases-section">
-      <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
+      <Text className="mb-1 text-lg font-semibold" style={{ color: theme.colors.text.primary }}>
         {t('exercises.viewExercise.aliasesTitle')}
       </Text>
       <Text className="mb-4 text-sm" style={{ color: theme.colors.text.secondary }}>

@@ -48,19 +48,19 @@ export function SegmentedControl({
   fullWidth = false,
 }: TestSegmentedControlProps) {
   const theme = useTheme();
-  const containerBase = 'flex-row rounded-lg';
+  const containerBase = 'flex-row rounded-control';
   const segmentBorderRadius = theme.borderRadius.xs;
 
   const getContainerClass = (variant: SegmentedControlVariant): string => {
     switch (variant) {
       case 'elevated':
-        return `${containerBase} bg-bg-cardElevated shadow-md`;
+        return `${containerBase} bg-bg-cardElevated`;
       case 'gradient':
         return `${containerBase} bg-bg-cardElevated`;
       case 'outline':
         return `${containerBase} bg-transparent border border-border-light`;
       case 'pill':
-        return `flex-row rounded-full bg-bg-overlay p-1 ${fullWidth ? 'self-stretch' : 'self-start'}`;
+        return `flex-row rounded-control bg-bg-overlay p-1 ${fullWidth ? 'self-stretch' : 'self-start'}`;
       default:
         return `${containerBase} bg-bg-card`;
     }
@@ -85,13 +85,13 @@ export function SegmentedControl({
               onPress={() => onValueChange(option.value)}
               // The track's padding brings the pill to the 44pt target.
               hitSlop={{ top: 4, bottom: 4 }}
-              className={`min-h-9 min-w-0 flex-row items-center gap-1.5 rounded-full px-3 py-2 ${fullWidth ? 'flex-1 justify-center' : ''} ${isSelected ? 'bg-accent-primary' : ''}`}
+              className={`min-h-9 min-w-0 flex-row items-center gap-1.5 rounded-inner px-3 py-2 ${fullWidth ? 'flex-1 justify-center' : ''} ${isSelected ? 'bg-accent-primary' : ''}`}
             >
               {renderIcon(option, isSelected)}
               <Text
                 // Android pads the glyph box asymmetrically, which sat the label below the icon.
                 style={{ includeFontPadding: false, textAlignVertical: 'center' }}
-                className={`min-w-0 shrink text-center text-sm font-semibold leading-5 ${isSelected ? 'text-text-on-accent' : 'text-text-secondary'}`}
+                className={`min-w-0 shrink text-center text-sm font-medium leading-5 ${isSelected ? 'text-text-on-accent' : 'text-text-secondary'}`}
               >
                 {option.label}
               </Text>
@@ -108,9 +108,8 @@ export function SegmentedControl({
       accessibilityRole="radiogroup"
       style={{
         // Allow translated labels and larger accessibility text to grow the track.
-        minHeight: theme.size['14'],
-        paddingHorizontal: theme.spacing.padding['1half'],
-        paddingVertical: theme.spacing.padding['1half'],
+        minHeight: theme.size['12'],
+        padding: theme.spacing.padding.xs,
         gap: theme.spacing.gap.xs,
       }}
     >
@@ -124,7 +123,9 @@ export function SegmentedControl({
             accessibilityLabel={option.label}
             accessibilityState={{ selected: isSelected, checked: isSelected }}
             className="min-w-0 flex-auto justify-center self-stretch"
-            style={{ borderRadius: segmentBorderRadius, minHeight: theme.size['44'] }}
+            // 40pt drawn; the track's padding takes the touch target to 48.
+            hitSlop={{ top: 4, bottom: 4 }}
+            style={{ borderRadius: segmentBorderRadius, minHeight: theme.size['10'] }}
             onPress={() => onValueChange(option.value)}
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
@@ -133,7 +134,7 @@ export function SegmentedControl({
                 style={{
                   flexGrow: 1,
                   paddingHorizontal: theme.spacing.padding.sm,
-                  paddingVertical: theme.spacing.padding.sm,
+                  paddingVertical: theme.spacing.padding['1half'],
                   borderRadius: segmentBorderRadius,
                   backgroundColor: theme.colors.accent.primary,
                   alignItems: 'center',
@@ -143,17 +144,17 @@ export function SegmentedControl({
                 <View className="min-w-0 flex-row items-center justify-center gap-1.5 self-stretch">
                   {renderIcon(option, isSelected)}
                   <Text
-                    className={`min-w-0 shrink text-center ${labelSize} font-bold text-text-on-accent`}
+                    className={`min-w-0 shrink text-center ${labelSize} font-semibold text-text-on-accent`}
                   >
                     {option.label}
                   </Text>
                 </View>
               </View>
             ) : (
-              <View className="min-w-0 flex-row items-center justify-center gap-1.5 px-2 py-2">
+              <View className="min-w-0 flex-row items-center justify-center gap-1.5 px-2 py-1.5">
                 {renderIcon(option, isSelected)}
                 <Text
-                  className={`min-w-0 shrink text-center ${labelSize} font-bold text-text-secondary`}
+                  className={`min-w-0 shrink text-center ${labelSize} font-medium text-text-secondary`}
                 >
                   {option.label}
                 </Text>
@@ -167,7 +168,7 @@ export function SegmentedControl({
                   minWidth: theme.size['4'],
                 }}
               >
-                <Text className="text-[10px] font-bold leading-none text-text-always-white">
+                <Text className="text-[10px] font-semibold leading-none text-text-always-white">
                   {option.badge > 9 ? '9+' : option.badge}
                 </Text>
               </View>

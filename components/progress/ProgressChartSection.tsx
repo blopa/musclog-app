@@ -30,7 +30,7 @@ export function ProgressChartSection({
           <View style={{ padding: 16 }}>
             <View className="mb-4 flex-row items-center justify-between">
               <View className="flex-1">
-                <Text className="text-lg font-bold text-text-primary">{title}</Text>
+                <Text className="text-lg font-semibold text-text-primary">{title}</Text>
                 {subtitle ? <Text className="text-xs text-text-tertiary">{subtitle}</Text> : null}
               </View>
               {!isCapturing ? (

@@ -56,7 +56,7 @@ export function QuickLogRow({ day }: QuickLogRowProps) {
 
   return (
     <View className="gap-3">
-      <Text className="text-xs font-bold text-text-tertiary">{t('cycle.quickLog.title')}</Text>
+      <Text className="text-xs font-semibold text-text-tertiary">{t('cycle.quickLog.title')}</Text>
       {guidance.hidePeriodActions ? (
         <Text className="text-xs text-text-secondary">
           {t('cycle.personalize.unexpectedBleeding')}

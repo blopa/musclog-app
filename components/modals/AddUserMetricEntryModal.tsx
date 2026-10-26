@@ -327,7 +327,7 @@ export default function AddUserMetricEntryModal({
       <View className="p-6">
         {/* Metric Input Section */}
         <View>
-          <Text className="mb-4 text-center text-xs font-bold text-text-secondary">
+          <Text className="mb-4 text-center text-xs font-semibold text-text-secondary">
             {config.label} ({config.unit})
           </Text>
 
@@ -353,7 +353,7 @@ export default function AddUserMetricEntryModal({
             </Pressable>
 
             <View className="flex-1 items-center">
-              <Text className="text-center text-6xl font-extrabold text-text-primary">
+              <Text className="text-center text-6xl font-bold text-text-primary">
                 {config.step < 1 ? formatDecimal(value, 1) : formatInteger(Math.round(value))}
               </Text>
             </View>

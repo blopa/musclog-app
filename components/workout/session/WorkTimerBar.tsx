@@ -62,7 +62,7 @@ export function WorkTimerBar({
             {t('workTimer.label')}
           </Text>
           <Text
-            className={`text-xl font-bold ${running ? 'text-text-primary' : 'text-text-tertiary'}`}
+            className={`text-xl font-bold tabular-nums ${running ? 'text-text-primary' : 'text-text-tertiary'}`}
           >
             {clock(remaining)}
           </Text>

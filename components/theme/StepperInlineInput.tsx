@@ -162,11 +162,11 @@ export function StepperInlineInput({
   );
 
   return (
-    <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-border-accent bg-bg-card p-5">
+    <View className="flex-row items-center justify-between overflow-hidden rounded-control border border-border-accent bg-bg-card p-5">
       <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-3">
         {Icon ? (
           <View
-            className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-lg`}
+            className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-control`}
             style={{ backgroundColor: theme.colors.status.brandVivid20 }}
           >
             <Icon

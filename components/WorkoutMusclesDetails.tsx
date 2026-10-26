@@ -58,7 +58,7 @@ export function WorkoutMusclesDetails({ muscleGroups, captureRef }: WorkoutMuscl
       <View ref={captureRef} collapsable={false} className="p-4">
         {hasData ? (
           <>
-            <Text className="mb-1 text-center text-xs font-bold text-text-tertiary">
+            <Text className="mb-1 text-center text-xs font-semibold text-text-tertiary">
               {t('workoutDetail.muscleBalance')}
             </Text>
             <View pointerEvents="none" style={{ height: theme.spacing.padding.base }} />
@@ -72,7 +72,7 @@ export function WorkoutMusclesDetails({ muscleGroups, captureRef }: WorkoutMuscl
               secondaryLabel={t('workoutDetail.secondaryFocus')}
             />
             <View className="mb-4 items-center">
-              <View className="bg-background-secondary rounded-full px-4 py-1.5">
+              <View className="bg-background-secondary rounded-tag px-4 py-1.5">
                 <Text className="text-xs font-semibold text-text-secondary">
                   {t('workoutDetail.musclesTargeted', { count: totalMuscles })}
                 </Text>

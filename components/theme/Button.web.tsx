@@ -1,21 +1,19 @@
 import { LucideIcon } from 'lucide-react-native';
 import { isValidElement, ReactNode } from 'react';
+import { Text } from 'react-native';
 
+import {
+  type ButtonSize,
+  type ButtonVariant,
+  getButtonBorder,
+  getButtonFill,
+  getButtonIconInk,
+  getButtonInk,
+  getButtonMetrics,
+} from '@/components/theme/buttonMetrics';
 import { useTheme } from '@/hooks/useTheme';
-import { Theme } from '@/theme';
 
-type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
-type ThemeButtonVariant =
-  | 'accent'
-  | 'discard'
-  | 'outline'
-  | 'secondary'
-  | 'secondaryGradient'
-  | 'dashed'
-  | 'gradientCta'
-  | 'rose'
-  | 'roseOutline';
 
 type ThemeButtonProps = {
   label: string;
@@ -24,172 +22,15 @@ type ThemeButtonProps = {
   iconColor?: string;
   icon?: LucideIcon | ReactNode | ((props: { size?: number; color?: string }) => ReactNode);
   iconPosition?: 'left' | 'right';
-  size?: ThemeButtonSize;
+  size?: ButtonSize;
   width?: ThemeButtonWidth;
-  variant?: ThemeButtonVariant;
+  variant?: ButtonVariant;
   disabled?: boolean;
   loading?: boolean;
   className?: string;
   style?: React.CSSProperties;
   testID?: string;
 };
-
-const getSizeConfig = (theme: Theme) => ({
-  xs: {
-    paddingVertical: theme.spacing.padding.sm,
-    paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius.md,
-    fontSize: theme.typography.fontSize.xs,
-    fontWeight: theme.typography.fontWeight.semibold,
-    iconSize: theme.iconSize.xs,
-    gap: theme.spacing.gap.xs,
-    minHeight: theme.spacing.padding.sm * 2 + theme.typography.fontSize.xs * 1.5,
-  },
-  sm: {
-    paddingVertical: theme.spacing.padding.md,
-    paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius.md,
-    fontSize: theme.typography.fontSize.sm,
-    fontWeight: theme.typography.fontWeight.semibold,
-    iconSize: theme.iconSize.sm,
-    gap: theme.spacing.gap.sm,
-    minHeight: theme.spacing.padding.md * 2 + theme.typography.fontSize.sm * 1.5,
-  },
-  md: {
-    paddingVertical: theme.spacing.padding.base,
-    paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius.lg,
-    fontSize: theme.typography.fontSize.base,
-    fontWeight: theme.typography.fontWeight.bold,
-    iconSize: theme.iconSize.md,
-    gap: theme.spacing.gap.md,
-    minHeight: theme.spacing.padding.base * 2 + theme.typography.fontSize.base * 1.5,
-  },
-  lg: {
-    paddingVertical: theme.spacing.padding.lg,
-    paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius.lg,
-    fontSize: theme.typography.fontSize.xl,
-    fontWeight: theme.typography.fontWeight.bold,
-    iconSize: theme.iconSize.lg,
-    gap: theme.spacing.gap.md,
-    minHeight: theme.spacing.padding.lg * 2 + theme.typography.fontSize.xl * 1.5,
-  },
-  xl: {
-    paddingVertical: theme.spacing.padding.xl,
-    paddingHorizontal: theme.spacing.padding.base,
-    borderRadius: theme.borderRadius.lg,
-    fontSize: theme.typography.fontSize.xl,
-    fontWeight: theme.typography.fontWeight.bold,
-    iconSize: theme.iconSize.lg,
-    gap: theme.spacing.gap.md,
-    minHeight: theme.spacing.padding.xl * 2 + theme.typography.fontSize.xl * 1.5,
-  },
-});
-
-function getBackground(theme: Theme, variant: ThemeButtonVariant, isDisabled: boolean): string {
-  if (isDisabled) {
-    return theme.colors.background.ink10;
-  }
-
-  const g = (colors: readonly string[]) => `linear-gradient(90deg, ${colors[0]}, ${colors[1]})`;
-
-  switch (variant) {
-    case 'gradientCta':
-      return g(theme.colors.gradients.cta);
-    case 'discard':
-    case 'rose':
-      return theme.colors.rose.brand;
-    case 'secondaryGradient':
-      return g(theme.colors.gradients.button);
-    case 'secondary':
-      return theme.colors.background.overlay;
-    case 'outline':
-    case 'dashed':
-    case 'roseOutline':
-      return 'transparent';
-    default:
-      // `accent` is a solid fill; the gradient belongs to `gradientCta` alone.
-      return theme.colors.accent.primary;
-  }
-}
-
-function getTextColor(theme: Theme, variant: ThemeButtonVariant, isDisabled: boolean): string {
-  if (isDisabled) {
-    return theme.colors.text.primary30;
-  }
-
-  if (variant === 'outline') {
-    return theme.colors.text.secondary;
-  }
-
-  if (variant === 'roseOutline') {
-    return theme.colors.rose.brand;
-  }
-
-  if (variant === 'accent') {
-    return theme.colors.text.onAccent;
-  }
-
-  if (variant === 'dashed') {
-    return theme.colors.text.secondary;
-  }
-
-  // `secondaryGradient` fills with `gradients.button`, which is a SURFACE gradient
-  // rather than a colourful one, so its label is on-surface ink like `secondary`.
-  if (variant === 'secondary' || variant === 'secondaryGradient') {
-    return theme.colors.text.primary;
-  }
-
-  return theme.colors.text.alwaysWhite;
-}
-
-function getBorder(
-  theme: Theme,
-  variant: ThemeButtonVariant
-): { borderWidth: number; borderStyle: string; borderColor: string } {
-  if (variant === 'outline') {
-    return {
-      borderWidth: theme.borderWidth.medium,
-      borderStyle: 'solid',
-      borderColor: theme.colors.background.ink10,
-    };
-  }
-
-  if (variant === 'roseOutline') {
-    return {
-      borderWidth: theme.borderWidth.medium,
-      borderStyle: 'solid',
-      borderColor: theme.colors.rose.brand,
-    };
-  }
-
-  if (variant === 'dashed') {
-    return {
-      borderWidth: theme.borderWidth.medium,
-      borderStyle: 'dashed',
-      borderColor: theme.colors.border.dashed,
-    };
-  }
-
-  if (variant === 'secondary') {
-    return {
-      borderWidth: theme.borderWidth.thin,
-      borderStyle: 'solid',
-      borderColor: theme.colors.border.default,
-    };
-  }
-
-  if (variant === 'secondaryGradient') {
-    return {
-      borderWidth: theme.borderWidth.thin,
-      borderStyle: 'solid',
-      borderColor: theme.colors.border.brand,
-    };
-  }
-
-  return { borderWidth: 0, borderStyle: 'none', borderColor: 'transparent' };
-}
 
 function getWidthStyle(width: ThemeButtonWidth): React.CSSProperties {
   switch (width) {
@@ -237,7 +78,7 @@ function renderIcon(
           justifyContent: 'center',
           width: 32,
           height: 32,
-          borderRadius: 16,
+          borderRadius: 9999,
           backgroundColor: iconBgColor,
           flexShrink: 0,
         }}
@@ -277,17 +118,17 @@ export function Button({
   testID,
 }: ThemeButtonProps) {
   const theme = useTheme();
-  const config = getSizeConfig(theme)[size];
+  const config = getButtonMetrics(theme)[size];
   const isDisabled = disabled || loading;
 
-  const iconColor = customIconColor ?? getTextColor(theme, variant, isDisabled);
+  const iconColor = customIconColor ?? getButtonIconInk(theme, variant, isDisabled);
   const iconEl = renderIcon(
     Icon,
     iconBgColor ? theme.iconSize.sm : config.iconSize,
     iconColor,
     iconBgColor
   );
-  const border = getBorder(theme, variant);
+  const border = getButtonBorder(theme, variant);
 
   const buttonStyle: React.CSSProperties = {
     display: 'inline-flex',
@@ -301,12 +142,9 @@ export function Button({
     paddingRight: config.paddingHorizontal,
     borderRadius: config.borderRadius,
     minHeight: config.minHeight,
-    fontSize: config.fontSize,
-    fontWeight: config.fontWeight,
-    color: getTextColor(theme, variant, isDisabled),
-    background: getBackground(theme, variant, isDisabled),
+    background: getButtonFill(theme, variant, isDisabled) ?? 'transparent',
     borderWidth: border.borderWidth,
-    borderStyle: border.borderStyle as any,
+    borderStyle: border.borderStyle,
     borderColor: border.borderColor,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? 0.5 : 1,
@@ -325,9 +163,23 @@ export function Button({
       data-testid={testID}
     >
       {iconPosition === 'left' ? iconEl : null}
-      <span style={{ flexShrink: 1, minWidth: 0, textAlign: 'center' }}>
+      {/*
+        The label is a react-native-web Text, not a bare span: a <button> does not inherit the page
+        font, so its label used to render in the browser's control font, wider than every other
+        piece of text in the app.
+      */}
+      <Text
+        style={{
+          flexShrink: 1,
+          minWidth: 0,
+          textAlign: 'center',
+          fontSize: config.fontSize,
+          fontWeight: config.fontWeight,
+          color: getButtonInk(theme, variant, isDisabled),
+        }}
+      >
         {loading ? '…' : label}
-      </span>
+      </Text>
       {iconPosition === 'right' ? iconEl : null}
     </button>
   );

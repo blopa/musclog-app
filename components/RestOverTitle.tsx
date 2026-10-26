@@ -9,15 +9,14 @@ export function RestOverTitle() {
   return (
     <View className="mx-auto max-w-xs gap-3">
       <View className="flex-row flex-wrap items-center justify-center">
-        <Text className="text-4xl font-extrabold leading-tight tracking-tight text-text-primary">
+        <Text className="text-4xl font-bold leading-tight text-text-primary">
           {t('restOver.restTimeIs')}{' '}
         </Text>
         <Text
           style={{
             color: theme.colors.text.primary,
             fontSize: theme.typography.fontSize['4xl'],
-            fontWeight: theme.typography.fontWeight.extrabold,
-            letterSpacing: theme.typography.letterSpacing.tight,
+            fontWeight: theme.typography.fontWeight.bold,
           }}
         >
           {t('restOver.over')}

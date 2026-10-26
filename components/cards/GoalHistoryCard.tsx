@@ -152,12 +152,12 @@ export function GoalHistoryCard({
             <View className="flex-row items-center justify-between">
               <View className="flex-col">
                 {goal.isDynamic ? (
-                  <Text className="text-lg font-bold text-text-primary">
+                  <Text className="text-lg font-semibold text-text-primary">
                     {t('goalHistoryCard.dynamic')}
                   </Text>
                 ) : (
                   <>
-                    <Text className="text-lg font-bold text-text-primary">
+                    <Text className="text-lg font-semibold text-text-primary">
                       {formatInteger(goal.calories)}{' '}
                       <Text
                         className="font-normal text-text-secondary"
@@ -182,7 +182,7 @@ export function GoalHistoryCard({
               </View>
               <View className="items-end">
                 {weightDisplay != null ? (
-                  <Text className="text-xs font-bold text-text-secondary">
+                  <Text className="text-xs font-semibold text-text-secondary">
                     {weightDisplay} {t(weightUnitKey)}
                   </Text>
                 ) : null}

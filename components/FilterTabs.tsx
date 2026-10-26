@@ -74,11 +74,15 @@ export function FilterTabs({
         return (
           <Pressable
             key={tab.id}
-            className={`flex-row items-center rounded-full px-6 py-2.5 ${
-              isActive ? 'bg-accent-primary' : 'border border-border-light bg-bg-filterTab'
+            // Same geometry as `Chip`: 36pt drawn, padded out to the 44pt target.
+            hitSlop={4}
+            className={`min-h-9 flex-row items-center rounded-control border px-4 ${
+              isActive
+                ? 'border-transparent bg-accent-primary'
+                : 'border-border-light bg-bg-filterTab'
             }`}
             style={{
-              marginRight: index < tabs.length - 1 ? theme.spacing.gap.md : 0,
+              marginRight: index < tabs.length - 1 ? theme.spacing.gap.sm : 0,
               ...(isActive || !inactiveBackgroundColor
                 ? undefined
                 : { backgroundColor: inactiveBackgroundColor }),
@@ -87,7 +91,7 @@ export function FilterTabs({
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
           >
             <Text
-              className={`text-sm font-medium ${isActive ? 'font-semibold' : ''}`}
+              className="text-sm font-medium"
               style={{
                 color: isActive
                   ? theme.colors.text.onAccent
@@ -128,5 +132,5 @@ export function FilterTabs({
     return content;
   }
 
-  return <View className={containerClassName || 'mb-6'}>{content}</View>;
+  return <View className={containerClassName || 'mb-4'}>{content}</View>;
 }

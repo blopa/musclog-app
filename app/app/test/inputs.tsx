@@ -94,7 +94,7 @@ export default function InputsTestScreen() {
         <Pressable className="h-12 w-12 shrink-0 items-center justify-center rounded-full active:bg-ink/10">
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
-        <Text className="flex-1 pr-12 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
+        <Text className="flex-1 pr-12 text-center text-lg font-semibold leading-tight text-text-primary">
           Design System
         </Text>
       </View>
@@ -107,7 +107,7 @@ export default function InputsTestScreen() {
         {/* Title Section */}
         <View className="px-6 pb-2 pt-6">
           <Text
-            className="font-extrabold leading-tight tracking-tight text-text-primary"
+            className="font-bold leading-tight text-text-primary"
             style={{ fontSize: theme.typography.fontSize['3xl'] }}
           >
             Input Components
@@ -241,7 +241,7 @@ export default function InputsTestScreen() {
 
         <TestSection title="Interactive Sliders" subtitle="Difficulty & Goals">
           <View
-            className="rounded-lg border bg-bg-card p-6"
+            className="rounded-control border bg-bg-card p-6"
             style={{ borderColor: theme.colors.background.ink10 }}
           >
             <View className="mb-6 flex-row items-center justify-between">

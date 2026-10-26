@@ -318,9 +318,11 @@ export function WorkoutTrainingView({
   const finishButton = (
     <View className="gap-3 pt-2">
       {allResolved ? (
-        <View className="items-center gap-1 rounded-2xl bg-accent-primary/10 p-4">
+        <View className="items-center gap-1 rounded-card bg-accent-primary/10 p-4">
           <Flag size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-          <Text className="text-lg font-bold text-text-primary">{t('trainingFlow.allDone')}</Text>
+          <Text className="text-lg font-semibold text-text-primary">
+            {t('trainingFlow.allDone')}
+          </Text>
           {summaryText ? (
             <Text className="text-center text-base font-semibold text-accent-primary">
               {summaryText}

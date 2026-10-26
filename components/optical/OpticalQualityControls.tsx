@@ -78,7 +78,7 @@ export function OpticalQualityControls({
 
       {expanded ? (
         <View
-          className="gap-4 rounded-xl p-4"
+          className="gap-4 rounded-card p-4"
           style={{ backgroundColor: theme.colors.background.card }}
         >
           {/* Free to change, so it is offered first. */}

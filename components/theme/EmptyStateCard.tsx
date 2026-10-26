@@ -44,7 +44,7 @@ export function EmptyStateCard({
       <Icon size={theme.iconSize['5xl']} color={theme.colors.text.tertiary} />
 
       <View className="flex-col items-center gap-2" style={{ maxWidth: theme.maxWidth['480'] }}>
-        <Text className="text-center text-lg font-bold leading-tight text-text-primary">
+        <Text className="text-center text-lg font-semibold leading-tight text-text-primary">
           {title}
         </Text>
         <Text className="text-center text-sm font-normal leading-relaxed text-text-secondary">

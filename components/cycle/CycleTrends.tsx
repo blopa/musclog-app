@@ -82,8 +82,8 @@ export function CycleTrends({ onSelectDay }: { onSelectDay: (day: number) => voi
   };
 
   return (
-    <View className="gap-4 rounded-2xl bg-bg-overlay p-4">
-      <Text className="text-lg font-bold text-text-primary">{t('cycle.complete.trends')}</Text>
+    <View className="gap-4 rounded-card bg-bg-overlay p-4">
+      <Text className="text-lg font-semibold text-text-primary">{t('cycle.complete.trends')}</Text>
       <Text className="text-sm text-text-secondary">{t('cycle.complete.trendsHint')}</Text>
       <View className="flex-row flex-wrap gap-2">
         {[30, 90, 365].map((n) => (

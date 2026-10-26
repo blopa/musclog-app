@@ -181,7 +181,7 @@ export function CyclePortabilityModal({
     >
       <AreaLockGate area="cycle">
         <View className="gap-5 p-4">
-          <Text className="text-base font-bold text-text-primary">
+          <Text className="text-base font-semibold text-text-primary">
             {t('cycle.portability.backupTitle')}
           </Text>
           <Text className="text-sm text-text-secondary">{t('cycle.portability.recoveryHint')}</Text>
@@ -232,7 +232,7 @@ export function CyclePortabilityModal({
             disabled={busy}
             onPress={() => void run(() => exportContextsCsv(contexts))}
           />
-          <Text className="text-base font-bold text-text-primary">
+          <Text className="text-base font-semibold text-text-primary">
             {t('cycle.portability.importTitle')}
           </Text>
           <Text className="text-sm text-text-secondary">{t('cycle.portability.importHint')}</Text>

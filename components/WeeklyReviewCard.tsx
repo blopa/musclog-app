@@ -85,11 +85,11 @@ export function WeeklyReviewCard({
       accessibilityRole="button"
       accessibilityLabel={`${t('weeklyReview.title')}, ${statusLabel}`}
       onPress={() => router.push(WEEKLY_REVIEW_ROUTE)}
-      className={`flex-row items-center gap-3 rounded-2xl border ${ready ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'} ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
+      className={`flex-row items-center gap-3 rounded-card border ${ready ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'} ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
       testID="weekly-review-entry"
     >
       <View
-        className={`items-center justify-center rounded-full ${ready ? 'bg-accent-primary' : 'bg-bg-overlay'} ${compact ? 'h-9 w-9' : 'h-11 w-11'}`}
+        className={`items-center justify-center rounded-control ${ready ? 'bg-accent-primary' : 'bg-bg-overlay'} ${compact ? 'h-9 w-9' : 'h-11 w-11'}`}
       >
         <Icon
           size={compact ? theme.iconSize.sm : theme.iconSize.md}
@@ -97,14 +97,14 @@ export function WeeklyReviewCard({
         />
       </View>
       <View className="min-w-0 flex-1 gap-1">
-        <Text className={`font-bold text-text-primary ${compact ? 'text-sm' : 'text-base'}`}>
+        <Text className={`font-semibold text-text-primary ${compact ? 'text-sm' : 'text-base'}`}>
           {t('weeklyReview.title')}
         </Text>
         {/* Status as its own pill on the second line: beside the title it ran into it, and in
             compact mode the week it refers to was not shown at all. */}
         <View className="flex-row flex-wrap items-center" style={{ gap: 6 }}>
           <View
-            className={`flex-row items-center rounded-full px-2 py-0.5 ${ready ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
+            className={`flex-row items-center rounded-tag px-2 py-0.5 ${ready ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
             style={{ gap: 4 }}
           >
             <Text

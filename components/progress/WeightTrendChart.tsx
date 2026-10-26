@@ -63,12 +63,12 @@ export function WeightTrendChart({
       subtitle={t('progress.weightTrend.explanation')}
     >
       <View className="mb-2 flex-row items-baseline justify-between">
-        <Text className="text-3xl font-black text-text-primary">
+        <Text className="text-3xl font-bold tabular-nums text-text-primary">
           {formatRoundedDecimal(latest.value, 1)}{' '}
           <Text className="text-base text-text-tertiary">{unit}</Text>
         </Text>
         {sevenDayChange !== null ? (
-          <Text className="text-sm font-bold text-text-secondary">
+          <Text className="text-sm font-semibold text-text-secondary">
             {t('progress.weightTrend.sevenDayChange')}: {sevenDayChange > 0 ? '+' : ''}
             {formatRoundedDecimal(sevenDayChange, 1)} {unit}
           </Text>

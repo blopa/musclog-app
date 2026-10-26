@@ -95,7 +95,7 @@ export function EditCycleSetupData({
                 </Text>
                 <TouchableOpacity
                   onPress={() => setIsDatePickerVisible(true)}
-                  className="rounded-xl border border-border-default px-4 py-4"
+                  className="rounded-control border border-border-default px-4 py-4"
                   style={{ borderColor: theme.colors.border.default }}
                 >
                   <Text style={{ color: theme.colors.text.secondary }}>

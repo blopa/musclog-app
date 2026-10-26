@@ -1033,7 +1033,7 @@ export function NutritionGoalsBody({
         {/* Dynamic mode info callout */}
         {isDynamic ? (
           <View
-            className="rounded-xl border p-4"
+            className="rounded-card border p-4"
             style={{
               borderColor: theme.colors.border.brand,
               backgroundColor: theme.colors.status.brandVivid10,
@@ -1050,7 +1050,7 @@ export function NutritionGoalsBody({
         {/* Total Daily Calories Card */}
         {!isDynamic ? (
           <View
-            className="relative mb-6 overflow-hidden rounded-2xl border p-6"
+            className="relative mb-6 overflow-hidden rounded-card border p-6"
             style={{
               borderColor: theme.colors.border.brand,
               backgroundColor: theme.colors.background.cardElevated,
@@ -1080,7 +1080,7 @@ export function NutritionGoalsBody({
                     isResolvingDynamicPreview ? (
                       <ActivityIndicator size="small" color={theme.colors.text.primary} />
                     ) : (
-                      <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                      <Text className="text-4xl font-bold tabular-nums text-text-primary">
                         {formatInteger(effectiveCalories)}
                       </Text>
                     )
@@ -1092,7 +1092,7 @@ export function NutritionGoalsBody({
                       onBlur={handleCalorieBlur}
                       onSubmitEditing={handleCalorieSubmit}
                       keyboardType="numeric"
-                      className="p-0 text-center text-5xl font-extrabold tracking-tighter text-text-primary"
+                      className="p-0 text-center text-4xl font-bold tabular-nums text-text-primary"
                       style={{
                         minWidth: 80,
                         color: theme.colors.text.primary,
@@ -1102,7 +1102,7 @@ export function NutritionGoalsBody({
                     />
                   ) : (
                     <Pressable onPress={handleCaloriePress}>
-                      <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                      <Text className="text-4xl font-bold tabular-nums text-text-primary">
                         {formatInteger(totalCalories)}
                       </Text>
                     </Pressable>
@@ -1191,11 +1191,11 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-border-accent bg-bg-card p-4">
+          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-card border border-border-accent bg-bg-card p-4">
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
-                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
+                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-control"
                   style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.brandBright} />
@@ -1606,7 +1606,7 @@ export function NutritionGoalsBody({
 
           {/* Target date for body metrics */}
           <View
-            className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border bg-bg-card p-4"
+            className="flex-row items-center justify-between gap-3 overflow-hidden rounded-card border bg-bg-card p-4"
             style={{
               borderColor:
                 isDynamic && targetDate === null
@@ -1617,7 +1617,7 @@ export function NutritionGoalsBody({
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
-                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
+                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-control"
                   style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.brandBright} />

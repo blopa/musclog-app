@@ -36,15 +36,15 @@ export function MoodSelectorCard({
           className={`${compact ? 'mb-2' : 'mb-6'} flex-row items-center justify-between gap-2`}
         >
           <View className="flex-1 flex-row items-center gap-3" style={{ minWidth: 0 }}>
-            <Text className="flex-1 text-xs font-bold text-text-secondary">
+            <Text className="flex-1 text-xs font-semibold text-text-secondary">
               {t('bodyMetrics.addEntry.moodQuestion')}
             </Text>
           </View>
           <View
-            className="flex-shrink-0 rounded px-2 py-0.5"
+            className="flex-shrink-0 rounded-tag px-2 py-0.5"
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
-            <Text className="text-xs font-bold text-accent-primary" numberOfLines={1}>
+            <Text className="text-xs font-semibold text-accent-primary" numberOfLines={1}>
               {value < 0
                 ? t('cycle.personalize.moodUnlogged')
                 : t(`bodyMetrics.addEntry.moods.${value}`)}
@@ -88,7 +88,7 @@ export function MoodSelectorCard({
                     strokeWidth={isSelected ? 2.5 : 2}
                   />
                   <Text
-                    className={`text-xs font-bold ${
+                    className={`text-xs font-semibold ${
                       isSelected ? 'text-accent-primary' : 'text-text-tertiary'
                     }`}
                     style={{ opacity: isSelected ? 1 : 0.4 }}

@@ -28,7 +28,7 @@ export default function DashedButton({
         onPress={onPress}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
-        className="w-full items-center justify-center gap-4 rounded-xl border-2 border-dashed"
+        className="w-full items-center justify-center gap-4 rounded-control border-2 border-dashed"
         style={{
           borderColor: theme.colors.border.subtle,
           padding: theme.spacing.padding.sm,
@@ -63,7 +63,7 @@ export default function DashedButton({
       onPress={onPress}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
-      className="w-full flex-row items-center justify-center gap-2 rounded-lg border-2 border-dashed py-4"
+      className="w-full flex-row items-center justify-center gap-2 rounded-control border-2 border-dashed py-4"
       style={{
         borderColor: theme.colors.border.dashed,
         backgroundColor: isPressed ? theme.colors.background.cardElevated : 'transparent',

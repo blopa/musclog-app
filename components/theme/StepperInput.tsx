@@ -160,12 +160,12 @@ export const StepperInput: FC<StepperInputProps> = ({
 
   return (
     <View className="flex flex-col gap-2">
-      <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+      <Text className="text-xs font-semibold" style={{ color: theme.colors.accent.primary }}>
         {label}
       </Text>
       <View className="flex flex-row items-center gap-2 overflow-hidden">
         <Pressable
-          className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
+          className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-control active:scale-95"
           style={{
             backgroundColor: isPortion
               ? theme.colors.background.brandBlob
@@ -193,7 +193,7 @@ export const StepperInput: FC<StepperInputProps> = ({
         </Pressable>
         {editing ? (
           <View
-            className="h-14 min-w-0 flex-1 flex-row items-center justify-center rounded-xl"
+            className="h-14 min-w-0 flex-1 flex-row items-center justify-center rounded-control"
             style={{
               backgroundColor: isPortion ? 'transparent' : theme.colors.background.card,
             }}
@@ -232,7 +232,7 @@ export const StepperInput: FC<StepperInputProps> = ({
           </View>
         ) : (
           <Pressable
-            className="h-14 min-w-0 flex-1 items-center justify-center rounded-xl"
+            className="h-14 min-w-0 flex-1 items-center justify-center rounded-control"
             style={{
               backgroundColor: isPortion ? 'transparent' : theme.colors.background.card,
             }}
@@ -254,7 +254,7 @@ export const StepperInput: FC<StepperInputProps> = ({
           </Pressable>
         )}
         <Pressable
-          className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
+          className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-control active:scale-95"
           style={{
             backgroundColor: isPortion ? theme.colors.accent.primary : theme.colors.background.card,
           }}

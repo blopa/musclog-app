@@ -82,7 +82,7 @@ function RestrictionRow({ row }: { row: ExerciseRestriction }) {
 
   return (
     <View
-      className="flex-row items-center justify-between gap-3 rounded-lg px-4 py-3"
+      className="flex-row items-center justify-between gap-3 rounded-control px-4 py-3"
       style={{ backgroundColor: theme.colors.background.card, opacity: active ? 1 : 0.6 }}
     >
       <View className="flex-1">
@@ -141,7 +141,7 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
 
   const sectionHeader = (title: string, subtitle: string) => (
     <View className="gap-1">
-      <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
+      <Text className="text-lg font-semibold" style={{ color: theme.colors.text.primary }}>
         {title}
       </Text>
       <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
@@ -297,7 +297,7 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
                   <View className="gap-3 p-4">
                     <View className="flex-row items-center justify-between gap-3">
                       <Text
-                        className="flex-1 text-lg font-bold"
+                        className="flex-1 text-lg font-semibold"
                         style={{ color: theme.colors.text.primary }}
                         numberOfLines={1}
                       >
@@ -305,11 +305,11 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
                       </Text>
                       {isActive ? (
                         <View
-                          className="rounded-full px-3 py-1"
+                          className="rounded-tag px-3 py-1"
                           style={{ backgroundColor: theme.colors.accent.primary20 }}
                         >
                           <Text
-                            className="text-xs font-bold"
+                            className="text-xs font-semibold"
                             style={{ color: theme.colors.accent.primary }}
                           >
                             {t('workoutSettings.gyms.active')}

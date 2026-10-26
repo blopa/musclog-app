@@ -103,7 +103,9 @@ export function RestTimerBar({
           {/* Idle, the clock is the length a rest will have — it must not read as a countdown. */}
           <Text
             className={
-              resting ? `text-xl font-bold ${tone}` : 'text-base font-medium text-text-tertiary'
+              resting
+                ? `text-xl font-bold tabular-nums ${tone}`
+                : 'text-base font-medium tabular-nums text-text-tertiary'
             }
           >
             {resting ? clock(remaining) : clock(defaultRest)}
@@ -134,7 +136,7 @@ export function RestTimerBar({
       {expanded ? (
         <View className="items-center gap-4 px-4 pb-5 pt-2">
           <Text
-            className={`font-bold ${tone}`}
+            className={`font-bold tabular-nums ${tone}`}
             style={{ fontSize: theme.typography.fontSize['7xl'], lineHeight: 88 }}
           >
             {clock(resting ? remaining : defaultRest)}

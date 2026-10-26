@@ -24,7 +24,7 @@ export function CardioSummaryCard({ activity, distance, pace }: CardioSummaryCar
 
   return (
     <View
-      className="flex-row items-center gap-4 rounded-xl p-4"
+      className="flex-row items-center gap-4 rounded-card p-4"
       style={{ backgroundColor: theme.colors.background.ink5 }}
       testID="cardio-summary"
     >
@@ -36,13 +36,13 @@ export function CardioSummaryCard({ activity, distance, pace }: CardioSummaryCar
       </View>
       <View className="flex-1 flex-row justify-between">
         <View>
-          <Text className="text-xs font-bold text-text-tertiary">{t('cardio.distance')}</Text>
-          <Text className="text-2xl font-bold text-text-primary">{distance}</Text>
+          <Text className="text-xs font-semibold text-text-tertiary">{t('cardio.distance')}</Text>
+          <Text className="text-2xl font-bold tabular-nums text-text-primary">{distance}</Text>
         </View>
         {pace ? (
           <View className="items-end">
-            <Text className="text-xs font-bold text-text-tertiary">{t('cardio.pace')}</Text>
-            <Text className="text-2xl font-bold text-text-primary">{pace}</Text>
+            <Text className="text-xs font-semibold text-text-tertiary">{t('cardio.pace')}</Text>
+            <Text className="text-2xl font-bold tabular-nums text-text-primary">{pace}</Text>
           </View>
         ) : null}
       </View>

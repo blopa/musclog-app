@@ -69,7 +69,7 @@ export function AINutritionTrackingContextModal({
       maxHeight="85%"
       headerIcon={
         <View
-          className="h-10 w-10 items-center justify-center rounded-xl"
+          className="h-10 w-10 items-center justify-center rounded-control"
           style={{
             backgroundColor: 'transparent',
           }}
@@ -92,11 +92,11 @@ export function AINutritionTrackingContextModal({
       <View className="pt-2">
         {/* Describe Your Meal Section */}
         <View className="mb-6">
-          <Text className="mb-2 ml-1 text-xs font-bold text-text-secondary">
+          <Text className="mb-2 ml-1 text-xs font-semibold text-text-secondary">
             {describeLabel ?? t('food.aiNutritionContext.describeYourMeal')}
           </Text>
           <View
-            className="w-full rounded-lg border p-4"
+            className="w-full rounded-card border p-4"
             style={{
               backgroundColor: theme.colors.background.primary,
               borderColor: theme.colors.background.ink10,
@@ -126,7 +126,7 @@ export function AINutritionTrackingContextModal({
 
         {/* Quick Tags Section */}
         <View className="mb-8">
-          <Text className="mb-3 ml-1 text-xs font-bold text-text-secondary">
+          <Text className="mb-3 ml-1 text-xs font-semibold text-text-secondary">
             {t('food.aiNutritionContext.quickTags')}
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -159,25 +159,25 @@ export function AINutritionTrackingContextModal({
         <View className="flex-row gap-3">
           <Pressable
             onPress={handleCancel}
-            className="flex-1 rounded-xl border px-6 py-4"
+            className="flex-1 rounded-control border px-6 py-4"
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
             style={{
               backgroundColor: theme.colors.background.neutralWashStrong,
               borderColor: theme.colors.background.ink5,
             }}
           >
-            <Text className="text-center text-sm font-bold text-text-primary">
+            <Text className="text-center text-sm font-semibold text-text-primary">
               {t('food.aiNutritionContext.cancel')}
             </Text>
           </Pressable>
           <Pressable
             onPress={handleApply}
-            className="flex-[2] rounded-xl px-6 py-4 active:scale-[0.98]"
+            className="flex-[2] rounded-control px-6 py-4 active:scale-[0.98]"
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
             style={{ backgroundColor: theme.colors.accent.primary }}
           >
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="text-sm font-bold" style={{ color: theme.colors.text.onAccent }}>
+              <Text className="text-sm font-semibold" style={{ color: theme.colors.text.onAccent }}>
                 {applyLabel ?? t('food.aiNutritionContext.applyContext')}
               </Text>
               <CheckCircle size={theme.iconSize.md} color={theme.colors.text.onAccent} />

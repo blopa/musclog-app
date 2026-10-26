@@ -31,7 +31,7 @@ function useCompactSetTable() {
 export function SetTableHeader({ weightUnit }: { weightUnit: string }) {
   const { t } = useTranslation();
   const compact = useCompactSetTable();
-  const label = 'text-xs font-bold text-text-tertiary';
+  const label = 'text-xs font-medium text-text-tertiary';
   return (
     <View className="flex-row items-center gap-2 px-1" accessibilityElementsHidden>
       <Text className={label} style={{ width: SET_TABLE_COLUMNS.set, textAlign: 'center' }}>
@@ -140,7 +140,7 @@ export function InlineSetRow({
         style={{ minHeight: 44 }}
         testID={`set-${set.id}-previous`}
       >
-        <Text className="text-sm text-text-secondary">
+        <Text className="text-sm tabular-nums text-text-secondary">
           {`${compact ? t('trainingFlow.columns.previous') + ': ' : ''}${formatDisplayWeightKg(locale, units, previous.weightKg)} × ${formatInteger(previous.reps, { useGrouping: false })}`}
         </Text>
       </Pressable>
@@ -157,19 +157,19 @@ export function InlineSetRow({
     );
 
   return (
-    <View className={`rounded-xl border px-1 py-1 ${surface}`} testID={`set-${set.id}`}>
+    <View className={`rounded-control border px-1 py-1 ${surface}`} testID={`set-${set.id}`}>
       <View className="flex-row items-center gap-2">
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${setName}, ${t('trainingFlow.details')}`}
           onPress={onDetails}
-          className="items-center justify-center rounded-lg"
+          className="items-center justify-center rounded-control"
           style={{ width: SET_TABLE_COLUMNS.set, height: 44 }}
           // The column is 32pt so the row fits a 390pt phone; the touch target still reaches 44.
           hitSlop={{ left: 6, right: 6 }}
         >
           <Text
-            className={`text-base font-bold ${workingNumber == null ? 'text-text-secondary' : 'text-text-primary'}`}
+            className={`text-base font-semibold tabular-nums ${workingNumber == null ? 'text-text-secondary' : 'text-text-primary'}`}
           >
             {setLabel}
           </Text>
@@ -189,7 +189,7 @@ export function InlineSetRow({
           disabled={busy}
           onPress={onComplete}
           testID={`set-${set.id}-complete`}
-          className={`items-center justify-center rounded-xl ${done ? 'bg-accent-primary' : 'border border-border-default bg-bg-cardElevated'}`}
+          className={`items-center justify-center rounded-control ${done ? 'bg-accent-primary' : 'border border-border-default bg-bg-cardElevated'}`}
           style={{ width: SET_TABLE_COLUMNS.check, height: 44 }}
         >
           {skipped ? (

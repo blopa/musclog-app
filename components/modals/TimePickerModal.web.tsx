@@ -213,7 +213,7 @@ export function TimePickerModal({
         <View className="items-center gap-2">
           <View className="flex-row items-end">
             <Text
-              className="font-bold tracking-tight text-text-primary"
+              className="font-bold text-text-primary"
               style={{
                 fontSize: theme.typography.fontSize['8xl'],
                 textShadowColor: theme.colors.background.scrim30,
@@ -248,7 +248,7 @@ export function TimePickerModal({
 
         {/* Picker card */}
         <View
-          className="w-full max-w-sm rounded-3xl px-5 py-5"
+          className="w-full max-w-sm rounded-card px-5 py-5"
           style={{ backgroundColor: theme.colors.background.ink5 }}
         >
           {/* Column labels */}
@@ -279,7 +279,7 @@ export function TimePickerModal({
           <View className="relative" style={{ height: PICKER_VIEW_HEIGHT }}>
             {/* Selection highlight */}
             <View
-              className="absolute left-0 right-0 rounded-xl"
+              className="absolute left-0 right-0 rounded-control"
               style={{
                 top: PICKER_VIEW_HEIGHT / 2 - ITEM_HEIGHT / 2,
                 height: ITEM_HEIGHT,

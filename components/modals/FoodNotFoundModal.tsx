@@ -49,7 +49,7 @@ export function FoodNotFoundModal({
               onTryAiScan?.();
               onClose();
             }}
-            className="overflow-hidden rounded-2xl"
+            className="overflow-hidden rounded-card"
           >
             <View
               style={{
@@ -60,11 +60,14 @@ export function FoodNotFoundModal({
                 padding: 16,
               }}
             >
-              <View className="h-12 w-12 items-center justify-center rounded-lg bg-text-always-white/20">
+              <View className="h-12 w-12 items-center justify-center rounded-control bg-text-always-white/20">
                 <Camera size={theme.iconSize.xl} color={theme.colors.text.onAccent} />
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-bold" style={{ color: theme.colors.text.onAccent }}>
+                <Text
+                  className="text-lg font-semibold"
+                  style={{ color: theme.colors.text.onAccent }}
+                >
                   {t('nutrition.tryAICamera')}
                 </Text>
                 <Text className="text-xs" style={{ color: theme.colors.text.onAccent }}>
@@ -82,13 +85,13 @@ export function FoodNotFoundModal({
             onSearchAgain?.();
             onClose();
           }}
-          className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
+          className="flex-row items-center gap-4 rounded-card border border-border-default bg-bg-overlay p-4"
         >
-          <View className="h-12 w-12 items-center justify-center rounded-lg bg-ink/10">
+          <View className="h-12 w-12 items-center justify-center rounded-control bg-ink/10">
             <Search size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-lg font-bold text-text-primary">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('nutrition.searchAgain')}
             </Text>
             <Text className="text-xs text-text-secondary">{t('nutrition.searchAgainDesc')}</Text>
@@ -102,13 +105,13 @@ export function FoodNotFoundModal({
             onCreateCustom?.();
             onClose();
           }}
-          className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
+          className="flex-row items-center gap-4 rounded-card border border-border-default bg-bg-overlay p-4"
         >
-          <View className="h-12 w-12 items-center justify-center rounded-lg bg-ink/10">
+          <View className="h-12 w-12 items-center justify-center rounded-control bg-ink/10">
             <Edit size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-lg font-bold text-text-primary">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('nutrition.createCustom')}
             </Text>
             <Text className="text-xs text-text-secondary">{t('nutrition.createCustomDesc')}</Text>

@@ -37,15 +37,13 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
             </View>
             <View className="flex-1">
               <Text className="mb-1 text-xs font-medium text-text-secondary">{entry.date}</Text>
-              <Text className="text-xl font-extrabold tracking-tight text-text-primary">
-                {entry.value}
-              </Text>
+              <Text className="text-xl font-bold text-text-primary">{entry.value}</Text>
             </View>
           </View>
           <View className="items-end gap-1">
             {entry.change ? (
               <View
-                className="flex-row items-center rounded-full px-2.5 py-1"
+                className="flex-row items-center rounded-tag px-2.5 py-1"
                 style={{
                   backgroundColor:
                     entry.changeType === 'down'
@@ -59,7 +57,7 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
                   <TrendingUp size={14} color={theme.colors.status.warning} />
                 )}
                 <Text
-                  className="ml-1 text-xs font-bold"
+                  className="ml-1 text-xs font-semibold"
                   style={{
                     color:
                       entry.changeType === 'down'

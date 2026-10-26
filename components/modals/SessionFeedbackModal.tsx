@@ -48,7 +48,7 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
       <View className="flex-row items-end justify-between">
         <Text className="text-sm font-semibold text-text-primary">{label}</Text>
         <View className="flex-row items-baseline">
-          <Text className="text-lg font-bold" style={{ color: theme.colors.accent.primary }}>
+          <Text className="text-lg font-semibold" style={{ color: theme.colors.accent.primary }}>
             {value}
           </Text>
           <Text className="ml-1 text-xs font-normal text-text-secondary">/10</Text>

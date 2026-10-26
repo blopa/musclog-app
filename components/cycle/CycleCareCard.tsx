@@ -15,8 +15,10 @@ export function CycleCareCard({ day, onAppointment }: { day: number; onAppointme
     contextAt(contexts, day)?.lifeStage ?? 'regular'
   );
   return (
-    <View className="mb-6 gap-2 rounded-2xl bg-bg-overlay p-5">
-      <Text className="text-base font-bold text-text-primary">{t('cycle.complete.careTitle')}</Text>
+    <View className="mb-6 gap-2 rounded-card bg-bg-overlay p-5">
+      <Text className="text-base font-semibold text-text-primary">
+        {t('cycle.complete.careTitle')}
+      </Text>
       <Text className="text-sm text-text-secondary">{t('cycle.complete.careHint')}</Text>
       {topics.map((topic) => (
         <TextButton

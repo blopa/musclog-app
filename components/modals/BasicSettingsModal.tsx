@@ -198,7 +198,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-3 px-5 text-lg font-semibold text-text-primary">
             {t('editFitnessDetails.units')}
           </Text>
           <View className="gap-2">
@@ -216,7 +216,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
               marginHorizontal: theme.spacing.padding.base,
             }}
           >
-            <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+            <Text className="mb-3 px-5 text-lg font-semibold text-text-primary">
               {t('settings.basicSettings.foodSearchSource')}
             </Text>
             <View className="gap-2">
@@ -235,7 +235,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-3 px-5 text-lg font-semibold text-text-primary">
             {t('settings.basicSettings.localization')}
           </Text>
           <ListGroup>
@@ -265,7 +265,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-3 px-5 text-lg font-semibold text-text-primary">
             {t('settings.basicSettings.integrations')}
           </Text>
 

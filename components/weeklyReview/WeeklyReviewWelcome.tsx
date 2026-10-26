@@ -37,7 +37,7 @@ export function WeeklyReviewWelcome({
       <View className="gap-4 pb-4" testID="weekly-review-welcome">
         {POINTS.map(({ key, icon: Icon, textKey }) => (
           <View key={key} className="flex-row items-start gap-3">
-            <View className="h-10 w-10 items-center justify-center rounded-xl bg-accent-primary/10">
+            <View className="h-10 w-10 items-center justify-center rounded-control bg-accent-primary/10">
               <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <Text className="flex-1 text-sm text-text-secondary">

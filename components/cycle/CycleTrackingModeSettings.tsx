@@ -51,7 +51,9 @@ export function CycleTrackingModeSettings({ onClose }: { onClose: () => void }) 
 
   return (
     <View className="gap-3">
-      <Text className="text-lg font-bold text-text-primary">{t('cycle.personalize.question')}</Text>
+      <Text className="text-lg font-semibold text-text-primary">
+        {t('cycle.personalize.question')}
+      </Text>
       {CYCLE_TRACKING_CHOICES.map(({ value, labelKey, hintKey }) => (
         <View key={value} className="gap-2">
           <Chip

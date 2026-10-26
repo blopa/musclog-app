@@ -159,10 +159,7 @@ export default function CycleSetup() {
         showsVerticalScrollIndicator={false}
       >
         <View className="px-6 pt-8">
-          <Text
-            className="mb-2 text-3xl font-bold tracking-tight"
-            style={{ color: theme.colors.text.primary }}
-          >
+          <Text className="mb-2 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
             {t('onboarding.cycleSetup.title')}
           </Text>
           <Text className="mb-8 text-lg text-text-secondary">
@@ -191,7 +188,7 @@ export default function CycleSetup() {
               {pastPeriods.map((period, index) => (
                 <View
                   key={period.startDate.getTime()}
-                  className="flex-row items-center justify-between rounded-xl px-4 py-3"
+                  className="flex-row items-center justify-between rounded-control px-4 py-3"
                   style={{ backgroundColor: theme.colors.background.card }}
                 >
                   <Text style={{ color: theme.colors.text.primary }}>

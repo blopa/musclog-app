@@ -92,7 +92,7 @@ export const TextInput = forwardRef<TextInputInstance, TestInputProps>(
     // Interpolate colors based on focus state
     const borderColor = focusAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: [theme.colors.background.ink10, theme.colors.accent.primary50],
+      outputRange: [theme.colors.background.ink10, theme.colors.accent.primary],
     });
 
     const labelColor = focusAnim.interpolate({
@@ -100,14 +100,9 @@ export const TextInput = forwardRef<TextInputInstance, TestInputProps>(
       outputRange: [theme.colors.text.secondary, theme.colors.accent.primary],
     });
 
-    const shadowOpacity = focusAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, theme.shadowOpacity.light],
-    });
-
     return (
-      <View className="flex-col gap-2">
-        <View className="ml-1 flex-row items-center">
+      <View className="flex-col gap-1.5">
+        <View className="flex-row items-center">
           {Platform.OS === 'web' ? (
             <Text className="text-sm font-medium text-text-secondary">{label}</Text>
           ) : (
@@ -120,12 +115,12 @@ export const TextInput = forwardRef<TextInputInstance, TestInputProps>(
         {Platform.OS === 'web' ? (
           <View
             className={classNames(
-              'w-full flex-row rounded-lg border-2 bg-bg-card px-4',
+              'w-full flex-row rounded-control border bg-bg-card px-4',
               {
-                'min-h-14 items-start py-3': multiline,
-                'h-14 items-center': !multiline,
+                'min-h-12 items-start py-3': multiline,
+                'h-12 items-center': !multiline,
               },
-              'border-ink/10 focus-within:border-accent-primary/50 focus-within:shadow-md'
+              'border-ink/10 focus-within:border-accent-primary'
             )}
           >
             <RNTextInput
@@ -168,19 +163,12 @@ export const TextInput = forwardRef<TextInputInstance, TestInputProps>(
           </View>
         ) : (
           <Animated.View
-            className={classNames('w-full flex-row rounded-lg border-2 bg-bg-card px-4', {
-              'min-h-14 items-start py-3': multiline,
-              'h-14 items-center': !multiline,
+            className={classNames('w-full flex-row rounded-control border bg-bg-card px-4', {
+              'min-h-12 items-start py-3': multiline,
+              'h-12 items-center': !multiline,
             })}
-            style={{
-              borderColor,
-              shadowColor: theme.colors.accent.primary,
-              shadowOffset: theme.shadowOffset.zero,
-              shadowOpacity,
-              shadowRadius: theme.shadowRadius.md,
-              // Note: elevation doesn't support Animated values, so we use shadowOpacity instead
-              elevation: theme.elevation.sm, // Static elevation for Android
-            }}
+            // Focus is the accent border alone: no glow, and no elevation on Android.
+            style={{ borderColor }}
           >
             <RNTextInput
               ref={inputRef}

@@ -389,7 +389,7 @@ export default function HomeScreen() {
             about. The avatar sits on the left so it lines up with the avatar the account menu
             opens with. A time-of-day greeting and the version string used to sit here; the
             version lives in Settings > About. */}
-        <View className="flex-row items-center gap-3 px-4 py-5">
+        <View className="flex-row items-center gap-3 px-4 py-3">
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t('home.accountMenu')}
@@ -402,7 +402,7 @@ export default function HomeScreen() {
             ) : (
               <AnimatedContent>
                 <View
-                  className="h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2"
+                  className="h-11 w-11 items-center justify-center overflow-hidden rounded-full border"
                   style={{
                     borderColor: avatar ? avatar.color : theme.colors.accent.primary,
                     backgroundColor: avatar
@@ -416,7 +416,7 @@ export default function HomeScreen() {
                       color: avatar.color,
                     })
                   ) : (
-                    <Text className="text-base font-bold text-text-primary">
+                    <Text className="text-base font-semibold text-text-primary">
                       {dbUser?.fullName?.charAt(0).toUpperCase() || 'G'}
                     </Text>
                   )}
@@ -449,7 +449,7 @@ export default function HomeScreen() {
           <WorkoutTodayCard activeOnly />
         </View>
         {/* Daily Summary Card */}
-        <View className="mb-6 px-4">
+        <View className="mb-4 px-4">
           {homeSummaryCard === 'weekly_streak' ? (
             <WeeklyHomeSummary
               date={today}
@@ -493,12 +493,12 @@ export default function HomeScreen() {
 
         {/* Action Buttons */}
         <HomeActionsRow selected={homeActions} onActionPress={(key) => homeActionHandlers[key]()} />
-        <View className="mx-4 mb-6">
+        <View className="mx-4 mb-4">
           <WeeklyReviewCard compact quietUntilReady />
         </View>
-        <View className="mx-4 mb-8">
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-text-primary">
+        <View className="mx-4 mb-6">
+          <View className="mb-2 flex-row items-center justify-between">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('home.sections.recentFoods')}
             </Text>
             <ShowMoreButton
@@ -510,7 +510,10 @@ export default function HomeScreen() {
           {isLoadingRecentFoods ? (
             <View className="gap-3">
               {[1, 2].map((i) => (
-                <View key={i} className="flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-5">
+                <View
+                  key={i}
+                  className="flex-row items-center gap-4 rounded-card bg-bg-overlay p-5"
+                >
                   <View className="flex-row items-center gap-3">
                     <SkeletonLoader
                       width={theme.size['10']}
@@ -587,9 +590,9 @@ export default function HomeScreen() {
         </View>
 
         {/* Recent Workouts */}
-        <View className="mx-4 mb-8">
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-text-primary">
+        <View className="mx-4 mb-6">
+          <View className="mb-2 flex-row items-center justify-between">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('home.sections.recentWorkouts')}
             </Text>
             <ShowMoreButton
@@ -603,7 +606,7 @@ export default function HomeScreen() {
               {[1, 2].map((i) => (
                 <View
                   key={i}
-                  className="rounded-lg border bg-bg-card p-4"
+                  className="rounded-card border bg-bg-card p-4"
                   style={{ borderColor: theme.colors.background.ink5 }}
                 >
                   <View className="flex-row items-center gap-3">

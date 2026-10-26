@@ -86,7 +86,7 @@ export function ExerciseGoalDetailModal({
   const renderProjectionStatus = () => {
     if (projection?.status === 'achieved') {
       return (
-        <View className="rounded-xl bg-status-success/10 p-4">
+        <View className="rounded-card bg-status-success/10 p-4">
           <Text className="text-center font-bold" style={{ color: theme.colors.status.success }}>
             {projection.achievedDate
               ? t('exerciseGoals.card.achieved', {
@@ -104,7 +104,7 @@ export function ExerciseGoalDetailModal({
 
     if (projection?.status === 'ready_to_achieve') {
       return (
-        <View className="rounded-xl bg-accent-primary/10 p-4">
+        <View className="rounded-card bg-accent-primary/10 p-4">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.accent.primary }}
@@ -117,7 +117,7 @@ export function ExerciseGoalDetailModal({
 
     if (projection?.status === 'stalling') {
       return (
-        <View className="rounded-xl bg-status-warning/10 p-4">
+        <View className="rounded-card bg-status-warning/10 p-4">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.status.warning }}
@@ -130,7 +130,7 @@ export function ExerciseGoalDetailModal({
 
     if (projection?.status === 'declining') {
       return (
-        <View className="rounded-xl bg-status-error/10 p-4">
+        <View className="rounded-card bg-status-error/10 p-4">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.status.error }}
@@ -159,8 +159,8 @@ export function ExerciseGoalDetailModal({
 
     if (projection?.projectedWeeks && projection?.projectedDate) {
       return (
-        <View className="rounded-xl bg-accent-primary/10 p-4">
-          <Text className="text-sm font-bold text-accent-primary">
+        <View className="rounded-card bg-accent-primary/10 p-4">
+          <Text className="text-sm font-semibold text-accent-primary">
             {t('exerciseGoals.card.projectedDate', {
               weeks: Math.ceil(projection.projectedWeeks),
               date: projection.projectedDate.toLocaleDateString(locale, {
@@ -184,25 +184,25 @@ export function ExerciseGoalDetailModal({
           <View className="p-4">
             <View className="mb-4 flex-row flex-wrap gap-3">
               <View
-                className="min-w-[45%] flex-1 rounded-xl p-3"
+                className="min-w-[45%] flex-1 rounded-control p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-xs font-bold text-text-tertiary">
+                <Text className="text-xs font-semibold text-text-tertiary">
                   {t('exerciseGoals.card.target')}
                 </Text>
-                <Text className="mt-1 text-lg font-bold text-text-primary">
+                <Text className="mt-1 text-lg font-semibold text-text-primary">
                   {targetWeightDisplay} {t(weightUnitKey)}
                 </Text>
               </View>
 
               <View
-                className="min-w-[45%] flex-1 rounded-xl p-3"
+                className="min-w-[45%] flex-1 rounded-control p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-xs font-bold text-text-tertiary">
+                <Text className="text-xs font-semibold text-text-tertiary">
                   {t('exerciseGoals.card.currentEstimate')}
                 </Text>
-                <Text className="mt-1 text-lg font-bold text-text-primary">
+                <Text className="mt-1 text-lg font-semibold text-text-primary">
                   {projection
                     ? `${formatDisplayWeightKg(locale, units, projection.currentEstimated1RM)} ${t(weightUnitKey)}`
                     : `— ${t(weightUnitKey)}`}
@@ -210,25 +210,25 @@ export function ExerciseGoalDetailModal({
               </View>
 
               <View
-                className="min-w-[45%] flex-1 rounded-xl p-3"
+                className="min-w-[45%] flex-1 rounded-control p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-xs font-bold text-text-tertiary">
+                <Text className="text-xs font-semibold text-text-tertiary">
                   {t('exerciseGoals.detail.progress')}
                 </Text>
-                <Text className="mt-1 text-lg font-bold text-accent-primary">
+                <Text className="mt-1 text-lg font-semibold text-accent-primary">
                   {projection ? `${formatRoundedDecimal(projection.progressPercent, 2)}%` : '—'}
                 </Text>
               </View>
 
               <View
-                className="min-w-[45%] flex-1 rounded-xl p-3"
+                className="min-w-[45%] flex-1 rounded-control p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-xs font-bold text-text-tertiary">
+                <Text className="text-xs font-semibold text-text-tertiary">
                   {t('exerciseGoals.detail.baseline')}
                 </Text>
-                <Text className="mt-1 text-lg font-bold text-text-primary">
+                <Text className="mt-1 text-lg font-semibold text-text-primary">
                   {baselineDisplay} {t(weightUnitKey)}
                 </Text>
               </View>
@@ -239,7 +239,7 @@ export function ExerciseGoalDetailModal({
               <Text className="text-xs text-text-secondary">
                 {t('exerciseGoals.detail.achievement')}
               </Text>
-              <Text className="text-xs font-bold text-text-primary">
+              <Text className="text-xs font-semibold text-text-primary">
                 {projection ? `${formatRoundedDecimal(projection.progressPercent, 2)}%` : '—'}
               </Text>
             </View>
@@ -258,7 +258,7 @@ export function ExerciseGoalDetailModal({
         {chartData.length > 0 ? (
           <GenericCard variant="flat">
             <View className="p-4">
-              <Text className="mb-4 text-sm font-bold text-text-primary">
+              <Text className="mb-4 text-sm font-semibold text-text-primary">
                 {t('exerciseGoals.detail.progressChart')}
               </Text>
               <LineChart
@@ -334,28 +334,30 @@ export function ExerciseGoalDetailModal({
           <View className="p-4">
             <View className="mb-4 flex-row flex-wrap gap-3">
               <View
-                className="min-w-[45%] flex-1 rounded-xl p-3"
+                className="min-w-[45%] flex-1 rounded-control p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-xs font-bold text-text-tertiary">
+                <Text className="text-xs font-semibold text-text-tertiary">
                   {t('exerciseGoals.creation.sessionsPerWeek')}
                 </Text>
-                <Text className="mt-1 text-lg font-bold text-text-primary">
+                <Text className="mt-1 text-lg font-semibold text-text-primary">
                   {goal.targetSessionsPerWeek ?? '—'}
                 </Text>
               </View>
 
               <View
-                className="min-w-[45%] flex-1 rounded-xl p-3"
+                className="min-w-[45%] flex-1 rounded-control p-3"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
-                <Text className="text-xs font-bold text-text-tertiary">
+                <Text className="text-xs font-semibold text-text-tertiary">
                   {t('exerciseGoals.card.sessionsThisWeek', {
                     count: sessionsThisWeek,
                     target: goal.targetSessionsPerWeek ?? 0,
                   })}
                 </Text>
-                <Text className="mt-1 text-lg font-bold text-text-primary">{sessionsThisWeek}</Text>
+                <Text className="mt-1 text-lg font-semibold text-text-primary">
+                  {sessionsThisWeek}
+                </Text>
               </View>
             </View>
           </View>

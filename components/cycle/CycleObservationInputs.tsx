@@ -53,7 +53,7 @@ export function CycleObservationInputs({
     if (key === 'impact') {
       return (
         <View key={key} className="gap-2">
-          <Text className="text-sm font-bold text-text-primary">{label}</Text>
+          <Text className="text-sm font-semibold text-text-primary">{label}</Text>
           <View className="flex-row flex-wrap gap-2">
             {[0, 1, 2, 3].map((n) => (
               <Chip
@@ -73,7 +73,7 @@ export function CycleObservationInputs({
     if (key === 'lhTest' || key === 'pregnancyTest') {
       return (
         <View key={key} className="gap-2">
-          <Text className="text-sm font-bold text-text-primary">{label}</Text>
+          <Text className="text-sm font-semibold text-text-primary">{label}</Text>
           <View className="flex-row flex-wrap gap-2">
             {['negative', 'positive', 'unclear'].map((choice) => (
               <Chip
@@ -91,7 +91,7 @@ export function CycleObservationInputs({
     if (kind === 'toggle') {
       return (
         <View key={key} className="gap-2">
-          <Text className="text-sm font-bold text-text-primary">{label}</Text>
+          <Text className="text-sm font-semibold text-text-primary">{label}</Text>
           <View className="flex-row gap-2">
             {[true, false].map((choice) => (
               <Chip
@@ -123,7 +123,7 @@ export function CycleObservationInputs({
           it can be corrected here, since a tap on a lock screen is easy to get wrong. */}
       {value.pill ? (
         <View className="gap-2">
-          <Text className="text-sm font-bold text-text-primary">
+          <Text className="text-sm font-semibold text-text-primary">
             {t('cycle.daySheet.pill.label')}
           </Text>
           <View className="flex-row gap-2">

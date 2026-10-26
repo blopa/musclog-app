@@ -57,7 +57,7 @@ export function CyclePreferences() {
     <View className="gap-5" pointerEvents={busy ? 'none' : 'auto'}>
       <CycleDiaryPresets />
       <CycleGoals value={config.goals ?? []} onChange={(goals) => save({ goals })} />
-      <Text className="text-base font-bold text-text-primary">
+      <Text className="text-base font-semibold text-text-primary">
         {t('cycle.personalize.quickTitle')}
       </Text>
       <Text className="text-xs text-text-secondary">{t('cycle.personalize.quickHint')}</Text>
@@ -119,7 +119,7 @@ export function CyclePreferences() {
           }
         />
       ))}
-      <Text className="text-base font-bold text-text-primary">
+      <Text className="text-base font-semibold text-text-primary">
         {t('cycle.personalize.fieldsTitle')}
       </Text>
       <Text className="text-xs text-text-secondary">{t('cycle.personalize.fieldsHint')}</Text>

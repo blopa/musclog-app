@@ -66,9 +66,9 @@ export function ListRow({
   const isChoice = selected !== undefined;
   const isGrouped = variant === 'grouped';
   const { flush } = useContext(ListGroupContext);
-  let surface = 'rounded-xl bg-bg-overlay';
+  let surface = 'rounded-control bg-bg-overlay';
   if (variant === 'card') {
-    surface = 'rounded-xl border border-border-light bg-bg-card';
+    surface = 'rounded-control border border-border-light bg-bg-card';
   } else if (isGrouped) {
     surface = '';
   }
@@ -119,10 +119,10 @@ export function ListRow({
       ) : null}
       <View className="min-w-0 flex-1">
         {overline ? (
-          <Text className="text-xs font-semibold text-text-secondary">{overline}</Text>
+          <Text className="text-xs font-medium text-text-secondary">{overline}</Text>
         ) : null}
         <Text
-          className="text-base font-semibold text-text-primary"
+          className="text-base font-medium text-text-primary"
           style={titleColor ? { color: titleColor } : undefined}
           numberOfLines={2}
         >

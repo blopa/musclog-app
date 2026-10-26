@@ -46,7 +46,7 @@ function IngredientRow({
   const theme = useTheme();
   return (
     <View
-      className="flex-row items-center justify-between rounded-xl p-3"
+      className="flex-row items-center justify-between rounded-control p-3"
       style={{ backgroundColor: theme.colors.background.cardElevated }}
     >
       <View className="flex-1 gap-0.5">

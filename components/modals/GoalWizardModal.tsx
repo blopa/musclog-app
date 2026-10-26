@@ -559,7 +559,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
             marginBottom: 2,
           }}
         >
-          <Text className="text-xs font-bold text-text-secondary">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('goalsManagement.goalWizard.targetDate.label')}
           </Text>
         </View>

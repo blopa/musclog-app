@@ -30,7 +30,7 @@ export function CopyDayPromptCard({ onPress }: CopyDayPromptCardProps) {
         </View>
 
         <View className="flex-col items-center gap-1" style={{ maxWidth: theme.maxWidth['480'] }}>
-          <Text className="text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
+          <Text className="text-center text-lg font-semibold leading-tight text-text-primary">
             {t('food.actions.copyDayPromptTitle')}
           </Text>
           <Text className="text-center text-sm font-normal leading-relaxed text-text-secondary">

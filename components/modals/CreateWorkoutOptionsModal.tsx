@@ -77,7 +77,7 @@ export function CreateWorkoutOptionsModal({
           <Text
             style={{
               fontSize: theme.typography.fontSize['3xl'],
-              fontWeight: theme.typography.fontWeight.extrabold,
+              fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.primary,
               lineHeight: theme.typography.fontSize['3xl'] * 1.2,
             }}

@@ -25,7 +25,9 @@ export function CycleDiaryPresets() {
   const { updateConfig } = useMenstrualCycle();
   return (
     <View className="gap-2">
-      <Text className="text-base font-bold text-text-primary">{t('cycle.complete.presets')}</Text>
+      <Text className="text-base font-semibold text-text-primary">
+        {t('cycle.complete.presets')}
+      </Text>
       <Text className="text-xs text-text-secondary">{t('cycle.complete.presetsHint')}</Text>
       {(Object.keys(PRESETS) as (keyof typeof PRESETS)[]).map((key) => (
         <TextButton

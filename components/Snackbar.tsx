@@ -78,7 +78,7 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
       }}
     >
       <View
-        className="mx-4 mb-3 flex-row items-center gap-4 rounded-2xl p-4"
+        className="mx-4 mb-3 flex-row items-center gap-4 rounded-card p-4"
         style={{
           backgroundColor: isSuccess
             ? theme.colors.background.snackbarSuccess
@@ -119,7 +119,7 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
           {snackbar.secondaryAction ? (
             <Pressable
               onPress={() => handleActionPress(snackbar.onSecondaryAction)}
-              className="rounded-lg px-3 py-1"
+              className="rounded-control px-3 py-1"
               style={{
                 backgroundColor: 'transparent',
                 opacity: 0.82,
@@ -133,13 +133,13 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
 
           <Pressable
             onPress={() => handleActionPress(snackbar.onAction)}
-            className="rounded-lg px-3 py-1"
+            className="rounded-control px-3 py-1"
             style={{
               backgroundColor: 'transparent',
             }}
           >
             <Text
-              className="text-sm font-bold"
+              className="text-sm font-semibold"
               style={{
                 color: isSuccess ? theme.colors.status.success : theme.colors.status.error,
               }}

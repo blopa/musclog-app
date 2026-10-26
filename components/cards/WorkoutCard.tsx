@@ -78,7 +78,7 @@ export function WorkoutCard({
 
   return (
     <GenericCard variant="flat">
-      <View className="p-5">
+      <View className="p-4">
         {/* Only the heading previews: a pressable card wrapping the Start button let one tap
             fire both on web, opening the preview on top of the session it had just started. */}
         <Pressable
@@ -86,39 +86,41 @@ export function WorkoutCard({
           accessibilityLabel={onPress ? t('workouts.previewWorkout', { name }) : undefined}
           disabled={!onPress}
           onPress={onPress}
-          className="mb-4 flex-row items-start justify-between"
+          className="mb-3 flex-row items-center gap-3"
           testID="workout-card-preview"
         >
-          <View className="flex-1">
-            {formattedLastCompleted ? (
-              <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-accent-primary/20 px-3 py-1">
-                <Clock size={theme.iconSize.xs} color={theme.colors.accent.primary} />
-                <Text className="text-xs font-bold text-accent-primary">
-                  {formattedLastCompleted}
-                </Text>
-              </View>
-            ) : null}
-            <Text className="mb-2 text-2xl font-bold text-text-primary">{name}</Text>
-            <Text className="text-sm text-text-secondary">
-              {exerciseCount} {t('workouts.exercises')}
-              {duration ? ` • ${duration}` : null}
-            </Text>
-          </View>
           <View
-            className="ml-4 h-20 w-20 items-center justify-center rounded-2xl"
+            className="h-10 w-10 items-center justify-center rounded-control"
             style={{ backgroundColor: theme.colors.background.iconDark }}
           >
-            <IconComponent size={theme.iconSize.lg} color={theme.colors.text.secondary} />
+            <IconComponent size={theme.iconSize.md} color={theme.colors.text.secondary} />
+          </View>
+          <View className="min-w-0 flex-1">
+            <Text className="text-base font-semibold text-text-primary" numberOfLines={2}>
+              {name}
+            </Text>
+            <View className="mt-0.5 flex-row flex-wrap items-center gap-x-1.5">
+              <Text className="text-sm tabular-nums text-text-secondary">
+                {exerciseCount} {t('workouts.exercises')}
+                {duration ? ` · ${duration}` : null}
+              </Text>
+              {formattedLastCompleted ? (
+                <View className="flex-row items-center gap-1">
+                  <Clock size={theme.iconSize.xs} color={theme.colors.accent.primary} />
+                  <Text className="text-sm text-accent-primary">{formattedLastCompleted}</Text>
+                </View>
+              ) : null}
+            </View>
           </View>
         </Pressable>
 
         {variant === 'featured' ? (
-          <View className="flex-row gap-3">
+          <View className="flex-row gap-2">
             <StartWorkoutButton variant="primary" onPress={onStart} />
             <MenuButton size="sm" onPress={onMore} className="w-14" />
           </View>
         ) : (
-          <View className="flex-row gap-3">
+          <View className="flex-row gap-2">
             {onArchive ? (
               <Button
                 label={t('workouts.archive')}

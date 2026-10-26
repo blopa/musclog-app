@@ -152,7 +152,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           key={v}
           onPress={() => handleViewChange(v)}
           disabled={isTransitioning}
-          className={`rounded-full px-2 py-1 ${
+          className={`rounded-tag px-2 py-1 ${
             view === v ? 'bg-accent-primary' : 'bg-background-tertiary'
           } ${isTransitioning ? 'opacity-50' : ''}`}
         >

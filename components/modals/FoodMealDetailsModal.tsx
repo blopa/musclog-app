@@ -170,7 +170,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
       >
         <GenericCard variant="raised">
           <View className="p-5">
-            <Text className="mb-5 text-2xl font-bold text-text-primary">{displayName}</Text>
+            <Text className="mb-5 text-xl font-semibold text-text-primary">{displayName}</Text>
 
             <View className="mb-4 flex-row gap-4">
               <View className="flex-1">

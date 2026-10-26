@@ -88,7 +88,7 @@ export function MealNutritionHighlightCard({
 
             <View className={`flex-row gap-2 ${statsMarginTop}`}>
               <View
-                className="flex-1 flex-col items-center rounded-lg p-2"
+                className="flex-1 flex-col items-center rounded-control p-2"
                 style={{
                   backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
@@ -101,7 +101,7 @@ export function MealNutritionHighlightCard({
                   {t('food.calories')}
                 </Text>
                 <Text
-                  className="text-lg font-bold"
+                  className="text-lg font-semibold"
                   style={[
                     { color: theme.colors.text.primary },
                     intuitiveMode ? blurFilter(4) : undefined,
@@ -115,7 +115,7 @@ export function MealNutritionHighlightCard({
               </View>
 
               <View
-                className="flex-1 flex-col items-center rounded-lg p-2"
+                className="flex-1 flex-col items-center rounded-control p-2"
                 style={{
                   backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
@@ -128,7 +128,7 @@ export function MealNutritionHighlightCard({
                   {narrow ? t('food.macros.proteinShort') : t('food.macros.protein')}
                 </Text>
                 <Text
-                  className="text-lg font-bold"
+                  className="text-lg font-semibold"
                   style={[
                     { color: theme.colors.accent.primary },
                     intuitiveMode ? blurFilter(4) : undefined,
@@ -142,7 +142,7 @@ export function MealNutritionHighlightCard({
               </View>
 
               <View
-                className="flex-1 flex-col items-center rounded-lg p-2"
+                className="flex-1 flex-col items-center rounded-control p-2"
                 style={{
                   backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
@@ -155,7 +155,7 @@ export function MealNutritionHighlightCard({
                   {narrow ? t('food.macros.carbsShort') : t('food.macros.carbs')}
                 </Text>
                 <Text
-                  className="text-lg font-bold"
+                  className="text-lg font-semibold"
                   style={[
                     { color: theme.colors.status.info },
                     intuitiveMode ? blurFilter(4) : undefined,
@@ -169,7 +169,7 @@ export function MealNutritionHighlightCard({
               </View>
 
               <View
-                className="flex-1 flex-col items-center rounded-lg p-2"
+                className="flex-1 flex-col items-center rounded-control p-2"
                 style={{
                   backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
@@ -182,7 +182,7 @@ export function MealNutritionHighlightCard({
                   {narrow ? t('food.macros.fatShort') : t('food.macros.fat')}
                 </Text>
                 <Text
-                  className="text-lg font-bold"
+                  className="text-lg font-semibold"
                   style={[
                     { color: theme.colors.status.amber },
                     intuitiveMode ? blurFilter(4) : undefined,

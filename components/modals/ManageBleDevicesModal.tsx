@@ -160,12 +160,12 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
       <View className="gap-6 p-4">
         {/* ── Saved sensors ───────────────────────────── */}
         <View>
-          <Text className="mb-3 text-xs font-bold text-text-tertiary">
+          <Text className="mb-3 text-xs font-semibold text-text-tertiary">
             {t('settings.bleDevices.savedSensors')}
           </Text>
 
           {savedDevices.length === 0 ? (
-            <View className="items-center rounded-xl border border-border-light bg-bg-primary py-8">
+            <View className="items-center rounded-card border border-border-light bg-bg-primary py-8">
               <BluetoothOff size={theme.iconSize['2xl']} color={theme.colors.text.tertiary} />
               <Text className="mt-3 text-sm text-text-tertiary">
                 {t('settings.bleDevices.noSavedSensors')}
@@ -187,7 +187,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
                   <GenericCard key={device.id} variant="flat">
                     <View className="p-4">
                       <View className="mb-3 flex-row items-center gap-3">
-                        <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
+                        <View className="h-10 w-10 items-center justify-center rounded-control bg-bg-card">
                           <Bluetooth
                             size={theme.iconSize.md}
                             color={
@@ -213,7 +213,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
                           </Text>
                         </View>
                         <View
-                          className="rounded-full px-2 py-0.5"
+                          className="rounded-tag px-2 py-0.5"
                           style={{
                             backgroundColor: isConnected
                               ? theme.colors.status.success + '33'
@@ -238,7 +238,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
                       {renamingDevice?.id === device.id ? (
                         <View className="mb-3 flex-row items-center gap-2">
                           <TextInput
-                            className="flex-1 rounded-lg border border-border-light bg-bg-primary px-3 py-2 text-text-primary"
+                            className="flex-1 rounded-control border border-border-light bg-bg-primary px-3 py-2 text-text-primary"
                             value={renameValue}
                             onChangeText={setRenameValue}
                             autoFocus
@@ -316,7 +316,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
 
         {/* ── Recording settings ──────────────────────── */}
         <View>
-          <Text className="mb-3 text-xs font-bold text-text-tertiary">
+          <Text className="mb-3 text-xs font-semibold text-text-tertiary">
             {t('settings.bleDevices.recordingSettings')}
           </Text>
           <ToggleInput
@@ -334,7 +334,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
 
         {/* ── Discover new sensors ────────────────────── */}
         <View>
-          <Text className="mb-3 text-xs font-bold text-text-tertiary">
+          <Text className="mb-3 text-xs font-semibold text-text-tertiary">
             {t('settings.bleDevices.foundSensors')}
           </Text>
 
@@ -355,7 +355,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
               {unsavedDiscovered.map((device) => (
                 <GenericCard key={device.id} variant="flat">
                   <View className="flex-row items-center gap-3 p-4">
-                    <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
+                    <View className="h-10 w-10 items-center justify-center rounded-control bg-bg-card">
                       <Bluetooth size={theme.iconSize.md} color={theme.colors.text.secondary} />
                     </View>
                     <View className="flex-1">
@@ -376,7 +376,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
 
           {permissionDenied || wit.error ? (
             <View
-              className="mt-3 flex-row items-center gap-3 rounded-xl p-3"
+              className="mt-3 flex-row items-center gap-3 rounded-control p-3"
               style={{ backgroundColor: theme.colors.status.error + '1A' }}
             >
               <AlertCircle size={theme.iconSize.md} color={theme.colors.status.error} />

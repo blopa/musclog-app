@@ -36,7 +36,9 @@ export function ListGroup({ title, footer, children, testID, flush = false }: Li
       {title ? <SectionLabel className="mb-2 px-1">{title}</SectionLabel> : null}
       <View
         className={
-          flush ? undefined : 'overflow-hidden rounded-2xl border border-border-light bg-bg-overlay'
+          flush
+            ? undefined
+            : 'overflow-hidden rounded-card border border-border-light bg-bg-overlay'
         }
       >
         {rows.map((row, index) => (

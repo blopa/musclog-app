@@ -48,7 +48,7 @@ const LENGTH_SAVE_DELAY_MS = 600;
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View className="gap-3">
-      <Text className="text-xs font-bold text-text-tertiary">{title}</Text>
+      <Text className="text-xs font-semibold text-text-tertiary">{title}</Text>
       {children}
     </View>
   );

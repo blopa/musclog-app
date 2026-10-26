@@ -62,10 +62,7 @@ export default function QuickPreferencesScreen() {
         >
           <View className="px-6 pt-6">
             {/* Title */}
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.quickPreferences.title')}
             </Text>
             <Text
@@ -102,7 +99,7 @@ export default function QuickPreferencesScreen() {
 
               {/* Info note */}
               <View
-                className="rounded-xl p-3"
+                className="rounded-control p-3"
                 style={{ backgroundColor: theme.colors.background.cardElevated }}
               >
                 <Text
@@ -123,7 +120,7 @@ export default function QuickPreferencesScreen() {
                   <Pressable
                     key={opt.value}
                     onPress={() => setGender(opt.value)}
-                    className="flex-row items-center justify-between rounded-xl px-4 py-4"
+                    className="flex-row items-center justify-between rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,

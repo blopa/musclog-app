@@ -117,14 +117,14 @@ export function PredictionCard({ onOpenDetails }: PredictionCardProps) {
     !guidance.variabilityIsExpected;
 
   return (
-    <View className="mb-4 rounded-2xl border-2 border-ink/5 bg-bg-overlay p-5">
+    <View className="mb-4 rounded-card border-2 border-ink/5 bg-bg-overlay p-5">
       <View className="mb-3 flex-row items-center gap-4">
-        <View className="h-10 w-10 items-center justify-center rounded-xl bg-bg-navActive">
+        <View className="h-10 w-10 items-center justify-center rounded-control bg-bg-navActive">
           <Calendar size={20} color={theme.colors.accent.primary} />
         </View>
         <View className="flex-1">
-          <Text className="text-xs font-bold text-text-tertiary">{t('cycle.nextPeriod')}</Text>
-          <Text className="text-lg font-black text-text-primary">{headline}</Text>
+          <Text className="text-xs font-semibold text-text-tertiary">{t('cycle.nextPeriod')}</Text>
+          <Text className="text-lg font-semibold text-text-primary">{headline}</Text>
         </View>
       </View>
 
@@ -143,7 +143,7 @@ export function PredictionCard({ onOpenDetails }: PredictionCardProps) {
 
       {showVariabilityHint ? (
         <View
-          className="my-3 gap-2 rounded-xl p-3"
+          className="my-3 gap-2 rounded-control p-3"
           style={{ backgroundColor: theme.colors.status.warning10 }}
         >
           <Text className="text-sm text-text-primary">

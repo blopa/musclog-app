@@ -79,7 +79,7 @@ export function HistoryPickerField({ kind, value, onChange }: HistoryPickerField
   return (
     <>
       <View
-        className="rounded-lg border bg-bg-card p-4"
+        className="rounded-card border bg-bg-card p-4"
         style={{ borderColor: theme.colors.border.light, borderWidth: theme.borderWidth.thin }}
       >
         <Text className="mb-3 text-sm font-medium text-text-secondary">{title}</Text>

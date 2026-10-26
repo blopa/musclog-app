@@ -120,7 +120,7 @@ export function RestTimer({
       {/* Timer Text */}
       <View className="absolute inset-0 items-center justify-center">
         <Text
-          className="font-bold tabular-nums leading-none tracking-tighter text-text-primary"
+          className="font-bold tabular-nums leading-none text-text-primary"
           style={{ fontSize: digitsSize }}
         >
           {formatRestTime(restTime)}

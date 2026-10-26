@@ -159,18 +159,38 @@ App headings and display text use solid `text.primary` ink across all themes, in
 Notes, Health Connect onboarding, workout summaries, and rest-complete messages. Do not use
 gradient-filled glyphs.
 
-The app currently relies mainly on platform/system fonts; do not document an unbundled typeface as
-part of the brand. The token scale is:
+The app uses the platform's system font. It was weighed against a display or monospaced face for
+the numbers and rejected: tabular figures (below) give the system font the alignment a monospace
+would, without bundling a font or a second voice. The token scale is:
 
-| Token       |  Size | Typical use                       |
-| ----------- | ----: | --------------------------------- |
-| `xxs`       |    10 | Badges and dense chart labels     |
-| `xs`        |    12 | Captions and metadata             |
-| `sm`        |    14 | Supporting text and controls      |
-| `base`      |    16 | Body text and inputs              |
-| `lg`–`xl`   | 18–20 | Section headings                  |
-| `2xl`–`5xl` | 24–48 | Screen headings and primary stats |
-| `6xl`–`8xl` | 60–96 | Rare hero values                  |
+| Token       |  Size | Typical use                                                         |
+| ----------- | ----: | ------------------------------------------------------------------- |
+| `xxs`       |    10 | Badges and dense chart labels; the floor, nothing smaller           |
+| `xs`        |    12 | Captions, metadata, stat labels                                     |
+| `sm`        |    14 | Supporting text, controls, chip and button labels                   |
+| `base`      |    16 | Body text, inputs, list-row and card titles                         |
+| `lg`        |    18 | Section headings, pushed-screen and modal titles                    |
+| `xl`        |    20 | The title of a record (a food, a past workout)                      |
+| `2xl`–`4xl` | 24–36 | Root-screen titles (`2xl`) and the one figure a card exists to show |
+| `5xl`+      |   48+ | Only the hero number of a dedicated input or timer                  |
+
+**Roles, not sizes.** A page title is `text-2xl font-bold` (root) or `text-lg font-semibold`
+(pushed, and every modal shell's title). A section heading inside a screen or modal is
+`text-lg font-semibold` — the old `text-2xl font-bold` section heading competed with the page
+title. A card or list-row title is `text-base`, semibold on a card and medium in a grouped list.
+
+**The weight ladder stops at bold.** 400 for body, 500 for labels, list rows and unselected
+options, 600 for titles, buttons and emphasis, 700 only for page titles and display figures.
+`font-black`/`font-extrabold` (800/900) are gone, and text at `xs`–`base` is at most semibold — a
+row of bold 12pt microtext was the densest source of visual noise. **No negative tracking**:
+`tracking-tight(er)` and `letterSpacing.tight` squeezed every large number and title, which reads as
+a template; the system font is already spaced for its size. `deslopGuards.test.ts` (Phase 10) holds
+all three at zero.
+
+**Numbers are tabular** (`tabular-nums`, or `fontVariant: ['tabular-nums']` in a style) wherever
+they line up or change in place: stat strips, the set table, macro rows, card figures and every
+clock. A countdown in proportional figures shifts sideways every second; the rest and work timers
+are guarded.
 
 **Labels are sentence case.** A small heading above a group of content is `SectionLabel`
 (`text-sm font-semibold text-text-secondary`, optional `tone="accent"` for the one live-state label
@@ -188,6 +208,8 @@ and units; a large number without context is not a useful hierarchy.
 
 Spacing follows a 4-point base scale: 4, 8, 12, 16, 20, 24, 32, and 48. Use
 `theme.spacing.padding`, `.gap`, and `.margin` instead of introducing near-duplicate literals.
+Screens are compact: a 16pt side inset, 16pt between the blocks of a screen, 24pt before a new
+section, 8pt between a section heading and its content, 8pt between controls in a row.
 
 Onboarding content uses a 24-point horizontal inset (`px-6`). In cycle setup, keep the
 horizontal inset and top padding on an inner `View` inside `KeyboardAwareScrollView`,
@@ -195,33 +217,57 @@ so the heading and every form section align with the bottom action button on web
 The shared cycle setup form leaves 12 points (`mt-3`) between the unknown-cycle-length
 option and the cycle/period numeric inputs.
 
-Standard radii are 12 for inputs/general controls, 16 for primary cards, and `full` for circular or
-pill elements. Borders should be subtle; surface separation should usually come from tonal layering
-before outlines or heavy shadows.
+**Radii are named by role**, once, in `theme.shape.js`, which both `tailwind.config.js` and
+`theme.ts` read:
+
+| Role      | px  | Class             | For                                                                |
+| --------- | --- | ----------------- | ------------------------------------------------------------------ |
+| `tag`     | 4   | `rounded-tag`     | Status badges ("Ready to review", "Set 2 of 3"), skeleton bars     |
+| `inner`   | 6   | `rounded-inner`   | Something inset a few points inside a control (keeps curves equal) |
+| `control` | 8   | `rounded-control` | Buttons, inputs, chips, filter tabs, list rows, tiles, icon wells  |
+| `card`    | 12  | `rounded-card`    | Cards, list groups, dialogs, callouts and info panels              |
+| `sheet`   | 16  | `rounded-t-sheet` | The top corners of a bottom sheet                                  |
+| `full`    | —   | `rounded-full`    | Circles only: avatars, dots, round FABs, thin progress tracks      |
+
+They are pixels on purpose. Tailwind's size-named radii are rem-based and NativeWind resolves `rem`
+to 14 on native and 16 on web, so `rounded-2xl` used to be 14 on a phone and 16 in a browser. App
+code uses only the role classes (`deslopGuards.test.ts`, Phase 10); the size names remain for the
+website. In a style object read `theme.borderRadius.control`/`.card`/…; the old size keys
+(`md`, `lg`, …) are aliases onto the roles for existing call sites. A pill — `rounded-full` on
+something with text in it — is not part of the language: chips, segments and badges are
+rectangles with restrained corners.
+
+Borders are 1pt hairlines (`border-ink/10`, `background.ink5` on cards); surfaces separate by tonal
+layering before outlines, and outlines before shadows. A shadow is for something that floats over
+content (the snackbar, text over the camera), never for a card, button or segmented track.
 
 Interactive mobile controls need an effective target of at least 44×44 points, preferably 48×48.
-Expand targets with internal padding. On iOS, negative margins and out-of-bounds `hitSlop` can be
-clipped by the parent; see `FIXES.md`.
+Dense controls may draw smaller and pad their hit area with `hitSlop` (`Chip` and filter tabs draw
+36pt, `IconButton sm` 36pt, a segment 40pt, each padded to 44–48). Expand targets with internal
+padding or `hitSlop`; on iOS, negative margins and out-of-bounds `hitSlop` can be clipped by the
+parent; see `FIXES.md`.
 
 ## Components
 
 ### Buttons
 
 - Primary: a flat `accent.primary` fill (`variant="accent"`, the default) with `text.onAccent`.
-  The gradient belongs to `gradientCta`, which draws `gradients.cta` and is the ONE primary action
-  of a screen; a screen that would show two demotes the second to `accent`. Both keep `text.onAccent`
-  at least 4.5:1 (the token generator blends an unsafe deep stop towards the vivid stop). Buttons
-  carry no shadow or glow, and their labels are never letter-spaced (tracking made "Scan Barcode"
-  wrap). Selected options in a list signal selection with the 2px accent border and a check, not a
+  `gradientCta` still marks the ONE primary action of a screen (a screen that would show two
+  demotes the second to `accent`), but it is drawn flat like `accent`: every button is flat, so
+  hierarchy comes from fill versus outline, not from a gradient. `gradients.cta` stays in the
+  palette for the later colour work and is read by no component. Buttons carry no shadow or glow,
+  and their labels are never letter-spaced (tracking made "Scan Barcode" wrap).
+- Sizes are fixed heights from one table, `components/theme/buttonMetrics.ts`, which `Button.tsx`
+  and `Button.web.tsx` both read (they used to carry two copies that had drifted): `xs` 36 (dense
+  rows only), `sm` 44, `md` 48, `lg` 52, `xl` 56, all semibold on the control radius. Outline,
+  dashed and secondary buttons draw a 1pt border. The web button's label is a react-native-web
+  `Text`, because a `<button>` does not inherit the page font. Selected options in a list signal selection with the 2px accent border and a check, not a
   halo. Every segmented control variant marks its selected segment with a solid `accent.primary`
-  fill and `text.onAccent` (decision D1 of the de-slop plan: the gradient is `gradientCta`'s
-  alone), and `text.secondary` for unselected options. A segment icon that changes colour uses the
+  fill and `text.onAccent`, and `text.secondary` for unselected options. A segment icon that changes colour uses the
   render-function form, `(selected) => …`, with those two inks — a static accent icon vanishes on
   the selected fill.
-- Button radius: `xs` and `sm` use 12 (`borderRadius.md`), `md` and up use 16 (`borderRadius.lg`).
-  The scale: 8 for chips inside dense rows, 12 for inputs and small buttons, 16 for cards, sheets
-  and regular buttons, `full` only for circles, avatars and true pills (filter chips, the pill
-  segmented control). Android buttons show a ripple bounded to the button.
+- Every button is on the control radius (8); see the radius table under Spacing, shape, and touch.
+  Android buttons show a ripple bounded to the button.
 - One primary action per screen. When a screen has a hero (the Workouts screen's Today card), the
   cards below it use their standard, secondary treatment rather than a second filled button.
 - Secondary: low-emphasis surface or outline treatment.
@@ -251,7 +297,7 @@ appropriate, or both. Pick by what the control is, not by how it looks today:
 | A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
 | A search box or any labeled text field                                  | `TextInput` (`label=""` + a `Search` icon for search); never a raw input   |
 
-**`SegmentedControl`: full width or `pill`, never both on one screen.** The full-width variants
+**`SegmentedControl`: full width or `pill`, never both on one screen.** (`pill` names the compact form; it is drawn on the control radius like the full-width track, not as a capsule.) The full-width variants
 (`elevated`, `outline`, `gradient` differ only in their track) are for a choice that switches what
 a screen shows or is the main field of a form or sheet. `pill` is for a choice that sits inline
 beside other content (the workout session's view toggle), where it hugs its options, or a
@@ -268,7 +314,7 @@ fields (`ProgressionRuleEditor`), a row whose whole surface toggles a panel (`Re
 `GuidanceSummary`) — never for something one of these already draws. `components/__tests__/themeControls.test.ts`
 lists the screens that have been moved onto them.
 
-**Lists are grouped, not a card per row.** `ListGroup` is one rounded (16) surface holding rows
+**Lists are grouped, not a card per row.** `ListGroup` is one `card`-radius (12) surface holding rows
 separated by hairlines, with an optional `SectionLabel` title above and footer text below; the rows
 draw no surface of their own. A row's icon is naked (20px, `text.secondary`): no tinted square or
 circle behind it, and no per-row color — the rainbow of chips the menus used to carry encoded
@@ -299,9 +345,9 @@ Every screen header is `components/theme/ScreenHeader.tsx`, rendered inside `Mas
 owns the top inset) and above the screen's scroll view, so the way back never scrolls away. It has
 two forms:
 
-- **root**: a large (`3xl`) title with trailing actions, for a screen that is one of the bottom
+- **root**: a large (`2xl`, bold) title with trailing actions, for a screen that is one of the bottom
   bar's slots right now. The highlighted tab already says where you are.
-- **pushed**: a back button, an `xl` title and trailing actions, for every other screen. Back goes
+- **pushed**: a back button, an `lg` semibold title and trailing actions, for every other screen. Back goes
   to the previous screen, or to Home when the screen was opened cold (a deep link, a reload).
 
 A screen that shows the bottom bar passes its `destination` and the header picks the form from the
@@ -331,7 +377,7 @@ exception — see `components/cards/cardSurface.ts` for the resolver and
 
 - **`flat`** (default) — `background.card` + an `ink/5` hairline, no shadow. Use for almost every
   card: lists, stats, settings rows.
-- **`raised`** — `background.cardElevated` + the same hairline + `shadows.md`. Reserve for the one
+- **`raised`** — `background.cardElevated` + the same hairline, no shadow: the tonal step lifts it. Reserve for the one
   emphasis/hero card on a screen. It is illegal inside `BottomPopUp` or `CenteredModal` — their
   sheet surface is already `cardElevated`, so a raised card disappears into it, and Android
   elevation can leak through a `SurfaceColorProvider` fade (see `AGENTS.md`).
@@ -339,14 +385,14 @@ exception — see `components/cards/cardSurface.ts` for the resolver and
   second consumer without updating this section.
 
 **Gradients carry meaning or they go.** A `LinearGradient` is allowed for a photo or camera scrim,
-a fade to the surface behind it (sticky footers, collapsed previews, filter rows), the `hero` card,
-the slider track, and the one `gradientCta` button. Washes, icon tiles, chat bubbles, progress
+a fade to the surface behind it (sticky footers, collapsed previews, filter rows), the `hero` card
+and the slider track. Buttons are flat, `gradientCta` included. Washes, icon tiles, chat bubbles, progress
 fills and summary panels are flat: the token they imitated (`accent.primary`, `accent.primary10`,
 `background.card`). `gradients.cta` is read only inside `components/theme/`; a hand-rolled gradient
 button goes through `Button`. `components/__tests__/deslopGuards.test.ts` holds the file allowlist,
 so a new gradient fails CI until it is added there with a reason.
 
-One radius throughout: `theme.borderRadius.lg` (16), the same value as Tailwind's `rounded-2xl`.
+One radius throughout: `theme.borderRadius.card` (12), the `rounded-card` class.
 Do not introduce a third style, a per-card radius, or a gradient card fill outside `hero` — a
 `GenericCard` call covers the case, and a hand-rolled surface should be migrated to it rather than
 copied.
@@ -365,7 +411,9 @@ themes into a grey slab and dropped their supporting ink under AA.
 
 Use the existing `FullScreenModal`, `CenteredModal`, `BottomPopUp`, and platform variants. A modal
 that opens another modal must follow the presenter rules in `FIXES.md`; visual nesting and React
-tree ownership are separate concerns. Modal headers sit on the modal's own surface — none of the
+tree ownership are separate concerns. All three shells title the modal at `text-lg font-semibold`,
+the same as a pushed screen header, with a 36pt control-radius close button (a dialog's sits on its
+`card` radius). Modal headers sit on the modal's own surface — none of the
 shared shells route a header through a gradient; a purple-to-transparent wash was a copy-pasted
 pattern across eight files and added nothing over the surface color.
 
@@ -376,7 +424,7 @@ aligned to the right.
 The avatar is the way into the account menu and carries an accessible label; it stays on the left
 so it lines up with the avatar the account menu itself opens with. No time-of-day
 greeting and no version string; the version lives in Settings > About. The home action tiles are
-compact (about 96pt, the icon above a short label, `rounded-2xl`), with no tinted icon circle and
+compact (64pt, the icon beside a short label, `rounded-control`), with no tinted icon circle and
 no faded watermark copy of the icon; the selection, picker and reconciliation rules in `AGENTS.md`
 are unchanged. Home shows a compact Weekly Review card while a week is waiting (or half
 reviewed); otherwise it is one line naming the next review (`WeeklyReviewCard compact quietUntilReady`).
@@ -477,13 +525,13 @@ belongs in both the desktop nav bar and the burger menu.
 
 Keep plan, targets, previous performance, editable actual values, source labels, explanation and undo together. Inline cards and Guided presentation use the same controller; switching changes presentation only. Completing a set saves immediately, while effort/partials live in an optional sheet. Keep the rest timer visible during editing and browsing. Finish Workout is explicit even when every set is resolved. Keep Guidance, Warm-up, Swap, Notes and More labeled. Lasting changes use the explicitly labeled workout editor.
 
-The session follows a set table, not a form. **Inline**: one card per exercise — thumbnail, name, muscle · equipment, a done/total pill — then the guidance block (badge, method, one-sentence reason, "Why?", "Use the plan's"), labeled action chips in one horizontal scrolling row, and rows of `Set · Last time · weight · reps · ✓` sharing one set of column widths with their header. Below 400 effective points (viewport width divided by font scale), show Last time as a labeled full-width line beneath each row; never truncate the previous load and reps. Set numbers count within the exercise; a warm-up is a "W". A numeric value the app calculated is accent-tinted **and** underlined until the user types over it. **Guided**: the exercise photo as a hero under a gradient, the name at 4xl, a "Set 2 of 3" pill, two large stepper fields (direct entry plus −/+ by the load step), and one gradient "Complete set"; context cards (fueling, cycle) follow the set instead of pushing it down. Both views share `SessionTopBar` (back, title, elapsed time and progress, a two-option view toggle on its own row under the progress bar) and the pinned `RestTimerBar`, which expands to a large panel automatically in Guided and on tap in Inline. Content is capped at 720 px so tablets keep the table legible. Session feedback is an optional action on the summary, with ratings and notes retained in the form when saving fails.
+The session follows a set table, not a form. **Inline**: one card per exercise — thumbnail, name, muscle · equipment, a done/total badge — then the guidance block (badge, method, one-sentence reason, "Why?", "Use the plan's"), labeled action chips in one horizontal scrolling row, and rows of `Set · Last time · weight · reps · ✓` sharing one set of column widths with their header. Below 400 effective points (viewport width divided by font scale), show Last time as a labeled full-width line beneath each row; never truncate the previous load and reps. Set numbers count within the exercise; a warm-up is a "W". A numeric value the app calculated is accent-tinted **and** underlined until the user types over it. **Guided**: the exercise photo as a hero under a gradient, the name at 3xl, a "Set 2 of 3" badge, two large stepper fields (direct entry plus −/+ by the load step), and one primary "Complete set"; context cards (fueling, cycle) follow the set instead of pushing it down. Both views share `SessionTopBar` (back, title, elapsed time and progress, a two-option view toggle on its own row under the progress bar) and the pinned `RestTimerBar`, which expands to a large panel automatically in Guided and on tap in Inline. Content is capped at 720 px so tablets keep the table legible. Session feedback is an optional action on the summary, with ratings and notes retained in the form when saving fails.
 
 "Why?" is a sheet, not a stack of buttons: method and reason first, then a small inputs table (rule, plan, last time, today), then action rows with icons and one-line hints (Use the plan's, Plate calculator, Edit gym, Edit workout and rules; Edit target only when the equipment cannot build the load). The rule editor is the same pattern: radio cards that each explain their method in a sentence, with the chosen card expanding to its settings. An exercise row in the workout editor names its rule and opens that sheet on tap.
 
-Home shows the Weekly Review card below actions while a week is waiting, and a one-line entry naming the next review otherwise, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a gradient Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due (and on empty or fasting days); otherwise the way in is the "Weekly Review" item of the summary card's menu, whose supporting line says where today's targets come from ("Daily automatic targets · since …"). The targets chip and the "Dynamic" badge that used to sit above the card took a fifth of the first screen to say what that one line says. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
+Home shows the Weekly Review card below actions while a week is waiting, and a one-line entry naming the next review otherwise, with active-workout Resume more prominent. Workouts begins with Today before the library: an in-progress workout is an accent card with a progress bar, a primary Resume and a small destructive Discard link — never the other way round; otherwise today's workout with "Preview and start", gym and starting-target chips, and workouts already trained today shown as done. Food shows the review card while a review is due (and on empty or fasting days); otherwise the way in is the "Weekly Review" item of the summary card's menu, whose supporting line says where today's targets come from ("Daily automatic targets · since …"). The targets chip and the "Dynamic" badge that used to sit above the card took a fifth of the first screen to say what that one line says. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
 
-Weekly Review leads with the week and a Training / Nutrition progress pair, then the two sections. Training: a `StatStrip` (workouts, working sets, volume in the user's unit), the week's workouts, records as trophy rows, and "Next up" with preview and editor actions; upcoming targets are collapsed by default. Nutrition: a `StatStrip` of the evidence (trend weight, food days, weigh-ins), a Current / Recommended table with signed deltas, the reason, then one gradient "Apply targets starting tomorrow" over "Keep current" and "Edit". Missing evidence makes "Keep targets while collecting data" the primary action with shortcuts to log. Review day and reminder live in a settings card below, history last. Opening or canceling a sheet never acknowledges a review. Training acknowledgement never gates progression. Respect themes, exercise units, local decimal separators, safe areas and keyboard clearance.
+Weekly Review leads with the week and a Training / Nutrition progress pair, then the two sections. Training: a `StatStrip` (workouts, working sets, volume in the user's unit), the week's workouts, records as trophy rows, and "Next up" with preview and editor actions; upcoming targets are collapsed by default. Nutrition: a `StatStrip` of the evidence (trend weight, food days, weigh-ins), a Current / Recommended table with signed deltas, the reason, then one primary "Apply targets starting tomorrow" over "Keep current" and "Edit". Missing evidence makes "Keep targets while collecting data" the primary action with shortcuts to log. Review day and reminder live in a settings card below, history last. Opening or canceling a sheet never acknowledges a review. Training acknowledgement never gates progression. Respect themes, exercise units, local decimal separators, safe areas and keyboard clearance.
 
 ### Cycle journal completion
 

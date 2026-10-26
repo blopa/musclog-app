@@ -34,7 +34,7 @@ export function LockScreen({ title, description }: LockScreenProps) {
       <View className="mb-6 h-16 w-16 items-center justify-center rounded-full bg-bg-overlay">
         <Lock size={28} color={theme.colors.text.secondary} />
       </View>
-      <Text className="mb-2 text-center text-2xl font-black text-text-primary">{title}</Text>
+      <Text className="mb-2 text-center text-xl font-semibold text-text-primary">{title}</Text>
       <Text className="mb-8 text-center text-sm text-text-secondary">{description}</Text>
       <Button label={t('cycle.lock.unlock')} onPress={() => void unlock()} variant="accent" />
     </View>

@@ -17,7 +17,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
   const renderStat = (label: string, value: string, colorClass: string) => (
     <View className="flex-1 items-center justify-center p-2">
       <Text className="text-xs text-text-tertiary">{label}</Text>
-      <Text className={`text-lg font-bold ${colorClass}`}>{value}</Text>
+      <Text className={`text-lg font-semibold tabular-nums ${colorClass}`}>{value}</Text>
     </View>
   );
 
@@ -35,7 +35,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
       {avg ? (
         <GenericCard variant="flat" containerStyle={{ marginBottom: 16 }}>
           <View className="p-2">
-            <Text className="mb-1 ml-2 mt-2 text-sm font-bold text-text-primary">
+            <Text className="mb-1 ml-2 mt-2 text-sm font-semibold text-text-primary">
               {t('progress.averageIntakeTitle')}
             </Text>
             <Text className="mb-2 ml-2 text-xs text-text-tertiary">
@@ -45,7 +45,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
               <Text className="text-center text-xs text-text-tertiary">
                 {t('progress.nutritionView.calories')}
               </Text>
-              <Text className="text-center text-xl font-bold text-accent-primary">
+              <Text className="text-center text-xl font-semibold tabular-nums text-accent-primary">
                 {formatInteger(Math.round(avg.calories))} {t('progress.kcal')}
               </Text>
             </View>
@@ -77,7 +77,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
 
       <GenericCard variant="flat" containerStyle={{ marginBottom: 16 }}>
         <View className="p-2">
-          <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">
+          <Text className="mb-2 ml-2 mt-2 text-sm font-semibold text-text-primary">
             {t('progress.metabolicSummary')}
           </Text>
           <View className="flex-row flex-wrap">
@@ -86,10 +86,10 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
                 <Text className="text-center text-xs text-text-tertiary">
                   {t('progress.empiricalTdee')}
                 </Text>
-                <Text className="text-lg font-bold text-accent-primary">
+                <Text className="text-lg font-semibold tabular-nums text-accent-primary">
                   {formatInteger(Math.round(insights.empiricalTdee))}
                 </Text>
-                <Text className="text-center text-[8px] text-text-tertiary">
+                <Text className="text-center text-[10px] text-text-tertiary">
                   {t('progress.basedOnRecentActivity')}
                 </Text>
               </View>
@@ -98,10 +98,10 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
               <Text className="text-center text-xs text-text-tertiary">
                 {t('progress.statisticalTdee')}
               </Text>
-              <Text className="text-lg font-bold text-accent-secondary">
+              <Text className="text-lg font-semibold tabular-nums text-accent-secondary">
                 {formatInteger(Math.round(insights.statisticalTdee))}
               </Text>
-              <Text className="text-center text-[8px] text-text-tertiary">
+              <Text className="text-center text-[10px] text-text-tertiary">
                 {t('progress.basedOnActivityLevel')}
               </Text>
             </View>
@@ -140,14 +140,14 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
       {insights.targetWeights.bf5 !== 0 ? (
         <GenericCard variant="flat" containerStyle={{ marginBottom: 16 }}>
           <View className="p-2">
-            <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">
+            <Text className="mb-2 ml-2 mt-2 text-sm font-semibold text-text-primary">
               {t('progress.bodyFatGoalWeights')}
             </Text>
             <View className="flex-row flex-wrap">
               {[5, 10, 15, 20].map((bf) => (
                 <View key={bf} className="flex-1 items-center justify-center p-2">
                   <Text className="text-[10px] text-text-tertiary">{bf}%</Text>
-                  <Text className="text-lg font-bold text-text-primary">
+                  <Text className="text-lg font-semibold tabular-nums text-text-primary">
                     {formatDecimal((insights.targetWeights as any)[`bf${bf}`], 1)}
                   </Text>
                 </View>

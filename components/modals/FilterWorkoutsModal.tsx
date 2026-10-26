@@ -209,7 +209,7 @@ export function FilterWorkoutsModal({
                   <Text
                     style={{
                       fontSize: theme.typography.fontSize.sm,
-                      fontWeight: theme.typography.fontWeight.extrabold,
+                      fontWeight: theme.typography.fontWeight.bold,
                       color: theme.colors.text.primary,
                     }}
                   >

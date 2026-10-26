@@ -51,16 +51,18 @@ export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonP
       accessibilityRole="button"
       // The label carries a deliberate line break for the tile; a screen reader reads one phrase.
       accessibilityLabel={label.replace(/\n/g, ' ')}
-      className="w-full flex-row items-center gap-4 rounded-2xl px-5 py-4 active:opacity-80"
-      style={{ minHeight: theme.size['96'], backgroundColor: config.bgColor }}
+      className="w-full flex-row items-center gap-3 rounded-control px-4 py-3 active:opacity-80"
+      style={{ minHeight: theme.size['16'], backgroundColor: config.bgColor }}
       onPress={onPress}
     >
       <Icon
-        size={theme.iconSize.xl}
+        size={theme.iconSize.lg}
         color={config.iconColor}
         strokeWidth={theme.strokeWidth.medium}
       />
-      <Text className={`flex-1 text-lg font-bold leading-tight ${config.textColor}`}>{label}</Text>
+      <Text className={`flex-1 text-base font-semibold leading-tight ${config.textColor}`}>
+        {label}
+      </Text>
     </Pressable>
   );
 }

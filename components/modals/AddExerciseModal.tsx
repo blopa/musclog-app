@@ -566,7 +566,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
         {/* Create Set Card */}
         <View
-          className="rounded-2xl border bg-bg-card p-5"
+          className="rounded-card border bg-bg-card p-5"
           style={{ borderColor: theme.colors.background.ink5 }}
         >
           <View className="mb-6 flex-row items-center justify-between">
@@ -686,7 +686,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               </Text>
               <Pressable
                 onPress={() => setIsSetTypePickerVisible(true)}
-                className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
+                className="overflow-hidden rounded-control border border-border-default bg-bg-overlay active:opacity-70"
               >
                 <View className="flex-row items-center justify-between px-4 py-3">
                   <Text

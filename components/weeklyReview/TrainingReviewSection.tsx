@@ -68,19 +68,19 @@ export function ReviewSectionHeader({
   const theme = useTheme();
   return (
     <View className="flex-row items-center gap-3">
-      <View className="h-10 w-10 items-center justify-center rounded-xl bg-accent-primary/10">
+      <View className="h-10 w-10 items-center justify-center rounded-control bg-accent-primary/10">
         <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
       </View>
       <Text className="flex-1 text-xl font-bold text-text-primary">{title}</Text>
       {done == null ? null : (
         <View
-          className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${done ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
+          className={`flex-row items-center gap-1 rounded-tag px-2.5 py-1 ${done ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
         >
           {done ? (
             <CheckCircle2 size={theme.iconSize.xs} color={theme.colors.text.onAccent} />
           ) : null}
           <Text
-            className={`text-xs font-bold ${done ? 'text-text-on-accent' : 'text-text-secondary'}`}
+            className={`text-xs font-semibold ${done ? 'text-text-on-accent' : 'text-text-secondary'}`}
           >
             {t(done ? 'weeklyReview.reviewed' : 'weeklyReview.toReview')}
           </Text>
@@ -147,7 +147,7 @@ export function TrainingReviewSection({
 
   return (
     <View
-      className="gap-4 rounded-2xl border border-border-light bg-bg-card p-4"
+      className="gap-4 rounded-card border border-border-light bg-bg-card p-4"
       testID="review-training"
     >
       <ReviewSectionHeader
@@ -223,11 +223,13 @@ export function TrainingReviewSection({
 
       {recordRows.length ? (
         <View className="gap-2">
-          <Text className="text-xs font-bold text-text-secondary">{t('weeklyReview.records')}</Text>
+          <Text className="text-xs font-semibold text-text-secondary">
+            {t('weeklyReview.records')}
+          </Text>
           {(showAllRecords ? recordRows : recordRows.slice(0, VISIBLE_RECORDS)).map((record) => (
             <View
               key={record.exerciseId}
-              className="flex-row items-center gap-3 rounded-xl bg-bg-overlay px-3 py-2.5"
+              className="flex-row items-center gap-3 rounded-control bg-bg-overlay px-3 py-2.5"
             >
               <Trophy size={theme.iconSize.md} color={theme.colors.accent.primary} />
               <View className="min-w-0 flex-1">
@@ -258,9 +260,11 @@ export function TrainingReviewSection({
       ) : null}
 
       {training.next ? (
-        <View className="gap-3 rounded-xl border border-border-light p-3">
-          <Text className="text-xs font-bold text-text-secondary">{t('weeklyReview.nextUp')}</Text>
-          <Text className="text-base font-bold text-text-primary">
+        <View className="gap-3 rounded-control border border-border-light p-3">
+          <Text className="text-xs font-semibold text-text-secondary">
+            {t('weeklyReview.nextUp')}
+          </Text>
+          <Text className="text-base font-semibold text-text-primary">
             {training.next.template.name}
           </Text>
           <View className="gap-2">
@@ -304,7 +308,7 @@ export function TrainingReviewSection({
 
       {reviewable ? (
         <View className="gap-2" testID="review-training-goals">
-          <Text className="text-xs font-bold text-text-secondary">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.goals.title')}
           </Text>
           {verdicts.length ? (
@@ -343,11 +347,11 @@ export function TrainingReviewSection({
       ) : null}
 
       {decided ? (
-        <View className="gap-1 rounded-xl bg-bg-overlay p-3" testID="review-training-decided">
-          <Text className="text-xs font-bold text-text-secondary">
+        <View className="gap-1 rounded-control bg-bg-overlay p-3" testID="review-training-decided">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.trainingDecision.title')}
           </Text>
-          <Text className="text-base font-bold text-text-primary">
+          <Text className="text-base font-semibold text-text-primary">
             {t(DECISION_COPY[decided.decision].chosen)}
           </Text>
           {decided.decision === 'progress' ? null : (
@@ -360,7 +364,7 @@ export function TrainingReviewSection({
 
       {training.canDecide && !decided ? (
         <View className="gap-3" testID="review-training-decision">
-          <Text className="text-xs font-bold text-text-secondary">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.trainingDecision.title')}
           </Text>
           <Text className="text-xs text-text-tertiary">{t('weeklyReview.trainingHint')}</Text>
@@ -418,7 +422,7 @@ function GoalVerdictRow({
       : ONE_RM_STATUS_KEYS[verdict.status]
   );
   return (
-    <View className="flex-row items-center gap-3 rounded-xl bg-bg-overlay px-3 py-2.5">
+    <View className="flex-row items-center gap-3 rounded-control bg-bg-overlay px-3 py-2.5">
       <View className="min-w-0 flex-1">
         <Text className="text-sm font-semibold text-text-primary" numberOfLines={1}>
           {verdict.kind === 'consistency'
@@ -439,10 +443,10 @@ function GoalVerdictRow({
         ) : null}
       </View>
       <View
-        className={`rounded-full px-2.5 py-1 ${good ? 'bg-status-success/15' : 'bg-status-warning/15'}`}
+        className={`rounded-tag px-2.5 py-1 ${good ? 'bg-status-success/15' : 'bg-status-warning/15'}`}
       >
         <Text
-          className={`text-xs font-bold ${good ? 'text-status-success' : 'text-status-warning'}`}
+          className={`text-xs font-semibold ${good ? 'text-status-success' : 'text-status-warning'}`}
         >
           {label}
         </Text>

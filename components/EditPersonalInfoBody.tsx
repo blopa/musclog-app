@@ -151,7 +151,7 @@ export function EditPersonalInfoBody({
           <View className="flex-col gap-2">
             <Text className="ml-1 text-sm font-medium text-text-secondary">
               <View className="flex-row items-center gap-1">
-                <Text className="text-lg font-bold text-text-primary">
+                <Text className="text-lg font-semibold text-text-primary">
                   {t('editPersonalInfo.dateOfBirth')}
                 </Text>
                 <Text style={{ color: theme.colors.status.error }}>*</Text>
@@ -171,7 +171,7 @@ export function EditPersonalInfoBody({
           <View className="gap-2">
             <Text className="ml-1 text-sm font-medium text-text-secondary">
               <View className="flex-row items-center gap-1">
-                <Text className="text-lg font-bold text-text-primary">
+                <Text className="text-lg font-semibold text-text-primary">
                   {t('editPersonalInfo.gender')}
                 </Text>
                 <Text style={{ color: theme.colors.status.error }}>*</Text>
@@ -186,10 +186,10 @@ export function EditPersonalInfoBody({
         ) : null}
 
         {hideGender || gender === 'female' || gender === 'other' ? (
-          <View className="mt-2 rounded-2xl border-2 border-ink/5 bg-bg-card p-4">
+          <View className="mt-2 rounded-card border-2 border-ink/5 bg-bg-card p-4">
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-4">
-                <Text className="text-lg font-bold text-text-primary">
+                <Text className="text-lg font-semibold text-text-primary">
                   {t('onboarding.personalInfo.trackCycle')}
                 </Text>
                 <Text className="text-sm text-text-secondary">

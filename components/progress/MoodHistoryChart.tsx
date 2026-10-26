@@ -37,12 +37,12 @@ export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
           <TouchableOpacity
             key={agg}
             onPress={() => setAggregation(agg)}
-            className={`rounded-full px-3 py-1.5 ${
+            className={`rounded-control px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}
           >
             <Text
-              className={`text-xs font-bold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
+              className={`text-xs font-semibold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
             >
               {t(`common.time.${agg}`)}
             </Text>
@@ -81,12 +81,12 @@ export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
           <TouchableOpacity
             key={agg}
             onPress={() => setAggregation(agg)}
-            className={`rounded-full px-3 py-1.5 ${
+            className={`rounded-control px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}
           >
             <Text
-              className={`text-xs font-bold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
+              className={`text-xs font-semibold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
             >
               {t(`common.time.${agg}`)}
             </Text>

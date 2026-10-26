@@ -51,7 +51,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
 
   return (
     <View
-      className="overflow-hidden rounded-2xl rounded-bl-sm"
+      className="overflow-hidden rounded-card rounded-bl-tag"
       style={{
         backgroundColor: theme.colors.background.card,
         borderWidth: theme.borderWidth.thin,
@@ -61,7 +61,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
     >
       {/* Summary header */}
       <View className="flex-row items-baseline justify-between px-4 pb-2 pt-4">
-        <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+        <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
           {t('meals.chatMealCard.mealCount', { count: meals.length })}
         </Text>
         <View className="flex-row items-baseline gap-1">
@@ -91,7 +91,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
           <View className="px-4 py-3">
             {/* Meal type label + calories */}
             <View className="mb-2 flex-row items-baseline justify-between">
-              <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {getMealLabel(meal.mealType)}
               </Text>
               <Text
@@ -108,15 +108,18 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
 
             {/* Macros row */}
             <View
-              className="mb-3 flex-row items-center justify-between rounded-lg p-2"
+              className="mb-3 flex-row items-center justify-between rounded-control p-2"
               style={{ backgroundColor: theme.colors.background.primary }}
             >
               <View className="flex-1 items-center">
-                <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
                   P
                 </Text>
                 <Text
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                   style={[
                     { color: theme.colors.accent.primary },
                     intuitiveEatingMode ? blurFilter(4) : undefined,
@@ -131,11 +134,14 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
               <View className="h-5 w-px" style={{ backgroundColor: theme.colors.border.light }} />
 
               <View className="flex-1 items-center">
-                <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
                   C
                 </Text>
                 <Text
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                   style={[
                     { color: theme.colors.status.indigo },
                     intuitiveEatingMode ? blurFilter(4) : undefined,
@@ -150,11 +156,14 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
               <View className="h-5 w-px" style={{ backgroundColor: theme.colors.border.light }} />
 
               <View className="flex-1 items-center">
-                <Text className="text-xs font-bold" style={{ color: theme.colors.text.tertiary }}>
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: theme.colors.text.tertiary }}
+                >
                   F
                 </Text>
                 <Text
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                   style={[
                     { color: theme.colors.status.warning },
                     intuitiveEatingMode ? blurFilter(4) : undefined,
@@ -170,7 +179,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
             {/* CTA button */}
             {meal.wasTracked ? (
               <View
-                className="flex-row items-center justify-center gap-1.5 rounded-lg py-1.5"
+                className="flex-row items-center justify-center gap-1.5 rounded-control py-1.5"
                 style={{
                   borderWidth: theme.borderWidth.thin,
                   borderColor: theme.colors.border.light,
@@ -178,7 +187,10 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
                 }}
               >
                 <Check size={12} color={theme.colors.accent.primary} />
-                <Text className="text-xs font-bold" style={{ color: theme.colors.accent.primary }}>
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: theme.colors.accent.primary }}
+                >
                   {t('meals.chatMealCard.tracked')}
                 </Text>
               </View>

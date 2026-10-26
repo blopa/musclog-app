@@ -1519,7 +1519,7 @@ export default function FoodScreen() {
                 <>
                   {/* Calories Card Skeleton */}
                   <View
-                    className="rounded-lg border bg-bg-card p-5"
+                    className="rounded-card border bg-bg-card p-5"
                     style={{ borderColor: theme.colors.background.ink5 }}
                   >
                     <View className="mb-4 flex-row items-center justify-between">
@@ -1557,7 +1557,7 @@ export default function FoodScreen() {
                   {[1, 2, 3].map((i) => (
                     <View
                       key={i}
-                      className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
+                      className="flex-row items-center justify-between rounded-card border bg-bg-card p-4"
                       style={{ borderColor: theme.colors.background.ink5 }}
                     >
                       <View className="flex-row items-center gap-3">
@@ -1668,13 +1668,13 @@ export default function FoodScreen() {
                     ) : null}
 
                     {/* Scan Buttons */}
-                    <View className="gap-4">
-                      <View className="flex-row gap-4">
+                    <View className="gap-2">
+                      <View className="flex-row gap-2">
                         <Button
                           label={t('food.actions.scanBarcode')}
                           icon={ScanLine}
                           variant="secondary"
-                          size="md"
+                          size="sm"
                           width="flex-1"
                           onPress={() => {
                             openCamera({
@@ -1690,7 +1690,7 @@ export default function FoodScreen() {
                             label={t('food.actions.aiCamera')}
                             icon={Sparkles}
                             variant="secondaryGradient"
-                            size="md"
+                            size="sm"
                             width="flex-1"
                             onPress={() => {
                               openCamera({
@@ -1702,7 +1702,7 @@ export default function FoodScreen() {
                           />
                         ) : null}
                       </View>
-                      <View className="flex-row gap-4">
+                      <View className="flex-row gap-2">
                         <Button
                           // label={t('food.actions.goToToday')}
                           label={t('food.actions.myMeals')}

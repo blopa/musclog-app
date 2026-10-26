@@ -41,7 +41,7 @@ export function NutritionConfirmationModal({
     ({ item, index }: { item: NutritionEntry; index: number }) => (
       <View
         key={index}
-        className="mb-3 rounded-lg p-4"
+        className="mb-3 rounded-card p-4"
         style={{ backgroundColor: theme.colors.background.card }}
       >
         <View className="mb-2 flex-row items-center justify-between">
@@ -101,7 +101,7 @@ export function NutritionConfirmationModal({
       <ScrollView className="flex-1 px-4 py-4">
         {/* Summary */}
         <View
-          className="mb-6 rounded-lg p-4"
+          className="mb-6 rounded-card p-4"
           style={{ backgroundColor: theme.colors.background.card }}
         >
           <Text className="mb-3 font-semibold text-text-primary">{t('nutrition.dailyTotals')}</Text>
@@ -168,7 +168,7 @@ export function NutritionConfirmationModal({
         <Pressable
           onPress={handleConfirm}
           disabled={isLoading || entries.length === 0}
-          className="mb-2 rounded-lg px-4 py-3"
+          className="mb-2 rounded-control px-4 py-3"
           style={{
             backgroundColor: theme.colors.accent.primary,
             opacity: isLoading || entries.length === 0 ? 0.5 : 1,
@@ -182,7 +182,7 @@ export function NutritionConfirmationModal({
         <Pressable
           onPress={onClose}
           disabled={isLoading}
-          className="rounded-lg border px-4 py-3"
+          className="rounded-control border px-4 py-3"
           style={{
             borderColor: theme.colors.border.light,
             opacity: isLoading ? 0.5 : 1,

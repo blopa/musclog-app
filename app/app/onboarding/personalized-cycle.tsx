@@ -68,10 +68,7 @@ export default function PersonalizedCycleScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-6 pt-6">
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.personalizedCycle.title')}
             </Text>
             <Text
@@ -98,7 +95,7 @@ export default function PersonalizedCycleScreen() {
                   <Pressable
                     key={String(opt.value)}
                     onPress={() => setMenstruates(opt.value)}
-                    className="flex-row items-center justify-between rounded-xl px-4 py-4"
+                    className="flex-row items-center justify-between rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,

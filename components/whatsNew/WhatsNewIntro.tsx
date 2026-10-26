@@ -51,8 +51,8 @@ export function WhatsNewIntro({
       </View>
 
       {headlines.length > 0 ? (
-        <View className="gap-3 rounded-2xl bg-bg-overlay p-4">
-          <Text className="text-xs font-bold text-text-secondary">
+        <View className="gap-3 rounded-card bg-bg-overlay p-4">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('whatsNew.intro.inside')}
           </Text>
           {headlines.map((headline, index) => (
@@ -61,7 +61,7 @@ export function WhatsNewIntro({
                 className="items-center justify-center rounded-full bg-accent-primary/15"
                 style={{ width: theme.iconSize['2xl'], height: theme.iconSize['2xl'] }}
               >
-                <Text className="text-sm font-bold text-accent-primary">
+                <Text className="text-sm font-semibold text-accent-primary">
                   {formatInteger(index + 1)}
                 </Text>
               </View>

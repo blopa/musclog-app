@@ -15,16 +15,17 @@ describe('resolveCardSurface', () => {
     const flat = resolveCardSurface('flat', theme);
     expect(flat.backgroundColor).toBe(theme.colors.background.card);
     expect(flat.borderColor).toBe(theme.colors.background.ink5);
-    expect(flat.shadow).toBeUndefined();
+    expect(flat).not.toHaveProperty('shadow');
 
     const raised = resolveCardSurface('raised', theme);
     expect(raised.backgroundColor).toBe(theme.colors.background.cardElevated);
     expect(raised.borderColor).toBe(theme.colors.background.ink5);
-    expect(raised.shadow).toEqual(theme.shadows.md);
+    // Cards are flat: the tonal step lifts a raised card, never a drop shadow.
+    expect(raised).not.toHaveProperty('shadow');
 
     // Both share the single card radius — no per-variant radius ladder.
-    expect(flat.borderRadius).toBe(theme.borderRadius.lg);
-    expect(raised.borderRadius).toBe(theme.borderRadius.lg);
+    expect(flat.borderRadius).toBe(theme.borderRadius.card);
+    expect(raised.borderRadius).toBe(theme.borderRadius.card);
   });
 
   it.each(THEME_IDS)('never gives raised the same fill as a BottomPopUp sheet on %s', (themeId) => {

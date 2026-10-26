@@ -87,10 +87,7 @@ export default function QuickGoalsScreen() {
         >
           <View className="px-6 pt-6">
             {/* Title */}
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.quickGoals.title')}
             </Text>
             <Text
@@ -191,7 +188,7 @@ export default function QuickGoalsScreen() {
                     <Pressable
                       key={opt.value}
                       onPress={() => setWeightGoal(opt.value)}
-                      className="flex-1 items-center justify-center rounded-xl py-4"
+                      className="flex-1 items-center justify-center rounded-control py-4"
                       style={{
                         backgroundColor: theme.colors.background.cardElevated,
                         borderWidth: 1.5,

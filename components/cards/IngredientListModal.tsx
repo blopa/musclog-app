@@ -51,7 +51,7 @@ export function IngredientListModal({
         {ingredients.map((ingredient, index) => (
           <View
             key={`${ingredient.name}-${index}`}
-            className="flex-row items-center justify-between rounded-lg px-3 py-2.5"
+            className="flex-row items-center justify-between rounded-control px-3 py-2.5"
             style={{ backgroundColor: theme.colors.background.ink5 }}
           >
             <View className="flex-1 pr-3">
@@ -69,7 +69,7 @@ export function IngredientListModal({
             <View className="flex-row items-center gap-3">
               <View className="items-end">
                 <Text
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                   style={[
                     { color: theme.colors.accent.primary },
                     intuitiveMode ? blurFilter(4) : undefined,
@@ -78,7 +78,7 @@ export function IngredientListModal({
                   P {intuitiveMode ? '0' : formatRoundedDecimal(ingredient.protein, 2)}g
                 </Text>
                 <Text
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                   style={[
                     { color: theme.colors.status.info },
                     intuitiveMode ? blurFilter(4) : undefined,
@@ -89,7 +89,7 @@ export function IngredientListModal({
               </View>
               <View className="items-end">
                 <Text
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                   style={[
                     { color: theme.colors.status.amber },
                     intuitiveMode ? blurFilter(4) : undefined,

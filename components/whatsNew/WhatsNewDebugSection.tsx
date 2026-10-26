@@ -50,7 +50,7 @@ export function WhatsNewDebugSection() {
   };
 
   return (
-    <View className="gap-3 rounded-xl border border-border-light bg-bg-card p-4">
+    <View className="gap-3 rounded-card border border-border-light bg-bg-card p-4">
       <Text accessibilityRole="header" className="text-xl font-bold text-text-primary">
         {t('whatsNew.debug.title')}
       </Text>

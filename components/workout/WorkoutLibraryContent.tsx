@@ -161,7 +161,7 @@ export function WorkoutLibraryContent({
             return (
               <View key={`${plan?.id ?? 'unplanned'}:${template.id}`} className="gap-2">
                 {hasSearchQuery && showPlanSections ? (
-                  <Text className="self-start rounded-full bg-accent-primary/10 px-2 py-1 text-xs font-medium text-text-accent">
+                  <Text className="self-start rounded-tag bg-accent-primary/10 px-2 py-1 text-xs font-medium text-text-accent">
                     {plan?.name ?? t('workouts.plans.unplanned')}
                   </Text>
                 ) : null}

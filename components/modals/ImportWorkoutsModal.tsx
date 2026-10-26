@@ -105,7 +105,7 @@ export function ImportWorkoutsModal({
             placeholderTextColor={theme.colors.text.tertiary}
             multiline
             numberOfLines={8}
-            className="mb-4 rounded-lg p-4 text-base text-text-primary"
+            className="mb-4 rounded-control p-4 text-base text-text-primary"
             style={{
               backgroundColor: theme.colors.background.card,
               borderWidth: theme.borderWidth.thin,
@@ -116,7 +116,7 @@ export function ImportWorkoutsModal({
           />
 
           {/* Format Info */}
-          <View className="mb-6 rounded-lg bg-status-warning/10 p-4">
+          <View className="mb-6 rounded-card bg-status-warning/10 p-4">
             <Text className="mb-2 text-xs font-semibold text-status-warning">
               {t('workout.import.supportedFormats')}
             </Text>
@@ -138,7 +138,7 @@ export function ImportWorkoutsModal({
         <Pressable
           onPress={handleProcessText}
           disabled={!rawText.trim() || isProcessing}
-          className="mb-2 rounded-lg px-4 py-3"
+          className="mb-2 rounded-control px-4 py-3"
           style={{
             backgroundColor: theme.colors.accent.primary,
             opacity: !rawText.trim() || isProcessing ? 0.5 : 1,
@@ -164,7 +164,7 @@ export function ImportWorkoutsModal({
         <Pressable
           onPress={handleClose}
           disabled={isProcessing}
-          className="rounded-lg border px-4 py-3"
+          className="rounded-control border px-4 py-3"
           style={{
             borderColor: theme.colors.border.light,
             opacity: isProcessing ? 0.5 : 1,

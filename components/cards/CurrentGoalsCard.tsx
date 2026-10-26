@@ -125,10 +125,10 @@ export function CurrentGoalsCard({
             {t('currentGoalsCard.dailyTarget')}
           </Text>
           <View className="flex-row items-baseline gap-1">
-            <Text className="text-4xl font-extrabold tracking-tighter text-text-primary">
+            <Text className="text-4xl font-bold tabular-nums text-text-primary">
               {formatInteger(goal.calories)}
             </Text>
-            <Text className="text-sm font-bold text-accent-primary">
+            <Text className="text-sm font-semibold text-accent-primary">
               {t('currentGoalsCard.kcal')}
             </Text>
           </View>
@@ -218,7 +218,7 @@ export function CurrentGoalsCard({
         goal.ffmi != null ||
         goal.bmi != null ? (
           <View
-            className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
+            className="mt-4 flex-row flex-wrap gap-4 rounded-control p-3"
             style={{ backgroundColor: theme.colors.background.brandWash }}
           >
             {targetWeightDisplay != null ? (
@@ -231,7 +231,7 @@ export function CurrentGoalsCard({
                   >
                     {t('currentGoalsCard.targetWeight')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-sm font-semibold text-text-primary">
                     {targetWeightDisplay}{' '}
                     <Text
                       className="text-text-secondary"
@@ -253,7 +253,7 @@ export function CurrentGoalsCard({
                   >
                     {t('currentGoalsCard.bodyFat')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-sm font-semibold text-text-primary">
                     {formatRoundedDecimal(goal.bodyFat!, 1)}{' '}
                     <Text
                       className="text-text-secondary"
@@ -275,7 +275,7 @@ export function CurrentGoalsCard({
                   >
                     {t('currentGoalsCard.ffmi')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-sm font-semibold text-text-primary">
                     {formatRoundedDecimal(goal.ffmi!, 1)}
                   </Text>
                 </View>
@@ -291,7 +291,7 @@ export function CurrentGoalsCard({
                   >
                     {t('currentGoalsCard.bmi')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-sm font-semibold text-text-primary">
                     {formatRoundedDecimal(goal.bmi!, 1)}
                   </Text>
                 </View>

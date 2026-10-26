@@ -31,7 +31,7 @@ export function WorkoutTimeTracker({
         <X size={theme.iconSize.xl} color={theme.colors.text.primary} />
       </Pressable>
       <View className="items-center">
-        <Text className="text-5xl font-bold tracking-tight text-text-primary">
+        <Text className="text-4xl font-bold tabular-nums text-text-primary">
           {formatDuration(time.hours, time.minutes, time.seconds)}
         </Text>
         <Text className="mt-1 text-sm font-semibold text-accent-primary">

@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { LucideIcon } from 'lucide-react-native';
 import { isValidElement, ReactNode, useState } from 'react';
 import {
@@ -11,28 +10,19 @@ import {
   ViewStyle,
 } from 'react-native';
 
+import {
+  type ButtonSize,
+  type ButtonVariant,
+  getButtonBorder,
+  getButtonFill,
+  getButtonIconInk,
+  getButtonInk,
+  getButtonMetrics,
+} from '@/components/theme/buttonMetrics';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import { useTheme } from '@/hooks/useTheme';
-import { Theme } from '@/theme';
-
-type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
-
-/**
- * `rose` / `roseOutline` are the cycle area's period actions ("My period started" / "ended"):
- * the brand's rose without `discard`'s destructive meaning.
- */
-type ThemeButtonVariant =
-  | 'accent'
-  | 'discard'
-  | 'outline'
-  | 'secondary'
-  | 'secondaryGradient'
-  | 'dashed'
-  | 'gradientCta'
-  | 'rose'
-  | 'roseOutline';
 
 type ThemeButtonProps = {
   label: string;
@@ -42,64 +32,19 @@ type ThemeButtonProps = {
   iconColor?: string;
   icon?: LucideIcon | ReactNode | ((props: { size?: number; color?: string }) => ReactNode);
   iconPosition?: 'left' | 'right';
-  size?: ThemeButtonSize;
+  size?: ButtonSize;
   width?: ThemeButtonWidth;
-  variant?: ThemeButtonVariant;
+  /**
+   * `rose` / `roseOutline` are the cycle area's period actions ("My period started" / "ended"):
+   * the brand's rose without `discard`'s destructive meaning. `gradientCta` marks the one primary
+   * action of a screen; it is drawn exactly like `accent` now that buttons are flat.
+   */
+  variant?: ButtonVariant;
   disabled?: boolean;
   loading?: boolean;
   className?: string;
   style?: ViewStyle;
   testID?: string;
-};
-
-const getSizeConfig = (theme: Theme) => {
-  return {
-    xs: {
-      paddingVertical: theme.spacing.padding.sm,
-      borderRadius: theme.borderRadius.md,
-      fontSize: theme.typography.fontSize.xs,
-      fontWeight: theme.typography.fontWeight.semibold,
-      iconSize: theme.iconSize.xs,
-      gap: theme.spacing.gap.xs,
-      shadow: theme.shadows.sm,
-    },
-    sm: {
-      paddingVertical: theme.spacing.padding.md,
-      borderRadius: theme.borderRadius.md,
-      fontSize: theme.typography.fontSize.sm,
-      fontWeight: theme.typography.fontWeight.semibold,
-      iconSize: theme.iconSize.sm,
-      gap: theme.spacing.gap.sm,
-      shadow: theme.shadows.md,
-    },
-    md: {
-      paddingVertical: theme.spacing.padding.base,
-      borderRadius: theme.borderRadius.lg,
-      fontSize: theme.typography.fontSize.base,
-      fontWeight: theme.typography.fontWeight.bold,
-      iconSize: theme.iconSize.md,
-      gap: theme.spacing.gap.md,
-      shadow: theme.shadows.none,
-    },
-    lg: {
-      paddingVertical: theme.spacing.padding.lg,
-      borderRadius: theme.borderRadius.lg,
-      fontSize: theme.typography.fontSize.xl,
-      fontWeight: theme.typography.fontWeight.bold,
-      iconSize: theme.iconSize.lg,
-      gap: theme.spacing.gap.md,
-      shadow: theme.shadows.none,
-    },
-    xl: {
-      paddingVertical: theme.spacing.padding.xl,
-      borderRadius: theme.borderRadius.lg,
-      fontSize: theme.typography.fontSize.xl,
-      fontWeight: theme.typography.fontWeight.bold,
-      iconSize: theme.iconSize.lg,
-      gap: theme.spacing.gap.md,
-      shadow: theme.shadows.none,
-    },
-  };
 };
 
 const widthClasses = {
@@ -109,154 +54,44 @@ const widthClasses = {
   auto: '',
 };
 
-const getGradientColors = (
-  theme: Theme,
-  variant: ThemeButtonVariant,
-  isDisabled: boolean
-): readonly [string, string, ...string[]] => {
-  if (isDisabled) {
-    return [theme.colors.background.ink10, theme.colors.background.ink10] as const;
+function renderIcon(
+  Icon: ThemeButtonProps['icon'],
+  size: number,
+  color: string,
+  iconBgColor: string | undefined,
+  loading: boolean
+): ReactNode {
+  let glyph: ReactNode = null;
+  if (loading) {
+    glyph = <ActivityIndicator size="small" color={color} />;
+  } else if (isValidElement(Icon)) {
+    return Icon;
+  } else if (typeof Icon === 'function' || (typeof Icon === 'object' && (Icon as any)?.render)) {
+    const Comp = Icon as any;
+    glyph = <Comp size={size} color={color} />;
+  } else if (Icon) {
+    return Icon as ReactNode;
   }
 
-  switch (variant) {
-    case 'gradientCta':
-      return theme.colors.gradients.cta;
-    case 'discard':
-    case 'rose':
-      return [theme.colors.rose.brand, theme.colors.rose.brand] as const;
-    case 'secondaryGradient':
-      return theme.colors.gradients.button;
-    case 'secondary':
-      return [theme.colors.background.overlay, theme.colors.background.overlay] as const;
-    default:
-      // `accent` is a solid fill; the gradient is `gradientCta`'s, the one primary action per screen.
-      return [theme.colors.accent.primary, theme.colors.accent.primary] as const;
-  }
-};
-
-const getTextColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boolean): string => {
-  if (isDisabled) {
-    return theme.colors.text.primary30;
+  if (glyph && iconBgColor) {
+    return (
+      <View
+        className="h-8 w-8 items-center justify-center rounded-full"
+        style={{ backgroundColor: iconBgColor }}
+      >
+        {glyph}
+      </View>
+    );
   }
 
-  switch (variant) {
-    case 'outline':
-    case 'dashed':
-      return theme.colors.text.secondary;
-    case 'roseOutline':
-      return theme.colors.rose.brand;
-    // `secondaryGradient` fills with `gradients.button`, which is a SURFACE gradient
-    // rather than a colourful one, so its label is on-surface ink like `secondary`.
-    case 'secondary':
-    case 'secondaryGradient':
-      return theme.colors.text.primary;
-    case 'accent':
-      return theme.colors.text.onAccent;
-    default:
-      break;
-  }
-
-  return theme.colors.text.alwaysWhite;
-};
-
-const getIconColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boolean): string => {
-  if (isDisabled) {
-    return theme.colors.text.primary30;
-  }
-
-  switch (variant) {
-    case 'outline':
-    case 'dashed':
-      return theme.colors.text.secondary;
-    case 'roseOutline':
-      return theme.colors.rose.brand;
-    case 'secondary':
-      return theme.colors.accent.secondary;
-    case 'secondaryGradient':
-      return theme.colors.text.primary;
-    case 'accent':
-      return theme.colors.text.onAccent;
-    default:
-      break;
-  }
-
-  return theme.colors.text.alwaysWhite;
-};
-
-const getShadowStyle = (
-  theme: Theme,
-  variant: ThemeButtonVariant,
-  configShadow: object,
-  isDisabled: boolean
-) => {
-  if (isDisabled) {
-    return theme.shadows.none;
-  }
-
-  switch (variant) {
-    case 'outline':
-    case 'secondary':
-    case 'secondaryGradient':
-    case 'dashed':
-    case 'gradientCta':
-    case 'roseOutline':
-    case 'discard':
-    case 'rose':
-      return theme.shadows.none;
-    default:
-      return configShadow;
-  }
-};
-
-const getOutlineBackgroundColor = (
-  theme: Theme,
-  variant: ThemeButtonVariant,
-  isDisabled: boolean,
-  isPressed: boolean
-): string | undefined => {
-  if ((variant !== 'outline' && variant !== 'roseOutline') || isDisabled) {
-    return undefined;
-  }
-
-  return isPressed ? theme.colors.background.ink5 : 'transparent';
-};
-
-const getBorderWidth = (theme: Theme, variant: ThemeButtonVariant): number => {
-  switch (variant) {
-    case 'outline':
-    case 'dashed':
-    case 'roseOutline':
-      return theme.borderWidth.medium;
-    case 'secondary':
-    case 'secondaryGradient':
-      return theme.borderWidth.thin;
-    default:
-      return theme.borderWidth.none;
-  }
-};
-
-const getBorderColor = (theme: Theme, variant: ThemeButtonVariant): string => {
-  switch (variant) {
-    case 'outline':
-      return theme.colors.background.ink10;
-    case 'roseOutline':
-      return theme.colors.rose.brand;
-    case 'dashed':
-      return theme.colors.border.dashed;
-    case 'secondaryGradient':
-      return theme.colors.border.brand;
-    case 'secondary':
-      return theme.colors.border.default;
-    default:
-      return 'transparent';
-  }
-};
+  return glyph;
+}
 
 export function Button({
   label,
   labelAccessory,
   onPress,
-  icon: Icon,
+  icon,
   iconBgColor,
   iconColor: customIconColor,
   iconPosition = 'left',
@@ -269,134 +104,50 @@ export function Button({
   testID,
 }: ThemeButtonProps) {
   const theme = useTheme();
-  const sizeConfig = getSizeConfig(theme);
-  const config = sizeConfig[size];
-  const widthClass = widthClasses[width];
+  const metrics = getButtonMetrics(theme)[size];
   const [isPressed, setIsPressed] = useState(false);
-
-  // Read once for the JSX below; every colour/metric resolver dispatches on
-  // `variant` itself rather than taking a parallel list of booleans.
-  const isOutlineVariant = variant === 'outline';
-  const isSecondaryVariant = variant === 'secondary';
-  const isSecondaryGradientVariant = variant === 'secondaryGradient';
-  const isDashedVariant = variant === 'dashed';
-  // Drawn as a plain bordered/filled view rather than over a gradient.
-  const isFlatVariant =
-    isOutlineVariant || isSecondaryVariant || isDashedVariant || variant === 'roseOutline';
-  const isGradientCtaVariant = variant === 'gradientCta';
   const isDisabled = disabled || loading;
+  const isOutlined = variant === 'outline' || variant === 'roseOutline' || variant === 'dashed';
 
-  const gradientColors = getGradientColors(theme, variant, isDisabled);
-  const textColor = getTextColor(theme, variant, isDisabled);
-  const iconColor = getIconColor(theme, variant, isDisabled);
-  const shadow = getShadowStyle(theme, variant, config.shadow, isDisabled);
+  const ink = getButtonInk(theme, variant, isDisabled);
+  const iconSize = iconBgColor ? theme.iconSize.sm : metrics.iconSize;
+  const iconElement = renderIcon(
+    icon,
+    iconSize,
+    customIconColor ?? getButtonIconInk(theme, variant, isDisabled),
+    iconBgColor,
+    loading
+  );
+  const iconRowChild =
+    iconElement != null ? (
+      // Keeps the icon from shrinking when a long translation wraps the label.
+      <View className="shrink-0 items-center justify-center">{iconElement}</View>
+    ) : null;
+  const showBalanceSpacer = iconRowChild != null && width !== 'auto';
 
-  const finalIconColor = customIconColor || iconColor;
-  const iconSize = iconBgColor ? theme.iconSize.sm : config.iconSize;
-
-  let iconElement: ReactNode = null;
-  if (loading) {
-    // Show ActivityIndicator when loading (replaces icon)
-    iconElement = (
-      <ActivityIndicator
-        size="small"
-        color={finalIconColor}
-        style={iconBgColor ? { width: iconSize, height: iconSize } : {}}
-      />
-    );
-    if (iconBgColor) {
-      iconElement = (
-        <View
-          className="h-8 w-8 items-center justify-center rounded-full"
-          style={{ backgroundColor: iconBgColor }}
-        >
-          <ActivityIndicator size="small" color={finalIconColor} />
-        </View>
-      );
-    }
-  } else if (Icon) {
-    if (isValidElement(Icon)) {
-      iconElement = Icon;
-    } else if (typeof Icon === 'function') {
-      const Comp = Icon as any;
-      iconElement = iconBgColor ? (
-        <View
-          className="h-8 w-8 items-center justify-center rounded-full"
-          style={{ backgroundColor: iconBgColor }}
-        >
-          <Comp size={iconSize} color={finalIconColor} />
-        </View>
-      ) : (
-        <Comp size={config.iconSize} color={iconColor} />
-      );
-    } else if (typeof Icon === 'object' && (Icon as any).render) {
-      const Comp = Icon as any;
-      iconElement = iconBgColor ? (
-        <View
-          className="h-8 w-8 items-center justify-center rounded-full"
-          style={{ backgroundColor: iconBgColor }}
-        >
-          <Comp size={iconSize} color={finalIconColor} />
-        </View>
-      ) : (
-        <Comp size={config.iconSize} color={iconColor} />
-      );
-    } else {
-      // Unknown type, attempt to render directly
-      iconElement = Icon as ReactNode;
-    }
+  let pressedFill: string | undefined;
+  if (isPressed) {
+    pressedFill = isOutlined ? theme.colors.background.ink5 : theme.colors.background.scrim10;
   }
 
   const accessoryTextStyle: TextStyle = {
-    color: isOutlineVariant ? theme.colors.text.tertiary : textColor,
-    fontSize: Math.max(theme.typography.fontSize.sm, config.fontSize - 6),
-    fontWeight: theme.typography.fontWeight.semibold,
-    letterSpacing: theme.typography.letterSpacing.normal,
-    opacity: isOutlineVariant ? theme.colors.opacity.full : theme.colors.opacity.strong,
+    color: variant === 'outline' ? theme.colors.text.tertiary : ink,
+    fontSize: Math.max(theme.typography.fontSize.sm, metrics.fontSize - 2),
+    fontWeight: theme.typography.fontWeight.medium,
+    opacity: variant === 'outline' ? theme.colors.opacity.full : theme.colors.opacity.strong,
   };
 
-  const textElement = (
-    <Text
-      style={{
-        fontSize: config.fontSize,
-        fontWeight: config.fontWeight,
-        color: textColor,
-        textAlign: 'center',
-        flexShrink: 1,
-      }}
-      maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
-      numberOfLines={2}
-      ellipsizeMode="tail"
-    >
-      {label}
-      {labelAccessory ? <Text style={accessoryTextStyle}>{`  ${labelAccessory}`}</Text> : null}
-    </Text>
-  );
-
-  /** Keeps Lucide/SVG icons from shrinking when the label is long (e.g. long translations). */
-  const iconRowChild =
-    iconElement != null ? (
-      <View
-        style={{
-          flexShrink: 0,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {iconElement}
-      </View>
-    ) : null;
-
-  const hasVisibleIcon = iconRowChild != null;
-  const showBalanceSpacer = hasVisibleIcon && width !== 'auto';
-
-  const buttonContent = (
+  const content = (
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: hasVisibleIcon ? config.gap : theme.spacing.gap.zero,
+        gap: iconRowChild ? metrics.gap : 0,
+        minHeight: metrics.minHeight,
+        paddingVertical: metrics.paddingVertical,
+        paddingHorizontal: metrics.paddingHorizontal,
+        backgroundColor: pressedFill,
         ...(width === 'auto' ? {} : { width: '100%' }),
       }}
     >
@@ -406,15 +157,28 @@ export function Button({
       ) : null}
       <View
         style={{
-          ...(hasVisibleIcon && width && width !== 'auto' ? { flex: 1 } : {}),
+          ...(showBalanceSpacer ? { flex: 1 } : {}),
           flexShrink: 1,
           minWidth: 0,
           maxWidth: '100%',
           alignItems: 'center',
-          justifyContent: 'center',
         }}
       >
-        {textElement}
+        <Text
+          style={{
+            fontSize: metrics.fontSize,
+            fontWeight: metrics.fontWeight,
+            color: ink,
+            textAlign: 'center',
+            flexShrink: 1,
+          }}
+          maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {label}
+          {labelAccessory ? <Text style={accessoryTextStyle}>{`  ${labelAccessory}`}</Text> : null}
+        </Text>
       </View>
       {showBalanceSpacer && iconPosition === 'left' ? (
         <View style={{ width: iconSize, flexShrink: 0 }} />
@@ -423,93 +187,28 @@ export function Button({
     </View>
   );
 
-  const outlineBackgroundColor = getOutlineBackgroundColor(theme, variant, isDisabled, isPressed);
-
-  // Determine border style for dashed variant
-  const borderStyle = isDashedVariant ? 'dashed' : 'solid';
-
-  // Calculate minimum height based on size and padding
-  // This ensures buttons of the same size have consistent heights
-  const minHeight = config.paddingVertical * 2 + config.fontSize * 1.5;
-
-  const buttonStyle = {
-    borderRadius: config.borderRadius,
-    ...shadow,
-    opacity: isDisabled ? theme.colors.opacity.full : undefined,
-    backgroundColor: outlineBackgroundColor,
-    borderWidth: getBorderWidth(theme, variant),
-    borderStyle: borderStyle as 'solid' | 'dashed',
-    borderColor: getBorderColor(theme, variant),
-    overflow: 'hidden' as const,
+  const buttonStyle: ViewStyle = {
+    ...getButtonBorder(theme, variant),
+    borderRadius: metrics.borderRadius,
+    backgroundColor: getButtonFill(theme, variant, isDisabled),
+    overflow: 'hidden',
     // Prevent stretching in flex containers
-    alignSelf: 'flex-start' as const,
-    minHeight: minHeight,
-    // Prevent horizontal stretching when width is 'auto'
+    alignSelf: 'flex-start',
+    minHeight: metrics.minHeight,
     ...(width === 'auto' ? { flexShrink: 0 } : {}),
     ...style,
   };
 
-  // If disabled, render as a View to avoid any interaction issues
   if (isDisabled) {
     return (
       <View
-        className={`${widthClass}`}
+        className={widthClasses[width]}
         style={buttonStyle}
         accessibilityRole="button"
-        accessibilityState={{ disabled: true }}
+        accessibilityState={{ disabled: true, busy: loading }}
         testID={testID}
       >
-        {isFlatVariant ? (
-          <View
-            style={{
-              borderRadius: config.borderRadius,
-              paddingVertical: config.paddingVertical,
-              paddingHorizontal: theme.spacing.padding.base,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: isSecondaryVariant ? theme.colors.background.overlay : undefined,
-              minHeight: minHeight,
-              ...(width === 'auto' ? {} : { width: '100%' }),
-            }}
-          >
-            {buttonContent}
-          </View>
-        ) : (
-          <View
-            style={{
-              position: 'relative',
-              borderRadius: config.borderRadius,
-              overflow: 'hidden',
-              minHeight: minHeight,
-              ...(width === 'auto' ? {} : { width: '100%' }),
-            }}
-          >
-            <LinearGradient
-              colors={gradientColors}
-              start={{
-                x: 0,
-                y: 0,
-              }}
-              end={{
-                x: 1,
-                y: isSecondaryGradientVariant ? 1 : 0,
-              }}
-              style={{
-                borderRadius: config.borderRadius,
-                paddingVertical: config.paddingVertical,
-                paddingHorizontal: theme.spacing.padding.base,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: minHeight,
-                ...(width === 'auto' ? {} : { width: '100%' }),
-              }}
-            >
-              {buttonContent}
-            </LinearGradient>
-          </View>
-        )}
+        {content}
       </View>
     );
   }
@@ -518,82 +217,18 @@ export function Button({
     <Pressable
       accessibilityRole="button"
       testID={testID}
-      className={`${widthClass} active:scale-[0.98]`}
+      className={widthClasses[width]}
       style={buttonStyle}
       onPress={onPress}
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
-      disabled={false}
       {...(Platform.OS === 'android' && {
         unstable_pressDelay: 130,
         // Bounded to the button's own radius by the `overflow: hidden` on `buttonStyle`.
         android_ripple: { color: theme.colors.background.ink10, borderless: false },
       })}
     >
-      {isFlatVariant ? (
-        <View
-          style={{
-            borderRadius: config.borderRadius,
-            paddingVertical: config.paddingVertical,
-            paddingHorizontal: theme.spacing.padding.base,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: isSecondaryVariant ? theme.colors.background.overlay : undefined,
-            minHeight: minHeight,
-            ...(width === 'auto' ? {} : { width: '100%' }),
-          }}
-        >
-          {buttonContent}
-        </View>
-      ) : (
-        <View
-          style={{
-            position: 'relative',
-            borderRadius: config.borderRadius,
-            overflow: 'hidden',
-            minHeight: minHeight,
-            ...(width === 'auto' ? {} : { width: '100%' }),
-          }}
-        >
-          <LinearGradient
-            colors={gradientColors}
-            start={{
-              x: 0,
-              y: 0,
-            }}
-            end={{
-              x: 1,
-              y: isSecondaryGradientVariant ? 1 : 0,
-            }}
-            style={{
-              borderRadius: config.borderRadius,
-              paddingVertical: config.paddingVertical,
-              paddingHorizontal: theme.spacing.padding.base,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: minHeight,
-              ...(width === 'auto' ? {} : { width: '100%' }),
-            }}
-          >
-            {buttonContent}
-          </LinearGradient>
-          {isGradientCtaVariant && isPressed ? (
-            <View
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: theme.colors.background.scrim10,
-                borderRadius: config.borderRadius,
-              }}
-            />
-          ) : null}
-        </View>
-      )}
+      {content}
     </Pressable>
   );
 }

@@ -66,8 +66,10 @@ export function CycleComparison({ onSelectDay }: { onSelectDay: (date: number) =
   };
 
   return (
-    <View className="gap-4 rounded-2xl bg-bg-card p-4">
-      <Text className="text-base font-bold text-text-primary">{t('cycle.comparison.title')}</Text>
+    <View className="gap-4 rounded-card bg-bg-card p-4">
+      <Text className="text-base font-semibold text-text-primary">
+        {t('cycle.comparison.title')}
+      </Text>
       <Text className="text-sm text-text-secondary">{t('cycle.comparison.description')}</Text>
       <SegmentedControl
         value={anchor}
@@ -90,7 +92,7 @@ export function CycleComparison({ onSelectDay }: { onSelectDay: (date: number) =
             />
           ))}
       </View>
-      <Text className="text-sm font-bold text-text-primary">{label(metric)}</Text>
+      <Text className="text-sm font-semibold text-text-primary">{label(metric)}</Text>
       <Text className="text-xs text-text-secondary">{t(legendKey)}</Text>
       {error ? (
         <Text className="text-sm text-text-secondary">{t('errors.somethingWentWrong')}</Text>
@@ -102,7 +104,7 @@ export function CycleComparison({ onSelectDay }: { onSelectDay: (date: number) =
           <View className="gap-4 pb-4">
             {rows.map((row) => (
               <View key={row.start} className="gap-2">
-                <Text className="text-sm font-bold text-text-primary">
+                <Text className="text-sm font-semibold text-text-primary">
                   {date(row.start)}
                   {row.complete ? '' : ` · ${t('cycle.comparison.inProgress')}`}
                 </Text>
@@ -113,7 +115,7 @@ export function CycleComparison({ onSelectDay }: { onSelectDay: (date: number) =
                       accessibilityRole="button"
                       accessibilityLabel={`${date(cell.date)} · ${label(metric)}: ${spokenCell(cell.value)}`}
                       onPress={() => onSelectDay(cell.date)}
-                      className="min-h-12 min-w-12 items-center justify-center rounded-lg border border-border-default p-2"
+                      className="min-h-12 min-w-12 items-center justify-center rounded-control border border-border-default p-2"
                       style={{
                         backgroundColor:
                           cell.value != null && cell.value > 0
@@ -122,7 +124,7 @@ export function CycleComparison({ onSelectDay }: { onSelectDay: (date: number) =
                       }}
                     >
                       <Text className="text-xs text-text-secondary">{cell.day}</Text>
-                      <Text className="text-sm font-bold text-text-primary">
+                      <Text className="text-sm font-semibold text-text-primary">
                         {cellText(cell.value)}
                       </Text>
                     </Pressable>

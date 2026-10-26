@@ -45,7 +45,6 @@ export function GenericCard({
     backgroundColor: surface.backgroundColor,
     borderColor: surface.borderColor,
     borderWidth: surface.borderWidth,
-    ...surface.shadow,
   };
 
   const content = isHero ? (
@@ -65,11 +64,7 @@ export function GenericCard({
     return (
       <Pressable
         onPress={onPress}
-        style={({ pressed }) => [
-          cardStyle,
-          containerStyle,
-          { transform: [{ scale: pressed ? 0.98 : 1 }] },
-        ]}
+        style={({ pressed }) => [cardStyle, containerStyle, pressed ? { opacity: 0.85 } : null]}
       >
         {content}
       </Pressable>

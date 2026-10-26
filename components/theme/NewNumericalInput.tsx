@@ -77,7 +77,7 @@ export default function NewNumericalInput({
         {label}
       </Text>
       <View
-        className={`flex w-full flex-row items-center justify-between rounded-2xl ${isCompact ? 'gap-0.5 px-2.5 py-1.5' : 'gap-2 px-4 py-3'}`}
+        className={`flex w-full flex-row items-center justify-between rounded-card ${isCompact ? 'gap-0.5 px-2.5 py-1.5' : 'gap-2 px-4 py-3'}`}
         style={{ backgroundColor: theme.colors.background.filterTab }}
       >
         <Pressable onPress={handleDecrement} className="flex-shrink-0" hitSlop={12}>

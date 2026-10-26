@@ -493,7 +493,7 @@ export default function NutritionGoalsResults() {
               style={{
                 color: theme.colors.text.primary,
                 fontSize: theme.typography.fontSize['3xl'],
-                fontWeight: theme.typography.fontWeight.black,
+                fontWeight: theme.typography.fontWeight.bold,
               }}
             >
               {t('nutritionGoals.results.your')} {t('nutritionGoals.results.nutritionPlan')}
@@ -515,7 +515,7 @@ export default function NutritionGoalsResults() {
 
           {/* Daily Calorie Target Card */}
           <View
-            className="relative mb-6 w-full overflow-hidden rounded-3xl p-8"
+            className="relative mb-6 w-full overflow-hidden rounded-card p-8"
             style={{
               borderRadius: theme.borderRadius['3xl'],
               padding: theme.spacing.padding['2xl'],
@@ -557,11 +557,11 @@ export default function NutritionGoalsResults() {
 
               <View className="flex-row items-baseline gap-2">
                 <Text
-                  className="text-5xl font-black"
+                  className="text-5xl font-bold"
                   style={{
                     color: theme.colors.text.onAccent,
                     fontSize: theme.typography.fontSize['5xl'],
-                    fontWeight: theme.typography.fontWeight.black,
+                    fontWeight: theme.typography.fontWeight.bold,
                   }}
                 >
                   {formattedCalories}
@@ -664,19 +664,18 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="mb-1 text-center text-xs font-bold text-indigo-400"
+                className="mb-1 text-center text-xs font-semibold text-indigo-400"
                 style={{
                   color: theme.colors.status.indigo,
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
-                  letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
                 {t('nutritionGoals.results.protein')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-text-primary"
+                className="text-center text-lg font-semibold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -707,19 +706,18 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="text-primary mb-1 text-center text-xs font-bold"
+                className="text-primary mb-1 text-center text-xs font-semibold"
                 style={{
                   color: theme.colors.accent.primary,
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
-                  letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
                 {t('nutritionGoals.results.carbs')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-text-primary"
+                className="text-center text-lg font-semibold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -750,19 +748,18 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="mb-1 text-center text-xs font-bold text-pink-400"
+                className="mb-1 text-center text-xs font-semibold text-pink-400"
                 style={{
                   color: theme.colors.status.pink,
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
-                  letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
                 {t('nutritionGoals.results.fats')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-text-primary"
+                className="text-center text-lg font-semibold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -902,7 +899,7 @@ export default function NutritionGoalsResults() {
                   </View>
                   <View className="flex-1">
                     <Text
-                      className="mb-1 text-sm font-bold"
+                      className="mb-1 text-sm font-semibold"
                       style={{
                         color: theme.colors.text.primary,
                         fontSize: theme.typography.fontSize.sm,
@@ -950,7 +947,7 @@ export default function NutritionGoalsResults() {
                   color={theme.colors.accent.primary}
                 />
                 <Text
-                  className="text-sm font-bold text-text-primary"
+                  className="text-sm font-semibold text-text-primary"
                   style={{
                     color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize.sm,
@@ -1009,12 +1006,11 @@ export default function NutritionGoalsResults() {
                     </Text>
                     <View className="flex-row items-baseline">
                       <Text
-                        className="mr-2 text-4xl font-black tracking-tight text-text-primary"
+                        className="mr-2 text-4xl font-bold text-text-primary"
                         style={{
                           color: theme.colors.text.primary,
                           fontSize: theme.typography.fontSize['4xl'],
-                          fontWeight: theme.typography.fontWeight.black,
-                          letterSpacing: -0.5,
+                          fontWeight: theme.typography.fontWeight.bold,
                         }}
                       >
                         {formattedWeightChange}

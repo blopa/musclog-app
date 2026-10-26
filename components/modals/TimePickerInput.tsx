@@ -79,8 +79,8 @@ export function TimePickerInput({
   const showUnsetPlaceholder = Boolean(unset && unsetPlaceholder);
   const showClearCta = Boolean(showClearButton && !unset && onClear);
   const pressableSurfaceClasses = embedded
-    ? 'rounded-lg bg-transparent'
-    : `rounded-lg border border-ink/10 bg-bg-cardDark`;
+    ? 'rounded-control bg-transparent'
+    : `rounded-control border border-ink/10 bg-bg-cardDark`;
 
   const rowClasses = embedded
     ? 'min-w-0 w-full flex-row items-center overflow-hidden p-0'
@@ -96,7 +96,7 @@ export function TimePickerInput({
   return (
     <View className={className}>
       {!hideLabel ? (
-        <Text className="mb-2 text-xs font-bold text-text-secondary">
+        <Text className="mb-2 text-xs font-semibold text-text-secondary">
           {label ?? t('food.foodDetails.time')}
         </Text>
       ) : null}

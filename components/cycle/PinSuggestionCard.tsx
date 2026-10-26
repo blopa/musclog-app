@@ -74,7 +74,7 @@ export function PinSuggestionCard() {
   };
 
   return (
-    <View className="mb-6 gap-3 rounded-2xl border-2 border-ink/5 bg-bg-overlay p-4">
+    <View className="mb-6 gap-3 rounded-card border-2 border-ink/5 bg-bg-overlay p-4">
       <Text className="text-sm text-text-primary">
         {t('cycle.quickLog.pinPrompt', { symptom: name })}
       </Text>

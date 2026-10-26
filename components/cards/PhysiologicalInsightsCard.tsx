@@ -40,13 +40,13 @@ export function PhysiologicalInsightsCard({
   };
 
   return (
-    <View className="flex-1 rounded-2xl border-2 border-ink/5 bg-bg-card p-5">
+    <View className="flex-1 rounded-card border-2 border-ink/5 bg-bg-card p-5">
       <View className="mb-4 flex-row items-center justify-between">
-        <Text className="text-xs font-bold text-text-tertiary">{label}</Text>
+        <Text className="text-xs font-semibold text-text-tertiary">{label}</Text>
         {getIcon()}
       </View>
       <View className="flex-row items-end justify-between">
-        <Text className="text-xl font-black capitalize text-text-primary">{value}</Text>
+        <Text className="text-xl font-bold capitalize text-text-primary">{value}</Text>
         {getTrendIcon()}
       </View>
     </View>

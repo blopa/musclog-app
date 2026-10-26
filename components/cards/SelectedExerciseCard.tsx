@@ -42,7 +42,7 @@ export function SelectedExerciseCard({
       <View className="flex-row items-center gap-4 p-4">
         {/* Icon Container */}
         <View
-          className="h-12 w-12 shrink-0 items-center justify-center rounded-lg"
+          className="h-12 w-12 shrink-0 items-center justify-center rounded-control"
           style={{ backgroundColor: theme.colors.accent.primary20 }}
         >
           <MaterialIcons
@@ -55,7 +55,7 @@ export function SelectedExerciseCard({
         {/* Exercise Info */}
         <View className="min-w-0 flex-1">
           <Text
-            className="mb-0.5 font-extrabold"
+            className="mb-0.5 font-bold"
             style={{
               fontSize: theme.typography.fontSize.xxs + 2, // 10px
               color: theme.colors.accent.primary,

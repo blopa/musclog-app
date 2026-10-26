@@ -132,7 +132,7 @@ export default function LandingScreen() {
         {/* Import actions - Top Right */}
         <View className="absolute right-4 top-4 z-10 flex-row gap-2">
           <TouchableOpacity
-            className="rounded-lg p-2"
+            className="rounded-control p-2"
             style={{
               backgroundColor: theme.colors.background.scrim30,
               opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
@@ -145,7 +145,7 @@ export default function LandingScreen() {
             <Download size={20} color={theme.colors.text.primary} />
           </TouchableOpacity>
           <TouchableOpacity
-            className="rounded-lg p-2"
+            className="rounded-control p-2"
             style={{
               backgroundColor: theme.colors.background.scrim30,
               opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
@@ -177,11 +177,10 @@ export default function LandingScreen() {
             <View className="mt-4 items-center gap-2">
               {/* App Name */}
               <Text
-                className="font-black leading-none tracking-tight"
+                className="font-bold leading-none"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize['4xl'],
-                  letterSpacing: theme.typography.letterSpacing.tight,
                   lineHeight: theme.typography.fontSize['4xl'] * 1.1,
                 }}
               >

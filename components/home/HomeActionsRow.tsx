@@ -32,7 +32,7 @@ export function HomeActionsRow({ onActionPress, selected }: HomeActionsRowProps)
   const actions = useMemo(() => reconcileHomeActions(selected, available), [selected, available]);
 
   return (
-    <View className="mx-4 mb-6 flex-row flex-wrap justify-between gap-y-3">
+    <View className="mx-4 mb-4 flex-row flex-wrap justify-between gap-y-2">
       {actions.map((key) => {
         const config = HOME_ACTIONS[key];
 

@@ -50,7 +50,7 @@ export function PeriodEndChoice({
 
   return (
     <View className="gap-3">
-      <Text className="text-sm font-bold text-text-primary">{t('cycle.end.title')}</Text>
+      <Text className="text-sm font-semibold text-text-primary">{t('cycle.end.title')}</Text>
       <View className="flex-row flex-wrap gap-2">
         {choices.map((choice) => (
           <Chip

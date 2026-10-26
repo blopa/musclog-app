@@ -150,7 +150,7 @@ export function ProgressionWhySheet({
         </View>
 
         {inputs.length ? (
-          <View className="overflow-hidden rounded-xl border border-border-light">
+          <View className="overflow-hidden rounded-control border border-border-light">
             {inputs.map((row, index) => (
               <View
                 key={row.label}

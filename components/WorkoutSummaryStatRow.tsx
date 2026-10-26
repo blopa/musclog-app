@@ -31,7 +31,7 @@ export function WorkoutSummaryStatRow({
       className={`flex-row items-center justify-between ${showDivider ? 'border-b border-ink/5 pb-4' : ''}`}
     >
       <View className="flex-row items-center gap-3">
-        <View className="rounded-lg p-2" style={{ backgroundColor: iconBgColor }}>
+        <View className="rounded-control p-2" style={{ backgroundColor: iconBgColor }}>
           <Icon size={theme.iconSize.lg} color={iconColor} />
         </View>
         <Text className="font-medium text-text-secondary">{label}</Text>
@@ -44,7 +44,7 @@ export function WorkoutSummaryStatRow({
             fill={theme.colors.status.amber}
           />
         ) : null}
-        <Text className="text-2xl font-bold tracking-tight text-text-primary">{value}</Text>
+        <Text className="text-2xl font-bold tabular-nums text-text-primary">{value}</Text>
         {valueSuffix ? (
           <Text className="text-sm font-normal text-text-tertiary">{valueSuffix}</Text>
         ) : null}

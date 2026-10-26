@@ -1,6 +1,7 @@
 // Plain JS tokens — Tailwind/Node cannot load theme.ts (TS + RN/DB imports)
 const plugin = require('tailwindcss/plugin');
 
+const { RADIUS } = require('./theme.shape');
 const { createTailwindColors, darkCssVariables, lightCssVariables } = require('./theme.tokens');
 
 /**
@@ -38,6 +39,11 @@ module.exports = {
         },
       },
       colors: createTailwindColors(),
+      // `rounded-tag|inner|control|card|sheet` (see theme.shape.js). The app uses only these and
+      // `rounded-full`; Tailwind's size-named radii stay for the website.
+      borderRadius: Object.fromEntries(
+        Object.entries(RADIUS).map(([name, px]) => [name, `${px}px`])
+      ),
     },
   },
   plugins: [

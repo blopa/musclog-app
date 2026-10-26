@@ -25,7 +25,9 @@ export function CycleSharingSettings() {
   const [failed, setFailed] = useState(false);
   return (
     <View className="gap-3">
-      <Text className="text-base font-bold text-text-primary">{t('cycle.complete.sharing')}</Text>
+      <Text className="text-base font-semibold text-text-primary">
+        {t('cycle.complete.sharing')}
+      </Text>
       <Text className="text-sm text-text-secondary">{t('cycle.complete.sharingHint')}</Text>
       <View className="flex-row flex-wrap gap-2">
         {SHARING_FIELDS.map((field) => (

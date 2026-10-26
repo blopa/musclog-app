@@ -440,7 +440,10 @@ export default function RestTimerScreen() {
                 >
                   {t('restTimer.upNext')}
                 </Text>
-                <Text className="text-3xl font-bold" style={{ color: theme.colors.text.primary }}>
+                <Text
+                  className="text-3xl font-bold tabular-nums"
+                  style={{ color: theme.colors.text.primary }}
+                >
                   {`${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)} × ${nextSet.set.reps ?? 0}`}
                 </Text>
               </View>

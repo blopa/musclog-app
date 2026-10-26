@@ -239,7 +239,7 @@ export function GenericEditModal({
                   </Text>
                 </Pressable>
               </View>
-              <View className="rounded-lg border border-border-default bg-bg-overlay px-4 py-3">
+              <View className="rounded-control border border-border-default bg-bg-overlay px-4 py-3">
                 <Text className="text-base text-text-tertiary">
                   {numberField.unsetPlaceholder
                     ? t(numberField.unsetPlaceholder, numberField.unsetPlaceholder)
@@ -362,7 +362,7 @@ export function GenericEditModal({
                 setCurrentSelectFieldKey(field.key);
                 setSelectMenuVisible(true);
               }}
-              className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
+              className="overflow-hidden rounded-control border border-border-default bg-bg-overlay active:opacity-70"
             >
               <View className="flex-row items-center justify-between px-4 py-3">
                 <Text className="min-w-0 flex-1 text-base text-text-primary">{selectedLabel}</Text>

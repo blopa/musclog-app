@@ -270,19 +270,21 @@ export function BottomPopUp({
             >
               {/* Header */}
               <View className="border-b border-border-dark">
-                <View className="flex-row items-center justify-between p-6">
+                <View className="flex-row items-center justify-between px-6 py-4">
                   <View className="flex-1 flex-row items-center gap-3">
                     {headerIcon ? <View>{headerIcon}</View> : null}
                     <View className="flex-1">
-                      <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+                      <Text className="text-lg font-semibold text-text-primary">{title}</Text>
                       {subtitle ? (
-                        <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
+                        <Text className="mt-0.5 text-sm text-text-secondary">{subtitle}</Text>
                       ) : null}
                     </View>
                   </View>
                   {onClose ? (
                     <Pressable
-                      className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                      accessibilityRole="button"
+                      hitSlop={4}
+                      className="h-9 w-9 items-center justify-center rounded-control bg-bg-overlay active:opacity-70"
                       onPress={() => onClose?.()}
                       {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                     >

@@ -53,11 +53,11 @@ type StatCardProps = {
 function StatCard({ label, value, suffix, muted }: StatCardProps) {
   const theme = useTheme();
   return (
-    <View className="flex-1 rounded-xl border border-border-accent bg-bg-overlay p-4">
+    <View className="flex-1 rounded-card border border-border-accent bg-bg-overlay p-4">
       <Text className="mb-1 text-xs font-semibold text-text-secondary">{label}</Text>
       <View className="flex-row items-baseline gap-1">
         <Text
-          className="text-3xl font-bold tracking-tight"
+          className="text-3xl font-bold tabular-nums"
           style={{ color: muted ? theme.colors.text.tertiary : theme.colors.text.primary }}
         >
           {value}
@@ -215,9 +215,9 @@ export function LogSetPerformanceModal({
           </View>
 
           {/* RPE Section */}
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-5">
+          <View className="rounded-card border border-border-accent bg-bg-overlay p-5">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-sm font-bold text-text-secondary">
+              <Text className="text-sm font-semibold text-text-secondary">
                 {t('logSetPerformance.difficulty')}
               </Text>
               <Text

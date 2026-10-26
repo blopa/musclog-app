@@ -578,8 +578,10 @@ export default function DebugTestScreen() {
           </View>
 
           {/* Notifications Testing */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Notifications Testing</Text>
+          <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Notifications Testing
+            </Text>
             <Text className="mb-2 text-sm text-text-secondary">
               Test all notification types during development. These test methods bypass settings
               checks and work offline.
@@ -593,7 +595,7 @@ export default function DebugTestScreen() {
             />
 
             {notificationStatus ? (
-              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+              <View className="rounded-control border border-border-light bg-bg-primary p-3">
                 <Text className="text-sm text-text-primary">{notificationStatus}</Text>
               </View>
             ) : null}
@@ -651,8 +653,8 @@ export default function DebugTestScreen() {
           </View>
 
           {/* Sentry: verify error reporting */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Sentry</Text>
+          <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Sentry</Text>
             <Text className="mb-2 text-sm text-text-secondary">
               Send a test exception to verify crash reporting in your Sentry project.
             </Text>
@@ -666,8 +668,8 @@ export default function DebugTestScreen() {
 
           {/* Apple Intelligence Test (iOS only) */}
           {Platform.OS === 'ios' ? (
-            <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-              <Text className="mb-2 text-lg font-bold text-text-primary">
+            <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
+              <Text className="mb-2 text-lg font-semibold text-text-primary">
                 Apple Intelligence Test
               </Text>
               <Text className="mb-2 text-sm text-text-secondary">
@@ -680,7 +682,7 @@ export default function DebugTestScreen() {
                 variant="secondary"
               />
               {onDeviceAiStatus ? (
-                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
+                <View className="rounded-control border border-border-light bg-bg-primary p-3">
                   <Text className="text-sm text-text-primary">{onDeviceAiStatus}</Text>
                 </View>
               ) : null}
@@ -688,12 +690,16 @@ export default function DebugTestScreen() {
           ) : null}
 
           {/* Unread Messages Debug */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Unread Messages Debug</Text>
+          <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Unread Messages Debug
+            </Text>
 
             {/* Live count */}
-            <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-              <Text className="text-xs font-bold uppercase text-text-tertiary">Current Count</Text>
+            <View className="rounded-control border border-border-light bg-bg-primary p-3">
+              <Text className="text-xs font-semibold uppercase text-text-tertiary">
+                Current Count
+              </Text>
               <Text className="text-2xl font-bold text-accent-primary">{unreadCount}</Text>
               <Text className="text-xs text-text-tertiary">
                 {CONVERSATION_CONTEXTS.map(
@@ -703,11 +709,11 @@ export default function DebugTestScreen() {
             </View>
 
             <View>
-              <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
+              <Text className="mb-1 text-xs font-semibold uppercase text-text-tertiary">
                 Set unread count for a conversation mode
               </Text>
               <TextInput
-                className="rounded-lg border border-border-light bg-bg-primary p-3 text-text-primary"
+                className="rounded-control border border-border-light bg-bg-primary p-3 text-text-primary"
                 placeholder="e.g. 5"
                 placeholderTextColor={theme.colors.text.tertiary}
                 value={unreadInput}
@@ -730,22 +736,22 @@ export default function DebugTestScreen() {
           </View>
 
           {/* Navigation Links Section */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 text-lg font-bold text-text-primary">App Navigation</Text>
+          <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">App Navigation</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Quick links to all screens for debugging
             </Text>
 
             {Object.entries(screensByCategory).map(([category, screens]) => (
               <View key={category} className="mb-4">
-                <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
                   {category}
                 </Text>
                 <View className="gap-2">
                   {screens.map((screen) => (
                     <Pressable
                       key={screen.route}
-                      className="flex-row items-center justify-between rounded-lg border border-border-light bg-bg-primary p-3"
+                      className="flex-row items-center justify-between rounded-control border border-border-light bg-bg-primary p-3"
                       onPress={() => router.navigate(screen.route as any)}
                     >
                       <Text className="flex-1 text-base font-medium text-text-primary">
@@ -763,8 +769,8 @@ export default function DebugTestScreen() {
           </View>
 
           {/* Danger Zone */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Danger Zone</Text>
+          <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Danger Zone</Text>
             <Button onPress={deleteDatabase} label="Delete Database" size="sm" variant="discard" />
             <Button
               onPress={clearAsyncStorage}
@@ -775,17 +781,17 @@ export default function DebugTestScreen() {
           </View>
 
           {/* Old Database Checker */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
             <View className="flex-row items-center gap-2">
               <Database size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              <Text className="text-lg font-bold text-text-primary">Old Database Checker</Text>
+              <Text className="text-lg font-semibold text-text-primary">Old Database Checker</Text>
             </View>
             <Text className="text-sm text-text-secondary">
               Check if the old workoutLoggerDatabase.db exists and view its tables
             </Text>
 
             <Pressable
-              className={`flex-row items-center justify-center gap-2 rounded-lg p-4 ${
+              className={`flex-row items-center justify-center gap-2 rounded-control p-4 ${
                 checkingOldDatabase ? 'bg-border-light' : 'bg-accent-primary'
               }`}
               onPress={checkOldDatabase}
@@ -807,15 +813,15 @@ export default function DebugTestScreen() {
             </Pressable>
 
             {migrationSummary && migrationSummary.tables.length > 0 ? (
-              <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-                <Text className="mb-2 text-sm font-bold text-text-primary">
+              <View className="rounded-control border border-border-light bg-bg-primary p-3">
+                <Text className="mb-2 text-sm font-semibold text-text-primary">
                   Found {migrationSummary!.tables.length} tables:
                 </Text>
                 <View className="gap-2">
                   {migrationSummary!.tables.map((tableName, index) => (
                     <View
                       key={index}
-                      className="rounded-lg border border-border-light bg-bg-overlay p-2"
+                      className="rounded-control border border-border-light bg-bg-overlay p-2"
                     >
                       <Pressable
                         className="flex-row items-center justify-between"
@@ -835,7 +841,7 @@ export default function DebugTestScreen() {
 
                       {expandedTables.has(tableName) && tableSchemas[tableName] ? (
                         <View className="mt-2 gap-1 pl-2">
-                          <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
+                          <Text className="mb-1 text-xs font-semibold uppercase text-text-tertiary">
                             Columns:
                           </Text>
                           {tableSchemas[tableName].map((column, colIndex) => (
@@ -843,7 +849,9 @@ export default function DebugTestScreen() {
                               <Text className="text-xs text-text-secondary">{column.name}</Text>
                               <Text className="text-xs text-text-tertiary">{column.type}</Text>
                               {column.pk ? (
-                                <Text className="text-xs font-bold text-accent-primary">PK</Text>
+                                <Text className="text-xs font-semibold text-accent-primary">
+                                  PK
+                                </Text>
                               ) : null}
                               {column.notnull && !column.pk ? (
                                 <Text className="text-xs text-text-tertiary">NOT NULL</Text>
@@ -869,13 +877,13 @@ export default function DebugTestScreen() {
           <WhatsNewDebugSection />
 
           {/* Form */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
             <View>
-              <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
+              <Text className="mb-1 text-xs font-semibold uppercase text-text-tertiary">
                 Exercise Name
               </Text>
               <TextInput
-                className="rounded-lg border border-border-light bg-bg-primary p-3 text-text-primary"
+                className="rounded-control border border-border-light bg-bg-primary p-3 text-text-primary"
                 placeholder="e.g. Bench Press"
                 placeholderTextColor={theme.colors.text.tertiary}
                 value={name}
@@ -883,11 +891,11 @@ export default function DebugTestScreen() {
               />
             </View>
             <View>
-              <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
+              <Text className="mb-1 text-xs font-semibold uppercase text-text-tertiary">
                 Muscle Group
               </Text>
               <TextInput
-                className="rounded-lg border border-border-light bg-bg-primary p-3 text-text-primary"
+                className="rounded-control border border-border-light bg-bg-primary p-3 text-text-primary"
                 placeholder="e.g. Chest"
                 placeholderTextColor={theme.colors.text.tertiary}
                 value={muscleGroup}
@@ -895,7 +903,7 @@ export default function DebugTestScreen() {
               />
             </View>
             <Pressable
-              className="flex-row items-center justify-center gap-2 rounded-lg bg-accent-primary p-4"
+              className="flex-row items-center justify-center gap-2 rounded-control bg-accent-primary p-4"
               onPress={addExercise}
             >
               <Plus size={theme.iconSize.lg} color={theme.colors.text.onAccent} />
@@ -904,9 +912,9 @@ export default function DebugTestScreen() {
           </View>
 
           {/* User Data Section */}
-          <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="gap-4 rounded-control border border-border-accent bg-bg-overlay p-4">
             <View className="flex-row items-center justify-between">
-              <Text className="text-lg font-bold text-text-primary">User Profile</Text>
+              <Text className="text-lg font-semibold text-text-primary">User Profile</Text>
               <Pressable onPress={fetchUserData} className="p-2">
                 <RefreshCw size={theme.iconSize.lg} color={theme.colors.text.secondary} />
               </Pressable>
@@ -914,8 +922,8 @@ export default function DebugTestScreen() {
 
             {user ? (
               <View className="gap-3">
-                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-                  <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+                <View className="rounded-control border border-border-light bg-bg-primary p-3">
+                  <Text className="mb-2 text-xs font-semibold uppercase text-text-tertiary">
                     Personal Info
                   </Text>
                   <Text className="text-text-primary">
@@ -943,8 +951,8 @@ export default function DebugTestScreen() {
                   ) : null}
                 </View>
 
-                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-                  <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+                <View className="rounded-control border border-border-light bg-bg-primary p-3">
+                  <Text className="mb-2 text-xs font-semibold uppercase text-text-tertiary">
                     Fitness Info
                   </Text>
                   <Text className="text-text-primary">
@@ -958,8 +966,8 @@ export default function DebugTestScreen() {
                   </Text>
                 </View>
 
-                <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-                  <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+                <View className="rounded-control border border-border-light bg-bg-primary p-3">
+                  <Text className="mb-2 text-xs font-semibold uppercase text-text-tertiary">
                     Timestamps
                   </Text>
                   <Text className="text-xs text-text-secondary">
@@ -976,13 +984,15 @@ export default function DebugTestScreen() {
 
             {/* Settings */}
             <View className="mt-4">
-              <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">Settings</Text>
+              <Text className="mb-2 text-xs font-semibold uppercase text-text-tertiary">
+                Settings
+              </Text>
               {settings.length > 0 ? (
                 <View className="gap-2">
                   {settings.map((setting) => (
                     <View
                       key={setting.id}
-                      className="rounded-lg border border-border-light bg-bg-primary p-3"
+                      className="rounded-control border border-border-light bg-bg-primary p-3"
                     >
                       <Text className="text-text-primary">
                         <Text className="font-bold">Type:</Text> {setting.type}
@@ -1005,7 +1015,7 @@ export default function DebugTestScreen() {
 
             {/* User Metrics */}
             <View className="mt-4">
-              <Text className="mb-2 text-xs font-bold uppercase text-text-tertiary">
+              <Text className="mb-2 text-xs font-semibold uppercase text-text-tertiary">
                 Recent Metrics ({userMetrics.length})
               </Text>
               {userMetrics.length > 0 ? (
@@ -1013,7 +1023,7 @@ export default function DebugTestScreen() {
                   {userMetrics.slice(0, 10).map(({ metric, decrypted }) => (
                     <View
                       key={metric.id}
-                      className="rounded-lg border border-border-light bg-bg-primary p-3"
+                      className="rounded-control border border-border-light bg-bg-primary p-3"
                     >
                       <Text className="text-text-primary">
                         <Text className="font-bold">{metric.type}:</Text> {decrypted.value}{' '}
@@ -1042,7 +1052,7 @@ export default function DebugTestScreen() {
           {/* List Header */}
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
-              <Text className="text-lg font-bold text-text-primary">Exercises</Text>
+              <Text className="text-lg font-semibold text-text-primary">Exercises</Text>
               <Text
                 className="rounded-full bg-bg-overlay px-2 text-xs text-text-secondary"
                 style={{ paddingVertical: theme.spacing.padding.xsHalf }}
@@ -1072,10 +1082,10 @@ export default function DebugTestScreen() {
               exercises.map((exercise) => (
                 <View
                   key={exercise.id}
-                  className="flex-row items-center justify-between rounded-xl border border-border-accent bg-bg-overlay p-4"
+                  className="flex-row items-center justify-between rounded-control border border-border-accent bg-bg-overlay p-4"
                 >
                   <View>
-                    <Text className="text-lg font-bold text-text-primary">{exercise.name}</Text>
+                    <Text className="text-lg font-semibold text-text-primary">{exercise.name}</Text>
                     <Text className="text-sm text-text-secondary">
                       {t(getMuscleGroupTranslationKey(exercise.muscleGroup ?? ''))}
                     </Text>

@@ -482,7 +482,10 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
           </View>
         ) : null}
 
-        <Text className="mb-2 px-5 text-xs font-bold" style={{ color: theme.colors.status.error }}>
+        <Text
+          className="mb-2 px-5 text-xs font-semibold"
+          style={{ color: theme.colors.status.error }}
+        >
           {t('settings.advancedSettings.dangerZone')}
         </Text>
         {/* Clear App Data */}

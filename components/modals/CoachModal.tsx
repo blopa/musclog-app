@@ -375,7 +375,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme, locale: string) => {
   if (isToday) {
     return (
       <View className="my-6 items-center">
-        <View className="rounded-full bg-bg-card px-3 py-1">
+        <View className="rounded-tag bg-bg-card px-3 py-1">
           <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
             {t('coach.todayAt', {
               time: formatTimeInTimezone(date.getTime(), undefined, locale),
@@ -550,7 +550,7 @@ const renderInputToolbar = (
       {attachedImage ? (
         <View className="px-4 py-2">
           <View
-            className="relative h-20 w-20 rounded-lg"
+            className="relative h-20 w-20 rounded-control"
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <ZoomableThumbnail uri={attachedImage.uri}>
@@ -573,7 +573,7 @@ const renderInputToolbar = (
       {pendingIntention ? (
         <View className="px-4 py-2">
           <View
-            className="flex-row items-center gap-1.5 rounded-full px-3 py-1"
+            className="flex-row items-center gap-1.5 rounded-tag px-3 py-1"
             style={{
               backgroundColor: theme.colors.accent.primary20,
               alignSelf: 'flex-start',
@@ -1379,7 +1379,7 @@ export function CoachModal({
           </View>
           <View className="flex-1">
             <View className="flex-row flex-wrap items-baseline gap-1.5">
-              <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
+              <Text className="text-lg font-semibold text-text-primary">{t('coach.name')}</Text>
               <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
                 - {conversationContext.charAt(0).toUpperCase() + conversationContext.slice(1)}
               </Text>

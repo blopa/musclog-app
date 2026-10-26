@@ -98,7 +98,7 @@ export function SaveForLaterPortionModal({
         style={{ opacity: isBusy ? 0.65 : 1 }}
       >
         <View className="flex-row items-center justify-between">
-          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('food.mealGroup.saveForLaterPercentageLabel')}
           </Text>
           <Text
@@ -116,7 +116,7 @@ export function SaveForLaterPortionModal({
           {SAVE_PRESETS.map((preset) => (
             <Pressable
               key={preset}
-              className="flex-1 items-center justify-center rounded-xl border py-2"
+              className="flex-1 items-center justify-center rounded-control border py-2"
               style={{
                 borderColor:
                   percentage === preset

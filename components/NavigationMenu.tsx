@@ -52,7 +52,7 @@ function NavSlotButton({
       onPressIn={onPressIn}
     >
       <View
-        className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+        className={`h-8 w-14 items-center justify-center rounded-control ${active ? 'bg-bg-navActive' : ''}`}
       >
         {icon}
         {badge ? (
@@ -224,7 +224,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         paddingBottom: insets.bottom,
       }}
     >
-      <View className="relative flex-row items-stretch px-6 py-4">
+      <View className="relative flex-row items-stretch px-4 py-2">
         {/* Home - always fixed */}
         <NavSlotButton
           active={homeActive}
@@ -252,12 +252,13 @@ export const NavigationMenu = memo(function NavigationMenu({
           style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
           onPress={onCameraPress}
         >
+          {/* A flat circle: the one round control in the bar, with no glow behind it. */}
           <View
-            className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
+            className="items-center justify-center rounded-full"
             style={[
               isSmallScreen
-                ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }
-                : { width: 80, height: 80 },
+                ? { width: screenWidth * 0.15, height: screenWidth * 0.15 }
+                : { width: theme.size['14'], height: theme.size['14'] },
               {
                 backgroundColor: cameraFabActive
                   ? theme.colors.accent.primary
@@ -266,7 +267,7 @@ export const NavigationMenu = memo(function NavigationMenu({
             ]}
           >
             <Camera
-              size={isSmallScreen ? theme.iconSize.md : theme.iconSize.xl}
+              size={isSmallScreen ? theme.iconSize.md : theme.iconSize.lg}
               color={theme.colors.background.secondaryDark}
               strokeWidth={theme.strokeWidth.medium}
             />

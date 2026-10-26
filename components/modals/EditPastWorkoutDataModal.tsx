@@ -99,7 +99,7 @@ function SetCard({
                 </Pressable>
               </View>
               <Text
-                className="text-xs font-bold"
+                className="text-xs font-semibold"
                 style={{
                   color: item.isPR ? theme.colors.accent.primary : theme.colors.text.secondary,
                 }}
@@ -109,12 +109,12 @@ function SetCard({
               {item.isPR ? (
                 <View
                   style={{ backgroundColor: theme.colors.accent.primary10 }}
-                  className="flex-row items-center rounded px-2 py-0.5"
+                  className="flex-row items-center rounded-tag px-2 py-0.5"
                 >
                   <Text
                     style={{
                       color: theme.colors.accent.primary,
-                      fontWeight: theme.typography.fontWeight.extrabold,
+                      fontWeight: theme.typography.fontWeight.bold,
                     }}
                     className="text-[10px]"
                   >
@@ -125,7 +125,7 @@ function SetCard({
             </View>
             <Pressable onPress={() => onRemove(item.id)} className="flex-row items-center gap-1">
               <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
-              <Text className="text-xs font-bold" style={{ color: theme.colors.status.error }}>
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.status.error }}>
                 {t('workoutDetail.remove')}
               </Text>
             </Pressable>

@@ -252,7 +252,7 @@ export function DailySummaryCard({
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-start gap-1">
                   <Text
-                    className="text-5xl font-extrabold tracking-tighter"
+                    className="text-4xl font-bold tabular-nums"
                     style={{
                       color: theme.colors.colorfulCard.ink,
                       ...(intuitiveMode ? blurFilter(8) : {}),
@@ -263,7 +263,7 @@ export function DailySummaryCard({
 
                   <View className="flex-col">
                     <Text
-                      className="font-bold"
+                      className="font-semibold tabular-nums"
                       style={{
                         fontSize: theme.typography.fontSize.sm,
                         color: theme.colors.colorfulCard.ink70,
@@ -273,7 +273,7 @@ export function DailySummaryCard({
                       {`/ ${formatInteger(Math.round(calories.goal))}`}
                     </Text>
                     <Text
-                      className="font-bold"
+                      className="font-semibold tabular-nums"
                       style={{
                         fontSize: theme.typography.fontSize.xs,
                         color: theme.colors.colorfulCard.ink70,
@@ -299,13 +299,13 @@ export function DailySummaryCard({
                   {intuitiveMode ? (
                     <View className="flex-row items-center gap-1">
                       <Text
-                        className="text-xs font-bold"
+                        className="text-xs font-semibold tabular-nums"
                         style={{ color: theme.colors.colorfulCard.ink90, ...blurFilter(5) }}
                       >
                         {'00'}
                       </Text>
                       <Text
-                        className="text-xs font-bold"
+                        className="text-xs font-semibold tabular-nums"
                         style={{ color: theme.colors.colorfulCard.ink90 }}
                       >
                         {t('dailySummaryCard.remaining')}
@@ -313,7 +313,7 @@ export function DailySummaryCard({
                     </View>
                   ) : (
                     <Text
-                      className="text-xs font-bold"
+                      className="text-xs font-semibold tabular-nums"
                       style={{ color: theme.colors.colorfulCard.ink90 }}
                     >
                       {calories.remaining >= 0
@@ -324,7 +324,7 @@ export function DailySummaryCard({
                   <View className="flex-row items-center gap-2">
                     {highlightThresholds && calorieStatus !== 'not-reached' ? (
                       <Text
-                        className="text-xs font-bold"
+                        className="text-xs font-semibold tabular-nums"
                         style={{
                           color: getProgressBarColor(calorieStatus, theme),
                         }}
@@ -364,7 +364,7 @@ export function DailySummaryCard({
                     {/* Label above the figure: side by side they fought for width and the label truncated. */}
                     <View className="gap-0.5">
                       <Text
-                        className="font-bold"
+                        className="font-semibold tabular-nums"
                         numberOfLines={1}
                         style={{
                           fontSize: theme.typography.fontSize.xxs,
@@ -390,7 +390,7 @@ export function DailySummaryCard({
                       {!highlightThresholds || macro.status === 'not-reached' ? (
                         <View className="flex-row items-baseline">
                           <Text
-                            className="text-xs font-bold"
+                            className="text-xs font-semibold tabular-nums"
                             style={{
                               color: showColoredIndicators
                                 ? getProgressBarColor(macro.status, theme)
@@ -487,7 +487,7 @@ export function DailySummaryCard({
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-start gap-1">
                   <Text
-                    className="text-5xl font-extrabold tracking-tighter"
+                    className="text-4xl font-bold tabular-nums"
                     style={{
                       color: theme.colors.colorfulCard.ink,
                       ...(intuitiveMode ? blurFilter(8) : {}),
@@ -497,7 +497,7 @@ export function DailySummaryCard({
                   </Text>
                   <View className="flex-col">
                     <Text
-                      className="font-bold"
+                      className="font-semibold tabular-nums"
                       style={{
                         fontSize: theme.typography.fontSize.sm,
                         color: theme.colors.colorfulCard.ink70,
@@ -507,7 +507,7 @@ export function DailySummaryCard({
                       {t('dailySummaryCard.kcal')}
                     </Text>
                     <Text
-                      className="font-bold"
+                      className="font-semibold tabular-nums"
                       style={{
                         fontSize: theme.typography.fontSize.xs,
                         color: theme.colors.colorfulCard.ink70,

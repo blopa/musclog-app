@@ -134,7 +134,7 @@ export function MealGroupDetailsModal({
               <GenericCard key={entry.log.id} variant="flat">
                 <View className="flex-row items-center gap-3 p-4">
                   <View
-                    className="h-9 w-9 items-center justify-center rounded-lg"
+                    className="h-9 w-9 items-center justify-center rounded-control"
                     style={{ backgroundColor: theme.colors.accent.primary10 }}
                   >
                     <EggFried size={18} color={theme.colors.accent.primary} />

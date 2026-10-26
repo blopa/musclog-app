@@ -205,7 +205,7 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="gap-3 p-4">
           {files.length === 0 && !isLoading ? (
-            <View className="items-center rounded-xl border border-border-light bg-bg-primary py-12">
+            <View className="items-center rounded-control border border-border-light bg-bg-primary py-12">
               <Text className="text-sm font-medium text-text-secondary">
                 {t('bleWorkoutData.noFiles')}
               </Text>

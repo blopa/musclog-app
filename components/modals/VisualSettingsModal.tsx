@@ -276,7 +276,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.homeActions.sectionTitle')}
           </Text>
           <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
@@ -294,7 +294,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.theme.sectionTitle')}
           </Text>
           <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
@@ -312,7 +312,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.visualSettings.sectionTitle')}
           </Text>
           <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
@@ -329,7 +329,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.nutritionDisplay.sectionTitle')}
           </Text>
           <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
@@ -347,7 +347,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-1 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.homeSummaryCard.sectionTitle')}
           </Text>
           <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>

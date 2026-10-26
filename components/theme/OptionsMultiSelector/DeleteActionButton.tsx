@@ -54,7 +54,7 @@ export const DeleteActionButton: FC<DeleteActionButtonProps> = ({ onPress, selec
           <Text
             style={{
               color: theme.colors.text.primary,
-              fontWeight: theme.typography.fontWeight.black,
+              fontWeight: theme.typography.fontWeight.bold,
               fontSize: theme.typography.fontSize.sm,
             }}
           >

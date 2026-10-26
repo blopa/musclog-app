@@ -342,7 +342,7 @@ export function CycleReminderSettings() {
   return (
     <View className="gap-5">
       <View
-        className="gap-3 rounded-2xl p-4"
+        className="gap-3 rounded-card p-4"
         style={{
           backgroundColor: blocked
             ? theme.colors.status.warning10
@@ -383,7 +383,7 @@ export function CycleReminderSettings() {
       </View>
 
       <View className="gap-2">
-        <Text className="text-sm font-bold text-text-primary">
+        <Text className="text-sm font-semibold text-text-primary">
           {t('cycle.reminders.pause.title')}
         </Text>
         {paused ? (
@@ -458,7 +458,7 @@ export function CycleReminderSettings() {
         onDecrement={() => save({ leadDays: Math.max(0, prefs.leadDays - 1) })}
       />
 
-      <View className="gap-3 rounded-2xl border border-border-light p-4">
+      <View className="gap-3 rounded-card border border-border-light p-4">
         <Row
           label={t('cycle.reminders.pill.label')}
           detail={[
@@ -528,7 +528,7 @@ export function CycleReminderSettings() {
       />
 
       <View className="gap-3">
-        <Text className="text-sm font-bold text-text-primary">
+        <Text className="text-sm font-semibold text-text-primary">
           {t('cycle.reminders.style.title')}
         </Text>
         <Text className="text-xs text-text-secondary">{t('cycle.reminders.style.hint')}</Text>
@@ -542,14 +542,16 @@ export function CycleReminderSettings() {
             />
           ))}
         </View>
-        <Text className="text-xs font-bold text-text-tertiary">{t('cycle.reminders.preview')}</Text>
+        <Text className="text-xs font-semibold text-text-tertiary">
+          {t('cycle.reminders.preview')}
+        </Text>
         {previews.map((content) => (
           <View
             key={`${content.title}|${content.body}`}
-            className="gap-1 rounded-2xl border border-border-light bg-bg-card p-3"
+            className="gap-1 rounded-card border border-border-light bg-bg-card p-3"
             accessibilityLabel={`${content.title}. ${content.body}`}
           >
-            <Text className="text-xs font-bold text-text-secondary">{content.title}</Text>
+            <Text className="text-xs font-semibold text-text-secondary">{content.title}</Text>
             <Text className="text-sm text-text-primary">{content.body}</Text>
           </View>
         ))}

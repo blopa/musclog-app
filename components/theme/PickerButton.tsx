@@ -14,10 +14,10 @@ export function PickerButton({ label, icon, onPress }: TestPickerButtonProps) {
   const theme = useTheme();
   return (
     <Pressable
-      className="h-14 w-full overflow-hidden rounded-lg border border-ink/10 bg-bg-card active:bg-ink/5"
+      className="h-12 w-full overflow-hidden rounded-control border border-ink/10 bg-bg-card active:bg-ink/5"
       onPress={onPress}
     >
-      <View className="h-14 flex-row items-center justify-between px-4">
+      <View className="h-12 flex-row items-center justify-between px-4">
         <View className="min-w-0 flex-1 flex-row items-center gap-3">
           {icon}
           {/* The home-actions row names every chosen action, so a long label ellipsizes

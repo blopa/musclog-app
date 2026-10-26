@@ -47,9 +47,9 @@ function RecommendationRow({ row }: { row: TemplateRecommendation }) {
   const hint = message ?? (hintKey ? t(hintKey) : null);
 
   return (
-    <View className="gap-2.5 rounded-xl border border-border-light bg-bg-secondary p-3">
+    <View className="gap-2.5 rounded-control border border-border-light bg-bg-secondary p-3">
       <View className="gap-1.5">
-        <Text className="text-base font-bold text-text-primary" numberOfLines={2}>
+        <Text className="text-base font-semibold text-text-primary" numberOfLines={2}>
           {row.exercise.name}
         </Text>
         <GuidanceBadgeLine state={row.status} rule={row.rule} />
@@ -58,7 +58,7 @@ function RecommendationRow({ row }: { row: TemplateRecommendation }) {
         {row.sets.map((set) => (
           <View
             key={set.id}
-            className={`rounded-lg px-2.5 py-1.5 ${changed.has(set.id) ? 'bg-accent-primary/10' : 'bg-bg-overlay'}`}
+            className={`rounded-control px-2.5 py-1.5 ${changed.has(set.id) ? 'bg-accent-primary/10' : 'bg-bg-overlay'}`}
           >
             <Text
               className={`text-sm font-semibold ${changed.has(set.id) ? 'text-accent-primary' : 'text-text-primary'}`}

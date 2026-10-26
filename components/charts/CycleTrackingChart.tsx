@@ -115,7 +115,7 @@ export function CycleTrackingChart({
         </View>
         {badge != null ? (
           <View
-            className="mt-4 rounded-2xl border border-border-default px-5 py-2 md:mt-0"
+            className="mt-4 rounded-card border border-border-default px-5 py-2 md:mt-0"
             style={{
               backgroundColor: theme.colors.background.primary,
               borderColor: theme.colors.border.light,
@@ -195,7 +195,7 @@ export function CycleTrackingChart({
             <Text
               style={{
                 fontSize: 10,
-                fontWeight: '800',
+                fontWeight: '700',
                 color: theme.colors.background.primary,
               }}
             >

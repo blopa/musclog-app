@@ -1,5 +1,3 @@
-import type { ViewStyle } from 'react-native';
-
 import type { Theme } from '@/theme';
 
 /**
@@ -8,8 +6,8 @@ import type { Theme } from '@/theme';
  *
  * - 'flat' (default): background.card + an ink/5 hairline, no shadow. Use for
  *   almost every card — lists, stats, settings rows.
- * - 'raised': background.cardElevated + the same hairline + shadows.md.
- *   Reserve for the single emphasis/hero card on a screen. Illegal inside
+ * - 'raised': background.cardElevated + the same hairline, no shadow: the tonal
+ *   step alone lifts it. Reserve for the single emphasis card on a screen. Illegal inside
  *   BottomPopUp / CenteredModal — their sheet surface is already
  *   cardElevated, so a raised card disappears into it (Android elevation can
  *   also leak through a SurfaceColorProvider fade; see AGENTS.md).
@@ -24,7 +22,6 @@ export type CardSurface = {
   borderColor: string;
   borderWidth: number;
   borderRadius: number;
-  shadow?: Partial<ViewStyle>;
 };
 
 /**
@@ -33,7 +30,7 @@ export type CardSurface = {
  * review alone.
  */
 export function resolveCardSurface(variant: CardVariant, theme: Theme): CardSurface {
-  const borderRadius = theme.borderRadius.lg;
+  const borderRadius = theme.borderRadius.card;
 
   if (variant === 'hero') {
     return {
@@ -49,7 +46,6 @@ export function resolveCardSurface(variant: CardVariant, theme: Theme): CardSurf
       borderColor: theme.colors.background.ink5,
       borderWidth: theme.borderWidth.thin,
       borderRadius,
-      shadow: theme.shadows.md,
     };
   }
 

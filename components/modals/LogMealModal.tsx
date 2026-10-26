@@ -239,7 +239,10 @@ export function LogMealModal({
 
         {/* Meal Type Selector */}
         <View>
-          <Text className="mb-3 text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+          <Text
+            className="mb-3 text-xs font-semibold"
+            style={{ color: theme.colors.text.secondary }}
+          >
             {t('meals.mealType')}
           </Text>
           <FilterTabs

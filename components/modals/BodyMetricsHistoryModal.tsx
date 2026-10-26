@@ -609,7 +609,7 @@ export default function BodyMetricsHistoryModal({
                         </View>
                       </View>
                       <View
-                        className="flex-row gap-1 rounded-lg p-1"
+                        className="flex-row gap-1 rounded-control p-1"
                         style={{ backgroundColor: theme.colors.background.raised50 }}
                       >
                         <SkeletonLoader
@@ -646,7 +646,7 @@ export default function BodyMetricsHistoryModal({
                           {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
                         </Text>
                         <View className="flex-row items-baseline gap-1">
-                          <Text className="text-3xl font-extrabold text-text-primary">
+                          <Text className="text-3xl font-bold tabular-nums text-text-primary">
                             {currentMetric.current}
                           </Text>
                           {currentMetric.unit && currentMetric.unit.length > 0 ? (
@@ -657,12 +657,12 @@ export default function BodyMetricsHistoryModal({
                         </View>
                       </View>
                       <View
-                        className="flex-row rounded-lg p-1"
+                        className="flex-row rounded-control p-1"
                         style={{ backgroundColor: theme.colors.background.raised50 }}
                       >
                         <Pressable
                           onPress={() => setSelectedPeriod('30D')}
-                          className="rounded-md px-3 py-1"
+                          className="rounded-inner px-3 py-1"
                           style={
                             selectedPeriod === '30D'
                               ? {
@@ -683,7 +683,7 @@ export default function BodyMetricsHistoryModal({
                         </Pressable>
                         <Pressable
                           onPress={() => setSelectedPeriod('3M')}
-                          className="rounded-md px-3 py-1"
+                          className="rounded-inner px-3 py-1"
                           style={
                             selectedPeriod === '3M'
                               ? {
@@ -702,7 +702,7 @@ export default function BodyMetricsHistoryModal({
                         </Pressable>
                         <Pressable
                           onPress={() => setSelectedPeriod('6M')}
-                          className="rounded-md px-3 py-1"
+                          className="rounded-inner px-3 py-1"
                           style={
                             selectedPeriod === '6M'
                               ? {
@@ -721,7 +721,7 @@ export default function BodyMetricsHistoryModal({
                         </Pressable>
                         <Pressable
                           onPress={() => setSelectedPeriod('1Y')}
-                          className="rounded-md px-3 py-1"
+                          className="rounded-inner px-3 py-1"
                           style={
                             selectedPeriod === '1Y'
                               ? {
@@ -765,7 +765,7 @@ export default function BodyMetricsHistoryModal({
             {/* History Section */}
             <View className="mb-6">
               <View className="mb-4 flex-row items-center justify-between px-1">
-                <Text className="text-lg font-bold text-text-primary">
+                <Text className="text-lg font-semibold text-text-primary">
                   {t('bodyMetrics.history.title')}
                 </Text>
                 <Pressable

@@ -73,7 +73,7 @@ function WorkoutSummaryCard({
   const durationDisplay = formatWorkoutDuration(totalTime);
 
   return (
-    <View className="overflow-hidden rounded-xl">
+    <View className="overflow-hidden rounded-control">
       <View
         style={{
           backgroundColor: theme.colors.background.card,
@@ -93,11 +93,11 @@ function WorkoutSummaryCard({
         <View className="flex-row gap-4">
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
-            <Text className="text-xs font-bold text-text-primary" style={{ opacity: 0.8 }}>
+            <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
+              <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {durationDisplay.value}
               </Text>
               {durationDisplay.suffix ? (
@@ -113,11 +113,11 @@ function WorkoutSummaryCard({
             className="flex-1 flex-col border-l pl-4"
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
-            <Text className="text-xs font-bold text-text-primary" style={{ opacity: 0.8 }}>
+            <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.volume')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
+              <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {formatDisplayWeightKg(locale, units, volume)}
               </Text>
               <Text className="text-xs font-medium text-text-primary" style={{ opacity: 0.8 }}>
@@ -131,11 +131,11 @@ function WorkoutSummaryCard({
             className="flex-1 flex-col border-l pl-4"
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
-            <Text className="text-xs font-bold text-text-primary" style={{ opacity: 0.8 }}>
+            <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.calories')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
+              <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {formatInteger(calories)}
               </Text>
               <Text className="text-xs font-medium text-text-primary" style={{ opacity: 0.8 }}>
@@ -172,14 +172,14 @@ function VolumeTrendCard({
     <GenericCard variant="flat">
       <View style={{ padding: theme.spacing.padding.base }}>
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-sm font-bold text-text-primary">
+          <Text className="text-sm font-semibold text-text-primary">
             {t('workoutDetail.volumeTrend')}
           </Text>
           <View
-            className="rounded px-2 py-0.5"
+            className="rounded-tag px-2 py-0.5"
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
-            <Text className="text-xs font-bold text-accent-primary">
+            <Text className="text-xs font-semibold text-accent-primary">
               {t('workoutDetail.volumeTrendPercentage', { percentage })}
             </Text>
           </View>
@@ -289,19 +289,25 @@ function SetsTable({ sets }: SetsTableProps) {
         }}
       >
         <View className="w-12 items-center py-2">
-          <Text className="text-xs font-bold text-text-tertiary">{t('workoutDetail.set')}</Text>
+          <Text className="text-xs font-semibold text-text-tertiary">{t('workoutDetail.set')}</Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-bold text-text-tertiary">{t('workoutDetail.weight')}</Text>
+          <Text className="text-xs font-semibold text-text-tertiary">
+            {t('workoutDetail.weight')}
+          </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-bold text-text-tertiary">{t('workoutDetail.reps')}</Text>
+          <Text className="text-xs font-semibold text-text-tertiary">
+            {t('workoutDetail.reps')}
+          </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-bold text-text-tertiary">{t('workoutDetail.partial')}</Text>
+          <Text className="text-xs font-semibold text-text-tertiary">
+            {t('workoutDetail.partial')}
+          </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-bold text-text-tertiary">{t('workoutDetail.rir')}</Text>
+          <Text className="text-xs font-semibold text-text-tertiary">{t('workoutDetail.rir')}</Text>
         </View>
       </View>
 
@@ -403,7 +409,7 @@ function ExercisesSection({ exercises, onEdit, onInfo, onClose }: ExercisesSecti
 
   return (
     <View className="flex-col gap-4">
-      <Text className="px-1 text-xs font-bold text-text-tertiary">
+      <Text className="px-1 text-xs font-semibold text-text-tertiary">
         {t('workoutDetail.exercisesCount', { count: exercises.length })}
       </Text>
 
@@ -666,7 +672,7 @@ export default function PastWorkoutDetailModal({
       <View className="flex-1 gap-5 p-4">
         {saveError ? (
           <View
-            className="rounded-xl px-4 py-3"
+            className="rounded-control px-4 py-3"
             style={{ backgroundColor: theme.colors.status.error + '20' }}
           >
             <Text className="text-sm font-medium" style={{ color: theme.colors.status.error }}>
@@ -695,11 +701,13 @@ export default function PastWorkoutDetailModal({
 
         {workout.notes ? (
           <View
-            className="gap-1 rounded-xl p-4"
+            className="gap-1 rounded-card p-4"
             style={{ backgroundColor: theme.colors.background.ink5 }}
             testID="workout-notes"
           >
-            <Text className="text-xs font-bold text-text-tertiary">{t('workoutDetail.notes')}</Text>
+            <Text className="text-xs font-semibold text-text-tertiary">
+              {t('workoutDetail.notes')}
+            </Text>
             <Text className="text-base text-text-primary">{workout.notes}</Text>
           </View>
         ) : null}
@@ -731,7 +739,7 @@ export default function PastWorkoutDetailModal({
         {allWorkoutMuscles.length > 0 ? (
           <View>
             <View className="mb-2 flex-row items-center justify-between px-1">
-              <Text className="text-xs font-bold text-text-tertiary">
+              <Text className="text-xs font-semibold text-text-tertiary">
                 {t('workoutDetail.musclesWorked')}
               </Text>
               {!isMusclesCapturing ? (

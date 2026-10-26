@@ -1424,7 +1424,7 @@ export function DataLogModal({
                 {[1, 2, 3].map((i) => (
                   <View
                     key={i}
-                    className="rounded-lg border p-4"
+                    className="rounded-card border p-4"
                     style={{
                       backgroundColor: theme.colors.background.card,
                       borderColor: theme.colors.background.ink5,
@@ -1470,7 +1470,9 @@ export function DataLogModal({
                   className="flex flex-col gap-2"
                 >
                   <View>
-                    <Text className="text-sm font-bold text-text-secondary">{dayData.date}</Text>
+                    <Text className="text-sm font-semibold text-text-secondary">
+                      {dayData.date}
+                    </Text>
                   </View>
                   <View className="flex flex-col gap-2">{dayData.items.map(renderItem)}</View>
                 </View>

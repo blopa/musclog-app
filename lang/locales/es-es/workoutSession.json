@@ -1,7 +1,7 @@
 {
   "workoutSession": {
     "totalTime": "Tiempo total",
-    "setOf": "SERIE {{current}} DE {{total}}",
+    "setOf": "Serie {{current}} de {{total}}",
     "lastSetForExercise": "Última serie para este ejercicio",
     "weight": "Peso",
     "reps": "Reps",

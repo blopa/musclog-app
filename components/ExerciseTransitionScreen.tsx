@@ -46,7 +46,7 @@ export function ExerciseTransitionScreen({
       {/* Header: Total Time */}
       <View className="z-10 flex items-center justify-center px-4 pb-2 pt-6">
         <Text
-          className="text-4xl font-bold tabular-nums leading-none tracking-tight"
+          className="text-4xl font-bold tabular-nums leading-none"
           style={{ color: theme.colors.text.primary }}
         >
           {totalTime}
@@ -91,7 +91,7 @@ export function ExerciseTransitionScreen({
         {/* Up Next Divider */}
         <View className="mt-2 flex-row items-center gap-4">
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
-          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('exerciseTransition.upNext')}
           </Text>
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
@@ -231,7 +231,7 @@ export function ExerciseTransitionScreen({
                   {nextExercise.equipment.map((item, index) => (
                     <View
                       key={index}
-                      className="flex-row items-center gap-1.5 rounded-lg border px-3 py-2"
+                      className="flex-row items-center gap-1.5 rounded-control border px-3 py-2"
                       style={{
                         borderColor: theme.colors.border.default,
                         backgroundColor:

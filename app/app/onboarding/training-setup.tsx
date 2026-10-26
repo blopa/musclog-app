@@ -221,10 +221,7 @@ export default function TrainingSetupScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-6 pt-6">
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.trainingSetup.title')}
             </Text>
             <Text

@@ -50,7 +50,7 @@ export function WeeklyStreakCard({
         lineHeight: 26,
       }}
     >
-      <Text className="font-extrabold">{formatInteger(workoutsThisWeek)}</Text>
+      <Text className="font-bold">{formatInteger(workoutsThisWeek)}</Text>
       {` ${t('weeklyStreakCard.workoutsThisWeek')}`}
     </Text>
   );
@@ -116,7 +116,7 @@ export function WeeklyStreakCard({
         <View className="flex-1 justify-center px-4 py-4">
           <View className="flex-row items-baseline gap-1.5">
             <Text
-              className="font-extrabold text-text-primary"
+              className="font-bold text-text-primary"
               numberOfLines={1}
               style={{
                 flexShrink: 0,
@@ -127,7 +127,7 @@ export function WeeklyStreakCard({
               {formatInteger(streakDays)}
             </Text>
             <Text
-              className="min-w-0 flex-1 font-extrabold text-text-primary"
+              className="min-w-0 flex-1 font-bold text-text-primary"
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.7}
@@ -148,7 +148,7 @@ export function WeeklyStreakCard({
               strokeWidth={theme.strokeWidth.medium}
             />
             <View
-              className="min-w-0 flex-1 flex-row items-center rounded-md px-2.5"
+              className="min-w-0 flex-1 flex-row items-center rounded-inner px-2.5"
               style={{
                 height: 30,
                 backgroundColor: theme.colors.status.brandVivid20,

@@ -100,7 +100,7 @@ export function BottomPopUpMenu({
         <View className="items-center justify-center p-12">
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
           {loadingTitle ? (
-            <Text className="mt-4 text-center text-lg font-bold text-text-primary">
+            <Text className="mt-4 text-center text-lg font-semibold text-text-primary">
               {loadingTitle}
             </Text>
           ) : null}

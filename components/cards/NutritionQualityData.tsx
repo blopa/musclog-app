@@ -54,14 +54,14 @@ function ScoreCard({ label, score }: { label: string; score: NutritionQualitySco
 
   return (
     <View
-      className="flex-1 items-center rounded-2xl py-4"
+      className="flex-1 items-center rounded-card py-4"
       style={{
         backgroundColor: theme.colors.background.cardElevated,
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.background.ink5,
       }}
     >
-      <Text className="mb-4 text-xs font-bold text-text-secondary">{label}</Text>
+      <Text className="mb-4 text-xs font-semibold text-text-secondary">{label}</Text>
       <View
         style={{
           backgroundColor: colors.bg,
@@ -81,7 +81,7 @@ function ScoreCard({ label, score }: { label: string; score: NutritionQualitySco
           shadowRadius: 10,
         }}
       >
-        <Text style={{ color: colors.text, fontWeight: '900', fontSize: 38, lineHeight: 44 }}>
+        <Text style={{ color: colors.text, fontWeight: '700', fontSize: 38, lineHeight: 44 }}>
           {score.toUpperCase()}
         </Text>
       </View>
@@ -96,7 +96,7 @@ function NovaRow({ group, description }: { group: number; description: string })
 
   return (
     <View
-      className="flex-row items-center gap-3 rounded-3xl px-4 py-3"
+      className="flex-row items-center gap-3 rounded-card px-4 py-3"
       style={{
         backgroundColor: theme.colors.background.cardElevated,
         borderWidth: theme.borderWidth.thin,
@@ -104,14 +104,14 @@ function NovaRow({ group, description }: { group: number; description: string })
       }}
     >
       <View
-        className="h-10 w-10 items-center justify-center rounded-xl"
+        className="h-10 w-10 items-center justify-center rounded-control"
         style={{ backgroundColor: theme.colors.background.ink5 }}
       >
         <Layers size={18} color={theme.colors.text.secondary} />
       </View>
 
       <Text
-        className="text-xs font-bold leading-tight text-text-secondary"
+        className="text-xs font-semibold leading-tight text-text-secondary"
         style={{ maxWidth: 48 }}
       >
         {t('food.logDetails.novaGroup').replace(' ', '\n')}
@@ -132,7 +132,7 @@ function NovaRow({ group, description }: { group: number; description: string })
           shadowRadius: 5,
         }}
       >
-        <Text style={{ color: colors.text, fontWeight: '900', fontSize: 20, lineHeight: 24 }}>
+        <Text style={{ color: colors.text, fontWeight: '700', fontSize: 20, lineHeight: 24 }}>
           {group}
         </Text>
       </View>
@@ -150,7 +150,7 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
 
   return (
     <View
-      className="flex-row items-center gap-3 rounded-3xl px-4 py-3"
+      className="flex-row items-center gap-3 rounded-card px-4 py-3"
       style={{
         backgroundColor: theme.colors.background.cardElevated,
         borderWidth: theme.borderWidth.thin,
@@ -158,13 +158,13 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
       }}
     >
       <View
-        className="h-10 w-10 items-center justify-center rounded-xl"
+        className="h-10 w-10 items-center justify-center rounded-control"
         style={{ backgroundColor: theme.colors.background.ink5 }}
       >
         <Tag size={18} color={theme.colors.text.secondary} />
       </View>
 
-      <Text className="text-xs font-bold text-text-secondary">
+      <Text className="text-xs font-semibold text-text-secondary">
         {t('food.logDetails.foodLabels')}
       </Text>
 
@@ -177,7 +177,7 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
         {activeLabels.map(({ translationKey }) => (
           <View
             key={translationKey}
-            className="rounded-full px-3 py-1"
+            className="rounded-tag px-3 py-1"
             style={{
               borderWidth: theme.borderWidth.thin,
               borderColor: theme.colors.status.brandVivid,

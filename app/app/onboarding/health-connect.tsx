@@ -127,7 +127,7 @@ export default function HealthConnectScreen() {
             <View className="mb-8 w-full gap-4 text-center">
               <View className="flex-row flex-wrap items-center justify-center">
                 <Text
-                  className="text-center font-bold tracking-tight text-text-primary"
+                  className="text-center font-bold text-text-primary"
                   style={{
                     fontSize: theme.typography.fontSize['3xl'],
                     lineHeight: theme.typography.fontSize['3xl'] * 1.1,
@@ -198,7 +198,7 @@ export default function HealthConnectScreen() {
             {/* Error Display */}
             {hcError || syncError ? (
               <View
-                className="mb-4 rounded-lg p-3"
+                className="mb-4 rounded-control p-3"
                 style={{ backgroundColor: theme.colors.status.error10 }}
               >
                 <Text

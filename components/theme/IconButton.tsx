@@ -38,14 +38,18 @@ const SIZE = {
   lg: { box: 'h-12 w-12', icon: 'lg', hitSlop: 0 },
 } as const;
 
+/**
+ * A button with a surface sits on the control radius like every other control; `ghost` has no
+ * surface to shape and `media` stays round, the convention for a control floating over a photo.
+ */
 const SURFACE: Record<IconButtonVariant, string> = {
-  filled: 'bg-bg-overlay',
-  elevated: 'bg-bg-cardElevated',
-  ghost: '',
-  media: '',
+  filled: 'rounded-control bg-bg-overlay',
+  elevated: 'rounded-control bg-bg-cardElevated',
+  ghost: 'rounded-full',
+  media: 'rounded-full',
 };
 
-/** A round, icon-only button. Use `Button` when the action has a visible label. */
+/** An icon-only button. Use `Button` when the action has a visible label. */
 export function IconButton({
   icon: Icon,
   accessibilityLabel,
@@ -74,7 +78,7 @@ export function IconButton({
       onPress={onPress}
       hitSlop={config.hitSlop}
       testID={testID}
-      className={`items-center justify-center rounded-full active:opacity-70 ${config.box} ${SURFACE[variant]}`}
+      className={`items-center justify-center active:opacity-70 ${config.box} ${SURFACE[variant]}`}
       style={isMedia ? { backgroundColor: theme.colors.overlay.scrim60 } : undefined}
     >
       <Icon size={theme.iconSize[config.icon]} color={ink} />

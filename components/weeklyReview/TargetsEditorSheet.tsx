@@ -86,7 +86,7 @@ export function TargetsEditorSheet({
         ))}
         {reading.macroCalories != null ? (
           <View
-            className={`gap-2 rounded-xl p-3 ${reading.mismatch ? 'bg-status-warning/10' : 'bg-bg-overlay'}`}
+            className={`gap-2 rounded-control p-3 ${reading.mismatch ? 'bg-status-warning/10' : 'bg-bg-overlay'}`}
           >
             <Text
               accessibilityRole={reading.mismatch ? 'alert' : undefined}

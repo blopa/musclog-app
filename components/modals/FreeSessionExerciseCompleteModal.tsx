@@ -153,7 +153,7 @@ export function FreeSessionExerciseCompleteModal({
 
           <View className="mb-10 items-center gap-2">
             <Text
-              className="text-center font-bold tracking-tight text-text-primary"
+              className="text-center font-bold text-text-primary"
               style={{ fontSize: theme.typography.fontSize['3xl'] }}
             >
               {t('freeTraining.exerciseComplete.title')}
@@ -176,7 +176,7 @@ export function FreeSessionExerciseCompleteModal({
               style={{ padding: theme.spacing.padding.lg }}
             >
               <View
-                className="shrink-0 items-center justify-center overflow-hidden rounded-xl border"
+                className="shrink-0 items-center justify-center overflow-hidden rounded-control border"
                 style={{
                   width: CARD_IMAGE_SIZE,
                   height: CARD_IMAGE_SIZE,
@@ -228,7 +228,7 @@ export function FreeSessionExerciseCompleteModal({
                     {t('freeTraining.exerciseComplete.totalVolume')}
                   </Text>
                   <Text
-                    className="font-bold tracking-tight text-text-primary"
+                    className="font-bold text-text-primary"
                     style={{ fontSize: theme.typography.fontSize['2xl'] }}
                   >
                     {displayVolumeStr}{' '}

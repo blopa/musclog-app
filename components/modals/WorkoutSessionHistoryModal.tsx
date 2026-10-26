@@ -491,16 +491,14 @@ export function WorkoutSessionHistoryModal({
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text
-                className="mb-0.5 block text-sm font-bold"
+                className="mb-0.5 block text-sm font-semibold"
                 style={{ color: theme.colors.accent.primary }}
               >
                 {isPreview
                   ? t('workoutHistory.previewSubtitle')
                   : t('workoutHistory.workoutInProgress')}
               </Text>
-              <Text className="text-3xl font-bold leading-tight text-text-primary">
-                {workoutName}
-              </Text>
+              <Text className="text-xl font-semibold text-text-primary">{workoutName}</Text>
               {(isPreview ? workoutTemplate?.description : null) ? (
                 <Text className="mt-1 text-sm text-text-secondary">
                   {workoutTemplate!.description}
@@ -509,7 +507,7 @@ export function WorkoutSessionHistoryModal({
             </View>
             {!isPreview && shouldShowTimer ? (
               <View className="items-end">
-                <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
+                <Text className="font-mono text-3xl font-bold tabular-nums text-text-primary">
                   {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
                 </Text>
                 <Text className="text-sm font-medium text-text-secondary">
@@ -522,7 +520,7 @@ export function WorkoutSessionHistoryModal({
           {/* Stats Pills */}
           <View className="mt-1 flex-row items-center gap-3">
             <View
-              className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
+              className="flex-row items-center gap-1.5 rounded-control px-3 py-1.5"
               style={{ backgroundColor: theme.colors.status.info20 }}
             >
               <Weight size={theme.iconSize.md} color={theme.colors.status.info} />
@@ -532,7 +530,7 @@ export function WorkoutSessionHistoryModal({
             </View>
             {!isPreview ? (
               <View
-                className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
+                className="flex-row items-center gap-1.5 rounded-control px-3 py-1.5"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />

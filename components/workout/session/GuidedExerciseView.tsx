@@ -96,9 +96,9 @@ function StepperField({
     />
   );
   return (
-    <View className="flex-1 items-center gap-2 rounded-2xl border border-border-light bg-bg-card p-3">
+    <View className="flex-1 items-center gap-2 rounded-card border border-border-light bg-bg-card p-3">
       <View className="flex-row items-center gap-1">
-        <Text className="text-xs font-bold text-text-secondary">
+        <Text className="text-xs font-semibold text-text-secondary">
           {label}
           {unit ? <Text className="font-medium normal-case">{` (${unit})`}</Text> : null}
         </Text>
@@ -213,7 +213,7 @@ export function GuidedExerciseView({
         <View className="gap-2 px-4 pb-2">
           <Text
             className="font-bold text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['4xl'], lineHeight: 42 }}
+            style={{ fontSize: theme.typography.fontSize['3xl'], lineHeight: 36 }}
             numberOfLines={2}
             adjustsFontSizeToFit
             minimumFontScale={0.7}
@@ -221,8 +221,8 @@ export function GuidedExerciseView({
             {exercise.name}
           </Text>
           <View className="flex-row flex-wrap items-center gap-2">
-            <View className="rounded-full bg-accent-primary px-3.5 py-1.5">
-              <Text className="text-sm font-bold text-text-on-accent">
+            <View className="rounded-tag bg-accent-primary px-3.5 py-1.5">
+              <Text className="text-sm font-semibold text-text-on-accent">
                 {workingNumber == null
                   ? t('workoutSession.warmup.badge')
                   : t('workoutSession.setOf', {

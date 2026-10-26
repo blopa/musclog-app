@@ -33,7 +33,7 @@ export function OpticalFoodSharePreview({ summary }: OpticalFoodSharePreviewProp
               : 'opticalTransfer.share.foodPer100g'
           )}
         </Text>
-        <Text className="text-sm font-bold text-text-primary">
+        <Text className="text-sm font-semibold text-text-primary">
           {t('food.meals.manageMealData.caloriesMacrosFormat', {
             calories: formatInteger(summary.nutrients.calories),
             carbs: formatRoundedDecimal(summary.nutrients.carbs, 1),

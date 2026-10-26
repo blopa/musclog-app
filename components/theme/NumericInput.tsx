@@ -31,7 +31,7 @@ export function NumericInput({
   const inputRef = useRef<TextInputInstance | null>(null);
 
   return (
-    <View className="flex-1 flex-col items-center gap-1 rounded-lg border border-ink/10 bg-bg-card p-4">
+    <View className="flex-1 flex-col items-center gap-1 rounded-control border border-ink/10 bg-bg-card p-4">
       <Text
         className="font-bold text-text-tertiary"
         style={{ fontSize: theme.typography.fontSize.xs }}
@@ -40,7 +40,7 @@ export function NumericInput({
       </Text>
       {onIncrement ? (
         <Pressable
-          className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
+          className="w-full items-center justify-center rounded-control bg-accent-primary py-1.5 active:opacity-80"
           onPress={onIncrement}
         >
           <ChevronUp size={theme.iconSize.sm} color={theme.colors.text.onAccent} />
@@ -50,7 +50,7 @@ export function NumericInput({
         ref={inputRef}
         accessibilityLabel={label}
         selectTextOnFocus
-        className="w-full border-none bg-transparent p-0 text-center text-3xl font-black text-text-primary"
+        className="w-full border-none bg-transparent p-0 text-center text-3xl font-bold text-text-primary"
         value={value}
         onChangeText={onChangeText}
         keyboardType="numeric"
@@ -61,7 +61,7 @@ export function NumericInput({
       </Text>
       {onDecrement ? (
         <Pressable
-          className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
+          className="w-full items-center justify-center rounded-control bg-accent-primary py-1.5 active:opacity-80"
           onPress={onDecrement}
         >
           <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.onAccent} />

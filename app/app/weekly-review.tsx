@@ -358,7 +358,7 @@ export default function WeeklyReviewScreen() {
             )}
             {!data && !loadError ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
             {error || loadError ? (
-              <View className="gap-3 rounded-2xl border border-status-error bg-bg-card p-4">
+              <View className="gap-3 rounded-card border border-status-error bg-bg-card p-4">
                 <Text accessibilityRole="alert" className="text-sm text-status-error">
                   {t(error ? 'weeklyReview.error' : 'errors.somethingWentWrong')}
                 </Text>
@@ -446,8 +446,8 @@ export default function WeeklyReviewScreen() {
                   onLogFirstMeal={() => router.push('/app/nutrition/food')}
                 />
 
-                <View className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4">
-                  <Text className="text-base font-bold text-text-primary">
+                <View className="gap-3 rounded-card border border-border-light bg-bg-card p-4">
+                  <Text className="text-base font-semibold text-text-primary">
                     {t('weeklyReview.settings')}
                   </Text>
                   <Text className="text-sm text-text-secondary">{t('weeklyReview.weekday')}</Text>
@@ -466,7 +466,7 @@ export default function WeeklyReviewScreen() {
 
                 {data.reviews.length || legacy.length ? (
                   <View className="gap-2">
-                    <Text className="text-lg font-bold text-text-primary">
+                    <Text className="text-lg font-semibold text-text-primary">
                       {t('weeklyReview.history')}
                     </Text>
                     {data.reviews.map((review) => (

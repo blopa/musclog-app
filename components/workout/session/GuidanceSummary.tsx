@@ -38,8 +38,10 @@ export function GuidanceBadgeLine({
       : null;
   return (
     <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-2">
-      <View className={`rounded-full px-2.5 py-1 ${badge.surface}`}>
-        <Text className={`text-xs font-bold ${badge.text}`}>{t(GUIDANCE_STATE_KEYS[state])}</Text>
+      <View className={`rounded-tag px-2.5 py-1 ${badge.surface}`}>
+        <Text className={`text-xs font-semibold ${badge.text}`}>
+          {t(GUIDANCE_STATE_KEYS[state])}
+        </Text>
       </View>
       <Text className="shrink text-sm font-semibold text-text-primary">
         {t(PROGRESSION_METHOD_KEYS[rule?.type ?? 'automatic'])}
@@ -89,7 +91,9 @@ export function GuidanceSummary({
 
   return (
     <View
-      className={flat ? 'gap-1' : 'gap-2 rounded-xl border border-border-light bg-bg-secondary p-3'}
+      className={
+        flat ? 'gap-1' : 'gap-2 rounded-control border border-border-light bg-bg-secondary p-3'
+      }
     >
       <Pressable
         accessibilityRole="button"

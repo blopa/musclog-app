@@ -108,7 +108,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
 
   const icon = (Icon: typeof Bell, tint: string, background: string) => (
     <View
-      className="h-10 w-10 items-center justify-center rounded-lg"
+      className="h-10 w-10 items-center justify-center rounded-control"
       style={{ backgroundColor: background }}
     >
       <Icon size={theme.iconSize.xl} color={tint} />
@@ -233,7 +233,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
 
   const sectionTitle = (title: string, hint?: string) => (
     <View className="gap-1 px-8">
-      <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+      <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
         {title}
       </Text>
       {hint ? (
@@ -251,7 +251,7 @@ export function NotificationsSettingsModal({ visible, onClose }: NotificationsSe
       subtitle: t('settings.notificationsSettings.mainToggleSubtitle'),
       icon: (
         <View
-          className="h-10 w-10 items-center justify-center rounded-lg"
+          className="h-10 w-10 items-center justify-center rounded-control"
           style={{ backgroundColor: theme.colors.accent.primary20 }}
         >
           <Bell size={theme.iconSize.xl} color={theme.colors.accent.primary} />

@@ -23,7 +23,7 @@ export function ProgressIndicator({ message, size = 'large' }: ProgressIndicator
       }}
     >
       <View
-        className="rounded-3xl"
+        className="rounded-card"
         style={{
           backgroundColor: theme.colors.background.cardElevated,
           borderColor: theme.colors.border.default,

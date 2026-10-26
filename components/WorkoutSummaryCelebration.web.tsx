@@ -83,7 +83,6 @@ function StatRow({
           style={{
             fontSize: 24,
             fontWeight: 700,
-            letterSpacing: '-0.5px',
             color: 'var(--text-primary, #fff)',
           }}
         >
@@ -184,9 +183,8 @@ export function WorkoutSummaryCelebration({
       <span
         style={{
           fontSize: theme.typography.fontSize['4xl'],
-          fontWeight: theme.typography.fontWeight.extrabold,
+          fontWeight: theme.typography.fontWeight.bold,
           textAlign: 'center',
-          letterSpacing: theme.typography.letterSpacing.tight,
           marginBottom: theme.spacing.padding.sm,
           color: theme.colors.text.primary,
         }}

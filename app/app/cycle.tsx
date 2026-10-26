@@ -219,9 +219,9 @@ export default function CycleScreen() {
           <AnimatedContent>
             <View className="px-4 pb-8 pt-6">
               {!cycle ? (
-                <View className="mb-8 items-center rounded-2xl bg-bg-overlay p-8">
+                <View className="mb-8 items-center rounded-card bg-bg-overlay p-8">
                   <CalendarHeart size={40} color={theme.colors.text.secondary} />
-                  <Text className="mt-4 text-center text-lg font-bold text-text-primary">
+                  <Text className="mt-4 text-center text-lg font-semibold text-text-primary">
                     {pausedCycle ? t('cycle.noData.pausedTitle') : t('cycle.noData.title')}
                   </Text>
                   <Text className="mt-2 text-center text-sm text-text-secondary">
@@ -250,7 +250,7 @@ export default function CycleScreen() {
                       {activePeriod ? (
                         <>
                           <View
-                            className="flex-row items-center gap-3 rounded-2xl px-4 py-3"
+                            className="flex-row items-center gap-3 rounded-card px-4 py-3"
                             style={{ backgroundColor: theme.colors.rose.brand10 }}
                           >
                             <CircleDot size={16} color={theme.colors.rose.brand} />
@@ -314,7 +314,7 @@ export default function CycleScreen() {
                   />
 
                   <View className="mb-4 flex-row items-center justify-between">
-                    <Text className="text-2xl font-bold text-text-primary">
+                    <Text className="text-lg font-semibold text-text-primary">
                       {t('cycle.history.title')}
                     </Text>
                     <IconButton

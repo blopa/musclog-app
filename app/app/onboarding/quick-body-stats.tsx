@@ -222,7 +222,7 @@ export default function QuickBodyStatsScreen() {
             {/* Title */}
             <View>
               <Text
-                className="mb-1 text-3xl font-black tracking-tight"
+                className="mb-1 text-2xl font-bold"
                 style={{ color: theme.colors.text.primary }}
               >
                 {t('onboarding.quickBodyStats.title')}

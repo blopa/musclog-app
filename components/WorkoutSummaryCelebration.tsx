@@ -94,7 +94,7 @@ export function WorkoutSummaryCelebration({
                     <View className="p-4">
                       <View className="mb-3 flex-row items-center gap-3">
                         <View
-                          className="rounded-lg p-2"
+                          className="rounded-control p-2"
                           style={{ backgroundColor: theme.colors.accent.primary10 }}
                         >
                           <Trophy size={20} color={theme.colors.accent.primary} />
@@ -114,7 +114,7 @@ export function WorkoutSummaryCelebration({
                           style={{ width: `${progress}%` }}
                         />
                       </View>
-                      <Text className="mt-2 text-center text-xs font-bold text-accent-primary">
+                      <Text className="mt-2 text-center text-xs font-semibold text-accent-primary">
                         {progress === 100
                           ? t('exerciseGoals.card.congratulations')
                           : `${progress}% to Goal`}

@@ -22,7 +22,7 @@ export function NoteRow({ note, relativeTime, onPress, onMenuPress }: NoteListIt
         <View className="min-w-0 flex-1">
           <Text className="mb-1 text-xs text-text-tertiary">{relativeTime}</Text>
           {note.title ? (
-            <Text className="mb-0.5 text-sm font-bold text-text-primary" numberOfLines={1}>
+            <Text className="mb-0.5 text-sm font-semibold text-text-primary" numberOfLines={1}>
               {note.title}
             </Text>
           ) : null}

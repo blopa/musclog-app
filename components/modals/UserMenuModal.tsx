@@ -163,7 +163,7 @@ export function UserMenuModal({
           }
         >
           {/* Modal Content */}
-          <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
+          <View className="overflow-hidden rounded-b-sheet border-b border-border-dark bg-bg-card">
             {/* Header */}
             <View className="border-b border-border-dark">
               <View className="flex-row items-center justify-between p-6">
@@ -196,7 +196,7 @@ export function UserMenuModal({
                       <Image source={user.avatar} className="h-full w-full" resizeMode="cover" />
                     ) : (
                       <View className="h-full w-full items-center justify-center rounded-full">
-                        <Text className="text-lg font-bold text-text-primary">
+                        <Text className="text-lg font-semibold text-text-primary">
                           {user.name?.charAt(0).toUpperCase() || 'G'}
                         </Text>
                       </View>

@@ -12,9 +12,8 @@ export function WorkoutSummaryHeader() {
         style={{
           color: theme.colors.text.primary,
           fontSize: theme.typography.fontSize['4xl'],
-          fontWeight: theme.typography.fontWeight.extrabold,
+          fontWeight: theme.typography.fontWeight.bold,
           textAlign: 'center',
-          letterSpacing: theme.typography.letterSpacing.tight,
           marginBottom: theme.spacing.padding.sm,
         }}
       >

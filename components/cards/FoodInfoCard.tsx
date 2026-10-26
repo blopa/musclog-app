@@ -70,7 +70,7 @@ export function FoodInfoCard({
           <View className="flex-1 pr-5">
             {showName ? (
               <View className="mb-1 flex-row items-start">
-                <Text className="flex-1 text-2xl font-bold text-text-primary">{food.name}</Text>
+                <Text className="flex-1 text-xl font-semibold text-text-primary">{food.name}</Text>
                 {onInfoPress ? (
                   <Pressable className="ml-1 mt-1 self-start" onPress={onInfoPress} hitSlop={8}>
                     <Info size={theme.iconSize.sm} color={theme.colors.text.secondary} />
@@ -90,7 +90,7 @@ export function FoodInfoCard({
           </View>
           <View className="items-end">
             <Text
-              className="text-4xl font-black tracking-tight text-accent-primary"
+              className="text-4xl font-bold text-accent-primary"
               style={intuitiveMode ? blurFilter(8) : undefined}
             >
               {intuitiveMode
@@ -99,7 +99,9 @@ export function FoodInfoCard({
                     useGrouping: false,
                   })}
             </Text>
-            <Text className="text-xs font-bold text-text-secondary">{t('food.common.kcal')}</Text>
+            <Text className="text-xs font-semibold text-text-secondary">
+              {t('food.common.kcal')}
+            </Text>
           </View>
         </View>
 
@@ -135,7 +137,7 @@ export function FoodInfoCard({
           {/* Grid View — inset lives on page 2 so the chart border is not flush with the page seam (avoids 1px bleed) */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
             <View className="mb-2 flex-row gap-3">
-              <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
+              <View className="flex-1 overflow-hidden rounded-control border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-indigo-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
@@ -149,7 +151,7 @@ export function FoodInfoCard({
                   })}
                 </Text>
               </View>
-              <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
+              <View className="flex-1 overflow-hidden rounded-control border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-emerald-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
@@ -163,7 +165,7 @@ export function FoodInfoCard({
                   })}
                 </Text>
               </View>
-              <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
+              <View className="flex-1 overflow-hidden rounded-control border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-yellow-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
@@ -183,7 +185,7 @@ export function FoodInfoCard({
           {/* Circular Chart View — margin insets the bordered card from the page seam (avoid padding on the page width, which can break paging) */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
             <View
-              className="flex-row items-center gap-4 rounded-xl border border-ink/5 bg-ink/5 p-3"
+              className="flex-row items-center gap-4 rounded-control border border-ink/5 bg-ink/5 p-3"
               style={{ marginLeft: 2 }}
             >
               <View className="h-24 w-24 flex-none">
@@ -208,7 +210,7 @@ export function FoodInfoCard({
                     </Text>
                   </View>
                   <Text
-                    className="text-xs font-bold text-text-primary"
+                    className="text-xs font-semibold text-text-primary"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
                     {t('common.weightFormatG', {
@@ -228,7 +230,7 @@ export function FoodInfoCard({
                     </Text>
                   </View>
                   <Text
-                    className="text-xs font-bold text-text-primary"
+                    className="text-xs font-semibold text-text-primary"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
                     {t('common.weightFormatG', {
@@ -248,7 +250,7 @@ export function FoodInfoCard({
                     </Text>
                   </View>
                   <Text
-                    className="text-xs font-bold text-text-primary"
+                    className="text-xs font-semibold text-text-primary"
                     style={intuitiveMode ? blurFilter(4) : undefined}
                   >
                     {t('common.weightFormatG', {

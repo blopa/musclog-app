@@ -21,7 +21,7 @@ export function WorkoutStatCard({ title, value, unit, onPress, isAdjusted }: Wor
     }
 
     if (typeof value === 'string' || typeof value === 'number') {
-      return <Text className="text-3xl font-bold text-text-primary">{value}</Text>;
+      return <Text className="text-3xl font-bold tabular-nums text-text-primary">{value}</Text>;
     }
 
     return <View className="h-10 items-center justify-center">{value}</View>;

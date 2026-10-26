@@ -646,7 +646,10 @@ export default function ViewExerciseModal({
           <ExerciseRestrictionSection exerciseId={exercise.id} />
 
           <View className="px-4 pb-2">
-            <Text className="mb-4 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
+            <Text
+              className="mb-4 text-lg font-semibold"
+              style={{ color: theme.colors.text.primary }}
+            >
               {t('exercises.viewExercise.oneRepMaxTrend')}
             </Text>
             <GenericCard variant="flat">
@@ -686,15 +689,15 @@ export default function ViewExerciseModal({
 
           <View className="px-4 py-4">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
+              <Text className="text-lg font-semibold" style={{ color: theme.colors.text.primary }}>
                 {t('exercises.viewExercise.workoutsUsingThis')}
               </Text>
               <View
-                className="rounded-full px-3 py-1.5"
+                className="rounded-tag px-3 py-1.5"
                 style={{ backgroundColor: theme.colors.accent.secondary20 }}
               >
                 <Text
-                  className="text-xs font-bold"
+                  className="text-xs font-semibold"
                   style={{ color: theme.colors.accent.secondary }}
                 >
                   {workouts.length} {t('exercises.viewExercise.templates')}

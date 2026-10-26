@@ -139,13 +139,13 @@ export function PeriodLogModal({
 
         {mode === 'end' && activePeriod ? (
           <View
-            className="rounded-xl px-4 py-3"
+            className="rounded-control px-4 py-3"
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <Text className="text-xs font-semibold text-text-secondary">
               {t('cycle.periodLog.startedOn')}
             </Text>
-            <Text className="mt-1 text-base font-bold text-text-primary">
+            <Text className="mt-1 text-base font-semibold text-text-primary">
               {new Date(activePeriod.startDate).toLocaleDateString(
                 i18n.resolvedLanguage ?? i18n.language,
                 { weekday: 'long', month: 'long', day: 'numeric' }

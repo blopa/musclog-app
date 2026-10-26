@@ -145,7 +145,7 @@ export const MealGroupCard = memo(function MealGroupCard({
       <View className="flex-row items-center gap-4 p-4">
         {/* Meal icon or photo */}
         <View
-          className="h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl"
+          className="h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-control"
           style={{ backgroundColor: imageUrl ? undefined : bgColor }}
         >
           {imageUrl ? (
@@ -164,7 +164,7 @@ export const MealGroupCard = memo(function MealGroupCard({
               {name}
             </Text>
             <View
-              className="rounded-full px-2 py-0.5"
+              className="rounded-tag px-2 py-0.5"
               style={{ backgroundColor: theme.colors.status.indigo10 }}
             >
               <Text className="text-xs font-semibold" style={{ color: theme.colors.status.indigo }}>

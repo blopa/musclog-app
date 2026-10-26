@@ -97,10 +97,7 @@ export default function MusclogApiScreen() {
 
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
-                  <Text
-                    className="text-2xl font-black tracking-tight"
-                    style={{ color: theme.colors.text.primary }}
-                  >
+                  <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
                     {t('onboarding.musclogApi.title')}
                   </Text>
                   <Text

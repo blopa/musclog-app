@@ -116,7 +116,7 @@ export function EndWorkoutModal({
                         fill={theme.colors.accent.secondary}
                       />
                     </View>
-                    <Text className="text-2xl font-bold text-text-primary">
+                    <Text className="text-lg font-semibold text-text-primary">
                       {t('endWorkout.title')}
                     </Text>
                   </View>

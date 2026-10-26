@@ -136,7 +136,7 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
       scrollable={false}
     >
       <View className="flex-row items-center justify-between border-b border-border-light px-4 py-2">
-        <Text accessibilityRole="header" className="text-lg font-bold text-text-primary">
+        <Text accessibilityRole="header" className="text-lg font-semibold text-text-primary">
           {t('whatsNew.title')}
         </Text>
         <IconButton

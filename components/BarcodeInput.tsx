@@ -37,7 +37,7 @@ export function BarcodeInput({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('food.actions.scanBarcode')}
-        className="absolute right-2 items-center justify-center rounded-lg"
+        className="absolute right-2 items-center justify-center rounded-control"
         style={{
           ...(Platform.OS !== 'web'
             ? {

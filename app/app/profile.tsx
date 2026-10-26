@@ -345,18 +345,18 @@ export default function ProfileScreen() {
         ) : null}
 
         {/* User Profile Section */}
-        <View className="mb-8 mt-6 items-center">
+        <View className="mb-6 mt-5 items-center">
           {isLoadingUser ? (
             <View className="items-center gap-3">
-              <SkeletonLoader width={128} height={128} borderRadius={64} />
+              <SkeletonLoader width={96} height={96} borderRadius={48} />
               <SkeletonLoader width={200} height={28} borderRadius={8} />
             </View>
           ) : (
             <AnimatedContent style={{ alignItems: 'center' }}>
               <>
-                <View className="relative mb-4">
+                <View className="relative mb-3">
                   <View
-                    className="h-32 w-32 overflow-hidden rounded-full border-4"
+                    className="h-24 w-24 overflow-hidden rounded-full border-2"
                     style={{
                       borderColor: dbUser
                         ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
@@ -373,7 +373,7 @@ export default function ProfileScreen() {
                           getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
                             .IconComponent,
                           {
-                            size: 40,
+                            size: 32,
                             color: getAvatarDisplayProps(
                               theme,
                               dbUser.avatarIcon,
@@ -385,18 +385,18 @@ export default function ProfileScreen() {
                     ) : null}
                   </View>
                   <Pressable
-                    className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
+                    className="absolute -bottom-1 -right-1 h-9 w-9 items-center justify-center rounded-full border-2 border-bg-primary"
                     style={{ backgroundColor: theme.colors.accent.primary }}
                     onPress={() => setIsEditPersonalVisible(true)}
                   >
                     <Edit size={theme.iconSize.sm} color={theme.colors.text.onAccent} />
                   </Pressable>
                 </View>
-                <Text className="mb-3 text-center text-3xl font-bold text-text-primary">
+                <Text className="mb-1 text-center text-xl font-semibold text-text-primary">
                   {dbUser?.fullName || t('profile.loading')}
                 </Text>
                 {dbUser?.fitnessGoal ? (
-                  <Text className="text-center text-base text-text-primary">
+                  <Text className="text-center text-sm text-text-secondary">
                     {t('profile.goal')}:{' '}
                     {t(
                       `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
@@ -409,9 +409,9 @@ export default function ProfileScreen() {
         </View>
 
         {/* Current Stats Section */}
-        <View className="mb-8 px-4">
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-text-primary">
+        <View className="mb-6 px-4">
+          <View className="mb-2 flex-row items-center justify-between">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('profile.currentStats')}
             </Text>
             <ShowMoreButton
@@ -419,10 +419,10 @@ export default function ProfileScreen() {
               label={t('profile.history')}
             />
           </View>
-          <View className="-mx-2 flex-row flex-wrap">
+          <View className="-mx-1.5 flex-row flex-wrap">
             {isLoadingMetrics || isLoadingUser ? (
               [1, 2, 3, 4].map((i) => (
-                <View key={i} className="mb-4 w-1/2 px-2">
+                <View key={i} className="mb-3 w-1/2 px-1.5">
                   <SkeletonLoader height={80} borderRadius={12} />
                 </View>
               ))
@@ -435,7 +435,7 @@ export default function ProfileScreen() {
                 }}
               >
                 {stats.map((stat) => (
-                  <View key={stat.id} className="mb-4 w-1/2 px-2">
+                  <View key={stat.id} className="mb-3 w-1/2 px-1.5">
                     <StatCard
                       title={t(stat.titleKey)}
                       value={stat.value}
@@ -456,7 +456,7 @@ export default function ProfileScreen() {
         {showWeightPrediction &&
         weightPrediction.shouldShow &&
         weightPrediction.predictedWeightKg !== null ? (
-          <View className="mb-8 px-4">
+          <View className="mb-6 px-4">
             <GenericCard variant="raised">
               <View className="flex-row items-center gap-3 p-4">
                 <View
@@ -470,7 +470,7 @@ export default function ProfileScreen() {
                     {t('profile.weightPrediction.title')}
                   </Text>
                   <View className="flex-row items-baseline gap-1">
-                    <Text className="text-2xl font-bold text-text-primary">
+                    <Text className="text-lg font-semibold text-text-primary">
                       {formatDecimal(kgToDisplay(weightPrediction.predictedWeightKg, units), 1)}
                     </Text>
                     <Text className="text-base text-text-secondary">{weightUnit}</Text>
@@ -485,8 +485,8 @@ export default function ProfileScreen() {
         ) : null}
 
         {/* Management Section */}
-        <View className="mb-8 px-4">
-          <Text className="mb-4 text-2xl font-bold text-text-primary">
+        <View className="mb-6 px-4">
+          <Text className="mb-2 text-lg font-semibold text-text-primary">
             {t('profile.management')}
           </Text>
           <ListGroup>

@@ -23,7 +23,7 @@ export function ContextTimeline({ contexts, onEdit }: ContextTimelineProps) {
 
   return (
     <View className="mt-6 gap-3">
-      <Text className="text-xs font-bold text-text-tertiary">
+      <Text className="text-xs font-semibold text-text-tertiary">
         {t('cycle.context.timelineTitle')}
       </Text>
       {[...contexts]
@@ -33,12 +33,12 @@ export function ContextTimeline({ contexts, onEdit }: ContextTimelineProps) {
             key={context.id}
             onPress={() => onEdit(context)}
             accessibilityRole="button"
-            className="rounded-2xl border-2 border-ink/5 bg-bg-card p-4"
+            className="rounded-card border-2 border-ink/5 bg-bg-card p-4"
           >
             <Text className="text-xs text-text-tertiary">
               {t('cycle.context.from', { date: date(context.effectiveFrom) })}
             </Text>
-            <Text className="text-sm font-bold text-text-primary">
+            <Text className="text-sm font-semibold text-text-primary">
               {t(lifeStageTitleKey(context.lifeStage))}
             </Text>
             <Text className="text-sm text-text-secondary">

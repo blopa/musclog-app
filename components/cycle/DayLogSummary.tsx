@@ -94,7 +94,7 @@ export function DayLogSummary({ log, onEdit, mood }: DayLogSummaryProps) {
   }
 
   return (
-    <View className="rounded-2xl border-2 border-ink/5 bg-bg-card p-4">
+    <View className="rounded-card border-2 border-ink/5 bg-bg-card p-4">
       {lines.length === 0 ? (
         <Text className="text-sm text-text-secondary">{t('cycle.daySheet.nothingLogged')}</Text>
       ) : (

@@ -364,8 +364,8 @@ export default function ModalsTestScreen() {
           </View>
 
           {/* Native row padding QA — Pressable + flex rows (verify trailing icons on device) */}
-          <View className="mb-6 rounded-xl border border-accent-primary/30 bg-bg-card p-4">
-            <Text className="mb-1 text-lg font-bold text-text-primary">
+          <View className="mb-6 rounded-control border border-accent-primary/30 bg-bg-card p-4">
+            <Text className="mb-1 text-lg font-semibold text-text-primary">
               Native row padding (device QA)
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -386,7 +386,7 @@ export default function ModalsTestScreen() {
 
           {/* Add Exercise Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Add Exercise Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Add Exercise Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for adding an exercise to the current workout.
             </Text>
@@ -400,7 +400,9 @@ export default function ModalsTestScreen() {
 
           {/* Nutrition Goals Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Nutrition Goals Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Nutrition Goals Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               A comprehensive modal for setting nutrition and body composition goals with
               interactive sliders.
@@ -415,7 +417,9 @@ export default function ModalsTestScreen() {
 
           {/* Basic Settings Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Basic Settings Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Basic Settings Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               A comprehensive modal for setting nutrition and body composition goals with
               interactive sliders.
@@ -430,7 +434,7 @@ export default function ModalsTestScreen() {
 
           {/* Advanced Settings Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Advanced Settings Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -452,7 +456,7 @@ export default function ModalsTestScreen() {
 
           {/* AI Settings Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">AI Settings Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">AI Settings Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Configure AI integrations — model row & custom prompts row (native padding QA).
             </Text>
@@ -473,7 +477,7 @@ export default function ModalsTestScreen() {
 
           {/* Edit Personal Info Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Edit Personal Info Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -490,7 +494,7 @@ export default function ModalsTestScreen() {
 
           {/* Edit Fitness Details Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Edit Fitness Details Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -507,7 +511,7 @@ export default function ModalsTestScreen() {
 
           {/* Confirmation Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Confirmation Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Confirmation Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               A modal for confirming actions with different variants.
             </Text>
@@ -547,7 +551,7 @@ export default function ModalsTestScreen() {
 
           {/* End Workout Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">End Workout Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">End Workout Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for ending a workout session with save/discard options.
             </Text>
@@ -561,7 +565,7 @@ export default function ModalsTestScreen() {
 
           {/* User Menu Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">User Menu Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">User Menu Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               User profile menu with navigation options.
             </Text>
@@ -575,7 +579,9 @@ export default function ModalsTestScreen() {
 
           {/* Session Feedback Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Session Feedback Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Session Feedback Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for collecting workout session feedback with rating sliders.
             </Text>
@@ -589,7 +595,9 @@ export default function ModalsTestScreen() {
 
           {/* Edit Set Details Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Edit Set Details Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Edit Set Details Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for editing workout set details (weight, reps, partials).
             </Text>
@@ -603,7 +611,7 @@ export default function ModalsTestScreen() {
 
           {/* Log Set Performance Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Log Set Performance Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -619,7 +627,7 @@ export default function ModalsTestScreen() {
 
           {/* Food Details Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Food Details Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Food Details Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal displaying detailed food information.
             </Text>
@@ -633,7 +641,7 @@ export default function ModalsTestScreen() {
 
           {/* Nutrition Log Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Nutrition Log Data Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -649,7 +657,7 @@ export default function ModalsTestScreen() {
 
           {/* Food Data Modal (Food library) */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Food Data Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Food Data Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for managing your food library (Food model) with search, favorites, and options.
             </Text>
@@ -663,7 +671,7 @@ export default function ModalsTestScreen() {
 
           {/* Add Food Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Add Food Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Add Food Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for adding food to a nutrition data with various options.
             </Text>
@@ -677,7 +685,7 @@ export default function ModalsTestScreen() {
 
           {/* Add Meal Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Add Meal Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Add Meal Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for creating or generating meals and managing categories.
             </Text>
@@ -690,7 +698,7 @@ export default function ModalsTestScreen() {
           </View>
           {/* Create Meal Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Create Meal Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Create Meal Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for creating a new meal with custom ingredients and macros.
             </Text>
@@ -704,7 +712,7 @@ export default function ModalsTestScreen() {
 
           {/* My Meals Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">My Meals Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">My Meals Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Preview the My Meals modal used for managing saved meals.
             </Text>
@@ -718,7 +726,7 @@ export default function ModalsTestScreen() {
 
           {/* Food Search Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Food Search Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Food Search Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for searching and selecting food items.
             </Text>
@@ -730,7 +738,9 @@ export default function ModalsTestScreen() {
             />
           </View>
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Food Not Found Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Food Not Found Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Empty-state modal when food isnt found.
             </Text>
@@ -742,7 +752,9 @@ export default function ModalsTestScreen() {
             />
           </View>
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Barcode Camera Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Barcode Camera Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Open camera to scan product barcodes.
             </Text>
@@ -762,7 +774,9 @@ export default function ModalsTestScreen() {
           </View>
           {/* Notifications Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Notifications Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Notifications Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal displaying app notifications.
             </Text>
@@ -776,7 +790,9 @@ export default function ModalsTestScreen() {
 
           {/* Workout Options Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Workout Options Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Workout Options Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal with workout-related options and actions.
             </Text>
@@ -804,7 +820,9 @@ export default function ModalsTestScreen() {
 
           {/* Replace Exercise Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Replace Exercise Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Replace Exercise Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for replacing an exercise in a workout.
             </Text>
@@ -818,7 +836,9 @@ export default function ModalsTestScreen() {
 
           {/* Workout History Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Workout History Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Workout History Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal displaying workout history and statistics.
             </Text>
@@ -844,7 +864,9 @@ export default function ModalsTestScreen() {
 
           {/* Filter Workouts Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Filter Workouts Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Filter Workouts Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Filter workouts by type, target muscles, and duration.
             </Text>
@@ -858,7 +880,7 @@ export default function ModalsTestScreen() {
 
           {/* Date Picker Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Date Picker Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Date Picker Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Default and compact variants (compact matches food details).
             </Text>
@@ -896,7 +918,7 @@ export default function ModalsTestScreen() {
 
           {/* Add Food Item to Meal Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Add Food Item to Meal Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -912,7 +934,7 @@ export default function ModalsTestScreen() {
 
           {/* Centered Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Centered Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Centered Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               A simple centered modal for displaying information.
             </Text>
@@ -926,7 +948,7 @@ export default function ModalsTestScreen() {
 
           {/* Coach Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Coach Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Coach Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for displaying coaching tips and guidance.
             </Text>
@@ -940,7 +962,7 @@ export default function ModalsTestScreen() {
 
           {/* Full Screen Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Full Screen Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Full Screen Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               A modal that takes up the full screen for immersive content.
             </Text>
@@ -952,7 +974,9 @@ export default function ModalsTestScreen() {
             />
           </View>
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">New Custom Food Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              New Custom Food Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Custom food form — scroll to Portion sizes for the chevron row (native padding QA).
             </Text>
@@ -966,7 +990,7 @@ export default function ModalsTestScreen() {
 
           {/* Exercises Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Exercises Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Exercises Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               A full-screen modal for browsing and selecting exercises from the exercise library
               with search and categorization.
@@ -981,7 +1005,7 @@ export default function ModalsTestScreen() {
 
           {/* Zoomable Image Thumbnail: tap to open the full-screen viewer */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Zoomable Image</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Zoomable Image</Text>
             <ZoomableThumbnail uri="https://picsum.photos/seed/musclog/1200/800">
               <Image
                 source={{ uri: 'https://picsum.photos/seed/musclog/1200/800' }}
@@ -1016,7 +1040,9 @@ export default function ModalsTestScreen() {
 
           {/* Goals Management Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Goals Management Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Goals Management Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               A full-screen modal for viewing and managing goals history and current goals.
             </Text>
@@ -1030,7 +1056,7 @@ export default function ModalsTestScreen() {
 
           {/* Past Workouts History Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Past Workouts History Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1047,7 +1073,7 @@ export default function ModalsTestScreen() {
 
           {/* Body Metrics History Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Body Metrics History Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1063,7 +1089,7 @@ export default function ModalsTestScreen() {
 
           {/* Add User Metric Entry Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Add User Metric Entry Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1080,7 +1106,7 @@ export default function ModalsTestScreen() {
 
           {/* Edit Past Workout Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Edit Past Workout Data Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1096,7 +1122,7 @@ export default function ModalsTestScreen() {
 
           {/* Past Workout Detail Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Past Workout Detail Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1117,7 +1143,7 @@ export default function ModalsTestScreen() {
 
           {/* Edit Workout Metadata Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Edit Workout Metadata Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1133,7 +1159,9 @@ export default function ModalsTestScreen() {
 
           {/* Create Workout Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Create Workout Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Create Workout Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for creating a new workout with exercises, goals, and scheduling options.
             </Text>
@@ -1147,7 +1175,7 @@ export default function ModalsTestScreen() {
 
           {/* Portion Sizes Picker Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Portion Sizes Picker Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1164,7 +1192,7 @@ export default function ModalsTestScreen() {
 
           {/* Create Food Portion Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Create Food Portion Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1180,7 +1208,9 @@ export default function ModalsTestScreen() {
 
           {/* Browse Templates Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Browse Templates Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Browse Templates Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               A full-screen modal for browsing and selecting workout templates with search and
               category filtering.
@@ -1195,7 +1225,7 @@ export default function ModalsTestScreen() {
 
           {/* Log Meal Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Log Meal Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Log Meal Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for logging a meal with date and meal type selection.
             </Text>
@@ -1209,7 +1239,7 @@ export default function ModalsTestScreen() {
 
           {/* Meal Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Meal Data Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Meal Data Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for managing meal data with search and meal options.
             </Text>
@@ -1223,7 +1253,9 @@ export default function ModalsTestScreen() {
 
           {/* Exercise Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Exercise Data Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Exercise Data Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for managing exercise data with search and exercise options.
             </Text>
@@ -1237,7 +1269,9 @@ export default function ModalsTestScreen() {
 
           {/* Workout Log Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Workout Log Data Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Workout Log Data Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for managing workout log data with search and session options.
             </Text>
@@ -1251,7 +1285,7 @@ export default function ModalsTestScreen() {
 
           {/* Workout Template Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Workout Template Data Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1267,7 +1301,9 @@ export default function ModalsTestScreen() {
 
           {/* User Metric Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">User Metric Data Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              User Metric Data Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for managing body metric entries (weight, body fat, etc.) with search and
               history.
@@ -1282,7 +1318,7 @@ export default function ModalsTestScreen() {
 
           {/* Food Portion Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Food Portion Data Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1298,7 +1334,9 @@ export default function ModalsTestScreen() {
 
           {/* Meal Estimation Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Meal Estimation Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Meal Estimation Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for displaying AI-powered meal estimation with identified food items and
               nutritional breakdown.
@@ -1313,7 +1351,7 @@ export default function ModalsTestScreen() {
 
           {/* Time Picker Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Time Picker Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Time Picker Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for selecting time with hour and minute controls.
             </Text>
@@ -1327,7 +1365,7 @@ export default function ModalsTestScreen() {
 
           {/* Free Session Exercise Complete Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Free Session Exercise Complete Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1344,7 +1382,7 @@ export default function ModalsTestScreen() {
 
           {/* Nutrition Goal Data Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Nutrition Goal Data Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1360,7 +1398,9 @@ export default function ModalsTestScreen() {
 
           {/* Import Nutrition Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Import Nutrition Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Import Nutrition Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for pasting raw nutrition data to be parsed by AI.
             </Text>
@@ -1374,7 +1414,9 @@ export default function ModalsTestScreen() {
 
           {/* Import Workouts Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Import Workouts Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Import Workouts Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for pasting raw workout data to be parsed by AI.
             </Text>
@@ -1388,7 +1430,7 @@ export default function ModalsTestScreen() {
 
           {/* Nutrition Confirmation Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Nutrition Confirmation Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1404,7 +1446,7 @@ export default function ModalsTestScreen() {
 
           {/* Retrospective Nutrition Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Retrospective Nutrition Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1420,7 +1462,7 @@ export default function ModalsTestScreen() {
 
           {/* AI Nutrition Tracking Context Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               AI Nutrition Tracking Context Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1436,7 +1478,7 @@ export default function ModalsTestScreen() {
 
           {/* AI Custom Prompts Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               AI Custom Prompts Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1452,7 +1494,7 @@ export default function ModalsTestScreen() {
 
           {/* AI Custom Prompt Edit Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               AI Custom Prompt Edit Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1468,7 +1510,7 @@ export default function ModalsTestScreen() {
 
           {/* Cycle Log Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Cycle Log Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Cycle Log Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for logging menstrual cycle data including flow and symptoms.
             </Text>
@@ -1482,7 +1524,9 @@ export default function ModalsTestScreen() {
 
           {/* Cycle Settings Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Cycle Settings Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Cycle Settings Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for configuring menstrual cycle settings and goals.
             </Text>
@@ -1497,7 +1541,7 @@ export default function ModalsTestScreen() {
 
           {/* Generic Edit Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Generic Edit Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Generic Edit Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Includes a select field (chevron row). Reusable modal for editing various data types.
             </Text>
@@ -1511,7 +1555,9 @@ export default function ModalsTestScreen() {
 
           {/* Move Copy Meal Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Move/Copy Meal Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Move/Copy Meal Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for moving, copying, or splitting meals to different dates.
             </Text>
@@ -1551,7 +1597,7 @@ export default function ModalsTestScreen() {
 
           {/* Notifications Settings Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Notifications Settings Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1567,7 +1613,7 @@ export default function ModalsTestScreen() {
 
           {/* Past Workout Bottom Menu */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Past Workout Bottom Menu
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1583,7 +1629,7 @@ export default function ModalsTestScreen() {
 
           {/* Past Workouts History Filter Menu */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Past Workouts History Filter Menu
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1599,7 +1645,7 @@ export default function ModalsTestScreen() {
 
           {/* Recent Nutrition History Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Recent Nutrition History Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1615,7 +1661,7 @@ export default function ModalsTestScreen() {
 
           {/* Scanned Food Details Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Scanned Food Details Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">
@@ -1631,7 +1677,7 @@ export default function ModalsTestScreen() {
 
           {/* Smart Camera Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Smart Camera Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Smart Camera Modal</Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Full-screen camera modal for AI meal scanning and barcode detection.
             </Text>
@@ -1645,7 +1691,9 @@ export default function ModalsTestScreen() {
 
           {/* Visual Settings Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Visual Settings Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Visual Settings Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for customizing navigation bar items and visual preferences.
             </Text>
@@ -1659,7 +1707,9 @@ export default function ModalsTestScreen() {
 
           {/* Saved For Later Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">Saved For Later Modal</Text>
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
+              Saved For Later Modal
+            </Text>
             <Text className="mb-4 text-sm text-text-secondary">
               Modal for managing saved for later meals.
             </Text>
@@ -1673,7 +1723,7 @@ export default function ModalsTestScreen() {
 
           {/* Add Exercise To Session Modal */}
           <View className="mb-6">
-            <Text className="mb-2 text-lg font-bold text-text-primary">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">
               Add Exercise To Session Modal
             </Text>
             <Text className="mb-4 text-sm text-text-secondary">

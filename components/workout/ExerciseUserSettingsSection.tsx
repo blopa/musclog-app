@@ -78,7 +78,7 @@ export function ExerciseUserSettingsSection({
 
   return (
     <View className="px-4 pb-6 pt-2" testID="exercise-user-settings-section">
-      <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
+      <Text className="mb-1 text-lg font-semibold" style={{ color: theme.colors.text.primary }}>
         {t('exercises.viewExercise.preferences.title')}
       </Text>
       <Text className="mb-4 text-sm" style={{ color: theme.colors.text.secondary }}>

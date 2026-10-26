@@ -209,7 +209,7 @@ export function HomeWaterPrompt({
               color={theme.colors.status.info}
               style={{ flexShrink: 0 }}
             />
-            <Text className="flex-1 text-xs font-bold text-text-secondary">
+            <Text className="flex-1 text-xs font-semibold text-text-secondary">
               {t('bodyMetrics.addEntry.waterQuestionWithAmount', {
                 amount: formattedWaterIntake,
               })}

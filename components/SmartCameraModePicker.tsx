@@ -32,7 +32,7 @@ function ModePickerTab({
     <Pressable
       onPress={() => onSelect(mode)}
       disabled={disabled}
-      className="flex-1 rounded-xl px-2"
+      className="flex-1 rounded-control px-2"
       style={[
         {
           overflow: 'hidden',
@@ -104,7 +104,7 @@ export function SmartCameraModePicker({
   return (
     <View className={isSmallScreen ? 'mb-3 w-full items-center' : 'mb-6 w-full items-center'}>
       <View
-        className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
+        className="w-full max-w-sm flex-row items-stretch justify-between rounded-card p-1.5"
         style={{
           backgroundColor: theme.colors.background.neutralWash,
           borderWidth: theme.borderWidth.thin,

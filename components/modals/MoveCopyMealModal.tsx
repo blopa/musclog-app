@@ -161,7 +161,10 @@ export function MoveCopyMealModal({
         {mode === 'split' ? (
           <View className="gap-2">
             <View className="flex-row items-center justify-between">
-              <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+              <Text
+                className="text-xs font-semibold"
+                style={{ color: theme.colors.text.secondary }}
+              >
                 {t('food.actions.splitPercentage')}
               </Text>
               <Text
@@ -179,7 +182,7 @@ export function MoveCopyMealModal({
               {SPLIT_PRESETS.map((preset) => (
                 <Pressable
                   key={preset}
-                  className="flex-1 items-center justify-center rounded-xl border py-2"
+                  className="flex-1 items-center justify-center rounded-control border py-2"
                   style={{
                     borderColor:
                       splitPercentage === preset
@@ -220,7 +223,7 @@ export function MoveCopyMealModal({
 
         {/* Target Meal Type */}
         <View className="gap-2">
-          <Text className="text-xs font-bold" style={{ color: theme.colors.text.secondary }}>
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('food.actions.targetMealType')}
           </Text>
           <FilterTabs

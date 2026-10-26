@@ -73,7 +73,7 @@ export function CaloriesRemainingCard({
                   / {formatInteger(Math.round(calories.total), { useGrouping: false })}
                 </Text>
                 <Text
-                  className="ml-auto text-3xl font-semibold"
+                  className="ml-auto text-3xl font-semibold tabular-nums"
                   style={{ color: theme.colors.accent.secondary }}
                 >
                   {calories.percentage % 1 === 0

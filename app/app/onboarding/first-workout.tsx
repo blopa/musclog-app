@@ -203,7 +203,7 @@ export default function FirstWorkoutScreen() {
 
   const chip = (icon: React.ReactNode, label: string) => (
     <View
-      className="flex-row items-center gap-1.5 rounded-full px-3 py-1.5"
+      className="flex-row items-center gap-1.5 rounded-tag px-3 py-1.5"
       style={{ backgroundColor: theme.colors.background.cardElevated }}
     >
       {icon}
@@ -225,10 +225,7 @@ export default function FirstWorkoutScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-6 pt-10">
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.firstWorkout.title')}
             </Text>
             <Text

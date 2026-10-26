@@ -64,13 +64,13 @@ export function PeriodHistoryList({ periods, history, onEdit }: PeriodHistoryLis
             onPress={() => onEdit(period)}
             accessibilityRole="button"
             accessibilityLabel={`${range}. ${t('cycle.history.editHint')}`}
-            className="rounded-2xl border-2 border-ink/5 bg-bg-card p-4"
+            className="rounded-card border-2 border-ink/5 bg-bg-card p-4"
             style={{ opacity: excluded ? 0.7 : 1 }}
           >
-            <Text className="text-base font-bold text-text-primary">{range}</Text>
+            <Text className="text-base font-semibold text-text-primary">{range}</Text>
             <View className="mt-2 flex-row flex-wrap items-center gap-2">
               <Text
-                className="rounded-full px-2 py-0.5 text-xs font-semibold"
+                className="rounded-tag px-2 py-0.5 text-xs font-semibold"
                 style={{
                   backgroundColor: theme.colors.rose.brand10,
                   color: theme.colors.rose.brand,

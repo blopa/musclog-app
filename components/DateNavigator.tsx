@@ -32,7 +32,7 @@ export function DateNavigator({ selectedDate, onDateChange, compact = false }: D
       <View className={`flex-row items-center justify-between ${compact ? '' : 'px-4 py-4'}`}>
         <Pressable
           onPress={goToPreviousDay}
-          className="rounded-lg p-3 active:bg-bg-secondary"
+          className="rounded-control p-3 active:bg-bg-secondary"
           style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
         >
           <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
@@ -46,7 +46,7 @@ export function DateNavigator({ selectedDate, onDateChange, compact = false }: D
 
         <Pressable
           onPress={goToNextDay}
-          className="rounded-lg p-3 active:bg-bg-secondary"
+          className="rounded-control p-3 active:bg-bg-secondary"
           style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
         >
           <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
