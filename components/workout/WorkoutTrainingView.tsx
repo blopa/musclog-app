@@ -8,7 +8,6 @@ import {
 } from 'react-native-keyboard-controller';
 
 import { Button } from '@/components/theme/Button';
-import { TextButton } from '@/components/theme/TextButton';
 import { useSnackbar } from '@/context/SnackbarContext';
 import type Exercise from '@/database/models/Exercise';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
@@ -334,10 +333,12 @@ export function WorkoutTrainingView({
         </View>
       ) : null}
       {controller.view === 'inline' || allResolved ? (
-        <TextButton
-          label={t('trainingFlow.addExercise')}
+        <Button
+          variant="dashed"
+          size="sm"
+          width="full"
           icon={Plus}
-          align="center"
+          label={t('trainingFlow.addExercise')}
           onPress={onAddExercise}
         />
       ) : null}

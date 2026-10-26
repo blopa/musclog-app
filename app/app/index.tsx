@@ -33,6 +33,7 @@ import { UserMenuModal } from '@/components/modals/UserMenuModal';
 import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { WhatsNewAutoPrompt } from '@/components/whatsNew/WhatsNewAutoPrompt';
@@ -578,10 +579,12 @@ export default function HomeScreen() {
                   />
                 ))}
 
-                {/* A filled list: adding more is a quiet text action, not another dashed slot. */}
-                <TextButton
-                  label={t('food.meals.addFood')}
+                <Button
+                  variant="dashed"
+                  size="sm"
+                  width="full"
                   icon={Plus}
+                  label={t('food.meals.addFood')}
                   onPress={() => setIsAddFoodVisible(true)}
                 />
               </View>

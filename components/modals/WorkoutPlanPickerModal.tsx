@@ -5,7 +5,6 @@ import { View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
-import { TextButton } from '@/components/theme/TextButton';
 import type WorkoutPlan from '@/database/models/WorkoutPlan';
 import { useTheme } from '@/hooks/useTheme';
 import { getWorkoutIcon } from '@/utils/workoutIconUtils';
@@ -70,9 +69,12 @@ export function WorkoutPlanPickerModal({
           hasGroups={false}
         />
         {onCreatePlan ? (
-          <TextButton
-            label={t('workouts.plans.picker.create')}
+          <Button
+            variant="dashed"
+            size="sm"
+            width="full"
             icon={Plus}
+            label={t('workouts.plans.picker.create')}
             onPress={onCreatePlan}
           />
         ) : null}

@@ -8,7 +8,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
 import DashedButton from './theme/DashedButton';
-import { TextButton } from './theme/TextButton';
 
 type MealSectionProps = {
   title: string;
@@ -20,30 +19,19 @@ type MealSectionProps = {
   onAddFood?: () => void;
   menuButton?: ReactNode;
   intuitiveMode?: boolean;
-  /** Whether the meal has anything logged. Only an empty meal is drawn as a dashed slot. */
-  hasItems?: boolean;
 };
 
 type AddFoodButtonProps = {
   mealType?: string;
   onPress?: () => void;
-  hasItems?: boolean;
 };
 
-/**
- * A dashed outline means "this slot is empty, fill it". Under a meal that already has food the
- * same action is a plain text button, so a full diary is not striped with dashed bars.
- */
-function AddFoodButton({ mealType, onPress, hasItems = false }: AddFoodButtonProps) {
+function AddFoodButton({ mealType, onPress }: AddFoodButtonProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const buttonText = mealType
     ? t('food.meals.addFoodTo', { meal: mealType })
     : t('food.meals.addFood');
-
-  if (hasItems) {
-    return <TextButton label={buttonText} icon={Plus} onPress={onPress} />;
-  }
 
   return (
     <DashedButton
@@ -150,7 +138,6 @@ export const MealSection = memo(function MealSection({
   onAddFood,
   menuButton,
   intuitiveMode = false,
-  hasItems = false,
 }: MealSectionProps) {
   return (
     <View>
@@ -168,7 +155,7 @@ export const MealSection = memo(function MealSection({
         {children}
 
         {/* Add Food Button */}
-        <AddFoodButton mealType={title} onPress={onAddFood} hasItems={hasItems} />
+        <AddFoodButton mealType={title} onPress={onAddFood} />
       </View>
     </View>
   );

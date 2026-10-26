@@ -438,9 +438,10 @@ subtitle.
   empty state is the screen and its button is that screen's one primary action. When the empty
   state is the whole screen (Notes), pass `bare` so there is no card around the only thing on the
   page.
-- A dashed outline means "this slot is empty, fill it": an empty meal, a list with no sets yet.
-  Under a list that already has entries, "Add …" is a `TextButton` with a plus icon, not another
-  dashed bar.
+- A dashed outline means "add another item to this list": the button at the end of any list the
+  user appends to (meals in the food diary, exercises, sets, ingredients, portions, past periods),
+  whether the list is empty or full. Use `Button variant="dashed"` (`DashedButton` where it already
+  stands); do not swap it for a `TextButton` once the list has entries.
 - No decoration that conveys nothing: no background blobs or blurred glows, no floating icon
   clusters around an illustration, no gradient icon tiles. Onboarding shows the real app mark
   (`assets/logo.png`), not a placeholder glyph.
@@ -453,8 +454,7 @@ subtitle.
   skeleton) and runs on the native driver; a pulsing glow, a floating trophy or a pulsing "live"
   dot is removed rather than moved to another thread. `TextInput`'s border colour is the one
   JS-driven animation, because colour cannot use the native driver.
-  `deslopGuards.test.ts` holds the loop allowlist, `useNativeDriver: false`, blur and the dashed
-  count.
+  `deslopGuards.test.ts` holds the loop allowlist, `useNativeDriver: false` and blur.
 
 ### Inputs
 

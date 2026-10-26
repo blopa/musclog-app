@@ -6,9 +6,9 @@ import { Text, View } from 'react-native';
 import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import { Accordion } from '@/components/theme/Accordion';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
-import { TextButton } from '@/components/theme/TextButton';
 import { useTheme } from '@/hooks/useTheme';
 import type { WorkoutTemplateWithMetadata } from '@/hooks/useWorkoutTemplates';
 import {
@@ -102,10 +102,12 @@ export function WorkoutLibraryContent({
   const resultCount = searchResults.length;
   const createWorkoutButton =
     templates.length > 0 ? (
-      <TextButton
-        label={t('workouts.createTemplate.title')}
+      <Button
+        variant="dashed"
+        size="sm"
+        width="full"
         icon={Plus}
-        align="center"
+        label={t('workouts.createTemplate.title')}
         onPress={onCreateWorkout}
       />
     ) : null;

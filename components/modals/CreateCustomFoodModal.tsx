@@ -40,7 +40,6 @@ import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
-import { TextButton } from '@/components/theme/TextButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import type { MealType } from '@/database/models';
@@ -893,24 +892,19 @@ export default function CreateCustomFoodModal({
                       </View>
                     );
                   })}
-                  {selectedPortionIds.length === 0 ? (
-                    <Button
-                      variant="dashed"
-                      width="full"
-                      size="sm"
-                      icon={Plus}
-                      disabled={isLoadingPortions}
-                      onPress={() => setShowPortionPicker(true)}
-                      label={t('food.newCustomFood.addPortionSizes')}
-                    />
-                  ) : (
-                    <TextButton
-                      label={t('food.newCustomFood.addAnotherPortion')}
-                      icon={Plus}
-                      disabled={isLoadingPortions}
-                      onPress={() => setShowPortionPicker(true)}
-                    />
-                  )}
+                  <Button
+                    variant="dashed"
+                    width="full"
+                    size="sm"
+                    icon={Plus}
+                    disabled={isLoadingPortions}
+                    onPress={() => setShowPortionPicker(true)}
+                    label={
+                      selectedPortionIds.length === 0
+                        ? t('food.newCustomFood.addPortionSizes')
+                        : t('food.newCustomFood.addAnotherPortion')
+                    }
+                  />
                 </View>
               )}
             </View>

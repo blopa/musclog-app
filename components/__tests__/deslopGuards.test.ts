@@ -313,8 +313,6 @@ const ANIMATED_LOOP_ALLOWLIST = [
   'app/app/workout/rest-timer.tsx',
   'components/CameraProcessingIndicator.tsx',
 ];
-/** Dashed outlines are for an empty slot (an empty meal, no sets yet); these are what is left. */
-const DASHED_CEILING = 5;
 
 describe('Phase 6: empty states, illustrations and decorative motion', () => {
   it('runs no infinite animation outside the allowlisted spinners', () => {
@@ -354,12 +352,6 @@ describe('Phase 6: empty states, illustrations and decorative motion', () => {
     );
     expect(source).not.toMatch(/\bh-40\b|\bw-40\b|accent\.primary10/);
     expect(source).toMatch(/buttonVariant = 'secondary'/);
-  });
-
-  it('keeps dashed "Add" bars from spreading', () => {
-    expect(total(occurrences(/<DashedButton\b|variant="dashed"/g))).toBeLessThanOrEqual(
-      DASHED_CEILING
-    );
   });
 });
 
