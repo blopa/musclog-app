@@ -29,6 +29,7 @@ import { parseSetPrescription } from '@/utils/setPrescription';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
+import { calculateSessionVolumeFromSets } from '@/utils/workoutCalculator';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
   assertValidWorkoutSetDifficultyLevel,
@@ -1240,6 +1241,79 @@ export class WorkoutService {
 
       throw new Error('Failed to reorder workout log exercises: Unknown error');
     }
+  }
+
+  /**
+   * Volume of one exercise in each recent session of the same workout as `workoutLogId`
+   * (the session itself included). Only performed working sets count, like workout volume.
+   * Empty when the log was not started from a template.
+   */
+  static async getExerciseVolumeHistory(
+    workoutLogId: string,
+    exerciseId: string,
+    limit = 10
+  ): Promise<{ id: string; date: number; volume: number }[]> {
+    const current = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+    if (!current.templateId) {
+      return [];
+    }
+
+    const logs = await this.getWorkoutLogsByTemplate(current.templateId, limit);
+    if (!logs.some((log) => log.id === current.id) && current.completedAt) {
+      logs.push(current);
+    }
+
+    const logExercises = await fetchByIds<WorkoutLogExercise>(
+      'workout_log_exercises',
+      'workout_log_id',
+      logs.map((log) => log.id),
+      Q.where('exercise_id', exerciseId),
+      Q.where('deleted_at', Q.eq(null))
+    );
+    if (logExercises.length === 0) {
+      return [];
+    }
+
+    const [sets, exercise, bodyWeightKg] = await Promise.all([
+      fetchByIds<WorkoutLogSet>(
+        'workout_log_sets',
+        'log_exercise_id',
+        logExercises.map((le) => le.id),
+        Q.where('deleted_at', Q.eq(null))
+      ),
+      database.get<Exercise>('exercises').find(exerciseId),
+      UserMetricService.getUserBodyWeightKgForVolume(),
+    ]);
+
+    const logIdByLogExercise = new Map(logExercises.map((le) => [le.id, le.workoutLogId]));
+    const setsByLog = new Map<string, WorkoutLogSet[]>();
+    for (const set of sets) {
+      const logId = logIdByLogExercise.get(set.logExerciseId);
+      if (logId) {
+        setsByLog.set(logId, [...(setsByLog.get(logId) ?? []), set]);
+      }
+    }
+
+    const exerciseById = new Map([[exerciseId, { equipmentType: exercise.equipmentType }]]);
+    return logs
+      .filter((log) => log.completedAt && setsByLog.has(log.id))
+      .map((log) => ({
+        id: log.id,
+        date: log.startedAt || log.completedAt || 0,
+        volume: calculateSessionVolumeFromSets(
+          setsByLog.get(log.id)!.map((set) => ({
+            exerciseId,
+            weight: set.weight,
+            reps: set.reps,
+            repsInReserve: set.repsInReserve,
+            completionStatus: set.completionStatus,
+            setType: set.setType,
+          })),
+          exerciseById,
+          bodyWeightKg,
+          { onlyCompletedSets: true }
+        ),
+      }));
   }
 
   /**

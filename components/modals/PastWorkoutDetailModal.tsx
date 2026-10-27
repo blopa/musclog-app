@@ -6,10 +6,10 @@ import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native
 import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
-import { LineChart, LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { CardioSummaryCard } from '@/components/workout/CardioSummaryCard';
+import { VolumeTrendCard } from '@/components/workout/VolumeTrendCard';
 import { WorkoutMusclesDetails } from '@/components/WorkoutMusclesDetails';
 import type { Units } from '@/constants/settings';
 import { database } from '@/database';
@@ -29,14 +29,18 @@ import { useTheme } from '@/hooks/useTheme';
 import { healthConnectService } from '@/services/healthConnect';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
 import { formatDistance, formatPace } from '@/utils/cardioFormat';
-import { XAxisLabel } from '@/utils/chartUtils';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import type { VolumeTrend } from '@/utils/volumeTrend';
 import { formatWorkoutDuration } from '@/utils/workout';
-import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
+import {
+  calculateExerciseVolumeTrend,
+  type WorkoutExercise,
+  type WorkoutSet,
+} from '@/utils/workoutDetail';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
@@ -146,61 +150,6 @@ function WorkoutSummaryCard({
         </View>
       </View>
     </View>
-  );
-}
-
-// Component: Volume Trend Card
-type VolumeTrendCardProps = {
-  percentage: number;
-  data: LineChartDataPoint[];
-  labels: XAxisLabel[];
-  onInteractionStart?: () => void;
-  onInteractionEnd?: () => void;
-};
-
-function VolumeTrendCard({
-  percentage,
-  data,
-  labels,
-  onInteractionStart,
-  onInteractionEnd,
-}: VolumeTrendCardProps) {
-  const theme = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <GenericCard variant="flat">
-      <View style={{ padding: theme.spacing.padding.base }}>
-        <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-sm font-semibold text-text-primary">
-            {t('workoutDetail.volumeTrend')}
-          </Text>
-          <View
-            className="rounded-tag px-2 py-0.5"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}
-          >
-            <Text className="text-xs font-semibold text-accent-primary">
-              {t('workoutDetail.volumeTrendPercentage', { percentage })}
-            </Text>
-          </View>
-        </View>
-        <LineChart
-          data={data}
-          height={128}
-          chartWidth={400}
-          chartHeight={100}
-          // The points are indexed 0..n-1, not pixels, so the domain has to match or they pile up on the left.
-          xDomain={[0, Math.max(data.length - 1, 1)]}
-          lineColor={theme.colors.accent.primary}
-          areaColor={theme.colors.accent.primary30}
-          xAxisLabels={labels}
-          marginTop={8}
-          marginBottom={8}
-          onInteractionStart={onInteractionStart}
-          onInteractionEnd={onInteractionEnd}
-        />
-      </View>
-    </GenericCard>
   );
 }
 
@@ -486,6 +435,8 @@ export default function PastWorkoutDetailModal({
   const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
   const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
   const [musclesModalSets, setMusclesModalSets] = useState<ExerciseSetRef[]>([]);
+  const [musclesModalTitle, setMusclesModalTitle] = useState<string | undefined>();
+  const [musclesModalTrend, setMusclesModalTrend] = useState<VolumeTrend | null>(null);
   const [allWorkoutMuscles, setAllWorkoutMuscles] = useState<string[]>([]);
 
   useEffect(() => {
@@ -790,7 +741,15 @@ export default function PastWorkoutDetailModal({
               .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
               .map((s, idx) => ({ id: s.id, setNumber: idx + 1 }));
             setMusclesModalSets(sets);
+            setMusclesModalTitle(workout.exercises.find((e) => e.id === exerciseId)?.name);
+            setMusclesModalTrend(null);
             setIsMusclesModalVisible(true);
+
+            if (workoutId) {
+              calculateExerciseVolumeTrend(workoutId, exerciseId, dateFnsLocale)
+                .then(setMusclesModalTrend)
+                .catch((err) => console.warn('[PastWorkoutDetailModal] exercise trend error:', err));
+            }
           }}
           onClose={onClose}
         />
@@ -944,7 +903,10 @@ export default function PastWorkoutDetailModal({
         onClose={() => {
           setIsMusclesModalVisible(false);
           setMusclesModalSets([]);
+          setMusclesModalTrend(null);
         }}
+        title={musclesModalTitle}
+        volumeTrend={musclesModalTrend}
         muscleGroups={musclesModalGroups}
         exerciseSets={musclesModalSets}
       />

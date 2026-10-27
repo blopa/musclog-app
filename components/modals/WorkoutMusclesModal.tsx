@@ -5,10 +5,12 @@ import { ActivityIndicator, Dimensions, Platform, Text, View } from 'react-nativ
 
 import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { VolumeTrendCard } from '@/components/workout/VolumeTrendCard';
 import { WorkoutMusclesDetails } from '@/components/WorkoutMusclesDetails';
 import { useChartCapture } from '@/hooks/useChartCapture';
 import { useTheme } from '@/hooks/useTheme';
 import { type BleWorkoutSample, readBleDataPointsFile } from '@/utils/bleWorkoutDataStorage';
+import type { VolumeTrend } from '@/utils/volumeTrend';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -73,6 +75,8 @@ type WorkoutMusclesModalProps = {
   title?: string;
   muscleGroups: (string | null | undefined)[];
   exerciseSets?: ExerciseSetRef[];
+  /** This exercise's volume across sessions of the same workout; shown above the muscles. */
+  volumeTrend?: VolumeTrend | null;
 };
 
 export function WorkoutMusclesModal({
@@ -81,6 +85,7 @@ export function WorkoutMusclesModal({
   title,
   muscleGroups,
   exerciseSets = [],
+  volumeTrend,
 }: WorkoutMusclesModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -89,6 +94,7 @@ export function WorkoutMusclesModal({
 
   const chartWidth = Dimensions.get('window').width - 48;
   const setsWithData = exerciseSets.filter((s) => (charts?.get(s.id)?.length ?? 0) > 0);
+  const hasTrend = (volumeTrend?.data.length ?? 0) > 1;
   const modalTitle = title ?? t('workoutDetail.musclesWorked');
 
   function renderRepContent() {
@@ -160,7 +166,7 @@ export function WorkoutMusclesModal({
       visible={visible}
       onClose={onClose}
       title={modalTitle}
-      scrollable={exerciseSets.length > 0}
+      scrollable={exerciseSets.length > 0 || hasTrend}
       headerRight={
         !isCapturing ? (
           <MenuButton
@@ -172,6 +178,15 @@ export function WorkoutMusclesModal({
         ) : null
       }
     >
+      {hasTrend && volumeTrend ? (
+        <View style={{ padding: theme.spacing.padding.base }}>
+          <VolumeTrendCard
+            percentage={volumeTrend.percentage}
+            data={volumeTrend.data}
+            labels={volumeTrend.labels}
+          />
+        </View>
+      ) : null}
       <WorkoutMusclesDetails muscleGroups={muscleGroups} captureRef={captureRef} />
       {exerciseSets.length > 0 ? (
         <View
