@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
-import { GEMINI_MODELS } from '@/constants/ai';
+import { DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
 import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import { readSetting, SETTINGS } from '@/constants/settingDefinitions';
@@ -85,6 +85,7 @@ import { waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
+import { resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
@@ -211,9 +212,9 @@ const DEFAULT_STATE: SettingsState = {
   writeHealthData: false,
   anonymousBugReport: true,
   googleGeminiApiKey: '',
-  googleGeminiModel: GEMINI_MODELS.GEMINI_2_5_FLASH.value,
+  googleGeminiModel: DEFAULT_GEMINI_MODEL,
   openAiApiKey: '',
-  openAiModel: 'gpt-4o',
+  openAiModel: DEFAULT_OPENAI_MODEL,
   localLlmApiKey: '',
   localLlmModel: 'llama3',
   localLlmBaseUrl: 'http://localhost:11434/v1',
@@ -357,13 +358,13 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     writeHealthData: getBoolean(map, WRITE_HEALTH_DATA_SETTING_TYPE),
     anonymousBugReport: getBoolean(map, ANONYMOUS_BUG_REPORT_SETTING_TYPE, true),
     googleGeminiApiKey: getString(map, GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
-    googleGeminiModel: getString(
-      map,
-      GOOGLE_GEMINI_MODEL_SETTING_TYPE,
-      GEMINI_MODELS.GEMINI_2_5_FLASH.value
+    googleGeminiModel: resolveGeminiModel(
+      getString(map, GOOGLE_GEMINI_MODEL_SETTING_TYPE, DEFAULT_GEMINI_MODEL)
     ),
     openAiApiKey: getString(map, OPENAI_API_KEY_SETTING_TYPE),
-    openAiModel: getString(map, OPENAI_MODEL_SETTING_TYPE, 'gpt-4o'),
+    openAiModel: resolveOpenAiModel(
+      getString(map, OPENAI_MODEL_SETTING_TYPE, DEFAULT_OPENAI_MODEL)
+    ),
     localLlmApiKey: getString(map, LOCAL_LLM_API_KEY_SETTING_TYPE),
     localLlmModel: getString(map, LOCAL_LLM_MODEL_SETTING_TYPE, 'llama3'),
     localLlmBaseUrl: getString(map, LOCAL_LLM_BASE_URL_SETTING_TYPE, 'http://localhost:11434/v1'),

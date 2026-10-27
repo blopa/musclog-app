@@ -1,3 +1,5 @@
+import { DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL, OPENAI_MODELS } from '@/constants/ai';
+
 import AiService from '../AiService';
 
 const mockSettings: Record<string, jest.Mock> = {};
@@ -38,6 +40,56 @@ function setSettings(values: Record<string, unknown>) {
     mockSettings[name] = jest.fn().mockResolvedValue(value);
   }
 }
+
+describe('AiService.getAiConfig stored models', () => {
+  it('replaces and saves a stored model that is no longer supported', async () => {
+    setSettings({
+      getEnableGoogleGemini: true,
+      getGoogleGeminiApiKey: 'g',
+      getGoogleGeminiModel: 'gemini-3-pro-preview',
+      setGoogleGeminiModel: undefined,
+    });
+    mockSettings.setGoogleGeminiModel = jest.fn().mockResolvedValue(undefined);
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({
+      provider: 'gemini',
+      model: DEFAULT_GEMINI_MODEL,
+    });
+    expect(mockSettings.setGoogleGeminiModel).toHaveBeenCalledWith(DEFAULT_GEMINI_MODEL);
+
+    setSettings({
+      getEnableOpenAi: true,
+      getOpenAiApiKey: 'o',
+      getOpenAiModel: 'gpt-4o',
+    });
+    mockSettings.setOpenAiModel = jest.fn().mockResolvedValue(undefined);
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({
+      provider: 'openai',
+      model: DEFAULT_OPENAI_MODEL,
+    });
+    expect(mockSettings.setOpenAiModel).toHaveBeenCalledWith(DEFAULT_OPENAI_MODEL);
+  });
+
+  it('keeps and does not rewrite a supported stored model', async () => {
+    setSettings({
+      getEnableOpenAi: true,
+      getOpenAiApiKey: 'o',
+      getOpenAiModel: OPENAI_MODELS.GPT_6_ASTRA.value,
+    });
+    mockSettings.setOpenAiModel = jest.fn();
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({ model: 'gpt-6-astra' });
+    expect(mockSettings.setOpenAiModel).not.toHaveBeenCalled();
+  });
+
+  it('still answers when saving the replacement fails', async () => {
+    setSettings({
+      getEnableOpenAi: true,
+      getOpenAiApiKey: 'o',
+      getOpenAiModel: 'o1',
+    });
+    mockSettings.setOpenAiModel = jest.fn().mockRejectedValue(new Error('db'));
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({ model: DEFAULT_OPENAI_MODEL });
+  });
+});
 
 describe('AiService.getAiConfig', () => {
   it('prefers the gateway over every other provider', async () => {
@@ -85,7 +137,7 @@ describe('AiService.getAiConfig', () => {
     await expect(AiService.getAiConfig()).resolves.toMatchObject({
       provider: 'openai',
       apiKey: 'o',
-      model: 'gpt-4o',
+      model: DEFAULT_OPENAI_MODEL,
     });
   });
 

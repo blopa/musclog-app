@@ -1,6 +1,6 @@
-import { GEMINI_MODELS } from '@/constants/ai';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
+import { resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import type { CoachAIConfig } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
@@ -73,8 +73,7 @@ export class AiService {
         return {
           provider: 'gemini',
           apiKey: geminiKey,
-          model:
-            (await SettingsService.getGoogleGeminiModel()) || GEMINI_MODELS.GEMINI_2_5_FLASH.value,
+          model: await AiService.currentGeminiModel(),
           language,
         };
       }
@@ -84,7 +83,7 @@ export class AiService {
         return {
           provider: 'openai',
           apiKey: openAiKey,
-          model: (await SettingsService.getOpenAiModel()) || 'gpt-4o',
+          model: await AiService.currentOpenAiModel(),
           language,
         };
       }
@@ -94,6 +93,34 @@ export class AiService {
     }
 
     return null;
+  }
+
+  /**
+   * The Gemini model to use, with a stored model that is no longer supported replaced by the
+   * default and saved, so the settings screen shows what is actually being called.
+   */
+  private static async currentGeminiModel(): Promise<string> {
+    const stored = await SettingsService.getGoogleGeminiModel();
+    const model = resolveGeminiModel(stored);
+    if (stored && stored !== model) {
+      await SettingsService.setGoogleGeminiModel(model).catch((error) =>
+        handleError(error, 'AiService.currentGeminiModel')
+      );
+    }
+
+    return model;
+  }
+
+  private static async currentOpenAiModel(): Promise<string> {
+    const stored = await SettingsService.getOpenAiModel();
+    const model = resolveOpenAiModel(stored);
+    if (stored && stored !== model) {
+      await SettingsService.setOpenAiModel(model).catch((error) =>
+        handleError(error, 'AiService.currentOpenAiModel')
+      );
+    }
+
+    return model;
   }
 }
 

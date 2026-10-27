@@ -20,7 +20,12 @@ import { SecretInput } from '@/components/theme/SecretInput';
 import { SectionLabel } from '@/components/theme/SectionLabel';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
+import {
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_OPENAI_MODEL,
+  GEMINI_MODELS,
+  OPENAI_MODELS,
+} from '@/constants/ai';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
@@ -262,12 +267,12 @@ export function AISettingsModal({
   onClose,
   googleGeminiApiKey = '',
   onGoogleGeminiApiKeyChange,
-  geminiModel = 'Gemini Pro 1.5',
+  geminiModel = DEFAULT_GEMINI_MODEL,
   onGeminiModelPress,
   openAiApiKey = '',
   onOpenAiApiKeyChange,
   onGetOpenAiKeyPress,
-  openAiModel = 'GPT-4o',
+  openAiModel = DEFAULT_OPENAI_MODEL,
   onOpenAiModelPress,
   localLlmApiKey = '',
   onLocalLlmApiKeyChange,

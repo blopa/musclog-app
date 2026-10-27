@@ -10,15 +10,13 @@ import {
 } from '@google/genai';
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
-import { GEMINI_MODELS } from '@/constants/ai';
+import { DEFAULT_GEMINI_MODEL } from '@/constants/ai';
 
 import { AiInvalidKeyError } from './aiErrors';
 import { captureMessage } from './sentry';
 
 const getModel = async () => {
-  const defaultModel = GEMINI_MODELS.GEMINI_2_5_FLASH.model;
-
-  return defaultModel;
+  return DEFAULT_GEMINI_MODEL;
 };
 
 const safetySettings = [
@@ -155,8 +153,10 @@ export function extractGeminiText(response: any): GeminiTextResult {
 // --- Generation config ---
 
 export type GeminiModelFamily =
+  | 'gemini-4'
   | 'gemini-3-pro'
   | 'gemini-3-flash'
+  | 'gemini-3-flash-no-minimal'
   | 'gemini-2.5-pro'
   | 'gemini-2.5-flash'
   | 'gemini-2.5-flash-lite'
@@ -176,8 +176,13 @@ type ThinkingCapability =
  * re-check this table against https://ai.google.dev/gemini-api/docs/thinking when adding a model.
  */
 export const GEMINI_MODEL_CAPABILITIES: Record<GeminiModelFamily, ThinkingCapability> = {
+  // Gemini 4 and 3.1 Pro list only low / medium / high.
+  'gemini-4': { kind: 'level', structured: ThinkingLevel.LOW },
   'gemini-3-pro': { kind: 'level', structured: ThinkingLevel.LOW },
+  // 3 Flash preview, 3.5 and 3.6 (Flash and Flash-Lite) accept `minimal`.
   'gemini-3-flash': { kind: 'level', structured: ThinkingLevel.MINIMAL },
+  // Every other Gemini 3.x Flash (3.8 lists low / medium / high only) gets `low`, which all accept.
+  'gemini-3-flash-no-minimal': { kind: 'level', structured: ThinkingLevel.LOW },
   'gemini-2.5-pro': { kind: 'budget', structured: 128 },
   'gemini-2.5-flash': { kind: 'budget', structured: 0 },
   'gemini-2.5-flash-lite': { kind: 'budget', structured: 0 },
@@ -186,12 +191,24 @@ export const GEMINI_MODEL_CAPABILITIES: Record<GeminiModelFamily, ThinkingCapabi
 
 export function geminiModelFamily(model: string | undefined): GeminiModelFamily {
   const name = (model ?? '').toLowerCase();
+  if (name.startsWith('gemini-4')) {
+    return 'gemini-4';
+  }
+
   if (name.startsWith('gemini-3') && name.includes('pro')) {
     return 'gemini-3-pro';
   }
 
-  if (name.startsWith('gemini-3')) {
+  if (
+    name.startsWith('gemini-3-flash') ||
+    name.startsWith('gemini-3.5-') ||
+    name.startsWith('gemini-3.6-')
+  ) {
     return 'gemini-3-flash';
+  }
+
+  if (name.startsWith('gemini-3')) {
+    return 'gemini-3-flash-no-minimal';
   }
 
   if (name.startsWith('gemini-2.5-flash-lite')) {
