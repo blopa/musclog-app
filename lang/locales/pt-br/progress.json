@@ -8,6 +8,7 @@
     "averageIntakeFiber": "Fibra",
     "caloriesBurnedToday": "Calorias Queimadas Hoje",
     "caloriesBurnedSubtitle": "Baseado no TDEE de {{tdee}} kcal/dia",
+    "pastTdeeWindow": "Calculado com seus registros entre {{start}} e {{end}}. Registre sua alimentação e se pese por uma ou duas semanas para atualizá-lo.",
     "caloriesBurnedProgress": "{{percent}}% do dia passou",
     "circadianModal": {
       "title": "Ciência da Queima de Calorias",

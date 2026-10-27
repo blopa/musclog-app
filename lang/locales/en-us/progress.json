@@ -8,6 +8,7 @@
     "averageIntakeFiber": "Fiber",
     "caloriesBurnedToday": "Calories burned today",
     "caloriesBurnedSubtitle": "Based on TDEE of {{tdee}} kcal/day",
+    "pastTdeeWindow": "Measured from your tracking between {{start}} and {{end}}. Log your food and weigh in for a week or two to update it.",
     "caloriesBurnedProgress": "{{percent}}% of day elapsed",
     "circadianModal": {
       "title": "Calorie burn science",

@@ -1,15 +1,21 @@
-import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
+import {
+  getHistoricalNutritionParams,
+  getLatestHistoricalNutritionWindow,
+} from '@/utils/historicalNutritionParams';
 import { localDayKeyPlusCalendarDays } from '@/utils/calendarDate';
 
 const mockGetMetricsHistory = jest.fn();
 const mockGetRangeNutrients = jest.fn();
 const mockGetNutritionLogsForDateRange = jest.fn();
+const mockGetLatestMetricOnOrBefore = jest.fn();
+const mockGetLatestLogOnOrBefore = jest.fn();
 
 // Mocked per module: reaching the real ones pulls in the adapter and, through it,
 // @sentry/react-native.
 jest.mock('@/database/services/UserMetricService', () => ({
   UserMetricService: {
     getMetricsHistory: (...args: unknown[]) => mockGetMetricsHistory(...args),
+    getLatestOnOrBefore: (...args: unknown[]) => mockGetLatestMetricOnOrBefore(...args),
   },
 }));
 
@@ -17,6 +23,7 @@ jest.mock('@/database/services/NutritionService', () => ({
   NutritionService: {
     getRangeNutrients: (...args: unknown[]) => mockGetRangeNutrients(...args),
     getNutritionLogsForDateRange: (...args: unknown[]) => mockGetNutritionLogsForDateRange(...args),
+    getLatestLogOnOrBefore: (...args: unknown[]) => mockGetLatestLogOnOrBefore(...args),
   },
 }));
 
@@ -371,4 +378,145 @@ it('separates seven food-logging days from a thirty-day trend interval', async (
   expect(
     await getHistoricalNutritionParams({ asOfDate: fixedEndDate, excludeUnloggedDays: true })
   ).toMatchObject({ historicalTotalDays: 7, historicalWeightChangeDays: 30 });
+});
+
+describe('getLatestHistoricalNutritionWindow', () => {
+  /** Noon on a local calendar day, so no timezone moves it to a neighbouring day. */
+  const day = (y: number, m: number, d: number) => new Date(y, m - 1, d, 12).getTime();
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  type Log = { date: number; calories: number };
+  let weights: { date: number; value: number }[];
+  let logs: Log[];
+  let fastedDaysInRange: (start: number, end: number) => number | undefined;
+
+  /** Each daily range call covers [start's midnight, end's midnight + 1 day). */
+  const inRange = (date: number, start: Date, end: Date) =>
+    date >= new Date(start).setHours(0, 0, 0, 0) &&
+    date < new Date(end).setHours(0, 0, 0, 0) + DAY_MS;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    weights = [];
+    logs = [];
+    fastedDaysInRange = () => undefined;
+
+    mockGetMetricsHistory.mockImplementation(
+      async (type: string, range: { startDate: number; endDate: number }) =>
+        type === 'weight'
+          ? weights
+              .filter((w) => w.date >= range.startDate && w.date <= range.endDate)
+              .map((w) => makeWeightMetric(w.date, w.value))
+          : []
+    );
+    mockGetNutritionLogsForDateRange.mockImplementation(async (start: Date, end: Date) =>
+      logs.filter((log) => inRange(log.date, start, end)).map((log) => makeNutritionLog(log.date))
+    );
+    mockGetRangeNutrients.mockImplementation(async (start: Date, end: Date) => {
+      const inside = logs.filter((log) => inRange(log.date, start, end));
+      const loggedDays = new Set(inside.map((log) => new Date(log.date).toDateString())).size;
+      const fasted = fastedDaysInRange(start.getTime(), end.getTime());
+      return {
+        calories: inside.reduce((sum, log) => sum + log.calories, 0),
+        // Mirrors getNutritionDayCoverage: only set while fasting days are enabled.
+        effectiveDayCount: fasted === undefined ? undefined : loggedDays + fasted,
+      };
+    });
+    mockGetLatestLogOnOrBefore.mockImplementation(async (max: number) => {
+      const before = logs.filter((log) => log.date <= max).sort((a, b) => b.date - a.date);
+      return before[0] ? { date: before[0].date, timezone: null } : null;
+    });
+    mockGetLatestMetricOnOrBefore.mockImplementation(async (_type: string, max: number) => {
+      const before = weights.filter((w) => w.date <= max).sort((a, b) => b.date - a.date);
+      return before[0] ? { date: before[0].date, timezone: null } : null;
+    });
+  });
+
+  /** `count` consecutive days of 2500 kcal from `first`, weighing in every 3rd day. */
+  function trackDays(first: number, count: number, { skip = [] as number[] } = {}) {
+    for (let i = 0; i < count; i++) {
+      const date = first + i * DAY_MS;
+      if (!skip.includes(i)) {
+        logs.push({ date, calories: 2500 });
+      }
+
+      if (i % 3 === 0) {
+        weights.push({ date, value: 80 });
+      }
+    }
+  }
+
+  it('uses the recent window when it has enough data, without looking further back', async () => {
+    const today = new Date(2026, 9, 27, 12);
+    trackDays(today.getTime() - 40 * DAY_MS, 41);
+
+    const result = await getLatestHistoricalNutritionWindow({ asOfDate: today });
+
+    expect(result?.fromPastWindow).toBe(false);
+    expect(mockGetLatestLogOnOrBefore).not.toHaveBeenCalled();
+  });
+
+  it('after months away, measures the 30 days that end at the last tracked day', async () => {
+    // Tracked every day through May 31, then nothing until late October.
+    trackDays(day(2025, 6, 1), 365);
+    const lastTracked = day(2026, 5, 31);
+    logs = logs.filter((log) => log.date <= lastTracked);
+    weights = weights.filter((w) => w.date <= lastTracked);
+
+    const result = await getLatestHistoricalNutritionWindow({ asOfDate: new Date(2026, 9, 27) });
+
+    expect(result).not.toBeNull();
+    expect(result!.fromPastWindow).toBe(true);
+    // The window closes at the last weigh-in on or before June 1, which is in late May…
+    expect(result!.endMs).toBeLessThanOrEqual(new Date(2026, 5, 1).getTime());
+    expect(result!.endMs).toBeGreaterThan(new Date(2026, 4, 25).getTime());
+    // …and the average intake is the 2500 kcal those days actually logged.
+    expect(result!.params.historicalTotalCalories / result!.params.historicalTotalDays).toBe(2500);
+  });
+
+  it('leaves days without a food log out of the average instead of counting them as 0 kcal', async () => {
+    const today = new Date(2026, 9, 27, 12);
+    trackDays(today.getTime() - 40 * DAY_MS, 41, { skip: [15, 22, 30] });
+
+    const result = await getLatestHistoricalNutritionWindow({ asOfDate: today });
+
+    expect(result!.params.historicalTotalCalories / result!.params.historicalTotalDays).toBe(2500);
+    // Tissue change still spans every elapsed day.
+    expect(result!.params.historicalWeightChangeDays).toBeGreaterThan(
+      result!.params.historicalTotalDays
+    );
+  });
+
+  it('counts flagged fasting days as real 0 kcal days', async () => {
+    const today = new Date(2026, 9, 27, 12);
+    trackDays(today.getTime() - 40 * DAY_MS, 41, { skip: [15, 22] });
+    fastedDaysInRange = () => 2;
+
+    const result = await getLatestHistoricalNutritionWindow({ asOfDate: today });
+    const { historicalTotalCalories, historicalTotalDays } = result!.params;
+
+    // Two fasts among the logged days pull the average under 2500.
+    expect(historicalTotalCalories / historicalTotalDays).toBeLessThan(2500);
+    expect(historicalTotalCalories / (historicalTotalDays - 2)).toBe(2500);
+  });
+
+  it('falls back to the last weigh-in when weighing stopped before food logging did', async () => {
+    trackDays(day(2026, 3, 1), 60);
+    // Food carried on for three more weeks with no weigh-ins at all.
+    for (let i = 60; i < 81; i++) {
+      logs.push({ date: day(2026, 3, 1) + i * DAY_MS, calories: 2500 });
+    }
+
+    const result = await getLatestHistoricalNutritionWindow({ asOfDate: new Date(2026, 9, 27) });
+
+    expect(result?.fromPastWindow).toBe(true);
+    const lastWeighIn = Math.max(...weights.map((w) => w.date));
+    expect(result!.endMs).toBe(new Date(lastWeighIn).setHours(0, 0, 0, 0));
+  });
+
+  it('returns null when nothing was ever tracked', async () => {
+    expect(
+      await getLatestHistoricalNutritionWindow({ asOfDate: new Date(2026, 9, 27) })
+    ).toBeNull();
+  });
 });

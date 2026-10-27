@@ -8,6 +8,7 @@
     "averageIntakeFiber": "Клетчатка",
     "caloriesBurnedToday": "Сожжено калорий сегодня",
     "caloriesBurnedSubtitle": "На основе TDEE {{tdee}} ккал/день",
+    "pastTdeeWindow": "Рассчитано по вашим записям с {{start}} по {{end}}. Записывайте питание и взвешивайтесь неделю-две, чтобы обновить значение.",
     "caloriesBurnedProgress": "{{percent}}% дня прошло",
     "circadianModal": {
       "title": "Наука сжигания калорий",

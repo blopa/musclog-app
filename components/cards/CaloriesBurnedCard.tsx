@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { CircadianScienceModal } from '@/components/modals/CircadianScienceModal';
+import { PastTdeeWindowNote } from '@/components/nutrition/PastTdeeWindowNote';
 import { useCircadianBurn } from '@/hooks/useCircadianBurn';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -16,7 +17,7 @@ export function CaloriesBurnedCard() {
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
-  const { tdee } = useEmpiricalTDEE();
+  const { tdee, historicalWindow } = useEmpiricalTDEE();
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -52,6 +53,9 @@ export function CaloriesBurnedCard() {
           <Text className="mt-1 text-sm text-text-secondary">
             {t('progress.caloriesBurnedSubtitle', { tdee: formatInteger(tdee) })}
           </Text>
+          {historicalWindow?.fromPastWindow ? (
+            <PastTdeeWindowNote startMs={historicalWindow.startMs} endMs={historicalWindow.endMs} />
+          ) : null}
 
           <View
             className="mt-4 overflow-hidden rounded-full"

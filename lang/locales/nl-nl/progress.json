@@ -8,6 +8,7 @@
     "averageIntakeFiber": "Vezels",
     "caloriesBurnedToday": "Vandaag Verbrande Calorieën",
     "caloriesBurnedSubtitle": "Gebaseerd op TDEE van {{tdee}} kcal/dag",
+    "pastTdeeWindow": "Berekend op basis van je registratie tussen {{start}} en {{end}}. Houd een week of twee je eten en gewicht bij om het bij te werken.",
     "caloriesBurnedProgress": "{{percent}}% van de dag verstreken",
     "circadianModal": {
       "title": "Wetenschap achter Calorieënverbranding",

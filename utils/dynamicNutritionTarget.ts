@@ -7,7 +7,11 @@ import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 
 import { localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
-import { getHistoricalNutritionParams } from './historicalNutritionParams';
+import {
+  getHistoricalNutritionParams,
+  getLatestHistoricalNutritionWindow,
+  type HistoricalNutritionParams,
+} from './historicalNutritionParams';
 import {
   calculateMacros,
   calculateNutritionPlan,
@@ -32,6 +36,11 @@ export interface ResolvedMacros {
   minimumCalories: number;
   /** The user turned the floor off, so `totalCalories` may sit below `minimumCalories`. */
   minimumCaloriesDisabled: boolean;
+  /**
+   * Present only when the TDEE was measured over an earlier tracked period because the recent
+   * lookback had too little data (local midnights of its first and last weight anchors).
+   */
+  pastEmpiricalWindow?: { startMs: number; endMs: number };
 }
 
 export interface DynamicGoalTrajectoryInput {
@@ -126,12 +135,12 @@ async function resolveDynamicGoalLike(
   date: Date,
   {
     alwaysReadHistory = false,
-    excludeUnloggedDays = false,
+    recentWindowOnly = false,
   }: {
     /** Read the logged history even when the goal has an explicit trajectory target. */
     alwaysReadHistory?: boolean;
-    /** Leave unlogged days out of the averages, so a forgotten log is not a day of fasting. */
-    excludeUnloggedDays?: boolean;
+    /** Never fall back to an earlier tracked period (the Weekly Review judges its own week). */
+    recentWindowOnly?: boolean;
   } = {}
 ): Promise<ResolvedMacros | null> {
   const asOfDayMs = localDayStartMs(date);
@@ -144,7 +153,7 @@ async function resolveDynamicGoalLike(
     weightMetric,
     heightMetric,
     bodyFatMetric,
-    historicalParams,
+    history,
     disableMinimumCalories,
     useBfForCalculations,
   ] = await Promise.all([
@@ -154,11 +163,7 @@ async function resolveDynamicGoalLike(
     UserMetricService.getLatestOnOrBefore('body_fat', asOfMetricMaxMs),
     hasExplicitTrajectoryTarget && !alwaysReadHistory
       ? Promise.resolve(null)
-      : getHistoricalNutritionParams({
-          asOfDate: date,
-          useWeeklyFatAverages: true,
-          excludeUnloggedDays,
-        }),
+      : readHistory(date, recentWindowOnly),
     SettingsService.getDisableMinimumCalories(),
     SettingsService.getUseBfForCalculations(),
   ]);
@@ -166,6 +171,8 @@ async function resolveDynamicGoalLike(
   if (!user) {
     return null;
   }
+
+  const historicalParams = history?.params ?? null;
 
   let weightKg = 70;
   if (weightMetric) {
@@ -254,6 +261,42 @@ async function resolveDynamicGoalLike(
     tdee: Math.round(basePlan.tdee),
     minimumCalories: getMinCalories(gender, basePlan.bmr),
     minimumCaloriesDisabled: disableMinimumCalories,
+    ...(history?.pastWindow && { pastEmpiricalWindow: history.pastWindow }),
+  };
+}
+
+/**
+ * Unlogged days are always left out of the intake average. The Weekly Review judges the week it
+ * reviews, so it reads only the recent lookback; daily targets take the latest tracked window,
+ * falling back to an earlier one after a break (see `getLatestHistoricalNutritionWindow`).
+ */
+async function readHistory(
+  date: Date,
+  recentWindowOnly: boolean
+): Promise<{
+  params: HistoricalNutritionParams;
+  pastWindow: { startMs: number; endMs: number } | null;
+} | null> {
+  if (recentWindowOnly) {
+    const params = await getHistoricalNutritionParams({
+      asOfDate: date,
+      useWeeklyFatAverages: true,
+      excludeUnloggedDays: true,
+    });
+    return params ? { params, pastWindow: null } : null;
+  }
+
+  const window = await getLatestHistoricalNutritionWindow({
+    asOfDate: date,
+    useWeeklyFatAverages: true,
+  });
+  if (!window) {
+    return null;
+  }
+
+  return {
+    params: window.params,
+    pastWindow: window.fromPastWindow ? { startMs: window.startMs, endMs: window.endMs } : null,
   };
 }
 
@@ -273,14 +316,15 @@ export async function resolveWeeklyRecommendation(
   goal: NutritionGoal,
   date: Date
 ): Promise<ResolvedMacros | null> {
-  return resolveDynamicGoalLike(goal, date, { alwaysReadHistory: true, excludeUnloggedDays: true });
+  return resolveDynamicGoalLike(goal, date, { alwaysReadHistory: true, recentWindowOnly: true });
 }
 
 /**
  * Resolves effective macros for a dynamic nutrition goal on a given day.
  * Returns null when called on a non-dynamic goal (caller should read goal fields directly).
  *
- * Uses the last 30 days of nutrition logs + weekly weight averages for empirical TDEE when available.
+ * Uses the last 30 days of nutrition logs + trend weight for empirical TDEE when available, or the
+ * latest earlier 30 days that had enough tracking after a break (`pastEmpiricalWindow`).
  * If the goal has a target weight and target date in the future, daily calories are adjusted to
  * follow that trajectory while still respecting the chosen eating phase and calorie safety floor.
  */

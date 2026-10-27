@@ -66,6 +66,7 @@ import {
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
+import { PastTdeeWindowNote } from './nutrition/PastTdeeWindowNote';
 import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { SegmentedControl } from './theme/SegmentedControl';
@@ -1132,6 +1133,13 @@ export function NutritionGoalsBody({
                   <Text className="text-xs text-text-secondary">
                     {t('nutritionGoals.tdeeHint', { kcal: formatInteger(effectiveTdeeEstimate) })}
                   </Text>
+                  {isDynamic && dynamicPreview?.pastEmpiricalWindow ? (
+                    <PastTdeeWindowNote
+                      startMs={dynamicPreview.pastEmpiricalWindow.startMs}
+                      endMs={dynamicPreview.pastEmpiricalWindow.endMs}
+                      className="text-center text-xs text-text-secondary"
+                    />
+                  ) : null}
                   {Math.abs(effectiveCalories - effectiveTdeeEstimate) >= 10 ? (
                     <Text
                       className="text-xs font-semibold"

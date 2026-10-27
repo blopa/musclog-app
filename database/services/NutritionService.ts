@@ -358,6 +358,21 @@ export class NutritionService {
     return await query.fetch();
   }
 
+  /** The newest live log consumed at or before `maxDate`, or null. One indexed `take(1)` read. */
+  static async getLatestLogOnOrBefore(maxDate: number): Promise<NutritionLog | null> {
+    const [latest] = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('date', Q.lte(maxDate)),
+        Q.sortBy('date', Q.desc),
+        Q.take(1)
+      )
+      .fetch();
+
+    return latest ?? null;
+  }
+
   /**
    * Get nutrition logs for a date range
    */
