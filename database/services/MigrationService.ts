@@ -31,6 +31,7 @@ import {
   WorkoutTemplateExercise,
   WorkoutTemplateSet,
 } from '@/database/models';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
 import { isProduction } from '@/utils/app';
 import { legacyConsumedDateTime, localDayStartFromUtcMs } from '@/utils/calendarDate';
@@ -1528,6 +1529,34 @@ export class MigrationService {
    * @param totalForProgress Total count from getMigrationSummary() for progress display
    * @param reportProgress
    */
+  /**
+   * Fills in `calories_burned` for the logs this run created, from their migrated sets, with the
+   * same estimate a freshly completed workout gets. Uses the latest weight/height and user, which
+   * the earlier steps have already migrated; a workout that cannot be estimated stays at 0.
+   */
+  private async estimateMigratedWorkoutCalories(): Promise<number> {
+    let updated = 0;
+    for (const logId of this.workoutEventIdToLogId.values()) {
+      try {
+        const kcal = await WorkoutService.estimateWorkoutKcal(logId);
+
+        if (kcal > 0) {
+          await database.write(async () => {
+            const log = await database.get<WorkoutLog>('workout_logs').find(logId);
+            await log.update((record) => {
+              record.caloriesBurned = kcal;
+            });
+          });
+          updated++;
+        }
+      } catch (error) {
+        console.warn(`Could not estimate calories for migrated workout ${logId}:`, error);
+      }
+    }
+
+    return updated;
+  }
+
   private async migrateWorkoutLogSets(
     totalForProgress: number,
     reportProgress?: (current: number, total: number) => void
@@ -2155,6 +2184,16 @@ export class MigrationService {
         report('workout_log_sets')
       );
       result.workoutLogSets = result.details.logSetsMigrated;
+
+      // 1.x stored no calories, and the logs were created with 0. Best effort: a failure here
+      // leaves them at 0 rather than failing a migration whose data is already in.
+      try {
+        console.log('Estimating calories burned for migrated workouts...');
+        await this.estimateMigratedWorkoutCalories();
+      } catch (error) {
+        console.error('Error estimating migrated workout calories:', error);
+        handleError(error, 'MigrationService.estimateMigratedWorkoutCalories');
+      }
 
       // Chat history is nice to have; losing it must not fail the migration
       try {

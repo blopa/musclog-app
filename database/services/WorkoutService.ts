@@ -367,6 +367,81 @@ export class WorkoutService {
   }
 
   /**
+   * Estimated energy for a finished workout (MWEM, performed sets only), rounded to whole kcal.
+   * Returns 0 when it cannot be estimated (no user or weight on file, no usable sets). Shared by
+   * completing a live workout and by the Musclog 1.x conversion, which stored no calories at all.
+   */
+  static async estimateWorkoutKcal(workoutLogId: string): Promise<number> {
+    const [user, weightMetric, heightMetric] = await Promise.all([
+      UserService.getCurrentUser(),
+      UserMetricService.getLatest('weight'),
+      UserMetricService.getLatest('height'),
+    ]);
+
+    if (!user || !weightMetric) {
+      return 0;
+    }
+
+    const { value: rawWeight, unit: weightUnit } = await weightMetric.getDecrypted();
+    const weightKg =
+      weightUnit === 'lbs' ? (convert(rawWeight, 'lb').to('kg') as number) : rawWeight;
+
+    let heightCm = 175; // Default fallback for height if missing
+    if (heightMetric) {
+      const { value: rawHeight, unit: heightUnit } = await heightMetric.getDecrypted();
+      heightCm =
+        heightUnit === 'in' || heightUnit === 'ft'
+          ? (convert(rawHeight, heightUnit as Unit).to('cm') as number)
+          : rawHeight;
+    }
+
+    if (!(weightKg > 0 && heightCm > 0)) {
+      return 0;
+    }
+
+    const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
+    const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
+    const setsByExercise = new Map<string, EnrichedWorkoutLogSet[]>();
+    for (const set of sets) {
+      // Only include completed and non-skipped sets for calorie calculation
+      if (!isPerformedWorkoutSet(set)) {
+        continue;
+      }
+
+      const eid = set.exerciseId ?? '';
+      if (!setsByExercise.has(eid)) {
+        setsByExercise.set(eid, []);
+      }
+
+      setsByExercise.get(eid)!.push(set);
+    }
+
+    const mwemInputs: MWEMInput[] = Array.from(setsByExercise.entries()).flatMap(
+      ([exerciseId, exerciseSets]) => {
+        const exercise = exerciseMap.get(exerciseId);
+        if (!exercise) {
+          return [];
+        }
+
+        return [
+          {
+            user: { weightKg, heightCm, gender: user.gender || 'other' },
+            exercise: {
+              mechanicType: exercise.mechanicType,
+              muscleGroup: exercise.muscleGroup,
+              equipmentType: exercise.equipmentType,
+              loadMultiplier: exercise.loadMultiplier ?? 1,
+            },
+            sets: exerciseSets.map((s) => ({ weight: s.weight ?? 0, reps: s.reps ?? 0 })),
+          },
+        ];
+      }
+    );
+
+    return Math.round(calculateWorkoutKcal(mwemInputs));
+  }
+
+  /**
    * Which logs count as a session of `templateId`: the ones stamped with its id, plus orphans
    * that carry its name. Logs converted from Musclog 1.x before the id mapping was fixed hold the
    * old numeric workout id ("8"), which no template has, so the id alone finds none of them. An
@@ -555,75 +630,13 @@ export class WorkoutService {
 
       // Calculate calories burned using MWEM (best-effort, never blocks completion)
       try {
-        const [user, weightMetric, heightMetric] = await Promise.all([
-          UserService.getCurrentUser(),
-          UserMetricService.getLatest('weight'),
-          UserMetricService.getLatest('height'),
-        ]);
-
-        if (user && weightMetric) {
-          const { value: rawWeight, unit: weightUnit } = await weightMetric.getDecrypted();
-          const weightKg =
-            weightUnit === 'lbs' ? (convert(rawWeight, 'lb').to('kg') as number) : rawWeight;
-
-          let heightCm = 175; // Default fallback for height if missing
-          if (heightMetric) {
-            const { value: rawHeight, unit: heightUnit } = await heightMetric.getDecrypted();
-            heightCm =
-              heightUnit === 'in' || heightUnit === 'ft'
-                ? (convert(rawHeight, heightUnit as Unit).to('cm') as number)
-                : rawHeight;
-          }
-
-          if (weightKg > 0 && heightCm > 0) {
-            const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
-            const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
-            const setsByExercise = new Map<string, EnrichedWorkoutLogSet[]>();
-            for (const set of sets) {
-              // Only include completed and non-skipped sets for calorie calculation
-              if (!isPerformedWorkoutSet(set)) {
-                continue;
-              }
-
-              const eid = set.exerciseId ?? '';
-              if (!setsByExercise.has(eid)) {
-                setsByExercise.set(eid, []);
-              }
-
-              setsByExercise.get(eid)!.push(set);
-            }
-
-            const mwemInputs: MWEMInput[] = Array.from(setsByExercise.entries()).flatMap(
-              ([exerciseId, exerciseSets]) => {
-                const exercise = exerciseMap.get(exerciseId);
-                if (!exercise) {
-                  return [];
-                }
-
-                return [
-                  {
-                    user: { weightKg, heightCm, gender: user?.gender || 'other' },
-                    exercise: {
-                      mechanicType: exercise.mechanicType,
-                      muscleGroup: exercise.muscleGroup,
-                      equipmentType: exercise.equipmentType,
-                      loadMultiplier: exercise.loadMultiplier ?? 1,
-                    },
-                    sets: exerciseSets.map((s) => ({ weight: s.weight ?? 0, reps: s.reps ?? 0 })),
-                  },
-                ];
-              }
-            );
-
-            const totalKcal = calculateWorkoutKcal(mwemInputs);
-            if (totalKcal > 0) {
-              await database.write(async () => {
-                await completedWorkout.update((log) => {
-                  log.caloriesBurned = Math.round(totalKcal);
-                });
-              });
-            }
-          }
+        const totalKcal = await this.estimateWorkoutKcal(workoutLogId);
+        if (totalKcal > 0) {
+          await database.write(async () => {
+            await completedWorkout.update((log) => {
+              log.caloriesBurned = totalKcal;
+            });
+          });
         }
       } catch (err) {
         console.warn('MWEM calorie calculation failed:', err);

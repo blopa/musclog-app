@@ -3,6 +3,7 @@ import { DatabaseSync } from 'node:sqlite';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import { MigrationService } from '@/database/services/MigrationService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import {
   legacyCreateTableSql,
@@ -12,9 +13,13 @@ import {
 } from '@/utils/legacyV1Backup';
 
 const mockCreated: { table: string; record: Record<string, unknown> }[] = [];
+const mockUpdated: Record<string, Record<string, unknown>> = {};
 
 jest.mock('expo-sqlite', () => ({ openDatabaseSync: jest.fn() }));
 jest.mock('@/database/models', () => ({}));
+jest.mock('@/database/services/WorkoutService', () => ({
+  WorkoutService: { estimateWorkoutKcal: jest.fn() },
+}));
 jest.mock('@/lang/lang', () => ({ __esModule: true, default: { t: (key: string) => key } }));
 jest.mock('@/utils/app', () => ({ isProduction: () => true }));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
@@ -29,6 +34,12 @@ jest.mock('@/database/encryptionHelpers', () => ({
 jest.mock('@/database/database-instance', () => ({
   database: {
     get: (table: string) => ({
+      find: async (id: string) => ({
+        update: async (apply: (record: Record<string, unknown>) => void) => {
+          mockUpdated[id] = { table };
+          apply(mockUpdated[id]);
+        },
+      }),
       create: async (build: (record: Record<string, unknown>) => void) => {
         const record: Record<string, unknown> = { id: `new-${mockCreated.length}` };
         build(record);
@@ -246,6 +257,24 @@ describe('MigrationService 1.x workout history', () => {
 
     const log = mockCreated.find(({ table }) => table === 'workout_logs')!.record;
     expect(log.templateId).toBe('tpl-new-id');
+  });
+
+  it('estimates calories burned for each migrated workout, leaving unestimable ones at 0', async () => {
+    const estimate = WorkoutService.estimateWorkoutKcal as jest.Mock;
+    estimate.mockReset().mockResolvedValueOnce(310).mockResolvedValueOnce(0);
+    const service = new MigrationService({
+      database: loadLegacyDump(SESSIONS_DUMP),
+      valuesEncrypted: false,
+    });
+    const internals = service as unknown as {
+      estimateMigratedWorkoutCalories: () => Promise<number>;
+      workoutEventIdToLogId: Map<number, string>;
+    };
+    internals.workoutEventIdToLogId.set(1, 'log-a').set(2, 'log-b');
+
+    expect(await internals.estimateMigratedWorkoutCalories()).toBe(1);
+    expect(mockUpdated['log-a']?.caloriesBurned).toBe(310);
+    expect(mockUpdated['log-b']).toBeUndefined();
   });
 
   it('builds the sets from exerciseData, not from the template Set table', async () => {
