@@ -1374,7 +1374,11 @@ export class MigrationService {
           this.volumeOfEventBlocks(this.parseEventBlocks(oldWorkoutLog));
         const newLog = await database.write(async () =>
           database.get<WorkoutLog>('workout_logs').create((newWorkoutLog) => {
-            newWorkoutLog.templateId = oldWorkoutLog.workoutId?.toString() || '';
+            // The 1.x workout id means nothing here: point at the template it became.
+            newWorkoutLog.templateId =
+              this.workoutIdToTemplateId.get(Number(oldWorkoutLog.workoutId)) ||
+              oldWorkoutLog.workoutId?.toString() ||
+              '';
             newWorkoutLog.workoutName = oldWorkoutLog.title || '';
             newWorkoutLog.startedAt = startedAt;
             newWorkoutLog.completedAt = completedAt;

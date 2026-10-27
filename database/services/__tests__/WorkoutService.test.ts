@@ -27,6 +27,9 @@ jest.mock('@nozbe/watermelondb', () => ({
     gte: jest.fn((value: any) => value),
     lte: jest.fn((value: any) => value),
     oneOf: jest.fn((values: any[]) => values),
+    notIn: jest.fn((values: any[]) => ({ notIn: values })),
+    or: jest.fn((...clauses: any[]) => ({ or: clauses })),
+    and: jest.fn((...clauses: any[]) => ({ and: clauses })),
     sortBy: jest.fn((field: string, direction: any) => ({ field, direction })),
     take: jest.fn((count: number) => count),
     skip: jest.fn((count: number) => count),
@@ -541,19 +544,52 @@ describe('WorkoutService', () => {
       expect(mockQuery.extend).toHaveBeenCalled();
     });
 
-    it('should restrict the query to one template when templateId is given', async () => {
+    describe('with templateId', () => {
       const mockQuery = {
         fetch: jest.fn().mockResolvedValue([]),
         extend: jest.fn().mockReturnThis(),
       };
 
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      const mockTemplates = (liveIds: string[], name: string | null) => {
+        const templateQuery = { fetchIds: jest.fn().mockResolvedValue(liveIds) };
+        mockDatabase.get.mockImplementation(((table: string) =>
+          table === 'workout_templates'
+            ? {
+                find: jest.fn().mockImplementation(async () => {
+                  if (name === null) {
+                    throw new Error('not found');
+                  }
 
-      await WorkoutService.getWorkoutHistory(undefined, 10, 0, 'template-1');
+                  return { name };
+                }),
+                query: jest.fn().mockReturnValue(templateQuery),
+              }
+            : { query: jest.fn().mockReturnValue(mockQuery) }) as any);
+      };
 
-      expect(mockQuery.extend).toHaveBeenCalledWith(Q.where('template_id', 'template-1'));
+      it('matches the template id, plus orphans carrying its name (1.x conversions)', async () => {
+        mockTemplates(['tpl-1', 'tpl-2'], 'Full Body Workout A');
+
+        await WorkoutService.getWorkoutHistory(undefined, 10, 0, 'tpl-1');
+
+        expect(mockQuery.extend).toHaveBeenCalledWith(
+          Q.or(
+            Q.where('template_id', 'tpl-1'),
+            Q.and(
+              Q.where('workout_name', 'Full Body Workout A'),
+              Q.where('template_id', Q.notIn(['tpl-1', 'tpl-2']))
+            )
+          )
+        );
+      });
+
+      it('falls back to the id alone when the template cannot be found', async () => {
+        mockTemplates(['tpl-2'], null);
+
+        await WorkoutService.getWorkoutHistory(undefined, 10, 0, 'gone');
+
+        expect(mockQuery.extend).toHaveBeenCalledWith(Q.where('template_id', 'gone'));
+      });
     });
 
     it('should not add a template clause without templateId', async () => {

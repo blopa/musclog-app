@@ -9,7 +9,7 @@ import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
-import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
+import { fetchByIds, fetchMapByIds, MAX_QUERY_IDS } from '@/database/queryByIds';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import {
   toWorkoutLogSetSnapshot,
@@ -366,6 +366,31 @@ export class WorkoutService {
     return await this.getCompletedWorkoutCount(getRollingWeeklyWorkoutRange(date));
   }
 
+  /**
+   * Which logs count as a session of `templateId`: the ones stamped with its id, plus orphans
+   * that carry its name. Logs converted from Musclog 1.x before the id mapping was fixed hold the
+   * old numeric workout id ("8"), which no template has, so the id alone finds none of them. An
+   * orphan is a log whose `template_id` is not any live template, so a same-named but distinct
+   * template never claims another template's sessions.
+   */
+  private static async templateSessionsClause(templateId: string) {
+    const byId = Q.where('template_id', templateId);
+    const templates = database.get<WorkoutTemplate>('workout_templates');
+    const [template, liveIds] = await Promise.all([
+      templates.find(templateId).catch(() => null),
+      templates.query(Q.where('deleted_at', Q.eq(null))).fetchIds(),
+    ]);
+
+    if (!template?.name || liveIds.length > MAX_QUERY_IDS) {
+      return byId;
+    }
+
+    return Q.or(
+      byId,
+      Q.and(Q.where('workout_name', template.name), Q.where('template_id', Q.notIn(liveIds)))
+    );
+  }
+
   private static async getWorkoutHistoryInternal(
     timeframe?: { startDate: number; endDate: number },
     limit?: number,
@@ -389,7 +414,7 @@ export class WorkoutService {
     }
 
     if (templateId) {
-      query = query.extend(Q.where('template_id', templateId));
+      query = query.extend(await this.templateSessionsClause(templateId));
     }
 
     // WatermelonDB requires Q.take() when using Q.skip()

@@ -154,6 +154,7 @@ type SessionSteps = {
   migrateWorkoutLogSets: (total: number) => Promise<number>;
   migrateChatMessages: () => Promise<number>;
   exerciseIdMap: Map<number, string>;
+  workoutIdToTemplateId: Map<number, string>;
 };
 
 const session = (sets: object[]) => JSON.stringify([{ exerciseId: 4, sets }]);
@@ -232,6 +233,19 @@ describe('MigrationService 1.x workout history', () => {
 
     expect(logs).toBe(1);
     expect(mockCreated.filter(({ table }) => table === 'workout_logs')).toHaveLength(1);
+  });
+
+  it('links each log to the template its 1.x workout became, not the old numeric id', async () => {
+    const service = new MigrationService({
+      database: loadLegacyDump(SESSIONS_DUMP),
+      valuesEncrypted: false,
+    });
+    const steps = service as unknown as SessionSteps;
+    steps.workoutIdToTemplateId.set(1, 'tpl-new-id');
+    await steps.migrateWorkoutLogs();
+
+    const log = mockCreated.find(({ table }) => table === 'workout_logs')!.record;
+    expect(log.templateId).toBe('tpl-new-id');
   });
 
   it('builds the sets from exerciseData, not from the template Set table', async () => {
