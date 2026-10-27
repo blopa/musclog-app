@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Beef,
+  Crosshair,
   Droplets,
   Flame,
   Heart,
@@ -95,6 +96,7 @@ const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
   'kinetic-volt': Zap,
   'kinetic-blush': Heart,
   'kinetic-varia': Rocket,
+  'kinetic-scope': Crosshair,
 };
 
 /** Convert a 5-char binary string to an array of visible macro keys. */

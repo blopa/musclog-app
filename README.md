@@ -295,7 +295,7 @@ MUSCLOG_SCREENSHOT_THEME=kinetic-shock npm run playwright-runner -- tests/screen
 ```
 
 Valid themes are `kinetic-depth`, `kinetic-light`, `kinetic-shock`, `kinetic-volt`,
-`kinetic-blush`, and `kinetic-varia`. Images are saved under
+`kinetic-blush`, `kinetic-varia`, and `kinetic-scope`. Images are saved under
 `screenshots/app-store/<theme>/<device>/`. The screenshot suite enables reduced
 motion, which disables web confetti for every screen and modal. Screenshot commands
 run only the capture suite; SDK compatibility tests remain available separately.

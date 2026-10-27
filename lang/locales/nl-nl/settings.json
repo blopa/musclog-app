@@ -523,6 +523,10 @@
         "kinetic-varia": {
           "label": "Kinetic Varia",
           "description": "Diepviolette oppervlakken met oranje accenten"
+        },
+        "kinetic-scope": {
+          "label": "Scope",
+          "description": "Bijna zwarte oppervlakken met een ingetogen limoenaccent"
         }
       },
       "iconAppliesLater": "Het app-icoon verandert zodra je de app verlaat."

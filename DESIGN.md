@@ -1,16 +1,25 @@
 # Musclog — Design System
 
-The app uses a high-contrast performance aesthetic built from tinted surfaces, vivid actions,
+The app uses a high-contrast performance aesthetic built from near-neutral surfaces, vivid actions,
 restrained supporting color, and dense data displays. `theme.registry.js` is the theme catalogue;
 `theme.tokens.js` and `theme.ts` derive the two runtime representations from it. This document
 describes how to use them.
 
 ## Theme status
 
-Five named palettes ship: Kinetic Depth is the dark emerald reference design, Kinetic Light is the
+Seven named palettes ship: Kinetic Depth is the dark emerald reference design, Kinetic Light is the
 same structure re-picked for a bright ground, Kinetic Shock is a dark rose-led alternative, Kinetic
-Volt pairs warm near-black surfaces with electric yellow accents, and Kinetic Blush is a bright pink
-ground with a raspberry accent.
+Volt pairs warm near-black surfaces with electric yellow accents, Kinetic Blush is a bright pink
+ground with a raspberry accent, Kinetic Varia pairs deep violet with an orange accent, and Scope
+(`kinetic-scope`) is fully neutral near-black with a lime accent and a flat summary card.
+
+**A theme's identity lives in its brand and accent colors, not in its surfaces.** The ladder
+surfaces (`surfaceBase`, `surfaceCard`, `surfaceRaised`), `borderHairline` and the secondary and
+tertiary text carry only a faint cast of the theme's hue — about half the chroma of a fully tinted
+ground, measured in OKLCH so lightness and contrast do not move. Tinting every surface spreads the
+brand color across the whole screen at low strength and leaves the accent nothing to stand out
+against. `surfaceTint` and `surfaceAccent` stay fully tinted, because they are the "selected /
+highlighted" surfaces and must read as the brand. A new theme should follow the same split.
 Users choose one of them, or System, under Settings → Interface → Appearance. System resolves to
 Kinetic Light or Kinetic Depth from the device's light/dark setting. The preference is stored in the
 settings table, so writing that row re-themes the app.
@@ -85,12 +94,12 @@ lighter on dark and darker on light.
 
 | Role           | Token                                       | Kinetic Depth | Kinetic Light | Kinetic Shock | Kinetic Volt | Kinetic Blush |
 | -------------- | ------------------------------------------- | ------------- | ------------- | ------------- | ------------ | ------------- |
-| App background | `background.primary` / `surfaceBase`        | `#091310`     | `#fafcfb`     | `#160b14`     | `#151208`    | `#fff7fa`     |
-| Card           | `background.card` / `surfaceCard`           | `#131d18`     | `#eef2f0`     | `#21101e`     | `#201b0c`    | `#fbe9f1`     |
-| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     | `#e0e7e3`     | `#2d1829`     | `#2c2510`    | `#f2d6e3`     |
+| App background | `background.primary` / `surfaceBase`        | `#0d1210`     | `#fbfcfb`     | `#130d12`     | `#14120d`    | `#fcf8fa`     |
+| Card           | `background.card` / `surfaceCard`           | `#171c19`     | `#eff1f0`     | `#1c141a`     | `#1e1b14`    | `#f5ecf0`     |
+| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#202522`     | `#e2e6e4`     | `#271d25`     | `#29251c`    | `#e9dae1`     |
 | Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     | `#dff0e7`     | `#351226`     | `#30270a`    | `#fadeeb`     |
 | Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     | `#c6e6d4`     | `#51203f`     | `#4a3b08`    | `#eec0d6`     |
-| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     | `#c2cfc8`     | `#503248`     | `#4a4126`    | `#d9b3c5`     |
+| Hairline       | `border.dashed` / `borderHairline`          | `#313834`     | `#c7cdca`     | `#473843`     | `#464135`    | `#cdb9c2`     |
 | Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     | `#0f1a16`     | `#f5e4ef`     | `#f6f0d5`    | `#2b101d`     |
 | Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     | `#0e7a54`     | `#e85d9e`     | `#f5c842`    | `#c2185b`     |
 

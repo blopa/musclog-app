@@ -8,7 +8,7 @@
 
 /* One entry per theme in the phone app's registry, in registry order — the index
  * is what ui_theme.c persists in SRAM, so appending is safe and reordering is not. */
-#define GB_THEME_COUNT 6u
+#define GB_THEME_COUNT 7u
 
 /* The theme a fresh cartridge boots with (the app's default dark theme). */
 #define GB_THEME_DEFAULT 0u

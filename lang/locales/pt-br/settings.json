@@ -523,6 +523,10 @@
         "kinetic-varia": {
           "label": "Kinetic Varia",
           "description": "Superfícies violeta profundo com detalhes em laranja"
+        },
+        "kinetic-scope": {
+          "label": "Scope",
+          "description": "Superfícies quase pretas com um discreto acento lima"
         }
       },
       "iconAppliesLater": "O ícone do app vai mudar quando você sair do app."

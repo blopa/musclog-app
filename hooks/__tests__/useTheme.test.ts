@@ -122,7 +122,7 @@ describe('theme context', () => {
 
     expect(result.current.id).toBe('kinetic-depth');
     expect(result.current.mode).toBe('dark');
-    expect(result.current.theme.colors.background.primary).toBe('#091310');
+    expect(result.current.theme.colors.background.primary).toBe('#0d1210');
   });
 
   it('leaves the root-level web variables in place when the provider unmounts', () => {

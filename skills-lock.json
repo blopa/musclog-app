@@ -55,6 +55,12 @@
       "skillPath": "SKILL.md",
       "computedHash": "fbeba4ea8cc5063c9280a0f29af46f05ff66326d49ff7e59b61ee021b4d424c8"
     },
+    "mobile-design": {
+      "source": "RubenGlez/mobile-design",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "1e80f88915cf93d24b3c71c3f91b5901a2c42f66a23c4e5df9b08b3f2659c135"
+    },
     "personal-trainer": {
       "source": "npapatheodorou/personal-trainer-skill",
       "sourceType": "github",

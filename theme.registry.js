@@ -16,16 +16,16 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
   'kinetic-depth': {
     mode: 'dark',
     palette: {
-      surfaceBase: '#091310',
-      surfaceCard: '#131d18',
-      surfaceRaised: '#1b2721',
+      surfaceBase: '#0d1210',
+      surfaceCard: '#171c19',
+      surfaceRaised: '#202522',
       surfaceTint: '#0c2419',
       surfaceAccent: '#1c3829',
-      borderHairline: '#2c3a32',
+      borderHairline: '#313834',
 
       textPrimary: '#dce5de',
-      textSecondary: '#9cb0a8',
-      textTertiary: '#7d918a',
+      textSecondary: '#a3ada9',
+      textTertiary: '#858e8b',
 
       brandPrimary: '#29a577',
       brandVivid: '#10b981',
@@ -60,16 +60,16 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
   'kinetic-light': {
     mode: 'light',
     palette: {
-      surfaceBase: '#fafcfb',
-      surfaceCard: '#eef2f0',
-      surfaceRaised: '#e0e7e3',
+      surfaceBase: '#fbfcfb',
+      surfaceCard: '#eff1f0',
+      surfaceRaised: '#e2e6e4',
       surfaceTint: '#dff0e7',
       surfaceAccent: '#c6e6d4',
-      borderHairline: '#c2cfc8',
+      borderHairline: '#c7cdca',
 
       textPrimary: '#0f1a16',
-      textSecondary: '#41564d',
-      textTertiary: '#4f645a',
+      textSecondary: '#49534f',
+      textTertiary: '#57615c',
 
       brandPrimary: '#0e7a54',
       brandVivid: '#0a6647',
@@ -107,16 +107,16 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
   'kinetic-shock': {
     mode: 'dark',
     palette: {
-      surfaceBase: '#160b14',
-      surfaceCard: '#21101e',
-      surfaceRaised: '#2d1829',
+      surfaceBase: '#130d12',
+      surfaceCard: '#1c141a',
+      surfaceRaised: '#271d25',
       surfaceTint: '#351226',
       surfaceAccent: '#51203f',
-      borderHairline: '#503248',
+      borderHairline: '#473843',
 
       textPrimary: '#f5e4ef',
-      textSecondary: '#ceb0c2',
-      textTertiary: '#b895aa',
+      textSecondary: '#c4b5be',
+      textTertiary: '#ad9ba5',
 
       brandPrimary: '#e85d9e',
       brandVivid: '#f472b6',
@@ -152,16 +152,16 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
   'kinetic-volt': {
     mode: 'dark',
     palette: {
-      surfaceBase: '#151208',
-      surfaceCard: '#201b0c',
-      surfaceRaised: '#2c2510',
+      surfaceBase: '#14120d',
+      surfaceCard: '#1e1b14',
+      surfaceRaised: '#29251c',
       surfaceTint: '#30270a',
       surfaceAccent: '#4a3b08',
-      borderHairline: '#4a4126',
+      borderHairline: '#464135',
 
       textPrimary: '#f6f0d5',
-      textSecondary: '#d0c59a',
-      textTertiary: '#b4a978',
+      textSecondary: '#cac5b0',
+      textTertiary: '#aea991',
 
       brandPrimary: '#f5c842',
       brandVivid: '#eab308',
@@ -198,16 +198,16 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
   'kinetic-blush': {
     mode: 'light',
     palette: {
-      surfaceBase: '#fff7fa',
-      surfaceCard: '#fbe9f1',
-      surfaceRaised: '#f2d6e3',
+      surfaceBase: '#fcf8fa',
+      surfaceCard: '#f5ecf0',
+      surfaceRaised: '#e9dae1',
       surfaceTint: '#fadeeb',
       surfaceAccent: '#eec0d6',
-      borderHairline: '#d9b3c5',
+      borderHairline: '#cdb9c2',
 
       textPrimary: '#2b101d',
-      textSecondary: '#5c2b40',
-      textTertiary: '#6a3549',
+      textSecondary: '#4e353f',
+      textTertiary: '#5b4049',
 
       brandPrimary: '#c2185b',
       brandVivid: '#ad1457',
@@ -247,16 +247,16 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
   'kinetic-varia': {
     mode: 'dark',
     palette: {
-      surfaceBase: '#0d0a12',
-      surfaceCard: '#181123',
-      surfaceRaised: '#241a33',
+      surfaceBase: '#0c0b0f',
+      surfaceCard: '#16131c',
+      surfaceRaised: '#221d2a',
       surfaceTint: '#291509',
       surfaceAccent: '#4a220d',
-      borderHairline: '#463355',
+      borderHairline: '#413849',
 
       textPrimary: '#f6e9dd',
-      textSecondary: '#c4b2c9',
-      textTertiary: '#a695ad',
+      textSecondary: '#bfb6c1',
+      textTertiary: '#a199a5',
 
       brandPrimary: '#f97316',
       brandVivid: '#fb923c',
@@ -288,6 +288,53 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
       },
       colorfulCardBlend: { start: 1, middle: 1, end: 1 },
       colorfulCardUsesSurfaceInk: false,
+    },
+  },
+  'kinetic-scope': {
+    mode: 'dark',
+    palette: {
+      surfaceBase: '#0a0a0a',
+      surfaceCard: '#131313',
+      surfaceRaised: '#1e1e1e',
+      surfaceTint: '#181818',
+      surfaceAccent: '#1f260f',
+      borderHairline: '#2a2a2a',
+
+      textPrimary: '#efefef',
+      textSecondary: '#9a9a9a',
+      textTertiary: '#858585',
+
+      brandPrimary: '#c8f736',
+      brandVivid: '#b8e62c',
+      brandBright: '#d6fa5e',
+      brandPale: '#e6fc9b',
+      brandDeep: '#8fb41f',
+      brandSurface: '#2c3a0a',
+
+      statusError: '#e8674f',
+      statusRose: '#e5557a',
+      statusWarning: '#e8a33d',
+      statusAmber: '#f0c15a',
+      statusInfo: '#5aa7e8',
+      statusIndigo: '#8b8ff0',
+      statusPurple: '#b48aea',
+      statusPink: '#e06fb0',
+
+      inkOnAccent: '#0a0a0a',
+      scrimBase: '#050505',
+      surfacePlaceholder: '#efefef',
+
+      alphas: {
+        borderDefault: 0.3,
+        borderLight: 0.28,
+        borderSubtle: 0.22,
+        hairlineFill: 0.06,
+      },
+      // Almost flat: the faintest lime wash that still lets the stat strip's
+      // darker inset read against the card. A fully flat card this dark cannot
+      // show a darker panel at all (1.02x even under a pure-black wash).
+      colorfulCardBlend: { start: 0.08, middle: 0.08, end: 0.08 },
+      colorfulCardUsesSurfaceInk: true,
     },
   },
 });

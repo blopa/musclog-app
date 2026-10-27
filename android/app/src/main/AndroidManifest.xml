@@ -138,5 +138,11 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity-alias>
+    <activity-alias android:name=".LauncherIconKineticScope" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_kinetic_scope" android:roundIcon="@mipmap/ic_launcher_kinetic_scope_round" android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity-alias>
   </application>
 </manifest>

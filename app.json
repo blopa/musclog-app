@@ -181,7 +181,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "icon": "./assets/theme-icons/opaque/icon-bg-kinetic-depth.png",
-      "backgroundColor": "#091310",
+      "backgroundColor": "#0d1210",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
       "buildNumber": "318",
@@ -202,7 +202,7 @@
       "versionCode": 318,
       "adaptiveIcon": {
         "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
-        "backgroundColor": "#091310"
+        "backgroundColor": "#0d1210"
       },
       "permissions": [
         "android.permission.INTERNET",

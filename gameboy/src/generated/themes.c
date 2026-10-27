@@ -5,10 +5,10 @@
 const palette_color_t gb_theme_palettes[GB_THEME_COUNT][GB_THEME_COLORS] = {
     {
         /* kinetic-depth (dark) */
-        /* NORMAL: #091310 screen background. */
-        RGB8(0x09, 0x13, 0x10),
-        RGB8(0x4f, 0x59, 0x55),
-        RGB8(0x96, 0x9f, 0x99),
+        /* NORMAL: #0d1210 screen background. */
+        RGB8(0x0d, 0x12, 0x10),
+        RGB8(0x52, 0x58, 0x55),
+        RGB8(0x97, 0x9f, 0x99),
         RGB8(0xdc, 0xe5, 0xde),
         /* HEADER: #064e3b title strip. */
         RGB8(0x06, 0x4e, 0x3b),
@@ -28,10 +28,10 @@ const palette_color_t gb_theme_palettes[GB_THEME_COUNT][GB_THEME_COLORS] = {
     },
     {
         /* kinetic-light (light) */
-        /* NORMAL: #fafcfb screen background. */
-        RGB8(0xfa, 0xfc, 0xfb),
+        /* NORMAL: #fbfcfb screen background. */
+        RGB8(0xfb, 0xfc, 0xfb),
         RGB8(0xac, 0xb1, 0xaf),
-        RGB8(0x5d, 0x65, 0x62),
+        RGB8(0x5e, 0x65, 0x62),
         RGB8(0x0f, 0x1a, 0x16),
         /* HEADER: #075038 title strip. */
         RGB8(0x07, 0x50, 0x38),
@@ -51,10 +51,10 @@ const palette_color_t gb_theme_palettes[GB_THEME_COUNT][GB_THEME_COLORS] = {
     },
     {
         /* kinetic-shock (dark) */
-        /* NORMAL: #160b14 screen background. */
-        RGB8(0x16, 0x0b, 0x14),
-        RGB8(0x60, 0x53, 0x5d),
-        RGB8(0xab, 0x9c, 0xa6),
+        /* NORMAL: #130d12 screen background. */
+        RGB8(0x13, 0x0d, 0x12),
+        RGB8(0x5e, 0x55, 0x5c),
+        RGB8(0xaa, 0x9c, 0xa5),
         RGB8(0xf5, 0xe4, 0xef),
         /* HEADER: #831843 title strip. */
         RGB8(0x83, 0x18, 0x43),
@@ -74,10 +74,10 @@ const palette_color_t gb_theme_palettes[GB_THEME_COUNT][GB_THEME_COLORS] = {
     },
     {
         /* kinetic-volt (dark) */
-        /* NORMAL: #151208 screen background. */
-        RGB8(0x15, 0x12, 0x08),
-        RGB8(0x60, 0x5c, 0x4c),
-        RGB8(0xab, 0xa6, 0x91),
+        /* NORMAL: #14120d screen background. */
+        RGB8(0x14, 0x12, 0x0d),
+        RGB8(0x5f, 0x5c, 0x50),
+        RGB8(0xab, 0xa6, 0x92),
         RGB8(0xf6, 0xf0, 0xd5),
         /* HEADER: #713f12 title strip. */
         RGB8(0x71, 0x3f, 0x12),
@@ -97,10 +97,10 @@ const palette_color_t gb_theme_palettes[GB_THEME_COUNT][GB_THEME_COLORS] = {
     },
     {
         /* kinetic-blush (light) */
-        /* NORMAL: #fff7fa screen background. */
-        RGB8(0xff, 0xf7, 0xfa),
-        RGB8(0xb8, 0xaa, 0xb0),
-        RGB8(0x72, 0x5d, 0x67),
+        /* NORMAL: #fcf8fa screen background. */
+        RGB8(0xfc, 0xf8, 0xfa),
+        RGB8(0xb6, 0xab, 0xb0),
+        RGB8(0x71, 0x5d, 0x67),
         RGB8(0x2b, 0x10, 0x1d),
         /* HEADER: #7a0c3d title strip. */
         RGB8(0x7a, 0x0c, 0x3d),
@@ -120,10 +120,10 @@ const palette_color_t gb_theme_palettes[GB_THEME_COUNT][GB_THEME_COLORS] = {
     },
     {
         /* kinetic-varia (dark) */
-        /* NORMAL: #0d0a12 screen background. */
-        RGB8(0x0d, 0x0a, 0x12),
-        RGB8(0x5b, 0x54, 0x56),
-        RGB8(0xa8, 0x9f, 0x99),
+        /* NORMAL: #0c0b0f screen background. */
+        RGB8(0x0c, 0x0b, 0x0f),
+        RGB8(0x5a, 0x55, 0x54),
+        RGB8(0xa8, 0x9f, 0x98),
         RGB8(0xf6, 0xe9, 0xdd),
         /* HEADER: #7c2d12 title strip. */
         RGB8(0x7c, 0x2d, 0x12),
@@ -141,8 +141,31 @@ const palette_color_t gb_theme_palettes[GB_THEME_COUNT][GB_THEME_COLORS] = {
         RGB8(0xbd, 0xa7, 0x98),
         RGB8(0xf6, 0xe9, 0xdd),
     },
+    {
+        /* kinetic-scope (dark) */
+        /* NORMAL: #0a0a0a screen background. */
+        RGB8(0x0a, 0x0a, 0x0a),
+        RGB8(0x56, 0x56, 0x56),
+        RGB8(0xa3, 0xa3, 0xa3),
+        RGB8(0xef, 0xef, 0xef),
+        /* HEADER: #2c3a0a title strip. */
+        RGB8(0x2c, 0x3a, 0x0a),
+        RGB8(0x6d, 0x76, 0x56),
+        RGB8(0xae, 0xb3, 0xa3),
+        RGB8(0xef, 0xef, 0xef),
+        /* SELECTED: #d6fa5e focused row. */
+        RGB8(0xd6, 0xfa, 0x5e),
+        RGB8(0x92, 0xaa, 0x42),
+        RGB8(0x4e, 0x5a, 0x26),
+        RGB8(0x0a, 0x0a, 0x0a),
+        /* PANEL: #1f260f cards, bars, value chips. */
+        RGB8(0x1f, 0x26, 0x0f),
+        RGB8(0x64, 0x69, 0x5a),
+        RGB8(0xaa, 0xac, 0xa4),
+        RGB8(0xef, 0xef, 0xef),
+    },
 };
 
 const char *const gb_theme_names[GB_THEME_COUNT] = {
-    "DEPTH", "LIGHT", "SHOCK", "VOLT", "BLUSH", "VARIA",
+    "DEPTH", "LIGHT", "SHOCK", "VOLT", "BLUSH", "VARIA", "SCOPE",
 };

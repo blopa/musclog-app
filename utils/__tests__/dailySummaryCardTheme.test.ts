@@ -44,7 +44,7 @@ describe('Daily Summary card theme', () => {
       lightTheme.colors.background.card,
       lightTheme.colors.background.card,
     ]);
-    expect(lightTheme.colors.colorfulCard.ink).toBe('#30413a');
+    expect(lightTheme.colors.colorfulCard.ink).toBe('#353f3b');
     expect(lightTheme.colors.colorfulCard.ink70).toBe(lightTheme.colors.text.secondary);
     expect(
       contrast(lightTheme.colors.background.card, lightTheme.colors.colorfulCard.ink70)
