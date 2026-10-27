@@ -1,4 +1,5 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
+import { useRouter } from 'expo-router';
 import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
@@ -21,6 +22,7 @@ import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
+import { COMEBACK_ROUTE } from '@/constants/comebackRoute';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -29,6 +31,7 @@ import { isAppLockSupported } from '@/utils/appLock';
 type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
   const {
@@ -141,6 +144,12 @@ export default function SettingsScreen() {
                 t('settings.workoutSettings.title'),
                 t('settings.workoutSettings.subtitle'),
                 () => setWorkoutSettingsVisible(true)
+              )}
+              {row(
+                'trending-up',
+                t('comeback.settings.title'),
+                t('comeback.settings.subtitle'),
+                () => router.push(COMEBACK_ROUTE)
               )}
               {row(
                 'bluetooth',

@@ -86,7 +86,12 @@ export function useAdjustmentMessage(adjustment: SetAdjustment | null | undefine
       reps: formatReps(adjustment.now.reps),
       lastReps: formatReps(adjustment.last.reps),
       planReps: formatReps(adjustment.plan.reps),
-      rir: formatInteger(Math.round(adjustment.last.averageRepsInReserve), { useGrouping: false }),
+      rir: formatInteger(
+        Math.round(adjustment.comeback?.targetRir ?? adjustment.last.averageRepsInReserve),
+        { useGrouping: false }
+      ),
+      week: formatInteger(adjustment.comeback?.week ?? 0, { useGrouping: false }),
+      percent: formatInteger(adjustment.comeback?.percent ?? 0, { useGrouping: false }),
       unit: weightUnit,
     });
   }

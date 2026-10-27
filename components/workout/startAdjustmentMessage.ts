@@ -15,6 +15,7 @@ export const START_ADJUSTMENT_MESSAGE_KEYS = {
   repeatReps: 'workoutSession.adjustment.startRepeatReps',
   reviewLighter: 'workoutSession.adjustment.startReviewLighter',
   reviewRepeat: 'workoutSession.adjustment.startReviewRepeat',
+  comeback: 'workoutSession.adjustment.startComeback',
 } as const;
 
 export type StartAdjustmentMessageKey =
@@ -37,6 +38,11 @@ export function startAdjustmentMessageKey(
     return adjustment.cause === 'deload'
       ? START_ADJUSTMENT_MESSAGE_KEYS.reviewLighter
       : START_ADJUSTMENT_MESSAGE_KEYS.reviewRepeat;
+  }
+
+  // A comeback's eased restart is the user's own opt-in, so it is credited to the comeback week.
+  if (adjustment.source === 'comeback') {
+    return START_ADJUSTMENT_MESSAGE_KEYS.comeback;
   }
 
   const repsMoved = adjustment.now.reps !== adjustment.plan.reps;

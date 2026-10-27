@@ -337,6 +337,14 @@ export const REVIEW_WEEKDAY_SETTING_TYPE = 'review_weekday';
 export const NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE = 'notifications_weekly_review';
 export const WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE = 'weekly_review_welcome_seen';
 
+/**
+ * Setting type for comeback mode (one JSON blob, `ComebackState` in utils/comeback/comebackState.ts):
+ * the opted-in ease-back-in plan after a break. Deliberately NOT mirrored into `SettingsState`, because
+ * its lists grow with use and would re-render every `useSettings()` consumer; `useComebackState` observes
+ * the single row instead.
+ */
+export const COMEBACK_STATE_SETTING_TYPE = 'comeback_state';
+
 /** Setting type for how much of a started workout's numbers the app decides. value: 'manual' | 'suggest'. */
 export const WORKOUT_AUTONOMY_SETTING_TYPE = 'workout_autonomy';
 

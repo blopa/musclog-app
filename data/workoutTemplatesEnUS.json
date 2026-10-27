@@ -42,5 +42,29 @@
       "5": "Upper B",
       "6": "Lower B"
     }
+  },
+  {
+    "title": "Short Full Body — Gym",
+    "description": "Two short full-body workouts (A and B) on gym equipment: about 30 minutes, 2 sets each, easy on purpose. A good way back in.",
+    "dayNames": {
+      "1": "Workout A",
+      "2": "Workout B"
+    }
+  },
+  {
+    "title": "Short Full Body — Home",
+    "description": "Two short full-body workouts (A and B) with dumbbells, a kettlebell and bands: about 30 minutes, 2 sets each. Easy on purpose.",
+    "dayNames": {
+      "1": "Workout A",
+      "2": "Workout B"
+    }
+  },
+  {
+    "title": "Short Full Body — No Equipment",
+    "description": "Two short full-body workouts (A and B) with just your body and a band: about 30 minutes, 2 sets each. Easy on purpose.",
+    "dayNames": {
+      "1": "Workout A",
+      "2": "Workout B"
+    }
   }
 ]

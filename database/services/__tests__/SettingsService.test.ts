@@ -1,5 +1,6 @@
 import { DEFAULT_HOME_ACTIONS, MAX_HOME_ACTIONS, parseHomeActions } from '@/constants/homeActions';
 import {
+  COMEBACK_STATE_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
   HOME_ACTIONS_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
@@ -452,6 +453,57 @@ describe('SettingsService', () => {
       expect(
         rows.filter((row) => row.type === SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE)
       ).toHaveLength(1);
+    });
+  });
+  describe('comeback state', () => {
+    it('reads the default state when nothing is stored', async () => {
+      installSettingsTable();
+
+      const state = await SettingsService.getComebackState();
+
+      expect(state.status).toBe('none');
+      expect(state.minimumDays).toEqual([]);
+    });
+
+    it('keeps both of two concurrent updates instead of the last read winning', async () => {
+      const rows = installSettingsTable();
+
+      await Promise.all([
+        SettingsService.updateComebackState((current) => ({
+          ...current,
+          minimumDays: [...current.minimumDays, '2026-09-01'],
+        })),
+        SettingsService.updateComebackState((current) => ({
+          ...current,
+          minimumDays: [...current.minimumDays, '2026-09-02'],
+        })),
+      ]);
+
+      const state = await SettingsService.getComebackState();
+      expect(state.minimumDays).toEqual(['2026-09-01', '2026-09-02']);
+      expect(valuesFor(rows, COMEBACK_STATE_SETTING_TYPE)).toHaveLength(1);
+    });
+
+    it('merges a plain patch and normalizes out-of-range values', async () => {
+      installSettingsTable();
+
+      const next = await SettingsService.updateComebackState({ status: 'active', weekShift: 99 });
+
+      expect(next.status).toBe('active');
+      expect(next.weekShift).toBeLessThan(99);
+    });
+
+    it('keeps accepting updates after one of them throws', async () => {
+      installSettingsTable();
+
+      await expect(
+        SettingsService.updateComebackState(() => {
+          throw new Error('boom');
+        })
+      ).rejects.toThrow('boom');
+
+      const next = await SettingsService.updateComebackState({ status: 'active' });
+      expect(next.status).toBe('active');
     });
   });
 });

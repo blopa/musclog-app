@@ -49,6 +49,22 @@ export function parseTrainingSetup(raw: string | null | undefined): TrainingSetu
   }
 }
 
+/**
+ * The place to train an existing gym profile amounts to, so a question about where the person
+ * trains can start on the answer their profile already gives.
+ */
+export function inferTrainingLocation(equipment: readonly EquipmentType[]): TrainingLocation {
+  if (
+    equipment.some((item) => ['barbell', 'plate_machine', 'cable', 'smith_machine'].includes(item))
+  ) {
+    return 'gym';
+  }
+
+  return equipment.some((item) => item === 'dumbbell' || item === 'kettlebell')
+    ? 'home'
+    : 'minimal';
+}
+
 /** What a gym profile created from the answer contains. */
 export function equipmentForLocation(location: TrainingLocation): EquipmentType[] {
   switch (location) {
@@ -79,10 +95,30 @@ export const STARTER_PLAN_TITLES: Record<LiftingExperience, Record<number, strin
 };
 
 /**
+ * The short, easy A/B full-body plans, one per place to train. They are the only bundled plans
+ * built for dumbbells/bands/bodyweight, so they are what home and minimal trainers are offered —
+ * and what a comeback's "a short plan for me" creates, for any location.
+ */
+export const SHORT_PLAN_TITLES: Record<TrainingLocation, string> = {
+  gym: 'Short Full Body — Gym',
+  home: 'Short Full Body — Home',
+  minimal: 'Short Full Body — No Equipment',
+};
+
+/** Index into `workoutTemplatesData.json` of the short plan for a place to train, or null. */
+export function shortPlanTemplateIndex(location: TrainingLocation): number | null {
+  const index = (workoutTemplatesData as { __title?: string }[]).findIndex(
+    (template) => template.__title === SHORT_PLAN_TITLES[location]
+  );
+
+  return index >= 0 ? index : null;
+}
+
+/**
  * Index into `workoutTemplatesData.json` of the plan to recommend, or null when the answers do
- * not fit a catalogue plan. Every bundled plan is built around gym equipment (barbells, machines,
- * cables), so someone training at home or with nothing gets an empty workout instead of a plan
- * they could not do.
+ * not fit a catalogue plan. The long catalogue plans are built around gym equipment (barbells,
+ * machines, cables), so someone training at home or with nothing is offered the short full-body
+ * plan for their equipment instead of an empty workout.
  */
 export function pickStarterTemplateIndex(
   location: TrainingLocation,
@@ -90,7 +126,7 @@ export function pickStarterTemplateIndex(
   daysPerWeek: number
 ): number | null {
   if (location !== 'gym') {
-    return null;
+    return shortPlanTemplateIndex(location);
   }
 
   const days = Math.min(5, Math.max(2, Math.round(daysPerWeek)));

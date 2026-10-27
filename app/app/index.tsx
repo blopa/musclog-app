@@ -35,6 +35,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
+import { ComebackCard } from '@/components/comeback/ComebackCard';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { WhatsNewAutoPrompt } from '@/components/whatsNew/WhatsNewAutoPrompt';
 import { WorkoutTodayCard } from '@/components/workout/WorkoutTodayCard';
@@ -446,7 +447,8 @@ export default function HomeScreen() {
           ) : null}
         </View>
 
-        <View className="mx-4 mb-4">
+        <View className="mx-4 mb-4 gap-4">
+          <ComebackCard />
           <WorkoutTodayCard activeOnly />
         </View>
         {/* Daily Summary Card */}

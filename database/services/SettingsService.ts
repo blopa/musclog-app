@@ -76,6 +76,11 @@ import { database } from '@/database/database-instance';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { DEFAULT_LANG } from '@/lang/lang';
+import {
+  type ComebackState,
+  parseComebackState,
+  serializeComebackState,
+} from '@/utils/comeback/comebackState';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import {
   type NotificationPreferences,
@@ -96,6 +101,9 @@ type CoachQuickSettingsUpdate = {
   workoutHistoryDays: WorkoutHistoryDays;
   useOcrBeforeAi?: boolean;
 };
+
+/** Tail of the comeback update queue; see `SettingsService.updateComebackState`. */
+let comebackUpdateQueue: Promise<unknown> = Promise.resolve();
 
 export class SettingsService {
   /**
@@ -575,6 +583,39 @@ export class SettingsService {
     );
 
     return next;
+  }
+
+  static async getComebackState(): Promise<ComebackState> {
+    return SettingsService.get(SETTINGS.comebackState);
+  }
+
+  /**
+   * Read-merge-write for comeback mode. Taps arrive back to back ("I did my minimum today" twice, a
+   * check-in racing a restart), and each one appends to a list or advances a counter, so the updates
+   * run one at a time through a queue: two concurrent read-then-write cycles would each start from the
+   * same snapshot and the second would silently drop the first's change. The result is normalized by
+   * `parseComebackState`, so a caller cannot store an out-of-range value.
+   */
+  static updateComebackState(
+    patchOrUpdater: Partial<ComebackState> | ((current: ComebackState) => ComebackState)
+  ): Promise<ComebackState> {
+    const run = async (): Promise<ComebackState> => {
+      const current = await SettingsService.getComebackState();
+      const candidate =
+        typeof patchOrUpdater === 'function'
+          ? patchOrUpdater(current)
+          : { ...current, ...patchOrUpdater };
+      const next = parseComebackState(serializeComebackState(candidate));
+      await SettingsService.set(SETTINGS.comebackState, next);
+
+      return next;
+    };
+
+    const result = comebackUpdateQueue.then(run, run);
+    // The queue must survive a failed update, or one rejection would wedge every later write.
+    comebackUpdateQueue = result.catch(() => undefined);
+
+    return result;
   }
 
   static async getCoachConversationContext(): Promise<'general' | 'exercise' | 'nutrition'> {

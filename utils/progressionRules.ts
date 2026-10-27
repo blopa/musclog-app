@@ -23,6 +23,8 @@ export type HistorySet = {
 
 /** A past session of the exercise, as far as a rule is concerned. */
 export type HistorySession = {
+  /** When the session's workout was completed (ms). Optional: only comeback mode reads it. */
+  completedAt?: number;
   /** Every prescribed working set of that session was performed. */
   allPrescribedSetsPerformed: boolean;
   /** Its performed working sets in set order; never empty. */

@@ -61,7 +61,13 @@ export function getWorkoutTemplates(locale = DEFAULT_LANG): RawWorkoutTemplate[]
     );
   const copies = WORKOUT_TEMPLATE_COPIES_BY_LOCALE[matchingLocale ?? DEFAULT_LANG];
 
-  return applyWorkoutTemplateCopies(workoutTemplatesData as RawWorkoutTemplateDefinition[], copies);
+  // The JSON files give each entry its own inferred shape (some have day names, some do not), which
+  // TypeScript unions into a type no single `WorkoutTemplateCopy` accepts; the structure is checked
+  // by `workoutTemplatesData.test.ts`.
+  return applyWorkoutTemplateCopies(
+    workoutTemplatesData as RawWorkoutTemplateDefinition[],
+    copies as WorkoutTemplateCopy[]
+  );
 }
 
 export const workoutTemplates = getWorkoutTemplates();

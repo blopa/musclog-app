@@ -296,6 +296,54 @@ describe('a start adjustment sourced from the Weekly Review', () => {
   });
 });
 
+describe('a start adjustment sourced from a comeback', () => {
+  const adjustment: StartSetAdjustment = {
+    cause: 'deload',
+    field: 'weight',
+    from: 100,
+    to: 80,
+    plan: { weightKg: 100, reps: 8 },
+    last: { weightKg: 100, reps: 8, averageRepsInReserve: 2 },
+    now: { weightKg: 80, reps: 8 },
+    source: 'comeback',
+    comeback: { week: 1, percent: 80, targetRir: 4 },
+  };
+
+  it('round-trips its source and the week/percent detail', () => {
+    const parsed = parseStartAdjustment(JSON.stringify(adjustment));
+
+    expect(parsed?.source).toBe('comeback');
+    expect(parsed?.comeback).toEqual({ week: 1, percent: 80, targetRir: 4 });
+  });
+
+  it('drops a malformed detail but keeps the explanation', () => {
+    const parsed = parseStartAdjustment(
+      JSON.stringify({ ...adjustment, comeback: { week: 'one', percent: 80 } })
+    );
+
+    expect(parsed).not.toBeNull();
+    expect(parsed?.comeback).toBeUndefined();
+  });
+
+  it('drops a comeback detail that no longer matches a comeback source', () => {
+    const parsed = parseStartAdjustment(JSON.stringify({ ...adjustment, source: 'weekly_review' }));
+
+    expect(parsed?.source).toBe('weekly_review');
+    expect(parsed?.comeback).toBeUndefined();
+  });
+
+  it('undoes to the plan, not to the pre-break session it was scaled from', () => {
+    expect(revertTargetFor({ ...adjustment, last: { ...adjustment.last, weightKg: 95 } })).toEqual({
+      weightKg: 100,
+      reps: 8,
+    });
+  });
+
+  it('marks the weight as adjusted, not the reps', () => {
+    expect(adjustedFields(adjustment)).toEqual({ weight: true, reps: false });
+  });
+});
+
 describe('explanations added for the rep ceiling and the training max reset', () => {
   const base = {
     cause: 'repeat',

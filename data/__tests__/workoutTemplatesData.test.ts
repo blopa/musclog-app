@@ -11,6 +11,7 @@ import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
 import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
 import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
 import { WORKOUT_TEMPLATE_COPIES_BY_LOCALE } from '@/lang/lang';
+import { equipmentForLocation, SHORT_PLAN_TITLES } from '@/utils/onboardingTraining';
 
 describe('workout template copies', () => {
   it('generates the locale catalog from the localized workout template files', () => {
@@ -163,6 +164,76 @@ describe('bundled workout exercise references', () => {
       for (const exercise of template.exercises) {
         expect(exerciseSlugs.has(exercise.exerciseSlug)).toBe(true);
         expect('exerciseId' in exercise).toBe(false);
+      }
+    }
+  });
+});
+
+describe('short full-body plans', () => {
+  const titles = Object.entries(SHORT_PLAN_TITLES) as [keyof typeof SHORT_PLAN_TITLES, string][];
+  const bySlug = new Map(exercisesData.map((exercise) => [exercise.__freeExerciseDbId, exercise]));
+
+  it.each(titles)('ships the %s plan as two easy A/B workouts of about 30 minutes', (_, title) => {
+    const plan = workoutTemplatesData.find((template) => template.__title === title);
+
+    expect(plan).toBeDefined();
+    expect(plan?.difficulty).toBe('beginner');
+    expect(plan?.duration).toBe(30);
+    const exercises = plan!.exercises as { day: number; sets: number; reps: number }[];
+    expect([...new Set(exercises.map(({ day }) => day))]).toEqual([1, 2]);
+    for (const day of [1, 2]) {
+      const dayExercises = exercises.filter((exercise) => exercise.day === day);
+      expect(dayExercises.length).toBeGreaterThanOrEqual(5);
+      expect(dayExercises.length).toBeLessThanOrEqual(6);
+    }
+
+    for (const exercise of exercises) {
+      expect(exercise.sets).toBe(2);
+      expect(exercise.reps).toBeGreaterThanOrEqual(8);
+      expect(exercise.reps).toBeLessThanOrEqual(12);
+    }
+  });
+
+  it.each(titles)(
+    'only uses equipment a %s trainer has, in real catalogue exercises',
+    (location, title) => {
+      const plan = workoutTemplatesData.find((template) => template.__title === title)!;
+      const allowed = new Set<string>(equipmentForLocation(location));
+
+      for (const { exerciseSlug } of plan.exercises as { exerciseSlug: string }[]) {
+        const exercise = bySlug.get(exerciseSlug);
+        expect(exercise).toBeDefined();
+        expect(allowed.has(exercise!.equipmentType)).toBe(true);
+      }
+    }
+  );
+
+  it.each(titles)('covers squat, hinge, push, pull and trunk movements in %s', (_, title) => {
+    const plan = workoutTemplatesData.find((template) => template.__title === title)!;
+    const groups = new Set(
+      (plan.exercises as { exerciseSlug: string }[]).map(
+        ({ exerciseSlug }) => bySlug.get(exerciseSlug)!.muscleGroup
+      )
+    );
+
+    for (const group of ['legs', 'chest', 'back', 'shoulders']) {
+      expect(groups.has(group)).toBe(true);
+    }
+
+    expect(groups.has('core') || groups.has('abdomen')).toBe(true);
+  });
+
+  it('names its workouts A and B in every locale', () => {
+    for (const [locale, copies] of Object.entries(WORKOUT_TEMPLATE_COPIES_BY_LOCALE)) {
+      for (const [, title] of titles) {
+        const index = workoutTemplatesData.findIndex((template) => template.__title === title);
+        const copy = copies[index] as { dayNames?: Record<string, string>; description?: string };
+
+        expect(copy.dayNames?.['1']).toBeTruthy();
+        expect(copy.dayNames?.['2']).toBeTruthy();
+        expect(copy.dayNames?.['1']).not.toBe(copy.dayNames?.['2']);
+        expect(copy.description).toBeTruthy();
+        expect(locale).toBeTruthy();
       }
     }
   });

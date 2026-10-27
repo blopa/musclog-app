@@ -54,7 +54,8 @@
       "startDeloadWeightReps": "Omlaag naar {{to}} {{unit}} × {{reps}} vanaf {{last}} {{unit}} × {{lastReps}} van vorige keer. Twee sessies op rij zonder herhalingen over.",
       "startRepeatWeightReps": "Je start met {{to}} {{unit}} × {{reps}}, wat je vorige keer deed, in plaats van de {{from}} {{unit}} × {{planReps}} uit het schema.",
       "startReviewLighter": "Lichtere week uit je Weekoverzicht: {{weight}} {{unit}} × {{reps}}.",
-      "startReviewRepeat": "Laatste sessie herhaald, uit je Weekoverzicht: {{weight}} {{unit}} × {{reps}}."
+      "startReviewRepeat": "Laatste sessie herhaald, uit je Weekoverzicht: {{weight}} {{unit}} × {{reps}}.",
+      "startComeback": "Comebackweek {{week}}: {{weight}} {{unit}} × {{reps}}, ongeveer {{percent}}% van wat je voor de pauze tilde. Houd ongeveer {{rir}} herhalingen in reserve."
     },
     "startRest": "Rust starten ({{seconds}} sec)",
     "warmup": {

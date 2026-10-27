@@ -54,7 +54,8 @@
       "startDeloadWeightReps": "Снижено до {{to}} {{unit}} × {{reps}} с прошлых {{last}} {{unit}} × {{lastReps}}. Две тренировки подряд без запаса повторений.",
       "startRepeatWeightReps": "Начинаем с {{to}} {{unit}} × {{reps}} — как в прошлый раз — вместо {{from}} {{unit}} × {{planReps}} по плану.",
       "startReviewLighter": "Лёгкая неделя из вашего Недельного обзора: {{weight}} {{unit}} × {{reps}}.",
-      "startReviewRepeat": "Повтор прошлой сессии из вашего Недельного обзора: {{weight}} {{unit}} × {{reps}}."
+      "startReviewRepeat": "Повтор прошлой сессии из вашего Недельного обзора: {{weight}} {{unit}} × {{reps}}.",
+      "startComeback": "Неделя {{week}} возвращения: {{weight}} {{unit}} × {{reps}}, около {{percent}}% от того, что вы поднимали до перерыва. Оставьте в запасе около {{rir}} повторений."
     },
     "startRest": "Начать отдых ({{seconds}} с)",
     "warmup": {

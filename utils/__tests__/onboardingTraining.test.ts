@@ -1,8 +1,11 @@
 import workoutTemplatesData from '@/data/workoutTemplatesData.json';
 import {
   equipmentForLocation,
+  inferTrainingLocation,
   parseTrainingSetup,
   pickStarterTemplateIndex,
+  SHORT_PLAN_TITLES,
+  shortPlanTemplateIndex,
   STARTER_PLAN_TITLES,
   TRAINING_DAYS_OPTIONS,
 } from '@/utils/onboardingTraining';
@@ -28,9 +31,18 @@ describe('onboardingTraining', () => {
     }
   });
 
-  it('never recommends a gym-equipment plan for home or minimal training', () => {
-    expect(pickStarterTemplateIndex('home', 'beginner', 3)).toBeNull();
-    expect(pickStarterTemplateIndex('minimal', 'advanced', 5)).toBeNull();
+  it('never recommends a gym-equipment plan for home or minimal training: the short plan for their equipment', () => {
+    const home = pickStarterTemplateIndex('home', 'beginner', 3);
+    const minimal = pickStarterTemplateIndex('minimal', 'advanced', 5);
+
+    expect(titles[home as number]).toBe(SHORT_PLAN_TITLES.home);
+    expect(titles[minimal as number]).toBe(SHORT_PLAN_TITLES.minimal);
+  });
+
+  it('finds the short plan for every place to train', () => {
+    for (const location of ['gym', 'home', 'minimal'] as const) {
+      expect(titles[shortPlanTemplateIndex(location) as number]).toBe(SHORT_PLAN_TITLES[location]);
+    }
   });
 
   it('keeps beginners on full-body plans and clamps odd day counts', () => {
@@ -57,5 +69,18 @@ describe('onboardingTraining', () => {
         JSON.stringify({ location: 'gym', experience: 'x', daysPerWeek: 'abc', autonomy: 'manual' })
       )
     ).toEqual({ location: 'gym', experience: undefined, daysPerWeek: 3, autonomy: 'manual' });
+  });
+});
+
+describe('inferTrainingLocation', () => {
+  it('reads each place back from the equipment it creates', () => {
+    for (const location of ['gym', 'home', 'minimal'] as const) {
+      expect(inferTrainingLocation(equipmentForLocation(location))).toBe(location);
+    }
+  });
+
+  it('treats a profile with nothing recognisable as minimal', () => {
+    expect(inferTrainingLocation([])).toBe('minimal');
+    expect(inferTrainingLocation(['bodyweight'])).toBe('minimal');
   });
 });

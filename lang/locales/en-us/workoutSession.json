@@ -54,7 +54,8 @@
       "startDeloadWeightReps": "Down to {{to}} {{unit}} × {{reps}} from last time's {{last}} {{unit}} × {{lastReps}}. Two sessions in a row with no reps left in reserve.",
       "startRepeatWeightReps": "Starting at {{to}} {{unit}} × {{reps}}, what you did last time, instead of the plan's {{from}} {{unit}} × {{planReps}}.",
       "startReviewLighter": "Lighter week from your Weekly Review: {{weight}} {{unit}} × {{reps}}.",
-      "startReviewRepeat": "Repeating last session, from your Weekly Review: {{weight}} {{unit}} × {{reps}}."
+      "startReviewRepeat": "Repeating last session, from your Weekly Review: {{weight}} {{unit}} × {{reps}}.",
+      "startComeback": "Comeback week {{week}}: {{weight}} {{unit}} × {{reps}}, about {{percent}}% of what you lifted before the break. Leave about {{rir}} reps in reserve."
     },
     "startRest": "Start rest ({{seconds}}s)",
     "warmup": {

@@ -33,3 +33,20 @@ export const OPENAI_MODELS = {
 } as const;
 
 export const DEFAULT_OPENAI_MODEL = OPENAI_MODELS.GPT_6_LUNA.value;
+
+/** Which provider answers AI requests; the order mirrors `AiService.getAiConfig()`'s priority. */
+export const AI_PROVIDER_KINDS = ['gateway', 'on-device', 'local', 'gemini', 'openai'] as const;
+export type AiProviderKind = (typeof AI_PROVIDER_KINDS)[number];
+
+/**
+ * How well a provider handles messy real-world food (a restaurant plate, a vague description).
+ * The hosted models are strong; the small on-device and local ones are fine for simple meals but
+ * guess more on a dish they cannot see well, so tips that lean on AI say so for them.
+ */
+export const AI_PROVIDER_STRENGTH: Record<AiProviderKind, 'strong' | 'basic'> = {
+  gateway: 'strong',
+  gemini: 'strong',
+  openai: 'strong',
+  'on-device': 'basic',
+  local: 'basic',
+};

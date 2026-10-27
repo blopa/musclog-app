@@ -54,7 +54,8 @@
       "startDeloadWeightReps": "Baja a {{to}} {{unit}} × {{reps}} desde {{last}} {{unit}} × {{lastReps}} de la última vez: dos sesiones seguidas sin repeticiones en reserva.",
       "startRepeatWeightReps": "Empiezas con {{to}} {{unit}} × {{reps}}, lo que hiciste la última vez, en lugar de los {{from}} {{unit}} × {{planReps}} del plan.",
       "startReviewLighter": "Semana ligera de tu Revisión semanal: {{weight}} {{unit}} × {{reps}}.",
-      "startReviewRepeat": "Repites la última sesión, por tu Revisión semanal: {{weight}} {{unit}} × {{reps}}."
+      "startReviewRepeat": "Repites la última sesión, por tu Revisión semanal: {{weight}} {{unit}} × {{reps}}.",
+      "startComeback": "Semana {{week}} de tu regreso: {{weight}} {{unit}} × {{reps}}, cerca del {{percent}}% de lo que levantabas antes del parón. Deja unas {{rir}} repeticiones en reserva."
     },
     "startRest": "Iniciar descanso ({{seconds}} s)",
     "warmup": {

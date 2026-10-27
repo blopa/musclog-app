@@ -42,6 +42,12 @@ export const SUPPORT_EMAIL: string = projectLinks.supportEmail;
 export const SUPPORT_MAILTO_URL = `mailto:${SUPPORT_EMAIL}`;
 /** There is no community server yet. While this is null, nothing links to one. */
 export const DISCORD_INVITE_URL: string | null = projectLinks.discordInviteUrl;
+/**
+ * A directory of free helplines by country (run by a non-profit), linked quietly from comeback mode's
+ * wellbeing question. A directory rather than one number because a single hotline is wrong in most
+ * countries.
+ */
+export const WELLBEING_SUPPORT_URL: string = projectLinks.wellbeingSupportUrl;
 
 // Training answers collected during onboarding (see `utils/onboardingTraining.ts`). Cleared once
 // the first-workout screen has been dealt with.

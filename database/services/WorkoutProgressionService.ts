@@ -14,6 +14,9 @@ import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
 import { TrainingWeekRepository } from '@/database/repositories/TrainingWeekRepository';
 import { type GymSnapshot, isBarLoadedEquipment } from '@/utils/gym';
+import { currentWorkoutRamp, type WorkoutRamp } from '@/utils/comeback/comebackProgram';
+import { tracksWorkouts } from '@/utils/comeback/comebackState';
+import { localDayStartMs } from '@/utils/calendarDate';
 import { loadStepFor } from '@/utils/loadIncrement';
 import { platesPerSide } from '@/utils/plateCalculator';
 import {
@@ -21,7 +24,12 @@ import {
   progressesLoad,
   projectExerciseProgression,
 } from '@/utils/progressionProjection';
-import { carriedSessionState, counterpartAt, type HistorySession } from '@/utils/progressionRules';
+import {
+  carriedSessionState,
+  counterpartAt,
+  type HistorySession,
+  type HistorySet,
+} from '@/utils/progressionRules';
 import {
   parseProgressionRule,
   parseSessionProgressionState,
@@ -38,7 +46,9 @@ import {
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
 import {
   applyWeekOverride,
+  planComebackOverride,
   planWeekOverride,
+  resolveStartOverride,
   type WeekOverrideKind,
   type WeekOverridePlan,
   type WeekOverrideSet,
@@ -73,7 +83,18 @@ type ProgressionContext = {
   lighterWindows: readonly { from: number; until: number }[];
   unitsFor: (exerciseId: string) => Units;
   repCeilingFor: (exercise: Exercise) => number;
+  /** The comeback ramp shaping workouts today (null = none), and the dates its baselines key off. */
+  comeback: {
+    ramp: WorkoutRamp | null;
+    /** Sessions completed before this are the pre-break baseline the ramp scales. */
+    baseBefore: number | null;
+    /** Sessions completed from this day on are the comeback's own: the load floor. */
+    startedAt: number | null;
+  };
 };
+
+/** What the comeback ramp needs from one exercise's history. */
+type ComebackSets = { base: readonly HistorySet[]; earlier: readonly HistorySet[] };
 
 /** What the session start does to one exercise's planned working sets. */
 type ExerciseStartPlan = WeekOverridePlan & {
@@ -98,6 +119,10 @@ export class WorkoutProgressionService {
       return null;
     }
 
+    const comeback = await this.comebackSets(context, history, (before) =>
+      this.history(exercise.id, undefined, undefined, context.lighterWindows, before)
+    );
+
     return this.planExercise({
       exercise,
       planned: history[0].sets.map((set, index) => ({
@@ -109,6 +134,7 @@ export class WorkoutProgressionService {
       rule: null,
       context,
       week: week?.decision ?? null,
+      comeback,
       plannedFromHistory: true,
     }).recommendation;
   }
@@ -129,6 +155,13 @@ export class WorkoutProgressionService {
       Q.where('deleted_at', Q.eq(null))
     );
     const context = await this.context();
+    // While a comeback ramp runs the session starts from the eased numbers, not from this plain
+    // projection, so listing it would promise loads the session never uses (the same reason the
+    // Weekly Review hides it once a repeat or lighter week is chosen).
+    if (context.comeback.ramp) {
+      return [];
+    }
+
     const exercises = await fetchMapByIds<Exercise>(
       'exercises',
       'id',
@@ -182,11 +215,12 @@ export class WorkoutProgressionService {
   }
 
   private static async context(): Promise<ProgressionContext> {
-    const [autonomy, mode, gym, lighterWindows] = await Promise.all([
+    const [autonomy, mode, gym, lighterWindows, comebackState] = await Promise.all([
       SettingsService.get(SETTINGS.workoutAutonomy),
       SettingsService.getProgressionMode(),
       GymService.getActiveGym().catch(() => null),
       TrainingWeekRepository.lighterWeekWindows(),
+      SettingsService.get(SETTINGS.comebackState),
     ]);
     const { unitsFor, repCeilingFor } = await ExerciseUserSettingsService.getResolvers(gym);
     return {
@@ -196,7 +230,39 @@ export class WorkoutProgressionService {
       lighterWindows,
       unitsFor,
       repCeilingFor,
+      comeback: {
+        // The nutrition-only track never eases workouts.
+        ramp: tracksWorkouts(comebackState.track)
+          ? currentWorkoutRamp(comebackState, localDayStartMs(new Date()))
+          : null,
+        baseBefore: comebackState.baseBefore,
+        startedAt: comebackState.startedAt,
+      },
     };
+  }
+
+  /**
+   * The comeback ramp's view of one exercise: its pre-break session (history strictly before
+   * `baseBefore`, filtered in the query so a few comeback weeks cannot push it out of the candidate
+   * window) and the latest session of this comeback, which sets the load floor. `history` is the
+   * ordinary, unfiltered one. Null when no ramp is running.
+   */
+  private static async comebackSets(
+    context: ProgressionContext,
+    history: readonly HistorySession[],
+    read: (before: number) => Promise<HistorySession[]>
+  ): Promise<ComebackSets | null> {
+    const { ramp, baseBefore, startedAt } = context.comeback;
+    if (!ramp) {
+      return null;
+    }
+
+    const base = baseBefore === null ? [] : ((await read(baseBefore))[0]?.sets ?? []);
+    const latest = history[0];
+    const earlier =
+      latest && startedAt !== null && (latest.completedAt ?? 0) >= startedAt ? latest.sets : [];
+
+    return { base, earlier };
   }
 
   static async applyStartProgression(workoutLogId: string): Promise<number> {
@@ -209,7 +275,10 @@ export class WorkoutProgressionService {
     const hasRule = rules.some((rule) => rule != null);
     // A repeat or lighter week the user chose in the Weekly Review applies even when autonomy is
     // `manual`: manual means the app does not change numbers on its own, and this is not on its own.
-    if (!context.automatic && !hasRule && !week) {
+    // The comeback ramp is the same kind of explicit choice, and it applies to exercises with no
+    // history too (their sets and effort are still eased).
+    const ramp = context.comeback.ramp;
+    if (!context.automatic && !hasRule && !week && !ramp) {
       return 0;
     }
 
@@ -223,9 +292,23 @@ export class WorkoutProgressionService {
         )
       )
     );
-    if (!hasRule && !week && !histories.some((history) => history.length)) {
+    if (!hasRule && !week && !ramp && !histories.some((history) => history.length)) {
       return 0;
     }
+
+    const comebackSets = await Promise.all(
+      logExercises.map((row, index) =>
+        this.comebackSets(context, histories[index], (before) =>
+          this.history(
+            row.exerciseId,
+            workoutLogId,
+            rules[index] ? row.templateExerciseId : undefined,
+            context.lighterWindows,
+            before
+          )
+        )
+      )
+    );
 
     const exercises = await fetchMapByIds<Exercise>(
       'exercises',
@@ -272,6 +355,7 @@ export class WorkoutProgressionService {
             rule,
             context,
             week: week?.decision ?? null,
+            comeback: comebackSets[index],
           });
           const changes = new Map(plan.changes.map((change) => [change.setId, change]));
           const dropped = new Set(plan.dropSetIds);
@@ -349,6 +433,7 @@ export class WorkoutProgressionService {
     rule,
     context,
     week,
+    comeback = null,
     plannedFromHistory = false,
   }: {
     exercise: Exercise;
@@ -357,6 +442,8 @@ export class WorkoutProgressionService {
     rule: ProgressionRule | null;
     context: ProgressionContext;
     week: WeekOverrideKind | null;
+    /** The comeback ramp's view of this exercise; null when no ramp is running. */
+    comeback?: ComebackSets | null;
     /** The "plan" is a copy of last session (Add/Swap), not a template's prescription. */
     plannedFromHistory?: boolean;
   }): ExerciseStartPlan {
@@ -368,7 +455,11 @@ export class WorkoutProgressionService {
       rule,
       plannedFromHistory,
     });
-    if (!week) {
+    const override = resolveStartOverride({
+      comeback: comeback ? context.comeback.ramp : null,
+      week,
+    });
+    if (!override) {
       return {
         changes: projection.changes,
         dropSetIds: [],
@@ -381,13 +472,27 @@ export class WorkoutProgressionService {
     // A week the review overrode is not a session the rule can learn from, so it does not advance
     // the remembered state — but it hands the last session's state on (while it still belongs to
     // this rule), or the next normal session would start the rule over.
-    const override = planWeekOverride({ kind: week, planned, last: history[0]?.sets ?? [], step });
+    const overridePlan =
+      override.kind === 'comeback' && comeback
+        ? planComebackOverride({
+            ramp: override.ramp,
+            planned,
+            base: comeback.base,
+            earlier: comeback.earlier,
+            step,
+          })
+        : planWeekOverride({
+            kind: override.kind === 'comeback' ? 'lighter' : override.kind,
+            planned,
+            last: history[0]?.sets ?? [],
+            step,
+          });
     return {
-      ...override,
+      ...overridePlan,
       state: carriedSessionState(rule, history[0]),
       recommendation: {
         ...projection,
-        sets: applyWeekOverride(planned, override),
+        sets: applyWeekOverride(planned, overridePlan),
         changes: [],
         state: null,
       },
@@ -495,7 +600,9 @@ export class WorkoutProgressionService {
     exerciseId: string,
     excludeId?: string,
     templateExerciseId?: string,
-    excludeWindows: readonly { from: number; until: number }[] = []
+    excludeWindows: readonly { from: number; until: number }[] = [],
+    /** Only sessions completed strictly before this (ms): comeback mode's pre-break baseline. */
+    before?: number
   ): Promise<HistorySession[]> {
     const candidates = await database
       .get<WorkoutLogExercise>('workout_log_exercises')
@@ -507,6 +614,9 @@ export class WorkoutProgressionService {
         Q.on('workout_logs', [
           Q.where('completed_at', Q.notEq(null)),
           Q.where('deleted_at', Q.eq(null)),
+          // In the query, not in memory: the candidate pool is a few dozen rows, and a handful of
+          // comeback weeks would push the pre-break sessions out of it.
+          ...(before === undefined ? [] : [Q.where('completed_at', Q.lt(before))]),
         ]),
         Q.sortBy('created_at', Q.desc),
         Q.take(HISTORY_CANDIDATE_WINDOW)
@@ -543,6 +653,7 @@ export class WorkoutProgressionService {
         .filter((set) => set.logExerciseId === row.id && !isWarmupSet(set))
         .sort((a, b) => a.setOrder - b.setOrder);
       return {
+        completedAt: happenedAt(row),
         sets: working.filter(isPerformedWorkoutSet).map((set) => ({
           weightKg: set.weight,
           reps: set.reps,

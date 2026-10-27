@@ -197,3 +197,45 @@ export function consistencySuggestion(
 
   return null;
 }
+
+/**
+ * Whether a start explanation is the APP deloading an exercise on its own — the fatigue signal a
+ * lighter week is recommended from. A deload with a `source` was somebody's decision (the Weekly
+ * Review's lighter week, or the eased restart of a comeback) and says nothing about how the lifter
+ * is coping, so counting it would recommend a lighter week for having had one.
+ */
+export const isSelfInitiatedDeload = (
+  explanation: { cause: string; source?: string } | null | undefined
+): boolean => explanation?.cause === 'deload' && explanation.source === undefined;
+
+/**
+ * Weeks with a training decision since the last lighter week (all of them if there never was one):
+ * the "you are due" signal. `reviews` is newest first, one count per reviewed period.
+ *
+ * `restartedAt` is the start of a comeback: the eased weeks and everything before them are a
+ * boundary exactly like a lighter week, since the person has just spent weeks deliberately below
+ * capacity. Without it, a period that ends before the comeback began would count towards "due".
+ */
+export function decidedWeeksSinceLighter(
+  reviews: readonly { periodEnd: number; trainingDecision?: string | null }[],
+  restartedAt: number | null = null
+): number {
+  const seen = new Set<number>();
+  for (const row of reviews) {
+    if (restartedAt !== null && row.periodEnd <= restartedAt) {
+      break;
+    }
+
+    if (!row.trainingDecision || seen.has(row.periodEnd)) {
+      continue;
+    }
+
+    if (row.trainingDecision === 'lighter') {
+      break;
+    }
+
+    seen.add(row.periodEnd);
+  }
+
+  return seen.size;
+}

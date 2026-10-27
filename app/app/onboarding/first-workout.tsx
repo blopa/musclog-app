@@ -52,8 +52,8 @@ const isExperience = (value: unknown): value is LiftingExperience =>
 
 /**
  * Where onboarding ends for anyone who answered the training questions: a concrete first workout
- * rather than an empty Home. Plans exist only for gym equipment, so home/minimal trainers are
- * offered an empty workout instead of a plan they could not do.
+ * rather than an empty Home. The long catalogue plans are gym-only, so home/minimal trainers are
+ * offered the short full-body plan for their equipment instead of a plan they could not do.
  */
 export default function FirstWorkoutScreen() {
   const theme = useTheme();

@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
-import { DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
+import { type AiProviderKind, DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
 import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import { readSetting, SETTINGS } from '@/constants/settingDefinitions';
@@ -464,6 +464,8 @@ export type SettingsContextType = UseSettingsResult & {
   useThinkingMode: boolean;
   isAiConfigured: boolean;
   isAiMealPhotoEnabled: boolean;
+  /** The provider that would answer an AI request now; null when none is configured. */
+  aiProvider: AiProviderKind | null;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -624,6 +626,35 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.openAiApiKey,
   ]);
 
+  const aiProvider = useMemo<AiProviderKind | null>(() => {
+    if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
+      return 'gateway';
+    }
+
+    if (state.useOnDeviceAi) {
+      return 'on-device';
+    }
+
+    if (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') {
+      return 'local';
+    }
+
+    if (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') {
+      return 'gemini';
+    }
+
+    return state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '' ? 'openai' : null;
+  }, [
+    state.useMusclogFreeTier,
+    state.useOnDeviceAi,
+    state.enableLocalLlm,
+    state.localLlmBaseUrl,
+    state.enableGoogleGemini,
+    decryptedApiKeys.googleGeminiApiKey,
+    state.enableOpenAi,
+    decryptedApiKeys.openAiApiKey,
+  ]);
+
   // Mirrors AiService.getAiConfig() priority: gateway → on-device → local → gemini → openai.
   // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
   // when it would be the active provider.
@@ -677,10 +708,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       appLockScopes,
       isAiConfigured,
       isAiMealPhotoEnabled,
+      aiProvider,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     };
-  }, [state, decryptedApiKeys, homeActions, appLockScopes, isAiConfigured, isAiMealPhotoEnabled]);
+  }, [
+    state,
+    decryptedApiKeys,
+    homeActions,
+    appLockScopes,
+    isAiConfigured,
+    isAiMealPhotoEnabled,
+    aiProvider,
+  ]);
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 }

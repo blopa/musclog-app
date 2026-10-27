@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
+import { ComebackSummaryLine } from '@/components/comeback/ComebackSummaryLine';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
@@ -334,6 +335,7 @@ export default function WorkoutSummaryScreen() {
         caloriesBurned={caloriesBurned}
         goalProgress={goalProgress}
       >
+        <ComebackSummaryLine />
         {workoutLogId ? <WorkoutSummaryProgression logId={workoutLogId} /> : null}
         {workoutLogId ? (
           <WorkoutSessionFeedback

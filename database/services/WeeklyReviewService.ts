@@ -18,6 +18,8 @@ import {
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
+import { checkpointsDue, currentWorkoutRamp } from '@/utils/comeback/comebackProgram';
+import { tracksWorkouts } from '@/utils/comeback/comebackState';
 import { parseSetPrescription } from '@/utils/setPrescription';
 import {
   parseTrainingDecisionSnapshot,
@@ -35,7 +37,9 @@ import { storedWeightToKg } from '@/utils/unitConversion';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
 import {
   consistencySuggestion,
+  decidedWeeksSinceLighter,
   goalVerdicts,
+  isSelfInitiatedDeload,
   recommendTrainingWeek,
 } from '@/utils/weeklyTrainingRecommendation';
 import { widgetEvents } from '@/utils/widgetEvents';
@@ -111,27 +115,6 @@ export type WeeklyEvidenceGaps = {
  */
 const trainingReviewedAtFor = (reviews: readonly WeeklyReview[], periodEnd: number) =>
   reviews.find((row) => row.periodEnd === periodEnd && row.trainingReviewedAt)?.trainingReviewedAt;
-
-/**
- * Weeks with a training decision since the last lighter week (all of them if there never was
- * one): the "you are due" signal. Newest first in, one count per reviewed period.
- */
-const decidedWeeksSinceLighter = (reviews: readonly WeeklyReview[]): number => {
-  const seen = new Set<number>();
-  for (const row of reviews) {
-    if (!row.trainingDecision || seen.has(row.periodEnd)) {
-      continue;
-    }
-
-    if (row.trainingDecision === 'lighter') {
-      break;
-    }
-
-    seen.add(row.periodEnd);
-  }
-
-  return seen.size;
-};
 
 /**
  * What the reviewed week holds, counted from the records themselves rather than the account's age
@@ -306,8 +289,18 @@ export class WeeklyReviewService {
     });
     // Once a repeat or lighter week is chosen, the session will not follow the plain progression
     // these targets project, so showing them would promise numbers the session never uses.
+    // During a comeback ramp the session starts from the eased numbers, so these targets would
+    // promise loads it never uses; the check-in below replaces the three-way decision instead.
+    const comebackState = await SettingsService.get(SETTINGS.comebackState);
+    const comebackRamp = tracksWorkouts(comebackState.track)
+      ? currentWorkoutRamp(comebackState, localDayStartMs(new Date()))
+      : null;
+    const comebackWeek = comebackRamp
+      ? (checkpointsDue(comebackState, localDayStartMs(new Date())).find((week) => week <= 4) ??
+        null)
+      : null;
     const targets =
-      next && (trainingDecision?.decision ?? 'progress') === 'progress'
+      next && !comebackRamp && (trainingDecision?.decision ?? 'progress') === 'progress'
         ? await WorkoutProgressionService.projectTemplate(next.template.id)
         : [];
     const current = goal
@@ -352,6 +345,8 @@ export class WeeklyReviewService {
         targets,
         next,
         decision: trainingDecision,
+        /** The ramp check-in (week 2 or 4) that answers this half during a comeback, or null. */
+        comebackCheckin: comebackWeek === 2 || comebackWeek === 4 ? { week: comebackWeek } : null,
         proposal: trainingEvidence.proposal,
         consistencySuggestion: trainingEvidence.suggestion,
         // Only the latest review can still shape a week, and only until the next review is due.
@@ -384,11 +379,15 @@ export class WeeklyReviewService {
     suggestion: ReturnType<typeof consistencySuggestion>;
   }> {
     const { period, workouts, details, workingSets, activity, reviews } = input;
-    const [goals, windows, previousWeek] = await Promise.all([
+    const [goals, windows, previousWeek, comeback] = await Promise.all([
       ExerciseGoalService.getActiveGoals(),
       TrainingWeekRepository.lighterWeekWindows(),
       this.weekActivity(localDayKeyPlusCalendarDays(period.start, -7), period.start),
+      SettingsService.get(SETTINGS.comebackState),
     ]);
+    // A comeback's eased weeks are a deliberate lighter stretch, so weeks before it never count
+    // towards "you are due for a lighter week".
+    const comebackStartedAt = comeback.startedAt;
     const consistencyGoal = goals.find(
       (goal) => goal.goalType === 'consistency' && goal.targetSessionsPerWeek != null
     );
@@ -412,13 +411,14 @@ export class WeeklyReviewService {
         : null,
       oneRm,
     });
-    // Exercises the automatic path deloaded on its own this week. A deload the REVIEW chose does
-    // not count: it would recommend a lighter week for having had one.
+    // Exercises the automatic path deloaded on its own this week. A deload somebody chose — the
+    // review's lighter week, a comeback's eased restart — does not count: it would recommend a
+    // lighter week for having had one.
     const deloaded = new Set<string>();
     for (const detail of details) {
       for (const set of detail.sets) {
         const explanation = parseSetPrescription(set.prescriptionJson)?.explanation;
-        if (explanation?.cause === 'deload' && explanation.source !== 'weekly_review') {
+        if (isSelfInitiatedDeload(explanation)) {
           deloaded.add(set.exerciseId);
         }
       }
@@ -434,7 +434,7 @@ export class WeeklyReviewService {
         ? rated.reduce((sum, set) => sum + set.repsInReserve, 0) / rated.length
         : null,
       goals: verdicts,
-      decidedWeeksSinceLighter: decidedWeeksSinceLighter(reviews),
+      decidedWeeksSinceLighter: decidedWeeksSinceLighter(reviews, comebackStartedAt),
     });
     return {
       proposal: { recommended: decision, reasons, goals: verdicts },

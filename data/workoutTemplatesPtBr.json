@@ -42,5 +42,29 @@
       "5": "Superior B",
       "6": "Inferior B"
     }
+  },
+  {
+    "title": "Corpo inteiro curto — Academia",
+    "description": "Dois treinos curtos de corpo inteiro (A e B) com equipamentos de academia: cerca de 30 minutos, 2 séries cada, leves de propósito. Um bom jeito de voltar.",
+    "dayNames": {
+      "1": "Treino A",
+      "2": "Treino B"
+    }
+  },
+  {
+    "title": "Corpo inteiro curto — Em casa",
+    "description": "Dois treinos curtos de corpo inteiro (A e B) com halteres, kettlebell e elásticos: cerca de 30 minutos, 2 séries cada. Leves de propósito.",
+    "dayNames": {
+      "1": "Treino A",
+      "2": "Treino B"
+    }
+  },
+  {
+    "title": "Corpo inteiro curto — Sem equipamento",
+    "description": "Dois treinos curtos de corpo inteiro (A e B) só com o peso do corpo e um elástico: cerca de 30 minutos, 2 séries cada. Leves de propósito.",
+    "dayNames": {
+      "1": "Treino A",
+      "2": "Treino B"
+    }
   }
 ]

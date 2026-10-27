@@ -53,6 +53,12 @@ import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationIte
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { syncAppIconWithTheme } from '@/services/themeAppIcon';
+import {
+  binaryToSelectedMacros,
+  NUTRITION_DISPLAY_MACROS,
+  type NutritionDisplayMacro,
+  selectedMacrosToBinary,
+} from '@/utils/nutritionDisplay';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -63,9 +69,8 @@ type VisualSettingsModalProps = {
 
 type SlotNumber = 1 | 2 | 3;
 
-/** Ordered macro keys — index maps to the binary string position. */
-const MACRO_KEYS = ['carbs', 'protein', 'fats', 'fiber', 'alcohol'] as const;
-type MacroKey = (typeof MACRO_KEYS)[number];
+const MACRO_KEYS = NUTRITION_DISPLAY_MACROS;
+type MacroKey = NutritionDisplayMacro;
 
 const MACRO_ICON: Record<MacroKey, typeof Wheat> = {
   carbs: Wheat,
@@ -98,16 +103,6 @@ const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
   'kinetic-varia': Rocket,
   'kinetic-scope': Crosshair,
 };
-
-/** Convert a 5-char binary string to an array of visible macro keys. */
-function binaryToSelected(binary: string): MacroKey[] {
-  return MACRO_KEYS.filter((_, i) => binary[i] === '1');
-}
-
-/** Convert an array of visible macro keys back to a 5-char binary string. */
-function selectedToBinary(selected: MacroKey[]): string {
-  return MACRO_KEYS.map((k) => (selected.includes(k) ? '1' : '0')).join('');
-}
 
 export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalProps) {
   const theme = useTheme();
@@ -144,7 +139,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     }
 
     SettingsService.getNutritionDisplay().then((binary) => {
-      setSelectedMacros(binaryToSelected(binary));
+      setSelectedMacros(binaryToSelectedMacros(binary));
     });
     SettingsService.getHomeSummaryCard().then(setHomeSummaryCard);
     SettingsService.getHomeActions().then((raw) => {
@@ -182,7 +177,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   const handleMacrosChange = async (ids: MacroKey[]) => {
     setSelectedMacros(ids);
-    await SettingsService.setNutritionDisplay(selectedToBinary(ids));
+    await SettingsService.setNutritionDisplay(selectedMacrosToBinary(ids));
   };
 
   const macroSummaryLabel = (): string => {

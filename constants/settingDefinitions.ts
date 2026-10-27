@@ -4,6 +4,7 @@ import {
   APP_LOCK_SCOPES_SETTING_TYPE,
   type AppLockScope,
   AUTO_START_REST_TIMER_SETTING_TYPE,
+  COMEBACK_STATE_SETTING_TYPE,
   CYCLE_NOTIFICATION_STYLE_SETTING_TYPE,
   CYCLE_PIN_SUGGESTED_SETTING_TYPE,
   CYCLE_QUICK_LOG_SETTING_TYPE,
@@ -34,6 +35,11 @@ import {
   WORKOUT_VIEW_SETTING_TYPE,
   type WorkoutAutonomy,
 } from '@/constants/settings';
+import {
+  type ComebackState,
+  parseComebackState,
+  serializeComebackState,
+} from '@/utils/comeback/comebackState';
 import { clampRestSeconds } from '@/utils/restTimer';
 
 /**
@@ -144,6 +150,13 @@ export const SETTINGS = {
   } satisfies SettingDefinition<number>,
   notificationsWeeklyReview: booleanSetting(NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE, false),
   weeklyReviewWelcomeSeen: booleanSetting(WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE, false),
+  /** Comeback mode's whole state; see `ComebackState`. Read through `useComebackState`, not the context. */
+  comebackState: {
+    type: COMEBACK_STATE_SETTING_TYPE,
+    defaultValue: parseComebackState(null),
+    parse: parseComebackState,
+    serialize: serializeComebackState,
+  } satisfies SettingDefinition<ComebackState>,
 } as const;
 
 /** Reads a setting out of an already-loaded `type → value` map (the reactive context's view). */
