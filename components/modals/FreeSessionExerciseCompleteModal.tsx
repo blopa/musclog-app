@@ -251,7 +251,7 @@ export function FreeSessionExerciseCompleteModal({
           <View className="w-full gap-3">
             <Button
               label={t('freeTraining.exerciseComplete.addNextExercise')}
-              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
+              icon={Plus}
               size="md"
               width="full"
               variant="gradientCta"
