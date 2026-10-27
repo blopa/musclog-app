@@ -49,6 +49,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Between-set weight/rep re-targeting that states what it changed and why (carried-over load, or a recalculation that holds your target reps in reserve), with the marker on the field it actually moved
 - Automatic personal record (PR) detection
 - Review the full planned set list in workout history, with unfinished sets and exercises marked skipped and excluded from volume, records, trends, and other performance calculations
+- Browse every completed session from the Workouts screen menu ("Workout history"), not only from Home's "See all". Previewing a workout also has a "View past sessions" button that lists every time you did that specific workout, newest first, over all time
 - Import workouts by pasting text — AI parses it into a session
 - AI errors you can act on say so: a rejected Gemini/OpenAI key names the provider and points to AI settings, a stalled request times out (retried once) instead of spinning forever, and the AI photo scan has a Cancel button. A "Test key" button in AI settings checks a key while you set it up
 - Keep screen awake during active workout sessions

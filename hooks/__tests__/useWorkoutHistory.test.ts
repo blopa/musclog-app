@@ -202,6 +202,21 @@ describe('useWorkoutHistory', () => {
     (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
   });
 
+  describe('templateId', () => {
+    it('scopes every fetch to the template and lists all time by default', async () => {
+      const { result } = renderHook(() =>
+        useWorkoutHistory({ initialLimit: 5, groupByMonth: true, templateId: 'template-1' })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(WorkoutService.getWorkoutHistory).toHaveBeenCalledWith(undefined, 5, 0, 'template-1');
+      expect((result.current as any).filters.dateRange).toBe('all');
+    });
+  });
+
   describe('Flat mode (groupByMonth = false)', () => {
     it('returns empty workouts and isLoading false after first load when no workouts', async () => {
       (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);

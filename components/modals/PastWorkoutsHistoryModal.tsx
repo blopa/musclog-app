@@ -26,6 +26,10 @@ type FilterMuscleGroup =
 type WorkoutHistoryModalProps = {
   visible: boolean;
   onClose: () => void;
+  /** Only list sessions started from this workout template. Defaults to all workouts. */
+  templateId?: string;
+  /** Overrides the default title, e.g. with the workout's name. */
+  title?: string;
 };
 
 // Search and Filter Header Component
@@ -328,7 +332,12 @@ function LoadingMoreFooter({ isLoadingMore }: { isLoadingMore: boolean }) {
 
 const MemoWorkoutCard = memo(WorkoutCard);
 
-function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
+function PastWorkoutsHistoryModal({
+  visible,
+  onClose,
+  templateId,
+  title,
+}: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
@@ -361,6 +370,7 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
     groupByMonth: true,
     enableReactivity: true,
     visible,
+    templateId,
   });
 
   const listSections = useMemo(
@@ -406,7 +416,7 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('pastWorkoutHistory.title')}
+      title={title ?? t('pastWorkoutHistory.title')}
       scrollable={false}
     >
       <View className="flex-1">

@@ -233,6 +233,10 @@
       "alreadyActive": "You already have a workout in progress. Resume or discard it first."
     },
     "unnamed": "Unnamed",
-    "previewWorkout": "Preview {{name}}"
+    "previewWorkout": "Preview {{name}}",
+    "history": {
+      "title": "Workout history",
+      "description": "See every session you've completed"
+    }
   }
 }

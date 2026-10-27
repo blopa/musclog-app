@@ -541,6 +541,36 @@ describe('WorkoutService', () => {
       expect(mockQuery.extend).toHaveBeenCalled();
     });
 
+    it('should restrict the query to one template when templateId is given', async () => {
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockQuery),
+      } as any);
+
+      await WorkoutService.getWorkoutHistory(undefined, 10, 0, 'template-1');
+
+      expect(mockQuery.extend).toHaveBeenCalledWith(Q.where('template_id', 'template-1'));
+    });
+
+    it('should not add a template clause without templateId', async () => {
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockQuery),
+      } as any);
+
+      await WorkoutService.getWorkoutHistory(undefined, 10);
+
+      expect(mockQuery.extend).not.toHaveBeenCalledWith(Q.where('template_id', expect.anything()));
+    });
+
     it('should filter out deleted workouts', async () => {
       const mockQuery = {
         fetch: jest.fn().mockResolvedValue([]),

@@ -13,6 +13,7 @@
     "set": "Serie {{number}}",
     "share": "Compartir",
     "shareDescription": "Compartir estos detalles del entrenamiento",
-    "shareFailed": "No se pudieron compartir los detalles del entrenamiento. Inténtalo de nuevo."
+    "shareFailed": "No se pudieron compartir los detalles del entrenamiento. Inténtalo de nuevo.",
+    "viewHistory": "Ver sesiones anteriores"
   }
 }

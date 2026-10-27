@@ -1,4 +1,4 @@
-import { Dumbbell, Share2, Weight } from 'lucide-react-native';
+import { Dumbbell, History, Share2, Weight } from 'lucide-react-native';
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -21,6 +21,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
+import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import type { EnrichedWorkoutTemplateSet } from '@/hooks/useWorkoutTemplateDetails';
 import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
@@ -37,6 +38,7 @@ import {
 } from '@/utils/workoutSetCompletion';
 
 import { FullScreenModal } from './FullScreenModal';
+import PastWorkoutsHistoryModal from './PastWorkoutsHistoryModal';
 
 export type { SetData } from '../WorkoutHistorySetRow';
 
@@ -85,6 +87,7 @@ export function WorkoutSessionHistoryModal({
   const units = accountUnits;
   const weightUnitKey = getWeightUnitI18nKey(units);
   const [isSharing, setIsSharing] = useState(false);
+  const [isTemplateHistoryVisible, setIsTemplateHistoryVisible] = useSubModalVisibility(visible);
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   const [recommendations, setRecommendations] = useState<TemplateRecommendation[]>([]);
@@ -542,6 +545,17 @@ export function WorkoutSessionHistoryModal({
           </View>
         </View>
 
+        {isPreview && workoutTemplate ? (
+          <Button
+            label={t('workoutHistory.viewHistory')}
+            icon={History}
+            variant="outline"
+            size="md"
+            width="full"
+            onPress={() => setIsTemplateHistoryVisible(true)}
+          />
+        ) : null}
+
         {/* Divider */}
         <View className="h-px" style={{ backgroundColor: theme.colors.border.light }} />
 
@@ -550,6 +564,16 @@ export function WorkoutSessionHistoryModal({
         {/* Bottom spacing */}
         <View className="h-8" />
       </View>
+
+      {/* Mounted only while open so its filters start fresh for whichever workout is previewed. */}
+      {isPreview && workoutTemplate && isTemplateHistoryVisible ? (
+        <PastWorkoutsHistoryModal
+          visible={true}
+          onClose={() => setIsTemplateHistoryVisible(false)}
+          templateId={workoutTemplate.id}
+          title={workoutName}
+        />
+      ) : null}
     </FullScreenModal>
   );
 }

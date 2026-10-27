@@ -233,6 +233,10 @@
       "alreadyActive": "Je hebt al een training bezig. Hervat of verwijder die eerst."
     },
     "unnamed": "Naamloos",
-    "previewWorkout": "Voorbeeld van {{name}}"
+    "previewWorkout": "Voorbeeld van {{name}}",
+    "history": {
+      "title": "Trainingsgeschiedenis",
+      "description": "Bekijk alle sessies die je hebt voltooid"
+    }
   }
 }

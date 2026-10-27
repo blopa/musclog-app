@@ -233,6 +233,10 @@
       "alreadyActive": "Você já tem um treino em andamento. Retome ou descarte-o primeiro."
     },
     "unnamed": "Sem nome",
-    "previewWorkout": "Pré-visualizar {{name}}"
+    "previewWorkout": "Pré-visualizar {{name}}",
+    "history": {
+      "title": "Histórico de treinos",
+      "description": "Veja todas as sessões que você concluiu"
+    }
   }
 }

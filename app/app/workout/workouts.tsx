@@ -1,5 +1,14 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { Footprints, Layers3, Pencil, Plus, Search, Target, Trash2 } from 'lucide-react-native';
+import {
+  Footprints,
+  History,
+  Layers3,
+  Pencil,
+  Plus,
+  Search,
+  Target,
+  Trash2,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
@@ -18,6 +27,7 @@ import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOpti
 import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { LogCardioModal } from '@/components/modals/LogCardioModal';
+import PastWorkoutsHistoryModal from '@/components/modals/PastWorkoutsHistoryModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
@@ -131,6 +141,7 @@ export default function WorkoutsScreen() {
   const [isCreateWorkoutModalVisible, setIsCreateWorkoutModalVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [isLogCardioVisible, setIsLogCardioVisible] = useState(false);
+  const [isWorkoutHistoryVisible, setIsWorkoutHistoryVisible] = useState(false);
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
   const [isGenerateWithAiModalVisible, setIsGenerateWithAiModalVisible] = useState(false);
@@ -681,6 +692,15 @@ export default function WorkoutsScreen() {
               },
             },
             {
+              icon: History,
+              iconColor: theme.colors.accent.primary,
+              title: t('workouts.history.title'),
+              description: t('workouts.history.description'),
+              onPress: () => {
+                setIsWorkoutHistoryVisible(true);
+              },
+            },
+            {
               icon: Target,
               iconColor: theme.colors.accent.secondary,
               title: t('exerciseGoals.title'),
@@ -747,6 +767,14 @@ export default function WorkoutsScreen() {
           <LogCardioModal
             visible={isLogCardioVisible}
             onClose={() => setIsLogCardioVisible(false)}
+          />
+        ) : null}
+
+        {/* Mounted only while open so each open starts from the default filters */}
+        {isWorkoutHistoryVisible ? (
+          <PastWorkoutsHistoryModal
+            visible={true}
+            onClose={() => setIsWorkoutHistoryVisible(false)}
           />
         ) : null}
 

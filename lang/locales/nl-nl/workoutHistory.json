@@ -13,6 +13,7 @@
     "set": "Set {{number}}",
     "share": "Delen",
     "shareDescription": "Deel deze workoutdetails",
-    "shareFailed": "Workoutdetails delen mislukt. Probeer het opnieuw."
+    "shareFailed": "Workoutdetails delen mislukt. Probeer het opnieuw.",
+    "viewHistory": "Eerdere sessies bekijken"
   }
 }

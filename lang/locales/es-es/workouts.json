@@ -233,6 +233,10 @@
       "alreadyActive": "Ya tienes un entrenamiento en curso. Reanúdalo o descártalo primero."
     },
     "unnamed": "Sin nombre",
-    "previewWorkout": "Vista previa de {{name}}"
+    "previewWorkout": "Vista previa de {{name}}",
+    "history": {
+      "title": "Historial de entrenamientos",
+      "description": "Consulta todas las sesiones que has completado"
+    }
   }
 }

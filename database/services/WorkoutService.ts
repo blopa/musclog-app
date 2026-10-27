@@ -338,9 +338,10 @@ export class WorkoutService {
   static async getWorkoutHistory(
     timeframe?: { startDate: number; endDate: number },
     limit?: number,
-    offset?: number
+    offset?: number,
+    templateId?: string
   ): Promise<WorkoutLog[]> {
-    return this.getWorkoutHistoryInternal(timeframe, limit, offset);
+    return this.getWorkoutHistoryInternal(timeframe, limit, offset, false, templateId);
   }
 
   static async getCompletedWorkoutCount(timeframe?: {
@@ -369,7 +370,8 @@ export class WorkoutService {
     timeframe?: { startDate: number; endDate: number },
     limit?: number,
     offset?: number,
-    repairAttempted = false
+    repairAttempted = false,
+    templateId?: string
   ): Promise<WorkoutLog[]> {
     let query = database
       .get<WorkoutLog>('workout_logs')
@@ -384,6 +386,10 @@ export class WorkoutService {
         Q.where('started_at', Q.gte(timeframe.startDate)),
         Q.where('started_at', Q.lte(timeframe.endDate))
       );
+    }
+
+    if (templateId) {
+      query = query.extend(Q.where('template_id', templateId));
     }
 
     // WatermelonDB requires Q.take() when using Q.skip()
@@ -402,7 +408,7 @@ export class WorkoutService {
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.getWorkoutHistoryInternal(timeframe, limit, offset, true)
+          this.getWorkoutHistoryInternal(timeframe, limit, offset, true, templateId)
         );
         if (repaired) {
           return repaired;

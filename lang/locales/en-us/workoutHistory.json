@@ -13,6 +13,7 @@
     "set": "Set {{number}}",
     "share": "Share",
     "shareDescription": "Share these workout details",
-    "shareFailed": "Failed to share workout details. Please try again."
+    "shareFailed": "Failed to share workout details. Please try again.",
+    "viewHistory": "View past sessions"
   }
 }
