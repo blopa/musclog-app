@@ -1,0 +1,310 @@
+{
+  "comeback": {
+    "title": "Retomada",
+    "settings": {
+      "title": "Começar um plano de retomada",
+      "subtitle": "Volte aos treinos e à alimentação um passo de cada vez"
+    },
+    "offer": {
+      "title": "Bem-vindo de volta",
+      "start": "Recomeçar com calma",
+      "notNow": "Agora não",
+      "bodyWorkout": "Faz {{count}} dias desde o seu último treino. Quer voltar com calma?",
+      "bodyWorkout_one": "Faz {{count}} dia desde o seu último treino. Quer voltar com calma?",
+      "bodyWorkout_other": "Faz {{count}} dias desde o seu último treino. Quer voltar com calma?",
+      "bodyFood": "Faz {{count}} dias que você registrou comida pela última vez. Quer voltar com calma?",
+      "bodyFood_one": "Faz {{count}} dia que você registrou comida pela última vez. Quer voltar com calma?",
+      "bodyFood_other": "Faz {{count}} dias que você registrou comida pela última vez. Quer voltar com calma?",
+      "bodyBoth": "Faz {{count}} dias que você treinou ou registrou comida. Quer voltar com calma?",
+      "bodyBoth_one": "Faz {{count}} dia que você treinou ou registrou comida. Quer voltar com calma?",
+      "bodyBoth_other": "Faz {{count}} dias que você treinou ou registrou comida. Quer voltar com calma?",
+      "bodyWorkout_few": "Faz {{count}} dias desde o seu último treino. Quer voltar com calma?",
+      "bodyWorkout_many": "Faz {{count}} dias desde o seu último treino. Quer voltar com calma?",
+      "bodyFood_few": "Faz {{count}} dias que você registrou comida pela última vez. Quer voltar com calma?",
+      "bodyFood_many": "Faz {{count}} dias que você registrou comida pela última vez. Quer voltar com calma?",
+      "bodyBoth_few": "Faz {{count}} dias que você treinou ou registrou comida. Quer voltar com calma?",
+      "bodyBoth_many": "Faz {{count}} dias que você treinou ou registrou comida. Quer voltar com calma?"
+    },
+    "card": {
+      "week": "Retomada, semana {{week}} de {{total}}",
+      "sessions": "{{done}} de {{target}} treinos nesta semana",
+      "minimum": "Fiz meu mínimo hoje",
+      "minimumDone": "Mínimo feito hoje",
+      "minimumHint": "Uma caminhada de 10 minutos ou uma refeição de verdade conta. Você decide.",
+      "checkpointWaiting": "Sua avaliação está esperando na Revisão semanal",
+      "open": "Abrir retomada",
+      "stalledTitle": "Continue de onde parou",
+      "stalledBody": "Faz um tempinho. Você não precisa recomeçar do zero, a menos que queira.",
+      "stalledContinue": "Continuar de onde parei",
+      "stalledRestart": "Recomeçar a semana 1",
+      "setupDone": "Seu plano de retomada está pronto",
+      "setupPartial": "Sua retomada começou, mas algumas etapas não terminaram. Você pode ajustá-las na tela de retomada.",
+      "tailor": "Personalize (3 perguntas rápidas)"
+    },
+    "summary": {
+      "week": "Semana {{week}} de {{total}} da retomada. Vá com calma.",
+      "graduated": "Você concluiu sua retomada. A progressão continua a partir daqui."
+    },
+    "checkpoint": {
+      "feel": {
+        "easy": "Fácil demais",
+        "right": "Na medida",
+        "hard": "Difícil demais"
+      }
+    },
+    "screen": {
+      "thisWeek": "Esta semana",
+      "graduatedTitle": "Retomada concluída",
+      "graduatedBody": "Você terminou a rampa. A progressão agora continua a partir das cargas que você vinha usando.",
+      "endsOn": "A rampa termina por volta de {{date}}",
+      "weightChange": "{{change}} {{unit}} desde o dia 1",
+      "finish": "Concluir retomada",
+      "endConfirm": "Encerrar o modo retomada? Seu histórico continua e os treinos voltam à progressão normal.",
+      "endConfirmYes": "Encerrar retomada",
+      "endConfirmNo": "Continuar",
+      "ended": "Retomada encerrada",
+      "end": "Encerrar retomada",
+      "startPlan": "Começar um plano de retomada",
+      "endedBody": "Sua retomada terminou. Você pode começar outra quando quiser.",
+      "notStartedBody": "Voltando depois de uma pausa? Um plano curto e leve pode facilitar o recomeço.",
+      "checkpointTitle": "Avaliação da semana {{week}}",
+      "checkpointBody": "Responda na sua Revisão semanal.",
+      "program": "O plano",
+      "programFootnote": "As cargas são um ponto de partida baseado nas suas últimas sessões antes da pausa. Mude o que não parecer certo.",
+      "sinceTitle": "Desde que você voltou",
+      "sinceFootnote": "Medido em relação à sua primeira semana de volta, não ao seu pico antigo.",
+      "eatingTitle": "Alimentação",
+      "toggleMealsOnly": "Só registrar refeições por enquanto",
+      "toggleMealsOnlyHint": "Esconda os números até se sentir pronto.",
+      "toggleProteinOnly": "Mostrar só proteína",
+      "toggleProteinOnlyHint": "Mantenha o foco em um único número.",
+      "edit": "Editar minhas respostas",
+      "sinceWorkouts": "{{count}} treinos",
+      "sinceWorkouts_one": "{{count}} treino",
+      "sinceWorkouts_other": "{{count}} treinos",
+      "sinceFood": "{{count}} dias com comida registrada",
+      "sinceFood_one": "{{count}} dia com comida registrada",
+      "sinceFood_other": "{{count}} dias com comida registrada",
+      "sinceMinimum": "{{count}} dias de mínimo",
+      "sinceMinimum_one": "{{count}} dia de mínimo",
+      "sinceMinimum_other": "{{count}} dias de mínimo",
+      "sinceWorkouts_few": "{{count}} treinos",
+      "sinceWorkouts_many": "{{count}} treinos",
+      "sinceFood_few": "{{count}} dias com comida registrada",
+      "sinceFood_many": "{{count}} dias com comida registrada",
+      "sinceMinimum_few": "{{count}} dias de mínimo",
+      "sinceMinimum_many": "{{count}} dias de mínimo"
+    },
+    "plan": {
+      "programTitle": "Suas primeiras quatro semanas",
+      "weekLabel": "Semana {{week}}",
+      "weekRowPlanSets": "Suas séries planejadas, cerca de {{rir}} repetições de reserva, {{percent}}% das suas cargas antigas",
+      "cueTitle": "Seu gatilho se-então",
+      "cue": "Se for {{days}} às {{time}}, eu coloco a roupa de treino e começo o aquecimento.",
+      "missTitle": "Se você perder um dia",
+      "missRule": "Faça o próximo. Nunca dobre.",
+      "maintenanceFirst": "Você vai comer na manutenção nas duas primeiras semanas. Depois é oferecido um pequeno déficit, nunca aplicado sem o seu toque.",
+      "switchDiary": "Ajustar meu diário alimentar a isso",
+      "longBreakNote": "Depois de uma pausa longa, consulte um médico antes se sentir dor no peito, desmaios ou tiver uma doença cardíaca conhecida.",
+      "partialFailure": "Algumas etapas não terminaram. Você pode ajustá-las na tela de retomada.",
+      "weekRow": "{{count}} séries efetivas, cerca de {{rir}} repetições de reserva, {{percent}}% das suas cargas antigas",
+      "weekRow_one": "{{count}} série efetiva, cerca de {{rir}} repetições de reserva, {{percent}}% das suas cargas antigas",
+      "weekRow_other": "{{count}} séries efetivas, cerca de {{rir}} repetições de reserva, {{percent}}% das suas cargas antigas",
+      "sessions": "{{count}} sessões por semana",
+      "sessions_one": "{{count}} sessão por semana",
+      "sessions_other": "{{count}} sessões por semana",
+      "setGoal": "Definir minha meta semanal em {{count}} treinos",
+      "setGoal_one": "Definir minha meta semanal em {{count}} treino",
+      "setGoal_other": "Definir minha meta semanal em {{count}} treinos",
+      "weekRow_few": "{{count}} séries efetivas, cerca de {{rir}} repetições de reserva, {{percent}}% das suas cargas antigas",
+      "weekRow_many": "{{count}} séries efetivas, cerca de {{rir}} repetições de reserva, {{percent}}% das suas cargas antigas",
+      "sessions_few": "{{count}} sessões por semana",
+      "sessions_many": "{{count}} sessões por semana",
+      "setGoal_few": "Definir minha meta semanal em {{count}} treinos",
+      "setGoal_many": "Definir minha meta semanal em {{count}} treinos"
+    },
+    "setup": {
+      "step": "Etapa {{current}} de {{total}}",
+      "skip": "Pular",
+      "save": "Salvar",
+      "startCta": "Começar minha retomada",
+      "breakLength": {
+        "under1m": "Menos de um mês",
+        "1to3m": "1 a 3 meses",
+        "3to6m": "3 a 6 meses",
+        "over6m": "Mais de 6 meses"
+      },
+      "intro": {
+        "title": "Bem-vindo de volta",
+        "subtitle": "Algumas perguntas rápidas. Pule as que quiser.",
+        "body": "Pausas acontecem. Vamos começar pequeno e crescer num ritmo que funcione para você.",
+        "howLong": "Mais ou menos quanto tempo durou a pausa?",
+        "workoutGap": "Seu último treino foi há {{count}} dias.",
+        "workoutGap_one": "Seu último treino foi há {{count}} dia.",
+        "workoutGap_other": "Seu último treino foi há {{count}} dias.",
+        "foodGap": "Você registrou comida pela última vez há {{count}} dias.",
+        "foodGap_one": "Você registrou comida pela última vez há {{count}} dia.",
+        "foodGap_other": "Você registrou comida pela última vez há {{count}} dias.",
+        "workoutGap_few": "Seu último treino foi há {{count}} dias.",
+        "workoutGap_many": "Seu último treino foi há {{count}} dias.",
+        "foodGap_few": "Você registrou comida pela última vez há {{count}} dias.",
+        "foodGap_many": "Você registrou comida pela última vez há {{count}} dias."
+      },
+      "track": {
+        "title": "Com o que você quer voltar aos poucos?",
+        "subtitle": "Você pode mudar isso depois.",
+        "workout": "Treinos",
+        "nutrition": "Comida",
+        "both": "Os dois"
+      },
+      "where": {
+        "title": "Onde você vai treinar?",
+        "subtitle": "Assim escolhemos um plano que combine com o seu equipamento.",
+        "gym": "Academia",
+        "home": "Em casa, com algum equipamento",
+        "minimal": "Sem equipamento"
+      },
+      "days": {
+        "title": "Quantos dias por semana?",
+        "subtitle": "Comece com menos do que você acha que precisa.",
+        "one": "1 dia",
+        "two": "2 dias",
+        "three": "3 dias",
+        "four": "4 dias",
+        "recommended": "Recomendado para começar",
+        "pickDays": "Quais dias?",
+        "pickTime": "Que horas?"
+      },
+      "start": {
+        "title": "Como você quer começar?",
+        "subtitle": "Escolha o jeito mais fácil de voltar.",
+        "ownPlan": "Retomar meu próprio plano",
+        "ownPlanHint": "Seus treinos de sempre, com cargas mais leves no início.",
+        "shortPlan": "Um plano curto para mim",
+        "shortPlanHint": "Dois treinos curtos de corpo inteiro que combinam com o seu equipamento.",
+        "chooseLater": "Escolho depois",
+        "chooseLaterHint": "Por enquanto, só valem as cargas reduzidas."
+      },
+      "eating": {
+        "title": "Como você costuma comer?",
+        "subtitle": "Isso adapta as dicas de registro.",
+        "cook": "Quase sempre cozinho",
+        "mix": "Um pouco de cada",
+        "out": "Quase sempre como fora",
+        "varies": "Varia"
+      },
+      "tracking": {
+        "title": "Quanto você quer registrar?",
+        "subtitle": "No começo, menos está ótimo.",
+        "full": "Tudo",
+        "fullHint": "Calorias e todos os macros.",
+        "caloriesProtein": "Só calorias e proteína",
+        "caloriesProteinHint": "Dois números para acompanhar.",
+        "mealsOnly": "Só registrar refeições, sem números ainda",
+        "mealsOnlyHint": "Primeiro crie o hábito."
+      },
+      "goal": {
+        "title": "Qual é seu objetivo de alimentação por enquanto?",
+        "subtitle": "Comer com regularidade vem primeiro.",
+        "regular": "Comer com regularidade primeiro",
+        "regularHint": "Calorias de manutenção, proteína primeiro.",
+        "loseSlowly": "Perder gordura devagar",
+        "loseSlowlyHint": "Duas semanas de manutenção e depois um pequeno déficit.",
+        "rebuild": "Recuperar massa muscular",
+        "rebuildHint": "Calorias de manutenção com bastante proteína.",
+        "keep": "Manter minhas metas atuais",
+        "keepHint": "Nada muda nas suas metas.",
+        "weightTitle": "Seu peso inicial",
+        "weightLabel": "Peso de hoje",
+        "weightHint": "Opcional. Se você informar, vira o dia 1.",
+        "latestWeight": "{{weight}} {{unit}}, registrado há {{count}} dias",
+        "latestWeight_one": "{{weight}} {{unit}}, registrado há {{count}} dia",
+        "latestWeight_other": "{{weight}} {{unit}}, registrado há {{count}} dias",
+        "latestWeight_few": "{{weight}} {{unit}}, registrado há {{count}} dias",
+        "latestWeight_many": "{{weight}} {{unit}}, registrado há {{count}} dias"
+      },
+      "energy": {
+        "title": "Como está sua energia ultimamente?",
+        "subtitle": "Menos energia significa um começo ainda mais leve.",
+        "plenty": "De sobra",
+        "plentyHint": "Pronto para começar.",
+        "some": "Um pouco",
+        "someHint": "Com altos e baixos.",
+        "low": "Muito pouca",
+        "lowHint": "Vamos deixar as primeiras semanas extra leves.",
+        "support": "Se tudo parece pesado agora, conversar com alguém pode ajudar"
+      },
+      "plan": {
+        "title": "Seu plano",
+        "subtitle": "Quatro semanas leves e depois você segue em frente."
+      }
+    },
+    "deficit": {
+      "title": "Pronto para um pequeno déficit?",
+      "body": "Você comeu na manutenção por duas semanas. Se quiser, já pode passar para um déficit leve.",
+      "numbers": "De {{from}} kcal para {{to}} kcal por dia, com {{protein}} g de proteína",
+      "accept": "Aplicar o déficit",
+      "decline": "Ficar na manutenção",
+      "applied": "Suas metas foram atualizadas",
+      "changedSince": "Suas metas mudaram desde a configuração, então nada foi sobrescrito"
+    },
+    "reflection": {
+      "title": "Como foi a semana {{week}}?",
+      "nextPhase": "O que vem agora para a sua alimentação?",
+      "keepLosing": "Continuar perdendo gordura devagar",
+      "maintain": "Manter",
+      "performance": "Focar no desempenho"
+    },
+    "tips": {
+      "snapMeal": {
+        "title": "Fotografe sua refeição",
+        "body": "Tire uma foto de uma refeição de restaurante e deixe a IA estimar.",
+        "action": "Abrir a câmera"
+      },
+      "snapMealBasic": {
+        "title": "Fotografe sua refeição",
+        "body": "As estimativas por foto funcionam melhor com a IA gratuita do Musclog ou uma chave do Gemini ou da OpenAI. Seu provedor atual pode errar mais em refeições de restaurante.",
+        "action": "Abrir a câmera"
+      },
+      "describeMeal": {
+        "title": "Descreva o que você comeu",
+        "body": "Conte ao coach o que você comeu e ele registra a refeição para você.",
+        "action": "Falar com o coach"
+      },
+      "describeMealBasic": {
+        "title": "Descreva o que você comeu",
+        "body": "Conte ao coach o que você comeu. As estimativas ficam melhores com a IA gratuita do Musclog ou uma chave do Gemini ou da OpenAI.",
+        "action": "Falar com o coach"
+      },
+      "setupAi": {
+        "title": "Configure o registro com IA",
+        "body": "Fotos e descrições facilitam muito registrar quando você come fora.",
+        "action": "Abrir configurações de IA"
+      },
+      "proteinFirstDish": {
+        "title": "Escolha o prato com proteína",
+        "body": "Ao comer fora, escolha o prato baseado em proteína e registre de forma aproximada. Perto já basta."
+      },
+      "savedMeals": {
+        "title": "Reutilize suas refeições salvas",
+        "body": "Cozinha as mesmas coisas? Salve uma vez e registre com um toque.",
+        "action": "Abrir minhas refeições"
+      },
+      "scanBarcode": {
+        "title": "Escaneie o código de barras",
+        "body": "Para alimentos embalados, escanear é a forma mais rápida de registrar.",
+        "action": "Escanear um código"
+      },
+      "sameAsYesterday": {
+        "title": "Igual a ontem",
+        "body": "Copie um dia que você já registrou e edite o que mudou.",
+        "action": "Copiar um dia"
+      },
+      "copyPreviousDay": {
+        "title": "Copie um dia anterior",
+        "body": "Os dias variam, mas muitos se repetem. Comece por um parecido com hoje.",
+        "action": "Copiar um dia"
+      }
+    }
+  }
+}

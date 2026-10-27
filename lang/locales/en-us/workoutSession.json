@@ -412,7 +412,8 @@
       "repeatedDeloads": "{{count}} exercises needed a deload on their own this week.",
       "lowReserveStalled": "Your sets left nothing in reserve and a lift has stalled.",
       "dueForLighter": "It has been {{count}} weeks since a lighter week.",
-      "onTrack": "Training is on track."
+      "onTrack": "Training is on track.",
+      "comeback": "You are in your comeback ramp, so progression follows it."
     },
     "belowFloorTitle": "Below the minimum calorie floor",
     "belowFloorBody": "This is below your minimum of {{minimum}} kcal. You turned off the minimum calorie floor in Advanced settings; going this low is not recommended and may be unsafe.",
@@ -427,6 +428,10 @@
       "macroTotal": "These macros add up to {{kcal}} kcal.",
       "mismatch": "These macros add up to {{kcal}} kcal, which does not match the calorie target.",
       "useMacroTotal": "Use {{kcal}} kcal"
+    },
+    "comebackCheckin": {
+      "title": "Comeback check-in",
+      "question": "How did week {{week}} of your comeback feel?"
     }
   }
 }

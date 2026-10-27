@@ -26,6 +26,7 @@ import { handleError } from '@/utils/handleError';
 import {
   parseTrainingSetup,
   pickStarterTemplateIndex,
+  shortPlanTemplateIndex,
   type TrainingSetupData,
 } from '@/utils/onboardingTraining';
 
@@ -123,7 +124,10 @@ export default function FirstWorkoutScreen() {
       return null;
     }
 
-    const index = pickStarterTemplateIndex(setup.location, experience, setup.daysPerWeek);
+    // Someone coming back starts on the short plan for their equipment, gym included.
+    const index = setup.comingBack
+      ? shortPlanTemplateIndex(setup.location)
+      : pickStarterTemplateIndex(setup.location, experience, setup.daysPerWeek);
     return index === null
       ? null
       : (getWorkoutTemplates(i18n.resolvedLanguage ?? i18n.language)[index] ?? null);

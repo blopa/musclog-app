@@ -1,0 +1,310 @@
+{
+  "comeback": {
+    "title": "Terugkeer",
+    "settings": {
+      "title": "Een terugkeerplan starten",
+      "subtitle": "Bouw trainen en eten stap voor stap weer op"
+    },
+    "offer": {
+      "title": "Welkom terug",
+      "start": "Rustig opnieuw beginnen",
+      "notNow": "Nu niet",
+      "bodyWorkout": "Het is {{count}} dagen geleden sinds je laatste training. Wil je rustig terugkomen?",
+      "bodyWorkout_one": "Het is {{count}} dag geleden sinds je laatste training. Wil je rustig terugkomen?",
+      "bodyWorkout_other": "Het is {{count}} dagen geleden sinds je laatste training. Wil je rustig terugkomen?",
+      "bodyFood": "Je hebt {{count}} dagen geleden voor het laatst eten gelogd. Wil je rustig terugkomen?",
+      "bodyFood_one": "Je hebt {{count}} dag geleden voor het laatst eten gelogd. Wil je rustig terugkomen?",
+      "bodyFood_other": "Je hebt {{count}} dagen geleden voor het laatst eten gelogd. Wil je rustig terugkomen?",
+      "bodyBoth": "Het is {{count}} dagen geleden dat je trainde of eten logde. Wil je rustig terugkomen?",
+      "bodyBoth_one": "Het is {{count}} dag geleden dat je trainde of eten logde. Wil je rustig terugkomen?",
+      "bodyBoth_other": "Het is {{count}} dagen geleden dat je trainde of eten logde. Wil je rustig terugkomen?",
+      "bodyWorkout_few": "Het is {{count}} dagen geleden sinds je laatste training. Wil je rustig terugkomen?",
+      "bodyWorkout_many": "Het is {{count}} dagen geleden sinds je laatste training. Wil je rustig terugkomen?",
+      "bodyFood_few": "Je hebt {{count}} dagen geleden voor het laatst eten gelogd. Wil je rustig terugkomen?",
+      "bodyFood_many": "Je hebt {{count}} dagen geleden voor het laatst eten gelogd. Wil je rustig terugkomen?",
+      "bodyBoth_few": "Het is {{count}} dagen geleden dat je trainde of eten logde. Wil je rustig terugkomen?",
+      "bodyBoth_many": "Het is {{count}} dagen geleden dat je trainde of eten logde. Wil je rustig terugkomen?"
+    },
+    "card": {
+      "week": "Terugkeer, week {{week}} van {{total}}",
+      "sessions": "{{done}} van {{target}} trainingen deze week",
+      "minimum": "Ik deed vandaag mijn minimum",
+      "minimumDone": "Minimum vandaag gedaan",
+      "minimumHint": "Een wandeling van 10 minuten of één goede maaltijd telt mee. Jij beslist.",
+      "checkpointWaiting": "Je check-in wacht in de Wekelijkse review",
+      "open": "Terugkeer openen",
+      "stalledTitle": "Pak de draad weer op",
+      "stalledBody": "Het is even stil geweest. Je hoeft niet opnieuw te beginnen, tenzij je dat zelf wilt.",
+      "stalledContinue": "Daar verdergaan waar ik was",
+      "stalledRestart": "Week 1 opnieuw starten",
+      "setupDone": "Je terugkeerplan is klaar",
+      "setupPartial": "Je terugkeer is gestart, maar sommige stappen zijn niet gelukt. Je kunt ze aanpassen op het terugkeerscherm.",
+      "tailor": "Stem het af (3 korte vragen)"
+    },
+    "summary": {
+      "week": "Terugkeerweek {{week}} van {{total}}. Hou het rustig.",
+      "graduated": "Je terugkeer zit erop. De progressie gaat vanaf hier verder."
+    },
+    "checkpoint": {
+      "feel": {
+        "easy": "Te makkelijk",
+        "right": "Precies goed",
+        "hard": "Te zwaar"
+      }
+    },
+    "screen": {
+      "thisWeek": "Deze week",
+      "graduatedTitle": "Terugkeer voltooid",
+      "graduatedBody": "Je hebt de opbouw afgerond. De progressie gaat nu verder vanaf de gewichten die je gebruikte.",
+      "endsOn": "De opbouw eindigt rond {{date}}",
+      "weightChange": "{{change}} {{unit}} sinds dag 1",
+      "finish": "Terugkeer afronden",
+      "endConfirm": "Terugkeermodus beëindigen? Je geschiedenis blijft staan en trainingen gaan terug naar de normale progressie.",
+      "endConfirmYes": "Terugkeer beëindigen",
+      "endConfirmNo": "Doorgaan",
+      "ended": "Terugkeer beëindigd",
+      "end": "Terugkeer beëindigen",
+      "startPlan": "Een terugkeerplan starten",
+      "endedBody": "Je terugkeer is beëindigd. Je kunt een nieuwe starten wanneer je wilt.",
+      "notStartedBody": "Kom je terug na een pauze? Een kort, rustig plan maakt het herstarten makkelijker.",
+      "checkpointTitle": "Check-in week {{week}}",
+      "checkpointBody": "Beantwoord hem in je Wekelijkse review.",
+      "program": "Het plan",
+      "programFootnote": "De gewichten zijn een startpunt op basis van je laatste sessies voor de pauze. Pas aan wat niet goed voelt.",
+      "sinceTitle": "Sinds je terugkwam",
+      "sinceFootnote": "Gemeten ten opzichte van je eerste week terug, niet je oude piek.",
+      "eatingTitle": "Eten",
+      "toggleMealsOnly": "Log voorlopig alleen maaltijden",
+      "toggleMealsOnlyHint": "Verberg de cijfers tot je eraan toe bent.",
+      "toggleProteinOnly": "Alleen eiwit tonen",
+      "toggleProteinOnlyHint": "Hou de focus op één getal.",
+      "edit": "Mijn antwoorden aanpassen",
+      "sinceWorkouts": "{{count}} trainingen",
+      "sinceWorkouts_one": "{{count}} training",
+      "sinceWorkouts_other": "{{count}} trainingen",
+      "sinceFood": "{{count}} dagen met eten gelogd",
+      "sinceFood_one": "{{count}} dag met eten gelogd",
+      "sinceFood_other": "{{count}} dagen met eten gelogd",
+      "sinceMinimum": "{{count}} minimumdagen",
+      "sinceMinimum_one": "{{count}} minimumdag",
+      "sinceMinimum_other": "{{count}} minimumdagen",
+      "sinceWorkouts_few": "{{count}} trainingen",
+      "sinceWorkouts_many": "{{count}} trainingen",
+      "sinceFood_few": "{{count}} dagen met eten gelogd",
+      "sinceFood_many": "{{count}} dagen met eten gelogd",
+      "sinceMinimum_few": "{{count}} minimumdagen",
+      "sinceMinimum_many": "{{count}} minimumdagen"
+    },
+    "plan": {
+      "programTitle": "Je eerste vier weken",
+      "weekLabel": "Week {{week}}",
+      "weekRowPlanSets": "Je geplande sets, ongeveer {{rir}} herhalingen in reserve, {{percent}}% van je oude gewichten",
+      "cueTitle": "Je als-dan-signaal",
+      "cue": "Als het {{days}} {{time}} is, trek ik mijn trainingskleding aan en begin ik met de warming-up.",
+      "missTitle": "Als je een dag mist",
+      "missRule": "Doe de volgende. Nooit dubbel doen.",
+      "maintenanceFirst": "De eerste twee weken eet je op onderhoud. Daarna wordt een klein tekort aangeboden, nooit toegepast zonder jouw tik.",
+      "switchDiary": "Mijn eetdagboek hierop afstemmen",
+      "longBreakNote": "Overleg na een lange pauze eerst met een arts als je pijn op de borst hebt, flauwvalt of een bekende hartaandoening hebt.",
+      "partialFailure": "Sommige stappen zijn niet gelukt. Je kunt ze aanpassen op het terugkeerscherm.",
+      "weekRow": "{{count}} worksets, ongeveer {{rir}} herhalingen in reserve, {{percent}}% van je oude gewichten",
+      "weekRow_one": "{{count}} werkset, ongeveer {{rir}} herhalingen in reserve, {{percent}}% van je oude gewichten",
+      "weekRow_other": "{{count}} worksets, ongeveer {{rir}} herhalingen in reserve, {{percent}}% van je oude gewichten",
+      "sessions": "{{count}} sessies per week",
+      "sessions_one": "{{count}} sessie per week",
+      "sessions_other": "{{count}} sessies per week",
+      "setGoal": "Mijn weekdoel instellen op {{count}} trainingen",
+      "setGoal_one": "Mijn weekdoel instellen op {{count}} training",
+      "setGoal_other": "Mijn weekdoel instellen op {{count}} trainingen",
+      "weekRow_few": "{{count}} worksets, ongeveer {{rir}} herhalingen in reserve, {{percent}}% van je oude gewichten",
+      "weekRow_many": "{{count}} worksets, ongeveer {{rir}} herhalingen in reserve, {{percent}}% van je oude gewichten",
+      "sessions_few": "{{count}} sessies per week",
+      "sessions_many": "{{count}} sessies per week",
+      "setGoal_few": "Mijn weekdoel instellen op {{count}} trainingen",
+      "setGoal_many": "Mijn weekdoel instellen op {{count}} trainingen"
+    },
+    "setup": {
+      "step": "Stap {{current}} van {{total}}",
+      "skip": "Overslaan",
+      "save": "Opslaan",
+      "startCta": "Mijn terugkeer starten",
+      "breakLength": {
+        "under1m": "Minder dan een maand",
+        "1to3m": "1 tot 3 maanden",
+        "3to6m": "3 tot 6 maanden",
+        "over6m": "Meer dan 6 maanden"
+      },
+      "intro": {
+        "title": "Welkom terug",
+        "subtitle": "Een paar snelle vragen. Sla over wat je wilt.",
+        "body": "Pauzes horen erbij. We beginnen klein en bouwen op in een tempo dat bij je past.",
+        "howLong": "Hoe lang duurde de pauze ongeveer?",
+        "workoutGap": "Je laatste training was {{count}} dagen geleden.",
+        "workoutGap_one": "Je laatste training was {{count}} dag geleden.",
+        "workoutGap_other": "Je laatste training was {{count}} dagen geleden.",
+        "foodGap": "Je logde {{count}} dagen geleden voor het laatst eten.",
+        "foodGap_one": "Je logde {{count}} dag geleden voor het laatst eten.",
+        "foodGap_other": "Je logde {{count}} dagen geleden voor het laatst eten.",
+        "workoutGap_few": "Je laatste training was {{count}} dagen geleden.",
+        "workoutGap_many": "Je laatste training was {{count}} dagen geleden.",
+        "foodGap_few": "Je logde {{count}} dagen geleden voor het laatst eten.",
+        "foodGap_many": "Je logde {{count}} dagen geleden voor het laatst eten."
+      },
+      "track": {
+        "title": "Waar wil je rustig mee terugkomen?",
+        "subtitle": "Je kunt dit later wijzigen.",
+        "workout": "Trainingen",
+        "nutrition": "Eten",
+        "both": "Allebei"
+      },
+      "where": {
+        "title": "Waar ga je trainen?",
+        "subtitle": "Zo kiezen we een plan dat bij je spullen past.",
+        "gym": "Sportschool",
+        "home": "Thuis, wat materiaal",
+        "minimal": "Geen materiaal"
+      },
+      "days": {
+        "title": "Hoeveel dagen per week?",
+        "subtitle": "Begin met minder dan je denkt nodig te hebben.",
+        "one": "1 dag",
+        "two": "2 dagen",
+        "three": "3 dagen",
+        "four": "4 dagen",
+        "recommended": "Aanbevolen om mee te beginnen",
+        "pickDays": "Welke dagen?",
+        "pickTime": "Hoe laat?"
+      },
+      "start": {
+        "title": "Hoe wil je beginnen?",
+        "subtitle": "Kies de makkelijkste weg terug.",
+        "ownPlan": "Rustig in mijn eigen plan komen",
+        "ownPlanHint": "Je gebruikelijke trainingen, eerst met lichtere gewichten.",
+        "shortPlan": "Een kort plan voor mij",
+        "shortPlanHint": "Twee korte fullbody-trainingen die bij je setup passen.",
+        "chooseLater": "Ik kies later",
+        "chooseLaterHint": "Voorlopig gelden alleen de verlichte gewichten."
+      },
+      "eating": {
+        "title": "Hoe eet je meestal?",
+        "subtitle": "Hiermee passen we de logtips aan.",
+        "cook": "Meestal zelf koken",
+        "mix": "Een mix",
+        "out": "Meestal uit eten",
+        "varies": "Wisselend"
+      },
+      "tracking": {
+        "title": "Hoeveel wil je bijhouden?",
+        "subtitle": "In het begin is minder prima.",
+        "full": "Alles",
+        "fullHint": "Calorieën en alle macro's.",
+        "caloriesProtein": "Alleen calorieën en eiwit",
+        "caloriesProteinHint": "Twee getallen om in de gaten te houden.",
+        "mealsOnly": "Alleen maaltijden loggen, nog geen cijfers",
+        "mealsOnlyHint": "Bouw eerst de gewoonte op."
+      },
+      "goal": {
+        "title": "Wat is je eetdoel voor nu?",
+        "subtitle": "Regelmatig eten gaat voor.",
+        "regular": "Eerst regelmatig eten",
+        "regularHint": "Onderhoudscalorieën, eerst eiwit.",
+        "loseSlowly": "Langzaam vet verliezen",
+        "loseSlowlyHint": "Twee weken onderhoud, daarna een klein tekort.",
+        "rebuild": "Spieren opbouwen",
+        "rebuildHint": "Onderhoudscalorieën met veel eiwit.",
+        "keep": "Mijn huidige doelen behouden",
+        "keepHint": "Aan je doelen verandert niets.",
+        "weightTitle": "Je startgewicht",
+        "weightLabel": "Gewicht van vandaag",
+        "weightHint": "Optioneel. Als je het toevoegt, wordt het dag 1.",
+        "latestWeight": "{{weight}} {{unit}}, {{count}} dagen geleden gelogd",
+        "latestWeight_one": "{{weight}} {{unit}}, {{count}} dag geleden gelogd",
+        "latestWeight_other": "{{weight}} {{unit}}, {{count}} dagen geleden gelogd",
+        "latestWeight_few": "{{weight}} {{unit}}, {{count}} dagen geleden gelogd",
+        "latestWeight_many": "{{weight}} {{unit}}, {{count}} dagen geleden gelogd"
+      },
+      "energy": {
+        "title": "Hoe is je energie de laatste tijd?",
+        "subtitle": "Minder energie betekent een nog rustiger start.",
+        "plenty": "Genoeg",
+        "plentyHint": "Klaar om te beginnen.",
+        "some": "Redelijk",
+        "someHint": "Wisselend.",
+        "low": "Heel weinig",
+        "lowHint": "We houden de eerste weken extra licht.",
+        "support": "Als het nu zwaar voelt, kan praten met iemand helpen"
+      },
+      "plan": {
+        "title": "Jouw plan",
+        "subtitle": "Vier rustige weken, daarna ga je zelf verder."
+      }
+    },
+    "deficit": {
+      "title": "Klaar voor een klein tekort?",
+      "body": "Je eet al twee weken op onderhoud. Als je wilt, kun je nu naar een mild tekort.",
+      "numbers": "Van {{from}} kcal naar {{to}} kcal per dag, met {{protein}} g eiwit",
+      "accept": "Tekort toepassen",
+      "decline": "Op onderhoud blijven",
+      "applied": "Je doelen zijn bijgewerkt",
+      "changedSince": "Je doelen zijn sinds de setup gewijzigd, dus er is niets overschreven"
+    },
+    "reflection": {
+      "title": "Hoe voelde week {{week}}?",
+      "nextPhase": "Wat is de volgende stap voor je eten?",
+      "keepLosing": "Langzaam vet blijven verliezen",
+      "maintain": "Onderhouden",
+      "performance": "Focus op prestaties"
+    },
+    "tips": {
+      "snapMeal": {
+        "title": "Maak een foto van je maaltijd",
+        "body": "Fotografeer een maaltijd uit een restaurant en laat de AI hem schatten.",
+        "action": "Camera openen"
+      },
+      "snapMealBasic": {
+        "title": "Maak een foto van je maaltijd",
+        "body": "Fotoschattingen werken het best met de gratis Musclog AI of een Gemini- of OpenAI-sleutel. Je huidige provider kan onnauwkeurig zijn bij restaurantmaaltijden.",
+        "action": "Camera openen"
+      },
+      "describeMeal": {
+        "title": "Beschrijf wat je at",
+        "body": "Vertel de coach wat je had en die logt de maaltijd voor je.",
+        "action": "Naar de coach"
+      },
+      "describeMealBasic": {
+        "title": "Beschrijf wat je at",
+        "body": "Vertel de coach wat je had. Schattingen zijn beter met de gratis Musclog AI of een Gemini- of OpenAI-sleutel.",
+        "action": "Naar de coach"
+      },
+      "setupAi": {
+        "title": "AI-maaltijdlogging instellen",
+        "body": "Foto's en beschrijvingen maken uit eten gaan veel makkelijker te loggen.",
+        "action": "AI-instellingen openen"
+      },
+      "proteinFirstDish": {
+        "title": "Kies het gerecht met eiwit",
+        "body": "Kies bij uit eten het gerecht rond eiwit en log het bij benadering. Ongeveer is genoeg."
+      },
+      "savedMeals": {
+        "title": "Gebruik je opgeslagen maaltijden",
+        "body": "Kook je vaak hetzelfde? Sla het één keer op en log het met een tik.",
+        "action": "Mijn maaltijden openen"
+      },
+      "scanBarcode": {
+        "title": "Scan de barcode",
+        "body": "Bij verpakt eten is scannen de snelste manier om te loggen.",
+        "action": "Barcode scannen"
+      },
+      "sameAsYesterday": {
+        "title": "Hetzelfde als gisteren",
+        "body": "Kopieer een dag die je al logde en pas aan wat anders was.",
+        "action": "Een dag kopiëren"
+      },
+      "copyPreviousDay": {
+        "title": "Kopieer een eerdere dag",
+        "body": "Dagen verschillen, maar veel herhalen zich. Begin bij een dag die op vandaag lijkt.",
+        "action": "Een dag kopiëren"
+      }
+    }
+  }
+}

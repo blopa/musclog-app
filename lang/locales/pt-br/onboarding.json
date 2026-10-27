@@ -335,7 +335,11 @@
         "gym": "Minha academia",
         "home": "Academia em casa",
         "minimal": "Peso corporal"
-      }
+      },
+      "comingBackLabel": "Voltando depois de uma pausa?",
+      "comingBack": "Estou voltando depois de uma pausa",
+      "comingBackDesc": "Vamos suavizar suas primeiras semanas e começar sua alimentação na manutenção.",
+      "breakLengthLabel": "Quanto tempo durou a pausa?"
     },
     "firstWorkout": {
       "title": "Seu primeiro treino",

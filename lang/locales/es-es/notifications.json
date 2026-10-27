@@ -92,6 +92,10 @@
       "workTimerAlert": {
         "title": "Se acabó el tiempo",
         "body": "Tu serie cronometrada ha terminado."
+      },
+      "comebackWelcome": {
+        "title": "Cuando quieras",
+        "body": "Sin prisa. Si quieres volver poco a poco, hay una forma suave de empezar."
       }
     },
     "actions": {

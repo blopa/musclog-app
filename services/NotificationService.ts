@@ -395,7 +395,7 @@ export class NotificationService {
   }
 
   // Workout Reminders
-  static async scheduleWorkoutReminders() {
+  static async scheduleWorkoutReminders(options: { backOff?: boolean } = {}) {
     if (Platform.OS === 'web') {
       return;
     }
@@ -406,7 +406,9 @@ export class NotificationService {
     // Always clear existing reminders before rescheduling
     await cancelScheduledByType('workout-reminder');
 
-    if (!isEnabled || !isNotificationsEnabled) {
+    // After weeks of silence the reminders stop (see `shouldBackOffReminders`); the cancel above has
+    // already cleared the old ones.
+    if (!isEnabled || !isNotificationsEnabled || options.backOff) {
       return;
     }
 
@@ -712,7 +714,7 @@ export class NotificationService {
   }
 
   // Weekly goal at risk — only when the user has a consistency goal and chose to be nudged.
-  static async scheduleGoalAtRiskReminder() {
+  static async scheduleGoalAtRiskReminder(options: { backOff?: boolean } = {}) {
     if (Platform.OS === 'web') {
       return;
     }
@@ -723,7 +725,12 @@ export class NotificationService {
       SettingsService.getNotifications(),
       loadNotificationPreferences(),
     ]);
-    if (!isNotificationsEnabled || !prefs.goalAtRisk || prefs.accountability === 'flexible') {
+    if (
+      !isNotificationsEnabled ||
+      !prefs.goalAtRisk ||
+      prefs.accountability === 'flexible' ||
+      options.backOff
+    ) {
       return;
     }
 

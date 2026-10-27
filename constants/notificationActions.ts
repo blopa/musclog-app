@@ -39,3 +39,5 @@ export const WORK_TIMER_NOTIFICATION_ID = 'work-timer-notification';
 export const REST_TIMER_REPEAT_NOTIFICATION_ID = 'rest-timer-repeat-notification';
 export const UNFINISHED_WORKOUT_NOTIFICATION_ID = 'unfinished-workout-notification';
 export const GOAL_AT_RISK_NOTIFICATION_TYPE = 'goal-at-risk';
+/** `data.type` of the single welcome-back nudge; tapping it opens Home, where the offer is. */
+export const COMEBACK_WELCOME_NOTIFICATION_TYPE = 'comeback-welcome';

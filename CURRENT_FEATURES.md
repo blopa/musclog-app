@@ -262,6 +262,18 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ---
 
+## Comeback Mode
+
+- After 14 or more days without a workout or food log, Home offers (never forces) to ease back in; "Not now" stays quiet for that gap and the offer returns after new activity or 30 days
+- A short questionnaire (about 30 seconds, every step skippable): workouts, food or both; where you train; days a week (2 recommended); how to start (your own plan, a short plan, or later); how you eat; how much to track; your food goal; your energy. Long breaks get a see-a-doctor note, and a quiet support link sits under the energy question
+- A four-week workout ramp: loads start at 60 to 90% of your pre-break loads depending on break length, with 1 to 3 working sets and 2 to 4 reps in reserve, easing up each week. It applies even with workout suggestions set to manual, is explained on each set, and "Use plan" undoes it
+- Short Full Body plans (gym, home, no equipment) of about 30 minutes, created as a weekly plan on the days you choose
+- Food: maintenance first, then a small deficit offered at week 2 (never applied without a tap); optional "just log meals" and "protein only" modes; tips tailored to how you eat, including AI photo and chat logging when AI is set up
+- "I did my minimum today" counts a 10-minute walk or one proper meal; the streak card shows active days this week instead of a streak while a comeback runs
+- Week 2 and 4 check-ins in the Weekly Review (too easy / about right / too hard; too hard holds the ramp a week); week 8 and 12 reflections on the comeback screen
+- Progress is measured against your first week back, never your old peak
+- Reminders back off after two weeks of silence, with one welcome-back nudge per gap; onboarding asks "Coming back after a break?" and starts the plan at maintenance
+
 ## Onboarding
 
 - Landing setup labels reflect the current flow totals: 10 steps for Personalized Setup and 7 for Quick Setup in every supported language

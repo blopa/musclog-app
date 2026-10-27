@@ -93,6 +93,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - **Fasting Days**: Optionally mark a no-food day as an intentional fast so it counts as a real 0-calorie day in your TDEE, averages, and streaks — while forgotten (unflagged) empty days are skipped
 - **Empirical TDEE**: Calorie needs estimated from logged intake and smoothed trend-weight changes
 - **Weekly Review**: Review training and nutrition from Home, Workouts, or Food. Apply explained calorie/macronutrient targets beginning tomorrow, keep current targets, or edit the recommendation. Approved targets stay stable between reviews; Manual and Daily automatic modes remain available.
+- **Comeback mode**: After a long break, ease back in with an opt-in four-week ramp: lighter loads and fewer sets for workouts, maintenance-first nutrition, a minimum day that counts, and check-ins instead of guilt.
 
 ### 🌙 Menstrual Cycle Tracking
 

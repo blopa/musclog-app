@@ -15,6 +15,10 @@ type WeeklyStreakCardProps = {
   streakDays: number;
   bestStreakDays: number;
   bestStreakLabel: string;
+  /** Replaces "day streak" beside the big number (a comeback counts active days instead). */
+  streakLabel?: string;
+  /** Hides the best-streak line, which means nothing for a count that is not a streak. */
+  hideBestStreak?: boolean;
   onCreateWorkoutGoalPress?: () => void;
 };
 
@@ -24,6 +28,8 @@ export function WeeklyStreakCard({
   streakDays,
   bestStreakDays,
   bestStreakLabel,
+  streakLabel,
+  hideBestStreak = false,
   onCreateWorkoutGoalPress,
 }: WeeklyStreakCardProps) {
   const theme = useTheme();
@@ -136,48 +142,50 @@ export function WeeklyStreakCard({
                 lineHeight: 25,
               }}
             >
-              {t('weeklyStreakCard.dayStreak')}
+              {streakLabel ?? t('weeklyStreakCard.dayStreak')}
             </Text>
           </View>
 
-          <View className="mt-3 h-8 flex-row items-center gap-1.5">
-            <Trophy
-              size={theme.iconSize.lg}
-              color={theme.colors.accent.primary}
-              fill={theme.colors.accent.primary}
-              strokeWidth={theme.strokeWidth.medium}
-            />
-            <View
-              className="min-w-0 flex-1 flex-row items-center rounded-inner px-2.5"
-              style={{
-                height: 30,
-                backgroundColor: theme.colors.status.brandVivid20,
-              }}
-            >
-              <Text
-                className="min-w-0 flex-1 text-text-secondary"
-                numberOfLines={1}
+          {hideBestStreak ? null : (
+            <View className="mt-3 h-8 flex-row items-center gap-1.5">
+              <Trophy
+                size={theme.iconSize.lg}
+                color={theme.colors.accent.primary}
+                fill={theme.colors.accent.primary}
+                strokeWidth={theme.strokeWidth.medium}
+              />
+              <View
+                className="min-w-0 flex-1 flex-row items-center rounded-inner px-2.5"
                 style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.semibold,
+                  height: 30,
+                  backgroundColor: theme.colors.status.brandVivid20,
                 }}
               >
-                {bestStreakLabel}:
-              </Text>
-              <Text
-                className="ml-1 font-bold text-text-primary"
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.75}
-                style={{
-                  flexShrink: 0,
-                  fontSize: theme.typography.fontSize.xs,
-                }}
-              >
-                {bestStreakDaysLabel}
-              </Text>
+                <Text
+                  className="min-w-0 flex-1 text-text-secondary"
+                  numberOfLines={1}
+                  style={{
+                    fontSize: theme.typography.fontSize.xs,
+                    fontWeight: theme.typography.fontWeight.semibold,
+                  }}
+                >
+                  {bestStreakLabel}:
+                </Text>
+                <Text
+                  className="ml-1 font-bold text-text-primary"
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.75}
+                  style={{
+                    flexShrink: 0,
+                    fontSize: theme.typography.fontSize.xs,
+                  }}
+                >
+                  {bestStreakDaysLabel}
+                </Text>
+              </View>
             </View>
-          </View>
+          )}
         </View>
       </View>
     </GenericCard>

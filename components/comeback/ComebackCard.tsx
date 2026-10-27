@@ -16,7 +16,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyWorkoutProgress } from '@/hooks/useWeeklyWorkoutProgress';
 import type { ComebackSetupResult } from '@/services/comebackSetup';
 import { checkpointsDue } from '@/utils/comeback/comebackProgram';
-import { type ComebackTrack, tracksWorkouts } from '@/utils/comeback/comebackState';
+import {
+  type ComebackTrack,
+  tracksNutrition,
+  tracksWorkouts,
+} from '@/utils/comeback/comebackState';
 import { minimumDayKey } from '@/utils/comeback/comebackTransitions';
 import { isComebackStalled } from '@/utils/comeback/lapse';
 import { handleError } from '@/utils/handleError';
@@ -77,7 +81,9 @@ export function ComebackCard() {
     <ComebackSetupModal
       visible={setupOpen}
       onClose={() => setSetupOpen(false)}
-      mode="start"
+      mode={state.status === 'active' ? 'tailor' : 'start'}
+      initialAnswers={state.status === 'active' ? state.answers : undefined}
+      initialTrack={state.status === 'active' ? state.track : undefined}
       workoutGapDays={lapse?.workoutGapDays ?? null}
       foodGapDays={lapse?.foodGapDays ?? null}
       suggestedTrack={lapse?.suggestedTrack ?? null}
@@ -125,6 +131,13 @@ export function ComebackCard() {
       }
 
       const doneToday = state.minimumDays.includes(minimumDayKey(today));
+      // Offered in week 1 to someone whose food questions are still unanswered (onboarding asks only
+      // about training); once they answer them, or the first week passes, it goes away.
+      const canTailor =
+        week === 1 &&
+        tracksNutrition(state.track) &&
+        state.answers.eating === undefined &&
+        state.answers.nutritionGoal === undefined;
       const checkpointWaiting = checkpointsDue(state, today).some((due) => due <= 4);
 
       return (
@@ -176,6 +189,13 @@ export function ComebackCard() {
           />
           {!doneToday ? (
             <Text className="text-xs text-text-tertiary">{t('comeback.card.minimumHint')}</Text>
+          ) : null}
+          {canTailor ? (
+            <TextButton
+              label={t('comeback.card.tailor')}
+              onPress={() => setSetupOpen(true)}
+              testID="comeback-tailor"
+            />
           ) : null}
         </View>
       );

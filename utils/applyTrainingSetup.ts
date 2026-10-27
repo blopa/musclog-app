@@ -3,6 +3,9 @@ import i18n from 'i18next';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { GymService } from '@/database/services/GymService';
 import { SettingsService } from '@/database/services/SettingsService';
+import { localDayStartMs } from '@/utils/calendarDate';
+import { MAX_COMEBACK_DAYS_PER_WEEK } from '@/utils/comeback/comebackState';
+import { startedState } from '@/utils/comeback/comebackTransitions';
 import { defaultBarWeightKg, defaultPlates, defaultWeightIncrementKg } from '@/utils/gym';
 import {
   equipmentForLocation,
@@ -18,6 +21,36 @@ import {
 export async function applyTrainingSetup(data: TrainingSetupData): Promise<void> {
   await SettingsService.set(SETTINGS.workoutAutonomy, data.autonomy);
   await ensureGymForLocation(data.location);
+  if (data.comingBack) {
+    await startOnboardingComeback(data);
+  }
+}
+
+/**
+ * Starts comeback mode for someone who said, during onboarding, that they are coming back. There is
+ * no history to ease from, so `baseBefore` stays null and no load is scaled; the ramp still caps
+ * sets and reps in reserve. A comeback that is already running is left alone, so finishing the flow
+ * twice does not restart week 1.
+ */
+async function startOnboardingComeback(data: TrainingSetupData): Promise<void> {
+  const breakLength = data.comingBack?.breakLength;
+  const today = localDayStartMs(new Date());
+  await SettingsService.updateComebackState((current) =>
+    current.status === 'active'
+      ? current
+      : {
+          ...startedState(current, {
+            track: 'both',
+            answers: {
+              breakLength,
+              location: data.location,
+              daysPerWeek: Math.min(MAX_COMEBACK_DAYS_PER_WEEK, data.daysPerWeek),
+            },
+            today,
+          }),
+          baseBefore: null,
+        }
+  );
 }
 
 /**

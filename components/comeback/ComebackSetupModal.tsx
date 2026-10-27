@@ -628,7 +628,7 @@ function ComebackSetupBody({
 
   const copy = STEP_COPY[stepKey];
   const nextLabel = isLast
-    ? t(mode === 'edit' ? 'comeback.setup.save' : 'comeback.setup.start')
+    ? t(mode === 'edit' ? 'comeback.setup.save' : 'comeback.setup.startCta')
     : t('common.next');
 
   const footer = (

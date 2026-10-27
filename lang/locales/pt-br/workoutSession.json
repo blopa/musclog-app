@@ -412,7 +412,8 @@
       "repeatedDeloads": "{{count}} exercícios precisaram de uma redução de carga por conta própria nesta semana.",
       "lowReserveStalled": "Suas séries não deixaram nada de reserva e um exercício estagnou.",
       "dueForLighter": "Já se passaram {{count}} semanas desde a última semana leve.",
-      "onTrack": "O treino está no caminho certo."
+      "onTrack": "O treino está no caminho certo.",
+      "comeback": "Você está na rampa de retomada, então a progressão a segue."
     },
     "belowFloorTitle": "Abaixo do mínimo de calorias",
     "belowFloorBody": "Isso está abaixo do seu mínimo de {{minimum}} kcal. Você desativou o mínimo de calorias nas configurações avançadas; ir tão baixo não é recomendado e pode não ser seguro.",
@@ -427,6 +428,10 @@
       "macroTotal": "Estes macros somam {{kcal}} kcal.",
       "mismatch": "Estes macros somam {{kcal}} kcal, o que não bate com a meta de calorias.",
       "useMacroTotal": "Usar {{kcal}} kcal"
+    },
+    "comebackCheckin": {
+      "title": "Avaliação da retomada",
+      "question": "Como foi a semana {{week}} da sua retomada?"
     }
   }
 }

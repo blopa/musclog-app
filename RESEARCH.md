@@ -606,3 +606,18 @@ A review of workout-app notifications (Hevy, MacroFactor Workouts, Strong, Fitbo
 ### Cycle phase and training
 
 Cycle-phase effects on strength and performance are small and inconsistent (a trivial reduction in the early follicular phase in pooled data, with low-certainty evidence), and follicular-phase length, hence ovulation day, varies widely between and within people. The app therefore draws no phase-based training conclusions and shows no cycle card in the live workout session, where an observation would read as a prediction about today. The personal "lower volume near a period start" observation compares each session only with the same workout away from period starts, excludes deliberate lighter weeks, and needs four comparable cycles.
+
+## Comeback mode: what the research says and which numbers are our choices
+
+The brief (`get-the-routine-back-research.md`, a literature and practitioner synthesis on restarting training and eating after a long break) agrees on the shape, not on numbers: there is no single right plan; start deliberately small; progress by how recovery feels rather than a fixed percentage; make a minimum viable day count; never double up after a miss; judge progress against week 1, not the old peak; plan with if-then cues; check in at weeks 2, 4, 8 and 12; ease into nutrition (maintenance, then a modest deficit, protein first); and use self-compassion, not guilt.
+
+**Taken from the brief:** 1 to 3 working sets and about 3 to 4 reps in reserve early, two strength days plus easy cardio, the 10-minute minimum day, the if-then cue sentence, the miss rule ("do the next one, never double up"), the checkpoint weeks, and the 300 to 500 kcal deficit range after a maintenance start.
+
+**Product choices (the brief gives sets and effort, not loads or schedules):**
+
+- Load factor against the pre-break load by break length: 0.9 (under a month), 0.8 (1 to 3 months), 0.7 (3 to 6 months), 0.6 (over 6 months), plus 0.1 per week, capped at 0.95. Detraining is faster for strength endurance than for maximal strength and varies widely, so these are conservative defaults the lifter's own sets override: the floor is any load already performed during the comeback.
+- Reps in reserve 4, 3, 3, 2 and working-set caps 2, 2, 3, plan across weeks 1 to 4 (1 in week 1 when energy is low).
+- Deficit size: 300 kcal, or 500 when the person reports plenty of energy; offered at week 2, clamped to the minimum-calorie floor.
+- The 14-day lapse threshold, the 30-day re-offer, and 10 days of silence as "stalled".
+
+**Deliberately not done:** phase- or mood-based prescriptions, a guilt-framed streak (the card counts active days instead), automatic deficits, and any clinical screening beyond a one-line see-a-doctor note for long breaks and a quiet support link. Wellbeing is a light touch: one optional energy question that makes the start gentler.

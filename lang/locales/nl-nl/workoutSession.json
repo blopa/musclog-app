@@ -412,7 +412,8 @@
       "repeatedDeloads": "{{count}} oefeningen hadden deze week zelf een deload nodig.",
       "lowReserveStalled": "Je sets lieten niets in reserve en een lift stagneert.",
       "dueForLighter": "Het is {{count}} weken geleden sinds een lichtere week.",
-      "onTrack": "De training loopt goed."
+      "onTrack": "De training loopt goed.",
+      "comeback": "Je zit in je terugkeeropbouw, dus de progressie volgt die."
     },
     "belowFloorTitle": "Onder de minimale caloriegrens",
     "belowFloorBody": "Dit ligt onder je minimum van {{minimum}} kcal. Je hebt de minimale caloriegrens uitgezet in de geavanceerde instellingen; zo laag gaan wordt afgeraden en kan onveilig zijn.",
@@ -427,6 +428,10 @@
       "macroTotal": "Deze macro’s tellen op tot {{kcal}} kcal.",
       "mismatch": "Deze macro’s tellen op tot {{kcal}} kcal en dat komt niet overeen met het caloriedoel.",
       "useMacroTotal": "{{kcal}} kcal gebruiken"
+    },
+    "comebackCheckin": {
+      "title": "Check-in terugkeer",
+      "question": "Hoe voelde week {{week}} van je terugkeer?"
     }
   }
 }

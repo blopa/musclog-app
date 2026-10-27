@@ -16,7 +16,11 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
-import { PERSONALIZED_SETUP_DATA, TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import {
+  PERSONALIZED_SETUP_DATA,
+  TEMP_NUTRITION_PLAN,
+  TRAINING_SETUP_DATA,
+} from '@/constants/misc';
 import {
   type FitnessGoal,
   type Gender,
@@ -30,6 +34,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
+import { parseTrainingSetup, planWeightGoal } from '@/utils/onboardingTraining';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
@@ -143,6 +148,7 @@ export default function PersonalizedBodyStatsScreen() {
 
       const gender = setupData.gender ?? 'other';
       const fitnessGoal = setupData.fitnessGoal ?? 'general';
+      const training = parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
       const weightGoal = setupData.weightGoal ?? 'maintain';
       const activityLevel = (setupData.activityLevel ?? 2) as 1 | 2 | 3 | 4 | 5;
       const liftingExperience = setupData.liftingExperience ?? 'beginner';
@@ -177,7 +183,7 @@ export default function PersonalizedBodyStatsScreen() {
         heightCm,
         age,
         activityLevel,
-        weightGoal,
+        weightGoal: planWeightGoal(training, weightGoal),
         fitnessGoal,
         liftingExperience,
         bodyFatPercent: useBfForCalculations ? (bodyFat ?? undefined) : undefined,

@@ -1,7 +1,8 @@
 import type { WorkoutAutonomy } from '@/constants/settings';
 import workoutTemplatesData from '@/data/workoutTemplatesData.json';
 import type { EquipmentType } from '@/database/models/Exercise';
-import type { LiftingExperience } from '@/database/models/User';
+import type { LiftingExperience, WeightGoal } from '@/database/models/User';
+import type { BreakLength } from '@/utils/comeback/comebackState';
 import { EQUIPMENT_TYPES } from '@/utils/gym';
 
 export const TRAINING_LOCATIONS = ['gym', 'home', 'minimal'] as const;
@@ -16,12 +17,25 @@ export type TrainingSetupData = {
   experience?: LiftingExperience;
   daysPerWeek: number;
   autonomy: WorkoutAutonomy;
+  /** Set when the person is coming back after a break; starts comeback mode once the plan is accepted. */
+  comingBack?: { breakLength: BreakLength };
 };
 
 const isLocation = (value: unknown): value is TrainingLocation =>
   TRAINING_LOCATIONS.includes(value as TrainingLocation);
 const isExperience = (value: unknown): value is LiftingExperience =>
   value === 'beginner' || value === 'intermediate' || value === 'advanced';
+
+// A literal rather than `BREAK_LENGTHS`: comebackState imports this module's values, so importing
+// back would be a cycle. The `satisfies` keeps it from naming a length that does not exist.
+const BREAK_LENGTH_VALUES = [
+  'under1m',
+  '1to3m',
+  '3to6m',
+  'over6m',
+] as const satisfies readonly BreakLength[];
+export const isBreakLength = (value: unknown): value is BreakLength =>
+  (BREAK_LENGTH_VALUES as readonly unknown[]).includes(value);
 
 /** Reads the stored answers back; anything malformed means "no training setup". */
 export function parseTrainingSetup(raw: string | null | undefined): TrainingSetupData | null {
@@ -43,6 +57,9 @@ export function parseTrainingSetup(raw: string | null | undefined): TrainingSetu
         ? Math.min(5, Math.max(2, Math.round(days)))
         : DEFAULT_TRAINING_DAYS,
       autonomy: parsed.autonomy === 'manual' ? 'manual' : 'suggest',
+      ...(isBreakLength(parsed.comingBack?.breakLength)
+        ? { comingBack: { breakLength: parsed.comingBack.breakLength } }
+        : {}),
     };
   } catch {
     return null;
@@ -136,4 +153,16 @@ export function pickStarterTemplateIndex(
   );
 
   return index >= 0 ? index : null;
+}
+
+/**
+ * The weight goal the first nutrition plan is calculated for. Someone coming back after a break
+ * eats at maintenance first (a deficit is offered at the week-2 check-in), so whatever they picked
+ * on the goals screen does not turn the first plan into a cut.
+ */
+export function planWeightGoal(
+  training: Pick<TrainingSetupData, 'comingBack'> | null,
+  weightGoal: WeightGoal
+): WeightGoal {
+  return training?.comingBack ? 'maintain' : weightGoal;
 }

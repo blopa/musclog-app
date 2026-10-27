@@ -412,7 +412,8 @@
       "repeatedDeloads": "{{count}} ejercicios necesitaron una descarga por sí solos esta semana.",
       "lowReserveStalled": "Tus series no dejaron nada en reserva y un levantamiento se ha estancado.",
       "dueForLighter": "Han pasado {{count}} semanas desde la última semana ligera.",
-      "onTrack": "El entrenamiento va por buen camino."
+      "onTrack": "El entrenamiento va por buen camino.",
+      "comeback": "Estás en tu rampa de retorno, así que la progresión la sigue."
     },
     "belowFloorTitle": "Por debajo del mínimo de calorías",
     "belowFloorBody": "Esto está por debajo de tu mínimo de {{minimum}} kcal. Desactivaste el mínimo de calorías en los ajustes avanzados; bajar tanto no se recomienda y puede no ser seguro.",
@@ -427,6 +428,10 @@
       "macroTotal": "Estos macros suman {{kcal}} kcal.",
       "mismatch": "Estos macros suman {{kcal}} kcal, que no coincide con el objetivo de calorías.",
       "useMacroTotal": "Usar {{kcal}} kcal"
+    },
+    "comebackCheckin": {
+      "title": "Revisión del retorno",
+      "question": "¿Cómo se sintió la semana {{week}} de tu retorno?"
     }
   }
 }

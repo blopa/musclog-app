@@ -7,6 +7,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     where: jest.fn((field: string, condition: unknown) => ({ field, condition })),
     eq: jest.fn((value: unknown) => value),
     gte: jest.fn((value: unknown) => ({ gte: value })),
+    between: jest.fn((from: number, to: number) => ({ from, to })),
     sortBy: jest.fn((field: string, direction: string) => ({ field, direction })),
     asc: 'asc',
   },
@@ -31,14 +32,20 @@ const weigh = (kg: number, date: number, unit = 'kg') => ({
 
 function mockTables(tables: {
   workoutCount?: number;
+  workouts?: { completedAt: number }[];
   food?: { date: number }[];
   weights?: ReturnType<typeof weigh>[];
 }) {
   (database.get as jest.Mock).mockImplementation((table: string) => ({
     query: () => ({
       fetchCount: async () => tables.workoutCount ?? 0,
-      fetch: async () =>
-        table === 'nutrition_logs' ? (tables.food ?? []) : (tables.weights ?? []),
+      fetch: async () => {
+        if (table === 'workout_logs') {
+          return tables.workouts ?? [];
+        }
+
+        return table === 'nutrition_logs' ? (tables.food ?? []) : (tables.weights ?? []);
+      },
     }),
   }));
 }
@@ -105,5 +112,30 @@ describe('ComebackProgressService.summarize', () => {
     mockTables({ weights: [] });
 
     expect((await ComebackProgressService.summarize(state(), now)).weight).toBeNull();
+  });
+});
+
+describe('ComebackProgressService.activeDaysThisWeek', () => {
+  // Wednesday 14 Oct 2026, midday.
+  const wednesday = new Date(2026, 9, 14, 12).getTime();
+
+  it('counts the distinct days of this week the person trained, ate or did their minimum', async () => {
+    mockTables({
+      workouts: [{ completedAt: new Date(2026, 9, 12, 18).getTime() }],
+      food: [{ date: new Date(2026, 9, 13, 12).getTime() }],
+    });
+
+    expect(
+      await ComebackProgressService.activeDaysThisWeek(
+        state({ minimumDays: ['2026-10-14', '2026-10-05'] }),
+        wednesday
+      )
+    ).toBe(3);
+  });
+
+  it('is zero in a week with nothing logged', async () => {
+    mockTables({});
+
+    expect(await ComebackProgressService.activeDaysThisWeek(state(), wednesday)).toBe(0);
   });
 });

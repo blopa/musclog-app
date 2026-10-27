@@ -335,7 +335,11 @@
         "gym": "Mijn sportschool",
         "home": "Thuisgym",
         "minimal": "Lichaamsgewicht"
-      }
+      },
+      "comingBackLabel": "Kom je terug na een pauze?",
+      "comingBack": "Ik kom terug na een pauze",
+      "comingBackDesc": "We maken je eerste weken rustiger en starten je eten op onderhoud.",
+      "breakLengthLabel": "Hoe lang duurde de pauze?"
     },
     "firstWorkout": {
       "title": "Je eerste training",

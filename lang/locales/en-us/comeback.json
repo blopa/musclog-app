@@ -1,0 +1,310 @@
+{
+  "comeback": {
+    "title": "Comeback",
+    "settings": {
+      "title": "Start a comeback plan",
+      "subtitle": "Ease back into training and eating, one step at a time"
+    },
+    "offer": {
+      "title": "Welcome back",
+      "bodyWorkout": "It has been {{count}} days since your last workout. Want to ease back in?",
+      "bodyWorkout_one": "It has been {{count}} day since your last workout. Want to ease back in?",
+      "bodyWorkout_other": "It has been {{count}} days since your last workout. Want to ease back in?",
+      "bodyFood": "It has been {{count}} days since you last logged food. Want to ease back in?",
+      "bodyFood_one": "It has been {{count}} day since you last logged food. Want to ease back in?",
+      "bodyFood_other": "It has been {{count}} days since you last logged food. Want to ease back in?",
+      "bodyBoth": "It has been {{count}} days since you last trained or logged food. Want to ease back in?",
+      "bodyBoth_one": "It has been {{count}} day since you last trained or logged food. Want to ease back in?",
+      "bodyBoth_other": "It has been {{count}} days since you last trained or logged food. Want to ease back in?",
+      "start": "Restart gently",
+      "notNow": "Not now",
+      "bodyWorkout_few": "It has been {{count}} days since your last workout. Want to ease back in?",
+      "bodyWorkout_many": "It has been {{count}} days since your last workout. Want to ease back in?",
+      "bodyFood_few": "It has been {{count}} days since you last logged food. Want to ease back in?",
+      "bodyFood_many": "It has been {{count}} days since you last logged food. Want to ease back in?",
+      "bodyBoth_few": "It has been {{count}} days since you last trained or logged food. Want to ease back in?",
+      "bodyBoth_many": "It has been {{count}} days since you last trained or logged food. Want to ease back in?"
+    },
+    "card": {
+      "week": "Comeback, week {{week}} of {{total}}",
+      "sessions": "{{done}} of {{target}} workouts this week",
+      "minimum": "I did my minimum today",
+      "minimumDone": "Minimum done today",
+      "minimumHint": "A 10-minute walk or one proper meal counts. Your call.",
+      "checkpointWaiting": "Your check-in is waiting in the Weekly Review",
+      "open": "Open comeback",
+      "stalledTitle": "Pick up where you left off",
+      "stalledBody": "It has been a little while. You do not need to start over unless you want to.",
+      "stalledContinue": "Pick up where I left off",
+      "stalledRestart": "Restart week 1",
+      "setupDone": "Your comeback plan is ready",
+      "setupPartial": "Your comeback started, but some steps did not finish. You can adjust them on the comeback screen.",
+      "tailor": "Tailor it (3 quick questions)"
+    },
+    "summary": {
+      "week": "Comeback week {{week}} of {{total}}. Keep it easy.",
+      "graduated": "You made it through your comeback. Progression continues from here."
+    },
+    "checkpoint": {
+      "feel": {
+        "easy": "Too easy",
+        "right": "About right",
+        "hard": "Too hard"
+      }
+    },
+    "screen": {
+      "thisWeek": "This week",
+      "graduatedTitle": "Comeback complete",
+      "graduatedBody": "You finished the ramp. Progression now continues from the loads you have been using.",
+      "endsOn": "The ramp ends around {{date}}",
+      "weightChange": "{{change}} {{unit}} since day 1",
+      "finish": "Finish comeback",
+      "endConfirm": "End comeback mode? Your history stays, and workouts go back to normal progression.",
+      "endConfirmYes": "End comeback",
+      "endConfirmNo": "Keep going",
+      "ended": "Comeback ended",
+      "end": "End comeback",
+      "startPlan": "Start a comeback plan",
+      "endedBody": "Your comeback has ended. You can start a new one whenever you like.",
+      "notStartedBody": "Coming back after a break? A short, gentle plan can make restarting easier.",
+      "checkpointTitle": "Week {{week}} check-in",
+      "checkpointBody": "Answer it in your Weekly Review.",
+      "program": "The plan",
+      "programFootnote": "Loads are a starting point based on your last sessions before the break. Change anything that feels off.",
+      "sinceTitle": "Since you came back",
+      "sinceWorkouts": "{{count}} workouts",
+      "sinceWorkouts_one": "{{count}} workout",
+      "sinceWorkouts_other": "{{count}} workouts",
+      "sinceFood": "{{count}} days with food logged",
+      "sinceFood_one": "{{count}} day with food logged",
+      "sinceFood_other": "{{count}} days with food logged",
+      "sinceMinimum": "{{count}} minimum days",
+      "sinceMinimum_one": "{{count}} minimum day",
+      "sinceMinimum_other": "{{count}} minimum days",
+      "sinceFootnote": "Measured against your first week back, not your old peak.",
+      "eatingTitle": "Eating",
+      "toggleMealsOnly": "Just log meals for now",
+      "toggleMealsOnlyHint": "Hide the numbers until you are ready for them.",
+      "toggleProteinOnly": "Show protein only",
+      "toggleProteinOnlyHint": "Keep the focus on one number.",
+      "edit": "Edit my answers",
+      "sinceWorkouts_few": "{{count}} workouts",
+      "sinceWorkouts_many": "{{count}} workouts",
+      "sinceFood_few": "{{count}} days with food logged",
+      "sinceFood_many": "{{count}} days with food logged",
+      "sinceMinimum_few": "{{count}} minimum days",
+      "sinceMinimum_many": "{{count}} minimum days"
+    },
+    "plan": {
+      "programTitle": "Your first four weeks",
+      "weekLabel": "Week {{week}}",
+      "weekRow": "{{count}} working sets, about {{rir}} reps in reserve, {{percent}}% of your old loads",
+      "weekRow_one": "{{count}} working set, about {{rir}} reps in reserve, {{percent}}% of your old loads",
+      "weekRow_other": "{{count}} working sets, about {{rir}} reps in reserve, {{percent}}% of your old loads",
+      "weekRowPlanSets": "Your planned sets, about {{rir}} reps in reserve, {{percent}}% of your old loads",
+      "sessions": "{{count}} sessions a week",
+      "sessions_one": "{{count}} session a week",
+      "sessions_other": "{{count}} sessions a week",
+      "cueTitle": "Your if-then cue",
+      "cue": "If it is {{days}} at {{time}}, I put on my training clothes and start the warm-up.",
+      "missTitle": "If you miss a day",
+      "missRule": "Do the next one. Never double up.",
+      "maintenanceFirst": "You will eat at maintenance for the first two weeks. A small deficit is offered after that and never applied without your tap.",
+      "setGoal": "Set my weekly goal to {{count}} workouts",
+      "setGoal_one": "Set my weekly goal to {{count}} workout",
+      "setGoal_other": "Set my weekly goal to {{count}} workouts",
+      "switchDiary": "Switch my food diary to match",
+      "longBreakNote": "After a long break, check with a doctor first if you have chest pain, fainting or a known heart condition.",
+      "partialFailure": "Some steps did not finish. You can adjust them on the comeback screen.",
+      "weekRow_few": "{{count}} working sets, about {{rir}} reps in reserve, {{percent}}% of your old loads",
+      "weekRow_many": "{{count}} working sets, about {{rir}} reps in reserve, {{percent}}% of your old loads",
+      "sessions_few": "{{count}} sessions a week",
+      "sessions_many": "{{count}} sessions a week",
+      "setGoal_few": "Set my weekly goal to {{count}} workouts",
+      "setGoal_many": "Set my weekly goal to {{count}} workouts"
+    },
+    "setup": {
+      "step": "Step {{current}} of {{total}}",
+      "skip": "Skip",
+      "save": "Save",
+      "startCta": "Start my comeback",
+      "breakLength": {
+        "under1m": "Less than a month",
+        "1to3m": "1 to 3 months",
+        "3to6m": "3 to 6 months",
+        "over6m": "More than 6 months"
+      },
+      "intro": {
+        "title": "Welcome back",
+        "subtitle": "A few quick questions. Skip any you like.",
+        "workoutGap": "Your last workout was {{count}} days ago.",
+        "workoutGap_one": "Your last workout was {{count}} day ago.",
+        "workoutGap_other": "Your last workout was {{count}} days ago.",
+        "foodGap": "You last logged food {{count}} days ago.",
+        "foodGap_one": "You last logged food {{count}} day ago.",
+        "foodGap_other": "You last logged food {{count}} days ago.",
+        "body": "Breaks happen. We will start small and build back at a pace that suits you.",
+        "howLong": "About how long has the break been?",
+        "workoutGap_few": "Your last workout was {{count}} days ago.",
+        "workoutGap_many": "Your last workout was {{count}} days ago.",
+        "foodGap_few": "You last logged food {{count}} days ago.",
+        "foodGap_many": "You last logged food {{count}} days ago."
+      },
+      "track": {
+        "title": "What do you want to ease back into?",
+        "subtitle": "You can change this later.",
+        "workout": "Workouts",
+        "nutrition": "Food",
+        "both": "Both"
+      },
+      "where": {
+        "title": "Where will you train?",
+        "subtitle": "This picks a plan that fits your equipment.",
+        "gym": "Gym",
+        "home": "Home, some equipment",
+        "minimal": "No equipment"
+      },
+      "days": {
+        "title": "How many days a week?",
+        "subtitle": "Start with fewer than you think you need.",
+        "one": "1 day",
+        "two": "2 days",
+        "three": "3 days",
+        "four": "4 days",
+        "recommended": "Recommended to start",
+        "pickDays": "Which days?",
+        "pickTime": "At what time?"
+      },
+      "start": {
+        "title": "How do you want to start?",
+        "subtitle": "Pick the easiest way back in.",
+        "ownPlan": "Ease into my own plan",
+        "ownPlanHint": "Your usual workouts, with lighter loads at first.",
+        "shortPlan": "A short plan for me",
+        "shortPlanHint": "Two short full-body workouts that fit your setup.",
+        "chooseLater": "I will choose later",
+        "chooseLaterHint": "Only the eased loads apply for now."
+      },
+      "eating": {
+        "title": "How do you usually eat?",
+        "subtitle": "This tailors the logging tips.",
+        "cook": "Mostly cook",
+        "mix": "A mix",
+        "out": "Mostly eat out",
+        "varies": "It varies"
+      },
+      "tracking": {
+        "title": "How much do you want to track?",
+        "subtitle": "Less is fine at first.",
+        "full": "Everything",
+        "fullHint": "Calories and all macros.",
+        "caloriesProtein": "Just calories and protein",
+        "caloriesProteinHint": "Two numbers to keep an eye on.",
+        "mealsOnly": "Just log meals, no numbers yet",
+        "mealsOnlyHint": "Build the habit first."
+      },
+      "goal": {
+        "title": "What is your food goal for now?",
+        "subtitle": "Eating regularly comes first.",
+        "regular": "Eat regularly first",
+        "regularHint": "Maintenance calories, protein first.",
+        "loseSlowly": "Lose fat slowly",
+        "loseSlowlyHint": "Maintenance for two weeks, then a small deficit.",
+        "rebuild": "Rebuild muscle",
+        "rebuildHint": "Maintenance calories with plenty of protein.",
+        "keep": "Keep my current targets",
+        "keepHint": "Nothing about your targets changes.",
+        "weightTitle": "Your starting weight",
+        "latestWeight": "{{weight}} {{unit}}, logged {{count}} days ago",
+        "latestWeight_one": "{{weight}} {{unit}}, logged {{count}} day ago",
+        "latestWeight_other": "{{weight}} {{unit}}, logged {{count}} days ago",
+        "weightLabel": "Today's weight",
+        "weightHint": "Optional. If you add it, it becomes day 1.",
+        "latestWeight_few": "{{weight}} {{unit}}, logged {{count}} days ago",
+        "latestWeight_many": "{{weight}} {{unit}}, logged {{count}} days ago"
+      },
+      "energy": {
+        "title": "How is your energy lately?",
+        "subtitle": "Lower energy means an even gentler start.",
+        "plenty": "Plenty",
+        "plentyHint": "Ready to go.",
+        "some": "Some",
+        "someHint": "Up and down.",
+        "low": "Very little",
+        "lowHint": "We will keep the first weeks extra light.",
+        "support": "If things feel heavy right now, talking to someone can help"
+      },
+      "plan": {
+        "title": "Your plan",
+        "subtitle": "Four easy weeks, then you carry on."
+      }
+    },
+    "deficit": {
+      "title": "Ready for a small deficit?",
+      "body": "You have eaten at maintenance for two weeks. If you want, you can move to a gentle deficit now.",
+      "numbers": "{{from}} kcal to {{to}} kcal a day, with {{protein}} g of protein",
+      "accept": "Apply the deficit",
+      "decline": "Stay at maintenance",
+      "applied": "Your targets are updated",
+      "changedSince": "Your targets changed since setup, so nothing was overwritten"
+    },
+    "reflection": {
+      "title": "How did week {{week}} feel?",
+      "nextPhase": "What comes next for your food?",
+      "keepLosing": "Keep losing fat slowly",
+      "maintain": "Maintain",
+      "performance": "Focus on performance"
+    },
+    "tips": {
+      "snapMeal": {
+        "title": "Snap your meal",
+        "body": "Take a photo of a restaurant meal and let AI estimate it.",
+        "action": "Open the camera"
+      },
+      "snapMealBasic": {
+        "title": "Snap your meal",
+        "body": "Photo estimates work best with the free Musclog AI or a Gemini or OpenAI key. Your current provider may be rough on restaurant meals.",
+        "action": "Open the camera"
+      },
+      "describeMeal": {
+        "title": "Describe what you ate",
+        "body": "Tell the coach what you had and it logs the meal for you.",
+        "action": "Tell the coach"
+      },
+      "describeMealBasic": {
+        "title": "Describe what you ate",
+        "body": "Tell the coach what you had. Estimates are better with the free Musclog AI or a Gemini or OpenAI key.",
+        "action": "Tell the coach"
+      },
+      "setupAi": {
+        "title": "Set up AI meal logging",
+        "body": "Photos and descriptions make eating out much easier to log.",
+        "action": "Open AI settings"
+      },
+      "proteinFirstDish": {
+        "title": "Pick the protein-first dish",
+        "body": "When eating out, choose the dish built around protein and log it roughly. Close is enough."
+      },
+      "savedMeals": {
+        "title": "Reuse your saved meals",
+        "body": "Cooking the same things? Save them once and log them in a tap.",
+        "action": "Open my meals"
+      },
+      "scanBarcode": {
+        "title": "Scan the barcode",
+        "body": "For packaged food, scanning is the fastest way to log.",
+        "action": "Scan a barcode"
+      },
+      "sameAsYesterday": {
+        "title": "Same as yesterday",
+        "body": "Copy a day you already logged and edit what changed.",
+        "action": "Copy a day"
+      },
+      "copyPreviousDay": {
+        "title": "Copy a previous day",
+        "body": "Days vary, but many repeat. Start from one that looks like today.",
+        "action": "Copy a day"
+      }
+    }
+  }
+}

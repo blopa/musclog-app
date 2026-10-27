@@ -4,6 +4,7 @@
     "dayStreak": "días de racha",
     "days": "{{value}} días",
     "bestStreak": "Mejor racha",
-    "setWeeklyGoal": "Definir meta"
+    "setWeeklyGoal": "Definir meta",
+    "activeDays": "días activos"
   }
 }

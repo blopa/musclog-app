@@ -335,7 +335,11 @@
         "gym": "My gym",
         "home": "Home gym",
         "minimal": "Bodyweight"
-      }
+      },
+      "comingBackLabel": "Coming back after a break?",
+      "comingBack": "Coming back after a break",
+      "comingBackDesc": "We will ease your first weeks and start your food at maintenance.",
+      "breakLengthLabel": "How long was the break?"
     },
     "firstWorkout": {
       "title": "Your first workout",

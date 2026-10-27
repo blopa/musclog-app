@@ -92,6 +92,10 @@
       "workTimerAlert": {
         "title": "Time's up",
         "body": "Your timed set is done."
+      },
+      "comebackWelcome": {
+        "title": "Whenever you're ready",
+        "body": "No rush. If you'd like to ease back in, there's a gentle way to start."
       }
     },
     "actions": {

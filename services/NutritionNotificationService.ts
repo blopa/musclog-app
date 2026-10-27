@@ -20,7 +20,7 @@ import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
 
 /** Offline nutrition reminders: the evening overview, check-ins and the weekly review. */
 export class NutritionNotificationService {
-  static async scheduleNutritionOverview() {
+  static async scheduleNutritionOverview(options: { backOff?: boolean } = {}) {
     if (Platform.OS === 'web') {
       return;
     }
@@ -31,7 +31,7 @@ export class NutritionNotificationService {
     // Clear existing
     await cancelScheduledByType('nutrition-overview');
 
-    if (!isEnabled || !isNotificationsEnabled) {
+    if (!isEnabled || !isNotificationsEnabled || options.backOff) {
       return;
     }
 

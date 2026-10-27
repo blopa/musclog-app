@@ -6,7 +6,9 @@ import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { countActiveDays } from '@/utils/comeback/activeDays';
 import type { ComebackState } from '@/utils/comeback/comebackState';
+import { calendarWeekBounds } from '@/utils/notificationPolicy';
 import { storedWeightToKg } from '@/utils/unitConversion';
 
 export type ComebackProgress = {
@@ -24,6 +26,7 @@ export type ComebackProgress = {
 const START_WEIGHT_LOOKBACK_DAYS = 14;
 /** The recent weight is the average of this many days, so one noisy morning does not move it. */
 const RECENT_WEIGHT_DAYS = 7;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * "Since you came back": what the person has done, measured against day 1 — never against their
@@ -57,6 +60,42 @@ export class ComebackProgressService {
     ).length;
 
     return { workouts, foodDays, minimumDays, weight };
+  }
+
+  /**
+   * Days this calendar week (Monday first) on which the person trained, logged food or did their
+   * minimum — what the streak card shows instead of a consecutive streak while a comeback runs.
+   */
+  static async activeDaysThisWeek(state: ComebackState, now: number = Date.now()): Promise<number> {
+    const week = calendarWeekBounds(new Date(now));
+    const weekStart = week.start.getTime();
+    const weekEnd = week.end.getTime();
+    const [workouts, foodLogs] = await Promise.all([
+      database
+        .get<WorkoutLog>('workout_logs')
+        .query(
+          Q.where('completed_at', Q.between(weekStart, weekEnd - 1)),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetch(),
+      // Food dates are datetimes with an offset, so the window is widened by a day each way and the
+      // exact local day is decided below.
+      database
+        .get<NutritionLog>('nutrition_logs')
+        .query(
+          Q.where('date', Q.between(weekStart - DAY_MS, weekEnd + DAY_MS)),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetch(),
+    ]);
+
+    return countActiveDays({
+      workoutAt: workouts.map((log) => log.completedAt ?? 0),
+      foodDayAt: foodLogs.map((log) => localDayStartFromUtcMs(log.date)),
+      minimumDays: state.minimumDays,
+      weekStart,
+      weekEnd,
+    });
   }
 
   private static async weightChange(

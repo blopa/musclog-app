@@ -3,6 +3,7 @@ import {
   equipmentForLocation,
   inferTrainingLocation,
   parseTrainingSetup,
+  planWeightGoal,
   pickStarterTemplateIndex,
   SHORT_PLAN_TITLES,
   shortPlanTemplateIndex,
@@ -82,5 +83,33 @@ describe('inferTrainingLocation', () => {
   it('treats a profile with nothing recognisable as minimal', () => {
     expect(inferTrainingLocation([])).toBe('minimal');
     expect(inferTrainingLocation(['bodyweight'])).toBe('minimal');
+  });
+});
+
+describe('coming back after a break', () => {
+  const base = { location: 'home', daysPerWeek: 3, autonomy: 'suggest' };
+
+  it('reads a valid break length back and drops an unknown one', () => {
+    expect(
+      parseTrainingSetup(JSON.stringify({ ...base, comingBack: { breakLength: '3to6m' } }))
+        ?.comingBack
+    ).toEqual({ breakLength: '3to6m' });
+    expect(
+      parseTrainingSetup(JSON.stringify({ ...base, comingBack: { breakLength: 'forever' } }))
+        ?.comingBack
+    ).toBeUndefined();
+  });
+
+  it('still reads answers saved before the field existed', () => {
+    const parsed = parseTrainingSetup(JSON.stringify(base));
+    expect(parsed).toMatchObject({ location: 'home', daysPerWeek: 3 });
+    expect(parsed?.comingBack).toBeUndefined();
+  });
+
+  it('calculates the first plan at maintenance, whatever goal was picked', () => {
+    expect(planWeightGoal({ comingBack: { breakLength: '1to3m' } }, 'lose')).toBe('maintain');
+    expect(planWeightGoal({ comingBack: { breakLength: '1to3m' } }, 'gain')).toBe('maintain');
+    expect(planWeightGoal({}, 'lose')).toBe('lose');
+    expect(planWeightGoal(null, 'gain')).toBe('gain');
   });
 });

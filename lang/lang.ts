@@ -37,6 +37,7 @@ import enUsBodyMetrics from './locales/en-us/bodyMetrics.json';
 import enUsCamera from './locales/en-us/camera.json';
 import enUsCardio from './locales/en-us/cardio.json';
 import enUsCoach from './locales/en-us/coach.json';
+import enUsComeback from './locales/en-us/comeback.json';
 import enUsCommon from './locales/en-us/common.json';
 import enUsCreateWorkout from './locales/en-us/createWorkout.json';
 import enUsCurrentGoalsCard from './locales/en-us/currentGoalsCard.json';
@@ -122,6 +123,7 @@ import esEsBodyMetrics from './locales/es-es/bodyMetrics.json';
 import esEsCamera from './locales/es-es/camera.json';
 import esEsCardio from './locales/es-es/cardio.json';
 import esEsCoach from './locales/es-es/coach.json';
+import esEsComeback from './locales/es-es/comeback.json';
 import esEsCommon from './locales/es-es/common.json';
 import esEsCreateWorkout from './locales/es-es/createWorkout.json';
 import esEsCurrentGoalsCard from './locales/es-es/currentGoalsCard.json';
@@ -207,6 +209,7 @@ import nlNlBodyMetrics from './locales/nl-nl/bodyMetrics.json';
 import nlNlCamera from './locales/nl-nl/camera.json';
 import nlNlCardio from './locales/nl-nl/cardio.json';
 import nlNlCoach from './locales/nl-nl/coach.json';
+import nlNlComeback from './locales/nl-nl/comeback.json';
 import nlNlCommon from './locales/nl-nl/common.json';
 import nlNlCreateWorkout from './locales/nl-nl/createWorkout.json';
 import nlNlCurrentGoalsCard from './locales/nl-nl/currentGoalsCard.json';
@@ -292,6 +295,7 @@ import ptBrBodyMetrics from './locales/pt-br/bodyMetrics.json';
 import ptBrCamera from './locales/pt-br/camera.json';
 import ptBrCardio from './locales/pt-br/cardio.json';
 import ptBrCoach from './locales/pt-br/coach.json';
+import ptBrComeback from './locales/pt-br/comeback.json';
 import ptBrCommon from './locales/pt-br/common.json';
 import ptBrCreateWorkout from './locales/pt-br/createWorkout.json';
 import ptBrCurrentGoalsCard from './locales/pt-br/currentGoalsCard.json';
@@ -377,6 +381,7 @@ import ruRuBodyMetrics from './locales/ru-ru/bodyMetrics.json';
 import ruRuCamera from './locales/ru-ru/camera.json';
 import ruRuCardio from './locales/ru-ru/cardio.json';
 import ruRuCoach from './locales/ru-ru/coach.json';
+import ruRuComeback from './locales/ru-ru/comeback.json';
 import ruRuCommon from './locales/ru-ru/common.json';
 import ruRuCreateWorkout from './locales/ru-ru/createWorkout.json';
 import ruRuCurrentGoalsCard from './locales/ru-ru/currentGoalsCard.json';
@@ -493,6 +498,7 @@ const resources = {
       ...enUsCamera,
       ...enUsCardio,
       ...enUsCoach,
+      ...enUsComeback,
       ...enUsCommon,
       ...enUsCreateWorkout,
       ...enUsCurrentGoalsCard,
@@ -582,6 +588,7 @@ const resources = {
       ...esEsCamera,
       ...esEsCardio,
       ...esEsCoach,
+      ...esEsComeback,
       ...esEsCommon,
       ...esEsCreateWorkout,
       ...esEsCurrentGoalsCard,
@@ -671,6 +678,7 @@ const resources = {
       ...nlNlCamera,
       ...nlNlCardio,
       ...nlNlCoach,
+      ...nlNlComeback,
       ...nlNlCommon,
       ...nlNlCreateWorkout,
       ...nlNlCurrentGoalsCard,
@@ -760,6 +768,7 @@ const resources = {
       ...ptBrCamera,
       ...ptBrCardio,
       ...ptBrCoach,
+      ...ptBrComeback,
       ...ptBrCommon,
       ...ptBrCreateWorkout,
       ...ptBrCurrentGoalsCard,
@@ -849,6 +858,7 @@ const resources = {
       ...ruRuCamera,
       ...ruRuCardio,
       ...ruRuCoach,
+      ...ruRuComeback,
       ...ruRuCommon,
       ...ruRuCreateWorkout,
       ...ruRuCurrentGoalsCard,

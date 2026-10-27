@@ -92,6 +92,10 @@
       "workTimerAlert": {
         "title": "De tijd is om",
         "body": "Je tijdset is klaar."
+      },
+      "comebackWelcome": {
+        "title": "Wanneer je er klaar voor bent",
+        "body": "Geen haast. Als je rustig wilt terugkomen, is er een zachte manier om te beginnen."
       }
     },
     "actions": {

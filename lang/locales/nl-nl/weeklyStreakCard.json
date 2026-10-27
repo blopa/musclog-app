@@ -4,6 +4,7 @@
     "dayStreak": "dagen reeks",
     "days": "{{value}} dagen",
     "bestStreak": "Beste reeks",
-    "setWeeklyGoal": "Doel instellen"
+    "setWeeklyGoal": "Doel instellen",
+    "activeDays": "actieve dagen"
   }
 }

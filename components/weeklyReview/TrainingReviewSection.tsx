@@ -21,6 +21,8 @@ import type { WeeklyReviewService } from '@/database/services/WeeklyReviewServic
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { FEEL_LABEL_KEYS } from '@/utils/comeback/comebackCopy';
+import type { ComebackFeel } from '@/utils/comeback/comebackState';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import {
   type GoalVerdict,
@@ -44,6 +46,8 @@ type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
 
 /** Records shown before "Show all": enough to celebrate, few enough to reach the next section. */
 const VISIBLE_RECORDS = 3;
+
+const FEELS: ComebackFeel[] = ['easy', 'right', 'hard'];
 
 const PR_TYPE_KEYS = {
   weight: 'weeklyReview.prTypes.weight',
@@ -102,6 +106,7 @@ export function TrainingReviewSection({
   data,
   busy,
   onDecide,
+  onComebackCheckin,
   onChangeConsistencyGoal,
   onOpenGoals,
   onPreviewNext,
@@ -111,6 +116,8 @@ export function TrainingReviewSection({
   data: Overview;
   busy: boolean;
   onDecide: (decision: TrainingDecision) => void;
+  /** Answers the comeback week-2/4 check-in; it closes the training half like a 'progress' decision. */
+  onComebackCheckin: (week: 2 | 4, feel: ComebackFeel) => void;
   /** Applies a suggested workouts-per-week target; only ever called from a tap. */
   onChangeConsistencyGoal: (sessionsPerWeek: number) => void;
   /** Opens the fitness goals editor. */
@@ -362,7 +369,28 @@ export function TrainingReviewSection({
         </View>
       ) : null}
 
-      {training.canDecide && !decided ? (
+      {training.canDecide && !decided && training.comebackCheckin ? (
+        <View className="gap-3" testID="review-training-comeback">
+          <Text className="text-xs font-semibold text-text-secondary">
+            {t('weeklyReview.comebackCheckin.title')}
+          </Text>
+          <Text className="text-sm text-text-secondary">
+            {t('weeklyReview.comebackCheckin.question', { week: training.comebackCheckin.week })}
+          </Text>
+          <View className="gap-2">
+            {FEELS.map((feel) => (
+              <ListRow
+                key={feel}
+                title={t(FEEL_LABEL_KEYS[feel])}
+                disabled={busy}
+                onPress={() => onComebackCheckin(training.comebackCheckin!.week, feel)}
+              />
+            ))}
+          </View>
+        </View>
+      ) : null}
+
+      {training.canDecide && !decided && !training.comebackCheckin ? (
         <View className="gap-3" testID="review-training-decision">
           <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.trainingDecision.title')}

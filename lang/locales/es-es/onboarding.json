@@ -335,7 +335,11 @@
         "gym": "Mi gimnasio",
         "home": "Gimnasio en casa",
         "minimal": "Peso corporal"
-      }
+      },
+      "comingBackLabel": "¿Vuelves tras un descanso?",
+      "comingBack": "Vuelvo tras un descanso",
+      "comingBackDesc": "Suavizaremos tus primeras semanas y empezaremos tu comida en mantenimiento.",
+      "breakLengthLabel": "¿Cuánto duró el descanso?"
     },
     "firstWorkout": {
       "title": "Tu primer entrenamiento",

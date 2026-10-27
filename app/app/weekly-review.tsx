@@ -20,6 +20,10 @@ import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { WeekdayChoiceChips } from '@/components/WeekdayChoiceChips';
+import {
+  ComebackDeficitOffer,
+  isDeficitOfferDue,
+} from '@/components/comeback/ComebackDeficitOffer';
 import { NutritionReviewSection } from '@/components/weeklyReview/NutritionReviewSection';
 import { TargetsEditorSheet } from '@/components/weeklyReview/TargetsEditorSheet';
 import { historyLabelKeys } from '@/components/weeklyReview/trainingDecisionCopy';
@@ -30,13 +34,16 @@ import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { type NutritionTargets } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
+import { ComebackService } from '@/database/services/ComebackService';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { useComebackState } from '@/hooks/useComebackState';
 import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
 import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
+import type { ComebackFeel } from '@/utils/comeback/comebackState';
 import type { TrainingDecision } from '@/utils/trainingWeekDecision';
 import { hasWeeklyActivity, shouldShowWeeklyReviewWelcome } from '@/utils/weeklyReviewEmptyState';
 
@@ -74,6 +81,7 @@ export default function WeeklyReviewScreen() {
   const { data, legacy, loadError, reload } = useWeeklyReviewOverview(selectedReview, requestedDay);
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
+  const comeback = useComebackState();
   const [panel, setPanel] = useState<ReviewPanel | null>(
     params.checkinId ? { kind: 'legacyCheckin', id: params.checkinId } : null
   );
@@ -168,6 +176,24 @@ export default function WeeklyReviewScreen() {
         training: { decision, ...data.training.proposal },
       })
     );
+
+  /** Decision first (it clears the review badge), then the feel that shapes the ramp. */
+  const answerComebackCheckin = (week: 2 | 4, feel: ComebackFeel) =>
+    data &&
+    run(async () => {
+      await WeeklyReviewService.decide({
+        period: data.period,
+        goalId: data.goal?.id,
+        section: 'training',
+        training: {
+          decision: 'progress',
+          recommended: 'progress',
+          reasons: [{ code: 'comeback' }],
+          goals: [],
+        },
+      });
+      await ComebackService.answerCheckpoint(week, feel);
+    });
 
   const changeConsistencyGoal = (sessionsPerWeek: number) =>
     run(() =>
@@ -415,6 +441,7 @@ export default function WeeklyReviewScreen() {
                   data={data}
                   busy={busy}
                   onDecide={reviewTraining}
+                  onComebackCheckin={answerComebackCheckin}
                   onChangeConsistencyGoal={changeConsistencyGoal}
                   onOpenGoals={() => setPanel({ kind: 'fitnessGoals' })}
                   onPreviewNext={() =>
@@ -427,6 +454,10 @@ export default function WeeklyReviewScreen() {
                   onEditPlan={() => setPanel({ kind: 'editRules' })}
                   onLogWorkout={() => router.push('/app/workout/workouts')}
                 />
+
+                {isDeficitOfferDue(comeback.state, comeback.week) ? (
+                  <ComebackDeficitOffer state={comeback.state} />
+                ) : null}
 
                 <NutritionReviewSection
                   data={data}

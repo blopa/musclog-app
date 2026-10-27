@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Platform } from 'react-native';
 
 import {
+  COMEBACK_WELCOME_NOTIFICATION_TYPE,
   CYCLE_NOTIFICATION_TYPE,
   CYCLE_SNOOZE_NOTIFICATION_TYPE,
   GOAL_AT_RISK_NOTIFICATION_TYPE,
@@ -74,6 +75,11 @@ export async function handleNotificationResponse(response: Notifications.Notific
     case 'workout-reminder':
       // The workouts screen explains the reminder ("Why did I get this?") from the same payload.
       router.navigate(workoutReminderRoute(data));
+      break;
+
+    case COMEBACK_WELCOME_NOTIFICATION_TYPE:
+      // Home makes the offer itself (ComebackCard), so the nudge only has to land there.
+      router.navigate('/app');
       break;
 
     case 'nutrition-overview':

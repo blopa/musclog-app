@@ -18,11 +18,15 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
+import { ListRow } from '@/components/theme/ListRow';
+import { ToggleInput } from '@/components/theme/ToggleInput';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TRAINING_SETUP_DATA } from '@/constants/misc';
 import type { WorkoutAutonomy } from '@/constants/settings';
 import type { LiftingExperience } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
+import { BREAK_LENGTH_LABEL_KEYS } from '@/utils/comeback/comebackCopy';
+import { BREAK_LENGTHS, type BreakLength } from '@/utils/comeback/comebackState';
 import {
   DEFAULT_TRAINING_DAYS,
   TRAINING_DAYS_OPTIONS,
@@ -105,6 +109,8 @@ export default function TrainingSetupScreen() {
   const [experience, setExperience] = useState<LiftingExperience>('beginner');
   const [days, setDays] = useState<number>(DEFAULT_TRAINING_DAYS);
   const [autonomy, setAutonomy] = useState<WorkoutAutonomy>('suggest');
+  const [comingBack, setComingBack] = useState(false);
+  const [breakLength, setBreakLength] = useState<BreakLength>('1to3m');
   const [isSaving, setIsSaving] = useState(false);
 
   const handleContinue = async () => {
@@ -115,6 +121,7 @@ export default function TrainingSetupScreen() {
         experience: mode === 'quick' ? experience : undefined,
         daysPerWeek: days,
         autonomy,
+        ...(comingBack ? { comingBack: { breakLength } } : {}),
       };
       await AsyncStorage.setItem(TRAINING_SETUP_DATA, JSON.stringify(data));
       router.navigate(nextRoute as never);
@@ -265,6 +272,41 @@ export default function TrainingSetupScreen() {
                 onValueChange={(v) => setDays(Number(v))}
                 variant="gradient"
               />
+            </View>
+
+            <View className="mb-8 gap-3">
+              {sectionLabel('onboarding.trainingSetup.comingBackLabel')}
+              <ToggleInput
+                items={[
+                  {
+                    key: 'coming-back',
+                    label: t('onboarding.trainingSetup.comingBack'),
+                    subtitle: t('onboarding.trainingSetup.comingBackDesc'),
+                    value: comingBack,
+                    onValueChange: setComingBack,
+                  },
+                ]}
+              />
+              {comingBack ? (
+                <View className="gap-2">
+                  <Text
+                    style={{
+                      color: theme.colors.text.secondary,
+                      fontSize: theme.typography.fontSize.sm,
+                    }}
+                  >
+                    {t('onboarding.trainingSetup.breakLengthLabel')}
+                  </Text>
+                  {BREAK_LENGTHS.map((value) => (
+                    <ListRow
+                      key={value}
+                      title={t(BREAK_LENGTH_LABEL_KEYS[value])}
+                      selected={breakLength === value}
+                      onPress={() => setBreakLength(value)}
+                    />
+                  ))}
+                </View>
+              ) : null}
             </View>
 
             <View className="mb-4 gap-3">

@@ -464,6 +464,7 @@ describe('Phase 8: screen headers and wayfinding', () => {
     ['app/app/notes.tsx', 'notes', null],
     ['app/app/cycle.tsx', 'cycle', '"cycle"'],
     ['app/app/weekly-review.tsx', 'checkin', '{WEEKLY_REVIEW_LOCK_AREAS}'],
+    ['app/app/comeback.tsx', null, '{COMEBACK_LOCK_AREAS}'],
     ['app/app/workout/workouts.tsx', 'workouts', '"workout"'],
     ['app/app/nutrition/food.tsx', 'food', '"nutrition"'],
   ];

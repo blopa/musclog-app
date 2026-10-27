@@ -2,10 +2,14 @@ import './weeklyProgressionMocks';
 
 import { database } from '@/database/database-instance';
 import WeeklyReview from '@/database/models/WeeklyReview';
+import { SettingsService } from '@/database/services/SettingsService';
+import { parseComebackState } from '@/utils/comeback/comebackState';
+import { startedState } from '@/utils/comeback/comebackTransitions';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { TrainingWeekRepository } from '@/database/repositories/TrainingWeekRepository';
+import { settingsGetMock } from './settingsGetMock';
 import {
   targets,
   goal,
@@ -153,5 +157,62 @@ describe('the training half of a review is a decision', () => {
     const overview = await WeeklyReviewService.overview();
     expect(overview.training.decision?.decision).toBe('lighter');
     expect(overview.training.targets).toEqual([]);
+  });
+
+  describe('during a comeback ramp', () => {
+    const DAY = 24 * 60 * 60 * 1000;
+    const midnight = () => {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    };
+
+    const realGet = SettingsService.get;
+    afterEach(() => {
+      SettingsService.get = realGet;
+    });
+
+    function startComebackWeeksAgo(weeks: number) {
+      const state = startedState(parseComebackState(null), {
+        track: 'workout',
+        answers: {},
+        today: midnight() - weeks * 7 * DAY,
+      });
+      SettingsService.get = settingsGetMock({
+        workoutAutonomy: 'manual',
+        reviewWeekday: 1,
+        comebackState: state,
+      });
+    }
+
+    it('offers the week-2 check-in instead of the three-way decision', async () => {
+      await finishedWorkout(weeklyReviewPeriod().start + 60 * 60 * 1000);
+      startComebackWeeksAgo(2);
+      const { training } = await WeeklyReviewService.overview();
+      expect(training.comebackCheckin).toEqual({ week: 2 });
+      expect(training.targets).toEqual([]);
+    });
+
+    it('offers nothing before the first checkpoint week', async () => {
+      await finishedWorkout(weeklyReviewPeriod().start + 60 * 60 * 1000);
+      startComebackWeeksAgo(1);
+      expect((await WeeklyReviewService.overview()).training.comebackCheckin).toBeNull();
+    });
+
+    it('closes the training half with a plain progress decision', async () => {
+      const period = weeklyReviewPeriod();
+      await finishedWorkout(period.start + 60 * 60 * 1000);
+      startComebackWeeksAgo(2);
+      await WeeklyReviewService.decide({
+        period,
+        section: 'training',
+        training: { ...trainingChoice('progress'), reasons: [{ code: 'comeback' }], goals: [] },
+      });
+      const { training } = await WeeklyReviewService.overview();
+      expect(training.reviewedAt).toEqual(expect.any(Number));
+      expect(training.decision?.decision).toBe('progress');
+      expect(training.decision?.reasons).toEqual([{ code: 'comeback' }]);
+      expect(await TrainingWeekRepository.activeTrainingWeek()).toBeNull();
+    });
   });
 });
