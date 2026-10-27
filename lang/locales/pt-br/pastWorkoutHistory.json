@@ -4,6 +4,7 @@
     "searchPlaceholder": "Pesquisar sessões...",
     "noWorkoutsFound": "Nenhum treino encontrado correspondente à sua pesquisa.",
     "noWorkoutHistory": "Nenhum histórico de treino ainda.",
+    "noWorkoutsInRange": "Nenhum treino neste período. Tente aumentar o intervalo do filtro.",
     "loadMore": "Carregar Mais",
     "loadingMore": "Carregando...",
     "stats": {
@@ -40,7 +41,7 @@
         "title": "Intervalo de data",
         "30days": "Últimos 30 Dias",
         "90days": "Últimos 90 Dias",
-        "custom": "Personalizado"
+        "allTime": "Todo o período"
       },
       "muscleGroups": {
         "title": "Grupo muscular (multi-seleção)",

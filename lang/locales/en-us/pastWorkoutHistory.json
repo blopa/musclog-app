@@ -4,6 +4,7 @@
     "searchPlaceholder": "Search sessions...",
     "noWorkoutsFound": "No workouts found matching your search.",
     "noWorkoutHistory": "No workout history yet.",
+    "noWorkoutsInRange": "No workouts in this date range. Try increasing the filter range.",
     "loadMore": "Load more",
     "loadingMore": "Loading...",
     "stats": {
@@ -40,7 +41,7 @@
         "title": "Date range",
         "30days": "Last 30 days",
         "90days": "Last 90 days",
-        "custom": "Custom"
+        "allTime": "All time"
       },
       "muscleGroups": {
         "title": "Muscle group (multi-select)",

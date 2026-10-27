@@ -84,11 +84,6 @@ jest.mock('../../utils/workoutHistory', () => ({
       const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
       return { startDate, endDate };
     }
-    if (range === 'custom') {
-      // For custom, return a specific range (e.g., last 7 days)
-      const startDate = endDate - 7 * 24 * 60 * 60 * 1000;
-      return { startDate, endDate };
-    }
     return undefined;
   }),
   processWorkouts: jest.fn(async (workouts: any[], filters: any, t: any, units: any) => {

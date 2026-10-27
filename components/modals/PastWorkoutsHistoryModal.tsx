@@ -50,7 +50,7 @@ function SearchAndFilterHeader({
         backgroundColor: theme.colors.background.darkBackground,
       }}
     >
-      <View className="flex-row items-center gap-2">
+      <View className="flex-row items-end gap-2">
         <View className="relative flex-1">
           <TextInput
             placeholder={t('pastWorkoutHistory.searchPlaceholder')}
@@ -61,12 +61,11 @@ function SearchAndFilterHeader({
           />
         </View>
         <Pressable
-          className="h-11 w-11 items-center justify-center border"
+          className="h-12 w-12 items-center justify-center border"
           style={{
             backgroundColor: theme.colors.background.card,
             borderColor: theme.colors.background.ink5,
             borderRadius: theme.borderRadius.md,
-            marginTop: theme.spacing.margin.sm,
           }}
           onPress={onFilterPress}
         >
@@ -152,9 +151,10 @@ function WorkoutHistorySkeleton() {
 // Empty State Component
 type EmptyStateProps = {
   hasSearchQuery: boolean;
+  isRangeLimited: boolean;
 };
 
-function EmptyState({ hasSearchQuery }: EmptyStateProps) {
+function EmptyState({ hasSearchQuery, isRangeLimited }: EmptyStateProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -169,7 +169,9 @@ function EmptyState({ hasSearchQuery }: EmptyStateProps) {
       >
         {hasSearchQuery
           ? t('pastWorkoutHistory.noWorkoutsFound')
-          : t('pastWorkoutHistory.noWorkoutHistory')}
+          : isRangeLimited
+            ? t('pastWorkoutHistory.noWorkoutsInRange')
+            : t('pastWorkoutHistory.noWorkoutHistory')}
       </Text>
     </View>
   );
@@ -417,7 +419,7 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
         {isLoading ? (
           <WorkoutHistorySkeleton />
         ) : workoutHistoryData.length === 0 ? (
-          <EmptyState hasSearchQuery={!!searchQuery} />
+          <EmptyState hasSearchQuery={!!searchQuery} isRangeLimited={filters.dateRange !== 'all'} />
         ) : (
           <SectionList
             className="flex-1"

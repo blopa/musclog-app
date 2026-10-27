@@ -12,7 +12,7 @@ import { type MuscleGroup } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
 
 type WorkoutType = 'all' | 'strength' | 'cardio' | 'hiit' | 'yoga';
-type DateRange = '30' | '90' | 'custom';
+type DateRange = '30' | '90' | 'all';
 // UI-specific muscle group type for filtering (aggregated categories)
 // Combines database MuscleGroup values with UI aggregations ('legs', 'arms', 'core', 'full-body')
 type FilterMuscleGroup =
@@ -100,8 +100,8 @@ export function PastWorkoutsHistoryFilterMenu({
         value: '90',
       },
       {
-        label: t('pastWorkoutHistory.filters.dateRange.custom') || 'Custom',
-        value: 'custom',
+        label: t('pastWorkoutHistory.filters.dateRange.allTime') || 'All time',
+        value: 'all',
         icon: (selected: boolean) => (
           <Calendar
             size={theme.iconSize.sm}
