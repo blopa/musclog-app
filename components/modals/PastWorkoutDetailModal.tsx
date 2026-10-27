@@ -189,6 +189,8 @@ function VolumeTrendCard({
           height={128}
           chartWidth={400}
           chartHeight={100}
+          // The points are indexed 0..n-1, not pixels, so the domain has to match or they pile up on the left.
+          xDomain={[0, Math.max(data.length - 1, 1)]}
           lineColor={theme.colors.accent.primary}
           areaColor={theme.colors.accent.primary30}
           xAxisLabels={labels}

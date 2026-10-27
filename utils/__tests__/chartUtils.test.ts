@@ -44,6 +44,23 @@ describe('getXAxisLabels', () => {
     }
   });
 
+  it('keeps the gaps between subsampled labels even', () => {
+    // Seven points used to print indices 0, 1, 2, 4, 5, 6: one gap twice the others.
+    const labels = getXAxisLabels(Array.from({ length: 7 }, (_, i) => ({ x: i })));
+    const gaps = labels.slice(1).map((l, i) => l.positionPercent - labels[i].positionPercent);
+    expect(labels[0].positionPercent).toBe(0);
+    expect(labels[labels.length - 1].positionPercent).toBe(100);
+    expect(Math.max(...gaps) / Math.min(...gaps)).toBeLessThanOrEqual(1.5);
+  });
+
+  it('never leaves a gap more than 1.5x another, whatever the point count', () => {
+    for (let n = MAX_X_LABELS + 1; n <= 60; n++) {
+      const labels = getXAxisLabels(Array.from({ length: n }, (_, i) => ({ x: i })));
+      const gaps = labels.slice(1).map((l, i) => l.positionPercent - labels[i].positionPercent);
+      expect(Math.max(...gaps) / Math.min(...gaps)).toBeLessThanOrEqual(1.5 + 1e-9);
+    }
+  });
+
   it('uses custom format function', () => {
     const data = [{ x: 100 }, { x: 200 }];
     const formatFn = (x: number) => `Val:${x}`;
