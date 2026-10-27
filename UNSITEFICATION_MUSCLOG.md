@@ -15,6 +15,11 @@ browser would use instead.
 
 Most of it comes from a few shared files, so a small number of changes reach most of the app.
 
+A second, smaller cause is **how space is spent** (U11). The screens are not overloaded — Home
+shows about as much as a dedicated nutrition dashboard — but the information is split across many
+separately boxed surfaces with gaps between them, so it reads as a web dashboard of cards rather than
+a native screen of grouped lists.
+
 ### Baseline (measured 2026-10-27, `app/app` + `components`, excluding `.web.tsx`, website and test routes)
 
 | Signal                                     | Count                                  |
@@ -30,6 +35,19 @@ Most of it comes from a few shared files, so a small number of changes reach mos
 | Files importing `@expo/ui` in the app      | 0 (installed, used only by `widgets/`) |
 | Root stack transition                      | `animation: 'fade'` for every route    |
 
+Density baseline (measured 2026-10-27 on the `kinetic-depth` 6.7" captures, 1284×2778px = 428×926pt;
+"gap" = rows between the header and the bottom bar that are plain background, so it excludes padding
+inside a box):
+
+| Screen   | Empty gap between surfaces | Notes                                                                        |
+| -------- | -------------------------- | ---------------------------------------------------------------------------- |
+| Home     | 23%                        | 8 separately bordered surfaces in the first viewport; 2 recent foods visible |
+| Food     | 24%                        | first logged item starts about 55% of the way down the screen                |
+| Progress | 13%                        | no chart in the first viewport                                               |
+| Profile  | 27%                        | Age and Gender each get a ~96pt tile                                         |
+
+Re-measure with the same method after each Phase 4 milestone; the targets are in U11.
+
 Heuristic score (ux-heuristics): **6/10** — nothing blocks a task; deductions are platform
 consistency, user control (dismiss, undo) and visibility of system status (feedback).
 
@@ -43,12 +61,16 @@ consistency, user control (dismiss, undo) and visibility of system status (feedb
 - Every meaningful touch gives feedback appropriate to the platform (haptic, ripple, pressed state).
 - Lists read as lists, not as stacks of cards.
 - Each main screen has one job and one primary action.
+- Space goes to content, not gaps and box padding: related rows share one surface, key figures are
+  large and plain, and no number is shown twice with different meanings.
 
 **Non-goals**
 
 - No new component library. `@expo/ui` is already a dependency and may be used; nothing else is
   added without a separate decision.
-- No change to themes, palettes, branding, the hero card, or the website.
+- No change to themes, palettes, branding, the hero card, or the website. The one optional
+  exception is trimming the hero card's four percentages (U11, open question 5), which needs a
+  decision first.
 - No feature removal. Things may move (into a header menu, a sheet, a row), never disappear.
 - No change to the speed of workout logging. The inline set table, steppers, RIR quick-pick and
   rest timer stay as they are, except for added haptics (U9).
@@ -60,7 +82,8 @@ the information and the tap count:
 
 - **Live session set table** (`components/workout/session/InlineSetRow.tsx`): Previous / Weight /
   Reps / ✓ per row, 44pt targets, RIR quick-pick. This is the Strong/Hevy pattern lifters expect.
-- **Hero card macro bars** (P / C / F / Fi with percentages) and the macro line on food rows.
+- **Hero card macro bars** (P / C / F / Fi) and the macro line on food rows. The percentages beside
+  the bars are the one candidate for trimming (U11), because the bars already show them.
 - **−/+ steppers** on Log set, Edit set and serving size: right for sweaty, one-handed entry.
 - **Rest timer bar** and its controls.
 
@@ -265,6 +288,53 @@ target.
     without the overhang.
   - Every interactive element reaches 44×44pt, by padding or `hitSlop`.
 
+### U11 — Information is split across too many boxes, and some of it contradicts itself
+
+Density is a real part of the problem, but not because the screens show too much. They show about as
+much as a dedicated nutrition dashboard. The issue is that the space is spent on gaps and per-box
+padding while some figures get far more room than they need.
+
+- **Evidence** (captures `01-home`, `02-food`, `03-progress`, `04-profile`; numbers in the section 1
+  density baseline):
+  - About a quarter of Home, Food and Profile is empty gap between boxes (23%, 24%, 27%), before
+    counting each box's own padding.
+  - Home's first viewport has 8 separately bordered surfaces: hero card, stat strip, two action
+    tiles, Weekly Review card, two recent foods, and the dashed "Add food" button.
+  - Density is uneven. The hero card packs 12 small numbers ("P 132/180g ▬ 73%" × 4), while a
+    recent-food row spends 66pt on three facts (name, weight, kcal) plus a generic placeholder icon
+    when there is no photo. On Progress, "Weekly weight change −0.27" gets a whole card; on Profile,
+    "Age 36" and "Gender Male" get ~96pt tiles each.
+  - The main content starts late: on Food the first logged item sits about 55% of the way down; on
+    Progress there is no chart in the first viewport.
+  - **Home contradicts itself at a glance.** The hero card says "1200 Remaining" (against the goal)
+    and the stat strip under it says "112 kcal Surplus" (eaten against energy burned so far). Both
+    are correct, but they read as opposites.
+- **Why it reads as web**: a stack of equal bordered cards is the web dashboard layout. NN/g's
+  guidance on cards is that they are "less scannable than lists" and fit fewer items per screen, and
+  that cards should not be "a modern-looking replacement for a list of content" — which is exactly
+  the diary, Recent foods and the exercise pickers. NN/g also says screen space "should be spent,
+  not hoarded" and that higher density means "less need to move around", with the limit that an
+  overloaded screen overwhelms. Apple's list guidance groups related rows in one inset section
+  rather than boxing each row.
+- **After**:
+  - **Merge related surfaces.** Rows of the same kind share one grouped surface (U5). Single-number
+    cards (weekly weight change, age, gender) become rows or one `StatStrip`.
+  - **Home stat strip shows only what the hero card does not**: Burned so far and Balance, with each
+    label saying what it compares against (for example "vs burned so far"). It no longer repeats
+    Eaten. This removes the remaining-vs-surplus contradiction without hiding either fact.
+  - **Rows pay for what they show.** A food row without a photo has no placeholder icon, and puts the
+    calories on the right. Target row height is about 52pt (from 66pt).
+  - **Lead with the content.** Food shows its diary first (summary compacts on scroll, U6); Progress
+    shows the weight-trend chart first (U7).
+  - **Optional**: drop the four percentages from the hero card (12 numbers to 8). The bars already
+    carry them. Needs a decision first; see open question 5.
+- **Targets** (re-measured with the section 1 method): empty gap at or below 15% on Home, Food and
+  Profile; at least 4 recent foods visible on Home's first viewport; the first logged food on Food
+  starts above 40% of the screen height; a Progress chart in the first viewport.
+- **Do not**: shrink touch targets below 44pt to gain space, reduce type below the current minimum, or
+  remove any figure the user can see today without giving it another home (a row, a sheet, a tap).
+  Density that serves the workout set table (section 3) is not part of this finding.
+
 ## 5. Phases and milestones
 
 Phases are ordered by leverage: Phase 0 changes shell files that every screen inherits. Each
@@ -368,29 +438,48 @@ milestone is shippable on its own and leaves the app consistent.
 
 - Recent foods (Home), Nutrition log, Add exercise, Replace exercise, exercise library.
 
-### Phase 4 — Screen by screen (U6, U7, U8)
+### Phase 4 — Screen by screen (U6, U7, U8, U11)
 
 **M13 — Home**
 
 - Remove the dashed "Add food" button; recent foods as a grouped list; Weekly Review full card on
   Home only.
+- Stat strip shows Burned so far and Balance with labels that name their comparison; no Eaten.
+- Food rows without a photo drop the placeholder icon; calories on the right.
 - Done when: Home's first viewport shows status, one action row, and the start of recent items, with
-  no duplicated entry point.
+  no duplicated entry point; at least 4 recent foods visible; empty gap at or below 15%; the
+  remaining-vs-surplus pair no longer reads as a contradiction.
 
 **M14 — Food**
 
 - Compact summary bar on scroll; 2×2 grid replaced by per-meal **Add** rows; My meals / More
   options in the header menu; Weekly Review reduced to the existing menu entry.
+- Done when: the first logged food starts above 40% of the screen height and the empty gap is at or
+  below 15%.
 
 **M15 — Progress**
 
 - `SegmentedControl` for range; chart first; averages as `StatStrip`; empirical-TDEE confidence
-  guard.
+  guard; the single-number "Weekly weight change" card merged into the strip.
 
 **M16 — Forms**
 
 - Log meal and Add entry reordered; combined date/time row; `@expo/ui` DateTimePicker on native;
   bottom padding so the primary button never covers a field.
+
+**M17 — Profile**
+
+- Weight, Body fat, Age and Gender become grouped rows or one `StatStrip` instead of four ~96pt
+  tiles; smaller avatar block; Management stays a `ListGroup`.
+- Done when: the empty gap is at or below 15% and every figure shown today is still shown.
+
+**M18 — Density check and optional hero trim**
+
+- Re-measure all four screens with the section 1 method in at least `kinetic-depth` and
+  `kinetic-light`, record the numbers in section 8, and fix any screen above target.
+- If open question 5 is answered yes, drop the hero card's four percentages and update
+  `DESIGN.md` and the `DailySummaryCard` tests.
+- Done when: every target in U11 is met, or the miss is recorded with a reason.
 
 ## 6. Requirements for every milestone
 
@@ -403,6 +492,7 @@ These come from `AGENTS.md` and apply to each milestone, not just the last one:
   - Phase 1: no native file renders `ConfirmationModal` directly.
   - Phase 2: a ceiling on `FullScreenModal` call sites without a `kind`, lowered as files migrate.
   - Phase 3: no list row in the migrated screens renders a vertical-ellipsis menu.
+  - Phase 4: the home stat strip does not render the Eaten figure the hero card already shows.
 - **Checks**: `npx tsc --noEmit`, `npm run lint:eslint`, `npm run check-translations`,
   `npm run check-locale-consistency`, and the relevant Jest suites. (Avoid `npm run lint:all`: it
   stages files and dirties `app.json` / iOS.)
@@ -440,9 +530,18 @@ These come from `AGENTS.md` and apply to each milestone, not just the last one:
    only if users ask)_
 4. Is `@expo/ui` DateTimePicker stable enough on SDK 58 for both platforms, or is
    `@react-native-community/datetimepicker` needed? Adding a dependency needs a separate decision.
+5. Should the hero card drop the four macro percentages (12 numbers to 8)? The bars already show
+   them, but some users may read the numbers. _(recommendation: yes; check with a few users first)_
 
 ## 9. Modal classification (filled in at M7)
 
 | Component | Kind (task / browse) | Target | Milestone |
 | --------- | -------------------- | ------ | --------- |
 |           |                      |        |           |
+
+## 10. Sources
+
+- NN/g, [Cards: UI-Component Definition](https://www.nngroup.com/articles/cards-component/)
+- NN/g, [Utilize Available Screen Space](https://www.nngroup.com/articles/utilize-available-screen-space/)
+- NN/g, [Dashboards: Making Charts and Graphs Easier to Understand](https://www.nngroup.com/articles/dashboards-preattentive/)
+- Apple HIG, [Lists and tables](https://developer-rno.apple.com/design/human-interface-guidelines/components/layout-and-organization/lists-and-tables)
