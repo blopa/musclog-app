@@ -15,6 +15,7 @@ import { seedDevData } from '@/database/seeders/dev';
 import { seedProductionData } from '@/database/seeders/prod';
 import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { isProduction } from '@/utils/app';
 import { importDatabase, shouldSeedDevData } from '@/utils/file';
@@ -51,6 +52,7 @@ export default function LandingScreen() {
   const [opticalImportVisible, setOpticalImportVisible] = useState(false);
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [loading, setLoading] = useState(false);
+  useKeepScreenAwake('onboarding-import', loading);
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
