@@ -5,7 +5,7 @@
     "volume": "Объём",
     "calories": "Калории",
     "volumeTrend": "Динамика объёма",
-    "volumeTrendPercentage": "+{{percentage}}% к среднему",
+    "volumeTrendPercentage": "{{percentage}}% к предыдущей",
     "exercisesCount": "Упражнения ({{count}})",
     "minsSpent": "{{minutes}} мин потрачено",
     "saveError": "Не удалось сохранить изменения. Пожалуйста, попробуйте снова.",

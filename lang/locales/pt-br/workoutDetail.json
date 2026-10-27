@@ -5,7 +5,7 @@
     "volume": "Volume",
     "calories": "Calorias",
     "volumeTrend": "Tendência de Volume",
-    "volumeTrendPercentage": "+{{percentage}}% vs média",
+    "volumeTrendPercentage": "{{percentage}}% vs anterior",
     "exercisesCount": "Exercícios ({{count}})",
     "minsSpent": "{{minutes}} min gastos",
     "saveError": "Falha ao salvar alterações. Por favor, tente novamente.",

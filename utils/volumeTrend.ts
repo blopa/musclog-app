@@ -52,7 +52,8 @@ export function buildVolumeTrend(
   // The x value is the index so `getXAxisLabels` and the chart domain line up.
   const data: LineChartDataPoint[] = sorted.map((entry, index) => ({
     x: index,
-    y: CHART_HEIGHT - ((entry.volume - minVolume) / range) * CHART_HEIGHT,
+    // The chart's y axis points up, so the highest volume gets the largest y.
+    y: ((entry.volume - minVolume) / range) * CHART_HEIGHT,
   }));
 
   const labels = getXAxisLabels(

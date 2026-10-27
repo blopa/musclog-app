@@ -35,9 +35,9 @@ describe('buildVolumeTrend', () => {
 
     expect(trend.percentage).toBe(50);
     expect(trend.data.map((p) => p.x)).toEqual([0, 1, 2]);
-    // Highest volume sits at y = 0, lowest at the chart height.
-    expect(trend.data[0].y).toBe(100);
-    expect(trend.data[2].y).toBe(0);
+    // The chart's y axis points up: highest volume at the top (100), lowest at the bottom (0).
+    expect(trend.data[0].y).toBe(0);
+    expect(trend.data[2].y).toBe(100);
   });
 
   it('reports no change for the first session', () => {

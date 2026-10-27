@@ -5,7 +5,7 @@
     "volume": "Volume",
     "calories": "Calorieën",
     "volumeTrend": "Volumetrend",
-    "volumeTrendPercentage": "+{{percentage}}% t.o.v. gem.",
+    "volumeTrendPercentage": "{{percentage}}% t.o.v. vorige",
     "exercisesCount": "Oefeningen ({{count}})",
     "minsSpent": "{{minutes}} min getraind",
     "saveError": "Wijzigingen opslaan mislukt. Probeer het opnieuw.",

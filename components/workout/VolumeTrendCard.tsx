@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { XAxisLabel } from '@/utils/chartUtils';
 
@@ -23,6 +24,7 @@ export function VolumeTrendCard({
 }: VolumeTrendCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
 
   return (
     <GenericCard variant="flat">
@@ -36,7 +38,9 @@ export function VolumeTrendCard({
             style={{ backgroundColor: theme.colors.accent.primary10 }}
           >
             <Text className="text-xs font-semibold text-accent-primary">
-              {t('workoutDetail.volumeTrendPercentage', { percentage })}
+              {t('workoutDetail.volumeTrendPercentage', {
+                percentage: formatInteger(percentage, { signDisplay: 'exceptZero' }),
+              })}
             </Text>
           </View>
         </View>
