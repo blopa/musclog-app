@@ -1,19 +1,13 @@
 import { Q } from '@nozbe/watermelondb';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 import { ASYNC_STORAGE_EXCLUDED_KEYS, RESTORE_ORDER } from '@/constants/exportImport';
-import {
-  CURRENT_ONBOARDING_VERSION,
-  CURRENT_USER_SYNC_ID,
-  ONBOARDING_COMPLETED,
-  ONBOARDING_VERSION,
-} from '@/constants/misc';
 import { getExportPlatform, isSameExportPlatform } from '@/constants/platform';
 import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
+import { isLegacyV1Dump } from '@/utils/legacyV1Backup';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { parseDatabaseExportJson } from '@/utils/optical/gameBoyExport';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
@@ -35,7 +29,8 @@ import {
   readPlainNutritionLogSnapshotRow,
   readSavedForLaterGroupNote,
 } from './encryptionHelpers';
-import { findImportedCurrentUserSyncId } from './importCurrentUser';
+import { findImportedCurrentUserSyncId, markImportedProfileOnboarded } from './importCurrentUser';
+import { restoreLegacyV1Database } from './legacyV1Import';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { prepareLocalCreateFromRaw } from './prepareLocalCreateFromRaw';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
@@ -157,6 +152,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   }
 
   const parsed: unknown = parseDatabaseExportJson(jsonString);
+
+  // A Musclog 1.x backup is the old SQLite schema, not an older version of this one.
+  if (isLegacyV1Dump(parsed)) {
+    await restoreLegacyV1Database(parsed);
+    return;
+  }
 
   // Pre-v26 exports used RPE=0 and is_skipped as an implicit lifecycle. Normalize that
   // relationship-aware legacy shape once, before validation and persistence.
@@ -487,22 +488,8 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       .map(([key, value]) => [key, value as string]);
     await replaceAppAsyncStorage(pairs, ASYNC_STORAGE_EXCLUDED_KEYS);
   } else {
-    // Compact and older exports have no app metadata. Mark their complete profile as
-    // onboarded and select the imported user instead of retaining a stale local user ID.
-    const importedCurrentUserSyncId = findImportedCurrentUserSyncId(dbData);
-    const fallbackPairs: [string, string][] = [
-      [ONBOARDING_COMPLETED, 'true'],
-      // TODO: we might not want to force it to be the current version
-      [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
-    ];
-
-    if (importedCurrentUserSyncId) {
-      fallbackPairs.push([CURRENT_USER_SYNC_ID, importedCurrentUserSyncId]);
-    } else {
-      await AsyncStorage.removeItem(CURRENT_USER_SYNC_ID);
-    }
-
-    await AsyncStorage.multiSet(fallbackPairs);
+    // Compact and older exports have no app metadata.
+    await markImportedProfileOnboarded(findImportedCurrentUserSyncId(dbData));
   }
 
   // On web, force Loki to persist to IndexedDB before triggering a page reload.

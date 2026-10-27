@@ -100,8 +100,19 @@ const getOldEncryptionKey = async (): Promise<string | null> => {
   }
 };
 
+/**
+ * Where the 1.x rows come from. Omitted, it is the 1.x database file left on the device
+ * by an app upgrade, whose `UserMetrics`/`UserNutrition` values are encrypted. A 1.x JSON
+ * backup is loaded into an in-memory database instead, and its values are plaintext.
+ */
+export interface MigrationSource {
+  database: SQLiteDatabase;
+  valuesEncrypted: boolean;
+}
+
 export class MigrationService {
   private oldDB: SQLiteDatabase | null = null;
+  private valuesEncrypted = true;
 
   /** Old Exercise id (number) → new exercise id (string). Populated during migrateExercises(). */
   private exerciseIdMap: Map<number, string> = new Map();
@@ -112,7 +123,13 @@ export class MigrationService {
   /** Old Food id (number) → new foods id (string). Populated during migrateFoods(). */
   private foodIdMap: Map<number, string> = new Map();
 
-  constructor() {
+  constructor(source?: MigrationSource) {
+    if (source) {
+      this.oldDB = source.database;
+      this.valuesEncrypted = source.valuesEncrypted;
+      return;
+    }
+
     try {
       console.log('Opening old database...');
 
@@ -127,6 +144,18 @@ export class MigrationService {
     } catch (error) {
       console.log('Old database not found or not accessible:', error);
     }
+  }
+
+  /**
+   * Read a `UserMetrics`/`UserNutrition` value the way the source stores it. Running AES
+   * over a plaintext backup value would return garbage, not the number.
+   */
+  private async readProtectedValue(value: unknown): Promise<string> {
+    if (this.valuesEncrypted) {
+      return decryptDatabaseValue(value as string | undefined);
+    }
+
+    return value == null ? '' : String(value);
   }
 
   /**
@@ -400,7 +429,7 @@ export class MigrationService {
         if (encryptedValue && encryptedValue !== '' && encryptedValue !== null) {
           try {
             // Try to decrypt the value
-            const decryptedValue = await decryptDatabaseValue(encryptedValue);
+            const decryptedValue = await this.readProtectedValue(encryptedValue);
             const numericValue = parseFloat(decryptedValue);
 
             if (!isNaN(numericValue)) {
@@ -718,21 +747,21 @@ export class MigrationService {
     for (const oldLog of oldNutritionLogs) {
       try {
         // Decrypt all the encrypted fields
-        const name = await decryptDatabaseValue(oldLog.name);
-        const calories = await decryptDatabaseValue(oldLog.calories);
-        const protein = await decryptDatabaseValue(oldLog.protein);
-        const carbohydrate = await decryptDatabaseValue(oldLog.carbohydrate);
-        const sugar = await decryptDatabaseValue(oldLog.sugar);
-        const fiber = await decryptDatabaseValue(oldLog.fiber);
-        const fat = await decryptDatabaseValue(oldLog.fat);
-        const monounsaturatedFat = await decryptDatabaseValue(oldLog.monounsaturatedFat);
-        const polyunsaturatedFat = await decryptDatabaseValue(oldLog.polyunsaturatedFat);
-        const saturatedFat = await decryptDatabaseValue(oldLog.saturatedFat);
-        const transFat = await decryptDatabaseValue(oldLog.transFat);
-        const unsaturatedFat = await decryptDatabaseValue(oldLog.unsaturatedFat);
-        const alcohol = await decryptDatabaseValue(oldLog.alcohol);
-        const grams = await decryptDatabaseValue(oldLog.grams);
-        const mealType = await decryptDatabaseValue(oldLog.mealType);
+        const name = await this.readProtectedValue(oldLog.name);
+        const calories = await this.readProtectedValue(oldLog.calories);
+        const protein = await this.readProtectedValue(oldLog.protein);
+        const carbohydrate = await this.readProtectedValue(oldLog.carbohydrate);
+        const sugar = await this.readProtectedValue(oldLog.sugar);
+        const fiber = await this.readProtectedValue(oldLog.fiber);
+        const fat = await this.readProtectedValue(oldLog.fat);
+        const monounsaturatedFat = await this.readProtectedValue(oldLog.monounsaturatedFat);
+        const polyunsaturatedFat = await this.readProtectedValue(oldLog.polyunsaturatedFat);
+        const saturatedFat = await this.readProtectedValue(oldLog.saturatedFat);
+        const transFat = await this.readProtectedValue(oldLog.transFat);
+        const unsaturatedFat = await this.readProtectedValue(oldLog.unsaturatedFat);
+        const alcohol = await this.readProtectedValue(oldLog.alcohol);
+        const grams = await this.readProtectedValue(oldLog.grams);
+        const mealType = await this.readProtectedValue(oldLog.mealType);
 
         // Build micros JSON object from old micro fields
         const micros: Record<string, number> = {};

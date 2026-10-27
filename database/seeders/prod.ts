@@ -21,6 +21,7 @@ import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { FoodService } from '@/database/services/FoodService';
 import {
   type MigrationProgressInfo,
+  type MigrationResult,
   MigrationService,
   type MigrationStepKey,
 } from '@/database/services/MigrationService';
@@ -171,6 +172,182 @@ async function seedUSDAFoundationFoods(): Promise<void> {
 }
 
 /**
+ * Everything a fresh database is seeded with, plus the 1.x migration from
+ * `migrationService`. The caller owns the reset before it and the AsyncStorage flags after
+ * it: first-run seeding (below) and the 1.x JSON import (`database/legacyV1Import.ts`)
+ * differ only there.
+ *
+ * Returns the migration result, or `null` when the source holds no 1.x data.
+ */
+export async function seedDatabaseContents(
+  migrationService: MigrationService,
+  onProgress?: SeedProductionDataOptions['onProgress']
+): Promise<MigrationResult | null> {
+  // Ensure encryption key exists before any encrypted writes (seeding/migration)
+  await getEncryptionKey();
+
+  // 1. Seed common portions if none exist
+  onProgress?.({ phase: 'seeding' });
+  const existingPortions = await FoodPortionService.getAllPortions();
+
+  if (existingPortions.length > 0) {
+    console.log(`Skipping portion seeding: ${existingPortions.length} portions already exist`);
+  } else {
+    const createdPortions = await FoodPortionService.createCommonPortions();
+    console.log(`Seeded ${createdPortions.length} common food portions`);
+  }
+
+  // 2. Seed muscles catalogue
+  const muscleNameToId = await MuscleService.seedMuscles();
+  console.log(`Muscle catalogue ready (${muscleNameToId.size} muscles)`);
+
+  // 3. Reconcile catalogue rows and their exact muscle-link sets as one invariant.
+  const catalogueReport = await AppExerciseCatalogueService.sync(muscleNameToId);
+  console.log(`Seeded ${catalogueReport.exercisesCreated} catalogue exercises`);
+  console.log('Exercise-muscle links ready');
+
+  // 4. Seed initial chat messages with welcome messages for each context using i18n
+  const existingMessages = await ChatService.getAllMessages(1, 0);
+
+  if (existingMessages.length === 0) {
+    const contexts = [
+      { key: 'coach.welcomeMessage', context: 'general' },
+      { key: 'coach.welcomeMessageExercise', context: 'exercise' },
+      { key: 'coach.welcomeMessageNutrition', context: 'nutrition' },
+    ] as const;
+
+    for (const { key, context } of contexts) {
+      await ChatService.saveMessage({
+        sender: 'coach',
+        message: i18n.t(key),
+        messageType: 'text',
+        context,
+      });
+    }
+
+    console.log('Seeded initial welcome messages for all contexts from Loggy');
+  } else {
+    console.log(`Skipping chat seeding: ${existingMessages.length} messages already exist`);
+  }
+
+  // 6. Migrate 1.x data if the source holds any (e.g. app upgrade, or a 1.x JSON backup)
+  let migrationResult: MigrationResult | null = null;
+  if (await migrationService.checkOldDatabaseExists()) {
+    const result = await migrationService.migrateAll({
+      onProgress: (info: MigrationProgressInfo) =>
+        onProgress?.({
+          phase: 'migrating',
+          step: info.step,
+          current: info.current,
+          total: info.total,
+        }),
+    });
+    migrationResult = result;
+
+    if (result.success) {
+      console.log(
+        `Migration completed: ${result.exercises} exercises, ${result.workouts} workouts, ${result.workoutLogs} workout logs, ${result.templateSets} template sets, ${result.workoutLogSets} log sets`
+      );
+    } else {
+      console.warn('Migration from old database failed:', result.error);
+    }
+  } else {
+    console.log('Old database not present, skip migration...');
+  }
+
+  // Detect device language and save it into the settings for language
+  const systemLocales = Localization.getLocales();
+  const deviceLanguage =
+    systemLocales.find((locale) => AVAILABLE_LANGUAGES.includes(locale.languageTag as any))
+      ?.languageTag || EN_US;
+
+  await SettingsService.setLanguage(deviceLanguage);
+  console.log(`Set language to: ${deviceLanguage}`);
+
+  // Detect device units preference and persist it explicitly so the DB always has
+  // a unit_system row. Without this, importing a backup that lacks the row would
+  // silently fall back to getDefaultUnits() — returning 'imperial' for US browsers
+  // even when the user intended metric.
+  const defaultUnits = getDefaultUnits();
+  await SettingsService.setUnits(defaultUnits);
+  await SettingsService.set(SETTINGS.workoutView, 'inline');
+
+  // Default the manual-entry carbs convention from units: imperial users read US labels
+  // (Total Carbohydrate includes fiber) → include fiber; metric users read EU labels
+  // (available carbohydrate excludes fiber) → don't. The app always stores total carbs.
+  await SettingsService.setIncludeFiberInCarbs(defaultUnits === 'imperial');
+  console.log(`Set default include-fiber-in-carbs to ${defaultUnits === 'imperial'}`);
+
+  // 7. Seed USDA foundation foods from CSV
+  await seedUSDAFoundationFoods();
+
+  // Set the anonymousBugReport setting to true by default
+  await SettingsService.setAnonymousBugReport(true);
+  console.log('Set anonymous bug report to true by default');
+
+  // Set default notification settings to false
+  await SettingsService.setNotifications(false);
+  await SettingsService.setNotificationsWorkoutReminders(false);
+  await SettingsService.setNotificationsActiveWorkout(false);
+  await SettingsService.setNotificationsNutritionOverview(false);
+  await SettingsService.setNotificationsMenstrualCycle(false);
+  await SettingsService.setNotificationsRestTimer(false);
+  await SettingsService.setNotificationsWorkoutDuration(false);
+  console.log('Set default notification settings to false');
+
+  await SettingsService.setCoachConversationContext('general');
+  console.log('Set default coach conversation context to general');
+
+  // Set default navigation bar slots (last slot opens Coach as a modal)
+  await SettingsService.setNavSlot(1, 'workouts');
+  await SettingsService.setNavSlot(2, 'food');
+  await SettingsService.setNavSlot(3, 'coach');
+  console.log('Set default navigation bar slots: workouts, food, coach');
+
+  // Set default food search source to both (Open Food Facts + USDA)
+  await SettingsService.setFoodSearchSource('both');
+  console.log('Set default food search source to both');
+
+  await SettingsService.setSendFoundationFoodsToLlm(true);
+  console.log('Set default send foundation foods to LLM to true');
+
+  await SettingsService.setMaxAiMemories(50);
+  console.log('Set default max AI memories to 50');
+
+  await SettingsService.setUseThinkingMode(false);
+  console.log('Set default AI thinking mode to false');
+
+  await SettingsService.setEnableGoogleGemini(false);
+  await SettingsService.setEnableOpenAi(false);
+  console.log('Set default Gemini and OpenAI enabled to false');
+
+  await SettingsService.setUseMusclogFreeTier(false);
+  console.log('Set default Musclog free tier to false');
+
+  await SettingsService.setBleGenerateChartPayload(false);
+  console.log(`Set default WitMotion chart payload generation to 'false'}`);
+
+  await SettingsService.setEnableFastedDay(false);
+  console.log("Set default fasting-day feature to 'false'");
+
+  await SettingsService.setNutritionLogHistoryDays('none');
+  console.log('Set default nutrition log history days sent to LLM to none');
+
+  await SettingsService.setWorkoutHistoryDays('none');
+  console.log('Set default workout history days sent to LLM to none');
+
+  if (Platform.OS === 'ios') {
+    await SettingsService.setUseOnDeviceAi(true);
+    console.log('Set default use on-device AI (Apple Intelligence) to true on iOS');
+  }
+
+  // uncomment this when debugging Apple Intelligence
+  // await SettingsService.setDumpLlmRequests(true);
+
+  return migrationResult;
+}
+
+/**
  *
  * Re-entrancy guard: this function calls `unsafeResetDatabase()` (which swaps in an
  * ErrorAdapter) and only sets the SEEDING_COMPLETE_KEY flag at the very end. If a second
@@ -263,165 +440,7 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     // Seed all confetti interactions as pending (subtractive model: activities are removed as completed)
     await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify(ALL_CONFETTI_ACTIVITIES));
 
-    // Ensure encryption key exists before any encrypted writes (seeding/migration)
-    await getEncryptionKey();
-
-    // 1. Seed common portions if none exist
-    onProgress?.({ phase: 'seeding' });
-    const existingPortions = await FoodPortionService.getAllPortions();
-
-    if (existingPortions.length > 0) {
-      console.log(`Skipping portion seeding: ${existingPortions.length} portions already exist`);
-    } else {
-      const createdPortions = await FoodPortionService.createCommonPortions();
-      console.log(`Seeded ${createdPortions.length} common food portions`);
-    }
-
-    // 2. Seed muscles catalogue
-    const muscleNameToId = await MuscleService.seedMuscles();
-    console.log(`Muscle catalogue ready (${muscleNameToId.size} muscles)`);
-
-    // 3. Reconcile catalogue rows and their exact muscle-link sets as one invariant.
-    const catalogueReport = await AppExerciseCatalogueService.sync(muscleNameToId);
-    console.log(`Seeded ${catalogueReport.exercisesCreated} catalogue exercises`);
-    console.log('Exercise-muscle links ready');
-
-    // 4. Seed initial chat messages with welcome messages for each context using i18n
-    const existingMessages = await ChatService.getAllMessages(1, 0);
-
-    if (existingMessages.length === 0) {
-      const contexts = [
-        { key: 'coach.welcomeMessage', context: 'general' },
-        { key: 'coach.welcomeMessageExercise', context: 'exercise' },
-        { key: 'coach.welcomeMessageNutrition', context: 'nutrition' },
-      ] as const;
-
-      for (const { key, context } of contexts) {
-        await ChatService.saveMessage({
-          sender: 'coach',
-          message: i18n.t(key),
-          messageType: 'text',
-          context,
-        });
-      }
-
-      console.log('Seeded initial welcome messages for all contexts from Loggy');
-    } else {
-      console.log(`Skipping chat seeding: ${existingMessages.length} messages already exist`);
-    }
-
-    // 6. Migrate data from the old database if it exists (e.g. app upgrade)
-    const migrationService = new MigrationService();
-    if (await migrationService.checkOldDatabaseExists()) {
-      const result = await migrationService.migrateAll({
-        onProgress: (info: MigrationProgressInfo) =>
-          onProgress?.({
-            phase: 'migrating',
-            step: info.step,
-            current: info.current,
-            total: info.total,
-          }),
-      });
-
-      if (result.success) {
-        console.log(
-          `Migration completed: ${result.exercises} exercises, ${result.workouts} workouts, ${result.workoutLogs} workout logs, ${result.templateSets} template sets, ${result.workoutLogSets} log sets`
-        );
-      } else {
-        console.warn('Migration from old database failed:', result.error);
-      }
-    } else {
-      console.log('Old database not present, skip migration...');
-    }
-
-    // Detect device language and save it into the settings for language
-    const systemLocales = Localization.getLocales();
-    const deviceLanguage =
-      systemLocales.find((locale) => AVAILABLE_LANGUAGES.includes(locale.languageTag as any))
-        ?.languageTag || EN_US;
-
-    await SettingsService.setLanguage(deviceLanguage);
-    console.log(`Set language to: ${deviceLanguage}`);
-
-    // Detect device units preference and persist it explicitly so the DB always has
-    // a unit_system row. Without this, importing a backup that lacks the row would
-    // silently fall back to getDefaultUnits() — returning 'imperial' for US browsers
-    // even when the user intended metric.
-    const defaultUnits = getDefaultUnits();
-    await SettingsService.setUnits(defaultUnits);
-    await SettingsService.set(SETTINGS.workoutView, 'inline');
-
-    // Default the manual-entry carbs convention from units: imperial users read US labels
-    // (Total Carbohydrate includes fiber) → include fiber; metric users read EU labels
-    // (available carbohydrate excludes fiber) → don't. The app always stores total carbs.
-    await SettingsService.setIncludeFiberInCarbs(defaultUnits === 'imperial');
-    console.log(`Set default include-fiber-in-carbs to ${defaultUnits === 'imperial'}`);
-
-    // 7. Seed USDA foundation foods from CSV
-    await seedUSDAFoundationFoods();
-
-    // Set the anonymousBugReport setting to true by default
-    await SettingsService.setAnonymousBugReport(true);
-    console.log('Set anonymous bug report to true by default');
-
-    // Set default notification settings to false
-    await SettingsService.setNotifications(false);
-    await SettingsService.setNotificationsWorkoutReminders(false);
-    await SettingsService.setNotificationsActiveWorkout(false);
-    await SettingsService.setNotificationsNutritionOverview(false);
-    await SettingsService.setNotificationsMenstrualCycle(false);
-    await SettingsService.setNotificationsRestTimer(false);
-    await SettingsService.setNotificationsWorkoutDuration(false);
-    console.log('Set default notification settings to false');
-
-    await SettingsService.setCoachConversationContext('general');
-    console.log('Set default coach conversation context to general');
-
-    // Set default navigation bar slots (last slot opens Coach as a modal)
-    await SettingsService.setNavSlot(1, 'workouts');
-    await SettingsService.setNavSlot(2, 'food');
-    await SettingsService.setNavSlot(3, 'coach');
-    console.log('Set default navigation bar slots: workouts, food, coach');
-
-    // Set default food search source to both (Open Food Facts + USDA)
-    await SettingsService.setFoodSearchSource('both');
-    console.log('Set default food search source to both');
-
-    await SettingsService.setSendFoundationFoodsToLlm(true);
-    console.log('Set default send foundation foods to LLM to true');
-
-    await SettingsService.setMaxAiMemories(50);
-    console.log('Set default max AI memories to 50');
-
-    await SettingsService.setUseThinkingMode(false);
-    console.log('Set default AI thinking mode to false');
-
-    await SettingsService.setEnableGoogleGemini(false);
-    await SettingsService.setEnableOpenAi(false);
-    console.log('Set default Gemini and OpenAI enabled to false');
-
-    await SettingsService.setUseMusclogFreeTier(false);
-    console.log('Set default Musclog free tier to false');
-
-    await SettingsService.setBleGenerateChartPayload(false);
-    console.log(`Set default WitMotion chart payload generation to 'false'}`);
-
-    await SettingsService.setEnableFastedDay(false);
-    console.log("Set default fasting-day feature to 'false'");
-
-    await SettingsService.setNutritionLogHistoryDays('none');
-    console.log('Set default nutrition log history days sent to LLM to none');
-
-    await SettingsService.setWorkoutHistoryDays('none');
-    console.log('Set default workout history days sent to LLM to none');
-
-    if (Platform.OS === 'ios') {
-      await SettingsService.setUseOnDeviceAi(true);
-      console.log('Set default use on-device AI (Apple Intelligence) to true on iOS');
-    }
-
-    // uncomment this when debugging Apple Intelligence
-    // await SettingsService.setDumpLlmRequests(true);
+    await seedDatabaseContents(new MigrationService(), onProgress);
 
     // Mark seeding as complete
     await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
