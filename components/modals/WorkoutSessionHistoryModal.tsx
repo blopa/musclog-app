@@ -15,7 +15,7 @@ import {
   type TemplateRecommendation,
   WorkoutProgressionService,
 } from '@/database/services/WorkoutProgressionService';
-import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
+import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/WorkoutService';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
@@ -91,6 +91,30 @@ export function WorkoutSessionHistoryModal({
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   const [recommendations, setRecommendations] = useState<TemplateRecommendation[]>([]);
+  // The "past sessions" button only appears once this workout has been completed at least once.
+  const [templateWithSessions, setTemplateWithSessions] = useState<string | null>(null);
+  const previewTemplateId = isPreview ? workoutTemplate?.id : undefined;
+  const hasPastSessions = !!previewTemplateId && templateWithSessions === previewTemplateId;
+  useEffect(() => {
+    let live = true;
+    if (visible && previewTemplateId) {
+      WorkoutService.getWorkoutHistory(undefined, 1, 0, previewTemplateId)
+        .then((logs) => {
+          if (live) {
+            setTemplateWithSessions(logs.length > 0 ? previewTemplateId : null);
+          }
+        })
+        .catch(() => {
+          if (live) {
+            setTemplateWithSessions(null);
+          }
+        });
+    }
+
+    return () => {
+      live = false;
+    };
+  }, [visible, previewTemplateId]);
   useEffect(() => {
     let live = true;
     if (visible && isPreview && workoutTemplate) {
@@ -545,7 +569,7 @@ export function WorkoutSessionHistoryModal({
           </View>
         </View>
 
-        {isPreview && workoutTemplate ? (
+        {isPreview && workoutTemplate && hasPastSessions ? (
           <Button
             label={t('workoutHistory.viewHistory')}
             icon={History}
