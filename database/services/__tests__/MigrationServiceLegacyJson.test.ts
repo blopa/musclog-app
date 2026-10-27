@@ -148,3 +148,135 @@ describe('MigrationService over a 1.x JSON backup', () => {
     expect(mockCreated.map(({ record }) => record.valueRaw)).toEqual(['70']);
   });
 });
+
+type SessionSteps = {
+  migrateWorkoutLogs: () => Promise<number>;
+  migrateWorkoutLogSets: (total: number) => Promise<number>;
+  migrateChatMessages: () => Promise<number>;
+  exerciseIdMap: Map<number, string>;
+};
+
+const session = (sets: object[]) => JSON.stringify([{ exerciseId: 4, sets }]);
+
+// A 1.x session keeps what was performed in `WorkoutEvent.exerciseData`; `Set.workoutId`
+// points at the `Workout` template, which only coincides with an event id by accident.
+const SESSIONS_DUMP: LegacyV1Dump = {
+  Workout: [{ deletedAt: null, id: 1, title: 'Chest Day' }],
+  Set: [{ deletedAt: null, exerciseId: 4, id: 1, reps: 5, setOrder: 1, weight: 20, workoutId: 1 }],
+  WorkoutEvent: [
+    {
+      date: '2024-07-27T19:00:00.000Z',
+      deletedAt: '',
+      duration: 60,
+      exerciseData: session([
+        { reps: 8, restTime: 90, setOrder: 1, unitSystem: 'metric', weight: 100 },
+        { reps: 6, restTime: 90, setOrder: 2, unitSystem: 'imperial', weight: 220 },
+      ]),
+      id: 1,
+      status: 'completed',
+      title: 'Chest Day',
+      workoutId: 1,
+    },
+    { date: '2024-08-01T19:00:00.000Z', exerciseData: '[]', id: 2, status: 'scheduled' },
+    { date: '2024-08-02T19:00:00.000Z', exerciseData: '[]', id: 3, status: 'upcoming' },
+  ],
+  Chat: [
+    {
+      createdAt: '2024-07-24T22:34:36.247Z',
+      deletedAt: '',
+      id: 1,
+      message: 'Hi',
+      sender: 'assistant',
+      type: 'text',
+    },
+    {
+      createdAt: '2024-07-25T22:34:36.247Z',
+      deletedAt: '',
+      id: 2,
+      message: 'Hey',
+      sender: 'user',
+      type: 'text',
+    },
+    {
+      createdAt: '2024-07-26T22:34:36.247Z',
+      deletedAt: '',
+      id: 3,
+      message: '',
+      misc: '{}',
+      sender: 'assistant',
+      type: 'recentWorkout',
+    },
+  ],
+};
+
+describe('MigrationService 1.x workout history', () => {
+  beforeEach(() => {
+    mockCreated.length = 0;
+  });
+
+  const run = async () => {
+    const service = new MigrationService({
+      database: loadLegacyDump(SESSIONS_DUMP),
+      valuesEncrypted: false,
+    });
+    const steps = service as unknown as SessionSteps;
+    steps.exerciseIdMap.set(4, 'ex-4');
+    const logs = await steps.migrateWorkoutLogs();
+    const sets = await steps.migrateWorkoutLogSets(0);
+
+    return { logs, service, sets };
+  };
+
+  it('imports performed sessions only, not scheduled or upcoming placeholders', async () => {
+    const { logs } = await run();
+
+    expect(logs).toBe(1);
+    expect(mockCreated.filter(({ table }) => table === 'workout_logs')).toHaveLength(1);
+  });
+
+  it('builds the sets from exerciseData, not from the template Set table', async () => {
+    const { sets } = await run();
+
+    expect(sets).toBe(2);
+    const created = mockCreated.filter(({ table }) => table === 'workout_log_sets');
+    expect(created.map(({ record }) => record.reps)).toEqual([8, 6]);
+    expect(created.map(({ record }) => record.setOrder)).toEqual([1, 2]);
+    // imperial sets were stored in pounds, the database is always kilograms
+    expect(created[0].record.weight).toBe(100);
+    expect(created[1].record.weight as number).toBeCloseTo(99.79, 1);
+    expect(created.every(({ record }) => record.rirRecorded === false)).toBe(true);
+  });
+
+  it('derives completion time and volume from the session', async () => {
+    await run();
+
+    const log = mockCreated.find(({ table }) => table === 'workout_logs')!.record;
+    expect((log.completedAt as number) - (log.startedAt as number)).toBe(60 * 60_000);
+    expect(log.totalVolume as number).toBeCloseTo(100 * 8 + 99.79 * 6, 0);
+  });
+
+  it('brings over the text chat messages and skips workout cards', async () => {
+    const service = new MigrationService({
+      database: loadLegacyDump(SESSIONS_DUMP),
+      valuesEncrypted: false,
+    });
+
+    expect(await (service as unknown as SessionSteps).migrateChatMessages()).toBe(2);
+    expect(
+      mockCreated
+        .filter(({ table }) => table === 'chat_messages')
+        .map(({ record }) => record.sender)
+    ).toEqual(['coach', 'user']);
+  });
+
+  it('reports the real log and set counts in the summary', async () => {
+    const service = new MigrationService({
+      database: loadLegacyDump(SESSIONS_DUMP),
+      valuesEncrypted: false,
+    });
+    const summary = await service.getMigrationSummary();
+
+    expect(summary.workoutLogsCount).toBe(1);
+    expect(summary.logSetsCount).toBe(2);
+  });
+});

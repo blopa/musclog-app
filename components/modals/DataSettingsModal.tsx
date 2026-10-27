@@ -33,6 +33,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { clearAllAppData } from '@/utils/clearAppData';
@@ -93,6 +94,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [includeDeletedRecords, setIncludeDeletedRecords] = useState(true);
   const [loading, setLoading] = useState(false);
+  useKeepScreenAwake('data-settings-transfer', loading);
   const [localBackupsModalVisible, setLocalBackupsModalVisible] = useState(false);
   const [opticalTransferVisible, setOpticalTransferVisible] = useSubModalVisibility(visible);
 

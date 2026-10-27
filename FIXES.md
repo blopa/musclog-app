@@ -3,6 +3,20 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Musclog 1.x import lost most workout sets and invented empty workouts (October 2026)
+
+### Symptom
+
+Importing a 1.x backup produced 127 completed workouts but only 259 sets, attached to the 11 oldest sessions; the other 116 were empty. The backup held 58 real sessions with 806 sets and 69 scheduled/upcoming placeholders. The 329-message coach chat was dropped, and 8 nutrition logs (zero-calorie drinks, sweeteners) vanished.
+
+### Cause
+
+`migrateWorkoutLogSets` read the `Set` table by event id, but 1.x stores `Set.workoutId` as the template id and keeps a session's performed sets in `WorkoutEvent.exerciseData`. Every `WorkoutEvent` was marked completed regardless of `status`. Nutrition logs that matched no food were skipped, and `Chat` was never read.
+
+### Fix
+
+Sets now come from `exerciseData` (pounds converted when `unitSystem` is `imperial`), placeholders are skipped, completion time and volume are derived from the session, text chat messages are imported, and unmatched nutrition logs get their own food. Pinned by `database/services/__tests__/MigrationServiceLegacyJson.test.ts`.
+
 ## iOS widgets crashed the app at boot: a `null` in a widget snapshot (October 2026)
 
 ### Symptom

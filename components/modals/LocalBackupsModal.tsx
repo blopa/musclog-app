@@ -21,6 +21,7 @@ import {
   convertSqliteBackupToJson,
   exportSqliteBackupAsJsonFile,
 } from '@/database/sqliteBackupConvert';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
 import { downloadFile, readFileAsStringAsync } from '@/utils/file';
@@ -46,6 +47,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [restoreModalVisible, setRestoreModalVisible] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  useKeepScreenAwake('local-backups-processing', isProcessing);
   const [requireExportEncryption, setRequireExportEncryption] = useState(true);
   const [databaseFailedToInitiate, setDatabaseFailedToInitiate] = useState(false);
 

@@ -14,6 +14,7 @@ import {
 import { database } from '@/database/database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
 import {
+  ChatMessage,
   type EquipmentType,
   Exercise,
   Food,
@@ -120,6 +121,7 @@ export class MigrationService {
   private workoutIdToTemplateId: Map<number, string> = new Map();
   /** Old WorkoutEvent id (number) → new workout_logs id (string). Populated during migrateWorkoutLogs(). */
   private workoutEventIdToLogId: Map<number, string> = new Map();
+  private unmatchedLogFoodIds: Map<string, string> = new Map();
   /** Old Food id (number) → new foods id (string). Populated during migrateFoods(). */
   private foodIdMap: Map<number, string> = new Map();
 
@@ -858,6 +860,38 @@ export class MigrationService {
         //   console.log('Food found!!!', newFoodId);
         // }
 
+        // Nothing matched (zero-calorie drinks, sweeteners...): keep the entry by giving it a
+        // food of its own, one per distinct name, instead of dropping the user's log.
+        if (!newFoodId && name?.trim()) {
+          const fallbackName = name.trim();
+          const cachedFoodId = this.unmatchedLogFoodIds.get(fallbackName.toLowerCase());
+          if (cachedFoodId) {
+            newFoodId = cachedFoodId;
+          } else {
+            const createdFood = await database.write(async () =>
+              database.get<Food>('foods').create((newFoodRecord) => {
+                newFoodRecord.isAiGenerated = false;
+                newFoodRecord.name = fallbackName;
+                newFoodRecord.brand = undefined;
+                newFoodRecord.barcode = undefined;
+                newFoodRecord.calories = parseFloat(calories) || 0;
+                newFoodRecord.protein = parseFloat(protein) || 0;
+                newFoodRecord.carbs = parseFloat(carbohydrate) || 0;
+                newFoodRecord.fat = parseFloat(fat) || 0;
+                newFoodRecord.fiber = parseFloat(fiber) || 0;
+                newFoodRecord.isFavorite = false;
+                newFoodRecord.source = 'user';
+                newFoodRecord.imageUrl = undefined;
+                const foodCreatedAt = this.convertTimestamp(oldLog.createdAt);
+                newFoodRecord.createdAt = foodCreatedAt;
+                newFoodRecord.updatedAt = foodCreatedAt;
+              })
+            );
+            newFoodId = createdFood.id;
+            this.unmatchedLogFoodIds.set(fallbackName.toLowerCase(), newFoodId);
+          }
+        }
+
         if (!newFoodId) {
           processedRows++;
           reportProgress?.(processedRows, total);
@@ -1316,10 +1350,12 @@ export class MigrationService {
       return 0;
     }
 
-    const oldWorkoutLogs = (await this.oldDB.getAllAsync(`
+    const oldWorkoutLogs = (
+      (await this.oldDB.getAllAsync(`
       SELECT * FROM WorkoutEvent 
       WHERE deletedAt IS NULL OR deletedAt = ''
-    `)) as Record<string, any>[];
+    `)) as Record<string, any>[]
+    ).filter((event) => this.isPerformedWorkoutEvent(event));
 
     const total = oldWorkoutLogs.length;
     reportProgress?.(0, total);
@@ -1327,13 +1363,22 @@ export class MigrationService {
 
     for (const oldWorkoutLog of oldWorkoutLogs) {
       try {
+        const startedAt = this.convertTimestamp(oldWorkoutLog.date);
+        const durationMinutes = Number(oldWorkoutLog.duration);
+        const completedAt =
+          Number.isFinite(durationMinutes) && durationMinutes > 0
+            ? startedAt + durationMinutes * 60_000
+            : startedAt;
+        const totalVolume =
+          this.parseWorkoutVolume(oldWorkoutLog.workoutVolume) ||
+          this.volumeOfEventBlocks(this.parseEventBlocks(oldWorkoutLog));
         const newLog = await database.write(async () =>
           database.get<WorkoutLog>('workout_logs').create((newWorkoutLog) => {
             newWorkoutLog.templateId = oldWorkoutLog.workoutId?.toString() || '';
             newWorkoutLog.workoutName = oldWorkoutLog.title || '';
-            newWorkoutLog.startedAt = this.convertTimestamp(oldWorkoutLog.date);
-            newWorkoutLog.completedAt = this.convertTimestamp(oldWorkoutLog.date); // Same as startedAt for old logs
-            newWorkoutLog.totalVolume = this.parseWorkoutVolume(oldWorkoutLog.workoutVolume);
+            newWorkoutLog.startedAt = startedAt;
+            newWorkoutLog.completedAt = completedAt;
+            newWorkoutLog.totalVolume = totalVolume;
             newWorkoutLog.caloriesBurned = 0; // Not present in old schema, default to 0
             newWorkoutLog.exhaustionLevel = oldWorkoutLog.exhaustionLevel || 0;
             newWorkoutLog.workoutScore = oldWorkoutLog.workoutScore || 0;
@@ -1487,12 +1532,9 @@ export class MigrationService {
       throw new Error('Old database not available');
     }
 
-    // Check if WorkoutEvent table exists (needed for log sets)
-    const workoutEventTableExists = await this.tableExists('WorkoutEvent');
-    const setTableExists = await this.tableExists('Set');
-
-    if (!workoutEventTableExists || !setTableExists) {
-      console.log('WorkoutEvent or Set table does not exist - skipping log sets migration');
+    // Performed sets live in WorkoutEvent.exerciseData, so only that table is needed
+    if (!(await this.tableExists('WorkoutEvent'))) {
+      console.log('WorkoutEvent table does not exist - skipping log sets migration');
       reportProgress?.(0, totalForProgress);
       return 0;
     }
@@ -1511,33 +1553,17 @@ export class MigrationService {
         continue;
       }
 
-      const oldSets = (await this.oldDB.getAllAsync(
-        `SELECT * FROM "Set" WHERE workoutId = ? AND (deletedAt IS NULL OR deletedAt = '') ORDER BY setOrder, id`,
-        [oldEvent.id]
-      )) as Record<string, any>[];
-
-      // Group sets by exerciseId to create exercise blocks
-      const setsByExercise = new Map<string, Record<string, any>[]>();
-      const exerciseOrder: string[] = [];
-
-      for (const oldSet of oldSets) {
-        const newExerciseId = this.exerciseIdMap.get(Number(oldSet.exerciseId));
-        if (!newExerciseId) {
+      // A 1.x session keeps what was performed in `exerciseData`. `Set.workoutId` points at the
+      // `Workout` template (see migrateWorkoutTemplateSets), never at the event, so reading
+      // `Set` by event id attached template sets to unrelated sessions.
+      let exerciseIdx = 1;
+      for (const block of this.parseEventBlocks(oldEvent)) {
+        const exerciseId = this.exerciseIdMap.get(Number(block.exerciseId));
+        if (!exerciseId || block.sets.length === 0) {
           continue;
         }
 
-        if (!setsByExercise.has(newExerciseId)) {
-          setsByExercise.set(newExerciseId, []);
-          exerciseOrder.push(newExerciseId);
-        }
-
-        setsByExercise.get(newExerciseId)!.push(oldSet);
-      }
-
-      // Create exercise blocks and their sets
-      let exerciseIdx = 1;
-      for (const exerciseId of exerciseOrder) {
-        const exerciseSets = setsByExercise.get(exerciseId)!;
+        const exerciseSets = block.sets;
         const firstSet = exerciseSets[0];
 
         try {
@@ -1548,14 +1574,16 @@ export class MigrationService {
               le.exerciseId = exerciseId;
               le.exerciseOrder = exerciseIdx++;
               le.groupId = firstSet.supersetName || undefined;
-              const createdAt = this.convertTimestamp(firstSet.createdAt);
+              const createdAt = this.convertTimestamp(firstSet.createdAt ?? oldEvent.date);
               le.createdAt = createdAt;
               le.updatedAt = createdAt;
             })
           );
 
           // Create sets linked to the exercise block
+          let setIdx = 0;
           for (const oldSet of exerciseSets) {
+            setIdx++;
             const parsedDifficultyLevel = Number(oldSet.difficultyLevel);
             const difficultyLevel =
               Number.isFinite(parsedDifficultyLevel) && parsedDifficultyLevel >= 1
@@ -1566,15 +1594,16 @@ export class MigrationService {
               await database.get<WorkoutLogSet>('workout_log_sets').create((ls) => {
                 ls.logExerciseId = logExercise.id;
                 ls.reps = Number(oldSet.reps) ?? 0;
-                ls.weight = Number(oldSet.weight) ?? 0;
+                ls.weight = this.setWeightKg(oldSet);
                 ls.partials = undefined;
                 ls.restTimeAfter = Number(oldSet.restTime) ?? 0;
                 ls.repsInReserve = 0;
+                ls.rirRecorded = false;
                 ls.difficultyLevel = difficultyLevel;
                 ls.completionStatus = 'performed';
                 ls.setType = oldSet.isDropSet ? 'drop_set' : 'normal';
-                ls.setOrder = Number(oldSet.setOrder) ?? 0;
-                const createdAt = this.convertTimestamp(oldSet.createdAt);
+                ls.setOrder = setIdx;
+                const createdAt = this.convertTimestamp(oldSet.createdAt ?? oldEvent.date);
                 ls.createdAt = createdAt;
                 ls.updatedAt = createdAt;
                 ls.deletedAt = oldSet.deletedAt
@@ -1593,6 +1622,115 @@ export class MigrationService {
           );
         }
       }
+    }
+
+    return migratedCount;
+  }
+
+  /**
+   * A 1.x `WorkoutEvent` is either a scheduled/upcoming placeholder or a performed session.
+   * Placeholders carry no sets and are not history; a row without a `status` column (older
+   * 1.x versions) counts as performed, and a placeholder that nevertheless holds sets is kept.
+   */
+  private isPerformedWorkoutEvent(event: Record<string, any>): boolean {
+    const status = typeof event.status === 'string' ? event.status.toLowerCase() : '';
+    if (status !== 'scheduled' && status !== 'upcoming') {
+      return true;
+    }
+
+    return this.parseEventBlocks(event).length > 0;
+  }
+
+  /**
+   * The performed sets of a 1.x session: `exerciseData` is a JSON array of
+   * `{ exerciseId, sets: [...] }`. Anything malformed is dropped rather than throwing.
+   */
+  private parseEventBlocks(
+    event: Record<string, any>
+  ): { exerciseId: number; sets: Record<string, any>[] }[] {
+    let parsed: unknown;
+    try {
+      parsed = typeof event.exerciseData === 'string' ? JSON.parse(event.exerciseData || '[]') : [];
+    } catch {
+      return [];
+    }
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    const blocks: { exerciseId: number; sets: Record<string, any>[] }[] = [];
+    for (const block of parsed) {
+      if (!block || typeof block !== 'object' || !Array.isArray(block.sets)) {
+        continue;
+      }
+
+      const sets = block.sets.filter(
+        (set: unknown): set is Record<string, any> => !!set && typeof set === 'object'
+      );
+      if (sets.length > 0) {
+        blocks.push({ exerciseId: Number(block.exerciseId ?? sets[0].exerciseId), sets });
+      }
+    }
+
+    return blocks;
+  }
+
+  /** A 1.x set weight in kilograms; `unitSystem: 'imperial'` sets were stored in pounds. */
+  private setWeightKg(set: Record<string, any>): number {
+    const weight = Number(set.weight);
+    if (!Number.isFinite(weight)) {
+      return 0;
+    }
+
+    return set.unitSystem === 'imperial' ? (convert(weight, 'lb').to('kg') as number) : weight;
+  }
+
+  private volumeOfEventBlocks(blocks: { sets: Record<string, any>[] }[]): number {
+    let volume = 0;
+    for (const block of blocks) {
+      for (const set of block.sets) {
+        volume += (Number(set.reps) || 0) * this.setWeightKg(set);
+      }
+    }
+
+    return Math.round(volume * 100) / 100;
+  }
+
+  /**
+   * Migrate the 1.x coach conversation. Only plain text messages carry over; the
+   * `recentWorkout` cards pointed at 1.x workout ids that no longer exist.
+   */
+  private async migrateChatMessages(): Promise<number> {
+    if (!this.oldDB || !(await this.tableExists('Chat'))) {
+      return 0;
+    }
+
+    const oldMessages = (await this.oldDB.getAllAsync(`
+      SELECT * FROM Chat 
+      WHERE (deletedAt IS NULL OR deletedAt = '') AND (type IS NULL OR type = 'text')
+      ORDER BY id
+    `)) as Record<string, any>[];
+
+    let migratedCount = 0;
+    for (const oldMessage of oldMessages) {
+      const message = typeof oldMessage.message === 'string' ? oldMessage.message.trim() : '';
+      if (!message) {
+        continue;
+      }
+
+      const createdAt = this.convertTimestamp(oldMessage.createdAt);
+      await database.write(async () =>
+        database.get<ChatMessage>('chat_messages').create((chat) => {
+          chat.sender = oldMessage.sender === 'user' ? 'user' : 'coach';
+          chat.message = message;
+          chat.messageType = 'text';
+          chat.context = 'general';
+          chat.createdAt = createdAt;
+          chat.updatedAt = createdAt;
+        })
+      );
+      migratedCount++;
     }
 
     return migratedCount;
@@ -1951,6 +2089,7 @@ export class MigrationService {
       this.exerciseIdMap.clear();
       this.workoutIdToTemplateId.clear();
       this.workoutEventIdToLogId.clear();
+      this.unmatchedLogFoodIds.clear();
       this.foodIdMap.clear();
 
       const report = (step: MigrationStepKey) => this.createProgressReporter(step, onProgress);
@@ -2012,6 +2151,15 @@ export class MigrationService {
         report('workout_log_sets')
       );
       result.workoutLogSets = result.details.logSetsMigrated;
+
+      // Chat history is nice to have; losing it must not fail the migration
+      try {
+        console.log('Migrating chat messages...');
+        await this.migrateChatMessages();
+      } catch (error) {
+        console.error('Error migrating chat messages:', error);
+        handleError(error, 'MigrationService.migrateChatMessages');
+      }
 
       // Step 11: Deduplicate food entries
       console.log('Deduplicating food entries...');
@@ -2139,11 +2287,20 @@ export class MigrationService {
       }
 
       if (tables.includes('WorkoutEvent')) {
-        const result = (await this.oldDB.getAllAsync(`
-          SELECT COUNT(*) as count FROM WorkoutEvent 
+        const events = (await this.oldDB.getAllAsync(`
+          SELECT * FROM WorkoutEvent 
           WHERE deletedAt IS NULL OR deletedAt = ''
-        `)) as { count: number }[];
-        workoutLogsCount = result[0]?.count || 0;
+        `)) as Record<string, any>[];
+        for (const event of events) {
+          if (!this.isPerformedWorkoutEvent(event)) {
+            continue;
+          }
+
+          workoutLogsCount++;
+          for (const block of this.parseEventBlocks(event)) {
+            logSetsCount += block.sets.length;
+          }
+        }
       }
 
       if (tables.includes('Set')) {
@@ -2153,13 +2310,6 @@ export class MigrationService {
           WHERE (s.deletedAt IS NULL OR s.deletedAt = '') AND (w.deletedAt IS NULL OR w.deletedAt = '')
         `)) as { count: number }[];
         templateSetsCount = templateResult[0]?.count || 0;
-
-        const logResult = (await this.oldDB.getAllAsync(`
-          SELECT COUNT(*) as count FROM "Set" s
-          INNER JOIN WorkoutEvent w ON s.workoutId = w.id
-          WHERE (s.deletedAt IS NULL OR s.deletedAt = '') AND (w.deletedAt IS NULL OR w.deletedAt = '')
-        `)) as { count: number }[];
-        logSetsCount = logResult[0]?.count || 0;
       }
     } catch (error) {
       console.error('Error getting migration summary:', error);

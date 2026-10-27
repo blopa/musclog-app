@@ -26,6 +26,7 @@ export const LEGACY_V1_TABLES = [
   'Workout',
   'WorkoutEvent',
   'Set',
+  'Chat',
 ] as const;
 
 export type LegacyV1Table = (typeof LEGACY_V1_TABLES)[number];
@@ -57,6 +58,7 @@ const REQUIRED_COLUMNS: Record<LegacyV1Table, readonly string[]> = {
   Workout: ['id', 'deletedAt'],
   WorkoutEvent: ['id', 'deletedAt'],
   Set: ['id', 'deletedAt', 'workoutId', 'setOrder'],
+  Chat: ['id', 'deletedAt', 'type'],
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
