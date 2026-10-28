@@ -101,7 +101,12 @@ export default function LandingScreen() {
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
     try {
-      await importDatabase(decryptionPhrase || undefined);
+      const imported = await importDatabase(decryptionPhrase || undefined);
+      if (!imported) {
+        // The picker was dismissed: stay on the landing screen with the confirmation modal open.
+        return;
+      }
+
       await setOnboardingCompleted(undefined, { markAnnouncementsSeen: false });
       setImportModalVisible(false);
       setDecryptionPhrase('');

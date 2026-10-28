@@ -77,16 +77,22 @@ export async function exportDatabase(
   }
 }
 
-export async function importDatabase(decryptionPhrase?: string): Promise<void> {
+/**
+ * Lets the user pick a backup file and restores it. Resolves `false` when the picker was
+ * dismissed without a file, so callers must not treat that as an imported database.
+ */
+export async function importDatabase(decryptionPhrase?: string): Promise<boolean> {
   try {
     const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
     if (result.canceled || !result.assets?.[0]) {
-      return;
+      return false;
     }
 
     const { uri } = result.assets[0];
     const dbDump = await readAsStringAsync(uri);
     await restoreDatabase(dbDump, decryptionPhrase);
+
+    return true;
   } catch (error) {
     console.error('Error importing database:', error);
     throw error;

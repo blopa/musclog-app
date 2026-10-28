@@ -95,7 +95,8 @@ export async function exportDatabase(
   URL.revokeObjectURL(url);
 }
 
-export async function importDatabase(decryptionPhrase?: string): Promise<void> {
+/** Resolves `false` when the picker was dismissed without a file (see the native variant). */
+export async function importDatabase(decryptionPhrase?: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -103,7 +104,7 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
     input.onchange = async (event: Event) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (!file) {
-        resolve();
+        resolve(false);
         return;
       }
 
@@ -118,11 +119,14 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
         await new Promise((resolve) => setTimeout(resolve, 50));
         await restoreDatabase(dbDump, decryptionPhrase);
         await new Promise((resolve) => setTimeout(resolve, 50));
-        resolve();
+        resolve(true);
       } catch (error) {
         reject(error);
       }
     };
+
+    // Browsers fire `cancel` instead of `change` when the dialog is dismissed.
+    input.oncancel = () => resolve(false);
 
     input.click();
   });
