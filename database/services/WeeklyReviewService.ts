@@ -17,9 +17,9 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
-import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
 import { checkpointsDue, currentWorkoutRamp } from '@/utils/comeback/comebackProgram';
 import { tracksWorkouts } from '@/utils/comeback/comebackState';
+import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
 import { parseSetPrescription } from '@/utils/setPrescription';
 import {
   parseTrainingDecisionSnapshot,

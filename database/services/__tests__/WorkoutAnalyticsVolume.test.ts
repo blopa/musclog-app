@@ -1,5 +1,6 @@
 import './workoutAnalyticsMocks';
 
+import { database } from '@/database/database-instance';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { calculateEstimated1RMForSet } from '@/utils/workoutCalculator';
 import { createMockExercise } from './helpers';
@@ -97,6 +98,41 @@ describe('WorkoutAnalytics', () => {
       );
 
       expect(result[0].totalVolume).toBe(vol(105, 10)); // Only workout-2
+    });
+
+    it('looks every exercise up in one query instead of one find per set', async () => {
+      const fixture = buildFixture({
+        exercises: [
+          createMockExercise({ id: 'ex-1', muscleGroup: 'chest' }),
+          createMockExercise({ id: 'ex-2', muscleGroup: 'back' }),
+        ],
+        sets: [
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 10 },
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 8 },
+          { exerciseId: 'ex-2', workoutLogId: 'workout-2', weight: 80, reps: 12 },
+        ],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() },
+          { id: 'workout-2', startedAt: Date.now() },
+        ],
+      });
+      installFixture(fixture);
+      const exercisesFind = jest.fn();
+      const exercisesQuery = jest.fn(() => ({
+        fetch: jest.fn().mockResolvedValue(fixture.exercises),
+      }));
+      const base = (database.get as jest.Mock).getMockImplementation()!;
+      (database.get as jest.Mock).mockImplementation((table: string) =>
+        table === 'exercises' ? { find: exercisesFind, query: exercisesQuery } : base(table)
+      );
+
+      const result = await WorkoutAnalytics.calculateMuscleGroupVolume(
+        fixture.workout_logs as any[]
+      );
+
+      expect(exercisesFind).not.toHaveBeenCalled();
+      expect(exercisesQuery).toHaveBeenCalledTimes(1);
+      expect(result.map((r) => r.muscleGroup).sort()).toEqual(['back', 'chest']);
     });
 
     it('should handle exercise not found gracefully', async () => {

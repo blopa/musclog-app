@@ -1,13 +1,14 @@
 import i18n from 'i18next';
 
-import { ComebackNutritionService } from '@/database/services/ComebackNutritionService';
+import { getWorkoutTemplates } from '@/data/workoutTemplates';
 import type { ComebackNutritionResult } from '@/database/services/ComebackNutritionService';
+import { ComebackNutritionService } from '@/database/services/ComebackNutritionService';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
-import { getWorkoutTemplates } from '@/data/workoutTemplates';
 import { refreshAllNotifications } from '@/services/notificationRefresh';
+import { ensureGymForLocation } from '@/utils/applyTrainingSetup';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { defaultTrainingWeekDays } from '@/utils/comeback/comebackSchedule';
 import {
@@ -19,7 +20,6 @@ import {
 } from '@/utils/comeback/comebackState';
 import { startedState } from '@/utils/comeback/comebackTransitions';
 import { handleError } from '@/utils/handleError';
-import { ensureGymForLocation } from '@/utils/applyTrainingSetup';
 import { shortPlanTemplateIndex } from '@/utils/onboardingTraining';
 
 /** The steps of a setup that can fail on their own without undoing the others. */

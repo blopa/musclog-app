@@ -13,10 +13,10 @@ import type WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
 import { TrainingWeekRepository } from '@/database/repositories/TrainingWeekRepository';
-import { type GymSnapshot, isBarLoadedEquipment } from '@/utils/gym';
+import { localDayStartMs } from '@/utils/calendarDate';
 import { currentWorkoutRamp, type WorkoutRamp } from '@/utils/comeback/comebackProgram';
 import { tracksWorkouts } from '@/utils/comeback/comebackState';
-import { localDayStartMs } from '@/utils/calendarDate';
+import { type GymSnapshot, isBarLoadedEquipment } from '@/utils/gym';
 import { loadStepFor } from '@/utils/loadIncrement';
 import { platesPerSide } from '@/utils/plateCalculator';
 import {

@@ -482,6 +482,50 @@ describe('MealService', () => {
     });
   });
 
+  describe('removeFoodsFromMeal', () => {
+    function liveMealFood(id: string) {
+      const record: any = { id, deletedAt: undefined, updatedAt: 1 };
+      record.prepareUpdate = jest.fn((mutator: (r: any) => void) => {
+        mutator(record);
+        return record;
+      });
+      return record;
+    }
+
+    it('retires every removed food in one write and one batch', async () => {
+      const first = liveMealFood('mf-1');
+      const second = liveMealFood('mf-2');
+      const { mealFoods } = wire({ mealFoodRows: [first, second] });
+
+      await MealService.removeFoodsFromMeal(['mf-1', 'mf-2']);
+
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+      expect(mealFoods.query).toHaveBeenCalledTimes(1);
+      expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+      expect((mockDatabase.batch as jest.Mock).mock.calls[0]).toEqual([first, second]);
+      expect(first.deletedAt).toBeGreaterThan(0);
+      expect(second.deletedAt).toBe(first.deletedAt);
+    });
+
+    it('only selects foods that are still live', async () => {
+      const { mealFoods } = wire({ mealFoodRows: [] });
+
+      await MealService.removeFoodsFromMeal(['mf-1']);
+
+      expect(mealFoods.queryClauses[0]).toContainEqual({ field: 'deleted_at', condition: IS_NULL });
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    it('does nothing for an empty list', async () => {
+      wire();
+
+      await MealService.removeFoodsFromMeal([]);
+
+      expect(mockDatabase.write).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+  });
+
   describe('duplicateMeal', () => {
     it('copies live foods only and starts the copy unfavourited', async () => {
       const original = stubMeal({ isFavorite: true }, [

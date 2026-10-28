@@ -1,5 +1,4 @@
 import type { SetupStepKey } from '@/utils/comeback/comebackSetupSteps';
-import type { TrainingLocation } from '@/utils/onboardingTraining';
 import type {
   BreakLength,
   ComebackEating,
@@ -10,6 +9,7 @@ import type {
   ComebackTrack,
   ComebackTrackingDepth,
 } from '@/utils/comeback/comebackState';
+import type { TrainingLocation } from '@/utils/onboardingTraining';
 
 /**
  * Whole translation keys for every enumerated answer. They are held in tables rather than built as

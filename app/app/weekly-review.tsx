@@ -6,6 +6,10 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import {
+  ComebackDeficitOffer,
+  isDeficitOfferDue,
+} from '@/components/comeback/ComebackDeficitOffer';
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
@@ -20,30 +24,26 @@ import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { WeekdayChoiceChips } from '@/components/WeekdayChoiceChips';
-import {
-  ComebackDeficitOffer,
-  isDeficitOfferDue,
-} from '@/components/comeback/ComebackDeficitOffer';
 import { NutritionReviewSection } from '@/components/weeklyReview/NutritionReviewSection';
 import { TargetsEditorSheet } from '@/components/weeklyReview/TargetsEditorSheet';
 import { historyLabelKeys } from '@/components/weeklyReview/trainingDecisionCopy';
 import { TrainingReviewSection } from '@/components/weeklyReview/TrainingReviewSection';
 import { WeeklyReviewWelcome } from '@/components/weeklyReview/WeeklyReviewWelcome';
 import { SETTINGS } from '@/constants/settingDefinitions';
+import { ComebackService } from '@/database/services/ComebackService';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { type NutritionTargets } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
-import { ComebackService } from '@/database/services/ComebackService';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
+import { useComebackState } from '@/hooks/useComebackState';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { useComebackState } from '@/hooks/useComebackState';
 import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
 import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
-import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import type { ComebackFeel } from '@/utils/comeback/comebackState';
+import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import type { TrainingDecision } from '@/utils/trainingWeekDecision';
 import { hasWeeklyActivity, shouldShowWeeklyReviewWelcome } from '@/utils/weeklyReviewEmptyState';
 

@@ -5,7 +5,8 @@ import { database } from '@/database/database-instance';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
 import NutritionLog from '@/database/models/NutritionLog';
-import { fetchByIds } from '@/database/queryByIds';
+import { prepareSoftDelete } from '@/database/prepareSoftDelete';
+import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
 import { handleError } from '@/utils/handleError';
 
 import { retryAfterRepair } from './DatabaseRepairService';
@@ -327,6 +328,30 @@ export class MealService {
   static async removeFoodFromMeal(mealFoodId: string): Promise<void> {
     const mealFood = await database.get<MealFood>('meal_foods').find(mealFoodId);
     await mealFood.markAsDeleted();
+  }
+
+  /**
+   * Remove several foods from their meal in one batch, so a failure part-way cannot leave the
+   * meal half-edited. Ids that are unknown or already removed are ignored.
+   */
+  static async removeFoodsFromMeal(mealFoodIds: readonly string[]): Promise<void> {
+    if (mealFoodIds.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      // Read inside the writer: what we retire must be what is live when the batch commits.
+      const mealFoods = await fetchByIds<MealFood>(
+        'meal_foods',
+        'id',
+        mealFoodIds,
+        Q.where('deleted_at', Q.eq(null))
+      );
+      const now = Date.now();
+      for (const chunk of chunked(mealFoods, MAX_BATCH_OPERATIONS)) {
+        await database.batch(...chunk.map((mealFood) => prepareSoftDelete(mealFood, now)));
+      }
+    });
   }
 
   /**

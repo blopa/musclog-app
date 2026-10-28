@@ -1,8 +1,8 @@
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
+import type { ComebackNutritionResult } from '@/database/services/ComebackNutritionService';
 import { ComebackNutritionService } from '@/database/services/ComebackNutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { localDayStartMs } from '@/utils/calendarDate';
-import type { ComebackNutritionResult } from '@/database/services/ComebackNutritionService';
 import type {
   ComebackAnswers,
   ComebackCheckpointWeek,

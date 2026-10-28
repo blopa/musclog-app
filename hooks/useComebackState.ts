@@ -6,10 +6,10 @@ import { database } from '@/database/database-instance';
 import type Setting from '@/database/models/Setting';
 import { useLocalToday } from '@/hooks/useLocalToday';
 import {
+  COMEBACK_RAMP_WEEKS,
   type ComebackPhase,
   comebackPhase,
   comebackWeek,
-  COMEBACK_RAMP_WEEKS,
   currentWorkoutRamp,
   type WorkoutRamp,
 } from '@/utils/comeback/comebackProgram';

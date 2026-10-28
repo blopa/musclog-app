@@ -1,14 +1,14 @@
 import { addDays, format } from 'date-fns';
 
+import { weekShiftAfterCheckpoint } from '@/utils/comeback/comebackProgram';
 import {
+  type ComebackAnswers,
   type ComebackCheckpointWeek,
   type ComebackFeel,
-  type ComebackAnswers,
   type ComebackState,
   type ComebackTrack,
   DEFAULT_COMEBACK_STATE,
 } from '@/utils/comeback/comebackState';
-import { weekShiftAfterCheckpoint } from '@/utils/comeback/comebackProgram';
 
 /**
  * Every way comeback mode's state moves, as a pure function of the state before it. The service

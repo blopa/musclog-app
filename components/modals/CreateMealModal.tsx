@@ -554,9 +554,7 @@ export function CreateMealModal({
           defaultPortionName: nutritionBasis === 'per_recipe' ? null : defaultPortionName.trim(),
           servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : null,
         });
-        for (const mealFoodId of removedMealFoodIdsRef.current) {
-          await MealService.removeFoodFromMeal(mealFoodId);
-        }
+        await MealService.removeFoodsFromMeal(removedMealFoodIdsRef.current);
 
         const newIngredients = ingredients.filter((ing) => !ing.mealFoodId);
         for (const ing of newIngredients) {
