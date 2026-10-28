@@ -51,7 +51,7 @@ export function useComebackOffer(): UseComebackOfferResult {
 
     return {
       lapse,
-      shouldOffer: lapse !== null && shouldOfferComeback(state, lapse, Date.now()),
+      shouldOffer: lapse !== null && shouldOfferComeback(state, lapse, today),
       daysSinceActivity:
         lastActivityAt === null
           ? null
