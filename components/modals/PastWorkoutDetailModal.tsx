@@ -748,7 +748,9 @@ export default function PastWorkoutDetailModal({
             if (workoutId) {
               calculateExerciseVolumeTrend(workoutId, exerciseId, dateFnsLocale)
                 .then(setMusclesModalTrend)
-                .catch((err) => console.warn('[PastWorkoutDetailModal] exercise trend error:', err));
+                .catch((err) =>
+                  console.warn('[PastWorkoutDetailModal] exercise trend error:', err)
+                );
             }
           }}
           onClose={onClose}
