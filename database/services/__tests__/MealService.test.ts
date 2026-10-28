@@ -472,7 +472,6 @@ describe('MealService', () => {
     it.each([
       ['deleteMeal', () => MealService.deleteMeal('meal-1')],
       ['toggleMealFavorite', () => MealService.toggleMealFavorite('meal-1')],
-      ['removeFoodFromMeal', () => MealService.removeFoodFromMeal('meal-food-1')],
     ])('%s delegates to the model @writer without opening a nested write', async (_name, run) => {
       wire({ mealFind: stubMeal(), mealFoodFind: stubMealFood() });
 

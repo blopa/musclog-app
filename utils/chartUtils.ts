@@ -97,20 +97,18 @@ const MAX_LABEL_GAP_RATIO = 1.5;
  */
 function pickEvenLabelIndices(count: number): number[] {
   const lastIndex = count - 1;
-  let fallback: number[] = [];
 
-  for (let labelCount = MAX_X_LABELS; labelCount >= 2; labelCount--) {
+  for (let labelCount = MAX_X_LABELS; labelCount > 2; labelCount--) {
     const step = lastIndex / (labelCount - 1);
     const indices = Array.from({ length: labelCount }, (_, i) => Math.round(i * step));
     const gaps = indices.slice(1).map((index, i) => index - indices[i]);
     if (Math.max(...gaps) / Math.min(...gaps) <= MAX_LABEL_GAP_RATIO) {
       return indices;
     }
-
-    fallback = indices;
   }
 
-  return fallback;
+  // Two labels have a single gap, which is always even.
+  return [0, lastIndex];
 }
 
 /** One day in ms — the padding a single-point time series gets so it still has a domain. */

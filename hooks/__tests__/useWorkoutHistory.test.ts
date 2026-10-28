@@ -64,6 +64,7 @@ jest.mock('../../database/database-instance', () => ({
 jest.mock('../../database/services/WorkoutService', () => ({
   WorkoutService: {
     getWorkoutHistory: jest.fn(),
+    getWorkoutLogsByTemplate: jest.fn(),
   },
 }));
 
@@ -199,6 +200,7 @@ describe('useWorkoutHistory', () => {
     jest.clearAllMocks();
     mockQuery.observe.mockReturnValue(createMockObservable([], false) as any);
     (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
+    (WorkoutService.getWorkoutLogsByTemplate as jest.Mock).mockResolvedValue([]);
     (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
   });
 
@@ -212,8 +214,38 @@ describe('useWorkoutHistory', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(WorkoutService.getWorkoutHistory).toHaveBeenCalledWith(undefined, 5, 0, 'template-1');
+      expect(WorkoutService.getWorkoutLogsByTemplate).toHaveBeenCalledWith('template-1', {
+        timeframe: undefined,
+        limit: 5,
+        offset: 0,
+      });
+      expect(WorkoutService.getWorkoutHistory).not.toHaveBeenCalled();
       expect((result.current as any).filters.dateRange).toBe('all');
+    });
+
+    it('pages through the same template, not through all sessions', async () => {
+      (WorkoutService.getWorkoutLogsByTemplate as jest.Mock).mockResolvedValue([
+        { id: 'w1', workoutName: 'A', startedAt: 1000, completedAt: 2000 },
+      ]);
+      const { result } = renderHook(() =>
+        useWorkoutHistory({ initialLimit: 1, groupByMonth: true, templateId: 'template-1' })
+      );
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      // The "is there more?" probe asks for the one row after the first page.
+      expect(WorkoutService.getWorkoutLogsByTemplate).toHaveBeenCalledWith('template-1', {
+        timeframe: undefined,
+        limit: 1,
+        offset: 1,
+      });
+    });
+
+    it('starts the all-sessions list at the last 30 days', async () => {
+      const { result } = renderHook(() => useWorkoutHistory({ groupByMonth: true }));
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect((result.current as any).filters.dateRange).toBe('30');
+      expect(WorkoutService.getWorkoutLogsByTemplate).not.toHaveBeenCalled();
     });
   });
 

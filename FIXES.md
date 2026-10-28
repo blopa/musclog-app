@@ -17,6 +17,8 @@ Importing a 1.x backup produced 127 completed workouts but only 259 sets, attach
 
 Sets now come from `exerciseData` (pounds converted when `unitSystem` is `imperial`), placeholders are skipped, completion time and volume are derived from the session, text chat messages are imported, and unmatched nutrition logs get their own food. Pinned by `database/services/__tests__/MigrationServiceLegacyJson.test.ts`.
 
+A converted log also pointed at the 1.x numeric workout id instead of the new template, so a workout's own history found none of its sessions. The converter now maps the id, and the run-once boot migration `LegacyWorkoutTemplateIdRepair` fixes logs converted earlier (orphans only, and only when exactly one live template has the log's workout name), so every reader can use a plain `template_id` match rather than each carrying a name-matching fallback. Pinned by `database/services/__tests__/LegacyWorkoutTemplateIdRepair.test.ts`.
+
 ## iOS widgets crashed the app at boot: a `null` in a widget snapshot (October 2026)
 
 ### Symptom

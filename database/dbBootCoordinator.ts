@@ -18,6 +18,7 @@ import { ExerciseService } from '@/database/services/ExerciseService';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { FoodService } from '@/database/services/FoodService';
 import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
+import { LegacyWorkoutTemplateIdRepair } from '@/database/services/LegacyWorkoutTemplateIdRepair';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -148,6 +149,14 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     tag: 'CycleRecordPurge.purgeDeleted',
     // Removed cycle records are destroyed once their in-session undo window is over.
     run: () => CycleRecordPurge.purgeDeleted(),
+  },
+  {
+    tag: 'LegacyWorkoutTemplateIdRepair.run',
+    // Logs converted from Musclog 1.x before the id mapping was fixed hold the old numeric workout
+    // id as `template_id`. Run once: the converter now writes the right id, and a restore that
+    // brings old rows back also restores the AsyncStorage flag from before this ran.
+    runOnce: true,
+    run: () => LegacyWorkoutTemplateIdRepair.run(),
   },
   {
     tag: 'WorkoutService.backfillNullTotalVolumes',

@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { Download, Edit, Info, RefreshCw, Share2, Trophy } from 'lucide-react-native';
-import { createElement, useEffect, useRef, useState } from 'react';
+import { createElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
@@ -21,10 +21,12 @@ import { useChartCapture } from '@/hooks/useChartCapture';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '@/hooks/useEditWorkoutSets';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
+import { useExerciseVolumeTrend } from '@/hooks/useExerciseVolumeTrend';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { usePastWorkoutDetail } from '@/hooks/usePastWorkoutDetail';
 import { useSettings } from '@/hooks/useSettings';
+import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { healthConnectService } from '@/services/healthConnect';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
@@ -34,13 +36,8 @@ import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
-import type { VolumeTrend } from '@/utils/volumeTrend';
 import { formatWorkoutDuration } from '@/utils/workout';
-import {
-  calculateExerciseVolumeTrend,
-  type WorkoutExercise,
-  type WorkoutSet,
-} from '@/utils/workoutDetail';
+import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
@@ -432,12 +429,58 @@ export default function PastWorkoutDetailModal({
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isEditMetadataVisible, setIsEditMetadataVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
-  const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
-  const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
-  const [musclesModalSets, setMusclesModalSets] = useState<ExerciseSetRef[]>([]);
-  const [musclesModalTitle, setMusclesModalTitle] = useState<string | undefined>();
-  const [musclesModalTrend, setMusclesModalTrend] = useState<VolumeTrend | null>(null);
+  // The exercise whose info sheet is open (null = closed); everything the sheet shows derives from it.
+  const [infoExerciseId, setInfoExerciseId] = useSubModalState<string | null>(visible, null);
+  const [loadedInfoMuscles, setLoadedInfoMuscles] = useState<{
+    exerciseId: string;
+    groups: string[];
+  } | null>(null);
   const [allWorkoutMuscles, setAllWorkoutMuscles] = useState<string[]>([]);
+  const infoExercise = workout?.exercises.find((e) => e.id === infoExerciseId);
+  const infoCoarseMuscleGroup = infoExercise?.muscleGroup;
+  const infoMuscleGroups =
+    loadedInfoMuscles?.exerciseId === infoExerciseId ? loadedInfoMuscles.groups : [];
+  const infoSets = useMemo<ExerciseSetRef[]>(
+    () =>
+      (rawSets ?? [])
+        .filter((s) => s.exerciseId === infoExerciseId)
+        .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
+        .map((s, idx) => ({ id: s.id, setNumber: idx + 1 })),
+    [rawSets, infoExerciseId]
+  );
+  const infoTrend = useExerciseVolumeTrend(workoutId, infoExerciseId, dateFnsLocale);
+
+  useEffect(() => {
+    if (!infoExerciseId) {
+      return;
+    }
+
+    let live = true;
+    async function loadInfoMuscles(exerciseId: string) {
+      let groups: string[];
+      try {
+        const muscles = await MuscleService.getMusclesForExercise(exerciseId);
+        // Backfill may not have run yet — fall back to the coarse muscle group.
+        groups = muscles.map((m) => m.name);
+        if (groups.length === 0 && infoCoarseMuscleGroup) {
+          groups = [infoCoarseMuscleGroup];
+        }
+      } catch (err) {
+        console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
+        groups = [];
+      }
+
+      if (live) {
+        setLoadedInfoMuscles({ exerciseId, groups });
+      }
+    }
+
+    loadInfoMuscles(infoExerciseId);
+
+    return () => {
+      live = false;
+    };
+  }, [infoExerciseId, infoCoarseMuscleGroup]);
 
   useEffect(() => {
     if (!workout) {
@@ -479,7 +522,6 @@ export default function PastWorkoutDetailModal({
         setIsEditModalVisible(false);
         setIsEditMetadataVisible(false);
         setIsPreviewModalVisible(false);
-        setIsMusclesModalVisible(false);
         setEditingExerciseId(null);
         setIsMenuVisible(false);
       };
@@ -679,9 +721,7 @@ export default function PastWorkoutDetailModal({
 
         {workout.volumeTrend.data.length > 0 ? (
           <VolumeTrendCard
-            percentage={workout.volumeTrend.percentage}
-            data={workout.volumeTrend.data}
-            labels={workout.volumeTrend.labels}
+            trend={workout.volumeTrend}
             onInteractionStart={() =>
               scrollViewRef.current?.setNativeProps({ scrollEnabled: false })
             }
@@ -721,38 +761,7 @@ export default function PastWorkoutDetailModal({
             setEditingExerciseId(exerciseId);
             setIsEditModalVisible(true);
           }}
-          onInfo={async (exerciseId) => {
-            try {
-              const muscles = await MuscleService.getMusclesForExercise(exerciseId);
-              if (muscles.length > 0) {
-                setMusclesModalGroups(muscles.map((m) => m.name));
-              } else {
-                // Backfill may not have run yet — fall back to coarse muscle group
-                const ex = workout.exercises.find((e) => e.id === exerciseId);
-                setMusclesModalGroups(ex?.muscleGroup ? [ex.muscleGroup] : []);
-              }
-            } catch (err) {
-              console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
-              setMusclesModalGroups([]);
-            }
-
-            const sets = (rawSets ?? [])
-              .filter((s) => s.exerciseId === exerciseId)
-              .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
-              .map((s, idx) => ({ id: s.id, setNumber: idx + 1 }));
-            setMusclesModalSets(sets);
-            setMusclesModalTitle(workout.exercises.find((e) => e.id === exerciseId)?.name);
-            setMusclesModalTrend(null);
-            setIsMusclesModalVisible(true);
-
-            if (workoutId) {
-              calculateExerciseVolumeTrend(workoutId, exerciseId, dateFnsLocale)
-                .then(setMusclesModalTrend)
-                .catch((err) =>
-                  console.warn('[PastWorkoutDetailModal] exercise trend error:', err)
-                );
-            }
-          }}
+          onInfo={setInfoExerciseId}
           onClose={onClose}
         />
       </View>
@@ -901,16 +910,12 @@ export default function PastWorkoutDetailModal({
       ) : null}
 
       <WorkoutMusclesModal
-        visible={isMusclesModalVisible}
-        onClose={() => {
-          setIsMusclesModalVisible(false);
-          setMusclesModalSets([]);
-          setMusclesModalTrend(null);
-        }}
-        title={musclesModalTitle}
-        volumeTrend={musclesModalTrend}
-        muscleGroups={musclesModalGroups}
-        exerciseSets={musclesModalSets}
+        visible={infoExerciseId !== null}
+        onClose={() => setInfoExerciseId(null)}
+        title={infoExercise?.name}
+        volumeTrend={infoTrend}
+        muscleGroups={infoMuscleGroups}
+        exerciseSets={infoSets}
       />
     </FullScreenModal>
   );

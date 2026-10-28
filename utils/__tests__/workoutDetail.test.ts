@@ -508,7 +508,7 @@ describe('transformWorkoutToDetailData — volume trend', () => {
     );
 
     expect(result.volumeTrend).toEqual(EMPTY_TREND);
-    expect(getWorkoutLogsByTemplate).toHaveBeenCalledWith('tpl-1', 10);
+    expect(getWorkoutLogsByTemplate).toHaveBeenCalledWith('tpl-1', { limit: 10 });
   });
 
   it('is empty when the historical logs are all incomplete', async () => {

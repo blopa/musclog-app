@@ -2,23 +2,19 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
-import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
+import { LineChart } from '@/components/charts/LineChart';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import type { XAxisLabel } from '@/utils/chartUtils';
+import type { VolumeTrend } from '@/utils/volumeTrend';
 
 type VolumeTrendCardProps = {
-  percentage: number;
-  data: LineChartDataPoint[];
-  labels: XAxisLabel[];
+  trend: VolumeTrend;
   onInteractionStart?: () => void;
   onInteractionEnd?: () => void;
 };
 
 export function VolumeTrendCard({
-  percentage,
-  data,
-  labels,
+  trend: { percentage, data, labels },
   onInteractionStart,
   onInteractionEnd,
 }: VolumeTrendCardProps) {

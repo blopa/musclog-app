@@ -151,6 +151,16 @@ async function processWorkoutSimple(
   };
 }
 
+/** A single workout's sessions are listed in full; the all-sessions list starts at the last 30 days. */
+function defaultWorkoutFilters(templateId: string | undefined): WorkoutFilters {
+  return {
+    workoutType: 'all',
+    dateRange: templateId ? 'all' : '30',
+    muscleGroups: [],
+    minDuration: 0,
+  };
+}
+
 // Function overloads for proper type narrowing
 export function useWorkoutHistory(
   params: UseWorkoutHistoryParams & { groupByMonth: true }
@@ -190,12 +200,20 @@ export function useWorkoutHistory({
   // State for filters (only used when groupByMonth = true)
   const [searchQuery, setSearchQuery] = useState('');
   const [workoutFilters, setWorkoutFilters] = useState<WorkoutFilters>(
-    filters || {
-      workoutType: 'all',
-      dateRange: templateId ? 'all' : '30',
-      muscleGroups: [],
-      minDuration: 0,
-    }
+    filters ?? defaultWorkoutFilters(templateId)
+  );
+
+  // One workout's sessions, or every session
+  const fetchLogs = useCallback(
+    (
+      timeframe: { startDate: number; endDate: number } | undefined,
+      limit: number,
+      offset: number
+    ) =>
+      templateId
+        ? WorkoutService.getWorkoutLogsByTemplate(templateId, { timeframe, limit, offset })
+        : WorkoutService.getWorkoutHistory(timeframe, limit, offset),
+    [templateId]
   );
 
   // Load initial batch of workouts
@@ -223,12 +241,7 @@ export function useWorkoutHistory({
         : undefined;
 
       // Fetch initial batch
-      const workoutLogs = await WorkoutService.getWorkoutHistory(
-        timeframe,
-        initialLimit,
-        0,
-        templateId
-      );
+      const workoutLogs = await fetchLogs(timeframe, initialLimit, 0);
 
       if (workoutLogs.length === 0) {
         if (groupByMonth) {
@@ -264,12 +277,7 @@ export function useWorkoutHistory({
         setHasMore(false);
       } else {
         // Check if there's a next batch
-        const nextBatch = await WorkoutService.getWorkoutHistory(
-          timeframe,
-          1,
-          initialLimit,
-          templateId
-        );
+        const nextBatch = await fetchLogs(timeframe, 1, initialLimit);
         setHasMore(nextBatch.length > 0);
       }
     } catch (err) {
@@ -295,7 +303,7 @@ export function useWorkoutHistory({
     theme,
     dateFnsLocale,
     skipPRDetection,
-    templateId,
+    fetchLogs,
   ]);
 
   // Load more workouts (pagination)
@@ -316,12 +324,7 @@ export function useWorkoutHistory({
         : undefined;
 
       // Fetch next batch
-      const workoutLogs = await WorkoutService.getWorkoutHistory(
-        timeframe,
-        batchSize,
-        currentOffset,
-        templateId
-      );
+      const workoutLogs = await fetchLogs(timeframe, batchSize, currentOffset);
 
       if (workoutLogs.length === 0) {
         setHasMore(false);
@@ -356,12 +359,7 @@ export function useWorkoutHistory({
         setHasMore(false);
       } else {
         // Check if there's a next batch
-        const nextBatch = await WorkoutService.getWorkoutHistory(
-          timeframe,
-          1,
-          newOffset,
-          templateId
-        );
+        const nextBatch = await fetchLogs(timeframe, 1, newOffset);
         setHasMore(nextBatch.length > 0);
       }
     } catch (err) {
@@ -384,7 +382,7 @@ export function useWorkoutHistory({
     theme,
     dateFnsLocale,
     skipPRDetection,
-    templateId,
+    fetchLogs,
   ]);
 
   // Handle filter changes
@@ -398,12 +396,7 @@ export function useWorkoutHistory({
   }, []);
 
   const handleClearFilters = useCallback(() => {
-    setWorkoutFilters({
-      workoutType: 'all',
-      dateRange: templateId ? 'all' : '30',
-      muscleGroups: [],
-      minDuration: 0,
-    });
+    setWorkoutFilters(defaultWorkoutFilters(templateId));
   }, [templateId]);
 
   // React to filter changes

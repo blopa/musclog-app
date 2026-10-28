@@ -15,13 +15,14 @@ import {
   type TemplateRecommendation,
   WorkoutProgressionService,
 } from '@/database/services/WorkoutProgressionService';
-import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/WorkoutService';
+import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
+import { useTemplateHasSessions } from '@/hooks/useTemplateHasSessions';
 import { useTheme } from '@/hooks/useTheme';
 import type { EnrichedWorkoutTemplateSet } from '@/hooks/useWorkoutTemplateDetails';
 import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
@@ -92,29 +93,10 @@ export function WorkoutSessionHistoryModal({
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   const [recommendations, setRecommendations] = useState<TemplateRecommendation[]>([]);
   // The "past sessions" button only appears once this workout has been completed at least once.
-  const [templateWithSessions, setTemplateWithSessions] = useState<string | null>(null);
-  const previewTemplateId = isPreview ? workoutTemplate?.id : undefined;
-  const hasPastSessions = !!previewTemplateId && templateWithSessions === previewTemplateId;
-  useEffect(() => {
-    let live = true;
-    if (visible && previewTemplateId) {
-      WorkoutService.getWorkoutHistory(undefined, 1, 0, previewTemplateId)
-        .then((logs) => {
-          if (live) {
-            setTemplateWithSessions(logs.length > 0 ? previewTemplateId : null);
-          }
-        })
-        .catch(() => {
-          if (live) {
-            setTemplateWithSessions(null);
-          }
-        });
-    }
-
-    return () => {
-      live = false;
-    };
-  }, [visible, previewTemplateId]);
+  const hasPastSessions = useTemplateHasSessions(
+    isPreview ? workoutTemplate?.id : undefined,
+    visible
+  );
   useEffect(() => {
     let live = true;
     if (visible && isPreview && workoutTemplate) {

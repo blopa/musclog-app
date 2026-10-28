@@ -180,11 +180,7 @@ export function WorkoutMusclesModal({
     >
       {hasTrend && volumeTrend ? (
         <View style={{ padding: theme.spacing.padding.base }}>
-          <VolumeTrendCard
-            percentage={volumeTrend.percentage}
-            data={volumeTrend.data}
-            labels={volumeTrend.labels}
-          />
+          <VolumeTrendCard trend={volumeTrend} />
         </View>
       ) : null}
       <WorkoutMusclesDetails muscleGroups={muscleGroups} captureRef={captureRef} />

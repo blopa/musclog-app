@@ -1,13 +1,14 @@
 import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 
-import type { LineChartDataPoint } from '@/components/charts/LineChart';
-
 import { getXAxisLabels, type XAxisLabel } from './chartUtils';
+
+/** One chart point: `x` is the session's index, `y` its volume scaled to the chart height. */
+export type VolumeTrendPoint = { x: number; y: number };
 
 export type VolumeTrend = {
   percentage: number;
-  data: LineChartDataPoint[];
+  data: VolumeTrendPoint[];
   labels: XAxisLabel[];
 };
 
@@ -50,7 +51,7 @@ export function buildVolumeTrend(
   const range = Math.max(...volumes) - minVolume || 1;
 
   // The x value is the index so `getXAxisLabels` and the chart domain line up.
-  const data: LineChartDataPoint[] = sorted.map((entry, index) => ({
+  const data: VolumeTrendPoint[] = sorted.map((entry, index) => ({
     x: index,
     // The chart's y axis points up, so the highest volume gets the largest y.
     y: ((entry.volume - minVolume) / range) * CHART_HEIGHT,

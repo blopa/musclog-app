@@ -3,6 +3,7 @@ import { DatabaseSync } from 'node:sqlite';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import { MigrationService } from '@/database/services/MigrationService';
+import { loadWorkoutEnergyProfile } from '@/database/services/workoutEnergyProfile';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import {
@@ -19,6 +20,25 @@ jest.mock('expo-sqlite', () => ({ openDatabaseSync: jest.fn() }));
 jest.mock('@/database/models', () => ({}));
 jest.mock('@/database/services/WorkoutService', () => ({
   WorkoutService: { estimateWorkoutKcal: jest.fn() },
+}));
+jest.mock('@/database/services/workoutEnergyProfile', () => ({
+  loadWorkoutEnergyProfile: jest.fn(),
+}));
+jest.mock('@/database/commitPrepared', () => ({
+  commitPrepared: async (_db: unknown, _existing: unknown[], prepare: () => unknown[]) => {
+    prepare();
+  },
+}));
+jest.mock('@/database/queryByIds', () => ({
+  ...jest.requireActual('@/database/queryByIds'),
+  fetchByIds: async (_table: string, _column: string, ids: string[]) =>
+    ids.map((id) => ({
+      id,
+      prepareUpdate: (apply: (record: Record<string, unknown>) => void) => {
+        mockUpdated[id] = { table: 'workout_logs' };
+        apply(mockUpdated[id]);
+      },
+    })),
 }));
 jest.mock('@/lang/lang', () => ({ __esModule: true, default: { t: (key: string) => key } }));
 jest.mock('@/utils/app', () => ({ isProduction: () => true }));
@@ -259,22 +279,61 @@ describe('MigrationService 1.x workout history', () => {
     expect(log.templateId).toBe('tpl-new-id');
   });
 
-  it('estimates calories burned for each migrated workout, leaving unestimable ones at 0', async () => {
-    const estimate = WorkoutService.estimateWorkoutKcal as jest.Mock;
-    estimate.mockReset().mockResolvedValueOnce(310).mockResolvedValueOnce(0);
-    const service = new MigrationService({
-      database: loadLegacyDump(SESSIONS_DUMP),
-      valuesEncrypted: false,
-    });
-    const internals = service as unknown as {
-      estimateMigratedWorkoutCalories: () => Promise<number>;
-      workoutEventIdToLogId: Map<number, string>;
-    };
-    internals.workoutEventIdToLogId.set(1, 'log-a').set(2, 'log-b');
+  describe('calories burned', () => {
+    const profile = { weightKg: 80, heightCm: 180, gender: 'male' as const };
 
-    expect(await internals.estimateMigratedWorkoutCalories()).toBe(1);
-    expect(mockUpdated['log-a']?.caloriesBurned).toBe(310);
-    expect(mockUpdated['log-b']).toBeUndefined();
+    beforeEach(() => {
+      for (const id of Object.keys(mockUpdated)) {
+        delete mockUpdated[id];
+      }
+    });
+
+    function serviceWithLogs() {
+      const service = new MigrationService({
+        database: loadLegacyDump(SESSIONS_DUMP),
+        valuesEncrypted: false,
+      });
+      const internals = service as unknown as {
+        estimateMigratedWorkoutCalories: () => Promise<number>;
+        workoutEventIdToLogId: Map<number, string>;
+      };
+      internals.workoutEventIdToLogId.set(1, 'log-a').set(2, 'log-b');
+      return internals;
+    }
+
+    it('estimates each migrated workout from one shared profile, leaving unestimable ones at 0', async () => {
+      (loadWorkoutEnergyProfile as jest.Mock).mockReset().mockResolvedValue(profile);
+      const estimate = WorkoutService.estimateWorkoutKcal as jest.Mock;
+      estimate.mockReset().mockResolvedValueOnce(310).mockResolvedValueOnce(0);
+
+      expect(await serviceWithLogs().estimateMigratedWorkoutCalories()).toBe(1);
+
+      expect(loadWorkoutEnergyProfile).toHaveBeenCalledTimes(1);
+      expect(estimate).toHaveBeenCalledWith('log-a', profile);
+      expect(estimate).toHaveBeenCalledWith('log-b', profile);
+      expect(mockUpdated['log-a']?.caloriesBurned).toBe(310);
+      expect(mockUpdated['log-b']).toBeUndefined();
+    });
+
+    it('estimates nothing when there is no body to estimate for', async () => {
+      (loadWorkoutEnergyProfile as jest.Mock).mockReset().mockResolvedValue(null);
+      const estimate = WorkoutService.estimateWorkoutKcal as jest.Mock;
+      estimate.mockReset();
+
+      expect(await serviceWithLogs().estimateMigratedWorkoutCalories()).toBe(0);
+      expect(estimate).not.toHaveBeenCalled();
+    });
+
+    it('skips a workout whose estimate fails without losing the others', async () => {
+      (loadWorkoutEnergyProfile as jest.Mock).mockReset().mockResolvedValue(profile);
+      const estimate = WorkoutService.estimateWorkoutKcal as jest.Mock;
+      estimate.mockReset().mockRejectedValueOnce(new Error('boom')).mockResolvedValueOnce(120);
+      jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+      expect(await serviceWithLogs().estimateMigratedWorkoutCalories()).toBe(1);
+      expect(mockUpdated['log-b']?.caloriesBurned).toBe(120);
+      expect(mockUpdated['log-a']).toBeUndefined();
+    });
   });
 
   it('builds the sets from exerciseData, not from the template Set table', async () => {

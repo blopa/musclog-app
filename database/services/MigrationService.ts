@@ -11,6 +11,7 @@ import {
   CALORIES_FOR_FIBER,
   CALORIES_FOR_PROTEIN,
 } from '@/constants/nutrition';
+import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
 import {
@@ -31,6 +32,8 @@ import {
   WorkoutTemplateExercise,
   WorkoutTemplateSet,
 } from '@/database/models';
+import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
+import { loadWorkoutEnergyProfile } from '@/database/services/workoutEnergyProfile';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
 import { isProduction } from '@/utils/app';
@@ -1525,38 +1528,54 @@ export class MigrationService {
   }
 
   /**
-   * Migrate sets from old Set table (where workoutId points to WorkoutEvent) to workout_log_sets
-   * @param totalForProgress Total count from getMigrationSummary() for progress display
-   * @param reportProgress
-   */
-  /**
    * Fills in `calories_burned` for the logs this run created, from their migrated sets, with the
-   * same estimate a freshly completed workout gets. Uses the latest weight/height and user, which
-   * the earlier steps have already migrated; a workout that cannot be estimated stays at 0.
+   * same estimate a freshly completed workout gets. The body (user, latest weight/height) is read
+   * once, and every estimate is committed in a single batch; a workout that cannot be estimated
+   * stays at 0.
    */
   private async estimateMigratedWorkoutCalories(): Promise<number> {
-    let updated = 0;
+    const profile = await loadWorkoutEnergyProfile();
+    if (!profile) {
+      return 0;
+    }
+
+    const estimates = new Map<string, number>();
     for (const logId of this.workoutEventIdToLogId.values()) {
       try {
-        const kcal = await WorkoutService.estimateWorkoutKcal(logId);
-
+        const kcal = await WorkoutService.estimateWorkoutKcal(logId, profile);
         if (kcal > 0) {
-          await database.write(async () => {
-            const log = await database.get<WorkoutLog>('workout_logs').find(logId);
-            await log.update((record) => {
-              record.caloriesBurned = kcal;
-            });
-          });
-          updated++;
+          estimates.set(logId, kcal);
         }
       } catch (error) {
         console.warn(`Could not estimate calories for migrated workout ${logId}:`, error);
       }
     }
 
-    return updated;
+    if (estimates.size === 0) {
+      return 0;
+    }
+
+    await database.write(async () => {
+      const logs = await fetchByIds<WorkoutLog>('workout_logs', 'id', [...estimates.keys()]);
+      for (const chunk of chunked(logs, MAX_BATCH_OPERATIONS)) {
+        await commitPrepared(database, chunk, () =>
+          chunk.map((log) =>
+            log.prepareUpdate((record) => {
+              record.caloriesBurned = estimates.get(log.id)!;
+            })
+          )
+        );
+      }
+    });
+
+    return estimates.size;
   }
 
+  /**
+   * Migrate sets from old Set table (where workoutId points to WorkoutEvent) to workout_log_sets
+   * @param totalForProgress Total count from getMigrationSummary() for progress display
+   * @param reportProgress
+   */
   private async migrateWorkoutLogSets(
     totalForProgress: number,
     reportProgress?: (current: number, total: number) => void

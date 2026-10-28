@@ -115,7 +115,7 @@ async function calculateVolumeTrend(
 
   const historicalLogs = await WorkoutService.getWorkoutLogsByTemplate(
     currentWorkoutLog.templateId,
-    10
+    { limit: 10 }
   );
 
   if (historicalLogs.length < 2) {
@@ -125,7 +125,7 @@ async function calculateVolumeTrend(
   const allLogs = [...historicalLogs];
   const isCurrentIncluded = allLogs.some((log) => log.id === currentWorkoutLog.id);
 
-  if (!isCurrentIncluded && currentWorkoutLog.totalVolume && currentWorkoutLog.completedAt) {
+  if (!isCurrentIncluded && currentWorkoutLog.completedAt) {
     allLogs.unshift(currentWorkoutLog);
   }
 
