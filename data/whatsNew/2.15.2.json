@@ -1,0 +1,31 @@
+{
+  "version": "2.15.2",
+  "pages": [
+    {
+      "id": "heatmaps",
+      "blocks": [
+        {
+          "id": "heatmaps",
+          "type": "info",
+          "icon": "calendar",
+          "titleKey": "whatsNew.releases.v2_15_2.heatmaps.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.heatmaps.description"
+        },
+        {
+          "id": "layouts",
+          "type": "info",
+          "icon": "layout",
+          "titleKey": "whatsNew.releases.v2_15_2.layouts.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.layouts.description"
+        },
+        {
+          "id": "setup",
+          "type": "info",
+          "icon": "settings",
+          "titleKey": "whatsNew.releases.v2_15_2.setup.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.setup.description"
+        }
+      ]
+    }
+  ]
+}

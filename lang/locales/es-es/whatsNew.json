@@ -156,6 +156,20 @@
           "title": "Bloquea solo tu ciclo",
           "description": "En Ajustes → Bloqueo de la app ahora puedes proteger tu ciclo, entrenamientos, nutrición, progreso o toda la app con la credencial de tu dispositivo."
         }
+      },
+      "v2_15_2": {
+        "heatmaps": {
+          "title": "Tu actividad de un vistazo",
+          "description": "Mira en Inicio los días que entrenaste y los días que registraste comidas como un calendario de cuadrados. Cuanto más oscuro, más intenso el día. Toca un cuadrado, o pasa el cursor en la web, para ver ese día."
+        },
+        "layouts": {
+          "title": "Tres formas de mostrarlos",
+          "description": "Ancho completo muestra unos cuatro meses de cada mapa, uno sobre otro. Lado a lado pone ambos en una fila como dos tarjetas pequeñas con los últimos 30 días. Compacto los reúne en una sola tarjeta corta con una fila fina de 30 días para cada uno."
+        },
+        "setup": {
+          "title": "Desactivados hasta que los actives",
+          "description": "Ve a Ajustes → Apariencia e inicio → Mapas de actividad para mostrar entrenamientos, nutrición o ambos, y elegir el diseño. Con un solo mapa activado, siempre usa el ancho completo."
+        }
       }
     }
   }

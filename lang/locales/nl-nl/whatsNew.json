@@ -156,6 +156,20 @@
           "title": "Vergrendel alleen je cyclus",
           "description": "In Instellingen → App-vergrendeling kun je nu je cyclus, trainingen, voeding, voortgang of de hele app beschermen met de beveiliging van je apparaat."
         }
+      },
+      "v2_15_2": {
+        "heatmaps": {
+          "title": "Je activiteit in één oogopslag",
+          "description": "Zie op Start de dagen waarop je trainde en de dagen waarop je maaltijden logde als een kalender van vierkantjes. Donkerdere vierkantjes zijn drukkere dagen. Tik op een vierkantje, of beweeg eroverheen op web, om die dag te lezen."
+        },
+        "layouts": {
+          "title": "Drie manieren om ze te tonen",
+          "description": "Volledige breedte toont ongeveer vier maanden van elke kaart, onder elkaar. Naast elkaar zet beide in één rij als twee kleine kaarten met de laatste 30 dagen. Compact brengt ze samen in één korte kaart met een dunne rij van 30 dagen per kaart."
+        },
+        "setup": {
+          "title": "Uit tot je ze aanzet",
+          "description": "Ga naar Instellingen → Uiterlijk en start → Activiteitskaarten om trainingen, voeding of beide te tonen en de indeling te kiezen. Met maar één kaart aan gebruikt die altijd de volledige breedte."
+        }
       }
     }
   }
