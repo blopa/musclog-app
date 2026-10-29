@@ -7,6 +7,7 @@ import { getDbReadyError, waitForDbReady } from '@/database/dbReady';
 import { reloadApp } from '@/utils/app';
 import { captureBootException } from '@/utils/bootErrorReporting';
 import { isOnboardingCompleted } from '@/utils/onboardingService';
+import { hydrateThemeMirror } from '@/utils/themeMirror';
 
 export function AppDbReadyGate({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(isStaticExport);
@@ -21,11 +22,19 @@ export function AppDbReadyGate({ children }: { children: ReactNode }) {
 
     const waitForCompletedUserDb = async () => {
       try {
+        // Children include ThemeProvider, which reads the mirror on its first
+        // render, so it must be loaded before they mount. Completed users wait
+        // on the database far longer than this read takes; new installs only
+        // pay a single AsyncStorage read.
+        const themeMirrorReady = hydrateThemeMirror();
+
         // Completed users wait here while AppBoot proves the DB is usable; new
         // installs must render so seedProductionData can finish and mark ready.
         if (await isOnboardingCompleted()) {
           await waitForDbReady();
         }
+
+        await themeMirrorReady;
       } catch (err) {
         captureBootException(err, 'AppDbReadyGate.waitForDbReady');
         if (!cancelled) {

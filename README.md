@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://play.google.com/store/apps/details?id=com.werules.logger">
-        <img src="/assets/musclog-icon-fallback.png" width="30%" alt="Musclog-logo">
+        <img src="/assets/theme-icons/icon-bg-kinetic-depth.png" width="30%" alt="Musclog-logo">
     </a>
 </p>
 <p align="center">

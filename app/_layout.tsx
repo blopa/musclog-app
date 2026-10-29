@@ -6,12 +6,16 @@ import { View } from 'react-native';
 import { DeferredAppBoot } from '@/components/DeferredAppBoot';
 import { useBootColors } from '@/hooks/useBootColors';
 import { captureBootException } from '@/utils/bootErrorReporting';
+import { hydrateThemeMirror } from '@/utils/themeMirror';
 import { registerWebIconFonts } from '@/utils/webIconFonts';
 
 SplashScreen.setOptions({
   duration: 180,
   fade: true,
 });
+
+// Start the native theme read at module load so the boot surfaces can use it too.
+void hydrateThemeMirror();
 
 export default function RootLayout() {
   // Expo collects fonts per server render; route imports run outside that context.

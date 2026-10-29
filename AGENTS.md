@@ -227,7 +227,11 @@ This repository serves two distinct purposes that share the same Expo Router pro
   A theme carries no component-level presentation flags: anything a component would branch on is
   expressed as palette values instead (a theme wanting a flat summary card sets its gradient stops
   flat). `ThemeProvider` resolves the preference once, and every `useTheme*` hook selects from that
-  context value. A surface that must pin a palette (currently the camera viewfinder) wraps it in
+  context value. **The preference is only readable through the database, so first paint
+  uses `utils/themeMirror` on every platform** — `localStorage` on web, AsyncStorage on
+  native (`hydrateThemeMirror`, awaited by `AppDbReadyGate` before `ThemeProvider`
+  mounts). Never gate theme on `useSettings().isLoading` alone, and never reuse the web key
+  for the native layer (AsyncStorage is `localStorage` on web); see `FIXES.md`. A surface that must pin a palette (currently the camera viewfinder) wraps it in
   `ThemeScope` and everything inside keeps using the ordinary `useTheme()` — do not create another
   forced-theme context and do not read `darkTheme`/`lightTheme` from a React component.
 - **Geometry and type are rules, not taste** (`DESIGN.md` → Typography; Spacing, shape, and touch). Corner radii come from `theme.shape.js` (`tag` 4, `inner` 6, `control` 8, `card` 12, `sheet` 16), which `tailwind.config.js` and `theme.ts` both read; app code writes `rounded-tag|inner|control|card|sheet|full` and never Tailwind's size-named radii, which are rem-based and so differ between native (rem 14) and web (rem 16). Text stops at bold, small text (`xs`–`base`) at semibold, no text takes negative tracking, and changing or aligned numbers use `tabular-nums`. Buttons are flat and sized from `components/theme/buttonMetrics.ts`, shared by `Button.tsx` and `Button.web.tsx`; cards carry no shadow. `components/__tests__/deslopGuards.test.ts` (Phase 10) holds each rule at zero.

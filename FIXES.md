@@ -3,6 +3,31 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Home flashed the default theme on every cold start (October 2026)
+
+### Symptom
+
+On a database with years of logs, opening the app painted Home in the default green palette for a
+couple of seconds, then repainted it in the user's chosen theme. Web never showed it.
+
+### Cause
+
+The preference lives only in the `settings` table. The splash is hidden on the first commit,
+`AppDbReadyGate` mounts `SettingsProvider` once the database is ready, and its first emission arrives
+asynchronously, queued behind the boot migrations (WatermelonDB runs on the JS thread under JSI). Until
+then `ThemeProvider` resolved `system` to the default dark theme. `utils/themeMirror` already carried
+the preference through `localStorage` on web, but `localStorage` does not exist on native.
+
+### Fix
+
+The mirror is also backed by AsyncStorage on native (`musclog_theme_mirror_native`, preference and
+resolved id only; a separate key because AsyncStorage _is_ `localStorage` on web). `hydrateThemeMirror()`
+starts at module load in `app/_layout.tsx` and `AppDbReadyGate` awaits it before mounting the providers,
+so `ThemeProvider`'s existing "mirror while `isLoading`" path paints the real theme on the first frame.
+`useBootColors` subscribes to it on native, so the splash and boot progress match. The first launch after
+upgrading has no mirror yet and still shows the default once. The slow load itself (boot migrations and
+Home queries on a large dataset) is a separate problem. Pinned by `utils/__tests__/themeMirror.test.ts`.
+
 ## Musclog 1.x import lost most workout sets and invented empty workouts (October 2026)
 
 ### Symptom

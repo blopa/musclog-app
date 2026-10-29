@@ -1,5 +1,9 @@
-import type { ThemeId, ThemeOption } from '@/constants/settings';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+
+import { THEME_IDS, type ThemeId, type ThemeOption } from '@/constants/settings';
 import { themeCssVariables } from '@/theme.tokens';
+import { normalizeThemeOption } from '@/utils/themeSelection';
 
 /**
  * The theme preference as the web build can always reach it.
@@ -17,8 +21,25 @@ import { themeCssVariables } from '@/theme.tokens';
  * body renders. The settings table stays authoritative wherever it can be read;
  * this is the stand-in, and `ThemeProvider` refreshes it from the real row as
  * soon as one arrives.
+ *
+ * Native has the same gap for a different reason: the splash is hidden on the
+ * first commit and `SettingsProvider` only learns the preference after the
+ * database opens and its first query emits — long enough, behind the boot
+ * migrations on a large database, to paint the whole Home screen in the default
+ * palette. There the mirror lives in AsyncStorage (`localStorage` does not
+ * exist), which can only be read asynchronously, so `hydrateThemeMirror` loads
+ * it before `AppDbReadyGate` mounts the providers. Native stores just the
+ * preference and resolved id: nothing there replays CSS variables.
  */
 export const THEME_MIRROR_STORAGE_KEY = 'musclog_theme';
+
+/**
+ * Distinct from the web key on purpose: AsyncStorage *is* `localStorage` on web,
+ * so sharing the key would let this layer write over the web mirror's `variables`.
+ */
+export const NATIVE_THEME_MIRROR_STORAGE_KEY = 'musclog_theme_mirror_native';
+
+const isNative = Platform.OS !== 'web';
 
 export type ThemeMirror = {
   preference: ThemeOption;
@@ -56,10 +77,17 @@ const listeners = new Set<() => void>();
 function commit(next: ThemeMirror): void {
   snapshot = next;
 
-  try {
-    storage()?.setItem(THEME_MIRROR_STORAGE_KEY, JSON.stringify(next));
-  } catch {
-    // A full or blocked store costs the pre-paint optimisation, nothing else.
+  if (isNative) {
+    const { preference, themeId } = next;
+    AsyncStorage.setItem(NATIVE_THEME_MIRROR_STORAGE_KEY, JSON.stringify({ preference, themeId }))
+      // A failed write costs the first-paint optimisation, nothing else.
+      .catch(() => {});
+  } else {
+    try {
+      storage()?.setItem(THEME_MIRROR_STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // A full or blocked store costs the pre-paint optimisation, nothing else.
+    }
   }
 
   for (const listener of listeners) {
@@ -74,6 +102,47 @@ export function subscribeToThemeMirror(listener: () => void): () => void {
 
 export function getThemeMirror(): null | ThemeMirror {
   return snapshot;
+}
+
+let hydration: null | Promise<void> = null;
+
+async function readNativeMirror(): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(NATIVE_THEME_MIRROR_STORAGE_KEY);
+    // A commit that landed while the read was in flight is newer than the disk.
+    if (!raw || snapshot) {
+      return;
+    }
+
+    const parsed = JSON.parse(raw) as Partial<ThemeMirror> | null;
+    if (!parsed?.preference) {
+      return;
+    }
+
+    const themeId = THEME_IDS.includes(parsed.themeId as ThemeId)
+      ? (parsed.themeId as ThemeId)
+      : undefined;
+    snapshot = { preference: normalizeThemeOption(parsed.preference), themeId };
+    for (const listener of listeners) {
+      listener();
+    }
+  } catch {
+    // An unreadable mirror just means the first frame uses the default palette.
+  }
+}
+
+/**
+ * Loads the native mirror from AsyncStorage. Idempotent, never rejects, and a
+ * no-op on web, where the mirror is read synchronously at module load. Await it
+ * before mounting `ThemeProvider`, or the first frame is the default palette.
+ */
+export function hydrateThemeMirror(): Promise<void> {
+  if (!isNative) {
+    return Promise.resolve();
+  }
+
+  hydration ??= readNativeMirror();
+  return hydration;
 }
 
 /** Server snapshot for `useSyncExternalStore`: static rendering has no storage. */

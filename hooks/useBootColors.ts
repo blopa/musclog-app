@@ -1,7 +1,9 @@
+import { useSyncExternalStore } from 'react';
 import { Platform, useColorScheme } from 'react-native';
 
 import { darkColors, lightColors, themeColorSetsById } from '@/theme.tokens';
-import { getThemeMirror } from '@/utils/themeMirror';
+import { getServerThemeMirror, getThemeMirror, subscribeToThemeMirror } from '@/utils/themeMirror';
+import { resolveThemeId } from '@/utils/themeSelection';
 
 /**
  * The palette the last session settled on, read straight from the web mirror.
@@ -16,11 +18,24 @@ const MIRRORED_COLORS =
  * Palette for the pre-boot surfaces (splash, boot progress, the root shell).
  *
  * These render before `SettingsProvider` exists, so the stored theme preference
- * is not readable yet and the system scheme is the only signal available — on
- * web the mirror stands in for it. Pulling from `theme.tokens` rather than
+ * is not readable yet and the system scheme is the only signal available — the
+ * mirror stands in for it. On web it is read once at module load; on native it
+ * arrives asynchronously from AsyncStorage (`hydrateThemeMirror`), so it is
+ * subscribed to instead. Pulling from `theme.tokens` rather than
  * `theme.ts` keeps them importable before the database layer loads.
  */
 export function useBootColors(): typeof darkColors {
-  const systemColors = useColorScheme() === 'light' ? lightColors : darkColors;
-  return MIRRORED_COLORS ?? systemColors;
+  const systemScheme = useColorScheme();
+  const mirror = useSyncExternalStore(subscribeToThemeMirror, getThemeMirror, getServerThemeMirror);
+  const systemColors = systemScheme === 'light' ? lightColors : darkColors;
+
+  if (Platform.OS === 'web') {
+    return MIRRORED_COLORS ?? systemColors;
+  }
+
+  // Resolve from the preference rather than the stored id so a `system`
+  // preference still follows the scheme the device has now.
+  return mirror
+    ? themeColorSetsById[resolveThemeId(mirror.preference, systemScheme)]
+    : systemColors;
 }
