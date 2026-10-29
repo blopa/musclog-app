@@ -2,7 +2,7 @@
 title: 'I put a calendar of squares on the home screen, in three sizes'
 date: '2026-10-22'
 category: 'product-updates'
-description: 'Musclog can now show your workouts and your food logging as GitHub-style heatmaps on Home. Here is what each square means, the three layouts (full width, side by side, compact), why the half-width version got redesigned, and why it is off until you ask for it.'
+description: 'Musclog can now show your workouts and your food logging as GitHub-style heatmaps on Home. Here is what each square means, the three layouts (full width, side by side, compact), why the half-width version got redesigned, the home screen widget that shows the compact one without opening the app, and why it is all off until you ask for it.'
 tags: ['Musclog', 'Heatmap', 'React Native', 'Home Screen', 'Fitness', 'UX']
 ---
 
@@ -10,7 +10,7 @@ The most useful thing a fitness app can show you on a quiet Tuesday isn't a numb
 
 A row of totals can't answer that. A calendar of squares can, at a glance, and everyone already knows how to read one because of GitHub's contribution graph. So Home can now show one, for your workouts, for your food logging, or both.
 
-It's **off by default**. Home is still the same screen you had yesterday until you turn it on. (The screenshots below use Musclog's demo data, so the patterns are made up. Yours will be yours.)
+It's **off by default**. Home is still the same screen you had yesterday until you turn it on. (And if you'd rather not open the app at all, there's now a [widget](#the-compact-one-is-also-a-widget) for your phone's home screen.) (The screenshots below use Musclog's demo data, so the patterns are made up. Yours will be yours.)
 
 ## What a square means
 
@@ -87,6 +87,54 @@ The fix was to stop pretending it was a calendar. A half-width card has width to
 
 If ten per row doesn't suit you, that's a single constant in the code. Fifteen would give two rows of slightly smaller squares. I'd rather ship one good default than a slider.
 
+## The compact one is also a widget
+
+The compact layout turned out to be the right shape for something else: the home screen of your phone. So there's now an **Activity Heatmap** widget for Android and iOS that is that same card: two thin rows of the last 30 days, workouts on top and food logging underneath, with no need to open Musclog to see whether the month looks the way you think it does.
+
+It is its own thing, not a mirror of the Home setting. You can leave Home heatmaps off and still put the widget on your home screen, and it always shows both rows, because there's no settings screen on a widget to choose between them. It's a 4×2 widget on Android and a medium widget on iOS.
+
+Everything about what a square means carries over, because it's the same code and not a copy of it. The widget uses the same level calculation, the same fixed scales (one workout is the third of four steps, all four meals is the darkest) and the same table of opacities as the Home card, so a day is the same shade in both places. That table used to live inside a chart component; it moved into the plain utility file so the widget could import it without pulling in a UI component.
+
+```typescript
+export const ACTIVITY_LEVEL_OPACITY: Record<ActivityHeatmapLevel, number> = {
+  0: 1,
+  1: 0.32,
+  2: 0.52,
+  3: 0.76,
+  4: 1,
+};
+```
+
+A few things are different, because a widget isn't a screen:
+
+- **It can't draw with opacity, so the colors are mixed in advance.** Neither widget runtime has an opacity modifier. The snapshot the app hands the widget carries a level from 0 to 4 for each day, plus five ready-made colors: the theme's accent at each of those opacities, written as `#rrggbbaa`. The widget only picks one per square.
+- **Midnight doesn't blank it.** The Nutrition widget has to fall back to "Open Musclog to refresh" after midnight, because yesterday's calorie total is no longer true. A heatmap doesn't have that problem. On iOS I schedule a second entry for midnight in which every row moves one day along and the new day is empty, which is exactly right at 00:00, so the widget stays readable until the app refreshes it.
+- **It updates when the data does.** Finish a workout or log a meal and the right square darkens, because the widget refreshes on any change to those two tables, as well as when the app comes to the foreground or the day changes. As with the Home card it reads only plain columns (when a workout started, and the date, time zone and meal type of a food log), so nothing is decrypted to draw it.
+- **Tapping it opens Home**, where the heatmaps are if you've turned them on.
+
+It also follows the Nutrition widget rather than the Cycle widget on one point: it doesn't hide behind the app locks. It only shows which days had _something_ in them, never a figure from your encrypted records, so there's nothing in it that a lock exists to protect. The Cycle widget is stricter because a day count is exactly the kind of thing you may not want visible on a locked phone.
+
+### Thirty squares without weights
+
+The iOS version is the easy one: thirty small rounded rectangles in a row, each told to share the width equally, like the Home card.
+
+Android was the awkward one. Its widget runtime has no flex weights and no gap between children, and the underlying Glance layouts accept at most ten children in a row. So each square is a fixed-size box (5dp wide) followed by a 2dp spacer, and each row is six groups of five, never thirty loose children:
+
+```tsx
+<Row verticalAlignment="center">
+  {groups.map((group, groupIndex) => (
+    <Row key={`${rowKey}-${groupIndex}`} verticalAlignment="center">
+      {group.flatMap((level, index) => [
+        <Box modifiers={[size(5, 14), background(props.levelColors[level]), cornerRadius(2)]} />,
+        <Spacer modifiers={[width(2)]} />,
+      ])}
+    </Row>
+  ))}
+</Row>
+```
+
+Thirty squares at 7dp each (5dp plus the 2dp gap) is 210dp, which is why the widget is four cells wide: the narrowest a 4-cell widget can get is about 250dp, minus a little padding on each side. A test fails the build if that arithmetic stops working, or if any row grows past ten children.
+
 ## What it costs
 
 A heatmap sounds like a decorative feature, but it's two live database queries per chart, so I was careful about when they run.
@@ -99,6 +147,8 @@ A heatmap sounds like a decorative feature, but it's two live database queries p
 ## Turning it on
 
 Open **Settings → Appearance and home → Home heatmaps**. Pick workouts, nutrition or both, and if you picked both, pick a layout. The first time you update to this version, the What's new tour also tells you about it.
+
+For the widget, long-press your home screen, choose widgets, and look for **Activity Heatmap** under Musclog.
 
 ## What it deliberately doesn't do
 

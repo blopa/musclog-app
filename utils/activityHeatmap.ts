@@ -23,6 +23,18 @@ export const ACTIVITY_HEATMAP_MIN_MONTH_LABEL_SPAN = 3;
 
 export type ActivityHeatmapLevel = 0 | 1 | 2 | 3 | 4;
 
+/**
+ * Opacity of the accent over its surface for levels 1-4; level 0 is the neutral empty cell. Shared
+ * by the home heatmaps and the home screen widget, so a day is the same shade in both.
+ */
+export const ACTIVITY_LEVEL_OPACITY: Record<ActivityHeatmapLevel, number> = {
+  0: 1,
+  1: 0.32,
+  2: 0.52,
+  3: 0.76,
+  4: 1,
+};
+
 export type ActivityHeatmapDay = {
   /** Local calendar day, `yyyy-MM-dd`. */
   date: string;

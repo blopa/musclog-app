@@ -15,6 +15,7 @@ it('configures both platforms, previews, identities, and existing compact Androi
   expect(config.widgets.map((widget: { name: string }) => widget.name)).toEqual([
     'Nutrition',
     'SmartCamera',
+    'ActivityHeatmap',
     'Cycle',
   ]);
   // The nutrition ring needs two rows; this matches the iOS medium family.
@@ -25,10 +26,18 @@ it('configures both platforms, previews, identities, and existing compact Androi
     targetCellHeight: 2,
   });
   expect(config.widgets[1].android).toMatchObject({ targetCellWidth: 1, targetCellHeight: 1 });
-  expect(config.widgets[2].android).toMatchObject({ targetCellWidth: 2, targetCellHeight: 1 });
+  // Thirty 5dp squares with 2dp gaps need the 4-cell width, and two rows plus a title need two cells of height.
+  expect(config.widgets[2].android).toMatchObject({
+    minWidth: 250,
+    minHeight: 110,
+    targetCellWidth: 4,
+    targetCellHeight: 2,
+  });
+  expect(config.widgets[3].android).toMatchObject({ targetCellWidth: 2, targetCellHeight: 1 });
   expect(config.widgets[0].ios.supportedFamilies).toEqual(['systemSmall', 'systemMedium']);
   expect(config.widgets[1].ios.supportedFamilies).toEqual(['systemSmall']);
-  expect(config.widgets[2].ios.supportedFamilies).toEqual(['systemSmall']);
+  expect(config.widgets[2].ios.supportedFamilies).toEqual(['systemMedium']);
+  expect(config.widgets[3].ios.supportedFamilies).toEqual(['systemSmall']);
   for (const widget of config.widgets) {
     expect(readFileSync(join(root, widget.ios.initialLayout), 'utf8')).toContain("'widget'");
     expect(readFileSync(join(root, widget.android.initialLayout), 'utf8')).toContain("'widget'");

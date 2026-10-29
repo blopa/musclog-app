@@ -88,6 +88,14 @@
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/smart_camera_info"/>
       <meta-data android:name="expo.modules.widgets.NAME" android:value="SmartCamera"/>
     </receiver>
+    <receiver android:name=".ActivityHeatmapProvider" android:exported="true" android:label="@string/activity_heatmap_display_name">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="expo.modules.widgets.ACTION_WIDGET_INTERACTION"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/activity_heatmap_info"/>
+      <meta-data android:name="expo.modules.widgets.NAME" android:value="ActivityHeatmap"/>
+    </receiver>
     <receiver android:name=".CycleProvider" android:exported="true" android:label="@string/cycle_display_name">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>

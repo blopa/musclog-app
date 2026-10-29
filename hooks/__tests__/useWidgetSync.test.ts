@@ -44,6 +44,20 @@ jest.mock('@/database/services/NutritionTargetService', () => ({ NutritionTarget
 jest.mock('@/utils/handleError', () => ({
   handleError: (...args: unknown[]) => mockReport(...args),
 }));
+const mockActivityTimeline = jest.fn();
+const mockActivityDays = jest.fn();
+
+jest.mock('@/widgets/activityWidgetData', () => ({
+  loadActivityWidgetDays: () => mockActivityDays(),
+  subscribeToActivityChanges: () => jest.fn(),
+}));
+jest.mock('@/widgets/ActivityHeatmapWidget', () => ({
+  __esModule: true,
+  default: {
+    updateSnapshot: jest.fn(),
+    updateTimeline: (...args: unknown[]) => mockActivityTimeline(...args),
+  },
+}));
 jest.mock('@/widgets/cycleWidgetData', () => ({
   loadCycleWidgetInputs: () => mockReadCycleInputs(),
   subscribeToCycleChanges: () => jest.fn(),
@@ -70,12 +84,14 @@ jest.mock('@/widgets/widgetSnapshot', () => ({
   widgetPalette: () => ({}),
   buildNutritionWidgetSnapshot: () => ({ value: 'nutrition' }),
   expiredWidgetSnapshot: () => ({ value: '' }),
+  widgetColorWithAlpha: (color: string) => color,
 }));
 
 beforeEach(() => {
   jest.clearAllMocks();
   mockSettings = { isLoading: false, appLockScopes: [] };
   mockReadCycleInputs.mockResolvedValue({ lockScopes: [], elapsedDay: 12 });
+  mockActivityDays.mockResolvedValue({ workoutDays: [], mealDays: [] });
   jest.mocked(NutritionService.getDailyNutrients).mockResolvedValue({} as never);
 });
 
@@ -114,5 +130,20 @@ it('publishes the private fallback while nutrition never finishes', async () => 
     )
   );
   expect(mockNutritionSnapshot).not.toHaveBeenCalled();
+  expect(mockCameraSnapshot).toHaveBeenCalled();
+});
+
+it('keeps the other widgets publishing when the activity read fails', async () => {
+  mockActivityDays.mockRejectedValue(new Error('activity read failed'));
+  const { Platform } = jest.requireMock('react-native');
+  Platform.OS = 'android';
+  render(createElement(WidgetSync));
+  await waitFor(() => expect(mockCycleSnapshot).toHaveBeenCalled());
+  await waitFor(() =>
+    expect(mockReport).toHaveBeenCalledWith(expect.any(Error), 'widgets.refresh', {
+      showSnackbar: false,
+    })
+  );
+  expect(mockActivityTimeline).not.toHaveBeenCalled();
   expect(mockCameraSnapshot).toHaveBeenCalled();
 });

@@ -2,11 +2,14 @@ import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type LayoutChangeEvent, Platform, Pressable, Text, View } from 'react-native';
 
-import { ACTIVITY_LEVEL_OPACITY } from '@/components/charts/ActivityHeatmap';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import { useChartTooltip } from '@/context/ChartTooltipContext';
 import { useTheme } from '@/hooks/useTheme';
-import { type ActivityHeatmapDay, buildActivityStrip } from '@/utils/activityHeatmap';
+import {
+  ACTIVITY_LEVEL_OPACITY,
+  type ActivityHeatmapDay,
+  buildActivityStrip,
+} from '@/utils/activityHeatmap';
 
 const CELL_GAP = 3;
 const MAX_CELL = 18;

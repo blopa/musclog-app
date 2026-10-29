@@ -4,6 +4,7 @@ import {
   INITIAL_CAMERA_SNAPSHOT,
   INITIAL_NUTRITION_SNAPSHOT,
   INITIAL_WIDGET_PALETTE,
+  widgetColorWithAlpha,
   widgetProgress,
   widgetTrackColor,
 } from '../widgetSnapshot';
@@ -56,6 +57,14 @@ describe('nutrition widget snapshots', () => {
     // Anything that is not plain #rrggbb is passed through rather than corrupted.
     expect(widgetTrackColor('rgba(1, 2, 3, 0.5)')).toBe('rgba(1, 2, 3, 0.5)');
     expect(INITIAL_WIDGET_PALETTE.track).toBe(`${INITIAL_WIDGET_PALETTE.text}1f`);
+  });
+
+  it('composes a #rrggbbaa color at a clamped opacity', () => {
+    expect(widgetColorWithAlpha('#0f1a16', 1)).toBe('#0f1a16ff');
+    expect(widgetColorWithAlpha('#0f1a16', 0.32)).toBe('#0f1a1652');
+    expect(widgetColorWithAlpha('#0f1a16', 0)).toBe('#0f1a1600');
+    expect(widgetColorWithAlpha('#0f1a16', 3)).toBe('#0f1a16ff');
+    expect(widgetColorWithAlpha('rgba(1, 2, 3, 0.5)', 0.5)).toBe('rgba(1, 2, 3, 0.5)');
   });
 
   it('publishes translated copy, the selected palette, and a localized date', () => {

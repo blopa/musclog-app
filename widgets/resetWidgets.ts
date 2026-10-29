@@ -1,6 +1,7 @@
 import { handleError } from '@/utils/handleError';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+import { INITIAL_ACTIVITY_SNAPSHOT } from './activityWidgetSnapshot';
 import { INITIAL_CYCLE_SNAPSHOT } from './cycleWidgetSnapshot';
 import { INITIAL_CAMERA_SNAPSHOT, INITIAL_NUTRITION_SNAPSHOT } from './widgetSnapshot';
 
@@ -23,6 +24,11 @@ export async function resetWidgets(): Promise<void> {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const widget = (require('./CycleWidget') as typeof import('./CycleWidget')).default;
       widget.updateSnapshot(INITIAL_CYCLE_SNAPSHOT);
+    },
+    () => {
+      const widget = // eslint-disable-next-line @typescript-eslint/no-require-imports
+        (require('./ActivityHeatmapWidget') as typeof import('./ActivityHeatmapWidget')).default;
+      widget.updateSnapshot(INITIAL_ACTIVITY_SNAPSHOT);
     },
   ];
   for (const reset of clear) {

@@ -43,10 +43,22 @@ export type CameraWidgetSnapshot = {
 };
 
 // Every palette color is `#rrggbb`; the widget runtimes read `#rrggbbaa` in CSS byte order.
-const TRACK_ALPHA = '1f';
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+const TRACK_OPACITY = 0x1f / 255;
+
+/** `color` at `opacity` as `#rrggbbaa`; a color that is not `#rrggbb` is returned unchanged. */
+export function widgetColorWithAlpha(color: string, opacity: number): string {
+  if (!HEX_COLOR.test(color)) {
+    return color;
+  }
+
+  const alpha = Math.round(Math.min(1, Math.max(0, opacity)) * 255);
+
+  return `${color}${alpha.toString(16).padStart(2, '0')}`;
+}
 
 export function widgetTrackColor(text: string): string {
-  return /^#[0-9a-f]{6}$/i.test(text) ? `${text}${TRACK_ALPHA}` : text;
+  return widgetColorWithAlpha(text, TRACK_OPACITY);
 }
 
 export function widgetPalette(

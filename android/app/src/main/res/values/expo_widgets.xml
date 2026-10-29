@@ -3,12 +3,15 @@
   <string-array name="expo_widgets_names">
     <item>Nutrition</item>
     <item>SmartCamera</item>
+    <item>ActivityHeatmap</item>
     <item>Cycle</item>
   </string-array>
   <string name="nutrition_display_name">Nutrition Progress</string>
   <string name="nutrition_description">Shows daily nutrition progress</string>
   <string name="smart_camera_display_name">Smart Camera</string>
   <string name="smart_camera_description">Open Smart Camera</string>
+  <string name="activity_heatmap_display_name">Activity Heatmap</string>
+  <string name="activity_heatmap_description">Shows your last 30 days of workouts and food logging</string>
   <string name="cycle_display_name">Cycle</string>
   <string name="cycle_description">Shows your cycle day. Private by default.</string>
 </resources>

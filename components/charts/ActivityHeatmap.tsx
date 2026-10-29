@@ -23,19 +23,11 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import {
   ACTIVITY_HEATMAP_LEVELS,
+  ACTIVITY_LEVEL_OPACITY,
   type ActivityHeatmapDay,
   type ActivityHeatmapLevel,
   buildActivityHeatmap,
 } from '@/utils/activityHeatmap';
-
-/** Opacity of the accent over the card for levels 1-4; level 0 is the neutral empty cell. */
-export const ACTIVITY_LEVEL_OPACITY: Record<ActivityHeatmapLevel, number> = {
-  0: 1,
-  1: 0.32,
-  2: 0.52,
-  3: 0.76,
-  4: 1,
-};
 
 /** Square sizing; the compact form trades the weekday column and some size for a narrower card. */
 const SIZING = {

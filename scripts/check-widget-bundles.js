@@ -23,7 +23,12 @@ try {
     }
 
     const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8')).widgets;
-    assert.deepEqual(Object.keys(registry).sort(), ['Nutrition', 'SmartCamera']);
+    assert.deepEqual(Object.keys(registry).sort(), [
+      'ActivityHeatmap',
+      'Cycle',
+      'Nutrition',
+      'SmartCamera',
+    ]);
     const context = vm.createContext({ console });
     vm.runInContext(fs.readFileSync(runtimePath, 'utf8'), context);
     for (const [name, widget] of Object.entries(registry)) {
@@ -54,9 +59,23 @@ try {
         calorieProgress: 0.49,
         macros: [{ label: 'Protein', value: '42 g', progress: 0.5, color: '#abcdef' }],
         imageUri: 'file:///shared/camera.png',
+        // The Cycle widget draws its figure only in the `day` state.
+        state: name === 'Cycle' ? 'day' : 'ready',
+        value: '12',
+        caption: 'Day',
+        // The activity widget draws one square per level, in the color of that level.
+        title: 'Last 30 days',
+        rows: [{ key: 'workouts', label: 'Workouts', levels: [0, 1, 2, 3, 4] }],
+        levelColors: ['#000000', '#111111', '#222222', '#333333', '#abcdef'],
       };
       const rendered = JSON.stringify(render(populated));
-      assert.ok(rendered.includes(name === 'Nutrition' ? '987' : 'camera.png'));
+      const expected = {
+        Nutrition: '987',
+        SmartCamera: 'camera.png',
+        Cycle: '12',
+        ActivityHeatmap: '#abcdef',
+      }[name];
+      assert.ok(rendered.includes(expected), `${platform}/${name} renders its populated data`);
       if (name === 'Nutrition') {
         assert.ok(rendered.includes('42 g'));
         assert.ok(rendered.includes('#abcdef'));

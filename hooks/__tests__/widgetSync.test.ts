@@ -3,6 +3,7 @@ import { AppState } from 'react-native';
 
 import { NutritionService } from '@/database/services/NutritionService';
 import { widgetEvents } from '@/utils/widgetEvents';
+import ActivityHeatmapWidget from '@/widgets/ActivityHeatmapWidget';
 import CycleWidget from '@/widgets/CycleWidget';
 import NutritionWidget from '@/widgets/NutritionWidget';
 import { WidgetSync } from '@/widgets/WidgetSync';
@@ -68,6 +69,18 @@ jest.mock('@/utils/handleError', () => ({ handleError: jest.fn(async () => {}) }
 jest.mock('@/widgets/NutritionWidget', () => ({
   __esModule: true,
   default: { updateTimeline: jest.fn(), updateSnapshot: jest.fn() },
+}));
+jest.mock('@/widgets/ActivityHeatmapWidget', () => ({
+  __esModule: true,
+  default: { updateTimeline: jest.fn(), updateSnapshot: jest.fn() },
+}));
+jest.mock('@/widgets/activityWidgetData', () => ({
+  loadActivityWidgetDays: jest.fn(async () => ({
+    // The widget reads the real clock, so "today" is whatever it is when the test runs.
+    workoutDays: [{ date: new Date().toLocaleDateString('sv-SE'), value: 1 }],
+    mealDays: [],
+  })),
+  subscribeToActivityChanges: jest.fn(() => jest.fn()),
 }));
 jest.mock('@/widgets/CycleWidget', () => ({
   __esModule: true,
@@ -162,5 +175,43 @@ describe('cycle widget', () => {
     expect(props.value).toBe('');
     expect(props.state).toBe('private');
     unmount();
+  });
+});
+
+describe('activity heatmap widget', () => {
+  const { loadActivityWidgetDays, subscribeToActivityChanges } = jest.requireMock(
+    '@/widgets/activityWidgetData'
+  );
+
+  it('publishes the last 30 days, then the same days moved along at midnight', async () => {
+    const { unmount } = renderHook(() => WidgetSync());
+    await waitFor(() => expect(ActivityHeatmapWidget.updateTimeline).toHaveBeenCalledTimes(1));
+    const [today, tomorrow] = (ActivityHeatmapWidget.updateTimeline as jest.Mock).mock.calls[0][0];
+    const workouts = (snapshot: { rows: { key: string; levels: number[] }[] }) =>
+      snapshot.rows.find((row) => row.key === 'workouts')?.levels ?? [];
+
+    expect(today.props.state).toBe('ready');
+    expect(workouts(today.props)).toHaveLength(30);
+    expect(workouts(today.props)[29]).toBeGreaterThan(0);
+    expect(workouts(tomorrow.props)[28]).toBeGreaterThan(0);
+    expect(workouts(tomorrow.props)[29]).toBe(0);
+    expect(tomorrow.date.getHours()).toBe(0);
+    unmount();
+  });
+
+  it('refreshes after a workout or food change and stops listening on unmount', async () => {
+    const unsubscribe = jest.fn();
+    let notify: () => void = () => {};
+    (subscribeToActivityChanges as jest.Mock).mockImplementationOnce((listener: () => void) => {
+      notify = listener;
+      return unsubscribe;
+    });
+    const { unmount } = renderHook(() => WidgetSync());
+    await waitFor(() => expect(ActivityHeatmapWidget.updateTimeline).toHaveBeenCalledTimes(1));
+    act(() => notify());
+    await waitFor(() => expect(ActivityHeatmapWidget.updateTimeline).toHaveBeenCalledTimes(2));
+    expect(loadActivityWidgetDays).toHaveBeenCalledTimes(2);
+    unmount();
+    expect(unsubscribe).toHaveBeenCalled();
   });
 });

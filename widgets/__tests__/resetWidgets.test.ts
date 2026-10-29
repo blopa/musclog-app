@@ -1,6 +1,8 @@
 import { widgetEvents } from '@/utils/widgetEvents';
 import { handleError } from '@/utils/handleError';
 
+import ActivityHeatmapWidget from '../ActivityHeatmapWidget';
+import { INITIAL_ACTIVITY_SNAPSHOT } from '../activityWidgetSnapshot';
 import CycleWidget from '../CycleWidget';
 import { INITIAL_CYCLE_SNAPSHOT } from '../cycleWidgetSnapshot';
 import NutritionWidget from '../NutritionWidget';
@@ -8,6 +10,10 @@ import { resetWidgets } from '../resetWidgets';
 import SmartCameraWidget from '../SmartCameraWidget';
 import { INITIAL_CAMERA_SNAPSHOT, INITIAL_NUTRITION_SNAPSHOT } from '../widgetSnapshot';
 
+jest.mock('../ActivityHeatmapWidget', () => ({
+  __esModule: true,
+  default: { updateSnapshot: jest.fn() },
+}));
 jest.mock('../CycleWidget', () => ({
   __esModule: true,
   default: { updateSnapshot: jest.fn() },
@@ -32,6 +38,7 @@ it('invalidates pending refreshes before clearing every persisted widget snapsho
   expect(NutritionWidget.updateSnapshot).toHaveBeenCalledWith(INITIAL_NUTRITION_SNAPSHOT);
   expect(SmartCameraWidget.updateSnapshot).toHaveBeenCalledWith(INITIAL_CAMERA_SNAPSHOT);
   expect(CycleWidget.updateSnapshot).toHaveBeenCalledWith(INITIAL_CYCLE_SNAPSHOT);
+  expect(ActivityHeatmapWidget.updateSnapshot).toHaveBeenCalledWith(INITIAL_ACTIVITY_SNAPSHOT);
   expect(reset.mock.invocationCallOrder[0]).toBeLessThan(
     (NutritionWidget.updateSnapshot as jest.Mock).mock.invocationCallOrder[0]
   );

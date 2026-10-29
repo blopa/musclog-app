@@ -158,3 +158,31 @@ describe('ActivityHeatmapRepository.observeMealDays', () => {
     expect(seen[seen.length - 1]).toBe(2);
   });
 });
+
+describe('ActivityHeatmapRepository.fetchWorkoutDays / fetchMealDays', () => {
+  it('reads the same days the live queries emit, once', async () => {
+    await addWorkout(day(8, 7));
+    await addWorkout(day(8, 18));
+    await addWorkout(day(11), { completed: false });
+    await addWorkout(day(12), { deleted: true });
+    await addFood(day(8, 8), 'breakfast');
+    await addFood(day(8, 13), 'lunch');
+    await addFood(day(8, 14), 'lunch');
+    await addFood(day(9, 21), 'snack', { deleted: true });
+    await addFood(day(19, 1), 'breakfast'); // inside the timezone buffer, outside the window
+
+    const fetched = {
+      workouts: await ActivityHeatmapRepository.fetchWorkoutDays(START, END),
+      meals: await ActivityHeatmapRepository.fetchMealDays(START, END),
+    };
+
+    expect(fetched.workouts).toEqual([{ date: '2026-10-08', value: 2 }]);
+    expect(fetched.meals).toEqual([{ date: '2026-10-08', value: 2 }]);
+    expect(fetched.workouts).toEqual(
+      await firstValueFrom(ActivityHeatmapRepository.observeWorkoutDays(START, END))
+    );
+    expect(fetched.meals).toEqual(
+      await firstValueFrom(ActivityHeatmapRepository.observeMealDays(START, END))
+    );
+  });
+});

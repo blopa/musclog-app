@@ -12,13 +12,15 @@ import { nutritionHeatmapDays, workoutHeatmapDays } from '@/utils/activityHeatma
 import { dayKeyRange, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 
 /**
- * Live per-day activity for the home heatmaps. Each method observes its own query and re-emits
- * whenever a row that could change a day is added, removed or edited, so the home screen needs
- * no refetch on focus. Both read only plaintext columns: a heatmap never decrypts a log.
+ * Per-day activity for the heatmaps. The `observe*` methods are live: each observes its own query
+ * and re-emits whenever a row that could change a day is added, removed or edited, so the home
+ * screen needs no refetch on focus. The `fetch*` methods read the same days once, for the home
+ * screen widget, which is not a React tree. All of them read only plaintext columns: a heatmap
+ * never decrypts a log.
  */
 export class ActivityHeatmapRepository {
   /** Completed, not deleted workouts that started between `startDate` and `endDate` (local days, inclusive). */
-  static observeWorkoutDays(startDate: Date, endDate: Date): Observable<ActivityHeatmapDay[]> {
+  private static workoutQuery(startDate: Date, endDate: Date) {
     return database
       .get<WorkoutLog>('workout_logs')
       .query(
@@ -26,22 +28,48 @@ export class ActivityHeatmapRepository {
         Q.where('deleted_at', Q.eq(null)),
         Q.where('started_at', Q.gte(startOfDay(startDate).getTime())),
         Q.where('started_at', Q.lte(endOfDay(endDate).getTime()))
-      )
+      );
+  }
+
+  /** Food logged between `startDate` and `endDate` (local days, inclusive), with the day range that trims its overscan. */
+  private static mealQuery(startDate: Date, endDate: Date) {
+    const range = dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate));
+
+    return {
+      range,
+      query: database
+        .get<NutritionLog>('nutrition_logs')
+        .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range)),
+    };
+  }
+
+  static observeWorkoutDays(startDate: Date, endDate: Date): Observable<ActivityHeatmapDay[]> {
+    return ActivityHeatmapRepository.workoutQuery(startDate, endDate)
       .observe()
       .pipe(map((logs) => workoutHeatmapDays(logs.map((log) => log.startedAt))));
   }
 
-  /** Food logged between `startDate` and `endDate` (local days, inclusive), valued by distinct meals. */
+  /** Valued by distinct meals. */
   static observeMealDays(startDate: Date, endDate: Date): Observable<ActivityHeatmapDay[]> {
-    const range = dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate));
+    const { range, query } = ActivityHeatmapRepository.mealQuery(startDate, endDate);
 
     return (
-      database
-        .get<NutritionLog>('nutrition_logs')
-        .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range))
+      query
         // The meal type and the consumed time edit in place; `observe()` would miss those.
         .observeWithColumns(['type', 'date', 'timezone'])
         .pipe(map((logs) => nutritionHeatmapDays(range.filterRecords(logs))))
     );
+  }
+
+  static async fetchWorkoutDays(startDate: Date, endDate: Date): Promise<ActivityHeatmapDay[]> {
+    const logs = await ActivityHeatmapRepository.workoutQuery(startDate, endDate).fetch();
+
+    return workoutHeatmapDays(logs.map((log) => log.startedAt));
+  }
+
+  static async fetchMealDays(startDate: Date, endDate: Date): Promise<ActivityHeatmapDay[]> {
+    const { range, query } = ActivityHeatmapRepository.mealQuery(startDate, endDate);
+
+    return nutritionHeatmapDays(range.filterRecords(await query.fetch()));
   }
 }

@@ -1,3 +1,4 @@
+import { buildActivityWidgetSnapshot, INITIAL_ACTIVITY_SNAPSHOT } from '../activityWidgetSnapshot';
 import { INITIAL_CYCLE_SNAPSHOT } from '../cycleWidgetSnapshot';
 import { INITIAL_CAMERA_SNAPSHOT, INITIAL_NUTRITION_SNAPSHOT } from '../widgetSnapshot';
 
@@ -17,6 +18,10 @@ const mockSupportedViews = [
   'Text',
 ];
 const SUPPORTED_VIEWS = new Set(mockSupportedViews);
+// Glance containers hold at most this many children.
+const MAX_CHILDREN = 10;
+// The activity widget's declared minWidth in app.json, in dp.
+const ACTIVITY_MIN_WIDTH_DP = 250;
 // The nutrition widget's declared minWidth in app.json, in dp: the narrowest it can be placed.
 const NUTRITION_MIN_WIDTH_DP = 250;
 // Room the macro column needs for a label, its value and a readable bar.
@@ -78,6 +83,7 @@ const layouts = {
   Nutrition: () => loadLayout('../NutritionWidget.android'),
   SmartCamera: () => loadLayout('../SmartCameraWidget.android'),
   Cycle: () => loadLayout('../CycleWidget.android'),
+  ActivityHeatmap: () => loadLayout('../ActivityHeatmapWidget.android'),
 } as const;
 
 const palette = INITIAL_NUTRITION_SNAPSHOT.palette;
@@ -93,12 +99,21 @@ const nutrition = {
     { label: 'Fat', value: '34 g', progress: 0.4, color: palette.fat },
   ],
 };
+const activity = buildActivityWidgetSnapshot({
+  date: new Date(2026, 9, 17),
+  workoutDays: [{ date: '2026-10-17', value: 1 }],
+  mealDays: [{ date: '2026-10-16', value: 3 }],
+  palette,
+  translate: (key) => key,
+});
 const cases: [string, keyof typeof layouts, object][] = [
   ['nutrition with data', 'Nutrition', nutrition],
   ['nutrition without data', 'Nutrition', INITIAL_NUTRITION_SNAPSHOT],
   ['camera with artwork', 'SmartCamera', { ...INITIAL_CAMERA_SNAPSHOT, imageUri: 'file:///a.png' }],
   ['camera without artwork', 'SmartCamera', INITIAL_CAMERA_SNAPSHOT],
   ['cycle private', 'Cycle', INITIAL_CYCLE_SNAPSHOT],
+  ['activity heatmap with data', 'ActivityHeatmap', activity],
+  ['activity heatmap without data', 'ActivityHeatmap', INITIAL_ACTIVITY_SNAPSHOT],
   [
     'cycle with a day count',
     'Cycle',
@@ -154,6 +169,44 @@ describe('Android widget layouts', () => {
     const used = 2 * padding + (fixed as number[]).reduce((a, b) => a + b, 0);
     expect(NUTRITION_MIN_WIDTH_DP - used).toBeGreaterThanOrEqual(MIN_MACRO_COLUMN_DP);
     expect(macroColumn.children).toHaveLength(nutrition.macros.length);
+  });
+
+  it('keeps every container within the child limit and the squares within the narrowest footprint', () => {
+    type Modifier = { $type: string; width?: number; height?: number; color?: string };
+    const root = layouts.ActivityHeatmap()(activity);
+    const modifiersOf = (node: Node) => (node.props.modifiers ?? []) as Modifier[];
+    const squares: Node[] = [];
+    walk(root, (node) => {
+      expect(node.children.length).toBeLessThanOrEqual(MAX_CHILDREN);
+      if (node.name === 'Box') {
+        squares.push(node);
+      }
+    });
+
+    // 30 squares for each of the two sources, each a fixed box in a level color.
+    expect(squares).toHaveLength(2 * 30);
+    const colors = new Set(activity.levelColors);
+    for (const square of squares) {
+      const size = modifiersOf(square).find((modifier) => modifier.$type === 'size') as {
+        $type: string;
+        width: number;
+      };
+      const fill = modifiersOf(square).find((modifier) => modifier.$type === 'background');
+      expect(size.width).toBe(5);
+      expect(colors.has(fill?.color as string)).toBe(true);
+    }
+
+    // The widest row is its 30 squares and gaps; the runtime has no weights to shrink it.
+    const GAP_DP = 2;
+    const rowWidth = 30 * (5 + GAP_DP);
+    const padding = modifiersOf(root.children[0]).find(
+      (modifier) => modifier.$type === 'padding'
+    ) as {
+      $type: string;
+      start: number;
+      end: number;
+    };
+    expect(rowWidth + padding.start + padding.end).toBeLessThanOrEqual(ACTIVITY_MIN_WIDTH_DP);
   });
 
   it('draws the calories on a ring tinted from the palette', () => {

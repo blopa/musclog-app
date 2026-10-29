@@ -151,6 +151,25 @@
               }
             },
             {
+              "name": "ActivityHeatmap",
+              "displayName": "Activity Heatmap",
+              "description": "Shows your last 30 days of workouts and food logging",
+              "ios": {
+                "supportedFamilies": [
+                  "systemMedium"
+                ],
+                "initialLayout": "widgets/ActivityHeatmapWidget.tsx"
+              },
+              "android": {
+                "minWidth": 250,
+                "minHeight": 110,
+                "targetCellWidth": 4,
+                "targetCellHeight": 2,
+                "resizeMode": "none",
+                "initialLayout": "widgets/ActivityHeatmapWidget.android.tsx"
+              }
+            },
+            {
               "name": "Cycle",
               "displayName": "Cycle",
               "description": "Shows your cycle day. Private by default.",

@@ -16,6 +16,12 @@ import { localNextDayStartMsFromDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+import ActivityHeatmapWidget from './ActivityHeatmapWidget';
+import { loadActivityWidgetDays, subscribeToActivityChanges } from './activityWidgetData';
+import {
+  buildActivityWidgetSnapshot,
+  expiredActivityWidgetSnapshot,
+} from './activityWidgetSnapshot';
 import CycleWidget from './CycleWidget';
 import { loadCycleWidgetInputs, subscribeToCycleChanges } from './cycleWidgetData';
 import {
@@ -163,6 +169,24 @@ export function WidgetSync() {
       ({ date, snapshot }) => publishDaily(CycleWidget, date, snapshot, expiredCycleWidgetSnapshot),
       report
     );
+    const activityQueue = createWidgetRefreshQueue(
+      async () => {
+        await waitForDbReady();
+        const date = new Date();
+        return {
+          date,
+          snapshot: buildActivityWidgetSnapshot({
+            date,
+            ...(await loadActivityWidgetDays(date)),
+            palette,
+            translate: (key, options) => t(key, options),
+          }),
+        };
+      },
+      ({ date, snapshot }) =>
+        publishDaily(ActivityHeatmapWidget, date, snapshot, expiredActivityWidgetSnapshot),
+      report
+    );
     const cameraQueue = createWidgetRefreshQueue(
       sharedCameraImage,
       (imageUri) =>
@@ -177,12 +201,14 @@ export function WidgetSync() {
     const refresh = () => {
       void nutritionQueue.refresh();
       void cycleQueue.refresh();
+      void activityQueue.refresh();
       void cameraQueue.refresh();
     };
 
     const dispose = () => {
       nutritionQueue.dispose();
       cycleQueue.dispose();
+      activityQueue.dispose();
       cameraQueue.dispose();
     };
 
@@ -191,6 +217,9 @@ export function WidgetSync() {
     });
     const unsubscribeCycle = subscribeToCycleChanges(() => {
       void cycleQueue.refresh();
+    });
+    const unsubscribeActivity = subscribeToActivityChanges(() => {
+      void activityQueue.refresh();
     });
     const unsubscribeReset = widgetEvents.onReset(dispose);
     const subscription = AppState.addEventListener('change', (state) => {
@@ -204,6 +233,7 @@ export function WidgetSync() {
       dispose();
       unsubscribe();
       unsubscribeCycle();
+      unsubscribeActivity();
       unsubscribeReset();
       subscription.remove();
     };

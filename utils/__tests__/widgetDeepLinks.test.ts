@@ -29,6 +29,16 @@ it.each([true, false])(
   }
 );
 
+it.each([true, false])(
+  'routes the activity heatmap widget for initial=%s to Home',
+  async (initial) => {
+    await expect(
+      redirectSystemPath({ path: 'com.werules.logger://?action=open-home', initial })
+    ).resolves.toBe('/app');
+    expect((global as any).__PENDING_WIDGET_ACTION).toBeUndefined();
+  }
+);
+
 it('defers a cold camera launch until the app navigator is mounted', async () => {
   await expect(redirectSystemPath({ path: '/?action=open-camera', initial: true })).resolves.toBe(
     '/app'
@@ -42,7 +52,7 @@ it('preserves a warm camera intent for the existing Linking listener', async () 
   expect((global as any).__PENDING_WIDGET_ACTION).toBeUndefined();
 });
 
-it.each(['open-nutrition', 'open-camera', 'open-cycle'])(
+it.each(['open-nutrition', 'open-camera', 'open-cycle', 'open-home'])(
   'keeps %s inert before onboarding completes',
   async (action) => {
     (isOnboardingCompleted as jest.Mock).mockResolvedValue(false);
