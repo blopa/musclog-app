@@ -519,4 +519,61 @@ describe('getLatestHistoricalNutritionWindow', () => {
       await getLatestHistoricalNutritionWindow({ asOfDate: new Date(2026, 9, 27) })
     ).toBeNull();
   });
+
+  /**
+   * At launch the home screen asks for this window from `useEmpiricalTDEE` and, for a dynamic goal,
+   * from `resolveDailyMacros` at the same moment. Each read decrypts every log in the lookback, so
+   * two reads doubled the most expensive part of a cold start.
+   */
+  describe('sharing concurrent reads', () => {
+    const today = new Date(2026, 9, 27, 12);
+    const weightReads = () =>
+      mockGetMetricsHistory.mock.calls.filter(([type]) => type === 'weight').length;
+
+    beforeEach(() => trackDays(today.getTime() - 40 * DAY_MS, 41));
+
+    it('runs one read for concurrent requests of the same window, at any time of that day', async () => {
+      const morning = new Date(2026, 9, 27, 7);
+      const [first, second] = await Promise.all([
+        getLatestHistoricalNutritionWindow({ asOfDate: today }),
+        // The options useEmpiricalTDEE passes explicitly are the defaults readHistory relies on.
+        getLatestHistoricalNutritionWindow({
+          asOfDate: morning,
+          lookbackDays: 30,
+          minNutritionDays: 7,
+          useWeeklyFatAverages: true,
+        }),
+      ]);
+
+      expect(weightReads()).toBe(1);
+      expect(second).toBe(first);
+    });
+
+    it('reads again once the earlier request has settled, so new data is never missed', async () => {
+      await getLatestHistoricalNutritionWindow({ asOfDate: today });
+      await getLatestHistoricalNutritionWindow({ asOfDate: today });
+
+      expect(weightReads()).toBe(2);
+    });
+
+    it('does not share between different days or options', async () => {
+      await Promise.all([
+        getLatestHistoricalNutritionWindow({ asOfDate: today }),
+        getLatestHistoricalNutritionWindow({ asOfDate: new Date(2026, 9, 26, 12) }),
+        getLatestHistoricalNutritionWindow({ asOfDate: today, lookbackDays: 14 }),
+        getLatestHistoricalNutritionWindow({ asOfDate: today, useWeeklyFatAverages: false }),
+      ]);
+
+      expect(weightReads()).toBe(4);
+    });
+
+    it('lets a later request retry after a failed read', async () => {
+      mockGetMetricsHistory.mockRejectedValueOnce(new Error('db busy'));
+
+      await expect(getLatestHistoricalNutritionWindow({ asOfDate: today })).rejects.toThrow(
+        'db busy'
+      );
+      await expect(getLatestHistoricalNutritionWindow({ asOfDate: today })).resolves.not.toBeNull();
+    });
+  });
 });

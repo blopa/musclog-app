@@ -3,6 +3,43 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Home took seconds to load on a multi-year diary: repeated decryption (October 2026)
+
+### Symptom
+
+With ~14,000 nutrition logs (three and a half years), every cold start kept Home waiting about two
+seconds before its numbers appeared, with the UI unresponsive meanwhile.
+
+### Cause
+
+Not the queries: loading every log as a model took ~26 ms in a benchmark on that dataset, and the
+date reads already use the indexed `date` column. The cost was decryption. Each logged macro is a
+separate `CryptoJS.AES.decrypt(cipher, passphrase)`, and passing a passphrase makes CryptoJS run
+OpenSSL's MD5 key derivation before every value — 91% of the ~190 µs a decrypt takes on a desktop JIT,
+and far more under Hermes, which has no JIT. The calls run back to back on the JS thread without
+yielding, so nothing repaints. A cold start decrypted 8,426 values, most of them more than once:
+
+- `NutritionLog.getNutrients()` called `hasSnapshot()`, which decrypted the whole snapshot (food name
+  included), then decrypted it all again for the numbers.
+- `useEmpiricalTDEE` and, for a dynamic goal, `resolveDailyMacros` each computed the same 30-day
+  window (~2,800 decrypts each); `resolveDailyMacros` only deduplicated its own callers.
+- The `NutritionService.fixNegativeFiber` boot repair loaded and decrypted every log's fiber on every
+  launch (~1,900 decrypts), though writers had clamped fiber since the original fix.
+
+### Fix
+
+`getNutrients()` decrypts once and only the macros and micros (`getDecryptedNutrients`, with
+`isCompleteSnapshot` shared with `hasSnapshot()`). `getLatestHistoricalNutritionWindow` shares
+concurrent requests for the same day and options — in-flight only, never a settled result, so a later
+call still sees new data. The log half of the fiber repair is its own `runOnce` boot migration; the
+goal and food halves are plaintext `fiber < 0` filters and still run every boot. On the same dataset a
+cold start now decrypts 1,386 values (−84%). Pinned by `database/models/__tests__/NutritionLog.test.ts`,
+`utils/__tests__/historicalNutritionParams.test.ts` and `database/__tests__/dbBootCoordinator.test.ts`.
+
+Still open: each value still pays its own key derivation on its first read, and the boot repairs still
+run alongside Home's first reads. Removing the per-value derivation means a new ciphertext format (a
+key derived once) or whole-database encryption.
+
 ## Cold start showed default settings and an unlocked app (October 2026)
 
 ### Symptom

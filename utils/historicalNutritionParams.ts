@@ -93,10 +93,51 @@ export interface HistoricalNutritionWindow {
  * forgotten day reads as an average one, not a day of eating nothing); flagged fasting days stay
  * in as 0 kcal, through `getRangeNutrients`' day coverage.
  */
-export async function getLatestHistoricalNutritionWindow(
+const inFlightWindows = new Map<string, Promise<HistoricalNutritionWindow | null>>();
+
+/**
+ * The home screen asks for this window twice at once — `useEmpiricalTDEE` for the TDEE figure and
+ * `resolveDailyMacros` for a dynamic goal (plus `WidgetSync`) — and each read decrypts every log in
+ * the lookback. Concurrent requests for the same window share one read. Only in-flight requests
+ * are shared, never a settled result, so a later call always sees data written since.
+ *
+ * The key holds the calendar day rather than the instant: the window reads only the day of
+ * `asOfDate` (its start, its closed end and its UTC day key), never the time of day.
+ */
+export function getLatestHistoricalNutritionWindow(
   options: Omit<HistoricalNutritionOptions, 'excludeUnloggedDays'>
 ): Promise<HistoricalNutritionWindow | null> {
   const asOfDate = options.asOfDate ?? new Date();
+  const {
+    useWeeklyFatAverages = true,
+    lookbackDays = HISTORICAL_NUTRITION_LOOKBACK_DAYS,
+    minNutritionDays = MIN_DAYS_WITH_NUTRITION,
+  } = options;
+  const key = [
+    localDayStartMs(asOfDate),
+    lookbackDays,
+    minNutritionDays,
+    useWeeklyFatAverages,
+  ].join(':');
+
+  const existing = inFlightWindows.get(key);
+  if (existing) {
+    return existing;
+  }
+
+  const request = readLatestHistoricalNutritionWindow({ ...options, asOfDate }).finally(() => {
+    if (inFlightWindows.get(key) === request) {
+      inFlightWindows.delete(key);
+    }
+  });
+  inFlightWindows.set(key, request);
+  return request;
+}
+
+async function readLatestHistoricalNutritionWindow(
+  options: Omit<HistoricalNutritionOptions, 'excludeUnloggedDays'> & { asOfDate: Date }
+): Promise<HistoricalNutritionWindow | null> {
+  const { asOfDate } = options;
   const recent = await readHistoricalWindow({ ...options, asOfDate, excludeUnloggedDays: true });
   if (recent) {
     return { ...recent, fromPastWindow: false };

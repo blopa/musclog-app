@@ -83,6 +83,7 @@ async function getRunOnceMigrationCutoff(tag: string): Promise<number> {
 const BOOT_MIGRATIONS: BootMigration[] = [
   {
     tag: 'fixNegativeFiber',
+    // Both are `fiber < 0` filters on plaintext columns, so they cost nothing once clean.
     run: () =>
       Promise.all([
         NutritionGoalService.fixNegativeFiber().catch((err) =>
@@ -91,10 +92,16 @@ const BOOT_MIGRATIONS: BootMigration[] = [
         FoodService.fixNegativeFiber().catch((err) =>
           captureBootException(err, 'FoodService.fixNegativeFiber')
         ),
-        NutritionService.fixNegativeFiber().catch((err) =>
-          captureBootException(err, 'NutritionService.fixNegativeFiber')
-        ),
       ]),
+  },
+  {
+    tag: 'NutritionService.fixNegativeFiber',
+    // Logged fiber is encrypted, so finding negatives means loading and decrypting every log the
+    // user has — seconds on a multi-year diary, on every boot. Every writer now clamps fiber and
+    // getNutrients() clamps on read, so only rows from before that fix can be negative. A restore
+    // of a backup without the done-flag runs it again.
+    runOnce: true,
+    run: () => NutritionService.fixNegativeFiber(),
   },
   {
     tag: 'ExerciseService.backfillExerciseSources',
