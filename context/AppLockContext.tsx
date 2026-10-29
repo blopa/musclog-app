@@ -26,6 +26,11 @@ interface AppLockContextType {
   isLocked: (scope: AppLockScope) => boolean;
   /** The app is in the background with a lock on: draw the privacy cover. */
   obscured: boolean;
+  /**
+   * The lock settings are not known yet, so every scope reads as locked. Cover the content, but do
+   * not ask to authenticate: most people have no lock at all.
+   */
+  pending: boolean;
   /** Asks the device to authenticate; resolves true and unlocks on success. */
   unlock: () => Promise<boolean>;
   lock: () => void;
@@ -35,7 +40,8 @@ const AppLockContext = createContext<AppLockContextType | undefined>(undefined);
 
 export function AppLockProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
-  const { appLockScopes } = useSettingsContext();
+  const { appLockScopes, appLockScopesPending: pending } = useSettingsContext();
+  const knownScopes = pending ? null : appLockScopes;
   const [state, dispatch] = useReducer(lockReducer, INITIAL_LOCK_STATE);
   const authenticating = useRef(false);
 
@@ -72,14 +78,14 @@ export function AppLockProvider({ children }: { children: ReactNode }) {
 
   const lock = useCallback(() => dispatch({ type: 'locked' }), []);
   const isLocked = useCallback(
-    (scope: AppLockScope) => isScopeLocked(appLockScopes, scope, state),
-    [appLockScopes, state]
+    (scope: AppLockScope) => isScopeLocked(knownScopes, scope, state),
+    [knownScopes, state]
   );
 
   const obscured = isObscured(appLockScopes, state);
   const value = useMemo(
-    () => ({ isLocked, obscured, unlock, lock }),
-    [isLocked, obscured, unlock, lock]
+    () => ({ isLocked, obscured, pending, unlock, lock }),
+    [isLocked, obscured, pending, unlock, lock]
   );
 
   return <AppLockContext.Provider value={value}>{children}</AppLockContext.Provider>;

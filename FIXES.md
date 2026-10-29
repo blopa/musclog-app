@@ -3,30 +3,42 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
-## Home flashed the default theme on every cold start (October 2026)
+## Cold start showed default settings and an unlocked app (October 2026)
 
 ### Symptom
 
 On a database with years of logs, opening the app painted Home in the default green palette for a
-couple of seconds, then repainted it in the user's chosen theme. Web never showed it.
+couple of seconds, then repainted it in the user's chosen theme. Web never showed it. The same window
+had two quieter versions: the text was drawn in the phone's language (then English, then the app's
+language), and a whole-app or area lock was off until it ended.
 
 ### Cause
 
-The preference lives only in the `settings` table. The splash is hidden on the first commit,
+Every setting lives in the `settings` table. The splash is hidden on the first commit,
 `AppDbReadyGate` mounts `SettingsProvider` once the database is ready, and its first emission arrives
 asynchronously, queued behind the boot migrations (WatermelonDB runs on the JS thread under JSI). Until
-then `ThemeProvider` resolved `system` to the default dark theme. `utils/themeMirror` already carried
-the preference through `localStorage` on web, but `localStorage` does not exist on native.
+then every consumer saw `DEFAULT_STATE`: theme `system` (the default dark palette), language `en-US`,
+which `LanguageInitializer` applied straight away, and lock scopes `[]`, so `AppLockProvider` reported
+nothing locked. `utils/themeMirror` already carried the theme through `localStorage` on web, which is
+why web was fine; `localStorage` does not exist on native.
 
 ### Fix
 
-The mirror is also backed by AsyncStorage on native (`musclog_theme_mirror_native`, preference and
-resolved id only; a separate key because AsyncStorage _is_ `localStorage` on web). `hydrateThemeMirror()`
-starts at module load in `app/_layout.tsx` and `AppDbReadyGate` awaits it before mounting the providers,
-so `ThemeProvider`'s existing "mirror while `isLoading`" path paints the real theme on the first frame.
-`useBootColors` subscribes to it on native, so the splash and boot progress match. The first launch after
-upgrading has no mirror yet and still shows the default once. The slow load itself (boot migrations and
-Home queries on a large dataset) is a separate problem. Pinned by `utils/__tests__/themeMirror.test.ts`.
+`utils/settingsMirror.ts` keeps theme, language, units and the lock scopes in one AsyncStorage entry,
+loaded by `AppDbReadyGate` before the providers mount, seeded into `SettingsProvider`'s initial state
+and rewritten on every settings emission. The gate also applies the mirrored language to i18n before
+anything renders, and `LanguageInitializer` now waits for settings to load. The lock never trusts a
+missing mirror: until the table is read, `appLockScopesPending` locks every scope and the overlay draws
+a neutral cover (not `LockScreen`, which would prompt everyone for authentication). The mirror is
+excluded from backups, so a restore removes it and the next launch is covered until the restored table
+is read. A first version mirrored only the theme (`musclog_theme_mirror_native`); it was replaced
+before release.
+
+Remaining limits: the first launch after upgrading has no mirror, so it still shows the default theme
+and is covered until settings load. A mirror whose last write failed can say "no lock" for one launch
+after the lock was turned on. And a settings query that errors still ends loading with the defaults,
+lock included, as it did before. The slow load itself (boot migrations and Home queries on a large
+dataset) is a separate problem.
 
 ## Musclog 1.x import lost most workout sets and invented empty workouts (October 2026)
 

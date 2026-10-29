@@ -20,7 +20,13 @@ type AreaLockGateProps = {
  */
 export function AreaLockGate({ area, children }: AreaLockGateProps) {
   const { t } = useTranslation();
-  const { isLocked } = useAppLock();
+  const { isLocked, pending } = useAppLock();
+  // The root overlay covers the app until the lock settings are known; the lock screen here would
+  // prompt for authentication that most people never set up.
+  if (pending) {
+    return null;
+  }
+
   const areas = typeof area === 'string' ? [area] : area;
   const locked = areas.find((candidate) => isLocked(candidate));
 

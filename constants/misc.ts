@@ -10,6 +10,9 @@ export const ONBOARDING_CURRENT_STEP = 'onboardingCurrentStep';
 // Temporary storage key used to pass an AI-generated nutrition plan between screens
 export const TEMP_NUTRITION_PLAN = 'tempNutritionPlan';
 
+// First-frame copy of a few settings (theme, language, units, lock scopes); see `utils/settingsMirror.ts`
+export const SETTINGS_MIRROR_STORAGE_KEY = 'musclog_settings_mirror';
+
 // Temporary storage key for quick-setup data accumulated across steps
 export const QUICK_SETUP_DATA = 'quickSetupData';
 

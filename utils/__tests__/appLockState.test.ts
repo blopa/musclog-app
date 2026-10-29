@@ -48,6 +48,15 @@ describe('lockReducer', () => {
     expect(isScopeLocked(['app'], 'app', unlocked)).toBe(false);
   });
 
+  it('locks every scope while the scopes are not known yet', () => {
+    const unlocked = lockReducer(INITIAL_LOCK_STATE, { type: 'unlocked' });
+
+    for (const scope of ['app', 'cycle', 'workout', 'nutrition', 'progress'] as const) {
+      expect(isScopeLocked(null, scope, INITIAL_LOCK_STATE)).toBe(true);
+      expect(isScopeLocked(null, scope, unlocked)).toBe(true);
+    }
+  });
+
   it('stays unlocked for a short trip to the background', () => {
     let state = lockReducer(INITIAL_LOCK_STATE, { type: 'unlocked' });
     state = lockReducer(state, { type: 'background', now: 1000 });

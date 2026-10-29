@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { ENCRYPTION_KEY } from '@/constants/database';
-import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import { SETTINGS_MIRROR_STORAGE_KEY, TEMP_NUTRITION_PLAN } from '@/constants/misc';
 import {
   WEB_BACKUP_DATA_PREFIX,
   WEB_BACKUP_DB_VERSION_KEY,
@@ -33,6 +33,8 @@ describe('captureAsyncStorageDump', () => {
     await AsyncStorage.multiSet([
       [ENCRYPTION_KEY, 'secret'],
       [TEMP_NUTRITION_PLAN, '{}'],
+      // Restoring another install's copy could say no lock is on before the table is read.
+      [SETTINGS_MIRROR_STORAGE_KEY, '{"appLockScopesRaw":""}'],
       ['onboardingCompleted', 'true'],
     ]);
 

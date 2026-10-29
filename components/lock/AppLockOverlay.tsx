@@ -10,7 +10,9 @@ import { useTheme } from '@/hooks/useTheme';
  * Covers whatever it is drawn over:
  * - with "lock the whole app" on and no authentication yet, the lock screen;
  * - with any lock on while the app is in the background, a blank privacy cover, so the app
- *   switcher's snapshot shows no records.
+ *   switcher's snapshot shows no records;
+ * - while the lock settings are still loading with nothing mirrored, the same blank cover — the
+ *   whole app may be locked, but prompting would ask everyone without a lock to authenticate.
  *
  * Rendered once at the root AND inside every native Modal (`components/theme/Modal`): a Modal is
  * its own native window above the root view, so the root overlay alone could never cover a sheet
@@ -35,7 +37,7 @@ export function AppLockOverlay() {
       style={{ zIndex: 9999, elevation: 9999, backgroundColor: theme.colors.background.primary }}
       accessibilityViewIsModal
     >
-      {locked ? (
+      {locked && !lock.pending ? (
         <LockScreen title={t('cycle.lock.appTitle')} description={t('cycle.lock.appDescription')} />
       ) : (
         <Lock size={32} color={theme.colors.text.tertiary} />

@@ -81,12 +81,17 @@ import {
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database';
-import { waitForDbReady } from '@/database/dbReady';
+import { isDbReady, waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
+import {
+  getSettingsMirror,
+  type MirroredSettings,
+  recordSettingsMirror,
+} from '@/utils/settingsMirror';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
@@ -278,6 +283,15 @@ const DEFAULT_STATE: SettingsState = {
   showHomeSteps: SETTINGS.showHomeSteps.defaultValue,
   isLoading: true,
 };
+
+function mirroredSettingsOf(state: SettingsState): MirroredSettings {
+  return {
+    theme: state.theme,
+    language: state.language,
+    units: state.units,
+    appLockScopesRaw: state.appLockScopesRaw,
+  };
+}
 
 function buildSettingsMap(settings: Setting[]): Map<string, string> {
   const best = new Map<string, { value: string; updatedAt: number }>();
@@ -489,6 +503,11 @@ export type SettingsContextType = UseSettingsResult & {
   cycleQuickLogRaw: string;
   cycleVariabilityHintDismissed: boolean;
   appLockScopes: readonly AppLockScope[];
+  /**
+   * True while `appLockScopes` is only a default: settings are still loading and
+   * no mirror said what they are. Every area must then count as locked.
+   */
+  appLockScopesPending: boolean;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   activeGymId: string;
@@ -510,7 +529,18 @@ export type SettingsContextType = UseSettingsResult & {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
+  // Starts from the mirror (loaded by `AppDbReadyGate`) so the first frame has the
+  // user's theme, language and units rather than the defaults. See `utils/settingsMirror`.
+  const [state, setState] = useState<SettingsState>(() => ({
+    ...DEFAULT_STATE,
+    ...getSettingsMirror(),
+  }));
+  // Lock scopes are unknown until the table is read, unless the mirror supplied
+  // them. A database not ready at mount belongs to an install that has not
+  // finished onboarding, which is the only time `AppDbReadyGate` mounts early,
+  // and no lock can be turned on before onboarding — so that case has nothing to
+  // protect and must not cover the onboarding screens.
+  const [lockScopesUnknownAtMount] = useState(() => getSettingsMirror() === null && isDbReady());
   const [canReadSettingsDb, setCanReadSettingsDb] = useState(false);
   const [decryptedApiKeys, setDecryptedApiKeys] = useState({
     googleGeminiApiKey: '',
@@ -542,9 +572,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         const query = database.get<Setting>('settings').query(Q.where('deleted_at', Q.eq(null)));
         subscription = query.observeWithColumns(['value']).subscribe({
           next: (settings) => {
-            const map = buildSettingsMap(settings);
+            const next = deriveStateFromMap(buildSettingsMap(settings));
+            recordSettingsMirror(mirroredSettingsOf(next));
             setState((prev) => {
-              const next = deriveStateFromMap(map);
               const keys = Object.keys(next) as (keyof SettingsState)[];
               const hasChanged = keys.some((k) => prev[k] !== next[k]);
               return hasChanged ? next : prev;
@@ -692,6 +722,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     [state.appLockScopesRaw]
   );
 
+  const appLockScopesPending = lockScopesUnknownAtMount && state.isLoading;
+
   const value = useMemo(() => {
     const {
       homeActionsRaw: _homeActionsRaw,
@@ -706,6 +738,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       localLlmApiKey: decryptedApiKeys.localLlmApiKey,
       homeActions,
       appLockScopes,
+      appLockScopesPending,
       isAiConfigured,
       isAiMealPhotoEnabled,
       aiProvider,
@@ -717,6 +750,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys,
     homeActions,
     appLockScopes,
+    appLockScopesPending,
     isAiConfigured,
     isAiMealPhotoEnabled,
     aiProvider,

@@ -48,11 +48,20 @@ export function scopeRequiresLock(scopes: readonly AppLockScope[], scope: AppLoc
   return !scopes.includes('app') && scopes.includes(scope);
 }
 
+/**
+ * `null` scopes mean "not read yet": the settings are still loading and nothing said which areas
+ * are locked. Every scope then reads as locked, because the answer may be "all of them" and a
+ * lock that opens until it has checked protects nothing.
+ */
 export function isScopeLocked(
-  scopes: readonly AppLockScope[],
+  scopes: readonly AppLockScope[] | null,
   scope: AppLockScope,
   state: LockState
 ): boolean {
+  if (scopes === null) {
+    return true;
+  }
+
   return scopeRequiresLock(scopes, scope) && !state.unlocked;
 }
 

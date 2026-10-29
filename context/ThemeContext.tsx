@@ -61,7 +61,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   // `isLoading` stays true wherever the settings table is unreadable — the
   // marketing site, where nobody has onboarded, and the first frames everywhere
-  // else. The mirror carries the preference through both. See `utils/themeMirror`.
+  // else. On web the theme mirror carries the preference through both (see
+  // `utils/themeMirror`); on native `SettingsProvider` already starts from the
+  // settings mirror, so `storedPreference` is right from the first frame.
   const themePreference = isLoading && mirror ? mirror.preference : storedPreference;
   const themeId = resolveThemeId(themePreference, systemColorScheme);
   const value = useMemo(() => valueForTheme(themeId, themePreference), [themeId, themePreference]);
