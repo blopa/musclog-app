@@ -106,6 +106,7 @@ const LINEAR_GRADIENT_ALLOWLIST = [
   'components/ExerciseTransitionScreen.tsx',
   'components/FilterTabs.tsx',
   'components/SmartCameraFrame.tsx',
+  'components/charts/ActivityHeatmap.tsx',
   'components/cards/ChatWorkoutCard.tsx',
   'components/cards/DetailedItemCard.tsx',
   'components/cards/FoodNutritionSectionCard.tsx',

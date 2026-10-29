@@ -24,6 +24,7 @@ import {
 import { TrainingConsistencyChart } from '@/components/charts/TrainingConsistencyChart';
 import { Button } from '@/components/theme/Button';
 import { MacrosPizzaChart } from '@/components/theme/MacrosPizzaChart';
+import { SurfaceColorProvider } from '@/context/SurfaceColorContext';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { ActivityHeatmapDay } from '@/utils/activityHeatmap';
@@ -790,18 +791,21 @@ export default function GraphsTestScreen() {
               />
             </View>
             <View className="rounded-card border border-border-default bg-bg-card p-4">
-              <ActivityHeatmap
-                title="Training Activity"
-                subtitle={`Last ${heatmapWeeks} weeks`}
-                days={heatmapDays}
-                weeks={heatmapWeeks}
-                weekStartsOn={heatmapMondayFirst ? 1 : 0}
-                legend={{ less: 'Less', more: 'More' }}
-                summary="Tap a day to see its workouts"
-                describeDay={({ dateLabel, value }) =>
-                  `${dateLabel}: ${value === 0 ? 'rest day' : `${value} ${value === 1 ? 'workout' : 'workouts'}`}`
-                }
-              />
+              <SurfaceColorProvider color={theme.colors.background.card}>
+                <ActivityHeatmap
+                  title="Training Activity"
+                  subtitle={`Last ${heatmapWeeks} weeks`}
+                  days={heatmapDays}
+                  weeks={heatmapWeeks}
+                  weekStartsOn={heatmapMondayFirst ? 1 : 0}
+                  legend={{ less: 'Less', more: 'More' }}
+                  scrollLabels={{ earlier: 'Show earlier weeks', later: 'Show later weeks' }}
+                  summary="Tap a day to see its workouts"
+                  describeDay={({ dateLabel, value }) =>
+                    `${dateLabel}: ${value === 0 ? 'rest day' : `${value} ${value === 1 ? 'workout' : 'workouts'}`}`
+                  }
+                />
+              </SurfaceColorProvider>
             </View>
           </View>
 

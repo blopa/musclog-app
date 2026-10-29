@@ -1,3 +1,5 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,8 +12,13 @@ import {
   View,
 } from 'react-native';
 
+import {
+  hidesContentToTheLeft,
+  hidesContentToTheRight,
+} from '@/components/workout/session/scrollOverflow';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import { useChartTooltip } from '@/context/ChartTooltipContext';
+import { useSurfaceColor } from '@/context/SurfaceColorContext';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -38,6 +45,10 @@ const WEEKDAY_COLUMN_GAP = 8;
 const MONTH_ROW_HEIGHT = 16;
 const MONTH_ROW_GAP = 6;
 const LEGEND_SWATCH = 12;
+/** Width of the fade, and of the arrow button on it, that marks a hidden side of the grid. */
+const EDGE_FADE_WIDTH = 48;
+/** Share of the visible width one arrow press scrolls, so the last column stays in view. */
+const PAGE_SHARE = 0.75;
 
 export type ActivityHeatmapDayInfo = {
   date: Date;
@@ -68,10 +79,69 @@ export type ActivityHeatmapProps = {
   describeDay?: (info: ActivityHeatmapDayInfo) => string;
   /** Ends of the legend. Omit to hide the legend. */
   legend?: { less: string; more: string };
+  /** Screen-reader names for the arrows that appear when weeks are hidden to either side. */
+  scrollLabels?: { earlier: string; later: string };
   /** Shown under the grid while no day is selected. */
   summary?: string;
   className?: string;
 };
+
+/** Gradient into the card surface along one edge, marking weeks hidden past it. */
+function EdgeFade({ side, surface }: { side: 'left' | 'right'; surface: string }) {
+  return (
+    <LinearGradient
+      pointerEvents="none"
+      colors={side === 'left' ? [surface, 'transparent'] : ['transparent', surface]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={{ position: 'absolute', top: 0, bottom: 0, [side]: 0, width: EDGE_FADE_WIDTH }}
+    />
+  );
+}
+
+/**
+ * The arrow on a faded edge. A phone swipes; a mouse has no horizontal wheel, so on web this is
+ * the only way to the hidden weeks, and on touch it doubles as the "this scrolls" cue.
+ */
+function EdgeArrow({
+  side,
+  top,
+  height,
+  color,
+  iconSize,
+  label,
+  onPress,
+}: {
+  side: 'left' | 'right';
+  top: number;
+  height: number;
+  color: string;
+  iconSize: number;
+  label?: string;
+  onPress: () => void;
+}) {
+  const Icon = side === 'left' ? ChevronLeft : ChevronRight;
+
+  return (
+    <Pressable
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      hitSlop={{ top: 8, bottom: 8 }}
+      onPress={onPress}
+      style={{
+        position: 'absolute',
+        top,
+        height,
+        [side]: 0,
+        width: EDGE_FADE_WIDTH * 0.7,
+        alignItems: side === 'left' ? 'flex-start' : 'flex-end',
+        justifyContent: 'center',
+      }}
+    >
+      <Icon size={iconSize} color={color} />
+    </Pressable>
+  );
+}
 
 /**
  * A GitHub-style contribution grid: one column per week, one row per weekday, the darkest
@@ -79,6 +149,8 @@ export type ActivityHeatmapProps = {
  *
  * Plain views, so one file serves Android, iOS and web (no `.web.tsx`, no Skia). Squares shrink to
  * fit the card down to a readable minimum and then scroll sideways, opening on the latest week.
+ * Weeks hidden past either edge fade into the card surface (`useSurfaceColor`) behind an arrow
+ * that scrolls them into view.
  * Tapping a square (hovering, on web) reads out that day beneath the grid. Every string arrives
  * from the caller already translated; month and weekday names come from `Intl` for the app's
  * language.
@@ -94,10 +166,12 @@ export function ActivityHeatmap({
   accentColor,
   describeDay,
   legend,
+  scrollLabels,
   summary,
   className,
 }: ActivityHeatmapProps) {
   const theme = useTheme();
+  const surface = useSurfaceColor();
   const { i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const locale = i18n.resolvedLanguage ?? i18n.language;
@@ -107,6 +181,8 @@ export function ActivityHeatmap({
   const [selectedIso, setSelectedIso] = useState<string | null>(null);
   const [width, setWidth] = useState(0);
   const scrollRef = useRef<ScrollViewInstance>(null);
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const [offsetX, setOffsetX] = useState(0);
 
   useEffect(() => {
     registerChart(chartId, () => setSelectedIso(null));
@@ -152,6 +228,10 @@ export function ActivityHeatmap({
   const cell = width === 0 ? MIN_CELL : Math.min(MAX_CELL, Math.max(MIN_CELL, fitted));
   const step = cell + GAP;
   const gridWidth = columnCount * cell + (columnCount - 1) * GAP;
+  const gridHeight = 7 * cell + 6 * GAP;
+  const gridTop = MONTH_ROW_HEIGHT + MONTH_ROW_GAP;
+  const hiddenLeft = hidesContentToTheLeft(offsetX);
+  const hiddenRight = hidesContentToTheRight(viewportWidth, gridWidth, offsetX);
   const accent = accentColor ?? theme.colors.accent.primary;
 
   const colorFor = (level: ActivityHeatmapLevel) =>
@@ -169,10 +249,22 @@ export function ActivityHeatmap({
     return null;
   }, [model.columns, selectedIso]);
 
-  // A grid wider than the card opens on today, the end that matters.
-  const scrollToLatest = useCallback(() => {
-    scrollRef.current?.scrollToEnd({ animated: false });
-  }, []);
+  // A grid wider than the card opens on today, the end that matters. `scrollToEnd` does not
+  // always report back as a scroll, so the offset it lands on is recorded here directly.
+  const scrollToLatest = useCallback(
+    (contentWidth: number) => {
+      scrollRef.current?.scrollToEnd({ animated: false });
+      setOffsetX(Math.max(0, contentWidth - viewportWidth));
+    },
+    [viewportWidth]
+  );
+
+  const scrollByPage = (direction: -1 | 1) => {
+    scrollRef.current?.scrollTo({
+      x: Math.max(0, offsetX + direction * viewportWidth * PAGE_SHARE),
+      animated: true,
+    });
+  };
 
   const handleLayout = useCallback((event: LayoutChangeEvent) => {
     setWidth(Math.round(event.nativeEvent.layout.width));
@@ -223,66 +315,94 @@ export function ActivityHeatmap({
           ))}
         </View>
 
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          onContentSizeChange={scrollToLatest}
-          style={{ flex: 1 }}
-        >
-          <View style={{ width: gridWidth }}>
-            <View style={{ height: MONTH_ROW_HEIGHT, marginBottom: MONTH_ROW_GAP }}>
-              {model.monthLabels.map((label) => (
-                <Text
-                  key={label.column}
-                  className="text-[10px] font-medium text-text-tertiary"
-                  maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
-                  numberOfLines={1}
-                  style={{ position: 'absolute', left: label.column * step, width: step * 3 }}
-                >
-                  {monthFormat.format(label.date)}
-                </Text>
-              ))}
+        <View style={{ flex: 1 }}>
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            onContentSizeChange={scrollToLatest}
+            onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
+            onScroll={(event) => setOffsetX(event.nativeEvent.contentOffset.x)}
+            scrollEventThrottle={32}
+          >
+            <View style={{ width: gridWidth }}>
+              <View style={{ height: MONTH_ROW_HEIGHT, marginBottom: MONTH_ROW_GAP }}>
+                {model.monthLabels.map((label) => (
+                  <Text
+                    key={label.column}
+                    className="text-[10px] font-medium text-text-tertiary"
+                    maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+                    numberOfLines={1}
+                    style={{ position: 'absolute', left: label.column * step, width: step * 3 }}
+                  >
+                    {monthFormat.format(label.date)}
+                  </Text>
+                ))}
+              </View>
+
+              <View className="flex-row" style={{ gap: GAP }}>
+                {model.columns.map((column, columnIndex) => (
+                  <View key={columnIndex} style={{ gap: GAP }}>
+                    {column.map((day, row) => {
+                      if (!day) {
+                        return null;
+                      }
+
+                      const isSelected = day.iso === selectedIso;
+
+                      return (
+                        <Pressable
+                          key={row}
+                          accessibilityLabel={describe(day.date, day.value)}
+                          accessibilityRole="button"
+                          accessibilityState={{ selected: isSelected }}
+                          onHoverIn={() => select(day.iso)}
+                          onHoverOut={() =>
+                            setSelectedIso((current) => (current === day.iso ? null : current))
+                          }
+                          onPress={() => select(day.iso)}
+                          style={{
+                            width: cell,
+                            height: cell,
+                            borderRadius: theme.borderRadius.tag,
+                            backgroundColor: colorFor(day.level),
+                            opacity: LEVEL_OPACITY[day.level],
+                            borderWidth: isSelected ? 2 : 0,
+                            borderColor: theme.colors.text.primary,
+                          }}
+                        />
+                      );
+                    })}
+                  </View>
+                ))}
+              </View>
             </View>
-
-            <View className="flex-row" style={{ gap: GAP }}>
-              {model.columns.map((column, columnIndex) => (
-                <View key={columnIndex} style={{ gap: GAP }}>
-                  {column.map((day, row) => {
-                    if (!day) {
-                      return null;
-                    }
-
-                    const isSelected = day.iso === selectedIso;
-
-                    return (
-                      <Pressable
-                        key={row}
-                        accessibilityLabel={describe(day.date, day.value)}
-                        accessibilityRole="button"
-                        accessibilityState={{ selected: isSelected }}
-                        onHoverIn={() => select(day.iso)}
-                        onHoverOut={() =>
-                          setSelectedIso((current) => (current === day.iso ? null : current))
-                        }
-                        onPress={() => select(day.iso)}
-                        style={{
-                          width: cell,
-                          height: cell,
-                          borderRadius: theme.borderRadius.tag,
-                          backgroundColor: colorFor(day.level),
-                          opacity: LEVEL_OPACITY[day.level],
-                          borderWidth: isSelected ? 2 : 0,
-                          borderColor: theme.colors.text.primary,
-                        }}
-                      />
-                    );
-                  })}
-                </View>
-              ))}
-            </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+          {hiddenLeft ? <EdgeFade side="left" surface={surface} /> : null}
+          {hiddenLeft ? (
+            <EdgeArrow
+              side="left"
+              top={gridTop}
+              height={gridHeight}
+              color={theme.colors.text.primary}
+              iconSize={theme.iconSize.sm}
+              label={scrollLabels?.earlier}
+              onPress={() => scrollByPage(-1)}
+            />
+          ) : null}
+          {hiddenRight ? <EdgeFade side="right" surface={surface} /> : null}
+          {hiddenRight ? (
+            <EdgeArrow
+              side="right"
+              top={gridTop}
+              height={gridHeight}
+              color={theme.colors.text.primary}
+              iconSize={theme.iconSize.sm}
+              label={scrollLabels?.later}
+              onPress={() => scrollByPage(1)}
+            />
+          ) : null}
+        </View>
       </View>
 
       <View className="mt-3 min-h-[18px] justify-center">

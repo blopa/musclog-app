@@ -12,3 +12,11 @@ export function hidesContentToTheRight(
 ): boolean {
   return viewportWidth > 0 && contentWidth - offsetX - viewportWidth > OVERFLOW_SLACK;
 }
+
+/**
+ * Whether a horizontal scroller still hides content past its left edge, the mirror of
+ * {@link hidesContentToTheRight}. Needs no widths: anything scrolled away is hidden.
+ */
+export function hidesContentToTheLeft(offsetX: number): boolean {
+  return offsetX > OVERFLOW_SLACK;
+}
