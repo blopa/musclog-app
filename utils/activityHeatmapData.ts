@@ -1,3 +1,4 @@
+import type { ActivityHeatmapSource } from '@/constants/settings';
 import type { ActivityHeatmapDay } from '@/utils/activityHeatmap';
 import { formatLocalCalendarDayIso, utcNormalizedDayKey } from '@/utils/calendarDate';
 
@@ -59,4 +60,39 @@ export function nutritionHeatmapDays(logs: readonly MealLogLike[]): ActivityHeat
   }
 
   return [...mealsByDay].map(([date, meals]) => ({ date, value: meals.size }));
+}
+
+/**
+ * Everything that differs between the heatmaps, in one table: the scale a day is shaded on and
+ * the wording for a day's number. The Home cards, the compact strip and the home screen widget
+ * all read it, so a source is added here and nowhere else (the `Record` makes the compiler say
+ * so). Whole translation keys, so `check-translations` can see each one.
+ */
+export const ACTIVITY_SOURCES = {
+  workouts: {
+    maxValue: WORKOUT_HEATMAP_MAX_VALUE,
+    titleKey: 'home.heatmaps.workouts.title',
+    noneKey: 'home.heatmaps.workouts.none',
+    countKey: 'home.heatmaps.workouts.count',
+  },
+  nutrition: {
+    maxValue: NUTRITION_HEATMAP_MAX_VALUE,
+    titleKey: 'home.heatmaps.nutrition.title',
+    noneKey: 'home.heatmaps.nutrition.none',
+    countKey: 'home.heatmaps.nutrition.count',
+  },
+} as const satisfies Record<
+  ActivityHeatmapSource,
+  { maxValue: number; titleKey: string; noneKey: string; countKey: string }
+>;
+
+/** What a day's number counts, in words: "No workout", "2 workouts", "3 meals". */
+export function describeActivityValue(
+  t: (key: string, options?: { count: number }) => string,
+  source: ActivityHeatmapSource,
+  value: number
+): string {
+  const { noneKey, countKey } = ACTIVITY_SOURCES[source];
+
+  return value === 0 ? t(noneKey) : t(countKey, { count: value });
 }

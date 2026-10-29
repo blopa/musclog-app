@@ -63,7 +63,7 @@ beforeEach(async () => {
   });
 });
 
-describe('ActivityHeatmapRepository.observeWorkoutDays', () => {
+describe("ActivityHeatmapRepository.observeDays('workouts')", () => {
   it('counts completed, live workouts inside the window by the day they started', async () => {
     await addWorkout(day(8, 7));
     await addWorkout(day(8, 18));
@@ -73,7 +73,9 @@ describe('ActivityHeatmapRepository.observeWorkoutDays', () => {
     await addWorkout(day(1)); // before the window
     await addWorkout(day(25)); // after it
 
-    const days = await firstValueFrom(ActivityHeatmapRepository.observeWorkoutDays(START, END));
+    const days = await firstValueFrom(
+      ActivityHeatmapRepository.observeDays('workouts', START, END)
+    );
 
     expect(Object.fromEntries(days.map((d) => [d.date, d.value]))).toEqual({
       '2026-10-08': 2,
@@ -84,14 +86,16 @@ describe('ActivityHeatmapRepository.observeWorkoutDays', () => {
   it('includes a workout on the last day however late it started', async () => {
     await addWorkout(new Date(2026, 9, 18, 23, 50).getTime());
 
-    const days = await firstValueFrom(ActivityHeatmapRepository.observeWorkoutDays(START, END));
+    const days = await firstValueFrom(
+      ActivityHeatmapRepository.observeDays('workouts', START, END)
+    );
 
     expect(days).toEqual([{ date: '2026-10-18', value: 1 }]);
   });
 
   it('emits again when a workout is finished', async () => {
     const seen: number[] = [];
-    const subscription = ActivityHeatmapRepository.observeWorkoutDays(START, END).subscribe(
+    const subscription = ActivityHeatmapRepository.observeDays('workouts', START, END).subscribe(
       (days) => seen.push(days.length)
     );
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -104,7 +108,7 @@ describe('ActivityHeatmapRepository.observeWorkoutDays', () => {
   });
 });
 
-describe('ActivityHeatmapRepository.observeMealDays', () => {
+describe("ActivityHeatmapRepository.observeDays('nutrition')", () => {
   it('values a day by its distinct meal types and skips deleted logs', async () => {
     await addFood(day(8, 8), 'breakfast');
     await addFood(day(8, 13), 'lunch');
@@ -112,7 +116,9 @@ describe('ActivityHeatmapRepository.observeMealDays', () => {
     await addFood(day(9, 20), 'dinner');
     await addFood(day(9, 21), 'snack', { deleted: true });
 
-    const days = await firstValueFrom(ActivityHeatmapRepository.observeMealDays(START, END));
+    const days = await firstValueFrom(
+      ActivityHeatmapRepository.observeDays('nutrition', START, END)
+    );
 
     expect(Object.fromEntries(days.map((d) => [d.date, d.value]))).toEqual({
       '2026-10-08': 2,
@@ -124,7 +130,9 @@ describe('ActivityHeatmapRepository.observeMealDays', () => {
     // 23:30 on the 8th in UTC-05:00 is already the 9th in UTC.
     await addFood(Date.UTC(2026, 9, 9, 4, 30), 'dinner', { timezone: '-05:00' });
 
-    const days = await firstValueFrom(ActivityHeatmapRepository.observeMealDays(START, END));
+    const days = await firstValueFrom(
+      ActivityHeatmapRepository.observeDays('nutrition', START, END)
+    );
 
     expect(days).toEqual([{ date: '2026-10-08', value: 1 }]);
   });
@@ -133,15 +141,17 @@ describe('ActivityHeatmapRepository.observeMealDays', () => {
     await addFood(day(4, 23), 'dinner');
     await addFood(day(19, 1), 'breakfast');
 
-    expect(await firstValueFrom(ActivityHeatmapRepository.observeMealDays(START, END))).toEqual([]);
+    expect(
+      await firstValueFrom(ActivityHeatmapRepository.observeDays('nutrition', START, END))
+    ).toEqual([]);
   });
 
   it('re-emits when a log changes meal type in place', async () => {
     await addFood(day(8, 12), 'lunch');
     await addFood(day(8, 13), 'lunch');
     const seen: number[] = [];
-    const subscription = ActivityHeatmapRepository.observeMealDays(START, END).subscribe((days) =>
-      seen.push(days[0]?.value ?? 0)
+    const subscription = ActivityHeatmapRepository.observeDays('nutrition', START, END).subscribe(
+      (days) => seen.push(days[0]?.value ?? 0)
     );
     await new Promise((resolve) => setTimeout(resolve, 20));
 
@@ -159,7 +169,7 @@ describe('ActivityHeatmapRepository.observeMealDays', () => {
   });
 });
 
-describe('ActivityHeatmapRepository.fetchWorkoutDays / fetchMealDays', () => {
+describe('ActivityHeatmapRepository.fetchDays', () => {
   it('reads the same days the live queries emit, once', async () => {
     await addWorkout(day(8, 7));
     await addWorkout(day(8, 18));
@@ -172,17 +182,17 @@ describe('ActivityHeatmapRepository.fetchWorkoutDays / fetchMealDays', () => {
     await addFood(day(19, 1), 'breakfast'); // inside the timezone buffer, outside the window
 
     const fetched = {
-      workouts: await ActivityHeatmapRepository.fetchWorkoutDays(START, END),
-      meals: await ActivityHeatmapRepository.fetchMealDays(START, END),
+      workouts: await ActivityHeatmapRepository.fetchDays('workouts', START, END),
+      meals: await ActivityHeatmapRepository.fetchDays('nutrition', START, END),
     };
 
     expect(fetched.workouts).toEqual([{ date: '2026-10-08', value: 2 }]);
     expect(fetched.meals).toEqual([{ date: '2026-10-08', value: 2 }]);
     expect(fetched.workouts).toEqual(
-      await firstValueFrom(ActivityHeatmapRepository.observeWorkoutDays(START, END))
+      await firstValueFrom(ActivityHeatmapRepository.observeDays('workouts', START, END))
     );
     expect(fetched.meals).toEqual(
-      await firstValueFrom(ActivityHeatmapRepository.observeMealDays(START, END))
+      await firstValueFrom(ActivityHeatmapRepository.observeDays('nutrition', START, END))
     );
   });
 });

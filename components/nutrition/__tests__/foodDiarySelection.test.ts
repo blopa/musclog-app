@@ -1,4 +1,5 @@
 import {
+  cardKeysOfMeal,
   diaryGroupKey,
   diaryLogKey,
   resolveDiarySelection,
@@ -124,5 +125,38 @@ describe('resolveDiarySelection', () => {
     expect(selection.totalGrams).toBe(100);
     expect(selection.totalNutrients.calories).toBe(205);
     expect(selection.totalNutrients.protein).toBe(20);
+  });
+});
+
+describe('cardKeysOfMeal', () => {
+  it('lists the grouped meals and the loose logs under one meal type, and nothing else', () => {
+    expect([...cardKeysOfMeal('breakfast', ungrouped, groups)]).toEqual([
+      diaryLogKey('oats'),
+      diaryLogKey('coffee'),
+    ]);
+    expect([...cardKeysOfMeal('lunch', ungrouped, groups)]).toEqual([
+      diaryGroupKey('lunch', 'bowl'),
+    ]);
+    expect(cardKeysOfMeal('other', ungrouped, groups).size).toBe(0);
+  });
+
+  it('resolves to the whole meal section: every log, each grouped meal counted once', () => {
+    const lunch = resolveDiarySelection(
+      cardKeysOfMeal('lunch', ungrouped, groups),
+      ungrouped,
+      groups
+    );
+
+    expect(lunch.entries.map((e) => e.log.id)).toEqual(['bowl-rice', 'bowl-chicken']);
+    expect(lunch.itemCount).toBe(1);
+    expect(lunch.commonMealType).toBe('lunch');
+
+    const breakfast = resolveDiarySelection(
+      cardKeysOfMeal('breakfast', ungrouped, groups),
+      ungrouped,
+      groups
+    );
+    expect(breakfast.itemCount).toBe(2);
+    expect(breakfast.totalGrams).toBe(100);
   });
 });

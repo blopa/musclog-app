@@ -14,6 +14,11 @@ const TRANSLATION_KEY_PROPERTIES = new Set([
   'messageKey',
   'promptKey',
   'hintKey',
+  // Outcome and count wording held in a table (`DIARY_SCOPE_COPY`, `ACTIVITY_SOURCES`).
+  'successKey',
+  'errorKey',
+  'noneKey',
+  'countKey',
 ]);
 
 // Configuration

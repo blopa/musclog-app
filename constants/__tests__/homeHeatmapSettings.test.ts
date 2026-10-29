@@ -1,6 +1,9 @@
 import { SETTINGS } from '@/constants/settingDefinitions';
 import {
+  availableHeatmapLayouts,
+  effectiveHeatmapLayout,
   HOME_HEATMAP_LAYOUT_OPTIONS,
+  homeHeatmapSources,
   HOME_HEATMAPS_OPTIONS,
   parseHomeHeatmapLayout,
   parseHomeHeatmaps,
@@ -35,5 +38,28 @@ describe('home heatmap settings', () => {
     expect(parseHomeHeatmaps(null)).toBe('none');
     expect(parseHomeHeatmapLayout('grid')).toBe('full');
     expect(parseHomeHeatmapLayout(undefined)).toBe('full');
+  });
+
+  it('keeps the picker order: none, each source, then both', () => {
+    expect(HOME_HEATMAPS_OPTIONS).toEqual(['none', 'workouts', 'nutrition', 'both']);
+  });
+
+  it('maps a choice to the heatmaps it shows', () => {
+    expect(homeHeatmapSources('none')).toEqual([]);
+    expect(homeHeatmapSources('workouts')).toEqual(['workouts']);
+    expect(homeHeatmapSources('nutrition')).toEqual(['nutrition']);
+    expect(homeHeatmapSources('both')).toEqual(['workouts', 'nutrition']);
+  });
+
+  it('draws side by side only for two heatmaps, and a lone one full width', () => {
+    expect(effectiveHeatmapLayout('side_by_side', 'both')).toBe('side_by_side');
+    expect(effectiveHeatmapLayout('side_by_side', 'workouts')).toBe('full');
+    expect(effectiveHeatmapLayout('compact', 'workouts')).toBe('compact');
+    expect(effectiveHeatmapLayout('full', 'both')).toBe('full');
+  });
+
+  it('offers side by side in the picker only for two heatmaps', () => {
+    expect(availableHeatmapLayouts('both')).toEqual(['full', 'side_by_side', 'compact']);
+    expect(availableHeatmapLayouts('nutrition')).toEqual(['full', 'compact']);
   });
 });

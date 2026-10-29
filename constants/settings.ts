@@ -462,8 +462,9 @@ export const HOME_HEATMAPS_SETTING_TYPE = 'home_heatmaps';
 
 /**
  * Setting type for how two home heatmaps share the row.
- * value: 'full' | 'side_by_side'. Default: 'full'. It only matters while both are shown: a lone
- * heatmap is always full width.
+ * value: 'full' | 'side_by_side' | 'compact'. Default: 'full'. `side_by_side` only means
+ * something while both heatmaps are shown (`effectiveHeatmapLayout`): a lone heatmap is always full
+ * width.
  */
 export const HOME_HEATMAP_LAYOUT_SETTING_TYPE = 'home_heatmap_layout';
 
@@ -539,8 +540,12 @@ export type NutritionLogHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type WorkoutHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type HomeSummaryCard = 'daily_summary' | 'weekly_streak';
 
+/** What an activity heatmap counts. Each one is a source of days: workouts or food diary. */
+export const ACTIVITY_HEATMAP_SOURCES = ['workouts', 'nutrition'] as const;
+export type ActivityHeatmapSource = (typeof ACTIVITY_HEATMAP_SOURCES)[number];
+
 /** Which heatmaps the home screen shows, in the order the picker lists them. */
-export const HOME_HEATMAPS_OPTIONS = ['none', 'workouts', 'nutrition', 'both'] as const;
+export const HOME_HEATMAPS_OPTIONS = ['none', ...ACTIVITY_HEATMAP_SOURCES, 'both'] as const;
 export type HomeHeatmaps = (typeof HOME_HEATMAPS_OPTIONS)[number];
 
 export const HOME_HEATMAP_LAYOUT_OPTIONS = ['full', 'side_by_side', 'compact'] as const;
@@ -553,6 +558,34 @@ export function parseHomeHeatmaps(raw: string | null | undefined): HomeHeatmaps 
 
 export function parseHomeHeatmapLayout(raw: string | null | undefined): HomeHeatmapLayout {
   return HOME_HEATMAP_LAYOUT_OPTIONS.find((option) => option === raw) ?? 'full';
+}
+
+/** The heatmaps a `homeHeatmaps` choice shows, in display order. */
+export function homeHeatmapSources(heatmaps: HomeHeatmaps): readonly ActivityHeatmapSource[] {
+  if (heatmaps === 'none') {
+    return [];
+  }
+
+  return heatmaps === 'both' ? ACTIVITY_HEATMAP_SOURCES : [heatmaps];
+}
+
+/**
+ * The layout actually drawn. `side_by_side` needs two heatmaps to share the row, so for one it
+ * is the full-width card; this is the single place that rule lives, read by the home screen and
+ * by the picker so what it shows is what the home screen draws.
+ */
+export function effectiveHeatmapLayout(
+  layout: HomeHeatmapLayout,
+  heatmaps: HomeHeatmaps
+): HomeHeatmapLayout {
+  return layout === 'side_by_side' && heatmaps !== 'both' ? 'full' : layout;
+}
+
+/** The layouts worth offering for a `homeHeatmaps` choice. */
+export function availableHeatmapLayouts(heatmaps: HomeHeatmaps): readonly HomeHeatmapLayout[] {
+  return HOME_HEATMAP_LAYOUT_OPTIONS.filter(
+    (layout) => effectiveHeatmapLayout(layout, heatmaps) === layout
+  );
 }
 
 /**

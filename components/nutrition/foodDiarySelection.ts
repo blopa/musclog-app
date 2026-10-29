@@ -26,6 +26,22 @@ export function diaryGroupKey(mealType: MealType, groupId: string): DiarySelecti
   return `group:${mealType}:${groupId}`;
 }
 
+/**
+ * Every card the diary draws under one meal type — its grouped meals and its loose logs —
+ * as selection keys. "Act on the whole breakfast" is then an ordinary selection, resolved by
+ * `resolveDiarySelection` like a long-press one.
+ */
+export function cardKeysOfMeal(
+  mealType: MealType,
+  ungroupedByType: Record<MealType, ResolvedLogEntry[]>,
+  mealGroupsByType: Record<MealType, MealGroup[]>
+): Set<DiarySelectionKey> {
+  return new Set([
+    ...(mealGroupsByType[mealType] ?? []).map((group) => diaryGroupKey(mealType, group.groupId)),
+    ...(ungroupedByType[mealType] ?? []).map((entry) => diaryLogKey(entry.log.id)),
+  ]);
+}
+
 /** A new set with `key` added if it was missing, or removed if it was there. */
 export function toggleSelectionKey(
   keys: ReadonlySet<DiarySelectionKey>,

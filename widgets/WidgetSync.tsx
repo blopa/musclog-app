@@ -177,7 +177,7 @@ export function WidgetSync() {
           date,
           snapshot: buildActivityWidgetSnapshot({
             date,
-            ...(await loadActivityWidgetDays(date)),
+            days: await loadActivityWidgetDays(date),
             palette,
             translate: (key, options) => t(key, options),
           }),

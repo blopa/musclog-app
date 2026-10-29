@@ -1,4 +1,5 @@
 import { database } from '@/database/database-instance';
+import { KEEP_MEAL_TYPES } from '@/database/models/mealTypeTarget';
 import type NutritionLog from '@/database/models/NutritionLog';
 import {
   NutritionService,
@@ -166,7 +167,7 @@ function capturePreparedUpdate(log: NutritionLog) {
   return draft;
 }
 
-describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
+describe('NutritionService.transferNutritionLogs (copy, keeping meals)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -174,13 +175,15 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('keeps each log on its own meal type instead of forcing a single one', async () => {
     const { created } = captureCreatedRecords();
 
-    await NutritionService.copyNutritionLogsPreservingMealType(
+    await NutritionService.transferNutritionLogs(
       [
         mockLog({ id: 'a', type: 'breakfast' }),
         mockLog({ id: 'b', type: 'dinner' }),
         mockLog({ id: 'c', type: 'snack' }),
       ],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(created.map((r) => r.type)).toEqual(['breakfast', 'dinner', 'snack']);
@@ -189,12 +192,14 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('preserves groupId and loggedMealName so grouped meals survive the copy', async () => {
     const { created } = captureCreatedRecords();
 
-    await NutritionService.copyNutritionLogsPreservingMealType(
+    await NutritionService.transferNutritionLogs(
       [
         mockLog({ id: 'a', groupId: 'group-1', loggedMealName: 'Chicken bowl' }),
         mockLog({ id: 'b', groupId: 'group-1', loggedMealName: 'Chicken bowl' }),
       ],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(created.map((r) => r.groupId)).toEqual(['group-1', 'group-1']);
@@ -205,7 +210,12 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
     const { created } = captureCreatedRecords();
     const source = mockLog({ id: 'a' });
 
-    await NutritionService.copyNutritionLogsPreservingMealType([source], new Date(2026, 7, 1));
+    await NutritionService.transferNutritionLogs(
+      [source],
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
+    );
 
     expect(created[0]).toMatchObject({
       loggedFoodNameRaw: source.loggedFoodNameRaw,
@@ -222,9 +232,11 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('does not carry over externalId — a copy is not the same external record', async () => {
     const { created } = captureCreatedRecords();
 
-    await NutritionService.copyNutritionLogsPreservingMealType(
+    await NutritionService.transferNutritionLogs(
       [mockLog({ id: 'a', externalId: 'health-connect-123' })],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(created[0].externalId).toBeUndefined();
@@ -236,7 +248,12 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
     const breakfast = mockLog({ id: 'a', date: Date.UTC(2026, 6, 14, 8, 30), timezone: '+00:00' });
     const dinner = mockLog({ id: 'b', date: Date.UTC(2026, 6, 14, 19, 45), timezone: '+00:00' });
 
-    await NutritionService.copyNutritionLogsPreservingMealType([breakfast, dinner], targetDate);
+    await NutritionService.transferNutritionLogs(
+      [breakfast, dinner],
+      'copy',
+      targetDate,
+      KEEP_MEAL_TYPES
+    );
 
     const [copiedBreakfast, copiedDinner] = created.map((r) => r.date as number);
 
@@ -262,7 +279,12 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
       timezone: '+05:30',
     });
 
-    await NutritionService.copyNutritionLogsPreservingMealType([source], new Date(2026, 7, 1));
+    await NutritionService.transferNutritionLogs(
+      [source],
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
+    );
 
     const copiedWallClock = wallClockDateInTimezone(
       created[0].date as number,
@@ -275,9 +297,11 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('returns the number of logs created and refreshes the widget', async () => {
     captureCreatedRecords();
 
-    const count = await NutritionService.copyNutritionLogsPreservingMealType(
+    const count = await NutritionService.transferNutritionLogs(
       [mockLog({ id: 'a' }), mockLog({ id: 'b' })],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(count).toBe(2);
@@ -287,9 +311,11 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('opens no write and fires no widget event for an empty selection', async () => {
     captureCreatedRecords();
 
-    const count = await NutritionService.copyNutritionLogsPreservingMealType(
+    const count = await NutritionService.transferNutritionLogs(
       [],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(count).toBe(0);
@@ -604,7 +630,53 @@ describe('NutritionService.ungroupNutritionLogs', () => {
   });
 });
 
-describe('NutritionService.moveNutritionLogsPreservingMealType', () => {
+describe('NutritionService.transferNutritionLogs (into one meal)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('copies every log into the chosen meal at the current time of day on the target day', async () => {
+    const { created } = captureCreatedRecords();
+    const targetDate = new Date(2026, 7, 1);
+
+    await NutritionService.transferNutritionLogs(
+      [mockLog({ id: 'a', type: 'breakfast' }), mockLog({ id: 'b', type: 'dinner' })],
+      'copy',
+      targetDate,
+      'lunch'
+    );
+
+    expect(created.map((r) => r.type)).toEqual(['lunch', 'lunch']);
+    for (const record of created) {
+      expect(utcNormalizedDayKey(record.date as number, record.timezone as string)).toBe(
+        utcDayKeyFromLocalDate(targetDate)
+      );
+    }
+
+    // One shared instant: unlike "keep", the source times are not reproduced.
+    expect(created[0].date).toBe(created[1].date);
+  });
+
+  it('moves every log into the chosen meal, updating the rows in place', async () => {
+    const breakfast = mockLog({ id: 'a', type: 'breakfast' });
+    const dinner = mockLog({ id: 'b', type: 'dinner' });
+    const drafts = [breakfast, dinner].map(capturePreparedUpdate);
+
+    const count = await NutritionService.transferNutritionLogs(
+      [breakfast, dinner],
+      'move',
+      new Date(2026, 7, 1),
+      'snack'
+    );
+
+    expect(count).toBe(2);
+    expect(drafts.map((draft) => draft.type)).toEqual(['snack', 'snack']);
+    expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    expect(widgetEvents.emitNutritionWidgetUpdate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('NutritionService.transferNutritionLogs (move, keeping meals)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -615,7 +687,12 @@ describe('NutritionService.moveNutritionLogsPreservingMealType', () => {
     const dinner = mockLog({ id: 'b', type: 'dinner', date: Date.UTC(2026, 6, 14, 19, 45) });
     const [breakfastDraft, dinnerDraft] = [breakfast, dinner].map(capturePreparedUpdate);
 
-    await NutritionService.moveNutritionLogsPreservingMealType([breakfast, dinner], targetDate);
+    await NutritionService.transferNutritionLogs(
+      [breakfast, dinner],
+      'move',
+      targetDate,
+      KEEP_MEAL_TYPES
+    );
 
     const targetDayKey = utcDayKeyFromLocalDate(targetDate);
     for (const [source, draft] of [
@@ -628,7 +705,7 @@ describe('NutritionService.moveNutritionLogsPreservingMealType', () => {
       expect(
         wallClockDateInTimezone(draft.date as number, draft.timezone as string).getHours()
       ).toBe(wallClockDateInTimezone(source.date, source.timezone).getHours());
-      expect('type' in draft).toBe(false);
+      expect(draft.type).toBe(source.type);
     }
 
     expect(mockDatabase.batch).toHaveBeenCalledTimes(1);

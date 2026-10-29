@@ -1,9 +1,7 @@
+import { ACTIVITY_HEATMAP_SOURCES, type ActivityHeatmapSource } from '@/constants/settings';
 import type { ActivityHeatmapDay } from '@/utils/activityHeatmap';
 import { ACTIVITY_LEVEL_OPACITY, buildActivityStrip } from '@/utils/activityHeatmap';
-import {
-  NUTRITION_HEATMAP_MAX_VALUE,
-  WORKOUT_HEATMAP_MAX_VALUE,
-} from '@/utils/activityHeatmapData';
+import { ACTIVITY_SOURCES } from '@/utils/activityHeatmapData';
 
 import { INITIAL_WIDGET_PALETTE, widgetColorWithAlpha, type WidgetPalette } from './widgetSnapshot';
 
@@ -11,7 +9,7 @@ import { INITIAL_WIDGET_PALETTE, widgetColorWithAlpha, type WidgetPalette } from
 export type ActivityWidgetState = 'ready' | 'stale';
 
 export type ActivityWidgetRow = {
-  key: 'workouts' | 'nutrition';
+  key: ActivityHeatmapSource;
   label: string;
   /** One level (0-4, an index into `levelColors`) per day, oldest first, ending today. */
   levels: number[];
@@ -58,37 +56,28 @@ export function activityLevelColors(palette: WidgetPalette): string[] {
 
 export function buildActivityWidgetSnapshot({
   date,
-  workoutDays,
-  mealDays,
+  days,
   palette,
   translate,
 }: {
   date: Date;
-  workoutDays: ActivityHeatmapDay[];
-  mealDays: ActivityHeatmapDay[];
+  days: Record<ActivityHeatmapSource, ActivityHeatmapDay[]>;
   palette: WidgetPalette;
   translate: (key: string, options?: { count: number }) => string;
 }): ActivityWidgetSnapshot {
-  const levels = (days: ActivityHeatmapDay[], maxValue: number) =>
-    buildActivityStrip({ days, endDate: date, dayCount: ACTIVITY_WIDGET_DAYS, maxValue }).cells.map(
-      (cell) => cell.level
-    );
-
   return {
     state: 'ready',
     title: translate('home.heatmaps.lastDays', { count: ACTIVITY_WIDGET_DAYS }),
-    rows: [
-      {
-        key: 'workouts',
-        label: translate('home.heatmaps.workouts.title'),
-        levels: levels(workoutDays, WORKOUT_HEATMAP_MAX_VALUE),
-      },
-      {
-        key: 'nutrition',
-        label: translate('home.heatmaps.nutrition.title'),
-        levels: levels(mealDays, NUTRITION_HEATMAP_MAX_VALUE),
-      },
-    ],
+    rows: ACTIVITY_HEATMAP_SOURCES.map((key) => ({
+      key,
+      label: translate(ACTIVITY_SOURCES[key].titleKey),
+      levels: buildActivityStrip({
+        days: days[key],
+        endDate: date,
+        dayCount: ACTIVITY_WIDGET_DAYS,
+        maxValue: ACTIVITY_SOURCES[key].maxValue,
+      }).cells.map((cell) => cell.level),
+    })),
     levelColors: activityLevelColors(palette),
     palette,
     refreshMessage: translate('widgets.refresh'),

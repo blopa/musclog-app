@@ -1,13 +1,12 @@
 import { addDays } from 'date-fns';
 import { useEffect, useState } from 'react';
 
+import type { ActivityHeatmapSource } from '@/constants/settings';
 import { ActivityHeatmapRepository } from '@/database/repositories/ActivityHeatmapRepository';
 import type { ActivityHeatmapDay } from '@/utils/activityHeatmap';
 import { handleError } from '@/utils/handleError';
 
 const NO_DAYS: ActivityHeatmapDay[] = [];
-
-export type ActivityHeatmapSource = 'workouts' | 'nutrition';
 
 /**
  * The live days for one heatmap, ending on `endDate`. The query reaches one week further back
@@ -34,12 +33,7 @@ export function useActivityHeatmapDays(
 
     const end = new Date(endMs);
     const start = addDays(end, -(weeks + 1) * 7);
-    const days$ =
-      source === 'workouts'
-        ? ActivityHeatmapRepository.observeWorkoutDays(start, end)
-        : ActivityHeatmapRepository.observeMealDays(start, end);
-
-    const subscription = days$.subscribe({
+    const subscription = ActivityHeatmapRepository.observeDays(source, start, end).subscribe({
       next: setDays,
       error: (error) => void handleError(error, `useActivityHeatmapDays.${source}`),
     });

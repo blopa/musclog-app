@@ -11,6 +11,7 @@ import {
   encryptNutritionLogSnapshot,
 } from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
+import { KEEP_MEAL_TYPES, type MealTypeTarget } from '@/database/models/mealTypeTarget';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import { getNutritionDayCoverage, loggedOrFastedDayKeys } from '@/database/nutritionDayCoverage';
 import { fetchMapByIds } from '@/database/queryByIds';
@@ -730,88 +731,57 @@ export class NutritionService {
   }
 
   /**
-   * Copy nutrition logs to a new date and/or meal type.
-   * Copies the encrypted snapshot fields as-is so no re-encryption is needed.
+   * Copy or move logs onto a target day.
+   *
+   * `target` decides what happens to each log's meal and time of day:
+   * - a {@link MealType} relocates every log into that meal, stamped at the current time of
+   *   day on the target day (a log copied or moved by hand has no meaningful time to keep);
+   * - {@link KEEP_MEAL_TYPES} reproduces the logs as they were: each keeps its own meal type
+   *   and is re-anchored to the wall-clock time it was consumed at (`nutrition_logs.date` is a
+   *   consumed datetime, not a day key) — the "repeat this whole day" case.
+   *
+   * A copy duplicates the encrypted snapshot fields as-is so nothing is re-encrypted, and keeps
+   * `groupId` so grouped meals keep their name and image on the destination day. `externalId`
+   * is deliberately not copied — the copy is a new entry, not the same external record.
+   *
+   * Returns the number of logs transferred.
    */
-  static async copyNutritionLogsToDate(
+  static async transferNutritionLogs(
     logs: NutritionLog[],
+    mode: 'copy' | 'move',
     targetDate: Date,
-    targetMealType: MealType
-  ): Promise<void> {
-    const consumed = consumedDateTimeOnDay(targetDate);
-
-    await database.write(async () => {
-      const now = Date.now();
-      await database.batch(
-        ...logs.map((log) =>
-          database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
-            record.foodId = log.foodId;
-            record.date = consumed.timestamp;
-            record.timezone = consumed.timezone;
-            record.type = targetMealType;
-            record.amount = log.amount;
-            record.portionId = log.portionId;
-            record.loggedFoodNameRaw = log.loggedFoodNameRaw;
-            record.loggedCaloriesRaw = log.loggedCaloriesRaw;
-            record.loggedProteinRaw = log.loggedProteinRaw;
-            record.loggedCarbsRaw = log.loggedCarbsRaw;
-            record.loggedFatRaw = log.loggedFatRaw;
-            record.loggedFiberRaw = log.loggedFiberRaw;
-            record.loggedMicrosRaw = log.loggedMicrosRaw;
-            record.loggedNutriscore = log.loggedNutriscore;
-            record.loggedEcoscore = log.loggedEcoscore;
-            record.loggedNovaGroup = log.loggedNovaGroup;
-            record.snapshotBasis = log.snapshotBasis;
-            record.groupId = log.groupId;
-            record.loggedMealName = log.loggedMealName;
-            record.createdAt = now;
-            record.updatedAt = now;
-          })
-        )
-      );
-    });
-
-    triggerWidgetUpdate();
-  }
-
-  /**
-   * Copy logs onto a target day while preserving each log's own meal type and
-   * time-of-day — the "repeat this whole day" case.
-   *
-   * Differs from {@link copyNutritionLogsToDate} in two ways, both because a whole
-   * day is being reproduced rather than one meal relocated:
-   * - `type` is taken per log instead of a single `targetMealType`, so breakfast
-   *   stays breakfast.
-   * - each copy is re-anchored to the wall-clock time its source was consumed at
-   *   (`nutrition_logs.date` is a consumed datetime, not a day key), instead of
-   *   collapsing the whole day onto a single "now" instant.
-   *
-   * Encrypted snapshot fields are copied as-is so nothing is re-encrypted, and
-   * `groupId` is preserved so grouped meals keep their name and image on the
-   * destination day. `externalId` is deliberately not copied — the copy is a new
-   * entry, not the same external record.
-   *
-   * Returns the number of logs created.
-   */
-  static async copyNutritionLogsPreservingMealType(
-    logs: NutritionLog[],
-    targetDate: Date
+    target: MealTypeTarget
   ): Promise<number> {
     if (logs.length === 0) {
       return 0;
     }
 
+    const placeAt = target === KEEP_MEAL_TYPES ? null : consumedDateTimeOnDay(targetDate);
+    const placementOf = (log: NutritionLog) => ({
+      consumed: placeAt ?? reanchoredOnDay(log, targetDate),
+      type: target === KEEP_MEAL_TYPES ? log.type : target,
+    });
+
     await database.write(async () => {
       const now = Date.now();
       await database.batch(
         ...logs.map((log) => {
-          const consumed = reanchoredOnDay(log, targetDate);
+          const { consumed, type } = placementOf(log);
+
+          if (mode === 'move') {
+            return log.prepareUpdate((record) => {
+              record.date = consumed.timestamp;
+              record.timezone = consumed.timezone;
+              record.type = type;
+              record.updatedAt = now;
+            });
+          }
 
           return database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
             record.date = consumed.timestamp;
             record.timezone = consumed.timezone;
-            record.type = log.type;
+            record.type = type;
             record.amount = log.amount;
             record.portionId = log.portionId;
             record.loggedFoodNameRaw = log.loggedFoodNameRaw;
@@ -887,64 +857,6 @@ export class NutritionService {
         };
       })
     );
-  }
-
-  /**
-   * Move nutrition logs to a new date and/or meal type.
-   */
-  static async moveNutritionLogsToDate(
-    logs: NutritionLog[],
-    targetDate: Date,
-    targetMealType: MealType
-  ): Promise<void> {
-    const consumed = consumedDateTimeOnDay(targetDate);
-
-    await database.write(async () => {
-      const now = Date.now();
-      await database.batch(
-        ...logs.map((log) =>
-          log.prepareUpdate((record) => {
-            record.date = consumed.timestamp;
-            record.timezone = consumed.timezone;
-            record.type = targetMealType;
-            record.updatedAt = now;
-          })
-        )
-      );
-    });
-
-    triggerWidgetUpdate();
-  }
-
-  /**
-   * Move logs onto a target day while keeping each log's own meal type and time-of-day —
-   * the move counterpart of {@link copyNutritionLogsPreservingMealType}, for a selection
-   * that spans several meals.
-   */
-  static async moveNutritionLogsPreservingMealType(
-    logs: NutritionLog[],
-    targetDate: Date
-  ): Promise<void> {
-    if (logs.length === 0) {
-      return;
-    }
-
-    await database.write(async () => {
-      const now = Date.now();
-      await database.batch(
-        ...logs.map((log) => {
-          const consumed = reanchoredOnDay(log, targetDate);
-
-          return log.prepareUpdate((record) => {
-            record.date = consumed.timestamp;
-            record.timezone = consumed.timezone;
-            record.updatedAt = now;
-          });
-        })
-      );
-    });
-
-    triggerWidgetUpdate();
   }
 
   /**

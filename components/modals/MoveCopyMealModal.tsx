@@ -7,6 +7,7 @@ import { FilterTabs } from '@/components/FilterTabs';
 import { Button } from '@/components/theme/Button';
 import { Slider } from '@/components/theme/Slider';
 import type { MealType } from '@/database/models';
+import { KEEP_MEAL_TYPES, type MealTypeTarget } from '@/database/models/mealTypeTarget';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
@@ -14,59 +15,48 @@ import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
-/** Leave every moved/copied item in the meal it is already in. */
-export const KEEP_MEAL_TYPES = 'keep';
-
-export type MealTypeTarget = MealType | typeof KEEP_MEAL_TYPES;
-
 type MoveCopyMealModalProps = {
   visible: boolean;
   onClose: () => void;
+  /**
+   * `targetMealType` is {@link KEEP_MEAL_TYPES} only when `allowKeepMealTypes` is set and the
+   * mode is not `split`: a split puts its share into one concrete meal.
+   */
+  onConfirm: (
+    targetDate: Date,
+    targetMealType: MealTypeTarget,
+    splitPercentage?: number
+  ) => Promise<void>;
   mode: 'move' | 'copy' | 'split';
   title?: string;
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
-} & (
-  | {
-      allowKeepMealTypes?: false;
-      onConfirm: (
-        targetDate: Date,
-        targetMealType: MealType,
-        splitPercentage?: number
-      ) => Promise<void>;
-    }
-  | {
-      /**
-       * Offer "Keep their meals" (selected by default) for a set of items that spans several
-       * meals, where one target meal would merge them.
-       */
-      allowKeepMealTypes: true;
-      onConfirm: (
-        targetDate: Date,
-        targetMealType: MealTypeTarget,
-        splitPercentage?: number
-      ) => Promise<void>;
-    }
-);
+  /**
+   * Offer "Keep their meals" (selected by default) for a set of items that spans several
+   * meals, where one target meal would merge them.
+   */
+  allowKeepMealTypes?: boolean;
+};
 
 const SPLIT_PRESETS = [25, 33, 50, 75];
 
-export function MoveCopyMealModal(props: MoveCopyMealModalProps) {
-  const {
-    visible,
-    onClose,
-    mode,
-    title: customTitle,
-    sourceMealType,
-    sourceDate,
-    isLoading = false,
-    allowKeepMealTypes = false,
-  } = props;
+export function MoveCopyMealModal({
+  visible,
+  onClose,
+  onConfirm,
+  mode,
+  title: customTitle,
+  sourceMealType,
+  sourceDate,
+  isLoading = false,
+  allowKeepMealTypes = false,
+}: MoveCopyMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [targetDate, setTargetDate] = useState(() => localCalendarDayDate(sourceDate));
-  const initialMealType: MealTypeTarget = allowKeepMealTypes ? KEEP_MEAL_TYPES : sourceMealType;
+  const offersKeep = allowKeepMealTypes && mode !== 'split';
+  const initialMealType: MealTypeTarget = offersKeep ? KEEP_MEAL_TYPES : sourceMealType;
   const [targetMealType, setTargetMealType] = useState<MealTypeTarget>(initialMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [splitPercentage, setSplitPercentage] = useState(50);
@@ -110,7 +100,7 @@ export function MoveCopyMealModal(props: MoveCopyMealModalProps) {
   }
 
   const mealTabs: { id: MealTypeTarget; label: string }[] = [
-    ...(allowKeepMealTypes
+    ...(offersKeep
       ? [{ id: KEEP_MEAL_TYPES, label: t('food.actions.keepMealTypes') } as const]
       : []),
     { id: 'breakfast', label: t('food.meals.breakfast') },
@@ -128,14 +118,10 @@ export function MoveCopyMealModal(props: MoveCopyMealModalProps) {
     setIsSubmitting(true);
     await flushLoadingPaint();
     try {
-      const percentage = mode === 'split' ? splitPercentage : undefined;
-      if (props.allowKeepMealTypes) {
-        await props.onConfirm(targetDate, targetMealType, percentage);
-      } else if (targetMealType !== KEEP_MEAL_TYPES) {
-        await props.onConfirm(targetDate, targetMealType, percentage);
-      }
-
+      await onConfirm(targetDate, targetMealType, mode === 'split' ? splitPercentage : undefined);
       onClose();
+    } catch {
+      // The caller has reported the failure; stay open so the chosen day and meal are not lost.
     } finally {
       setIsSubmitting(false);
     }
