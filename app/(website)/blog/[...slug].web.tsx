@@ -4,6 +4,7 @@ import { createStaticLoader } from 'expo-router/server';
 import { ArrowLeft, CalendarDays, Folder, Languages, Tags } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { BlogMermaid } from '@/components/website/BlogMermaid';
 import { BlogPostShare } from '@/components/website/BlogPostShare';
 import { blogPostPath } from '@/components/website/blogRoutes';
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
@@ -145,7 +146,12 @@ export default function BlogPostPage() {
             </p>
           ) : null}
 
-          <div className="blog-prose py-10" dangerouslySetInnerHTML={{ __html: post.html }} />
+          <div
+            id="blog-post-body"
+            className="blog-prose py-10"
+            dangerouslySetInnerHTML={{ __html: post.html }}
+          />
+          <BlogMermaid containerId="blog-post-body" />
 
           <footer className="border-t border-ink/10 pt-8">
             <BlogPostShare

@@ -458,6 +458,24 @@ html.hide-desktop-wrapper .expo-web-app-shell {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 }
 
+.blog-prose pre.mermaid {
+  display: flex;
+  justify-content: center;
+  /* Until Mermaid draws it, the source shows as plain text. */
+  white-space: pre;
+}
+
+.blog-prose pre.mermaid[data-processed] {
+  white-space: normal;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.blog-prose pre.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
 .blog-prose table {
   display: block;
   width: 100%;

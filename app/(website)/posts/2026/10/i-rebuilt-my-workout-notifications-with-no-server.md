@@ -29,7 +29,22 @@ export function planWorkoutReminders(input: {
 }): PlannedReminder[];
 ```
 
-Give it your schedule, your preferences and what you've already done today, and it returns the exact list of dates to schedule. A workout you finished this morning gets no reminder tonight. A reminder that falls inside your quiet hours is simply never created. The trade-off is that the schedule goes stale if you never open the app, but the next time you do, it's rebuilt.
+Give it your schedule, your preferences and what you've already done today, and it returns the exact list of dates to schedule. A workout you finished this morning gets no reminder tonight. A reminder that falls inside your quiet hours is simply never created. Here's the path each candidate reminder takes:
+
+```mermaid
+flowchart TD
+    A([App opens, or a workout finishes]) --> B{Already trained it today?}
+    B -- Yes --> X1[No reminder]
+    B -- No --> C{Fire time already past?}
+    C -- Yes --> X2[No reminder]
+    C -- No --> D{Paused or quiet hours?}
+    D -- Yes --> X3[No reminder]
+    D -- No --> E([Schedule a one-off notification])
+```
+
+The fire time is your reminder time minus the lead time you chose.
+
+The trade-off is that the schedule goes stale if you never open the app, but the next time you do, it's rebuilt.
 
 ## The rest alert is the one that matters
 

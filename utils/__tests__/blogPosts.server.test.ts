@@ -62,6 +62,15 @@ describe('blogPosts.server', () => {
     expect(post.html).not.toContain('```');
   });
 
+  it('leaves a mermaid fence as escaped source for the browser to draw, not as highlighted code', () => {
+    const html = renderBlogPostMarkdown('```mermaid\nflowchart TD\n  A[<b>x</b>] --> B\n```');
+
+    expect(html).toContain('<pre class="mermaid">flowchart TD');
+    expect(html).toContain('A[&lt;b&gt;x&lt;/b&gt;] --&gt; B');
+    expect(html).not.toContain('hljs');
+    expect(html).not.toContain('<b>');
+  });
+
   it('renders rich Markdown and keeps raw HTML and unsafe links inert', () => {
     const html = renderBlogPostMarkdown(`
 ## Examples

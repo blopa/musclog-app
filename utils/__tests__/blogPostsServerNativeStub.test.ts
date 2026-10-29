@@ -44,6 +44,15 @@ describe('blogPosts.server native stub resolution', () => {
     expect(resolve('@/utils/blogPosts.server.extra', 'android')).toBe(PASSTHROUGH);
   });
 
+  it('stubs mermaid off web, so the diagram library stays out of the app bundle', () => {
+    const stub = path.resolve(__dirname, '../../mermaid-stub.js');
+
+    expect(resolve('mermaid', 'android')).toBe(stub);
+    expect(resolve('mermaid/dist/mermaid.core.mjs', 'ios')).toBe(stub);
+    expect(resolve('mermaid', 'web')).toBe(PASSTHROUGH);
+    expect(resolve('mermaid-something-else', 'android')).toBe(PASSTHROUGH);
+  });
+
   it('keeps stubbing the sharp Node-only dependency', () => {
     expect(resolve('sharp', 'android')).toBe(path.resolve(__dirname, '../../sharp-stub.js'));
   });

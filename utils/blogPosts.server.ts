@@ -68,6 +68,13 @@ const markdownRenderer = new MarkdownIt({
   typographer: true,
   highlight(code, language) {
     const normalizedLanguage = language.trim().toLowerCase();
+    // A ```mermaid fence is a diagram, not code to colour. The source stays escaped text in the
+    // HTML (Markdown has no raw HTML here) and `BlogMermaid` draws it in the browser; without
+    // JavaScript the reader still gets the readable source.
+    if (normalizedLanguage === 'mermaid') {
+      return `<pre class="mermaid">${escapeHtml(code)}</pre>`;
+    }
+
     let highlighted = escapeHtml(code);
     if (normalizedLanguage && hljs.getLanguage(normalizedLanguage)) {
       highlighted = hljs.highlight(code, {
