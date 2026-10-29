@@ -454,6 +454,20 @@ export const WORKOUT_HISTORY_DAYS_SETTING_TYPE = 'workout_history_days';
 export const HOME_SUMMARY_CARD_SETTING_TYPE = 'home_summary_card';
 
 /**
+ * Setting type for which activity heatmaps the home screen shows.
+ * value: 'none' | 'workouts' | 'nutrition' | 'both'. Default: 'none' (the home screen is unchanged
+ * for anyone who never opens the setting).
+ */
+export const HOME_HEATMAPS_SETTING_TYPE = 'home_heatmaps';
+
+/**
+ * Setting type for how two home heatmaps share the row.
+ * value: 'full' | 'side_by_side'. Default: 'full'. It only matters while both are shown: a lone
+ * heatmap is always full width.
+ */
+export const HOME_HEATMAP_LAYOUT_SETTING_TYPE = 'home_heatmap_layout';
+
+/**
  * Setting type for which quick actions the home screen shows.
  * value: JSON array of `HomeActionKey`, at most `MAX_HOME_ACTIONS` entries.
  * Parse it with `parseHomeActions` from `@/constants/homeActions`.
@@ -524,6 +538,23 @@ export type ChartTooltipPosition = 'left' | 'right';
 export type NutritionLogHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type WorkoutHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type HomeSummaryCard = 'daily_summary' | 'weekly_streak';
+
+/** Which heatmaps the home screen shows, in the order the picker lists them. */
+export const HOME_HEATMAPS_OPTIONS = ['none', 'workouts', 'nutrition', 'both'] as const;
+export type HomeHeatmaps = (typeof HOME_HEATMAPS_OPTIONS)[number];
+
+export const HOME_HEATMAP_LAYOUT_OPTIONS = ['full', 'side_by_side'] as const;
+export type HomeHeatmapLayout = (typeof HOME_HEATMAP_LAYOUT_OPTIONS)[number];
+
+/** Reads a stored choice, treating anything unrecognized (a newer build, a hand-edited backup) as off. */
+export function parseHomeHeatmaps(raw: string | null | undefined): HomeHeatmaps {
+  return HOME_HEATMAPS_OPTIONS.find((option) => option === raw) ?? 'none';
+}
+
+export function parseHomeHeatmapLayout(raw: string | null | undefined): HomeHeatmapLayout {
+  return HOME_HEATMAP_LAYOUT_OPTIONS.find((option) => option === raw) ?? 'full';
+}
+
 /**
  * What a cycle reminder shows on the lock screen. `discreet` (stored name kept for existing
  * installs; shown as "Private") never says what it is about; `subtle` names the task but never
@@ -592,6 +623,8 @@ export type UseSettingsResult = {
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
+  homeHeatmaps: HomeHeatmaps;
+  homeHeatmapLayout: HomeHeatmapLayout;
   showHomeSteps: boolean;
 };
 

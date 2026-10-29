@@ -1,8 +1,11 @@
 import {
   BarChart3,
   Beef,
+  Columns2,
   Crosshair,
   Droplets,
+  Dumbbell,
+  EyeOff,
   Flame,
   Heart,
   LayoutGrid,
@@ -11,7 +14,9 @@ import {
   Moon,
   Palette,
   Rocket,
+  Rows2,
   Sun,
+  Utensils,
   Wheat,
   Wine,
   Zap,
@@ -40,6 +45,10 @@ import {
 } from '@/constants/homeActions';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import {
+  HOME_HEATMAP_LAYOUT_OPTIONS,
+  HOME_HEATMAPS_OPTIONS,
+  type HomeHeatmapLayout,
+  type HomeHeatmaps,
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
   type NavItemKey,
@@ -88,6 +97,19 @@ const HOME_SUMMARY_CARD_ICON: Record<HomeSummaryCard, typeof LayoutGrid> = {
   weekly_streak: Flame,
 };
 
+/** Home heatmap choices and their icons. Exhaustive by type, so a new choice needs an icon. */
+const HOME_HEATMAPS_ICON: Record<HomeHeatmaps, typeof LayoutGrid> = {
+  none: EyeOff,
+  workouts: Dumbbell,
+  nutrition: Utensils,
+  both: LayoutGrid,
+};
+
+const HOME_HEATMAP_LAYOUT_ICON: Record<HomeHeatmapLayout, typeof LayoutGrid> = {
+  full: Rows2,
+  side_by_side: Columns2,
+};
+
 /** Appearance options, in the order they are offered. */
 const THEME_OPTIONS = ['system', ...THEME_IDS] as const satisfies readonly ThemeOption[];
 
@@ -111,13 +133,15 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
-  const { theme: themePreference, showHomeSteps } = useSettings();
+  const { theme: themePreference, showHomeSteps, homeHeatmaps, homeHeatmapLayout } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
   const [macrosPopupVisible, setMacrosPopupVisible] = useState(false);
   const [selectedMacros, setSelectedMacros] = useState<MacroKey[]>([...MACRO_KEYS]);
   const [homeCardPopupVisible, setHomeCardPopupVisible] = useState(false);
+  const [heatmapsPopupVisible, setHeatmapsPopupVisible] = useState(false);
+  const [heatmapLayoutPopupVisible, setHeatmapLayoutPopupVisible] = useState(false);
   const [homeSummaryCard, setHomeSummaryCard] = useState<HomeSummaryCard>('daily_summary');
   const [homeActionsPopupVisible, setHomeActionsPopupVisible] = useState(false);
   const [selectedHomeActions, setSelectedHomeActions] = useState<readonly HomeActionKey[]>([]);
@@ -173,6 +197,21 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   };
 
   const HomeSummaryCardIcon = HOME_SUMMARY_CARD_ICON[homeSummaryCard];
+  const HeatmapsIcon = HOME_HEATMAPS_ICON[homeHeatmaps];
+  const HeatmapLayoutIcon = HOME_HEATMAP_LAYOUT_ICON[homeHeatmapLayout];
+
+  // These two read straight from `useSettings()`, which re-renders on the write, so they keep
+  // no local copy to fall out of step with the stored value.
+  const handleHeatmapsChange = async (choice: HomeHeatmaps) => {
+    setHeatmapsPopupVisible(false);
+    await SettingsService.set(SETTINGS.homeHeatmaps, choice);
+  };
+
+  const handleHeatmapLayoutChange = async (layout: HomeHeatmapLayout) => {
+    setHeatmapLayoutPopupVisible(false);
+    await SettingsService.set(SETTINGS.homeHeatmapLayout, layout);
+  };
+
   const ThemeIcon = THEME_ICON[themePreference];
 
   const handleMacrosChange = async (ids: MacroKey[]) => {
@@ -372,6 +411,32 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             />
           </View>
         </View>
+
+        <View style={{ marginHorizontal: theme.spacing.padding.base }}>
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
+            {t('settings.homeHeatmaps.sectionTitle')}
+          </Text>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.homeHeatmaps.sectionSubtitle')}
+          </Text>
+          <PickerButton
+            icon={<HeatmapsIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+            label={t(`settings.homeHeatmaps.options.${homeHeatmaps}.label`)}
+            onPress={() => setHeatmapsPopupVisible(true)}
+          />
+          {/* Layout only matters for two heatmaps; one alone is always full width. */}
+          {homeHeatmaps === 'both' ? (
+            <View className="mt-3">
+              <PickerButton
+                icon={
+                  <HeatmapLayoutIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                }
+                label={t(`settings.homeHeatmaps.layout.options.${homeHeatmapLayout}.label`)}
+                onPress={() => setHeatmapLayoutPopupVisible(true)}
+              />
+            </View>
+          ) : null}
+        </View>
       </View>
       <BottomPopUp
         visible={homeActionsPopupVisible}
@@ -440,6 +505,32 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
           title: t(`settings.homeSummaryCard.options.${card}.label`),
           description: t(`settings.homeSummaryCard.options.${card}.description`),
           onPress: () => handleHomeSummaryCardChange(card),
+        }))}
+      />
+      <BottomPopUpMenu
+        visible={heatmapsPopupVisible}
+        onClose={() => setHeatmapsPopupVisible(false)}
+        title={t('settings.homeHeatmaps.popupTitle')}
+        subtitle={t('settings.homeHeatmaps.popupSubtitle')}
+        items={HOME_HEATMAPS_OPTIONS.map((choice) => ({
+          icon: HOME_HEATMAPS_ICON[choice],
+          selected: choice === homeHeatmaps,
+          title: t(`settings.homeHeatmaps.options.${choice}.label`),
+          description: t(`settings.homeHeatmaps.options.${choice}.description`),
+          onPress: () => handleHeatmapsChange(choice),
+        }))}
+      />
+      <BottomPopUpMenu
+        visible={heatmapLayoutPopupVisible}
+        onClose={() => setHeatmapLayoutPopupVisible(false)}
+        title={t('settings.homeHeatmaps.layout.popupTitle')}
+        subtitle={t('settings.homeHeatmaps.layout.popupSubtitle')}
+        items={HOME_HEATMAP_LAYOUT_OPTIONS.map((layout) => ({
+          icon: HOME_HEATMAP_LAYOUT_ICON[layout],
+          selected: layout === homeHeatmapLayout,
+          title: t(`settings.homeHeatmaps.layout.options.${layout}.label`),
+          description: t(`settings.homeHeatmaps.layout.options.${layout}.description`),
+          onPress: () => handleHeatmapLayoutChange(layout),
         }))}
       />
     </FullScreenModal>

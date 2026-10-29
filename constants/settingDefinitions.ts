@@ -13,9 +13,15 @@ import {
   CYCLE_VARIABILITY_HINT_SETTING_TYPE,
   type CycleNotificationStyle,
   DEFAULT_REST_SECONDS_SETTING_TYPE,
+  HOME_HEATMAP_LAYOUT_SETTING_TYPE,
+  HOME_HEATMAPS_SETTING_TYPE,
+  type HomeHeatmapLayout,
+  type HomeHeatmaps,
   NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE,
   parseAppLockScopes,
   parseCycleNotificationStyle,
+  parseHomeHeatmapLayout,
+  parseHomeHeatmaps,
   parseRestAlertSound,
   parseRestHapticStrength,
   parseRestHeadsUpSeconds,
@@ -129,6 +135,11 @@ export const SETTINGS = {
     serialize: (id) => id ?? '',
   } satisfies SettingDefinition<string | null>,
   showHomeSteps: booleanSetting(SHOW_HOME_STEPS_SETTING_TYPE, true),
+  homeHeatmaps: choiceSetting<HomeHeatmaps>(HOME_HEATMAPS_SETTING_TYPE, parseHomeHeatmaps),
+  homeHeatmapLayout: choiceSetting<HomeHeatmapLayout>(
+    HOME_HEATMAP_LAYOUT_SETTING_TYPE,
+    parseHomeHeatmapLayout
+  ),
   workoutView: choiceSetting<WorkoutView>(WORKOUT_VIEW_SETTING_TYPE, (raw) =>
     raw === 'inline' ? 'inline' : 'guided'
   ),

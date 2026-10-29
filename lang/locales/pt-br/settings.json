@@ -546,6 +546,44 @@
       "email": "Enviar e-mail ao suporte",
       "emailHint": "Não precisa de conta. Versão e dispositivo são adicionados à mensagem.",
       "openFailed": "Não foi possível abrir esse link."
+    },
+    "homeHeatmaps": {
+      "sectionTitle": "Mapas de atividade",
+      "sectionSubtitle": "Mostre um calendário da sua atividade recente na tela inicial.",
+      "popupTitle": "Mapas de atividade",
+      "popupSubtitle": "Escolha quais mapas exibir",
+      "options": {
+        "none": {
+          "label": "Desligado",
+          "description": "Sem mapas na tela inicial"
+        },
+        "workouts": {
+          "label": "Treinos",
+          "description": "Os dias em que você treinou"
+        },
+        "nutrition": {
+          "label": "Nutrição",
+          "description": "Os dias em que você registrou refeições"
+        },
+        "both": {
+          "label": "Treinos e nutrição",
+          "description": "Os dois mapas"
+        }
+      },
+      "layout": {
+        "popupTitle": "Layout dos mapas",
+        "popupSubtitle": "Como os dois mapas dividem a tela inicial",
+        "options": {
+          "full": {
+            "label": "Largura total",
+            "description": "Um acima do outro"
+          },
+          "side_by_side": {
+            "label": "Lado a lado",
+            "description": "Dois cartões compactos na mesma linha"
+          }
+        }
+      }
     }
   }
 }

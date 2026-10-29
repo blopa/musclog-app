@@ -17,6 +17,7 @@ import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DailyHomeFooter } from '@/components/home/DailyHomeFooter';
 import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
 import { HomeActionsRow } from '@/components/home/HomeActionsRow';
+import { HomeHeatmaps } from '@/components/home/HomeHeatmaps';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
@@ -499,6 +500,7 @@ export default function HomeScreen() {
         <View className="mx-4 mb-4">
           <WeeklyReviewCard compact quietUntilReady />
         </View>
+        <HomeHeatmaps today={today} />
         <View className="mx-4 mb-6">
           <View className="mb-2 flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-text-primary">

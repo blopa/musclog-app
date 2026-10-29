@@ -546,6 +546,44 @@
       "email": "Email support",
       "emailHint": "No account needed. Version and device are added to the message.",
       "openFailed": "Couldn't open that link."
+    },
+    "homeHeatmaps": {
+      "sectionTitle": "Home heatmaps",
+      "sectionSubtitle": "Show a calendar of your recent activity on the home screen.",
+      "popupTitle": "Home heatmaps",
+      "popupSubtitle": "Choose which heatmaps to show",
+      "options": {
+        "none": {
+          "label": "Off",
+          "description": "No heatmaps on the home screen"
+        },
+        "workouts": {
+          "label": "Workouts",
+          "description": "Days you trained"
+        },
+        "nutrition": {
+          "label": "Nutrition",
+          "description": "Days you logged meals"
+        },
+        "both": {
+          "label": "Workouts and nutrition",
+          "description": "Both heatmaps"
+        }
+      },
+      "layout": {
+        "popupTitle": "Heatmap layout",
+        "popupSubtitle": "How the two heatmaps share the home screen",
+        "options": {
+          "full": {
+            "label": "Full width",
+            "description": "One above the other"
+          },
+          "side_by_side": {
+            "label": "Side by side",
+            "description": "Two compact cards in one row"
+          }
+        }
+      }
     }
   }
 }

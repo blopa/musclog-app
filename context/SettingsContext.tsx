@@ -28,6 +28,8 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   HOME_ACTIONS_SETTING_TYPE,
   HOME_SUMMARY_CARD_SETTING_TYPE,
+  type HomeHeatmapLayout,
+  type HomeHeatmaps,
   type HomeSummaryCard,
   INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
@@ -178,6 +180,8 @@ type SettingsState = {
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
+  homeHeatmaps: HomeHeatmaps;
+  homeHeatmapLayout: HomeHeatmapLayout;
   /**
    * The raw stored setting, NOT the parsed array.
    *
@@ -279,6 +283,8 @@ const DEFAULT_STATE: SettingsState = {
   nutritionLogHistoryDays: 'none',
   workoutHistoryDays: 'none',
   homeSummaryCard: 'daily_summary',
+  homeHeatmaps: SETTINGS.homeHeatmaps.defaultValue,
+  homeHeatmapLayout: SETTINGS.homeHeatmapLayout.defaultValue,
   homeActionsRaw: '',
   showHomeSteps: SETTINGS.showHomeSteps.defaultValue,
   isLoading: true,
@@ -440,6 +446,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
     workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
     homeSummaryCard,
+    homeHeatmaps: readSetting(map, SETTINGS.homeHeatmaps),
+    homeHeatmapLayout: readSetting(map, SETTINGS.homeHeatmapLayout),
     homeActionsRaw: map.get(HOME_ACTIONS_SETTING_TYPE) ?? '',
     showHomeSteps: readSetting(map, SETTINGS.showHomeSteps),
     isLoading: false,
@@ -522,6 +530,8 @@ export type SettingsContextType = UseSettingsResult & {
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
   homeSummaryCard: HomeSummaryCard;
+  homeHeatmaps: HomeHeatmaps;
+  homeHeatmapLayout: HomeHeatmapLayout;
   homeActions: readonly HomeActionKey[];
   showHomeSteps: boolean;
 };

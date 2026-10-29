@@ -39,6 +39,33 @@
       "surplus": "Overschot",
       "even": "In balans",
       "kcal": "kcal"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Afgelopen week",
+      "lastWeeks_few": "Afgelopen {{count}} weken",
+      "lastWeeks_many": "Afgelopen {{count}} weken",
+      "lastWeeks_other": "Afgelopen {{count}} weken",
+      "tapHint": "Tik op een dag voor details",
+      "less": "Minder",
+      "more": "Meer",
+      "earlierWeeks": "Eerdere weken tonen",
+      "laterWeeks": "Latere weken tonen",
+      "workouts": {
+        "title": "Workouts",
+        "none": "Geen workout",
+        "count_one": "{{count}} workout",
+        "count_few": "{{count}} workouts",
+        "count_many": "{{count}} workouts",
+        "count_other": "{{count}} workouts"
+      },
+      "nutrition": {
+        "title": "Voeding",
+        "none": "Niets gelogd",
+        "count_one": "{{count}} maaltijd gelogd",
+        "count_few": "{{count}} maaltijden gelogd",
+        "count_many": "{{count}} maaltijden gelogd",
+        "count_other": "{{count}} maaltijden gelogd"
+      }
     }
   }
 }

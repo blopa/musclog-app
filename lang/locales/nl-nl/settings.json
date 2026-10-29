@@ -546,6 +546,44 @@
       "email": "Mail de support",
       "emailHint": "Geen account nodig. Versie en apparaat worden aan het bericht toegevoegd.",
       "openFailed": "Die link kon niet worden geopend."
+    },
+    "homeHeatmaps": {
+      "sectionTitle": "Activiteitskaarten",
+      "sectionSubtitle": "Toon een kalender van je recente activiteit op het startscherm.",
+      "popupTitle": "Activiteitskaarten",
+      "popupSubtitle": "Kies welke kaarten je wilt tonen",
+      "options": {
+        "none": {
+          "label": "Uit",
+          "description": "Geen kaarten op het startscherm"
+        },
+        "workouts": {
+          "label": "Workouts",
+          "description": "Dagen dat je hebt getraind"
+        },
+        "nutrition": {
+          "label": "Voeding",
+          "description": "Dagen dat je maaltijden hebt gelogd"
+        },
+        "both": {
+          "label": "Workouts en voeding",
+          "description": "Beide kaarten"
+        }
+      },
+      "layout": {
+        "popupTitle": "Indeling van de kaarten",
+        "popupSubtitle": "Hoe de twee kaarten het startscherm delen",
+        "options": {
+          "full": {
+            "label": "Volledige breedte",
+            "description": "De ene boven de andere"
+          },
+          "side_by_side": {
+            "label": "Naast elkaar",
+            "description": "Twee compacte kaarten in één rij"
+          }
+        }
+      }
     }
   }
 }

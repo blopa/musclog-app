@@ -39,6 +39,33 @@
       "surplus": "Surplus",
       "even": "Balanced",
       "kcal": "kcal"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Last week",
+      "lastWeeks_few": "Last {{count}} weeks",
+      "lastWeeks_many": "Last {{count}} weeks",
+      "lastWeeks_other": "Last {{count}} weeks",
+      "tapHint": "Tap a day for details",
+      "less": "Less",
+      "more": "More",
+      "earlierWeeks": "Show earlier weeks",
+      "laterWeeks": "Show later weeks",
+      "workouts": {
+        "title": "Workouts",
+        "none": "No workout",
+        "count_one": "{{count}} workout",
+        "count_few": "{{count}} workouts",
+        "count_many": "{{count}} workouts",
+        "count_other": "{{count}} workouts"
+      },
+      "nutrition": {
+        "title": "Nutrition",
+        "none": "Nothing logged",
+        "count_one": "{{count}} meal logged",
+        "count_few": "{{count}} meals logged",
+        "count_many": "{{count}} meals logged",
+        "count_other": "{{count}} meals logged"
+      }
     }
   }
 }
