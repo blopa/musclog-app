@@ -581,6 +581,10 @@
           "side_by_side": {
             "label": "Lado a lado",
             "description": "Dois cartões compactos na mesma linha"
+          },
+          "compact": {
+            "label": "Compacto",
+            "description": "Últimos 30 dias, uma linha fina cada"
           }
         }
       }

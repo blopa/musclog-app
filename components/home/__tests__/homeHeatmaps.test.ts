@@ -35,6 +35,19 @@ describe('home heatmaps', () => {
     );
   });
 
+  it('draws the compact layout as one strip card, whatever the number of heatmaps', () => {
+    const component = code('components', 'home', 'HomeHeatmaps.tsx');
+    const gate = component.indexOf("homeHeatmapLayout === 'compact'");
+
+    expect(gate).toBeGreaterThan(-1);
+    expect(component.slice(gate, component.indexOf('const sideBySide'))).toMatch(
+      /<HomeHeatmapStripCard\b/
+    );
+    // A source that is not shown must not subscribe.
+    expect(component).toMatch(/enabled: sources\.includes\('workouts'\)/);
+    expect(component).toMatch(/enabled: sources\.includes\('nutrition'\)/);
+  });
+
   it('draws two heatmaps side by side only when both are on and the user chose that', () => {
     const component = code('components', 'home', 'HomeHeatmaps.tsx');
 

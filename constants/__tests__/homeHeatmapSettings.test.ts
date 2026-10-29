@@ -24,6 +24,11 @@ describe('home heatmap settings', () => {
     }
   });
 
+  it('offers the compact strip beside the two grid layouts', () => {
+    expect(HOME_HEATMAP_LAYOUT_OPTIONS).toEqual(['full', 'side_by_side', 'compact']);
+    expect(parseHomeHeatmapLayout('compact')).toBe('compact');
+  });
+
   it('reads anything unknown, as a newer build or a hand-edited backup can leave, as the default', () => {
     expect(parseHomeHeatmaps('everything')).toBe('none');
     expect(parseHomeHeatmaps('')).toBe('none');

@@ -1,4 +1,4 @@
-import { activityLevel, buildActivityHeatmap } from '@/utils/activityHeatmap';
+import { activityLevel, buildActivityHeatmap, buildActivityStrip } from '@/utils/activityHeatmap';
 
 // Wednesday, 14 October 2026 (local), the day the grid ends on in most cases below.
 const WEDNESDAY = new Date(2026, 9, 14);
@@ -218,5 +218,67 @@ describe('buildActivityHeatmap', () => {
 
     expect(sunday.weekdays.map((d) => d.getDay())).toEqual([0, 1, 2, 3, 4, 5, 6]);
     expect(monday.weekdays.map((d) => d.getDay())).toEqual([1, 2, 3, 4, 5, 6, 0]);
+  });
+});
+
+describe('buildActivityStrip', () => {
+  it('draws the last N days, oldest first, ending on the end date', () => {
+    const { cells } = buildActivityStrip({ days: [], endDate: WEDNESDAY, dayCount: 30 });
+
+    expect(cells).toHaveLength(30);
+    expect(cells[29].iso).toBe('2026-10-14');
+    expect(cells[0].iso).toBe('2026-09-15');
+  });
+
+  it('keeps the days one calendar day apart across a DST change', () => {
+    // US and EU clocks both change between these dates; the keys must still be consecutive days.
+    const { cells } = buildActivityStrip({
+      days: [],
+      endDate: new Date(2026, 10, 5),
+      dayCount: 40,
+    });
+    const keys = cells.map((cell) => cell.iso);
+
+    expect(new Set(keys).size).toBe(40);
+    expect([...keys].sort()).toEqual(keys);
+  });
+
+  it('levels days exactly as the grid does', () => {
+    const days = [
+      { date: '2026-10-14', value: 10 },
+      { date: '2026-10-13', value: 5 },
+      { date: '2026-10-12', value: 0.01 },
+    ];
+    const strip = buildActivityStrip({ days, endDate: WEDNESDAY, dayCount: 7 });
+    const grid = buildActivityHeatmap({ days, endDate: WEDNESDAY, weeks: 2 });
+    const gridLevel = (iso: string) => grid.columns.flat().find((cell) => cell?.iso === iso)?.level;
+
+    expect(strip.max).toBe(10);
+    for (const cell of strip.cells) {
+      expect(cell.level).toBe(gridLevel(cell.iso));
+    }
+  });
+
+  it('sums repeated days and ignores days outside the window', () => {
+    const { cells } = buildActivityStrip({
+      days: [
+        { date: '2026-10-14', value: 1 },
+        { date: '2026-10-14', value: 1 },
+        { date: '2026-01-01', value: 9 },
+      ],
+      endDate: WEDNESDAY,
+      dayCount: 7,
+    });
+
+    expect(cells[6].value).toBe(2);
+    expect(cells.reduce((sum, cell) => sum + cell.value, 0)).toBe(2);
+  });
+
+  it('uses a fixed maximum when given, and clamps the day count', () => {
+    expect(buildActivityStrip({ days: [], endDate: WEDNESDAY, maxValue: 4 }).max).toBe(4);
+    expect(buildActivityStrip({ days: [], endDate: WEDNESDAY, dayCount: 0 }).cells).toHaveLength(1);
+    expect(buildActivityStrip({ days: [], endDate: WEDNESDAY, dayCount: 9999 }).cells).toHaveLength(
+      366
+    );
   });
 });

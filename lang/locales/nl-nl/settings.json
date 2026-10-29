@@ -581,6 +581,10 @@
           "side_by_side": {
             "label": "Naast elkaar",
             "description": "Twee compacte kaarten in één rij"
+          },
+          "compact": {
+            "label": "Compact",
+            "description": "Laatste 30 dagen, elk één dunne rij"
           }
         }
       }

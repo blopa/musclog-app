@@ -29,7 +29,7 @@ import {
 } from '@/utils/activityHeatmap';
 
 /** Opacity of the accent over the card for levels 1-4; level 0 is the neutral empty cell. */
-const LEVEL_OPACITY: Record<ActivityHeatmapLevel, number> = {
+export const ACTIVITY_LEVEL_OPACITY: Record<ActivityHeatmapLevel, number> = {
   0: 1,
   1: 0.32,
   2: 0.52,
@@ -398,7 +398,7 @@ export function ActivityHeatmap({
                               height: cell,
                               borderRadius: theme.borderRadius.tag,
                               backgroundColor: colorFor(day.level),
-                              opacity: LEVEL_OPACITY[day.level],
+                              opacity: ACTIVITY_LEVEL_OPACITY[day.level],
                               borderWidth: isSelected ? 2 : 0,
                               borderColor: theme.colors.text.primary,
                             }}
@@ -468,7 +468,7 @@ export function ActivityHeatmap({
                     height: LEGEND_SWATCH,
                     borderRadius: theme.borderRadius.tag,
                     backgroundColor: colorFor(stepLevel),
-                    opacity: LEVEL_OPACITY[stepLevel],
+                    opacity: ACTIVITY_LEVEL_OPACITY[stepLevel],
                   }}
                 />
               );

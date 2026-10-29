@@ -581,6 +581,10 @@
           "side_by_side": {
             "label": "Side by side",
             "description": "Two compact cards in one row"
+          },
+          "compact": {
+            "label": "Compact",
+            "description": "Last 30 days, one thin row each"
           }
         }
       }

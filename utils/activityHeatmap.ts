@@ -1,4 +1,4 @@
-import { addDays, startOfDay, startOfWeek, subWeeks } from 'date-fns';
+import { addDays, startOfDay, startOfWeek, subDays, subWeeks } from 'date-fns';
 
 import { formatLocalCalendarDayIso, parseLocalCalendarDate } from '@/utils/calendarDate';
 import { weekdayDates } from '@/utils/monthGrid';
@@ -216,4 +216,51 @@ function monthLabelsFor(columns: (ActivityHeatmapCell | null)[][]): ActivityHeat
   }
 
   return labels;
+}
+
+export type ActivityStripCell = ActivityHeatmapCell;
+
+export type BuildActivityStripInput = {
+  days: ActivityHeatmapDay[];
+  /** Last day shown, normally today. Defaults to today. */
+  endDate?: Date;
+  /** Days to draw, ending on `endDate`; clamped to 1-366. Defaults to 30. */
+  dayCount?: number;
+  /** The value that earns the top level, as for `buildActivityHeatmap`. Defaults to the busiest day. */
+  maxValue?: number;
+};
+
+export const ACTIVITY_STRIP_MAX_DAYS = 366;
+
+/**
+ * The compact form of the grid: the last `dayCount` days as one run of cells, oldest first, with no
+ * week structure. It exists for a card that has width to spare and no height, where a 7-row calendar
+ * would take most of a screen. Same bucketing and levels as `buildActivityHeatmap`, so a day reads
+ * the same shade in both.
+ */
+export function buildActivityStrip({
+  days,
+  endDate,
+  dayCount = 30,
+  maxValue,
+}: BuildActivityStripInput): { cells: ActivityStripCell[]; max: number } {
+  const count = Number.isFinite(dayCount)
+    ? Math.min(ACTIVITY_STRIP_MAX_DAYS, Math.max(1, Math.floor(dayCount)))
+    : 30;
+  const end = startOfDay(endDate ?? new Date());
+  const byDay = valuesByDay(days);
+
+  const raw = Array.from({ length: count }, (_, index) => {
+    const date = subDays(end, count - 1 - index);
+    const iso = formatLocalCalendarDayIso(date);
+
+    return { iso, date, value: byDay.get(iso) ?? 0 };
+  });
+  const largest = raw.reduce((best, cell) => Math.max(best, cell.value), 0);
+  const max = maxValue != null && Number.isFinite(maxValue) && maxValue > 0 ? maxValue : largest;
+
+  return {
+    cells: raw.map((cell) => ({ ...cell, level: activityLevel(cell.value, max) })),
+    max,
+  };
 }

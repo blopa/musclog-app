@@ -15,6 +15,7 @@ import {
   Palette,
   Rocket,
   Rows2,
+  Rows3,
   Sun,
   Utensils,
   Wheat,
@@ -108,6 +109,7 @@ const HOME_HEATMAPS_ICON: Record<HomeHeatmaps, typeof LayoutGrid> = {
 const HOME_HEATMAP_LAYOUT_ICON: Record<HomeHeatmapLayout, typeof LayoutGrid> = {
   full: Rows2,
   side_by_side: Columns2,
+  compact: Rows3,
 };
 
 /** Appearance options, in the order they are offered. */
@@ -198,7 +200,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   const HomeSummaryCardIcon = HOME_SUMMARY_CARD_ICON[homeSummaryCard];
   const HeatmapsIcon = HOME_HEATMAPS_ICON[homeHeatmaps];
-  const HeatmapLayoutIcon = HOME_HEATMAP_LAYOUT_ICON[homeHeatmapLayout];
+  // A stored side-by-side choice means nothing for a single heatmap, which is drawn full width.
+  const effectiveHeatmapLayout: HomeHeatmapLayout =
+    homeHeatmapLayout === 'side_by_side' && homeHeatmaps !== 'both' ? 'full' : homeHeatmapLayout;
+  const HeatmapLayoutIcon = HOME_HEATMAP_LAYOUT_ICON[effectiveHeatmapLayout];
 
   // These two read straight from `useSettings()`, which re-renders on the write, so they keep
   // no local copy to fall out of step with the stored value.
@@ -424,14 +429,14 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             label={t(`settings.homeHeatmaps.options.${homeHeatmaps}.label`)}
             onPress={() => setHeatmapsPopupVisible(true)}
           />
-          {/* Layout only matters for two heatmaps; one alone is always full width. */}
-          {homeHeatmaps === 'both' ? (
+          {/* Side by side needs two heatmaps; the compact strip suits one or two. */}
+          {homeHeatmaps !== 'none' ? (
             <View className="mt-3">
               <PickerButton
                 icon={
                   <HeatmapLayoutIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 }
-                label={t(`settings.homeHeatmaps.layout.options.${homeHeatmapLayout}.label`)}
+                label={t(`settings.homeHeatmaps.layout.options.${effectiveHeatmapLayout}.label`)}
                 onPress={() => setHeatmapLayoutPopupVisible(true)}
               />
             </View>
@@ -525,9 +530,11 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         onClose={() => setHeatmapLayoutPopupVisible(false)}
         title={t('settings.homeHeatmaps.layout.popupTitle')}
         subtitle={t('settings.homeHeatmaps.layout.popupSubtitle')}
-        items={HOME_HEATMAP_LAYOUT_OPTIONS.map((layout) => ({
+        items={HOME_HEATMAP_LAYOUT_OPTIONS.filter(
+          (layout) => layout !== 'side_by_side' || homeHeatmaps === 'both'
+        ).map((layout) => ({
           icon: HOME_HEATMAP_LAYOUT_ICON[layout],
-          selected: layout === homeHeatmapLayout,
+          selected: layout === effectiveHeatmapLayout,
           title: t(`settings.homeHeatmaps.layout.options.${layout}.label`),
           description: t(`settings.homeHeatmaps.layout.options.${layout}.description`),
           onPress: () => handleHeatmapLayoutChange(layout),

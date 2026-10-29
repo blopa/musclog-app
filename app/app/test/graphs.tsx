@@ -1,9 +1,11 @@
 import { subDays } from 'date-fns';
+import { Dumbbell, Utensils } from 'lucide-react-native';
 import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActivityHeatmap } from '@/components/charts/ActivityHeatmap';
+import { ActivityHeatmapStrip } from '@/components/charts/ActivityHeatmapStrip';
 import { ActivityRingsChart } from '@/components/charts/ActivityRingsChart';
 import { AreaChart, AreaChartDatum, AreaChartSeriesConfig } from '@/components/charts/AreaChart';
 import { BarChart, BarChartDataPoint } from '@/components/charts/BarChart';
@@ -806,6 +808,30 @@ export default function GraphsTestScreen() {
                   }
                 />
               </SurfaceColorProvider>
+            </View>
+            <View className="mt-4 rounded-card border border-border-default bg-bg-card p-3">
+              <ActivityHeatmapStrip
+                title="Last 30 days"
+                dayCount={30}
+                rows={[
+                  {
+                    key: 'workouts',
+                    label: 'Workouts',
+                    icon: Dumbbell,
+                    days: heatmapDays,
+                    maxValue: 1.5,
+                    describeValue: (value) => (value === 0 ? 'No workout' : `${value} workouts`),
+                  },
+                  {
+                    key: 'nutrition',
+                    label: 'Nutrition',
+                    icon: Utensils,
+                    days: heatmapDays,
+                    maxValue: 1.5,
+                    describeValue: (value) => (value === 0 ? 'Nothing logged' : `${value} meals`),
+                  },
+                ]}
+              />
             </View>
           </View>
 

@@ -543,7 +543,7 @@ export type HomeSummaryCard = 'daily_summary' | 'weekly_streak';
 export const HOME_HEATMAPS_OPTIONS = ['none', 'workouts', 'nutrition', 'both'] as const;
 export type HomeHeatmaps = (typeof HOME_HEATMAPS_OPTIONS)[number];
 
-export const HOME_HEATMAP_LAYOUT_OPTIONS = ['full', 'side_by_side'] as const;
+export const HOME_HEATMAP_LAYOUT_OPTIONS = ['full', 'side_by_side', 'compact'] as const;
 export type HomeHeatmapLayout = (typeof HOME_HEATMAP_LAYOUT_OPTIONS)[number];
 
 /** Reads a stored choice, treating anything unrecognized (a newer build, a hand-edited backup) as off. */
