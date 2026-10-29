@@ -55,4 +55,17 @@ describe('home heatmaps', () => {
       /sideBySide\s*=\s*sources\.length === 2 && homeHeatmapLayout === 'side_by_side'/
     );
   });
+
+  it('keeps the side-by-side cards to the last 30 days, wrapped, with only a title', () => {
+    const component = code('components', 'home', 'HomeHeatmaps.tsx');
+    const card = component.slice(
+      component.indexOf('function HomeHeatmapDayGridCard'),
+      component.indexOf('type HomeHeatmapStripCardProps')
+    );
+
+    expect(card).toMatch(/<ActivityDayGrid\b/);
+    expect(card).toMatch(/dayCount=\{HOME_HEATMAP_STRIP_DAYS\}/);
+    expect(card).not.toMatch(/subtitle=|summary=|legend=/);
+    expect(component).toMatch(/sideBySide \? \(\s*<HomeHeatmapDayGridCard/);
+  });
 });

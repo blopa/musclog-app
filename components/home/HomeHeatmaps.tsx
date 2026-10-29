@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
+import { ActivityDayGrid } from '@/components/charts/ActivityDayGrid';
 import { ActivityHeatmap } from '@/components/charts/ActivityHeatmap';
 import {
   ActivityHeatmapStrip,
@@ -17,15 +18,16 @@ import {
   WORKOUT_HEATMAP_MAX_VALUE,
 } from '@/utils/activityHeatmapData';
 
-/**
- * Weeks drawn by each form. The full-width card fits 18 on a phone without scrolling; the half-width
- * one fits 12 of its smaller squares, which is why the two cards can show different spans.
- */
-export const HOME_HEATMAP_WEEKS = { full: 18, compact: 12 } as const;
+/** Weeks drawn by the full-width card, which fits 18 on a phone without scrolling. */
+export const HOME_HEATMAP_FULL_WEEKS = 18;
 
-/** Days drawn by each row of the compact strip, which has no weeks to count. */
+/**
+ * Days drawn by the two compact forms: each row of the strip, and each half-width card of the
+ * side-by-side layout, which wraps them into `HOME_HEATMAP_DAY_GRID_COLUMNS` squares per row.
+ */
 export const HOME_HEATMAP_STRIP_DAYS = 30;
-/** Weeks the strip's query reaches back to cover `HOME_HEATMAP_STRIP_DAYS`, plus the hook's spare week. */
+export const HOME_HEATMAP_DAY_GRID_COLUMNS = 10;
+/** Weeks a query reaches back to cover `HOME_HEATMAP_STRIP_DAYS`, plus the hook's spare week. */
 const STRIP_QUERY_WEEKS = Math.ceil(HOME_HEATMAP_STRIP_DAYS / 7);
 
 const MAX_VALUE: Record<ActivityHeatmapSource, number> = {
@@ -55,41 +57,62 @@ function useDescribeValue(source: ActivityHeatmapSource) {
 type HomeHeatmapCardProps = {
   source: ActivityHeatmapSource;
   today: Date;
-  compact: boolean;
 };
 
-function HomeHeatmapCard({ source, today, compact }: HomeHeatmapCardProps) {
+function HomeHeatmapCard({ source, today }: HomeHeatmapCardProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const weeks = compact ? HOME_HEATMAP_WEEKS.compact : HOME_HEATMAP_WEEKS.full;
-  const days = useActivityHeatmapDays(source, today, weeks);
+  const days = useActivityHeatmapDays(source, today, HOME_HEATMAP_FULL_WEEKS);
 
   const describeValue = useDescribeValue(source);
 
   return (
-    <GenericCard fill={compact} containerStyle={compact ? { minWidth: 0 } : undefined}>
+    <GenericCard>
       <SurfaceColorProvider color={theme.colors.background.card}>
         <ActivityHeatmap
-          className={compact ? 'p-3' : 'p-4'}
+          className="p-4"
           title={t(
             source === 'workouts' ? 'home.heatmaps.workouts.title' : 'home.heatmaps.nutrition.title'
           )}
-          subtitle={t('home.heatmaps.lastWeeks', { count: weeks })}
+          subtitle={t('home.heatmaps.lastWeeks', { count: HOME_HEATMAP_FULL_WEEKS })}
           days={days}
           endDate={today}
-          weeks={weeks}
+          weeks={HOME_HEATMAP_FULL_WEEKS}
           maxValue={MAX_VALUE[source]}
-          compact={compact}
           summary={t('home.heatmaps.tapHint')}
           describeDay={({ dateLabel, value }) => `${dateLabel}: ${describeValue(value)}`}
-          // The legend alone is wider than a half-width card, so only the full form carries it.
-          legend={
-            compact ? undefined : { less: t('home.heatmaps.less'), more: t('home.heatmaps.more') }
-          }
+          legend={{ less: t('home.heatmaps.less'), more: t('home.heatmaps.more') }}
           scrollLabels={{
             earlier: t('home.heatmaps.earlierWeeks'),
             later: t('home.heatmaps.laterWeeks'),
           }}
+        />
+      </SurfaceColorProvider>
+    </GenericCard>
+  );
+}
+
+/** One half of the side-by-side layout: the title over the last 30 days, three short rows. */
+function HomeHeatmapDayGridCard({ source, today }: HomeHeatmapCardProps) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const days = useActivityHeatmapDays(source, today, STRIP_QUERY_WEEKS);
+  const describeValue = useDescribeValue(source);
+
+  return (
+    <GenericCard fill containerStyle={{ minWidth: 0 }}>
+      <SurfaceColorProvider color={theme.colors.background.card}>
+        <ActivityDayGrid
+          className="p-3"
+          title={t(
+            source === 'workouts' ? 'home.heatmaps.workouts.title' : 'home.heatmaps.nutrition.title'
+          )}
+          days={days}
+          endDate={today}
+          dayCount={HOME_HEATMAP_STRIP_DAYS}
+          columns={HOME_HEATMAP_DAY_GRID_COLUMNS}
+          maxValue={MAX_VALUE[source]}
+          describeValue={describeValue}
         />
       </SurfaceColorProvider>
     </GenericCard>
@@ -162,7 +185,7 @@ type HomeHeatmapsProps = {
  * `homeHeatmapLayout`). Self-gating: with the setting off it renders nothing and subscribes to
  * nothing, so the home screen pays for these only when they are shown.
  *
- * Two heatmaps are either stacked at full width or share one row in the compact form. The
+ * Two heatmaps are either stacked at full width or share one row as two small cards (the last 30 days, title only). The
  * `compact` layout instead puts every selected heatmap in ONE short card, a thin 30-day row each. A single
  * heatmap is always full width: half a row with nothing beside it would only waste the space.
  */
@@ -188,9 +211,13 @@ export function HomeHeatmaps({ today }: HomeHeatmapsProps) {
 
   return (
     <View className={`mx-4 mb-4 gap-3 ${sideBySide ? 'flex-row' : ''}`}>
-      {sources.map((source) => (
-        <HomeHeatmapCard key={source} source={source} today={today} compact={sideBySide} />
-      ))}
+      {sources.map((source) =>
+        sideBySide ? (
+          <HomeHeatmapDayGridCard key={source} source={source} today={today} />
+        ) : (
+          <HomeHeatmapCard key={source} source={source} today={today} />
+        )
+      )}
     </View>
   );
 }
