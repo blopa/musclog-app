@@ -23,6 +23,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
+import { CardSelectionCheck } from './CardSelectionCheck';
 import { GenericCard } from './GenericCard';
 
 type FoodItemCardProps = {
@@ -32,6 +33,10 @@ type FoodItemCardProps = {
   image?: ImageSourcePropType;
   onPress?: () => void;
   onMorePress?: () => void;
+  onLongPress?: () => void;
+  /** A selection is running: the menu button gives way to a checkbox. */
+  selectionMode?: boolean;
+  selected?: boolean;
   protein?: number;
   carbs?: number;
   fat?: number;
@@ -103,6 +108,9 @@ export const FoodItemCard = memo(function FoodItemCard({
   image,
   onPress,
   onMorePress,
+  onLongPress,
+  selectionMode = false,
+  selected = false,
   protein,
   carbs,
   fat,
@@ -146,8 +154,22 @@ export const FoodItemCard = memo(function FoodItemCard({
     }
   }, [image]);
 
+  // While a selection runs the menu button gives way to the card's checkbox.
+  let trailingControl = null;
+  if (selectionMode) {
+    trailingControl = <CardSelectionCheck selected={selected} />;
+  } else if (onMorePress) {
+    trailingControl = <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />;
+  }
+
   return (
-    <GenericCard variant="flat" isPressable={!!onPress} onPress={onPress}>
+    <GenericCard
+      variant="flat"
+      isPressable={!!onPress}
+      onPress={onPress}
+      onLongPress={onLongPress}
+      selected={selected}
+    >
       <View className="flex-row items-center gap-3 px-4 py-3">
         <View
           className={`flex-shrink-0 overflow-hidden rounded-control ${
@@ -219,9 +241,7 @@ export const FoodItemCard = memo(function FoodItemCard({
             </View>
           ) : null}
         </View>
-        {onMorePress ? (
-          <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />
-        ) : null}
+        {trailingControl}
       </View>
     </GenericCard>
   );

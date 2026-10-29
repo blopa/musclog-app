@@ -81,6 +81,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Scale meal portions up or down while maintaining macro ratios
 - Log meals retroactively for past dates
 - Move, copy, combine, or group meal entries
+- Bulk-edit the diary: long-press any food or meal card to start a selection, tap more cards to add or remove them, then copy or move them to another day (a selection spanning several meals can keep each item in its own meal), change their combined portion, combine them into one named meal, save them as a reusable meal, save them for later, or delete them. Android back, changing day or leaving the screen ends the selection
+- Unpack a meal: a meal card with several foods (an AI, chat or saved meal) can be turned back into its separate foods from its menu, with Undo in the confirmation
 - Copy a whole previous day into the current one — pick a recent logged day, review its meals, untick anything you didn't repeat, and confirm (meal types, meal groups, and times of day are preserved)
 - Configurable carb convention (total carbs vs. net carbs, based on region/label type)
 - Intuitive eating mode (hides calorie and macro numbers)

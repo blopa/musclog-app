@@ -14,37 +14,60 @@ import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
+/** Leave every moved/copied item in the meal it is already in. */
+export const KEEP_MEAL_TYPES = 'keep';
+
+export type MealTypeTarget = MealType | typeof KEEP_MEAL_TYPES;
+
 type MoveCopyMealModalProps = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (
-    targetDate: Date,
-    targetMealType: MealType,
-    splitPercentage?: number
-  ) => Promise<void>;
   mode: 'move' | 'copy' | 'split';
   title?: string;
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
-};
+} & (
+  | {
+      allowKeepMealTypes?: false;
+      onConfirm: (
+        targetDate: Date,
+        targetMealType: MealType,
+        splitPercentage?: number
+      ) => Promise<void>;
+    }
+  | {
+      /**
+       * Offer "Keep their meals" (selected by default) for a set of items that spans several
+       * meals, where one target meal would merge them.
+       */
+      allowKeepMealTypes: true;
+      onConfirm: (
+        targetDate: Date,
+        targetMealType: MealTypeTarget,
+        splitPercentage?: number
+      ) => Promise<void>;
+    }
+);
 
 const SPLIT_PRESETS = [25, 33, 50, 75];
 
-export function MoveCopyMealModal({
-  visible,
-  onClose,
-  onConfirm,
-  mode,
-  title: customTitle,
-  sourceMealType,
-  sourceDate,
-  isLoading = false,
-}: MoveCopyMealModalProps) {
+export function MoveCopyMealModal(props: MoveCopyMealModalProps) {
+  const {
+    visible,
+    onClose,
+    mode,
+    title: customTitle,
+    sourceMealType,
+    sourceDate,
+    isLoading = false,
+    allowKeepMealTypes = false,
+  } = props;
   const theme = useTheme();
   const { t } = useTranslation();
   const [targetDate, setTargetDate] = useState(() => localCalendarDayDate(sourceDate));
-  const [targetMealType, setTargetMealType] = useState<MealType>(sourceMealType);
+  const initialMealType: MealTypeTarget = allowKeepMealTypes ? KEEP_MEAL_TYPES : sourceMealType;
+  const [targetMealType, setTargetMealType] = useState<MealTypeTarget>(initialMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [splitPercentage, setSplitPercentage] = useState(50);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,7 +78,7 @@ export function MoveCopyMealModal({
     const syncOrReset = () => {
       if (visible) {
         setTargetDate(localCalendarDayDate(sourceDate));
-        setTargetMealType(sourceMealType);
+        setTargetMealType(initialMealType);
         setSplitPercentage(50);
       } else {
         setIsSubmitting(false);
@@ -63,7 +86,7 @@ export function MoveCopyMealModal({
     };
 
     syncOrReset();
-  }, [visible, sourceDate, sourceMealType]);
+  }, [visible, sourceDate, initialMealType]);
 
   useEffect(() => {
     if (!visible) {
@@ -86,7 +109,10 @@ export function MoveCopyMealModal({
     }
   }
 
-  const mealTabs: { id: MealType; label: string }[] = [
+  const mealTabs: { id: MealTypeTarget; label: string }[] = [
+    ...(allowKeepMealTypes
+      ? [{ id: KEEP_MEAL_TYPES, label: t('food.actions.keepMealTypes') } as const]
+      : []),
     { id: 'breakfast', label: t('food.meals.breakfast') },
     { id: 'lunch', label: t('food.meals.lunch') },
     { id: 'dinner', label: t('food.meals.dinner') },
@@ -102,7 +128,13 @@ export function MoveCopyMealModal({
     setIsSubmitting(true);
     await flushLoadingPaint();
     try {
-      await onConfirm(targetDate, targetMealType, mode === 'split' ? splitPercentage : undefined);
+      const percentage = mode === 'split' ? splitPercentage : undefined;
+      if (props.allowKeepMealTypes) {
+        await props.onConfirm(targetDate, targetMealType, percentage);
+      } else if (targetMealType !== KEEP_MEAL_TYPES) {
+        await props.onConfirm(targetDate, targetMealType, percentage);
+      }
+
       onClose();
     } finally {
       setIsSubmitting(false);
@@ -229,7 +261,7 @@ export function MoveCopyMealModal({
           <FilterTabs
             tabs={mealTabs}
             activeTab={targetMealType}
-            onTabChange={(tabId) => setTargetMealType(tabId as MealType)}
+            onTabChange={(tabId) => setTargetMealType(tabId as MealTypeTarget)}
             showContainer={false}
             scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
           />

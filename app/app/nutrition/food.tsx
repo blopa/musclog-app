@@ -12,6 +12,7 @@ import {
   Scissors,
   Sparkles,
   Trash2,
+  Ungroup,
   UtensilsCrossed,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -47,9 +48,11 @@ import {
   ShareOpticalSendModal,
   type ShareSendTarget,
 } from '@/components/modals/ShareOpticalSendModal';
+import { BulkFoodActions } from '@/components/nutrition/BulkFoodActions';
 import { CopyDayPromptCard } from '@/components/nutrition/CopyDayPromptCard';
 import { FastingDayCard } from '@/components/nutrition/FastingDayCard';
 import {
+  mealFoodsFromEntries,
   type MealGroup,
   mealGroupShareTarget,
   type ResolvedLogEntry,
@@ -85,6 +88,7 @@ import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useFastingDay } from '@/hooks/useFastingDay';
+import { useFoodDiarySelection } from '@/hooks/useFoodDiarySelection';
 import { useFoodItemUi } from '@/hooks/useFoodItemUi';
 import { useFoodScreenModals } from '@/hooks/useFoodScreenModals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -534,6 +538,12 @@ export default function FoodScreen() {
     return groups;
   }, [resolvedLogs]);
 
+  const diarySelection = useFoodDiarySelection({
+    dayKey: selectedDate.getTime(),
+    ungroupedByType,
+    mealGroupsByType,
+  });
+
   const [mealGroupImageUrls, setMealGroupImageUrls] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -802,23 +812,52 @@ export default function FoodScreen() {
     }
   };
 
+  /**
+   * "Unpack meal": the group's foods become loose diary items. Lossless, so it runs without a
+   * confirmation and offers Undo instead, which files the same logs back under the same group.
+   */
+  const handleUnpackMealGroup = async () => {
+    const mealGroup = selectedMealGroup;
+    closeMealGroupMenu(true);
+    if (!mealGroup) {
+      return;
+    }
+
+    const groupLogs = mealGroup.entries.map((entry) => entry.log);
+    try {
+      await NutritionService.ungroupNutritionLogs(groupLogs);
+      showSnackbar(
+        'success',
+        t('food.mealGroup.unpackSuccess', { count: groupLogs.length, name: mealGroup.mealName }),
+        {
+          duration: 6000,
+          action: t('food.mealGroup.undo'),
+          onAction: () => {
+            NutritionService.groupNutritionLogs(groupLogs, { groupId: mealGroup.groupId })
+              .then(() => refresh())
+              .catch((error) =>
+                handleError(error, 'food.undoUnpackMealGroup', {
+                  snackbarMessage: t('food.mealGroup.unpackUndoError'),
+                })
+              );
+          },
+        }
+      );
+      await refresh();
+    } catch (error) {
+      await handleError(error, 'food.unpackMealGroup', {
+        snackbarMessage: t('food.mealGroup.unpackError'),
+      });
+    }
+  };
+
   const handleFoodCreateMeal = () => {
     closeFoodMenu();
     if (!selectedFoodItem || !selectedFoodItem.food) {
       return;
     }
 
-    const items = [
-      {
-        food: selectedFoodItem.food,
-        amount:
-          selectedFoodItem.food.resolvedNutritionBasis === 'per_serving'
-            ? selectedFoodItem.log.amount
-            : Math.round(selectedFoodItem.gramWeight),
-      },
-    ];
-
-    openCreateMeal(items);
+    openCreateMeal(mealFoodsFromEntries([selectedFoodItem]));
   };
 
   const handleConfirmFoodMove = async (targetDate: Date, targetMealType: MealType) => {
@@ -1021,22 +1060,7 @@ export default function FoodScreen() {
       return;
     }
 
-    const mealFoods = mealsByType[selectedMealForMenu] || [];
-    const items = mealFoods
-      .map((entry) => {
-        if (!entry.food) {
-          return null;
-        }
-
-        return {
-          food: entry.food,
-          amount:
-            entry.food.resolvedNutritionBasis === 'per_serving'
-              ? entry.log.amount
-              : Math.round(entry.gramWeight),
-        };
-      })
-      .filter(Boolean) as { food: Food; amount: number }[];
+    const items = mealFoodsFromEntries(mealsByType[selectedMealForMenu] || []);
 
     if (items.length === 0) {
       showSnackbar('error', t('food.createMeal.noFoods') ?? t('common.error'));
@@ -1450,6 +1474,18 @@ export default function FoodScreen() {
       description: t('food.actions.scaleMealPortionDesc'),
       onPress: handleMealGroupScalePortion,
     },
+    // A one-row group (a single-row AI meal) is one custom food: there is nothing to unpack.
+    ...(selectedMealGroup && selectedMealGroup.entries.length > 1
+      ? [
+          {
+            icon: Ungroup,
+            iconColor: theme.colors.accent.primary,
+            title: t('food.mealGroup.unpack'),
+            description: t('food.mealGroup.unpackDesc'),
+            onPress: handleUnpackMealGroup,
+          },
+        ]
+      : []),
     {
       icon: Copy,
       iconColor: theme.colors.status.purple,
@@ -1741,6 +1777,12 @@ export default function FoodScreen() {
                         onMealGroupCardPress: handleMealGroupCardPress,
                         onMealGroupMenuPress: handleMealGroupMenuPress,
                       }}
+                      selection={{
+                        isSelecting: diarySelection.isSelecting,
+                        selectedKeys: diarySelection.selectedKeys,
+                        onLongPress: diarySelection.start,
+                        onToggle: diarySelection.toggle,
+                      }}
                     />
                   </>
                 </AnimatedContent>
@@ -1750,6 +1792,17 @@ export default function FoodScreen() {
               <View className="h-32" />
             </View>
           </ScrollView>
+          {diarySelection.isSelecting ? (
+            <BulkFoodActions
+              selection={diarySelection.selection}
+              selectedDate={selectedDate}
+              intuitiveMode={intuitiveEatingMode}
+              onClearSelection={diarySelection.clear}
+              onCreateMeal={openCreateMeal}
+              onSaveForLater={screenModals.savedForLater.request}
+              refresh={refresh}
+            />
+          ) : null}
         </View>
 
         {/* Add Food Modal */}

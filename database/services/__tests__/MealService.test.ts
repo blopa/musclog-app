@@ -332,9 +332,10 @@ describe('MealService', () => {
     });
 
     it('orders non-favourite meals by how often they were logged, then newest first', async () => {
-      // Logs link back to a saved meal by `logged_meal_name` — never by `group_id`, which
-      // is a per-log-instance UUID. A fixture keyed on meal ids would pass against a
-      // frequency map that can never match anything in production.
+      // Usage is counted by `logged_meal_name` — never by `group_id`, which is a fresh UUID
+      // for AI meals and, for saved meals, the same `meal.id` on every logging (so distinct
+      // group ids collapse every use into one). A fixture keyed on meal ids would pass
+      // against a frequency map that cannot count anything correctly in production.
       wire({
         mealRows: [
           stubMeal({ id: 'a', name: 'Favourite', isFavorite: true }),

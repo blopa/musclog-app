@@ -485,10 +485,10 @@ export class MealService {
    * Non-favourite meals ordered by how often they have recently been logged, falling back
    * to newest-first for meals with no logged history.
    *
-   * The only link a nutrition log keeps back to a saved meal is `logged_meal_name`, which
-   * every "log this saved meal" path stamps from `meal.name` (`schema.ts` reserves
-   * `group_id` for this too, but no writer sets it to a meal id — it is a per-log-instance
-   * UUID, so counting by it would match nothing). Matching on the name therefore means a
+   * The link counted here is `logged_meal_name`, which every "log this saved meal" path
+   * stamps from `meal.name`. `group_id` is not usable for it: AI, chat and "Combine into
+   * meal" groups get a fresh UUID, and while logging a saved meal does reuse `meal.id`, that
+   * collapses every logging of the meal into one occurrence. Matching on the name therefore means a
    * renamed meal loses its history and drops to the newest-first tail, which is acceptable
    * for a suggestion ordering. The lookback boundary is a plain instant rather than a
    * calendar-day key for the same reason: an approximate edge cannot change a ranking.

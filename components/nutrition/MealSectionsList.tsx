@@ -7,6 +7,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import type { MealType } from '@/database/models/NutritionLog';
 import { useTheme } from '@/hooks/useTheme';
 
+import { diaryGroupKey, diaryLogKey, type DiarySelectionKey } from './foodDiarySelection';
 import { type MacroTotals, MEAL_TYPES, type MealGroup, type ResolvedLogEntry } from './foodTypes';
 
 type MealSectionsCallbacks = {
@@ -18,6 +19,17 @@ type MealSectionsCallbacks = {
   onMealGroupMenuPress: (group: MealGroup) => void;
 };
 
+/**
+ * Long-press selection. While it runs, a tap on a card toggles it instead of opening it, and
+ * the per-card and per-section menus give way: the selection's own actions apply instead.
+ */
+type MealSectionsSelection = {
+  isSelecting: boolean;
+  selectedKeys: ReadonlySet<DiarySelectionKey>;
+  onLongPress: (key: DiarySelectionKey) => void;
+  onToggle: (key: DiarySelectionKey) => void;
+};
+
 type MealSectionsListProps = {
   byMealType?: Partial<Record<MealType, Partial<MacroTotals>>>;
   ungroupedByType: Record<MealType, ResolvedLogEntry[]>;
@@ -25,6 +37,7 @@ type MealSectionsListProps = {
   mealGroupImageUrls: Record<string, string>;
   intuitiveMode?: boolean;
   callbacks: MealSectionsCallbacks;
+  selection: MealSectionsSelection;
 };
 
 export function MealSectionsList({
@@ -34,6 +47,7 @@ export function MealSectionsList({
   mealGroupImageUrls,
   intuitiveMode,
   callbacks,
+  selection,
 }: MealSectionsListProps) {
   const {
     onAddFood,
@@ -43,6 +57,7 @@ export function MealSectionsList({
     onMealGroupCardPress,
     onMealGroupMenuPress,
   } = callbacks;
+  const { isSelecting, selectedKeys, onLongPress, onToggle } = selection;
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -65,7 +80,7 @@ export function MealSectionsList({
             onAddFood={() => onAddFood(type)}
             intuitiveMode={intuitiveMode}
             menuButton={
-              hasItems ? (
+              hasItems && !isSelecting ? (
                 <MenuButton
                   onPress={() => onMealMenuPress(type)}
                   size="sm"
@@ -74,41 +89,55 @@ export function MealSectionsList({
               ) : undefined
             }
           >
-            {groups.map((group) => (
-              <MealGroupCard
-                key={group.groupId}
-                name={group.mealName}
-                calories={group.totalNutrients.calories}
-                protein={group.totalNutrients.protein}
-                carbs={group.totalNutrients.carbs}
-                fat={group.totalNutrients.fat}
-                mealType={type}
-                imageUrl={
-                  mealGroupImageUrls[group.groupId] ??
-                  group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
-                  undefined
-                }
-                onPress={() => onMealGroupCardPress(group)}
-                onMorePress={() => onMealGroupMenuPress(group)}
-                intuitiveMode={intuitiveMode}
-              />
-            ))}
-            {foods.map((entry) => (
-              <FoodItemCard
-                key={entry.log.id}
-                name={entry.displayName}
-                portion={entry.gramWeight}
-                calories={entry.nutrients.calories}
-                protein={entry.nutrients.protein}
-                carbs={entry.nutrients.carbs}
-                fat={entry.nutrients.fat}
-                image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
-                mealType={type}
-                onPress={() => onFoodCardPress(entry)}
-                onMorePress={() => onFoodMenuPress(entry)}
-                intuitiveMode={intuitiveMode}
-              />
-            ))}
+            {groups.map((group) => {
+              const key = diaryGroupKey(type, group.groupId);
+
+              return (
+                <MealGroupCard
+                  key={group.groupId}
+                  name={group.mealName}
+                  calories={group.totalNutrients.calories}
+                  protein={group.totalNutrients.protein}
+                  carbs={group.totalNutrients.carbs}
+                  fat={group.totalNutrients.fat}
+                  mealType={type}
+                  imageUrl={
+                    mealGroupImageUrls[group.groupId] ??
+                    group.entries.find((entry) => entry?.food?.imageUrl)?.food?.imageUrl ??
+                    undefined
+                  }
+                  onPress={() => (isSelecting ? onToggle(key) : onMealGroupCardPress(group))}
+                  onMorePress={() => onMealGroupMenuPress(group)}
+                  onLongPress={() => onLongPress(key)}
+                  selectionMode={isSelecting}
+                  selected={selectedKeys.has(key)}
+                  intuitiveMode={intuitiveMode}
+                />
+              );
+            })}
+            {foods.map((entry) => {
+              const key = diaryLogKey(entry.log.id);
+
+              return (
+                <FoodItemCard
+                  key={entry.log.id}
+                  name={entry.displayName}
+                  portion={entry.gramWeight}
+                  calories={entry.nutrients.calories}
+                  protein={entry.nutrients.protein}
+                  carbs={entry.nutrients.carbs}
+                  fat={entry.nutrients.fat}
+                  image={entry.food?.imageUrl ? { uri: entry.food.imageUrl } : undefined}
+                  mealType={type}
+                  onPress={() => (isSelecting ? onToggle(key) : onFoodCardPress(entry))}
+                  onMorePress={() => onFoodMenuPress(entry)}
+                  onLongPress={() => onLongPress(key)}
+                  selectionMode={isSelecting}
+                  selected={selectedKeys.has(key)}
+                  intuitiveMode={intuitiveMode}
+                />
+              );
+            })}
           </MealSection>
         );
       })}

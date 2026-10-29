@@ -49,6 +49,18 @@ function triggerWidgetUpdate(): void {
 }
 
 /**
+ * The consumed datetime `log` lands on when it is re-anchored onto `targetDate` at the
+ * time-of-day it was originally consumed. The source wall-clock time is read back through
+ * the log's own offset so a DST change or a trip between the two days can't shift it into
+ * a different hour.
+ */
+function reanchoredOnDay(log: NutritionLog, targetDate: Date) {
+  return consumedDateTimeFromDate(
+    combineLocalDateAndTime(targetDate, wallClockDateInTimezone(log.date, log.timezone))
+  );
+}
+
+/**
  * Helper function to retry database queries that fail during database reset.
  * WatermelonDB throws an error when queries are attempted during reset.
  * This function retries the query with exponential backoff.
@@ -101,6 +113,17 @@ export async function scaleMealNutritionLogsToTotalGrams(
 
   const prepared = await Promise.all(
     entries.map(async ({ log, gramWeight }) => {
+      // A per-serving log has no gram weight (its amount is a serving count), so it adds
+      // nothing to the total — but it is still part of the meal and scales by the same
+      // ratio. Rewriting it through grams set its amount to 0.
+      if (gramWeight <= 0) {
+        return {
+          log,
+          newAmount: roundToDecimalPlaces(log.amount * ratio, 6),
+          portionId: log.portionId,
+        };
+      }
+
       const newGramWeight = gramWeight * ratio;
       let newAmount = newGramWeight;
       let portionId: string | undefined = log.portionId;
@@ -782,12 +805,7 @@ export class NutritionService {
       const now = Date.now();
       await database.batch(
         ...logs.map((log) => {
-          // Re-anchor onto the target day at the time-of-day the source was consumed,
-          // reading it back through the source's own offset so a DST change or a trip
-          // between the two days can't shift the copy into a different hour.
-          const consumed = consumedDateTimeFromDate(
-            combineLocalDateAndTime(targetDate, wallClockDateInTimezone(log.date, log.timezone))
-          );
+          const consumed = reanchoredOnDay(log, targetDate);
 
           return database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
@@ -889,6 +907,104 @@ export class NutritionService {
             record.date = consumed.timestamp;
             record.timezone = consumed.timezone;
             record.type = targetMealType;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+
+    triggerWidgetUpdate();
+  }
+
+  /**
+   * Move logs onto a target day while keeping each log's own meal type and time-of-day —
+   * the move counterpart of {@link copyNutritionLogsPreservingMealType}, for a selection
+   * that spans several meals.
+   */
+  static async moveNutritionLogsPreservingMealType(
+    logs: NutritionLog[],
+    targetDate: Date
+  ): Promise<void> {
+    if (logs.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      const now = Date.now();
+      await database.batch(
+        ...logs.map((log) => {
+          const consumed = reanchoredOnDay(log, targetDate);
+
+          return log.prepareUpdate((record) => {
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
+            record.updatedAt = now;
+          });
+        })
+      );
+    });
+
+    triggerWidgetUpdate();
+  }
+
+  /**
+   * File `logs` under one meal: they share `groupId`, `mealName` when given and, when
+   * `mealType` is given, that meal type too (the diary groups cards by meal type AND group,
+   * so a meal split across two types would render as two cards). Undoing
+   * {@link ungroupNutritionLogs} passes only the original `groupId`, since unpacking never
+   * touched the names.
+   *
+   * This and `ungroupNutritionLogs` are the only writers that change the grouping of logs
+   * that already exist.
+   */
+  static async groupNutritionLogs(
+    logs: NutritionLog[],
+    group: { groupId: string; mealName?: string; mealType?: MealType }
+  ): Promise<void> {
+    if (logs.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      const now = Date.now();
+      await database.batch(
+        ...logs.map((log) =>
+          log.prepareUpdate((record) => {
+            record.groupId = group.groupId;
+            if (group.mealName !== undefined) {
+              record.loggedMealName = group.mealName;
+            }
+
+            if (group.mealType) {
+              record.type = group.mealType;
+            }
+
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+
+    triggerWidgetUpdate();
+  }
+
+  /**
+   * Turn a grouped meal back into loose foods ("Unpack meal"). Only `groupId` is cleared:
+   * `loggedMealName` stays, because a loose log carrying a meal name is already a normal
+   * state (a single-food AI log has one and no group), a loose card shows the food's own
+   * name anyway, and `MealService.getMealSuggestions` counts meals by that name.
+   */
+  static async ungroupNutritionLogs(logs: NutritionLog[]): Promise<void> {
+    if (logs.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      const now = Date.now();
+      await database.batch(
+        ...logs.map((log) =>
+          log.prepareUpdate((record) => {
+            record.groupId = undefined;
             record.updatedAt = now;
           })
         )
