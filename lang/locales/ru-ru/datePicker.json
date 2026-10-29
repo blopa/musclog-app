@@ -7,6 +7,10 @@
     "nextMonday": "Следующий понедельник",
     "selectDate": "Выбрать дату",
     "selectMonthYear": "Выбрать месяц и год",
+    "status": {
+      "fasted": "Голодание",
+      "tracked": "Еда записана"
+    },
     "today": "Сегодня",
     "tomorrow": "Завтра",
     "year": "Год",

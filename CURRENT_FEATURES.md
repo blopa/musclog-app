@@ -87,6 +87,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Configurable carb convention (total carbs vs. net carbs, based on region/label type)
 - Intuitive eating mode (hides calorie and macro numbers)
 - Fasting days (opt-in): mark an empty day as an intentional fast so it counts as a real 0-calorie day in TDEE, averages, check-ins, and streaks — while unflagged empty days (forgotten logs) are skipped
+- The food diary's date picker marks each day of the visible month: a filled circle where food was logged, a dashed ring where the day is flagged as fasted (only while Fasting days is on, and food on the day wins over the flag), nothing where nothing was tracked, with a legend that lists only the marks on screen
 - View full micronutrient breakdown, ingredient list, and allergen info per food
 
 ---

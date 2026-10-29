@@ -7,6 +7,10 @@
     "nextMonday": "Próximo Lunes",
     "selectDate": "Seleccionar Fecha",
     "selectMonthYear": "Seleccionar Mes y Año",
+    "status": {
+      "fasted": "En ayunas",
+      "tracked": "Comida registrada"
+    },
     "today": "Hoy",
     "tomorrow": "Mañana",
     "year": "Año",

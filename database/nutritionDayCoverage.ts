@@ -65,6 +65,28 @@ export async function getNutritionDayCoverage(
   };
 }
 
+/** What the diary knows about one calendar day: food was logged, or the user flagged a fast. */
+export type NutritionDayStatus = 'tracked' | 'fasted';
+
+/**
+ * Per-day status over `range`, keyed by UTC-normalized day key. A day with logged food is
+ * `tracked` even when it is also flagged fasted (the food wins, matching the diary view);
+ * `fasted` appears only while the fasting-day feature is on. Days in neither set are absent.
+ */
+export async function getNutritionDayStatuses(
+  records: NutritionDayRecord[],
+  range: DayKeyRange
+): Promise<Map<number, NutritionDayStatus>> {
+  const statuses = new Map<number, NutritionDayStatus>();
+  const coverage = await getNutritionDayCoverage(records, { range });
+  const loggedKeys = loggedNutritionDayKeys(records);
+  for (const key of coverage.effectiveDayKeys) {
+    statuses.set(key, loggedKeys.has(key) ? 'tracked' : 'fasted');
+  }
+
+  return statuses;
+}
+
 export async function loggedOrFastedDayKeys(
   records: Iterable<NutritionDayRecord>
 ): Promise<Set<number>> {

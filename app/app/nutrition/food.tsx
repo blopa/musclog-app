@@ -87,6 +87,7 @@ import { nutritionDayShareKey } from '@/database/share/buildNutritionDayShare';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import { loadNutritionDayStatuses } from '@/database/nutritionDayStatusRange';
 import { useFastingDay } from '@/hooks/useFastingDay';
 import { useFoodDiarySelection } from '@/hooks/useFoodDiarySelection';
 import { useFoodItemUi } from '@/hooks/useFoodItemUi';
@@ -1542,7 +1543,12 @@ export default function FoodScreen() {
         destination="food"
         lockArea="nutrition"
         center={
-          <DateNavigator compact selectedDate={selectedDate} onDateChange={setSelectedDate} />
+          <DateNavigator
+            compact
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
+            loadDayStatuses={loadNutritionDayStatuses}
+          />
         }
       />
       <AreaLockGate area="nutrition">

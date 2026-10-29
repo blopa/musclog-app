@@ -6,16 +6,26 @@ import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localCalendarDayPlusDays } from '@/utils/calendarDate';
 
 import { DatePickerInput } from './modals/DatePickerInput';
-import { DatePickerModal } from './modals/DatePickerModal';
+import { type DatePickerDayStatus, DatePickerModal } from './modals/DatePickerModal';
 
 type DateNavigatorProps = {
   selectedDate: Date;
   onDateChange: (date: Date) => void | Promise<void>;
   /** Drops the outer padding, for the `center` slot of `ScreenHeader`, which pads itself. */
   compact?: boolean;
+  /** Marks days in the picker; see `DatePickerModal`. Keep the reference stable. */
+  loadDayStatuses?: (
+    gridStart: Date,
+    gridEnd: Date
+  ) => Promise<ReadonlyMap<number, DatePickerDayStatus>>;
 };
 
-export function DateNavigator({ selectedDate, onDateChange, compact = false }: DateNavigatorProps) {
+export function DateNavigator({
+  selectedDate,
+  onDateChange,
+  compact = false,
+  loadDayStatuses,
+}: DateNavigatorProps) {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const theme = useTheme();
 
@@ -57,6 +67,7 @@ export function DateNavigator({ selectedDate, onDateChange, compact = false }: D
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
+        loadDayStatuses={loadDayStatuses}
         onDateSelect={(date) => {
           void onDateChange(localCalendarDayDate(date));
         }}
