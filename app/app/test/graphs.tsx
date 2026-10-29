@@ -1,7 +1,9 @@
+import { subDays } from 'date-fns';
 import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ActivityHeatmap } from '@/components/charts/ActivityHeatmap';
 import { ActivityRingsChart } from '@/components/charts/ActivityRingsChart';
 import { AreaChart, AreaChartDatum, AreaChartSeriesConfig } from '@/components/charts/AreaChart';
 import { BarChart, BarChartDataPoint } from '@/components/charts/BarChart';
@@ -24,7 +26,35 @@ import { Button } from '@/components/theme/Button';
 import { MacrosPizzaChart } from '@/components/theme/MacrosPizzaChart';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import type { ActivityHeatmapDay } from '@/utils/activityHeatmap';
+import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
 import { getXAxisLabels } from '@/utils/chartUtils';
+
+const HEATMAP_WEEK_OPTIONS = [12, 26, 53];
+
+// Sample data for ActivityHeatmap: a year of workouts, busier on weekdays, with the odd rest week.
+function generateHeatmapDays(): ActivityHeatmapDay[] {
+  const today = new Date();
+  const result: ActivityHeatmapDay[] = [];
+  for (let offset = 0; offset < 53 * 7; offset++) {
+    const date = subDays(today, offset);
+    const weekday = date.getDay();
+    const restWeek = Math.floor(offset / 7) % 9 === 4;
+    let chance = weekday === 0 || weekday === 6 ? 0.35 : 0.7;
+    if (restWeek) {
+      chance = 0.1;
+    }
+
+    if (Math.random() < chance) {
+      result.push({
+        date: formatLocalCalendarDayIso(date),
+        value: 1 + Math.floor(Math.random() * 4),
+      });
+    }
+  }
+
+  return result;
+}
 
 export default function GraphsTestScreen() {
   const theme = useTheme();
@@ -134,6 +164,11 @@ export default function GraphsTestScreen() {
   const [consistencyData, setConsistencyData] = useState<number[]>(
     () => Array.from({ length: 12 * 7 }, () => Math.floor(Math.random() * 6)) // 0–5
   );
+
+  // Sample data for ActivityHeatmap
+  const [heatmapDays, setHeatmapDays] = useState<ActivityHeatmapDay[]>(generateHeatmapDays);
+  const [heatmapWeeks, setHeatmapWeeks] = useState(26);
+  const [heatmapMondayFirst, setHeatmapMondayFirst] = useState(false);
 
   // Sample data for MacrosPizzaChart
   const [macrosData, setMacrosData] = useState({
@@ -269,6 +304,7 @@ export default function GraphsTestScreen() {
     generateRandomMacros();
     generateRandomSpiderData();
     generateRandomConsistencyData();
+    setHeatmapDays(generateHeatmapDays());
   };
 
   return (
@@ -712,6 +748,59 @@ export default function GraphsTestScreen() {
                 columns={12}
                 gridHeight={128}
                 accentColor={theme.colors.status.brandBright}
+              />
+            </View>
+          </View>
+
+          {/* Activity Heatmap Section */}
+          <View className="mb-8">
+            <Text className="mb-2 text-lg font-semibold text-text-primary">Activity Heatmap</Text>
+            <Text className="mb-4 text-sm text-text-secondary">
+              GitHub-style calendar grid: one square per day, darker means busier. Tap (or hover on
+              web) a square to read the day. Wider than the card scrolls, opening on today.
+            </Text>
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                label="Random Data"
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={() => setHeatmapDays(generateHeatmapDays())}
+              />
+              <Button
+                label={`${heatmapWeeks} weeks`}
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={() =>
+                  setHeatmapWeeks(
+                    (current) =>
+                      HEATMAP_WEEK_OPTIONS[
+                        (HEATMAP_WEEK_OPTIONS.indexOf(current) + 1) % HEATMAP_WEEK_OPTIONS.length
+                      ]
+                  )
+                }
+              />
+              <Button
+                label={heatmapMondayFirst ? 'Monday first' : 'Sunday first'}
+                variant="outline"
+                size="sm"
+                width="flex-1"
+                onPress={() => setHeatmapMondayFirst((current) => !current)}
+              />
+            </View>
+            <View className="rounded-card border border-border-default bg-bg-card p-4">
+              <ActivityHeatmap
+                title="Training Activity"
+                subtitle={`Last ${heatmapWeeks} weeks`}
+                days={heatmapDays}
+                weeks={heatmapWeeks}
+                weekStartsOn={heatmapMondayFirst ? 1 : 0}
+                legend={{ less: 'Less', more: 'More' }}
+                summary="Tap a day to see its workouts"
+                describeDay={({ dateLabel, value }) =>
+                  `${dateLabel}: ${value === 0 ? 'rest day' : `${value} ${value === 1 ? 'workout' : 'workouts'}`}`
+                }
               />
             </View>
           </View>
