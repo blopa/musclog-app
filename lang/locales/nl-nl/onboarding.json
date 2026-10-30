@@ -186,7 +186,7 @@
       "importOptically": "Gegevens importeren vanaf een andere telefoon",
       "storedLocally": "Alle gegevens lokaal opgeslagen op uw apparaat",
       "personalizedSetup": "Gepersonaliseerde Installatie",
-      "personalizedSetupSteps": "10 stappen",
+      "personalizedSetupSteps": "11 stappen",
       "personalizedSetupSubtitle": "Krijg nauwkeurige TDEE, macro's en gepersonaliseerde aanbevelingen",
       "quickSetup": "Snelle Installatie",
       "quickSetupSteps": "7 stappen",
@@ -368,6 +368,12 @@
       "stepNextTitle": "Slimmer de volgende keer",
       "stepNextBody": "We onthouden je cijfers en stellen je volgende gewicht voor.",
       "planHint": "Tik op \"{{action}}\" om dit schema aan je profiel toe te voegen, of op \"{{later}}\" om later zelf een training te kiezen."
+    },
+    "coachPersona": {
+      "title": "Kies je coach",
+      "subtitle": "Wie moet je AI-coach zijn? Je kunt dit altijd wijzigen in de AI-instellingen.",
+      "continue": "Doorgaan",
+      "keepLoggy": "Loggy houden"
     }
   }
 }

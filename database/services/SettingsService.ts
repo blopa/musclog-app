@@ -1,5 +1,8 @@
 import { Q } from '@nozbe/watermelondb';
+import type { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
+import { type CustomCoachPersona, normalizeCustomPersona } from '@/constants/coachPersonas';
 import { type HomeActionKey, MAX_HOME_ACTIONS } from '@/constants/homeActions';
 import { type SettingDefinition, SETTINGS } from '@/constants/settingDefinitions';
 import {
@@ -102,8 +105,27 @@ type CoachQuickSettingsUpdate = {
   useOcrBeforeAi?: boolean;
 };
 
-/** Tail of the comeback update queue; see `SettingsService.updateComebackState`. */
-let comebackUpdateQueue: Promise<unknown> = Promise.resolve();
+/**
+ * A queue that runs read-merge-write updates of ONE setting one at a time, so two quick edits cannot
+ * start from the same snapshot and drop each other's change. The queue survives a failed update,
+ * or one rejection would wedge every later write.
+ */
+function createUpdateQueue(): <T>(run: () => Promise<T>) => Promise<T> {
+  let tail: Promise<unknown> = Promise.resolve();
+
+  return <T>(run: () => Promise<T>): Promise<T> => {
+    const result = tail.then(run, run);
+    tail = result.catch(() => undefined);
+
+    return result;
+  };
+}
+
+/** See `SettingsService.updateComebackState`. */
+const enqueueComebackUpdate = createUpdateQueue();
+
+/** See `SettingsService.updateCoachCustomPersona`. */
+const enqueueCoachPersonaUpdate = createUpdateQueue();
 
 export class SettingsService {
   /**
@@ -599,7 +621,7 @@ export class SettingsService {
   static updateComebackState(
     patchOrUpdater: Partial<ComebackState> | ((current: ComebackState) => ComebackState)
   ): Promise<ComebackState> {
-    const run = async (): Promise<ComebackState> => {
+    return enqueueComebackUpdate(async () => {
       const current = await SettingsService.getComebackState();
       const candidate =
         typeof patchOrUpdater === 'function'
@@ -609,13 +631,22 @@ export class SettingsService {
       await SettingsService.set(SETTINGS.comebackState, next);
 
       return next;
-    };
+    });
+  }
 
-    const result = comebackUpdateQueue.then(run, run);
-    // The queue must survive a failed update, or one rejection would wedge every later write.
-    comebackUpdateQueue = result.catch(() => undefined);
+  /**
+   * Read-merge-write for the custom persona. The name, voice and avatar are saved from separate
+   * controls, so the queue runs them one at a time. The result is normalized (trimmed, capped, avatar
+   * checked) by `normalizeCustomPersona`, so a caller cannot store an oversized value.
+   */
+  static updateCoachCustomPersona(patch: Partial<CustomCoachPersona>): Promise<CustomCoachPersona> {
+    return enqueueCoachPersonaUpdate(async () => {
+      const current = await SettingsService.get(SETTINGS.coachCustomPersona);
+      const next = normalizeCustomPersona({ ...current, ...patch });
+      await SettingsService.set(SETTINGS.coachCustomPersona, next);
 
-    return result;
+      return next;
+    });
   }
 
   static async getCoachConversationContext(): Promise<'general' | 'exercise' | 'nutrition'> {
@@ -988,6 +1019,28 @@ export class SettingsService {
   static async get<T>(setting: SettingDefinition<T>): Promise<T> {
     const raw = await SettingsService.getRawSetting(setting.type);
     return raw === undefined ? setting.defaultValue : setting.parse(raw);
+  }
+
+  /**
+   * Emits a setting's parsed value now and on every later write. `observeWithColumns`: a write
+   * updates the row in place, which plain `observe()` would never emit. Resolves duplicates the way
+   * `get` does (the most recently updated row wins).
+   */
+  static observe<T>(setting: SettingDefinition<T>): Observable<T> {
+    return database
+      .get<Setting>('settings')
+      .query(Q.where('type', setting.type), Q.where('deleted_at', Q.eq(null)))
+      .observeWithColumns(['value'])
+      .pipe(
+        map((rows) => {
+          const newest = rows.reduce<Setting | null>(
+            (latest, row) => (latest === null || row.updatedAt > latest.updatedAt ? row : latest),
+            null
+          );
+
+          return newest?.value == null ? setting.defaultValue : setting.parse(newest.value);
+        })
+      );
   }
 
   /** Writes a setting through its definition, which may refuse a value it must never store. */

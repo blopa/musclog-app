@@ -7,6 +7,7 @@ jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     where: jest.fn((field: string, condition: unknown) => ({ field, condition })),
     eq: jest.fn((value: unknown) => ({ kind: 'eq', value })),
+    oneOf: jest.fn((values: unknown[]) => ({ kind: 'oneOf', values })),
     sortBy: jest.fn((field: string, direction: string) => ({ kind: 'sortBy', field, direction })),
     skip: jest.fn((count: number) => ({ kind: 'skip', count })),
     take: jest.fn((count: number) => ({ kind: 'take', count })),
@@ -229,6 +230,98 @@ describe('ChatService', () => {
       mockDatabase.get.mockReturnValue({ query: jest.fn().mockReturnValue(stubQuery([])) } as any);
 
       await expect(ChatService.deleteMessagesByContext('general')).resolves.toBeUndefined();
+    });
+  });
+
+  describe('rewriteUntouchedWelcomeMessages', () => {
+    const WELCOME = JSON.stringify({ type: 'welcome' });
+    const texts = {
+      general: 'Hi, I am Dracula (general)',
+      exercise: 'Hi, I am Dracula (exercise)',
+      nutrition: 'Hi, I am Dracula (nutrition)',
+    };
+    const legacy = new Set(["Hi, I'm Loggy, your AI coach."]);
+
+    /** One query serves every context, so the stub returns all rows with their context stamped on. */
+    function mockContexts(byContext: Record<string, unknown[]>) {
+      const rows = Object.entries(byContext).flatMap(([context, records]) =>
+        records.map((record) => Object.assign(record as object, { context }))
+      );
+      const collectionQuery = jest.fn().mockReturnValue(stubQuery(rows));
+      mockDatabase.get.mockReturnValue({ query: collectionQuery } as any);
+
+      return collectionQuery;
+    }
+
+    it('rewrites a lone marked welcome in a single write block', async () => {
+      const welcome = stubMessage({ sender: 'coach', message: 'old', payloadJson: WELCOME });
+      mockContexts({ general: [welcome], exercise: [], nutrition: [] });
+
+      await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
+
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+      expect(welcome.message).toBe(texts.general);
+      expect(welcome.payloadJson).toBe(WELCOME);
+    });
+
+    it('reads every context with a single query', async () => {
+      const collectionQuery = mockContexts({ general: [], exercise: [], nutrition: [] });
+
+      await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
+
+      expect(collectionQuery).toHaveBeenCalledTimes(1);
+      expect(Q.oneOf).toHaveBeenCalledWith(['general', 'exercise', 'nutrition']);
+    });
+
+    it('recognises an unmarked welcome from before the marker existed, and marks it', async () => {
+      const welcome = stubMessage({
+        sender: 'coach',
+        message: "Hi, I'm Loggy, your AI coach.",
+        payloadJson: undefined,
+      });
+      mockContexts({ general: [welcome] });
+
+      await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
+
+      expect(welcome.message).toBe(texts.general);
+      expect(welcome.payloadJson).toBe(WELCOME);
+    });
+
+    it('leaves a conversation alone once the user has written in it', async () => {
+      const welcome = stubMessage({ sender: 'coach', message: 'old', payloadJson: WELCOME });
+      const reply = stubMessage({ id: 'msg-2', sender: 'user', message: 'hello' });
+      mockContexts({ general: [welcome, reply] });
+
+      await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
+
+      expect(welcome.update).not.toHaveBeenCalled();
+      expect(welcome.message).toBe('old');
+    });
+
+    it('leaves a lone coach message that is not the welcome (an insight) alone', async () => {
+      const insight = stubMessage({
+        sender: 'coach',
+        message: 'You ate 120 g of protein yesterday.',
+        payloadJson: undefined,
+      });
+      mockContexts({ nutrition: [insight] });
+
+      await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
+
+      expect(insight.update).not.toHaveBeenCalled();
+    });
+
+    it('does not rewrite a welcome that already says the right thing', async () => {
+      const welcome = stubMessage({
+        sender: 'coach',
+        message: texts.general,
+        payloadJson: WELCOME,
+      });
+      mockContexts({ general: [welcome] });
+
+      await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
+
+      expect(welcome.update).not.toHaveBeenCalled();
     });
   });
 });

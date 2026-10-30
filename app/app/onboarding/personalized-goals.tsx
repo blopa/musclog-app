@@ -13,6 +13,7 @@ import { Button } from '@/components/theme/Button';
 import { type FitnessGoal, type WeightGoal } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
 import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 export default function PersonalizedGoalsScreen() {
@@ -63,7 +64,7 @@ export default function PersonalizedGoalsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={4} total={10} />
+        <QuickSetupProgressBar current={PERSONALIZED_STEP.goals} total={PERSONALIZED_SETUP_STEPS} />
 
         <ScrollView
           className="flex-1"

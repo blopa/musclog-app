@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { type AiProviderKind, DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
+import type { CoachPersonaId } from '@/constants/coachPersonas';
 import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import { readSetting, SETTINGS } from '@/constants/settingDefinitions';
@@ -182,6 +183,7 @@ type SettingsState = {
   homeSummaryCard: HomeSummaryCard;
   homeHeatmaps: HomeHeatmaps;
   homeHeatmapLayout: HomeHeatmapLayout;
+  coachPersona: CoachPersonaId;
   /**
    * The raw stored setting, NOT the parsed array.
    *
@@ -285,6 +287,7 @@ const DEFAULT_STATE: SettingsState = {
   homeSummaryCard: 'daily_summary',
   homeHeatmaps: SETTINGS.homeHeatmaps.defaultValue,
   homeHeatmapLayout: SETTINGS.homeHeatmapLayout.defaultValue,
+  coachPersona: SETTINGS.coachPersona.defaultValue,
   homeActionsRaw: '',
   showHomeSteps: SETTINGS.showHomeSteps.defaultValue,
   isLoading: true,
@@ -448,6 +451,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     homeSummaryCard,
     homeHeatmaps: readSetting(map, SETTINGS.homeHeatmaps),
     homeHeatmapLayout: readSetting(map, SETTINGS.homeHeatmapLayout),
+    coachPersona: readSetting(map, SETTINGS.coachPersona),
     homeActionsRaw: map.get(HOME_ACTIONS_SETTING_TYPE) ?? '',
     showHomeSteps: readSetting(map, SETTINGS.showHomeSteps),
     isLoading: false,
@@ -532,6 +536,7 @@ export type SettingsContextType = UseSettingsResult & {
   homeSummaryCard: HomeSummaryCard;
   homeHeatmaps: HomeHeatmaps;
   homeHeatmapLayout: HomeHeatmapLayout;
+  coachPersona: CoachPersonaId;
   homeActions: readonly HomeActionKey[];
   showHomeSteps: boolean;
 };

@@ -186,7 +186,7 @@
       "importOptically": "Importar dados de outro celular",
       "storedLocally": "Todos os dados armazenados localmente no seu dispositivo",
       "personalizedSetup": "Configuração Personalizada",
-      "personalizedSetupSteps": "10 etapas",
+      "personalizedSetupSteps": "11 etapas",
       "personalizedSetupSubtitle": "Obtenha TDEE preciso, macros e recomendações personalizadas",
       "quickSetup": "Configuração Rápida",
       "quickSetupSteps": "7 etapas",
@@ -368,6 +368,12 @@
       "stepNextTitle": "Mais inteligente da próxima vez",
       "stepNextBody": "Lembramos seus números e sugerimos a próxima carga.",
       "planHint": "Toque em \"{{action}}\" para adicionar este plano ao seu perfil, ou em \"{{later}}\" para escolher um treino depois."
+    },
+    "coachPersona": {
+      "title": "Escolha seu treinador",
+      "subtitle": "Quem deve ser o seu treinador com IA? Você pode mudar isso quando quiser nas configurações de IA.",
+      "continue": "Continuar",
+      "keepLoggy": "Ficar com o Loggy"
     }
   }
 }

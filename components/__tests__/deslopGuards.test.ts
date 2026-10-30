@@ -382,7 +382,7 @@ const SPARKLES_ALLOWLIST = [
 ];
 /** Proper nouns that keep their capitals inside a sentence-case label. */
 const PROPER_NOUNS =
-  /\b(Health Connect|Apple( Health| Intelligence)?|Open Food Facts|Foundation Foods|Weekly Review|Kinetic \w+|Game Boy|Gemini|Google( AI Studio)?|Claude|Comeback|OpenAI|HealthKit|Musclog|Loggy|Monday|Smith|Discord|GitHub|NHS|Keiser|Tonal)\b/g;
+  /\b(Health Connect|Apple( Health| Intelligence)?|Open Food Facts|Foundation Foods|Weekly Review|Kinetic \w+|Game Boy|Gemini|Google( AI Studio)?|Claude|Comeback|OpenAI|HealthKit|Musclog|Loggy|Sherlock Holmes|Monday|Smith|Discord|GitHub|NHS|Keiser|Tonal)\b/g;
 const SMALL_WORDS = new Set([
   'a',
   'an',

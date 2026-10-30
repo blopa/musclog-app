@@ -44,6 +44,9 @@
     <loc>https://musclog.app/blog/page/2</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/page/3</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/category/engineering</loc>
   </url>
   <url>
@@ -95,6 +98,9 @@
     <loc>https://musclog.app/blog/2026/10/greedy-plate-math-is-wrong-the-moment-your-gym-runs-out-of-plates</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/2026/10/i-let-an-ai-set-up-musclog-but-it-never-touches-your-data</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/2026/10/i-lost-my-app-icon-so-a-script-draws-six-of-them</loc>
   </url>
   <url>
@@ -114,5 +120,8 @@
   </url>
   <url>
     <loc>https://musclog.app/blog/2026/10/the-first-frame-should-already-know-your-theme</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/my-ai-coach-can-be-dracula-but-it-cannot-change-your-numbers</loc>
   </url>
 </urlset>

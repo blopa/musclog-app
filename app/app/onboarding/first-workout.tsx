@@ -23,6 +23,7 @@ import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateServi
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
+import { PERSONALIZED_SETUP_STEPS } from '@/utils/onboardingRoutes';
 import {
   parseTrainingSetup,
   pickStarterTemplateIndex,
@@ -62,8 +63,9 @@ export default function FirstWorkoutScreen() {
   const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode?: string }>();
-  // The last step of the quick (7) or personalized (10) setup; absent when opened directly.
-  const totalSteps = mode === 'personalized' ? 10 : mode === 'quick' ? 7 : null;
+  // The last step of the quick (7) or personalized (11) setup; absent when opened directly.
+  const totalSteps =
+    mode === 'personalized' ? PERSONALIZED_SETUP_STEPS : mode === 'quick' ? 7 : null;
 
   const [setup, setSetup] = useState<TrainingSetupData | null>(null);
   const [experience, setExperience] = useState<LiftingExperience>('beginner');

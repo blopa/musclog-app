@@ -24,6 +24,7 @@ import { AppLockOverlay } from '@/components/lock/AppLockOverlay';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
 import { isStaticExport } from '@/constants/platform';
 import { AppLockProvider } from '@/context/AppLockContext';
+import { CoachPersonaProvider } from '@/context/CoachPersonaContext';
 import { ConfettiInteractionsProvider } from '@/context/ConfettiInteractionsContext';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { SmartCameraProvider } from '@/context/SmartCameraContext';
@@ -150,9 +151,11 @@ function RootLayout() {
                             <UnreadChatProvider>
                               <SnackbarProvider>
                                 <SmartCameraProvider>
-                                  <CoachProvider>
-                                    <AppContent />
-                                  </CoachProvider>
+                                  <CoachPersonaProvider>
+                                    <CoachProvider>
+                                      <AppContent />
+                                    </CoachProvider>
+                                  </CoachPersonaProvider>
                                 </SmartCameraProvider>
                               </SnackbarProvider>
                             </UnreadChatProvider>

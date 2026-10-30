@@ -1,9 +1,18 @@
+import {
+  type CoachPersonaId,
+  type CustomCoachPersona,
+  parseCoachPersonaId,
+  parseCustomPersona,
+  serializeCustomPersona,
+} from '@/constants/coachPersonas';
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
   APP_LOCK_SCOPES_SETTING_TYPE,
   type AppLockScope,
   AUTO_START_REST_TIMER_SETTING_TYPE,
+  COACH_CUSTOM_PERSONA_SETTING_TYPE,
+  COACH_PERSONA_SETTING_TYPE,
   COMEBACK_STATE_SETTING_TYPE,
   CYCLE_NOTIFICATION_STYLE_SETTING_TYPE,
   CYCLE_PIN_SUGGESTED_SETTING_TYPE,
@@ -135,6 +144,14 @@ export const SETTINGS = {
     serialize: (id) => id ?? '',
   } satisfies SettingDefinition<string | null>,
   showHomeSteps: booleanSetting(SHOW_HOME_STEPS_SETTING_TYPE, true),
+  coachPersona: choiceSetting<CoachPersonaId>(COACH_PERSONA_SETTING_TYPE, parseCoachPersonaId),
+  /** The persona the user wrote; large (avatar), so read through `useCoachPersona`, not the context. */
+  coachCustomPersona: {
+    type: COACH_CUSTOM_PERSONA_SETTING_TYPE,
+    defaultValue: parseCustomPersona(null),
+    parse: parseCustomPersona,
+    serialize: serializeCustomPersona,
+  } satisfies SettingDefinition<CustomCoachPersona>,
   homeHeatmaps: choiceSetting<HomeHeatmaps>(HOME_HEATMAPS_SETTING_TYPE, parseHomeHeatmaps),
   homeHeatmapLayout: choiceSetting<HomeHeatmapLayout>(
     HOME_HEATMAP_LAYOUT_SETTING_TYPE,

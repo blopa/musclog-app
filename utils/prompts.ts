@@ -2,6 +2,8 @@ import { FunctionDeclaration } from '@google/genai';
 import { differenceInCalendarDays } from 'date-fns';
 import OpenAI from 'openai';
 
+import type { AiProviderKind } from '@/constants/ai';
+import type { ResolvedCoachPersona } from '@/constants/coachPersonas';
 import type { Units } from '@/constants/settings';
 import { User } from '@/database/models';
 import Food from '@/database/models/Food';
@@ -19,6 +21,7 @@ import { UserService } from '@/database/services/UserService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
+import { getActiveCoachPersona } from '@/services/coachPersona';
 
 import {
   formatLocalCalendarDayIso,
@@ -28,6 +31,7 @@ import {
   MS_PER_SOLAR_DAY,
   parseLocalCalendarDate,
 } from './calendarDate';
+import { buildCoachPersonaBlock } from './coachPersonaPrompt';
 import { getNutritionLogHistoryPrompt, getWorkoutLogHistoryPrompt } from './coachPromptHistory';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
@@ -111,17 +115,22 @@ export const getActiveMemories = async (
 };
 
 /**
- * Base system prompt for Loggy persona
+ * The locked, name-neutral core system prompt: scope, safety, memory, language, concision.
+ *
+ * `persona` is who the coach is. Pass it ONLY for prose the user reads (the chat reply, the
+ * insights; see `getPersonaSystemPrompt`): the structured and function-calling prompts leave it out
+ * and stay neutral.
  */
 export const getBaseSystemPrompt = async (
   language: string = DEFAULT_LANG,
   context?: 'nutrition' | 'exercise' | 'general',
-  provider?: string
+  provider?: AiProviderKind,
+  persona?: ResolvedCoachPersona
 ): Promise<string> => {
   const customPrompts = await getActiveCustomPrompts(context);
   const memories = context ? await getActiveMemories(context, provider) : '';
 
-  let finalPrompt = `You are Loggy, a specialized fitness, nutrition, and health assistant.
+  let finalPrompt = `You are a specialized fitness, nutrition, and health assistant.
 Your goal is to provide expert, motivating, and practical advice.
 
 Core Capabilities:
@@ -131,7 +140,7 @@ Core Capabilities:
 - Track fitness activities and nutrition logs
 
 Conversation Guidelines:
-1. TONE: Friendly, professional, and human-like. Use colloquial language and emojis naturally.
+1. TONE: Clear, practical, and encouraging, in a human-like way. A persona section below, when present, sets the exact voice.
 2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}. Do NOT explicitly mention which languages you can speak unless asked.
 3. SCOPE: If asked about topics outside your domain, politely explain your specialization and offer 2-3 specific alternatives within your expertise.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
@@ -143,6 +152,11 @@ Error Handling:
 - If you cannot fulfill a request, explain why clearly and provide specific suggestions.
 - Avoid canned responses; personalize each interaction.`.trim();
 
+  // After the locked rules and before the user's own prompts, so a custom prompt can still adjust it.
+  if (persona) {
+    finalPrompt += `\n\n${buildCoachPersonaBlock(persona)}`;
+  }
+
   if (customPrompts) {
     finalPrompt += `\n\n${customPrompts}`;
   }
@@ -153,6 +167,18 @@ Error Handling:
 
   return finalPrompt;
 };
+
+/**
+ * The core system prompt in the voice of the coach the user picked. Every prompt that produces
+ * prose the user reads goes through this; the provider matters twice: on-device AI always gets
+ * Loggy, and it skips memory injection entirely, exactly as the chat prompt does.
+ */
+export const getPersonaSystemPrompt = async (
+  language: string = DEFAULT_LANG,
+  context?: 'nutrition' | 'exercise' | 'general',
+  provider?: AiProviderKind
+): Promise<string> =>
+  getBaseSystemPrompt(language, context, provider, await getActiveCoachPersona(provider));
 
 /**
  * Check if provider is a small model that needs Markdown-KV format
@@ -580,7 +606,7 @@ export const getChatMessagePromptContent = async (
   language: string = DEFAULT_LANG,
   eatingPhase?: string,
   context: 'nutrition' | 'exercise' | 'general' = 'general',
-  provider?: string
+  provider?: AiProviderKind
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
 
@@ -684,17 +710,24 @@ export const getChatMessagePromptContent = async (
     }
   }
 
-  contextSections.push('The following content is a conversation between the user and Loggy...');
+  const persona = await getActiveCoachPersona(provider);
+  contextSections.push(
+    `The following content is a conversation between the user and ${persona.promptName}...`
+  );
 
   // For Gemini, put context first and instructions last
   if (isGeminiProvider(provider)) {
-    return [...contextSections, '', await getBaseSystemPrompt(language, context, provider)].join(
-      '\n'
-    );
+    return [
+      ...contextSections,
+      '',
+      await getBaseSystemPrompt(language, context, provider, persona),
+    ].join('\n');
   }
 
   // For other providers, use traditional ordering (instructions first)
-  return [await getBaseSystemPrompt(language, context, provider), ...contextSections].join('\n');
+  return [await getBaseSystemPrompt(language, context, provider, persona), ...contextSections].join(
+    '\n'
+  );
 };
 
 /**
@@ -745,7 +778,8 @@ export const getNutritionInsightsPrompt = async (
   endDate: string,
   language: string = DEFAULT_LANG,
   eatingPhase?: string,
-  context?: 'nutrition' | 'exercise' | 'general'
+  context?: 'nutrition' | 'exercise' | 'general',
+  provider?: AiProviderKind
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -844,7 +878,7 @@ export const getNutritionInsightsPrompt = async (
   );
 
   return [
-    await getBaseSystemPrompt(language, context),
+    await getPersonaSystemPrompt(language, context, provider),
     `Please provide insights about the user's nutrition in these ${diffInDays} days range, like if they are eating enough protein, if they are consuming too many calories, etc. Base your analysis on their goal, eating phase, and activity level.`,
     userDetails,
     'Weight and fat percentage metrics:',
@@ -866,7 +900,8 @@ export const getMealCritiquePrompt = async (
   foods: { name: string; gramWeight: number }[],
   totals: { calories: number; protein: number; carbs: number; fat: number },
   language: string = DEFAULT_LANG,
-  context?: 'nutrition' | 'exercise' | 'general'
+  context?: 'nutrition' | 'exercise' | 'general',
+  provider?: AiProviderKind
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const nutritionGoal = await NutritionGoalService.getCurrent();
@@ -909,7 +944,7 @@ export const getMealCritiquePrompt = async (
     .join('\n');
 
   return [
-    await getBaseSystemPrompt(language, context),
+    await getPersonaSystemPrompt(language, context, provider),
     `The user wants feedback on their ${mealType} meal.`,
     userDetails,
     heightInfo,
@@ -932,7 +967,8 @@ export const getRecentWorkoutsInsightsPrompt = async (
   endDate: string,
   language: string = DEFAULT_LANG,
   eatingPhase?: string,
-  context?: 'nutrition' | 'exercise' | 'general'
+  context?: 'nutrition' | 'exercise' | 'general',
+  provider?: AiProviderKind
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -967,7 +1003,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
   );
 
   return [
-    await getBaseSystemPrompt(language, context),
+    await getPersonaSystemPrompt(language, context, provider),
     `Please provide insights about the user's workouts in these ${diffInDays} days range, like if they are doing enough volume, if they are using the correct weights, etc. Base your analysis on their goal, eating phase, and activity level.`,
     userDetails,
     'Recent workouts:',
@@ -1027,7 +1063,8 @@ export const getCalculateNextWorkoutVolumePrompt = async (
 export const getWorkoutInsightsPrompt = async (
   workoutTitle: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string
+  eatingPhase?: string,
+  provider?: AiProviderKind
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -1086,7 +1123,7 @@ export const getWorkoutInsightsPrompt = async (
   }
 
   return [
-    await getBaseSystemPrompt(language),
+    await getPersonaSystemPrompt(language, undefined, provider),
     `Please provide insights about the user's "${workoutTitle}" workout, like if they are doing enough volume, if they are using the correct weights, etc. Base your analysis on their goal, eating phase, and activity level.`,
     userDetails,
     'Workout details:',
@@ -1104,7 +1141,8 @@ export const getRecentWorkoutInsightsPrompt = async (
   workoutTitle: string,
   language: string = DEFAULT_LANG,
   eatingPhase?: string,
-  workoutJson?: string
+  workoutJson?: string,
+  provider?: AiProviderKind
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -1114,7 +1152,7 @@ export const getRecentWorkoutInsightsPrompt = async (
   const resolvedJson = workoutJson ?? '{}';
 
   return [
-    await getBaseSystemPrompt(language),
+    await getPersonaSystemPrompt(language, undefined, provider),
     `Please provide insights and feedback about the user's recent "${workoutTitle}" workout performance, including volume, exercise selection, rest times, and effort level.`,
     userDetails,
     'Completed workout:',
@@ -1130,7 +1168,8 @@ export const getRecentWorkoutInsightsPrompt = async (
 export const getRecentWorkoutInsightsPromptByLogId = async (
   workoutLogId: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string
+  eatingPhase?: string,
+  provider?: AiProviderKind
 ): Promise<string> => {
   const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
   const units = await SettingsService.getUnits();
@@ -1139,7 +1178,8 @@ export const getRecentWorkoutInsightsPromptByLogId = async (
     details.workoutLog.workoutName,
     language,
     eatingPhase,
-    workoutJson
+    workoutJson,
+    provider
   );
 };
 
@@ -1149,7 +1189,8 @@ export const getRecentWorkoutInsightsPromptByLogId = async (
 export const getWorkoutVolumeInsightsPrompt = async (
   workoutTitle: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string
+  eatingPhase?: string,
+  provider?: AiProviderKind
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -1174,7 +1215,7 @@ export const getWorkoutVolumeInsightsPrompt = async (
   }
 
   return [
-    await getBaseSystemPrompt(language),
+    await getPersonaSystemPrompt(language, undefined, provider),
     `Analyze the volume trend for the user's "${workoutTitle}" workout over time. Identify patterns, recommend adjustments, and assess progress.`,
     userDetails,
     'Historical volume data (sorted by date):',

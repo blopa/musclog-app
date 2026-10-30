@@ -32,6 +32,7 @@ import {
   readPersonalizedSetup,
   writeBodyStatsDraft,
 } from '@/utils/onboardingDraft';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
@@ -150,7 +151,10 @@ export default function PersonalizedBodyStatsScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={5} total={10} />
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.bodyStats}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
 
         <KeyboardAwareScrollView
           className="flex-1"

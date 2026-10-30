@@ -27,6 +27,7 @@ import type { LiftingExperience } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
 import { BREAK_LENGTH_LABEL_KEYS } from '@/utils/comeback/comebackCopy';
 import { BREAK_LENGTHS, type BreakLength } from '@/utils/comeback/comebackState';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import {
   DEFAULT_TRAINING_DAYS,
   parseTrainingSetup,
@@ -102,8 +103,8 @@ export default function TrainingSetupScreen() {
   const defaultNextRoute =
     mode === 'quick' ? '/app/onboarding/quick-goals' : '/app/onboarding/personalized-experience';
   const nextRoute = params.nextRoute ? decodeURIComponent(params.nextRoute) : defaultNextRoute;
-  const step = params.quickStep ? Number(params.quickStep) : 2;
-  const defaultTotal = mode === 'quick' ? 7 : 10;
+  const step = params.quickStep ? Number(params.quickStep) : PERSONALIZED_STEP.training;
+  const defaultTotal = mode === 'quick' ? 7 : PERSONALIZED_SETUP_STEPS;
   const total = params.quickTotal ? Number(params.quickTotal) : defaultTotal;
 
   const [location, setLocation] = useState<TrainingLocation>('gym');

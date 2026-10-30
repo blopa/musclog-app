@@ -186,7 +186,7 @@
       "importData": "Import data",
       "importOptically": "Import data from another phone",
       "personalizedSetup": "Personalized setup",
-      "personalizedSetupSteps": "10 steps",
+      "personalizedSetupSteps": "11 steps",
       "personalizedSetupSubtitle": "Get accurate TDEE, macros, and personalized recommendations",
       "quickSetup": "Quick setup",
       "quickSetupSteps": "7 steps",
@@ -368,6 +368,12 @@
       "stepNextTitle": "Get smarter next time",
       "stepNextBody": "We remember your numbers and suggest your next load.",
       "planHint": "Tap \"{{action}}\" to add this plan to your profile, or \"{{later}}\" to pick a workout yourself later."
+    },
+    "coachPersona": {
+      "title": "Pick your coach",
+      "subtitle": "Who should your AI coach be? You can change this any time in AI settings.",
+      "continue": "Continue",
+      "keepLoggy": "Keep Loggy"
     }
   }
 }

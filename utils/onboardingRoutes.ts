@@ -9,13 +9,50 @@ export const PROFILE_ROUTE = '/app/profile';
 export const AI_SETUP_ROUTE = '/app/onboarding/ai-setup';
 export const PERSONALIZED_CYCLE_ROUTE = '/app/onboarding/personalized-cycle';
 
-const musclogApiRoute = (quickStep: number) =>
-  `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=${quickStep}&quickTotal=10`;
+/** Where the personalized setup asks which coach the user wants; it always follows the AI choice. */
+export const COACH_PERSONA_ROUTE = '/app/onboarding/coach-persona';
 
 /**
- * The routes after the personalized cycle question. The "Musclog AI" step is left out when the
- * person already chose a provider in the AI setup: the free tier outranks their own key, so
- * offering it again would quietly replace the key they had just tested.
+ * The step number each personalized-setup screen shows on its progress bar. The screens, the routes
+ * below and the totals all read this one table, so inserting a step is an edit here and nowhere
+ * else. Step 6 is unused, and the steps between the cycle question and the results are reached
+ * through `personalizedCycleRoutes`. The quick setup has its own, shorter count (7).
+ */
+export const PERSONALIZED_STEP = {
+  preferences: 1,
+  training: 2,
+  experience: 3,
+  goals: 4,
+  bodyStats: 5,
+  cycleQuestion: 7,
+  cycleSetup: 8,
+  results: 10,
+  firstWorkout: 11,
+} as const;
+
+/** Steps in the personalized setup, counting the coach step: the last screen is the first workout. */
+export const PERSONALIZED_SETUP_STEPS = PERSONALIZED_STEP.firstWorkout;
+
+/**
+ * The coach step always leads to the nutrition results, so it takes no `nextRoute`: nesting that
+ * query string inside the Musclog AI step's own `nextRoute` would be decoded once too often there.
+ */
+const coachPersonaRoute = (quickStep: number) =>
+  `${COACH_PERSONA_ROUTE}?quickStep=${quickStep}&quickTotal=${PERSONALIZED_SETUP_STEPS}`;
+
+/** The Musclog AI step, which hands on to the coach step right after it. */
+const musclogApiRoute = (quickStep: number) =>
+  `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(coachPersonaRoute(quickStep + 1))}&quickStep=${quickStep}&quickTotal=${PERSONALIZED_SETUP_STEPS}`;
+
+/** The route of the cycle-setup screen the personalized cycle question opens. */
+export const personalizedCycleSetupRoute = (tracking: string, nextRoute: string) =>
+  `/app/onboarding/cycle-setup?tracking=${tracking}&nextRoute=${nextRoute}&quickStep=${PERSONALIZED_STEP.cycleSetup}&quickTotal=${PERSONALIZED_SETUP_STEPS}`;
+
+/**
+ * The routes after the personalized cycle question: the "Musclog AI" step, then the coach step.
+ * The Musclog AI step is left out when the person already chose a provider in the AI setup: the
+ * free tier outranks their own key, so offering it again would quietly replace the key they had
+ * just tested. The coach step is always asked.
  */
 export function personalizedCycleRoutes(skipMusclogApi: boolean): {
   /** Cycle tracking skipped: straight on. */
@@ -23,9 +60,12 @@ export function personalizedCycleRoutes(skipMusclogApi: boolean): {
   /** After the cycle setup screen. */
   afterCycle: string;
 } {
+  const afterQuestion = PERSONALIZED_STEP.cycleQuestion + 1;
+  const afterSetup = PERSONALIZED_STEP.cycleSetup + 1;
+
   return skipMusclogApi
-    ? { direct: NUTRITION_RESULTS_ROUTE, afterCycle: NUTRITION_RESULTS_ROUTE }
-    : { direct: musclogApiRoute(8), afterCycle: musclogApiRoute(9) };
+    ? { direct: coachPersonaRoute(afterQuestion), afterCycle: coachPersonaRoute(afterSetup) }
+    : { direct: musclogApiRoute(afterQuestion), afterCycle: musclogApiRoute(afterSetup) };
 }
 
 export type ResultsContext = 'onboarding' | 'profile';

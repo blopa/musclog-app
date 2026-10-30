@@ -89,6 +89,7 @@ const APP_SCREENS = [
     category: 'Onboarding',
   },
   { name: 'Cycle Setup', route: '/app/onboarding/cycle-setup', category: 'Onboarding' },
+  { name: 'Coach Persona', route: '/app/onboarding/coach-persona', category: 'Onboarding' },
   { name: 'Health Connect', route: '/app/onboarding/health-connect', category: 'Onboarding' },
   { name: 'Test: Buttons', route: '/app/test/buttons', category: 'Test' },
   { name: 'Test: Cards', route: '/app/test/cards', category: 'Test' },

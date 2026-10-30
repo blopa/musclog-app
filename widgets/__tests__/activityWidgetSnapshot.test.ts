@@ -13,7 +13,12 @@ const translate = (key: string, options?: { count: number }) =>
   options ? `${key}:${options.count}` : key;
 
 const build = (workoutDays = [] as { date: string; value: number }[], mealDays = workoutDays) =>
-  buildActivityWidgetSnapshot({ date: today, workoutDays, mealDays, palette, translate });
+  buildActivityWidgetSnapshot({
+    date: today,
+    days: { workouts: workoutDays, nutrition: mealDays },
+    palette,
+    translate,
+  });
 
 const containsNull = (value: unknown): boolean =>
   value === null ||

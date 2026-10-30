@@ -108,6 +108,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## AI Coach (Loggy)
 
+- Choose who your coach is: Loggy, Dracula, Cthulhu, Sherlock Holmes, or a custom coach with your own name, voice description and avatar. Picked in Settings → AI settings or during the personalized setup. Only the way the coach talks changes (chat replies and written insights); summaries, memories, plans and every structured result stay neutral, and on-device AI always uses Loggy
 - Chat-based AI coach for workout, nutrition, and general fitness questions
 - Choose between Google Gemini or OpenAI models (or a local LLM)
 - AI retains contextual memory of your preferences and history for relevant advice
@@ -281,7 +282,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Onboarding
 
-- Landing setup labels reflect the current flow totals: 10 steps for Personalized Setup and 7 for Quick Setup in every supported language
+- Landing setup labels reflect the current flow totals: 11 steps for Personalized Setup and 7 for Quick Setup in every supported language
 
 - Returning users get a short, skippable post-update tour on home, merging missed announcements into at most six pages plus an intro. The intro pairs page titles with descriptions and names the additional features under “Also new”. Fresh installs skip it; restored backups retain their seen version (older backups without one may show the tour again). The first announcement targets 2.13.1, the first production release with the tour: every update from an earlier version (including a 2.13.0 test build) shows it. It introduces Guided/Inline views, progression preferences, rest controls, gyms and plates, Weekly Review, plans, cardio, swaps, restrictions and warm-ups.
 - Quick or detailed guided setup flow, or "Set up with AI" as a third choice on the first screen. The AI setup collects the personalized answers (not cycle data) three ways: a chat inside Musclog (free Musclog AI, your own Gemini or OpenAI key, or a provider already set up), or ChatGPT/Claude outside the app, whose result comes back as a `musclog-onboarding.json` file or pasted JSON. All three end on one review screen where every answer is editable and nothing is saved until you apply it; the AI only collects answers, and Musclog's own calculator and starter plan produce the targets and workouts

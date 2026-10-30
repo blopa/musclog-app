@@ -8,25 +8,24 @@ jest.mock('@/database/database-instance', () => ({
   database: { withChangesForTables: (...args: unknown[]) => mockWithChanges(...args) },
 }));
 jest.mock('@/database/repositories/ActivityHeatmapRepository', () => ({
-  ActivityHeatmapRepository: { fetchWorkoutDays: jest.fn(), fetchMealDays: jest.fn() },
+  ActivityHeatmapRepository: { fetchDays: jest.fn() },
 }));
 
 beforeEach(() => jest.clearAllMocks());
 
 it('reads both sources for the 30 days ending today', async () => {
-  const workoutDays = [{ date: '2026-10-17', value: 1 }];
-  const mealDays = [{ date: '2026-10-16', value: 3 }];
-  (ActivityHeatmapRepository.fetchWorkoutDays as jest.Mock).mockResolvedValue(workoutDays);
-  (ActivityHeatmapRepository.fetchMealDays as jest.Mock).mockResolvedValue(mealDays);
+  const workouts = [{ date: '2026-10-17', value: 1 }];
+  const nutrition = [{ date: '2026-10-16', value: 3 }];
+  (ActivityHeatmapRepository.fetchDays as jest.Mock).mockImplementation(async (source: string) =>
+    source === 'workouts' ? workouts : nutrition
+  );
   const today = new Date(2026, 9, 17, 9);
 
-  await expect(loadActivityWidgetDays(today)).resolves.toEqual({ workoutDays, mealDays });
+  await expect(loadActivityWidgetDays(today)).resolves.toEqual({ workouts, nutrition });
 
-  for (const read of [
-    ActivityHeatmapRepository.fetchWorkoutDays,
-    ActivityHeatmapRepository.fetchMealDays,
-  ]) {
-    const [start, end] = (read as jest.Mock).mock.calls[0];
+  const calls = (ActivityHeatmapRepository.fetchDays as jest.Mock).mock.calls;
+  expect(calls.map(([source]) => source).sort()).toEqual(['nutrition', 'workouts']);
+  for (const [, start, end] of calls) {
     expect(end).toBe(today);
     // 30 days including today: the first is 29 days back.
     expect(start.getFullYear()).toBe(2026);

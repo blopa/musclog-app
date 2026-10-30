@@ -41,7 +41,12 @@ import {
   inchesToCm,
   NutritionPlan,
 } from '@/utils/nutritionCalculator';
-import { PROFILE_ROUTE, resolveResultsCompletion } from '@/utils/onboardingRoutes';
+import {
+  PERSONALIZED_SETUP_STEPS,
+  PERSONALIZED_STEP,
+  PROFILE_ROUTE,
+  resolveResultsCompletion,
+} from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 import { parseTrainingSetup } from '@/utils/onboardingTraining';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -466,7 +471,12 @@ export default function NutritionGoalsResults() {
   return (
     <MasterLayout showNavigationMenu={false}>
       {isQuickSetup ? <QuickSetupProgressBar current={6} total={7} /> : null}
-      {isPersonalizedSetup ? <QuickSetupProgressBar current={9} total={10} /> : null}
+      {isPersonalizedSetup ? (
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.results}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
+      ) : null}
       <ScrollView
         ref={scrollViewRef}
         className="flex-1"

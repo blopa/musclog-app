@@ -14,6 +14,7 @@ import { Linking, Platform, Pressable, Text, View } from 'react-native';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
+import { CoachPersonaPicker } from '@/components/coach/CoachPersonaPicker';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SecretInput } from '@/components/theme/SecretInput';
@@ -843,6 +844,15 @@ export function AISettingsModal({
               },
             ]}
           />
+        </View>
+
+        {/* Coach personality */}
+        <View>
+          <SectionLabel className="mb-1 px-1">{t('coach.personaPicker.title')}</SectionLabel>
+          <Text className="mb-2 px-1 text-xs text-text-secondary">
+            {t('coach.personaPicker.subtitle')}
+          </Text>
+          <CoachPersonaPicker />
         </View>
 
         {/* Custom Prompts Section */}

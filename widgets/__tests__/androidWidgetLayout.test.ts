@@ -101,8 +101,10 @@ const nutrition = {
 };
 const activity = buildActivityWidgetSnapshot({
   date: new Date(2026, 9, 17),
-  workoutDays: [{ date: '2026-10-17', value: 1 }],
-  mealDays: [{ date: '2026-10-16', value: 3 }],
+  days: {
+    workouts: [{ date: '2026-10-17', value: 1 }],
+    nutrition: [{ date: '2026-10-16', value: 3 }],
+  },
   palette,
   translate: (key) => key,
 });

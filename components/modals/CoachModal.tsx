@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Image,
+  type ImageSourcePropType,
   Keyboard,
   Platform,
   Pressable,
@@ -54,13 +55,14 @@ import {
   type ConversationContext,
   TRACK_MEAL,
 } from '@/constants/chat';
+import { useCoachPersona } from '@/context/CoachPersonaContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import { ChatService } from '@/database/services/ChatService';
 import { MuscleService } from '@/database/services/MuscleService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
-import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
+import { type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
@@ -336,7 +338,7 @@ const renderBubble = (
   }
 };
 
-const renderAvatar = (props: any, theme: Theme) => {
+const renderAvatar = (props: any, theme: Theme, avatarSource: ImageSourcePropType) => {
   const styles = getStyles(theme);
 
   if (props.currentMessage?.user._id === 1) {
@@ -355,7 +357,7 @@ const renderAvatar = (props: any, theme: Theme) => {
   return (
     <View style={[styles.avatar, { overflow: 'hidden' }]}>
       <Image
-        source={AI_COACH_AVATAR}
+        source={avatarSource}
         style={{ width: theme.size['8'], height: theme.size['8'] }}
         resizeMode="cover"
       />
@@ -623,6 +625,7 @@ export function CoachModal({
 }: CoachModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const persona = useCoachPersona();
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const insets = useAppSafeAreaInsets();
   const router = useRouter();
@@ -780,10 +783,11 @@ export function CoachModal({
         _id: `${idPrefix}-${Date.now()}`,
         text: t(promptKey),
         createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+        // The bubble's avatar is drawn by `renderAvatar`, which reads the persona.
+        user: { _id: 2, name: persona.name },
       });
     },
-    [addPendingCoachMessage, t]
+    [addPendingCoachMessage, persona.name, t]
   );
 
   // Arm and disarm are separate primitives on purpose: the chips want the toggle, while an
@@ -1025,7 +1029,7 @@ export function CoachModal({
       const sorted = [...records].sort((a, b) => a.createdAt - b.createdAt);
       const header = t('coach.share.title');
       const youLabel = t('coach.you');
-      const coachLabel = t('coach.name');
+      const coachLabel = persona.name;
 
       const lines: string[] = [header, ''];
 
@@ -1049,7 +1053,15 @@ export function CoachModal({
         snackbarMessage: t('coach.share.failed'),
       });
     }
-  }, [conversationContext, i18n.resolvedLanguage, i18n.language, shareText, showSnackbar, t]);
+  }, [
+    conversationContext,
+    i18n.resolvedLanguage,
+    i18n.language,
+    persona.name,
+    shareText,
+    showSnackbar,
+    t,
+  ]);
 
   const handleClearHistoryPress = useCallback(() => {
     setIsMenuVisible(false);
@@ -1215,8 +1227,8 @@ export function CoachModal({
     ]
   );
   const gcRenderAvatar = useCallback(
-    (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme),
-    [theme]
+    (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme, persona.avatarSource),
+    [theme, persona.avatarSource]
   );
 
   const gcRenderCustomView = useCallback(
@@ -1358,7 +1370,7 @@ export function CoachModal({
         >
           <View className="relative">
             <Image
-              source={AI_COACH_AVATAR}
+              source={persona.avatarSource}
               className="rounded-full"
               style={{
                 width: theme.size['10'],
@@ -1379,7 +1391,7 @@ export function CoachModal({
           </View>
           <View className="flex-1">
             <View className="flex-row flex-wrap items-baseline gap-1.5">
-              <Text className="text-lg font-semibold text-text-primary">{t('coach.name')}</Text>
+              <Text className="text-lg font-semibold text-text-primary">{persona.name}</Text>
               <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
                 - {conversationContext.charAt(0).toUpperCase() + conversationContext.slice(1)}
               </Text>

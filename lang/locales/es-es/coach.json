@@ -26,9 +26,9 @@
     "analyzeProgressPrompt": "Analizaré tus entrenamientos recientes. ¿Algún comentario que quieras decirme antes de que lo haga?",
     "nutritionCheckPrompt": "Revisaré tu nutrición de los últimos 7 días. ¿Algún comentario que quieras añadir antes de que lo haga?",
     "trackMealPrompt": "Dime qué has comido (¡incluso puedes enviar una foto!) y estimaré los macros y lo registraré por ti.",
-    "welcomeMessage": "Hola, soy Loggy, tu entrenador con IA. Pregúntame lo que quieras sobre tus entrenamientos, tu nutrición o tu progreso.",
-    "welcomeMessageExercise": "Hola, soy Loggy. Pídeme que cree un plan de entrenamiento, revise tu técnica o analice tu progreso.",
-    "welcomeMessageNutrition": "Hola, soy Loggy. Cuéntame qué has comido y estimaré los macros, o hazme una pregunta sobre nutrición.",
+    "welcomeMessage": "Hola, soy {{name}}, tu entrenador con IA. Pregúntame lo que quieras sobre tus entrenamientos, tu nutrición o tu progreso.",
+    "welcomeMessageExercise": "Hola, soy {{name}}. Pídeme que cree un plan de entrenamiento, revise tu técnica o analice tu progreso.",
+    "welcomeMessageNutrition": "Hola, soy {{name}}. Cuéntame qué has comido y estimaré los macros, o hazme una pregunta sobre nutrición.",
     "insights": {
       "noNutritionLogs": "Todavía no puedo darte información sobre nutrición porque no has registrado comidas en los últimos 7 días. Registra lo que comes y tendré comentarios para ti.",
       "noWorkoutLogs": "Todavía no puedo darte información sobre entrenamientos porque no has completado ninguno en los últimos 7 días. Termina uno y analizaré tu entrenamiento."
@@ -118,6 +118,48 @@
       "copied": "Mensaje copiado al portapapeles",
       "deleted": "Mensaje eliminado"
     },
-    "sendViaOpenAI": "Enviar a través de OpenAI"
+    "sendViaOpenAI": "Enviar a través de OpenAI",
+    "personas": {
+      "loggy": {
+        "name": "Loggy",
+        "description": "Amable y motivador. El predeterminado."
+      },
+      "dracula": {
+        "name": "Drácula",
+        "description": "Un conde de la vieja escuela con siglos de disciplina."
+      },
+      "cthulhu": {
+        "name": "Cthulhu",
+        "description": "Un horror cósmico ancestral que quiere que cumplas con tu proteína."
+      },
+      "sherlock": {
+        "name": "Sherlock Holmes",
+        "description": "Deduce tu progreso a partir de las pistas de tus registros."
+      },
+      "custom": {
+        "name": "Entrenador personalizado",
+        "description": "Escribe tu propio entrenador: nombre, voz y avatar."
+      }
+    },
+    "personaPicker": {
+      "title": "Personalidad del entrenador",
+      "subtitle": "Elige quién es tu entrenador. Solo cambia su forma de hablar; los consejos y las reglas son los mismos.",
+      "editCustom": "Editar entrenador personalizado",
+      "onDeviceNote": "La IA en el dispositivo siempre usa a Loggy. Cambia a una IA en la nube o local para elegir otro entrenador.",
+      "custom": {
+        "title": "Entrenador personalizado",
+        "nameLabel": "Nombre",
+        "namePlaceholder": "p. ej. Coach Atlas",
+        "voiceLabel": "Cómo habla",
+        "voicePlaceholder": "p. ej. Un sargento tranquilo que respeta el esfuerzo y nunca me deja saltarme el día de pierna.",
+        "voiceCount": "{{count}} / {{max}}",
+        "hint": "Tu descripción se envía a la IA junto con tus mensajes. Solo cambia el tono, no los consejos.",
+        "avatarPick": "Elegir avatar",
+        "avatarChange": "Cambiar avatar",
+        "avatarRemove": "Quitar avatar",
+        "errorUnsafe": "Ese texto no se puede usar. Prueba a describir la voz con palabras más sencillas.",
+        "errorImage": "No se pudo cargar esa imagen."
+      }
+    }
   }
 }

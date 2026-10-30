@@ -1,10 +1,12 @@
 import {
   AI_SETUP_ROUTE,
   aiSetupRoute,
-  NUTRITION_RESULTS_ROUTE,
   personalizedCycleRoutes,
   PROFILE_RESULTS_ROUTE,
   PROFILE_ROUTE,
+  PERSONALIZED_SETUP_STEPS,
+  PERSONALIZED_STEP,
+  personalizedCycleSetupRoute,
   resolveAiSetupMode,
   resolveResultsCompletion,
 } from '@/utils/onboardingRoutes';
@@ -14,16 +16,49 @@ describe('personalizedCycleRoutes', () => {
     const { direct, afterCycle } = personalizedCycleRoutes(false);
 
     expect(direct).toContain('/app/onboarding/musclog-api?');
-    expect(direct).toContain('quickStep=8&quickTotal=10');
-    expect(afterCycle).toContain('quickStep=9&quickTotal=10');
-    expect(decodeURIComponent(direct)).toContain(NUTRITION_RESULTS_ROUTE);
+    expect(direct).toContain('quickStep=8&quickTotal=11');
+    expect(afterCycle).toContain('quickStep=9&quickTotal=11');
   });
 
-  it('skips that step when the person already chose a provider', () => {
+  it('hands the Musclog AI step on to the coach step, one step later', () => {
+    const { direct, afterCycle } = personalizedCycleRoutes(false);
+    const nextOf = (route: string) =>
+      decodeURIComponent(new URL(route, 'https://x').searchParams.get('nextRoute') ?? '');
+
+    expect(nextOf(direct)).toBe('/app/onboarding/coach-persona?quickStep=9&quickTotal=11');
+    expect(nextOf(afterCycle)).toBe('/app/onboarding/coach-persona?quickStep=10&quickTotal=11');
+  });
+
+  it('skips the Musclog AI step when the person already chose a provider, but still asks for a coach', () => {
     expect(personalizedCycleRoutes(true)).toEqual({
-      direct: NUTRITION_RESULTS_ROUTE,
-      afterCycle: NUTRITION_RESULTS_ROUTE,
+      direct: '/app/onboarding/coach-persona?quickStep=8&quickTotal=11',
+      afterCycle: '/app/onboarding/coach-persona?quickStep=9&quickTotal=11',
     });
+  });
+
+  it('keeps the coach step free of nested query strings, so no screen decodes it twice', () => {
+    const { direct } = personalizedCycleRoutes(true);
+
+    expect(direct).not.toContain('nextRoute');
+    expect(decodeURIComponent(direct)).toBe(direct);
+  });
+
+  it('counts the coach step in the personalized total', () => {
+    expect(PERSONALIZED_SETUP_STEPS).toBe(11);
+  });
+
+  it('numbers the screens in order, ending on the first workout', () => {
+    const steps = Object.values(PERSONALIZED_STEP);
+
+    expect(steps).toEqual([...steps].sort((a, b) => a - b));
+    expect(new Set(steps).size).toBe(steps.length);
+    expect(PERSONALIZED_SETUP_STEPS).toBe(PERSONALIZED_STEP.firstWorkout);
+  });
+
+  it('opens the cycle setup on its own step of the same total', () => {
+    expect(personalizedCycleSetupRoute('regular', 'next')).toBe(
+      `/app/onboarding/cycle-setup?tracking=regular&nextRoute=next&quickStep=${PERSONALIZED_STEP.cycleSetup}&quickTotal=${PERSONALIZED_SETUP_STEPS}`
+    );
   });
 });
 

@@ -9,8 +9,9 @@ import {
   ActivityHeatmapStrip,
   type ActivityStripRow,
 } from '@/components/charts/ActivityHeatmapStrip';
+import type { ActivityHeatmapSource } from '@/constants/settings';
 import { SurfaceColorProvider } from '@/context/SurfaceColorContext';
-import { type ActivityHeatmapSource, useActivityHeatmapDays } from '@/hooks/useActivityHeatmapDays';
+import { useActivityHeatmapDays } from '@/hooks/useActivityHeatmapDays';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import {

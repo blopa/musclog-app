@@ -22,6 +22,7 @@ import { Button } from '@/components/theme/Button';
 import { type LiftingExperience } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
 import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 type ExperienceOption = {
@@ -140,7 +141,10 @@ export default function PersonalizedExperienceScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={3} total={10} />
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.experience}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
 
         <ScrollView
           className="flex-1"

@@ -26,9 +26,9 @@
     "analyzeProgressPrompt": "I'll analyze your recent workouts. Any remarks you'd like to tell me before I do?",
     "nutritionCheckPrompt": "I'll review your nutrition for the last 7 days. Any remarks you'd like to add before I do?",
     "trackMealPrompt": "Tell me what you've eaten (you can even send a photo!), and I'll estimate the macros and track it for you.",
-    "welcomeMessage": "Hi, I'm Loggy, your AI coach. Ask me anything about your workouts, nutrition or progress.",
-    "welcomeMessageExercise": "Hi, I'm Loggy. Ask me to build a workout plan, check your form or analyze your progress.",
-    "welcomeMessageNutrition": "Hi, I'm Loggy. Tell me what you ate and I'll estimate the macros, or ask me a nutrition question.",
+    "welcomeMessage": "Hi, I'm {{name}}, your AI coach. Ask me anything about your workouts, nutrition or progress.",
+    "welcomeMessageExercise": "Hi, I'm {{name}}. Ask me to build a workout plan, check your form or analyze your progress.",
+    "welcomeMessageNutrition": "Hi, I'm {{name}}. Tell me what you ate and I'll estimate the macros, or ask me a nutrition question.",
     "insights": {
       "noNutritionLogs": "I can't give nutrition insights yet because you haven't tracked any meals in the past 7 days. Log your food and I'll have feedback for you.",
       "noWorkoutLogs": "I can't give workout insights yet because you haven't completed a workout in the past 7 days. Finish one and I'll analyze your training."
@@ -118,6 +118,48 @@
       "copied": "Message copied to clipboard",
       "deleted": "Message deleted"
     },
-    "sendViaOpenAI": "Send via OpenAI"
+    "sendViaOpenAI": "Send via OpenAI",
+    "personas": {
+      "loggy": {
+        "name": "Loggy",
+        "description": "Friendly and motivating. The default."
+      },
+      "dracula": {
+        "name": "Dracula",
+        "description": "An old-world count with centuries of discipline."
+      },
+      "cthulhu": {
+        "name": "Cthulhu",
+        "description": "An ancient cosmic horror who really wants you to hit your protein."
+      },
+      "sherlock": {
+        "name": "Sherlock Holmes",
+        "description": "Deduces your progress from the clues in your logs."
+      },
+      "custom": {
+        "name": "Custom coach",
+        "description": "Write your own coach: a name, a voice and an avatar."
+      }
+    },
+    "personaPicker": {
+      "title": "Coach personality",
+      "subtitle": "Choose who your coach is. Only the way it talks changes; the advice and rules stay the same.",
+      "editCustom": "Edit custom coach",
+      "onDeviceNote": "On-device AI always uses Loggy. Switch to a cloud or local AI to pick a different coach.",
+      "custom": {
+        "title": "Custom coach",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Coach Atlas",
+        "voiceLabel": "How it talks",
+        "voicePlaceholder": "e.g. A calm drill sergeant who respects effort and never lets me skip leg day.",
+        "voiceCount": "{{count}} / {{max}}",
+        "hint": "Your description is sent to the AI with your messages. It only changes the tone, not the advice.",
+        "avatarPick": "Choose avatar",
+        "avatarChange": "Change avatar",
+        "avatarRemove": "Remove avatar",
+        "errorUnsafe": "That text can’t be used. Try describing the voice in simpler words.",
+        "errorImage": "Couldn’t load that image."
+      }
+    }
   }
 }

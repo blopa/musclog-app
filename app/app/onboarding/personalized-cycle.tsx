@@ -12,7 +12,12 @@ import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 import { CYCLE_TRACKING_CHOICES, type CycleTrackingMode } from '@/utils/cycle/trackingMode';
 import { readPersonalizedSetup } from '@/utils/onboardingDraft';
-import { personalizedCycleRoutes } from '@/utils/onboardingRoutes';
+import {
+  PERSONALIZED_SETUP_STEPS,
+  PERSONALIZED_STEP,
+  personalizedCycleRoutes,
+  personalizedCycleSetupRoute,
+} from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 export default function PersonalizedCycleScreen() {
@@ -37,9 +42,7 @@ export default function PersonalizedCycleScreen() {
 
       if (menstruates !== 'skip') {
         const nextRoute = encodeURIComponent(routes.afterCycle);
-        router.navigate(
-          `/app/onboarding/cycle-setup?tracking=${menstruates}&nextRoute=${nextRoute}&quickStep=8&quickTotal=10`
-        );
+        router.navigate(personalizedCycleSetupRoute(menstruates, nextRoute));
       } else {
         router.navigate(routes.direct);
       }
@@ -60,7 +63,10 @@ export default function PersonalizedCycleScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={7} total={10} />
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.cycleQuestion}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
 
         <ScrollView
           className="flex-1"

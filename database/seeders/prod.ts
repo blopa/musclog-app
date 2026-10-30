@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import { Platform } from 'react-native';
 
+import { COACH_WELCOME_KEYS, COACH_WELCOME_PAYLOAD_JSON } from '@/constants/coachWelcome';
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import {
@@ -12,6 +13,7 @@ import usdaFoundationFoodsData from '@/data/usda_foundation_foods.json';
 import { clearAppAsyncStorage } from '@/database/asyncStorageReset';
 import { database } from '@/database/database-instance';
 import { markDbReady } from '@/database/dbReady';
+import type { ChatMessageContext } from '@/database/models/ChatMessage';
 import Food from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import Setting from '@/database/models/Setting';
@@ -210,18 +212,17 @@ export async function seedDatabaseContents(
   const existingMessages = await ChatService.getAllMessages(1, 0);
 
   if (existingMessages.length === 0) {
-    const contexts = [
-      { key: 'coach.welcomeMessage', context: 'general' },
-      { key: 'coach.welcomeMessageExercise', context: 'exercise' },
-      { key: 'coach.welcomeMessageNutrition', context: 'nutrition' },
-    ] as const;
-
-    for (const { key, context } of contexts) {
+    // Seeded as Loggy; a persona picked during onboarding rewrites these while they are untouched.
+    for (const [context, key] of Object.entries(COACH_WELCOME_KEYS) as [
+      ChatMessageContext,
+      (typeof COACH_WELCOME_KEYS)[ChatMessageContext],
+    ][]) {
       await ChatService.saveMessage({
         sender: 'coach',
-        message: i18n.t(key),
+        message: i18n.t(key, { name: 'Loggy' }),
         messageType: 'text',
         context,
+        payloadJson: COACH_WELCOME_PAYLOAD_JSON,
       });
     }
 

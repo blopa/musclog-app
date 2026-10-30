@@ -1690,7 +1690,8 @@ export async function getNutritionInsights(
       endDate,
       lang,
       undefined,
-      context
+      context,
+      config.provider
     );
 
     const finalUserMessage = userRemarks?.trim()
@@ -1841,7 +1842,12 @@ export async function getWorkoutInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getWorkoutInsightsPrompt(workoutTitle, lang);
+    const systemPrompt = await getWorkoutInsightsPrompt(
+      workoutTitle,
+      lang,
+      undefined,
+      config.provider
+    );
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
@@ -1860,7 +1866,12 @@ export async function getRecentWorkoutInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(workoutLogId, lang);
+    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(
+      workoutLogId,
+      lang,
+      undefined,
+      config.provider
+    );
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
@@ -1890,7 +1901,8 @@ export async function getRecentWorkoutsInsights(
       endDate,
       lang,
       undefined,
-      context
+      context,
+      config.provider
     );
 
     const finalUserMessage = userRemarks?.trim()
@@ -1925,7 +1937,12 @@ export async function getWorkoutVolumeInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getWorkoutVolumeInsightsPrompt(workoutTitle, lang);
+    const systemPrompt = await getWorkoutVolumeInsightsPrompt(
+      workoutTitle,
+      lang,
+      undefined,
+      config.provider
+    );
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
@@ -2230,7 +2247,14 @@ export async function getMealCritique(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getMealCritiquePrompt(mealType, foods, totals, lang, 'nutrition');
+    const systemPrompt = await getMealCritiquePrompt(
+      mealType,
+      foods,
+      totals,
+      lang,
+      'nutrition',
+      config.provider
+    );
     const finalUserMessage = userRemarks?.trim()
       ? userRemarks.trim()
       : 'Please critique this meal.';

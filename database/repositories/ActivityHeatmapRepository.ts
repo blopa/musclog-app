@@ -1,4 +1,4 @@
-import { type Model, type Query, Q } from '@nozbe/watermelondb';
+import { type Model, Q, type Query } from '@nozbe/watermelondb';
 import { endOfDay, startOfDay } from 'date-fns';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,44 +12,67 @@ import type { ActivityHeatmapDay } from '@/utils/activityHeatmap';
 import { nutritionHeatmapDays, workoutHeatmapDays } from '@/utils/activityHeatmapData';
 import { dayKeyRange, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 
-/** How one heatmap source reads its days: the query, the columns it must re-emit on, the bucketing. */
-type SourceReader = (
-  startDate: Date,
-  endDate: Date
-) => {
-  query: Query<Model>;
-  /** Columns that edit in place; `observe()` would miss those. Omit when a row never edits into another day. */
-  watchedColumns?: string[];
-  toDays: (records: Model[]) => ActivityHeatmapDay[];
+/** One heatmap source over a date range: its days once, or live. */
+type SourceRead = {
+  observe: () => Observable<ActivityHeatmapDay[]>;
+  fetch: () => Promise<ActivityHeatmapDay[]>;
 };
 
-const SOURCE_READERS: Record<ActivityHeatmapSource, SourceReader> = {
-  /** Completed, not deleted workouts that started between the two local days, inclusive. */
-  workouts: (startDate, endDate) => ({
-    query: database
-      .get<WorkoutLog>('workout_logs')
-      .query(
-        Q.where('completed_at', Q.notEq(null)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('started_at', Q.gte(startOfDay(startDate).getTime())),
-        Q.where('started_at', Q.lte(endOfDay(endDate).getTime()))
+/**
+ * Pairs a source's query with the bucketing that understands ITS records. The record type is
+ * generic here and erased in the result, so each source keeps a typed `toDays` (no casts) while the
+ * sources still share one `SourceRead` shape.
+ */
+function sourceRead<T extends Model>({
+  query,
+  watchedColumns,
+  toDays,
+}: {
+  query: Query<T>;
+  /** Columns that edit in place; `observe()` would miss those. Omit when a row never edits into another day. */
+  watchedColumns?: string[];
+  toDays: (records: T[]) => ActivityHeatmapDay[];
+}): SourceRead {
+  return {
+    observe: () =>
+      (watchedColumns ? query.observeWithColumns(watchedColumns) : query.observe()).pipe(
+        map(toDays)
       ),
-    toDays: (logs) => workoutHeatmapDays((logs as WorkoutLog[]).map((log) => log.startedAt)),
-  }),
+    fetch: async () => toDays(await query.fetch()),
+  };
+}
+
+const SOURCE_READERS: Record<
+  ActivityHeatmapSource,
+  (startDate: Date, endDate: Date) => SourceRead
+> = {
+  /** Completed, not deleted workouts that started between the two local days, inclusive. */
+  workouts: (startDate, endDate) =>
+    sourceRead({
+      query: database
+        .get<WorkoutLog>('workout_logs')
+        .query(
+          Q.where('completed_at', Q.notEq(null)),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.where('started_at', Q.gte(startOfDay(startDate).getTime())),
+          Q.where('started_at', Q.lte(endOfDay(endDate).getTime()))
+        ),
+      toDays: (logs) => workoutHeatmapDays(logs.map((log) => log.startedAt)),
+    }),
 
   /** Food logged between the two local days, inclusive; valued by distinct meals. */
   nutrition: (startDate, endDate) => {
     const range = dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate));
 
-    return {
+    return sourceRead({
       query: database
         .get<NutritionLog>('nutrition_logs')
         .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range)),
       // The meal type and the consumed time edit in place.
       watchedColumns: ['type', 'date', 'timezone'],
       // The query widens the range to be safe; the range trims the overscan back to the days asked for.
-      toDays: (logs) => nutritionHeatmapDays(range.filterRecords(logs as NutritionLog[])),
-    };
+      toDays: (logs) => nutritionHeatmapDays(range.filterRecords(logs)),
+    });
   },
 };
 
@@ -65,10 +88,7 @@ export class ActivityHeatmapRepository {
     startDate: Date,
     endDate: Date
   ): Observable<ActivityHeatmapDay[]> {
-    const { query, watchedColumns, toDays } = SOURCE_READERS[source](startDate, endDate);
-    const records$ = watchedColumns ? query.observeWithColumns(watchedColumns) : query.observe();
-
-    return records$.pipe(map(toDays));
+    return SOURCE_READERS[source](startDate, endDate).observe();
   }
 
   static async fetchDays(
@@ -76,8 +96,6 @@ export class ActivityHeatmapRepository {
     startDate: Date,
     endDate: Date
   ): Promise<ActivityHeatmapDay[]> {
-    const { query, toDays } = SOURCE_READERS[source](startDate, endDate);
-
-    return toDays(await query.fetch());
+    return SOURCE_READERS[source](startDate, endDate).fetch();
   }
 }

@@ -77,8 +77,8 @@ jest.mock('@/widgets/ActivityHeatmapWidget', () => ({
 jest.mock('@/widgets/activityWidgetData', () => ({
   loadActivityWidgetDays: jest.fn(async () => ({
     // The widget reads the real clock, so "today" is whatever it is when the test runs.
-    workoutDays: [{ date: new Date().toLocaleDateString('sv-SE'), value: 1 }],
-    mealDays: [],
+    workouts: [{ date: new Date().toLocaleDateString('sv-SE'), value: 1 }],
+    nutrition: [],
   })),
   subscribeToActivityChanges: jest.fn(() => jest.fn()),
 }));

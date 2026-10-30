@@ -16,6 +16,7 @@ import { type Gender } from '@/database/models/User';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useTheme } from '@/hooks/useTheme';
 import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 type Units = 'metric' | 'imperial';
@@ -71,7 +72,9 @@ export default function PersonalizedPreferencesScreen() {
 
       await setCurrentOnboardingStep('/app/onboarding/personalized-preferences');
 
-      router.navigate(`/app/onboarding/training-setup?mode=personalized&quickStep=2&quickTotal=10`);
+      router.navigate(
+        `/app/onboarding/training-setup?mode=personalized&quickStep=${PERSONALIZED_STEP.training}&quickTotal=${PERSONALIZED_SETUP_STEPS}`
+      );
     } catch (e) {
       console.error('Error saving personalized preferences:', e);
     } finally {
@@ -82,7 +85,10 @@ export default function PersonalizedPreferencesScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={1} total={10} />
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.preferences}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
 
         <KeyboardAwareScrollView
           className="flex-1"

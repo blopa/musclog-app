@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
+
 const read = (file: string) => fs.readFileSync(path.join(__dirname, '../..', file), 'utf8');
 
 describe('onboarding training flow wiring', () => {
@@ -17,7 +19,25 @@ describe('onboarding training flow wiring', () => {
 
   it('keeps the step counts of both setups intact', () => {
     expect(read('app/app/onboarding/quick-preferences.tsx')).toContain('quickTotal=7');
-    expect(read('app/app/onboarding/personalized-preferences.tsx')).toContain('quickTotal=10');
+    expect(read('app/app/onboarding/personalized-preferences.tsx')).toContain(
+      'quickTotal=${PERSONALIZED_SETUP_STEPS}'
+    );
+    expect(PERSONALIZED_SETUP_STEPS).toBe(11);
+  });
+
+  it('keeps every personalized screen on the shared step table, with no step literals left', () => {
+    for (const screen of [
+      'personalized-preferences',
+      'personalized-experience',
+      'personalized-goals',
+      'personalized-body-stats',
+      'personalized-cycle',
+    ]) {
+      const source = read(`app/app/onboarding/${screen}.tsx`);
+
+      expect(source).toContain('total={PERSONALIZED_SETUP_STEPS}');
+      expect(source).not.toMatch(/total=\{\d+\}/);
+    }
   });
 
   it('advertises the flow totals on the landing page in every locale', () => {
@@ -25,9 +45,7 @@ describe('onboarding training flow wiring', () => {
     const quickTotal = read('app/app/onboarding/quick-preferences.tsx').match(
       /quickTotal=(\d+)/
     )![1];
-    const personalizedTotal = read('app/app/onboarding/personalized-preferences.tsx').match(
-      /quickTotal=(\d+)/
-    )![1];
+    const personalizedTotal = String(PERSONALIZED_SETUP_STEPS);
 
     for (const locale of fs.readdirSync(localesDir, { withFileTypes: true })) {
       if (!locale.isDirectory()) {
@@ -45,10 +63,16 @@ describe('onboarding training flow wiring', () => {
   it('counts the first workout as the final step of each setup', () => {
     const results = read('app/app/onboarding/nutrition-goals-results.tsx');
     expect(results).toContain('current={6} total={7}');
-    expect(results).toContain('current={9} total={10}');
+    expect(results).toMatch(
+      /current=\{PERSONALIZED_STEP\.results\}\s+total=\{PERSONALIZED_SETUP_STEPS\}/
+    );
+    // The first workout is the step after the results.
+    expect(PERSONALIZED_STEP.results).toBe(PERSONALIZED_STEP.firstWorkout - 1);
     expect(results).toContain("isPersonalizedSetup ? 'personalized' : 'quick'");
     const firstWorkout = read('app/app/onboarding/first-workout.tsx');
-    expect(firstWorkout).toContain("mode === 'personalized' ? 10 : mode === 'quick' ? 7 : null");
+    expect(firstWorkout).toMatch(
+      /mode === 'personalized' \? PERSONALIZED_SETUP_STEPS : mode === 'quick' \? 7 : null/
+    );
     expect(firstWorkout).toContain(
       '<QuickSetupProgressBar current={totalSteps} total={totalSteps}'
     );

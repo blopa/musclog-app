@@ -461,6 +461,20 @@ export const HOME_SUMMARY_CARD_SETTING_TYPE = 'home_summary_card';
 export const HOME_HEATMAPS_SETTING_TYPE = 'home_heatmaps';
 
 /**
+ * Setting type for who the AI coach is.
+ * value: a `CoachPersonaId` ('loggy' | 'dracula' | 'cthulhu' | 'sherlock' | 'custom'). Default 'loggy'.
+ * Parse it with `parseCoachPersonaId` from `@/constants/coachPersonas`.
+ */
+export const COACH_PERSONA_SETTING_TYPE = 'coach_persona';
+
+/**
+ * Setting type for the persona the user wrote (name, voice, avatar data URI), as JSON. Kept out of
+ * `SettingsState` on purpose: the avatar makes it tens of KB. Read it with
+ * `SettingsService.get(SETTINGS.coachCustomPersona)`, or `useCoachPersona` in React.
+ */
+export const COACH_CUSTOM_PERSONA_SETTING_TYPE = 'coach_custom_persona';
+
+/**
  * Setting type for how two home heatmaps share the row.
  * value: 'full' | 'side_by_side' | 'compact'. Default: 'full'. `side_by_side` only means
  * something while both heatmaps are shown (`effectiveHeatmapLayout`): a lone heatmap is always full
