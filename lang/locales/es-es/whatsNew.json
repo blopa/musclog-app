@@ -31,7 +31,7 @@
       "version": "Versión (x.y.z)"
     },
     "releases": {
-      "v2_13_1": {
+      "v2_15_2": {
         "view": {
           "title": "Tu entrenamiento, tu vista",
           "description": "La vista guiada te ayuda a centrarte en una serie a la vez. Si prefieres verlo todo, la vista en lista sigue disponible."
@@ -125,9 +125,7 @@
             "label": "Series de calentamiento",
             "description": "Separa los calentamientos de tus series de trabajo."
           }
-        }
-      },
-      "v2_14_2": {
+        },
         "widgets": {
           "title": "Widgets en ambas plataformas",
           "description": "Progreso nutricional y Cámara inteligente ahora están disponibles en iOS y siguen el tema y el idioma de la app. En iOS, mantén pulsada la pantalla de inicio, elige Añadir widget y luego Musclog."
@@ -155,9 +153,7 @@
         "cycleLock": {
           "title": "Bloquea solo tu ciclo",
           "description": "En Ajustes → Bloqueo de la app ahora puedes proteger tu ciclo, entrenamientos, nutrición, progreso o toda la app con la credencial de tu dispositivo."
-        }
-      },
-      "v2_15_2": {
+        },
         "heatmaps": {
           "title": "Tu actividad de un vistazo",
           "description": "Mira en Inicio los días que entrenaste y los días que registraste comidas como un calendario de cuadrados. Cuanto más oscuro, más intenso el día. Toca un cuadrado, o pasa el cursor en la web, para ver ese día."

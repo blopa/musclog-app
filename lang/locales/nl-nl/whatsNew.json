@@ -31,7 +31,7 @@
       "version": "Versie (x.y.z)"
     },
     "releases": {
-      "v2_13_1": {
+      "v2_15_2": {
         "view": {
           "title": "Jouw training, jouw weergave",
           "description": "De begeleide weergave helpt je om op één set tegelijk te focussen. Liever het overzicht? De lijstweergave blijft beschikbaar."
@@ -125,9 +125,7 @@
             "label": "Opwarmsets",
             "description": "Houd opwarmsets gescheiden van je werksets."
           }
-        }
-      },
-      "v2_14_2": {
+        },
         "widgets": {
           "title": "Widgets op beide platforms",
           "description": "Voedingsvoortgang en Slimme camera werken nu ook op iOS en volgen het thema en de taal van de app. Houd op iOS het beginscherm ingedrukt, kies Voeg widget toe en vervolgens Musclog."
@@ -155,9 +153,7 @@
         "cycleLock": {
           "title": "Vergrendel alleen je cyclus",
           "description": "In Instellingen → App-vergrendeling kun je nu je cyclus, trainingen, voeding, voortgang of de hele app beschermen met de beveiliging van je apparaat."
-        }
-      },
-      "v2_15_2": {
+        },
         "heatmaps": {
           "title": "Je activiteit in één oogopslag",
           "description": "Zie op Start de dagen waarop je trainde en de dagen waarop je maaltijden logde als een kalender van vierkantjes. Donkerdere vierkantjes zijn drukkere dagen. Tik op een vierkantje, of beweeg eroverheen op web, om die dag te lezen."

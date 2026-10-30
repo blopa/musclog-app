@@ -21,13 +21,13 @@ jest.mock('@/database/dbReady', () => ({ waitForDbReady: jest.fn(async () => und
 jest.mock('@/utils/onboardingService', () => ({
   isOnboardingCompleted: jest.fn(async () => true),
 }));
-jest.mock('@/utils/appVersion', () => ({ getAppVersion: jest.fn(() => '2.13.1') }));
+jest.mock('@/utils/appVersion', () => ({ getAppVersion: jest.fn(() => '2.15.2') }));
 beforeEach(async () => {
   jest.clearAllMocks();
   await AsyncStorage.clear();
   mockFocused = true;
   mockStaticExport = false;
-  jest.mocked(getAppVersion).mockReturnValue('2.13.1');
+  jest.mocked(getAppVersion).mockReturnValue('2.15.2');
   jest.mocked(isOnboardingCompleted).mockResolvedValue(true);
   resetWhatsNewAutoFlowSession();
 });
@@ -55,7 +55,7 @@ test('dismisses once per session, saves before resolving, and debug reset re-arm
   const { result, rerender } = renderHook(() => useWhatsNewAutoFlow());
   await waitFor(() => expect(result.current.visible).toBe(true));
   await act(async () => result.current.dismiss());
-  expect(await getWhatsNewSeenThrough()).toBe('2.13.1');
+  expect(await getWhatsNewSeenThrough()).toBe('2.15.2');
   expect(result.current.visible).toBe(false);
   mockFocused = false;
   rerender();

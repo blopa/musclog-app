@@ -31,7 +31,7 @@
       "version": "Version (x.y.z)"
     },
     "releases": {
-      "v2_13_1": {
+      "v2_15_2": {
         "view": {
           "title": "Your workout, your view",
           "description": "Guided view now helps you focus on one set at a time. Prefer the full picture? Inline view is still here."
@@ -125,9 +125,7 @@
             "label": "Warm-up sets",
             "description": "Keep warm-ups separate from your working sets."
           }
-        }
-      },
-      "v2_14_2": {
+        },
         "widgets": {
           "title": "Widgets on both platforms",
           "description": "Nutrition Progress and Smart Camera now support iOS and follow your app theme and language. On iOS, touch and hold the Home Screen, choose Add Widget, then Musclog."
@@ -155,9 +153,7 @@
         "cycleLock": {
           "title": "Lock just your cycle",
           "description": "In Settings → App lock you can now protect your cycle, workouts, nutrition, progress, or the whole app behind your device credential."
-        }
-      },
-      "v2_15_2": {
+        },
         "heatmaps": {
           "title": "Your activity at a glance",
           "description": "See the days you trained and the days you logged meals as a calendar of squares on Home. Darker squares are busier days. Tap a square, or hover on web, to read out that day."
