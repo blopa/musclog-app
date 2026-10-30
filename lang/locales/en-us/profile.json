@@ -28,7 +28,9 @@
       "editFitness": "Edit fitness details",
       "editFitnessDesc": "Update your fitness goals and preferences",
       "appPreferences": "App preferences",
-      "appPreferencesDesc": "Customize app settings and preferences"
+      "appPreferencesDesc": "Customize app settings and preferences",
+      "aiUpdate": "Update with AI",
+      "aiUpdateDesc": "Tell an AI what changed and review before saving"
     },
     "stats": {
       "weight": "Weight",

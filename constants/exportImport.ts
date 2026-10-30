@@ -1,6 +1,11 @@
 import { CYCLE_BACKUP_STATUS_KEY } from '@/constants/cycle';
 import { ENCRYPTION_KEY } from '@/constants/database';
-import { SETTINGS_MIRROR_STORAGE_KEY, TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import {
+  AI_ONBOARDING_DRAFT,
+  PERSONALIZED_BODY_DRAFT,
+  SETTINGS_MIRROR_STORAGE_KEY,
+  TEMP_NUTRITION_PLAN,
+} from '@/constants/misc';
 import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
@@ -13,6 +18,10 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   CYCLE_BACKUP_STATUS_KEY,
   // Rebuilt from the restored settings table; a carried-over copy could claim no lock is on.
   SETTINGS_MIRROR_STORAGE_KEY,
+  // Encrypted with this device's key, so another install could not read them anyway, and an
+  // unfinished onboarding conversation is not part of anyone's data.
+  AI_ONBOARDING_DRAFT,
+  PERSONALIZED_BODY_DRAFT,
 ]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';

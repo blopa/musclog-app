@@ -26,6 +26,39 @@
           "descriptionKey": "whatsNew.releases.v2_15_2.setup.description"
         }
       ]
+    },
+    {
+      "id": "aiSetup",
+      "blocks": [
+        {
+          "id": "aiSetup",
+          "type": "info",
+          "icon": "bot",
+          "titleKey": "whatsNew.releases.v2_15_2.aiSetup.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.aiSetup.description"
+        },
+        {
+          "id": "aiOptions",
+          "type": "info",
+          "icon": "shuffle",
+          "titleKey": "whatsNew.releases.v2_15_2.aiOptions.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.aiOptions.description"
+        },
+        {
+          "id": "aiReview",
+          "type": "info",
+          "icon": "shield",
+          "titleKey": "whatsNew.releases.v2_15_2.aiReview.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.aiReview.description"
+        },
+        {
+          "id": "openAiSetup",
+          "type": "action",
+          "action": "openProfileAiSetup",
+          "labelKey": "whatsNew.releases.v2_15_2.openAiSetup",
+          "icon": "bot"
+        }
+      ]
     }
   ]
 }

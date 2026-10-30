@@ -1,7 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { ENCRYPTION_KEY } from '@/constants/database';
-import { SETTINGS_MIRROR_STORAGE_KEY, TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import {
+  AI_ONBOARDING_DRAFT,
+  PERSONALIZED_BODY_DRAFT,
+  SETTINGS_MIRROR_STORAGE_KEY,
+  TEMP_NUTRITION_PLAN,
+} from '@/constants/misc';
 import {
   WEB_BACKUP_DATA_PREFIX,
   WEB_BACKUP_DB_VERSION_KEY,
@@ -35,6 +40,16 @@ describe('captureAsyncStorageDump', () => {
       [TEMP_NUTRITION_PLAN, '{}'],
       // Restoring another install's copy could say no lock is on before the table is read.
       [SETTINGS_MIRROR_STORAGE_KEY, '{"appLockScopesRaw":""}'],
+      ['onboardingCompleted', 'true'],
+    ]);
+
+    expect(await captureAsyncStorageDump()).toEqual({ onboardingCompleted: 'true' });
+  });
+
+  it('excludes the unfinished AI onboarding conversation and the encrypted body draft', async () => {
+    await AsyncStorage.multiSet([
+      [AI_ONBOARDING_DRAFT, 'cipher'],
+      [PERSONALIZED_BODY_DRAFT, 'cipher'],
       ['onboardingCompleted', 'true'],
     ]);
 

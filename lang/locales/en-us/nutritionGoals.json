@@ -143,6 +143,7 @@
     "dynamic": "Dynamic",
     "dynamicInfo": "Daily targets are auto-calculated each day from your current stats and goal timeline. Your current calorie target is {{kcal}} kcal.",
     "dynamicBadge": "Dynamic",
-    "dynamicRequiredFields": "Target weight and target date are required for dynamic goals."
+    "dynamicRequiredFields": "Target weight and target date are required for dynamic goals.",
+    "keepCurrentTargets": "Keep my current targets"
   }
 }

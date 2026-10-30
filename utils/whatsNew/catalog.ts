@@ -1,4 +1,5 @@
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
+import { aiSetupRoute } from '@/utils/onboardingRoutes';
 
 export const WHATS_NEW_ICONS = [
   'layout',
@@ -13,6 +14,7 @@ export const WHATS_NEW_ICONS = [
   'shield',
   'flame',
   'settings',
+  'bot',
 ] as const;
 export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
 
@@ -74,6 +76,7 @@ export const WHATS_NEW_ACTIONS = [
   'openCardioLog',
   'openWeeklyReview',
   'openWorkouts',
+  'openProfileAiSetup',
 ] as const;
 export type WhatsNewAction = (typeof WHATS_NEW_ACTIONS)[number];
 export const WHATS_NEW_ACTION_CATALOG = {
@@ -81,6 +84,7 @@ export const WHATS_NEW_ACTION_CATALOG = {
   openCardioLog: { kind: 'modal' },
   openWeeklyReview: { kind: 'route', route: WEEKLY_REVIEW_ROUTE },
   openWorkouts: { kind: 'route', route: '/app/workout/workouts' },
+  openProfileAiSetup: { kind: 'route', route: aiSetupRoute('setup', 'profile') },
 } as const satisfies Record<WhatsNewAction, { kind: 'modal' } | { kind: 'route'; route: string }>;
 export type WhatsNewRoute = Extract<
   (typeof WHATS_NEW_ACTION_CATALOG)[WhatsNewAction],

@@ -143,6 +143,7 @@
     "dynamic": "Dynamisch",
     "dynamicInfo": "Dagelijkse doelen worden elke dag automatisch berekend op basis van je huidige gegevens en je doelplanning. Je huidige caloriedoel is {{kcal}} kcal.",
     "dynamicBadge": "Dynamisch",
-    "dynamicRequiredFields": "Doelgewicht en doeldatum zijn verplicht voor dynamische doelen."
+    "dynamicRequiredFields": "Doelgewicht en doeldatum zijn verplicht voor dynamische doelen.",
+    "keepCurrentTargets": "Mijn huidige doelen behouden"
   }
 }

@@ -1,0 +1,219 @@
+{
+  "aiOnboarding": {
+    "chat": {
+      "greeting": "Hi! I'll ask a few short questions to set up Musclog for you. You can skip anything optional, and you'll review every answer before anything is saved. Say hi, or just tell me a bit about yourself.",
+      "notSent": "Not sent",
+      "placeholder": "Type your answer",
+      "review": "Review my answers",
+      "send": "Send",
+      "stop": "Stop",
+      "thinking": "Thinking…",
+      "title": "Setup chat"
+    },
+    "common": {
+      "backToGuided": "Use the setup forms instead",
+      "editManually": "Edit my details by hand"
+    },
+    "external": {
+      "backSection": "Step 2: come back with your setup",
+      "copied": "Instructions copied",
+      "copiedPaste": "Instructions copied. Paste them into the chat if the box is empty.",
+      "copy": "Copy",
+      "errors": {
+        "empty": "There is nothing to import.",
+        "fileRead": "That file could not be read. Try another one, or paste the text instead.",
+        "newerVersion": "This setup was made for a newer version of Musclog. Update the app, then import it again.",
+        "notJson": "That doesn't look like a setup file. Pick the musclog-onboarding.json file the assistant gave you, or paste its JSON.",
+        "tooLarge": "That file is too large to be a setup file.",
+        "wrongSchema": "That isn't a Musclog setup file. Check that you picked the file the assistant made."
+      },
+      "fallback": "Couldn't open the app or site. The instructions are copied: open ChatGPT or Claude yourself and paste them.",
+      "importFile": "Import a setup file",
+      "intro": "ChatGPT or Claude can ask the questions for you, then give you a file to bring back. You leave Musclog for a moment; nothing is applied until you review it here.",
+      "leaveSection": "Step 1: ask the assistant",
+      "noFile": "No file? Paste the JSON instead, or go back to the setup forms.",
+      "openChatgpt": "Open ChatGPT",
+      "openClaude": "Open Claude",
+      "paste": {
+        "fromClipboard": "Paste from clipboard",
+        "import": "Import",
+        "placeholder": "Paste the JSON here",
+        "subtitle": "Paste the JSON the assistant gave you.",
+        "title": "Paste setup JSON"
+      },
+      "pasteJson": "Paste JSON",
+      "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
+      "share": "Share",
+      "steps": {
+        "one": "Open ChatGPT or Claude. The instructions are copied for you: paste them into the chat.",
+        "three": "Come back to Musclog and import that file, or paste its text.",
+        "two": "Answer its questions. It will end with a file called musclog-onboarding.json."
+      },
+      "title": "Use ChatGPT or Claude"
+    },
+    "fields": {
+      "activityLevel": "Activity level",
+      "birthDate": "Birthday",
+      "bodyFat": "Body fat",
+      "breakLength": "Break length",
+      "fitnessGoal": "Fitness focus",
+      "fullName": "Name",
+      "gender": "Gender",
+      "height": "Height",
+      "liftingExperience": "Training experience",
+      "trainingAutonomy": "Load suggestions",
+      "trainingDays": "Days per week",
+      "trainingLocation": "Where you train",
+      "units": "Units",
+      "weight": "Weight",
+      "weightGoal": "Weight goal"
+    },
+    "hub": {
+      "chatSubtitle": "Answer a few questions in a chat inside Musclog.",
+      "chatTitle": "Chat with AI here",
+      "externalSubtitle": "Chat there, then bring your setup back as a file.",
+      "externalTitle": "Use ChatGPT or Claude",
+      "haveFile": "I already have a setup file",
+      "intro": "Answer a few questions in a conversation instead of filling in forms. You'll check everything before anything is saved.",
+      "privacy": "Your answers go to the AI you choose. Your API key stays on this device.",
+      "profileIntro": "Tell an AI what has changed. You'll see each change next to what you have now before anything is saved.",
+      "profileTitle": "Update with AI",
+      "resumeBody": "You have an unfinished setup conversation.",
+      "resumeContinue": "Continue",
+      "resumeStartOver": "Start over",
+      "resumeTitle": "Pick up where you left off",
+      "title": "Set up with AI"
+    },
+    "provider": {
+      "checkKey": "Check key and continue",
+      "gatewayHint": "No account or key. A daily limit applies.",
+      "intro": "Pick the AI that will ask you the questions. Your own key keeps working in Musclog afterwards.",
+      "keyLabel": "API key",
+      "keyNetwork": "Couldn't reach {{provider}} to check the key. Check your connection and try again.",
+      "keyPlaceholder": "Paste your key",
+      "keyRejected": "{{provider}} didn't accept that key. Check that you copied all of it.",
+      "keySaved": "A key is saved. Tap to use it or replace it.",
+      "keyStorage": "The key is stored encrypted on this device and used for Musclog's AI features. Musclog uses {{model}} by default; you can change it, or remove the key, in Settings, AI.",
+      "keyTitle": "Your {{provider}} key",
+      "names": {
+        "gateway": "Free Musclog AI",
+        "gemini": "Google Gemini",
+        "local": "Local model",
+        "onDevice": "Apple Intelligence",
+        "openai": "OpenAI"
+      },
+      "openGemini": "Open Google AI Studio",
+      "openOpenAi": "Open the OpenAI keys page",
+      "ownKey": "Use your own key",
+      "problem": "Something went wrong. Try again, or pick another option.",
+      "simpleHint": "Runs on your device. Simpler models may struggle with this chat.",
+      "steps": {
+        "gemini": {
+          "one": "Open Google AI Studio and sign in.",
+          "three": "Copy it and paste it below.",
+          "two": "Create an API key."
+        },
+        "openai": {
+          "one": "Open the OpenAI keys page and sign in.",
+          "three": "Copy it and paste it below.",
+          "two": "Create a new secret key. Your account needs billing set up."
+        }
+      },
+      "title": "Choose your AI",
+      "useExternal": "Use ChatGPT or Claude instead",
+      "useSaved": "Use the saved key"
+    },
+    "recovery": {
+      "actions": {
+        "continueGuided": "Use the setup forms instead",
+        "ownKey": "Use my own key",
+        "replaceKey": "Replace the key",
+        "retry": "Try again",
+        "switchProvider": "Choose another AI",
+        "useExternal": "Use ChatGPT or Claude"
+      },
+      "cancelled": {
+        "description": "Your message is back in the box.",
+        "title": "Stopped"
+      },
+      "credits": {
+        "description": "The provider says the account has run out of credit or quota. Add credit, or choose another way to answer.",
+        "title": "This AI has no credit left"
+      },
+      "gatewayLimit": {
+        "description": "Free Musclog AI has a daily limit. Try again tomorrow, use your own key, or choose another way.",
+        "title": "The free daily limit is reached"
+      },
+      "invalidKey": {
+        "description": "The provider no longer accepts this key. Replace it, or choose another way to answer.",
+        "title": "The key was rejected"
+      },
+      "malformed": {
+        "description": "This model isn't giving answers Musclog can use. Choose another AI or another way.",
+        "title": "That AI's answer couldn't be read"
+      },
+      "offline": {
+        "description": "Your message wasn't sent. Check your connection and try again.",
+        "title": "No connection"
+      },
+      "timeout": {
+        "description": "The AI didn't answer in time. Try again, or choose another one.",
+        "title": "That took too long"
+      },
+      "unavailable": {
+        "description": "It was turned off or its key was removed. Choose another AI or another way.",
+        "title": "This AI isn't available"
+      },
+      "unknown": {
+        "description": "The AI couldn't answer. Try again, or choose another way.",
+        "title": "Something went wrong"
+      }
+    },
+    "review": {
+      "apply": "Apply",
+      "applyFailedBody": "Nothing was lost. Your answers are still here: try again.",
+      "applyFailedTitle": "Couldn't save your setup",
+      "applyOnboarding": "Looks right, continue",
+      "applyProfile": "Apply changes",
+      "back": "Back",
+      "currentValue": "Now: {{value}}",
+      "errors": {
+        "invalid": "That value isn't valid.",
+        "outOfRange": "That value is outside the allowed range."
+      },
+      "estimatedFromAge": "estimated from age",
+      "ignored": "Ignored because Musclog doesn't use them: {{keys}}",
+      "intro": "Check your answers. Tap one to change it. Nothing is saved until you continue.",
+      "missing": "Still needed: {{fields}}",
+      "needed": "Needed",
+      "notSet": "Not set",
+      "notes": {
+        "comebackNotStarted": "Coming back after a break wasn't started. You can start it from Comeback.",
+        "daysNotApplied": "Days per week isn't saved from here.",
+        "gymKept": "You already have a gym, so it was left as it is.",
+        "recalculationSkipped": "Your targets weren't recalculated because your profile is missing something."
+      },
+      "openComeback": "Open Comeback",
+      "profileIntro": "Each answer is shown next to what you have now. Choose which changes to apply.",
+      "recalculate": "Also recalculate my nutrition targets",
+      "recalculateHint": "You'll see the new targets before they're saved. Your earlier targets stay in your history.",
+      "remove": "Remove",
+      "save": "Save",
+      "sections": {
+        "aboutYou": "About you",
+        "body": "Body",
+        "experience": "Experience",
+        "goals": "Goals",
+        "training": "Training"
+      },
+      "skip": "Skip",
+      "title": "Review your setup",
+      "warnings": {
+        "comebackStartsAtMaintenance": "Because you're coming back after a break, your first nutrition plan starts at maintenance.",
+        "dobAgeMismatch": "The birth date and the age don't match. The birth date was used.",
+        "unusualBodyMeasurements": "Your height and weight look unusual together. Check them.",
+        "weightGoalConflictsFocus": "Your fitness focus is weight loss, but your weight goal isn't to lose weight."
+      }
+    }
+  }
+}

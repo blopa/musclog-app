@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import {
   Award,
@@ -11,7 +10,7 @@ import {
   Wind,
   Zap,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,9 +19,9 @@ import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { PERSONALIZED_SETUP_DATA } from '@/constants/misc';
 import { type LiftingExperience } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
+import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 type ExperienceOption = {
@@ -102,15 +101,32 @@ export default function PersonalizedExperienceScreen() {
   const [activityLevel, setActivityLevel] = useState(2);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Answers given earlier (including through the AI setup) come back prefilled instead of reset.
+  useEffect(() => {
+    let cancelled = false;
+    readPersonalizedSetup().then((saved) => {
+      if (cancelled) {
+        return;
+      }
+
+      if (saved.liftingExperience) {
+        setExperience(saved.liftingExperience);
+      }
+
+      if (saved.activityLevel) {
+        setActivityLevel(saved.activityLevel);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleContinue = async () => {
     setIsSaving(true);
     try {
-      const existing = await AsyncStorage.getItem(PERSONALIZED_SETUP_DATA);
-      const current = existing ? JSON.parse(existing) : {};
-      await AsyncStorage.setItem(
-        PERSONALIZED_SETUP_DATA,
-        JSON.stringify({ ...current, liftingExperience: experience, activityLevel })
-      );
+      await mergePersonalizedSetup({ liftingExperience: experience, activityLevel });
 
       await setCurrentOnboardingStep('/app/onboarding/personalized-experience');
       router.navigate('/app/onboarding/personalized-goals');

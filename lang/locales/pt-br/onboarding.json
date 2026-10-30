@@ -190,7 +190,9 @@
       "personalizedSetupSubtitle": "Obtenha TDEE preciso, macros e recomendações personalizadas",
       "quickSetup": "Configuração Rápida",
       "quickSetupSteps": "7 etapas",
-      "quickSetupSubtitle": "Configuração básica, você pode personalizar depois"
+      "quickSetupSubtitle": "Configuração básica, você pode personalizar depois",
+      "aiSetup": "Configurar com IA",
+      "aiSetupSubtitle": "Converse com uma IA ou deixe o ChatGPT ou o Claude entrevistar você"
     },
     "quickPreferences": {
       "title": "Vamos começar",
@@ -217,7 +219,8 @@
       "lose": "Perder",
       "maintain": "Manter",
       "gain": "Ganhar",
-      "continue": "Continuar"
+      "continue": "Continuar",
+      "weightLoss": "Perda de peso"
     },
     "quickBodyStats": {
       "title": "Suas estatísticas corporais",
@@ -228,7 +231,8 @@
       "birthdayHelper": "Usada para calcular sua idade e estimar calorias com precisão",
       "bodyFat": "Percentual de gordura corporal",
       "bodyFatHelper": "Se você souber, ajuda nos cálculos de calorias",
-      "continue": "Continuar"
+      "continue": "Continuar",
+      "birthdayEstimated": "Estimada a partir da sua idade. Escolha sua data de nascimento se souber."
     },
     "musclogApi": {
       "title": "Musclog AI",

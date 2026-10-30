@@ -41,6 +41,7 @@ import {
   inchesToCm,
   NutritionPlan,
 } from '@/utils/nutritionCalculator';
+import { PROFILE_ROUTE, resolveResultsCompletion } from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 import { parseTrainingSetup } from '@/utils/onboardingTraining';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -62,10 +63,13 @@ export default function NutritionGoalsResults() {
     plan?: string;
     quickSetup?: string;
     personalizedSetup?: string;
+    /** `profile` when reached from "Update my profile with AI": save the goal, then go back. */
+    context?: string;
   }>();
   const aiGenerated = params.aiGenerated === 'true';
   const isQuickSetup = params.quickSetup === 'true';
   const isPersonalizedSetup = params.personalizedSetup === 'true';
+  const isProfileContext = params.context === 'profile';
   const [isSaving, setIsSaving] = useState(false);
   const [storedPlan, setStoredPlan] = useState<NutritionPlan | null>(null);
 
@@ -389,21 +393,28 @@ export default function NutritionGoalsResults() {
 
       // Anyone who answered the training questions ends on a concrete first workout. The rest keep
       // the old ending, with the Health prompt that used to sit at the start of the setup.
-      const training = parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
-      if (training) {
+      // Updating a finished profile applies none of that (see resolveResultsCompletion).
+      const training = isProfileContext
+        ? null
+        : parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
+      const completion = resolveResultsCompletion({
+        context: isProfileContext ? 'profile' : 'onboarding',
+        hasTraining: training !== null,
+        isWeb: Platform.OS === 'web',
+        mode: isPersonalizedSetup ? 'personalized' : 'quick',
+      });
+      if (completion.applyTraining && training) {
         await applyTrainingSetup(training);
       }
 
-      await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
-      if (training) {
-        router.replace(
-          `/app/onboarding/first-workout?mode=${isPersonalizedSetup ? 'personalized' : 'quick'}`
-        );
-      } else if (Platform.OS === 'web') {
-        router.replace('/app');
+      if (completion.completeOnboarding) {
+        await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
       } else {
-        router.replace('/app/onboarding/health-connect?nextRoute=/app');
+        // Onboarding completion clears the temporary plan; a profile update has to do it itself.
+        await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
       }
+
+      router.replace(completion.route as never);
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       showSnackbar('error', t('nutritionGoals.errorSaving'));
@@ -1157,7 +1168,7 @@ export default function NutritionGoalsResults() {
           style={{ marginBottom: theme.spacing.margin.sm }}
         />
 
-        {aiGenerated ? (
+        {aiGenerated && !isProfileContext ? (
           <>
             <View style={{ height: theme.spacing.margin.md }} />
             <Button
@@ -1174,6 +1185,23 @@ export default function NutritionGoalsResults() {
                     personalizedSetup: isPersonalizedSetup ? 'true' : 'false',
                   },
                 });
+              }}
+            />
+            <View style={{ height: theme.spacing.margin.md }} />
+          </>
+        ) : null}
+
+        {isProfileContext ? (
+          <>
+            <Button
+              label={t('nutritionGoals.keepCurrentTargets')}
+              variant="outline"
+              width="full"
+              size="sm"
+              disabled={isSaving}
+              onPress={async () => {
+                await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
+                router.replace(PROFILE_ROUTE as never);
               }}
             />
             <View style={{ height: theme.spacing.margin.md }} />

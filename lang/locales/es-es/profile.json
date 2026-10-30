@@ -28,7 +28,9 @@
       "editFitness": "Editar Detalles de Fitness",
       "editFitnessDesc": "Actualiza tus objetivos de fitness y preferencias",
       "appPreferences": "Preferencias de la App",
-      "appPreferencesDesc": "Personaliza los ajustes y preferencias de la app"
+      "appPreferencesDesc": "Personaliza los ajustes y preferencias de la app",
+      "aiUpdate": "Actualizar con IA",
+      "aiUpdateDesc": "Cuéntale a una IA qué cambió y revisa antes de guardar"
     },
     "stats": {
       "weight": "Peso",

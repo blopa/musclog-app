@@ -685,8 +685,8 @@ const MACRO_SPLITS: Record<FitnessGoal, { carbsPct: number; proteinPct: number; 
 export const BODY_FAT_UNCERTAINTY = 4;
 
 /** Valid body fat range for Katch-McArdle (percentage points). */
-const BODY_FAT_MIN = 5;
-const BODY_FAT_MAX = 60;
+export const BODY_FAT_MIN = 5;
+export const BODY_FAT_MAX = 60;
 
 /**
  * Whole-body glycogen per kg of body weight (liver + skeletal muscle, dry weight).

@@ -2242,3 +2242,185 @@ export async function getMealCritique(
     return null;
   }
 }
+
+// --- Multi-turn structured chat (AI-assisted onboarding) ---
+
+export type StructuredTurnDialect = 'openai' | 'gemini' | 'on-device';
+
+export type StructuredTurnRequest = {
+  /** Names the call in debug dumps and retry logs. */
+  operation: string;
+  systemPrompt: string;
+  /** The conversation so far, without the message being sent. */
+  history: ChatHistoryEntry[];
+  userMessage: string;
+  /** Each provider takes the schema in a slightly different dialect. */
+  buildSchema: (dialect: StructuredTurnDialect) => object;
+  schemaName: string;
+};
+
+export type StructuredTurnResult =
+  { kind: 'ok'; value: unknown } | { kind: 'malformed'; raw: string };
+
+/** A person's chat message is capped, not rewritten: nothing here executes what the model returns. */
+const STRUCTURED_TURN_MAX_USER_CHARS = 2000;
+const MALFORMED_RAW_PREVIEW_CHARS = 500;
+
+function parseStructuredJson(raw: string): StructuredTurnResult {
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim();
+    return clean
+      ? { kind: 'ok', value: JSON.parse(clean) }
+      : { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
+  } catch {
+    return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
+  }
+}
+
+/**
+ * One turn of a multi-turn conversation whose reply must match a JSON schema. Unlike
+ * `generateStructured` it keeps history, and it throws typed errors (bad key, timeout, cancel,
+ * exhausted credits, dropped connection) instead of returning null, so the caller can offer the
+ * right next step. A reply that is not valid JSON comes back as `malformed` rather than an error.
+ *
+ * The message is trusted no more than any other user text: it is length-capped, and the caller
+ * validates what comes back before using any of it.
+ */
+export async function sendStructuredChatTurn(
+  config: CoachAIConfig,
+  request: StructuredTurnRequest
+): Promise<StructuredTurnResult> {
+  const lang = config.language ?? DEFAULT_LANG;
+  const userMessage = request.userMessage.trim().slice(0, STRUCTURED_TURN_MAX_USER_CHARS);
+  const systemPrompt = `${request.systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output must be in this language.`;
+
+  const budget =
+    PROVIDER_CONFIGS[config.provider].maxCharBudget - systemPrompt.length - userMessage.length;
+  const fitted = budget > 0 ? truncateHistoryByBudget(request.history, budget) : [];
+  const history = normalizeHistory(fitted);
+  // Providers want the conversation to open with the person, not the assistant.
+  while (history.length > 0 && history[0].role === 'coach') {
+    history.shift();
+  }
+
+  try {
+    if (config.provider === 'on-device') {
+      const messages = [
+        ...history.map((entry) => ({
+          role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+          content: entry.content,
+        })),
+        { role: 'user' as const, content: userMessage },
+      ];
+      const schema = request.buildSchema('on-device');
+      await logLlmDebugEvent({
+        provider: 'on-device',
+        direction: 'request',
+        operation: request.operation,
+        payload: { systemPrompt, messages, schema },
+        config,
+      });
+
+      const value = await sendOnDeviceStructured<unknown>(messages, systemPrompt, schema);
+      await logLlmDebugEvent({
+        provider: 'on-device',
+        direction: 'response',
+        operation: request.operation,
+        payload: value,
+        config,
+      });
+
+      return value === null || value === undefined
+        ? { kind: 'malformed', raw: '' }
+        : { kind: 'ok', value };
+    }
+
+    if (config.provider === 'gemini') {
+      const schema = request.buildSchema('gemini');
+      const genModel = await configureBasicGenAI(
+        {
+          apiKey: config.apiKey,
+          model: config.model,
+          generationConfig: buildGeminiGenerationConfig(config.model, {
+            responseSchema: schema,
+            thinking: (await SettingsService.getUseThinkingMode()) ? 'default' : 'low',
+          }),
+        },
+        [{ text: systemPrompt } as Part]
+      );
+      const contents = buildGeminiContents(history, userMessage);
+      await logLlmDebugEvent({
+        provider: config.provider,
+        direction: 'request',
+        operation: request.operation,
+        payload: { model: config.model, contents, systemPrompt, schema },
+        config,
+      });
+
+      const result = await withLlmRetry(request.operation, config, (signal) =>
+        genModel.generateContent({ contents, abortSignal: signal })
+      );
+      await logLlmDebugEvent({
+        provider: config.provider,
+        direction: 'response',
+        operation: request.operation,
+        payload: result,
+        config,
+      });
+
+      return parseStructuredJson(extractRawText(result));
+    }
+
+    const client = buildOpenAIClient(config);
+    const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+      model: config.model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...history.map((entry) => ({
+          role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+          content: entry.content,
+        })),
+        { role: 'user', content: userMessage },
+      ],
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: request.schemaName,
+          strict: true,
+          schema: makeSchemaStrict(request.buildSchema('openai')),
+        },
+      },
+    };
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation: request.operation,
+      payload,
+      config,
+    });
+
+    const completion = await withLlmRetry(request.operation, config, (signal) =>
+      client.chat.completions.create(payload, { signal })
+    );
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'response',
+      operation: request.operation,
+      payload: completion,
+      config,
+    });
+
+    return parseStructuredJson(completion.choices[0]?.message?.content ?? '');
+  } catch (error) {
+    rethrowUserFacingAiError(error);
+    reportAiError(error, `coachAI.sendStructuredChatTurn[${request.operation}]`);
+
+    if (isAiCreditsError(error)) {
+      throw config.provider === 'gateway'
+        ? new GatewayRateLimitError(i18n.t('errors.gatewayDailyLimitError'))
+        : new AiCreditsError(i18n.t('errors.aiCreditsError'));
+    }
+
+    throw error;
+  }
+}

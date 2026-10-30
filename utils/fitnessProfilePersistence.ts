@@ -1,5 +1,8 @@
 import { subYears } from 'date-fns';
 
+import type { Units } from '@/constants/settings';
+import type User from '@/database/models/User';
+import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models/User';
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
@@ -153,112 +156,125 @@ export async function loadFitnessDetailsInitialData(
 }
 
 /**
+ * A profile write in storage terms: metric values, a birthday as local-midnight milliseconds, and
+ * every field optional so a partial update (the profile "update with AI" flow) touches only what
+ * it names. {@link persistFitnessDetails} is the form-shaped entry that delegates here.
+ */
+export type FitnessProfileWrite = {
+  fullName?: string;
+  dateOfBirthMs?: number;
+  gender?: Gender;
+  fitnessGoal?: FitnessGoal;
+  weightGoal?: WeightGoal;
+  activityLevel?: 1 | 2 | 3 | 4 | 5;
+  liftingExperience?: LiftingExperience;
+  weightKg?: number;
+  heightCm?: number;
+  bodyFatPercent?: number | null;
+  units?: Units;
+};
+
+/** One reading per metric per local day: the first write creates it, later ones update it. */
+async function upsertTodayMetric(
+  type: 'weight' | 'height' | 'body_fat',
+  value: number,
+  unit: 'kg' | 'cm' | '%'
+): Promise<void> {
+  const dayStart = localDayStartMs(new Date());
+  const dayEnd = localDayClosedRangeMaxMs(new Date());
+  const now = Date.now();
+  const existing = await UserMetricService.getMetricsHistory(
+    type,
+    { startDate: dayStart, endDate: dayEnd },
+    1
+  );
+  if (existing.length > 0) {
+    await UserMetricService.updateMetric(existing[0].id, { value, unit, date: now });
+  } else {
+    await UserMetricService.createMetric({
+      type,
+      value,
+      unit,
+      date: now,
+      timezone: getCurrentTimezone(),
+    });
+  }
+}
+
+/**
+ * The single writer for the profile's fitness fields: user row, today's body metrics, and the unit
+ * system. Idempotent for a given day, so going back and forth in onboarding never stacks readings.
+ * A missing user is created only when the fields a user needs are all present; an existing user
+ * receives just the fields given.
+ */
+export async function persistFitnessProfile(data: FitnessProfileWrite): Promise<User> {
+  const fullName = data.fullName?.trim() || undefined;
+  let user = await UserService.getCurrentUser();
+  if (!user) {
+    if (!data.gender || !data.fitnessGoal || !data.activityLevel || !data.liftingExperience) {
+      throw new Error(
+        'Cannot create a profile without gender, goal, activity level and experience'
+      );
+    }
+
+    user = await UserService.initializeUser({
+      fullName: fullName ?? getDefaultUsernameForGender(data.gender),
+      dateOfBirth: data.dateOfBirthMs ?? defaultAdultDobLocalDayStartMs(),
+      gender: data.gender,
+      fitnessGoal: data.fitnessGoal,
+      weightGoal: data.weightGoal,
+      activityLevel: data.activityLevel,
+      liftingExperience: data.liftingExperience,
+    });
+  } else {
+    await user.updateProfile({
+      ...(fullName ? { fullName } : {}),
+      ...(data.dateOfBirthMs !== undefined ? { dateOfBirth: data.dateOfBirthMs } : {}),
+      ...(data.gender ? { gender: data.gender } : {}),
+      ...(data.fitnessGoal ? { fitnessGoal: data.fitnessGoal } : {}),
+      ...(data.weightGoal ? { weightGoal: data.weightGoal } : {}),
+      ...(data.activityLevel ? { activityLevel: data.activityLevel } : {}),
+      ...(data.liftingExperience ? { liftingExperience: data.liftingExperience } : {}),
+    });
+  }
+
+  if (data.weightKg !== undefined && data.weightKg > 0) {
+    await upsertTodayMetric('weight', data.weightKg, 'kg');
+  }
+
+  if (data.heightCm !== undefined && data.heightCm > 0) {
+    await upsertTodayMetric('height', data.heightCm, 'cm');
+  }
+
+  if (data.bodyFatPercent != null && data.bodyFatPercent > 0) {
+    await upsertTodayMetric('body_fat', data.bodyFatPercent, '%');
+  }
+
+  if (data.units) {
+    await SettingsService.setUnits(data.units);
+  }
+
+  return user;
+}
+
+/**
  * Persist fitness details (user profile fields + today's body metrics + units).
  * Mirrors onboarding `saveFitnessData` behavior.
  */
 export async function persistFitnessDetails(data: FitnessDetails): Promise<void> {
-  const dateOfBirthMs = data.dob?.trim() ? parseDobStringToLocalDayStartMs(data.dob) : undefined;
+  const weightDisplay = parseFloat(data.weight);
+  const heightDisplay = parseFloat(data.height);
 
-  let user = await UserService.getCurrentUser();
-  if (!user) {
-    const fullName = getDefaultUsernameForGender(data.gender);
-
-    user = await UserService.initializeUser({
-      fullName,
-      dateOfBirth: dateOfBirthMs ?? defaultAdultDobLocalDayStartMs(),
-      gender: data.gender,
-      fitnessGoal: data.fitnessGoal,
-      weightGoal: data.weightGoal,
-      activityLevel: data.activityLevel,
-      liftingExperience: data.experience,
-    });
-  } else {
-    await user.updateProfile({
-      ...(dateOfBirthMs !== undefined ? { dateOfBirth: dateOfBirthMs } : {}),
-      gender: data.gender,
-      fitnessGoal: data.fitnessGoal,
-      weightGoal: data.weightGoal,
-      activityLevel: data.activityLevel,
-      liftingExperience: data.experience,
-    });
-  }
-
-  const dayStart = localDayStartMs(new Date());
-  const now = Date.now();
-  const dayEnd = localDayClosedRangeMaxMs(new Date());
-  const timezone = getCurrentTimezone();
-
-  if (data.weight && parseFloat(data.weight) > 0) {
-    const weightValueKg = displayToKg(parseFloat(data.weight), data.units);
-    const existingWeight = await UserMetricService.getMetricsHistory(
-      'weight',
-      { startDate: dayStart, endDate: dayEnd },
-      1
-    );
-    if (existingWeight.length > 0) {
-      await UserMetricService.updateMetric(existingWeight[0].id, {
-        value: weightValueKg,
-        unit: 'kg',
-        date: now,
-      });
-    } else {
-      await UserMetricService.createMetric({
-        type: 'weight',
-        value: weightValueKg,
-        unit: 'kg',
-        date: now,
-        timezone,
-      });
-    }
-  }
-
-  if (data.height && parseFloat(data.height) > 0) {
-    const heightValueCm = displayToCm(parseFloat(data.height), data.units);
-    const existingHeight = await UserMetricService.getMetricsHistory(
-      'height',
-      { startDate: dayStart, endDate: dayEnd },
-      1
-    );
-    if (existingHeight.length > 0) {
-      await UserMetricService.updateMetric(existingHeight[0].id, {
-        value: heightValueCm,
-        unit: 'cm',
-        date: now,
-      });
-    } else {
-      await UserMetricService.createMetric({
-        type: 'height',
-        value: heightValueCm,
-        unit: 'cm',
-        date: now,
-        timezone,
-      });
-    }
-  }
-
-  if (data.fatPercentage != null && data.fatPercentage > 0) {
-    const fatValue = data.fatPercentage;
-    const existingBodyFat = await UserMetricService.getMetricsHistory(
-      'body_fat',
-      { startDate: dayStart, endDate: dayEnd },
-      1
-    );
-    if (existingBodyFat.length > 0) {
-      await UserMetricService.updateMetric(existingBodyFat[0].id, {
-        value: fatValue,
-        unit: '%',
-        date: now,
-      });
-    } else {
-      await UserMetricService.createMetric({
-        type: 'body_fat',
-        value: fatValue,
-        unit: '%',
-        date: now,
-        timezone,
-      });
-    }
-  }
-
-  await SettingsService.setUnits(data.units);
+  await persistFitnessProfile({
+    dateOfBirthMs: data.dob?.trim() ? parseDobStringToLocalDayStartMs(data.dob) : undefined,
+    gender: data.gender,
+    fitnessGoal: data.fitnessGoal,
+    weightGoal: data.weightGoal,
+    activityLevel: data.activityLevel as FitnessProfileWrite['activityLevel'],
+    liftingExperience: data.experience,
+    weightKg: weightDisplay > 0 ? displayToKg(weightDisplay, data.units) : undefined,
+    heightCm: heightDisplay > 0 ? displayToCm(heightDisplay, data.units) : undefined,
+    bodyFatPercent: data.fatPercentage,
+    units: data.units,
+  });
 }

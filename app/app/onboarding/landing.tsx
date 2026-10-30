@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Download, Lock, ScanLine, Settings2, Zap } from 'lucide-react-native';
+import { Bot, Download, Lock, ScanLine, Settings2, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
@@ -20,6 +20,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { isProduction } from '@/utils/app';
 import { importDatabase, shouldSeedDevData } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
+import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 
 export default function LandingScreen() {
@@ -324,6 +325,27 @@ export default function LandingScreen() {
                   }}
                 >
                   {t('onboarding.landing.quickSetupSubtitle')}
+                </Text>
+
+                {/* Set up with AI — shown whether or not an AI is configured: the ChatGPT/Claude
+                    hand-off and the file import need none, and the screen offers free AI. */}
+                <Button
+                  label={t('onboarding.landing.aiSetup')}
+                  onPress={() => router.navigate(aiSetupRoute('setup', 'onboarding') as never)}
+                  icon={Bot}
+                  iconPosition="left"
+                  variant="outline"
+                  size="md"
+                  width="full"
+                />
+                <Text
+                  className="text-center"
+                  style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.typography.fontSize.xs,
+                  }}
+                >
+                  {t('onboarding.landing.aiSetupSubtitle')}
                 </Text>
 
                 {/* Terms / Footer Text */}

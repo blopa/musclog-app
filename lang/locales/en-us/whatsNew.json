@@ -169,7 +169,20 @@
         "setup": {
           "title": "Off until you turn them on",
           "description": "Go to Settings → Appearance and home → Home heatmaps to show workouts, nutrition, or both, and pick the layout. With only one heatmap on, it always uses the full width."
-        }
+        },
+        "aiSetup": {
+          "title": "Set up Musclog by talking",
+          "description": "Answer a few questions in a chat instead of filling in forms. New installs find it on the first screen, and you can use it any time to update your profile."
+        },
+        "aiOptions": {
+          "title": "Chat here, or in ChatGPT or Claude",
+          "description": "Chat inside Musclog with free Musclog AI or your own Gemini or OpenAI key. Or let ChatGPT or Claude ask the questions: Musclog copies the instructions for you, then you bring back a file or paste its text."
+        },
+        "aiReview": {
+          "title": "You check everything first",
+          "description": "Every answer shows on a review screen where you can edit it. From Profile, each change sits next to what you have now, and nothing is saved until you apply it."
+        },
+        "openAiSetup": "Update my profile with AI"
       }
     }
   }

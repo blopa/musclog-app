@@ -1,7 +1,7 @@
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
 import { resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
-import type { CoachAIConfig } from '@/utils/coachAI';
+import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { isOnDeviceAiAvailable } from '@/utils/onDeviceAi';
@@ -55,37 +55,17 @@ export class AiService {
 
       const localLlmBaseUrl = localLlmBaseUrlRaw.trim();
       if (enableLocalLlm && localLlmBaseUrl) {
-        const [localKey, localModel] = await Promise.all([
-          SettingsService.getLocalLlmApiKey(),
-          SettingsService.getLocalLlmModel(),
-        ]);
-        return {
-          provider: 'local',
-          apiKey: localKey.trim() || 'ollama',
-          model: localModel || 'llama3',
-          baseUrl: localLlmBaseUrl,
-          language,
-        };
+        return await AiService.localConfig(localLlmBaseUrl, language);
       }
 
       const geminiKey = geminiKeyRaw.trim();
       if (enableGemini && geminiKey) {
-        return {
-          provider: 'gemini',
-          apiKey: geminiKey,
-          model: await AiService.currentGeminiModel(),
-          language,
-        };
+        return await AiService.geminiConfig(geminiKey, language);
       }
 
       const openAiKey = openAiKeyRaw.trim();
       if (enableOpenAi && openAiKey) {
-        return {
-          provider: 'openai',
-          apiKey: openAiKey,
-          model: await AiService.currentOpenAiModel(),
-          language,
-        };
+        return await AiService.openAiConfig(openAiKey, language);
       }
     } catch (error) {
       handleError(error, 'AiService.getAiConfig');
@@ -93,6 +73,83 @@ export class AiService {
     }
 
     return null;
+  }
+
+  /**
+   * The configuration for ONE named provider, ignoring the priority order above. `getAiConfig`
+   * answers "which provider does the app use"; this answers "is this particular provider ready",
+   * which the setup chat needs: someone who just saved a Gemini key must talk to Gemini even while
+   * the free tier or a local model would win the priority order. Null when that provider is not
+   * usable (disabled, no key, unavailable on this device or platform).
+   */
+  static async getAiConfigForProvider(provider: CoachAIProvider): Promise<CoachAIConfig | null> {
+    try {
+      const language = await SettingsService.getLanguage();
+      switch (provider) {
+        case 'gateway':
+          return effectiveUseMusclogGateway(await SettingsService.getUseMusclogFreeTier())
+            ? GatewayService.buildGatewayConfig(language)
+            : null;
+        case 'on-device':
+          return (await SettingsService.getUseOnDeviceAi()) && (await isOnDeviceAiAvailable())
+            ? { provider: 'on-device', model: 'on-device', language }
+            : null;
+        case 'local': {
+          const baseUrl = (await SettingsService.getLocalLlmBaseUrl()).trim();
+          return (await SettingsService.getEnableLocalLlm()) && baseUrl
+            ? await AiService.localConfig(baseUrl, language)
+            : null;
+        }
+        case 'gemini': {
+          const key = (await SettingsService.getGoogleGeminiApiKey()).trim();
+          return (await SettingsService.getEnableGoogleGemini()) && key
+            ? await AiService.geminiConfig(key, language)
+            : null;
+        }
+        case 'openai': {
+          const key = (await SettingsService.getOpenAiApiKey()).trim();
+          return (await SettingsService.getEnableOpenAi()) && key
+            ? await AiService.openAiConfig(key, language)
+            : null;
+        }
+      }
+    } catch (error) {
+      handleError(error, 'AiService.getAiConfigForProvider');
+      console.error('[AiService] Error resolving AI config for provider:', error);
+      return null;
+    }
+  }
+
+  private static async localConfig(baseUrl: string, language: string): Promise<CoachAIConfig> {
+    const [localKey, localModel] = await Promise.all([
+      SettingsService.getLocalLlmApiKey(),
+      SettingsService.getLocalLlmModel(),
+    ]);
+    return {
+      provider: 'local',
+      apiKey: localKey.trim() || 'ollama',
+      model: localModel || 'llama3',
+      baseUrl,
+      language,
+    };
+  }
+
+  private static async geminiConfig(apiKey: string, language: string): Promise<CoachAIConfig> {
+    return {
+      provider: 'gemini',
+      apiKey,
+      model: await AiService.currentGeminiModel(),
+      language,
+    };
+  }
+
+  private static async openAiConfig(apiKey: string, language: string): Promise<CoachAIConfig> {
+    return {
+      provider: 'openai',
+      apiKey,
+      model: await AiService.currentOpenAiModel(),
+      language,
+    };
   }
 
   /**

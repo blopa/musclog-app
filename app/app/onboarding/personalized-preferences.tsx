@@ -1,7 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Check, User, Users } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -13,10 +12,10 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
-import { PERSONALIZED_SETUP_DATA } from '@/constants/misc';
 import { type Gender } from '@/database/models/User';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useTheme } from '@/hooks/useTheme';
+import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 type Units = 'metric' | 'imperial';
@@ -31,6 +30,32 @@ export default function PersonalizedPreferencesScreen() {
   const [fullName, setFullName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Answers given earlier (including through the AI setup) come back prefilled instead of reset.
+  useEffect(() => {
+    let cancelled = false;
+    readPersonalizedSetup().then((saved) => {
+      if (cancelled) {
+        return;
+      }
+
+      if (saved.units) {
+        setUnits(saved.units);
+      }
+
+      if (saved.gender) {
+        setGender(saved.gender);
+      }
+
+      if (saved.fullName) {
+        setFullName(saved.fullName);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const genderOptions: { value: Gender; label: string }[] = [
     { value: 'male', label: t('onboarding.quickPreferences.male') },
     { value: 'female', label: t('onboarding.quickPreferences.female') },
@@ -42,12 +67,7 @@ export default function PersonalizedPreferencesScreen() {
     try {
       await SettingsService.setUnits(units);
 
-      const existing = await AsyncStorage.getItem(PERSONALIZED_SETUP_DATA);
-      const current = existing ? JSON.parse(existing) : {};
-      await AsyncStorage.setItem(
-        PERSONALIZED_SETUP_DATA,
-        JSON.stringify({ ...current, fullName: fullName.trim(), gender, units })
-      );
+      await mergePersonalizedSetup({ fullName: fullName.trim(), gender, units });
 
       await setCurrentOnboardingStep('/app/onboarding/personalized-preferences');
 

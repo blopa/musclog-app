@@ -11,12 +11,9 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 import { CYCLE_TRACKING_CHOICES, type CycleTrackingMode } from '@/utils/cycle/trackingMode';
+import { readPersonalizedSetup } from '@/utils/onboardingDraft';
+import { personalizedCycleRoutes } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
-
-const NUTRITION_RESULTS_ROUTE =
-  '/app/onboarding/nutrition-goals-results?aiGenerated=true&personalizedSetup=true';
-const MUSCLOG_API_DIRECT_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=8&quickTotal=10`;
-const MUSCLOG_API_AFTER_CYCLE_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=9&quickTotal=10`;
 
 export default function PersonalizedCycleScreen() {
   const theme = useTheme();
@@ -34,14 +31,17 @@ export default function PersonalizedCycleScreen() {
     setIsSaving(true);
     try {
       await setCurrentOnboardingStep('/app/onboarding/personalized-cycle');
+      const routes = personalizedCycleRoutes(
+        (await readPersonalizedSetup()).skipMusclogApi === true
+      );
 
       if (menstruates !== 'skip') {
-        const nextRoute = encodeURIComponent(MUSCLOG_API_AFTER_CYCLE_ROUTE);
+        const nextRoute = encodeURIComponent(routes.afterCycle);
         router.navigate(
           `/app/onboarding/cycle-setup?tracking=${menstruates}&nextRoute=${nextRoute}&quickStep=8&quickTotal=10`
         );
       } else {
-        router.navigate(MUSCLOG_API_DIRECT_ROUTE);
+        router.navigate(routes.direct);
       }
     } catch (e) {
       console.error('Error in personalized cycle screen:', e);

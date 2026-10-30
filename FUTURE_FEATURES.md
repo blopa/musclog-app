@@ -26,6 +26,12 @@ collects.
    Support a bounded multi-photo draft, editable review, deterministic retry/cancel behavior, and
    share-to-Musclog entry points that reuse the existing crop and review pipeline.
 
+## AI setup follow-ups
+
+- Native tool calling for the setup chat, replacing the per-turn structured reply, once providers share a tool format.
+- Cycle tracking questions in the AI setup, if a clear privacy story for sending them to a third-party assistant is found.
+- A hosted, versioned instructions page the assistant could read, which would shorten the copied text if assistants gain reliable browsing.
+
 ## Nutrition and coaching
 
 ### Energy balance and goals

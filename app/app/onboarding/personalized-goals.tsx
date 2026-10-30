@@ -1,54 +1,19 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import {
-  Check,
-  Dumbbell,
-  Equal,
-  Flame,
-  Heart,
-  LucideIcon,
-  TrendingDown,
-  TrendingUp,
-  Zap,
-} from 'lucide-react-native';
-import { useState } from 'react';
+import { Check } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
+import { FITNESS_OPTIONS, WEIGHT_OPTIONS } from '@/components/onboarding/onboardingOptions';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { PERSONALIZED_SETUP_DATA } from '@/constants/misc';
 import { type FitnessGoal, type WeightGoal } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
+import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
-
-type FitnessOption = {
-  value: FitnessGoal;
-  labelKey: string;
-  icon: LucideIcon;
-};
-
-const FITNESS_OPTIONS: FitnessOption[] = [
-  { value: 'hypertrophy', labelKey: 'onboarding.quickGoals.buildMuscle', icon: Dumbbell },
-  { value: 'strength', labelKey: 'onboarding.quickGoals.strength', icon: Zap },
-  { value: 'endurance', labelKey: 'onboarding.quickGoals.endurance', icon: Flame },
-  { value: 'general', labelKey: 'onboarding.quickGoals.general', icon: Heart },
-];
-
-type WeightOption = {
-  value: WeightGoal;
-  labelKey: string;
-  icon: LucideIcon;
-};
-
-const WEIGHT_OPTIONS: WeightOption[] = [
-  { value: 'lose', labelKey: 'onboarding.quickGoals.lose', icon: TrendingDown },
-  { value: 'maintain', labelKey: 'onboarding.quickGoals.maintain', icon: Equal },
-  { value: 'gain', labelKey: 'onboarding.quickGoals.gain', icon: TrendingUp },
-];
 
 export default function PersonalizedGoalsScreen() {
   const theme = useTheme();
@@ -59,15 +24,32 @@ export default function PersonalizedGoalsScreen() {
   const [weightGoal, setWeightGoal] = useState<WeightGoal>('maintain');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Answers given earlier (including through the AI setup) come back prefilled instead of reset.
+  useEffect(() => {
+    let cancelled = false;
+    readPersonalizedSetup().then((saved) => {
+      if (cancelled) {
+        return;
+      }
+
+      if (saved.fitnessGoal) {
+        setFitnessGoal(saved.fitnessGoal);
+      }
+
+      if (saved.weightGoal) {
+        setWeightGoal(saved.weightGoal);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleContinue = async () => {
     setIsSaving(true);
     try {
-      const existing = await AsyncStorage.getItem(PERSONALIZED_SETUP_DATA);
-      const current = existing ? JSON.parse(existing) : {};
-      await AsyncStorage.setItem(
-        PERSONALIZED_SETUP_DATA,
-        JSON.stringify({ ...current, fitnessGoal, weightGoal })
-      );
+      await mergePersonalizedSetup({ fitnessGoal, weightGoal });
 
       await setCurrentOnboardingStep('/app/onboarding/personalized-goals');
       router.navigate('/app/onboarding/personalized-body-stats');

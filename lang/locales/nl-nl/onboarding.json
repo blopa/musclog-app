@@ -190,7 +190,9 @@
       "personalizedSetupSubtitle": "Krijg nauwkeurige TDEE, macro's en gepersonaliseerde aanbevelingen",
       "quickSetup": "Snelle Installatie",
       "quickSetupSteps": "7 stappen",
-      "quickSetupSubtitle": "Basisinstallatie, u kunt later aanpassen"
+      "quickSetupSubtitle": "Basisinstallatie, u kunt later aanpassen",
+      "aiSetup": "Instellen met AI",
+      "aiSetupSubtitle": "Chat met een AI, of laat ChatGPT of Claude je interviewen"
     },
     "quickPreferences": {
       "title": "Laten we beginnen",
@@ -217,7 +219,8 @@
       "lose": "Afvallen",
       "maintain": "Behouden",
       "gain": "Aankomen",
-      "continue": "Doorgaan"
+      "continue": "Doorgaan",
+      "weightLoss": "Afvallen"
     },
     "quickBodyStats": {
       "title": "Uw lichaamsstatistieken",
@@ -228,7 +231,8 @@
       "birthdayHelper": "Gebruikt om uw leeftijd te berekenen voor nauwkeurige calorieschattingen",
       "bodyFat": "Lichaamsvetpercentage",
       "bodyFatHelper": "Als u het weet, helpt dit bij caloriebebrekeningen",
-      "continue": "Doorgaan"
+      "continue": "Doorgaan",
+      "birthdayEstimated": "Geschat op basis van je leeftijd. Kies je geboortedatum als je die weet."
     },
     "musclogApi": {
       "title": "Musclog AI",

@@ -11,6 +11,7 @@ import {
   parseDobStringToLocalDayStartMs,
   parseMmDdYyyyDateOfBirthToLocalDayStartMs,
   persistFitnessDetails,
+  persistFitnessProfile,
 } from '@/utils/fitnessProfilePersistence';
 
 jest.mock('@/database/services/SettingsService', () => ({
@@ -361,5 +362,112 @@ describe('persistFitnessDetails', () => {
     await persistFitnessDetails(details({ units: 'imperial' }));
 
     expect(mockSetUnits).toHaveBeenCalledWith('imperial');
+  });
+});
+
+describe('persistFitnessProfile', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGetMetricsHistory.mockResolvedValue([]);
+    mockGetCurrentUser.mockResolvedValue({ updateProfile: jest.fn() });
+    mockInitializeUser.mockResolvedValue({ updateProfile: jest.fn() });
+  });
+
+  const full = {
+    fullName: '  Ana  ',
+    dateOfBirthMs: 1000,
+    gender: 'female' as const,
+    fitnessGoal: 'strength' as const,
+    weightGoal: 'maintain' as const,
+    activityLevel: 3 as const,
+    liftingExperience: 'advanced' as const,
+    weightKg: 62.5,
+    heightCm: 168,
+    bodyFatPercent: 22,
+    units: 'imperial' as const,
+  };
+
+  it('creates the user with the given name and stores metric metrics as they are', async () => {
+    mockGetCurrentUser.mockResolvedValue(null);
+
+    await persistFitnessProfile(full);
+
+    expect(mockInitializeUser).toHaveBeenCalledWith({
+      fullName: 'Ana',
+      dateOfBirth: 1000,
+      gender: 'female',
+      fitnessGoal: 'strength',
+      weightGoal: 'maintain',
+      activityLevel: 3,
+      liftingExperience: 'advanced',
+    });
+    expect(mockCreateMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'weight', value: 62.5, unit: 'kg' })
+    );
+    expect(mockCreateMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'height', value: 168, unit: 'cm' })
+    );
+    expect(mockCreateMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'body_fat', value: 22, unit: '%' })
+    );
+    expect(mockSetUnits).toHaveBeenCalledWith('imperial');
+  });
+
+  it('refuses to create a user it does not have the required answers for', async () => {
+    mockGetCurrentUser.mockResolvedValue(null);
+
+    await expect(persistFitnessProfile({ weightKg: 70 })).rejects.toThrow(/Cannot create/);
+    expect(mockInitializeUser).not.toHaveBeenCalled();
+    expect(mockCreateMetric).not.toHaveBeenCalled();
+  });
+
+  it('updates only the fields it was given on an existing user', async () => {
+    const updateProfile = jest.fn();
+    mockGetCurrentUser.mockResolvedValue({ updateProfile });
+
+    await persistFitnessProfile({ weightGoal: 'lose' });
+
+    expect(updateProfile).toHaveBeenCalledWith({ weightGoal: 'lose' });
+    expect(mockCreateMetric).not.toHaveBeenCalled();
+    expect(mockSetUnits).not.toHaveBeenCalled();
+  });
+
+  it('is idempotent for a day: a second run updates the readings instead of adding rows', async () => {
+    mockGetMetricsHistory.mockResolvedValue([{ id: 'row-1' }]);
+
+    await persistFitnessProfile({ weightKg: 70, heightCm: 175, bodyFatPercent: 15 });
+
+    expect(mockCreateMetric).not.toHaveBeenCalled();
+    expect(mockUpdateMetric).toHaveBeenCalledTimes(3);
+    expect(mockUpdateMetric).toHaveBeenCalledWith(
+      'row-1',
+      expect.objectContaining({ value: 70, unit: 'kg' })
+    );
+  });
+
+  it('skips non-positive and cleared readings and never keeps a blank name', async () => {
+    const updateProfile = jest.fn();
+    mockGetCurrentUser.mockResolvedValue({ updateProfile });
+
+    await persistFitnessProfile({
+      fullName: '   ',
+      weightKg: 0,
+      heightCm: -1,
+      bodyFatPercent: null,
+    });
+
+    expect(updateProfile).toHaveBeenCalledWith({});
+    expect(mockCreateMetric).not.toHaveBeenCalled();
+    expect(mockUpdateMetric).not.toHaveBeenCalled();
+  });
+
+  it('generates a name when the person gave none', async () => {
+    mockGetCurrentUser.mockResolvedValue(null);
+
+    await persistFitnessProfile({ ...full, fullName: undefined, dateOfBirthMs: undefined });
+
+    const arg = mockInitializeUser.mock.calls[0][0];
+    expect(arg.fullName.length).toBeGreaterThan(0);
+    expect(new Date(arg.dateOfBirth).getFullYear()).toBe(new Date().getFullYear() - 25);
   });
 });

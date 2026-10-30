@@ -57,9 +57,19 @@ describe('onboarding training flow wiring', () => {
   it('applies the training answers, then ends on the first workout', () => {
     const results = read('app/app/onboarding/nutrition-goals-results.tsx');
     expect(results).toContain('applyTrainingSetup(training)');
-    expect(results).toContain('/app/onboarding/first-workout?mode=');
+    // Where it ends is decided once, in onboardingRoutes, which is also what a profile update
+    // reads to skip all of this.
+    expect(results).toContain('resolveResultsCompletion');
+    const routes = read('utils/onboardingRoutes.ts');
+    expect(routes).toContain('/app/onboarding/first-workout?mode=');
     // Nutrition-only users keep a Health prompt rather than losing it.
-    expect(results).toContain('/app/onboarding/health-connect?nextRoute=/app');
+    expect(routes).toContain('/app/onboarding/health-connect?nextRoute=/app');
+  });
+
+  it('keeps a profile update from finishing onboarding or applying training', () => {
+    const results = read('app/app/onboarding/nutrition-goals-results.tsx');
+    expect(results).toContain("params.context === 'profile'");
+    expect(results).toContain('nutritionGoals.keepCurrentTargets');
   });
 
   it('holds the health prompt until a workout summary consumes it', () => {

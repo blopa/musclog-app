@@ -190,7 +190,9 @@
       "personalizedSetupSubtitle": "Получите точный TDEE, макросы и персональные рекомендации",
       "quickSetup": "Быстрая настройка",
       "quickSetupSteps": "7 шагов",
-      "quickSetupSubtitle": "Базовая настройка, можно персонализировать позже"
+      "quickSetupSubtitle": "Базовая настройка, можно персонализировать позже",
+      "aiSetup": "Настройка с ИИ",
+      "aiSetupSubtitle": "Пообщайтесь с ИИ или пусть вас опросит ChatGPT или Claude"
     },
     "quickPreferences": {
       "title": "Давайте начнём",
@@ -217,7 +219,8 @@
       "lose": "Сбросить",
       "maintain": "Поддерживать",
       "gain": "Набрать",
-      "continue": "Продолжить"
+      "continue": "Продолжить",
+      "weightLoss": "Похудение"
     },
     "quickBodyStats": {
       "title": "Ваши параметры тела",
@@ -228,7 +231,8 @@
       "birthdayHelper": "Используется для расчёта вашего возраста для точной оценки калорий",
       "bodyFat": "Процент жира в теле",
       "bodyFatHelper": "Если известен, помогает при расчёте калорий",
-      "continue": "Продолжить"
+      "continue": "Продолжить",
+      "birthdayEstimated": "Оценка по вашему возрасту. Выберите дату рождения, если знаете её."
     },
     "musclogApi": {
       "title": "Musclog AI",

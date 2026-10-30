@@ -19,6 +19,15 @@ export const QUICK_SETUP_DATA = 'quickSetupData';
 // Temporary storage key for personalized-setup data accumulated across steps
 export const PERSONALIZED_SETUP_DATA = 'personalizedSetupData';
 
+/**
+ * AI-assisted onboarding: the unfinished setup conversation and its draft answers. Encrypted, local
+ * only, and deliberately separate from `chat_messages` so it can never show up in coach history.
+ */
+export const AI_ONBOARDING_DRAFT = 'aiOnboardingDraft';
+
+// Encrypted birthday/height/weight/body-fat answers the guided body-stats screen is prefilled from
+export const PERSONALIZED_BODY_DRAFT = 'personalizedBodyDraft';
+
 // Current user (sync_id) for multi-user / future sync support
 export const CURRENT_USER_SYNC_ID = 'currentUserSyncId';
 

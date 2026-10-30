@@ -190,7 +190,9 @@
       "personalizedSetupSubtitle": "Get accurate TDEE, macros, and personalized recommendations",
       "quickSetup": "Quick setup",
       "quickSetupSteps": "7 steps",
-      "quickSetupSubtitle": "Basic setup, you can personalize later"
+      "quickSetupSubtitle": "Basic setup, you can personalize later",
+      "aiSetup": "Set up with AI",
+      "aiSetupSubtitle": "Chat with an AI, or let ChatGPT or Claude interview you"
     },
     "quickPreferences": {
       "title": "Let's get started",
@@ -217,7 +219,8 @@
       "lose": "Lose",
       "maintain": "Maintain",
       "gain": "Gain",
-      "continue": "Continue"
+      "continue": "Continue",
+      "weightLoss": "Weight loss"
     },
     "quickBodyStats": {
       "title": "Your body stats",
@@ -228,7 +231,8 @@
       "birthdayHelper": "Used to calculate your age for accurate calorie estimates",
       "bodyFat": "Body fat percentage",
       "bodyFatHelper": "If you know it, this helps with calorie calculations",
-      "continue": "Continue"
+      "continue": "Continue",
+      "birthdayEstimated": "Estimated from your age. Pick your birthday if you know it."
     },
     "personalizedPreferences": {
       "nameLabel": "What should we call you?",

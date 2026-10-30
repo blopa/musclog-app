@@ -3,6 +3,10 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Guided body-stats stacked a weight and height reading on every Continue (October 2026)
+
+`personalized-body-stats.tsx` created new weight, height and body-fat metric rows each time Continue was pressed, so going back and forth in onboarding left duplicates, and it computed age as a calendar-year difference. It now saves through `commitOnboardingProfile` and `persistFitnessProfile`, which update today's reading instead of adding one and use `differenceInYears`. Pinned by `utils/__tests__/fitnessProfilePersistence.test.ts` and `onboardingAiFlowWiring.test.ts`.
+
 ## Home took seconds to load on a multi-year diary: repeated decryption (October 2026)
 
 ### Symptom

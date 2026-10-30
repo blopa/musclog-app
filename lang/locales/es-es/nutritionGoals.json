@@ -143,6 +143,7 @@
     "dynamic": "Dinámico",
     "dynamicInfo": "Los objetivos diarios se calculan automáticamente cada día a partir de tus datos actuales y del plazo de tu objetivo. Tu objetivo actual de calorías es {{kcal}} kcal.",
     "dynamicBadge": "Dinámico",
-    "dynamicRequiredFields": "El peso objetivo y la fecha objetivo son obligatorios para los objetivos dinámicos."
+    "dynamicRequiredFields": "El peso objetivo y la fecha objetivo son obligatorios para los objetivos dinámicos.",
+    "keepCurrentTargets": "Mantener mis objetivos actuales"
   }
 }

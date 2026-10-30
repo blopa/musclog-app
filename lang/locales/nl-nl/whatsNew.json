@@ -169,7 +169,20 @@
         "setup": {
           "title": "Uit tot je ze aanzet",
           "description": "Ga naar Instellingen → Uiterlijk en start → Activiteitskaarten om trainingen, voeding of beide te tonen en de indeling te kiezen. Met maar één kaart aan gebruikt die altijd de volledige breedte."
-        }
+        },
+        "aiSetup": {
+          "title": "Stel Musclog in door te praten",
+          "description": "Beantwoord een paar vragen in een chat in plaats van formulieren in te vullen. Nieuwe installaties vinden het op het eerste scherm en je kunt het altijd gebruiken om je profiel bij te werken."
+        },
+        "aiOptions": {
+          "title": "Chat hier, of in ChatGPT of Claude",
+          "description": "Chat binnen Musclog met de gratis Musclog AI of je eigen Gemini- of OpenAI-sleutel. Of laat ChatGPT of Claude de vragen stellen: Musclog kopieert de instructies voor je en daarna breng je een bestand terug of plak je de tekst."
+        },
+        "aiReview": {
+          "title": "Jij controleert eerst alles",
+          "description": "Elk antwoord staat op een controlescherm waar je het kunt aanpassen. Vanuit Profiel staat elke wijziging naast wat je nu hebt en er wordt niets opgeslagen tot je het toepast."
+        },
+        "openAiSetup": "Mijn profiel bijwerken met AI"
       }
     }
   }

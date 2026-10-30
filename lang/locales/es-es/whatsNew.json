@@ -169,7 +169,20 @@
         "setup": {
           "title": "Desactivados hasta que los actives",
           "description": "Ve a Ajustes → Apariencia e inicio → Mapas de actividad para mostrar entrenamientos, nutrición o ambos, y elegir el diseño. Con un solo mapa activado, siempre usa el ancho completo."
-        }
+        },
+        "aiSetup": {
+          "title": "Configura Musclog hablando",
+          "description": "Responde unas preguntas en un chat en vez de rellenar formularios. Las instalaciones nuevas lo encuentran en la primera pantalla, y puedes usarlo cuando quieras para actualizar tu perfil."
+        },
+        "aiOptions": {
+          "title": "Chatea aquí, o en ChatGPT o Claude",
+          "description": "Chatea dentro de Musclog con la IA gratuita o con tu propia clave de Gemini u OpenAI. O deja que ChatGPT o Claude hagan las preguntas: Musclog copia las instrucciones por ti y luego traes un archivo o pegas su texto."
+        },
+        "aiReview": {
+          "title": "Tú lo revisas todo primero",
+          "description": "Cada respuesta aparece en una pantalla de revisión donde puedes editarla. Desde el Perfil, cada cambio se muestra junto a lo que tienes ahora y no se guarda nada hasta que lo apliques."
+        },
+        "openAiSetup": "Actualizar mi perfil con IA"
       }
     }
   }

@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import {
   Activity,
+  Bot,
   BrainCircuit,
   CheckCircle,
   Dumbbell,
@@ -53,6 +54,7 @@ import {
   persistFitnessDetails,
 } from '@/utils/fitnessProfilePersistence';
 import { handleError } from '@/utils/handleError';
+import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { kgToDisplay } from '@/utils/unitConversion';
 
 const getGenderKey = (gender: string): string => {
@@ -140,6 +142,12 @@ export default function ProfileScreen() {
         titleKey: 'profile.managementItems.editFitness',
         descriptionKey: 'profile.managementItems.editFitnessDesc',
         icon: Dumbbell,
+      },
+      {
+        id: 'ai',
+        titleKey: 'profile.managementItems.aiUpdate',
+        descriptionKey: 'profile.managementItems.aiUpdateDesc',
+        icon: Bot,
       },
       {
         id: 'preferences',
@@ -501,6 +509,9 @@ export default function ProfileScreen() {
                     setIsEditPersonalVisible(true);
                   } else if (item.id === 'fitness') {
                     setIsEditFitnessVisible(true);
+                  } else if (item.id === 'ai') {
+                    // Not gated on a configured AI: the ChatGPT/Claude route needs none.
+                    router.navigate(aiSetupRoute('setup', 'profile') as never);
                   } else if (item.id === 'preferences') {
                     router.navigate('/app/settings');
                   }

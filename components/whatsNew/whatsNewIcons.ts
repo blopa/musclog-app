@@ -1,4 +1,5 @@
 import {
+  Bot,
   Calendar,
   Dumbbell,
   Flame,
@@ -29,4 +30,5 @@ export const whatsNewIcons: Record<WhatsNewIconName, LucideIcon> = {
   shield: Shield,
   flame: Flame,
   settings: Settings,
+  bot: Bot,
 };

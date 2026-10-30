@@ -1,16 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import {
-  Check,
-  Dumbbell,
-  Equal,
-  Flame,
-  Heart,
-  LucideIcon,
-  TrendingDown,
-  TrendingUp,
-  Zap,
-} from 'lucide-react-native';
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -18,36 +8,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
+import { FITNESS_OPTIONS, WEIGHT_OPTIONS } from '@/components/onboarding/onboardingOptions';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { QUICK_SETUP_DATA } from '@/constants/misc';
 import { type FitnessGoal, type WeightGoal } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
-
-type FitnessOption = {
-  value: FitnessGoal;
-  labelKey: string;
-  icon: LucideIcon;
-};
-
-const FITNESS_OPTIONS: FitnessOption[] = [
-  { value: 'hypertrophy', labelKey: 'onboarding.quickGoals.buildMuscle', icon: Dumbbell },
-  { value: 'strength', labelKey: 'onboarding.quickGoals.strength', icon: Zap },
-  { value: 'endurance', labelKey: 'onboarding.quickGoals.endurance', icon: Flame },
-  { value: 'general', labelKey: 'onboarding.quickGoals.general', icon: Heart },
-];
-
-type WeightOption = {
-  value: WeightGoal;
-  labelKey: string;
-  icon: LucideIcon;
-};
-
-const WEIGHT_OPTIONS: WeightOption[] = [
-  { value: 'lose', labelKey: 'onboarding.quickGoals.lose', icon: TrendingDown },
-  { value: 'maintain', labelKey: 'onboarding.quickGoals.maintain', icon: Equal },
-  { value: 'gain', labelKey: 'onboarding.quickGoals.gain', icon: TrendingUp },
-];
 
 export default function QuickGoalsScreen() {
   const theme = useTheme();

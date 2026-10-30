@@ -8,7 +8,7 @@ import {
   SlidersHorizontal,
   TrendingUp,
 } from 'lucide-react-native';
-import { type ComponentType, useState } from 'react';
+import { type ComponentType, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,6 +29,7 @@ import { BREAK_LENGTH_LABEL_KEYS } from '@/utils/comeback/comebackCopy';
 import { BREAK_LENGTHS, type BreakLength } from '@/utils/comeback/comebackState';
 import {
   DEFAULT_TRAINING_DAYS,
+  parseTrainingSetup,
   TRAINING_DAYS_OPTIONS,
   type TrainingLocation,
   type TrainingSetupData,
@@ -112,6 +113,33 @@ export default function TrainingSetupScreen() {
   const [comingBack, setComingBack] = useState(false);
   const [breakLength, setBreakLength] = useState<BreakLength>('1to3m');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Come back to what was answered before (here earlier, or in the AI setup) rather than defaults.
+  useEffect(() => {
+    let cancelled = false;
+    AsyncStorage.getItem(TRAINING_SETUP_DATA).then((raw) => {
+      const saved = parseTrainingSetup(raw);
+      if (cancelled || !saved) {
+        return;
+      }
+
+      setLocation(saved.location);
+      setDays(saved.daysPerWeek);
+      setAutonomy(saved.autonomy);
+      if (saved.experience) {
+        setExperience(saved.experience);
+      }
+
+      if (saved.comingBack) {
+        setComingBack(true);
+        setBreakLength(saved.comingBack.breakLength);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleContinue = async () => {
     setIsSaving(true);

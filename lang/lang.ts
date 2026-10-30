@@ -31,6 +31,7 @@ import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
 import enUsAccessToken from './locales/en-us/access_token.json';
 import enUsAddMeal from './locales/en-us/addMeal.json';
 import enUsAi from './locales/en-us/ai.json';
+import enUsAiOnboarding from './locales/en-us/aiOnboarding.json';
 import enUsBleWorkoutData from './locales/en-us/bleWorkoutData.json';
 import enUsBodyFat from './locales/en-us/body_fat.json';
 import enUsBodyMetrics from './locales/en-us/bodyMetrics.json';
@@ -117,6 +118,7 @@ import enUsWorkTimer from './locales/en-us/workTimer.json';
 import esEsAccessToken from './locales/es-es/access_token.json';
 import esEsAddMeal from './locales/es-es/addMeal.json';
 import esEsAi from './locales/es-es/ai.json';
+import esEsAiOnboarding from './locales/es-es/aiOnboarding.json';
 import esEsBleWorkoutData from './locales/es-es/bleWorkoutData.json';
 import esEsBodyFat from './locales/es-es/body_fat.json';
 import esEsBodyMetrics from './locales/es-es/bodyMetrics.json';
@@ -203,6 +205,7 @@ import esEsWorkTimer from './locales/es-es/workTimer.json';
 import nlNlAccessToken from './locales/nl-nl/access_token.json';
 import nlNlAddMeal from './locales/nl-nl/addMeal.json';
 import nlNlAi from './locales/nl-nl/ai.json';
+import nlNlAiOnboarding from './locales/nl-nl/aiOnboarding.json';
 import nlNlBleWorkoutData from './locales/nl-nl/bleWorkoutData.json';
 import nlNlBodyFat from './locales/nl-nl/body_fat.json';
 import nlNlBodyMetrics from './locales/nl-nl/bodyMetrics.json';
@@ -289,6 +292,7 @@ import nlNlWorkTimer from './locales/nl-nl/workTimer.json';
 import ptBrAccessToken from './locales/pt-br/access_token.json';
 import ptBrAddMeal from './locales/pt-br/addMeal.json';
 import ptBrAi from './locales/pt-br/ai.json';
+import ptBrAiOnboarding from './locales/pt-br/aiOnboarding.json';
 import ptBrBleWorkoutData from './locales/pt-br/bleWorkoutData.json';
 import ptBrBodyFat from './locales/pt-br/body_fat.json';
 import ptBrBodyMetrics from './locales/pt-br/bodyMetrics.json';
@@ -375,6 +379,7 @@ import ptBrWorkTimer from './locales/pt-br/workTimer.json';
 import ruRuAccessToken from './locales/ru-ru/access_token.json';
 import ruRuAddMeal from './locales/ru-ru/addMeal.json';
 import ruRuAi from './locales/ru-ru/ai.json';
+import ruRuAiOnboarding from './locales/ru-ru/aiOnboarding.json';
 import ruRuBleWorkoutData from './locales/ru-ru/bleWorkoutData.json';
 import ruRuBodyFat from './locales/ru-ru/body_fat.json';
 import ruRuBodyMetrics from './locales/ru-ru/bodyMetrics.json';
@@ -492,6 +497,7 @@ const resources = {
       ...enUsAccessToken,
       ...enUsAddMeal,
       ...enUsAi,
+      ...enUsAiOnboarding,
       ...enUsBleWorkoutData,
       ...enUsBodyMetrics,
       ...enUsBodyFat,
@@ -582,6 +588,7 @@ const resources = {
       ...esEsAccessToken,
       ...esEsAddMeal,
       ...esEsAi,
+      ...esEsAiOnboarding,
       ...esEsBleWorkoutData,
       ...esEsBodyMetrics,
       ...esEsBodyFat,
@@ -672,6 +679,7 @@ const resources = {
       ...nlNlAccessToken,
       ...nlNlAddMeal,
       ...nlNlAi,
+      ...nlNlAiOnboarding,
       ...nlNlBleWorkoutData,
       ...nlNlBodyMetrics,
       ...nlNlBodyFat,
@@ -762,6 +770,7 @@ const resources = {
       ...ptBrAccessToken,
       ...ptBrAddMeal,
       ...ptBrAi,
+      ...ptBrAiOnboarding,
       ...ptBrBleWorkoutData,
       ...ptBrBodyMetrics,
       ...ptBrBodyFat,
@@ -852,6 +861,7 @@ const resources = {
       ...ruRuAccessToken,
       ...ruRuAddMeal,
       ...ruRuAi,
+      ...ruRuAiOnboarding,
       ...ruRuBleWorkoutData,
       ...ruRuBodyMetrics,
       ...ruRuBodyFat,
