@@ -170,11 +170,11 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
       >
         <GenericCard variant="raised">
           <View className="p-5">
-            <Text className="mb-5 text-2xl font-bold text-text-primary">{displayName}</Text>
+            <Text className="mb-5 text-xl font-semibold text-text-primary">{displayName}</Text>
 
             <View className="mb-4 flex-row gap-4">
               <View className="flex-1">
-                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                <Text className="mb-1 text-xs font-medium text-text-secondary">
                   {t('food.logDetails.mealType')}
                 </Text>
                 <View className="flex-row items-center gap-2">
@@ -191,7 +191,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
               />
 
               <View className="flex-1">
-                <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+                <Text className="mb-1 text-xs font-medium text-text-secondary">
                   {t('food.foodDetails.portionSize')}
                 </Text>
                 <View className="flex-row items-baseline gap-1">
@@ -203,7 +203,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
             </View>
 
             <View>
-              <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+              <Text className="mb-1 text-xs font-medium text-text-secondary">
                 {t('food.logDetails.dateAndTime')}
               </Text>
               <View className="flex-row items-center gap-2">

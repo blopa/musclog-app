@@ -72,7 +72,7 @@ export function CurrentExerciseGoalCard({
 
     if (projection.status === 'achieved') {
       return (
-        <View className="rounded-lg bg-status-success/10 p-3">
+        <View className="rounded-control bg-status-success/10 p-3">
           <Text className="text-center font-bold" style={{ color: theme.colors.status.success }}>
             {projection.achievedDate
               ? t('exerciseGoals.card.achieved', {
@@ -90,7 +90,7 @@ export function CurrentExerciseGoalCard({
 
     if (projection.status === 'ready_to_achieve') {
       return (
-        <View className="rounded-lg bg-accent-primary/10 p-3">
+        <View className="rounded-control bg-accent-primary/10 p-3">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.accent.primary }}
@@ -103,7 +103,7 @@ export function CurrentExerciseGoalCard({
 
     if (projection.status === 'stalling') {
       return (
-        <View className="rounded-lg bg-status-warning/10 p-3">
+        <View className="rounded-control bg-status-warning/10 p-3">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.status.warning }}
@@ -116,7 +116,7 @@ export function CurrentExerciseGoalCard({
 
     if (projection.status === 'declining') {
       return (
-        <View className="rounded-lg bg-status-error/10 p-3">
+        <View className="rounded-control bg-status-error/10 p-3">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.status.error }}
@@ -166,7 +166,6 @@ export function CurrentExerciseGoalCard({
           {
             icon: RefreshCw,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('exerciseGoals.detail.recalculateBaseline'),
             description: '',
             onPress: handleRecalculate,
@@ -178,7 +177,6 @@ export function CurrentExerciseGoalCard({
           {
             icon: Eye,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('exerciseGoals.detail.viewDetails'),
             description: '',
             onPress: onViewDetails,
@@ -190,7 +188,6 @@ export function CurrentExerciseGoalCard({
           {
             icon: Pencil,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('common.edit'),
             description: '',
             onPress: onEdit,
@@ -202,7 +199,6 @@ export function CurrentExerciseGoalCard({
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error10,
             title: t('exerciseGoals.deleteGoal'),
             description: t('exerciseGoals.deleteGoalMessage'),
             titleColor: theme.colors.status.error,
@@ -220,13 +216,13 @@ export function CurrentExerciseGoalCard({
         <View className="mb-4 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">
             <View
-              className="rounded-lg p-2"
+              className="rounded-control p-2"
               style={{ backgroundColor: theme.colors.accent.secondary10 }}
             >
               <Dumbbell size={theme.iconSize.md} color={theme.colors.accent.secondary} />
             </View>
             <View>
-              <Text className="text-lg font-bold text-text-primary">
+              <Text className="text-lg font-semibold text-text-primary">
                 {goal.exerciseNameSnapshot}
               </Text>
               <Text className="text-xs text-text-secondary">
@@ -255,7 +251,7 @@ export function CurrentExerciseGoalCard({
                 <Text className="text-sm text-text-secondary">
                   {t('exerciseGoals.card.target')}: {targetWeightDisplay} {t(weightUnitKey)}
                 </Text>
-                <Text className="text-sm font-bold text-text-primary">
+                <Text className="text-sm font-semibold text-text-primary">
                   {formatRoundedDecimal(projection.progressPercent, 2)}%
                 </Text>
               </View>
@@ -272,7 +268,7 @@ export function CurrentExerciseGoalCard({
                 <Text className="text-xs text-text-secondary">
                   {t('exerciseGoals.card.currentEstimate')}
                 </Text>
-                <Text className="text-base font-bold text-text-primary">
+                <Text className="text-base font-semibold text-text-primary">
                   {formatDisplayWeightKg(locale, units, projection.currentEstimated1RM)}{' '}
                   {t(weightUnitKey)}
                 </Text>
@@ -305,13 +301,13 @@ export function CurrentExerciseGoalCard({
         <View className="mb-4 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">
             <View
-              className="rounded-lg p-2"
+              className="rounded-control p-2"
               style={{ backgroundColor: theme.colors.accent.primary10 }}
             >
               <Dumbbell size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <View>
-              <Text className="text-lg font-bold text-text-primary">
+              <Text className="text-lg font-semibold text-text-primary">
                 {t('exerciseGoals.goalTypes.consistency')}
               </Text>
               <Text className="text-xs text-text-secondary">

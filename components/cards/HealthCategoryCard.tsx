@@ -23,7 +23,7 @@ export function HealthCategoryCard({
     <View className="flex-1 basis-[48%]">
       <GenericCard variant="flat" fill>
         <View className="flex-row items-center gap-3 p-3">
-          <View className="rounded-lg p-2" style={{ backgroundColor }}>
+          <View className="rounded-control p-2" style={{ backgroundColor }}>
             <Icon
               size={theme.iconSize.lg}
               color={iconColor}

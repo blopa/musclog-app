@@ -4,8 +4,8 @@
     "nutritionAndBodyTab": "Nutrición y Cuerpo",
     "fitnessAndExerciseTab": "Fitness y Ejercicio",
     "subtitle": "Sigue tu progreso e historial.",
-    "currentGoals": "OBJETIVOS ACTUALES",
-    "history": "HISTORIAL DE OBJETIVOS",
+    "currentGoals": "Objetivos actuales",
+    "history": "Historial de objetivos",
     "newGoal": "Nuevo Objetivo",
     "createGoalDesc": "Establecer nuevos objetivos de nutrición y macros",
     "createCheckin": "Crear Revisión",
@@ -96,7 +96,7 @@
       "subtitleFormat": "Objetivo {{targetWeight}} {{unit}} • {{targetBodyFat}}% de grasa corporal",
       "checkinDate": "Fecha de Revisión"
     },
-    "exerciseGoals": "OBJETIVOS DE EJERCICIO",
+    "exerciseGoals": "Objetivos de ejercicio",
     "exerciseGoalsTitle": "Fuerza y Consistencia",
     "exerciseGoalsSubtitle": "Sigue tus metas de 1RM y frecuencia de entrenamiento"
   }

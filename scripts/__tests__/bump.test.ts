@@ -66,6 +66,18 @@ it('updates every release version source together', () => {
   );
 });
 
+it('keeps the widget extension version and build in sync when it exists', () => {
+  writeFixture(
+    'ios/ExpoWidgetsTarget/Info.plist',
+    '<key>CFBundleShortVersionString</key>\n<string>2.11.2</string>\n' +
+      '<key>CFBundleVersion</key>\n<string>296</string>\n'
+  );
+  bumpProjectVersions(projectDir, 'minor');
+  const widgetInfo = readFileSync(join(projectDir, 'ios/ExpoWidgetsTarget/Info.plist'), 'utf8');
+  expect(widgetInfo).toContain('<string>2.12.2</string>');
+  expect(widgetInfo).toContain('<string>297</string>');
+});
+
 it('refuses to bump an already inconsistent project', () => {
   writeFixture(
     'android/app/build.gradle',

@@ -1,7 +1,7 @@
 {
   "healthConnect": {
     "initializeFirst": "Please initialize Health Connect first",
-    "openSettings": "Open Settings",
+    "openSettings": "Open settings",
     "permissionsDenied": "Health Connect permissions were denied",
     "workoutCaloriesNote": "Calories: {{calories}} kcal",
     "workoutVolumeNote": "Volume: {{volume}} {{unit}}",

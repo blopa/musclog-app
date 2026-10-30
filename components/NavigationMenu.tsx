@@ -4,11 +4,12 @@ import { Camera, Home } from 'lucide-react-native';
 import { memo, type ReactNode, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
+import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import type { NavItemKey } from '@/constants/settings';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
@@ -51,7 +52,7 @@ function NavSlotButton({
       onPressIn={onPressIn}
     >
       <View
-        className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+        className={`h-8 w-14 items-center justify-center rounded-control ${active ? 'bg-bg-navActive' : ''}`}
       >
         {icon}
         {badge ? (
@@ -61,7 +62,10 @@ function NavSlotButton({
           />
         ) : null}
       </View>
-      <Text className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}>
+      <Text
+        maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+        className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+      >
         {label}
       </Text>
     </Pressable>
@@ -121,7 +125,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
   const { width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenWidth < 350;
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
 
   const isPathActive = useCallback(
     (path: string) => {
@@ -220,7 +224,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         paddingBottom: insets.bottom,
       }}
     >
-      <View className="relative flex-row items-stretch px-6 py-4">
+      <View className="relative flex-row items-stretch px-4 py-2">
         {/* Home - always fixed */}
         <NavSlotButton
           active={homeActive}

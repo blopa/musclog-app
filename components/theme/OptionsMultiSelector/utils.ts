@@ -12,6 +12,8 @@ export type SelectorOption<T extends string | number> = {
   description: string;
   /** e.g. formatted weight — shown accent-styled at the end of the row when set */
   trailingHighlight?: string;
+  /** Shows a notes icon beside the description; the description itself stays plain text. */
+  hasNotes?: boolean;
   icon: LucideIcon | ComponentType<{ size: number; color: string }>;
   iconBgColor: string;
   iconColor: string;

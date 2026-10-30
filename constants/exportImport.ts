@@ -1,12 +1,28 @@
+import { CYCLE_BACKUP_STATUS_KEY } from '@/constants/cycle';
 import { ENCRYPTION_KEY } from '@/constants/database';
-import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
+import {
+  AI_ONBOARDING_DRAFT,
+  PERSONALIZED_BODY_DRAFT,
+  SETTINGS_MIRROR_STORAGE_KEY,
+  TEMP_NUTRITION_PLAN,
+} from '@/constants/misc';
 import {
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
 } from '@/constants/settings';
 
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
-export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([ENCRYPTION_KEY, TEMP_NUTRITION_PLAN]);
+export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
+  ENCRYPTION_KEY,
+  TEMP_NUTRITION_PLAN,
+  CYCLE_BACKUP_STATUS_KEY,
+  // Rebuilt from the restored settings table; a carried-over copy could claim no lock is on.
+  SETTINGS_MIRROR_STORAGE_KEY,
+  // Encrypted with this device's key, so another install could not read them anyway, and an
+  // unfinished onboarding conversation is not part of anyone's data.
+  AI_ONBOARDING_DRAFT,
+  PERSONALIZED_BODY_DRAFT,
+]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';
 
@@ -78,6 +94,9 @@ export const RESTORE_ORDER: string[] = [
   'nutrition_checkins',
   'exercise_goals',
   'menstrual_cycles',
+  'cycle_periods',
+  'cycle_day_logs',
+  'cycle_contexts',
 
   // Log tables (depend on templates and master data)
   'workout_logs',

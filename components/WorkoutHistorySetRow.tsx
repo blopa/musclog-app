@@ -46,7 +46,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
 
   return (
     <View
-      className="flex-row items-center rounded py-1.5"
+      className="flex-row items-center rounded-tag py-1.5"
       style={{
         paddingVertical: theme.spacing.padding['1half'], // 6px
         borderRadius: theme.borderRadius.sm,
@@ -67,7 +67,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
           }}
         >
           <Text
-            className="text-xs font-bold"
+            className="text-xs font-semibold"
             style={{
               color: setNumberColor,
               textDecorationLine: textDecoration,
@@ -81,7 +81,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
       {/* Weight */}
       <View className="flex-1 items-center">
         <Text
-          className="text-base font-bold tabular-nums"
+          className="text-base font-semibold tabular-nums"
           style={{ color: valueColor, textDecorationLine: textDecoration }}
         >
           {set.weight}
@@ -92,7 +92,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
       {/* Reps */}
       <View className="flex-1 items-center">
         <Text
-          className="text-base font-bold tabular-nums"
+          className="text-base font-semibold tabular-nums"
           style={{ color: valueColor, textDecorationLine: textDecoration }}
         >
           {set.reps}

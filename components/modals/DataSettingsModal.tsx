@@ -27,10 +27,13 @@ import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { Button } from '@/components/theme/Button';
 import { CheckRadioBox } from '@/components/theme/CheckRadioBox';
+import { ListGroup } from '@/components/theme/ListGroup';
+import { SectionLabel } from '@/components/theme/SectionLabel';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { clearAllAppData } from '@/utils/clearAppData';
@@ -91,6 +94,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [includeDeletedRecords, setIncludeDeletedRecords] = useState(true);
   const [loading, setLoading] = useState(false);
+  useKeepScreenAwake('data-settings-transfer', loading);
   const [localBackupsModalVisible, setLocalBackupsModalVisible] = useState(false);
   const [opticalTransferVisible, setOpticalTransferVisible] = useSubModalVisibility(visible);
 
@@ -261,67 +265,38 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Data Portability Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.advancedSettings.dataPortability')}
-          </Text>
-          <SettingsCard
-            icon={<Upload size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-            iconContainerStyle={{
-              width: theme.size['16'],
-              height: theme.size['16'],
-              borderRadius: theme.borderRadius.sm,
-              backgroundColor: theme.colors.accent.primary20,
-            }}
-            title={t('settings.advancedSettings.exportFitnessData')}
-            subtitle={t('settings.advancedSettings.exportFitnessDataSubtitle')}
-            onPress={() => {
-              setIncludeDeletedRecords(true);
-              setExportModalVisible(true);
-            }}
-            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-          />
-          <SettingsCard
-            icon={<Database size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-            iconContainerStyle={{
-              width: theme.size['16'],
-              height: theme.size['16'],
-              borderRadius: theme.borderRadius.sm,
-              backgroundColor: theme.colors.accent.primary20,
-            }}
-            title={t('settings.advancedSettings.manageLocalBackups')}
-            subtitle={t('settings.advancedSettings.manageLocalBackupsSubtitle')}
-            onPress={() => setLocalBackupsModalVisible(true)}
-            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-          />
-          <SettingsCard
-            icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-            iconContainerStyle={{
-              width: theme.size['16'],
-              height: theme.size['16'],
-              borderRadius: theme.borderRadius.sm,
-              backgroundColor: theme.colors.accent.primary20,
-            }}
-            title={t('settings.advancedSettings.importFitnessData')}
-            subtitle={t('settings.advancedSettings.importFitnessDataSubtitle')}
-            onPress={() => setImportModalVisible(true)}
-            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-          />
-          <SettingsCard
-            icon={<ScanLine size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-            iconContainerStyle={{
-              width: theme.size['16'],
-              height: theme.size['16'],
-              borderRadius: theme.borderRadius.sm,
-              backgroundColor: theme.colors.accent.primary20,
-            }}
-            title={t('settings.advancedSettings.opticalTransfer')}
-            subtitle={t('settings.advancedSettings.opticalTransferSubtitle')}
-            onPress={() => setOpticalTransferVisible(true)}
-            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-          />
+          </SectionLabel>
+          <ListGroup>
+            <SettingsCard
+              icon={<Upload size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title={t('settings.advancedSettings.exportFitnessData')}
+              subtitle={t('settings.advancedSettings.exportFitnessDataSubtitle')}
+              onPress={() => {
+                setIncludeDeletedRecords(true);
+                setExportModalVisible(true);
+              }}
+            />
+            <SettingsCard
+              icon={<Database size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title={t('settings.advancedSettings.manageLocalBackups')}
+              subtitle={t('settings.advancedSettings.manageLocalBackupsSubtitle')}
+              onPress={() => setLocalBackupsModalVisible(true)}
+            />
+            <SettingsCard
+              icon={<Download size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title={t('settings.advancedSettings.importFitnessData')}
+              subtitle={t('settings.advancedSettings.importFitnessDataSubtitle')}
+              onPress={() => setImportModalVisible(true)}
+            />
+            <SettingsCard
+              icon={<ScanLine size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title={t('settings.advancedSettings.opticalTransfer')}
+              subtitle={t('settings.advancedSettings.opticalTransferSubtitle')}
+              onPress={() => setOpticalTransferVisible(true)}
+            />
+          </ListGroup>
           <View className="mt-4" />
           <ToggleInput
             items={[
@@ -352,25 +327,15 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
 
         {/* Sensor Data Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
-            {t('bleWorkoutData.sectionTitle')}
-          </Text>
-          <SettingsCard
-            icon={<Bluetooth size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-            iconContainerStyle={{
-              width: theme.size['16'],
-              height: theme.size['16'],
-              borderRadius: theme.borderRadius.sm,
-              backgroundColor: theme.colors.accent.primary20,
-            }}
-            title={t('bleWorkoutData.title')}
-            subtitle={t('bleWorkoutData.subtitle')}
-            onPress={() => setShowBleWorkoutDataModal(true)}
-            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
-          />
+          <SectionLabel className="mb-2 px-1">{t('bleWorkoutData.sectionTitle')}</SectionLabel>
+          <ListGroup>
+            <SettingsCard
+              icon={<Bluetooth size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title={t('bleWorkoutData.title')}
+              subtitle={t('bleWorkoutData.subtitle')}
+              onPress={() => setShowBleWorkoutDataModal(true)}
+            />
+          </ListGroup>
         </View>
 
         {/* Advanced Data Management Toggle */}
@@ -405,204 +370,136 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
         {/* Data Management Section */}
         {debouncedAdvancedDataManagement ? (
           <View>
-            <Text
-              className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-              style={{ color: theme.colors.text.secondary }}
-            >
+            <SectionLabel className="mb-2 px-1">
               {t('settings.advancedSettings.dataManagement')}
-            </Text>
-            <SettingsCard
-              icon={<Utensils size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageFoodData')}
-              subtitle={t('settings.advancedSettings.manageFoodDataSubtitle')}
-              onPress={() => setShowFoodDataModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<Apple size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageNutritionLogsData')}
-              subtitle={t('settings.advancedSettings.manageNutritionLogsDataSubtitle')}
-              onPress={() => setShowNutritionLogsModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<Coffee size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageMealsData')}
-              subtitle={t('settings.advancedSettings.manageMealsDataSubtitle')}
-              onPress={() => setShowMealsModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<Database size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.managePortionsData')}
-              subtitle={t('settings.advancedSettings.managePortionsDataSubtitle')}
-              onPress={() => setShowPortionsModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageWorkoutsData')}
-              subtitle={t('settings.advancedSettings.manageWorkoutsDataSubtitle')}
-              onPress={() => setShowWorkoutsModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<Target size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageWorkoutsLogData')}
-              subtitle={t('settings.advancedSettings.manageWorkoutsLogDataSubtitle')}
-              onPress={() => setShowWorkoutLogsModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<TrendingUp size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageMetricsData')}
-              subtitle={t('settings.advancedSettings.manageMetricsDataSubtitle')}
-              onPress={() => setShowMetricsModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<Activity size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageExercisesData')}
-              subtitle={t('settings.advancedSettings.manageExercisesDataSubtitle')}
-              onPress={() => setShowExercisesModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<Flag size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageGoalsData')}
-              subtitle={t('settings.advancedSettings.manageGoalsDataSubtitle')}
-              onPress={() => setShowNutritionGoalsModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<CalendarCheck size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.manageCheckinsData')}
-              subtitle={t('settings.advancedSettings.manageCheckinsDataSubtitle')}
-              onPress={() => setShowNutritionCheckinsModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-            <SettingsCard
-              icon={<MessageSquare size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.chatMessages.title')}
-              subtitle={t(
-                'settings.chatMessages.subtitle',
-                'View and edit your conversation history'
-              )}
-              onPress={() => setShowChatMessagesModal(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
+            </SectionLabel>
+            <ListGroup>
+              <SettingsCard
+                icon={<Utensils size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.manageFoodData')}
+                subtitle={t('settings.advancedSettings.manageFoodDataSubtitle')}
+                onPress={() => setShowFoodDataModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={<Apple size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.manageNutritionLogsData')}
+                subtitle={t('settings.advancedSettings.manageNutritionLogsDataSubtitle')}
+                onPress={() => setShowNutritionLogsModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={<Coffee size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.manageMealsData')}
+                subtitle={t('settings.advancedSettings.manageMealsDataSubtitle')}
+                onPress={() => setShowMealsModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={<Database size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.managePortionsData')}
+                subtitle={t('settings.advancedSettings.managePortionsDataSubtitle')}
+                onPress={() => setShowPortionsModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={<Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.manageWorkoutsData')}
+                subtitle={t('settings.advancedSettings.manageWorkoutsDataSubtitle')}
+                onPress={() => setShowWorkoutsModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={<Target size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.manageWorkoutsLogData')}
+                subtitle={t('settings.advancedSettings.manageWorkoutsLogDataSubtitle')}
+                onPress={() => setShowWorkoutLogsModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={<TrendingUp size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.manageMetricsData')}
+                subtitle={t('settings.advancedSettings.manageMetricsDataSubtitle')}
+                onPress={() => setShowMetricsModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={<Activity size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.manageExercisesData')}
+                subtitle={t('settings.advancedSettings.manageExercisesDataSubtitle')}
+                onPress={() => setShowExercisesModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={<Flag size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+                title={t('settings.advancedSettings.manageGoalsData')}
+                subtitle={t('settings.advancedSettings.manageGoalsDataSubtitle')}
+                onPress={() => setShowNutritionGoalsModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={
+                  <CalendarCheck size={theme.iconSize.xl} color={theme.colors.accent.primary} />
+                }
+                title={t('settings.advancedSettings.manageCheckinsData')}
+                subtitle={t('settings.advancedSettings.manageCheckinsDataSubtitle')}
+                onPress={() => setShowNutritionCheckinsModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+              <SettingsCard
+                icon={
+                  <MessageSquare size={theme.iconSize.xl} color={theme.colors.accent.primary} />
+                }
+                title={t('settings.chatMessages.title')}
+                subtitle={t(
+                  'settings.chatMessages.subtitle',
+                  'View and edit your conversation history'
+                )}
+                onPress={() => setShowChatMessagesModal(true)}
+                rightIcon={
+                  <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+                }
+              />
+            </ListGroup>
           </View>
         ) : null}
 
         <Text
-          className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+          className="mb-2 px-5 text-xs font-semibold"
           style={{ color: theme.colors.status.error }}
         >
           {t('settings.advancedSettings.dangerZone')}
         </Text>
         {/* Clear App Data */}
-        <SettingsCard
-          icon={<Database size={theme.iconSize.xl} color={theme.colors.status.error} />}
-          iconContainerStyle={{
-            width: theme.size['16'],
-            height: theme.size['16'],
-            borderRadius: theme.borderRadius.sm,
-            backgroundColor: theme.colors.status.error20,
-          }}
-          title={t('settings.advancedSettings.clearAppData')}
-          subtitle={t('settings.advancedSettings.clearAppDataSubtitle')}
-          titleColor={theme.colors.status.error}
-          onPress={() => setClearAppDataModalVisible(true)}
-          rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.status.error} />}
-        />
+        <ListGroup>
+          <SettingsCard
+            icon={<Database size={theme.iconSize.xl} color={theme.colors.status.error} />}
+            title={t('settings.advancedSettings.clearAppData')}
+            subtitle={t('settings.advancedSettings.clearAppDataSubtitle')}
+            titleColor={theme.colors.status.error}
+            onPress={() => setClearAppDataModalVisible(true)}
+          />
+        </ListGroup>
         <LegalLinksCard />
       </View>
 

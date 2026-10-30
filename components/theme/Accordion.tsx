@@ -59,7 +59,7 @@ export function Accordion({
 
   return (
     <View
-      className={`mb-4 overflow-hidden rounded-lg border border-border-dark bg-bg-card ${className}`}
+      className={`mb-4 overflow-hidden rounded-control border border-border-dark bg-bg-card ${className}`}
     >
       <Pressable onPress={handlePress} className="overflow-hidden">
         <View className="flex-row items-center justify-between px-4 py-4">

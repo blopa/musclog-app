@@ -13,7 +13,6 @@ export const CameraProcessingIndicator = ({
   const theme = useTheme();
   const { t } = useTranslation();
   const [spinAnim] = useState(() => new Animated.Value(0));
-  const [pulseAnim] = useState(() => new Animated.Value(1));
 
   const getProcessingText = useCallback(() => {
     switch (cameraMode) {
@@ -43,27 +42,10 @@ export const CameraProcessingIndicator = ({
     );
     spin.start();
 
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 0.5,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    pulse.start();
-
     return () => {
       spin.stop();
-      pulse.stop();
     };
-  }, [spinAnim, pulseAnim]);
+  }, [spinAnim]);
 
   const spin = spinAnim.interpolate({
     inputRange: [0, 1],
@@ -96,10 +78,7 @@ export const CameraProcessingIndicator = ({
 
         {/* Center Icon */}
         <View className="absolute inset-0 items-center justify-center">
-          <Animated.View
-            className="h-8 w-8 items-center justify-center"
-            style={{ opacity: pulseAnim }}
-          >
+          <View className="h-8 w-8 items-center justify-center">
             <Svg
               width={32}
               height={32}
@@ -114,7 +93,7 @@ export const CameraProcessingIndicator = ({
                 d="M12 3l1.8 4.5L18 9l-4.2 1.5L12 15l-1.8-4.5L6 9l4.2-1.5L12 3z"
               />
             </Svg>
-          </Animated.View>
+          </View>
         </View>
       </View>
 
@@ -128,7 +107,7 @@ export const CameraProcessingIndicator = ({
         </Text>
 
         <Text
-          className="mt-2 text-center text-xs uppercase tracking-widest"
+          className="mt-2 text-center text-xs"
           style={{ color: theme.colors.overlay.alwaysWhite70 }}
         >
           {getSubText()}

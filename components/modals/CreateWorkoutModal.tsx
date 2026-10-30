@@ -5,7 +5,6 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-nati
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { Button } from '@/components/theme/Button';
-import DashedButton from '@/components/theme/DashedButton';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
@@ -110,12 +109,10 @@ export default function CreateWorkoutModal({
           {
             label: t('createWorkout.workoutInsight.ai'),
             value: 'ai',
-            icon: (
+            icon: (selected: boolean) => (
               <Sparkles
                 size={theme.iconSize.xs}
-                color={
-                  workoutInsights === 'ai' ? theme.colors.text.primary : theme.colors.text.tertiary
-                }
+                color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
               />
             ),
           },
@@ -186,8 +183,6 @@ export default function CreateWorkoutModal({
               fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}
@@ -359,8 +354,6 @@ export default function CreateWorkoutModal({
               fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}
@@ -414,8 +407,6 @@ export default function CreateWorkoutModal({
               fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}
@@ -434,7 +425,7 @@ export default function CreateWorkoutModal({
           >
             <Pressable
               onPress={() => planAssignment.openPicker()}
-              className="mb-4 flex-row items-center justify-between rounded-lg border border-border-light bg-bg-secondary p-4"
+              className="mb-4 flex-row items-center justify-between rounded-card border border-border-light bg-bg-secondary p-4"
             >
               <View className="min-w-0 flex-1">
                 <Text className="text-sm font-medium text-text-primary">
@@ -506,8 +497,6 @@ export default function CreateWorkoutModal({
               fontSize: theme.typography.fontSize.sm,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.md,
               marginLeft: theme.spacing.margin.xs,
             }}
@@ -552,11 +541,13 @@ export default function CreateWorkoutModal({
                   {t('createWorkout.ruleTapHint')}
                 </Text>
                 <View style={{ marginTop: theme.spacing.margin.md }}>
-                  <DashedButton
+                  <Button
+                    variant="dashed"
+                    size="sm"
+                    width="full"
+                    icon={Plus}
                     label={t('workouts.addExercise.title')}
                     onPress={() => setAddExerciseVisible(true)}
-                    size="sm"
-                    icon={<Plus size={theme.iconSize.md} color={theme.colors.text.secondary} />}
                   />
                 </View>
               </>

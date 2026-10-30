@@ -98,3 +98,45 @@ describe('hapticBeat', () => {
     expect([...HAPTIC_TICK_SECONDS]).toEqual([3, 2, 1]);
   });
 });
+
+describe('restPhase with a chosen heads-up', () => {
+  it('turns to get-ready at the chosen window, not a fixed ten seconds', () => {
+    expect(restPhase(25, 90, 30)).toBe('getReady');
+    expect(restPhase(25, 90, 20)).toBe('resting');
+    expect(restPhase(20, 90, 20)).toBe('getReady');
+  });
+
+  it('never turns to get-ready when the heads-up is off', () => {
+    expect(restPhase(5, 90, 0)).toBe('resting');
+    expect(restPhase(0, 90, 0)).toBe('done');
+  });
+
+  it('keeps the long-standing ten-second window when none is given', () => {
+    expect(restPhase(10, 90)).toBe('getReady');
+    expect(restPhase(11, 90)).toBe('resting');
+  });
+
+  it('has nothing to warn about when the rest is no longer than the window', () => {
+    expect(restPhase(15, 20, 30)).toBe('resting');
+  });
+});
+
+describe('hapticBeat heads-up', () => {
+  it('buzzes once as the countdown crosses onto the heads-up second', () => {
+    expect(hapticBeat(21, 20, 20)).toBe('headsUp');
+  });
+
+  it('does not buzz for the heads-up when it is off or the value is only re-rendered', () => {
+    expect(hapticBeat(21, 20, 0)).toBeNull();
+    expect(hapticBeat(20, 20, 20)).toBeNull();
+  });
+
+  it('does not announce a heads-up while the rest is counting up onto it (an adjustment)', () => {
+    expect(hapticBeat(15, 20, 20)).toBeNull();
+  });
+
+  it('still plays the final ticks and the done buzz', () => {
+    expect(hapticBeat(4, 3, 20)).toBe('tick');
+    expect(hapticBeat(1, 0, 20)).toBe('done');
+  });
+});

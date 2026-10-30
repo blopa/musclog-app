@@ -3,8 +3,7 @@ import type { EquipmentType } from '@/database/models/Exercise';
 
 import {
   defaultBarWeightKg,
-  defaultPlates,
-  defaultWeightIncrementKg,
+  defaultGymSnapshot,
   type GymSnapshot,
   isBarLoadedEquipment,
 } from './gym';
@@ -72,14 +71,7 @@ export function buildWarmupSets(
   const barKg = barLoaded ? (gym?.barWeightKg ?? defaultBarWeightKg(units)) : 0;
   // Without a gym the standard plates and the default step apply, so a user who never described
   // their gym still gets weights that can be loaded.
-  const loadingGym: GymSnapshot = gym ?? {
-    id: 'default',
-    name: 'default',
-    barWeightKg: defaultBarWeightKg(units),
-    plates: defaultPlates(units),
-    weightIncrementKg: defaultWeightIncrementKg(units),
-    equipment: [],
-  };
+  const loadingGym = gym ?? defaultGymSnapshot(units);
   const floorKg = barLoaded ? barKg : loadingGym.weightIncrementKg;
 
   // The bar alone is the warm-up when the working weight barely exceeds it.
@@ -92,7 +84,7 @@ export function buildWarmupSets(
   for (const { fraction, reps } of WARMUP_RAMP) {
     const snapped = Math.max(
       floorKg,
-      roundToLoadable(workingKg * fraction, equipmentType, loadingGym)
+      roundToLoadable(workingKg * fraction, equipmentType, loadingGym, units)
     );
     if (snapped >= workingKg * MAX_WARMUP_FRACTION_OF_WORKING || seen.has(snapped)) {
       continue;

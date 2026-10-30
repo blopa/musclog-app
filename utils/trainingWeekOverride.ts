@@ -1,7 +1,8 @@
+import type { WorkoutRamp } from '@/utils/comeback/comebackProgram';
 import { counterpartAt, type HistorySet, type RuleLoadStep } from '@/utils/progressionRules';
 import { sameLoad } from '@/utils/sameLoad';
 import type { StartSetAdjustment } from '@/utils/setAdjustment';
-import { deloadedLoad } from '@/utils/setProgression';
+import { deloadedLoad, loadBelow } from '@/utils/setProgression';
 import { LIGHTER_WEEK_TARGET_RIR, lighterSetCount } from '@/utils/weeklyTrainingRecommendation';
 
 export type WeekOverrideKind = 'repeat' | 'lighter';
@@ -25,6 +26,21 @@ export type WeekOverridePlan = {
   /** Working sets left after the change, recorded so a partial block never implies full success. */
   workingSetCount: number;
 };
+
+/** The planned sets as a week override leaves them: changed numbers, dropped sets removed. */
+export function applyWeekOverride(
+  planned: readonly WeekOverrideSet[],
+  plan: Pick<WeekOverridePlan, 'changes' | 'dropSetIds'>
+): WeekOverrideSet[] {
+  const changes = new Map(plan.changes.map((change) => [change.setId, change]));
+  const dropped = new Set(plan.dropSetIds);
+  return planned
+    .filter((set) => !dropped.has(set.id))
+    .map((set) => {
+      const change = changes.get(set.id);
+      return change ? { ...set, weight: change.weightKg, reps: change.reps } : set;
+    });
+}
 
 /**
  * What a Weekly Review decision of "repeat" or "lighter" does to one exercise's planned working
@@ -82,6 +98,101 @@ export function planWeekOverride(input: {
             },
             now: { weightKg, reps },
             source: 'weekly_review',
+          }
+        : null,
+    });
+  }
+
+  return {
+    changes,
+    dropSetIds: planned.slice(keep).map((set) => set.id),
+    workingSetCount: keep,
+  };
+}
+
+/** What decides a workout's starting numbers instead of the ordinary projection. */
+export type StartOverride = { kind: WeekOverrideKind } | { kind: 'comeback'; ramp: WorkoutRamp };
+
+/**
+ * Which override governs a session start. An active comeback ramp beats a Weekly Review's repeat or
+ * lighter week: the person opted in to an eased restart, so a week decision made on thin, months-old
+ * evidence must not push the loads back up (or, worse, apply a second reduction on top of it).
+ */
+export function resolveStartOverride({
+  comeback,
+  week,
+}: {
+  comeback: WorkoutRamp | null;
+  week: WeekOverrideKind | null;
+}): StartOverride | null {
+  if (comeback) {
+    return { kind: 'comeback', ramp: comeback };
+  }
+
+  return week ? { kind: week } : null;
+}
+
+/**
+ * What one week of the comeback ramp does to one exercise's planned working sets. Pure.
+ *
+ * - Sets: at most `ramp.maxWorkingSets` of them are kept; the trailing ones are dropped.
+ * - Effort: every kept set aims for the ramp's reps in reserve, which also stops between-sets
+ *   re-targeting from pushing the load straight back up.
+ * - Load: only when this exercise HAS pre-break history (`base`). The ramp then asks for a share of
+ *   that session's load, snapped DOWN to a load that is really lighter ({@link loadBelow}) so a
+ *   small weight cannot round back up to what it was meant to ease. It never goes below what the
+ *   person already lifted in an earlier session of this comeback (`earlier`): a lifter who turned
+ *   out stronger than the ramp is not told to lift less. With no history the plan's own load stands
+ *   — a template's loads are already profile-based, and scaling them again would cut them twice.
+ * - Reps stay the plan's; a bodyweight set (load 0) only loses sets.
+ */
+export function planComebackOverride(input: {
+  ramp: WorkoutRamp;
+  planned: readonly WeekOverrideSet[];
+  /** The pre-break session's performed working sets (empty = no history for this exercise). */
+  base: readonly HistorySet[];
+  /** The latest session of this comeback, if any: the floor for the load. */
+  earlier: readonly HistorySet[];
+  step: RuleLoadStep;
+}): WeekOverridePlan {
+  const { ramp, planned, base, earlier, step } = input;
+  const keep =
+    ramp.maxWorkingSets === null ? planned.length : Math.min(ramp.maxWorkingSets, planned.length);
+  const changes: WeekOverrideSetChange[] = [];
+  for (const [index, set] of planned.slice(0, keep).entries()) {
+    const before = counterpartAt(base, index);
+    let weightKg = set.weight;
+    if (before && before.weightKg > 0) {
+      const eased = loadBelow(before.weightKg, before.weightKg * ramp.loadFactor, step);
+      const floor = counterpartAt(earlier, index)?.weightKg ?? 0;
+      weightKg = Math.max(eased, floor);
+    }
+
+    const moved = !sameLoad(weightKg, set.weight);
+    changes.push({
+      setId: set.id,
+      weightKg,
+      reps: set.reps,
+      repsInReserve: ramp.targetRir,
+      adjustment: moved
+        ? {
+            cause: 'deload',
+            field: 'weight',
+            from: set.weight,
+            to: weightKg,
+            plan: { weightKg: set.weight, reps: set.reps },
+            last: {
+              weightKg: before?.weightKg ?? set.weight,
+              reps: before?.reps ?? set.reps,
+              averageRepsInReserve: before?.repsInReserve ?? 0,
+            },
+            now: { weightKg, reps: set.reps },
+            source: 'comeback',
+            comeback: {
+              week: ramp.week,
+              percent: Math.round(ramp.loadFactor * 100),
+              targetRir: ramp.targetRir,
+            },
           }
         : null,
     });

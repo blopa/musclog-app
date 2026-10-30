@@ -120,8 +120,8 @@
       "clearFilters": "Limpar Filtros",
       "applyFilters": "Aplicar Filtros",
       "workoutType": "Tipo de Treino",
-      "targetMuscles": "MÚSCULOS ALVO",
-      "duration": "DURAÇÃO",
+      "targetMuscles": "Músculos alvo",
+      "duration": "Duração",
       "upTo": "Até {{duration}}",
       "workoutTypes": {
         "strength": "Força",
@@ -209,7 +209,7 @@
       "successMessageWithPlan": "{{planName}} criado com {{count}} treinos"
     },
     "aiGeneration": {
-      "comingSoon": "Geração de treino por IA em breve!",
+      "comingSoon": "Geração de treino por IA em breve.",
       "title": "Gerar com IA",
       "subtitle": "Conte seus objetivos e criaremos um plano de treino personalizado",
       "preferencesLabel": "Suas preferências",
@@ -220,7 +220,7 @@
       "aiNotConfigured": "Os recursos de IA não estão configurados. Adicione uma chave de API do Gemini ou OpenAI nas Configurações."
     },
     "templateBrowser": {
-      "comingSoon": "Navegador de modelos em breve!"
+      "comingSoon": "Navegador de modelos em breve."
     },
     "interruptedSession": {
       "description": "Você tem um treino em andamento.",
@@ -233,6 +233,10 @@
       "alreadyActive": "Você já tem um treino em andamento. Retome ou descarte-o primeiro."
     },
     "unnamed": "Sem nome",
-    "previewWorkout": "Pré-visualizar {{name}}"
+    "previewWorkout": "Pré-visualizar {{name}}",
+    "history": {
+      "title": "Histórico de treinos",
+      "description": "Veja todas as sessões que você concluiu"
+    }
   }
 }

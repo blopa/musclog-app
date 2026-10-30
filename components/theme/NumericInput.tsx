@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useRef } from 'react';
+import type { TextInputInstance } from 'react-native';
 import { Pressable, Text, TextInput as RNTextInput, TextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -27,19 +28,19 @@ export function NumericInput({
 }: TestNumericInputProps) {
   const theme = useTheme();
   const unitColorFinal = unitColor || theme.colors.accent.primary;
-  const inputRef = useRef<RNTextInput | null>(null);
+  const inputRef = useRef<TextInputInstance | null>(null);
 
   return (
-    <View className="flex-1 flex-col items-center gap-1 rounded-lg border border-ink/10 bg-bg-card p-4">
+    <View className="flex-1 flex-col items-center gap-1 rounded-control border border-ink/10 bg-bg-card p-4">
       <Text
-        className="font-bold uppercase tracking-widest text-text-tertiary"
+        className="font-bold text-text-tertiary"
         style={{ fontSize: theme.typography.fontSize.xs }}
       >
         {label}
       </Text>
       {onIncrement ? (
         <Pressable
-          className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
+          className="w-full items-center justify-center rounded-control bg-accent-primary py-1.5 active:opacity-80"
           onPress={onIncrement}
         >
           <ChevronUp size={theme.iconSize.sm} color={theme.colors.text.onAccent} />
@@ -47,8 +48,9 @@ export function NumericInput({
       ) : null}
       <TextInput
         ref={inputRef}
+        accessibilityLabel={label}
         selectTextOnFocus
-        className="w-full border-none bg-transparent p-0 text-center text-3xl font-black text-text-primary"
+        className="w-full border-none bg-transparent p-0 text-center text-3xl font-bold text-text-primary"
         value={value}
         onChangeText={onChangeText}
         keyboardType="numeric"
@@ -59,7 +61,7 @@ export function NumericInput({
       </Text>
       {onDecrement ? (
         <Pressable
-          className="w-full items-center justify-center rounded-lg bg-accent-primary py-1.5 active:opacity-80"
+          className="w-full items-center justify-center rounded-control bg-accent-primary py-1.5 active:opacity-80"
           onPress={onDecrement}
         >
           <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.onAccent} />

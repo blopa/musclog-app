@@ -33,12 +33,12 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
             <TouchableOpacity
               key={agg}
               onPress={() => setAggregation(agg)}
-              className={`rounded-full px-3 py-1.5 ${
+              className={`rounded-control px-3 py-1.5 ${
                 aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
               }`}
             >
               <Text
-                className={`text-xs font-bold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
+                className={`text-xs font-semibold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
               >
                 {t(`common.time.${agg}`)}
               </Text>
@@ -78,12 +78,12 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
           <TouchableOpacity
             key={agg}
             onPress={() => setAggregation(agg)}
-            className={`rounded-full px-3 py-1.5 ${
+            className={`rounded-control px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}
           >
             <Text
-              className={`text-xs font-bold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
+              className={`text-xs font-semibold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
             >
               {t(`common.time.${agg}`)}
             </Text>
@@ -105,7 +105,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
           yDomain={[0, maxY]}
         />
         <View className="mt-4 px-2">
-          <Text className="mb-2 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="mb-2 text-xs font-semibold text-text-tertiary">
             {t('progress.muscleGroupVolumeOverlay')}
           </Text>
           <View className="flex-row flex-wrap gap-4">

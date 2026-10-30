@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import {
   Activity,
+  Bot,
   BrainCircuit,
   CheckCircle,
   Dumbbell,
@@ -30,11 +31,15 @@ import {
 import { EditPersonalInfoModal } from '@/components/modals/EditPersonalInfoModal';
 import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { IconButton } from '@/components/theme/IconButton';
+import { ListGroup } from '@/components/theme/ListGroup';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { type Gender } from '@/database/models';
 import { UserService } from '@/database/services/UserService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSettings } from '@/hooks/useSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
@@ -43,11 +48,13 @@ import { useUserMetrics } from '@/hooks/useUserMetrics';
 import { useWeightPrediction } from '@/hooks/useWeightPrediction';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { calculateBMIWithStatus } from '@/utils/bmiHelper';
+import { resolveTrackingToggle } from '@/utils/cycle/trackingToggle';
 import {
   formatDateOfBirthFromTimestamp,
   persistFitnessDetails,
 } from '@/utils/fitnessProfilePersistence';
 import { handleError } from '@/utils/handleError';
+import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { kgToDisplay } from '@/utils/unitConversion';
 
 const getGenderKey = (gender: string): string => {
@@ -105,6 +112,12 @@ export default function ProfileScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const {
+    isActive: isCycleActive,
+    pausedCycle,
+    deactivateTracking,
+    resumeTracking,
+  } = useMenstrualCycle();
   const { units, weightUnit, heightUnit, showWeightPrediction } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
@@ -123,24 +136,27 @@ export default function ProfileScreen() {
         titleKey: 'profile.managementItems.editPersonal',
         descriptionKey: 'profile.managementItems.editPersonalDesc',
         icon: User,
-        iconColor: theme.colors.accent.primary,
       },
       {
         id: 'fitness',
         titleKey: 'profile.managementItems.editFitness',
         descriptionKey: 'profile.managementItems.editFitnessDesc',
         icon: Dumbbell,
-        iconColor: theme.colors.status.purple,
+      },
+      {
+        id: 'ai',
+        titleKey: 'profile.managementItems.aiUpdate',
+        descriptionKey: 'profile.managementItems.aiUpdateDesc',
+        icon: Bot,
       },
       {
         id: 'preferences',
         titleKey: 'profile.managementItems.appPreferences',
         descriptionKey: 'profile.managementItems.appPreferencesDesc',
         icon: List,
-        iconColor: theme.colors.text.secondary,
       },
     ],
-    [theme]
+    []
   );
 
   useEffect(() => {
@@ -280,6 +296,23 @@ export default function ProfileScreen() {
         avatarIcon: data.avatarIcon || null,
         avatarColor: data.avatarColor || null,
       });
+
+      const trackingAction = resolveTrackingToggle({
+        requested: data.trackCycle,
+        isActive: isCycleActive,
+        hasPausedCycle: pausedCycle != null,
+      });
+      if (trackingAction === 'pause') {
+        // Pausing keeps every record; turning it back on resumes the same history.
+        await deactivateTracking();
+      } else if (trackingAction === 'resume') {
+        await resumeTracking();
+      } else if (trackingAction === 'setup') {
+        router.navigate({
+          pathname: '/app/onboarding/cycle-setup',
+          params: { nextRoute: encodeURIComponent('/app/profile') },
+        } as never);
+      }
     } catch (err) {
       handleError(err, 'profile.handleSavePersonalInfo', {
         snackbarMessage: t('errors.somethingWentWrong'),
@@ -299,6 +332,18 @@ export default function ProfileScreen() {
 
   return (
     <MasterLayout>
+      <ScreenHeader
+        title={t('profile.header.title')}
+        destination="profile"
+        actions={
+          <IconButton
+            icon={Settings}
+            variant="ghost"
+            accessibilityLabel={t('settings.title')}
+            onPress={() => router.navigate('/app/settings')}
+          />
+        }
+      />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Syncing Indicator */}
         {isSyncing ? (
@@ -306,30 +351,20 @@ export default function ProfileScreen() {
             <ProgressIndicator message={t('profile.syncing.healthKit')} />
           </View>
         ) : null}
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-6">
-          <Text className="text-4xl font-bold text-text-primary">{t('profile.header.title')}</Text>
-          <Pressable
-            className="active:bg-bg-card-elevated h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
-            onPress={() => router.navigate('/app/settings')}
-          >
-            <Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />
-          </Pressable>
-        </View>
 
         {/* User Profile Section */}
-        <View className="mb-8 items-center">
+        <View className="mb-6 mt-5 items-center">
           {isLoadingUser ? (
             <View className="items-center gap-3">
-              <SkeletonLoader width={128} height={128} borderRadius={64} />
+              <SkeletonLoader width={96} height={96} borderRadius={48} />
               <SkeletonLoader width={200} height={28} borderRadius={8} />
             </View>
           ) : (
             <AnimatedContent style={{ alignItems: 'center' }}>
               <>
-                <View className="relative mb-4">
+                <View className="relative mb-3">
                   <View
-                    className="h-32 w-32 overflow-hidden rounded-full border-4"
+                    className="h-24 w-24 overflow-hidden rounded-full border-2"
                     style={{
                       borderColor: dbUser
                         ? getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor).color
@@ -346,7 +381,7 @@ export default function ProfileScreen() {
                           getAvatarDisplayProps(theme, dbUser.avatarIcon, dbUser.avatarColor)
                             .IconComponent,
                           {
-                            size: 40,
+                            size: 32,
                             color: getAvatarDisplayProps(
                               theme,
                               dbUser.avatarIcon,
@@ -358,18 +393,18 @@ export default function ProfileScreen() {
                     ) : null}
                   </View>
                   <Pressable
-                    className="absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-full border-2 border-bg-primary"
+                    className="absolute -bottom-1 -right-1 h-9 w-9 items-center justify-center rounded-full border-2 border-bg-primary"
                     style={{ backgroundColor: theme.colors.accent.primary }}
                     onPress={() => setIsEditPersonalVisible(true)}
                   >
                     <Edit size={theme.iconSize.sm} color={theme.colors.text.onAccent} />
                   </Pressable>
                 </View>
-                <Text className="mb-3 text-center text-3xl font-bold text-text-primary">
+                <Text className="mb-1 text-center text-xl font-semibold text-text-primary">
                   {dbUser?.fullName || t('profile.loading')}
                 </Text>
                 {dbUser?.fitnessGoal ? (
-                  <Text className="text-center text-base text-text-primary">
+                  <Text className="text-center text-sm text-text-secondary">
                     {t('profile.goal')}:{' '}
                     {t(
                       `editFitnessDetails.fitnessGoalLabels.${dbUser.fitnessGoal === 'weight_loss' ? 'weightLoss' : dbUser.fitnessGoal}`
@@ -382,9 +417,9 @@ export default function ProfileScreen() {
         </View>
 
         {/* Current Stats Section */}
-        <View className="mb-8 px-4">
-          <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-text-primary">
+        <View className="mb-6 px-4">
+          <View className="mb-2 flex-row items-center justify-between">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('profile.currentStats')}
             </Text>
             <ShowMoreButton
@@ -392,10 +427,10 @@ export default function ProfileScreen() {
               label={t('profile.history')}
             />
           </View>
-          <View className="-mx-2 flex-row flex-wrap">
+          <View className="-mx-1.5 flex-row flex-wrap">
             {isLoadingMetrics || isLoadingUser ? (
               [1, 2, 3, 4].map((i) => (
-                <View key={i} className="mb-4 w-1/2 px-2">
+                <View key={i} className="mb-3 w-1/2 px-1.5">
                   <SkeletonLoader height={80} borderRadius={12} />
                 </View>
               ))
@@ -405,11 +440,10 @@ export default function ProfileScreen() {
                   flexDirection: 'row',
                   flexWrap: 'wrap',
                   width: '100%',
-                  marginHorizontal: -8,
                 }}
               >
                 {stats.map((stat) => (
-                  <View key={stat.id} className="mb-4 w-1/2 px-2">
+                  <View key={stat.id} className="mb-3 w-1/2 px-1.5">
                     <StatCard
                       title={t(stat.titleKey)}
                       value={stat.value}
@@ -430,7 +464,7 @@ export default function ProfileScreen() {
         {showWeightPrediction &&
         weightPrediction.shouldShow &&
         weightPrediction.predictedWeightKg !== null ? (
-          <View className="mb-8 px-4">
+          <View className="mb-6 px-4">
             <GenericCard variant="raised">
               <View className="flex-row items-center gap-3 p-4">
                 <View
@@ -444,7 +478,7 @@ export default function ProfileScreen() {
                     {t('profile.weightPrediction.title')}
                   </Text>
                   <View className="flex-row items-baseline gap-1">
-                    <Text className="text-2xl font-bold text-text-primary">
+                    <Text className="text-lg font-semibold text-text-primary">
                       {formatDecimal(kgToDisplay(weightPrediction.predictedWeightKg, units), 1)}
                     </Text>
                     <Text className="text-base text-text-secondary">{weightUnit}</Text>
@@ -459,30 +493,32 @@ export default function ProfileScreen() {
         ) : null}
 
         {/* Management Section */}
-        <View className="mb-8 px-4">
-          <Text className="mb-4 text-2xl font-bold text-text-primary">
+        <View className="mb-6 px-4">
+          <Text className="mb-2 text-lg font-semibold text-text-primary">
             {t('profile.management')}
           </Text>
-          <View className="gap-3">
+          <ListGroup>
             {managementItems.map((item) => (
               <ManagementItem
                 key={item.id}
                 title={t(item.titleKey)}
                 description={t(item.descriptionKey)}
                 icon={item.icon}
-                iconColor={item.iconColor}
                 onPress={() => {
                   if (item.id === 'personal') {
                     setIsEditPersonalVisible(true);
                   } else if (item.id === 'fitness') {
                     setIsEditFitnessVisible(true);
+                  } else if (item.id === 'ai') {
+                    // Not gated on a configured AI: the ChatGPT/Claude route needs none.
+                    router.navigate(aiSetupRoute('setup', 'profile') as never);
                   } else if (item.id === 'preferences') {
                     router.navigate('/app/settings');
                   }
                 }}
               />
             ))}
-          </View>
+          </ListGroup>
         </View>
 
         {/* Bottom spacing for navigation */}
@@ -510,6 +546,7 @@ export default function ProfileScreen() {
                 gender: dbUser.gender,
                 avatarIcon: dbUser.avatarIcon,
                 avatarColor: dbUser.avatarColor,
+                trackCycle: isCycleActive,
               }
             : undefined
         }

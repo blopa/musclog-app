@@ -67,17 +67,12 @@ export const MealSectionHeader = memo(function MealSectionHeader({
   const { formatInteger } = useFormatAppNumber();
 
   return (
-    <View className="items-flex-start mb-4 mt-4 flex-row justify-between">
-      <Text className="text-2xl font-bold text-text-primary">{title}</Text>
-      <View
-        className="flex-row items-end gap-2"
-        style={{
-          ...(totalCalories > 0 && { marginTop: -theme.spacing.padding.base }),
-        }}
-      >
+    <View className="mb-2 mt-5 flex-row items-center justify-between gap-3">
+      <Text className="shrink text-lg font-semibold text-text-primary">{title}</Text>
+      <View className="flex-row items-center gap-1">
         <View className="items-end">
           <Text
-            className="text-lg text-text-secondary"
+            className="text-sm font-semibold tabular-nums text-text-primary"
             style={intuitiveMode ? blurFilter(5) : undefined}
           >
             {intuitiveMode
@@ -89,7 +84,10 @@ export const MealSectionHeader = memo(function MealSectionHeader({
               className="flex-row items-center"
               style={intuitiveMode ? blurFilter(4) : undefined}
             >
-              <Text className="text-sm" style={{ color: theme.colors.macros.protein.text }}>
+              <Text
+                className="text-xs tabular-nums"
+                style={{ color: theme.colors.macros.protein.text }}
+              >
                 {t('common.labelColonValue', {
                   label: t('food.macros.proteinShort'),
                   value: t('common.weightFormatG', {
@@ -97,8 +95,11 @@ export const MealSectionHeader = memo(function MealSectionHeader({
                   }),
                 })}
               </Text>
-              <Text className="text-sm text-text-secondary">{' • '}</Text>
-              <Text className="text-sm" style={{ color: theme.colors.macros.carbs.text }}>
+              <Text className="text-xs text-text-tertiary">{' · '}</Text>
+              <Text
+                className="text-xs tabular-nums"
+                style={{ color: theme.colors.macros.carbs.text }}
+              >
                 {t('common.labelColonValue', {
                   label: t('food.macros.carbsShort'),
                   value: t('common.weightFormatG', {
@@ -106,8 +107,11 @@ export const MealSectionHeader = memo(function MealSectionHeader({
                   }),
                 })}
               </Text>
-              <Text className="text-sm text-text-secondary">{' • '}</Text>
-              <Text className="text-sm" style={{ color: theme.colors.macros.fat.text }}>
+              <Text className="text-xs text-text-tertiary">{' · '}</Text>
+              <Text
+                className="text-xs tabular-nums"
+                style={{ color: theme.colors.macros.fat.text }}
+              >
                 {t('common.labelColonValue', {
                   label: t('food.macros.fatShort'),
                   value: t('common.weightFormatG', {
@@ -120,22 +124,6 @@ export const MealSectionHeader = memo(function MealSectionHeader({
         </View>
         {menuButton}
       </View>
-    </View>
-  );
-});
-
-export type MealSectionFooterProps = {
-  title: string;
-  onAddFood?: () => void;
-};
-
-export const MealSectionFooter = memo(function MealSectionFooter({
-  title,
-  onAddFood,
-}: MealSectionFooterProps) {
-  return (
-    <View className="pb-6">
-      <AddFoodButton mealType={title} onPress={onAddFood} />
     </View>
   );
 });

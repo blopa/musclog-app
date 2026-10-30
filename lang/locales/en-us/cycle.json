@@ -1,25 +1,66 @@
 {
   "cycle": {
-    "title": "Today's Cycle Focus",
-    "nextPeriod": "Next Period Prediction",
-    "insightsAndLog": "Cycle Insights & Log",
-    "dailyLog": "Daily Log",
-    "flowIntensity": "Flow Intensity",
+    "title": "Cycle",
+    "nextPeriod": "Next period prediction",
+    "insightsAndLog": "Cycle insights & log",
+    "dailyLog": "Daily log",
+    "flowIntensity": "Flow intensity",
     "symptomsTitle": "Symptoms",
     "noLogsToday": "No symptoms logged for today.",
-    "logSymptoms": "Log Symptoms",
-    "logDaily": "Daily Cycle Log",
+    "logSymptoms": "Log symptoms",
+    "logDaily": "Daily cycle log",
     "predictionDisclaimer": "Cycle predictions are estimates and not a contraceptive method.",
-    "periodActive": "Period active — Day {{day}}",
+    "periodActive": "Period active, day {{day}}",
     "periodActiveGeneric": "Period active",
     "settings": {
-      "title": "Cycle Settings",
+      "title": "Cycle settings",
       "subtitle": "Edit your cycle configuration",
-      "save": "Save Changes"
+      "changeContext": "Change life stage or birth control",
+      "sectionUsual": "Your usual lengths",
+      "usualHint": "Used until there's enough history to learn your own.",
+      "sectionShown": "What's shown",
+      "showPredictions": "Show predictions",
+      "showPredictionsHint": "Turn off to keep logging without any predicted dates.",
+      "showFertility": "Show fertility estimates",
+      "showFertilityHint": "Off by default. An informational estimate of the fertile window, not contraception.",
+      "fertility": {
+        "explainTitle": "Show fertility estimates?",
+        "explainMessage": "The fertile window is estimated from your past cycle lengths. That can't reliably tell when you ovulate, so never use it alone to prevent pregnancy.",
+        "enable": "Show estimates"
+      },
+      "sectionReminders": "Reminders",
+      "sectionTracking": "Tracking",
+      "sectionPrivacy": "Privacy",
+      "privacyNote": "Cycle records are encrypted on this phone. Backups you export are separate files that you control.",
+      "sectionExport": "Export",
+      "exportPeriods": "Export periods (CSV)",
+      "exportDays": "Export daily log (CSV)",
+      "summaryTitle": "Appointment summary",
+      "summaryHint": "A short PDF of what you logged: dates, bleeding, symptoms, pain and notes. It states your records and makes no diagnosis.",
+      "summaryRange": "Last {{count}} months",
+      "summaryCreate": "Create summary (PDF)",
+      "sectionManage": "Manage",
+      "pause": "Pause tracking",
+      "pauseHint": "Pausing keeps all your records and hides the cycle tab and reminders until you resume.",
+      "delete": {
+        "action": "Delete all cycle data",
+        "title": "Delete all cycle data?",
+        "message": "This permanently erases every period, daily log and life-stage entry from this phone. It can't be undone. Files you exported or shared earlier are outside the app and aren't affected. Shared mood entries remain available in Home and Progress.",
+        "confirm": "Delete everything",
+        "prompt": "Confirm deleting your cycle data",
+        "backupsTitle": "Delete local recovery points too?",
+        "backupsMessage": "This phone keeps {{count}} recovery point that can contain a copy of your cycle records, along with the rest of your data. Delete it as well?",
+        "backupsMessage_plural": "This phone keeps {{count}} recovery points that can contain a copy of your cycle records, along with the rest of your data. Delete them as well?",
+        "backupsConfirm": "Delete recovery points"
+      }
     },
     "noData": {
       "title": "Start tracking your cycle",
-      "description": "Tap the button below to log your first period and unlock personalized phase predictions."
+      "description": "Keep period dates or track symptoms without bleeding. You can start without knowing your last period date.",
+      "start": "Start tracking",
+      "pausedTitle": "Tracking is paused",
+      "pausedDescription": "Your history is saved. Resume to keep logging and see predictions.",
+      "resume": "Resume tracking"
     },
     "actions": {
       "periodStarted": "My period started today",
@@ -27,9 +68,9 @@
       "logPastPeriod": "Log a past period"
     },
     "periodLog": {
-      "startTitle": "Log Period Start",
-      "endTitle": "Log Period End",
-      "pastTitle": "Add Past Period",
+      "startTitle": "Log period start",
+      "endTitle": "Log period end",
+      "pastTitle": "Add past period",
       "startDescription": "Mark when your period began. You can log for today or a past date.",
       "endDescription": "Mark when your period ended.",
       "pastDescription": "Adding past period dates helps the app learn your cycle and make better predictions.",
@@ -39,11 +80,11 @@
       "useToday": "Use today"
     },
     "confidence": {
-      "low": "Estimate — based on {{count}} cycle",
-      "low_plural": "Estimate — based on {{count}} cycles",
+      "low": "Estimate based on {{count}} cycle",
+      "low_plural": "Estimate based on {{count}} cycles",
       "medium": "Based on {{count}} cycles",
-      "high": "Based on {{count}} cycles — good accuracy",
-      "irregular": "Cycles vary — showing date range"
+      "high": "Based on {{count}} cycles, good accuracy",
+      "irregular": "Cycles vary, so a date range is shown"
     },
     "lifeStage": {
       "pcos": "With PCOS, cycles can be highly irregular. Predictions are rough estimates.",
@@ -56,37 +97,623 @@
       "light": "Light",
       "medium": "Medium",
       "heavy": "Heavy",
-      "veryHeavy": "Very Heavy"
+      "veryHeavy": "Very heavy"
     },
     "symptoms": {
       "physicalTitle": "Physical",
-      "emotionalTitle": "Emotional & Mental",
+      "emotionalTitle": "Emotional & mental",
       "cramps": "Cramps",
       "headache": "Headache",
       "migraine": "Migraine",
       "bloating": "Bloating",
-      "breastTenderness": "Breast Tenderness",
+      "breastTenderness": "Breast tenderness",
       "nausea": "Nausea",
-      "backPain": "Back Pain",
+      "backPain": "Back pain",
       "fatigue": "Fatigue",
       "acne": "Acne",
-      "foodCravings": "Food Cravings",
-      "digestiveIssues": "Digestive Issues",
-      "hotFlashes": "Hot Flashes",
+      "foodCravings": "Food cravings",
+      "digestiveIssues": "Digestive issues",
+      "hotFlashes": "Hot flashes",
       "insomnia": "Insomnia",
-      "moodSwings": "Mood Swings",
+      "moodSwings": "Mood swings",
       "anxiety": "Anxiety",
       "irritability": "Irritability",
-      "lowMood": "Low Mood",
-      "brainFog": "Brain Fog",
-      "lowLibido": "Low Libido"
+      "lowMood": "Low mood",
+      "brainFog": "Brain fog",
+      "lowLibido": "Low libido"
     },
     "phase": {
       "menstrual": "Menstrual",
       "follicular": "Follicular",
       "ovulatory": "Ovulatory",
       "ovulation": "Ovulation",
-      "luteal": "Luteal"
+      "luteal": "Luteal",
+      "between": "Between periods"
+    },
+    "late": {
+      "title": "{{count}} day later than your usual range",
+      "title_plural": "{{count}} days later than your usual range",
+      "description": "Log your period when it starts and your predictions will update."
+    },
+    "insufficient": "Log a period to see a prediction",
+    "periodNotLogged": "Period not logged yet",
+    "lock": {
+      "prompt": "Unlock Musclog",
+      "unlock": "Unlock",
+      "appTitle": "Musclog is locked",
+      "appDescription": "Authenticate to continue."
+    },
+    "calendar": {
+      "bleeding": {
+        "none": "No bleeding",
+        "spotting": "Spotting",
+        "light": "Light",
+        "medium": "Medium",
+        "heavy": "Heavy",
+        "very_heavy": "Very heavy"
+      },
+      "a11y": {
+        "period": "logged period",
+        "predicted": "predicted period window",
+        "fertile": "estimated fertile window",
+        "observation": "something logged",
+        "today": "today",
+        "nothing": "nothing logged"
+      },
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month",
+      "legend": "Calendar legend",
+      "legendPeriod": "Logged period or bleeding",
+      "legendSpotting": "Logged spotting",
+      "legendPredicted": "Predicted period window",
+      "legendFertile": "Estimated fertile window",
+      "legendLogged": "Something logged"
+    },
+    "context": {
+      "title": "Life stage & birth control",
+      "description": "Record a change from a date on. Your earlier history is kept.",
+      "effectiveFrom": "Applies from",
+      "chooseSpecific": "Choose a specific type for better guidance.",
+      "effects": "Some methods change how your cycle behaves, so predictions and the fertile window may be hidden or shown with a caveat.",
+      "remove": "Remove this change",
+      "timelineTitle": "Life stage & birth control history",
+      "from": "From {{date}}",
+      "lossQuietTitle": "Pause the other reminders too?",
+      "lossQuietMessage": "Predictions and period reminders have already stopped. You can also pause the daily check-in and other cycle reminders for 4 weeks. Pill reminders keep going. You can resume any time in cycle settings.",
+      "lossQuietConfirm": "Pause for 4 weeks",
+      "lossQuietKeep": "Keep them"
+    },
+    "daySheet": {
+      "title": "Log this day",
+      "noSymptoms": "No symptoms today",
+      "noSymptomsLogged": "No symptoms",
+      "moreSymptoms": "More symptoms",
+      "fewerSymptoms": "Fewer symptoms",
+      "pain": "Pain",
+      "energy": "Energy",
+      "energyLevel": {
+        "1": "Very low",
+        "2": "Low",
+        "3": "Okay",
+        "4": "Good",
+        "5": "High"
+      },
+      "note": "Note",
+      "notePlaceholder": "Anything worth remembering",
+      "clearDay": "Clear this day",
+      "nothingLogged": "Nothing logged for this day.",
+      "addDetails": "Add details",
+      "edit": "Edit",
+      "startPeriodPrompt": "Bleeding logged outside a period.",
+      "startPeriod": "Start period here",
+      "moodUnavailable": "Mood couldn't be loaded. Everything else still saves.",
+      "severityOptional": "How strong? Optional. Tap a rating again to clear it.",
+      "painScale": "0 = no pain, 10 = the worst you can imagine",
+      "clearTitle": "Clear this day?",
+      "clearMessage": "This removes everything logged for this day, including its mood on Home and Progress. It can't be undone.",
+      "clearConfirm": "Clear day",
+      "pill": {
+        "label": "Pill",
+        "taken": "Taken",
+        "skipped": "Skipped"
+      }
+    },
+    "edit": {
+      "title": "Edit period",
+      "delete": "Delete this period",
+      "deleteTitle": "Delete this period?",
+      "deleteMessage": "Your statistics and reminders are recalculated without it. You can undo right after.",
+      "deleted": "Period deleted",
+      "undo": "Undo",
+      "recalculates": "Saving recalculates your statistics and reminders."
+    },
+    "end": {
+      "title": "How did it end?",
+      "open": "Still going",
+      "onDate": "On a date",
+      "unknown": "I don't remember",
+      "usualLength": "Usual length ({{days}} days)",
+      "estimatedHint": "Saved as an estimate, not as a recorded end date.",
+      "unknownHint": "The length of this period won't be used in your averages."
+    },
+    "errors": {
+      "future": "Period dates can't be in the future.",
+      "overlap": "This overlaps a period you already logged.",
+      "endBeforeStart": "The end can't be before the start.",
+      "notFound": "That period no longer exists. It may have been removed."
+    },
+    "fertilityDisclaimer": "Informational estimate only. Do not use it alone to prevent pregnancy.",
+    "history": {
+      "title": "History",
+      "tabCalendar": "Calendar",
+      "tabHistory": "Periods",
+      "empty": "No periods logged yet.",
+      "estimatedEnd": "Estimated end",
+      "unknownEnd": "End unknown",
+      "ongoing": "Ongoing",
+      "editHint": "Tap to edit",
+      "days": "{{days}} day",
+      "days_plural": "{{days}} days",
+      "cycleLength": "{{days}}-day cycle",
+      "cycleLength_plural": "{{days}}-day cycle",
+      "notUsed": "Not used for predictions: {{reason}}",
+      "reason": {
+        "too_short": "the gap was very short, possibly a mislog",
+        "possible_missed_period": "it was much longer than your others, possibly a missed period",
+        "user_excluded": "you excluded it",
+        "hormonal_context": "a hormonal method was in use",
+        "postpartum_context": "postpartum cycles are not counted",
+        "life_context": "context without natural period prediction"
+      }
+    },
+    "insights": {
+      "title": "Patterns in your records",
+      "basedOnRecords": "Based only on your records.",
+      "viewData": "View the data",
+      "viewSessions": "View those sessions",
+      "evidenceTitle": "What this is based on",
+      "recurringSymptom": "You logged {{symptom}} within {{days}} days of your period starting in {{hits}} of your last {{total}} cycles.",
+      "highPain": "You logged pain of {{level}} or more within {{days}} days of your period starting in {{hits}} of your last {{total}} cycles.",
+      "cycleLengthLonger": "Your last cycle was {{length}} days, {{diff}} days longer than the median of your previous {{count}} cycles ({{typical}} days).",
+      "cycleLengthShorter": "Your last cycle was {{length}} days, {{diff}} days shorter than the median of your previous {{count}} cycles ({{typical}} days).",
+      "durationLonger": "Your last period lasted {{duration}} days, {{diff}} days longer than the median of your previous {{count}} ({{typical}} days).",
+      "durationShorter": "Your last period lasted {{duration}} days, {{diff}} days shorter than the median of your previous {{count}} ({{typical}} days).",
+      "moodNearStart": "Your logged mood was lower within {{days}} days of your period starting than on your other days in {{hits}} of your last {{total}} cycles.",
+      "workoutNearStart": "In {{hits}} of your last {{total}} cycles, your workouts within {{days}} days of your period starting had lower volume than your other sessions in the same cycle.",
+      "recurringPreperiodSymptom": "You logged {{symptom}} in the seven days before {{hits}} of {{total}} recorded periods."
+    },
+    "phaseEstimated": "Estimated phase",
+    "phaseUnknown": "No estimate",
+    "prediction": {
+      "insufficient": "Log a period to see a prediction",
+      "hidden": "Predictions are hidden",
+      "notShown": "No prediction in your situation",
+      "likelyRange": "Likely {{from}} – {{to}}",
+      "likelyDate": "Likely around {{date}}",
+      "caveated": "This method can change how your cycle behaves, so treat the estimate loosely.",
+      "variabilityExpected": "Cycle length varies in your situation. That's common, and the range reflects it.",
+      "variableHint": "Your cycles have varied a lot ({{low}}–{{high}} days). A single date may not be reliable.",
+      "keepHidden": "Keep hidden",
+      "showRange": "Show range",
+      "fertile": "Estimated fertile window: {{from}} – {{to}}",
+      "howCalculated": "How is this calculated?",
+      "show": "Show predictions",
+      "hide": "Hide predictions",
+      "detailsTitle": "How the estimate is made",
+      "basis": "Based on your last {{cycles}} cycle · median {{median}} days · range {{low}}–{{high}}",
+      "basis_plural": "Based on your last {{cycles}} cycles · median {{median}} days · range {{low}}–{{high}}",
+      "basisNone": "No usable cycles yet, so the estimate uses your usual length of {{days}} days.",
+      "recentWeighted": "Recent cycles count more, so the estimate uses {{days}} days.",
+      "excludedCount": "{{cycles}} cycle is not used (see below).",
+      "excludedCount_plural": "{{cycles}} cycles are not used (see below).",
+      "cycleUsed": "Used for predictions",
+      "useForPredictions": "Use this cycle for predictions",
+      "evidenceNote": "Based on your data. A prediction is an estimate, not a medical result.",
+      "confidence": {
+        "none": "No data yet",
+        "low": "Low confidence · {{cycles}} usable cycle",
+        "low_plural": "Low confidence · {{cycles}} usable cycles",
+        "moderate": "Moderate confidence · {{cycles}} usable cycles",
+        "high": "Higher confidence · {{cycles}} usable cycles"
+      },
+      "suppressed": {
+        "hormonal": "Bleeding on this method may not follow a natural cycle, so a predicted date wouldn't mean much. You can still log everything.",
+        "postpartum": "Cycles often return unpredictably after birth. Predictions will appear once you've logged two periods.",
+        "no_bleeding": "You're tracking without bleeding, so there is no period to predict. Daily logs and patterns still work."
+      }
+    },
+    "quickLog": {
+      "title": "Quick log",
+      "pinPrompt": "You often log {{symptom}}. Pin it to the quick log?",
+      "noThanks": "No thanks",
+      "pin": "Pin it"
+    },
+    "severity": {
+      "mild": "mild",
+      "moderate": "moderate",
+      "severe": "severe"
+    },
+    "summary": {
+      "title": "Cycle summary",
+      "range": "{{from}} – {{to}} (last {{months}} months)",
+      "disclaimer": "Self-recorded data from the Musclog app. It is not a diagnosis and does not replace medical advice.",
+      "sectionOverview": "Overview",
+      "sectionPeriods": "Periods",
+      "sectionBleeding": "Bleeding days by level",
+      "sectionSymptoms": "Most logged symptoms (days)",
+      "sectionPain": "Pain",
+      "sectionNotes": "Notes",
+      "sectionContext": "Life stage & birth control",
+      "colStart": "Start",
+      "colEnd": "End",
+      "colDuration": "Days",
+      "colCycleLength": "Cycle (days)",
+      "colStatus": "Used for averages",
+      "empty": "No periods in this range.",
+      "statusUsed": "counted",
+      "statusInProgress": "in progress",
+      "overviewPeriods": "{{n}} period logged",
+      "overviewPeriods_plural": "{{n}} periods logged",
+      "overviewLength": "Cycle length: median {{median}} days, range {{low}}–{{high}}.",
+      "overviewNoLength": "Not enough completed cycles to state a cycle length.",
+      "overviewUsed": "{{used}} cycles counted for averages, {{excluded}} not counted.",
+      "pain": "Pain logged on {{days}} days: median {{median}}/10, highest {{max}}/10, {{severe}} days at 6 or more."
+    },
+    "personalize": {
+      "title": "Personalize tracking",
+      "goalsTitle": "What would you like to understand?",
+      "goalsHint": "Choose any that matter to you. You can change these later.",
+      "goals": {
+        "timing": "Period timing",
+        "symptoms": "Pain and symptoms",
+        "mood": "Mood",
+        "record": "Just keep a record"
+      },
+      "question": "Would you like to track bleeding or cyclical symptoms?",
+      "trackBleeding": "Bleeding and symptoms",
+      "trackBleedingHint": "Keep period dates and daily observations.",
+      "trackSymptoms": "Symptoms without periods",
+      "trackSymptomsHint": "Keep a body journal even when you do not bleed.",
+      "skip": "Skip for now",
+      "skipHint": "You can enable tracking later in settings.",
+      "quickTitle": "Quick log favorites",
+      "quickHint": "Choose up to six symptoms for quick logging.",
+      "customSymptom": "New custom symptom",
+      "removeNamed": "Remove {{name}} from the form",
+      "fieldsTitle": "Optional daily fields",
+      "fieldsHint": "Only your selected fields appear in the daily log.",
+      "fields": {
+        "sleepHours": "Sleep (hours)",
+        "temperatureC": "Basal temperature",
+        "discharge": "Discharge / cervical mucus",
+        "medication": "Medication and dose",
+        "sex": "Sexual activity",
+        "tags": "Tags",
+        "impact": "Daily-life impact",
+        "leakage": "Leakage through clothing or bedding",
+        "clots": "Blood clots",
+        "lhTest": "Ovulation (LH) test",
+        "pregnancyTest": "Pregnancy test"
+      },
+      "customField": "New custom field",
+      "kinds": {
+        "text": "Text",
+        "number": "Number",
+        "toggle": "Yes / no",
+        "rating": "Bounded rating"
+      },
+      "removeHint": "Removing a field from the form keeps its previously recorded values in history and exports.",
+      "saving": "Saving…",
+      "observationsHint": "Leave a field empty if you did not record it. Temperature is a manual observation and does not confirm ovulation.",
+      "invalidObservation": "Check your entries: sleep must be 0–24 hours, temperature 30–45 °C, and number fields must contain a valid number.",
+      "unexpectedBleeding": "Log unexpected bleeding or spotting",
+      "sharedMoodHint": "Mood is shared with Home and Progress. Clearing it here removes that day’s mood there too. Deleting cycle data keeps shared moods.",
+      "loadingMood": "Loading mood…",
+      "clearMood": "Clear mood when saving",
+      "clearDayAndMood": "Clear this day’s observations and shared mood",
+      "summaryObservations": "Mood and other observations",
+      "add": "Add",
+      "moodUnlogged": "Mood not recorded"
+    },
+    "portability": {
+      "title": "Cycle backup and import",
+      "backupTitle": "Encrypted cycle backup",
+      "recoveryHint": "This file includes period history, daily observations, context, preferences and shared mood history. Save it outside this phone. Keep the password separately: without it, the backup cannot be recovered. Restore it below on your new device after enabling cycle tracking.",
+      "lastBackup": "Last encrypted backup prepared: {{date}}",
+      "noBackup": "No encrypted cycle backup has been prepared on this device.",
+      "password": "Backup password (at least 8 characters)",
+      "repeatPassword": "Repeat password",
+      "createBackup": "Create encrypted backup",
+      "plaintextHint": "Readable JSON, CSV and PDF exports contain sensitive information without password protection. Only share them with someone you choose.",
+      "exportJson": "Export readable cycle JSON",
+      "exportContexts": "Export context history CSV",
+      "importTitle": "Bring your cycle history",
+      "importHint": "Choose a Musclog cycle JSON backup or a periods, daily logs or context CSV exported by Musclog. Dates use YYYY-MM-DD. This merges cycle records and shared moods; your other app data stays intact.",
+      "importPassword": "Password for an encrypted file (otherwise leave empty)",
+      "chooseFile": "Choose file and preview",
+      "conflictHint": "For a date that already has a record, choose whether to keep yours or replace the entire record with the imported entry.",
+      "keep": "Keep existing",
+      "replace": "Replace matching dates",
+      "restorePreferences": "Restore usual lengths, goals and field choices",
+      "preview": "{{added}} new records · {{updated}} replacements · {{skipped}} existing records kept · {{overlaps}} overlapping periods skipped",
+      "checking": "Checking file…",
+      "overlapHint": "Overlapping periods are skipped. Field definitions travel with the file so historic observations stay readable. The preview counts each period, day, context and mood separately.",
+      "confirmImport": "Confirm merge",
+      "imported": "Imported {{added}} new records and {{updated}} replacements.",
+      "invalidFile": "This file cannot be imported. Check its format, dates and field definitions.",
+      "failed": "Could not complete this action. Check the file or password and try again.",
+      "prepared": "Export prepared. Store the file somewhere you can recover it.",
+      "fullBackup": "Full app backup and restore",
+      "fullBackupHint": "Open Data settings for a full app backup and local recovery points. Export encryption is required by default. Restoring a full backup replaces app data; cycle-only import above merges it."
+    },
+    "comparison": {
+      "tab": "Compare",
+      "title": "Compare your cycles",
+      "description": "Compare your own logged observations by cycle day or before the next recorded period. Tap any day to view or edit it.",
+      "start": "Cycle day",
+      "before": "Before next period",
+      "filter": "Find a symptom or measure",
+      "metrics": {
+        "bleeding": "Bleeding",
+        "pain": "Pain (0–10)",
+        "energy": "Energy (1–5)",
+        "mood": "Mood (0–4)"
+      },
+      "flowLegend": "— not logged · 0 no bleeding · 1 spotting · 2 light · 3 medium · 4 heavy · 5 very heavy",
+      "symptomLegend": "— not logged · 0 explicitly no symptoms · ● present, not rated · 1 mild · 2 moderate · 3 severe",
+      "numberLegend": "— not logged. Numbers are your recorded ratings, not inferred values.",
+      "empty": "Log period starts to compare cycles. The before-period view needs two starts.",
+      "inProgress": "In progress",
+      "unlogged": "Not logged",
+      "unrated": "Present, not rated",
+      "limitHint": "Shows your latest six cycles, up to 60 days after a start or 14 days before the next logged start. Empty days stay empty."
+    },
+    "complete": {
+      "confirmLong": "This longer cycle is correct",
+      "unknownLength": "I don't know my usual cycle length",
+      "rangeHeuristic": "This range is an estimate from your history, not a probability interval or a confirmed ovulation date.",
+      "backtest": "Retrospective check: {{hits}} of {{checked}} later starts fell within the range; average midpoint error {{error}} days. This is not clinical validation.",
+      "restoreFirst": "Restore or bring my history",
+      "careTitle": "Understanding your symptoms",
+      "careHint": "General education from NHS and RCOG. Logging is not a diagnosis. If symptoms worry you or affect daily life, discuss them with a healthcare professional; seek urgent local care for severe or rapidly worsening symptoms.",
+      "education": {
+        "bleeding": "Heavy bleeding (NHS, English)",
+        "pain": "Period pain (NHS, English)",
+        "unexpected": "Unexpected bleeding (NHS, English)",
+        "pms": "PMS and symptom diaries (RCOG, English)",
+        "menopause": "Perimenopause and menopause (NHS, English)",
+        "pregnancy": "Pregnancy information (NHS, English)",
+        "postpartum": "Recovery after birth (NHS, English)",
+        "pregnancy_loss": "Pregnancy loss information (NHS, English)"
+      },
+      "trends": "Trends and search",
+      "trendsHint": "Explore your recorded days, including when you don't have periods. These are observations, not explanations of what caused a change.",
+      "lastDays": "Last {{days}} days",
+      "summary": "{{logged}} logged days · {{heavy}} heavy-flow days · {{spotting}} spotting days · {{impact}} days with daily-life impact",
+      "recap": "Since the recorded start on {{date}}: {{logged}} logged days, {{heavy}} heavy-flow days, {{impact}} days with daily-life impact.",
+      "symptomSummary": "{{symptom}}: {{days}} recorded days, {{severe}} rated severe",
+      "loggedOnly": "Only recorded values are shown. Missing days are unknown. The latest 30 values are listed.",
+      "noObservations": "No matching observations in this range.",
+      "contextChanged": "Context changed on {{date}}. See context history.",
+      "search": "Search your records",
+      "searchHint": "Search symptoms, notes, medication, tags or custom values. All words must match. Search stays on this device; up to 50 matching days are shown.",
+      "metrics": {
+        "pain": "Pain (0–10)",
+        "energy": "Energy (1–5)",
+        "mood": "Mood (0–4)",
+        "sleepHours": "Sleep (hours)",
+        "temperatureC": "Basal temperature (°C)",
+        "impact": "Daily-life impact (0–3)",
+        "bleeding": "Bleeding",
+        "symptoms": "Symptoms",
+        "note": "Notes",
+        "importedTemperatureC": "Imported basal temperature (°C)"
+      },
+      "backupDays": "Backup reminder interval (days; 0 disables)",
+      "importTitle": "Bring history from another tracker",
+      "importHint": "{{rows}} CSV rows. Columns: {{columns}}. Enter the exact column names below; leave optional fields empty. This wizard accepts CSV, not proprietary archives.",
+      "importColumns": {
+        "date": "Date/start column",
+        "end": "End date column (optional)",
+        "flow": "Flow column (optional)",
+        "temperature": "Temperature in °C column (optional)",
+        "symptoms": "Symptoms column (semicolon separated)",
+        "note": "Notes column (optional)"
+      },
+      "dateOrder": {
+        "iso": "YYYY-MM-DD",
+        "dmy": "Day/month/year",
+        "mdy": "Month/day/year"
+      },
+      "importPeriods": "Each row records a period start (not a daily log)",
+      "importError": "Check the column names, date order, and values. Flow accepts none, spotting, light, medium, heavy or very_heavy; temperature must be in °C. Duplicate period starts and invalid dates cannot be imported.",
+      "previewImport": "Preview import",
+      "healthTitle": "Cycle data in your health store",
+      "healthHint": "Read bleeding and basal temperature with your permission. Imported observations keep their source and never replace your manual logs or create period starts. Health-store access can be limited by platform history permissions.",
+      "healthRead": "Read and preview",
+      "healthPreview": "{{count}} observations available. Re-importing the same source IDs updates their imported copies only.",
+      "healthImport": "Import these observations",
+      "healthWrite": "Export manual bleeding and temperature",
+      "healthWriteHint": "This writes your manual bleeding and basal-temperature entries in the selected range to your device's health store. Other apps with permission may read them. Imported observations, symptoms, mood, medication, sex and notes are excluded. Very heavy flow is exported as heavy.",
+      "healthDone": "Imported observations saved.",
+      "healthWritten": "{{count}} health records written.",
+      "healthError": "Health access failed or permission was declined. Check device health permissions and try again. A failed export may have written some records; retrying updates Musclog's own records.",
+      "importedValue": "Imported from {{source}}: {{value}}",
+      "sharing": "Share selected records",
+      "sharingHint": "Choose exactly what to share. This creates a readable JSON file for your selected range. The recipient can keep or forward the file; this is not live access and cannot be revoked. Nothing is selected by default.",
+      "shareSelected": "Export selected fields",
+      "presets": "Optional diary setups",
+      "presetsHint": "Add useful fields and fill unused favorite slots. Your history and existing favorites stay intact.",
+      "preset": {
+        "pms": "Set up a PMS/mood diary",
+        "fertility": "Add fertility observations",
+        "perimenopause": "Add perimenopause observations"
+      },
+      "pmsDiaryHint": "A daily symptom-and-impact diary over two consecutive cycles can support a clinical conversation about PMS. This diary is not a validated PMDD questionnaire and does not diagnose PMDD.",
+      "fertilityHint": "Temperature, discharge and test results are observations only. They do not confirm ovulation or make calendar estimates suitable for contraception.",
+      "impact": {
+        "0": "No impact",
+        "1": "Some disruption",
+        "2": "Activities limited",
+        "3": "Unable to do usual activities"
+      },
+      "tests": {
+        "negative": "Negative",
+        "positive": "Positive",
+        "unclear": "Unclear"
+      },
+      "stagePregnancy": "Pregnancy",
+      "stagePregnancyHint": "Period and fertility predictions are paused. Keep your symptom records and change context when ready.",
+      "stageLoss": "After pregnancy loss",
+      "stageLossHint": "A quiet tracking context with no period or fertility predictions. Your history is kept; return to another context when ready.",
+      "stageSurgery": "After hysterectomy",
+      "stageSurgeryHint": "Track symptoms without period or fertility predictions. Surgery does not automatically tell us whether you still have ovarian cycles.",
+      "stageMenopause": "After menopause",
+      "stageMenopauseHint": "Track symptoms without period or fertility predictions. Unexpected bleeding can still be recorded.",
+      "ratingMin": "Minimum rating",
+      "ratingMax": "Maximum rating",
+      "chartDescription": "{{metric}} over time. Each dot is a recorded value; dates and values are listed below.",
+      "variabilitySummary": "{{count}} recorded cycle intervals in this range: {{low}}–{{high}} days, including intervals excluded from predictions.",
+      "energyInsight": "You logged lower energy near period starts in {{hits}} of {{total}} observed cycles. This does not establish a cause.",
+      "sleepInsight": "You logged shorter sleep near period starts in {{hits}} of {{total}} observed cycles. This does not establish a cause.",
+      "reviewLong": "Treat this long cycle as uncertain again"
+    },
+    "notifications": {
+      "subtle": {
+        "cycle": "Your cycle update is ready.",
+        "routine": "Time for your daily reminder.",
+        "checkIn": "Time for your daily check-in.",
+        "update": "Time to update your log.",
+        "backup": "Time to save a backup."
+      },
+      "periodStart": {
+        "title": "Period may start soon",
+        "body": "Based on your recent cycles, your period may start around {{from}}. This is an estimate.",
+        "bodyRange": "Based on your recent cycles, your period may start between {{from}} and {{to}}. This is an estimate."
+      },
+      "periodDue": {
+        "title": "Period may start today",
+        "body": "Today is the most likely start, based on your recent cycles. Log it when it happens."
+      },
+      "periodLate": {
+        "title": "This cycle is longer than usual",
+        "body": "This cycle is longer than your recent pattern. There are many possible reasons. Tap if you'd like to update it.",
+        "bodyRange": "This cycle is longer than your recent pattern, which usually ends by {{to}}. There are many possible reasons. Tap if you'd like to update it."
+      },
+      "fertileWindow": {
+        "title": "Estimated fertile window",
+        "body": "Your estimated fertile window may begin {{from}}. It's a calendar estimate, not confirmation of ovulation, and not contraception.",
+        "bodyRange": "Your estimated fertile window is {{from}} to {{to}}. It's a calendar estimate, not confirmation of ovulation, and not contraception."
+      },
+      "pill": {
+        "title": "Pill reminder",
+        "body": "Time to take your pill."
+      },
+      "dailyLog": {
+        "title": "Daily cycle check-in",
+        "body": "Record today if you want to."
+      },
+      "endCheck": {
+        "title": "Is your period still going?",
+        "body": "The period you marked as ongoing started a week ago. Update its end when you're ready."
+      },
+      "backup": {
+        "title": "Cycle backup",
+        "body": "Consider saving an encrypted backup of your records."
+      }
+    },
+    "reminders": {
+      "time": "Reminder time",
+      "leadDays": "Days of notice before your period",
+      "oncePerCycle": "about once per cycle",
+      "atMostOncePerCycle": "at most once per cycle",
+      "daily": "every day",
+      "oncePerPeriod": "at most once per period",
+      "basis": {
+        "estimate": "an estimate from your logged cycles",
+        "routine": "a time you chose"
+      },
+      "notWhileSuppressed": "not sent while predictions are off for your situation",
+      "periodStart": {
+        "label": "Before my period",
+        "when": "At {{time}}, with the notice set below, before the earliest predicted start"
+      },
+      "periodDue": {
+        "label": "On the most likely day",
+        "when": "At {{time}} on the most likely start day"
+      },
+      "periodLate": {
+        "label": "If this cycle runs long",
+        "when": "The day after your usual range ends, in neutral wording"
+      },
+      "fertileWindow": {
+        "label": "Estimated fertile window",
+        "when": "At {{time}} when the estimated window begins",
+        "unavailable": "Available only with the fertile-window estimate turned on, in a situation where it means something."
+      },
+      "dailyLog": {
+        "label": "Daily check-in",
+        "when": "At {{time}}"
+      },
+      "endCheck": {
+        "label": "Check an ongoing period",
+        "when": "A week after a period you marked as ongoing"
+      },
+      "backup": {
+        "label": "Backup reminder"
+      },
+      "pill": {
+        "label": "Pill reminder",
+        "when": "Every pill day at {{time}}",
+        "time": "Pill time",
+        "pattern21": "21 days + 7 off",
+        "pattern24": "24 days + 4 off",
+        "continuous": "Every day",
+        "packStart": "First pill of the current pack",
+        "hint": "Pill-free days get no reminder. This is a reminder, not medical advice: follow your pill's instructions if you miss one.",
+        "notPaused": "keeps going during a pause"
+      },
+      "pause": {
+        "title": "Pause cycle reminders",
+        "week": "1 week",
+        "month": "1 month",
+        "indefinite": "Until I resume",
+        "resume": "Resume reminders",
+        "hint": "For illness, grief, travel or a break. Pill reminders keep going."
+      },
+      "status": {
+        "web": "Reminders are delivered by the Musclog phone app. Settings made here apply there too.",
+        "noPermission": "Notifications are not allowed for Musclog, so no reminder can arrive.",
+        "switchedOff": "Cycle notifications are switched off, so no reminder will arrive.",
+        "pausedUntil": "Reminders are paused until {{date}}.",
+        "paused": "Reminders are paused until you resume them.",
+        "next": "Next: {{reminder}}, {{date}}.",
+        "none": "Nothing is scheduled. Turn on a reminder below.",
+        "turnOn": "Turn on cycle reminders",
+        "permissionDenied": "Notifications were not allowed. You can allow them in your phone's settings."
+      },
+      "test": "Send a test notification",
+      "testSent": "Sent. It arrives in a few seconds, worded as you chose.",
+      "style": {
+        "title": "Lock-screen wording",
+        "hint": "What someone glancing at your phone could read. Private never says what a reminder is about.",
+        "private": "Private",
+        "subtle": "Subtle",
+        "detailed": "Detailed"
+      },
+      "preview": "Preview",
+      "lockScreenHint": "On a locked phone with a secure lock screen, Android also hides the text of cycle reminders.",
+      "why": {
+        "title": "Why you got this reminder",
+        "setting": "You turned on “{{reminder}}” in cycle settings.",
+        "estimateFromCycles": "Its date is an estimate from your logged cycles ({{cycles}} used), which have been {{low}} to {{high}} days long. A reminder can't be more precise than that.",
+        "estimateFromSetup": "Its date comes from the usual cycle length you entered, because there isn't enough logged history yet. It gets better as you log periods.",
+        "routine": "It goes off at the time you chose, whatever your cycle data says.",
+        "pillBreak": "It skips the pill-free days of your pack.",
+        "late": "A longer cycle has many possible reasons. Musclog never assumes one.",
+        "change": "Change or turn off reminders",
+        "estimateFromSteadyCycles": "Its date is an estimate from your logged cycles ({{cycles}} used), which have all been about {{low}} days long. Cycles can still vary, so treat it as approximate."
+      }
     }
   }
 }

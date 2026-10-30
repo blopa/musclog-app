@@ -45,7 +45,7 @@ export function SelectModal({
         onPress={onClose}
       >
         <Pressable
-          className="w-full overflow-hidden rounded-xl border border-border-dark"
+          className="w-full overflow-hidden rounded-control border border-border-dark"
           style={{
             backgroundColor: theme.colors.background.cardElevated,
             maxWidth: theme.size['384'],

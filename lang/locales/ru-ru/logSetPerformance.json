@@ -1,11 +1,11 @@
 {
   "logSetPerformance": {
     "title": "Записать результат подхода",
-    "difficulty": "СЛОЖНОСТЬ (RPE)",
-    "easy": "ЛЕГКО",
-    "moderate": "УМЕРЕННО",
-    "failure": "ДО ОТКАЗА",
-    "cancel": "ОТМЕНА",
-    "logSet": "ЗАПИСАТЬ ПОДХОД"
+    "difficulty": "Сложность (RPE)",
+    "easy": "Легко",
+    "moderate": "Умеренно",
+    "failure": "До отказа",
+    "cancel": "Отмена",
+    "logSet": "Записать подход"
   }
 }

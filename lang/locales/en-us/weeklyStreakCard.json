@@ -4,6 +4,7 @@
     "dayStreak": "day streak",
     "days": "{{value}} days",
     "bestStreak": "Best streak",
-    "setWeeklyGoal": "Set goal"
+    "setWeeklyGoal": "Set goal",
+    "activeDays": "active days"
   }
 }

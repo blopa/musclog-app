@@ -4,8 +4,8 @@
     "nutritionAndBodyTab": "Voeding & Lichaam",
     "fitnessAndExerciseTab": "Fitness & Oefening",
     "subtitle": "Houd je voortgang en geschiedenis bij.",
-    "currentGoals": "HUIDIGE DOELEN",
-    "history": "DOELENGESCHIEDENIS",
+    "currentGoals": "Huidige doelen",
+    "history": "Doelengeschiedenis",
     "newGoal": "Nieuw doel",
     "createGoalDesc": "Stel nieuwe voedingsdoelen en macro's in",
     "createCheckin": "Controle maken",
@@ -96,7 +96,7 @@
       "subtitleFormat": "Doel {{targetWeight}} {{unit}} • {{targetBodyFat}}% vetpercentage",
       "checkinDate": "Controledatum"
     },
-    "exerciseGoals": "OEFENINGSDOELEN",
+    "exerciseGoals": "Oefeningsdoelen",
     "exerciseGoalsTitle": "Kracht & Consistentie",
     "exerciseGoalsSubtitle": "Houd 1RM-doelen en workoutfrequentie bij"
   }

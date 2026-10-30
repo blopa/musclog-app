@@ -23,7 +23,7 @@ export function ErrorStateCard({
   const { t } = useTranslation();
   const defaultButtonLabel = buttonLabel || t('common.tryAgain');
   return (
-    <View className="flex-col items-center gap-4 rounded-lg border-2 border-dashed border-status-error/20 bg-status-error/5 p-6">
+    <View className="flex-col items-center gap-4 rounded-card border-2 border-dashed border-status-error/20 bg-status-error/5 p-6">
       {/* Icon */}
       <View
         className="h-12 w-12 items-center justify-center rounded-full"
@@ -41,11 +41,11 @@ export function ErrorStateCard({
       {/* Button */}
       {onButtonPress ? (
         <Pressable
-          className="mt-2 flex-row items-center gap-2 rounded-lg border border-accent-primary px-6 py-2 active:scale-95"
+          className="mt-2 flex-row items-center gap-2 rounded-control border border-accent-primary px-6 py-2 active:scale-95"
           onPress={onButtonPress}
         >
           <RefreshCw size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-          <Text className="text-sm font-bold text-accent-primary">{defaultButtonLabel}</Text>
+          <Text className="text-sm font-semibold text-accent-primary">{defaultButtonLabel}</Text>
         </Pressable>
       ) : null}
     </View>

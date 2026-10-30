@@ -91,13 +91,13 @@ export function RetrospectiveNutritionModal({
         <View className="flex-1 px-4 py-6">
           {/* Date Display */}
           <View
-            className="mb-6 rounded-lg p-4"
+            className="mb-6 rounded-card p-4"
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <Text className="text-xs font-medium text-text-secondary">
               {t('nutrition.dateLabel')}
             </Text>
-            <Text className="mt-1 text-lg font-bold text-text-primary">{dateString}</Text>
+            <Text className="mt-1 text-lg font-semibold text-text-primary">{dateString}</Text>
           </View>
 
           {/* Instructions */}
@@ -113,7 +113,7 @@ export function RetrospectiveNutritionModal({
             placeholderTextColor={theme.colors.text.tertiary}
             multiline
             numberOfLines={6}
-            className="mb-4 rounded-lg p-4 text-base text-text-primary"
+            className="mb-4 rounded-control p-4 text-base text-text-primary"
             style={{
               backgroundColor: theme.colors.background.card,
               borderWidth: theme.borderWidth.thin,
@@ -124,7 +124,7 @@ export function RetrospectiveNutritionModal({
           />
 
           {/* Example */}
-          <View className="mb-6 rounded-lg bg-status-info/10 p-4">
+          <View className="mb-6 rounded-card bg-status-info/10 p-4">
             <Text className="mb-2 text-xs font-semibold text-status-info">
               {t('nutrition.example')}
             </Text>
@@ -140,7 +140,7 @@ export function RetrospectiveNutritionModal({
         <Pressable
           onPress={handleProcessDescription}
           disabled={!description.trim() || isProcessing}
-          className="mb-2 rounded-lg px-4 py-3"
+          className="mb-2 rounded-control px-4 py-3"
           style={{
             backgroundColor: theme.colors.accent.primary,
             opacity: !description.trim() || isProcessing ? 0.5 : 1,
@@ -166,7 +166,7 @@ export function RetrospectiveNutritionModal({
         <Pressable
           onPress={handleClose}
           disabled={isProcessing}
-          className="rounded-lg border px-4 py-3"
+          className="rounded-control border px-4 py-3"
           style={{
             borderColor: theme.colors.border.light,
             opacity: isProcessing ? 0.5 : 1,

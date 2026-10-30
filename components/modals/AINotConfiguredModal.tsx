@@ -103,7 +103,7 @@ export function AINotConfiguredModal({
         >
           <View className="flex-row gap-4">
             <View
-              className="items-center justify-center rounded-2xl"
+              className="items-center justify-center rounded-card"
               style={{
                 width: 48,
                 height: 48,
@@ -113,7 +113,7 @@ export function AINotConfiguredModal({
               <KeyRound size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-lg font-bold leading-snug text-text-primary">
+              <Text className="text-lg font-semibold leading-snug text-text-primary">
                 {t('ai.notConfiguredModal.tipApiKey')}
               </Text>
               <Text className="mt-0.5 text-sm text-text-tertiary">
@@ -132,7 +132,7 @@ export function AINotConfiguredModal({
 
           <View className="flex-row gap-4">
             <View
-              className="items-center justify-center rounded-2xl"
+              className="items-center justify-center rounded-card"
               style={{
                 width: 48,
                 height: 48,
@@ -142,7 +142,7 @@ export function AINotConfiguredModal({
               <Sparkles size={theme.iconSize.md} color={theme.colors.status.purple} />
             </View>
             <View className="flex-1 justify-center">
-              <Text className="text-lg font-bold leading-snug text-text-primary">
+              <Text className="text-lg font-semibold leading-snug text-text-primary">
                 {t('ai.notConfiguredModal.tipFeatures')}
               </Text>
               <Text className="mt-1 text-sm leading-relaxed text-text-secondary">

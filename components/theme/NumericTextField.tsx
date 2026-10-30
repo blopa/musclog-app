@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import type { TextInputInstance } from 'react-native';
 import { Platform, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -28,6 +29,11 @@ type NumericTextFieldProps = {
    * underline, so it reads without color too.
    */
   marked?: boolean;
+  /**
+   * The value cannot be saved as typed (an emptied weight, zero reps): an error-coloured outline,
+   * so the field to fix is visible next to the message that names it.
+   */
+  invalid?: boolean;
   /** Draw the field's own surface. Defaults to on for `field` and `cell`, off for `hero`. */
   surface?: boolean;
   editable?: boolean;
@@ -54,20 +60,41 @@ export function NumericTextField({
   integer = false,
   placeholder,
   marked = false,
+  invalid = false,
   surface = size !== 'hero',
   editable = true,
   testID,
 }: NumericTextFieldProps) {
   const theme = useTheme();
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const [focused, setFocused] = useState(false);
 
   const metrics = {
     hero: { fontSize: theme.typography.fontSize['5xl'], minHeight: 64 },
-    field: { fontSize: theme.typography.fontSize.xl, minHeight: 56 },
+    field: { fontSize: theme.typography.fontSize.xl, minHeight: 48 },
     cell: { fontSize: theme.typography.fontSize.lg, minHeight: 44 },
   }[size];
+  // The hero number is the screen's figure; a field or table cell is one value among several.
+  const weight =
+    size === 'hero' ? theme.typography.fontWeight.bold : theme.typography.fontWeight.semibold;
   const showPlaceholder = placeholder != null && value === '' && !focused;
+
+  // A field with a surface is outlined like every other input (`TextInput`, `PickerButton`): a
+  // fill alone vanished wherever it matched what was behind it. A `field` sat on a sheet painted in
+  // `cardElevated` — its own fill — so the set-details effort fields read as loose labels. It
+  // takes `TextInput`'s `card` fill instead; a `cell` keeps `cardElevated`, the contrasting fill on
+  // the `card` the set table lives on.
+  let borderColor = surface ? theme.colors.background.ink10 : 'transparent';
+  if (invalid) {
+    borderColor = theme.colors.status.error;
+  } else if (focused && surface) {
+    borderColor = theme.colors.accent.primary;
+  }
+
+  let fill = 'transparent';
+  if (surface) {
+    fill = size === 'field' ? theme.colors.background.card : theme.colors.background.cardElevated;
+  }
 
   return (
     <View
@@ -75,10 +102,15 @@ export function NumericTextField({
         width: width ?? '100%',
         minHeight: metrics.minHeight,
         justifyContent: 'center',
-        borderRadius: theme.borderRadius.md,
-        backgroundColor: surface ? theme.colors.background.cardElevated : 'transparent',
-        borderBottomWidth: marked ? theme.borderWidth.medium : 0,
-        borderBottomColor: theme.colors.accent.primary,
+        borderRadius: theme.borderRadius.control,
+        backgroundColor: fill,
+        // Constant widths, so focusing or marking a field never shifts its neighbours. The bottom
+        // edge is the heavier one because it carries the "adjusted" underline.
+        borderWidth: theme.borderWidth.thin,
+        borderBottomWidth: theme.borderWidth.medium,
+        borderColor,
+        // Marked reads by the underline as well as the accent ink, so it survives without color.
+        borderBottomColor: marked && !invalid ? theme.colors.accent.primary : borderColor,
       }}
     >
       <TextInput
@@ -106,7 +138,8 @@ export function NumericTextField({
           padding: 0,
           color: marked ? theme.colors.accent.primary : theme.colors.text.primary,
           fontSize: metrics.fontSize,
-          fontWeight: theme.typography.fontWeight.bold,
+          fontWeight: weight,
+          fontVariant: ['tabular-nums'],
           textAlign: 'center',
         }}
       />
@@ -121,7 +154,8 @@ export function NumericTextField({
             style={{
               color: theme.colors.text.tertiary,
               fontSize: metrics.fontSize,
-              fontWeight: theme.typography.fontWeight.bold,
+              fontWeight: weight,
+              fontVariant: ['tabular-nums'],
             }}
           >
             {placeholder}

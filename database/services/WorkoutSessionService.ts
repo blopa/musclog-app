@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type Exercise from '@/database/models/Exercise';
@@ -9,7 +10,7 @@ import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { selectRetargets } from '@/utils/intraSessionRetarget';
 import { loadStepFor } from '@/utils/loadIncrement';
 import { progressesLoad } from '@/utils/progressionProjection';
-import { parseProgressionRule } from '@/utils/progressionRules';
+import { parseProgressionRule } from '@/utils/progressionRuleSchema';
 import { computeIntraSessionAdjustment, parseStartAdjustment } from '@/utils/setAdjustment';
 import { writeSetEffort } from '@/utils/setEffort';
 import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
@@ -75,7 +76,7 @@ export class WorkoutSessionService {
     const [gym, mode, autonomy, bodyWeightKg] = await Promise.all([
       GymService.getActiveGym().catch(() => null),
       SettingsService.getProgressionMode(),
-      SettingsService.getWorkoutAutonomy(),
+      SettingsService.get(SETTINGS.workoutAutonomy),
       UserMetricService.getUserBodyWeightKgForVolume(),
     ]);
     const unitsFor = await ExerciseUserSettingsService.getWeightUnitsResolver(gym);

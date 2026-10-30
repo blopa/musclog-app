@@ -1,16 +1,15 @@
 import { Search, SlidersHorizontal, Trophy } from 'lucide-react-native';
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, SectionList, Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
-import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { type MuscleGroup } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
-import { type WorkoutHistoryItem, WorkoutHistorySection } from '@/utils/workoutHistory';
+import { type WorkoutHistoryItem } from '@/utils/workoutHistory';
 
 import { FullScreenModal } from './FullScreenModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
@@ -27,6 +26,10 @@ type FilterMuscleGroup =
 type WorkoutHistoryModalProps = {
   visible: boolean;
   onClose: () => void;
+  /** Only list sessions started from this workout template. Defaults to all workouts. */
+  templateId?: string;
+  /** Overrides the default title, e.g. with the workout's name. */
+  title?: string;
 };
 
 // Search and Filter Header Component
@@ -51,7 +54,7 @@ function SearchAndFilterHeader({
         backgroundColor: theme.colors.background.darkBackground,
       }}
     >
-      <View className="flex-row items-center gap-2">
+      <View className="flex-row items-end gap-2">
         <View className="relative flex-1">
           <TextInput
             placeholder={t('pastWorkoutHistory.searchPlaceholder')}
@@ -62,12 +65,11 @@ function SearchAndFilterHeader({
           />
         </View>
         <Pressable
-          className="h-11 w-11 items-center justify-center border"
+          className="h-12 w-12 items-center justify-center border"
           style={{
             backgroundColor: theme.colors.background.card,
             borderColor: theme.colors.background.ink5,
             borderRadius: theme.borderRadius.md,
-            marginTop: theme.spacing.margin.sm,
           }}
           onPress={onFilterPress}
         >
@@ -94,7 +96,7 @@ function WorkoutHistorySkeleton() {
           {[1, 2, 3, 4, 5].map((i) => (
             <View
               key={i}
-              className="rounded-lg border p-4"
+              className="rounded-card border p-4"
               style={{
                 backgroundColor: theme.colors.background.card,
                 borderColor: theme.colors.background.ink5,
@@ -125,7 +127,7 @@ function WorkoutHistorySkeleton() {
                   {[1, 2, 3].map((statIndex) => (
                     <View
                       key={statIndex}
-                      className="flex-1 gap-2 rounded-lg p-2"
+                      className="flex-1 gap-2 rounded-control p-2"
                       style={{ backgroundColor: theme.colors.background.ink5 }}
                     >
                       <SkeletonLoader
@@ -153,9 +155,10 @@ function WorkoutHistorySkeleton() {
 // Empty State Component
 type EmptyStateProps = {
   hasSearchQuery: boolean;
+  isRangeLimited: boolean;
 };
 
-function EmptyState({ hasSearchQuery }: EmptyStateProps) {
+function EmptyState({ hasSearchQuery, isRangeLimited }: EmptyStateProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -170,10 +173,16 @@ function EmptyState({ hasSearchQuery }: EmptyStateProps) {
       >
         {hasSearchQuery
           ? t('pastWorkoutHistory.noWorkoutsFound')
-          : t('pastWorkoutHistory.noWorkoutHistory')}
+          : isRangeLimited
+            ? t('pastWorkoutHistory.noWorkoutsInRange')
+            : t('pastWorkoutHistory.noWorkoutHistory')}
       </Text>
     </View>
   );
+}
+
+function ItemSeparator() {
+  return <View className="h-3" />;
 }
 
 // Workout Card Component
@@ -202,7 +211,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
           <View className="flex-row items-start justify-between">
             <View className="flex-row items-center gap-3">
               <View
-                className="h-12 w-12 items-center justify-center rounded-lg"
+                className="h-12 w-12 items-center justify-center rounded-control"
                 style={{
                   backgroundColor: workout.iconBgOpacity,
                 }}
@@ -231,7 +240,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
             </View>
             {workout.prCount ? (
               <View
-                className="flex-row items-center gap-1 rounded px-2 py-0.5"
+                className="flex-row items-center gap-1 rounded-tag px-2 py-0.5"
                 style={{
                   backgroundColor: theme.colors.status.brandBright10,
                 }}
@@ -242,8 +251,6 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
                     fontSize: theme.typography.fontSize.xxs,
                     fontWeight: theme.typography.fontWeight.bold,
                     color: theme.colors.status.brandBright,
-                    textTransform: 'uppercase',
-                    letterSpacing: theme.typography.letterSpacing.wider,
                   }}
                 >
                   {workout.prCount === 1
@@ -262,7 +269,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
             {workout.stats.map((stat, statIndex) => (
               <View
                 key={statIndex}
-                className="flex-1 rounded-lg p-2"
+                className="flex-1 rounded-control p-2"
                 style={{
                   backgroundColor: theme.colors.background.ink5,
                 }}
@@ -294,70 +301,43 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
   );
 }
 
-// Workout Month Section Component
-type WorkoutMonthSectionProps = {
-  section: WorkoutHistorySection;
-  isLastMonth: boolean;
-  onWorkoutPress: (workoutId: string) => void;
-};
-
-function WorkoutMonthSection({ section, isLastMonth, onWorkoutPress }: WorkoutMonthSectionProps) {
+// Month heading rendered as a SectionList section header
+function MonthHeader({ title, isLastMonth }: { title: string; isLastMonth: boolean }) {
   const theme = useTheme();
-  return (
-    <View>
-      <Text
-        className="mb-3 px-1 font-bold uppercase tracking-widest"
-        style={{
-          fontSize: theme.typography.fontSize.xs,
-          color: theme.colors.text.secondary,
-          opacity: isLastMonth ? 0.8 : 1,
-        }}
-      >
-        {section.month}
-      </Text>
 
-      <View className="flex-col gap-3">
-        {section.workouts.map((workout) => (
-          <WorkoutCard
-            key={workout.id}
-            workout={workout}
-            opacity={isLastMonth ? 0.8 : 1}
-            onPress={() => onWorkoutPress(workout.id)}
-          />
-        ))}
-      </View>
+  return (
+    <Text
+      className="px-5 pb-3 pt-6 font-bold"
+      style={{
+        fontSize: theme.typography.fontSize.xs,
+        color: theme.colors.text.secondary,
+        opacity: isLastMonth ? 0.8 : 1,
+      }}
+    >
+      {title}
+    </Text>
+  );
+}
+
+// Footer shown while the next page is loading
+function LoadingMoreFooter({ isLoadingMore }: { isLoadingMore: boolean }) {
+  const theme = useTheme();
+
+  return (
+    <View className="items-center py-6">
+      {isLoadingMore ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
     </View>
   );
 }
 
-// Load More Button Component
-type LoadMoreButtonProps = {
-  isLoadingMore: boolean;
-  onPress: () => void;
-};
+const MemoWorkoutCard = memo(WorkoutCard);
 
-function LoadMoreButton({ isLoadingMore, onPress }: LoadMoreButtonProps) {
-  const theme = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <View className="py-4">
-      <Button
-        label={
-          isLoadingMore ? t('pastWorkoutHistory.loadingMore') : t('pastWorkoutHistory.loadMore')
-        }
-        onPress={onPress}
-        size="sm"
-        variant="outline"
-        disabled={isLoadingMore}
-        loading={isLoadingMore}
-        width="full"
-      />
-    </View>
-  );
-}
-
-function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps) {
+function PastWorkoutsHistoryModal({
+  visible,
+  onClose,
+  templateId,
+  title,
+}: WorkoutHistoryModalProps) {
   const { t } = useTranslation();
   const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
@@ -390,13 +370,53 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
     groupByMonth: true,
     enableReactivity: true,
     visible,
+    templateId,
   });
+
+  const listSections = useMemo(
+    () =>
+      workoutHistoryData.map((section, index) => ({
+        key: section.monthKey,
+        title: section.month,
+        isLastMonth: index === workoutHistoryData.length - 1,
+        data: section.workouts,
+      })),
+    [workoutHistoryData]
+  );
+
+  const keyExtractor = useCallback((workout: WorkoutHistoryItem) => workout.id, []);
+
+  const renderWorkout = useCallback(
+    ({ item, section }: { item: WorkoutHistoryItem; section: { isLastMonth: boolean } }) => (
+      <View className="px-4">
+        <MemoWorkoutCard
+          workout={item}
+          opacity={section.isLastMonth ? 0.8 : 1}
+          onPress={() => setSelectedWorkoutId(item.id)}
+        />
+      </View>
+    ),
+    []
+  );
+
+  const renderSectionHeader = useCallback(
+    ({ section }: { section: { title: string; isLastMonth: boolean } }) => (
+      <MonthHeader title={section.title} isLastMonth={section.isLastMonth} />
+    ),
+    []
+  );
+
+  const handleEndReached = useCallback(() => {
+    if (hasMore && !searchQuery && !isLoadingMore) {
+      loadMoreWorkouts();
+    }
+  }, [hasMore, searchQuery, isLoadingMore, loadMoreWorkouts]);
 
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
-      title={t('pastWorkoutHistory.title')}
+      title={title ?? t('pastWorkoutHistory.title')}
       scrollable={false}
     >
       <View className="flex-1">
@@ -406,28 +426,25 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
           onFilterPress={() => setIsFilterMenuVisible(true)}
         />
 
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          {isLoading ? (
-            <WorkoutHistorySkeleton />
-          ) : workoutHistoryData.length === 0 ? (
-            <EmptyState hasSearchQuery={!!searchQuery} />
-          ) : (
-            <View className="flex-1 gap-6 p-4">
-              {workoutHistoryData.map((section, sectionIndex) => (
-                <WorkoutMonthSection
-                  key={section.monthKey}
-                  section={section}
-                  isLastMonth={sectionIndex === workoutHistoryData.length - 1}
-                  onWorkoutPress={setSelectedWorkoutId}
-                />
-              ))}
-
-              {hasMore && !searchQuery ? (
-                <LoadMoreButton isLoadingMore={isLoadingMore} onPress={loadMoreWorkouts} />
-              ) : null}
-            </View>
-          )}
-        </ScrollView>
+        {isLoading ? (
+          <WorkoutHistorySkeleton />
+        ) : workoutHistoryData.length === 0 ? (
+          <EmptyState hasSearchQuery={!!searchQuery} isRangeLimited={filters.dateRange !== 'all'} />
+        ) : (
+          <SectionList
+            className="flex-1"
+            sections={listSections}
+            keyExtractor={keyExtractor}
+            renderItem={renderWorkout}
+            renderSectionHeader={renderSectionHeader}
+            ItemSeparatorComponent={ItemSeparator}
+            stickySectionHeadersEnabled={false}
+            showsVerticalScrollIndicator={false}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={<LoadingMoreFooter isLoadingMore={isLoadingMore} />}
+          />
+        )}
       </View>
 
       {/* Filter Menu */}

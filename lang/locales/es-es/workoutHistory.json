@@ -2,8 +2,8 @@
   "workoutHistory": {
     "title": "Historial de Sesiones",
     "previewTitle": "Vista Previa del Entrenamiento",
-    "workoutInProgress": "ENTRENAMIENTO EN CURSO",
-    "previewSubtitle": "VISTA PREVIA",
+    "workoutInProgress": "Entrenamiento en curso",
+    "previewSubtitle": "Vista previa",
     "duration": "Duración",
     "volume": "Vol",
     "setsDone": "Series Hechas",
@@ -13,6 +13,7 @@
     "set": "Serie {{number}}",
     "share": "Compartir",
     "shareDescription": "Compartir estos detalles del entrenamiento",
-    "shareFailed": "No se pudieron compartir los detalles del entrenamiento. Inténtalo de nuevo."
+    "shareFailed": "No se pudieron compartir los detalles del entrenamiento. Inténtalo de nuevo.",
+    "viewHistory": "Ver sesiones anteriores"
   }
 }

@@ -6,7 +6,7 @@ import { Text, View } from 'react-native';
 import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import { Accordion } from '@/components/theme/Accordion';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
-import DashedButton from '@/components/theme/DashedButton';
+import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { useTheme } from '@/hooks/useTheme';
@@ -102,11 +102,13 @@ export function WorkoutLibraryContent({
   const resultCount = searchResults.length;
   const createWorkoutButton =
     templates.length > 0 ? (
-      <DashedButton
+      <Button
+        variant="dashed"
+        size="sm"
+        width="full"
+        icon={Plus}
         label={t('workouts.createTemplate.title')}
         onPress={onCreateWorkout}
-        size="lg"
-        icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
       />
     ) : null;
 
@@ -161,7 +163,7 @@ export function WorkoutLibraryContent({
             return (
               <View key={`${plan?.id ?? 'unplanned'}:${template.id}`} className="gap-2">
                 {hasSearchQuery && showPlanSections ? (
-                  <Text className="self-start rounded-full bg-accent-primary/10 px-2 py-1 text-xs font-medium text-text-accent">
+                  <Text className="self-start rounded-tag bg-accent-primary/10 px-2 py-1 text-xs font-medium text-text-accent">
                     {plan?.name ?? t('workouts.plans.unplanned')}
                   </Text>
                 ) : null}

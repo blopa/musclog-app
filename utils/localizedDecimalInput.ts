@@ -122,3 +122,20 @@ export function sanitizeLocalizedSignedDecimalInput(
 export function sanitizeLocalizedIntegerInput(raw: string): string {
   return raw.replace(/[^0-9]/g, '');
 }
+
+/**
+ * A non-negative number written exactly as the locale writes it ("62,5" with a comma separator,
+ * "62.5" with a dot), or `null` for anything else — including an empty string.
+ *
+ * {@link parseLocalizedDecimalString} is lenient on purpose: it reads "" and "abc" as 0 and treats
+ * the other separator as grouping, so "62.5" becomes 625 for a comma locale. That is right for a
+ * field being typed and wrong for deciding whether a value may be SAVED. Validation uses this.
+ */
+export function parseStrictLocalizedNumber(
+  text: string | undefined,
+  decimalSeparator: ',' | '.'
+): number | null {
+  const trimmed = (text ?? '').trim();
+  const pattern = decimalSeparator === ',' ? /^\d+(,\d+)?$/ : /^\d+(\.\d+)?$/;
+  return pattern.test(trimmed) ? Number(trimmed.replace(',', '.')) : null;
+}

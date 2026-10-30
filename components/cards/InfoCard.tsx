@@ -89,7 +89,7 @@ export function InfoCard({
   return (
     <Pressable
       onPress={expandable ? () => setIsExpanded(!isExpanded) : undefined}
-      className="rounded-2xl border-2 p-4"
+      className="rounded-card border-2 p-4"
       style={{ borderColor, backgroundColor }}
     >
       <View className="flex-row items-start gap-3">
@@ -119,10 +119,7 @@ export function InfoCard({
           ) : (
             <>
               <View className="flex-row items-center justify-between">
-                <Text
-                  className="font-bold uppercase tracking-wider"
-                  style={{ color: accentColor, fontSize }}
-                >
+                <Text className="font-bold" style={{ color: accentColor, fontSize }}>
                   {label}
                 </Text>
                 {onDismiss ? (

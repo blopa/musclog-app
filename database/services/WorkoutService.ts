@@ -1,5 +1,4 @@
 import { type Model, Q } from '@nozbe/watermelondb';
-import convert, { type Unit } from 'convert';
 
 import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database/database-instance';
@@ -11,6 +10,7 @@ import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
+import { loadWorkoutEnergyProfile } from '@/database/services/workoutEnergyProfile';
 import {
   toWorkoutLogSetSnapshot,
   type WorkoutLogSetSnapshot,
@@ -29,11 +29,16 @@ import { parseSetPrescription } from '@/utils/setPrescription';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
-import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
+import { calculateExerciseVolume } from '@/utils/workoutCalculator';
+import {
+  estimateWorkoutKcalFromSets,
+  type WorkoutEnergyProfile,
+} from '@/utils/workoutKcalEstimate';
 import {
   assertValidWorkoutSetDifficultyLevel,
   isPerformedWorkoutSet,
   isPlannedWorkoutSet,
+  isWorkingSet,
   isWorkoutSetCompletionStatus,
   type WorkoutSetCompletionStatus,
 } from '@/utils/workoutSetCompletion';
@@ -45,7 +50,6 @@ import {
 import { DatabaseRepairService } from './DatabaseRepairService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
-import { UserService } from './UserService';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
 import { WorkoutProgressionService } from './WorkoutProgressionService';
 
@@ -58,6 +62,13 @@ export type EnrichedWorkoutLogSet = WorkoutLogSetSnapshot & {
   /** Set by the live session when it re-targets the planned set — see `computeIntraSessionAdjustment`. */
   adjustment?: SetAdjustment;
   isSkipped: boolean;
+};
+
+type CompletedLogsQuery = {
+  timeframe?: { startDate: number; endDate: number };
+  limit?: number;
+  offset?: number;
+  templateId?: string;
 };
 
 type WorkoutSetUpdateFields = {
@@ -339,7 +350,7 @@ export class WorkoutService {
     limit?: number,
     offset?: number
   ): Promise<WorkoutLog[]> {
-    return this.getWorkoutHistoryInternal(timeframe, limit, offset);
+    return this.fetchCompletedLogs({ timeframe, limit, offset });
   }
 
   static async getCompletedWorkoutCount(timeframe?: {
@@ -364,48 +375,65 @@ export class WorkoutService {
     return await this.getCompletedWorkoutCount(getRollingWeeklyWorkoutRange(date));
   }
 
-  private static async getWorkoutHistoryInternal(
-    timeframe?: { startDate: number; endDate: number },
-    limit?: number,
-    offset?: number,
-    repairAttempted = false
-  ): Promise<WorkoutLog[]> {
-    let query = database
-      .get<WorkoutLog>('workout_logs')
-      .query(
-        Q.where('completed_at', Q.notEq(null)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('started_at', Q.desc)
-      );
-
-    if (timeframe) {
-      query = query.extend(
-        Q.where('started_at', Q.gte(timeframe.startDate)),
-        Q.where('started_at', Q.lte(timeframe.endDate))
-      );
+  /**
+   * Estimated energy for a finished workout (MWEM, performed sets only), rounded to whole kcal.
+   * Returns 0 when it cannot be estimated (no user or weight on file, no usable sets). Shared by
+   * completing a live workout and by the Musclog 1.x conversion, which stored no calories at all
+   * and passes the `profile` it loaded once rather than having it re-read for every workout.
+   */
+  static async estimateWorkoutKcal(
+    workoutLogId: string,
+    profile?: WorkoutEnergyProfile
+  ): Promise<number> {
+    const resolvedProfile = profile ?? (await loadWorkoutEnergyProfile());
+    if (!resolvedProfile) {
+      return 0;
     }
 
-    // WatermelonDB requires Q.take() when using Q.skip()
-    // Apply skip before take (if offset > 0), then always apply take
-    if (limit) {
-      if (offset !== undefined && offset !== null && offset > 0) {
-        // Apply both skip and take together - skip must come before take
-        query = query.extend(Q.skip(offset), Q.take(limit));
-      } else {
-        query = query.extend(Q.take(limit));
+    const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
+    return estimateWorkoutKcalFromSets(resolvedProfile, sets, exercises);
+  }
+
+  /**
+   * The one definition of "completed, not deleted, newest first", with the optional filters every
+   * caller composes: a date window, a page and a workout template.
+   */
+  private static async fetchCompletedLogs(query: CompletedLogsQuery): Promise<WorkoutLog[]> {
+    const build = () => {
+      const { timeframe, limit, offset, templateId } = query;
+      let logs = database
+        .get<WorkoutLog>('workout_logs')
+        .query(
+          Q.where('completed_at', Q.notEq(null)),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('started_at', Q.desc)
+        );
+
+      if (timeframe) {
+        logs = logs.extend(
+          Q.where('started_at', Q.gte(timeframe.startDate)),
+          Q.where('started_at', Q.lte(timeframe.endDate))
+        );
       }
-    }
+
+      if (templateId) {
+        logs = logs.extend(Q.where('template_id', templateId));
+      }
+
+      // WatermelonDB requires Q.take() when using Q.skip(), and skip must come before take.
+      if (limit) {
+        logs = logs.extend(...(offset ? [Q.skip(offset)] : []), Q.take(limit));
+      }
+
+      return logs;
+    };
 
     try {
-      return await query.fetch();
+      return await build().fetch();
     } catch (error) {
-      if (!repairAttempted) {
-        const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.getWorkoutHistoryInternal(timeframe, limit, offset, true)
-        );
-        if (repaired) {
-          return repaired;
-        }
+      const repaired = await this.retryAfterWorkoutRepair(error, () => build().fetch());
+      if (repaired) {
+        return repaired;
       }
 
       throw error;
@@ -523,75 +551,13 @@ export class WorkoutService {
 
       // Calculate calories burned using MWEM (best-effort, never blocks completion)
       try {
-        const [user, weightMetric, heightMetric] = await Promise.all([
-          UserService.getCurrentUser(),
-          UserMetricService.getLatest('weight'),
-          UserMetricService.getLatest('height'),
-        ]);
-
-        if (user && weightMetric) {
-          const { value: rawWeight, unit: weightUnit } = await weightMetric.getDecrypted();
-          const weightKg =
-            weightUnit === 'lbs' ? (convert(rawWeight, 'lb').to('kg') as number) : rawWeight;
-
-          let heightCm = 175; // Default fallback for height if missing
-          if (heightMetric) {
-            const { value: rawHeight, unit: heightUnit } = await heightMetric.getDecrypted();
-            heightCm =
-              heightUnit === 'in' || heightUnit === 'ft'
-                ? (convert(rawHeight, heightUnit as Unit).to('cm') as number)
-                : rawHeight;
-          }
-
-          if (weightKg > 0 && heightCm > 0) {
-            const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
-            const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
-            const setsByExercise = new Map<string, EnrichedWorkoutLogSet[]>();
-            for (const set of sets) {
-              // Only include completed and non-skipped sets for calorie calculation
-              if (!isPerformedWorkoutSet(set)) {
-                continue;
-              }
-
-              const eid = set.exerciseId ?? '';
-              if (!setsByExercise.has(eid)) {
-                setsByExercise.set(eid, []);
-              }
-
-              setsByExercise.get(eid)!.push(set);
-            }
-
-            const mwemInputs: MWEMInput[] = Array.from(setsByExercise.entries()).flatMap(
-              ([exerciseId, exerciseSets]) => {
-                const exercise = exerciseMap.get(exerciseId);
-                if (!exercise) {
-                  return [];
-                }
-
-                return [
-                  {
-                    user: { weightKg, heightCm, gender: user?.gender || 'other' },
-                    exercise: {
-                      mechanicType: exercise.mechanicType,
-                      muscleGroup: exercise.muscleGroup,
-                      equipmentType: exercise.equipmentType,
-                      loadMultiplier: exercise.loadMultiplier ?? 1,
-                    },
-                    sets: exerciseSets.map((s) => ({ weight: s.weight ?? 0, reps: s.reps ?? 0 })),
-                  },
-                ];
-              }
-            );
-
-            const totalKcal = calculateWorkoutKcal(mwemInputs);
-            if (totalKcal > 0) {
-              await database.write(async () => {
-                await completedWorkout.update((log) => {
-                  log.caloriesBurned = Math.round(totalKcal);
-                });
-              });
-            }
-          }
+        const totalKcal = await this.estimateWorkoutKcal(workoutLogId);
+        if (totalKcal > 0) {
+          await database.write(async () => {
+            await completedWorkout.update((log) => {
+              log.caloriesBurned = totalKcal;
+            });
+          });
         }
       } catch (err) {
         console.warn('MWEM calorie calculation failed:', err);
@@ -1243,23 +1209,81 @@ export class WorkoutService {
   }
 
   /**
-   * Get workout logs by template_id, ordered by date (newest first)
+   * Volume of one exercise in each of the last `limit` sessions of the same workout up to and
+   * including `workoutLogId`, oldest first. Only performed working sets count, like workout
+   * volume. Empty when the log was not started from a template.
    */
-  static async getWorkoutLogsByTemplate(templateId: string, limit?: number): Promise<WorkoutLog[]> {
-    let query = database
-      .get<WorkoutLog>('workout_logs')
-      .query(
-        Q.where('template_id', templateId),
-        Q.where('completed_at', Q.notEq(null)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('started_at', Q.desc)
-      );
-
-    if (limit) {
-      query = query.extend(Q.take(limit));
+  static async getExerciseVolumeHistory(
+    workoutLogId: string,
+    exerciseId: string,
+    limit = 10
+  ): Promise<{ id: string; date: number; volume: number }[]> {
+    const current = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+    if (!current.templateId) {
+      return [];
     }
 
-    return await query.fetch();
+    const logs = await this.getWorkoutLogsByTemplate(current.templateId, {
+      timeframe: { startDate: 0, endDate: current.startedAt },
+      limit,
+    });
+
+    const logExercises = await fetchByIds<WorkoutLogExercise>(
+      'workout_log_exercises',
+      'workout_log_id',
+      logs.map((log) => log.id),
+      Q.where('exercise_id', exerciseId),
+      Q.where('deleted_at', Q.eq(null))
+    );
+    if (logExercises.length === 0) {
+      return [];
+    }
+
+    const [sets, exercise, bodyWeightKg] = await Promise.all([
+      fetchByIds<WorkoutLogSet>(
+        'workout_log_sets',
+        'log_exercise_id',
+        logExercises.map((le) => le.id),
+        Q.where('deleted_at', Q.eq(null))
+      ),
+      database.get<Exercise>('exercises').find(exerciseId),
+      UserMetricService.getUserBodyWeightKgForVolume(),
+    ]);
+
+    const logIdByLogExercise = new Map(logExercises.map((le) => [le.id, le.workoutLogId]));
+    const setsByLog = new Map<string, WorkoutLogSet[]>();
+    for (const set of sets.filter(isWorkingSet)) {
+      const logId = logIdByLogExercise.get(set.logExerciseId);
+      if (logId) {
+        const logSets = setsByLog.get(logId) ?? [];
+        logSets.push(set);
+        setsByLog.set(logId, logSets);
+      }
+    }
+
+    return logs
+      .filter((log) => setsByLog.has(log.id))
+      .map((log) => ({
+        id: log.id,
+        date: log.startedAt || log.completedAt || 0,
+        volume: calculateExerciseVolume(setsByLog.get(log.id)!, exercise, bodyWeightKg),
+      }));
+  }
+
+  /**
+   * Completed sessions of a workout template, newest first. Takes the same date window and page
+   * as `getWorkoutHistory`.
+   */
+  static async getWorkoutLogsByTemplate(
+    templateId: string,
+    options: Omit<CompletedLogsQuery, 'templateId'> = {}
+  ): Promise<WorkoutLog[]> {
+    return this.fetchCompletedLogs({ ...options, templateId });
+  }
+
+  /** Whether the template has been completed at least once. */
+  static async hasCompletedSessions(templateId: string): Promise<boolean> {
+    return (await this.getWorkoutLogsByTemplate(templateId, { limit: 1 })).length > 0;
   }
 
   /**

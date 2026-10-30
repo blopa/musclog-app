@@ -74,11 +74,11 @@ export function SessionTopBar({
           variant="ghost"
         />
         <View className="min-w-0 flex-1">
-          <Text className="text-base font-bold text-text-primary" numberOfLines={1}>
+          <Text className="text-base font-semibold text-text-primary" numberOfLines={1}>
             {title}
           </Text>
           <Text className="text-xs text-text-secondary" numberOfLines={1}>
-            <Text className="font-semibold text-accent-primary">{duration}</Text>
+            <Text className="font-semibold tabular-nums text-accent-primary">{duration}</Text>
             {` · ${t('trainingFlow.progress', { done: formatInteger(done), total: formatInteger(total) })}`}
           </Text>
         </View>

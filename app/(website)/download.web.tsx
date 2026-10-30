@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { GOOGLE_PLAY_URL, TESTFLIGHT_URL } from '@/components/website/storeLinks';
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { BRAND_GREEN_BRIGHT, hue } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
 
 function AppleLogo() {
@@ -94,4 +95,8 @@ export default function Download() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('download');
 }

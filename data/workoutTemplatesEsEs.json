@@ -42,5 +42,29 @@
       "5": "Torso B",
       "6": "Tren inferior B"
     }
+  },
+  {
+    "title": "Cuerpo completo corto — Gimnasio",
+    "description": "Dos entrenamientos cortos de cuerpo completo (A y B) con máquinas y pesas del gimnasio: unos 30 minutos, 2 series cada uno, suaves a propósito. Una buena forma de volver.",
+    "dayNames": {
+      "1": "Entrenamiento A",
+      "2": "Entrenamiento B"
+    }
+  },
+  {
+    "title": "Cuerpo completo corto — Casa",
+    "description": "Dos entrenamientos cortos de cuerpo completo (A y B) con mancuernas, una pesa rusa y bandas: unos 30 minutos, 2 series cada uno. Suaves a propósito.",
+    "dayNames": {
+      "1": "Entrenamiento A",
+      "2": "Entrenamiento B"
+    }
+  },
+  {
+    "title": "Cuerpo completo corto — Sin equipo",
+    "description": "Dos entrenamientos cortos de cuerpo completo (A y B) solo con tu cuerpo y una banda: unos 30 minutos, 2 series cada uno. Suaves a propósito.",
+    "dayNames": {
+      "1": "Entrenamiento A",
+      "2": "Entrenamiento B"
+    }
   }
 ]

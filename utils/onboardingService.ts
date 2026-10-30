@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
+  AI_ONBOARDING_DRAFT,
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_CURRENT_STEP,
   ONBOARDING_VERSION,
+  PERSONALIZED_BODY_DRAFT,
   TEMP_NUTRITION_PLAN,
 } from '@/constants/misc';
 import {
@@ -66,7 +68,13 @@ export const setOnboardingCompleted = async (
       : []),
   ]);
 
-  await AsyncStorage.multiRemove([ONBOARDING_CURRENT_STEP, TEMP_NUTRITION_PLAN]);
+  // `PERSONALIZED_SETUP_DATA` stays: the first-workout screen still reads the experience from it.
+  await AsyncStorage.multiRemove([
+    ONBOARDING_CURRENT_STEP,
+    TEMP_NUTRITION_PLAN,
+    AI_ONBOARDING_DRAFT,
+    PERSONALIZED_BODY_DRAFT,
+  ]);
 
   // Remove ONBOARDING_COMPLETED from pending confetti activities (new subtractive model).
   try {
@@ -96,6 +104,8 @@ export const resetOnboarding = async (): Promise<void> => {
     ONBOARDING_VERSION,
     ONBOARDING_CURRENT_STEP,
     TEMP_NUTRITION_PLAN,
+    AI_ONBOARDING_DRAFT,
+    PERSONALIZED_BODY_DRAFT,
   ]);
 };
 

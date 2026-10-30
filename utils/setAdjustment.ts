@@ -1,6 +1,6 @@
 import type { ProgressionMode } from '@/constants/settings';
 
-import type { ProgressionRule } from './progressionRules';
+import type { ProgressionRule } from './progressionRuleSchema';
 import { sameLoad, WEIGHT_EPSILON } from './sameLoad';
 import {
   calculateAverage1RM,
@@ -131,9 +131,15 @@ export type StartSetAdjustment = {
   /**
    * Present when the user's Weekly Review decision set the numbers (a repeated or lighter week),
    * not how last session went. The explanation then credits the review instead of the last session.
+   * `'comeback'` credits the eased restart the user opted in to after a break: `last` is then the
+   * pre-break session the ramp scales, and `comeback` says which week and share of it.
    */
-  source?: 'weekly_review';
+  source?: 'weekly_review' | 'comeback';
+  /** Present with `source: 'comeback'`: the ramp week, the share of the pre-break load asked for and the reps in reserve it aims for. */
+  comeback?: { week: number; percent: number; targetRir: number };
 };
+
+const START_SOURCES: readonly string[] = ['weekly_review', 'comeback'];
 
 export type SetAdjustment = IntraSessionSetAdjustment | StartSetAdjustment;
 
@@ -244,8 +250,18 @@ export function parseStartAdjustment(raw: string | null | undefined): StartSetAd
   }
 
   // A source this build does not know is dropped, not the whole explanation: it only credits.
-  if (parsed.source !== undefined && parsed.source !== 'weekly_review') {
+  if (parsed.source !== undefined && !START_SOURCES.includes(parsed.source)) {
     delete parsed.source;
+  }
+
+  // Likewise a comeback detail that is malformed, or no longer matches a comeback source.
+  if (
+    parsed.comeback !== undefined &&
+    (parsed.source !== 'comeback' ||
+      !finite(parsed.comeback?.week) ||
+      !finite(parsed.comeback?.percent))
+  ) {
+    delete parsed.comeback;
   }
 
   return parsed as StartSetAdjustment;
@@ -258,7 +274,8 @@ export const serializeStartAdjustment = (adjustment: StartSetAdjustment): string
 export const revertsToPlan = (adjustment: StartSetAdjustment): boolean =>
   adjustment.cause === 'repeat' ||
   adjustment.rule !== undefined ||
-  adjustment.source === 'weekly_review';
+  adjustment.source === 'weekly_review' ||
+  adjustment.source === 'comeback';
 
 /**
  * What "undo" means for a start adjustment: the OTHER number the user could have started with.

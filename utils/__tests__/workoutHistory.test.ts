@@ -249,8 +249,8 @@ describe('calculateDateRange', () => {
     expect(calculateDateRange('90')!.startDate).toBeLessThan(calculateDateRange('30')!.startDate);
   });
 
-  it('returns undefined for the custom range, which has no picker yet', () => {
-    expect(calculateDateRange('custom')).toBeUndefined();
+  it('returns no bounds for the all-time range', () => {
+    expect(calculateDateRange('all')).toBeUndefined();
   });
 });
 

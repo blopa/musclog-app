@@ -1,6 +1,5 @@
 import convert from 'convert';
 import { differenceInCalendarDays } from 'date-fns';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   Activity,
   Beef,
@@ -17,6 +16,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TextInputInstance } from 'react-native';
 import {
   ActivityIndicator,
   Platform,
@@ -66,6 +66,7 @@ import {
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
+import { PastTdeeWindowNote } from './nutrition/PastTdeeWindowNote';
 import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { SegmentedControl } from './theme/SegmentedControl';
@@ -224,7 +225,7 @@ function MacrosDistributionChart({
 
   return (
     <View className="items-center py-10">
-      <Text className="mb-6 text-sm font-semibold uppercase tracking-widest text-text-secondary opacity-60">
+      <Text className="mb-6 text-sm font-semibold text-text-secondary opacity-60">
         {t('nutritionGoals.macrosDistribution')}
       </Text>
 
@@ -335,7 +336,7 @@ export function NutritionGoalsBody({
   const [calorieInputValue, setCalorieInputValue] = useState(() =>
     initialGoals.totalCalories.toString()
   );
-  const calorieInputRef = useRef<TextInput>(null);
+  const calorieInputRef = useRef<TextInputInstance>(null);
 
   const preciseMacros = useRef({
     protein: initialGoals.protein,
@@ -1009,28 +1010,31 @@ export function NutritionGoalsBody({
           <Text className="mb-2 text-sm text-text-secondary">{t('nutritionGoals.subtitle')}</Text>
         ) : null}
 
-        {/* Goal Mode: Manual / Dynamic */}
+        {/* Goal mode */}
         <View className="gap-2">
           <Text className="ml-1 text-sm font-medium text-text-secondary">
             {t('nutritionGoals.goalMode')}
           </Text>
           <SegmentedControl
             options={[
-              { label: t('nutritionGoals.manual'), value: 'manual' },
-              { label: t('weeklyReview.modes.daily'), value: 'daily' },
-              { label: t('weeklyReview.modes.weekly'), value: 'weekly' },
+              { label: t('nutritionGoals.modeOptions.manual'), value: 'manual' },
+              { label: t('nutritionGoals.modeOptions.daily'), value: 'daily' },
+              { label: t('nutritionGoals.modeOptions.weekly'), value: 'weekly' },
             ]}
             value={targetMode}
             onValueChange={(val) =>
               setTargetMode(val === 'weekly' ? 'weekly' : val === 'daily' ? 'daily' : 'manual')
             }
           />
+          <Text className="px-1 text-sm text-text-secondary">
+            {t(`nutritionGoals.modeHints.${targetMode}`)}
+          </Text>
         </View>
 
         {/* Dynamic mode info callout */}
         {isDynamic ? (
           <View
-            className="rounded-xl border p-4"
+            className="rounded-card border p-4"
             style={{
               borderColor: theme.colors.border.brand,
               backgroundColor: theme.colors.status.brandVivid10,
@@ -1047,20 +1051,14 @@ export function NutritionGoalsBody({
         {/* Total Daily Calories Card */}
         {!isDynamic ? (
           <View
-            className="relative mb-6 overflow-hidden rounded-2xl border p-6"
+            className="relative mb-6 overflow-hidden rounded-card border p-6"
             style={{
               borderColor: theme.colors.border.brand,
               backgroundColor: theme.colors.background.cardElevated,
             }}
           >
-            <LinearGradient
-              colors={[theme.colors.status.indigo10, theme.colors.accent.secondary10]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ position: 'absolute', inset: 0 }}
-            />
             <View className="relative z-10 items-center">
-              <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
+              <Text className="mb-1 text-xs font-medium text-text-secondary">
                 {t('nutritionGoals.totalDailyCalories')}
               </Text>
               <View className="w-full flex-row items-center justify-center gap-6">
@@ -1083,7 +1081,7 @@ export function NutritionGoalsBody({
                     isResolvingDynamicPreview ? (
                       <ActivityIndicator size="small" color={theme.colors.text.primary} />
                     ) : (
-                      <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                      <Text className="text-4xl font-bold tabular-nums text-text-primary">
                         {formatInteger(effectiveCalories)}
                       </Text>
                     )
@@ -1095,7 +1093,7 @@ export function NutritionGoalsBody({
                       onBlur={handleCalorieBlur}
                       onSubmitEditing={handleCalorieSubmit}
                       keyboardType="numeric"
-                      className="p-0 text-center text-5xl font-extrabold tracking-tighter text-text-primary"
+                      className="p-0 text-center text-4xl font-bold tabular-nums text-text-primary"
                       style={{
                         minWidth: 80,
                         color: theme.colors.text.primary,
@@ -1105,12 +1103,12 @@ export function NutritionGoalsBody({
                     />
                   ) : (
                     <Pressable onPress={handleCaloriePress}>
-                      <Text className="text-5xl font-extrabold tracking-tighter text-text-primary">
+                      <Text className="text-4xl font-bold tabular-nums text-text-primary">
                         {formatInteger(totalCalories)}
                       </Text>
                     </Pressable>
                   )}
-                  <Text className="text-lg font-semibold uppercase text-accent-primary">
+                  <Text className="text-lg font-semibold text-accent-primary">
                     {t('food.common.kcal')}
                   </Text>
                 </View>
@@ -1135,6 +1133,13 @@ export function NutritionGoalsBody({
                   <Text className="text-xs text-text-secondary">
                     {t('nutritionGoals.tdeeHint', { kcal: formatInteger(effectiveTdeeEstimate) })}
                   </Text>
+                  {isDynamic && dynamicPreview?.pastEmpiricalWindow ? (
+                    <PastTdeeWindowNote
+                      startMs={dynamicPreview.pastEmpiricalWindow.startMs}
+                      endMs={dynamicPreview.pastEmpiricalWindow.endMs}
+                      className="text-center text-xs text-text-secondary"
+                    />
+                  ) : null}
                   {Math.abs(effectiveCalories - effectiveTdeeEstimate) >= 10 ? (
                     <Text
                       className="text-xs font-semibold"
@@ -1194,11 +1199,11 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-border-accent bg-bg-card p-4">
+          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-card border border-border-accent bg-bg-card p-4">
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
-                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
+                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-control"
                   style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.brandBright} />
@@ -1252,7 +1257,7 @@ export function NutritionGoalsBody({
         {!isDynamic ? (
           <>
             <Text
-              className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+              className="mb-2 mt-8 font-bold text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xs }}
             >
               {t('nutritionGoals.dailyMacroTargets')}
@@ -1383,7 +1388,7 @@ export function NutritionGoalsBody({
 
         {/* Target Body Metrics */}
         <Text
-          className="mb-2 mt-8 font-bold uppercase tracking-widest text-text-secondary"
+          className="mb-2 mt-8 font-bold text-text-secondary"
           style={{ fontSize: theme.typography.fontSize.xs }}
         >
           {t('nutritionGoals.targetBodyMetrics')}
@@ -1609,7 +1614,7 @@ export function NutritionGoalsBody({
 
           {/* Target date for body metrics */}
           <View
-            className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border bg-bg-card p-4"
+            className="flex-row items-center justify-between gap-3 overflow-hidden rounded-card border bg-bg-card p-4"
             style={{
               borderColor:
                 isDynamic && targetDate === null
@@ -1620,7 +1625,7 @@ export function NutritionGoalsBody({
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
-                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
+                  className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-control"
                   style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                 >
                   <Calendar size={theme.iconSize.sm} color={theme.colors.status.brandBright} />

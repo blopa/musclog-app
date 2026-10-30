@@ -43,7 +43,7 @@ export function ShareImportPanel({
     return (
       <View className="gap-4">
         <Text
-          className="text-center text-lg font-bold"
+          className="text-center text-lg font-semibold"
           style={{ color: theme.colors.status.success }}
         >
           {saved.title}

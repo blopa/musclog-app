@@ -1,7 +1,8 @@
 import type { WorkoutAutonomy } from '@/constants/settings';
 import workoutTemplatesData from '@/data/workoutTemplatesData.json';
 import type { EquipmentType } from '@/database/models/Exercise';
-import type { LiftingExperience } from '@/database/models/User';
+import type { LiftingExperience, WeightGoal } from '@/database/models/User';
+import type { BreakLength } from '@/utils/comeback/comebackState';
 import { EQUIPMENT_TYPES } from '@/utils/gym';
 
 export const TRAINING_LOCATIONS = ['gym', 'home', 'minimal'] as const;
@@ -16,12 +17,25 @@ export type TrainingSetupData = {
   experience?: LiftingExperience;
   daysPerWeek: number;
   autonomy: WorkoutAutonomy;
+  /** Set when the person is coming back after a break; starts comeback mode once the plan is accepted. */
+  comingBack?: { breakLength: BreakLength };
 };
 
 const isLocation = (value: unknown): value is TrainingLocation =>
   TRAINING_LOCATIONS.includes(value as TrainingLocation);
 const isExperience = (value: unknown): value is LiftingExperience =>
   value === 'beginner' || value === 'intermediate' || value === 'advanced';
+
+// A literal rather than `BREAK_LENGTHS`: comebackState imports this module's values, so importing
+// back would be a cycle. The `satisfies` keeps it from naming a length that does not exist.
+const BREAK_LENGTH_VALUES = [
+  'under1m',
+  '1to3m',
+  '3to6m',
+  'over6m',
+] as const satisfies readonly BreakLength[];
+export const isBreakLength = (value: unknown): value is BreakLength =>
+  (BREAK_LENGTH_VALUES as readonly unknown[]).includes(value);
 
 /** Reads the stored answers back; anything malformed means "no training setup". */
 export function parseTrainingSetup(raw: string | null | undefined): TrainingSetupData | null {
@@ -43,10 +57,29 @@ export function parseTrainingSetup(raw: string | null | undefined): TrainingSetu
         ? Math.min(5, Math.max(2, Math.round(days)))
         : DEFAULT_TRAINING_DAYS,
       autonomy: parsed.autonomy === 'manual' ? 'manual' : 'suggest',
+      ...(isBreakLength(parsed.comingBack?.breakLength)
+        ? { comingBack: { breakLength: parsed.comingBack.breakLength } }
+        : {}),
     };
   } catch {
     return null;
   }
+}
+
+/**
+ * The place to train an existing gym profile amounts to, so a question about where the person
+ * trains can start on the answer their profile already gives.
+ */
+export function inferTrainingLocation(equipment: readonly EquipmentType[]): TrainingLocation {
+  if (
+    equipment.some((item) => ['barbell', 'plate_machine', 'cable', 'smith_machine'].includes(item))
+  ) {
+    return 'gym';
+  }
+
+  return equipment.some((item) => item === 'dumbbell' || item === 'kettlebell')
+    ? 'home'
+    : 'minimal';
 }
 
 /** What a gym profile created from the answer contains. */
@@ -79,10 +112,30 @@ export const STARTER_PLAN_TITLES: Record<LiftingExperience, Record<number, strin
 };
 
 /**
+ * The short, easy A/B full-body plans, one per place to train. They are the only bundled plans
+ * built for dumbbells/bands/bodyweight, so they are what home and minimal trainers are offered —
+ * and what a comeback's "a short plan for me" creates, for any location.
+ */
+export const SHORT_PLAN_TITLES: Record<TrainingLocation, string> = {
+  gym: 'Short Full Body — Gym',
+  home: 'Short Full Body — Home',
+  minimal: 'Short Full Body — No Equipment',
+};
+
+/** Index into `workoutTemplatesData.json` of the short plan for a place to train, or null. */
+export function shortPlanTemplateIndex(location: TrainingLocation): number | null {
+  const index = (workoutTemplatesData as { __title?: string }[]).findIndex(
+    (template) => template.__title === SHORT_PLAN_TITLES[location]
+  );
+
+  return index >= 0 ? index : null;
+}
+
+/**
  * Index into `workoutTemplatesData.json` of the plan to recommend, or null when the answers do
- * not fit a catalogue plan. Every bundled plan is built around gym equipment (barbells, machines,
- * cables), so someone training at home or with nothing gets an empty workout instead of a plan
- * they could not do.
+ * not fit a catalogue plan. The long catalogue plans are built around gym equipment (barbells,
+ * machines, cables), so someone training at home or with nothing is offered the short full-body
+ * plan for their equipment instead of an empty workout.
  */
 export function pickStarterTemplateIndex(
   location: TrainingLocation,
@@ -90,7 +143,7 @@ export function pickStarterTemplateIndex(
   daysPerWeek: number
 ): number | null {
   if (location !== 'gym') {
-    return null;
+    return shortPlanTemplateIndex(location);
   }
 
   const days = Math.min(5, Math.max(2, Math.round(daysPerWeek)));
@@ -100,4 +153,16 @@ export function pickStarterTemplateIndex(
   );
 
   return index >= 0 ? index : null;
+}
+
+/**
+ * The weight goal the first nutrition plan is calculated for. Someone coming back after a break
+ * eats at maintenance first (a deficit is offered at the week-2 check-in), so whatever they picked
+ * on the goals screen does not turn the first plan into a cut.
+ */
+export function planWeightGoal(
+  training: Pick<TrainingSetupData, 'comingBack'> | null,
+  weightGoal: WeightGoal
+): WeightGoal {
+  return training?.comingBack ? 'maintain' : weightGoal;
 }

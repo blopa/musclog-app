@@ -92,10 +92,7 @@ export function ActivityRingsChart({
             </Text>
           ) : null}
           {subtitle != null ? (
-            <Text
-              className="mt-1 text-xs uppercase tracking-widest text-text-tertiary"
-              style={{ marginTop: 4, letterSpacing: 4 }}
-            >
+            <Text className="mt-1 text-xs text-text-tertiary" style={{ marginTop: 4 }}>
               {subtitle}
             </Text>
           ) : null}
@@ -158,7 +155,7 @@ export function ActivityRingsChart({
             {centerValue}
           </Text>
           <Text
-            className="mt-1 text-[10px] font-bold uppercase text-text-tertiary"
+            className="mt-1 text-xs font-semibold text-text-tertiary"
             style={{ marginTop: 4, fontSize: 10 }}
           >
             {resolvedCenterLabel}
@@ -194,10 +191,7 @@ export function ActivityRingsChart({
               >
                 {ring.value}
               </Text>
-              <Text
-                className="text-[9px] uppercase text-text-tertiary"
-                style={{ fontSize: 9, marginTop: 2 }}
-              >
+              <Text className="text-xs text-text-tertiary" style={{ fontSize: 10, marginTop: 2 }}>
                 {ring.label}
               </Text>
             </View>

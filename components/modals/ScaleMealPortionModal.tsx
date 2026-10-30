@@ -21,6 +21,7 @@ export type ScaleMealPortionMealNutrients = {
 type ScaleMealPortionModalProps = {
   visible: boolean;
   onClose: () => void;
+  /** Resolves when the portion is saved. May throw after reporting: the sheet then stays open. */
   onConfirm: (totalGrams: number) => Promise<void>;
   initialTotalGrams: number;
   /** Current meal totals at `initialTotalGrams`; used to preview scaled nutrition. */
@@ -81,6 +82,8 @@ export function ScaleMealPortionModal({
     await flushLoadingPaint();
     try {
       await onConfirm(targetGrams);
+    } catch {
+      // The caller has reported the failure; stay open so the typed grams are not lost.
     } finally {
       setIsSubmitting(false);
     }

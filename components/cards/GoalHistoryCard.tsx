@@ -72,7 +72,6 @@ export function GoalHistoryCard({
           {
             icon: Pencil,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('goalsManagement.manageGoalData.editGoal'),
             description: t('goalsManagement.manageGoalData.editGoalDesc'),
             onPress: onEdit,
@@ -84,7 +83,6 @@ export function GoalHistoryCard({
           {
             icon: RefreshCw,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('goalsManagement.manageGoalData.regenerateCheckins'),
             description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
             onPress: onRegenerateCheckins,
@@ -97,7 +95,6 @@ export function GoalHistoryCard({
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error10,
             title: t('goalsManagement.manageGoalData.deleteGoal'),
             description: t('goalsManagement.manageGoalData.deleteGoalDesc'),
             titleColor: theme.colors.status.error,
@@ -155,12 +152,12 @@ export function GoalHistoryCard({
             <View className="flex-row items-center justify-between">
               <View className="flex-col">
                 {goal.isDynamic ? (
-                  <Text className="text-lg font-bold text-text-primary">
+                  <Text className="text-lg font-semibold text-text-primary">
                     {t('goalHistoryCard.dynamic')}
                   </Text>
                 ) : (
                   <>
-                    <Text className="text-lg font-bold text-text-primary">
+                    <Text className="text-lg font-semibold text-text-primary">
                       {formatInteger(goal.calories)}{' '}
                       <Text
                         className="font-normal text-text-secondary"
@@ -185,7 +182,7 @@ export function GoalHistoryCard({
               </View>
               <View className="items-end">
                 {weightDisplay != null ? (
-                  <Text className="text-xs font-bold text-text-secondary">
+                  <Text className="text-xs font-semibold text-text-secondary">
                     {weightDisplay} {t(weightUnitKey)}
                   </Text>
                 ) : null}

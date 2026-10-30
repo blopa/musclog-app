@@ -23,7 +23,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.13.1</string>
+    <string>2.15.3</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -35,9 +35,19 @@
           <string>com.werules.logger</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>exp+logger</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>311</string>
+    <string>325</string>
+    <key>ExpoWidgetsAppGroupIdentifier</key>
+    <string>group.com.werules.logger</string>
+    <key>ExpoWidgets_EnablePushNotifications</key>
+    <false/>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
     <key>LSMinimumSystemVersion</key>
@@ -53,6 +63,10 @@
     </dict>
     <key>NSBluetoothAlwaysUsageDescription</key>
     <string>Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors</string>
+    <key>NSBonjourServices</key>
+    <array>
+      <string>_expo._tcp</string>
+    </array>
     <key>NSCalendarsFullAccessUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your calendars</string>
     <key>NSCalendarsUsageDescription</key>
@@ -62,9 +76,11 @@
     <key>NSFaceIDUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to use Face ID.</string>
     <key>NSHealthShareUsageDescription</key>
-    <string>Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.</string>
+    <string>Musclog reads workouts, nutrition and body measurements, and optionally menstrual bleeding and basal temperature when you request a cycle import.</string>
     <key>NSHealthUpdateUsageDescription</key>
-    <string>Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync.</string>
+    <string>Musclog writes workouts, nutrition and body metrics, and optionally your manually logged bleeding and basal temperature when you request a cycle export.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Musclog does not use your location. This permission string is required because a bundled SDK references location APIs.</string>
     <key>NSMicrophoneUsageDescription</key>
@@ -75,6 +91,10 @@
     <string>Allow $(PRODUCT_NAME) to access your reminders</string>
     <key>NSRemindersUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+    <key>NSSupportsLiveActivities</key>
+    <true/>
+    <key>NSSupportsLiveActivitiesFrequentUpdates</key>
+    <false/>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
@@ -87,6 +107,23 @@
     <array>
       <string>MaterialIcons.ttf</string>
     </array>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+      <key>UIApplicationSupportsMultipleScenes</key>
+      <false/>
+      <key>UISceneConfigurations</key>
+      <dict>
+        <key>UIWindowSceneSessionRoleApplication</key>
+        <array>
+          <dict>
+            <key>UISceneConfigurationName</key>
+            <string>Default Configuration</string>
+            <key>UISceneDelegateClassName</key>
+            <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+          </dict>
+        </array>
+      </dict>
+    </dict>
     <key>UIBackgroundModes</key>
     <array>
       <string>fetch</string>

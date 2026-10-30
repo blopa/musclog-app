@@ -7,12 +7,12 @@ import { isOnboardingCompleted } from '@/utils/onboardingService';
 // Strategy per action:
 // - open-camera: stash in global + return '/' — camera is a modal on the home screen,
 //   index.tsx reads the global once the navigator is ready.
-// - open-nutrition (and any future screen-based actions): return the target route directly.
+// - open-nutrition / open-cycle / open-home (and any future screen-based actions): return the target route directly.
 //   redirectSystemPath sets the *initial* route, which Expo Router handles natively
 //   with no imperative navigation involved — no race condition possible.
 
 /** Valid deep link actions that can be processed */
-const VALID_ACTIONS = ['open-camera', 'open-nutrition'] as const;
+const VALID_ACTIONS = ['open-camera', 'open-nutrition', 'open-cycle', 'open-home'] as const;
 type ValidAction = (typeof VALID_ACTIONS)[number];
 
 /**
@@ -57,6 +57,16 @@ export const redirectSystemPath = async ({ path, initial }: { path: string; init
 
       if (action === 'open-nutrition') {
         return '/app/nutrition/food';
+      }
+
+      // The cycle lock gates the screen itself; the widget only ever opens it.
+      if (action === 'open-cycle') {
+        return '/app/cycle';
+      }
+
+      // The activity heatmap widget opens Home, where the heatmaps live.
+      if (action === 'open-home') {
+        return '/app';
       }
     }
   } catch {

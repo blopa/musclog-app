@@ -1,8 +1,8 @@
 {
   "eatingPhaseBadge": {
-    "cutting": "CUTTING",
-    "maintenance": "MAINTENANCE",
-    "bulking": "BULKING",
-    "lean-bulk": "LEAN BULK"
+    "cutting": "Cutting",
+    "maintenance": "Maintenance",
+    "bulking": "Bulking",
+    "lean-bulk": "Lean bulk"
   }
 }

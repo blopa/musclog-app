@@ -32,7 +32,7 @@
 #define ORIGIN_Y ((SCREEN_TILE_H - logo_TILE_H) / 2) /* (18 - 8) / 2 = 5 */
 
 /* The app's dark-green surface color (theme token `green800` = #0d4a2d, "Deep green
- * surface"). The literal page background (swampGreen #091310) is so dark it reads as
+ * surface"). The literal page background (surfaceBase #0d1210) is so dark it reads as
  * pitch black on the Game Boy Color, so we use this clearly-green surface tone instead.
  * Loaded as CGB background palette 1; only color 0 is used (blank fill tile is all index 0). */
 #define BG_PALETTE 1

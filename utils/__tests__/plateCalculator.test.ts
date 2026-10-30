@@ -150,29 +150,31 @@ describe('roundToLoadable', () => {
     equipment: ['barbell', 'dumbbell'],
   };
 
-  it('keeps the long-standing whole-kilogram rounding when there is no gym', () => {
-    expect(roundToLoadable(82.6, 'barbell', null)).toBe(83);
-    expect(roundToLoadable(82.4, 'dumbbell', undefined)).toBe(82);
+  it('without a gym, moves a bar in plate pairs and tidies anything else to the input precision', () => {
+    expect(roundToLoadable(82.6, 'barbell', null, 'metric')).toBe(82.5);
+    expect(roundToLoadable(81.2, 'barbell', null, 'metric')).toBe(80);
+    expect(roundToLoadable(12.2, 'dumbbell', undefined, 'metric')).toBe(12);
+    expect(roundToLoadable(12.3, 'dumbbell', undefined, 'metric')).toBe(12.5);
   });
 
   it('snaps a barbell to what the plates can make', () => {
-    expect(roundToLoadable(101.5, 'barbell', gym)).toBe(102.5);
-    expect(roundToLoadable(101.5, 'smith_machine', gym)).toBe(102.5);
+    expect(roundToLoadable(101.5, 'barbell', gym, 'metric')).toBe(102.5);
+    expect(roundToLoadable(101.5, 'smith_machine', gym, 'metric')).toBe(102.5);
   });
 
   it('snaps everything else to the gym increment', () => {
-    expect(roundToLoadable(13.7, 'dumbbell', gym)).toBe(12.5);
-    expect(roundToLoadable(14, 'dumbbell', gym)).toBe(15);
-    expect(roundToLoadable(17.4, 'cable', { ...gym, weightIncrementKg: 5 })).toBe(15);
+    expect(roundToLoadable(13.7, 'dumbbell', gym, 'metric')).toBe(12.5);
+    expect(roundToLoadable(14, 'dumbbell', gym, 'metric')).toBe(15);
+    expect(roundToLoadable(17.4, 'cable', { ...gym, weightIncrementKg: 5 }, 'metric')).toBe(15);
   });
 
   it('falls back to the increment for a barbell in a gym with no plates', () => {
-    expect(roundToLoadable(82, 'barbell', { ...gym, plates: [] })).toBe(82.5);
+    expect(roundToLoadable(82, 'barbell', { ...gym, plates: [] }, 'metric')).toBe(82.5);
   });
 
   it('returns 0 for nothing to load', () => {
-    expect(roundToLoadable(0, 'barbell', gym)).toBe(0);
-    expect(roundToLoadable(-3, 'dumbbell', gym)).toBe(0);
-    expect(roundToLoadable(Number.NaN, 'dumbbell', gym)).toBe(0);
+    expect(roundToLoadable(0, 'barbell', gym, 'metric')).toBe(0);
+    expect(roundToLoadable(-3, 'dumbbell', gym, 'metric')).toBe(0);
+    expect(roundToLoadable(Number.NaN, 'dumbbell', gym, 'metric')).toBe(0);
   });
 });

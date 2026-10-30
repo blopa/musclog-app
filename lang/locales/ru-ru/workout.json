@@ -32,7 +32,7 @@
     },
     "exercises": "{{count}} упражнений",
     "workoutSequence": "Последовательность тренировки",
-    "skipped": "ПРОПУЩЕНО",
+    "skipped": "Пропущено",
     "startFromExercise": {
       "title": "Начать с упражнения",
       "message": "Хотите начать тренировку с {{exerciseName}}?",
@@ -85,6 +85,11 @@
       "resistance_band": "Эластичная лента",
       "medicine_ball": "Медбол",
       "smith_machine": "Тренажёр Смита",
+      "plate_machine": "Рычажный тренажёр с дисками",
+      "cardio": "Кардио",
+      "stretching": "Растяжка",
+      "plyometric": "Плиометрика",
+      "mobility": "Мобильность",
       "other": "Другое"
     }
   }

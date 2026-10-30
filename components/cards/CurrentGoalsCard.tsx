@@ -81,7 +81,6 @@ export function CurrentGoalsCard({
           {
             icon: Pencil,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('goalsManagement.manageGoalData.editGoal'),
             description: t('goalsManagement.manageGoalData.editGoalDesc'),
             onPress: onEdit,
@@ -93,7 +92,6 @@ export function CurrentGoalsCard({
           {
             icon: RefreshCw,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('goalsManagement.manageGoalData.regenerateCheckins'),
             description: t('goalsManagement.manageGoalData.regenerateCheckinsDesc'),
             onPress: onRegenerateCheckins,
@@ -106,7 +104,6 @@ export function CurrentGoalsCard({
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error10,
             title: t('goalsManagement.manageGoalData.deleteGoal'),
             description: t('goalsManagement.manageGoalData.deleteGoalDesc'),
             titleColor: theme.colors.status.error,
@@ -122,16 +119,16 @@ export function CurrentGoalsCard({
         {/* Daily Target */}
         <View className="mb-6">
           <Text
-            className="mb-1 font-medium uppercase tracking-wider text-text-secondary"
+            className="mb-1 font-medium text-text-secondary"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {t('currentGoalsCard.dailyTarget')}
           </Text>
           <View className="flex-row items-baseline gap-1">
-            <Text className="text-4xl font-extrabold tracking-tighter text-text-primary">
+            <Text className="text-4xl font-bold tabular-nums text-text-primary">
               {formatInteger(goal.calories)}
             </Text>
-            <Text className="text-sm font-bold uppercase text-accent-primary">
+            <Text className="text-sm font-semibold text-accent-primary">
               {t('currentGoalsCard.kcal')}
             </Text>
           </View>
@@ -152,7 +149,7 @@ export function CurrentGoalsCard({
         <View className="border-border flex-row gap-4 border-t pt-4">
           <View className="flex-1">
             <Text
-              className="font-bold uppercase text-text-secondary"
+              className="font-bold text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380
@@ -171,7 +168,7 @@ export function CurrentGoalsCard({
           </View>
           <View className="flex-1">
             <Text
-              className="font-bold uppercase text-text-secondary"
+              className="font-bold text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380 ? t('currentGoalsCard.carbsShort') : t('currentGoalsCard.carbs')}
@@ -188,7 +185,7 @@ export function CurrentGoalsCard({
           </View>
           <View className="flex-1">
             <Text
-              className="font-bold uppercase text-text-secondary"
+              className="font-bold text-text-secondary"
               style={{ fontSize: theme.typography.fontSize.xxs }}
             >
               {windowWidth < 380 ? t('currentGoalsCard.fatsShort') : t('currentGoalsCard.fats')}
@@ -221,7 +218,7 @@ export function CurrentGoalsCard({
         goal.ffmi != null ||
         goal.bmi != null ? (
           <View
-            className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
+            className="mt-4 flex-row flex-wrap gap-4 rounded-control p-3"
             style={{ backgroundColor: theme.colors.background.brandWash }}
           >
             {targetWeightDisplay != null ? (
@@ -229,12 +226,12 @@ export function CurrentGoalsCard({
                 <Scale size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text
-                    className="font-bold uppercase text-text-secondary"
+                    className="font-bold text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xxs }}
                   >
                     {t('currentGoalsCard.targetWeight')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-sm font-semibold text-text-primary">
                     {targetWeightDisplay}{' '}
                     <Text
                       className="text-text-secondary"
@@ -251,12 +248,12 @@ export function CurrentGoalsCard({
                 <Percent size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text
-                    className="font-bold uppercase text-text-secondary"
+                    className="font-bold text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xxs }}
                   >
                     {t('currentGoalsCard.bodyFat')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-sm font-semibold text-text-primary">
                     {formatRoundedDecimal(goal.bodyFat!, 1)}{' '}
                     <Text
                       className="text-text-secondary"
@@ -273,12 +270,12 @@ export function CurrentGoalsCard({
                 <Activity size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text
-                    className="font-bold uppercase text-text-secondary"
+                    className="font-bold text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xxs }}
                   >
                     {t('currentGoalsCard.ffmi')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-sm font-semibold text-text-primary">
                     {formatRoundedDecimal(goal.ffmi!, 1)}
                   </Text>
                 </View>
@@ -289,12 +286,12 @@ export function CurrentGoalsCard({
                 <Calculator size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View>
                   <Text
-                    className="font-bold uppercase text-text-secondary"
+                    className="font-bold text-text-secondary"
                     style={{ fontSize: theme.typography.fontSize.xxs }}
                   >
                     {t('currentGoalsCard.bmi')}
                   </Text>
-                  <Text className="text-sm font-bold text-text-primary">
+                  <Text className="text-sm font-semibold text-text-primary">
                     {formatRoundedDecimal(goal.bmi!, 1)}
                   </Text>
                 </View>

@@ -449,7 +449,6 @@ export function AreaChart({
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
                     color: theme.colors.text.tertiary,
-                    textTransform: 'uppercase',
                   }}
                 >
                   {s.label}

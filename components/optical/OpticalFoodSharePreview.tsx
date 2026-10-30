@@ -26,14 +26,14 @@ export function OpticalFoodSharePreview({ summary }: OpticalFoodSharePreviewProp
       </View>
 
       <View className="gap-1">
-        <Text className="text-xs uppercase text-text-tertiary">
+        <Text className="text-xs text-text-tertiary">
           {t(
             summary.nutritionBasis === 'per_serving'
               ? 'opticalTransfer.share.foodPerServing'
               : 'opticalTransfer.share.foodPer100g'
           )}
         </Text>
-        <Text className="text-sm font-bold text-text-primary">
+        <Text className="text-sm font-semibold text-text-primary">
           {t('food.meals.manageMealData.caloriesMacrosFormat', {
             calories: formatInteger(summary.nutrients.calories),
             carbs: formatRoundedDecimal(summary.nutrients.carbs, 1),

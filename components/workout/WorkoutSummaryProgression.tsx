@@ -65,14 +65,14 @@ export function WorkoutSummaryProgression({ logId }: { logId: string }) {
             return (
               <View
                 key={`${record.exerciseId}-${index}`}
-                className="flex-row items-center gap-3 rounded-2xl border border-accent-primary bg-accent-primary/10 p-3"
+                className="flex-row items-center gap-3 rounded-card border border-accent-primary bg-accent-primary/10 p-3"
               >
                 <Trophy size={theme.iconSize.lg} color={theme.colors.accent.primary} />
                 <View className="min-w-0 flex-1">
-                  <Text className="text-xs font-bold uppercase tracking-wider text-accent-primary">
+                  <Text className="text-xs font-semibold text-accent-primary">
                     {t('trainingFlow.newRecord', { type: t(PR_TYPE_KEYS[record.type]) })}
                   </Text>
-                  <Text className="text-base font-bold text-text-primary" numberOfLines={1}>
+                  <Text className="text-base font-semibold text-text-primary" numberOfLines={1}>
                     {record.exerciseName}
                   </Text>
                   <Text className="text-sm text-text-secondary">

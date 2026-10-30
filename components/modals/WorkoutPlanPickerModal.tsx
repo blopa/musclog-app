@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
-import DashedButton from '@/components/theme/DashedButton';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import type WorkoutPlan from '@/database/models/WorkoutPlan';
 import { useTheme } from '@/hooks/useTheme';
@@ -70,11 +69,13 @@ export function WorkoutPlanPickerModal({
           hasGroups={false}
         />
         {onCreatePlan ? (
-          <DashedButton
+          <Button
+            variant="dashed"
+            size="sm"
+            width="full"
+            icon={Plus}
             label={t('workouts.plans.picker.create')}
             onPress={onCreatePlan}
-            size="sm"
-            icon={<Plus size={theme.iconSize.md} color={theme.colors.text.primary} />}
           />
         ) : null}
       </View>

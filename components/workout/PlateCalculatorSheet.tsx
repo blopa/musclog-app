@@ -88,10 +88,7 @@ export function PlateCalculatorSheet({
         ) : null}
         {hasPlates ? (
           <View className="gap-3">
-            <Text
-              className="text-xs font-semibold uppercase tracking-wide"
-              style={{ color: theme.colors.text.secondary }}
-            >
+            <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
               {t('workoutSettings.plateCalculator.perSide')}
             </Text>
             <View
@@ -120,10 +117,13 @@ export function PlateCalculatorSheet({
               {load.platesPerSide.map((plate) => (
                 <View
                   key={plate.weightKg}
-                  className="flex-row items-center justify-between rounded-lg px-4 py-3"
+                  className="flex-row items-center justify-between rounded-control px-4 py-3"
                   style={{ backgroundColor: theme.colors.background.card }}
                 >
-                  <Text className="text-lg font-bold" style={{ color: theme.colors.text.primary }}>
+                  <Text
+                    className="text-lg font-semibold"
+                    style={{ color: theme.colors.text.primary }}
+                  >
                     {t('workoutSettings.plateCalculator.plateLine', {
                       weight: show(plate.weightKg),
                       unit,
@@ -139,7 +139,7 @@ export function PlateCalculatorSheet({
         ) : null}
 
         <View
-          className="flex-row items-center justify-between rounded-lg px-4 py-3"
+          className="flex-row items-center justify-between rounded-control px-4 py-3"
           style={{ backgroundColor: theme.colors.background.card }}
         >
           <Text style={{ color: theme.colors.text.secondary }}>

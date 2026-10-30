@@ -2,7 +2,11 @@ import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { localDayClosedRangeMaxMs } from '@/utils/calendarDate';
 import { resolveWeeklyRecommendation, resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
-import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
+import {
+  getHistoricalNutritionParams,
+  getLatestHistoricalNutritionWindow,
+  type HistoricalNutritionParams,
+} from '@/utils/historicalNutritionParams';
 import {
   calculateMacros,
   calculateNutritionPlan,
@@ -32,7 +36,25 @@ jest.mock('@/database/services/UserMetricService', () => ({
 
 jest.mock('../historicalNutritionParams', () => ({
   getHistoricalNutritionParams: jest.fn(),
+  getLatestHistoricalNutritionWindow: jest.fn(),
 }));
+
+/** What the daily path's window read returns: a recent window, a past one, or nothing. */
+function mockDailyHistory(
+  params: Partial<HistoricalNutritionParams> | null,
+  past?: { startMs: number; endMs: number }
+) {
+  jest.mocked(getLatestHistoricalNutritionWindow).mockResolvedValue(
+    params
+      ? {
+          params: params as HistoricalNutritionParams,
+          startMs: past?.startMs ?? 0,
+          endMs: past?.endMs ?? 0,
+          fromPastWindow: past !== undefined,
+        }
+      : null
+  );
+}
 
 jest.mock('../nutritionCalculator', () => ({
   calculateNutritionPlan: jest.fn(),
@@ -100,7 +122,7 @@ describe('resolveDailyMacros', () => {
       }
       return Promise.resolve(null);
     });
-    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue({
+    mockDailyHistory({
       historicalTotalCalories: 60000,
       historicalTotalDays: 30,
       historicalInitialWeightKg: 85,
@@ -140,7 +162,7 @@ describe('resolveDailyMacros', () => {
       }
       return Promise.resolve(null);
     });
-    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue(null);
+    mockDailyHistory(null);
     (calculateNutritionPlan as jest.Mock).mockReturnValue({
       targetCalories: 2500,
       tdee: 2600,
@@ -177,7 +199,7 @@ describe('resolveDailyMacros', () => {
     // Mock an extreme scenario (losing 10kg in 30 days while eating 1000kcal)
     // that might lead to negative targets if not floored.
     // calculateNutritionPlan should already be using getMinCalories internally.
-    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue({
+    mockDailyHistory({
       historicalTotalCalories: 30000,
       historicalTotalDays: 30,
       historicalInitialWeightKg: 100,
@@ -216,7 +238,7 @@ describe('resolveDailyMacros', () => {
       }
       return Promise.resolve(null);
     });
-    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue(null);
+    mockDailyHistory(null);
     (calculateNutritionPlan as jest.Mock).mockReturnValue({
       targetCalories: 2500,
       tdee: 2600,
@@ -256,7 +278,7 @@ describe('resolveDailyMacros', () => {
       }
       return Promise.resolve(null);
     });
-    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue(null);
+    mockDailyHistory(null);
     (calculateNutritionPlan as jest.Mock).mockReturnValue({
       targetCalories: 2300,
       tdee: 2500,
@@ -311,7 +333,7 @@ describe('resolveDailyMacros', () => {
       viewedDate
     );
 
-    expect(getHistoricalNutritionParams).not.toHaveBeenCalled();
+    expect(getLatestHistoricalNutritionWindow).not.toHaveBeenCalled();
     expect(calculateNutritionPlan).toHaveBeenCalledWith(
       expect.not.objectContaining({
         historicalTotalCalories: expect.anything(),
@@ -336,7 +358,7 @@ describe('resolveDailyMacros', () => {
       }
       return Promise.resolve(null);
     });
-    (getHistoricalNutritionParams as jest.Mock).mockResolvedValue(null);
+    mockDailyHistory(null);
     (calculateNutritionPlan as jest.Mock).mockReturnValue({
       targetCalories: 2300,
       tdee: 2500,
@@ -351,6 +373,57 @@ describe('resolveDailyMacros', () => {
         gender: 'other',
       })
     );
+  });
+  it('reports an earlier tracked window when the TDEE came from one', async () => {
+    (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (UserMetricService.getLatestOnOrBefore as jest.Mock).mockImplementation((type) =>
+      Promise.resolve(type === 'height' ? mockHeightMetric : mockWeightMetric)
+    );
+    const past = { startMs: new Date(2026, 3, 1).getTime(), endMs: new Date(2026, 4, 1).getTime() };
+    mockDailyHistory(
+      {
+        historicalTotalCalories: 75000,
+        historicalTotalDays: 30,
+        historicalInitialWeightKg: 82,
+        historicalFinalWeightKg: 82,
+      },
+      past
+    );
+    (calculateNutritionPlan as jest.Mock).mockReturnValue({
+      targetCalories: 2500,
+      tdee: 2500,
+      bmr: 1800,
+    });
+
+    const result = await resolveDailyMacros(mockGoal, new Date(2026, 9, 1));
+
+    expect(result?.usedEmpiricalData).toBe(true);
+    expect(result?.pastEmpiricalWindow).toEqual(past);
+    expect(calculateNutritionPlan).toHaveBeenCalledWith(
+      expect.objectContaining({ historicalTotalCalories: 75000 })
+    );
+  });
+
+  it('leaves pastEmpiricalWindow out when the recent window was used', async () => {
+    (UserService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (UserMetricService.getLatestOnOrBefore as jest.Mock).mockImplementation((type) =>
+      Promise.resolve(type === 'height' ? mockHeightMetric : mockWeightMetric)
+    );
+    mockDailyHistory({
+      historicalTotalCalories: 75000,
+      historicalTotalDays: 30,
+      historicalInitialWeightKg: 82,
+      historicalFinalWeightKg: 82,
+    });
+    (calculateNutritionPlan as jest.Mock).mockReturnValue({
+      targetCalories: 2500,
+      tdee: 2500,
+      bmr: 1800,
+    });
+
+    const result = await resolveDailyMacros(mockGoal, new Date(2026, 9, 2));
+
+    expect(result).not.toHaveProperty('pastEmpiricalWindow');
   });
 });
 
@@ -372,6 +445,7 @@ it('weekly recommendations include available expenditure history even with an ex
     historicalFinalWeightKg: 80,
   };
   jest.mocked(getHistoricalNutritionParams).mockClear().mockResolvedValue(historical);
+  jest.mocked(getLatestHistoricalNutritionWindow).mockClear();
   jest
     .mocked(calculateNutritionPlan)
     .mockClear()
@@ -384,4 +458,6 @@ it('weekly recommendations include available expenditure history even with an ex
     expect.objectContaining({ excludeUnloggedDays: true })
   );
   expect(calculateNutritionPlan).toHaveBeenCalledWith(expect.objectContaining(historical));
+  // The review judges its own week: an earlier tracked period must never stand in for it.
+  expect(getLatestHistoricalNutritionWindow).not.toHaveBeenCalled();
 });

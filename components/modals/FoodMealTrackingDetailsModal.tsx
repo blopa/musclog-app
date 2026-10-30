@@ -1761,7 +1761,7 @@ export function FoodMealTrackingDetailsModal({
             {/* Same serving size input for both food and meal (editable, same UX) */}
             {mode !== 'meal' ? (
               resolvedFoodServingMode ? (
-                <View className="rounded-2xl border border-border-light bg-bg-card p-4">
+                <View className="rounded-card border border-border-light bg-bg-card p-4">
                   <StepperInput
                     label={t('food.foodDetails.servings')}
                     value={servingSize}
@@ -1784,7 +1784,7 @@ export function FoodMealTrackingDetailsModal({
                 />
               )
             ) : resolvedMealServingMode ? (
-              <View className="rounded-2xl border border-border-light bg-bg-card p-4">
+              <View className="rounded-card border border-border-light bg-bg-card p-4">
                 <StepperInput
                   label={t('food.foodDetails.servings')}
                   value={mealAmountGrams}
@@ -1815,7 +1815,7 @@ export function FoodMealTrackingDetailsModal({
 
             {/* Meal Selection */}
             <View>
-              <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
+              <Text className="mb-3 text-xs font-semibold text-text-secondary">
                 {t('food.foodDetails.meal')}
               </Text>
               <FilterTabs
@@ -1934,7 +1934,7 @@ export function FoodMealTrackingDetailsModal({
                 </Text>
               </View>
 
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+              <Text className="text-xs font-semibold text-text-secondary">
                 {t('food.foodDetails.macrosPer100g')}
               </Text>
 

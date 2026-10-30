@@ -65,8 +65,8 @@
       }
     },
     "typeTags": {
-      "bodyweight": "LICHAAMSGEWICHT",
-      "equipment": "APPARATUUR"
+      "bodyweight": "Lichaamsgewicht",
+      "equipment": "Apparatuur"
     },
     "emptyGroupMessage": "Tik om {{muscleGroup}} oefeningen te bekijken.",
     "createExercise": {
@@ -119,14 +119,14 @@
       }
     },
     "viewExercise": {
-      "watchTechnique": "BEKIJK TECHNIEK",
+      "watchTechnique": "Bekijk techniek",
       "primaryMuscle": "Primaire spier",
       "equipment": "Apparatuur",
       "mechanic": "Mechanisme",
       "personalBest": "Persoonlijk record",
       "avgFrequency": "Gem. frequentie",
       "workoutsUsingThis": "Workouts die dit gebruiken",
-      "templates": "SJABLONEN",
+      "templates": "Sjablonen",
       "exerciseOptions": "Oefeningopties",
       "editExercise": "Oefening bewerken",
       "editExerciseDescription": "Wijzig oefeninggegevens",
@@ -224,7 +224,7 @@
         "cable": "Machines met een ingebouwde gewichtstapel en een pin. Ze hebben een constante weerstand en produceren vaak een scherpe versnellingspiek (een 'klap') als de gewichten de bodem raken aan het einde van de herhaling.",
         "plate_machine": "Machines waarbij je fysieke gewichtsschijven op een stang laadt (zoals een klassieke 45-graden leg press). Ze werken op een vaste boog of hefboom, wat resulteert in zeer soepele, voorspelbare bewegingscurven.",
         "smith_machine": "Een halterstang die vastzit aan verticale of licht schuine geleidestangen. Omdat de stang niet naar voren, achteren, links of rechts kan zwaaien, vertonen de gyroscoopgegevens vrijwel geen horizontale wiebeling vergeleken met een losse halterstang.",
-        "pneumatic_machine": "Kabelmachines aangedreven door luchtcompressoren (zoals Keiser) of digitale motoren (zoals Tonal). Ze hebben nul momentum—als je stopt met duwen, stopt het gewicht met bewegen—wat resulteert in zeer duidelijke versnellings- en vertragingspatronen.",
+        "pneumatic_machine": "Kabelmachines aangedreven door luchtcompressoren (zoals Keiser) of digitale motoren (zoals Tonal). Ze hebben nul momentum: als je stopt met duwen, stopt het gewicht met bewegen, wat resulteert in zeer duidelijke versnellings- en vertragingspatronen.",
         "kettlebell": "Bolvormig gewicht met handvat",
         "resistance_band": "Elastische weerstandsbanden",
         "other": "Andere apparatuur"

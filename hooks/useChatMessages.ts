@@ -65,9 +65,6 @@ import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutriti
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
 
-// Local avatar image for Loggy
-export const AI_COACH_AVATAR = require('../assets/avatars/loggy.png');
-
 export interface ExtendedIMessage extends IMessage {
   showSettingsButton?: boolean;
   workout?: {
@@ -118,7 +115,9 @@ export interface ExtendedIMessage extends IMessage {
 const INITIAL_LIMIT = 10;
 const BATCH_SIZE = 10;
 
-const COACH_USER = { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR };
+// Who the coach is (name, picture) is the persona's business and drawn by the chat; a message only
+// records that the coach said it.
+const COACH_USER = { _id: 2 };
 
 function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
   const isCoach = record.sender === 'coach';

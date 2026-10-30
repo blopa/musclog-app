@@ -1,24 +1,23 @@
 import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
-import { GEMINI_MODELS } from '@/constants/ai';
+import { type AiProviderKind, DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
+import type { CoachPersonaId } from '@/constants/coachPersonas';
 import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
-import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
+import { readSetting, SETTINGS } from '@/constants/settingDefinitions';
 import {
-  ACTIVE_GYM_ID_SETTING_TYPE,
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
-  AUTO_START_REST_TIMER_SETTING_TYPE,
+  type AppLockScope,
   BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   type ChartTooltipPosition,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
+  type CycleNotificationStyle,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
-  DEFAULT_REST_SECONDS_SETTING_TYPE,
-  DEFAULT_WORKOUT_AUTONOMY,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
@@ -30,6 +29,8 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   HOME_ACTIONS_SETTING_TYPE,
   HOME_SUMMARY_CARD_SETTING_TYPE,
+  type HomeHeatmapLayout,
+  type HomeHeatmaps,
   type HomeSummaryCard,
   INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
@@ -54,17 +55,17 @@ import {
   type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
-  parseWorkoutAutonomy,
   PROGRESSION_MODE_SETTING_TYPE,
   type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
-  REST_TIMER_HAPTICS_SETTING_TYPE,
+  type RestAlertSound,
+  type RestHapticStrength,
+  type RestHeadsUpSeconds,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
   SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
-  SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
@@ -76,7 +77,6 @@ import {
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
   type UseSettingsResult,
-  WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
   type WorkoutAutonomy,
@@ -84,12 +84,17 @@ import {
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database';
-import { waitForDbReady } from '@/database/dbReady';
+import { isDbReady, waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
+import { resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
-import { clampRestSeconds } from '@/utils/restTimer';
+import {
+  getSettingsMirror,
+  type MirroredSettings,
+  recordSettingsMirror,
+} from '@/utils/settingsMirror';
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
@@ -142,6 +147,16 @@ type SettingsState = {
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   enableFastedDay: boolean;
+  cycleShowPredictions: boolean;
+  cycleShowFertility: boolean;
+  cycleNotificationStyle: CycleNotificationStyle;
+  cycleQuickLogRaw: string;
+  cycleVariabilityHintDismissed: boolean;
+  /**
+   * The raw stored list, NOT the parsed array (same rule as `homeActionsRaw`): a field that is
+   * reallocated per derivation would re-render every `useSettings()` consumer on any write.
+   */
+  appLockScopesRaw: string;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   /** `gyms.id` of the profile being trained in, '' for none. */
@@ -152,6 +167,12 @@ type SettingsState = {
   autoStartRestTimer: boolean;
   /** Haptic countdown on the rest timer. */
   restTimerHaptics: boolean;
+  /** Whether the rest-over notification makes a sound. */
+  restAlertSound: RestAlertSound;
+  /** How firm the haptic countdown is. */
+  restHapticStrength: RestHapticStrength;
+  /** Seconds before a rest ends that it turns to "get ready" (0 = never). */
+  restHeadsUpSeconds: RestHeadsUpSeconds;
   /** Rest, in seconds, after a set that names none of its own. */
   defaultRestSeconds: number;
   nutritionDisplay: string;
@@ -160,6 +181,9 @@ type SettingsState = {
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
+  homeHeatmaps: HomeHeatmaps;
+  homeHeatmapLayout: HomeHeatmapLayout;
+  coachPersona: CoachPersonaId;
   /**
    * The raw stored setting, NOT the parsed array.
    *
@@ -199,9 +223,9 @@ const DEFAULT_STATE: SettingsState = {
   writeHealthData: false,
   anonymousBugReport: true,
   googleGeminiApiKey: '',
-  googleGeminiModel: GEMINI_MODELS.GEMINI_2_5_FLASH.value,
+  googleGeminiModel: DEFAULT_GEMINI_MODEL,
   openAiApiKey: '',
-  openAiModel: 'gpt-4o',
+  openAiModel: DEFAULT_OPENAI_MODEL,
   localLlmApiKey: '',
   localLlmModel: 'llama3',
   localLlmBaseUrl: 'http://localhost:11434/v1',
@@ -239,23 +263,44 @@ const DEFAULT_STATE: SettingsState = {
   useBfForCalculations: false,
   intuitiveEatingMode: false,
   enableFastedDay: false,
+  cycleShowPredictions: SETTINGS.cycleShowPredictions.defaultValue,
+  cycleShowFertility: SETTINGS.cycleShowFertility.defaultValue,
+  cycleNotificationStyle: SETTINGS.cycleNotificationStyle.defaultValue,
+  cycleQuickLogRaw: SETTINGS.cycleQuickLog.defaultValue,
+  cycleVariabilityHintDismissed: SETTINGS.cycleVariabilityHintDismissed.defaultValue,
+  appLockScopesRaw: '',
   includeFiberInCarbs: true,
   progressionMode: 'reps_first',
   activeGymId: '',
-  workoutAutonomy: DEFAULT_WORKOUT_AUTONOMY,
-  autoStartRestTimer: true,
-  restTimerHaptics: true,
-  defaultRestSeconds: DEFAULT_REST_SECONDS,
+  workoutAutonomy: SETTINGS.workoutAutonomy.defaultValue,
+  autoStartRestTimer: SETTINGS.autoStartRestTimer.defaultValue,
+  restTimerHaptics: SETTINGS.restTimerHaptics.defaultValue,
+  restAlertSound: SETTINGS.restAlertSound.defaultValue,
+  restHapticStrength: SETTINGS.restHapticStrength.defaultValue,
+  restHeadsUpSeconds: SETTINGS.restHeadsUpSeconds.defaultValue,
+  defaultRestSeconds: SETTINGS.defaultRestSeconds.defaultValue,
   nutritionDisplay: '11111',
   advancedDataManagement: false,
   bleGenerateChartPayload: false,
   nutritionLogHistoryDays: 'none',
   workoutHistoryDays: 'none',
   homeSummaryCard: 'daily_summary',
+  homeHeatmaps: SETTINGS.homeHeatmaps.defaultValue,
+  homeHeatmapLayout: SETTINGS.homeHeatmapLayout.defaultValue,
+  coachPersona: SETTINGS.coachPersona.defaultValue,
   homeActionsRaw: '',
-  showHomeSteps: true,
+  showHomeSteps: SETTINGS.showHomeSteps.defaultValue,
   isLoading: true,
 };
+
+function mirroredSettingsOf(state: SettingsState): MirroredSettings {
+  return {
+    theme: state.theme,
+    language: state.language,
+    units: state.units,
+    appLockScopesRaw: state.appLockScopesRaw,
+  };
+}
 
 function buildSettingsMap(settings: Setting[]): Map<string, string> {
   const best = new Map<string, { value: string; updatedAt: number }>();
@@ -336,13 +381,13 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     writeHealthData: getBoolean(map, WRITE_HEALTH_DATA_SETTING_TYPE),
     anonymousBugReport: getBoolean(map, ANONYMOUS_BUG_REPORT_SETTING_TYPE, true),
     googleGeminiApiKey: getString(map, GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
-    googleGeminiModel: getString(
-      map,
-      GOOGLE_GEMINI_MODEL_SETTING_TYPE,
-      GEMINI_MODELS.GEMINI_2_5_FLASH.value
+    googleGeminiModel: resolveGeminiModel(
+      getString(map, GOOGLE_GEMINI_MODEL_SETTING_TYPE, DEFAULT_GEMINI_MODEL)
     ),
     openAiApiKey: getString(map, OPENAI_API_KEY_SETTING_TYPE),
-    openAiModel: getString(map, OPENAI_MODEL_SETTING_TYPE, 'gpt-4o'),
+    openAiModel: resolveOpenAiModel(
+      getString(map, OPENAI_MODEL_SETTING_TYPE, DEFAULT_OPENAI_MODEL)
+    ),
     localLlmApiKey: getString(map, LOCAL_LLM_API_KEY_SETTING_TYPE),
     localLlmModel: getString(map, LOCAL_LLM_MODEL_SETTING_TYPE, 'llama3'),
     localLlmBaseUrl: getString(map, LOCAL_LLM_BASE_URL_SETTING_TYPE, 'http://localhost:11434/v1'),
@@ -381,23 +426,34 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     useBfForCalculations: getBoolean(map, USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
     enableFastedDay: getBoolean(map, ENABLE_FASTED_DAY_SETTING_TYPE, false),
+    cycleShowPredictions: readSetting(map, SETTINGS.cycleShowPredictions),
+    cycleShowFertility: readSetting(map, SETTINGS.cycleShowFertility),
+    cycleNotificationStyle: readSetting(map, SETTINGS.cycleNotificationStyle),
+    cycleQuickLogRaw: readSetting(map, SETTINGS.cycleQuickLog),
+    cycleVariabilityHintDismissed: readSetting(map, SETTINGS.cycleVariabilityHintDismissed),
+    appLockScopesRaw: map.get(SETTINGS.appLockScopes.type) ?? '',
     includeFiberInCarbs: getBoolean(map, INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, true),
     progressionMode,
-    activeGymId: getString(map, ACTIVE_GYM_ID_SETTING_TYPE, ''),
-    workoutAutonomy: parseWorkoutAutonomy(getString(map, WORKOUT_AUTONOMY_SETTING_TYPE)),
-    autoStartRestTimer: getBoolean(map, AUTO_START_REST_TIMER_SETTING_TYPE, true),
-    restTimerHaptics: getBoolean(map, REST_TIMER_HAPTICS_SETTING_TYPE, true),
-    defaultRestSeconds: clampRestSeconds(
-      getNumber(map, DEFAULT_REST_SECONDS_SETTING_TYPE, DEFAULT_REST_SECONDS)
-    ),
+    // State fields stay primitive and non-null: no active gym is the empty string here.
+    activeGymId: readSetting(map, SETTINGS.activeGymId) ?? '',
+    workoutAutonomy: readSetting(map, SETTINGS.workoutAutonomy),
+    autoStartRestTimer: readSetting(map, SETTINGS.autoStartRestTimer),
+    restTimerHaptics: readSetting(map, SETTINGS.restTimerHaptics),
+    restAlertSound: readSetting(map, SETTINGS.restAlertSound),
+    restHapticStrength: readSetting(map, SETTINGS.restHapticStrength),
+    restHeadsUpSeconds: readSetting(map, SETTINGS.restHeadsUpSeconds),
+    defaultRestSeconds: readSetting(map, SETTINGS.defaultRestSeconds),
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
     bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
     nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
     workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
     homeSummaryCard,
+    homeHeatmaps: readSetting(map, SETTINGS.homeHeatmaps),
+    homeHeatmapLayout: readSetting(map, SETTINGS.homeHeatmapLayout),
+    coachPersona: readSetting(map, SETTINGS.coachPersona),
     homeActionsRaw: map.get(HOME_ACTIONS_SETTING_TYPE) ?? '',
-    showHomeSteps: getBoolean(map, SHOW_HOME_STEPS_SETTING_TYPE, true),
+    showHomeSteps: readSetting(map, SETTINGS.showHomeSteps),
     isLoading: false,
   };
 }
@@ -434,6 +490,8 @@ export type SettingsContextType = UseSettingsResult & {
   useThinkingMode: boolean;
   isAiConfigured: boolean;
   isAiMealPhotoEnabled: boolean;
+  /** The provider that would answer an AI request now; null when none is configured. */
+  aiProvider: AiProviderKind | null;
   navSlot1: NavItemKey;
   navSlot2: NavItemKey;
   navSlot3: NavItemKey;
@@ -451,17 +509,34 @@ export type SettingsContextType = UseSettingsResult & {
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   enableFastedDay: boolean;
+  cycleShowPredictions: boolean;
+  cycleShowFertility: boolean;
+  cycleNotificationStyle: CycleNotificationStyle;
+  cycleQuickLogRaw: string;
+  cycleVariabilityHintDismissed: boolean;
+  appLockScopes: readonly AppLockScope[];
+  /**
+   * True while `appLockScopes` is only a default: settings are still loading and
+   * no mirror said what they are. Every area must then count as locked.
+   */
+  appLockScopesPending: boolean;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   activeGymId: string;
   workoutAutonomy: WorkoutAutonomy;
   autoStartRestTimer: boolean;
   restTimerHaptics: boolean;
+  restAlertSound: RestAlertSound;
+  restHapticStrength: RestHapticStrength;
+  restHeadsUpSeconds: RestHeadsUpSeconds;
   defaultRestSeconds: number;
   nutritionDisplay: string;
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
   homeSummaryCard: HomeSummaryCard;
+  homeHeatmaps: HomeHeatmaps;
+  homeHeatmapLayout: HomeHeatmapLayout;
+  coachPersona: CoachPersonaId;
   homeActions: readonly HomeActionKey[];
   showHomeSteps: boolean;
 };
@@ -469,7 +544,18 @@ export type SettingsContextType = UseSettingsResult & {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
+  // Starts from the mirror (loaded by `AppDbReadyGate`) so the first frame has the
+  // user's theme, language and units rather than the defaults. See `utils/settingsMirror`.
+  const [state, setState] = useState<SettingsState>(() => ({
+    ...DEFAULT_STATE,
+    ...getSettingsMirror(),
+  }));
+  // Lock scopes are unknown until the table is read, unless the mirror supplied
+  // them. A database not ready at mount belongs to an install that has not
+  // finished onboarding, which is the only time `AppDbReadyGate` mounts early,
+  // and no lock can be turned on before onboarding — so that case has nothing to
+  // protect and must not cover the onboarding screens.
+  const [lockScopesUnknownAtMount] = useState(() => getSettingsMirror() === null && isDbReady());
   const [canReadSettingsDb, setCanReadSettingsDb] = useState(false);
   const [decryptedApiKeys, setDecryptedApiKeys] = useState({
     googleGeminiApiKey: '',
@@ -501,9 +587,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         const query = database.get<Setting>('settings').query(Q.where('deleted_at', Q.eq(null)));
         subscription = query.observeWithColumns(['value']).subscribe({
           next: (settings) => {
-            const map = buildSettingsMap(settings);
+            const next = deriveStateFromMap(buildSettingsMap(settings));
+            recordSettingsMirror(mirroredSettingsOf(next));
             setState((prev) => {
-              const next = deriveStateFromMap(map);
               const keys = Object.keys(next) as (keyof SettingsState)[];
               const hasChanged = keys.some((k) => prev[k] !== next[k]);
               return hasChanged ? next : prev;
@@ -585,6 +671,35 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.openAiApiKey,
   ]);
 
+  const aiProvider = useMemo<AiProviderKind | null>(() => {
+    if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
+      return 'gateway';
+    }
+
+    if (state.useOnDeviceAi) {
+      return 'on-device';
+    }
+
+    if (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') {
+      return 'local';
+    }
+
+    if (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') {
+      return 'gemini';
+    }
+
+    return state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '' ? 'openai' : null;
+  }, [
+    state.useMusclogFreeTier,
+    state.useOnDeviceAi,
+    state.enableLocalLlm,
+    state.localLlmBaseUrl,
+    state.enableGoogleGemini,
+    decryptedApiKeys.googleGeminiApiKey,
+    state.enableOpenAi,
+    decryptedApiKeys.openAiApiKey,
+  ]);
+
   // Mirrors AiService.getAiConfig() priority: gateway → on-device → local → gemini → openai.
   // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
   // when it would be the active provider.
@@ -617,8 +732,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   // actual change instead of once per settings emission — see `homeActionsRaw`.
   const homeActions = useMemo(() => parseHomeActions(state.homeActionsRaw), [state.homeActionsRaw]);
 
+  const appLockScopes = useMemo(
+    () => SETTINGS.appLockScopes.parse(state.appLockScopesRaw),
+    [state.appLockScopesRaw]
+  );
+
+  const appLockScopesPending = lockScopesUnknownAtMount && state.isLoading;
+
   const value = useMemo(() => {
-    const { homeActionsRaw: _homeActionsRaw, ...publicState } = state;
+    const {
+      homeActionsRaw: _homeActionsRaw,
+      appLockScopesRaw: _appLockScopesRaw,
+      ...publicState
+    } = state;
 
     return {
       ...publicState,
@@ -626,12 +752,24 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       openAiApiKey: decryptedApiKeys.openAiApiKey,
       localLlmApiKey: decryptedApiKeys.localLlmApiKey,
       homeActions,
+      appLockScopes,
+      appLockScopesPending,
       isAiConfigured,
       isAiMealPhotoEnabled,
+      aiProvider,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
     };
-  }, [state, decryptedApiKeys, homeActions, isAiConfigured, isAiMealPhotoEnabled]);
+  }, [
+    state,
+    decryptedApiKeys,
+    homeActions,
+    appLockScopes,
+    appLockScopesPending,
+    isAiConfigured,
+    isAiMealPhotoEnabled,
+    aiProvider,
+  ]);
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 }

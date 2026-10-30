@@ -28,12 +28,12 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
             <TouchableOpacity
               key={agg}
               onPress={() => setAggregation(agg)}
-              className={`rounded-full px-3 py-1.5 ${
+              className={`rounded-control px-3 py-1.5 ${
                 aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
               }`}
             >
               <Text
-                className={`text-xs font-bold ${
+                className={`text-xs font-semibold ${
                   aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'
                 }`}
               >
@@ -81,12 +81,12 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
           <TouchableOpacity
             key={agg}
             onPress={() => setAggregation(agg)}
-            className={`rounded-full px-3 py-1.5 ${
+            className={`rounded-control px-3 py-1.5 ${
               aggregation === agg ? 'bg-accent-primary' : 'bg-background-tertiary'
             }`}
           >
             <Text
-              className={`text-xs font-bold ${
+              className={`text-xs font-semibold ${
                 aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'
               }`}
             >

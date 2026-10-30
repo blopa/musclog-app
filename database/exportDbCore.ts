@@ -4,6 +4,7 @@ import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 
 import type { AsyncStorageDump } from './asyncStorageBackup';
+import { decryptCycleText } from './cyclePayload';
 import {
   decryptNumber,
   decryptNutritionLogSnapshotRow,
@@ -29,6 +30,13 @@ export type CapturedTableRows = Record<string, Record<string, unknown>[]>;
 
 export type DumpDatabaseOptions = {
   includeDeletedRecords?: boolean;
+  /**
+   * Keep cycle payloads as this device's ciphertext instead of decrypting them. Set for the
+   * automatic on-device recovery points, which are restored on the same device: an unattended
+   * JSON copy of a reproductive diary must not sit in the cache folder in plaintext. A user's own
+   * export (and a recovery point they choose to download) is decrypted, so it opens anywhere.
+   */
+  keepCycleCiphertext?: boolean;
   exportVersion?: number;
   // AsyncStorage snapshot to embed as `_async_storage_` in the dump. Absent (or
   // empty) means the dump carries no AsyncStorage section. This module never
@@ -40,6 +48,7 @@ export type DumpDatabaseOptions = {
 
 type DumpRowsOptions = {
   exportVersion?: number;
+  keepCycleCiphertext?: boolean;
   asyncStorageData?: AsyncStorageDump;
 };
 
@@ -59,6 +68,8 @@ export function selectAllRowsSql(tableName: string, includeDeletedRecords = true
   const deletedRecordsClause = includeDeletedRecords ? '' : " WHERE _status != 'deleted'";
   return `SELECT * FROM ${quoteIdentifier(tableName)}${deletedRecordsClause};`;
 }
+
+const CYCLE_PAYLOAD_TABLES = new Set(['cycle_periods', 'cycle_day_logs', 'cycle_contexts']);
 
 function addAsyncStorageDump(dbData: ExportDump, snapshot?: AsyncStorageDump): void {
   if (!snapshot || Object.keys(snapshot).length === 0) {
@@ -101,6 +112,27 @@ export async function dumpRowsToJson(
         })
       );
       dbData.user_metrics = decryptedRows;
+      continue;
+    }
+
+    if (CYCLE_PAYLOAD_TABLES.has(tableName) || tableName === 'menstrual_cycles') {
+      const column = tableName === 'menstrual_cycles' ? 'config' : 'payload';
+      // A removed cycle record never leaves the device: restore does not need it, and an export
+      // would otherwise carry the text the person deleted.
+      const live = rows.filter((row) => row.deleted_at == null);
+      if (options.keepCycleCiphertext) {
+        dbData[tableName] = live;
+        continue;
+      }
+
+      dbData[tableName] = await Promise.all(
+        live.map(async (row) => {
+          const text = await decryptCycleText(row[column] as string | undefined);
+
+          // A value that will not decrypt is exported untouched rather than dropped or corrupted.
+          return text == null ? row : { ...row, [column]: text, _decrypted: true };
+        })
+      );
       continue;
     }
 
@@ -162,5 +194,36 @@ export async function dumpDatabaseWithQueryRunner(
   return dumpRowsToJson(capturedRows, encryptionPhrase, {
     exportVersion: options.exportVersion,
     asyncStorageData: options.asyncStorageData,
+    keepCycleCiphertext: options.keepCycleCiphertext,
   });
+}
+
+/**
+ * A recovery point made with `keepCycleCiphertext`, turned into an ordinary portable export: the
+ * cycle payloads are decrypted with this device's key and flagged `_decrypted`, which is what
+ * `restoreDatabase` re-encrypts on whichever device imports it. Used when the person downloads a
+ * recovery point; rows that will not decrypt stay as they are.
+ */
+export async function decryptCyclePayloadsInDump(json: string): Promise<string> {
+  const dump = JSON.parse(json) as Record<string, unknown>;
+  for (const tableName of [...CYCLE_PAYLOAD_TABLES, 'menstrual_cycles']) {
+    const rows = dump[tableName];
+    if (!Array.isArray(rows)) {
+      continue;
+    }
+
+    const column = tableName === 'menstrual_cycles' ? 'config' : 'payload';
+    dump[tableName] = await Promise.all(
+      rows.map(async (row: Record<string, unknown>) => {
+        if (row._decrypted === true) {
+          return row;
+        }
+
+        const text = await decryptCycleText(row[column] as string | undefined);
+        return text == null ? row : { ...row, [column]: text, _decrypted: true };
+      })
+    );
+  }
+
+  return JSON.stringify(dump);
 }

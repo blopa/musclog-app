@@ -17,7 +17,7 @@ export function WorkoutLibrarySkeleton() {
   return (
     <>
       <View
-        className="rounded-lg border bg-bg-card p-5"
+        className="rounded-card border bg-bg-card p-5"
         style={{ borderColor: theme.colors.background.ink5 }}
       >
         <View className="mb-4 flex-row items-start justify-between">
@@ -48,7 +48,7 @@ export function WorkoutLibrarySkeleton() {
       {[1, 2, 3].map((index) => (
         <View
           key={index}
-          className="rounded-lg border bg-bg-card p-4"
+          className="rounded-card border bg-bg-card p-4"
           style={{ borderColor: theme.colors.background.ink5 }}
         >
           <View className="flex-row items-center gap-3">

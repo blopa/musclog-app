@@ -38,7 +38,7 @@ export function OpticalCameraHintCard({
 
   return (
     <View
-      className={`gap-2 rounded-xl p-4 ${className ?? ''}`}
+      className={`gap-2 rounded-card p-4 ${className ?? ''}`}
       style={{ backgroundColor: theme.colors.background.card }}
     >
       <Text className="font-bold text-text-primary">{title}</Text>

@@ -46,7 +46,7 @@ export function ChatWorkoutCard({
           }}
         />
         <View className="absolute bottom-3 left-4">
-          <Text className="mb-1 text-lg font-bold text-text-primary">{title}</Text>
+          <Text className="mb-1 text-lg font-semibold text-text-primary">{title}</Text>
           <Text className="text-sm font-medium" style={{ color: theme.colors.accent.primary }}>
             {duration} • {level}
           </Text>
@@ -73,7 +73,7 @@ export function ChatWorkoutCard({
 
         {/* Start Workout Button */}
         <Pressable
-          className="w-full flex-row items-center justify-center gap-2 rounded-lg py-2.5 active:scale-95"
+          className="w-full flex-row items-center justify-center gap-2 rounded-control py-2.5 active:scale-95"
           style={{ backgroundColor: theme.colors.accent.primary }}
           onPress={onStartWorkout}
         >

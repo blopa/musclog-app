@@ -124,7 +124,6 @@ export function HomeActionsPicker({ selected, available, onChange }: HomeActions
                       backgroundColor: theme.colors.background.card,
                       opacity: isLocked && !isSelected ? theme.colors.opacity.medium : 1,
                       transform: [{ scale: pressed ? 0.98 : 1 }],
-                      ...(isSelected ? theme.shadows.accentGlow : {}),
                     }}
                   >
                     <View

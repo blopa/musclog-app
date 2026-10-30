@@ -2,7 +2,7 @@ import { ArrowRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
-import { AI_COACH_AVATAR } from '@/hooks/useChatMessages';
+import { useCoachPersona } from '@/context/CoachPersonaContext';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -27,6 +27,7 @@ const SEE_ALL_CARD_WIDTH = 88;
 export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const persona = useCoachPersona();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { width: screenWidth } = useWindowDimensions();
 
@@ -52,13 +53,13 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
           }}
         >
           <Image
-            source={AI_COACH_AVATAR}
+            source={persona.avatarSource}
             style={{ width: theme.size['8'], height: theme.size['8'] }}
             resizeMode="cover"
           />
         </View>
         <Text className="text-xs font-medium" style={{ color: theme.colors.text.secondary }}>
-          {t('coach.name')}
+          {persona.name}
         </Text>
       </View>
 
@@ -75,7 +76,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
         {visibleMeals.map((meal) => (
           <View
             key={meal.id}
-            className="rounded-xl border px-2 py-2"
+            className="rounded-control border px-2 py-2"
             style={{
               backgroundColor: theme.colors.background.card,
               borderColor: theme.colors.border.light,
@@ -92,7 +93,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
 
               <View className="mb-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
                 <Text
-                  className="text-base font-bold leading-none"
+                  className="text-base font-semibold leading-none"
                   style={{ color: theme.colors.text.primary }}
                 >
                   {formatRoundedDecimal(meal.calories, 2)}
@@ -108,7 +109,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
               <View className="w-full flex-row items-center justify-between gap-0.5">
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
                   <Text
-                    className="text-[9px] font-semibold"
+                    className="text-[10px] font-semibold"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     P:
@@ -124,7 +125,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                 </View>
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
                   <Text
-                    className="text-[9px] font-semibold"
+                    className="text-[10px] font-semibold"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('food.macros.carbsShort')}:
@@ -140,7 +141,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
                 </View>
                 <View className="flex-1 flex-row flex-wrap items-baseline justify-center gap-0.5">
                   <Text
-                    className="text-[9px] font-semibold"
+                    className="text-[10px] font-semibold"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('food.macros.fatShort')}:
@@ -162,7 +163,7 @@ export function ChatMealPlanCarousel({ meals, onSeeAll }: ChatMealPlanCarouselPr
         {onSeeAll && hasMoreMeals ? (
           <Pressable
             onPress={onSeeAll}
-            className="items-center justify-center rounded-xl border px-1.5 py-2 active:opacity-70"
+            className="items-center justify-center rounded-control border px-1.5 py-2 active:opacity-70"
             style={{
               backgroundColor: theme.colors.background.card,
               borderColor: theme.colors.border.light,

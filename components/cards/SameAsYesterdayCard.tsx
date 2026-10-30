@@ -30,7 +30,7 @@ export function SameAsYesterdayCard({
     <View style={{ marginTop: theme.spacing.padding.lg }}>
       <View className="mb-3 flex-row items-center gap-2 px-1">
         <History size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="text-xs font-semibold text-text-secondary">
           {t('foodSearch.sameAsYesterday')}
         </Text>
       </View>
@@ -69,7 +69,7 @@ export function SameAsYesterdayCard({
                 }}
               >
                 <Text
-                  className="text-xs font-bold uppercase tracking-tighter"
+                  className="text-xs font-semibold"
                   style={{
                     color: theme.colors.accent.secondary,
                     marginBottom: theme.spacing.margin['2'],
@@ -87,7 +87,7 @@ export function SameAsYesterdayCard({
                   }}
                 >
                   <Text
-                    className="text-[11px] font-bold tracking-tight"
+                    className="text-[11px] font-bold"
                     style={[
                       { color: theme.colors.macros.protein.text },
                       intuitiveEatingMode ? blurFilter(4) : undefined,
@@ -98,7 +98,7 @@ export function SameAsYesterdayCard({
                     })}
                   </Text>
                   <Text
-                    className="text-[11px] font-bold tracking-tight"
+                    className="text-[11px] font-bold"
                     style={[
                       { color: theme.colors.macros.carbs.text },
                       intuitiveEatingMode ? blurFilter(4) : undefined,
@@ -109,7 +109,7 @@ export function SameAsYesterdayCard({
                     })}
                   </Text>
                   <Text
-                    className="text-[11px] font-bold tracking-tight"
+                    className="text-[11px] font-bold"
                     style={[
                       { color: theme.colors.macros.fat.text },
                       intuitiveEatingMode ? blurFilter(4) : undefined,
@@ -122,7 +122,7 @@ export function SameAsYesterdayCard({
                 </View>
               </View>
               <Text
-                className="text-xs font-bold text-text-primary"
+                className="text-xs font-semibold text-text-primary"
                 style={[{ flexShrink: 0 }, intuitiveEatingMode ? blurFilter(4) : undefined]}
               >
                 {t('foodSearch.totalWithKcal', {
@@ -198,13 +198,12 @@ export function SameAsYesterdayCard({
                 width: theme.size['12'],
                 height: theme.size['12'],
                 backgroundColor: theme.colors.accent.primary,
-                ...theme.shadows.lg,
               }}
             >
               <Plus size={theme.iconSize.xl} color={theme.colors.background.primary} />
             </Pressable>
             <Text
-              className="text-[9px] font-bold uppercase tracking-tighter"
+              className="text-xs font-semibold"
               style={{ color: theme.colors.accent.secondary }}
             >
               {t('foodSearch.addAll')}

@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import convert from 'convert';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
@@ -41,6 +41,12 @@ import {
   inchesToCm,
   NutritionPlan,
 } from '@/utils/nutritionCalculator';
+import {
+  PERSONALIZED_SETUP_STEPS,
+  PERSONALIZED_STEP,
+  PROFILE_ROUTE,
+  resolveResultsCompletion,
+} from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 import { parseTrainingSetup } from '@/utils/onboardingTraining';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -52,7 +58,7 @@ export default function NutritionGoalsResults() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<ScrollViewInstance>(null);
   const { units, useBfForCalculations } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const { formatDecimal, formatInteger } = useFormatAppNumber();
@@ -62,10 +68,13 @@ export default function NutritionGoalsResults() {
     plan?: string;
     quickSetup?: string;
     personalizedSetup?: string;
+    /** `profile` when reached from "Update my profile with AI": save the goal, then go back. */
+    context?: string;
   }>();
   const aiGenerated = params.aiGenerated === 'true';
   const isQuickSetup = params.quickSetup === 'true';
   const isPersonalizedSetup = params.personalizedSetup === 'true';
+  const isProfileContext = params.context === 'profile';
   const [isSaving, setIsSaving] = useState(false);
   const [storedPlan, setStoredPlan] = useState<NutritionPlan | null>(null);
 
@@ -389,21 +398,28 @@ export default function NutritionGoalsResults() {
 
       // Anyone who answered the training questions ends on a concrete first workout. The rest keep
       // the old ending, with the Health prompt that used to sit at the start of the setup.
-      const training = parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
-      if (training) {
+      // Updating a finished profile applies none of that (see resolveResultsCompletion).
+      const training = isProfileContext
+        ? null
+        : parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
+      const completion = resolveResultsCompletion({
+        context: isProfileContext ? 'profile' : 'onboarding',
+        hasTraining: training !== null,
+        isWeb: Platform.OS === 'web',
+        mode: isPersonalizedSetup ? 'personalized' : 'quick',
+      });
+      if (completion.applyTraining && training) {
         await applyTrainingSetup(training);
       }
 
-      await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
-      if (training) {
-        router.replace(
-          `/app/onboarding/first-workout?mode=${isPersonalizedSetup ? 'personalized' : 'quick'}`
-        );
-      } else if (Platform.OS === 'web') {
-        router.replace('/app');
+      if (completion.completeOnboarding) {
+        await setOnboardingCompleted(CURRENT_ONBOARDING_VERSION);
       } else {
-        router.replace('/app/onboarding/health-connect?nextRoute=/app');
+        // Onboarding completion clears the temporary plan; a profile update has to do it itself.
+        await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
       }
+
+      router.replace(completion.route as never);
     } catch (error) {
       console.error('Error saving nutrition goals:', error);
       showSnackbar('error', t('nutritionGoals.errorSaving'));
@@ -455,7 +471,12 @@ export default function NutritionGoalsResults() {
   return (
     <MasterLayout showNavigationMenu={false}>
       {isQuickSetup ? <QuickSetupProgressBar current={6} total={7} /> : null}
-      {isPersonalizedSetup ? <QuickSetupProgressBar current={9} total={10} /> : null}
+      {isPersonalizedSetup ? (
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.results}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
+      ) : null}
       <ScrollView
         ref={scrollViewRef}
         className="flex-1"
@@ -478,10 +499,10 @@ export default function NutritionGoalsResults() {
               </View>
             ) : (
               <View className="mb-3 flex-row items-center gap-1.5">
-                <MaterialIcons name="tune" size={14} color={theme.colors.status.indigoLight} />
+                <MaterialIcons name="tune" size={14} color={theme.colors.text.secondary} />
                 <Text
                   className="text-xs font-semibold"
-                  style={{ color: theme.colors.status.indigoLight }}
+                  style={{ color: theme.colors.text.secondary }}
                 >
                   {t('nutritionGoals.results.manualPlanBadge')}
                 </Text>
@@ -493,19 +514,10 @@ export default function NutritionGoalsResults() {
               style={{
                 color: theme.colors.text.primary,
                 fontSize: theme.typography.fontSize['3xl'],
-                fontWeight: theme.typography.fontWeight.black,
+                fontWeight: theme.typography.fontWeight.bold,
               }}
             >
-              {t('nutritionGoals.results.your')}{' '}
-              <Text
-                style={{
-                  color: theme.colors.status.indigoLight,
-                  fontSize: theme.typography.fontSize['3xl'],
-                  fontWeight: theme.typography.fontWeight.black,
-                }}
-              >
-                {t('nutritionGoals.results.nutritionPlan')}
-              </Text>
+              {t('nutritionGoals.results.your')} {t('nutritionGoals.results.nutritionPlan')}
             </Text>
 
             <Text
@@ -524,24 +536,21 @@ export default function NutritionGoalsResults() {
 
           {/* Daily Calorie Target Card */}
           <View
-            className="relative mb-6 w-full overflow-hidden rounded-3xl p-8"
+            className="relative mb-6 w-full overflow-hidden rounded-card p-8"
             style={{
               borderRadius: theme.borderRadius['3xl'],
               padding: theme.spacing.padding['2xl'],
               marginBottom: theme.spacing.margin.lg,
             }}
           >
-            <LinearGradient
-              colors={theme.colors.gradients.cta}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+            <View
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 right: 0,
                 bottom: 0,
-                borderRadius: theme.borderRadius['3xl'],
+                backgroundColor: theme.colors.accent.primary,
               }}
             />
 
@@ -550,19 +559,18 @@ export default function NutritionGoalsResults() {
               <MaterialIcons
                 name="bolt"
                 size={96}
-                color={theme.colors.text.alwaysWhite}
+                color={theme.colors.text.onAccent}
                 style={{ opacity: 0.2 }}
               />
             </View>
 
             <View className="relative z-10">
               <Text
-                className="mb-1 text-sm font-semibold uppercase tracking-widest"
+                className="mb-1 text-sm font-semibold"
                 style={{
-                  color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.8),
+                  color: addOpacityToHex(theme.colors.text.onAccent, 0.8),
                   fontSize: theme.typography.fontSize.sm,
                   fontWeight: theme.typography.fontWeight.semibold,
-                  letterSpacing: 2,
                 }}
               >
                 {t('nutritionGoals.results.dailyCalorieTarget')}
@@ -570,11 +578,11 @@ export default function NutritionGoalsResults() {
 
               <View className="flex-row items-baseline gap-2">
                 <Text
-                  className="text-5xl font-black"
+                  className="text-5xl font-bold"
                   style={{
-                    color: theme.colors.text.alwaysWhite,
+                    color: theme.colors.text.onAccent,
                     fontSize: theme.typography.fontSize['5xl'],
-                    fontWeight: theme.typography.fontWeight.black,
+                    fontWeight: theme.typography.fontWeight.bold,
                   }}
                 >
                   {formattedCalories}
@@ -582,7 +590,7 @@ export default function NutritionGoalsResults() {
                 <Text
                   className="text-xl font-bold"
                   style={{
-                    color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.9),
+                    color: addOpacityToHex(theme.colors.text.onAccent, 0.9),
                     fontSize: theme.typography.fontSize.xl,
                     fontWeight: theme.typography.fontWeight.bold,
                   }}
@@ -596,7 +604,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-sm font-medium"
                     style={{
-                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.7),
+                      color: addOpacityToHex(theme.colors.text.onAccent, 0.7),
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -608,7 +616,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="mt-1 text-xs"
                     style={{
-                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.5),
+                      color: addOpacityToHex(theme.colors.text.onAccent, 0.5),
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.normal,
                     }}
@@ -624,7 +632,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-sm font-medium"
                     style={{
-                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.9),
+                      color: addOpacityToHex(theme.colors.text.onAccent, 0.9),
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -644,7 +652,7 @@ export default function NutritionGoalsResults() {
                 <View
                   className="mt-4 flex-row items-center justify-between border-t pt-4"
                   style={{
-                    borderTopColor: addOpacityToHex(theme.colors.text.alwaysWhite, 0.1),
+                    borderTopColor: addOpacityToHex(theme.colors.text.onAccent, 0.1),
                     borderTopWidth: 1,
                     marginTop: theme.spacing.margin.md,
                     paddingTop: theme.spacing.padding.md,
@@ -653,7 +661,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-xs font-medium"
                     style={{
-                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.7),
+                      color: addOpacityToHex(theme.colors.text.onAccent, 0.7),
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -677,19 +685,18 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-indigo-400"
+                className="mb-1 text-center text-xs font-semibold text-indigo-400"
                 style={{
                   color: theme.colors.status.indigo,
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
-                  letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
                 {t('nutritionGoals.results.protein')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-text-primary"
+                className="text-center text-lg font-semibold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -720,19 +727,18 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="text-primary mb-1 text-center text-[10px] font-bold uppercase tracking-tighter"
+                className="text-primary mb-1 text-center text-xs font-semibold"
                 style={{
                   color: theme.colors.accent.primary,
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
-                  letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
                 {t('nutritionGoals.results.carbs')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-text-primary"
+                className="text-center text-lg font-semibold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -763,19 +769,18 @@ export default function NutritionGoalsResults() {
               }}
             >
               <Text
-                className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-pink-400"
+                className="mb-1 text-center text-xs font-semibold text-pink-400"
                 style={{
                   color: theme.colors.status.pink,
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
-                  letterSpacing: -0.5,
                   marginBottom: theme.spacing.margin.xs,
                 }}
               >
                 {t('nutritionGoals.results.fats')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-text-primary"
+                className="text-center text-lg font-semibold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -819,12 +824,11 @@ export default function NutritionGoalsResults() {
             <>
               <View className="mb-6 w-full">
                 <Text
-                  className="mb-2 text-center text-xs font-semibold uppercase tracking-wider"
+                  className="mb-2 text-center text-xs font-semibold"
                   style={{
                     color: theme.colors.text.tertiary,
                     fontSize: theme.typography.fontSize.xxs,
                     fontWeight: theme.typography.fontWeight.semibold,
-                    letterSpacing: 1.5,
                     marginBottom: theme.spacing.margin.sm,
                   }}
                 >
@@ -916,7 +920,7 @@ export default function NutritionGoalsResults() {
                   </View>
                   <View className="flex-1">
                     <Text
-                      className="mb-1 text-sm font-bold"
+                      className="mb-1 text-sm font-semibold"
                       style={{
                         color: theme.colors.text.primary,
                         fontSize: theme.typography.fontSize.sm,
@@ -964,7 +968,7 @@ export default function NutritionGoalsResults() {
                   color={theme.colors.accent.primary}
                 />
                 <Text
-                  className="text-sm font-bold text-text-primary"
+                  className="text-sm font-semibold text-text-primary"
                   style={{
                     color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize.sm,
@@ -1023,12 +1027,11 @@ export default function NutritionGoalsResults() {
                     </Text>
                     <View className="flex-row items-baseline">
                       <Text
-                        className="mr-2 text-4xl font-black tracking-tight text-text-primary"
+                        className="mr-2 text-4xl font-bold text-text-primary"
                         style={{
                           color: theme.colors.text.primary,
                           fontSize: theme.typography.fontSize['4xl'],
-                          fontWeight: theme.typography.fontWeight.black,
-                          letterSpacing: -0.5,
+                          fontWeight: theme.typography.fontWeight.bold,
                         }}
                       >
                         {formattedWeightChange}
@@ -1175,7 +1178,7 @@ export default function NutritionGoalsResults() {
           style={{ marginBottom: theme.spacing.margin.sm }}
         />
 
-        {aiGenerated ? (
+        {aiGenerated && !isProfileContext ? (
           <>
             <View style={{ height: theme.spacing.margin.md }} />
             <Button
@@ -1192,6 +1195,23 @@ export default function NutritionGoalsResults() {
                     personalizedSetup: isPersonalizedSetup ? 'true' : 'false',
                   },
                 });
+              }}
+            />
+            <View style={{ height: theme.spacing.margin.md }} />
+          </>
+        ) : null}
+
+        {isProfileContext ? (
+          <>
+            <Button
+              label={t('nutritionGoals.keepCurrentTargets')}
+              variant="outline"
+              width="full"
+              size="sm"
+              disabled={isSaving}
+              onPress={async () => {
+                await AsyncStorage.removeItem(TEMP_NUTRITION_PLAN);
+                router.replace(PROFILE_ROUTE as never);
               }}
             />
             <View style={{ height: theme.spacing.margin.md }} />

@@ -1,7 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Check, User, Users } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -13,10 +12,11 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
-import { PERSONALIZED_SETUP_DATA } from '@/constants/misc';
 import { type Gender } from '@/database/models/User';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useTheme } from '@/hooks/useTheme';
+import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 type Units = 'metric' | 'imperial';
@@ -31,6 +31,32 @@ export default function PersonalizedPreferencesScreen() {
   const [fullName, setFullName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  // Answers given earlier (including through the AI setup) come back prefilled instead of reset.
+  useEffect(() => {
+    let cancelled = false;
+    readPersonalizedSetup().then((saved) => {
+      if (cancelled) {
+        return;
+      }
+
+      if (saved.units) {
+        setUnits(saved.units);
+      }
+
+      if (saved.gender) {
+        setGender(saved.gender);
+      }
+
+      if (saved.fullName) {
+        setFullName(saved.fullName);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const genderOptions: { value: Gender; label: string }[] = [
     { value: 'male', label: t('onboarding.quickPreferences.male') },
     { value: 'female', label: t('onboarding.quickPreferences.female') },
@@ -42,16 +68,13 @@ export default function PersonalizedPreferencesScreen() {
     try {
       await SettingsService.setUnits(units);
 
-      const existing = await AsyncStorage.getItem(PERSONALIZED_SETUP_DATA);
-      const current = existing ? JSON.parse(existing) : {};
-      await AsyncStorage.setItem(
-        PERSONALIZED_SETUP_DATA,
-        JSON.stringify({ ...current, fullName: fullName.trim(), gender, units })
-      );
+      await mergePersonalizedSetup({ fullName: fullName.trim(), gender, units });
 
       await setCurrentOnboardingStep('/app/onboarding/personalized-preferences');
 
-      router.navigate(`/app/onboarding/training-setup?mode=personalized&quickStep=2&quickTotal=10`);
+      router.navigate(
+        `/app/onboarding/training-setup?mode=personalized&quickStep=${PERSONALIZED_STEP.training}&quickTotal=${PERSONALIZED_SETUP_STEPS}`
+      );
     } catch (e) {
       console.error('Error saving personalized preferences:', e);
     } finally {
@@ -62,7 +85,10 @@ export default function PersonalizedPreferencesScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={1} total={10} />
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.preferences}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
 
         <KeyboardAwareScrollView
           className="flex-1"
@@ -72,10 +98,7 @@ export default function PersonalizedPreferencesScreen() {
         >
           <View className="px-6 pt-6">
             {/* Title */}
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.quickPreferences.title')}
             </Text>
             <Text
@@ -90,10 +113,7 @@ export default function PersonalizedPreferencesScreen() {
 
             {/* Name */}
             <View className="mb-8 gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.personalizedPreferences.nameLabel')}
               </Text>
               <TextInput
@@ -107,10 +127,7 @@ export default function PersonalizedPreferencesScreen() {
 
             {/* Unit System */}
             <View className="mb-8 gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickPreferences.unitSystem').toUpperCase()}
               </Text>
               <SegmentedControl
@@ -126,15 +143,12 @@ export default function PersonalizedPreferencesScreen() {
 
             {/* Gender */}
             <View className="gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickPreferences.gender').toUpperCase()}
               </Text>
 
               <View
-                className="rounded-xl p-3"
+                className="rounded-control p-3"
                 style={{ backgroundColor: theme.colors.background.cardElevated }}
               >
                 <Text
@@ -154,7 +168,7 @@ export default function PersonalizedPreferencesScreen() {
                   <Pressable
                     key={opt.value}
                     onPress={() => setGender(opt.value)}
-                    className="flex-row items-center justify-between rounded-xl px-4 py-4"
+                    className="flex-row items-center justify-between rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,

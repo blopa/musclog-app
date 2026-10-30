@@ -2,16 +2,20 @@
   "notifications": {
     "header": {
       "title": "Notificaciones",
-      "clearAll": "BORRAR TODO"
+      "clearAll": "Borrar todo"
     },
     "sections": {
       "today": "HOY",
-      "yesterday": "AYER",
-      "earlier": "ANTERIORES"
+      "yesterday": "Ayer",
+      "earlier": "Anteriores"
     },
     "channels": {
       "default": "Por defecto",
-      "activeWorkout": "Entrenamiento Activo"
+      "activeWorkout": "Entrenamiento Activo",
+      "cycle": "Recordatorios del ciclo",
+      "restTimer": "Temporizador de descanso",
+      "workoutReminders": "Recordatorios de entrenamiento",
+      "restTimerQuiet": "Temporizador de descanso (sin sonido)"
     },
     "startNow": "Iniciar Ahora",
     "types": {
@@ -24,7 +28,7 @@
         "description": "¿Listo para {{workoutName}}? Programado para hoy a las {{time}}."
       },
       "workoutCompleted": {
-        "title": "¡Entrenamiento Completado!",
+        "title": "Entrenamiento completado",
         "description": "Buen trabajo terminando {{workoutName}}. Quemaste {{calories}} kcal."
       },
       "kudosReceived": {
@@ -38,7 +42,8 @@
       "activeWorkout": {
         "title": "Entrenamiento: {{workoutName}}",
         "body": "{{totalTime}} - {{currentExercise}}",
-        "bodyNoExercise": "{{totalTime}}"
+        "bodyNoExercise": "{{totalTime}}",
+        "titleMinimal": "Entrenamiento en curso"
       },
       "workoutReminderMorning": {
         "title": "Recordatorio de Entrenamiento",
@@ -46,7 +51,7 @@
       },
       "nutritionOverview": {
         "title": "Resumen Diario de Nutrición",
-        "body": "¡Mira cómo se alineó tu nutrición con tus objetivos hoy!"
+        "body": "Mira cómo se compara tu nutrición de hoy con tus objetivos."
       },
       "nutritionCheckin": {
         "title": "Revisión de Progreso Semanal",
@@ -54,20 +59,58 @@
       },
       "periodPrediction": {
         "title": "Predicción del Periodo",
-        "body": "Se predice que tu periodo comenzará en 2 días. ¡Prepárate!"
+        "body": "Tu periodo podría empezar en unos días, según tus ciclos recientes."
       },
       "fertileWindow": {
         "title": "Ventana Fértil",
-        "body": "¡Tu ventana fértil está comenzando! Útil para rastrear tus niveles de energía."
+        "body": "Tu ventana fértil estimada podría empezar pronto. Es una estimación de calendario, no una confirmación de la ovulación."
       },
       "restTimerAlert": {
-        "title": "Descanso Terminado - ¡A trabajar!",
-        "body": "Tu tiempo de descanso ha terminado. ¡Hora de ir a por la siguiente serie!"
+        "title": "Descanso terminado",
+        "body": "Tu descanso ha terminado. Toca la siguiente serie."
       },
       "workoutDurationWarning": {
         "title": "¿Sigues entrenando?",
-        "body": "Tu sesión lleva 5 horas en curso. ¡No olvides terminarla en Musclog!"
+        "body": "Tu sesión lleva 5 horas en curso. Recuerda terminarla en Musclog."
+      },
+      "cycleDiscreet": {
+        "title": "Musclog",
+        "body": "Tienes una novedad."
+      },
+      "unfinishedWorkout": {
+        "title": "¿Terminas tu entrenamiento?",
+        "body": "{{workoutName}} sigue abierto. Termínalo y regístralo cuando acabes."
+      },
+      "goalAtRisk": {
+        "title": "Objetivo semanal en riesgo",
+        "body": "Entrenamientos que faltan para tu objetivo semanal: {{count}}."
+      },
+      "restTimerHeadsUp": {
+        "title": "Casi listo",
+        "body": "Quedan {{seconds}} segundos de descanso."
+      },
+      "workTimerAlert": {
+        "title": "Se acabó el tiempo",
+        "body": "Tu serie cronometrada ha terminado."
+      },
+      "comebackWelcome": {
+        "title": "Cuando quieras",
+        "body": "Sin prisa. Si quieres volver poco a poco, hay una forma suave de empezar."
       }
+    },
+    "actions": {
+      "addRest": "+{{seconds}} s de descanso",
+      "nextSet": "Siguiente serie",
+      "snooze": "Posponer 1 h",
+      "done": "Hecho",
+      "later": "Más tarde",
+      "skip": "Omitir"
+    },
+    "restPrompt": {
+      "title": "¿Alertas del temporizador?",
+      "message": "Tu temporizador de descanso está en marcha. ¿Quieres una alerta si bloqueas el teléfono o cambias de app?",
+      "confirm": "Activar alertas",
+      "cancel": "Ahora no"
     }
   }
 }

@@ -19,11 +19,10 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
 
   return (
     <View
-      className="mt-4 w-full max-w-sm rounded-xl border p-5"
+      className="mt-4 w-full max-w-sm rounded-card border p-5"
       style={{
         backgroundColor: theme.colors.background.brandWash,
         borderColor: theme.colors.background.ink5,
-        ...theme.shadows.lg,
       }}
     >
       <View className="mb-3 flex-row items-center gap-3">
@@ -32,7 +31,7 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
           style={{ backgroundColor: theme.colors.accent.primary }}
         />
         <View className="flex-1">
-          <Text className="text-xs font-bold uppercase tracking-widest text-accent-primary opacity-80">
+          <Text className="text-xs font-semibold text-accent-primary opacity-80">
             {t('restOver.upNext')}
           </Text>
           <Text className="text-xl font-bold text-text-primary">{exercise.name}</Text>
@@ -41,30 +40,30 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
       <View className="flex-row items-center justify-between border-t border-ink/10 pt-3">
         <View className="flex-col items-start">
           <Text
-            className="font-bold uppercase text-ink/40"
+            className="font-bold text-ink/40"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {t('restOver.weight')}
           </Text>
-          <Text className="text-base font-bold text-text-primary">{exercise.weight}</Text>
+          <Text className="text-base font-semibold text-text-primary">{exercise.weight}</Text>
         </View>
         <View className="flex-col items-start">
           <Text
-            className="font-bold uppercase text-ink/40"
+            className="font-bold text-ink/40"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {t('restOver.reps')}
           </Text>
-          <Text className="text-base font-bold text-text-primary">{exercise.reps}</Text>
+          <Text className="text-base font-semibold text-text-primary">{exercise.reps}</Text>
         </View>
         <View className="flex-col items-start">
           <Text
-            className="font-bold uppercase text-ink/40"
+            className="font-bold text-ink/40"
             style={{ fontSize: theme.typography.fontSize.xs }}
           >
             {t('restOver.set')}
           </Text>
-          <Text className="text-base font-bold text-text-primary">
+          <Text className="text-base font-semibold text-text-primary">
             {exercise.set}
             <Text className="font-normal text-ink/40">/{exercise.totalSets}</Text>
           </Text>

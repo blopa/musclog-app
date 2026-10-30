@@ -5,8 +5,12 @@
     "confirm": "Confirm",
     "month": "Month",
     "nextMonday": "Next Monday",
-    "selectDate": "Select Date",
-    "selectMonthYear": "Select Month Year",
+    "selectDate": "Select date",
+    "selectMonthYear": "Select month year",
+    "status": {
+      "fasted": "Fasted",
+      "tracked": "Food logged"
+    },
     "today": "Today",
     "tomorrow": "Tomorrow",
     "year": "Year",

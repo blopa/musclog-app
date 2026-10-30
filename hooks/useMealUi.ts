@@ -4,42 +4,30 @@ import type Food from '@/database/models/Food';
 import { type MealType } from '@/database/models/NutritionLog';
 import { closeMenuDialog } from '@/hooks/closeMenuDialog';
 
-type MealActionMode = 'move' | 'copy' | 'split';
 type CreateMealItem = { food: Food; amount: number };
-type MealDialog =
-  | null
-  | 'addFood'
-  | 'menu'
-  | 'createMeal'
-  | 'deleteAll'
-  | 'action'
-  | 'insights'
-  | 'scale'
-  | 'mergeDuplicates';
+type MealDialog = null | 'addFood' | 'menu' | 'createMeal' | 'insights' | 'mergeDuplicates';
 
 type MealLoadingState = {
-  deleteAll: boolean;
-  action: boolean;
   insights: boolean;
-  scale: boolean;
   mergeDuplicates: boolean;
 };
 
 const INITIAL_LOADING: MealLoadingState = {
-  deleteAll: false,
-  action: false,
   insights: false,
-  scale: false,
   mergeDuplicates: false,
 };
 
+/**
+ * UI state of a meal section: its menu, adding food, building a meal, AI insights and merging
+ * duplicates. Copying, moving, splitting, scaling and deleting a section are not here — they go
+ * through `DiaryActionPanels`.
+ */
 export function useMealUi() {
   const [addFoodModalPreselectedMealType, setAddFoodModalPreselectedMealType] =
     useState<MealType | null>(null);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [selectedMealForMenu, setSelectedMealForMenu] = useState<MealType | null>(null);
   const [createMealInitialFoods, setCreateMealInitialFoods] = useState<CreateMealItem[]>([]);
-  const [mealActionMode, setMealActionMode] = useState<MealActionMode>('move');
   const [dialog, setDialog] = useState<MealDialog>(null);
   const [loading, setLoading] = useState<MealLoadingState>(INITIAL_LOADING);
 
@@ -48,19 +36,12 @@ export function useMealUi() {
     selectedMealType,
     selectedMealForMenu,
     createMealInitialFoods,
-    mealActionMode,
     isAddFoodModalVisible: dialog === 'addFood',
     isMealMenuVisible: dialog === 'menu',
     isCreateMealModalVisible: dialog === 'createMeal',
-    isDeleteAllMealVisible: dialog === 'deleteAll',
-    isMealActionModalVisible: dialog === 'action',
     isMealInsightsVisible: dialog === 'insights',
-    isScaleMealPortionModalVisible: dialog === 'scale',
     isMergeDuplicatesVisible: dialog === 'mergeDuplicates',
-    isDeleteAllMealLoading: loading.deleteAll,
-    isMealActionLoading: loading.action,
     isMealInsightsLoading: loading.insights,
-    isScaleMealPortionLoading: loading.scale,
     isMergeDuplicatesLoading: loading.mergeDuplicates,
     handleMealMenuPress: (mealType: MealType) => {
       setSelectedMealForMenu(mealType);
@@ -81,27 +62,6 @@ export function useMealUi() {
     },
     closeAddFoodModal: () => setDialog(null),
     selectMealType: (mealType: MealType) => setSelectedMealType(mealType),
-    openDeleteAll: () => setDialog('deleteAll'),
-    closeDeleteAll: () => {
-      setDialog(null);
-      setSelectedMealForMenu(null);
-      setLoading((current) => ({ ...current, deleteAll: false }));
-    },
-    openMealAction: (mode: MealActionMode) => {
-      setMealActionMode(mode);
-      setDialog('action');
-    },
-    closeMealAction: () => {
-      setDialog(null);
-      setSelectedMealForMenu(null);
-      setLoading((current) => ({ ...current, action: false }));
-    },
-    openScalePortion: () => setDialog('scale'),
-    closeScalePortion: () => {
-      setDialog(null);
-      setSelectedMealForMenu(null);
-      setLoading((current) => ({ ...current, scale: false }));
-    },
     openMergeDuplicates: () => setDialog('mergeDuplicates'),
     closeMergeDuplicates: () => {
       setDialog(null);
@@ -128,24 +88,9 @@ export function useMealUi() {
       }
     },
     clearMealSelection: () => setSelectedMealForMenu(null),
-    setDeleteAllMealLoading: (value: boolean) =>
-      setLoading((current) => ({ ...current, deleteAll: value })),
-    setMealActionLoading: (value: boolean) =>
-      setLoading((current) => ({ ...current, action: value })),
-    setScaleMealPortionLoading: (value: boolean) =>
-      setLoading((current) => ({ ...current, scale: value })),
     setMergeDuplicatesLoading: (value: boolean) =>
       setLoading((current) => ({ ...current, mergeDuplicates: value })),
     setMealInsightsLoading: (value: boolean) =>
       setLoading((current) => ({ ...current, insights: value })),
-    resetMeal: () => {
-      setDialog(null);
-      setAddFoodModalPreselectedMealType(null);
-      setSelectedMealType('breakfast');
-      setSelectedMealForMenu(null);
-      setCreateMealInitialFoods([]);
-      setMealActionMode('move');
-      setLoading(INITIAL_LOADING);
-    },
   };
 }

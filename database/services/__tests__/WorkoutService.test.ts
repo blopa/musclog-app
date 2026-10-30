@@ -96,6 +96,8 @@ jest.mock('@/utils/activeWorkoutStorage', () => ({
 jest.mock('../UserMetricService', () => ({
   UserMetricService: {
     getLatest: jest.fn().mockResolvedValue(null),
+    getLatestWeightKg: jest.fn().mockResolvedValue(null),
+    getLatestHeightCm: jest.fn().mockResolvedValue(null),
     getUserBodyWeightKgForVolume: jest.fn().mockResolvedValue(0),
   },
 }));
@@ -539,6 +541,21 @@ describe('WorkoutService', () => {
       const result = await WorkoutService.getWorkoutHistory(undefined, 10, 5);
 
       expect(mockQuery.extend).toHaveBeenCalled();
+    });
+
+    it('should not add a template clause without templateId', async () => {
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+
+      mockDatabase.get.mockReturnValue({
+        query: jest.fn().mockReturnValue(mockQuery),
+      } as any);
+
+      await WorkoutService.getWorkoutHistory(undefined, 10);
+
+      expect(mockQuery.extend).not.toHaveBeenCalledWith(Q.where('template_id', expect.anything()));
     });
 
     it('should filter out deleted workouts', async () => {
@@ -1407,7 +1424,7 @@ describe('WorkoutService', () => {
         query: jest.fn().mockReturnValue(mockQuery),
       } as any);
 
-      const result = await WorkoutService.getWorkoutLogsByTemplate('template-1', 1);
+      const result = await WorkoutService.getWorkoutLogsByTemplate('template-1', { limit: 1 });
 
       expect(result).toEqual([workout1]);
     });
@@ -1452,6 +1469,45 @@ describe('WorkoutService', () => {
       const result = await WorkoutService.getWorkoutLogsByTemplate('template-1');
 
       expect(result).toEqual([]);
+    });
+
+    it('matches the template id exactly, in the same window and page as the history list', async () => {
+      const mockQuery = {
+        fetch: jest.fn().mockResolvedValue([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+      const query = jest.fn().mockReturnValue(mockQuery);
+      mockDatabase.get.mockReturnValue({ query } as any);
+      const timeframe = { startDate: 100, endDate: 200 };
+
+      await WorkoutService.getWorkoutLogsByTemplate('template-1', {
+        timeframe,
+        limit: 5,
+        offset: 10,
+      });
+
+      expect(mockDatabase.get).toHaveBeenCalledWith('workout_logs');
+      expect(mockQuery.extend).toHaveBeenCalledWith(
+        Q.where('started_at', Q.gte(100)),
+        Q.where('started_at', Q.lte(200))
+      );
+      expect(mockQuery.extend).toHaveBeenCalledWith(Q.where('template_id', 'template-1'));
+      expect(mockQuery.extend).toHaveBeenCalledWith(Q.skip(10), Q.take(5));
+    });
+
+    it('reports whether the template has a completed session', async () => {
+      const mockQuery = {
+        fetch: jest
+          .fn()
+          .mockResolvedValueOnce([createMockWorkoutLog({ completedAt: 1 })])
+          .mockResolvedValueOnce([]),
+        extend: jest.fn().mockReturnThis(),
+      };
+      mockDatabase.get.mockReturnValue({ query: jest.fn().mockReturnValue(mockQuery) } as any);
+
+      expect(await WorkoutService.hasCompletedSessions('template-1')).toBe(true);
+      expect(await WorkoutService.hasCompletedSessions('template-1')).toBe(false);
+      expect(mockQuery.extend).toHaveBeenCalledWith(Q.take(1));
     });
   });
 

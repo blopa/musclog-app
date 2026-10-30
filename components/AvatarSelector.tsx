@@ -46,7 +46,7 @@ export function AvatarSelector({
     <View className="flex-col gap-2">
       <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
 
-      <View className="flex-row items-center gap-4 rounded-2xl border border-ink/10 bg-bg-card p-4">
+      <View className="flex-row items-center gap-4 rounded-card border border-ink/10 bg-bg-card p-4">
         {/* Default avatar with gradient background */}
         <View className="flex-shrink-0">
           <View
@@ -101,7 +101,7 @@ export function AvatarSelector({
             {t('editPersonalInfo.chooseColor')}
           </Text>
           <View
-            className="rounded-2xl border border-ink/10 bg-bg-card"
+            className="rounded-card border border-ink/10 bg-bg-card"
             style={{
               paddingHorizontal: theme.spacing.padding['3half'],
             }}

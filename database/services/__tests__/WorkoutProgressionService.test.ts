@@ -1,3 +1,4 @@
+import { settingsGetMock } from './settingsGetMock';
 import { database } from '@/database/database-instance';
 import { GymService } from '@/database/services/GymService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -11,6 +12,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     eq: jest.fn((value: any) => value),
     notEq: jest.fn((value: any) => value),
     gte: jest.fn((value: any) => value),
+    lt: jest.fn((value: any) => value),
     lte: jest.fn((value: any) => value),
     oneOf: jest.fn((values: any[]) => values),
     sortBy: jest.fn((field: string, direction: any) => ({ field, direction })),
@@ -206,7 +208,9 @@ describe('WorkoutProgressionService', () => {
     ];
 
     beforeEach(() => {
-      jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('suggest');
+      jest
+        .spyOn(SettingsService, 'get')
+        .mockImplementation(settingsGetMock({ workoutAutonomy: 'suggest' }));
       jest.spyOn(SettingsService, 'getProgressionMode').mockResolvedValue('weight_first');
       jest.spyOn(SettingsService, 'getUnits').mockResolvedValue('metric');
       jest.spyOn(GymService, 'getActiveGym').mockResolvedValue(null);
@@ -239,7 +243,7 @@ describe('WorkoutProgressionService', () => {
       expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
     });
 
-    it('progresses an exercise shown in pounds in whole pounds, even on a metric account', async () => {
+    it('progresses a barbell lift shown in pounds on the pound plate grid, even on a metric account', async () => {
       const sets = [planned('s1', { weight: 60 })];
       installHistory({
         sets,
@@ -249,9 +253,10 @@ describe('WorkoutProgressionService', () => {
 
       await WorkoutProgressionService.applyStartProgression('wl-1');
 
-      // 62 kg (136.69 lb) + the 5 lb step = 141.69 lb → 142 lb. A metric rounding would have
-      // stored 65 kg, which this lifter would read as 143.3 lb.
-      expect(kgToDisplay(sets[0].weight, 'imperial')).toBeCloseTo(142, 6);
+      // 62 kg (136.69 lb) + the 5 lb step = 141.69 lb → 140 lb: a bar loads in pairs of 2.5 lb
+      // plates, so 142 cannot be built. A metric rounding would have stored 65 kg, which this lifter
+      // would read as 143.3 lb.
+      expect(kgToDisplay(sets[0].weight, 'imperial')).toBeCloseTo(140, 6);
     });
 
     it('reads history before opening the writer, so the write lock is not held across it', async () => {
@@ -279,7 +284,9 @@ describe('WorkoutProgressionService', () => {
     });
 
     it('does nothing in manual mode: the plan is copied exactly as it always was', async () => {
-      jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('manual');
+      jest
+        .spyOn(SettingsService, 'get')
+        .mockImplementation(settingsGetMock({ workoutAutonomy: 'manual' }));
       const sets = [planned('s1')];
       installHistory({ sets, previousSets: lastSession(62, 4) });
 
@@ -577,7 +584,9 @@ describe('WorkoutProgressionService', () => {
       });
 
       it('applies in manual mode, because the user chose it', async () => {
-        jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('manual');
+        jest
+          .spyOn(SettingsService, 'get')
+          .mockImplementation(settingsGetMock({ workoutAutonomy: 'manual' }));
         const sets = four();
         installHistory({ sets, previousSets: lastSession(62, 1) });
         installWeek('lighter');
@@ -669,6 +678,287 @@ describe('WorkoutProgressionService', () => {
 
         // Built from the 62 kg session (2 in reserve → hold at the target), not the 56 kg one.
         expect(sets[0].weight).toBeGreaterThanOrEqual(62);
+      });
+    });
+
+    describe('a comeback ramp after a long break', () => {
+      const today = new Date();
+      const startedAt = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+      const DAY = 86_400_000;
+      const comebackState = (patch: Record<string, unknown> = {}) => ({
+        status: 'active' as const,
+        track: 'both' as const,
+        startedAt,
+        baseBefore: startedAt,
+        endedAt: null,
+        weekShift: 0,
+        answers: { breakLength: '1to3m' as const },
+        checkpoints: [],
+        minimumDays: [],
+        offerDismissal: null,
+        ...patch,
+      });
+      const useComeback = (state: ReturnType<typeof comebackState>, autonomy = 'suggest') =>
+        jest
+          .spyOn(SettingsService, 'get')
+          .mockImplementation(
+            settingsGetMock({ workoutAutonomy: autonomy as any, comebackState: state })
+          );
+      const four = () => [1, 2, 3, 4].map((n) => planned(`s${n}`, { setOrder: n }));
+      const preBreak = (weight: number) =>
+        [1, 2, 3, 4].map((n) => ({
+          weight,
+          reps: 8,
+          repsInReserve: 2,
+          setOrder: n,
+          completionStatus: 'performed',
+        }));
+
+      /**
+       * History as comeback mode reads it twice: the unfiltered sessions, and — when the query carries
+       * a `completed_at < baseBefore` clause — only the pre-break one.
+       */
+      function installComebackHistory(options: {
+        sets: any[];
+        preBreakSets?: any[];
+        comebackSets?: any[];
+      }) {
+        const pre = { id: 'pre-le', workoutLogId: 'wl-pre', createdAt: 1 };
+        const cb = { id: 'cb-le', workoutLogId: 'wl-cb', createdAt: 2 };
+        mockDatabase.get.mockImplementation((table: string) => {
+          if (table === 'workout_logs') {
+            return collection({
+              fetch: jest.fn().mockResolvedValue([
+                { id: 'wl-pre', completedAt: startedAt - 30 * DAY },
+                { id: 'wl-cb', completedAt: startedAt + 3_600_000 },
+              ]),
+            }) as any;
+          }
+          if (table === 'workout_log_exercises') {
+            return {
+              query: jest.fn((...clauses: any[]) => ({
+                fetch: jest.fn(async () => {
+                  if (!clauses.some((c) => c?.field === 'exercise_id')) {
+                    return [{ id: 'le-bench', exerciseId: 'bench' }];
+                  }
+                  const filtered = clauses.some(
+                    (c) =>
+                      c?.table === 'workout_logs' &&
+                      c.clauses.some(
+                        (inner: any) =>
+                          inner.field === 'completed_at' && typeof inner.condition === 'number'
+                      )
+                  );
+                  const rows = [
+                    ...(options.comebackSets && !filtered ? [cb] : []),
+                    ...(options.preBreakSets ? [pre] : []),
+                  ];
+                  return rows;
+                }),
+              })),
+            } as any;
+          }
+          if (table === 'workout_log_sets') {
+            return {
+              query: jest.fn((...clauses: any[]) => ({
+                fetch: jest.fn(async () => {
+                  const ids: unknown[] = [
+                    clauses.find((c) => c?.field === 'log_exercise_id')?.condition ?? [],
+                  ].flat();
+                  if (!ids.includes('pre-le') && !ids.includes('cb-le')) {
+                    return options.sets;
+                  }
+                  const tag = (rows: any[] | undefined, id: string) =>
+                    ids.includes(id)
+                      ? (rows ?? []).map((set) => ({ logExerciseId: id, ...set }))
+                      : [];
+                  return [
+                    ...tag(options.preBreakSets, 'pre-le'),
+                    ...tag(options.comebackSets, 'cb-le'),
+                  ];
+                }),
+              })),
+            } as any;
+          }
+          if (table === 'exercise_user_settings') {
+            return collection({ fetch: jest.fn().mockResolvedValue([]) }) as any;
+          }
+          if (table === 'exercises') {
+            return {
+              query: jest.fn(() => ({ fetch: jest.fn().mockResolvedValue([bench]) })),
+            } as any;
+          }
+          return collection() as any;
+        });
+      }
+
+      it('eases the pre-break load, caps the sets and aims for plenty in reserve', async () => {
+        useComeback(comebackState());
+        const sets = four();
+        installComebackHistory({ sets, preBreakSets: preBreak(100) });
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        const live = sets.filter((set) => !set.deletedAt);
+        expect(live.map((set) => set.id)).toEqual(['s1', 's2']);
+        for (const set of live) {
+          expect(set).toMatchObject({ weight: 80, reps: 8, repsInReserve: 4 });
+          expect(JSON.parse(set.adjustmentJson)).toMatchObject({
+            cause: 'deload',
+            source: 'comeback',
+            comeback: { week: 1, percent: 80, targetRir: 4 },
+            plan: { weightKg: 60, reps: 8 },
+            now: { weightKg: 80, reps: 8 },
+          });
+          expect(JSON.parse(set.prescriptionJson)).toMatchObject({ workingSetCount: 2 });
+        }
+        expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+      });
+
+      it('reads the baseline strictly before baseBefore, in the query', async () => {
+        useComeback(comebackState({ startedAt: startedAt + 7 * DAY, baseBefore: startedAt }));
+        const { Q } = jest.requireMock('@nozbe/watermelondb');
+        installComebackHistory({ sets: four(), preBreakSets: preBreak(100) });
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        // The cutoff is the fixed baseBefore, never the (restartable) start of the comeback.
+        expect(Q.lt).toHaveBeenCalledWith(startedAt);
+        expect(Q.lt).not.toHaveBeenCalledWith(startedAt + 7 * DAY);
+      });
+
+      it('applies in manual mode, because the user opted in', async () => {
+        useComeback(comebackState(), 'manual');
+        const sets = four();
+        installComebackHistory({ sets, preBreakSets: preBreak(100) });
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(sets[0].weight).toBe(80);
+      });
+
+      it('beats a lighter week chosen in the Weekly Review', async () => {
+        useComeback(comebackState());
+        const sets = four();
+        installComebackHistory({ sets, preBreakSets: preBreak(100) });
+        const base = mockDatabase.get.getMockImplementation()!;
+        mockDatabase.get.mockImplementation((table: string) =>
+          table === 'weekly_reviews'
+            ? (collection({
+                fetch: jest.fn().mockResolvedValue([
+                  {
+                    id: 'review-1',
+                    trainingDecision: 'lighter',
+                    trainingJson: JSON.stringify({
+                      decision: 'lighter',
+                      recommended: 'progress',
+                      reasons: [],
+                      goals: [],
+                      window: { from: Date.now() - 1000, until: Date.now() + 10_000_000 },
+                    }),
+                  },
+                ]),
+              }) as any)
+            : base(table)
+        );
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(JSON.parse(sets[0].adjustmentJson).source).toBe('comeback');
+        expect(sets[0].weight).toBe(80);
+      });
+
+      it('never goes below what was already lifted earlier in this comeback', async () => {
+        useComeback(comebackState());
+        const sets = four();
+        installComebackHistory({
+          sets,
+          preBreakSets: preBreak(100),
+          comebackSets: preBreak(90),
+        });
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(sets[0].weight).toBe(90);
+      });
+
+      it('does not ease an exercise with no pre-break history, only its sets and effort', async () => {
+        useComeback(comebackState());
+        const sets = four();
+        installComebackHistory({ sets });
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        const live = sets.filter((set) => !set.deletedAt);
+        expect(live).toHaveLength(2);
+        for (const set of live) {
+          expect(set).toMatchObject({ weight: 60, reps: 8, repsInReserve: 4 });
+          expect(set.adjustmentJson).toBeUndefined();
+        }
+      });
+
+      it('undo restores the whole plan: dropped sets, loads and reps in reserve', async () => {
+        useComeback(comebackState());
+        const sets = four().map((set) => Object.assign(set, { repsInReserve: 1 }));
+        installComebackHistory({ sets, preBreakSets: preBreak(100) });
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+        expect(sets.filter((set) => !set.deletedAt)).toHaveLength(2);
+
+        await WorkoutProgressionService.revertStartAdjustment('le-bench');
+
+        expect(sets.every((set) => !set.deletedAt)).toBe(true);
+        for (const set of sets) {
+          expect(set).toMatchObject({ weight: 60, reps: 8, repsInReserve: 1 });
+        }
+        expect(JSON.parse(sets[0].prescriptionJson)).toMatchObject({
+          workingSetCount: 4,
+          override: 'plan',
+        });
+      });
+
+      it('stops easing once the ramp is over, and carries on from the eased loads', async () => {
+        useComeback(comebackState({ startedAt: startedAt - 5 * 7 * DAY }));
+        const sets = four();
+        installComebackHistory({
+          sets,
+          preBreakSets: preBreak(100),
+          comebackSets: preBreak(85).map((set) => ({ ...set, repsInReserve: 2 })),
+        });
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(sets.every((set) => !set.deletedAt)).toBe(true);
+        // Ordinary progression from the latest session (85 kg), not the 100 kg before the break.
+        expect(sets[0].weight).toBeGreaterThanOrEqual(85);
+        expect(sets[0].weight).toBeLessThan(100);
+        expect(JSON.parse(sets[0].adjustmentJson ?? 'null')?.source).toBeUndefined();
+      });
+
+      it('never eases workouts on the nutrition-only track', async () => {
+        useComeback(comebackState({ track: 'nutrition' }));
+        const sets = four();
+        installComebackHistory({ sets, preBreakSets: preBreak(100) });
+
+        await WorkoutProgressionService.applyStartProgression('wl-1');
+
+        expect(sets.every((set) => !set.deletedAt)).toBe(true);
+        expect(sets.every((set) => !set.adjustmentJson?.includes('comeback'))).toBe(true);
+      });
+
+      it('eases an exercise added or swapped in mid-session', async () => {
+        useComeback(comebackState());
+        installComebackHistory({ sets: four(), preBreakSets: preBreak(100) });
+
+        const projection = await WorkoutProgressionService.projectAdHocExercise(bench as any);
+
+        expect(projection!.sets.map((set) => set.weight)).toEqual([80, 80]);
+      });
+
+      it('hides the "next time" targets while the ramp runs, because the session will not follow them', async () => {
+        useComeback(comebackState());
+        installComebackHistory({ sets: four(), preBreakSets: preBreak(100) });
+
+        expect(await WorkoutProgressionService.projectTemplate('tpl-1')).toEqual([]);
       });
     });
   });

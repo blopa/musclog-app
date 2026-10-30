@@ -175,7 +175,7 @@ export function MealEstimationModal({
       headerRight={
         <TouchableOpacity
           onPress={handleRetake}
-          className="flex-row items-center gap-2 rounded-lg px-3 py-2"
+          className="flex-row items-center gap-2 rounded-control px-3 py-2"
           style={{
             backgroundColor: theme.colors.background.ink10,
           }}

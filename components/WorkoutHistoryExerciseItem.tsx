@@ -71,7 +71,7 @@ export function ExerciseItem({
         {/* Exercise Info */}
         <View className="flex-1">
           <View className="mb-1 flex-row items-center gap-2">
-            <Text className="text-sm font-bold uppercase text-text-secondary">{exercise.time}</Text>
+            <Text className="text-sm font-semibold text-text-secondary">{exercise.time}</Text>
             <View
               className="h-1 w-1 rounded-full"
               style={{ backgroundColor: theme.colors.text.secondary }}
@@ -80,12 +80,12 @@ export function ExerciseItem({
               {t('workoutHistory.exercise', { number: exercise.exerciseNumber })}
             </Text>
           </View>
-          <Text className="text-lg font-bold text-text-primary">{exercise.name}</Text>
+          <Text className="text-lg font-semibold text-text-primary">{exercise.name}</Text>
         </View>
 
         {/* Exercise Image */}
         {exercise.image ? (
-          <View className="h-8 w-8 overflow-hidden rounded-lg border border-border-light">
+          <View className="h-8 w-8 overflow-hidden rounded-control border border-border-light">
             <Image source={exercise.image} className="h-full w-full" resizeMode="cover" />
           </View>
         ) : null}
@@ -94,7 +94,7 @@ export function ExerciseItem({
       {/* Sets Table */}
       <View className="ml-5 pl-8">
         <View
-          className="overflow-hidden rounded-xl border"
+          className="overflow-hidden rounded-control border"
           style={{
             backgroundColor: theme.colors.background.card,
             borderColor: theme.colors.border.accent,
@@ -109,23 +109,21 @@ export function ExerciseItem({
             }}
           >
             <View className="w-8 items-center py-2">
-              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
-                #
-              </Text>
+              <Text className="text-sm font-semibold text-text-secondary">#</Text>
             </View>
             <View className="flex-1 items-center py-2">
-              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+              <Text className="text-sm font-semibold text-text-secondary">
                 {t('workoutSession.weight')}
               </Text>
             </View>
             <View className="flex-1 items-center py-2">
-              <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+              <Text className="text-sm font-semibold text-text-secondary">
                 {t('workoutSession.reps')}
               </Text>
             </View>
             {!isPreview ? (
               <View className="flex-1 items-center py-2">
-                <Text className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                <Text className="text-sm font-semibold text-text-secondary">
                   {t('workoutSession.partials')}
                 </Text>
               </View>

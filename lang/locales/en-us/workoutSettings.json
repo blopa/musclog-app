@@ -1,6 +1,6 @@
 {
   "workoutSettings": {
-    "title": "Workout Settings",
+    "title": "Workout settings",
     "gyms": {
       "title": "My gyms",
       "subtitle": "Describe the equipment you train with. The plate calculator, weight steps and exercise suggestions follow your active gym.",
@@ -19,7 +19,7 @@
       "namePlaceholder": "e.g. Home gym",
       "unit": "Weight unit",
       "unitDefault": "Account setting",
-      "unitHint": "Pin pounds or kilograms for this gym only — for example when its plates are in pounds. Exercises with their own unit keep it.",
+      "unitHint": "Pin pounds or kilograms for this gym only, for example when its plates are in pounds. Exercises with their own unit keep it.",
       "bar": "Bar weight ({{unit}})",
       "increment": "Smallest weight step ({{unit}})",
       "incrementHint": "Used for dumbbells, machines and cables.",
@@ -68,7 +68,7 @@
       "title": "Plate calculator",
       "subtitle": "Loading {{weight}} {{unit}}",
       "belowBar": "That's lighter than the {{bar}} {{unit}} bar.",
-      "barOnly": "Just the bar — no plates needed.",
+      "barOnly": "Just the bar, no plates needed.",
       "perSide": "On each side",
       "plateLine": "{{weight}} {{unit}}",
       "bar": "Bar",
@@ -86,13 +86,21 @@
       "hapticsHint": "A tick for the last three seconds and a buzz at zero.",
       "defaultRest": "Default rest",
       "defaultRestHint": "Used for sets that don't name their own rest.",
-      "seconds": "sec"
+      "seconds": "sec",
+      "strongHaptics": "Stronger haptics",
+      "strongHapticsHint": "Heavier taps and a double buzz at zero.",
+      "alertSound": "Alert sound",
+      "alertSoundHint": "Play a sound when the rest-over notification arrives. Off keeps the vibration.",
+      "headsUp": "Heads-up before rest ends",
+      "headsUpOff": "Off",
+      "headsUpSeconds": "{{seconds}} s",
+      "headsUpHint": "The timer turns to \"get ready\" and buzzes once this long before the rest ends."
     },
     "autonomy": {
       "title": "When a workout starts",
       "subtitle": "Decide how much of today's numbers the app chooses.",
       "suggest": "Suggest weights and reps",
-      "suggestHint": "Each exercise starts from how its last session went — more load, more reps, a deload, or a repeat. You'll see why, and can undo it."
+      "suggestHint": "Each exercise starts from how its last session went: more load, more reps, a deload, or a repeat. You'll see why, and can undo it."
     }
   }
 }

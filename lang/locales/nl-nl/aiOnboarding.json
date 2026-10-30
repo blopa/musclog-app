@@ -1,0 +1,218 @@
+{
+  "aiOnboarding": {
+    "chat": {
+      "greeting": "Hoi! Ik stel een paar korte vragen om Musclog voor je in te stellen. Optionele vragen kun je overslaan en je controleert elk antwoord voordat er iets wordt opgeslagen. Zeg hallo, of vertel iets over jezelf.",
+      "notSent": "Niet verzonden",
+      "placeholder": "Typ je antwoord",
+      "review": "Mijn antwoorden bekijken",
+      "send": "Verstuur",
+      "stop": "Stop",
+      "thinking": "Aan het nadenken…",
+      "title": "Setup-chat"
+    },
+    "common": {
+      "backToGuided": "Gebruik in plaats daarvan de formulieren",
+      "editManually": "Mijn gegevens zelf aanpassen"
+    },
+    "external": {
+      "backSection": "Stap 2: kom terug met je setup",
+      "copied": "Instructies gekopieerd",
+      "copiedPaste": "Instructies gekopieerd. Plak ze in de chat als het vak leeg is.",
+      "copy": "Kopiëren",
+      "errors": {
+        "empty": "Er is niets om te importeren.",
+        "fileRead": "Dat bestand kon niet worden gelezen. Probeer een ander bestand of plak de tekst.",
+        "newerVersion": "Deze setup is gemaakt voor een nieuwere versie van Musclog. Werk de app bij en importeer opnieuw.",
+        "notJson": "Dit lijkt geen setup-bestand. Kies het bestand musclog-onboarding.json van de assistent of plak de JSON.",
+        "tooLarge": "Dat bestand is te groot voor een setup-bestand.",
+        "wrongSchema": "Dit is geen Musclog-setupbestand. Controleer of je het bestand van de assistent hebt gekozen."
+      },
+      "fallback": "De app of site kon niet worden geopend. De instructies zijn gekopieerd: open ChatGPT of Claude zelf en plak ze.",
+      "importFile": "Een setup-bestand importeren",
+      "intro": "ChatGPT of Claude kan de vragen voor je stellen en geeft je daarna een bestand om terug te brengen. Je verlaat Musclog even; er wordt niets toegepast tot je het hier controleert.",
+      "leaveSection": "Stap 1: vraag het aan de assistent",
+      "noFile": "Geen bestand? Plak de JSON, of ga terug naar de formulieren.",
+      "openChatgpt": "ChatGPT openen",
+      "openClaude": "Claude openen",
+      "paste": {
+        "fromClipboard": "Plakken van klembord",
+        "import": "Importeren",
+        "placeholder": "Plak de JSON hier",
+        "subtitle": "Plak de JSON die de assistent je gaf.",
+        "title": "Setup-JSON plakken"
+      },
+      "pasteJson": "JSON plakken",
+      "privacy": "Alleen de instructies worden gekopieerd. Er zit niets over jou of een API-sleutel in.",
+      "share": "Delen",
+      "steps": {
+        "one": "Open ChatGPT of Claude. De instructies worden voor je gekopieerd: plak ze in de chat.",
+        "three": "Kom terug naar Musclog en importeer dat bestand, of plak de tekst.",
+        "two": "Beantwoord de vragen. Aan het eind krijg je een bestand musclog-onboarding.json."
+      },
+      "title": "ChatGPT of Claude gebruiken"
+    },
+    "fields": {
+      "activityLevel": "Activiteitsniveau",
+      "birthDate": "Geboortedatum",
+      "bodyFat": "Vetpercentage",
+      "breakLength": "Duur van de pauze",
+      "fitnessGoal": "Trainingsfocus",
+      "fullName": "Naam",
+      "gender": "Geslacht",
+      "height": "Lengte",
+      "liftingExperience": "Trainingservaring",
+      "trainingAutonomy": "Gewichtssuggesties",
+      "trainingDays": "Dagen per week",
+      "trainingLocation": "Waar je traint",
+      "units": "Eenheden",
+      "weight": "Gewicht",
+      "weightGoal": "Gewichtsdoel"
+    },
+    "hub": {
+      "chatSubtitle": "Beantwoord een paar vragen in een chat binnen Musclog.",
+      "chatTitle": "Hier met AI chatten",
+      "externalSubtitle": "Chat daar en breng je setup terug als bestand.",
+      "externalTitle": "ChatGPT of Claude gebruiken",
+      "haveFile": "Ik heb al een setup-bestand",
+      "intro": "Beantwoord een paar vragen in een gesprek in plaats van formulieren in te vullen. Je controleert alles voordat er iets wordt opgeslagen.",
+      "privacy": "Je antwoorden gaan naar de AI die je kiest. Je API-sleutel blijft op dit apparaat.",
+      "profileIntro": "Vertel een AI wat er is veranderd. Je ziet elke wijziging naast wat je nu hebt voordat er iets wordt opgeslagen.",
+      "profileTitle": "Bijwerken met AI",
+      "resumeBody": "Je hebt een onafgemaakt setup-gesprek.",
+      "resumeContinue": "Doorgaan",
+      "resumeStartOver": "Opnieuw beginnen",
+      "resumeTitle": "Ga verder waar je gebleven was",
+      "title": "Instellen met AI"
+    },
+    "provider": {
+      "checkKey": "Sleutel controleren en doorgaan",
+      "gatewayHint": "Geen account of sleutel. Er geldt een daglimiet.",
+      "intro": "Kies de AI die je de vragen stelt. Je eigen sleutel blijft daarna in Musclog werken.",
+      "keyLabel": "API-sleutel",
+      "keyNetwork": "Kon {{provider}} niet bereiken om de sleutel te controleren. Controleer je verbinding en probeer opnieuw.",
+      "keyPlaceholder": "Plak je sleutel",
+      "keyRejected": "{{provider}} accepteerde die sleutel niet. Controleer of je hem helemaal hebt gekopieerd.",
+      "keySaved": "Er is een sleutel opgeslagen. Tik om hem te gebruiken of te vervangen.",
+      "keyStorage": "De sleutel wordt versleuteld op dit apparaat opgeslagen en gebruikt voor de AI-functies van Musclog. Standaard wordt {{model}} gebruikt; je kunt dat wijzigen of de sleutel verwijderen in Instellingen, AI.",
+      "keyTitle": "Je {{provider}}-sleutel",
+      "names": {
+        "gateway": "Gratis Musclog AI",
+        "gemini": "Google Gemini",
+        "local": "Lokaal model",
+        "onDevice": "Apple Intelligence",
+        "openai": "OpenAI"
+      },
+      "openGemini": "Google AI Studio openen",
+      "openOpenAi": "De OpenAI-sleutelpagina openen",
+      "ownKey": "Gebruik je eigen sleutel",
+      "problem": "Er ging iets mis. Probeer opnieuw of kies een andere optie.",
+      "simpleHint": "Draait op je apparaat. Eenvoudigere modellen hebben mogelijk moeite met deze chat.",
+      "steps": {
+        "gemini": {
+          "one": "Open Google AI Studio en log in.",
+          "three": "Kopieer hem en plak hem hieronder.",
+          "two": "Maak een API-sleutel aan."
+        },
+        "openai": {
+          "one": "Open de OpenAI-sleutelpagina en log in.",
+          "three": "Kopieer hem en plak hem hieronder.",
+          "two": "Maak een nieuwe geheime sleutel aan. Je account heeft betaalgegevens nodig."
+        }
+      },
+      "title": "Kies je AI",
+      "useExternal": "Gebruik in plaats daarvan ChatGPT of Claude",
+      "useSaved": "De opgeslagen sleutel gebruiken"
+    },
+    "recovery": {
+      "actions": {
+        "continueGuided": "Gebruik in plaats daarvan de formulieren",
+        "ownKey": "Mijn eigen sleutel gebruiken",
+        "replaceKey": "De sleutel vervangen",
+        "retry": "Opnieuw proberen",
+        "switchProvider": "Een andere AI kiezen",
+        "useExternal": "ChatGPT of Claude gebruiken"
+      },
+      "cancelled": {
+        "description": "Je bericht staat weer in het tekstvak.",
+        "title": "Gestopt"
+      },
+      "credits": {
+        "description": "De aanbieder meldt dat het account zonder tegoed of quotum zit. Voeg tegoed toe of kies een andere manier om te antwoorden.",
+        "title": "Deze AI heeft geen tegoed meer"
+      },
+      "gatewayLimit": {
+        "description": "Gratis Musclog AI heeft een daglimiet. Probeer morgen opnieuw, gebruik je eigen sleutel of kies een andere manier.",
+        "title": "De gratis daglimiet is bereikt"
+      },
+      "invalidKey": {
+        "description": "De aanbieder accepteert deze sleutel niet meer. Vervang hem of kies een andere manier om te antwoorden.",
+        "title": "De sleutel is geweigerd"
+      },
+      "malformed": {
+        "description": "Dit model geeft geen antwoorden die Musclog kan gebruiken. Kies een andere AI of een andere manier.",
+        "title": "Het antwoord van die AI was onleesbaar"
+      },
+      "offline": {
+        "description": "Je bericht is niet verzonden. Controleer je verbinding en probeer opnieuw.",
+        "title": "Geen verbinding"
+      },
+      "timeout": {
+        "description": "De AI antwoordde niet op tijd. Probeer opnieuw of kies een andere.",
+        "title": "Dat duurde te lang"
+      },
+      "unavailable": {
+        "description": "Hij is uitgezet of de sleutel is verwijderd. Kies een andere AI of een andere manier.",
+        "title": "Deze AI is niet beschikbaar"
+      },
+      "unknown": {
+        "description": "De AI kon niet antwoorden. Probeer opnieuw of kies een andere manier.",
+        "title": "Er ging iets mis"
+      }
+    },
+    "review": {
+      "apply": "Toepassen",
+      "applyFailedBody": "Er is niets verloren gegaan. Je antwoorden staan er nog: probeer opnieuw.",
+      "applyFailedTitle": "Je setup kon niet worden opgeslagen",
+      "applyOnboarding": "Klopt, doorgaan",
+      "applyProfile": "Wijzigingen toepassen",
+      "back": "Terug",
+      "currentValue": "Nu: {{value}}",
+      "errors": {
+        "invalid": "Die waarde is ongeldig.",
+        "outOfRange": "Die waarde valt buiten het toegestane bereik."
+      },
+      "ignored": "Genegeerd omdat Musclog ze niet gebruikt: {{keys}}",
+      "intro": "Controleer je antwoorden. Tik op een antwoord om het te wijzigen. Er wordt niets opgeslagen tot je doorgaat.",
+      "missing": "Nog nodig: {{fields}}",
+      "needed": "Vereist",
+      "notSet": "Niet ingesteld",
+      "notes": {
+        "comebackNotStarted": "Terugkeren na een pauze is niet gestart. Je kunt dat starten via Terugkeer.",
+        "daysNotApplied": "Dagen per week worden hier niet opgeslagen.",
+        "gymKept": "Je hebt al een gym, dus die is ongewijzigd gebleven.",
+        "recalculationSkipped": "Je doelen zijn niet herberekend omdat er iets in je profiel ontbreekt."
+      },
+      "openComeback": "Terugkeer openen",
+      "profileIntro": "Elk antwoord staat naast wat je nu hebt. Kies welke wijzigingen je toepast.",
+      "recalculate": "Ook mijn voedingsdoelen herberekenen",
+      "recalculateHint": "Je ziet de nieuwe doelen voordat ze worden opgeslagen. Je eerdere doelen blijven in je geschiedenis.",
+      "remove": "Verwijderen",
+      "save": "Opslaan",
+      "sections": {
+        "aboutYou": "Over jou",
+        "body": "Lichaam",
+        "experience": "Ervaring",
+        "goals": "Doelen",
+        "training": "Training"
+      },
+      "skip": "Overslaan",
+      "title": "Controleer je setup",
+      "warnings": {
+        "comebackStartsAtMaintenance": "Omdat je terugkeert na een pauze, begint je eerste voedingsplan op onderhoud.",
+        "dobAgeMismatch": "De geboortedatum en de leeftijd komen niet overeen. De geboortedatum is gebruikt.",
+        "unusualBodyMeasurements": "Je lengte en gewicht zien er samen ongebruikelijk uit. Controleer ze.",
+        "weightGoalConflictsFocus": "Je trainingsfocus is afvallen, maar je gewichtsdoel is niet afvallen."
+      }
+    }
+  }
+}

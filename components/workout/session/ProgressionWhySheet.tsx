@@ -16,7 +16,7 @@ import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import type { GuidanceState } from '@/utils/progressionProjection';
-import { parseSessionProgressionState, type ProgressionRule } from '@/utils/progressionRules';
+import { parseSessionProgressionState, type ProgressionRule } from '@/utils/progressionRuleSchema';
 import type { SetAdjustment } from '@/utils/setAdjustment';
 import type { SetPrescription } from '@/utils/setPrescription';
 import { getWeightUnitI18nKey } from '@/utils/units';
@@ -150,7 +150,7 @@ export function ProgressionWhySheet({
         </View>
 
         {inputs.length ? (
-          <View className="overflow-hidden rounded-xl border border-border-light">
+          <View className="overflow-hidden rounded-control border border-border-light">
             {inputs.map((row, index) => (
               <View
                 key={row.label}

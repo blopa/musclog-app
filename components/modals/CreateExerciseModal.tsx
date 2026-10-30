@@ -157,10 +157,8 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
   const pickerMenuItems = PRIMARY_MUSCLES.map((muscle) => ({
     icon: Dumbbell,
-    iconColor: theme.colors.text.primary,
-    iconBgColor: theme.colors.text.primary20,
+    selected: muscle.value === primaryMuscle,
     title: muscle.label,
-    description: '',
     onPress: () => handleSelectPrimaryMuscle(muscle.value),
   }));
 
@@ -200,7 +198,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
           {/* Muscle Target Section */}
           <View style={{ gap: theme.spacing.gap.base }}>
-            <Text className="text-lg font-bold tracking-tight text-text-primary">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('exercises.createExercise.muscleTarget')}
             </Text>
 
@@ -212,7 +210,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                     {t('exercises.createExercise.primaryMuscleGroup')}
                   </Text>
                   <View
-                    className="h-14 w-full flex-row items-center justify-between rounded-lg border bg-bg-card px-4"
+                    className="h-14 w-full flex-row items-center justify-between rounded-control border bg-bg-card px-4"
                     style={{ borderColor: theme.colors.background.ink10 }}
                   >
                     <Text
@@ -286,13 +284,13 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
 
           {/* Add Visuals Section */}
           <View style={{ gap: theme.spacing.gap.md }}>
-            <Text className="text-lg font-bold tracking-tight text-text-primary">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('exercises.createExercise.addVisuals')}
             </Text>
             <View className="flex-row gap-4">
               <Pressable
                 onPress={handleUploadImage}
-                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4"
+                className="flex-1 flex-col items-center justify-center gap-2 rounded-control border-2 border-dashed p-4"
                 style={{
                   borderColor: imageUri
                     ? theme.colors.accent.primary
@@ -324,7 +322,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
               </Pressable>
               <Pressable
                 onPress={handleVideoURL}
-                className="flex-1 flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4"
+                className="flex-1 flex-col items-center justify-center gap-2 rounded-control border-2 border-dashed p-4"
                 style={{
                   borderColor: videoUrl
                     ? theme.colors.accent.primary

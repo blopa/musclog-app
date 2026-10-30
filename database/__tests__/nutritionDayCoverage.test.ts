@@ -20,6 +20,7 @@ jest.mock('@/database/repositories/FastedDayRepository', () => ({
 import {
   addFastedZeroDaysToMap,
   getNutritionDayCoverage,
+  getNutritionDayStatuses,
   loggedOrFastedDayKeys,
   withFastedZeroDays,
 } from '../nutritionDayCoverage';
@@ -109,5 +110,57 @@ describe('nutritionDayCoverage', () => {
         [fastedOnlyDay, 0],
       ])
     );
+  });
+
+  describe('getNutritionDayStatuses', () => {
+    it('marks logged days as tracked and never reports fasts while the feature is off', async () => {
+      const loggedDay = day(2026, 0, 1);
+
+      const statuses = await getNutritionDayStatuses(
+        [{ date: loggedDay, timezone: '+00:00' }],
+        range
+      );
+
+      expect(statuses).toEqual(new Map([[loggedDay, 'tracked']]));
+      expect(mockGetFastedDayKeysForRange).not.toHaveBeenCalled();
+    });
+
+    it('marks flagged days without food as fasted', async () => {
+      mockGetEnableFastedDay.mockResolvedValue(true);
+      const loggedDay = day(2026, 0, 1);
+      const fastedDay = day(2026, 0, 2);
+      mockGetFastedDayKeysForRange.mockResolvedValue(new Set([fastedDay]));
+
+      const statuses = await getNutritionDayStatuses(
+        [{ date: loggedDay, timezone: '+00:00' }],
+        range
+      );
+
+      expect(statuses).toEqual(
+        new Map([
+          [loggedDay, 'tracked'],
+          [fastedDay, 'fasted'],
+        ])
+      );
+    });
+
+    it('lets logged food win over a fasted flag on the same day', async () => {
+      mockGetEnableFastedDay.mockResolvedValue(true);
+      const sharedDay = day(2026, 0, 1);
+      mockGetFastedDayKeysForRange.mockResolvedValue(new Set([sharedDay]));
+
+      const statuses = await getNutritionDayStatuses(
+        [{ date: sharedDay, timezone: '+00:00' }],
+        range
+      );
+
+      expect(statuses.get(sharedDay)).toBe('tracked');
+    });
+
+    it('leaves days with neither food nor a flag out of the result', async () => {
+      mockGetEnableFastedDay.mockResolvedValue(true);
+
+      await expect(getNutritionDayStatuses([], range)).resolves.toEqual(new Map());
+    });
   });
 });

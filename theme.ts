@@ -7,6 +7,7 @@ import { Appearance } from 'react-native';
 import { THEME_IDS, type ThemeId } from './constants/settings';
 import { SettingsService } from './database/services/SettingsService';
 import { DEFAULT_THEME_BY_MODE } from './theme.registry';
+import { RADIUS } from './theme.shape';
 import { themeColorsById } from './theme.tokens';
 import { resolveThemeId } from './utils/themeSelection';
 
@@ -139,16 +140,21 @@ const staticTokens = {
   },
 
   borderRadius: {
-    xs: 4,
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
-    '2xl': 24,
-    '3xl': 30,
-    '4xl': 36,
+    // The scale, named by role (theme.shape.js). New code reads these.
+    ...RADIUS,
     full: 9999,
-    // Additional border radius values
+    // Size-named aliases kept for existing call sites, each resolved onto the role it was used
+    // for: `md` was the input/small-button radius, `lg`/`xl` the card radius, `2xl` and up the
+    // sheet and dialog radius.
+    xs: RADIUS.tag,
+    sm: RADIUS.control,
+    md: RADIUS.control,
+    lg: RADIUS.card,
+    xl: RADIUS.card,
+    '2xl': RADIUS.sheet,
+    '3xl': RADIUS.sheet,
+    '4xl': RADIUS.sheet,
+    // Literal values for shapes that are not part of the scale.
     '2': 2, // 2px border radius (for small dots)
     '10': 10, // 10px border radius
     '20': 20, // 20px border radius
@@ -432,13 +438,6 @@ function createShadows(palette: ThemePalette) {
       shadowRadius: 6,
       elevation: 5,
     },
-    accentGlow: {
-      shadowColor: palette.accent.primary,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.3,
-      shadowRadius: 15,
-      elevation: 5,
-    },
     error: {
       shadowColor: palette.status.error,
       shadowOffset: { width: 0, height: 4 },
@@ -452,20 +451,6 @@ function createShadows(palette: ThemePalette) {
       shadowOpacity: 0.8,
       shadowRadius: 200,
       elevation: 0,
-    },
-    accentGlowLarge: {
-      shadowColor: palette.accent.primary,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 10,
-      elevation: 5,
-    },
-    roseGlow: {
-      shadowColor: palette.rose.brand,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 5,
     },
   };
 }

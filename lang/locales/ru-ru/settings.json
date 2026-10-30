@@ -1,9 +1,17 @@
 {
   "settings": {
     "title": "Настройки",
-    "configuration": "Конфигурация",
+    "groups": {
+      "you": "Вы",
+      "app": "Приложение",
+      "training": "Тренировки",
+      "nutritionHealth": "Питание и здоровье",
+      "ai": "ИИ",
+      "data": "Данные",
+      "about": "О приложении"
+    },
     "basicSettings": {
-      "title": "Основные настройки",
+      "title": "Профиль и единицы",
       "subtitle": "Профиль, единицы измерения и предпочтения",
       "localization": "Локализация",
       "language": "Язык",
@@ -39,7 +47,7 @@
       "records": "записей",
       "migrated": "перенесено",
       "tablesFound": "Найденные таблицы:",
-      "successful": "Миграция успешна!",
+      "successful": "Миграция завершена",
       "failed": "Миграция не удалась",
       "error": "Ошибка: {{error}}",
       "clickToCheck": "Нажмите «Проверить данные миграции», чтобы увидеть, что можно перенести",
@@ -58,9 +66,9 @@
       }
     },
     "advancedSettings": {
-      "title": "Настройки локальных данных",
+      "title": "Резервные копии и данные",
       "subtitle": "Экспорт данных, интеграции, кэш",
-      "dataPortability": "ПЕРЕНОС ДАННЫХ",
+      "dataPortability": "Перенос данных",
       "exportFitnessData": "Экспорт фитнес-данных",
       "exportFitnessDataSubtitle": "Скачать полную резервную копию (JSON)",
       "importFitnessData": "Импорт фитнес-данных",
@@ -84,7 +92,8 @@
         "deleteConfirmMessage": "Вы уверены, что хотите удалить этот файл бэкапа? Это действие нельзя отменить.",
         "restoreConfirmTitle": "Восстановить базу данных?",
         "restoreConfirmMessage": "Это заменит все текущие данные данными из этого бэкапа. Приложение перезагрузится после восстановления.",
-        "restoreSuccess": "База данных успешно восстановлена"
+        "restoreSuccess": "База данных успешно восстановлена",
+        "cycleEncryptionBackup": "Перед шифрованием данных цикла"
       },
       "confirmExport": "Подтвердить экспорт",
       "confirmImport": "Подтвердить импорт",
@@ -111,10 +120,10 @@
       "exportFailedMessage": "При экспорте произошла ошибка. Пожалуйста, попробуйте снова.",
       "importFailedMessage": "При импорте произошла ошибка. Проверьте файл и попробуйте снова.",
       "importSuccessMessage": "Данные успешно импортированы",
-      "privacyDiagnostics": "КОНФИДЕНЦИАЛЬНОСТЬ И ДИАГНОСТИКА",
+      "privacyDiagnostics": "Конфиденциальность и диагностика",
       "anonymousBugReport": "Анонимный отчёт об ошибках",
       "anonymousBugReportSubtitle": "Помогите улучшить Musclog, отправляя журналы сбоев",
-      "reminders": "НАПОМИНАНИЯ",
+      "reminders": "Напоминания",
       "dailyMoodPrompt": "Ежедневный запрос настроения",
       "dailyMoodPromptSubtitle": "Показывать выбор настроения на главном экране, если оно ещё не записано сегодня",
       "dailyWaterPrompt": "Ежедневное напоминание о воде",
@@ -137,7 +146,7 @@
       "showWeightPredictionSubtitle": "Показывать карточку с прогнозируемым весом на экране профиля, если вес не регистрировался 4 дня",
       "intuitiveEatingMode": "Интуитивный режим отслеживания",
       "intuitiveEatingModeSubtitle": "Скрывает отслеженные количества в карточке ежедневного резюме, показывая ?? вместо точных значений",
-      "nutrition": "ПИТАНИЕ",
+      "nutrition": "Питание",
       "disableMinimumCalories": "Отключить минимальный порог калорий",
       "disableMinimumCaloriesSubtitle": "Разрешить цели по калориям ниже стандартных минимумов 1200 / 1500 ккал",
       "useBfForCalculations": "Использовать % жира для расчетов",
@@ -150,17 +159,17 @@
       "disableMinimumCaloriesConfirmMessage": "Это убирает стандартные минимальные ограничения калорий в Musclog и позволяет устанавливать цели вплоть до 0 ккал.",
       "disableMinimumCaloriesWarning": "Опускаться ниже минимальной потребности в калориях не рекомендуется и это может быть небезопасно. Включая это, вы подтверждаете, что действуете под свою ответственность, что Musclog не рекомендует опускаться ниже этих минимумов, и что вы понимаете риски перед продолжением.",
       "disableMinimumCaloriesConfirmButton": "Я Понимаю",
-      "charts": "ГРАФИКИ",
+      "charts": "Графики",
       "chartTooltipLeft": "Подсказки слева",
       "chartTooltipLeftSubtitle": "Показывать подсказки графиков в левом верхнем углу вместо правого",
-      "workouts": "ТРЕНИРОВКИ",
+      "workouts": "Тренировки",
       "progressionModeWeightFirst": "Приоритет прогрессии веса",
       "progressionModeWeightFirstSubtitle": "Увеличивать вес напрямую при высоком RIR, вместо добавления повторений",
       "enableAdvancedDataManagement": "Включить расширенное управление данными",
-      "enableAdvancedDataManagementSubtitle": "Открывает прямой доступ к данным приложения — только для опытных пользователей",
+      "enableAdvancedDataManagementSubtitle": "Открывает прямой доступ к данным приложения (только для опытных пользователей)",
       "enableAdvancedDataManagementConfirmTitle": "Только для опытных пользователей",
-      "enableAdvancedDataManagementConfirmMessage": "Это только для опытных пользователей. Работа с данными здесь может необратимо повредить приложение — используйте только если знаете, что делаете.",
-      "dataManagement": "УПРАВЛЕНИЕ ДАННЫМИ",
+      "enableAdvancedDataManagementConfirmMessage": "Это только для опытных пользователей. Работа с данными здесь может необратимо повредить приложение. Используйте только если знаете, что делаете.",
+      "dataManagement": "Управление данными",
       "manageFoodData": "Управление данными продуктов",
       "manageFoodDataSubtitle": "Просматривайте, редактируйте или удаляйте пользовательские записи о продуктах",
       "manageNutritionLogsData": "Управление журналами питания",
@@ -190,7 +199,7 @@
       "clearAppDataAuthPrompt": "Авторизуйтесь, чтобы удалить все данные приложения",
       "clearAppDataFailedMessage": "Произошла ошибка при очистке данных приложения. Повторите попытку.",
       "openSettingsFailedMessage": "Не удалось открыть настройки приложения. Пожалуйста, откройте их вручную.",
-      "dangerZone": "ОПАСНАЯ ЗОНА",
+      "dangerZone": "Опасная зона",
       "opticalTransfer": "Оптическая передача",
       "opticalTransferSubtitle": "Перенесите данные на другой телефон светом"
     },
@@ -202,20 +211,20 @@
       "title": "Настройки ИИ",
       "save": "Сохранить",
       "saved": "Сохранено",
-      "googleGeminiIntegration": "ИНТЕГРАЦИЯ GOOGLE GEMINI",
-      "googleGeminiApiKey": "API-КЛЮЧ GOOGLE GEMINI",
+      "googleGeminiIntegration": "Интеграция Google Gemini",
+      "googleGeminiApiKey": "API-ключ Google Gemini",
       "apiKeyPlaceholder": "Вставьте API-ключ сюда",
       "apiKeyHelper": "Для Google Gemini нужен API-ключ Gemini. Получите его в Google AI Studio.",
-      "openAiIntegration": "ИНТЕГРАЦИЯ OPENAI",
-      "openAiApiKey": "API-КЛЮЧ OPENAI",
-      "insightsAlerts": "АНАЛИТИКА И ОПОВЕЩЕНИЯ",
+      "openAiIntegration": "Интеграция OpenAI",
+      "openAiApiKey": "API-ключ OpenAI",
+      "insightsAlerts": "Аналитика и оповещения",
       "enableGoogleGemini": "Включить Google Gemini",
       "dailyNutritionInsights": "Ежедневная аналитика питания",
       "dailyNutritionInsightsSubtitle": "Утренняя сводка на основе журналов",
       "workoutInsights": "Аналитика тренировок",
       "workoutInsightsSubtitle": "Анализ после тренировки",
       "enableOpenAi": "Включить OpenAI",
-      "localLlmIntegration": "ИНТЕГРАЦИЯ ЛОКАЛЬНОГО LLM",
+      "localLlmIntegration": "Интеграция локального LLM",
       "enableLocalLlm": "Включить локальный LLM",
       "localLlmBaseUrl": "Базовый URL локального LLM",
       "localLlmModel": "Модель локального LLM",
@@ -230,10 +239,10 @@
       "selectOpenAiModel": "Выбрать модель OpenAI",
       "selectOpenAiModelSubtitle": "Выберите модель для всех функций ИИ",
       "subtitle": "Настройки всего ИИ, используемого в этом приложении",
-      "imageProcessing": "ОБРАБОТКА ИЗОБРАЖЕНИЙ",
+      "imageProcessing": "Обработка изображений",
       "useOcrBeforeAi": "OCR перед отправкой в ИИ",
       "useOcrBeforeAiSubtitle": "Обрабатывать изображения локально с OCR и отправлять текст",
-      "useOcrBeforeAiOnDeviceSubtitle": "Требуется для Apple Intelligence — OCR преобразует изображения в текст перед отправкой.",
+      "useOcrBeforeAiOnDeviceSubtitle": "Требуется для Apple Intelligence. OCR преобразует изображения в текст перед отправкой.",
       "sendFoundationFoodsToLlm": "Отправлять базовые продукты в ИИ",
       "sendFoundationFoodsToLlmSubtitle": "Улучшить подбор ингредиентов с помощью базы данных основных продуктов",
       "getOpenAiKey": "Получить ключ OpenAI",
@@ -254,7 +263,7 @@
       "promptContextGeneral": "Общий",
       "promptContextNutrition": "Питание",
       "promptContextExercise": "Тренировка",
-      "memorySettings": "НАСТРОЙКИ ПАМЯТИ",
+      "memorySettings": "Настройки памяти",
       "useThinkingMode": "Использовать режим размышления",
       "useThinkingModeSubtitle": "Разрешить провайдерам ИИ использовать более глубокое рассуждение, если поддерживается. Это потребляет больше токенов и может увеличить стоимость.",
       "maxAiMemories": "Макс. воспоминаний ИИ",
@@ -278,7 +287,7 @@
       "workoutHistoryDaysNoneDescription": "Не отправлять историю тренировок в ИИ",
       "workoutHistoryDaysOptionDescription": "Отправлять последние {{days}} дней тренировок в ИИ",
       "onDeviceAi": {
-        "sectionTitle": "APPLE INTELLIGENCE",
+        "sectionTitle": "Apple Intelligence",
         "toggle": "Использовать Apple Intelligence",
         "toggleSubtitle": "Обрабатывает запросы к ИИ на устройстве с помощью Apple Foundation Models. API-ключ не нужен.",
         "toggleSubtitleNotReady": "Apple Intelligence недоступна на этом устройстве. Требуется iPhone 15 Pro или новее с iOS 26 и включённой Apple Intelligence.",
@@ -286,7 +295,7 @@
         "foundationFoodsDisabled": "Внедрение базовых продуктов отключено для ИИ на устройстве для экономии памяти."
       },
       "musclogFreeTier": {
-        "sectionTitle": "БЕСПЛАТНЫЙ ТАРИФ MUSCLOG",
+        "sectionTitle": "Бесплатный тариф Musclog",
         "toggle": "Использовать бесплатный LLM Musclog",
         "toggleSubtitle": "Доступ к функциям ИИ без API-ключа. Действует дневной лимит запросов.",
         "activeNote": "Бесплатный тариф активен. Ваши собственные API-ключи не используются."
@@ -295,7 +304,7 @@
       "testingKey": "Проверка…"
     },
     "visualSettings": {
-      "title": "Интерфейс",
+      "title": "Внешний вид и главный экран",
       "subtitle": "Настройка интерфейса приложения",
       "sectionTitle": "Навигационная панель",
       "sectionSubtitle": "Выберите, какие ярлыки отображаются в нижней панели. Главная и Камера всегда закреплены.",
@@ -303,7 +312,7 @@
       "slot2Label": "Слот 2 (правее камеры)",
       "slot3Label": "Слот 3 (крайний правый)",
       "selectItem": "Выберите ярлык для этого слота",
-      "currentlyInSlot": "Сейчас в слоте {{slot}} — поменяются местами",
+      "currentlyInSlot": "Сейчас в слоте {{slot}} (поменяются местами)",
       "navItems": {
         "workouts": "Тренировки",
         "food": "Питание",
@@ -346,7 +355,62 @@
       "restTimer": "Оповещения таймера отдыха",
       "restTimerSubtitle": "Получать уведомление об окончании периода отдыха",
       "workoutDuration": "Предупреждение о длинной тренировке",
-      "workoutDurationSubtitle": "Оповещение, если сессия превышает 5 часов"
+      "workoutDurationSubtitle": "Оповещение, если сессия превышает 5 часов",
+      "restTimerRepeat": "Повторять оповещение об отдыхе",
+      "restTimerRepeatSubtitle": "Напомнить ещё раз через минуту, если я не начал следующий подход",
+      "unfinishedWorkout": "Напоминание о незавершённой тренировке",
+      "unfinishedWorkoutSubtitle": "Напомнить через 45 минут после последнего подхода, если я забыл завершить",
+      "goalAtRisk": "Недельная цель под угрозой",
+      "goalAtRiskSubtitle": "Предупреждать, если недельная цель по тренировкам отстаёт",
+      "weeklyReview": "Недельный обзор",
+      "weeklyReviewSubtitle": "Напоминание, когда недельный обзор готов",
+      "lockScreen": "Детали на экране блокировки",
+      "lockScreenOptions": {
+        "full": "Все детали",
+        "minimal": "Минимум"
+      },
+      "sections": {
+        "session": "Во время тренировок",
+        "plan": "Ваш план тренировок",
+        "reports": "Отчёты и питание",
+        "quiet": "Тихие часы и пауза",
+        "delivery": "Доставка"
+      },
+      "accountability": {
+        "structured": "По плану",
+        "gentle": "Мягко",
+        "flexible": "Гибко"
+      },
+      "accountabilityHints": {
+        "structured": "Напоминать в запланированные дни тренировок.",
+        "gentle": "Напоминать, только когда недельная цель отстаёт.",
+        "flexible": "Никогда не напоминать. Просто показывать, что дальше."
+      },
+      "reminderLead": "Напоминать до тренировки",
+      "leadOnTime": "Вовремя",
+      "leadMinutes": "{{minutes}} мин",
+      "quietHours": "Тихие часы",
+      "quietHoursSubtitle": "Без напоминаний в этот промежуток",
+      "quietExempt": "Оповещения об отдыхе и активная тренировка никогда не отключаются.",
+      "quietFrom": "С",
+      "quietUntil": "До",
+      "pause": "Приостановить напоминания",
+      "pauseOptions": {
+        "off": "Выкл.",
+        "days3": "3 дня",
+        "week": "1 неделя"
+      },
+      "deliveryStatus": "Разрешение: {{permission}} · запланировано: {{pending}}",
+      "permission": {
+        "granted": "разрешено",
+        "denied": "заблокировано",
+        "undetermined": "ещё не запрашивалось",
+        "unsupported": "не поддерживается"
+      },
+      "testAlert": "Отправить тестовое оповещение об отдыхе",
+      "openSystemSettings": "Открыть системные настройки уведомлений",
+      "updateInterval": "Обновлять часы тренировки каждые",
+      "updateIntervalOption": "{{seconds}} с"
     },
     "supportProject": {
       "title": "Поддержать проект"
@@ -355,7 +419,7 @@
     "termsOfService": "Условия использования",
     "privacyPolicy": "Политика конфиденциальности",
     "appBehaviorSettings": {
-      "title": "Настройки приложения",
+      "title": "Настройки учёта",
       "subtitle": "Тренировки, питание и настройки графиков"
     },
     "bleDevices": {
@@ -402,7 +466,7 @@
       "chosenCount": "{{chosen}}/{{max}}",
       "hintOrder": "Они появятся в том порядке, в котором вы их выберете.",
       "hintAtMin": "Оставьте не менее {{min}} на главном экране.",
-      "hintAtMax": "Это максимум — уберите одно, чтобы добавить другое."
+      "hintAtMax": "Это максимум. Уберите одно, чтобы добавить другое."
     },
     "homeSummaryCard": {
       "sectionTitle": "Карточка сводки на главном экране",
@@ -459,8 +523,13 @@
         "kinetic-varia": {
           "label": "Kinetic Varia",
           "description": "Глубокие фиолетовые тона с оранжевыми акцентами"
+        },
+        "kinetic-scope": {
+          "label": "Scope",
+          "description": "Почти чёрные поверхности со сдержанным лаймовым акцентом"
         }
-      }
+      },
+      "iconAppliesLater": "Значок приложения изменится, когда вы выйдете из приложения."
     },
     "workoutSettings": {
       "title": "Настройки тренировок",
@@ -477,6 +546,48 @@
       "email": "Написать в поддержку",
       "emailHint": "Учётная запись не нужна. Версия и устройство добавятся в сообщение.",
       "openFailed": "Не удалось открыть ссылку."
+    },
+    "homeHeatmaps": {
+      "sectionTitle": "Карты активности",
+      "sectionSubtitle": "Показывать календарь вашей недавней активности на главном экране.",
+      "popupTitle": "Карты активности",
+      "popupSubtitle": "Выберите, какие карты показывать",
+      "options": {
+        "none": {
+          "label": "Выключено",
+          "description": "Без карт на главном экране"
+        },
+        "workouts": {
+          "label": "Тренировки",
+          "description": "Дни, когда вы тренировались"
+        },
+        "nutrition": {
+          "label": "Питание",
+          "description": "Дни, когда вы записывали приёмы пищи"
+        },
+        "both": {
+          "label": "Тренировки и питание",
+          "description": "Обе карты"
+        }
+      },
+      "layout": {
+        "popupTitle": "Расположение карт",
+        "popupSubtitle": "Как две карты делят главный экран",
+        "options": {
+          "full": {
+            "label": "Во всю ширину",
+            "description": "Одна над другой"
+          },
+          "side_by_side": {
+            "label": "Рядом",
+            "description": "Две компактные карточки в одном ряду"
+          },
+          "compact": {
+            "label": "Компактно",
+            "description": "Последние 30 дней, по одной тонкой строке"
+          }
+        }
+      }
     }
   }
 }

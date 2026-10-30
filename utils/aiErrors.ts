@@ -37,13 +37,28 @@ export class AiCancelledError extends Error {
 /** Providers where the user supplies the key. Gateway and on-device never become a key error. */
 const USER_KEY_PROVIDERS: ReadonlySet<CoachAIProvider> = new Set(['gemini', 'openai']);
 
-function statusOf(error: any): number | undefined {
-  return error?.status ?? error?.response?.status ?? error?.error?.code ?? undefined;
+/** The fields the provider SDKs put on a failure; every one may be absent. */
+interface SdkErrorShape {
+  name?: unknown;
+  message?: unknown;
+  code?: unknown;
+  status?: unknown;
+  details?: unknown;
+  response?: { status?: unknown };
+  error?: { code?: unknown; message?: unknown; status?: unknown; details?: unknown };
 }
 
-function textOf(error: any): string {
-  const parts: unknown[] = [error?.message, error?.error?.message, error?.error?.status];
-  const details = error?.details ?? error?.error?.details;
+/** Anything can be thrown; read it as the loose shape above (an empty one for a non-object). */
+const asSdkError = (error: unknown): SdkErrorShape =>
+  typeof error === 'object' && error !== null ? (error as SdkErrorShape) : {};
+
+function statusOf(error: SdkErrorShape): unknown {
+  return error.status ?? error.response?.status ?? error.error?.code;
+}
+
+function textOf(error: SdkErrorShape): string {
+  const parts: unknown[] = [error.message, error.error?.message, error.error?.status];
+  const details = error.details ?? error.error?.details;
   if (details) {
     try {
       parts.push(JSON.stringify(details));
@@ -67,9 +82,9 @@ export function isInvalidApiKeyError(error: unknown): boolean {
     return true;
   }
 
-  const e = error as any;
+  const e = asSdkError(error);
   const status = Number(statusOf(e));
-  const code = String(e?.error?.code ?? e?.code ?? '').toLowerCase();
+  const code = String(e.error?.code ?? e.code ?? '').toLowerCase();
   const text = textOf(e);
 
   if (code === 'invalid_api_key') {
@@ -97,13 +112,13 @@ export function isAiTimeoutError(error: unknown): boolean {
     return true;
   }
 
-  const e = error as any;
-  const name = String(e?.name ?? '');
+  const e = asSdkError(error);
+  const name = String(e.name ?? '');
   if (name === 'APIConnectionTimeoutError' || name === 'TimeoutError') {
     return true;
   }
 
-  const message = String(e?.message ?? '').toLowerCase();
+  const message = String(e.message ?? '').toLowerCase();
   return message.includes('request timed out') || message.includes('timed out');
 }
 

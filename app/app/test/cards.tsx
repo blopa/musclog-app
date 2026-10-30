@@ -49,6 +49,7 @@ import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import { WorkoutStatCard } from '@/components/cards/WorkoutStatCard';
 import { WorkoutSummaryStatsCard } from '@/components/cards/WorkoutSummaryStatsCard';
 import { RestTimer } from '@/components/RestTimer';
+import { ListGroup } from '@/components/theme/ListGroup';
 import { UpNextLabel } from '@/components/UpNextLabel';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -62,7 +63,7 @@ export default function CardsTestScreen() {
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}
       <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
-        <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
+        <Text className="flex-1 text-center text-lg font-semibold leading-tight text-text-primary">
           Card Variants
         </Text>
       </View>
@@ -71,7 +72,7 @@ export default function CardsTestScreen() {
         {/* Title Section */}
         <View className="px-6 pb-2 pt-6">
           <Text
-            className="font-extrabold leading-tight tracking-tight text-text-primary"
+            className="font-bold leading-tight text-text-primary"
             style={{ fontSize: theme.typography.fontSize['3xl'] }}
           >
             Card Components
@@ -518,12 +519,14 @@ export default function CardsTestScreen() {
         </TestSection>
 
         <TestSection title="Settings" subtitle="App settings overview">
-          <SettingsCard
-            icon={<Sparkles size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-            title="Settings"
-            subtitle="Manage your app settings."
-            onPress={() => console.log('Settings pressed')}
-          />
+          <ListGroup>
+            <SettingsCard
+              icon={<Sparkles size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title="Settings"
+              subtitle="Manage your app settings."
+              onPress={() => console.log('Settings pressed')}
+            />
+          </ListGroup>
         </TestSection>
 
         <TestSection title="Health Categories" subtitle="Test reusable health category cards">
@@ -639,7 +642,7 @@ export default function CardsTestScreen() {
                 protein: 5,
                 carbs: 45,
                 fat: 1.8,
-                icon: '🍚',
+                iconName: 'utensils-crossed',
               }}
               onAddPress={() => console.log('Add food')}
             />
@@ -652,7 +655,7 @@ export default function CardsTestScreen() {
         >
           <GenericCard variant="flat">
             <View className="p-4">
-              <Text className="text-lg font-bold text-text-primary">Flat</Text>
+              <Text className="text-lg font-semibold text-text-primary">Flat</Text>
               <Text className="mt-2 text-sm text-text-secondary">
                 background.card + an ink/5 hairline, no shadow. The default — use for almost every
                 card.
@@ -662,7 +665,7 @@ export default function CardsTestScreen() {
           <View className="mt-4">
             <GenericCard variant="raised">
               <View className="p-4">
-                <Text className="text-lg font-bold text-text-primary">Raised</Text>
+                <Text className="text-lg font-semibold text-text-primary">Raised</Text>
                 <Text className="mt-2 text-sm text-text-secondary">
                   background.cardElevated + the same hairline + shadows.md. Reserve for the one
                   emphasis card on a screen.
@@ -673,7 +676,7 @@ export default function CardsTestScreen() {
           <View className="mt-4">
             <GenericCard variant="hero">
               <View className="p-4">
-                <Text className="text-lg font-bold text-text-primary">Hero</Text>
+                <Text className="text-lg font-semibold text-text-primary">Hero</Text>
                 <Text className="mt-2 text-sm text-text-secondary">
                   The colorfulCard gradient. Reserved for DailySummaryCard — do not add a second
                   consumer without updating DESIGN.md.
@@ -684,7 +687,7 @@ export default function CardsTestScreen() {
           <View className="mt-4">
             <GenericCard isPressable onPress={() => console.log('Pressed')}>
               <View className="p-4">
-                <Text className="text-lg font-bold text-text-primary">Pressable</Text>
+                <Text className="text-lg font-semibold text-text-primary">Pressable</Text>
                 <Text className="mt-2 text-sm text-text-secondary">
                   Any variant can be pressable; feedback is a scale-down only.
                 </Text>
@@ -694,12 +697,12 @@ export default function CardsTestScreen() {
           <View className="mt-4 flex-row gap-3">
             <GenericCard fill>
               <View className="p-3">
-                <Text className="text-sm font-bold text-text-primary">fill (row 1/2)</Text>
+                <Text className="text-sm font-semibold text-text-primary">fill (row 1/2)</Text>
               </View>
             </GenericCard>
             <GenericCard fill>
               <View className="p-3">
-                <Text className="text-sm font-bold text-text-primary">fill (row 2/2)</Text>
+                <Text className="text-sm font-semibold text-text-primary">fill (row 2/2)</Text>
               </View>
             </GenericCard>
           </View>

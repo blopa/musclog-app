@@ -1,18 +1,18 @@
 {
   "editPersonalInfo": {
-    "title": "Edit Personal Info",
-    "fullName": "Full Name",
+    "title": "Edit personal info",
+    "fullName": "Full name",
     "fullNamePlaceholder": "e.g. Alex Johnson",
-    "emailAddress": "Email Address",
+    "emailAddress": "Email address",
     "emailPlaceholder": "e.g. alex@example.com",
-    "dateOfBirth": "Date of Birth",
+    "dateOfBirth": "Date of birth",
     "dateOfBirthPlaceholder": "MM/DD/YYYY",
     "gender": "Gender",
     "male": "Male",
     "female": "Female",
     "other": "Other",
-    "chooseAvatar": "Choose Avatar",
-    "chooseColor": "Choose Color",
-    "saveChanges": "Save Changes"
+    "chooseAvatar": "Choose avatar",
+    "chooseColor": "Choose color",
+    "saveChanges": "Save changes"
   }
 }

@@ -1,5 +1,4 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { AlertTriangle, ChevronRight, Edit, Search } from 'lucide-react-native';
+import { AlertTriangle, Camera, ChevronRight, Edit, Search } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
@@ -50,32 +49,33 @@ export function FoodNotFoundModal({
               onTryAiScan?.();
               onClose();
             }}
-            className="overflow-hidden rounded-2xl"
+            className="overflow-hidden rounded-card"
           >
-            <LinearGradient
-              colors={theme.colors.gradients.cta}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+            <View
               style={{
+                backgroundColor: theme.colors.accent.primary,
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 16,
                 padding: 16,
               }}
             >
-              <View className="h-12 w-12 items-center justify-center rounded-lg bg-text-always-white/20">
-                <Text className="text-2xl">✨</Text>
+              <View className="h-12 w-12 items-center justify-center rounded-control bg-text-always-white/20">
+                <Camera size={theme.iconSize.xl} color={theme.colors.text.onAccent} />
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-bold text-text-always-white">
+                <Text
+                  className="text-lg font-semibold"
+                  style={{ color: theme.colors.text.onAccent }}
+                >
                   {t('nutrition.tryAICamera')}
                 </Text>
-                <Text className="text-xs text-text-always-white/80">
+                <Text className="text-xs" style={{ color: theme.colors.text.onAccent }}>
                   {t('nutrition.tryAICameraDesc')}
                 </Text>
               </View>
-              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.alwaysWhite} />
-            </LinearGradient>
+              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.onAccent} />
+            </View>
           </Pressable>
         ) : null}
 
@@ -85,13 +85,13 @@ export function FoodNotFoundModal({
             onSearchAgain?.();
             onClose();
           }}
-          className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
+          className="flex-row items-center gap-4 rounded-card border border-border-default bg-bg-overlay p-4"
         >
-          <View className="h-12 w-12 items-center justify-center rounded-lg bg-ink/10">
+          <View className="h-12 w-12 items-center justify-center rounded-control bg-ink/10">
             <Search size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-lg font-bold text-text-primary">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('nutrition.searchAgain')}
             </Text>
             <Text className="text-xs text-text-secondary">{t('nutrition.searchAgainDesc')}</Text>
@@ -105,16 +105,13 @@ export function FoodNotFoundModal({
             onCreateCustom?.();
             onClose();
           }}
-          className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
+          className="flex-row items-center gap-4 rounded-card border border-border-default bg-bg-overlay p-4"
         >
-          <View className="h-12 w-12 items-center justify-center rounded-lg bg-ink/10">
-            <Edit
-              size={theme.iconSize.md}
-              color={theme.colors.gradients.accent?.[0] || theme.colors.status.indigo}
-            />
+          <View className="h-12 w-12 items-center justify-center rounded-control bg-ink/10">
+            <Edit size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
-            <Text className="text-lg font-bold text-text-primary">
+            <Text className="text-lg font-semibold text-text-primary">
               {t('nutrition.createCustom')}
             </Text>
             <Text className="text-xs text-text-secondary">{t('nutrition.createCustomDesc')}</Text>

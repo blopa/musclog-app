@@ -1,4 +1,10 @@
-import { getPaddedYDomain, getTimeSeriesXDomain, getXAxisLabels } from '@/utils/chartUtils';
+import {
+  getPaddedYDomain,
+  getTimeSeriesXDomain,
+  getXAxisLabels,
+  MAX_X_LABELS,
+  X_AXIS_LABEL_WIDTH,
+} from '@/utils/chartUtils';
 
 describe('getXAxisLabels', () => {
   it('returns empty array for empty data', () => {
@@ -24,9 +30,35 @@ describe('getXAxisLabels', () => {
   it('subsamples to MAX_X_LABELS when data is large', () => {
     const data = Array.from({ length: 20 }, (_, i) => ({ x: i * 100 }));
     const labels = getXAxisLabels(data);
-    expect(labels).toHaveLength(8);
+    expect(labels).toHaveLength(MAX_X_LABELS);
     expect(labels[0].positionPercent).toBe(0);
     expect(labels[labels.length - 1].positionPercent).toBe(100);
+  });
+
+  it('keeps neighbouring labels at least one label box apart on a phone-width plot', () => {
+    const plotWidth = 300;
+    const labels = getXAxisLabels(Array.from({ length: 40 }, (_, i) => ({ x: i * 100 })));
+    for (let i = 1; i < labels.length; i++) {
+      const gapPx = ((labels[i].positionPercent - labels[i - 1].positionPercent) / 100) * plotWidth;
+      expect(gapPx).toBeGreaterThan(X_AXIS_LABEL_WIDTH);
+    }
+  });
+
+  it('keeps the gaps between subsampled labels even', () => {
+    // Seven points used to print indices 0, 1, 2, 4, 5, 6: one gap twice the others.
+    const labels = getXAxisLabels(Array.from({ length: 7 }, (_, i) => ({ x: i })));
+    const gaps = labels.slice(1).map((l, i) => l.positionPercent - labels[i].positionPercent);
+    expect(labels[0].positionPercent).toBe(0);
+    expect(labels[labels.length - 1].positionPercent).toBe(100);
+    expect(Math.max(...gaps) / Math.min(...gaps)).toBeLessThanOrEqual(1.5);
+  });
+
+  it('never leaves a gap more than 1.5x another, whatever the point count', () => {
+    for (let n = MAX_X_LABELS + 1; n <= 60; n++) {
+      const labels = getXAxisLabels(Array.from({ length: n }, (_, i) => ({ x: i })));
+      const gaps = labels.slice(1).map((l, i) => l.positionPercent - labels[i].positionPercent);
+      expect(Math.max(...gaps) / Math.min(...gaps)).toBeLessThanOrEqual(1.5 + 1e-9);
+    }
   });
 
   it('uses custom format function', () => {

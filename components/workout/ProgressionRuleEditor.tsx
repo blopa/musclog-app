@@ -20,7 +20,7 @@ import {
   PROGRESSION_RULE_TYPES,
   type ProgressionRule,
   type ProgressionRuleType,
-} from '@/utils/progressionRules';
+} from '@/utils/progressionRuleSchema';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -154,7 +154,7 @@ export function ProgressionRuleFields({
           value.trainingMaxKg == null
         ) {
           return (
-            <View key={field} className="gap-2 rounded-xl bg-bg-overlay p-3">
+            <View key={field} className="gap-2 rounded-control bg-bg-overlay p-3">
               <Text className="text-sm text-text-secondary">{t('progression.tmEstimated')}</Text>
               <Button
                 label={t('progression.enterTm')}
@@ -195,7 +195,7 @@ export function ProgressionRuleFields({
         return (
           <View
             key={type}
-            className={`overflow-hidden rounded-xl border ${isSelected ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'}`}
+            className={`overflow-hidden rounded-control border ${isSelected ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'}`}
           >
             <Pressable
               accessibilityRole="radio"

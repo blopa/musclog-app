@@ -1,6 +1,10 @@
 import { database } from '@/database/database-instance';
+import { KEEP_MEAL_TYPES } from '@/database/models/mealTypeTarget';
 import type NutritionLog from '@/database/models/NutritionLog';
-import { NutritionService } from '@/database/services/NutritionService';
+import {
+  NutritionService,
+  scaleMealNutritionLogsToTotalGrams,
+} from '@/database/services/NutritionService';
 import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
@@ -147,7 +151,23 @@ function captureCreatedRecords() {
   return { created, prepareCreate };
 }
 
-describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
+/**
+ * Gives `log` a `prepareUpdate` that applies the writer's callback to an empty draft, so a
+ * test can tell which fields an update set (present in the draft) from those it left alone.
+ */
+function capturePreparedUpdate(log: NutritionLog) {
+  const draft: Record<string, unknown> = {};
+  (log as unknown as { prepareUpdate: jest.Mock }).prepareUpdate = jest.fn(
+    (callback: (record: Record<string, unknown>) => void) => {
+      callback(draft);
+      return draft;
+    }
+  );
+
+  return draft;
+}
+
+describe('NutritionService.transferNutritionLogs (copy, keeping meals)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -155,13 +175,15 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('keeps each log on its own meal type instead of forcing a single one', async () => {
     const { created } = captureCreatedRecords();
 
-    await NutritionService.copyNutritionLogsPreservingMealType(
+    await NutritionService.transferNutritionLogs(
       [
         mockLog({ id: 'a', type: 'breakfast' }),
         mockLog({ id: 'b', type: 'dinner' }),
         mockLog({ id: 'c', type: 'snack' }),
       ],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(created.map((r) => r.type)).toEqual(['breakfast', 'dinner', 'snack']);
@@ -170,12 +192,14 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('preserves groupId and loggedMealName so grouped meals survive the copy', async () => {
     const { created } = captureCreatedRecords();
 
-    await NutritionService.copyNutritionLogsPreservingMealType(
+    await NutritionService.transferNutritionLogs(
       [
         mockLog({ id: 'a', groupId: 'group-1', loggedMealName: 'Chicken bowl' }),
         mockLog({ id: 'b', groupId: 'group-1', loggedMealName: 'Chicken bowl' }),
       ],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(created.map((r) => r.groupId)).toEqual(['group-1', 'group-1']);
@@ -186,7 +210,12 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
     const { created } = captureCreatedRecords();
     const source = mockLog({ id: 'a' });
 
-    await NutritionService.copyNutritionLogsPreservingMealType([source], new Date(2026, 7, 1));
+    await NutritionService.transferNutritionLogs(
+      [source],
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
+    );
 
     expect(created[0]).toMatchObject({
       loggedFoodNameRaw: source.loggedFoodNameRaw,
@@ -203,9 +232,11 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('does not carry over externalId — a copy is not the same external record', async () => {
     const { created } = captureCreatedRecords();
 
-    await NutritionService.copyNutritionLogsPreservingMealType(
+    await NutritionService.transferNutritionLogs(
       [mockLog({ id: 'a', externalId: 'health-connect-123' })],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(created[0].externalId).toBeUndefined();
@@ -217,7 +248,12 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
     const breakfast = mockLog({ id: 'a', date: Date.UTC(2026, 6, 14, 8, 30), timezone: '+00:00' });
     const dinner = mockLog({ id: 'b', date: Date.UTC(2026, 6, 14, 19, 45), timezone: '+00:00' });
 
-    await NutritionService.copyNutritionLogsPreservingMealType([breakfast, dinner], targetDate);
+    await NutritionService.transferNutritionLogs(
+      [breakfast, dinner],
+      'copy',
+      targetDate,
+      KEEP_MEAL_TYPES
+    );
 
     const [copiedBreakfast, copiedDinner] = created.map((r) => r.date as number);
 
@@ -243,7 +279,12 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
       timezone: '+05:30',
     });
 
-    await NutritionService.copyNutritionLogsPreservingMealType([source], new Date(2026, 7, 1));
+    await NutritionService.transferNutritionLogs(
+      [source],
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
+    );
 
     const copiedWallClock = wallClockDateInTimezone(
       created[0].date as number,
@@ -256,9 +297,11 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('returns the number of logs created and refreshes the widget', async () => {
     captureCreatedRecords();
 
-    const count = await NutritionService.copyNutritionLogsPreservingMealType(
+    const count = await NutritionService.transferNutritionLogs(
       [mockLog({ id: 'a' }), mockLog({ id: 'b' })],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(count).toBe(2);
@@ -268,9 +311,11 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
   it('opens no write and fires no widget event for an empty selection', async () => {
     captureCreatedRecords();
 
-    const count = await NutritionService.copyNutritionLogsPreservingMealType(
+    const count = await NutritionService.transferNutritionLogs(
       [],
-      new Date(2026, 7, 1)
+      'copy',
+      new Date(2026, 7, 1),
+      KEEP_MEAL_TYPES
     );
 
     expect(count).toBe(0);
@@ -510,5 +555,184 @@ describe('NutritionService.logCustomMeal consumedTime', () => {
     expect([consumed.getMonth(), consumed.getDate()]).toEqual([2, 10]);
     expect([consumed.getHours(), consumed.getMinutes()]).toEqual([14, 5]);
     jest.useRealTimers();
+  });
+});
+
+describe('NutritionService.groupNutritionLogs', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('files every log under one group, name and meal type in a single batch', async () => {
+    const logs = [mockLog({ id: 'a', type: 'breakfast' }), mockLog({ id: 'b', type: 'snack' })];
+    const drafts = logs.map(capturePreparedUpdate);
+
+    await NutritionService.groupNutritionLogs(logs, {
+      groupId: 'group-new',
+      mealName: 'Lunch bowl',
+      mealType: 'lunch',
+    });
+
+    expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+    expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    expect(mockDatabase.batch).toHaveBeenCalledWith(...drafts);
+    for (const draft of drafts) {
+      expect(draft).toMatchObject({
+        groupId: 'group-new',
+        loggedMealName: 'Lunch bowl',
+        type: 'lunch',
+      });
+    }
+
+    expect(widgetEvents.emitNutritionWidgetUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves the names and meal type alone when only a group id is given (undo of unpack)', async () => {
+    const log = mockLog({ id: 'a', loggedMealName: 'Chicken bowl' });
+    const draft = capturePreparedUpdate(log);
+
+    await NutritionService.groupNutritionLogs([log], { groupId: 'group-1' });
+
+    expect(draft.groupId).toBe('group-1');
+    expect('loggedMealName' in draft).toBe(false);
+    expect('type' in draft).toBe(false);
+  });
+
+  it('opens no write for an empty selection', async () => {
+    await NutritionService.groupNutritionLogs([], { groupId: 'group-1' });
+
+    expect(mockDatabase.write).not.toHaveBeenCalled();
+  });
+});
+
+describe('NutritionService.ungroupNutritionLogs', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('clears the group id in one batch and keeps the logged meal name', async () => {
+    const logs = [
+      mockLog({ id: 'a', groupId: 'group-1', loggedMealName: 'Chicken bowl' }),
+      mockLog({ id: 'b', groupId: 'group-1', loggedMealName: 'Chicken bowl' }),
+    ];
+    const drafts = logs.map(capturePreparedUpdate);
+
+    await NutritionService.ungroupNutritionLogs(logs);
+
+    expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    for (const draft of drafts) {
+      expect('groupId' in draft).toBe(true);
+      expect(draft.groupId).toBeUndefined();
+      expect('loggedMealName' in draft).toBe(false);
+    }
+
+    expect(widgetEvents.emitNutritionWidgetUpdate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('NutritionService.transferNutritionLogs (into one meal)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('copies every log into the chosen meal at the current time of day on the target day', async () => {
+    const { created } = captureCreatedRecords();
+    const targetDate = new Date(2026, 7, 1);
+
+    await NutritionService.transferNutritionLogs(
+      [mockLog({ id: 'a', type: 'breakfast' }), mockLog({ id: 'b', type: 'dinner' })],
+      'copy',
+      targetDate,
+      'lunch'
+    );
+
+    expect(created.map((r) => r.type)).toEqual(['lunch', 'lunch']);
+    for (const record of created) {
+      expect(utcNormalizedDayKey(record.date as number, record.timezone as string)).toBe(
+        utcDayKeyFromLocalDate(targetDate)
+      );
+    }
+
+    // One shared instant: unlike "keep", the source times are not reproduced.
+    expect(created[0].date).toBe(created[1].date);
+  });
+
+  it('moves every log into the chosen meal, updating the rows in place', async () => {
+    const breakfast = mockLog({ id: 'a', type: 'breakfast' });
+    const dinner = mockLog({ id: 'b', type: 'dinner' });
+    const drafts = [breakfast, dinner].map(capturePreparedUpdate);
+
+    const count = await NutritionService.transferNutritionLogs(
+      [breakfast, dinner],
+      'move',
+      new Date(2026, 7, 1),
+      'snack'
+    );
+
+    expect(count).toBe(2);
+    expect(drafts.map((draft) => draft.type)).toEqual(['snack', 'snack']);
+    expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    expect(widgetEvents.emitNutritionWidgetUpdate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('NutritionService.transferNutritionLogs (move, keeping meals)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('moves each log to the target day at its own time of day, keeping its meal type', async () => {
+    const targetDate = new Date(2026, 7, 1);
+    const breakfast = mockLog({ id: 'a', type: 'breakfast', date: Date.UTC(2026, 6, 14, 8, 30) });
+    const dinner = mockLog({ id: 'b', type: 'dinner', date: Date.UTC(2026, 6, 14, 19, 45) });
+    const [breakfastDraft, dinnerDraft] = [breakfast, dinner].map(capturePreparedUpdate);
+
+    await NutritionService.transferNutritionLogs(
+      [breakfast, dinner],
+      'move',
+      targetDate,
+      KEEP_MEAL_TYPES
+    );
+
+    const targetDayKey = utcDayKeyFromLocalDate(targetDate);
+    for (const [source, draft] of [
+      [breakfast, breakfastDraft],
+      [dinner, dinnerDraft],
+    ] as const) {
+      expect(utcNormalizedDayKey(draft.date as number, draft.timezone as string)).toBe(
+        targetDayKey
+      );
+      expect(
+        wallClockDateInTimezone(draft.date as number, draft.timezone as string).getHours()
+      ).toBe(wallClockDateInTimezone(source.date, source.timezone).getHours());
+      expect(draft.type).toBe(source.type);
+    }
+
+    expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('scaleMealNutritionLogsToTotalGrams', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('scales a per-serving log by the same ratio instead of zeroing it', async () => {
+    const grams = mockLog({ id: 'rice', amount: 100 });
+    const servings = mockLog({ id: 'bar', amount: 2 });
+    (servings as unknown as { snapshotBasis: string }).snapshotBasis = 'per_serving';
+    const [gramsDraft, servingsDraft] = [grams, servings].map(capturePreparedUpdate);
+
+    // Only the rice has a gram weight; doubling the meal doubles the bars too.
+    await scaleMealNutritionLogsToTotalGrams(
+      [
+        { log: grams, gramWeight: 100 },
+        { log: servings, gramWeight: 0 },
+      ],
+      200
+    );
+
+    expect(gramsDraft.amount).toBe(200);
+    expect(servingsDraft.amount).toBe(4);
   });
 });

@@ -1,6 +1,6 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -38,7 +38,7 @@ function ScrollPicker({
   textMutedColor,
   highlightBgColor,
 }: ScrollPickerProps) {
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const [displayIndex, setDisplayIndex] = useState(initialIndex);
 
   useEffect(() => {
@@ -211,8 +211,6 @@ export function TimePickerModal({
                 color: textMuted,
                 fontSize: 11,
                 fontWeight: '600',
-                letterSpacing: 2,
-                textTransform: 'uppercase',
               }}
             >
               {t('timePicker.clearSelection')}
@@ -259,9 +257,7 @@ export function TimePickerModal({
               color: textMuted,
               fontSize: 10,
               fontWeight: '600',
-              letterSpacing: 2.5,
               marginTop: 4,
-              textTransform: 'uppercase',
             }}
           >
             {t('timePicker.selectedStartTime')}
@@ -281,8 +277,6 @@ export function TimePickerModal({
                 color: textMuted,
                 fontSize: 10,
                 fontWeight: '600',
-                letterSpacing: 2,
-                textTransform: 'uppercase',
               }}
             >
               {t('timePicker.hours')}
@@ -294,8 +288,6 @@ export function TimePickerModal({
                 color: textMuted,
                 fontSize: 10,
                 fontWeight: '600',
-                letterSpacing: 2,
-                textTransform: 'uppercase',
               }}
             >
               {t('timePicker.minutes')}
@@ -346,12 +338,10 @@ export function TimePickerModal({
               return (
                 <Pressable key={period} onPress={() => setAmPm(period)} style={{ flex: 1 }}>
                   {isActive ? (
-                    <LinearGradient
-                      colors={[theme.colors.accent.secondary, theme.colors.accent.tertiary]}
-                      end={{ x: 1, y: 0 }}
-                      start={{ x: 0, y: 0 }}
+                    <View
                       style={{
                         alignItems: 'center',
+                        backgroundColor: theme.colors.accent.primary,
                         borderRadius: 9999,
                         height: 44,
                         justifyContent: 'center',
@@ -366,7 +356,7 @@ export function TimePickerModal({
                       >
                         {periodLabel}
                       </Text>
-                    </LinearGradient>
+                    </View>
                   ) : (
                     <View style={{ alignItems: 'center', height: 44, justifyContent: 'center' }}>
                       <Text style={{ color: textMuted, fontSize: 15, fontWeight: '600' }}>

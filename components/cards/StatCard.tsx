@@ -48,8 +48,8 @@ export function StatCard({
           <Icon size={theme.iconSize.sm} color={iconColor} />
         </View>
         <View className="mb-1 flex-row items-baseline gap-1">
-          <Text className="text-3xl font-bold text-text-primary">{value}</Text>
-          {unit ? <Text className="text-lg text-text-secondary">{unit}</Text> : null}
+          <Text className="text-2xl font-bold tabular-nums text-text-primary">{value}</Text>
+          {unit ? <Text className="text-sm text-text-secondary">{unit}</Text> : null}
         </View>
         {change ? (
           <View className="flex-row items-center gap-1">

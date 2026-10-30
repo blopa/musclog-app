@@ -45,7 +45,7 @@ describe('stat strip', () => {
 
   it('owns the divider and the container exactly once', () => {
     expect([...statStrip.matchAll(/\bw-px\b/g)]).toHaveLength(1);
-    expect([...statStrip.matchAll(/\brounded-2xl\b/g)]).toHaveLength(1);
+    expect([...statStrip.matchAll(/\brounded-card\b/g)]).toHaveLength(1);
   });
 
   it('puts the number above its label in every cell', () => {

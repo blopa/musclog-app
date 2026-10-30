@@ -318,7 +318,7 @@ export function CreateEditPlanModal({
                       <Pressable
                         key={option.value}
                         onPress={() => setIcon(option.value)}
-                        className={`h-12 w-12 items-center justify-center rounded-lg ${selected ? 'bg-accent-primary' : 'bg-bg-secondary'}`}
+                        className={`h-12 w-12 items-center justify-center rounded-control ${selected ? 'bg-accent-primary' : 'bg-bg-secondary'}`}
                       >
                         <Icon
                           size={theme.iconSize.md}
@@ -367,7 +367,7 @@ export function CreateEditPlanModal({
                 </Text>
               ) : null}
               {visibleMembers.map((member, index) => (
-                <View key={member.templateId} className="gap-3 rounded-lg bg-bg-card p-4">
+                <View key={member.templateId} className="gap-3 rounded-card bg-bg-card p-4">
                   <View className="flex-row items-center gap-2">
                     <Text className="min-w-0 flex-1 font-semibold text-text-primary">
                       {member.template.name}

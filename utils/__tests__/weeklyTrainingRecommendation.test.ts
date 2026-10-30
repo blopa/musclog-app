@@ -1,7 +1,9 @@
 import {
   consistencyStatus,
   consistencySuggestion,
+  decidedWeeksSinceLighter,
   goalVerdicts,
+  isSelfInitiatedDeload,
   lighterSetCount,
   oneRmStatus,
   recommendTrainingWeek,
@@ -118,6 +120,18 @@ describe('recommendTrainingWeek', () => {
     );
   });
 
+  it('reads an exercise that deloaded on its own as a stall too, for users without 1RM goals', () => {
+    const grinding = { ...base, ratedSets: 8, averageRir: 0.2, goals: [] };
+    // One deload alone is below the repeated-deloads threshold; with grinding it is a fatigue signal.
+    expect(recommendTrainingWeek({ ...grinding, deloadedExercises: 1 })).toEqual({
+      decision: 'lighter',
+      reasons: [{ code: 'lowReserveStalled' }],
+    });
+    expect(
+      recommendTrainingWeek({ ...grinding, averageRir: 2, deloadedExercises: 1 }).decision
+    ).toBe('progress');
+  });
+
   it('suggests a lighter week once the interval has passed', () => {
     expect(recommendTrainingWeek({ ...base, decidedWeeksSinceLighter: 5 }).decision).toBe(
       'progress'
@@ -175,5 +189,58 @@ describe('consistencySuggestion', () => {
   });
   it('stays quiet when the goal is met', () => {
     expect(consistencySuggestion(4, 4, 4)).toBeNull();
+  });
+});
+
+describe('isSelfInitiatedDeload', () => {
+  it('counts only a deload the app made on its own', () => {
+    expect(isSelfInitiatedDeload({ cause: 'deload' })).toBe(true);
+  });
+
+  it('does not count a deload somebody chose: a lighter week or a comeback', () => {
+    expect(isSelfInitiatedDeload({ cause: 'deload', source: 'weekly_review' })).toBe(false);
+    expect(isSelfInitiatedDeload({ cause: 'deload', source: 'comeback' })).toBe(false);
+  });
+
+  it('ignores other causes and missing explanations', () => {
+    expect(isSelfInitiatedDeload({ cause: 'progression' })).toBe(false);
+    expect(isSelfInitiatedDeload(undefined)).toBe(false);
+  });
+});
+
+describe('decidedWeeksSinceLighter', () => {
+  const week = (n: number) => n * 7 * 86_400_000;
+  const row = (n: number, trainingDecision: string | null) => ({
+    periodEnd: week(n),
+    trainingDecision,
+  });
+
+  it('counts decided weeks, newest first, until the last lighter week', () => {
+    const reviews = [row(6, 'progress'), row(5, 'progress'), row(4, 'lighter'), row(3, 'progress')];
+
+    expect(decidedWeeksSinceLighter(reviews)).toBe(2);
+  });
+
+  it('counts a period once and skips undecided ones', () => {
+    const reviews = [row(3, 'progress'), row(3, 'progress'), row(2, null), row(1, 'repeat')];
+
+    expect(decidedWeeksSinceLighter(reviews)).toBe(2);
+  });
+
+  it('treats the start of a comeback as a lighter boundary', () => {
+    const reviews = [
+      row(9, 'progress'),
+      row(8, 'progress'),
+      row(5, 'progress'),
+      row(4, 'progress'),
+    ];
+
+    // Without the boundary the pre-comeback weeks would make four weeks "since lighter".
+    expect(decidedWeeksSinceLighter(reviews)).toBe(4);
+    expect(decidedWeeksSinceLighter(reviews, week(6))).toBe(2);
+  });
+
+  it('is unchanged when there is no comeback', () => {
+    expect(decidedWeeksSinceLighter([row(2, 'progress')], null)).toBe(1);
   });
 });

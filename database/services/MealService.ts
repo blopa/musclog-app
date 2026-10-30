@@ -5,6 +5,7 @@ import { database } from '@/database/database-instance';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
 import NutritionLog from '@/database/models/NutritionLog';
+import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { fetchByIds } from '@/database/queryByIds';
 import { handleError } from '@/utils/handleError';
 
@@ -322,11 +323,29 @@ export class MealService {
   }
 
   /**
-   * Remove food from meal
+   * Remove several foods from their meal in one batch, so a failure part-way cannot leave the
+   * meal half-edited. Ids that are unknown or already removed are ignored.
    */
-  static async removeFoodFromMeal(mealFoodId: string): Promise<void> {
-    const mealFood = await database.get<MealFood>('meal_foods').find(mealFoodId);
-    await mealFood.markAsDeleted();
+  static async removeFoodsFromMeal(mealFoodIds: readonly string[]): Promise<void> {
+    if (mealFoodIds.length === 0) {
+      return;
+    }
+
+    await database.write(async () => {
+      // Read inside the writer: what we retire must be what is live when the batch commits.
+      const mealFoods = await fetchByIds<MealFood>(
+        'meal_foods',
+        'id',
+        mealFoodIds,
+        Q.where('deleted_at', Q.eq(null))
+      );
+      if (mealFoods.length === 0) {
+        return;
+      }
+
+      const now = Date.now();
+      await database.batch(...mealFoods.map((mealFood) => prepareSoftDelete(mealFood, now)));
+    });
   }
 
   /**
@@ -466,10 +485,10 @@ export class MealService {
    * Non-favourite meals ordered by how often they have recently been logged, falling back
    * to newest-first for meals with no logged history.
    *
-   * The only link a nutrition log keeps back to a saved meal is `logged_meal_name`, which
-   * every "log this saved meal" path stamps from `meal.name` (`schema.ts` reserves
-   * `group_id` for this too, but no writer sets it to a meal id — it is a per-log-instance
-   * UUID, so counting by it would match nothing). Matching on the name therefore means a
+   * The link counted here is `logged_meal_name`, which every "log this saved meal" path
+   * stamps from `meal.name`. `group_id` is not usable for it: AI, chat and "Combine into
+   * meal" groups get a fresh UUID, and while logging a saved meal does reuse `meal.id`, that
+   * collapses every logging of the meal into one occurrence. Matching on the name therefore means a
    * renamed meal loses its history and drops to the newest-first tail, which is acceptable
    * for a suggestion ordering. The lookback boundary is a plain instant rather than a
    * calendar-day key for the same reason: an approximate edge cannot change a ranking.

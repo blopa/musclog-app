@@ -1,0 +1,10 @@
+{
+  "widgets": {
+    "refresh": "Open Musclog om te vernieuwen",
+    "smartCamera": "Slimme camera",
+    "cycle": {
+      "day": "Dag",
+      "privateCaption": "Tik om te openen"
+    }
+  }
+}

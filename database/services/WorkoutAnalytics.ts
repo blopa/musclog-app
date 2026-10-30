@@ -5,6 +5,7 @@ import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { fetchMapByIds } from '@/database/queryByIds';
 import {
   toPerformedWorkoutLogSetSnapshots,
   type WorkoutLogSetSnapshot,
@@ -622,33 +623,42 @@ export class WorkoutAnalytics {
     }
 
     const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
-    // Process each workout
-    for (const workout of validWorkouts) {
-      const sets = await this.getEnrichedSetsForWorkout(workout);
+    const setsByWorkout = await Promise.all(
+      validWorkouts.map((workout) => this.getEnrichedSetsForWorkout(workout))
+    );
 
+    // One batched lookup instead of a `find` per set. No `deleted_at` filter: a retired exercise
+    // still counts towards the history it was logged in (as the per-id `find` always did).
+    const exercisesById = await fetchMapByIds<Exercise>(
+      'exercises',
+      'id',
+      setsByWorkout.flatMap((sets) => sets.map((set) => set.exerciseId ?? ''))
+    );
+
+    for (const sets of setsByWorkout) {
       for (const set of sets) {
-        try {
-          const exercise = await database.get<Exercise>('exercises').find(set.exerciseId ?? '');
-          const volume = calculateSetVolume(
-            set.weight ?? 0,
-            set.reps ?? 0,
-            set.repsInReserve,
-            exercise.equipmentType,
-            bodyWeightKg
-          );
-          const muscleGroup = exercise.muscleGroup ?? '';
-
-          if (!muscleGroupVolume.has(muscleGroup)) {
-            muscleGroupVolume.set(muscleGroup, { volume: 0, exercises: new Set() });
-          }
-
-          const groupData = muscleGroupVolume.get(muscleGroup)!;
-          groupData.volume += volume;
-          groupData.exercises.add(set.exerciseId ?? '');
-        } catch (error) {
+        const exercise = exercisesById.get(set.exerciseId ?? '');
+        if (!exercise) {
           // Skip if exercise not found
           continue;
         }
+
+        const volume = calculateSetVolume(
+          set.weight ?? 0,
+          set.reps ?? 0,
+          set.repsInReserve,
+          exercise.equipmentType,
+          bodyWeightKg
+        );
+        const muscleGroup = exercise.muscleGroup ?? '';
+
+        if (!muscleGroupVolume.has(muscleGroup)) {
+          muscleGroupVolume.set(muscleGroup, { volume: 0, exercises: new Set() });
+        }
+
+        const groupData = muscleGroupVolume.get(muscleGroup)!;
+        groupData.volume += volume;
+        groupData.exercises.add(set.exerciseId ?? '');
       }
     }
 

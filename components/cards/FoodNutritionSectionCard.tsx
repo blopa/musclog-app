@@ -202,7 +202,7 @@ export function FoodNutritionSectionCard({
 
       {showIncompleteWarning ? (
         <View
-          className="mt-3 flex-row items-center gap-2 rounded-xl border px-3 py-2"
+          className="mt-3 flex-row items-center gap-2 rounded-control border px-3 py-2"
           style={{
             borderColor: theme.colors.status.warning50,
             backgroundColor: theme.colors.status.warning10,
@@ -295,8 +295,8 @@ export function FoodNutritionSectionCard({
           ) : null}
 
           {showAdditionalNutrition ? (
-            <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
-              <Text className="mb-3 text-sm font-bold uppercase tracking-wider text-text-secondary">
+            <View className="mt-4 rounded-card border border-border-light bg-bg-overlay p-4">
+              <Text className="mb-3 text-sm font-semibold text-text-secondary">
                 {t('food.foodDetails.additionalNutrition')}
               </Text>
               <View className="gap-2">
@@ -441,7 +441,7 @@ export function FoodNutritionSectionCard({
               </View>
             </View>
           ) : showLoadingOnly ? (
-            <View className="mt-4 rounded-2xl border border-border-light bg-bg-overlay p-4">
+            <View className="mt-4 rounded-card border border-border-light bg-bg-overlay p-4">
               <View className="flex-row items-center justify-center gap-2">
                 <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                 <Text className="text-xs text-text-secondary">

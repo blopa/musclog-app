@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
 import { ExerciseTransitionScreen } from '@/components/ExerciseTransitionScreen';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { database } from '@/database';
@@ -242,13 +243,15 @@ export default function NewExerciseTransitionScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      <ExerciseTransitionScreen
-        totalTime={totalTimeFormatted}
-        completedExercise={completedExerciseName}
-        completedMessage={t('exerciseTransition.completedMessage')}
-        nextExercise={nextExercise}
-        onStartNextExercise={handleStartNextExercise}
-      />
+      <AreaLockGate area="workout">
+        <ExerciseTransitionScreen
+          totalTime={totalTimeFormatted}
+          completedExercise={completedExerciseName}
+          completedMessage={t('exerciseTransition.completedMessage')}
+          nextExercise={nextExercise}
+          onStartNextExercise={handleStartNextExercise}
+        />
+      </AreaLockGate>
     </MasterLayout>
   );
 }

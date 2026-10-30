@@ -30,7 +30,6 @@ export function WorkoutOptionsModal({
           {
             icon: Plus,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('freeTraining.addExercise.title'),
             description: t('freeTraining.addExercise.menuDescription'),
             onPress: () => onAddExercise(),
@@ -40,7 +39,6 @@ export function WorkoutOptionsModal({
     {
       icon: List,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('workoutOptions.previewWorkout'),
       description: t('workoutOptions.previewWorkoutDesc'),
       onPress: () => onPreviewWorkout?.(),
@@ -50,7 +48,6 @@ export function WorkoutOptionsModal({
           {
             icon: Settings,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('workoutOptions.workoutSettings'),
             description: t('workoutOptions.workoutSettingsDesc'),
             onPress: () => onWorkoutSettings?.(),
@@ -60,7 +57,6 @@ export function WorkoutOptionsModal({
     {
       icon: Square,
       iconColor: theme.colors.status.error,
-      iconBgColor: theme.colors.status.error20,
       title: t('workoutOptions.endWorkout'),
       description: t('workoutOptions.endWorkoutDesc'),
       titleColor: theme.colors.status.error,

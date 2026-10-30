@@ -3,27 +3,24 @@ import { Text, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
-import { GradientText } from './GradientText';
-
 export function RestOverTitle() {
   const theme = useTheme();
   const { t } = useTranslation();
   return (
     <View className="mx-auto max-w-xs gap-3">
       <View className="flex-row flex-wrap items-center justify-center">
-        <Text className="text-4xl font-extrabold leading-tight tracking-tight text-text-primary">
+        <Text className="text-4xl font-bold leading-tight text-text-primary">
           {t('restOver.restTimeIs')}{' '}
         </Text>
-        <GradientText
-          colors={theme.colors.gradients.restOverTitle}
+        <Text
           style={{
+            color: theme.colors.text.primary,
             fontSize: theme.typography.fontSize['4xl'],
-            fontWeight: theme.typography.fontWeight.extrabold,
-            letterSpacing: theme.typography.letterSpacing.tight,
+            fontWeight: theme.typography.fontWeight.bold,
           }}
         >
           {t('restOver.over')}
-        </GradientText>
+        </Text>
       </View>
       <Text className="text-center text-lg font-medium text-ink/70">{t('restOver.timeToGo')}</Text>
     </View>

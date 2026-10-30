@@ -554,9 +554,7 @@ export function CreateMealModal({
           defaultPortionName: nutritionBasis === 'per_recipe' ? null : defaultPortionName.trim(),
           servingGrams: nutritionBasis === 'per_gram' ? Math.max(1, servingGrams) : null,
         });
-        for (const mealFoodId of removedMealFoodIdsRef.current) {
-          await MealService.removeFoodFromMeal(mealFoodId);
-        }
+        await MealService.removeFoodsFromMeal(removedMealFoodIdsRef.current);
 
         const newIngredients = ingredients.filter((ing) => !ing.mealFoodId);
         for (const ing of newIngredients) {
@@ -734,7 +732,7 @@ export function CreateMealModal({
                 {t('common.photo')}
               </Text>
               {imageUrl ? (
-                <View className="relative h-48 w-full overflow-hidden rounded-2xl">
+                <View className="relative h-48 w-full overflow-hidden rounded-card">
                   <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
                   <View className="absolute bottom-2 right-2 flex-row gap-2">
                     <Pressable
@@ -772,7 +770,7 @@ export function CreateMealModal({
               ) : (
                 <Pressable
                   onPress={handlePickImage}
-                  className="h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-ink/10 bg-ink/5"
+                  className="h-32 w-full flex-col items-center justify-center rounded-card border-2 border-dashed border-ink/10 bg-ink/5"
                 >
                   <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
                   <Text className="mt-2 text-sm text-text-tertiary">
@@ -879,8 +877,6 @@ export function CreateMealModal({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
               }}
             >
               {t('food.createMeal.ingredients', { count: ingredients.length })}
@@ -997,7 +993,6 @@ export function CreateMealModal({
               size="sm"
               width="full"
               icon={Plus}
-              iconBgColor={theme.colors.background.secondaryDark}
               label={
                 isQuickTrack
                   ? t('food.quickTrackMeal.addIngredient')
@@ -1183,7 +1178,6 @@ export function CreateMealModal({
             {
               icon: Trash2,
               iconColor: theme.colors.status.error,
-              iconBgColor: theme.colors.status.error20,
               title: t('food.meals.manageMealData.deleteMeal'),
               description: t('food.meals.manageMealData.deleteMealDesc'),
               titleColor: theme.colors.status.error,

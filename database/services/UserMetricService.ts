@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import convert from 'convert';
+import convert, { type Unit } from 'convert';
 import { Platform } from 'react-native';
 
 import { REPAIR_DESCRIPTORS } from '@/constants/database';
@@ -27,21 +27,40 @@ const MAX_KEY_BELOW_DATE_MS = MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
 
 export class UserMetricService {
   /**
-   * Latest user body weight in kg for volume (bodyweight exercises). Returns 0 if unknown.
+   * Latest user body weight in kg, or null when none is on file.
    */
-  static async getUserBodyWeightKgForVolume(): Promise<number> {
+  static async getLatestWeightKg(): Promise<number | null> {
     const weightMetric = await UserMetricService.getLatest('weight');
     if (!weightMetric) {
-      return 0;
+      return null;
     }
 
     const decrypted = await weightMetric.getDecrypted();
-    let kg = decrypted.value;
-    if (decrypted.unit === 'lbs') {
-      kg = convert(decrypted.value, 'lb').to('kg') as number;
+    return decrypted.unit === 'lbs'
+      ? (convert(decrypted.value, 'lb').to('kg') as number)
+      : decrypted.value;
+  }
+
+  /**
+   * Latest user height in cm, or null when none is on file.
+   */
+  static async getLatestHeightCm(): Promise<number | null> {
+    const heightMetric = await UserMetricService.getLatest('height');
+    if (!heightMetric) {
+      return null;
     }
 
-    return kg;
+    const { value, unit } = await heightMetric.getDecrypted();
+    return unit === 'in' || unit === 'ft'
+      ? (convert(value, unit as Unit).to('cm') as number)
+      : value;
+  }
+
+  /**
+   * Latest user body weight in kg for volume (bodyweight exercises). Returns 0 if unknown.
+   */
+  static async getUserBodyWeightKgForVolume(): Promise<number> {
+    return (await UserMetricService.getLatestWeightKg()) ?? 0;
   }
 
   /**

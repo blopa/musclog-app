@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
@@ -15,6 +16,8 @@ import {
   MIN_REST_SECONDS,
   REST_SECONDS_STEP,
 } from '@/constants/restTimer';
+import { SETTINGS } from '@/constants/settingDefinitions';
+import { REST_HEADS_UP_OPTIONS, type RestHeadsUpSeconds } from '@/constants/settings';
 import type ExerciseRestriction from '@/database/models/ExerciseRestriction';
 import { ExerciseRestrictionService } from '@/database/services/ExerciseRestrictionService';
 import { ExerciseService } from '@/database/services/ExerciseService';
@@ -79,7 +82,7 @@ function RestrictionRow({ row }: { row: ExerciseRestriction }) {
 
   return (
     <View
-      className="flex-row items-center justify-between gap-3 rounded-lg px-4 py-3"
+      className="flex-row items-center justify-between gap-3 rounded-control px-4 py-3"
       style={{ backgroundColor: theme.colors.background.card, opacity: active ? 1 : 0.6 }}
     >
       <View className="flex-1">
@@ -113,8 +116,16 @@ function RestrictionRow({ row }: { row: ExerciseRestriction }) {
 export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { units, workoutAutonomy, autoStartRestTimer, restTimerHaptics, defaultRestSeconds } =
-    useSettings();
+  const {
+    units,
+    workoutAutonomy,
+    autoStartRestTimer,
+    restTimerHaptics,
+    restAlertSound,
+    restHapticStrength,
+    restHeadsUpSeconds,
+    defaultRestSeconds,
+  } = useSettings();
   const { locale } = useFormatAppNumber();
   const { gym: activeGym, gyms } = useActiveGym();
   const { rows: restrictionRows } = useExerciseRestrictions();
@@ -130,7 +141,7 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
 
   const sectionHeader = (title: string, subtitle: string) => (
     <View className="gap-1">
-      <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
+      <Text className="text-lg font-semibold" style={{ color: theme.colors.text.primary }}>
         {title}
       </Text>
       <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
@@ -155,7 +166,7 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
                 subtitle: t('workoutSettings.autonomy.suggestHint'),
                 value: workoutAutonomy === 'suggest',
                 onValueChange: (value) =>
-                  void SettingsService.setWorkoutAutonomy(value ? 'suggest' : 'manual'),
+                  void SettingsService.set(SETTINGS.workoutAutonomy, value ? 'suggest' : 'manual'),
               },
             ]}
           />
@@ -173,29 +184,79 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
                 label: t('workoutSettings.restTimer.autoStart'),
                 subtitle: t('workoutSettings.restTimer.autoStartHint'),
                 value: autoStartRestTimer,
-                onValueChange: (value) => void SettingsService.setAutoStartRestTimer(value),
+                onValueChange: (value) =>
+                  void SettingsService.set(SETTINGS.autoStartRestTimer, value),
               },
               {
                 key: 'haptics',
                 label: t('workoutSettings.restTimer.haptics'),
                 subtitle: t('workoutSettings.restTimer.hapticsHint'),
                 value: restTimerHaptics,
-                onValueChange: (value) => void SettingsService.setRestTimerHaptics(value),
+                onValueChange: (value) =>
+                  void SettingsService.set(SETTINGS.restTimerHaptics, value),
+              },
+              {
+                key: 'strongHaptics',
+                label: t('workoutSettings.restTimer.strongHaptics'),
+                subtitle: t('workoutSettings.restTimer.strongHapticsHint'),
+                value: restHapticStrength === 'strong',
+                disabled: !restTimerHaptics,
+                onValueChange: (value) =>
+                  void SettingsService.set(
+                    SETTINGS.restHapticStrength,
+                    value ? 'strong' : 'standard'
+                  ),
+              },
+              {
+                key: 'alertSound',
+                label: t('workoutSettings.restTimer.alertSound'),
+                subtitle: t('workoutSettings.restTimer.alertSoundHint'),
+                value: restAlertSound === 'on',
+                onValueChange: (value) =>
+                  void SettingsService.set(SETTINGS.restAlertSound, value ? 'on' : 'off'),
               },
             ]}
           />
+          <View className="gap-2">
+            <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+              {t('workoutSettings.restTimer.headsUp')}
+            </Text>
+            <SegmentedControl
+              variant="pill"
+              fullWidth
+              value={String(restHeadsUpSeconds)}
+              onValueChange={(value) =>
+                void SettingsService.set(
+                  SETTINGS.restHeadsUpSeconds,
+                  Number(value) as RestHeadsUpSeconds
+                )
+              }
+              options={REST_HEADS_UP_OPTIONS.map((seconds) => ({
+                value: String(seconds),
+                label:
+                  seconds === 0
+                    ? t('workoutSettings.restTimer.headsUpOff')
+                    : t('workoutSettings.restTimer.headsUpSeconds', { seconds }),
+              }))}
+            />
+            <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+              {t('workoutSettings.restTimer.headsUpHint')}
+            </Text>
+          </View>
           <StepperInput
             label={t('workoutSettings.restTimer.defaultRest')}
             value={defaultRestSeconds ?? DEFAULT_REST_SECONDS}
             maxFractionDigits={0}
             unit={t('workoutSettings.restTimer.seconds')}
             onIncrement={() =>
-              void SettingsService.setDefaultRestSeconds(
+              void SettingsService.set(
+                SETTINGS.defaultRestSeconds,
                 Math.min(MAX_REST_SECONDS, defaultRestSeconds + REST_SECONDS_STEP)
               )
             }
             onDecrement={() =>
-              void SettingsService.setDefaultRestSeconds(
+              void SettingsService.set(
+                SETTINGS.defaultRestSeconds,
                 Math.max(MIN_REST_SECONDS, defaultRestSeconds - REST_SECONDS_STEP)
               )
             }
@@ -236,7 +297,7 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
                   <View className="gap-3 p-4">
                     <View className="flex-row items-center justify-between gap-3">
                       <Text
-                        className="flex-1 text-lg font-bold"
+                        className="flex-1 text-lg font-semibold"
                         style={{ color: theme.colors.text.primary }}
                         numberOfLines={1}
                       >
@@ -244,11 +305,11 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
                       </Text>
                       {isActive ? (
                         <View
-                          className="rounded-full px-3 py-1"
+                          className="rounded-tag px-3 py-1"
                           style={{ backgroundColor: theme.colors.accent.primary20 }}
                         >
                           <Text
-                            className="text-xs font-bold"
+                            className="text-xs font-semibold"
                             style={{ color: theme.colors.accent.primary }}
                           >
                             {t('workoutSettings.gyms.active')}

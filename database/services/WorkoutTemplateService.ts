@@ -19,13 +19,14 @@ import { fetchByIds } from '@/database/queryByIds';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
+import { distributeWeekDays } from '@/utils/comeback/comebackSchedule';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { handleError } from '@/utils/handleError';
 import {
   parseProgressionRule,
   type ProgressionRule,
   serializeProgressionRule,
-} from '@/utils/progressionRules';
+} from '@/utils/progressionRuleSchema';
 import { roundWeightForUnits } from '@/utils/unitConversion';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
@@ -942,7 +943,16 @@ export class WorkoutTemplateService {
    * Each day becomes a separate workout template
    */
   static async createWorkoutsFromJsonTemplate(
-    rawTemplate: RawWorkoutTemplate
+    rawTemplate: RawWorkoutTemplate,
+    options: {
+      /**
+       * `'weekly'` pins the workouts to `weekDays` (alternating A/B) so the plan's reminders and the
+       * calendar fire on those days. Omitted, the plan rotates through its workouts with no weekdays
+       * — what the program catalogue and the first-workout screen have always done.
+       */
+      cycleType?: 'weekly';
+      weekDays?: number[];
+    } = {}
   ): Promise<{ plan: WorkoutPlan | null; templates: WorkoutTemplate[] }> {
     const theme = await getTheme();
     // Validate that exercises is an array
@@ -1116,15 +1126,26 @@ export class WorkoutTemplateService {
       return { plan: null, templates: [] };
     }
 
+    const weekly = options.cycleType === 'weekly' && (options.weekDays?.length ?? 0) > 0;
+    let inputs = planTemplates;
+    if (weekly) {
+      const assigned = distributeWeekDays(planTemplates.length, options.weekDays ?? []);
+      // A workout with no weekday would never be scheduled in a weekly plan, so it is left out.
+      inputs = planTemplates
+        .map((input, index) => ({ ...input, weekDays: assigned[index] }))
+        .filter((input) => input.weekDays.length > 0)
+        .map((input, index) => ({ ...input, position: index }));
+    }
+
     return this.createPlanWithTemplates(
       {
         name: rawTemplate.title,
         description: rawTemplate.description,
         difficulty: rawTemplate.difficulty,
         icon: rawTemplate.icon,
-        cycleType: 'rotating',
+        cycleType: weekly ? 'weekly' : 'rotating',
       },
-      planTemplates
+      inputs
     );
   }
 

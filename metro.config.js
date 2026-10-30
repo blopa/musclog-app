@@ -25,6 +25,15 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     };
   }
 
+  // Mermaid is imported dynamically by the blog post route (web only), but Metro resolves that
+  // `import()` statically on native too. Stub it so the diagram library stays out of the app bundle.
+  if (platform !== 'web' && (moduleName === 'mermaid' || moduleName.startsWith('mermaid/'))) {
+    return {
+      filePath: path.resolve(__dirname, 'mermaid-stub.js'),
+      type: 'sourceFile',
+    };
+  }
+
   // VisionCamera throws on import under web. See vision-camera-web-stub.js.
   if (platform === 'web' && moduleName === 'react-native-vision-camera') {
     return {

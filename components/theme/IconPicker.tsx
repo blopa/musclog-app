@@ -55,7 +55,7 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
       {label ? <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text> : null}
       <Pressable
         onPress={() => setModalVisible(true)}
-        className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
+        className="overflow-hidden rounded-control border border-border-default bg-bg-overlay active:opacity-70"
       >
         <View className="flex-row items-center justify-between px-4 py-3">
           <View className="min-w-0 flex-1 flex-row items-center gap-3">
@@ -97,7 +97,7 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
                     setModalVisible(false);
                   }}
                   {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
-                  className={`h-14 w-14 items-center justify-center rounded-lg border ${
+                  className={`h-14 w-14 items-center justify-center rounded-control border ${
                     isSelected
                       ? 'border-accent-primary bg-accent-primary/10'
                       : 'border-border-default bg-bg-card'

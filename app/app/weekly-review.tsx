@@ -6,6 +6,11 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import {
+  ComebackDeficitOffer,
+  isDeficitOfferDue,
+} from '@/components/comeback/ComebackDeficitOffer';
+import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
 import AddUserMetricEntryModal from '@/components/modals/AddUserMetricEntryModal';
 import { CheckinDetailsModal } from '@/components/modals/CheckinDetailsModal';
@@ -15,35 +20,38 @@ import { NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
 import { ListRow } from '@/components/theme/ListRow';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TextButton } from '@/components/theme/TextButton';
-import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { WeekdayChoiceChips } from '@/components/WeekdayChoiceChips';
-import {
-  MACRO_FIELDS,
-  MACRO_LABEL_KEYS,
-  NutritionReviewSection,
-} from '@/components/weeklyReview/NutritionReviewSection';
+import { NutritionReviewSection } from '@/components/weeklyReview/NutritionReviewSection';
+import { TargetsEditorSheet } from '@/components/weeklyReview/TargetsEditorSheet';
 import { historyLabelKeys } from '@/components/weeklyReview/trainingDecisionCopy';
 import { TrainingReviewSection } from '@/components/weeklyReview/TrainingReviewSection';
 import { WeeklyReviewWelcome } from '@/components/weeklyReview/WeeklyReviewWelcome';
+import { SETTINGS } from '@/constants/settingDefinitions';
+import { ComebackService } from '@/database/services/ComebackService';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { type NutritionTargets } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
+import { useComebackState } from '@/hooks/useComebackState';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
-import { NotificationService } from '@/services/NotificationService';
+import { NutritionNotificationService } from '@/services/NutritionNotificationService';
 import { formatLocalCalendarDayIso } from '@/utils/calendarDate';
-import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
+import type { ComebackFeel } from '@/utils/comeback/comebackState';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 import type { TrainingDecision } from '@/utils/trainingWeekDecision';
 import { hasWeeklyActivity, shouldShowWeeklyReviewWelcome } from '@/utils/weeklyReviewEmptyState';
 
 /** Old check-ins shown before "Show all": the history should not bury everything above it. */
 const LEGACY_HISTORY_PREVIEW = 4;
+
+/** The review is training AND nutrition, so either area's lock holds the whole screen. */
+const WEEKLY_REVIEW_LOCK_AREAS = ['workout', 'nutrition'] as const;
 
 /**
  * The one sheet or modal open over the review. One value instead of a flag per sheet: two of them
@@ -73,6 +81,7 @@ export default function WeeklyReviewScreen() {
   const { data, legacy, loadError, reload } = useWeeklyReviewOverview(selectedReview, requestedDay);
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
+  const comeback = useComebackState();
   const [panel, setPanel] = useState<ReviewPanel | null>(
     params.checkinId ? { kind: 'legacyCheckin', id: params.checkinId } : null
   );
@@ -82,12 +91,13 @@ export default function WeeklyReviewScreen() {
   /** `null` until read, so the welcome cannot flash for someone who already dismissed it. */
   const [welcomeSeen, setWelcomeSeen] = useState<boolean | null>(null);
   useEffect(() => {
-    SettingsService.getNotificationsWeeklyReview().then(setReminder);
-    SettingsService.getWeeklyReviewWelcomeSeen()
+    SettingsService.get(SETTINGS.notificationsWeeklyReview)
+      .then(setReminder)
+      .catch(() => setReminder(false));
+    SettingsService.get(SETTINGS.weeklyReviewWelcomeSeen)
       .then(setWelcomeSeen)
       .catch(() => setWelcomeSeen(true));
   }, []);
-  const [draft, setDraft] = useState<Record<string, string>>({});
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formatDate = (value: number) =>
     new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(value);
@@ -113,23 +123,48 @@ export default function WeeklyReviewScreen() {
     }
   };
 
-  const decide = (decision: 'apply' | 'keep', edited?: NutritionTargets) =>
-    data &&
-    run(
+  /** Applies the recommendation (or the user's edit of it); only possible when there is one. */
+  const apply = (edited?: NutritionTargets) => {
+    const goal = data?.goal;
+    const recommendation = data?.nutrition;
+    if (!data || !goal || !recommendation) {
+      return;
+    }
+
+    void run(
       () =>
         WeeklyReviewService.decide({
           period: data.period,
-          goalId: data.goal?.id,
+          goalId: goal.id,
           section: 'nutrition',
-          decision,
-          recommendation: data.nutrition ?? undefined,
-          accepted:
-            decision === 'apply'
-              ? (edited ?? data.nutrition?.targets)
-              : (data.current ?? undefined),
+          decision: 'apply',
+          recommendation,
+          accepted: edited ?? recommendation.targets,
         }),
       closePanel
     );
+  };
+
+  /** Keeps the current targets: the review is closed and nothing changes. */
+  const keep = () => {
+    const goal = data?.goal;
+    if (!data || !goal) {
+      return;
+    }
+
+    void run(
+      () =>
+        WeeklyReviewService.decide({
+          period: data.period,
+          goalId: goal.id,
+          section: 'nutrition',
+          decision: 'keep',
+          recommendation: data.nutrition ?? undefined,
+          accepted: data.current ?? undefined,
+        }),
+      closePanel
+    );
+  };
 
   const reviewTraining = (decision: TrainingDecision) =>
     data &&
@@ -141,6 +176,24 @@ export default function WeeklyReviewScreen() {
         training: { decision, ...data.training.proposal },
       })
     );
+
+  /** Decision first (it clears the review badge), then the feel that shapes the ramp. */
+  const answerComebackCheckin = (week: 2 | 4, feel: ComebackFeel) =>
+    data &&
+    run(async () => {
+      await WeeklyReviewService.decide({
+        period: data.period,
+        goalId: data.goal?.id,
+        section: 'training',
+        training: {
+          decision: 'progress',
+          recommended: 'progress',
+          reasons: [{ code: 'comeback' }],
+          goals: [],
+        },
+      });
+      await ComebackService.answerCheckpoint(week, feel);
+    });
 
   const changeConsistencyGoal = (sessionsPerWeek: number) =>
     run(() =>
@@ -157,8 +210,8 @@ export default function WeeklyReviewScreen() {
   const changeWeekday = async (day: number) => {
     setError(false);
     try {
-      await SettingsService.setReviewWeekday(day);
-      await NotificationService.scheduleWeeklyReviewNotification();
+      await SettingsService.set(SETTINGS.reviewWeekday, day);
+      await NutritionNotificationService.scheduleWeeklyReviewNotification();
       await reload();
     } catch {
       setError(true);
@@ -168,8 +221,8 @@ export default function WeeklyReviewScreen() {
   const toggleReminder = async (value: boolean) => {
     setReminder(value);
     try {
-      await SettingsService.setNotificationsWeeklyReview(value);
-      await NotificationService.scheduleWeeklyReviewNotification();
+      await SettingsService.set(SETTINGS.notificationsWeeklyReview, value);
+      await NutritionNotificationService.scheduleWeeklyReviewNotification();
     } catch {
       setReminder(!value);
       setError(true);
@@ -177,41 +230,31 @@ export default function WeeklyReviewScreen() {
   };
 
   const openEditor = () => {
-    if (!data?.nutrition) {
-      return;
+    if (data?.nutrition) {
+      setError(false);
+      setPanel({ kind: 'editTargets' });
     }
-
-    setDraft(
-      Object.fromEntries(
-        MACRO_FIELDS.map((field) => [
-          field,
-          new Intl.NumberFormat(locale, { useGrouping: false, maximumFractionDigits: 1 }).format(
-            data.nutrition!.targets[field]
-          ),
-        ])
-      )
-    );
-    setPanel({ kind: 'editTargets' });
   };
 
-  const editedTargets = () =>
-    Object.fromEntries(
-      MACRO_FIELDS.map((field) => [
-        field,
-        parseLocalizedDecimalString(draft[field] ?? '', getDecimalSeparator(locale)),
-      ])
-    ) as NutritionTargets;
-
-  const progressDone = [
-    !!data?.training.reviewedAt || !data?.activity.everWorkout,
-    !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
+  /** Where each half of the review stands; a status line, not a control. */
+  const progress = [
+    {
+      key: 'training',
+      label: t('weeklyReview.training'),
+      done: !!data?.training.reviewedAt || !data?.activity.everWorkout,
+    },
+    {
+      key: 'nutrition',
+      label: t('weeklyReview.nutrition'),
+      done: !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
+    },
   ];
 
   const viewingLatest = !selectedReview && !requestedDay;
   const reviewable = !!data && hasWeeklyActivity(data.activity);
   const dismissWelcome = () => {
     setWelcomeSeen(true);
-    SettingsService.setWeeklyReviewWelcomeSeen(true).catch(() => {});
+    SettingsService.set(SETTINGS.weeklyReviewWelcomeSeen, true).catch(() => {});
   };
 
   /** The sheet or modal for the open panel; `null` when its data has gone away underneath it. */
@@ -242,50 +285,15 @@ export default function WeeklyReviewScreen() {
           />
         );
       case 'editTargets':
-        return (
-          <BottomPopUp
-            visible
-            onClose={() => {
-              if (!busy) {
-                closePanel();
-              }
-            }}
-            title={t('weeklyReview.edit')}
-            footer={
-              <View className="gap-3">
-                <Button
-                  label={t('weeklyReview.applyTomorrow')}
-                  disabled={busy}
-                  onPress={() => decide('apply', editedTargets())}
-                />
-                <Button
-                  label={t('common.cancel')}
-                  variant="outline"
-                  disabled={busy}
-                  onPress={closePanel}
-                />
-              </View>
-            }
-          >
-            <View className="gap-3 pb-4">
-              {MACRO_FIELDS.map((field) => (
-                <TextInput
-                  key={field}
-                  label={t(MACRO_LABEL_KEYS[field])}
-                  value={draft[field] ?? ''}
-                  onChangeText={(value) => setDraft({ ...draft, [field]: value })}
-                  inputMode="decimal"
-                  keyboardType="numeric"
-                />
-              ))}
-              {error ? (
-                <Text accessibilityRole="alert" className="text-status-error">
-                  {t('weeklyReview.error')}
-                </Text>
-              ) : null}
-            </View>
-          </BottomPopUp>
-        );
+        return data?.nutrition ? (
+          <TargetsEditorSheet
+            initial={data.nutrition.targets}
+            busy={busy}
+            saveFailed={error}
+            onApply={apply}
+            onClose={closePanel}
+          />
+        ) : null;
       case 'logWeight':
         return (
           <AddUserMetricEntryModal
@@ -339,186 +347,202 @@ export default function WeeklyReviewScreen() {
 
   return (
     <MasterLayout>
-      <KeyboardAwareScrollView
-        bottomOffset={16}
-        contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View className="gap-5" testID="weekly-review">
-          <View className="gap-1">
-            <Text className="text-3xl font-bold text-text-primary">{t('weeklyReview.title')}</Text>
+      <ScreenHeader
+        title={t('weeklyReview.title')}
+        destination="checkin"
+        lockArea={WEEKLY_REVIEW_LOCK_AREAS}
+        subtitle={
+          data
+            ? t('weeklyReview.period', {
+                start: formatDate(data.period.start),
+                end: formatDate(data.period.end - 1),
+              })
+            : undefined
+        }
+      />
+      <AreaLockGate area={WEEKLY_REVIEW_LOCK_AREAS}>
+        <KeyboardAwareScrollView
+          bottomOffset={16}
+          contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="gap-5" testID="weekly-review">
+            {data ? (
+              <Text className="text-xs text-text-tertiary">{t('weeklyReview.periodHint')}</Text>
+            ) : null}
+            {viewingLatest ? null : (
+              <Chip
+                variant="solid"
+                role="button"
+                icon={ChevronLeft}
+                label={t('weeklyReview.latest')}
+                onPress={() => {
+                  setSelectedReview(undefined);
+                  setRequestedDay(undefined);
+                }}
+              />
+            )}
+            {!data && !loadError ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
+            {error || loadError ? (
+              <View className="gap-3 rounded-card border border-status-error bg-bg-card p-4">
+                <Text accessibilityRole="alert" className="text-sm text-status-error">
+                  {t(error ? 'weeklyReview.error' : 'errors.somethingWentWrong')}
+                </Text>
+                <Button label={t('common.tryAgain')} variant="outline" onPress={reload} />
+              </View>
+            ) : null}
             {data ? (
               <>
-                <Text className="text-base font-semibold text-text-secondary">
-                  {t('weeklyReview.period', {
-                    start: formatDate(data.period.start),
-                    end: formatDate(data.period.end - 1),
-                  })}
-                </Text>
-                <Text className="text-xs text-text-tertiary">{t('weeklyReview.periodHint')}</Text>
-              </>
-            ) : null}
-          </View>
-          {viewingLatest ? null : (
-            <Chip
-              variant="solid"
-              role="button"
-              icon={ChevronLeft}
-              label={t('weeklyReview.latest')}
-              onPress={() => {
-                setSelectedReview(undefined);
-                setRequestedDay(undefined);
-              }}
-            />
-          )}
-          {!data && !loadError ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
-          {error || loadError ? (
-            <View className="gap-3 rounded-2xl border border-status-error bg-bg-card p-4">
-              <Text accessibilityRole="alert" className="text-sm text-status-error">
-                {t(error ? 'weeklyReview.error' : 'errors.somethingWentWrong')}
-              </Text>
-              <Button label={t('common.tryAgain')} variant="outline" onPress={reload} />
-            </View>
-          ) : null}
-          {data ? (
-            <>
-              {reviewable ? (
-                <View className="flex-row gap-2">
-                  {[t('weeklyReview.training'), t('weeklyReview.nutrition')].map((label, index) => (
-                    <View
-                      key={label}
-                      className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2 ${progressDone[index] ? 'bg-accent-primary/10' : 'bg-bg-overlay'}`}
-                    >
-                      {progressDone[index] ? (
-                        <CheckCircle2
-                          size={theme.iconSize.sm}
-                          color={theme.colors.accent.primary}
-                        />
-                      ) : (
-                        <Circle size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                      )}
-                      <Text
-                        className={`text-sm font-semibold ${progressDone[index] ? 'text-accent-primary' : 'text-text-secondary'}`}
-                      >
-                        {label}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ) : null}
-              {!reviewable && viewingLatest && !data.reviews.length ? (
-                // Nothing logged in the reviewed week and no review yet: say when there will be.
-                <Text className="text-sm text-text-secondary" testID="review-first-date">
-                  {t('weeklyReview.empty.firstReviewOn', {
-                    date: new Intl.DateTimeFormat(locale, {
-                      weekday: 'long',
-                      month: 'short',
-                      day: 'numeric',
-                    }).format(data.period.next),
-                  })}
-                </Text>
-              ) : null}
-
-              <TrainingReviewSection
-                data={data}
-                busy={busy}
-                onDecide={reviewTraining}
-                onChangeConsistencyGoal={changeConsistencyGoal}
-                onOpenGoals={() => setPanel({ kind: 'fitnessGoals' })}
-                onPreviewNext={() =>
-                  data.training.next &&
-                  router.push({
-                    pathname: '/app/workout/workouts',
-                    params: { previewTemplateId: data.training.next.template.id },
-                  })
-                }
-                onEditPlan={() => setPanel({ kind: 'editRules' })}
-                onLogWorkout={() => router.push('/app/workout/workouts')}
-              />
-
-              <NutritionReviewSection
-                data={data}
-                busy={busy}
-                onApply={() => decide('apply')}
-                onKeep={() => decide('keep')}
-                onEdit={openEditor}
-                onSwitchWeekly={switchWeekly}
-                onEditGoal={() => setPanel({ kind: 'editGoal' })}
-                onLogWeight={(day) => setPanel({ kind: 'logWeight', day })}
-                onLogFood={(day) =>
-                  router.push({
-                    pathname: '/app/nutrition/food',
-                    params: { date: formatLocalCalendarDayIso(new Date(day)) },
-                  })
-                }
-                onLogFirstMeal={() => router.push('/app/nutrition/food')}
-              />
-
-              <View className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4">
-                <Text className="text-base font-bold text-text-primary">
-                  {t('weeklyReview.settings')}
-                </Text>
-                <Text className="text-sm text-text-secondary">{t('weeklyReview.weekday')}</Text>
-                <WeekdayChoiceChips value={data.weekday} onChange={changeWeekday} />
-                <ToggleInput
-                  items={[
-                    {
-                      key: 'weekly-review',
-                      label: t('weeklyReview.reminder'),
-                      value: reminder,
-                      onValueChange: toggleReminder,
-                    },
-                  ]}
-                />
-              </View>
-
-              {data.reviews.length || legacy.length ? (
-                <View className="gap-2">
-                  <Text className="text-lg font-bold text-text-primary">
-                    {t('weeklyReview.history')}
+                {reviewable ? (
+                  // Plain status, deliberately not pill-shaped: filled pills read as tabs, and these
+                  // cannot be tapped.
+                  <View
+                    className="flex-row flex-wrap items-center gap-x-4 gap-y-1"
+                    accessibilityRole="summary"
+                  >
+                    {progress.map((half) => (
+                      <View key={half.key} className="flex-row items-center gap-1.5">
+                        {half.done ? (
+                          <CheckCircle2
+                            size={theme.iconSize.sm}
+                            color={theme.colors.accent.primary}
+                          />
+                        ) : (
+                          <Circle size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                        )}
+                        <Text
+                          className={`text-sm ${half.done ? 'font-semibold text-text-primary' : 'text-text-secondary'}`}
+                        >
+                          {t(
+                            half.done
+                              ? 'weeklyReview.halfStatus.done'
+                              : 'weeklyReview.halfStatus.open',
+                            { half: half.label }
+                          )}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+                {!reviewable && viewingLatest && !data.reviews.length ? (
+                  // Nothing logged in the reviewed week and no review yet: say when there will be.
+                  <Text className="text-sm text-text-secondary" testID="review-first-date">
+                    {t('weeklyReview.empty.firstReviewOn', {
+                      date: new Intl.DateTimeFormat(locale, {
+                        weekday: 'long',
+                        month: 'short',
+                        day: 'numeric',
+                      }).format(data.period.next),
+                    })}
                   </Text>
-                  {data.reviews.map((review) => (
-                    <ListRow
-                      key={review.id}
-                      variant="card"
-                      title={t('weeklyReview.period', {
-                        start: formatDate(review.periodStart),
-                        end: formatDate(review.periodEnd - 1),
-                      })}
-                      subtitle={historyLabelKeys(review)
-                        .map((key) => t(key))
-                        .join(' · ')}
-                      onPress={() => setSelectedReview(review.id)}
-                    />
-                  ))}
-                  {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map(
-                    (review) => (
+                ) : null}
+
+                <TrainingReviewSection
+                  data={data}
+                  busy={busy}
+                  onDecide={reviewTraining}
+                  onComebackCheckin={answerComebackCheckin}
+                  onChangeConsistencyGoal={changeConsistencyGoal}
+                  onOpenGoals={() => setPanel({ kind: 'fitnessGoals' })}
+                  onPreviewNext={() =>
+                    data.training.next &&
+                    router.push({
+                      pathname: '/app/workout/workouts',
+                      params: { previewTemplateId: data.training.next.template.id },
+                    })
+                  }
+                  onEditPlan={() => setPanel({ kind: 'editRules' })}
+                  onLogWorkout={() => router.push('/app/workout/workouts')}
+                />
+
+                {isDeficitOfferDue(comeback.state, comeback.week) ? (
+                  <ComebackDeficitOffer state={comeback.state} />
+                ) : null}
+
+                <NutritionReviewSection
+                  data={data}
+                  busy={busy}
+                  onApply={() => apply()}
+                  onKeep={keep}
+                  onEdit={openEditor}
+                  onSwitchWeekly={switchWeekly}
+                  onEditGoal={() => setPanel({ kind: 'editGoal' })}
+                  onLogWeight={(day) => setPanel({ kind: 'logWeight', day })}
+                  onLogFood={(day) =>
+                    router.push({
+                      pathname: '/app/nutrition/food',
+                      params: { date: formatLocalCalendarDayIso(new Date(day)) },
+                    })
+                  }
+                  onLogFirstMeal={() => router.push('/app/nutrition/food')}
+                />
+
+                <View className="gap-3 rounded-card border border-border-light bg-bg-card p-4">
+                  <Text className="text-base font-semibold text-text-primary">
+                    {t('weeklyReview.settings')}
+                  </Text>
+                  <Text className="text-sm text-text-secondary">{t('weeklyReview.weekday')}</Text>
+                  <WeekdayChoiceChips value={data.weekday} onChange={changeWeekday} />
+                  <ToggleInput
+                    items={[
+                      {
+                        key: 'weekly-review',
+                        label: t('weeklyReview.reminder'),
+                        value: reminder,
+                        onValueChange: toggleReminder,
+                      },
+                    ]}
+                  />
+                </View>
+
+                {data.reviews.length || legacy.length ? (
+                  <View className="gap-2">
+                    <Text className="text-lg font-semibold text-text-primary">
+                      {t('weeklyReview.history')}
+                    </Text>
+                    {data.reviews.map((review) => (
                       <ListRow
                         key={review.id}
                         variant="card"
-                        title={`${t('weeklyReview.legacy')} · ${formatDate(review.checkinDate)}`}
-                        onPress={() => setPanel({ kind: 'legacyCheckin', id: review.id })}
+                        title={t('weeklyReview.period', {
+                          start: formatDate(review.periodStart),
+                          end: formatDate(review.periodEnd - 1),
+                        })}
+                        subtitle={historyLabelKeys(review)
+                          .map((key) => t(key))
+                          .join(' · ')}
+                        onPress={() => setSelectedReview(review.id)}
                       />
-                    )
-                  )}
-                  {legacy.length > LEGACY_HISTORY_PREVIEW ? (
-                    <TextButton
-                      accessibilityState={{ expanded: showAllHistory }}
-                      onPress={() => setShowAllHistory(!showAllHistory)}
-                      label={
-                        showAllHistory
-                          ? t('weeklyReview.showFewer')
-                          : t('weeklyReview.showAll', { count: formatInteger(legacy.length) })
-                      }
-                    />
-                  ) : null}
-                </View>
-              ) : null}
-            </>
-          ) : null}
-        </View>
-      </KeyboardAwareScrollView>
-      {modal}
+                    ))}
+                    {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map(
+                      (review) => (
+                        <ListRow
+                          key={review.id}
+                          variant="card"
+                          title={`${t('weeklyReview.legacy')} · ${formatDate(review.checkinDate)}`}
+                          onPress={() => setPanel({ kind: 'legacyCheckin', id: review.id })}
+                        />
+                      )
+                    )}
+                    {legacy.length > LEGACY_HISTORY_PREVIEW ? (
+                      <TextButton
+                        accessibilityState={{ expanded: showAllHistory }}
+                        onPress={() => setShowAllHistory(!showAllHistory)}
+                        label={
+                          showAllHistory
+                            ? t('weeklyReview.showFewer')
+                            : t('weeklyReview.showAll', { count: formatInteger(legacy.length) })
+                        }
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+              </>
+            ) : null}
+          </View>
+        </KeyboardAwareScrollView>
+        {modal}
+      </AreaLockGate>
     </MasterLayout>
   );
 }

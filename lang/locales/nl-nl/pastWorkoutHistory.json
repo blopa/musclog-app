@@ -4,6 +4,7 @@
     "searchPlaceholder": "Sessies zoeken...",
     "noWorkoutsFound": "Geen workouts gevonden die overeenkomen met je zoekopdracht.",
     "noWorkoutHistory": "Nog geen workout-geschiedenis.",
+    "noWorkoutsInRange": "Geen workouts in deze periode. Probeer het filterbereik te vergroten.",
     "loadMore": "Meer laden",
     "loadingMore": "Laden...",
     "stats": {
@@ -19,8 +20,8 @@
     },
     "filters": {
       "title": "Workouts filteren",
-      "workoutType": "WORKOUTTYPE",
-      "minDuration": "MIN. DUUR",
+      "workoutType": "Workouttype",
+      "minDuration": "Min. duur",
       "reset": "Reset",
       "applyFilters": "Filters toepassen",
       "durationFormats": {
@@ -37,13 +38,13 @@
         "yoga": "Yoga"
       },
       "dateRange": {
-        "title": "DATUMBEREIK",
+        "title": "Datumbereik",
         "30days": "Laatste 30 dagen",
         "90days": "Laatste 90 dagen",
-        "custom": "Aangepast"
+        "allTime": "Alle tijd"
       },
       "muscleGroups": {
-        "title": "SPIERGROEP (MEERVOUDIGE SELECTIE)",
+        "title": "Spiergroep (meervoudige selectie)",
         "chest": "Borst",
         "back": "Rug",
         "legs": "Benen",

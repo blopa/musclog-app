@@ -1,5 +1,5 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import { CheckCircle2, Dumbbell, Play, Sparkles, Warehouse } from 'lucide-react-native';
+import { CheckCircle2, Dumbbell, Play, TrendingUp, Warehouse } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -7,6 +7,7 @@ import { Text, View } from 'react-native';
 import { Button } from '@/components/theme/Button';
 import { ListRow } from '@/components/theme/ListRow';
 import { TextButton } from '@/components/theme/TextButton';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import {
   type TodayWorkout,
@@ -55,7 +56,7 @@ export function WorkoutTodayCard({
         const [log, next, autonomy] = await Promise.all([
           WorkoutService.getActiveWorkout(),
           activeOnly ? Promise.resolve([]) : WorkoutTodayRepository.upcoming(),
-          SettingsService.getWorkoutAutonomy(),
+          SettingsService.get(SETTINGS.workoutAutonomy),
         ]);
         let session: ActiveSession | null = null;
         if (log) {
@@ -107,7 +108,7 @@ export function WorkoutTodayCard({
         <Text className="text-xs text-text-tertiary">{gym?.name ?? t('trainingFlow.noGym')}</Text>
       </View>
       <View className="flex-row items-center gap-1.5">
-        <Sparkles size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
+        <TrendingUp size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
         <Text className="text-xs text-text-tertiary">
           {t(automatic ? 'trainingFlow.guidanceOn' : 'trainingFlow.guidanceOff')}
         </Text>
@@ -119,12 +120,12 @@ export function WorkoutTodayCard({
     const fraction = active.total ? active.done / active.total : 0;
     return (
       <View
-        className="gap-3 rounded-2xl border border-accent-primary bg-accent-primary/10 p-4"
+        className="gap-3 rounded-card border border-accent-primary bg-accent-primary/10 p-4"
         testID="workout-today"
       >
         <View className="flex-row items-center gap-2">
           <View className="h-2.5 w-2.5 rounded-full bg-accent-primary" />
-          <Text className="text-xs font-bold uppercase tracking-wider text-accent-primary">
+          <Text className="text-xs font-semibold text-accent-primary">
             {t('trainingFlow.activeWorkout')}
           </Text>
         </View>
@@ -188,12 +189,10 @@ export function WorkoutTodayCard({
   const finished = upcoming.filter((row) => row.completedToday);
   return (
     <View
-      className="gap-3 rounded-2xl border border-border-light bg-bg-card p-4"
+      className="gap-3 rounded-card border border-border-light bg-bg-card p-4"
       testID="workout-today"
     >
-      <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-        {t('trainingFlow.today')}
-      </Text>
+      <Text className="text-xs font-semibold text-text-secondary">{t('trainingFlow.today')}</Text>
       {error ? (
         <Text accessibilityRole="alert" className="text-sm text-status-error">
           {t('errors.somethingWentWrong')}
@@ -202,11 +201,11 @@ export function WorkoutTodayCard({
       {primary ? (
         <View className="gap-3">
           <View className="flex-row items-center gap-3">
-            <View className="h-11 w-11 items-center justify-center rounded-xl bg-accent-primary/10">
+            <View className="h-11 w-11 items-center justify-center rounded-control bg-accent-primary/10">
               <Dumbbell size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <View className="min-w-0 flex-1">
-              <Text className="text-lg font-bold text-text-primary" numberOfLines={2}>
+              <Text className="text-lg font-semibold text-text-primary" numberOfLines={2}>
                 {primary.template.name}
               </Text>
               <Text className="text-sm text-text-secondary" numberOfLines={2}>
@@ -234,7 +233,7 @@ export function WorkoutTodayCard({
       {finished.map((row) => (
         <View
           key={`done-${row.template.id}`}
-          className="min-h-12 flex-row items-center gap-2 rounded-xl bg-accent-primary/10 px-4"
+          className="min-h-12 flex-row items-center gap-2 rounded-control bg-accent-primary/10 px-4"
         >
           <CheckCircle2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
           <Text className="flex-1 text-base font-medium text-text-primary" numberOfLines={1}>

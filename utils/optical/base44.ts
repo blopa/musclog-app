@@ -45,6 +45,7 @@ const DIGITS = (() => {
   }
 
   return table;
+  // TODO: avoid IIFE
 })();
 
 export function base44Encode(bytes: Uint8Array): string {

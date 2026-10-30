@@ -6,6 +6,7 @@ import { whatsNewReleases } from '@/data/whatsNew/releases';
 import { waitForDbReady } from '@/database/dbReady';
 import { getAppVersion } from '@/utils/appVersion';
 import { isOnboardingCompleted } from '@/utils/onboardingService';
+import { loadWhatsNewContext } from '@/utils/whatsNew/context';
 import { selectWhatsNewFlow, type WhatsNewFlow } from '@/utils/whatsNew/flow';
 import { getWhatsNewSeenThrough, markWhatsNewSeenThrough } from '@/utils/whatsNew/storage';
 
@@ -31,6 +32,7 @@ async function evaluate(): Promise<WhatsNewFlow | null> {
     releases: whatsNewReleases,
     currentVersion,
     seenThrough: await getWhatsNewSeenThrough(),
+    context: await loadWhatsNewContext(),
   });
   if (!flow.pages.length) {
     await markWhatsNewSeenThrough(currentVersion);

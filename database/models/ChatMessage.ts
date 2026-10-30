@@ -71,6 +71,12 @@ export type LegacyTrackMealPayload = {
   was_tracked?: boolean;
 };
 
+// Marks a message as the seeded welcome from the coach, so a persona change can rewrite it while
+// the conversation is still untouched. It renders as an ordinary text message.
+export type WelcomePayload = {
+  type: 'welcome';
+};
+
 // Union type representing all possible payload_json values
 export type ChatMessagePayload =
   | ImagePayload
@@ -78,7 +84,8 @@ export type ChatMessagePayload =
   | WorkoutPlanPayload
   | TrackMealPayload
   | MealPlanPayload
-  | LegacyTrackMealPayload;
+  | LegacyTrackMealPayload
+  | WelcomePayload;
 
 // Helper type guard functions for type narrowing
 export function isImagePayload(payload: ChatMessagePayload): payload is ImagePayload {

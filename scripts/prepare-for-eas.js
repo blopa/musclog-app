@@ -44,7 +44,7 @@ if (content.includes('AF0E8295EA1C4ED79216E101 /* PBXTargetDependency */')) {
     '\n\t\t\t)'
   );
   changed = true;
-  console.log('[prepare-for-eas] ✅ Removed PBXTargetDependency from main target dependencies');
+  console.log('[prepare-for-eas] [OK] Removed PBXTargetDependency from main target dependencies');
 }
 
 // 2. Remove PBXTargetDependency section
@@ -54,7 +54,7 @@ if (content.includes('/* Begin PBXTargetDependency section */')) {
     ''
   );
   changed = true;
-  console.log('[prepare-for-eas] ✅ Removed PBXTargetDependency section');
+  console.log('[prepare-for-eas] [OK] Removed PBXTargetDependency section');
 }
 
 // 3. Remove PBXContainerItemProxy section
@@ -64,7 +64,7 @@ if (content.includes('/* Begin PBXContainerItemProxy section */')) {
     ''
   );
   changed = true;
-  console.log('[prepare-for-eas] ✅ Removed PBXContainerItemProxy section');
+  console.log('[prepare-for-eas] [OK] Removed PBXContainerItemProxy section');
 }
 
 // 4. Remove Pods.xcodeproj file reference
@@ -76,12 +76,12 @@ if (content.includes('E8E11EA3CEC44DF7A02CE491 /* Pods.xcodeproj */')) {
   // Also remove from group children if present
   content = content.replace(/\t\t\t\tE8E11EA3CEC44DF7A02CE491 \/\* Pods\.xcodeproj \*\/,\n/, '');
   changed = true;
-  console.log('[prepare-for-eas] ✅ Removed Pods.xcodeproj file reference');
+  console.log('[prepare-for-eas] [OK] Removed Pods.xcodeproj file reference');
 }
 
 if (changed) {
   fs.writeFileSync(projectPath, content);
-  console.log('[prepare-for-eas] ✅ project.pbxproj ready for EAS build');
+  console.log('[prepare-for-eas] [OK] project.pbxproj ready for EAS build');
 } else {
-  console.log('[prepare-for-eas] ℹ️  No Xcode 26 patches found, project.pbxproj already clean');
+  console.log('[prepare-for-eas] [INFO] No Xcode 26 patches found, project.pbxproj already clean');
 }

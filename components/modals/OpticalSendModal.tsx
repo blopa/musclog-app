@@ -197,7 +197,7 @@ export function OpticalSendModal({
       {showReadyCard && summary ? (
         <View className="gap-4 px-4 py-6">
           <View
-            className="gap-2 rounded-xl p-4"
+            className="gap-2 rounded-card p-4"
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <Text className="font-bold text-text-primary">{labels.readyTitle}</Text>

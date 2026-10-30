@@ -96,6 +96,13 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await expect(page.getByTestId('review-nutrition')).toContainText(copy.weeklyReview.applied);
   for (const path of ['', '/workout/workouts', '/nutrition/food']) {
     await page.goto(`${app}${path}`);
+    // Food's entry lives in the summary card's menu once the review card is not due.
+    if (
+      path === '/nutrition/food' &&
+      !(await page.getByTestId('weekly-review-entry').isVisible())
+    ) {
+      await page.getByTestId('daily-summary-menu').click();
+    }
     await expect(page.getByTestId('weekly-review-entry')).toBeVisible();
     await page.getByTestId('weekly-review-entry').click();
     await expect(page.getByTestId('weekly-review')).toBeVisible();

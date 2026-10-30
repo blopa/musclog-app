@@ -7,6 +7,10 @@
     "nextMonday": "Próxima Segunda",
     "selectDate": "Selecionar Data",
     "selectMonthYear": "Selecionar Mês e Ano",
+    "status": {
+      "fasted": "Em jejum",
+      "tracked": "Alimentos registrados"
+    },
     "today": "Hoje",
     "tomorrow": "Amanhã",
     "year": "Ano",

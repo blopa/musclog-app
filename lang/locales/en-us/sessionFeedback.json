@@ -1,6 +1,6 @@
 {
   "sessionFeedback": {
-    "title": "Session Feedback",
+    "title": "Session feedback",
     "subtitle": "Rate your performance",
     "difficulty": "Difficulty",
     "exhaustion": "Exhaustion",
@@ -11,7 +11,7 @@
     "drained": "Drained",
     "disliked": "Disliked",
     "loved": "Loved",
-    "submit": "SUBMIT FEEDBACK",
+    "submit": "Submit feedback",
     "notes": "Notes",
     "notesPlaceholder": "How did it go? Anything to remember next time?"
   }

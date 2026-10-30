@@ -119,3 +119,11 @@ describe('an adjustment sourced from the Weekly Review', () => {
     ).toBe(START_ADJUSTMENT_MESSAGE_KEYS.reviewRepeat);
   });
 });
+
+describe('a comeback start adjustment', () => {
+  it('credits the comeback, whatever moved', () => {
+    expect(startAdjustmentMessageKey(adjustment({ cause: 'deload', source: 'comeback' }))).toBe(
+      START_ADJUSTMENT_MESSAGE_KEYS.comeback
+    );
+  });
+});

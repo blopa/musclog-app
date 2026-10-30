@@ -5,7 +5,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 
-import { UNITS_SETTING_TYPE } from '@/constants/settings';
+import { APP_LOCK_SCOPES_SETTING_TYPE, UNITS_SETTING_TYPE } from '@/constants/settings';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { useSettings } from '@/hooks/useSettings';
 
@@ -42,9 +42,28 @@ jest.mock('../../database/database-instance', () => ({
   },
 }));
 
+const mockIsDbReady = jest.fn(() => true);
+
 jest.mock('../../database/dbReady', () => ({
+  isDbReady: () => mockIsDbReady(),
   waitForDbReady: jest.fn(() => Promise.resolve()),
 }));
+
+const mockGetSettingsMirror = jest.fn((): unknown => null);
+const mockRecordSettingsMirror = jest.fn();
+
+jest.mock('../../utils/settingsMirror', () => ({
+  getSettingsMirror: () => mockGetSettingsMirror(),
+  recordSettingsMirror: (next: unknown) => mockRecordSettingsMirror(next),
+}));
+
+// Subscribes and never emits: the provider stays in its loading state.
+const neverEmits = () => ({
+  subscribe: () => {
+    unsubscribeFn = jest.fn();
+    return { unsubscribe: unsubscribeFn };
+  },
+});
 
 // jsdom trips the static-export guard (`Platform.OS === 'web'` + a jsdom user agent),
 // which would make the provider skip the subscription entirely.
@@ -67,6 +86,8 @@ const wrapper = ({ children }: { children: ReactNode }) =>
 describe('useSettings', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockIsDbReady.mockReturnValue(true);
+    mockGetSettingsMirror.mockReturnValue(null);
     mockQuery.observeWithColumns.mockReturnValue(createMockObservable([]));
   });
 
@@ -135,5 +156,100 @@ describe('useSettings', () => {
       expect(result.current.isLoading).toBe(false);
     });
     expect(result.current.units).toBe('imperial');
+  });
+
+  describe('settings mirror', () => {
+    it('starts from the mirrored theme, language and units before the table emits', async () => {
+      mockGetSettingsMirror.mockReturnValue({
+        theme: 'kinetic-volt',
+        language: 'pt-BR',
+        units: 'metric',
+        appLockScopesRaw: '',
+      });
+      mockQuery.observeWithColumns.mockReturnValue(neverEmits());
+
+      const { result } = renderHook(() => useSettings(), { wrapper });
+
+      expect(result.current.isLoading).toBe(true);
+      expect(result.current.theme).toBe('kinetic-volt');
+      expect(result.current.language).toBe('pt-BR');
+      // The locale default here is imperial, so metric can only have come from the mirror.
+      expect(result.current.units).toBe('metric');
+    });
+
+    it('writes every value read from the table back to the mirror', async () => {
+      mockQuery.observeWithColumns.mockReturnValue(
+        createMockObservable([
+          unitsSetting('0'),
+          { id: '2', type: APP_LOCK_SCOPES_SETTING_TYPE, updatedAt: 1, value: 'cycle' },
+        ])
+      );
+
+      const { result } = renderHook(() => useSettings(), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+      expect(mockRecordSettingsMirror).toHaveBeenCalledWith({
+        theme: 'system',
+        language: 'en-US',
+        units: 'metric',
+        appLockScopesRaw: 'cycle',
+      });
+    });
+  });
+
+  describe('appLockScopesPending', () => {
+    it('is true while loading with no mirror, and clears once the table is read', async () => {
+      let emit!: (settings: FakeSetting[]) => void;
+      mockQuery.observeWithColumns.mockReturnValue({
+        subscribe: (handlers: { next: (v: FakeSetting[]) => void }) => {
+          emit = handlers.next;
+          unsubscribeFn = jest.fn();
+          return { unsubscribe: unsubscribeFn };
+        },
+      });
+
+      const { result } = renderHook(() => useSettings(), { wrapper });
+
+      expect(result.current.appLockScopesPending).toBe(true);
+      await waitFor(() => {
+        expect(emit).toBeDefined();
+      });
+
+      emit([{ id: '1', type: APP_LOCK_SCOPES_SETTING_TYPE, updatedAt: 1, value: 'app' }]);
+
+      await waitFor(() => {
+        expect(result.current.appLockScopesPending).toBe(false);
+      });
+      expect(result.current.appLockScopes).toEqual(['app']);
+    });
+
+    it('trusts the mirrored scopes while loading', () => {
+      mockGetSettingsMirror.mockReturnValue({
+        theme: 'system',
+        language: 'en-US',
+        units: 'metric',
+        appLockScopesRaw: 'app',
+      });
+      mockQuery.observeWithColumns.mockReturnValue(neverEmits());
+
+      const { result } = renderHook(() => useSettings(), { wrapper });
+
+      expect(result.current.appLockScopesPending).toBe(false);
+      expect(result.current.appLockScopes).toEqual(['app']);
+    });
+
+    // AppDbReadyGate mounts the providers before the database is ready only for an install that
+    // has not finished onboarding, which cannot have a lock yet.
+    it('is false for an install whose database was not ready at mount', () => {
+      mockIsDbReady.mockReturnValue(false);
+      mockQuery.observeWithColumns.mockReturnValue(neverEmits());
+
+      const { result } = renderHook(() => useSettings(), { wrapper });
+
+      expect(result.current.isLoading).toBe(true);
+      expect(result.current.appLockScopesPending).toBe(false);
+    });
   });
 });

@@ -30,7 +30,7 @@ export function RirQuickPick({
 
   return (
     <View className="gap-2" testID={testID}>
-      <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+      <Text className="text-xs font-semibold text-text-secondary">
         {t('trainingFlow.rirQuickLabel')}
       </Text>
       <View className="flex-row flex-wrap gap-2">

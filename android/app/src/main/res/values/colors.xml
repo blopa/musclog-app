@@ -1,11 +1,12 @@
 <resources>
   <color name="splashscreen_background">#0c1a13</color>
-  <color name="iconBackground">#091310</color>
+  <color name="iconBackground">#0d1210</color>
   <color name="colorPrimary">#023c69</color>
   <color name="notification_icon_color">#ffffff</color>
-  <color name="iconBackgroundKineticLight">#fafcfb</color>
-  <color name="iconBackgroundKineticShock">#160b14</color>
-  <color name="iconBackgroundKineticVolt">#151208</color>
-  <color name="iconBackgroundKineticBlush">#fff7fa</color>
-  <color name="iconBackgroundKineticVaria">#0d0a12</color>
+  <color name="iconBackgroundKineticLight">#fbfcfb</color>
+  <color name="iconBackgroundKineticShock">#130d12</color>
+  <color name="iconBackgroundKineticVolt">#14120d</color>
+  <color name="iconBackgroundKineticBlush">#fcf8fa</color>
+  <color name="iconBackgroundKineticVaria">#0c0b0f</color>
+  <color name="iconBackgroundKineticScope">#0a0a0a</color>
 </resources>

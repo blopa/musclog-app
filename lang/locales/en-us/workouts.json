@@ -1,6 +1,6 @@
 {
   "workouts": {
-    "title": "My Workouts",
+    "title": "My workouts",
     "filters": {
       "all": "All",
       "strength": "Strength",
@@ -70,32 +70,32 @@
     "deleteSuccess": "Workout deleted successfully",
     "deleteError": "Failed to delete workout",
     "deleteConfirmation": {
-      "title": "Delete Workout",
+      "title": "Delete workout",
       "message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
     },
     "searchPlaceholder": "Search workouts...",
     "noSearchResults": "No workouts found",
     "noSearchResultsDescription": "No workouts match \"{{query}}\"",
-    "noSearchResultsButtonLabel": "Clear Search",
+    "noSearchResultsButtonLabel": "Clear search",
     "exercises": "Exercises",
     "addExercise": {
-      "title": "Add Exercise",
-      "targetMuscle": "Target Muscle",
+      "title": "Add exercise",
+      "targetMuscle": "Target muscle",
       "searchPlaceholder": "Search {{muscle}} exercises...",
-      "createSet": "Create Set",
+      "createSet": "Create set",
       "bodyweight": "Bodyweight",
       "sets": "Sets",
       "reps": "Reps",
       "weight": "Weight",
-      "addToWorkout": "Add to Workout",
-      "restTime": "Rest Time",
+      "addToWorkout": "Add to workout",
+      "restTime": "Rest time",
       "seconds": "sec",
       "setType": {
-        "label": "Set Type",
+        "label": "Set type",
         "normal": "Normal",
         "warmup": "Warm-up",
         "failure": "Failure",
-        "drop_set": "Drop Set",
+        "drop_set": "Drop set",
         "myo_rep": "Myo-rep"
       },
       "notes": "Notes",
@@ -115,24 +115,24 @@
       "exerciseDescriptionLead": "{{sets}} sets × {{reps}} reps @"
     },
     "filterWorkouts": {
-      "title": "Filter Workouts",
+      "title": "Filter workouts",
       "clear": "Clear",
-      "clearFilters": "Clear Filters",
-      "applyFilters": "Apply Filters",
-      "workoutType": "Workout Type",
-      "targetMuscles": "TARGET MUSCLES",
-      "duration": "DURATION",
+      "clearFilters": "Clear filters",
+      "applyFilters": "Apply filters",
+      "workoutType": "Workout type",
+      "targetMuscles": "Target muscles",
+      "duration": "Duration",
       "upTo": "Up to {{duration}}",
       "workoutTypes": {
         "strength": "Strength",
-        "strengthDescription": "Weights, Bodyweight",
+        "strengthDescription": "Weights, bodyweight",
         "cardio": "Cardio",
-        "cardioDescription": "Running, Cycling, HIIT",
+        "cardioDescription": "Running, cycling, HIIT",
         "flexibility": "Flexibility",
-        "flexibilityDescription": "Yoga, Stretching"
+        "flexibilityDescription": "Yoga, stretching"
       },
       "muscleGroups": {
-        "fullBody": "Full Body",
+        "fullBody": "Full body",
         "chest": "Chest",
         "back": "Back",
         "legs": "Legs",
@@ -144,13 +144,13 @@
     "createWorkoutOptions": {
       "generateWithAi": "Generate with AI",
       "generateWithAiSubtitle": "Let Musclog build a personalized routine based on your goals and equipment.",
-      "createFromEmptyTemplate": "Create from Empty Template",
+      "createFromEmptyTemplate": "Create from empty template",
       "createFromEmptyTemplateSubtitle": "Design your own routine from scratch, exercise by exercise.",
-      "browseTemplates": "Browse Templates",
+      "browseTemplates": "Browse templates",
       "browseTemplatesSubtitle": "Explore expert-created programs and community favorites."
     },
     "browseTemplatesModal": {
-      "title": "Browse Templates",
+      "title": "Browse templates",
       "searchPlaceholder": "Search expert programs...",
       "templateName": "Template {{number}}",
       "tabs": {
@@ -165,74 +165,78 @@
       "stats": {
         "duration": "Duration",
         "exercises": "Exercises",
-        "exercisesQty": "{{count}} Exercise",
-        "exercisesQty_one": "{{count}} Exercise",
-        "exercisesQty_other": "{{count}} Exercises",
+        "exercisesQty": "{{count}} exercise",
+        "exercisesQty_one": "{{count}} exercise",
+        "exercisesQty_other": "{{count}} exercises",
         "sets": "Sets",
-        "setsQty": "{{count}} Set",
-        "setsQty_one": "{{count}} Set",
-        "setsQty_other": "{{count}} Sets"
+        "setsQty": "{{count}} set",
+        "setsQty_one": "{{count}} set",
+        "setsQty_other": "{{count}} sets"
       }
     },
     "manageWorkoutTemplateData": {
       "deleteTemplateWarning": "Are you sure you want to delete this template? This action cannot be undone.",
-      "title": "Manage Workout Template Data",
+      "title": "Manage workout template data",
       "searchPlaceholder": "Search templates...",
       "noTemplates": "No workout templates yet",
       "noTemplatesDesc": "Create workout templates to see them here",
       "endOfHistory": "End of template history",
-      "templateOptions": "Template Options",
-      "editTemplate": "Edit Template",
+      "templateOptions": "Template options",
+      "editTemplate": "Edit template",
       "editTemplateDesc": "Modify template name and exercises",
-      "duplicateTemplate": "Duplicate Template",
+      "duplicateTemplate": "Duplicate template",
       "duplicateTemplateDesc": "Create a copy of this template",
-      "deleteTemplate": "Delete Template",
+      "deleteTemplate": "Delete template",
       "deleteTemplateDesc": "Remove this template permanently",
       "noDescription": "No description",
-      "unknownTemplate": "Unknown Template"
+      "unknownTemplate": "Unknown template"
     },
     "createTemplate": {
-      "title": "Create Workout Template",
+      "title": "Create workout template",
       "description": "Build a reusable workout routine"
     },
     "createWorkoutOptionsModal": {
-      "header": "Create Workout",
+      "header": "Create workout",
       "title": "How do you want to build your routine?",
       "subtitle": "Select how you want to build your routine today."
     },
     "createFromTemplate": {
-      "title": "Create Workouts from Template",
+      "title": "Create workouts from template",
       "message": "This will create separate workout templates for each day in this program. Each workout will include the exercises, sets, and reps specified for that day.",
-      "confirm": "Create Workouts",
+      "confirm": "Create workouts",
       "cancel": "Cancel",
       "successMessage": "Workouts created successfully",
       "successMessageWithPlan": "{{planName}} created with {{count}} workouts"
     },
     "aiGeneration": {
-      "comingSoon": "AI workout generation coming soon!",
+      "comingSoon": "AI workout generation is coming soon.",
       "title": "Generate with AI",
       "subtitle": "Tell us about your goals and we'll build a personalized workout plan",
       "preferencesLabel": "Your preferences",
       "preferencesPlaceholder": "E.g. I want to build muscle, I can train 4 days a week, I have access to a full gym, I'm an intermediate lifter...",
-      "generateButton": "Generate Plan",
+      "generateButton": "Generate plan",
       "successMessageWithPlan": "{{planName}} is ready with {{count}} workouts.",
       "errorMessage": "Couldn't generate a plan. Please try again.",
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings."
     },
     "templateBrowser": {
-      "comingSoon": "Template browser coming soon!"
+      "comingSoon": "The template browser is coming soon."
     },
     "interruptedSession": {
       "description": "You have a workout in progress.",
       "resume": "Resume",
       "discard": "Discard",
-      "discardConfirmTitle": "Discard Workout?",
+      "discardConfirmTitle": "Discard workout?",
       "discardConfirmMessage": "This will permanently delete your in-progress workout and all logged sets.",
       "discardConfirm": "Discard",
-      "discardCancel": "Keep It",
+      "discardCancel": "Keep it",
       "alreadyActive": "You already have a workout in progress. Resume or discard it first."
     },
     "unnamed": "Unnamed",
-    "previewWorkout": "Preview {{name}}"
+    "previewWorkout": "Preview {{name}}",
+    "history": {
+      "title": "Workout history",
+      "description": "See every session you've completed"
+    }
   }
 }

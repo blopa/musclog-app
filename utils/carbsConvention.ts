@@ -244,3 +244,17 @@ export function aiIngredientMacrosPer100g(
     fiber,
   };
 }
+
+/**
+ * The energy a set of NUTRITION GOAL macros describes. Goals use the other convention from food
+ * (AGENTS.md → Carbs vs fiber): `carbs` is net carbohydrate and fiber is a separate, additive
+ * macro at 2 kcal/g. Never use this for food items, whose `carbs` already include fiber.
+ */
+export function goalCaloriesFromMacros(macros: {
+  protein: number;
+  carbs: number;
+  fats: number;
+  fiber: number;
+}): number {
+  return macros.protein * 4 + macros.carbs * 4 + macros.fats * 9 + macros.fiber * 2;
+}

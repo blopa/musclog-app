@@ -36,6 +36,7 @@ export function EditPersonalInfoModal({
     photoUri,
     avatarIcon,
     avatarColor,
+    trackCycle,
   }: PersonalInfo & { photoUri?: string }) => {
     onSave?.({
       fullName,
@@ -45,6 +46,7 @@ export function EditPersonalInfoModal({
       photoUri,
       avatarIcon,
       avatarColor,
+      trackCycle,
     });
     onClose();
   };

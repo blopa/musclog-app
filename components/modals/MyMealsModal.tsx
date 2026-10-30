@@ -1,12 +1,11 @@
 import { Pencil, QrCode, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { MealItemCard } from '@/components/cards/MealItemCard';
 import { FilterTabs } from '@/components/FilterTabs';
-import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
@@ -120,6 +119,12 @@ type MyMealsModalProps = {
   /** Pre-selected meal type to use when logging a meal. */
   initialMealType?: MealType;
 };
+
+const EMPTY_MEALS: never[] = [];
+
+function MealSeparator() {
+  return <View className="h-3" />;
+}
 
 export default function MyMealsModal({ visible, onClose, initialMealType }: MyMealsModalProps) {
   const { t } = useTranslation();
@@ -374,9 +379,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
     setSearchQuery(query);
   };
 
-  const handleOpenMenu = (mealId: string) => {
+  const handleOpenMenu = useCallback((mealId: string) => {
     setMenuMealId(mealId);
-  };
+  }, []);
 
   const handleTrackMeal = (mealId: string) => {
     const meal = mealsMap.get(mealId);
@@ -503,11 +508,34 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
     return activeFilter === 'all' ? t('meals.createFirstMeal') : t('meals.tryDifferentFilter');
   };
 
+  const mealKeyExtractor = useCallback((meal: { id: string }) => meal.id, []);
+
+  const renderMeal = useCallback(
+    ({ item: meal }: { item: (typeof filteredMeals)[number] }) => (
+      <MealItemCard
+        title={meal.title}
+        tags={meal.tags.map((tag) => tag.label)}
+        calories={meal.calories}
+        macros={meal.macros}
+        image={meal.image}
+        onMenuPress={() => handleOpenMenu(meal.id)}
+      />
+    ),
+    [handleOpenMenu]
+  );
+
+  const handleEndReached = useCallback(() => {
+    if (hasMore && !isLoadingMore && !isLoading) {
+      loadMore();
+    }
+  }, [hasMore, isLoadingMore, isLoading, loadMore]);
+
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
       title={t('meals.title')}
+      scrollable={false}
       showConfetti={showConfetti}
       closable={!isGeneratingMealAI}
       headerRight={
@@ -544,79 +572,64 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         </View>
 
         {/* Meal List */}
-        <ScrollView
+        <FlatList
           className="flex-1"
-          contentContainerStyle={{
-            paddingHorizontal: theme.spacing.padding.xl,
-            gap: theme.spacing.gap.base,
-          }}
-        >
-          {showLoading ? (
-            <View className="flex-1 items-center justify-center py-12">
-              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-              <Text
-                className="mt-4 font-medium"
-                style={{
-                  color: theme.colors.text.tertiary,
-                  fontSize: theme.typography.fontSize.sm,
-                }}
-              >
-                {isGeneratingMealAI ? t('meals.generateAI.generating') : t('meals.loadingMeals')}
-              </Text>
-            </View>
-          ) : filteredMeals.length === 0 ? (
-            <View className="flex-1 items-center justify-center py-12">
-              <Text
-                className="mb-2 font-bold"
-                style={{
-                  color: theme.colors.text.primary,
-                  fontSize: theme.typography.fontSize.xl,
-                }}
-              >
-                {getEmptyStateTitle()}
-              </Text>
-              <Text
-                className="text-center font-medium"
-                style={{
-                  color: theme.colors.text.tertiary,
-                  fontSize: theme.typography.fontSize.sm,
-                }}
-              >
-                {getEmptyStateMessage()}
-              </Text>
-            </View>
-          ) : (
-            <>
-              {filteredMeals.map((meal) => (
-                <MealItemCard
-                  key={meal.id}
-                  title={meal.title}
-                  tags={meal.tags.map((tag) => tag.label)}
-                  calories={meal.calories}
-                  macros={meal.macros}
-                  image={meal.image}
-                  onMenuPress={() => handleOpenMenu(meal.id)}
-                />
-              ))}
-              {/* Load More Button */}
-              {hasMore ? (
-                <View className="py-4">
-                  <Button
-                    label={isLoadingMore ? t('meals.loadingMore') : t('meals.loadMore')}
-                    onPress={loadMore}
-                    size="sm"
-                    variant="outline"
-                    disabled={isLoadingMore}
-                    loading={isLoadingMore}
-                    width="full"
-                  />
-                </View>
-              ) : null}
-              {/* Bottom spacing for FAB and TabBar */}
-              <View style={{ height: theme.size['120'] }} />
-            </>
-          )}
-        </ScrollView>
+          data={showLoading ? EMPTY_MEALS : filteredMeals}
+          keyExtractor={mealKeyExtractor}
+          renderItem={renderMeal}
+          ItemSeparatorComponent={MealSeparator}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          contentContainerStyle={{ paddingHorizontal: theme.spacing.padding.xl }}
+          ListEmptyComponent={
+            showLoading ? (
+              <View className="items-center justify-center py-12">
+                <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+                <Text
+                  className="mt-4 font-medium"
+                  style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}
+                >
+                  {isGeneratingMealAI ? t('meals.generateAI.generating') : t('meals.loadingMeals')}
+                </Text>
+              </View>
+            ) : (
+              <View className="items-center justify-center py-12">
+                <Text
+                  className="mb-2 font-bold"
+                  style={{
+                    color: theme.colors.text.primary,
+                    fontSize: theme.typography.fontSize.xl,
+                  }}
+                >
+                  {getEmptyStateTitle()}
+                </Text>
+                <Text
+                  className="text-center font-medium"
+                  style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}
+                >
+                  {getEmptyStateMessage()}
+                </Text>
+              </View>
+            )
+          }
+          ListFooterComponent={
+            showLoading || filteredMeals.length === 0 ? (
+              <View />
+            ) : (
+              <View className="items-center pt-4">
+                {isLoadingMore ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
+                {/* Bottom spacing for FAB and TabBar */}
+                <View style={{ height: theme.size['120'] }} />
+              </View>
+            )
+          }
+        />
 
         {/* AddMealModal */}
         {addMealModalVisible ? (
@@ -678,7 +691,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: Utensils,
                 iconColor: theme.colors.text.onAccent,
-                iconBgColor: theme.colors.accent.primary,
                 title: t('food.actions.track'),
                 description: t('meals.logMeal'),
                 onPress: () => handleTrackMeal(menuMealId),
@@ -686,7 +698,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: Pencil,
                 iconColor: theme.colors.text.primary,
-                iconBgColor: theme.colors.background.iconDarker,
                 title: t('food.meals.manageMealData.editMeal'),
                 description: t('food.meals.manageMealData.editMealDesc'),
                 onPress: () => handleEditMeal(menuMealId),
@@ -694,7 +705,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: Share2,
                 iconColor: theme.colors.text.primary,
-                iconBgColor: theme.colors.background.iconDarker,
                 title: t('food.meals.manageMealData.shareMealAsRecipe'),
                 description: t('food.meals.manageMealData.shareMealAsRecipeDesc'),
                 onPress: () => {
@@ -704,7 +714,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: QrCode,
                 iconColor: theme.colors.accent.primary,
-                iconBgColor: theme.colors.accent.primary10,
                 title: t('food.meals.manageMealData.sendToPhone'),
                 description: t('food.meals.manageMealData.sendToPhoneDesc'),
                 onPress: () => handleSendMealToPhone(menuMealId),
@@ -712,7 +721,6 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               {
                 icon: Trash2,
                 iconColor: theme.colors.status.error,
-                iconBgColor: theme.colors.status.error20,
                 title: t('food.meals.manageMealData.deleteMeal'),
                 description: t('food.meals.manageMealData.deleteMealDesc'),
                 titleColor: theme.colors.status.error,

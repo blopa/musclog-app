@@ -124,10 +124,8 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
           <Text
             style={{
               color: theme.colors.text.primary,
-              fontWeight: theme.typography.fontWeight.black,
+              fontWeight: theme.typography.fontWeight.bold,
               fontSize: theme.typography.fontSize.sm,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
             }}
           >
             {isUngroup ? t('optionsSelector.unlink') : t('optionsSelector.link')}

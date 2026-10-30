@@ -1,3 +1,4 @@
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { GymService } from '@/database/services/GymService';
 import { SettingsService } from '@/database/services/SettingsService';
 
@@ -11,7 +12,7 @@ jest.mock('@nozbe/watermelondb', () => ({
 }));
 jest.mock('@/database/models/Gym', () => ({ __esModule: true, default: class {} }));
 jest.mock('@/database/services/SettingsService', () => ({
-  SettingsService: { getActiveGymId: jest.fn(), setActiveGymId: jest.fn() },
+  SettingsService: { get: jest.fn(), set: jest.fn() },
 }));
 
 jest.mock('@/database/database-instance', () => {
@@ -64,7 +65,7 @@ const input = {
 beforeEach(() => {
   mockState.rows = [];
   jest.clearAllMocks();
-  settings.getActiveGymId.mockResolvedValue(null);
+  (settings.get as jest.Mock).mockResolvedValue(null);
 });
 
 describe('GymService.createGym', () => {
@@ -106,10 +107,10 @@ describe('GymService.createGym', () => {
 
   it('only makes the new gym active when asked', async () => {
     await GymService.createGym(input);
-    expect(settings.setActiveGymId).not.toHaveBeenCalled();
+    expect(settings.set).not.toHaveBeenCalled();
 
     const snapshot = await GymService.createGym(input, { makeActive: true });
-    expect(settings.setActiveGymId).toHaveBeenCalledWith(snapshot.id);
+    expect(settings.set).toHaveBeenCalledWith(SETTINGS.activeGymId, snapshot.id);
   });
 
   it('names an unnamed gym and clamps nonsense numbers', async () => {
@@ -144,7 +145,7 @@ describe('GymService weight unit', () => {
 describe('GymService.getActiveGym', () => {
   it('returns the selected gym', async () => {
     const created = await GymService.createGym(input);
-    settings.getActiveGymId.mockResolvedValue(created.id);
+    (settings.get as jest.Mock).mockResolvedValue(created.id);
 
     expect((await GymService.getActiveGym())?.name).toBe('Home Gym');
   });
@@ -153,7 +154,7 @@ describe('GymService.getActiveGym', () => {
     expect(await GymService.getActiveGym()).toBeNull();
 
     const created = await GymService.createGym(input);
-    settings.getActiveGymId.mockResolvedValue(created.id);
+    (settings.get as jest.Mock).mockResolvedValue(created.id);
     mockState.rows[0].deletedAt = 5;
     expect(await GymService.getActiveGym()).toBeNull();
   });
@@ -184,21 +185,21 @@ describe('GymService.updateGym', () => {
 describe('GymService.deleteGym', () => {
   it('soft-deletes through the model writer and stops using the active gym', async () => {
     const { id } = await GymService.createGym(input);
-    settings.getActiveGymId.mockResolvedValue(id);
+    (settings.get as jest.Mock).mockResolvedValue(id);
 
     await GymService.deleteGym(id);
 
     expect(mockState.rows[0].markAsDeleted).toHaveBeenCalledTimes(1);
-    expect(settings.setActiveGymId).toHaveBeenCalledWith(null);
+    expect(settings.set).toHaveBeenCalledWith(SETTINGS.activeGymId, null);
   });
 
   it('leaves the active selection alone when a different gym is deleted', async () => {
     const { id } = await GymService.createGym(input);
-    settings.getActiveGymId.mockResolvedValue('some-other-gym');
+    (settings.get as jest.Mock).mockResolvedValue('some-other-gym');
 
     await GymService.deleteGym(id);
 
-    expect(settings.setActiveGymId).not.toHaveBeenCalled();
+    expect(settings.set).not.toHaveBeenCalled();
   });
 });
 

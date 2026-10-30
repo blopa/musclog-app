@@ -1,4 +1,5 @@
 import { ReactNode, useRef, useState } from 'react';
+import type { TextInputInstance } from 'react-native';
 import { Platform, Text, TextInput as RNTextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -66,7 +67,7 @@ export function MacroInput({
 }: MacroInputProps) {
   const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<RNTextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const { sizeConfig, variantColors, variantBorderColors } = getVariantsData(theme);
 
   const highlightColor = variantColors[variant];
@@ -75,7 +76,7 @@ export function MacroInput({
 
   return (
     <View
-      className="overflow-hidden rounded-xl border border-ink/10 bg-bg-card"
+      className="overflow-hidden rounded-control border border-ink/10 bg-bg-card"
       style={
         {
           width: size === 'half' ? '47%' : '100%',
@@ -90,9 +91,7 @@ export function MacroInput({
       }
     >
       <View className="mb-1 flex-row items-start justify-between">
-        <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-          {label}
-        </Text>
+        <Text className="text-xs font-semibold text-text-secondary">{label}</Text>
         {topRightElement}
       </View>
       <RNTextInput
@@ -117,7 +116,7 @@ export function MacroInput({
       />
       {isFocused ? (
         <View
-          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-xl"
+          className="absolute bottom-0 left-0 right-0 h-1 rounded-b-control"
           style={{ backgroundColor: highlightColor }}
         />
       ) : null}

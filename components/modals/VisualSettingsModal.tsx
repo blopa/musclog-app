@@ -1,7 +1,11 @@
 import {
   BarChart3,
   Beef,
+  Columns2,
+  Crosshair,
   Droplets,
+  Dumbbell,
+  EyeOff,
   Flame,
   Heart,
   LayoutGrid,
@@ -10,7 +14,10 @@ import {
   Moon,
   Palette,
   Rocket,
+  Rows2,
+  Rows3,
   Sun,
+  Utensils,
   Wheat,
   Wine,
   Zap,
@@ -37,19 +44,31 @@ import {
   MIN_HOME_ACTIONS,
   parseHomeActions,
 } from '@/constants/homeActions';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import {
+  HOME_HEATMAP_LAYOUT_OPTIONS,
+  HOME_HEATMAPS_OPTIONS,
+  type HomeHeatmapLayout,
+  type HomeHeatmaps,
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
   type NavItemKey,
   THEME_IDS,
   type ThemeOption,
 } from '@/constants/settings';
+import { useSnackbar } from '@/context/SnackbarContext';
 import SettingsService from '@/database/services/SettingsService';
 import { useAvailableHomeActions } from '@/hooks/useAvailableHomeActions';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { syncAppIconWithTheme } from '@/services/themeAppIcon';
+import {
+  binaryToSelectedMacros,
+  NUTRITION_DISPLAY_MACROS,
+  type NutritionDisplayMacro,
+  selectedMacrosToBinary,
+} from '@/utils/nutritionDisplay';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -60,9 +79,8 @@ type VisualSettingsModalProps = {
 
 type SlotNumber = 1 | 2 | 3;
 
-/** Ordered macro keys — index maps to the binary string position. */
-const MACRO_KEYS = ['carbs', 'protein', 'fats', 'fiber', 'alcohol'] as const;
-type MacroKey = (typeof MACRO_KEYS)[number];
+const MACRO_KEYS = NUTRITION_DISPLAY_MACROS;
+type MacroKey = NutritionDisplayMacro;
 
 const MACRO_ICON: Record<MacroKey, typeof Wheat> = {
   carbs: Wheat,
@@ -80,6 +98,20 @@ const HOME_SUMMARY_CARD_ICON: Record<HomeSummaryCard, typeof LayoutGrid> = {
   weekly_streak: Flame,
 };
 
+/** Home heatmap choices and their icons. Exhaustive by type, so a new choice needs an icon. */
+const HOME_HEATMAPS_ICON: Record<HomeHeatmaps, typeof LayoutGrid> = {
+  none: EyeOff,
+  workouts: Dumbbell,
+  nutrition: Utensils,
+  both: LayoutGrid,
+};
+
+const HOME_HEATMAP_LAYOUT_ICON: Record<HomeHeatmapLayout, typeof LayoutGrid> = {
+  full: Rows2,
+  side_by_side: Columns2,
+  compact: Rows3,
+};
+
 /** Appearance options, in the order they are offered. */
 const THEME_OPTIONS = ['system', ...THEME_IDS] as const satisfies readonly ThemeOption[];
 
@@ -93,31 +125,25 @@ const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
   'kinetic-volt': Zap,
   'kinetic-blush': Heart,
   'kinetic-varia': Rocket,
+  'kinetic-scope': Crosshair,
 };
-
-/** Convert a 5-char binary string to an array of visible macro keys. */
-function binaryToSelected(binary: string): MacroKey[] {
-  return MACRO_KEYS.filter((_, i) => binary[i] === '1');
-}
-
-/** Convert an array of visible macro keys back to a 5-char binary string. */
-function selectedToBinary(selected: MacroKey[]): string {
-  return MACRO_KEYS.map((k) => (selected.includes(k) ? '1' : '0')).join('');
-}
 
 export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
-  const { theme: themePreference, showHomeSteps } = useSettings();
+  const { theme: themePreference, showHomeSteps, homeHeatmaps, homeHeatmapLayout } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
   const [macrosPopupVisible, setMacrosPopupVisible] = useState(false);
   const [selectedMacros, setSelectedMacros] = useState<MacroKey[]>([...MACRO_KEYS]);
   const [homeCardPopupVisible, setHomeCardPopupVisible] = useState(false);
+  const [heatmapsPopupVisible, setHeatmapsPopupVisible] = useState(false);
+  const [heatmapLayoutPopupVisible, setHeatmapLayoutPopupVisible] = useState(false);
   const [homeSummaryCard, setHomeSummaryCard] = useState<HomeSummaryCard>('daily_summary');
   const [homeActionsPopupVisible, setHomeActionsPopupVisible] = useState(false);
   const [selectedHomeActions, setSelectedHomeActions] = useState<readonly HomeActionKey[]>([]);
@@ -139,7 +165,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     }
 
     SettingsService.getNutritionDisplay().then((binary) => {
-      setSelectedMacros(binaryToSelected(binary));
+      setSelectedMacros(binaryToSelectedMacros(binary));
     });
     SettingsService.getHomeSummaryCard().then(setHomeSummaryCard);
     SettingsService.getHomeActions().then((raw) => {
@@ -161,7 +187,9 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     // row is what re-themes the app.
     await SettingsService.setTheme(option);
     // Only a manual pick moves the launcher icon (see services/themeAppIcon.ts).
-    await syncAppIconWithTheme(option);
+    if (await syncAppIconWithTheme(option)) {
+      showSnackbar('success', t('settings.theme.iconAppliesLater'));
+    }
   };
 
   const handleHomeSummaryCardChange = async (card: HomeSummaryCard) => {
@@ -171,11 +199,29 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   };
 
   const HomeSummaryCardIcon = HOME_SUMMARY_CARD_ICON[homeSummaryCard];
+  const HeatmapsIcon = HOME_HEATMAPS_ICON[homeHeatmaps];
+  // A stored side-by-side choice means nothing for a single heatmap, which is drawn full width.
+  const effectiveHeatmapLayout: HomeHeatmapLayout =
+    homeHeatmapLayout === 'side_by_side' && homeHeatmaps !== 'both' ? 'full' : homeHeatmapLayout;
+  const HeatmapLayoutIcon = HOME_HEATMAP_LAYOUT_ICON[effectiveHeatmapLayout];
+
+  // These two read straight from `useSettings()`, which re-renders on the write, so they keep
+  // no local copy to fall out of step with the stored value.
+  const handleHeatmapsChange = async (choice: HomeHeatmaps) => {
+    setHeatmapsPopupVisible(false);
+    await SettingsService.set(SETTINGS.homeHeatmaps, choice);
+  };
+
+  const handleHeatmapLayoutChange = async (layout: HomeHeatmapLayout) => {
+    setHeatmapLayoutPopupVisible(false);
+    await SettingsService.set(SETTINGS.homeHeatmapLayout, layout);
+  };
+
   const ThemeIcon = THEME_ICON[themePreference];
 
   const handleMacrosChange = async (ids: MacroKey[]) => {
     setSelectedMacros(ids);
-    await SettingsService.setNutritionDisplay(selectedToBinary(ids));
+    await SettingsService.setNutritionDisplay(selectedMacrosToBinary(ids));
   };
 
   const macroSummaryLabel = (): string => {
@@ -233,8 +279,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     activeSlot !== null
       ? NAV_ITEM_KEYS.filter((item) => isNavItemAvailable(item, isCycleActive)).map((item) => ({
           icon: NAV_DESTINATIONS[item].icon,
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: currentSlots[activeSlot] === item,
           title: getItemLabel(item),
           description: getItemDescription(item),
           onPress: () => {
@@ -266,16 +311,16 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.visualSettings.title')}>
-      <View className="gap-2 py-6">
+      <View className="gap-8 py-6">
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.homeActions.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.homeActions.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -290,10 +335,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.theme.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.theme.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -308,10 +353,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.visualSettings.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.visualSettings.sectionSubtitle')}
           </Text>
 
@@ -325,10 +370,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.nutritionDisplay.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.nutritionDisplay.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -343,10 +388,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             marginHorizontal: theme.spacing.padding.base,
           }}
         >
-          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
             {t('settings.homeSummaryCard.sectionTitle')}
           </Text>
-          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('settings.homeSummaryCard.sectionSubtitle')}
           </Text>
           <PickerButton
@@ -364,11 +409,38 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
                   label: t('settings.homeDailyStats.showHomeSteps.title'),
                   subtitle: t('settings.homeDailyStats.showHomeSteps.description'),
                   value: showHomeSteps,
-                  onValueChange: (v: boolean) => void SettingsService.setShowHomeSteps(v),
+                  onValueChange: (v: boolean) =>
+                    void SettingsService.set(SETTINGS.showHomeSteps, v),
                 },
               ]}
             />
           </View>
+        </View>
+
+        <View style={{ marginHorizontal: theme.spacing.padding.base }}>
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
+            {t('settings.homeHeatmaps.sectionTitle')}
+          </Text>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.homeHeatmaps.sectionSubtitle')}
+          </Text>
+          <PickerButton
+            icon={<HeatmapsIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+            label={t(`settings.homeHeatmaps.options.${homeHeatmaps}.label`)}
+            onPress={() => setHeatmapsPopupVisible(true)}
+          />
+          {/* Side by side needs two heatmaps; the compact strip suits one or two. */}
+          {homeHeatmaps !== 'none' ? (
+            <View className="mt-3">
+              <PickerButton
+                icon={
+                  <HeatmapLayoutIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                }
+                label={t(`settings.homeHeatmaps.layout.options.${effectiveHeatmapLayout}.label`)}
+                onPress={() => setHeatmapLayoutPopupVisible(true)}
+              />
+            </View>
+          ) : null}
         </View>
       </View>
       <BottomPopUp
@@ -421,8 +493,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         subtitle={t('settings.theme.popupSubtitle')}
         items={THEME_OPTIONS.map((option) => ({
           icon: THEME_ICON[option],
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: option === themePreference,
           title: t(`settings.theme.options.${option}.label`),
           description: t(`settings.theme.options.${option}.description`),
           onPress: () => handleThemeChange(option),
@@ -435,11 +506,38 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         subtitle={t('settings.homeSummaryCard.popupSubtitle')}
         items={HOME_SUMMARY_CARD_OPTIONS.map((card) => ({
           icon: HOME_SUMMARY_CARD_ICON[card],
-          iconColor: theme.colors.accent.primary,
-          iconBgColor: theme.colors.background.iconDark,
+          selected: card === homeSummaryCard,
           title: t(`settings.homeSummaryCard.options.${card}.label`),
           description: t(`settings.homeSummaryCard.options.${card}.description`),
           onPress: () => handleHomeSummaryCardChange(card),
+        }))}
+      />
+      <BottomPopUpMenu
+        visible={heatmapsPopupVisible}
+        onClose={() => setHeatmapsPopupVisible(false)}
+        title={t('settings.homeHeatmaps.popupTitle')}
+        subtitle={t('settings.homeHeatmaps.popupSubtitle')}
+        items={HOME_HEATMAPS_OPTIONS.map((choice) => ({
+          icon: HOME_HEATMAPS_ICON[choice],
+          selected: choice === homeHeatmaps,
+          title: t(`settings.homeHeatmaps.options.${choice}.label`),
+          description: t(`settings.homeHeatmaps.options.${choice}.description`),
+          onPress: () => handleHeatmapsChange(choice),
+        }))}
+      />
+      <BottomPopUpMenu
+        visible={heatmapLayoutPopupVisible}
+        onClose={() => setHeatmapLayoutPopupVisible(false)}
+        title={t('settings.homeHeatmaps.layout.popupTitle')}
+        subtitle={t('settings.homeHeatmaps.layout.popupSubtitle')}
+        items={HOME_HEATMAP_LAYOUT_OPTIONS.filter(
+          (layout) => layout !== 'side_by_side' || homeHeatmaps === 'both'
+        ).map((layout) => ({
+          icon: HOME_HEATMAP_LAYOUT_ICON[layout],
+          selected: layout === effectiveHeatmapLayout,
+          title: t(`settings.homeHeatmaps.layout.options.${layout}.label`),
+          description: t(`settings.homeHeatmaps.layout.options.${layout}.description`),
+          onPress: () => handleHeatmapLayoutChange(layout),
         }))}
       />
     </FullScreenModal>

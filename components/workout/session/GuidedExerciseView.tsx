@@ -42,7 +42,7 @@ import {
   type SessionBlock,
   type SessionSetRowModel,
 } from './sessionModel';
-import { draftFromPrevious, stepInput } from './setDraft';
+import { draftFromPrevious, type SetDraftField, stepInput } from './setDraft';
 
 const HERO_HEIGHT = 260;
 
@@ -65,6 +65,7 @@ function StepperField({
   locale,
   editable,
   adjusted,
+  invalid,
   testID,
   onChange,
 }: {
@@ -72,6 +73,8 @@ function StepperField({
   unit?: string;
   /** The app calculated this number (see `adjustedFields`); the user has not typed over it. */
   adjusted?: boolean;
+  /** The value stopped the last completion (see `setDraftProblem`). */
+  invalid?: boolean;
   value: string;
   step: number;
   locale: string;
@@ -93,9 +96,9 @@ function StepperField({
     />
   );
   return (
-    <View className="flex-1 items-center gap-2 rounded-2xl border border-border-light bg-bg-card p-3">
+    <View className="flex-1 items-center gap-2 rounded-card border border-border-light bg-bg-card p-3">
       <View className="flex-row items-center gap-1">
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <Text className="text-xs font-semibold text-text-secondary">
           {label}
           {unit ? <Text className="font-medium normal-case">{` (${unit})`}</Text> : null}
         </Text>
@@ -113,6 +116,7 @@ function StepperField({
         onChangeText={onChange}
         integer={wholeNumbers}
         marked={!!adjusted}
+        invalid={invalid}
       />
       <View className="flex-row gap-3">
         {button(-1)}
@@ -141,6 +145,7 @@ export function GuidedExerciseView({
   notes,
   warmup,
   busy,
+  invalidField,
   nextLabel,
   onPreviousExercise,
   onNextExercise,
@@ -164,6 +169,8 @@ export function GuidedExerciseView({
   notes: SessionNote[];
   warmup: 'add' | 'remove' | null;
   busy: boolean;
+  /** The field that stopped the last attempt to complete this set, until the user edits it. */
+  invalidField?: SetDraftField | null;
   /** "Up next" — the set after this one, already resolved through the superset order. */
   nextLabel?: string;
   onPreviousExercise?: () => void;
@@ -206,7 +213,7 @@ export function GuidedExerciseView({
         <View className="gap-2 px-4 pb-2">
           <Text
             className="font-bold text-text-primary"
-            style={{ fontSize: theme.typography.fontSize['4xl'], lineHeight: 42 }}
+            style={{ fontSize: theme.typography.fontSize['3xl'], lineHeight: 36 }}
             numberOfLines={2}
             adjustsFontSizeToFit
             minimumFontScale={0.7}
@@ -214,8 +221,8 @@ export function GuidedExerciseView({
             {exercise.name}
           </Text>
           <View className="flex-row flex-wrap items-center gap-2">
-            <View className="rounded-full bg-accent-primary px-3.5 py-1.5">
-              <Text className="text-sm font-bold text-text-on-accent">
+            <View className="rounded-tag bg-accent-primary px-3.5 py-1.5">
+              <Text className="text-sm font-semibold text-text-on-accent">
                 {workingNumber == null
                   ? t('workoutSession.warmup.badge')
                   : t('workoutSession.setOf', {
@@ -290,6 +297,7 @@ export function GuidedExerciseView({
             locale={locale}
             editable={!done}
             adjusted={weightAdjusted}
+            invalid={invalidField === 'weight'}
             testID={`set-${set.id}-weight`}
             onChange={(weight) => onEdit({ weight })}
           />
@@ -300,6 +308,7 @@ export function GuidedExerciseView({
             locale={locale}
             editable={!done}
             adjusted={repsAdjusted}
+            invalid={invalidField === 'reps'}
             testID={`set-${set.id}-reps`}
             onChange={(reps) => onEdit({ reps })}
           />
@@ -334,12 +343,10 @@ export function GuidedExerciseView({
           iconColor={theme.colors.text.secondary}
           title={t('trainingFlow.details')}
           onPress={onDetails}
-          trailing={
-            <Text className="text-sm text-text-secondary">
-              {values.rir?.trim()
-                ? t('trainingFlow.rir', { value: values.rir })
-                : t('trainingFlow.unrated')}
-            </Text>
+          value={
+            values.rir?.trim()
+              ? t('trainingFlow.rir', { value: values.rir })
+              : t('trainingFlow.unrated')
           }
         />
 

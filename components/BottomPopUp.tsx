@@ -1,5 +1,6 @@
 import { X } from 'lucide-react-native';
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import type { ViewInstance } from 'react-native';
 import {
   Animated,
   Keyboard,
@@ -11,11 +12,11 @@ import {
   TouchableWithoutFeedback, // it's deprecated, but using Pressable instead causes a gap below the modal on mobile
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { computeKeyboardSheetLift } from '@/components/keyboardSheetLift';
 import { sheetSurfaceColor } from '@/components/sheetSurfaceColor';
 import { SurfaceColorProvider } from '@/context/SurfaceColorContext';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -53,7 +54,7 @@ export function BottomPopUp({
     !scrollable && Platform.OS !== 'web' ? { height: effectiveMaxHeight } : undefined;
 
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   /** Published to descendants so content can fade out to the real surface behind it. */
   const sheetSurfaceColorValue = sheetSurfaceColor(theme);
   /**
@@ -111,7 +112,7 @@ export function BottomPopUp({
   };
 
   const [slideAnim] = useState(() => new Animated.Value(theme.size['300']));
-  const sheetRef = useRef<View>(null);
+  const sheetRef = useRef<ViewInstance>(null);
   const [rawKeyboardBottomLift, setKeyboardBottomLift] = useState(0);
   // Derive: when the sheet is not visible the lift is always 0
   const keyboardBottomLift = visible ? rawKeyboardBottomLift : 0;
@@ -269,19 +270,21 @@ export function BottomPopUp({
             >
               {/* Header */}
               <View className="border-b border-border-dark">
-                <View className="flex-row items-center justify-between p-6">
+                <View className="flex-row items-center justify-between px-6 py-4">
                   <View className="flex-1 flex-row items-center gap-3">
                     {headerIcon ? <View>{headerIcon}</View> : null}
                     <View className="flex-1">
-                      <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+                      <Text className="text-lg font-semibold text-text-primary">{title}</Text>
                       {subtitle ? (
-                        <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
+                        <Text className="mt-0.5 text-sm text-text-secondary">{subtitle}</Text>
                       ) : null}
                     </View>
                   </View>
                   {onClose ? (
                     <Pressable
-                      className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                      accessibilityRole="button"
+                      hitSlop={4}
+                      className="h-9 w-9 items-center justify-center rounded-control bg-bg-overlay active:opacity-70"
                       onPress={() => onClose?.()}
                       {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                     >

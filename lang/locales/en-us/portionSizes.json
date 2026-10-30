@@ -1,7 +1,7 @@
 {
   "portionSizes": {
-    "addNew": "Add New",
-    "noResults": "No Results",
+    "addNew": "Add new",
+    "noResults": "No results",
     "searchPlaceholder": "Search portions...",
     "selectTitle": "Select portion size",
     "portionWithValueUnit": "{{name}} ({{value}} {{unit}})",

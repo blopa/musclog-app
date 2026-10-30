@@ -1,7 +1,6 @@
 import NetInfo from '@react-native-community/netinfo';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
@@ -22,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Image,
+  type ImageSourcePropType,
   Keyboard,
   Platform,
   Pressable,
@@ -39,7 +39,6 @@ import {
   InputToolbarProps,
   SendProps,
 } from 'react-native-gifted-chat';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { ChatMealCard } from '@/components/cards/ChatMealCard';
@@ -56,12 +55,14 @@ import {
   type ConversationContext,
   TRACK_MEAL,
 } from '@/constants/chat';
+import { useCoachPersona } from '@/context/CoachPersonaContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import { ChatService } from '@/database/services/ChatService';
 import { MuscleService } from '@/database/services/MuscleService';
 import { WorkoutService } from '@/database/services/WorkoutService';
-import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
+import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
+import { type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
@@ -99,25 +100,6 @@ const getConversationContextBackgroundColor = (
       return theme.colors.accent.primary20;
     default:
       return 'transparent';
-  }
-};
-
-const getConversationContextBubbleGradient = (
-  conversationContext: string,
-  theme: Theme
-): readonly [string, string, ...string[]] => {
-  switch (conversationContext) {
-    case 'general':
-      // Indigo to purple gradient for general context
-      return theme.colors.gradients.userBubble;
-    case 'exercise':
-      // Blue to emerald gradient for exercise context
-      return theme.colors.gradients.blueEmerald;
-    case 'nutrition':
-      // Green to jade gradient for nutrition context (current default)
-      return theme.colors.gradients.celebrationGlow;
-    default:
-      return theme.colors.gradients.userBubble;
   }
 };
 
@@ -270,6 +252,7 @@ const renderBubble = (
   theme: Theme,
   conversationContext: string,
   locale: string,
+  coachName: string,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
   onLongPress?: (message: ExtendedIMessage) => void,
   onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealIndex: number) => void,
@@ -283,7 +266,6 @@ const renderBubble = (
   const styles = getStyles(theme);
 
   if (isUser) {
-    const bubbleGradient = getConversationContextBubbleGradient(conversationContext, theme);
     return (
       <Pressable
         style={styles.userBubbleContainer}
@@ -292,14 +274,9 @@ const renderBubble = (
       >
         {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text ? (
-          <LinearGradient
-            colors={bubbleGradient as readonly [string, string, ...string[]]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.userBubbleGradient}
-          >
+          <View style={[styles.userBubble, { backgroundColor: theme.colors.accent.primary }]}>
             {renderMessageText(props, theme)}
-          </LinearGradient>
+          </View>
         ) : null}
         {!!currentMessage?.workout ? renderCustomView(props) : null}
         {!!currentMessage?.createdAt ? (
@@ -319,11 +296,9 @@ const renderBubble = (
         onLongPress={() => currentMessage && onLongPress?.(currentMessage)}
         delayLongPress={350}
       >
-        {!!currentMessage?.user.name ? (
-          <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
-            {currentMessage.user.name}
-          </Text>
-        ) : null}
+        <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
+          {coachName}
+        </Text>
         {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text && !currentMessage?.workoutCompleted ? (
           <View style={styles.aiBubbleContent}>{renderMessageText(props, theme)}</View>
@@ -362,7 +337,7 @@ const renderBubble = (
   }
 };
 
-const renderAvatar = (props: any, theme: Theme) => {
+const renderAvatar = (props: any, theme: Theme, avatarSource: ImageSourcePropType) => {
   const styles = getStyles(theme);
 
   if (props.currentMessage?.user._id === 1) {
@@ -381,7 +356,7 @@ const renderAvatar = (props: any, theme: Theme) => {
   return (
     <View style={[styles.avatar, { overflow: 'hidden' }]}>
       <Image
-        source={AI_COACH_AVATAR}
+        source={avatarSource}
         style={{ width: theme.size['8'], height: theme.size['8'] }}
         resizeMode="cover"
       />
@@ -401,7 +376,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme, locale: string) => {
   if (isToday) {
     return (
       <View className="my-6 items-center">
-        <View className="rounded-full bg-bg-card px-3 py-1">
+        <View className="rounded-tag bg-bg-card px-3 py-1">
           <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
             {t('coach.todayAt', {
               time: formatTimeInTimezone(date.getTime(), undefined, locale),
@@ -576,7 +551,7 @@ const renderInputToolbar = (
       {attachedImage ? (
         <View className="px-4 py-2">
           <View
-            className="relative h-20 w-20 rounded-lg"
+            className="relative h-20 w-20 rounded-control"
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <ZoomableThumbnail uri={attachedImage.uri}>
@@ -599,7 +574,7 @@ const renderInputToolbar = (
       {pendingIntention ? (
         <View className="px-4 py-2">
           <View
-            className="flex-row items-center gap-1.5 rounded-full px-3 py-1"
+            className="flex-row items-center gap-1.5 rounded-tag px-3 py-1"
             style={{
               backgroundColor: theme.colors.accent.primary20,
               alignSelf: 'flex-start',
@@ -649,8 +624,9 @@ export function CoachModal({
 }: CoachModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const persona = useCoachPersona();
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const insets = useSafeAreaInsets();
+  const insets = useAppSafeAreaInsets();
   const router = useRouter();
 
   const { conversationContext, handleConversationContextChange } = useDebouncedSettings();
@@ -806,7 +782,8 @@ export function CoachModal({
         _id: `${idPrefix}-${Date.now()}`,
         text: t(promptKey),
         createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+        // The bubble's name and avatar are drawn from the persona, not from this user object.
+        user: { _id: 2 },
       });
     },
     [addPendingCoachMessage, t]
@@ -966,7 +943,6 @@ export function CoachModal({
             {
               icon: Copy,
               iconColor: theme.colors.text.primary,
-              iconBgColor: theme.colors.background.iconDarker,
               title: t('coach.message.copy'),
               description: t('coach.message.copyDesc'),
               onPress: async () => {
@@ -978,7 +954,6 @@ export function CoachModal({
             {
               icon: Share2,
               iconColor: theme.colors.text.primary,
-              iconBgColor: theme.colors.background.iconDarker,
               title: t('coach.message.share'),
               description: t('coach.message.shareDesc'),
               onPress: () => {
@@ -989,11 +964,9 @@ export function CoachModal({
             {
               icon: Trash2,
               iconColor: theme.colors.status.error50,
-              iconBgColor: theme.colors.status.error10,
               title: t('coach.message.delete'),
               description: t('coach.message.deleteDesc'),
               titleColor: theme.colors.status.error50,
-              descriptionColor: theme.colors.status.error50,
               onPress: () => {
                 setMessageToDelete(selectedMessage);
                 setSelectedMessage(null);
@@ -1055,7 +1028,7 @@ export function CoachModal({
       const sorted = [...records].sort((a, b) => a.createdAt - b.createdAt);
       const header = t('coach.share.title');
       const youLabel = t('coach.you');
-      const coachLabel = t('coach.name');
+      const coachLabel = persona.name;
 
       const lines: string[] = [header, ''];
 
@@ -1079,7 +1052,15 @@ export function CoachModal({
         snackbarMessage: t('coach.share.failed'),
       });
     }
-  }, [conversationContext, i18n.resolvedLanguage, i18n.language, shareText, showSnackbar, t]);
+  }, [
+    conversationContext,
+    i18n.resolvedLanguage,
+    i18n.language,
+    persona.name,
+    shareText,
+    showSnackbar,
+    t,
+  ]);
 
   const handleClearHistoryPress = useCallback(() => {
     setIsMenuVisible(false);
@@ -1131,7 +1112,6 @@ export function CoachModal({
       {
         icon: SlidersHorizontal,
         iconColor: theme.colors.accent.primary,
-        iconBgColor: theme.colors.accent.primary10,
         title: t('coach.menu.quickSettings'),
         description: t('coach.menu.quickSettingsDesc'),
         onPress: handleQuickSettingsPress,
@@ -1139,7 +1119,6 @@ export function CoachModal({
       {
         icon: Share2,
         iconColor: theme.colors.text.primary,
-        iconBgColor: theme.colors.background.iconDarker,
         title: t('coach.menu.shareHistory'),
         description: t('coach.menu.shareHistoryDesc'),
         onPress: handleShareHistory,
@@ -1147,11 +1126,9 @@ export function CoachModal({
       {
         icon: Trash2,
         iconColor: theme.colors.status.error50,
-        iconBgColor: theme.colors.status.error10,
         title: t('coach.menu.clearHistory'),
         description: t('coach.menu.clearHistoryDesc'),
         titleColor: theme.colors.status.error50,
-        descriptionColor: theme.colors.status.error50,
         onPress: handleClearHistoryPress,
       },
     ],
@@ -1226,6 +1203,7 @@ export function CoachModal({
         theme,
         conversationContext,
         locale,
+        persona.name,
         handleViewWorkoutDetails,
         handleMessageLongPress,
         handleViewMealDetails,
@@ -1245,12 +1223,13 @@ export function CoachModal({
       handleSeeAllMeals,
       handleViewMuscles,
       locale,
+      persona.name,
       t,
     ]
   );
   const gcRenderAvatar = useCallback(
-    (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme),
-    [theme]
+    (props: Parameters<typeof renderAvatar>[0]) => renderAvatar(props, theme, persona.avatarSource),
+    [theme, persona.avatarSource]
   );
 
   const gcRenderCustomView = useCallback(
@@ -1340,14 +1319,10 @@ export function CoachModal({
         value: 'general',
         label: t('coach.context.general'),
         badge: unreadCountsByContext.general,
-        icon: (
+        icon: (selected: boolean) => (
           <Zap
             size={theme.iconSize.sm}
-            color={
-              conversationContext === 'general'
-                ? theme.colors.text.primary
-                : theme.colors.text.tertiary
-            }
+            color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
           />
         ),
       },
@@ -1355,14 +1330,10 @@ export function CoachModal({
         value: 'exercise',
         label: t('coach.context.exercise'),
         badge: unreadCountsByContext.exercise,
-        icon: (
+        icon: (selected: boolean) => (
           <Dumbbell
             size={theme.iconSize.sm}
-            color={
-              conversationContext === 'exercise'
-                ? theme.colors.text.primary
-                : theme.colors.text.tertiary
-            }
+            color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
           />
         ),
       },
@@ -1370,19 +1341,15 @@ export function CoachModal({
         value: 'nutrition',
         label: t('coach.context.nutrition'),
         badge: unreadCountsByContext.nutrition,
-        icon: (
+        icon: (selected: boolean) => (
           <UtensilsCrossed
             size={theme.iconSize.sm}
-            color={
-              conversationContext === 'nutrition'
-                ? theme.colors.text.primary
-                : theme.colors.text.tertiary
-            }
+            color={selected ? theme.colors.text.onAccent : theme.colors.text.secondary}
           />
         ),
       },
     ],
-    [conversationContext, theme, t, unreadCountsByContext]
+    [theme, t, unreadCountsByContext]
   );
 
   return (
@@ -1404,7 +1371,7 @@ export function CoachModal({
         >
           <View className="relative">
             <Image
-              source={AI_COACH_AVATAR}
+              source={persona.avatarSource}
               className="rounded-full"
               style={{
                 width: theme.size['10'],
@@ -1425,7 +1392,7 @@ export function CoachModal({
           </View>
           <View className="flex-1">
             <View className="flex-row flex-wrap items-baseline gap-1.5">
-              <Text className="text-lg font-bold text-text-primary">{t('coach.name')}</Text>
+              <Text className="text-lg font-semibold text-text-primary">{persona.name}</Text>
               <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
                 - {conversationContext.charAt(0).toUpperCase() + conversationContext.slice(1)}
               </Text>
@@ -1612,7 +1579,7 @@ const getStyles = (theme: Theme) =>
       marginLeft: 'auto',
       alignItems: 'flex-end',
     },
-    userBubbleGradient: {
+    userBubble: {
       paddingHorizontal: theme.spacing.padding.base,
       paddingVertical: theme.spacing.padding.md,
       borderRadius: theme.borderRadius.xl,

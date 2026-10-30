@@ -34,11 +34,10 @@ import {
   isLargeCalorieChange,
   nutritionReason,
 } from './nutritionReason';
+import { TARGET_FIELDS, type TargetField } from './targetsDraft';
 import { ReviewSectionHeader } from './TrainingReviewSection';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
-
-export const MACRO_FIELDS = ['totalCalories', 'protein', 'carbs', 'fats', 'fiber'] as const;
 
 export const MACRO_LABEL_KEYS = {
   totalCalories: 'weeklyReview.macros.totalCalories',
@@ -46,7 +45,7 @@ export const MACRO_LABEL_KEYS = {
   carbs: 'weeklyReview.macros.carbs',
   fats: 'weeklyReview.macros.fats',
   fiber: 'weeklyReview.macros.fiber',
-} as const satisfies Record<(typeof MACRO_FIELDS)[number], string>;
+} as const satisfies Record<TargetField, string>;
 
 const MODE_KEYS = {
   manual: 'weeklyReview.modes.manual',
@@ -91,7 +90,7 @@ export function NutritionReviewSection({
   const { locale, formatInteger, formatNumber } = useFormatAppNumber();
   if (data.intuitive) {
     return (
-      <View className="rounded-2xl border border-border-light bg-bg-card p-4">
+      <View className="rounded-card border border-border-light bg-bg-card p-4">
         <Text className="text-sm text-text-secondary">{t('weeklyReview.intuitive')}</Text>
       </View>
     );
@@ -100,7 +99,7 @@ export function NutritionReviewSection({
   if (!data.goal || !data.current) {
     return (
       <View
-        className="gap-2 rounded-2xl border border-border-light bg-bg-card p-4"
+        className="gap-2 rounded-card border border-border-light bg-bg-card p-4"
         testID="review-nutrition"
       >
         <ReviewSectionHeader
@@ -162,10 +161,10 @@ export function NutritionReviewSection({
 
   const applied = data.review?.nutritionDecision === 'apply';
   const decidedBlock = (
-    <View className="flex-row items-start gap-3 rounded-xl bg-accent-primary/10 p-3">
+    <View className="flex-row items-start gap-3 rounded-control bg-accent-primary/10 p-3">
       <CalendarCheck size={theme.iconSize.md} color={theme.colors.accent.primary} />
       <View className="min-w-0 flex-1 gap-0.5">
-        <Text className="text-base font-bold text-text-primary">
+        <Text className="text-base font-semibold text-text-primary">
           {t(applied ? 'weeklyReview.applied' : 'weeklyReview.kept')}
         </Text>
         {applied && data.review?.nutritionReviewedAt ? (
@@ -313,13 +312,11 @@ export function NutritionReviewSection({
   const shownRecommendation = decided && data.accepted ? data.accepted : recommendation?.targets;
   return (
     <View
-      className="gap-4 rounded-2xl border border-border-light bg-bg-card p-4"
+      className="gap-4 rounded-card border border-border-light bg-bg-card p-4"
       testID="review-nutrition"
     >
       <ReviewSectionHeader title={t('weeklyReview.nutrition')} icon={Utensils} done={decided} />
-      <Text className="text-xs font-semibold uppercase tracking-wider text-accent-primary">
-        {t(MODE_KEYS[mode])}
-      </Text>
+      <Text className="text-xs font-semibold text-accent-primary">{t(MODE_KEYS[mode])}</Text>
 
       <StatStrip
         items={[
@@ -354,21 +351,21 @@ export function NutritionReviewSection({
         }}
       />
 
-      <View className="overflow-hidden rounded-xl border border-border-light">
+      <View className="overflow-hidden rounded-control border border-border-light">
         <View className="flex-row bg-bg-overlay px-3 py-2">
-          <Text className="flex-1 text-xs font-bold uppercase text-text-tertiary">
+          <Text className="flex-1 text-xs font-semibold text-text-tertiary">
             {t('weeklyReview.target')}
           </Text>
-          <Text className="w-20 text-right text-xs font-bold uppercase text-text-tertiary">
+          <Text className="w-20 text-right text-xs font-semibold text-text-tertiary">
             {t('weeklyReview.currentShort')}
           </Text>
           <Text
-            className={`w-28 text-right text-xs font-bold uppercase ${estimate ? 'text-text-tertiary' : 'text-accent-primary'}`}
+            className={`w-28 text-right text-xs font-semibold ${estimate ? 'text-text-tertiary' : 'text-accent-primary'}`}
           >
             {t(recommendedColumnKey)}
           </Text>
         </View>
-        {MACRO_FIELDS.map((field, index) => {
+        {TARGET_FIELDS.map((field, index) => {
           const current = data.current![field];
           const next = shownRecommendation?.[field] ?? current;
           const delta = Math.round(next) - Math.round(current);
@@ -383,7 +380,7 @@ export function NutritionReviewSection({
                 {formatInteger(Math.round(current))}
               </Text>
               <Text
-                className={`w-28 text-right text-sm ${estimate ? 'text-text-tertiary' : 'font-bold text-text-primary'}`}
+                className={`w-28 text-right text-sm ${estimate ? 'text-text-tertiary' : 'font-semibold text-text-primary'}`}
               >
                 {formatInteger(Math.round(next))}
                 {delta ? (
@@ -403,7 +400,7 @@ export function NutritionReviewSection({
       </View>
 
       {belowFloor && recommendation?.minimumCalories != null ? (
-        <View className="gap-1 rounded-xl bg-status-error/10 p-3" testID="review-below-floor">
+        <View className="gap-1 rounded-control bg-status-error/10 p-3" testID="review-below-floor">
           <Text className="text-sm font-semibold text-text-primary">
             {t('weeklyReview.belowFloorTitle')}
           </Text>
@@ -416,7 +413,10 @@ export function NutritionReviewSection({
       ) : null}
 
       {largeChange && recommendation ? (
-        <View className="gap-1 rounded-xl bg-status-warning/10 p-3" testID="review-large-change">
+        <View
+          className="gap-1 rounded-control bg-status-warning/10 p-3"
+          testID="review-large-change"
+        >
           <Text className="text-sm font-semibold text-text-primary">
             {t('weeklyReview.largeChangeTitle')}
           </Text>
@@ -502,7 +502,7 @@ function NutritionEmptyState({
 
   return (
     <View
-      className="gap-4 rounded-2xl border border-border-light bg-bg-card p-4"
+      className="gap-4 rounded-card border border-border-light bg-bg-card p-4"
       testID="review-nutrition"
     >
       <ReviewSectionHeader
@@ -511,7 +511,7 @@ function NutritionEmptyState({
         done={reviewable ? decided : null}
       />
       <View className="gap-2">
-        <Text className="text-xs font-semibold uppercase tracking-wider text-accent-primary">
+        <Text className="text-xs font-semibold text-accent-primary">
           {t('weeklyReview.empty.currentTargets')}
         </Text>
         <StatStrip

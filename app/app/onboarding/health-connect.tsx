@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 
 import { HealthCategoryCard } from '@/components/cards/HealthCategoryCard';
-import { GradientText } from '@/components/GradientText';
-import { HealthConnectIllustration } from '@/components/HealthConnectIllustration';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
@@ -123,15 +121,13 @@ export default function HealthConnectScreen() {
           {...scrollProps}
         >
           {/* Main Content */}
-          <View className="flex-col items-center px-6 pt-4">
-            {/* Illustration Section */}
-            <HealthConnectIllustration />
-
+          {/* No illustration: the four data types below say what connecting shares. */}
+          <View className="flex-col items-center px-6 pt-12">
             {/* Typography Block */}
             <View className="mb-8 w-full gap-4 text-center">
               <View className="flex-row flex-wrap items-center justify-center">
                 <Text
-                  className="text-center font-bold tracking-tight text-text-primary"
+                  className="text-center font-bold text-text-primary"
                   style={{
                     fontSize: theme.typography.fontSize['3xl'],
                     lineHeight: theme.typography.fontSize['3xl'] * 1.1,
@@ -139,16 +135,16 @@ export default function HealthConnectScreen() {
                 >
                   {t('onboarding.healthConnect.connectYour')}{' '}
                 </Text>
-                <GradientText
-                  colors={[theme.colors.status.indigoLight, theme.colors.status.brandBright]}
+                <Text
                   style={{
+                    color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize['3xl'],
                     fontWeight: theme.typography.fontWeight.bold,
                     lineHeight: theme.typography.fontSize['3xl'] * 1.1,
                   }}
                 >
                   {t('onboarding.healthConnect.health')}
-                </GradientText>
+                </Text>
               </View>
               <Text
                 className="text-center font-normal leading-relaxed"
@@ -202,7 +198,7 @@ export default function HealthConnectScreen() {
             {/* Error Display */}
             {hcError || syncError ? (
               <View
-                className="mb-4 rounded-lg p-3"
+                className="mb-4 rounded-control p-3"
                 style={{ backgroundColor: theme.colors.status.error10 }}
               >
                 <Text

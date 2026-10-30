@@ -508,7 +508,7 @@ describe('transformWorkoutToDetailData — volume trend', () => {
     );
 
     expect(result.volumeTrend).toEqual(EMPTY_TREND);
-    expect(getWorkoutLogsByTemplate).toHaveBeenCalledWith('tpl-1', 10);
+    expect(getWorkoutLogsByTemplate).toHaveBeenCalledWith('tpl-1', { limit: 10 });
   });
 
   it('is empty when the historical logs are all incomplete', async () => {
@@ -583,7 +583,7 @@ describe('transformWorkoutToDetailData — volume trend', () => {
     expect(result.volumeTrend.data).toHaveLength(2);
   });
 
-  it('normalizes the series to an inverted 0–100 chart range, oldest first', async () => {
+  it('normalizes the series to a 0–100 chart range, oldest first', async () => {
     getWorkoutLogsByTemplate.mockResolvedValue([
       historicalLog('wl-1', 1000, 14),
       historicalLog('wl-a', 900, 7),
@@ -600,11 +600,11 @@ describe('transformWorkoutToDetailData — volume trend', () => {
       [exercise()]
     );
 
-    // y is inverted for screen coordinates: the largest volume sits at y = 0.
+    // The chart's y axis points up: the largest volume sits at y = 100.
     expect(result.volumeTrend.data).toEqual([
-      { x: 0, y: 100 },
+      { x: 0, y: 0 },
       { x: 1, y: 50 },
-      { x: 2, y: 0 },
+      { x: 2, y: 100 },
     ]);
   });
 

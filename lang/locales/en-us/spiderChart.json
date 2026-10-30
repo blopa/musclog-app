@@ -1,7 +1,7 @@
 {
   "spiderChart": {
-    "primaryFocus": "Primary Focus",
-    "areaToImprove": "Area to Improve",
+    "primaryFocus": "Primary focus",
+    "areaToImprove": "Area to improve",
     "defaultScoreLabel": "PTS"
   }
 }

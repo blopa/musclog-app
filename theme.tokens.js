@@ -68,6 +68,18 @@ function contrastRatio(hexA, hexB) {
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
+/** Keep accent ink readable across the sweep, moving only an unsafe end towards the start. */
+function readableAccentEnd(palette) {
+  for (let percent = 0; percent <= 100; percent += 1) {
+    const end = mixHex(palette.brandDeep, palette.brandVivid, percent / 100);
+    if (contrastRatio(end, palette.inkOnAccent) >= 4.5) {
+      return end;
+    }
+  }
+
+  return palette.brandVivid;
+}
+
 /**
  * Expand a palette into the full flat colour set: the primaries plus every
  * translucent wash, scrim and tinted surface derived from them.
@@ -87,6 +99,7 @@ function createColors(palette) {
 
   return {
     ...palette,
+    accentGradientEnd: readableAccentEnd(palette),
 
     // --- Scrims, backdrops and overlays. Derived from `scrimBase`, which is dark
     // in every theme: a backdrop's job is to darken what is behind it. ---
@@ -126,14 +139,16 @@ function createColors(palette) {
     surfacePurpleTint: mixHex(palette.surfaceBase, palette.statusPurple, 0.33), // was #3d3162
     surfaceBrandTint: mixHex(palette.surfaceBase, palette.brandPrimary, 0.39), // was #0d4a2d
     surfaceNotification: mixHex(palette.surfaceBase, palette.brandPrimary, 0.15), // was #132a1e
+    // A single-hue tonal ramp, deep brand -> brand -> vivid brand. It used to start on
+    // `statusIndigo`, which put the same periwinkle sweep at the top of Home in every theme.
     colorfulCardStart: mixHex(
       palette.surfaceCard,
-      palette.statusIndigo,
+      palette.brandDeep,
       palette.colorfulCardBlend.start
     ),
     colorfulCardMiddle: mixHex(
       palette.surfaceCard,
-      palette.brandDeep,
+      palette.brandPrimary,
       palette.colorfulCardBlend.middle
     ),
     colorfulCardEnd: mixHex(palette.surfaceCard, palette.brandVivid, palette.colorfulCardBlend.end),
@@ -512,31 +527,22 @@ function createThemeColors(colors) {
     // Gradient colors — every entry has a live consumer; utils/__tests__/themeSelection.test.ts
     // asserts the retired tokens below stay gone.
     gradients: {
-      accent: [colors.brandVivid, colors.brandDeep],
+      accent: [colors.brandVivid, colors.accentGradientEnd],
       button: [colors.surfaceTint, colors.surfaceCard],
-      progress: [colors.statusIndigo, colors.brandDeep, colors.brandVivid],
+      progress: [colors.brandDeep, colors.brandPrimary, colors.brandVivid],
       colorfulCard: [colors.colorfulCardStart, colors.colorfulCardMiddle, colors.colorfulCardEnd],
-      workoutsTitle: [colors.statusPurple, colors.statusInfo, colors.brandVivid],
       // DESIGN.md: a primary action is emerald or the approved emerald-to-teal gradient. It was
       // indigo-to-green, which DESIGN.md does not allow, so it now uses the accent stops.
-      cta: [colors.brandVivid, colors.brandDeep],
-      userBubble: [colors.brandPrimary, colors.brandVivid], // User message bubble gradient
-      // GradientText: these stops ARE the text colour, so every stop stays on the
-      // readable side of the theme's ground (>= 3:1 as large display type).
-      celebrationGlow: [colors.brandPale, colors.textPrimary, colors.brandBright],
-      restOverTitle: [colors.brandPrimary, colors.statusIndigo], // Rest over title gradient
-      workoutStats: [colors.statusIndigo, colors.brandPrimary, colors.brandVivid], // Workout stats gradient
+      cta: [colors.brandVivid, colors.accentGradientEnd],
       // Fades the screen behind the session sheet — follows the theme surface.
       workoutSessionOverlay: [
         colors.surfaceBaseAlpha95,
         colors.surfaceBaseAlpha85,
         colors.surfaceBaseAlpha70,
       ],
-      blueEmerald: [colors.statusInfo, colors.brandVivid], // Blue to emerald gradient
       overlayDark: ['transparent', colors.surfaceWashBrandDeep, colors.surfaceTint], // Dark overlay gradient
       // Camera scrim: sits over a live preview, so it darkens in every theme.
       cameraOverlay: [colors.scrimAlpha60, 'transparent', colors.scrimAlpha90],
-      landingBackground: [colors.surfaceBase, colors.surfaceBase, colors.surfaceBase], // Landing page background gradient
     },
   };
 }

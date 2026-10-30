@@ -246,13 +246,13 @@ export function DailySummaryCard({
           }}
         >
           {/* Page 1 — Today */}
-          <View style={{ width: pageWidth }} className="gap-4 p-5">
+          <View style={{ width: pageWidth }} className="gap-3 p-4">
             {/* Main calorie section */}
-            <View className="gap-3">
+            <View className="gap-2">
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-start gap-1">
                   <Text
-                    className="text-5xl font-extrabold tracking-tighter"
+                    className="text-4xl font-bold tabular-nums"
                     style={{
                       color: theme.colors.colorfulCard.ink,
                       ...(intuitiveMode ? blurFilter(8) : {}),
@@ -263,7 +263,7 @@ export function DailySummaryCard({
 
                   <View className="flex-col">
                     <Text
-                      className="font-bold uppercase"
+                      className="font-semibold tabular-nums"
                       style={{
                         fontSize: theme.typography.fontSize.sm,
                         color: theme.colors.colorfulCard.ink70,
@@ -273,7 +273,7 @@ export function DailySummaryCard({
                       {`/ ${formatInteger(Math.round(calories.goal))}`}
                     </Text>
                     <Text
-                      className="font-bold uppercase"
+                      className="font-semibold tabular-nums"
                       style={{
                         fontSize: theme.typography.fontSize.xs,
                         color: theme.colors.colorfulCard.ink70,
@@ -299,13 +299,13 @@ export function DailySummaryCard({
                   {intuitiveMode ? (
                     <View className="flex-row items-center gap-1">
                       <Text
-                        className="text-xs font-bold"
+                        className="text-xs font-semibold tabular-nums"
                         style={{ color: theme.colors.colorfulCard.ink90, ...blurFilter(5) }}
                       >
                         {'00'}
                       </Text>
                       <Text
-                        className="text-xs font-bold"
+                        className="text-xs font-semibold tabular-nums"
                         style={{ color: theme.colors.colorfulCard.ink90 }}
                       >
                         {t('dailySummaryCard.remaining')}
@@ -313,7 +313,7 @@ export function DailySummaryCard({
                     </View>
                   ) : (
                     <Text
-                      className="text-xs font-bold"
+                      className="text-xs font-semibold tabular-nums"
                       style={{ color: theme.colors.colorfulCard.ink90 }}
                     >
                       {calories.remaining >= 0
@@ -321,16 +321,23 @@ export function DailySummaryCard({
                         : `${formatInteger(Math.round(Math.abs(calories.remaining)))} ${t('dailySummaryCard.over')}`}
                     </Text>
                   )}
-                  {highlightThresholds && calorieStatus !== 'not-reached' ? (
-                    <Text
-                      className="text-xs font-bold"
-                      style={{
-                        color: getProgressBarColor(calorieStatus, theme),
-                      }}
-                    >
-                      {getStatusLabel(calorieStatus, t)}
-                    </Text>
-                  ) : null}
+                  <View className="flex-row items-center gap-2">
+                    {highlightThresholds && calorieStatus !== 'not-reached' ? (
+                      <Text
+                        className="text-xs font-semibold tabular-nums"
+                        style={{
+                          color: getProgressBarColor(calorieStatus, theme),
+                        }}
+                      >
+                        {getStatusLabel(calorieStatus, t)}
+                      </Text>
+                    ) : null}
+                    {intuitiveMode ? null : (
+                      <Text className="text-xs" style={{ color: theme.colors.colorfulCard.ink70 }}>
+                        {`${formatInteger(Math.round(calorieProgress))}%`}
+                      </Text>
+                    )}
+                  </View>
                 </View>
                 <View
                   className="h-1.5 overflow-hidden rounded-full"
@@ -346,28 +353,22 @@ export function DailySummaryCard({
                     }}
                   />
                 </View>
-                <Text
-                  className="text-left text-xs"
-                  style={{ color: theme.colors.colorfulCard.ink70 }}
-                >
-                  {intuitiveMode ? '' : `${formatInteger(Math.round(calorieProgress))}%`}
-                </Text>
               </View>
             </View>
 
             {/* Macros grid */}
             {dailyMacroItems.length > 0 ? (
-              <View className="flex-row gap-2 pt-1">
+              <View className="flex-row gap-2">
                 {dailyMacroItems.map((macro) => (
                   <View key={macro.label} className="flex-1 gap-1.5">
-                    <View className="flex-row items-end justify-between">
+                    {/* Label above the figure: side by side they fought for width and the label truncated. */}
+                    <View className="gap-0.5">
                       <Text
-                        className="font-bold uppercase"
+                        className="font-semibold tabular-nums"
                         numberOfLines={1}
                         style={{
                           fontSize: theme.typography.fontSize.xxs,
                           color: theme.colors.colorfulCard.ink70,
-                          flexShrink: 1,
                         }}
                       >
                         {macro.label}
@@ -389,7 +390,7 @@ export function DailySummaryCard({
                       {!highlightThresholds || macro.status === 'not-reached' ? (
                         <View className="flex-row items-baseline">
                           <Text
-                            className="text-xs font-bold"
+                            className="text-xs font-semibold tabular-nums"
                             style={{
                               color: showColoredIndicators
                                 ? getProgressBarColor(macro.status, theme)
@@ -412,26 +413,32 @@ export function DailySummaryCard({
                         </View>
                       ) : null}
                     </View>
-                    <View
-                      className="h-1 overflow-hidden rounded-full"
-                      style={{ backgroundColor: theme.colors.colorfulCard.track }}
-                    >
+                    {/* The percentage rides beside the bar rather than on a line of its own. */}
+                    <View className="flex-row items-center gap-1.5">
                       <View
-                        className="h-full rounded-full"
-                        style={{
-                          width: intuitiveMode ? '0%' : `${Math.min(macro.progress, 100)}%`,
-                          backgroundColor: showColoredIndicators
-                            ? getProgressBarColor(macro.status, theme)
-                            : theme.colors.colorfulCard.ink90,
-                        }}
-                      />
+                        className="h-1 flex-1 overflow-hidden rounded-full"
+                        style={{ backgroundColor: theme.colors.colorfulCard.track }}
+                      >
+                        <View
+                          className="h-full rounded-full"
+                          style={{
+                            width: intuitiveMode ? '0%' : `${Math.min(macro.progress, 100)}%`,
+                            backgroundColor: showColoredIndicators
+                              ? getProgressBarColor(macro.status, theme)
+                              : theme.colors.colorfulCard.ink90,
+                          }}
+                        />
+                      </View>
+                      {intuitiveMode ? null : (
+                        <Text
+                          className="text-xs"
+                          numberOfLines={1}
+                          style={{ color: theme.colors.colorfulCard.ink70 }}
+                        >
+                          {`${formatInteger(Math.round(macro.progress))}%`}
+                        </Text>
+                      )}
                     </View>
-                    <Text
-                      className="text-left text-xs"
-                      style={{ color: theme.colors.colorfulCard.ink70 }}
-                    >
-                      {intuitiveMode ? '' : `${formatInteger(Math.round(macro.progress))}%`}
-                    </Text>
                   </View>
                 ))}
               </View>
@@ -475,41 +482,42 @@ export function DailySummaryCard({
 
           {/* Page 2 — Weekly Average */}
           {hasWeeklyData ? (
-            <View style={{ width: pageWidth }} className="gap-5 p-5">
-              {/* Header */}
+            <View style={{ width: pageWidth }} className="gap-3 p-4">
+              {/* Average calorie number, labelled the way page 1 labels its goal. */}
               <View className="flex-row items-center justify-between">
-                <Text
-                  className="font-bold uppercase tracking-wider"
-                  style={{
-                    fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.colorfulCard.ink,
-                  }}
-                >
-                  {t('dailySummaryCard.weeklyAvg')}
-                </Text>
+                <View className="flex-row items-start gap-1">
+                  <Text
+                    className="text-4xl font-bold tabular-nums"
+                    style={{
+                      color: theme.colors.colorfulCard.ink,
+                      ...(intuitiveMode ? blurFilter(8) : {}),
+                    }}
+                  >
+                    {intuitiveMode ? '00' : formatInteger(Math.round(weeklyAverages!.calories))}
+                  </Text>
+                  <View className="flex-col">
+                    <Text
+                      className="font-semibold tabular-nums"
+                      style={{
+                        fontSize: theme.typography.fontSize.sm,
+                        color: theme.colors.colorfulCard.ink70,
+                        marginTop: theme.spacing.margin.md,
+                      }}
+                    >
+                      {t('dailySummaryCard.kcal')}
+                    </Text>
+                    <Text
+                      className="font-semibold tabular-nums"
+                      style={{
+                        fontSize: theme.typography.fontSize.xs,
+                        color: theme.colors.colorfulCard.ink70,
+                      }}
+                    >
+                      {t('dailySummaryCard.weeklyAvg')}
+                    </Text>
+                  </View>
+                </View>
                 {menuButton ? menuButton : null}
-              </View>
-
-              {/* Average calorie number */}
-              <View className="flex-row items-end gap-2">
-                <Text
-                  className="text-5xl font-extrabold tracking-tighter"
-                  style={{
-                    color: theme.colors.colorfulCard.ink,
-                    ...(intuitiveMode ? blurFilter(8) : {}),
-                  }}
-                >
-                  {intuitiveMode ? '00' : formatInteger(Math.round(weeklyAverages!.calories))}
-                </Text>
-                <Text
-                  className="mb-1.5 font-bold uppercase"
-                  style={{
-                    fontSize: theme.typography.fontSize.lg,
-                    color: theme.colors.colorfulCard.ink70,
-                  }}
-                >
-                  {t('dailySummaryCard.kcal')}
-                </Text>
               </View>
 
               {/*
@@ -539,7 +547,7 @@ export function DailySummaryCard({
 
         {/* Pagination dots */}
         {hasWeeklyData ? (
-          <View className="flex-row justify-center gap-1.5 pb-3">
+          <View className="flex-row justify-center gap-1.5 pb-2">
             {[0, 1].map((i) => (
               <View
                 key={i}

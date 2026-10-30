@@ -2,8 +2,8 @@
   "workoutHistory": {
     "title": "Sessiegeschiedenis",
     "previewTitle": "Workout-voorbeeld",
-    "workoutInProgress": "WORKOUT IN UITVOERING",
-    "previewSubtitle": "VOORBEELD",
+    "workoutInProgress": "Workout in uitvoering",
+    "previewSubtitle": "Voorbeeld",
     "duration": "Duur",
     "volume": "Vol",
     "setsDone": "Sets gedaan",
@@ -13,6 +13,7 @@
     "set": "Set {{number}}",
     "share": "Delen",
     "shareDescription": "Deel deze workoutdetails",
-    "shareFailed": "Workoutdetails delen mislukt. Probeer het opnieuw."
+    "shareFailed": "Workoutdetails delen mislukt. Probeer het opnieuw.",
+    "viewHistory": "Eerdere sessies bekijken"
   }
 }

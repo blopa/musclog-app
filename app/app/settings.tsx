@@ -1,9 +1,8 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import { useRouter } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
-import { useState } from 'react';
+import { type ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { HelpAndFeedbackCard } from '@/components/cards/HelpAndFeedbackCard';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
@@ -12,21 +11,29 @@ import { WhatsNewCard } from '@/components/cards/WhatsNewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
+import { AppLockSettingsModal } from '@/components/modals/AppLockSettingsModal';
 import { BasicSettingsModal } from '@/components/modals/BasicSettingsModal';
+import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
 import { ManageBleDevicesModal } from '@/components/modals/ManageBleDevicesModal';
 import { NotificationsSettingsModal } from '@/components/modals/NotificationsSettingsModal';
 import { VisualSettingsModal } from '@/components/modals/VisualSettingsModal';
 import { WorkoutSettingsModal } from '@/components/modals/WorkoutSettingsModal';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
+import { ListGroup } from '@/components/theme/ListGroup';
+import { ScreenHeader } from '@/components/theme/ScreenHeader';
+import { COMEBACK_ROUTE } from '@/constants/comebackRoute';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { isAppLockSupported } from '@/utils/appLock';
+
+type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 
 export default function SettingsScreen() {
+  const router = useRouter();
   const theme = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
   const {
     googleGeminiApiKey,
     googleGeminiModel,
@@ -37,12 +44,14 @@ export default function SettingsScreen() {
     localLlmBaseUrl,
   } = useSettings();
   const [isAISettingsVisible, setAISettingsVisible] = useState(false);
+  const [isCycleSettingsVisible, setCycleSettingsVisible] = useState(false);
   const [isBasicSettingsVisible, setBasicSettingsVisible] = useState(false);
   const [isDataSettingsVisible, setDataSettingsVisible] = useState(false);
   const [isAppBehaviorSettingsVisible, setAppBehaviorSettingsVisible] = useState(false);
   const [isVisualSettingsVisible, setVisualSettingsVisible] = useState(false);
   const [isNotificationsSettingsVisible, setNotificationsSettingsVisible] = useState(false);
   const [isBleDevicesVisible, setBleDevicesVisible] = useState(false);
+  const [isAppLockVisible, setAppLockVisible] = useState(false);
   const [isWorkoutSettingsVisible, setWorkoutSettingsVisible] = useState(false);
 
   const handleGoogleGeminiApiKeyChange = async (value: string) => {
@@ -73,25 +82,22 @@ export default function SettingsScreen() {
     await SettingsService.setLocalLlmBaseUrl(value);
   };
 
+  /** One settings row: a neutral icon, the section's title and subtitle, a chevron. */
+  const row = (icon: MaterialIconName, title: string, subtitle: string, onPress: () => void) => (
+    <SettingsCard
+      key={title}
+      icon={
+        <MaterialIcons name={icon} size={theme.iconSize.md} color={theme.colors.text.secondary} />
+      }
+      title={title}
+      subtitle={subtitle}
+      onPress={onPress}
+    />
+  );
+
   return (
     <MasterLayout showNavigationMenu={false}>
-      <View className="border-b border-border-light bg-bg-primary">
-        <View className="flex-row items-center gap-4 px-4 py-4">
-          <Pressable
-            className="-ml-2 rounded-full p-2"
-            onPress={() => {
-              router.navigate('/app');
-            }}
-          >
-            <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
-          </Pressable>
-          <View className="flex-1">
-            <Text className="text-xl font-bold tracking-tight text-text-primary">
-              {t('settings.title')}
-            </Text>
-          </View>
-        </View>
-      </View>
+      <ScreenHeader title={t('settings.title')} />
       <ScrollView
         style={{
           flex: 1,
@@ -102,186 +108,94 @@ export default function SettingsScreen() {
       >
         <AnimatedContent>
           <View style={{ height: theme.size['6'] }} />
-          {/* Configuration Section */}
-          <Text
-            style={{
-              marginLeft: theme.spacing.padding['5'],
-              marginTop: theme.spacing.padding.sm,
-              marginBottom: theme.spacing.padding.sm,
-              fontSize: theme.typography.fontSize.sm,
-              fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
-            }}
-          >
-            {t('settings.configuration')}
-          </Text>
+          <View style={{ gap: theme.spacing.gap.xl }}>
+            <ListGroup title={t('settings.groups.you')}>
+              {row(
+                'settings',
+                t('settings.basicSettings.title'),
+                t('settings.basicSettings.subtitle'),
+                () => setBasicSettingsVisible(true)
+              )}
+            </ListGroup>
 
-          <SettingsCard
-            icon={
-              <MaterialIcons
-                name="settings"
-                size={theme.iconSize['2xl']}
-                color={theme.colors.accent.primary}
-              />
-            }
-            title={t('settings.basicSettings.title')}
-            subtitle={t('settings.basicSettings.subtitle')}
-            onPress={() => setBasicSettingsVisible(true)}
-            rightIcon={
-              <MaterialIcons
-                name="chevron-right"
-                size={theme.iconSize.xl}
-                color={theme.colors.text.secondary}
-              />
-            }
-          />
+            <ListGroup title={t('settings.groups.app')}>
+              {row(
+                'grid-view',
+                t('settings.visualSettings.title'),
+                t('settings.visualSettings.subtitle'),
+                () => setVisualSettingsVisible(true)
+              )}
+              {row(
+                'notifications',
+                t('settings.notificationsSettings.title'),
+                t('settings.notificationsSettings.subtitle'),
+                () => setNotificationsSettingsVisible(true)
+              )}
+              {isAppLockSupported
+                ? row('lock', t('lock.settings.title'), t('lock.settings.subtitle'), () =>
+                    setAppLockVisible(true)
+                  )
+                : null}
+            </ListGroup>
 
-          <SettingsCard
-            icon={
-              <MaterialIcons
-                name="grid-view"
-                size={theme.iconSize['2xl']}
-                color={theme.colors.accent.primary}
-              />
-            }
-            title={t('settings.visualSettings.title')}
-            subtitle={t('settings.visualSettings.subtitle')}
-            onPress={() => setVisualSettingsVisible(true)}
-            rightIcon={
-              <MaterialIcons
-                name="chevron-right"
-                size={theme.iconSize.xl}
-                color={theme.colors.text.secondary}
-              />
-            }
-          />
+            <ListGroup title={t('settings.groups.training')}>
+              {row(
+                'fitness-center',
+                t('settings.workoutSettings.title'),
+                t('settings.workoutSettings.subtitle'),
+                () => setWorkoutSettingsVisible(true)
+              )}
+              {row(
+                'trending-up',
+                t('comeback.settings.title'),
+                t('comeback.settings.subtitle'),
+                () => router.push(COMEBACK_ROUTE)
+              )}
+              {row(
+                'bluetooth',
+                t('settings.bleDevices.title'),
+                t('settings.bleDevices.subtitle'),
+                () => setBleDevicesVisible(true)
+              )}
+            </ListGroup>
 
-          <SettingsCard
-            icon={
-              <MaterialIcons
-                name="sd-storage"
-                size={theme.iconSize['2xl']}
-                color={theme.colors.accent.primary}
-              />
-            }
-            title={t('settings.advancedSettings.title')}
-            subtitle={t('settings.advancedSettings.subtitle')}
-            onPress={() => setDataSettingsVisible(true)}
-            rightIcon={
-              <MaterialIcons
-                name="chevron-right"
-                size={theme.iconSize.xl}
-                color={theme.colors.text.secondary}
-              />
-            }
-          />
+            <ListGroup title={t('settings.groups.nutritionHealth')}>
+              {row(
+                'tune',
+                t('settings.appBehaviorSettings.title'),
+                t('settings.appBehaviorSettings.subtitle'),
+                () => setAppBehaviorSettingsVisible(true)
+              )}
+              {row('calendar-month', t('cycle.settings.title'), t('cycle.settings.subtitle'), () =>
+                setCycleSettingsVisible(true)
+              )}
+            </ListGroup>
 
-          <SettingsCard
-            icon={
-              <MaterialIcons
-                name="tune"
-                size={theme.iconSize['2xl']}
-                color={theme.colors.accent.primary}
-              />
-            }
-            title={t('settings.appBehaviorSettings.title')}
-            subtitle={t('settings.appBehaviorSettings.subtitle')}
-            onPress={() => setAppBehaviorSettingsVisible(true)}
-            rightIcon={
-              <MaterialIcons
-                name="chevron-right"
-                size={theme.iconSize.xl}
-                color={theme.colors.text.secondary}
-              />
-            }
-          />
+            <ListGroup title={t('settings.groups.ai')}>
+              {row(
+                'smart-toy',
+                t('settings.aiSettings.title'),
+                t('settings.aiSettings.subtitle'),
+                () => setAISettingsVisible(true)
+              )}
+            </ListGroup>
 
-          <SettingsCard
-            icon={
-              <MaterialIcons
-                name="fitness-center"
-                size={theme.iconSize['2xl']}
-                color={theme.colors.accent.primary}
-              />
-            }
-            title={t('settings.workoutSettings.title')}
-            subtitle={t('settings.workoutSettings.subtitle')}
-            onPress={() => setWorkoutSettingsVisible(true)}
-            rightIcon={
-              <MaterialIcons
-                name="chevron-right"
-                size={theme.iconSize.xl}
-                color={theme.colors.text.secondary}
-              />
-            }
-          />
+            <ListGroup title={t('settings.groups.data')}>
+              {row(
+                'sd-storage',
+                t('settings.advancedSettings.title'),
+                t('settings.advancedSettings.subtitle'),
+                () => setDataSettingsVisible(true)
+              )}
+            </ListGroup>
 
-          <SettingsCard
-            icon={
-              <MaterialIcons
-                name="smart-toy"
-                size={theme.iconSize['2xl']}
-                color={theme.colors.accent.primary}
-              />
-            }
-            title={t('settings.aiSettings.title')}
-            subtitle={t('settings.aiSettings.subtitle')}
-            onPress={() => setAISettingsVisible(true)}
-            rightIcon={
-              <MaterialIcons
-                name="chevron-right"
-                size={theme.iconSize.xl}
-                color={theme.colors.text.secondary}
-              />
-            }
-          />
+            <ListGroup title={t('settings.groups.about')}>
+              <HelpAndFeedbackCard />
+              <WhatsNewCard />
+            </ListGroup>
 
-          <SettingsCard
-            icon={
-              <MaterialIcons
-                name="notifications"
-                size={theme.iconSize['2xl']}
-                color={theme.colors.accent.primary}
-              />
-            }
-            title={t('settings.notificationsSettings.title')}
-            subtitle={t('settings.notificationsSettings.subtitle')}
-            onPress={() => setNotificationsSettingsVisible(true)}
-            rightIcon={
-              <MaterialIcons
-                name="chevron-right"
-                size={theme.iconSize.xl}
-                color={theme.colors.text.secondary}
-              />
-            }
-          />
-
-          <SettingsCard
-            icon={
-              <MaterialIcons
-                name="bluetooth"
-                size={theme.iconSize['2xl']}
-                color={theme.colors.accent.primary}
-              />
-            }
-            title={t('settings.bleDevices.title')}
-            subtitle={t('settings.bleDevices.subtitle')}
-            onPress={() => setBleDevicesVisible(true)}
-            rightIcon={
-              <MaterialIcons
-                name="chevron-right"
-                size={theme.iconSize.xl}
-                color={theme.colors.text.secondary}
-              />
-            }
-          />
-
-          <WhatsNewCard />
-          <HelpAndFeedbackCard />
-
-          <LegalLinksCard />
+            <LegalLinksCard />
+          </View>
           <View style={{ height: theme.size['8'] }} />
         </AnimatedContent>
       </ScrollView>
@@ -324,6 +238,11 @@ export default function SettingsScreen() {
         visible={isWorkoutSettingsVisible}
         onClose={() => setWorkoutSettingsVisible(false)}
       />
+      <CycleSettingsModal
+        visible={isCycleSettingsVisible}
+        onClose={() => setCycleSettingsVisible(false)}
+      />
+      <AppLockSettingsModal visible={isAppLockVisible} onClose={() => setAppLockVisible(false)} />
       <NotificationsSettingsModal
         visible={isNotificationsSettingsVisible}
         onClose={() => setNotificationsSettingsVisible(false)}

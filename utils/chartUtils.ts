@@ -17,7 +17,12 @@ export interface YAxisLabel {
   yDomainValue: number;
 }
 
-export const MAX_X_LABELS = 8;
+/**
+ * Most x labels a chart prints. A phone-width plot is about 300px once the gutters and the y axis
+ * are out of the way, so eight labels sat ~43px apart against a 40px label box and dates such as
+ * "10/12 10/13" ran into each other; six leaves ~60px between neighbours.
+ */
+export const MAX_X_LABELS = 6;
 export const X_AXIS_LABEL_WIDTH = 40;
 export const X_AXIS_LABEL_OFFSET = 20;
 
@@ -70,19 +75,40 @@ export function getXAxisLabels<T extends { x: number }>(
     }));
   }
 
-  // Otherwise, subsample to MAX_X_LABELS
-  const labels: XAxisLabel[] = [];
-  const step = (data.length - 1) / (MAX_X_LABELS - 1);
+  // Otherwise, subsample, keeping the gaps between printed labels even
+  const lastIndex = data.length - 1;
 
-  for (let i = 0; i < MAX_X_LABELS; i++) {
-    const index = Math.min(Math.round(i * step), data.length - 1);
-    labels.push({
-      label: formatLabel(data[index].x),
-      positionPercent: (index / (data.length - 1)) * 100,
-    });
+  return pickEvenLabelIndices(data.length).map((index) => ({
+    label: formatLabel(data[index].x),
+    positionPercent: (index / lastIndex) * 100,
+  }));
+}
+
+/** The widest a gap between printed labels may be, relative to the narrowest. */
+const MAX_LABEL_GAP_RATIO = 1.5;
+
+/**
+ * Indices of the points to label out of `count` (> MAX_X_LABELS), always including both ends.
+ *
+ * Stepping by `(count - 1) / (MAX_X_LABELS - 1)` and rounding leaves some gaps a point wider than
+ * others — with 7 points it printed indices 0, 1, 2, 4, 5, 6, so one gap was double the rest and
+ * read as a label missing from the axis. This takes the most labels (up to MAX_X_LABELS) whose
+ * widest gap is within MAX_LABEL_GAP_RATIO of the narrowest.
+ */
+function pickEvenLabelIndices(count: number): number[] {
+  const lastIndex = count - 1;
+
+  for (let labelCount = MAX_X_LABELS; labelCount > 2; labelCount--) {
+    const step = lastIndex / (labelCount - 1);
+    const indices = Array.from({ length: labelCount }, (_, i) => Math.round(i * step));
+    const gaps = indices.slice(1).map((index, i) => index - indices[i]);
+    if (Math.max(...gaps) / Math.min(...gaps) <= MAX_LABEL_GAP_RATIO) {
+      return indices;
+    }
   }
 
-  return labels;
+  // Two labels have a single gap, which is always even.
+  return [0, lastIndex];
 }
 
 /** One day in ms — the padding a single-point time series gets so it still has a domain. */

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import {
-  getHistoricalNutritionParams,
+  getLatestHistoricalNutritionWindow,
   type HistoricalNutritionParams,
+  type HistoricalNutritionWindow,
 } from '@/utils/historicalNutritionParams';
 import { calculateTDEE, type TDEEParams } from '@/utils/nutritionCalculator';
 
@@ -30,6 +31,11 @@ export interface UseEmpiricalTDEEResult {
   usedEmpiricalData: boolean;
   /** Historical nutrition data if available */
   historicalData: HistoricalNutritionParams | null;
+  /**
+   * The tracked period the empirical TDEE was measured over. `fromPastWindow` means the recent
+   * lookback had too little data and an earlier period stood in — say so wherever the TDEE shows.
+   */
+  historicalWindow: Omit<HistoricalNutritionWindow, 'params'> | null;
   /** Error information if calculation failed */
   error: string | null;
 }
@@ -45,7 +51,8 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
   const { user, isLoading: userLoading } = useUser();
   const { metrics, isLoading: metricsLoading } = useUserMetrics();
   const { useBfForCalculations } = useSettings();
-  const [historicalData, setHistoricalData] = useState<HistoricalNutritionParams | null>(null);
+  const [historicalWindow, setHistoricalWindow] = useState<HistoricalNutritionWindow | null>(null);
+  const historicalData = historicalWindow?.params ?? null;
   const [historicalLoading, setHistoricalLoading] = useState(true);
   const [historicalError, setHistoricalError] = useState<string | null>(null);
 
@@ -56,17 +63,17 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
         setHistoricalLoading(true);
         setHistoricalError(null);
 
-        const data = await getHistoricalNutritionParams({
+        const window = await getLatestHistoricalNutritionWindow({
           lookbackDays,
           minNutritionDays,
           useWeeklyFatAverages,
         });
 
-        setHistoricalData(data);
+        setHistoricalWindow(window);
       } catch (err) {
         console.error('Error fetching historical nutrition data:', err);
         setHistoricalError(err instanceof Error ? err.message : 'Failed to fetch historical data');
-        setHistoricalData(null);
+        setHistoricalWindow(null);
       } finally {
         setHistoricalLoading(false);
       }
@@ -141,6 +148,17 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
   ]);
 
   const isLoading = userLoading || metricsLoading || historicalLoading;
+  const windowInfo = useMemo(
+    () =>
+      historicalWindow
+        ? {
+            startMs: historicalWindow.startMs,
+            endMs: historicalWindow.endMs,
+            fromPastWindow: historicalWindow.fromPastWindow,
+          }
+        : null,
+    [historicalWindow]
+  );
   const error = historicalError ?? calculationError;
 
   return {
@@ -148,6 +166,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
     isLoading,
     usedEmpiricalData,
     historicalData,
+    historicalWindow: windowInfo,
     error,
   };
 }

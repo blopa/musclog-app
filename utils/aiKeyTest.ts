@@ -1,8 +1,7 @@
 import OpenAI from 'openai';
 
-import { GEMINI_MODELS } from '@/constants/ai';
-
 import { isInvalidApiKeyError } from './aiErrors';
+import { resolveGeminiModel } from './aiModels';
 import { configureBasicGenAI } from './gemini';
 
 export type AiKeyTestResult = 'ok' | 'rejected' | 'network';
@@ -44,7 +43,7 @@ export async function testApiKey(
     if (provider === 'gemini') {
       const client = await configureBasicGenAI({
         apiKey: key,
-        model: model || GEMINI_MODELS.GEMINI_2_5_FLASH.model,
+        model: resolveGeminiModel(model),
         generationConfig: { maxOutputTokens: 1 },
       });
       await withTimeout(

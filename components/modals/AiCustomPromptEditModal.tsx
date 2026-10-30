@@ -94,10 +94,7 @@ export function AiCustomPromptEditModal({
         />
 
         <View className="gap-2">
-          <Text
-            className="text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('settings.aiSettings.promptContext')}
           </Text>
           <SegmentedControl

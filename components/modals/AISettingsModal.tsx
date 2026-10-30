@@ -14,12 +14,19 @@ import { Linking, Platform, Pressable, Text, View } from 'react-native';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
+import { CoachPersonaPicker } from '@/components/coach/CoachPersonaPicker';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
 import { SecretInput } from '@/components/theme/SecretInput';
+import { SectionLabel } from '@/components/theme/SectionLabel';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
+import {
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_OPENAI_MODEL,
+  GEMINI_MODELS,
+  OPENAI_MODELS,
+} from '@/constants/ai';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
@@ -102,10 +109,7 @@ function AIIntegrationCard({
 
   return (
     <View>
-      <Text
-        className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-        style={{ color: sectionTitleColor }}
-      >
+      <Text className="mb-2 px-5 text-xs font-semibold" style={{ color: sectionTitleColor }}>
         {sectionTitle}
       </Text>
 
@@ -264,12 +268,12 @@ export function AISettingsModal({
   onClose,
   googleGeminiApiKey = '',
   onGoogleGeminiApiKeyChange,
-  geminiModel = 'Gemini Pro 1.5',
+  geminiModel = DEFAULT_GEMINI_MODEL,
   onGeminiModelPress,
   openAiApiKey = '',
   onOpenAiApiKeyChange,
   onGetOpenAiKeyPress,
-  openAiModel = 'GPT-4o',
+  openAiModel = DEFAULT_OPENAI_MODEL,
   onOpenAiModelPress,
   localLlmApiKey = '',
   onLocalLlmApiKeyChange,
@@ -523,8 +527,7 @@ export function AISettingsModal({
 
   const geminiModelMenuItems: BottomPopUpMenuItem[] = Object.values(GEMINI_MODELS).map((model) => ({
     icon: Bot,
-    iconColor: theme.colors.status.info,
-    iconBgColor: theme.colors.status.info10,
+    selected: model.model === geminiModel,
     title: model.model,
     description: `Google Gemini ${model.model}`,
     onPress: () => onGeminiModelPress?.(model.model),
@@ -532,8 +535,7 @@ export function AISettingsModal({
 
   const openAiModelMenuItems: BottomPopUpMenuItem[] = Object.values(OPENAI_MODELS).map((model) => ({
     icon: Bot,
-    iconColor: theme.colors.status.indigo,
-    iconBgColor: theme.colors.status.indigo10,
+    selected: model.model === openAiModel,
     title: model.model,
     description: `OpenAI ${model.model}`,
     onPress: () => onOpenAiModelPress?.(model.model),
@@ -546,7 +548,7 @@ export function AISettingsModal({
         {musclogGatewayAvailable ? (
           <View className="gap-3">
             <Text
-              className="px-5 text-xs font-bold uppercase tracking-wider"
+              className="px-5 text-xs font-semibold"
               style={{ color: theme.colors.accent.primary }}
             >
               {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
@@ -674,7 +676,7 @@ export function AISettingsModal({
             {Platform.OS === 'ios' && isOnDeviceCapable ? (
               <View className="gap-3">
                 <Text
-                  className="px-5 text-xs font-bold uppercase tracking-wider"
+                  className="px-5 text-xs font-semibold"
                   style={{ color: theme.colors.accent.primary }}
                 >
                   {t('settings.aiSettings.onDeviceAi.sectionTitle')}
@@ -718,23 +720,17 @@ export function AISettingsModal({
 
         {/* Insights & Alerts Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.insightsAlerts')}
-          </Text>
+          </SectionLabel>
           <ToggleInput items={insightsItems} />
         </View>
 
         {/* Memory Settings Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.memorySettings')}
-          </Text>
+          </SectionLabel>
           <View className="mb-3">
             <ToggleInput
               items={[
@@ -763,7 +759,7 @@ export function AISettingsModal({
             />
           </View>
           <View
-            className="rounded-lg border bg-bg-card p-4"
+            className="rounded-card border bg-bg-card p-4"
             style={{
               borderColor: theme.colors.border.light,
               borderWidth: theme.borderWidth.thin,
@@ -793,12 +789,9 @@ export function AISettingsModal({
 
         {/* Image Processing Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.imageProcessing')}
-          </Text>
+          </SectionLabel>
           <ToggleInput
             items={[
               {
@@ -853,17 +846,23 @@ export function AISettingsModal({
           />
         </View>
 
+        {/* Coach personality */}
+        <View>
+          <SectionLabel className="mb-1 px-1">{t('coach.personaPicker.title')}</SectionLabel>
+          <Text className="mb-2 px-1 text-xs text-text-secondary">
+            {t('coach.personaPicker.subtitle')}
+          </Text>
+          <CoachPersonaPicker />
+        </View>
+
         {/* Custom Prompts Section */}
         <View>
-          <Text
-            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <SectionLabel className="mb-2 px-1">
             {t('settings.aiSettings.customPrompts')}
-          </Text>
+          </SectionLabel>
           <Pressable
             onPress={() => setIsCustomPromptsVisible(true)}
-            className="overflow-hidden rounded-lg border bg-bg-card active:bg-bg-overlay"
+            className="overflow-hidden rounded-control border bg-bg-card active:bg-bg-overlay"
             style={{
               borderColor: theme.colors.border.light,
               borderWidth: theme.borderWidth.thin,

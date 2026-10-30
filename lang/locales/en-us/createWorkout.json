@@ -1,10 +1,10 @@
 {
   "createWorkout": {
-    "title": "Create New Workout",
+    "title": "Create new workout",
     "save": "Save",
-    "workoutIcon": "Workout Icon",
+    "workoutIcon": "Workout icon",
     "essentials": "Essentials",
-    "workoutTitle": "Workout Title",
+    "workoutTitle": "Workout title",
     "workoutTitlePlaceholder": "e.g., Leg Day Destruction",
     "description": "Description",
     "descriptionPlaceholder": "Focus on quads and calves...",
@@ -37,11 +37,11 @@
     "weekly": "Weekly",
     "exercises": "Exercises",
     "exercisesInWorkout": "Exercises in the workout",
-    "addExerciseError": "Failed to Add Exercise",
-    "editTitle": "Edit Workout",
-    "loadError": "Failed to Load",
-    "noExercisesPlaceholder": "No Exercises",
-    "saveError": "Failed to Save",
+    "addExerciseError": "Failed to add exercise",
+    "editTitle": "Edit workout",
+    "loadError": "Failed to load",
+    "noExercisesPlaceholder": "No exercises",
+    "saveError": "Failed to save",
     "validation": {
       "titleRequiredMessage": "Please enter a workout title"
     },

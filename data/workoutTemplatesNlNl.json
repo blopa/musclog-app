@@ -42,5 +42,29 @@
       "5": "Bovenlichaam B",
       "6": "Onderlichaam B"
     }
+  },
+  {
+    "title": "Korte full body — Sportschool",
+    "description": "Twee korte full-bodytrainingen (A en B) met sportschoolapparatuur: ongeveer 30 minuten, 2 sets per oefening, bewust rustig. Een fijne manier om weer te beginnen.",
+    "dayNames": {
+      "1": "Training A",
+      "2": "Training B"
+    }
+  },
+  {
+    "title": "Korte full body — Thuis",
+    "description": "Twee korte full-bodytrainingen (A en B) met dumbbells, een kettlebell en weerstandsbanden: ongeveer 30 minuten, 2 sets per oefening. Bewust rustig.",
+    "dayNames": {
+      "1": "Training A",
+      "2": "Training B"
+    }
+  },
+  {
+    "title": "Korte full body — Zonder materiaal",
+    "description": "Twee korte full-bodytrainingen (A en B) met alleen je lichaam en een band: ongeveer 30 minuten, 2 sets per oefening. Bewust rustig.",
+    "dayNames": {
+      "1": "Training A",
+      "2": "Training B"
+    }
   }
 ]

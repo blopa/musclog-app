@@ -37,6 +37,7 @@ export const REASON_KEYS = {
   lowReserveStalled: 'weeklyReview.reasons.lowReserveStalled',
   dueForLighter: 'weeklyReview.reasons.dueForLighter',
   onTrack: 'weeklyReview.reasons.onTrack',
+  comeback: 'weeklyReview.reasons.comeback',
 } as const satisfies Record<TrainingReasonCode, string>;
 
 export const CONSISTENCY_STATUS_KEYS = {

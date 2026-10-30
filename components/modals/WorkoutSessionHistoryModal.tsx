@@ -1,4 +1,4 @@
-import { Dumbbell, Share2, Weight } from 'lucide-react-native';
+import { Dumbbell, History, Share2, Weight } from 'lucide-react-native';
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -21,6 +21,8 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
+import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
+import { useTemplateHasSessions } from '@/hooks/useTemplateHasSessions';
 import { useTheme } from '@/hooks/useTheme';
 import type { EnrichedWorkoutTemplateSet } from '@/hooks/useWorkoutTemplateDetails';
 import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
@@ -37,6 +39,7 @@ import {
 } from '@/utils/workoutSetCompletion';
 
 import { FullScreenModal } from './FullScreenModal';
+import PastWorkoutsHistoryModal from './PastWorkoutsHistoryModal';
 
 export type { SetData } from '../WorkoutHistorySetRow';
 
@@ -85,9 +88,15 @@ export function WorkoutSessionHistoryModal({
   const units = accountUnits;
   const weightUnitKey = getWeightUnitI18nKey(units);
   const [isSharing, setIsSharing] = useState(false);
+  const [isTemplateHistoryVisible, setIsTemplateHistoryVisible] = useSubModalVisibility(visible);
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
   const [recommendations, setRecommendations] = useState<TemplateRecommendation[]>([]);
+  // The "past sessions" button only appears once this workout has been completed at least once.
+  const hasPastSessions = useTemplateHasSessions(
+    isPreview ? workoutTemplate?.id : undefined,
+    visible
+  );
   useEffect(() => {
     let live = true;
     if (visible && isPreview && workoutTemplate) {
@@ -491,16 +500,14 @@ export function WorkoutSessionHistoryModal({
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text
-                className="mb-0.5 block text-sm font-bold uppercase tracking-wider"
+                className="mb-0.5 block text-sm font-semibold"
                 style={{ color: theme.colors.accent.primary }}
               >
                 {isPreview
                   ? t('workoutHistory.previewSubtitle')
                   : t('workoutHistory.workoutInProgress')}
               </Text>
-              <Text className="text-3xl font-bold leading-tight text-text-primary">
-                {workoutName}
-              </Text>
+              <Text className="text-xl font-semibold text-text-primary">{workoutName}</Text>
               {(isPreview ? workoutTemplate?.description : null) ? (
                 <Text className="mt-1 text-sm text-text-secondary">
                   {workoutTemplate!.description}
@@ -509,7 +516,7 @@ export function WorkoutSessionHistoryModal({
             </View>
             {!isPreview && shouldShowTimer ? (
               <View className="items-end">
-                <Text className="font-mono text-3xl font-bold tabular-nums tracking-tight text-text-primary">
+                <Text className="font-mono text-3xl font-bold tabular-nums text-text-primary">
                   {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
                 </Text>
                 <Text className="text-sm font-medium text-text-secondary">
@@ -522,7 +529,7 @@ export function WorkoutSessionHistoryModal({
           {/* Stats Pills */}
           <View className="mt-1 flex-row items-center gap-3">
             <View
-              className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
+              className="flex-row items-center gap-1.5 rounded-control px-3 py-1.5"
               style={{ backgroundColor: theme.colors.status.info20 }}
             >
               <Weight size={theme.iconSize.md} color={theme.colors.status.info} />
@@ -532,7 +539,7 @@ export function WorkoutSessionHistoryModal({
             </View>
             {!isPreview ? (
               <View
-                className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
+                className="flex-row items-center gap-1.5 rounded-control px-3 py-1.5"
                 style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />
@@ -544,6 +551,17 @@ export function WorkoutSessionHistoryModal({
           </View>
         </View>
 
+        {isPreview && workoutTemplate && hasPastSessions ? (
+          <Button
+            label={t('workoutHistory.viewHistory')}
+            icon={History}
+            variant="outline"
+            size="md"
+            width="full"
+            onPress={() => setIsTemplateHistoryVisible(true)}
+          />
+        ) : null}
+
         {/* Divider */}
         <View className="h-px" style={{ backgroundColor: theme.colors.border.light }} />
 
@@ -552,6 +570,16 @@ export function WorkoutSessionHistoryModal({
         {/* Bottom spacing */}
         <View className="h-8" />
       </View>
+
+      {/* Mounted only while open so its filters start fresh for whichever workout is previewed. */}
+      {isPreview && workoutTemplate && isTemplateHistoryVisible ? (
+        <PastWorkoutsHistoryModal
+          visible={true}
+          onClose={() => setIsTemplateHistoryVisible(false)}
+          templateId={workoutTemplate.id}
+          title={workoutName}
+        />
+      ) : null}
     </FullScreenModal>
   );
 }

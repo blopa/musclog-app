@@ -1,5 +1,10 @@
+import { of } from 'rxjs';
+
 import { DEFAULT_HOME_ACTIONS, MAX_HOME_ACTIONS, parseHomeActions } from '@/constants/homeActions';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import {
+  COACH_CUSTOM_PERSONA_SETTING_TYPE,
+  COMEBACK_STATE_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
   HOME_ACTIONS_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
@@ -452,6 +457,126 @@ describe('SettingsService', () => {
       expect(
         rows.filter((row) => row.type === SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE)
       ).toHaveLength(1);
+    });
+  });
+  describe('comeback state', () => {
+    it('reads the default state when nothing is stored', async () => {
+      installSettingsTable();
+
+      const state = await SettingsService.getComebackState();
+
+      expect(state.status).toBe('none');
+      expect(state.minimumDays).toEqual([]);
+    });
+
+    it('keeps both of two concurrent updates instead of the last read winning', async () => {
+      const rows = installSettingsTable();
+
+      await Promise.all([
+        SettingsService.updateComebackState((current) => ({
+          ...current,
+          minimumDays: [...current.minimumDays, '2026-09-01'],
+        })),
+        SettingsService.updateComebackState((current) => ({
+          ...current,
+          minimumDays: [...current.minimumDays, '2026-09-02'],
+        })),
+      ]);
+
+      const state = await SettingsService.getComebackState();
+      expect(state.minimumDays).toEqual(['2026-09-01', '2026-09-02']);
+      expect(valuesFor(rows, COMEBACK_STATE_SETTING_TYPE)).toHaveLength(1);
+    });
+
+    it('merges a plain patch and normalizes out-of-range values', async () => {
+      installSettingsTable();
+
+      const next = await SettingsService.updateComebackState({ status: 'active', weekShift: 99 });
+
+      expect(next.status).toBe('active');
+      expect(next.weekShift).toBeLessThan(99);
+    });
+
+    it('keeps accepting updates after one of them throws', async () => {
+      installSettingsTable();
+
+      await expect(
+        SettingsService.updateComebackState(() => {
+          throw new Error('boom');
+        })
+      ).rejects.toThrow('boom');
+
+      const next = await SettingsService.updateComebackState({ status: 'active' });
+      expect(next.status).toBe('active');
+    });
+  });
+  describe('custom coach persona', () => {
+    it('keeps both of two concurrent edits instead of the last read winning', async () => {
+      const rows = installSettingsTable();
+
+      await Promise.all([
+        SettingsService.updateCoachCustomPersona({ name: '  Coach Atlas ' }),
+        SettingsService.updateCoachCustomPersona({ voice: 'Calm drill sergeant.' }),
+      ]);
+
+      const stored = await SettingsService.get(SETTINGS.coachCustomPersona);
+      expect(stored).toEqual({ name: 'Coach Atlas', voice: 'Calm drill sergeant.', avatar: '' });
+      expect(valuesFor(rows, COACH_CUSTOM_PERSONA_SETTING_TYPE)).toHaveLength(1);
+    });
+
+    it('drops an avatar that is not an image data URI', async () => {
+      installSettingsTable();
+
+      const next = await SettingsService.updateCoachCustomPersona({
+        name: 'Atlas',
+        avatar: 'https://evil.example/a.png',
+      });
+
+      expect(next.avatar).toBe('');
+    });
+
+    it('keeps accepting edits after one of them fails to save', async () => {
+      installSettingsTable();
+      const failing = jest
+        .spyOn(SettingsService, 'set')
+        .mockRejectedValueOnce(new Error('disk full'));
+
+      await expect(SettingsService.updateCoachCustomPersona({ name: 'A' })).rejects.toThrow(
+        'disk full'
+      );
+      failing.mockRestore();
+
+      const next = await SettingsService.updateCoachCustomPersona({ name: 'B' });
+      expect(next.name).toBe('B');
+    });
+  });
+
+  describe('observe', () => {
+    const observeRows = (rows: Partial<SettingRow>[]) => {
+      mockDatabase.get.mockReturnValue({
+        query: () => ({ observeWithColumns: () => of(rows) }),
+      } as any);
+    };
+
+    it('emits the parsed value of the most recently updated row', (done) => {
+      observeRows([
+        { value: '{"name":"Old","voice":"v","avatar":""}', updatedAt: 1 },
+        { value: '{"name":"New","voice":"v","avatar":""}', updatedAt: 2 },
+      ]);
+
+      SettingsService.observe(SETTINGS.coachCustomPersona).subscribe((value) => {
+        expect(value.name).toBe('New');
+        done();
+      });
+    });
+
+    it('emits the default while nothing is stored', (done) => {
+      observeRows([]);
+
+      SettingsService.observe(SETTINGS.coachCustomPersona).subscribe((value) => {
+        expect(value).toEqual(SETTINGS.coachCustomPersona.defaultValue);
+        done();
+      });
     });
   });
 });

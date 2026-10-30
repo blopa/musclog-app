@@ -20,7 +20,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
         {/* Header */}
         <View className="flex-row items-center justify-between">
           <Text
-            className="font-medium uppercase tracking-wider"
+            className="font-medium"
             style={{
               fontSize: theme.typography.fontSize.xs,
               color: theme.colors.colorfulCard.ink70,

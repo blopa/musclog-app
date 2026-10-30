@@ -50,7 +50,7 @@ export function WhatsNewDebugSection() {
   };
 
   return (
-    <View className="gap-3 rounded-xl border border-border-light bg-bg-card p-4">
+    <View className="gap-3 rounded-card border border-border-light bg-bg-card p-4">
       <Text accessibilityRole="header" className="text-xl font-bold text-text-primary">
         {t('whatsNew.debug.title')}
       </Text>
@@ -78,7 +78,13 @@ export function WhatsNewDebugSection() {
           key={release.version}
           label={t('whatsNew.debug.preview', { version: release.version })}
           onPress={() =>
-            setPreview(selectReplayFlow({ releases: [release], currentVersion: release.version }))
+            setPreview(
+              selectReplayFlow({
+                releases: [release],
+                currentVersion: release.version,
+                context: { cycleTracking: true },
+              })
+            )
           }
         />
       ))}

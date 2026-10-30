@@ -1,5 +1,8 @@
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
-import { serializeProgressionRule, serializeSessionProgression } from '@/utils/progressionRules';
+import {
+  serializeProgressionRule,
+  serializeSessionProgression,
+} from '@/utils/progressionRuleSchema';
 import { serializeSetPrescription } from '@/utils/setPrescription';
 
 import { buildSessionBlocks, canRevertStartAdjustment, guidanceStateFor } from '../sessionModel';

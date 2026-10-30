@@ -99,7 +99,7 @@ export function ConfirmationModal({
               }}
             >
               <Text
-                className="font-bold tracking-tight text-text-primary"
+                className="font-bold text-text-primary"
                 style={{ fontSize: theme.typography.fontSize.lg }}
               >
                 {title}
@@ -128,7 +128,7 @@ export function ConfirmationModal({
             {/* Warning */}
             {warning ? (
               <View
-                className="rounded-lg border-l-4 p-3"
+                className="rounded-control border-l-4 p-3"
                 style={{
                   backgroundColor: `${theme.colors.status.warning}10`,
                   borderColor: theme.colors.status.warning,

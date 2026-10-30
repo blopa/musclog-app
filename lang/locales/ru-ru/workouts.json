@@ -120,8 +120,8 @@
       "clearFilters": "Очистить фильтры",
       "applyFilters": "Применить фильтры",
       "workoutType": "Тип тренировки",
-      "targetMuscles": "ЦЕЛЕВЫЕ МЫШЦЫ",
-      "duration": "ДЛИТЕЛЬНОСТЬ",
+      "targetMuscles": "Целевые мышцы",
+      "duration": "Длительность",
       "upTo": "До {{duration}}",
       "workoutTypes": {
         "strength": "Силовые",
@@ -209,7 +209,7 @@
       "successMessageWithPlan": "План «{{planName}}» создан: {{count}} тренировок"
     },
     "aiGeneration": {
-      "comingSoon": "Генерация тренировок с помощью ИИ скоро появится!",
+      "comingSoon": "Генерация тренировок с помощью ИИ скоро появится.",
       "title": "Создать с помощью ИИ",
       "subtitle": "Расскажите о своих целях, и мы составим персональный план тренировок",
       "preferencesLabel": "Ваши предпочтения",
@@ -220,7 +220,7 @@
       "aiNotConfigured": "Функции ИИ не настроены. Пожалуйста, добавьте API-ключ Gemini или OpenAI в Настройках."
     },
     "templateBrowser": {
-      "comingSoon": "Просмотр шаблонов скоро появится!"
+      "comingSoon": "Просмотр шаблонов скоро появится."
     },
     "interruptedSession": {
       "description": "У вас есть незавершённая тренировка.",
@@ -233,6 +233,10 @@
       "alreadyActive": "У вас уже есть незавершённая тренировка. Сначала продолжите или удалите её."
     },
     "unnamed": "Без названия",
-    "previewWorkout": "Просмотр: {{name}}"
+    "previewWorkout": "Просмотр: {{name}}",
+    "history": {
+      "title": "История тренировок",
+      "description": "Просмотрите все завершённые сессии"
+    }
   }
 }

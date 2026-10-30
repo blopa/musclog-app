@@ -30,7 +30,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
-import { parseTrainingSetup } from '@/utils/onboardingTraining';
+import { parseTrainingSetup, planWeightGoal } from '@/utils/onboardingTraining';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
@@ -153,6 +153,7 @@ export default function QuickBodyStatsScreen() {
 
       const gender = setupData.gender ?? 'other';
       const fitnessGoal = setupData.fitnessGoal ?? 'general';
+      const training = parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA));
       const weightGoal = setupData.weightGoal ?? 'maintain';
 
       // Create or update user profile
@@ -188,7 +189,7 @@ export default function QuickBodyStatsScreen() {
         heightCm,
         age,
         activityLevel: 2,
-        weightGoal,
+        weightGoal: planWeightGoal(training, weightGoal),
         fitnessGoal,
         liftingExperience,
         bodyFatPercent: useBfForCalculations ? (bodyFat ?? undefined) : undefined,
@@ -222,7 +223,7 @@ export default function QuickBodyStatsScreen() {
             {/* Title */}
             <View>
               <Text
-                className="mb-1 text-3xl font-black tracking-tight"
+                className="mb-1 text-2xl font-bold"
                 style={{ color: theme.colors.text.primary }}
               >
                 {t('onboarding.quickBodyStats.title')}
@@ -291,10 +292,7 @@ export default function QuickBodyStatsScreen() {
 
             {/* Birthday */}
             <View className="gap-2">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickBodyStats.birthday').toUpperCase()}
               </Text>
               <DatePickerInput
@@ -314,10 +312,7 @@ export default function QuickBodyStatsScreen() {
 
             {/* Body Fat % */}
             <View className="gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickBodyStats.bodyFat').toUpperCase()}
               </Text>
               <Text

@@ -501,7 +501,7 @@ export default function ExerciseGoalCreationModal({
             <ActivityIndicator size="small" color={theme.colors.accent.primary} />
           ) : null}
           {!isLoadingHistory ? (
-            <View className="bg-surface-variant rounded-2xl p-4">
+            <View className="bg-surface-variant rounded-card p-4">
               {current1RM !== null ? (
                 <Text className="text-sm text-text-primary">
                   {t('exerciseGoals.creation.currentEstimated1RM', {
@@ -610,8 +610,8 @@ export default function ExerciseGoalCreationModal({
           />
 
           {projection?.projectedWeeks ? (
-            <View className="mt-4 rounded-xl bg-accent-primary/10 p-4">
-              <Text className="text-sm font-bold text-accent-primary">
+            <View className="mt-4 rounded-card bg-accent-primary/10 p-4">
+              <Text className="text-sm font-semibold text-accent-primary">
                 {t('exerciseGoals.creation.projectionPreview', {
                   weeks: Math.ceil(projection.projectedWeeks),
                   date: projection.projectedDate?.toLocaleDateString(locale, {
@@ -623,7 +623,7 @@ export default function ExerciseGoalCreationModal({
             </View>
           ) : null}
 
-          <View className="bg-surface-variant mt-4 flex-row items-start gap-3 rounded-xl p-4">
+          <View className="bg-surface-variant mt-4 flex-row items-start gap-3 rounded-card p-4">
             <Lightbulb size={20} color={theme.colors.accent.primary} />
             <Text className="flex-1 text-sm text-text-secondary">
               {isRealistic
@@ -708,8 +708,6 @@ export default function ExerciseGoalCreationModal({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.accent.primary,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
               }}
             >
               {t('exerciseGoals.creation.reviewSummary')}
@@ -749,8 +747,6 @@ export default function ExerciseGoalCreationModal({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: 1,
               }}
             >
               {t('exerciseGoals.creation.exerciseLabel')}
@@ -797,8 +793,6 @@ export default function ExerciseGoalCreationModal({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
             }}
           >
             {t('exerciseGoals.creation.typeLabel')}
@@ -827,8 +821,6 @@ export default function ExerciseGoalCreationModal({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
             }}
           >
             {t('exerciseGoals.creation.targetLabel')}
@@ -929,8 +921,6 @@ export default function ExerciseGoalCreationModal({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.accent.primary,
-              textTransform: 'uppercase',
-              letterSpacing: 1,
             }}
           >
             {t('exerciseGoals.creation.projectionPreview', {

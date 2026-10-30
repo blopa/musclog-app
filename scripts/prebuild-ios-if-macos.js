@@ -54,8 +54,8 @@ try {
     cwd: process.cwd(),
   });
 
-  console.log('[prebuild-ios-if-macos] ✅ iOS project fixed successfully');
+  console.log('[prebuild-ios-if-macos] [OK] iOS project fixed successfully');
 } catch (error) {
-  console.error('[prebuild-ios-if-macos] ❌ Error:', error.message);
+  console.error('[prebuild-ios-if-macos] [ERROR] Error:', error.message);
   process.exit(1);
 }

@@ -1,10 +1,6 @@
 {
   "home": {
-    "greeting": {
-      "goodMorning": "Доброе утро",
-      "goodAfternoon": "Добрый день",
-      "goodEvening": "Добрый вечер"
-    },
+    "accountMenu": "Открыть меню аккаунта",
     "actions": {
       "startWorkout": "Начать\nтренировку",
       "trackFood": "Записать\nеду",
@@ -43,6 +39,37 @@
       "surplus": "Профицит",
       "even": "Баланс",
       "kcal": "ккал"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Последняя {{count}} неделя",
+      "lastWeeks_few": "Последние {{count}} недели",
+      "lastWeeks_many": "Последние {{count}} недель",
+      "lastWeeks_other": "Последние {{count}} недели",
+      "lastDays_one": "Последний {{count}} день",
+      "lastDays_few": "Последние {{count}} дня",
+      "lastDays_many": "Последние {{count}} дней",
+      "lastDays_other": "Последние {{count}} дня",
+      "tapHint": "Нажмите на день, чтобы увидеть подробности",
+      "less": "Меньше",
+      "more": "Больше",
+      "earlierWeeks": "Показать более ранние недели",
+      "laterWeeks": "Показать более поздние недели",
+      "workouts": {
+        "title": "Тренировки",
+        "none": "Без тренировки",
+        "count_one": "{{count}} тренировка",
+        "count_few": "{{count}} тренировки",
+        "count_many": "{{count}} тренировок",
+        "count_other": "{{count}} тренировки"
+      },
+      "nutrition": {
+        "title": "Питание",
+        "none": "Ничего не записано",
+        "count_one": "{{count}} приём пищи записан",
+        "count_few": "{{count}} приёма пищи записано",
+        "count_many": "{{count}} приёмов пищи записано",
+        "count_other": "{{count}} приёма пищи записано"
+      }
     }
   }
 }

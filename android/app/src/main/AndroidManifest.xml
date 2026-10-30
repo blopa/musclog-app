@@ -13,6 +13,7 @@
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
@@ -21,19 +22,25 @@
   <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
   <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED"/>
+  <uses-permission android:name="android.permission.health.READ_BASAL_BODY_TEMPERATURE"/>
   <uses-permission android:name="android.permission.health.READ_BASAL_METABOLIC_RATE"/>
   <uses-permission android:name="android.permission.health.READ_BODY_FAT"/>
   <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY"/>
   <uses-permission android:name="android.permission.health.READ_HEIGHT"/>
+  <uses-permission android:name="android.permission.health.READ_INTERMENSTRUAL_BLEEDING"/>
   <uses-permission android:name="android.permission.health.READ_LEAN_BODY_MASS"/>
+  <uses-permission android:name="android.permission.health.READ_MENSTRUATION"/>
   <uses-permission android:name="android.permission.health.READ_NUTRITION"/>
   <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
   <uses-permission android:name="android.permission.health.READ_WEIGHT"/>
+  <uses-permission android:name="android.permission.health.WRITE_BASAL_BODY_TEMPERATURE"/>
   <uses-permission android:name="android.permission.health.WRITE_BODY_FAT"/>
   <uses-permission android:name="android.permission.health.WRITE_DISTANCE"/>
   <uses-permission android:name="android.permission.health.WRITE_EXERCISE"/>
   <uses-permission android:name="android.permission.health.WRITE_HEIGHT"/>
+  <uses-permission android:name="android.permission.health.WRITE_INTERMENSTRUAL_BLEEDING"/>
   <uses-permission android:name="android.permission.health.WRITE_LEAN_BODY_MASS"/>
+  <uses-permission android:name="android.permission.health.WRITE_MENSTRUATION"/>
   <uses-permission android:name="android.permission.health.WRITE_NUTRITION"/>
   <uses-permission android:name="android.permission.health.WRITE_WEIGHT"/>
   <queries>
@@ -53,31 +60,49 @@
     <meta-data android:name="expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT" android:value="true"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
-    <service android:name="com.reactnativeandroidwidget.RNWidgetCollectionService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize|assetsPaths|locale|layoutDirection" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="unspecified">
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.werules.logger"/>
+        <data android:scheme="exp+logger"/>
       </intent-filter>
       <intent-filter>
         <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE"/>
       </intent-filter>
     </activity>
-    <receiver android:name=".widget.SmartCamera" android:exported="false" android:label="Smart Camera">
+    <receiver android:name=".NutritionProvider" android:exported="true" android:label="@string/nutrition_display_name">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-        <action android:name="com.werules.logger.WIDGET_CLICK"/>
+        <action android:name="expo.modules.widgets.ACTION_WIDGET_INTERACTION"/>
       </intent-filter>
-      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_smartcamera"/>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/nutrition_info"/>
+      <meta-data android:name="expo.modules.widgets.NAME" android:value="Nutrition"/>
     </receiver>
-    <receiver android:name=".widget.Nutrition" android:exported="false" android:label="Nutrition Progress">
+    <receiver android:name=".SmartCameraProvider" android:exported="true" android:label="@string/smart_camera_display_name">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-        <action android:name="com.werules.logger.WIDGET_CLICK"/>
+        <action android:name="expo.modules.widgets.ACTION_WIDGET_INTERACTION"/>
       </intent-filter>
-      <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_nutrition"/>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/smart_camera_info"/>
+      <meta-data android:name="expo.modules.widgets.NAME" android:value="SmartCamera"/>
+    </receiver>
+    <receiver android:name=".ActivityHeatmapProvider" android:exported="true" android:label="@string/activity_heatmap_display_name">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="expo.modules.widgets.ACTION_WIDGET_INTERACTION"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/activity_heatmap_info"/>
+      <meta-data android:name="expo.modules.widgets.NAME" android:value="ActivityHeatmap"/>
+    </receiver>
+    <receiver android:name=".CycleProvider" android:exported="true" android:label="@string/cycle_display_name">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+        <action android:name="expo.modules.widgets.ACTION_WIDGET_INTERACTION"/>
+      </intent-filter>
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/cycle_info"/>
+      <meta-data android:name="expo.modules.widgets.NAME" android:value="Cycle"/>
     </receiver>
     <activity-alias android:name="ViewPermissionUsageActivity" android:exported="true" android:targetActivity=".MainActivity" android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
       <intent-filter>
@@ -116,6 +141,12 @@
       </intent-filter>
     </activity-alias>
     <activity-alias android:name=".LauncherIconKineticVaria" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_kinetic_varia" android:roundIcon="@mipmap/ic_launcher_kinetic_varia_round" android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity-alias>
+    <activity-alias android:name=".LauncherIconKineticScope" android:enabled="false" android:exported="true" android:icon="@mipmap/ic_launcher_kinetic_scope" android:roundIcon="@mipmap/ic_launcher_kinetic_scope_round" android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>

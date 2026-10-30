@@ -204,7 +204,7 @@ export function TrackSavedForLaterFoodMealModal({
           <View className="mt-6 gap-2">
             <View className="flex-row items-center justify-between">
               <Text
-                className="text-xs font-bold uppercase tracking-wider"
+                className="text-xs font-semibold"
                 style={{ color: theme.colors.text.secondary }}
               >
                 {t('food.actions.splitPercentage')}
@@ -223,7 +223,7 @@ export function TrackSavedForLaterFoodMealModal({
               {SPLIT_PRESETS.map((preset) => (
                 <Pressable
                   key={preset}
-                  className="flex-1 items-center justify-center rounded-xl border py-2"
+                  className="flex-1 items-center justify-center rounded-control border py-2"
                   style={{
                     borderColor:
                       splitPercentage === preset
@@ -262,10 +262,7 @@ export function TrackSavedForLaterFoodMealModal({
         ) : null}
 
         <View className="mt-6 gap-2">
-          <Text
-            className="text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('food.actions.targetMealType')}
           </Text>
           <FilterTabs

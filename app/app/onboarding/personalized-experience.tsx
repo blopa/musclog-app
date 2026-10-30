@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import {
   Award,
@@ -11,7 +10,7 @@ import {
   Wind,
   Zap,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,9 +19,11 @@ import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { PERSONALIZED_SETUP_DATA } from '@/constants/misc';
 import { type LiftingExperience } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
+import { type ActivityLevel } from '@/utils/aiOnboarding/contract';
+import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
 type ExperienceOption = {
@@ -33,7 +34,7 @@ type ExperienceOption = {
 };
 
 type ActivityOption = {
-  value: number;
+  value: ActivityLevel;
   labelKey: string;
   descKey: string;
   icon: LucideIcon;
@@ -99,18 +100,35 @@ export default function PersonalizedExperienceScreen() {
   const router = useRouter();
 
   const [experience, setExperience] = useState<LiftingExperience>('beginner');
-  const [activityLevel, setActivityLevel] = useState(2);
+  const [activityLevel, setActivityLevel] = useState<ActivityLevel>(2);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Answers given earlier (including through the AI setup) come back prefilled instead of reset.
+  useEffect(() => {
+    let cancelled = false;
+    readPersonalizedSetup().then((saved) => {
+      if (cancelled) {
+        return;
+      }
+
+      if (saved.liftingExperience) {
+        setExperience(saved.liftingExperience);
+      }
+
+      if (saved.activityLevel) {
+        setActivityLevel(saved.activityLevel);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleContinue = async () => {
     setIsSaving(true);
     try {
-      const existing = await AsyncStorage.getItem(PERSONALIZED_SETUP_DATA);
-      const current = existing ? JSON.parse(existing) : {};
-      await AsyncStorage.setItem(
-        PERSONALIZED_SETUP_DATA,
-        JSON.stringify({ ...current, liftingExperience: experience, activityLevel })
-      );
+      await mergePersonalizedSetup({ liftingExperience: experience, activityLevel });
 
       await setCurrentOnboardingStep('/app/onboarding/personalized-experience');
       router.navigate('/app/onboarding/personalized-goals');
@@ -124,7 +142,10 @@ export default function PersonalizedExperienceScreen() {
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={3} total={10} />
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.experience}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
 
         <ScrollView
           className="flex-1"
@@ -132,10 +153,7 @@ export default function PersonalizedExperienceScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-6 pt-6">
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.personalizedExperience.title')}
             </Text>
             <Text
@@ -150,10 +168,7 @@ export default function PersonalizedExperienceScreen() {
 
             {/* Training Experience */}
             <View className="mb-8 gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.personalizedExperience.experienceLabel')}
               </Text>
 
@@ -163,7 +178,7 @@ export default function PersonalizedExperienceScreen() {
                   <Pressable
                     key={opt.value}
                     onPress={() => setExperience(opt.value)}
-                    className="flex-row items-center justify-between rounded-xl px-4 py-4"
+                    className="flex-row items-center justify-between rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,
@@ -234,10 +249,7 @@ export default function PersonalizedExperienceScreen() {
 
             {/* Activity Level */}
             <View className="gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.personalizedExperience.activityLevelLabel')}
               </Text>
 
@@ -247,7 +259,7 @@ export default function PersonalizedExperienceScreen() {
                   <Pressable
                     key={opt.value}
                     onPress={() => setActivityLevel(opt.value)}
-                    className="flex-row items-center justify-between rounded-xl px-4 py-4"
+                    className="flex-row items-center justify-between rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,

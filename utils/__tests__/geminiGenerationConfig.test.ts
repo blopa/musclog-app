@@ -10,8 +10,13 @@ jest.mock('../sentry', () => ({ captureMessage: jest.fn() }));
 
 describe('geminiModelFamily', () => {
   it.each([
+    ['gemini-4-argon', 'gemini-4'],
     ['gemini-3-pro-preview', 'gemini-3-pro'],
+    ['gemini-3.1-pro-preview', 'gemini-3-pro'],
     ['gemini-3-flash-preview', 'gemini-3-flash'],
+    ['gemini-3.6-flash', 'gemini-3-flash'],
+    ['gemini-3.5-flash-lite', 'gemini-3-flash'],
+    ['gemini-3.8-flash', 'gemini-3-flash-no-minimal'],
     ['gemini-2.5-pro', 'gemini-2.5-pro'],
     ['gemini-2.5-flash', 'gemini-2.5-flash'],
     ['gemini-2.5-flash-lite', 'gemini-2.5-flash-lite'],
@@ -34,11 +39,19 @@ describe('buildGeminiGenerationConfig', () => {
     expect(flash.thinkingConfig).toEqual({ thinkingLevel: ThinkingLevel.MINIMAL });
 
     // Pro cannot go below LOW.
-    const pro = buildGeminiGenerationConfig('gemini-3-pro-preview', {
+    const pro = buildGeminiGenerationConfig('gemini-3.1-pro-preview', {
       responseSchema: schema,
       thinking: 'low',
     });
     expect(pro.thinkingConfig).toEqual({ thinkingLevel: ThinkingLevel.LOW });
+  });
+
+  it('never sends MINIMAL to a model whose levels start at low', () => {
+    for (const model of ['gemini-3.8-flash', 'gemini-4-argon', 'gemini-3.1-pro-preview']) {
+      expect(buildGeminiGenerationConfig(model, { thinking: 'low' }).thinkingConfig).toEqual({
+        thinkingLevel: ThinkingLevel.LOW,
+      });
+    }
   });
 
   it('gives Gemini 2.5 a thinkingBudget and never a level', () => {
@@ -55,7 +68,10 @@ describe('buildGeminiGenerationConfig', () => {
 
   it('sets at most one thinking field for every known family', () => {
     for (const model of [
-      'gemini-3-pro-preview',
+      'gemini-4-argon',
+      'gemini-3.1-pro-preview',
+      'gemini-3.8-flash',
+      'gemini-3.6-flash',
       'gemini-3-flash-preview',
       'gemini-2.5-pro',
       'gemini-2.5-flash',

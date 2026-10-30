@@ -10,7 +10,10 @@ import {
   Donut,
   Egg,
   Fish,
+  Globe,
   Grape,
+  Landmark,
+  Lightbulb,
   type LucideIcon,
   Milk,
   Pizza,
@@ -19,17 +22,25 @@ import {
   Salad,
   Search,
   Soup,
-  Sparkles,
   Utensils,
   UtensilsCrossed,
   Wheat,
 } from 'lucide-react-native';
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type ComponentProps,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  FlatList,
   Image,
   ImageSourcePropType,
+  type ListRenderItemInfo,
   Pressable,
   ScrollView,
   Text,
@@ -63,6 +74,13 @@ import { getMassUnitI18nKey } from '@/utils/units';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
+import {
+  buildFoodSearchRows,
+  type FoodSearchFilter,
+  type FoodSearchRow,
+  type PagedSource,
+  type ResultSource,
+} from './foodSearchRows';
 import { FullScreenModal } from './FullScreenModal';
 import { RecentNutritionHistoryModal } from './RecentNutritionHistoryModal';
 
@@ -91,7 +109,6 @@ function pickRandomFoodIcon(): LucideIcon {
 }
 
 type FoodItem = UnifiedFoodResult & {
-  icon?: string; // Emoji
   iconName?: string; // Lucide icon name, e.g. 'utensils-crossed'
   iconColor?: string;
   iconBgColor?: string;
@@ -201,7 +218,7 @@ function UnderlineTabs({ tabs, activeTab, onTabChange }: UnderlineTabsProps) {
 
 type SectionHeaderProps = {
   title: string;
-  icon?: typeof Sparkles;
+  icon?: typeof Lightbulb;
   rightAction?: {
     label: string;
     onPress: () => void;
@@ -214,13 +231,11 @@ function SectionHeader({ title, icon: Icon, rightAction }: SectionHeaderProps) {
     <View className="mb-3 flex-row items-center justify-between px-1">
       <View className="flex-row items-center gap-2">
         {Icon ? <Icon size={theme.iconSize.sm} color={theme.colors.accent.secondary} /> : null}
-        <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-          {title}
-        </Text>
+        <Text className="text-xs font-semibold text-text-secondary">{title}</Text>
       </View>
       {rightAction ? (
         <Pressable onPress={rightAction.onPress} className="p-3">
-          <Text className="text-xs font-bold text-accent-secondary">{rightAction.label}</Text>
+          <Text className="text-xs font-semibold text-accent-secondary">{rightAction.label}</Text>
         </Pressable>
       ) : null}
     </View>
@@ -256,10 +271,10 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
   });
 
   return (
-    <Pressable className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
+    <Pressable className="flex-row items-center gap-3 rounded-card border border-border-light bg-bg-overlay p-3 active:scale-[0.98]">
       {/* Icon/Image */}
       <View
-        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
+        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-control border"
         style={{
           backgroundColor: theme.colors.background.secondaryDark,
           borderColor: 'transparent',
@@ -273,7 +288,7 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
             style={{ borderRadius: theme.borderRadius.xl }}
           />
         ) : (
-          <Text className="text-xl">🍽️</Text>
+          <UtensilsCrossed size={theme.iconSize.lg} color={theme.colors.text.secondary} />
         )}
       </View>
 
@@ -308,40 +323,6 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
       </Pressable>
     </Pressable>
   );
-}
-
-function getSectionHeaderTitle(
-  isInitialLoad: boolean,
-  hasLocalResults: boolean,
-  hasApiResults: boolean,
-  isLoadingAPI: boolean,
-  t: TFunction
-): string {
-  if (isInitialLoad) {
-    return t('foodSearch.searching');
-  }
-
-  if (hasLocalResults || hasApiResults || isLoadingAPI) {
-    return t('foodSearch.bestMatches');
-  }
-
-  return t('foodSearch.noResults');
-}
-
-function getSearchingStatusText(
-  isLoadingLocal: boolean,
-  isLoadingAPI: boolean,
-  t: TFunction
-): string {
-  if (isLoadingLocal && isLoadingAPI) {
-    return t('foodSearch.searchingLocalAndAPI');
-  }
-
-  if (isLoadingLocal) {
-    return t('foodSearch.searchingLocal');
-  }
-
-  return t('foodSearch.searchingAPI');
 }
 
 export function FoodSearchModal({
@@ -420,7 +401,7 @@ export function FoodSearchModal({
     };
   }, [visible]);
 
-  // Pick a new random food emoji each time the user starts a new search
+  // Pick a new random food icon each time the user starts a new search
   useEffect(() => {
     if (searchQuery) {
       const randomize = () => {
@@ -993,6 +974,243 @@ export function FoodSearchModal({
     t,
   ]);
 
+  const { rows, endReached } = buildFoodSearchRows<FoodItem, MealCardData>({
+    t,
+    searchQuery,
+    activeFilter: activeFilter as FoodSearchFilter,
+    search: {
+      isInitialLoad,
+      isLoadingLocal,
+      isLoadingAPI,
+      hasLocalResults,
+      hasApiResults,
+      localCount,
+      apiCount,
+      apiError: !!apiError,
+      usdaError: !!usdaError,
+      showCancel: showCancelSearch,
+      firstResolvedApi,
+      results: {
+        local: resultsBySource.local,
+        api: resultsBySource.api,
+        usda: resultsBySource.usda,
+      },
+      filteredCount: filteredResults.length,
+      paging: {
+        local: { hasMore: hasMoreLocal, isLoadingMore: isLoadingMoreLocal },
+        openfood: { hasMore: hasMoreAPI, isLoadingMore: isLoadingMoreAPI },
+        usda: { hasMore: hasMoreUSDA, isLoadingMore: isLoadingMoreUSDA },
+      },
+    },
+    favorites: {
+      foods: favoriteFoods,
+      isLoading: isLoadingFavorites,
+      hasError: !!favoriteFoodsError,
+      paging: { hasMore: hasMoreFavoriteFoods, isLoadingMore: isLoadingMoreFavorites },
+    },
+    meals: {
+      all: mealCardsData,
+      filtered: filteredMealCardsData,
+      isLoading: isLoadingMeals,
+      paging: { hasMore: hasMoreMeals, isLoadingMore: isLoadingMoreMeals },
+    },
+    recent: recentFoods,
+    showYesterday:
+      !isLoadingYesterday &&
+      !hasItemsTrackedForSelectedDate &&
+      !!yesterdayMealData &&
+      yesterdayMealData.logs.length > 0,
+    suggested: { title: suggestedTitle, foods: suggestedFoods, isLoading: isLoadingSuggested },
+  });
+
+  const pagers: Record<PagedSource, { load: () => void; isLoadingMore: boolean }> = {
+    local: { load: loadMoreLocal, isLoadingMore: isLoadingMoreLocal },
+    openfood: { load: loadMoreAPI, isLoadingMore: isLoadingMoreAPI },
+    usda: { load: loadMoreUSDA, isLoadingMore: isLoadingMoreUSDA },
+    favorites: { load: loadMoreFavoriteFoods, isLoadingMore: isLoadingMoreFavorites },
+    meals: { load: loadMoreMeals, isLoadingMore: isLoadingMoreMeals },
+  };
+
+  // FlatList can fire this several times while one page is in flight; load each page once.
+  const handleEndReached = () => {
+    if (endReached && !pagers[endReached].isLoadingMore) {
+      pagers[endReached].load();
+    }
+  };
+
+  const sourceDividerStyle: Record<ResultSource, { icon: LucideIcon; color: string }> = {
+    local: { icon: UtensilsCrossed, color: theme.colors.accent.primary },
+    openfood: { icon: Globe, color: theme.colors.text.tertiary },
+    usda: { icon: Landmark, color: theme.colors.text.tertiary },
+  };
+
+  const renderRow = ({
+    item: row,
+    index,
+  }: ListRenderItemInfo<FoodSearchRow<FoodItem, MealCardData>>) => {
+    switch (row.kind) {
+      case 'header':
+        return (
+          <View style={index === 0 ? undefined : { paddingTop: theme.spacing.padding.base }}>
+            <SectionHeader
+              title={row.title}
+              icon={row.icon === 'suggested' ? Lightbulb : undefined}
+              rightAction={
+                row.action === 'viewAllRecent'
+                  ? {
+                      label: t('foodSearch.viewAll'),
+                      onPress: () => setIsRecentNutritionHistoryModalVisible(true),
+                    }
+                  : undefined
+              }
+            />
+          </View>
+        );
+      case 'sourceDivider': {
+        const { icon: Icon, color } = sourceDividerStyle[row.source];
+        const line = row.source === 'local' ? 'bg-accent-primary/20' : 'bg-text-tertiary/30';
+        return (
+          <View className="mb-3 flex-row items-center gap-2 pt-2">
+            <View className={`h-0.5 flex-1 ${line}`} />
+            <View className="flex-row items-center gap-2">
+              <Icon size={theme.iconSize.sm} color={color} />
+              <Text className="text-xs font-medium" style={{ color }}>
+                {row.label}
+              </Text>
+            </View>
+            <View className={`h-0.5 flex-1 ${line}`} />
+          </View>
+        );
+      }
+
+      case 'food': {
+        let food: ComponentProps<typeof FoodSearchItemCard>['food'] = row.food;
+        if (row.decoration === 'local') {
+          food = {
+            ...row.food,
+            iconName: 'utensils-crossed',
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+          };
+        } else if (row.decoration === 'usda' || (row.decoration === 'api' && !row.food.imageUrl)) {
+          food = { ...row.food, iconComponent: searchSessionIcon };
+        }
+
+        return (
+          <View className="pb-1.5">
+            <FoodSearchItemCard
+              food={food}
+              onAddPress={() => handleFoodClick(row.food)}
+              intuitiveMode={intuitiveEatingMode}
+            />
+          </View>
+        );
+      }
+
+      case 'meal':
+        return (
+          <View className="pb-1.5">
+            <MealSearchCard
+              mealData={row.mealData}
+              onAddPress={() => handleMealSelect(row.mealData.meal)}
+              intuitiveMode={intuitiveEatingMode}
+            />
+          </View>
+        );
+      case 'sourceError':
+        return (
+          <View
+            className="mb-4 overflow-hidden rounded-control border"
+            style={{
+              backgroundColor: theme.colors.status.error10,
+              borderColor: theme.colors.status.error + '33',
+            }}
+          >
+            <View className="flex-row items-center gap-3 p-3">
+              <AlertTriangle size={theme.iconSize.sm} color={theme.colors.status.error} />
+              <Text
+                className="flex-1 text-xs font-medium"
+                style={{ color: theme.colors.status.error }}
+              >
+                {t(
+                  row.source === 'openfood'
+                    ? 'foodSearch.errorLoadingAPI'
+                    : 'foodSearch.errorLoadingUSDA'
+                )}
+              </Text>
+            </View>
+            <View className="items-center px-3 pb-3">
+              <Button
+                label={t('foodSearch.retrySearch')}
+                onPress={row.source === 'openfood' ? retryAPI : retryUSDA}
+                size="sm"
+                variant="outline"
+                width="full"
+              />
+            </View>
+          </View>
+        );
+      case 'loading':
+        return (
+          <View
+            className={`flex items-center justify-center ${row.size === 'large' ? 'py-12' : 'py-4'}`}
+          >
+            <ActivityIndicator size={row.size} color={theme.colors.accent.primary} />
+            {row.label ? (
+              <Text className="mt-2 text-sm text-text-secondary">{row.label}</Text>
+            ) : null}
+            {row.cancellable ? (
+              <View className="mt-4">
+                <Button
+                  label={t('foodSearch.cancelSearch')}
+                  onPress={handleCancelSearch}
+                  size="sm"
+                  variant="outline"
+                />
+              </View>
+            ) : null}
+          </View>
+        );
+      case 'message':
+        return (
+          <View className="py-8">
+            <Text className="text-center text-text-secondary">{row.text}</Text>
+            {row.hint ? (
+              <Text className="mt-2 text-center text-sm text-text-tertiary">{row.hint}</Text>
+            ) : null}
+          </View>
+        );
+      case 'showMore':
+        return (
+          <View className="pb-4 pt-1.5">
+            <Button
+              label={row.label}
+              onPress={pagers[row.source].load}
+              size="sm"
+              variant="outline"
+              disabled={row.loading}
+              loading={row.loading}
+              width="full"
+            />
+          </View>
+        );
+      case 'loadingMore':
+        return (
+          <View className="items-center py-4">
+            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
+          </View>
+        );
+      case 'yesterday':
+        return yesterdayMealData ? (
+          <SameAsYesterdayCard
+            yesterdayMealData={yesterdayMealData}
+            mealLabel={mealLabel}
+            onAddAllPress={() => setConfirmSameAsYesterdayVisible(true)}
+          />
+        ) : null;
+    }
+  };
+
   const headerRight = (
     <Pressable onPress={onCreatePress}>
       <Text className="text-sm font-semibold text-accent-secondary">
@@ -1035,7 +1253,7 @@ export function FoodSearchModal({
                 onChangeText={setSearchQuery}
                 onSubmitEditing={triggerNow}
                 returnKeyType="search"
-                className="w-full rounded-2xl border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
+                className="w-full rounded-card border border-border-light bg-bg-overlay py-3.5 pl-11 pr-10 text-base text-text-primary"
                 style={{
                   backgroundColor: theme.colors.background.secondaryDark,
                   borderColor: searchQuery
@@ -1049,7 +1267,7 @@ export function FoodSearchModal({
                 onPress={onBarcodeScanPress}
                 hitSlop={12}
               >
-                <View className="rounded-lg p-1.5">
+                <View className="rounded-control p-1.5">
                   <QrCode size={theme.iconSize.lg} color={theme.colors.text.secondary} />
                 </View>
               </Pressable>
@@ -1065,552 +1283,22 @@ export function FoodSearchModal({
             />
           </View>
 
-          {/* Content */}
-          <ScrollView
+          {/* Content: one virtualized list of rows; see foodSearchRows.ts for the paging rules. */}
+          <FlatList
+            data={rows}
+            keyExtractor={(row) => row.key}
+            renderItem={renderRow}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.5}
+            keyboardShouldPersistTaps="handled"
             className="flex-1 bg-bg-primary"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ backgroundColor: theme.colors.background.primary }}
-          >
-            <View className="gap-4 p-4 pb-20">
-              {/* Search Results Section */}
-              {searchQuery ? (
-                <View>
-                  {activeFilter === 'meals' ? (
-                    /* Meals tab with search query: filter meals client-side */
-                    <View>
-                      <SectionHeader title={t('foodSearch.filters.meals')} />
-                      <View className="gap-1.5">
-                        {isLoadingMeals ? (
-                          <View className="flex items-center justify-center py-4">
-                            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                          </View>
-                        ) : filteredMealCardsData.length > 0 ? (
-                          filteredMealCardsData.map((mealData) => (
-                            <MealSearchCard
-                              key={mealData.meal.id}
-                              mealData={mealData}
-                              onAddPress={() => handleMealSelect(mealData.meal)}
-                              intuitiveMode={intuitiveEatingMode}
-                            />
-                          ))
-                        ) : (
-                          <View className="py-8">
-                            <Text className="text-center text-text-secondary">
-                              {t('foodSearch.noResultsFor', { query: searchQuery })}
-                            </Text>
-                            <Text className="mt-2 text-center text-sm text-text-tertiary">
-                              {t('foodSearch.trySomethingElse')}
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                  ) : (
-                    /* All / Favorites / API tabs: food search results */
-                    <View>
-                      <SectionHeader
-                        title={getSectionHeaderTitle(
-                          isInitialLoad,
-                          hasLocalResults,
-                          hasApiResults,
-                          isLoadingAPI,
-                          t
-                        )}
-                      />
-                      <View className="gap-1.5">
-                        {/* Show initial loading state */}
-                        {isInitialLoad ? (
-                          <View className="flex items-center justify-center py-12">
-                            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-                            <Text className="mt-2 text-sm text-text-secondary">
-                              {getSearchingStatusText(isLoadingLocal, isLoadingAPI, t)}
-                            </Text>
-                            {showCancelSearch ? (
-                              <View className="mt-4">
-                                <Button
-                                  label={t('foodSearch.cancelSearch')}
-                                  onPress={handleCancelSearch}
-                                  size="sm"
-                                  variant="outline"
-                                />
-                              </View>
-                            ) : null}
-                          </View>
-                        ) : null}
-
-                        {/* Show results when available */}
-                        {!isInitialLoad && (filteredResults.length > 0 || apiError || usdaError) ? (
-                          <>
-                            {/* Local Results Section - only show if filter includes local or 'all' */}
-                            {(activeFilter === 'all' || activeFilter === 'myFoods') &&
-                            resultsBySource.local.length > 0 ? (
-                              <View className="mb-4">
-                                <View className="mb-3 flex-row items-center gap-2">
-                                  <View className="h-0.5 flex-1 bg-accent-primary/20" />
-                                  <View className="flex-row items-center gap-2">
-                                    <Text className="text-xs font-medium uppercase text-accent-primary">
-                                      {t('foodSearch.yourFoods', {
-                                        count: resultsBySource.local.length,
-                                      })}
-                                    </Text>
-                                  </View>
-                                  <View className="h-0.5 flex-1 bg-accent-primary/20" />
-                                </View>
-                                <View className="gap-1.5">
-                                  {(resultsBySource.local || []).map((food) => (
-                                    <FoodSearchItemCard
-                                      key={`local-${food.id}`}
-                                      food={{
-                                        ...food,
-                                        name: food.name ?? '',
-                                        iconName: 'utensils-crossed',
-                                        iconColor: theme.colors.accent.primary,
-                                        iconBgColor: theme.colors.accent.primary10,
-                                      }}
-                                      onAddPress={() =>
-                                        handleFoodClick({ ...food, name: food.name ?? '' })
-                                      }
-                                      intuitiveMode={intuitiveEatingMode}
-                                    />
-                                  ))}
-                                </View>
-
-                                {/* Load More Local Button */}
-                                {hasMoreLocal ? (
-                                  <View className="py-3">
-                                    <Button
-                                      label={
-                                        isLoadingMoreLocal
-                                          ? t('foodSearch.loadingMore')
-                                          : t('foodSearch.loadMoreLocal')
-                                      }
-                                      onPress={loadMoreLocal}
-                                      size="sm"
-                                      variant="outline"
-                                      disabled={isLoadingMoreLocal}
-                                      loading={isLoadingMoreLocal}
-                                      width="full"
-                                      iconPosition="left"
-                                    />
-                                  </View>
-                                ) : null}
-                              </View>
-                            ) : null}
-
-                            {/* OFF and USDA sections — ordered by whichever resolved first */}
-                            {(firstResolvedApi === 'usda'
-                              ? (['usda', 'openfood'] as const)
-                              : (['openfood', 'usda'] as const)
-                            ).map((apiSource) => {
-                              if (apiSource === 'openfood') {
-                                if (
-                                  !(activeFilter === 'all' || activeFilter === 'openfood') ||
-                                  (resultsBySource.api.length === 0 && !apiError)
-                                ) {
-                                  return null;
-                                }
-
-                                return (
-                                  <View key="openfood" className="mb-4">
-                                    <View className="mb-3 flex-row items-center gap-2">
-                                      <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                                      <View className="flex-row items-center gap-2">
-                                        <Text className="text-xs font-medium uppercase text-text-tertiary">
-                                          {t('foodSearch.openFoodFacts', {
-                                            count: resultsBySource.api.length,
-                                          })}
-                                        </Text>
-                                      </View>
-                                      <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                                    </View>
-                                    {apiError ? (
-                                      <View
-                                        className="mb-4 overflow-hidden rounded-xl border"
-                                        style={{
-                                          backgroundColor: theme.colors.status.error10,
-                                          borderColor: theme.colors.status.error + '33',
-                                        }}
-                                      >
-                                        <View className="flex-row items-center gap-3 p-3">
-                                          <View
-                                            className="items-center justify-center rounded-lg p-2"
-                                            style={{
-                                              backgroundColor: theme.colors.status.error + '22',
-                                            }}
-                                          >
-                                            <AlertTriangle
-                                              size={theme.iconSize.sm}
-                                              color={theme.colors.status.error}
-                                            />
-                                          </View>
-                                          <Text
-                                            className="flex-1 text-xs font-medium"
-                                            style={{ color: theme.colors.status.error }}
-                                          >
-                                            {t('foodSearch.errorLoadingAPI')}
-                                          </Text>
-                                        </View>
-                                        <View className="items-center px-3 pb-3">
-                                          <Button
-                                            label={t('foodSearch.retrySearch')}
-                                            onPress={retryAPI}
-                                            size="sm"
-                                            variant="outline"
-                                            width="full"
-                                          />
-                                        </View>
-                                      </View>
-                                    ) : (
-                                      <View className="gap-1.5">
-                                        {resultsBySource.api.map((food: UnifiedFoodResult) => (
-                                          <FoodSearchItemCard
-                                            key={`api-${food.id}`}
-                                            food={{
-                                              ...food,
-                                              iconComponent: food.imageUrl
-                                                ? undefined
-                                                : searchSessionIcon,
-                                            }}
-                                            onAddPress={() => handleFoodClick(food)}
-                                            intuitiveMode={intuitiveEatingMode}
-                                          />
-                                        ))}
-                                      </View>
-                                    )}
-                                    {hasMoreAPI ? (
-                                      <View className="py-3">
-                                        <Button
-                                          label={
-                                            isLoadingMoreAPI
-                                              ? t('foodSearch.loadingMore')
-                                              : t('foodSearch.loadMoreAPI')
-                                          }
-                                          onPress={loadMoreAPI}
-                                          size="sm"
-                                          variant="outline"
-                                          disabled={isLoadingMoreAPI}
-                                          loading={isLoadingMoreAPI}
-                                          width="full"
-                                          iconPosition="left"
-                                        />
-                                      </View>
-                                    ) : null}
-                                  </View>
-                                );
-                              }
-
-                              // usda
-                              if (
-                                !(activeFilter === 'all' || activeFilter === 'usda') ||
-                                (resultsBySource.usda.length === 0 && !usdaError)
-                              ) {
-                                return null;
-                              }
-
-                              return (
-                                <View key="usda" className="mb-4">
-                                  <View className="mb-3 flex-row items-center gap-2">
-                                    <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                                    <View className="flex-row items-center gap-2">
-                                      <Text className="text-xs font-medium uppercase text-text-tertiary">
-                                        {t('foodSearch.usda', {
-                                          count: resultsBySource.usda.length,
-                                        })}
-                                      </Text>
-                                    </View>
-                                    <View className="h-0.5 flex-1 bg-text-tertiary/30" />
-                                  </View>
-                                  {usdaError ? (
-                                    <View
-                                      className="mb-4 overflow-hidden rounded-xl border"
-                                      style={{
-                                        backgroundColor: theme.colors.status.error10,
-                                        borderColor: theme.colors.status.error + '33',
-                                      }}
-                                    >
-                                      <View className="flex-row items-center gap-3 p-3">
-                                        <View
-                                          className="items-center justify-center rounded-lg p-2"
-                                          style={{
-                                            backgroundColor: theme.colors.status.error + '22',
-                                          }}
-                                        >
-                                          <AlertTriangle
-                                            size={theme.iconSize.sm}
-                                            color={theme.colors.status.error}
-                                          />
-                                        </View>
-                                        <Text
-                                          className="flex-1 text-xs font-medium"
-                                          style={{ color: theme.colors.status.error }}
-                                        >
-                                          {t('foodSearch.errorLoadingUSDA')}
-                                        </Text>
-                                      </View>
-                                      <View className="items-center px-3 pb-3">
-                                        <Button
-                                          label={t('foodSearch.retrySearch')}
-                                          onPress={retryUSDA}
-                                          size="sm"
-                                          variant="outline"
-                                          width="full"
-                                        />
-                                      </View>
-                                    </View>
-                                  ) : (
-                                    <View className="gap-1.5">
-                                      {resultsBySource.usda.map((food: UnifiedFoodResult) => (
-                                        <FoodSearchItemCard
-                                          key={`usda-${food.id}`}
-                                          food={{ ...food, iconComponent: searchSessionIcon }}
-                                          onAddPress={() => handleFoodClick(food)}
-                                          intuitiveMode={intuitiveEatingMode}
-                                        />
-                                      ))}
-                                    </View>
-                                  )}
-                                  {hasMoreUSDA ? (
-                                    <View className="py-3">
-                                      <Button
-                                        label={
-                                          isLoadingMoreUSDA
-                                            ? t('foodSearch.loadingMore')
-                                            : t('foodSearch.loadMoreUSDA')
-                                        }
-                                        onPress={loadMoreUSDA}
-                                        size="sm"
-                                        variant="outline"
-                                        disabled={isLoadingMoreUSDA}
-                                        loading={isLoadingMoreUSDA}
-                                        width="full"
-                                        iconPosition="left"
-                                      />
-                                    </View>
-                                  ) : null}
-                                </View>
-                              );
-                            })}
-                          </>
-                        ) : null}
-
-                        {!isInitialLoad && isLoadingAPI ? (
-                          <View className="flex items-center justify-center py-4">
-                            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                            <Text className="ml-2 text-xs text-text-secondary">
-                              {t('foodSearch.searchingAPI')}
-                            </Text>
-                            {showCancelSearch ? (
-                              <View className="mt-3">
-                                <Button
-                                  label={t('foodSearch.cancelSearch')}
-                                  onPress={handleCancelSearch}
-                                  size="sm"
-                                  variant="outline"
-                                />
-                              </View>
-                            ) : null}
-                          </View>
-                        ) : null}
-
-                        {/* Show no results state - only when API is completely done */}
-                        {!isInitialLoad &&
-                        !isLoadingAPI &&
-                        !apiError &&
-                        !usdaError &&
-                        filteredResults.length === 0 &&
-                        searchQuery ? (
-                          <View className="py-8 text-center">
-                            <Text className="text-center text-text-secondary">
-                              {t('foodSearch.noResultsFor', { query: searchQuery })}
-                            </Text>
-                            {localCount === 0 && apiCount === 0 ? (
-                              <Text className="mt-2 text-center text-sm text-text-tertiary">
-                                {t('foodSearch.trySomethingElse')}
-                              </Text>
-                            ) : null}
-                          </View>
-                        ) : null}
-                      </View>
-                    </View>
-                  )}
-                </View>
-              ) : null}
-
-              {/* Non-search area: show favorites when "myFoods" tab is active, meals when "meals" tab is active, otherwise recent history */}
-              {!searchQuery ? (
-                <View>
-                  {activeFilter === 'myFoods' ? (
-                    <View>
-                      <SectionHeader title={t('foodSearch.yourFavoriteFoods')} />
-                      <View className="gap-1.5">
-                        {isLoadingFavorites ? (
-                          <View className="py-4">
-                            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                          </View>
-                        ) : favoriteFoodsError ? (
-                          <View className="py-8 text-center">
-                            <Text className="text-center text-text-tertiary">
-                              {t('foodSearch.loadFavoritesError')}
-                            </Text>
-                          </View>
-                        ) : favoriteFoods.length > 0 ? (
-                          <>
-                            {favoriteFoods.map((food) => (
-                              <FoodSearchItemCard
-                                key={food.id}
-                                food={food}
-                                onAddPress={() => handleFoodClick(food)}
-                                intuitiveMode={intuitiveEatingMode}
-                              />
-                            ))}
-                            {hasMoreFavoriteFoods ? (
-                              <View className="py-3">
-                                <Button
-                                  label={
-                                    isLoadingMoreFavorites
-                                      ? t('foodSearch.loadingMore')
-                                      : t('foodSearch.loadMoreFavorites')
-                                  }
-                                  onPress={loadMoreFavoriteFoods}
-                                  size="sm"
-                                  variant="outline"
-                                  disabled={isLoadingMoreFavorites}
-                                  loading={isLoadingMoreFavorites}
-                                  width="full"
-                                  iconPosition="left"
-                                />
-                              </View>
-                            ) : null}
-                          </>
-                        ) : (
-                          <View className="py-8 text-center">
-                            <Text className="text-center text-text-tertiary">
-                              {t('foodSearch.noFavoriteFoods')}
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                  ) : activeFilter === 'meals' ? (
-                    <View>
-                      <SectionHeader title={t('foodSearch.filters.meals')} />
-                      <View className="gap-1.5">
-                        {isLoadingMeals ? (
-                          <View className="py-4">
-                            <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                            <Text className="mt-2 text-center text-sm text-text-secondary">
-                              {t('foodSearch.loadingMeals')}
-                            </Text>
-                          </View>
-                        ) : mealCardsData.length > 0 ? (
-                          <>
-                            {mealCardsData.map((mealData) => (
-                              <MealSearchCard
-                                key={mealData.meal.id}
-                                mealData={mealData}
-                                onAddPress={() => handleMealSelect(mealData.meal)}
-                                intuitiveMode={intuitiveEatingMode}
-                              />
-                            ))}
-                            {hasMoreMeals ? (
-                              <View className="py-3">
-                                <Button
-                                  label={
-                                    isLoadingMoreMeals
-                                      ? t('foodSearch.loadingMore')
-                                      : t('foodSearch.loadMoreMeals')
-                                  }
-                                  onPress={loadMoreMeals}
-                                  size="sm"
-                                  variant="outline"
-                                  disabled={isLoadingMoreMeals}
-                                  loading={isLoadingMoreMeals}
-                                  width="full"
-                                  iconPosition="left"
-                                />
-                              </View>
-                            ) : null}
-                          </>
-                        ) : (
-                          <View className="py-8 text-center">
-                            <Text className="text-center text-text-tertiary">
-                              {t('foodSearch.noMeals')}
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                  ) : (
-                    <View>
-                      <SectionHeader
-                        title={t('foodSearch.recentHistory')}
-                        rightAction={{
-                          label: t('foodSearch.viewAll'),
-                          onPress: () => setIsRecentNutritionHistoryModalVisible(true),
-                        }}
-                      />
-                      <View className="gap-1.5">
-                        {recentFoods.length > 0 ? (
-                          recentFoods.map((food) => (
-                            <FoodSearchItemCard
-                              key={food.id}
-                              food={food}
-                              onAddPress={() => handleFoodClick(food)}
-                              intuitiveMode={intuitiveEatingMode}
-                            />
-                          ))
-                        ) : (
-                          <View className="py-8 text-center">
-                            <Text className="text-center text-text-tertiary">
-                              {t('foodSearch.noRecentFoods')}
-                            </Text>
-                          </View>
-                        )}
-                      </View>
-
-                      {activeFilter === 'all' &&
-                      !isLoadingYesterday &&
-                      !hasItemsTrackedForSelectedDate &&
-                      yesterdayMealData &&
-                      yesterdayMealData.logs.length > 0 ? (
-                        <SameAsYesterdayCard
-                          yesterdayMealData={yesterdayMealData}
-                          mealLabel={mealLabel}
-                          onAddAllPress={() => setConfirmSameAsYesterdayVisible(true)}
-                        />
-                      ) : null}
-                    </View>
-                  )}
-                </View>
-              ) : null}
-
-              {!searchQuery &&
-              activeFilter !== 'myFoods' &&
-              activeFilter !== 'meals' &&
-              suggestedFoods &&
-              suggestedFoods.length > 0 ? (
-                <View>
-                  <SectionHeader title={suggestedTitle} icon={Sparkles} />
-                  <View className="gap-1.5">
-                    {isLoadingSuggested ? (
-                      <View className="py-4">
-                        <ActivityIndicator size="small" color={theme.colors.accent.primary} />
-                      </View>
-                    ) : (
-                      suggestedFoods.map((food) => (
-                        <FoodSearchItemCard
-                          key={food.id}
-                          food={food}
-                          onAddPress={() => handleFoodClick(food)}
-                          intuitiveMode={intuitiveEatingMode}
-                        />
-                      ))
-                    )}
-                  </View>
-                </View>
-              ) : null}
-            </View>
-          </ScrollView>
+            contentContainerStyle={{
+              backgroundColor: theme.colors.background.primary,
+              padding: theme.spacing.padding.base,
+              paddingBottom: theme.spacing.padding['80'],
+            }}
+          />
         </View>
 
         {/* Food Details Modal */}

@@ -145,7 +145,7 @@ function BulkTrackFoodModal({ visible, food, onClose, onTracked }: BulkTrackModa
         {/* Picked food summary */}
         <GenericCard variant="flat">
           <View className="flex-row items-center gap-3 p-4">
-            <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
+            <View className="h-10 w-10 items-center justify-center rounded-control bg-bg-card">
               <Utensils size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <View className="min-w-0 flex-1">
@@ -189,7 +189,7 @@ function BulkTrackFoodModal({ visible, food, onClose, onTracked }: BulkTrackModa
 
         {/* Meal type */}
         <View>
-          <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-secondary">
             Meal
           </Text>
           <FilterTabs
@@ -286,7 +286,7 @@ export default function NutritionDebugScreen() {
         <GenericCard variant="flat">
           <View className="gap-3 p-4">
             <View className="flex-row items-center gap-3">
-              <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
+              <View className="h-10 w-10 items-center justify-center rounded-control bg-bg-card">
                 <Utensils size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </View>
               <View className="flex-1">

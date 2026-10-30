@@ -1,4 +1,5 @@
 import {
+  Bot,
   Calendar,
   Dumbbell,
   Flame,
@@ -9,7 +10,6 @@ import {
   Settings,
   Shield,
   Shuffle,
-  Sparkles,
   Target,
   Timer,
   TrendingUp,
@@ -18,7 +18,6 @@ import {
 import type { WhatsNewIconName } from '@/utils/whatsNew/catalog';
 
 export const whatsNewIcons: Record<WhatsNewIconName, LucideIcon> = {
-  sparkles: Sparkles,
   layout: Layout,
   list: List,
   target: Target,
@@ -31,4 +30,5 @@ export const whatsNewIcons: Record<WhatsNewIconName, LucideIcon> = {
   shield: Shield,
   flame: Flame,
   settings: Settings,
+  bot: Bot,
 };

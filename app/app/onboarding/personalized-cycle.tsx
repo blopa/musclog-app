@@ -10,19 +10,22 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
+import { CYCLE_TRACKING_CHOICES, type CycleTrackingMode } from '@/utils/cycle/trackingMode';
+import { readPersonalizedSetup } from '@/utils/onboardingDraft';
+import {
+  PERSONALIZED_SETUP_STEPS,
+  PERSONALIZED_STEP,
+  personalizedCycleRoutes,
+  personalizedCycleSetupRoute,
+} from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
-
-const NUTRITION_RESULTS_ROUTE =
-  '/app/onboarding/nutrition-goals-results?aiGenerated=true&personalizedSetup=true';
-const MUSCLOG_API_DIRECT_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=8&quickTotal=10`;
-const MUSCLOG_API_AFTER_CYCLE_ROUTE = `/app/onboarding/musclog-api?nextRoute=${encodeURIComponent(NUTRITION_RESULTS_ROUTE)}&quickStep=9&quickTotal=10`;
 
 export default function PersonalizedCycleScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
 
-  const [menstruates, setMenstruates] = useState<boolean | null>(null);
+  const [menstruates, setMenstruates] = useState<CycleTrackingMode | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleContinue = async () => {
@@ -33,14 +36,15 @@ export default function PersonalizedCycleScreen() {
     setIsSaving(true);
     try {
       await setCurrentOnboardingStep('/app/onboarding/personalized-cycle');
+      const routes = personalizedCycleRoutes(
+        (await readPersonalizedSetup()).skipMusclogApi === true
+      );
 
-      if (menstruates) {
-        const nextRoute = encodeURIComponent(MUSCLOG_API_AFTER_CYCLE_ROUTE);
-        router.navigate(
-          `/app/onboarding/cycle-setup?nextRoute=${nextRoute}&quickStep=8&quickTotal=10`
-        );
+      if (menstruates !== 'skip') {
+        const nextRoute = encodeURIComponent(routes.afterCycle);
+        router.navigate(personalizedCycleSetupRoute(menstruates, nextRoute));
       } else {
-        router.navigate(MUSCLOG_API_DIRECT_ROUTE);
+        router.navigate(routes.direct);
       }
     } catch (e) {
       console.error('Error in personalized cycle screen:', e);
@@ -49,25 +53,20 @@ export default function PersonalizedCycleScreen() {
     }
   };
 
-  const options = [
-    {
-      value: true,
-      label: t('onboarding.personalizedCycle.yes'),
-      desc: t('onboarding.personalizedCycle.yesDesc'),
-      icon: Waves,
-    },
-    {
-      value: false,
-      label: t('onboarding.personalizedCycle.no'),
-      desc: t('onboarding.personalizedCycle.noDesc'),
-      icon: CircleOff,
-    },
-  ];
+  const options = CYCLE_TRACKING_CHOICES.map(({ value, labelKey, hintKey }) => ({
+    value,
+    label: t(labelKey),
+    desc: t(hintKey),
+    icon: value === 'skip' ? CircleOff : Waves,
+  }));
 
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={7} total={10} />
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.cycleQuestion}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
 
         <ScrollView
           className="flex-1"
@@ -75,10 +74,7 @@ export default function PersonalizedCycleScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-6 pt-6">
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.personalizedCycle.title')}
             </Text>
             <Text
@@ -95,7 +91,7 @@ export default function PersonalizedCycleScreen() {
               className="mb-4 text-lg font-semibold"
               style={{ color: theme.colors.text.primary }}
             >
-              {t('onboarding.personalizedCycle.question')}
+              {t('cycle.personalize.question')}
             </Text>
 
             <View className="gap-3">
@@ -105,7 +101,7 @@ export default function PersonalizedCycleScreen() {
                   <Pressable
                     key={String(opt.value)}
                     onPress={() => setMenstruates(opt.value)}
-                    className="flex-row items-center justify-between rounded-xl px-4 py-4"
+                    className="flex-row items-center justify-between rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,

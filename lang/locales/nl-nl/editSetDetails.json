@@ -2,9 +2,9 @@
   "editSetDetails": {
     "title": "Set-gegevens bewerken",
     "subtitle": "Doelen voor {{setLabel}} wijzigen",
-    "partialReps": "GEDEELTELIJKE HERHALINGEN",
-    "cancel": "ANNULEREN",
-    "saveChanges": "WIJZIGINGEN OPSLAAN",
+    "partialReps": "Gedeeltelijke herhalingen",
+    "cancel": "Annuleren",
+    "saveChanges": "Wijzigingen opslaan",
     "repsInReserve": "Herhalingen in reserve"
   }
 }

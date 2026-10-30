@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,35 +15,30 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
-import { PERSONALIZED_SETUP_DATA, TEMP_NUTRITION_PLAN } from '@/constants/misc';
-import {
-  type FitnessGoal,
-  type Gender,
-  type LiftingExperience,
-  type WeightGoal,
-} from '@/database/models/User';
-import { UserMetricService } from '@/database/services/UserMetricService';
-import { UserService } from '@/database/services/UserService';
 import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
-import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
+import { commitOnboardingProfile } from '@/services/onboardingAnswersApply';
+import type { CompleteOnboardingAnswers } from '@/utils/aiOnboarding/contract';
+import {
+  formatLocalCalendarDayIso,
+  localCalendarDayDate,
+  parseLocalCalendarDate,
+} from '@/utils/calendarDate';
+import {
+  type PersonalizedSetupData,
+  pickBodyStats,
+  readBodyStatsDraft,
+  readPersonalizedSetup,
+  writeBodyStatsDraft,
+} from '@/utils/onboardingDraft';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
-import { getCurrentTimezone } from '@/utils/timezone';
-import { displayToCm, displayToKg } from '@/utils/unitConversion';
+import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
-import { getDefaultUsernameForGender } from '@/utils/usernameUtils';
 
-type PersonalizedSetupData = {
-  fullName?: string;
-  units?: 'metric' | 'imperial';
-  gender?: Gender;
-  liftingExperience?: LiftingExperience;
-  activityLevel?: number;
-  fitnessGoal?: FitnessGoal;
-  weightGoal?: WeightGoal;
-};
+/** A measurement as the text field shows it: one decimal at most, no trailing zero. */
+const toFieldText = (value: number): string => String(Math.round(value * 10) / 10);
 
 export default function PersonalizedBodyStatsScreen() {
   const theme = useTheme();
@@ -56,6 +50,7 @@ export default function PersonalizedBodyStatsScreen() {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
   const [birthday, setBirthday] = useState<Date>(localCalendarDayDate(new Date(1990, 0, 1)));
+  const [birthdayEstimated, setBirthdayEstimated] = useState(false);
   const [isBirthdayPickerVisible, setIsBirthdayPickerVisible] = useState(false);
   const [isHeightPickerVisible, setIsHeightPickerVisible] = useState(false);
   const [bodyFat, setBodyFat] = useState<number | null>(null);
@@ -67,29 +62,36 @@ export default function PersonalizedBodyStatsScreen() {
 
   useEffect(() => {
     async function load() {
-      let resolvedUnits: 'metric' | 'imperial' = 'metric';
-      try {
-        const raw = await AsyncStorage.getItem(PERSONALIZED_SETUP_DATA);
-        if (raw) {
-          const parsed = JSON.parse(raw) as PersonalizedSetupData;
-          setSetupData(parsed);
-          resolvedUnits = parsed.units ?? 'metric';
-        }
-      } catch {
-        // ignore
-      }
+      const saved = await readPersonalizedSetup();
+      setSetupData(saved);
+      const resolvedUnits = saved.units ?? 'metric';
 
+      // What the person already answered (here before, or in the AI setup) wins over a Health
+      // prefill, which only fills the gaps.
+      const draft = await readBodyStatsDraft();
       const prefill = await getHealthBodyMetricsPrefill(resolvedUnits);
-      if (prefill.weight) {
+
+      if (draft.weightKg !== undefined) {
+        setWeight(toFieldText(kgToDisplay(draft.weightKg, resolvedUnits)));
+      } else if (prefill.weight) {
         setWeight(prefill.weight);
       }
 
-      if (prefill.height) {
+      if (draft.heightCm !== undefined) {
+        setHeight(toFieldText(cmToDisplay(draft.heightCm, resolvedUnits)));
+      } else if (prefill.height) {
         setHeight(prefill.height);
       }
 
-      if (prefill.bodyFat != null) {
+      if (draft.bodyFatPercent !== undefined) {
+        setBodyFat(draft.bodyFatPercent);
+      } else if (prefill.bodyFat != null) {
         setBodyFat(prefill.bodyFat);
+      }
+
+      if (draft.birthDate) {
+        setBirthday(localCalendarDayDate(parseLocalCalendarDate(draft.birthDate)));
+        setBirthdayEstimated(draft.dobEstimated === true);
       }
     }
 
@@ -106,84 +108,25 @@ export default function PersonalizedBodyStatsScreen() {
         return;
       }
 
-      const weightKg = displayToKg(weightValue, units);
-      const heightCm = displayToCm(heightValue, units);
-      const now = Date.now();
-      const timezone = getCurrentTimezone();
+      const answers: CompleteOnboardingAnswers = {
+        ...(setupData.fullName?.trim() ? { fullName: setupData.fullName.trim() } : {}),
+        units,
+        gender: setupData.gender ?? 'other',
+        birthDate: formatLocalCalendarDayIso(birthday),
+        ...(birthdayEstimated ? { dobEstimated: true } : {}),
+        heightCm: displayToCm(heightValue, units),
+        weightKg: displayToKg(weightValue, units),
+        ...(bodyFat !== null ? { bodyFatPercent: bodyFat } : {}),
+        liftingExperience: setupData.liftingExperience ?? 'beginner',
+        activityLevel: setupData.activityLevel ?? 2,
+        fitnessGoal: setupData.fitnessGoal ?? 'general',
+        weightGoal: setupData.weightGoal ?? 'maintain',
+      };
 
-      await Promise.all([
-        UserMetricService.createMetric({
-          type: 'weight',
-          value: weightKg,
-          unit: 'kg',
-          date: now,
-          timezone,
-        }),
-        UserMetricService.createMetric({
-          type: 'height',
-          value: heightCm,
-          unit: 'cm',
-          date: now,
-          timezone,
-        }),
-        bodyFat !== null
-          ? UserMetricService.createMetric({
-              type: 'body_fat',
-              value: bodyFat,
-              unit: '%',
-              date: now,
-              timezone,
-            })
-          : Promise.resolve(),
-      ]);
-
-      const todayYear = new Date().getFullYear();
-      const age = Math.max(1, todayYear - birthday.getFullYear());
-      const dob = localDayStartMs(birthday);
-
-      const gender = setupData.gender ?? 'other';
-      const fitnessGoal = setupData.fitnessGoal ?? 'general';
-      const weightGoal = setupData.weightGoal ?? 'maintain';
-      const activityLevel = (setupData.activityLevel ?? 2) as 1 | 2 | 3 | 4 | 5;
-      const liftingExperience = setupData.liftingExperience ?? 'beginner';
-      const fullName = setupData.fullName?.trim() || undefined;
-
-      const existingUser = await UserService.getCurrentUser();
-      if (existingUser) {
-        await UserService.updateUserProfile({
-          gender,
-          fitnessGoal,
-          weightGoal,
-          activityLevel,
-          liftingExperience,
-          dateOfBirth: dob,
-          ...(fullName ? { fullName } : {}),
-        });
-      } else {
-        await UserService.initializeUser({
-          fullName: fullName ?? getDefaultUsernameForGender(gender),
-          dateOfBirth: dob,
-          gender,
-          fitnessGoal,
-          weightGoal,
-          activityLevel,
-          liftingExperience,
-        });
-      }
-
-      const plan = calculateNutritionPlan({
-        gender,
-        weightKg,
-        heightCm,
-        age,
-        activityLevel,
-        weightGoal,
-        fitnessGoal,
-        liftingExperience,
-        bodyFatPercent: useBfForCalculations ? (bodyFat ?? undefined) : undefined,
-      });
-
-      await AsyncStorage.setItem(TEMP_NUTRITION_PLAN, JSON.stringify(plan));
+      // Kept so going back and forth shows what was typed, and saved through the one profile
+      // writer, which updates today's readings instead of stacking new ones.
+      await writeBodyStatsDraft(pickBodyStats(answers));
+      await commitOnboardingProfile(answers, { useBodyFat: useBfForCalculations });
       await setCurrentOnboardingStep('/app/onboarding/personalized-body-stats');
       router.navigate('/app/onboarding/personalized-cycle');
     } catch (e) {
@@ -191,14 +134,27 @@ export default function PersonalizedBodyStatsScreen() {
     } finally {
       setIsSaving(false);
     }
-  }, [weight, height, units, bodyFat, birthday, setupData, router, useBfForCalculations]);
+  }, [
+    weight,
+    height,
+    units,
+    bodyFat,
+    birthday,
+    birthdayEstimated,
+    setupData,
+    router,
+    useBfForCalculations,
+  ]);
 
   const isValid = parseFloat(weight) > 0 && parseFloat(height) > 0;
 
   return (
     <MasterLayout showNavigationMenu={false}>
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <QuickSetupProgressBar current={5} total={10} />
+        <QuickSetupProgressBar
+          current={PERSONALIZED_STEP.bodyStats}
+          total={PERSONALIZED_SETUP_STEPS}
+        />
 
         <KeyboardAwareScrollView
           className="flex-1"
@@ -209,7 +165,7 @@ export default function PersonalizedBodyStatsScreen() {
           <View className="gap-6 px-6 pt-6">
             <View>
               <Text
-                className="mb-1 text-3xl font-black tracking-tight"
+                className="mb-1 text-2xl font-bold"
                 style={{ color: theme.colors.text.primary }}
               >
                 {t('onboarding.quickBodyStats.title')}
@@ -278,10 +234,7 @@ export default function PersonalizedBodyStatsScreen() {
 
             {/* Birthday */}
             <View className="gap-2">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickBodyStats.birthday').toUpperCase()}
               </Text>
               <DatePickerInput
@@ -295,16 +248,15 @@ export default function PersonalizedBodyStatsScreen() {
                   fontSize: theme.typography.fontSize.xs,
                 }}
               >
-                {t('onboarding.quickBodyStats.birthdayHelper')}
+                {birthdayEstimated
+                  ? t('onboarding.quickBodyStats.birthdayEstimated')
+                  : t('onboarding.quickBodyStats.birthdayHelper')}
               </Text>
             </View>
 
             {/* Body Fat % */}
             <View className="gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickBodyStats.bodyFat').toUpperCase()}
               </Text>
               <Text
@@ -380,6 +332,7 @@ export default function PersonalizedBodyStatsScreen() {
           selectedDate={birthday}
           onDateSelect={(date) => {
             setBirthday(localCalendarDayDate(date));
+            setBirthdayEstimated(false);
             setIsBirthdayPickerVisible(false);
           }}
           minYear={1920}

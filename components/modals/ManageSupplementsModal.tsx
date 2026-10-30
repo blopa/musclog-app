@@ -167,9 +167,9 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
       >
         <View className="px-4 py-6">
           {supplements.length === 0 && !isLoading ? (
-            <View className="items-center rounded-3xl border border-border-light bg-bg-card px-6 py-10">
+            <View className="items-center rounded-card border border-border-light bg-bg-card px-6 py-10">
               <Pill size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
-              <Text className="mt-4 text-center text-base font-bold text-text-primary">
+              <Text className="mt-4 text-center text-base font-semibold text-text-primary">
                 {t('settings.advancedSettings.manageSupplementsEmpty')}
               </Text>
               <View className="mt-6 w-full">
@@ -177,7 +177,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
                   label={t('settings.advancedSettings.addSupplement')}
                   onPress={openCreateModal}
                   icon={Plus}
-                  variant="gradientCta"
+                  variant="accent"
                   width="full"
                 />
               </View>
@@ -202,7 +202,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
                           <Pill size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
                         </View>
                         <View className="flex-1">
-                          <Text className="text-base font-bold text-text-primary">
+                          <Text className="text-base font-semibold text-text-primary">
                             {supplement.name}
                           </Text>
                         </View>
@@ -316,7 +316,6 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
           {
             icon: Plus,
             iconColor: theme.colors.text.onAccent,
-            iconBgColor: theme.colors.accent.primary,
             title: t('settings.advancedSettings.addSupplement'),
             description: t('settings.advancedSettings.addSupplementDescription'),
             onPress: openCreateModal,
@@ -332,7 +331,6 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
           {
             icon: Pencil,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.background.iconDarker,
             title: t('settings.advancedSettings.editSupplement'),
             description: t('settings.advancedSettings.editSupplementDescription'),
             onPress: () => {
@@ -344,7 +342,6 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
             title: t('common.delete'),
             description: t('settings.advancedSettings.deleteSupplementDescription'),
             titleColor: theme.colors.status.error,

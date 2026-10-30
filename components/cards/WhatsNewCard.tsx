@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import { Sparkles } from 'lucide-react-native';
-import { useState } from 'react';
+import { Megaphone } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useMenstrualCycleContext } from '@/components/MenstrualCycleContext';
 import { WhatsNewModal } from '@/components/whatsNew/WhatsNewModal';
 import { whatsNewReleases } from '@/data/whatsNew/releases';
 import { useTheme } from '@/hooks/useTheme';
@@ -16,8 +17,15 @@ export function WhatsNewCard() {
   const { t } = useTranslation();
   const router = useRouter();
   const [visible, setVisible] = useState(false);
-  const [flow] = useState(() =>
-    selectReplayFlow({ releases: whatsNewReleases, currentVersion: getAppVersion() })
+  const { isActive: cycleTracking } = useMenstrualCycleContext();
+  const flow = useMemo(
+    () =>
+      selectReplayFlow({
+        releases: whatsNewReleases,
+        currentVersion: getAppVersion(),
+        context: { cycleTracking },
+      }),
+    [cycleTracking]
   );
   if (!flow.pages.length) {
     return null;
@@ -26,7 +34,7 @@ export function WhatsNewCard() {
   return (
     <>
       <SettingsCard
-        icon={<Sparkles size={theme.iconSize['2xl']} color={theme.colors.accent.primary} />}
+        icon={<Megaphone size={theme.iconSize['2xl']} color={theme.colors.accent.primary} />}
         title={t('whatsNew.settingsCard.title')}
         subtitle={t('whatsNew.settingsCard.subtitle')}
         onPress={() => setVisible(true)}

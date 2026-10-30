@@ -1,15 +1,15 @@
 {
   "addMeal": {
-    "createMeal": "Create Meal",
+    "createMeal": "Create meal",
     "createMealDesc": "Add a new meal to your daily log",
-    "dynamicCreator": "Dynamic Meal Creator",
+    "dynamicCreator": "Dynamic meal creator",
     "dynamicCreatorDesc": "Build a meal step-by-step by scanning or searching foods",
-    "generateMealAI": "Generate Meal with AI",
+    "generateMealAI": "Generate meal with AI",
     "generateMealAIDesc": "Let AI suggest a meal based on your preferences",
-    "manageCategories": "Manage Categories",
+    "manageCategories": "Manage categories",
     "manageCategoriesDesc": "Organize your meal categories (breakfast, lunch, etc.)",
     "importFromPhone": "Import from another phone",
     "importFromPhoneDesc": "Scan a meal being sent from another phone",
-    "title": "Add Meal"
+    "title": "Add meal"
   }
 }

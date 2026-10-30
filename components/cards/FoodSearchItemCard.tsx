@@ -9,7 +9,6 @@ import { addOpacityToHex } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
 
 type FoodItem = UnifiedFoodResult & {
-  icon?: string; // Emoji
   iconComponent?: LucideIcon; // Lucide icon component
   iconName?: string; // Lucide icon name, e.g. 'utensils-crossed'
   iconColor?: string;
@@ -72,10 +71,6 @@ export function FoodSearchItemCard({
       );
     }
 
-    if (food.icon) {
-      return <Text className="text-xl">{food.icon}</Text>;
-    }
-
     return <View className="h-full w-full opacity-80" />;
   };
 
@@ -87,12 +82,12 @@ export function FoodSearchItemCard({
 
   return (
     <Pressable
-      className="flex-row items-center gap-3 rounded-2xl border border-border-light bg-bg-overlay p-3 active:scale-[0.98]"
+      className="flex-row items-center gap-3 rounded-card border border-border-light bg-bg-overlay p-3 active:scale-[0.98]"
       onPress={onAddPress}
     >
       {/* Icon/Image */}
       <View
-        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border"
+        className="h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-control border"
         style={{
           backgroundColor: food.iconBgColor || theme.colors.background.secondaryDark,
           borderColor: food.iconColor
@@ -111,7 +106,7 @@ export function FoodSearchItemCard({
           </Text>
           {food.grade ? (
             <View
-              className="rounded border px-1.5 py-0.5"
+              className="rounded-tag border px-1.5 py-0.5"
               style={{
                 backgroundColor: food.gradeColor
                   ? addOpacityToHex(food.gradeColor, theme.colors.opacity.veryLight)

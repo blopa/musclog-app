@@ -240,7 +240,7 @@ export function LogMealModal({
         {/* Meal Type Selector */}
         <View>
           <Text
-            className="mb-3 text-xs font-bold uppercase tracking-wider"
+            className="mb-3 text-xs font-semibold"
             style={{ color: theme.colors.text.secondary }}
           >
             {t('meals.mealType')}

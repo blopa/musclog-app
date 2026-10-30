@@ -1,16 +1,15 @@
 import { format } from 'date-fns';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Download, Edit, Info, RefreshCw, Share2, Trophy } from 'lucide-react-native';
-import { createElement, useEffect, useRef, useState } from 'react';
+import { createElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
-import { LineChart, LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { CardioSummaryCard } from '@/components/workout/CardioSummaryCard';
+import { VolumeTrendCard } from '@/components/workout/VolumeTrendCard';
 import { WorkoutMusclesDetails } from '@/components/WorkoutMusclesDetails';
 import type { Units } from '@/constants/settings';
 import { database } from '@/database';
@@ -22,15 +21,16 @@ import { useChartCapture } from '@/hooks/useChartCapture';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '@/hooks/useEditWorkoutSets';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
+import { useExerciseVolumeTrend } from '@/hooks/useExerciseVolumeTrend';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { usePastWorkoutDetail } from '@/hooks/usePastWorkoutDetail';
 import { useSettings } from '@/hooks/useSettings';
+import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { healthConnectService } from '@/services/healthConnect';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
 import { formatDistance, formatPace } from '@/utils/cardioFormat';
-import { XAxisLabel } from '@/utils/chartUtils';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
@@ -74,12 +74,10 @@ function WorkoutSummaryCard({
   const durationDisplay = formatWorkoutDuration(totalTime);
 
   return (
-    <View className="overflow-hidden rounded-xl">
-      <LinearGradient
-        colors={theme.colors.gradients.cta}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
+    <View className="overflow-hidden rounded-control">
+      <View
         style={{
+          backgroundColor: theme.colors.background.card,
           padding: theme.spacing.padding.lg,
           borderRadius: theme.borderRadius.xl,
         }}
@@ -88,22 +86,19 @@ function WorkoutSummaryCard({
           <Pressable
             onPress={onEdit}
             className="absolute right-3 top-3 z-10 h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: theme.colors.overlay.alwaysWhite20 }}
+            style={{ backgroundColor: theme.colors.background.ink10 }}
           >
-            <Edit size={14} color={theme.colors.text.alwaysWhite} />
+            <Edit size={14} color={theme.colors.text.secondary} />
           </Pressable>
         ) : null}
         <View className="flex-row gap-4">
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
-            <Text
-              className="text-xs font-bold uppercase tracking-wider text-text-primary"
-              style={{ opacity: 0.8 }}
-            >
+            <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
+              <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {durationDisplay.value}
               </Text>
               {durationDisplay.suffix ? (
@@ -119,14 +114,11 @@ function WorkoutSummaryCard({
             className="flex-1 flex-col border-l pl-4"
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
-            <Text
-              className="text-xs font-bold uppercase tracking-wider text-text-primary"
-              style={{ opacity: 0.8 }}
-            >
+            <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.volume')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
+              <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {formatDisplayWeightKg(locale, units, volume)}
               </Text>
               <Text className="text-xs font-medium text-text-primary" style={{ opacity: 0.8 }}>
@@ -140,14 +132,11 @@ function WorkoutSummaryCard({
             className="flex-1 flex-col border-l pl-4"
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
-            <Text
-              className="text-xs font-bold uppercase tracking-wider text-text-primary"
-              style={{ opacity: 0.8 }}
-            >
+            <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.calories')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
+              <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {formatInteger(calories)}
               </Text>
               <Text className="text-xs font-medium text-text-primary" style={{ opacity: 0.8 }}>
@@ -156,61 +145,8 @@ function WorkoutSummaryCard({
             </View>
           </View>
         </View>
-      </LinearGradient>
-    </View>
-  );
-}
-
-// Component: Volume Trend Card
-type VolumeTrendCardProps = {
-  percentage: number;
-  data: LineChartDataPoint[];
-  labels: XAxisLabel[];
-  onInteractionStart?: () => void;
-  onInteractionEnd?: () => void;
-};
-
-function VolumeTrendCard({
-  percentage,
-  data,
-  labels,
-  onInteractionStart,
-  onInteractionEnd,
-}: VolumeTrendCardProps) {
-  const theme = useTheme();
-  const { t } = useTranslation();
-
-  return (
-    <GenericCard variant="flat">
-      <View style={{ padding: theme.spacing.padding.base }}>
-        <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-sm font-bold text-text-primary">
-            {t('workoutDetail.volumeTrend')}
-          </Text>
-          <View
-            className="rounded px-2 py-0.5"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}
-          >
-            <Text className="text-xs font-bold uppercase text-accent-primary">
-              {t('workoutDetail.volumeTrendPercentage', { percentage })}
-            </Text>
-          </View>
-        </View>
-        <LineChart
-          data={data}
-          height={128}
-          chartWidth={400}
-          chartHeight={100}
-          lineColor={theme.colors.accent.primary}
-          areaColor={theme.colors.accent.primary30}
-          xAxisLabels={labels}
-          marginTop={8}
-          marginBottom={8}
-          onInteractionStart={onInteractionStart}
-          onInteractionEnd={onInteractionEnd}
-        />
       </View>
-    </GenericCard>
+    </View>
   );
 }
 
@@ -301,29 +237,25 @@ function SetsTable({ sets }: SetsTableProps) {
         }}
       >
         <View className="w-12 items-center py-2">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
-            {t('workoutDetail.set')}
-          </Text>
+          <Text className="text-xs font-semibold text-text-tertiary">{t('workoutDetail.set')}</Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-semibold text-text-tertiary">
             {t('workoutDetail.weight')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-semibold text-text-tertiary">
             {t('workoutDetail.reps')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
+          <Text className="text-xs font-semibold text-text-tertiary">
             {t('workoutDetail.partial')}
           </Text>
         </View>
         <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
-            {t('workoutDetail.rir')}
-          </Text>
+          <Text className="text-xs font-semibold text-text-tertiary">{t('workoutDetail.rir')}</Text>
         </View>
       </View>
 
@@ -425,7 +357,7 @@ function ExercisesSection({ exercises, onEdit, onInfo, onClose }: ExercisesSecti
 
   return (
     <View className="flex-col gap-4">
-      <Text className="px-1 text-xs font-bold uppercase tracking-widest text-text-tertiary">
+      <Text className="px-1 text-xs font-semibold text-text-tertiary">
         {t('workoutDetail.exercisesCount', { count: exercises.length })}
       </Text>
 
@@ -497,10 +429,58 @@ export default function PastWorkoutDetailModal({
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isEditMetadataVisible, setIsEditMetadataVisible] = useState(false);
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
-  const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
-  const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
-  const [musclesModalSets, setMusclesModalSets] = useState<ExerciseSetRef[]>([]);
+  // The exercise whose info sheet is open (null = closed); everything the sheet shows derives from it.
+  const [infoExerciseId, setInfoExerciseId] = useSubModalState<string | null>(visible, null);
+  const [loadedInfoMuscles, setLoadedInfoMuscles] = useState<{
+    exerciseId: string;
+    groups: string[];
+  } | null>(null);
   const [allWorkoutMuscles, setAllWorkoutMuscles] = useState<string[]>([]);
+  const infoExercise = workout?.exercises.find((e) => e.id === infoExerciseId);
+  const infoCoarseMuscleGroup = infoExercise?.muscleGroup;
+  const infoMuscleGroups =
+    loadedInfoMuscles?.exerciseId === infoExerciseId ? loadedInfoMuscles.groups : [];
+  const infoSets = useMemo<ExerciseSetRef[]>(
+    () =>
+      (rawSets ?? [])
+        .filter((s) => s.exerciseId === infoExerciseId)
+        .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
+        .map((s, idx) => ({ id: s.id, setNumber: idx + 1 })),
+    [rawSets, infoExerciseId]
+  );
+  const infoTrend = useExerciseVolumeTrend(workoutId, infoExerciseId, dateFnsLocale);
+
+  useEffect(() => {
+    if (!infoExerciseId) {
+      return;
+    }
+
+    let live = true;
+    async function loadInfoMuscles(exerciseId: string) {
+      let groups: string[];
+      try {
+        const muscles = await MuscleService.getMusclesForExercise(exerciseId);
+        // Backfill may not have run yet — fall back to the coarse muscle group.
+        groups = muscles.map((m) => m.name);
+        if (groups.length === 0 && infoCoarseMuscleGroup) {
+          groups = [infoCoarseMuscleGroup];
+        }
+      } catch (err) {
+        console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
+        groups = [];
+      }
+
+      if (live) {
+        setLoadedInfoMuscles({ exerciseId, groups });
+      }
+    }
+
+    loadInfoMuscles(infoExerciseId);
+
+    return () => {
+      live = false;
+    };
+  }, [infoExerciseId, infoCoarseMuscleGroup]);
 
   useEffect(() => {
     if (!workout) {
@@ -542,7 +522,6 @@ export default function PastWorkoutDetailModal({
         setIsEditModalVisible(false);
         setIsEditMetadataVisible(false);
         setIsPreviewModalVisible(false);
-        setIsMusclesModalVisible(false);
         setEditingExerciseId(null);
         setIsMenuVisible(false);
       };
@@ -688,7 +667,7 @@ export default function PastWorkoutDetailModal({
       <View className="flex-1 gap-5 p-4">
         {saveError ? (
           <View
-            className="rounded-xl px-4 py-3"
+            className="rounded-control px-4 py-3"
             style={{ backgroundColor: theme.colors.status.error + '20' }}
           >
             <Text className="text-sm font-medium" style={{ color: theme.colors.status.error }}>
@@ -717,11 +696,11 @@ export default function PastWorkoutDetailModal({
 
         {workout.notes ? (
           <View
-            className="gap-1 rounded-xl p-4"
+            className="gap-1 rounded-card p-4"
             style={{ backgroundColor: theme.colors.background.ink5 }}
             testID="workout-notes"
           >
-            <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+            <Text className="text-xs font-semibold text-text-tertiary">
               {t('workoutDetail.notes')}
             </Text>
             <Text className="text-base text-text-primary">{workout.notes}</Text>
@@ -742,9 +721,7 @@ export default function PastWorkoutDetailModal({
 
         {workout.volumeTrend.data.length > 0 ? (
           <VolumeTrendCard
-            percentage={workout.volumeTrend.percentage}
-            data={workout.volumeTrend.data}
-            labels={workout.volumeTrend.labels}
+            trend={workout.volumeTrend}
             onInteractionStart={() =>
               scrollViewRef.current?.setNativeProps({ scrollEnabled: false })
             }
@@ -755,7 +732,7 @@ export default function PastWorkoutDetailModal({
         {allWorkoutMuscles.length > 0 ? (
           <View>
             <View className="mb-2 flex-row items-center justify-between px-1">
-              <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+              <Text className="text-xs font-semibold text-text-tertiary">
                 {t('workoutDetail.musclesWorked')}
               </Text>
               {!isMusclesCapturing ? (
@@ -784,28 +761,7 @@ export default function PastWorkoutDetailModal({
             setEditingExerciseId(exerciseId);
             setIsEditModalVisible(true);
           }}
-          onInfo={async (exerciseId) => {
-            try {
-              const muscles = await MuscleService.getMusclesForExercise(exerciseId);
-              if (muscles.length > 0) {
-                setMusclesModalGroups(muscles.map((m) => m.name));
-              } else {
-                // Backfill may not have run yet — fall back to coarse muscle group
-                const ex = workout.exercises.find((e) => e.id === exerciseId);
-                setMusclesModalGroups(ex?.muscleGroup ? [ex.muscleGroup] : []);
-              }
-            } catch (err) {
-              console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
-              setMusclesModalGroups([]);
-            }
-
-            const sets = (rawSets ?? [])
-              .filter((s) => s.exerciseId === exerciseId)
-              .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
-              .map((s, idx) => ({ id: s.id, setNumber: idx + 1 }));
-            setMusclesModalSets(sets);
-            setIsMusclesModalVisible(true);
-          }}
+          onInfo={setInfoExerciseId}
           onClose={onClose}
         />
       </View>
@@ -954,13 +910,12 @@ export default function PastWorkoutDetailModal({
       ) : null}
 
       <WorkoutMusclesModal
-        visible={isMusclesModalVisible}
-        onClose={() => {
-          setIsMusclesModalVisible(false);
-          setMusclesModalSets([]);
-        }}
-        muscleGroups={musclesModalGroups}
-        exerciseSets={musclesModalSets}
+        visible={infoExerciseId !== null}
+        onClose={() => setInfoExerciseId(null)}
+        title={infoExercise?.name}
+        volumeTrend={infoTrend}
+        muscleGroups={infoMuscleGroups}
+        exerciseSets={infoSets}
       />
     </FullScreenModal>
   );

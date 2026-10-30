@@ -43,16 +43,7 @@ export interface HistoricalNutritionParams {
   historicalFinalFatPercent?: number;
 }
 
-/**
- * Fetches historical nutrition and body metrics for the lookback window and returns
- * params suitable for calculateNutritionPlan (empirical TDEE). Returns null when
- * there is insufficient data (fewer than 2 weight entries, or fewer than
- * `minNutritionDays` days with nutrition logs, or zero total calories).
- *
- * Data is read from the local DB only (user_metrics + nutrition_logs); may have
- * been synced from Health Connect or entered manually.
- */
-export async function getHistoricalNutritionParams(options: {
+type HistoricalNutritionOptions = {
   asOfDate?: Date;
   /**
    * Average the body-fat anchors over the first and last week of the window instead of taking the
@@ -65,7 +56,145 @@ export async function getHistoricalNutritionParams(options: {
   /** Minimum distinct days with nutrition logs required. Defaults to 7. */
   minNutritionDays?: number;
   excludeUnloggedDays?: boolean;
-}): Promise<HistoricalNutritionParams | null> {
+};
+
+/**
+ * Fetches historical nutrition and body metrics for the lookback window and returns
+ * params suitable for calculateNutritionPlan (empirical TDEE). Returns null when
+ * there is insufficient data (fewer than 2 weight entries, or fewer than
+ * `minNutritionDays` days with nutrition logs, or zero total calories).
+ *
+ * Data is read from the local DB only (user_metrics + nutrition_logs); may have
+ * been synced from Health Connect or entered manually.
+ */
+export async function getHistoricalNutritionParams(
+  options: HistoricalNutritionOptions
+): Promise<HistoricalNutritionParams | null> {
+  return (await readHistoricalWindow(options))?.params ?? null;
+}
+
+export interface HistoricalNutritionWindow {
+  params: HistoricalNutritionParams;
+  /** Local midnight of the first and last weight anchors the window measured between. */
+  startMs: number;
+  endMs: number;
+  /**
+   * The recent lookback had too little data, so the latest earlier stretch of tracking stood in.
+   * That TDEE describes the person as they were then, and callers must say so.
+   */
+  fromPastWindow: boolean;
+}
+
+/**
+ * The empirical-TDEE window the app actually uses: the lookback ending at `asOfDate` when it has
+ * enough data, otherwise the same-length lookback ending at the last day that was tracked — so
+ * someone returning after months away gets the TDEE their own tracking measured rather than a
+ * population formula. Days without a food log are always left out of the intake average (a
+ * forgotten day reads as an average one, not a day of eating nothing); flagged fasting days stay
+ * in as 0 kcal, through `getRangeNutrients`' day coverage.
+ */
+const inFlightWindows = new Map<string, Promise<HistoricalNutritionWindow | null>>();
+
+/**
+ * The home screen asks for this window twice at once — `useEmpiricalTDEE` for the TDEE figure and
+ * `resolveDailyMacros` for a dynamic goal (plus `WidgetSync`) — and each read decrypts every log in
+ * the lookback. Concurrent requests for the same window share one read. Only in-flight requests
+ * are shared, never a settled result, so a later call always sees data written since.
+ *
+ * The key holds the calendar day rather than the instant: the window reads only the day of
+ * `asOfDate` (its start, its closed end and its UTC day key), never the time of day.
+ */
+export function getLatestHistoricalNutritionWindow(
+  options: Omit<HistoricalNutritionOptions, 'excludeUnloggedDays'>
+): Promise<HistoricalNutritionWindow | null> {
+  const asOfDate = options.asOfDate ?? new Date();
+  const {
+    useWeeklyFatAverages = true,
+    lookbackDays = HISTORICAL_NUTRITION_LOOKBACK_DAYS,
+    minNutritionDays = MIN_DAYS_WITH_NUTRITION,
+  } = options;
+  const key = [
+    localDayStartMs(asOfDate),
+    lookbackDays,
+    minNutritionDays,
+    useWeeklyFatAverages,
+  ].join(':');
+
+  const existing = inFlightWindows.get(key);
+  if (existing) {
+    return existing;
+  }
+
+  const request = readLatestHistoricalNutritionWindow({ ...options, asOfDate }).finally(() => {
+    if (inFlightWindows.get(key) === request) {
+      inFlightWindows.delete(key);
+    }
+  });
+  inFlightWindows.set(key, request);
+  return request;
+}
+
+async function readLatestHistoricalNutritionWindow(
+  options: Omit<HistoricalNutritionOptions, 'excludeUnloggedDays'> & { asOfDate: Date }
+): Promise<HistoricalNutritionWindow | null> {
+  const { asOfDate } = options;
+  const recent = await readHistoricalWindow({ ...options, asOfDate, excludeUnloggedDays: true });
+  if (recent) {
+    return { ...recent, fromPastWindow: false };
+  }
+
+  for (const anchor of await pastWindowAnchors(asOfDate)) {
+    const past = await readHistoricalWindow({
+      ...options,
+      asOfDate: new Date(anchor),
+      excludeUnloggedDays: true,
+    });
+    if (past) {
+      return { ...past, fromPastWindow: true };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Where an earlier window may end, best first. The day after the last food log comes first: a
+ * weigh-in that morning still bounds the intake before it. The last weigh-in is tried only when it
+ * came before the last food log (weighing stopped first); a later one would stretch the window
+ * over weeks with no food at all. Anchors at or after `asOfDate` would repeat the recent window.
+ */
+async function pastWindowAnchors(asOfDate: Date): Promise<number[]> {
+  const asOfDayMs = localDayStartMs(asOfDate);
+  const maxMs = localDayClosedRangeMaxMs(asOfDate);
+  const [lastFood, lastWeight] = await Promise.all([
+    NutritionService.getLatestLogOnOrBefore(maxMs),
+    UserMetricService.getLatestOnOrBefore('weight', maxMs),
+  ]);
+
+  const anchors: number[] = [];
+  const lastFoodDayMs = lastFood
+    ? calendarDateFromRecordDay(lastFood.date, lastFood.timezone).getTime()
+    : null;
+  if (lastFoodDayMs !== null) {
+    anchors.push(localDayKeyPlusCalendarDays(lastFoodDayMs, 1));
+  }
+
+  if (lastWeight) {
+    const lastWeightDayMs = calendarDateFromRecordDay(
+      lastWeight.date,
+      lastWeight.timezone
+    ).getTime();
+    if (lastFoodDayMs === null || lastWeightDayMs < lastFoodDayMs) {
+      anchors.push(lastWeightDayMs);
+    }
+  }
+
+  return anchors.filter((anchor) => anchor < asOfDayMs);
+}
+
+async function readHistoricalWindow(
+  options: HistoricalNutritionOptions
+): Promise<Omit<HistoricalNutritionWindow, 'fromPastWindow'> | null> {
   const {
     asOfDate = new Date(),
     useWeeklyFatAverages = true,
@@ -180,12 +309,16 @@ export async function getHistoricalNutritionParams(options: {
   }
 
   return {
-    historicalTotalCalories: Math.round(rangeNutrients.calories),
-    historicalTotalDays,
-    historicalWeightChangeDays,
-    historicalInitialWeightKg: initialWeight,
-    historicalFinalWeightKg: finalWeight,
-    ...(initialFatPercent !== undefined && { historicalInitialFatPercent: initialFatPercent }),
-    ...(finalFatPercent !== undefined && { historicalFinalFatPercent: finalFatPercent }),
+    params: {
+      historicalTotalCalories: Math.round(rangeNutrients.calories),
+      historicalTotalDays,
+      historicalWeightChangeDays,
+      historicalInitialWeightKg: initialWeight,
+      historicalFinalWeightKg: finalWeight,
+      ...(initialFatPercent !== undefined && { historicalInitialFatPercent: initialFatPercent }),
+      ...(finalFatPercent !== undefined && { historicalFinalFatPercent: finalFatPercent }),
+    },
+    startMs: firstDay.getTime(),
+    endMs: lastDay.getTime(),
   };
 }

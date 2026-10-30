@@ -21,6 +21,8 @@ import type { WeeklyReviewService } from '@/database/services/WeeklyReviewServic
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { FEEL_LABEL_KEYS } from '@/utils/comeback/comebackCopy';
+import type { ComebackFeel } from '@/utils/comeback/comebackState';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import {
   type GoalVerdict,
@@ -45,6 +47,8 @@ type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
 /** Records shown before "Show all": enough to celebrate, few enough to reach the next section. */
 const VISIBLE_RECORDS = 3;
 
+const FEELS: ComebackFeel[] = ['easy', 'right', 'hard'];
+
 const PR_TYPE_KEYS = {
   weight: 'weeklyReview.prTypes.weight',
   reps: 'weeklyReview.prTypes.reps',
@@ -68,19 +72,19 @@ export function ReviewSectionHeader({
   const theme = useTheme();
   return (
     <View className="flex-row items-center gap-3">
-      <View className="h-10 w-10 items-center justify-center rounded-xl bg-accent-primary/10">
+      <View className="h-10 w-10 items-center justify-center rounded-control bg-accent-primary/10">
         <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
       </View>
       <Text className="flex-1 text-xl font-bold text-text-primary">{title}</Text>
       {done == null ? null : (
         <View
-          className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${done ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
+          className={`flex-row items-center gap-1 rounded-tag px-2.5 py-1 ${done ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
         >
           {done ? (
             <CheckCircle2 size={theme.iconSize.xs} color={theme.colors.text.onAccent} />
           ) : null}
           <Text
-            className={`text-xs font-bold ${done ? 'text-text-on-accent' : 'text-text-secondary'}`}
+            className={`text-xs font-semibold ${done ? 'text-text-on-accent' : 'text-text-secondary'}`}
           >
             {t(done ? 'weeklyReview.reviewed' : 'weeklyReview.toReview')}
           </Text>
@@ -102,6 +106,7 @@ export function TrainingReviewSection({
   data,
   busy,
   onDecide,
+  onComebackCheckin,
   onChangeConsistencyGoal,
   onOpenGoals,
   onPreviewNext,
@@ -111,6 +116,8 @@ export function TrainingReviewSection({
   data: Overview;
   busy: boolean;
   onDecide: (decision: TrainingDecision) => void;
+  /** Answers the comeback week-2/4 check-in; it closes the training half like a 'progress' decision. */
+  onComebackCheckin: (week: 2 | 4, feel: ComebackFeel) => void;
   /** Applies a suggested workouts-per-week target; only ever called from a tap. */
   onChangeConsistencyGoal: (sessionsPerWeek: number) => void;
   /** Opens the fitness goals editor. */
@@ -147,7 +154,7 @@ export function TrainingReviewSection({
 
   return (
     <View
-      className="gap-4 rounded-2xl border border-border-light bg-bg-card p-4"
+      className="gap-4 rounded-card border border-border-light bg-bg-card p-4"
       testID="review-training"
     >
       <ReviewSectionHeader
@@ -223,13 +230,13 @@ export function TrainingReviewSection({
 
       {recordRows.length ? (
         <View className="gap-2">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.records')}
           </Text>
           {(showAllRecords ? recordRows : recordRows.slice(0, VISIBLE_RECORDS)).map((record) => (
             <View
               key={record.exerciseId}
-              className="flex-row items-center gap-3 rounded-xl bg-bg-overlay px-3 py-2.5"
+              className="flex-row items-center gap-3 rounded-control bg-bg-overlay px-3 py-2.5"
             >
               <Trophy size={theme.iconSize.md} color={theme.colors.accent.primary} />
               <View className="min-w-0 flex-1">
@@ -260,11 +267,11 @@ export function TrainingReviewSection({
       ) : null}
 
       {training.next ? (
-        <View className="gap-3 rounded-xl border border-border-light p-3">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <View className="gap-3 rounded-control border border-border-light p-3">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.nextUp')}
           </Text>
-          <Text className="text-base font-bold text-text-primary">
+          <Text className="text-base font-semibold text-text-primary">
             {training.next.template.name}
           </Text>
           <View className="gap-2">
@@ -308,7 +315,7 @@ export function TrainingReviewSection({
 
       {reviewable ? (
         <View className="gap-2" testID="review-training-goals">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.goals.title')}
           </Text>
           {verdicts.length ? (
@@ -347,11 +354,11 @@ export function TrainingReviewSection({
       ) : null}
 
       {decided ? (
-        <View className="gap-1 rounded-xl bg-bg-overlay p-3" testID="review-training-decided">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+        <View className="gap-1 rounded-control bg-bg-overlay p-3" testID="review-training-decided">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.trainingDecision.title')}
           </Text>
-          <Text className="text-base font-bold text-text-primary">
+          <Text className="text-base font-semibold text-text-primary">
             {t(DECISION_COPY[decided.decision].chosen)}
           </Text>
           {decided.decision === 'progress' ? null : (
@@ -362,9 +369,30 @@ export function TrainingReviewSection({
         </View>
       ) : null}
 
-      {training.canDecide && !decided ? (
+      {training.canDecide && !decided && training.comebackCheckin ? (
+        <View className="gap-3" testID="review-training-comeback">
+          <Text className="text-xs font-semibold text-text-secondary">
+            {t('weeklyReview.comebackCheckin.title')}
+          </Text>
+          <Text className="text-sm text-text-secondary">
+            {t('weeklyReview.comebackCheckin.question', { week: training.comebackCheckin.week })}
+          </Text>
+          <View className="gap-2">
+            {FEELS.map((feel) => (
+              <ListRow
+                key={feel}
+                title={t(FEEL_LABEL_KEYS[feel])}
+                disabled={busy}
+                onPress={() => onComebackCheckin(training.comebackCheckin!.week, feel)}
+              />
+            ))}
+          </View>
+        </View>
+      ) : null}
+
+      {training.canDecide && !decided && !training.comebackCheckin ? (
         <View className="gap-3" testID="review-training-decision">
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('weeklyReview.trainingDecision.title')}
           </Text>
           <Text className="text-xs text-text-tertiary">{t('weeklyReview.trainingHint')}</Text>
@@ -422,7 +450,7 @@ function GoalVerdictRow({
       : ONE_RM_STATUS_KEYS[verdict.status]
   );
   return (
-    <View className="flex-row items-center gap-3 rounded-xl bg-bg-overlay px-3 py-2.5">
+    <View className="flex-row items-center gap-3 rounded-control bg-bg-overlay px-3 py-2.5">
       <View className="min-w-0 flex-1">
         <Text className="text-sm font-semibold text-text-primary" numberOfLines={1}>
           {verdict.kind === 'consistency'
@@ -443,10 +471,10 @@ function GoalVerdictRow({
         ) : null}
       </View>
       <View
-        className={`rounded-full px-2.5 py-1 ${good ? 'bg-status-success/15' : 'bg-status-warning/15'}`}
+        className={`rounded-tag px-2.5 py-1 ${good ? 'bg-status-success/15' : 'bg-status-warning/15'}`}
       >
         <Text
-          className={`text-xs font-bold ${good ? 'text-status-success' : 'text-status-warning'}`}
+          className={`text-xs font-semibold ${good ? 'text-status-success' : 'text-status-warning'}`}
         >
           {label}
         </Text>

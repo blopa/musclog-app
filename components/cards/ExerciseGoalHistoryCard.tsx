@@ -60,8 +60,8 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
       <View className="flex-1 pb-2">
         <View className="mb-1 flex-row items-center justify-between">
           <Text className="text-xs font-semibold text-text-secondary">{dateRange}</Text>
-          <View className="bg-surface-variant rounded-full px-2 py-0.5">
-            <Text className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+          <View className="bg-surface-variant rounded-tag px-2 py-0.5">
+            <Text className="text-xs font-semibold text-text-secondary">
               {t(`exerciseGoals.goalTypes.${goal.goalType}`)}
             </Text>
           </View>
@@ -69,7 +69,7 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
 
         <GenericCard variant="flat">
           <View className="p-3">
-            <Text className="text-base font-bold text-text-primary">
+            <Text className="text-base font-semibold text-text-primary">
               {goal.exerciseNameSnapshot || t('exerciseGoals.goalTypes.consistency')}
             </Text>
             {goal.goalType === '1rm' ? (

@@ -96,7 +96,7 @@ it('finds nested JSON keys, protects them from cleanup, and reports missing ones
   scanner.findMissingTranslations();
   expect(scanner.missingKeys).toEqual(new Set(['whatsNew.missing']));
   expect(scanner.missingKeyLocations.get('whatsNew.missing')[0].file).toBe(filePath);
-  expect(scanner.findFilesToScan()).toContain(join(__dirname, '../../data/whatsNew/2.13.1.json'));
+  expect(scanner.findFilesToScan()).toContain(join(__dirname, '../../data/whatsNew/2.15.2.json'));
 });
 
 it('reports malformed release JSON as a scan error', () => {

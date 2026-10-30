@@ -183,7 +183,7 @@ export function BleDevicePreviewModal({ visible, onClose }: BleDevicePreviewModa
         </View>
 
         {last ? (
-          <View className="flex-row justify-around rounded-xl border border-border-light bg-bg-primary py-4">
+          <View className="flex-row justify-around rounded-control border border-border-light bg-bg-primary py-4">
             {[
               { label: 'X', value: last.a, color: theme.colors.accent.primary },
               { label: 'Y', value: last.b, color: theme.colors.status.success },

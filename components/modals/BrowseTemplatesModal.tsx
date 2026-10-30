@@ -191,28 +191,25 @@ export function BrowseTemplatesModal({
               <MaterialIcons name={template.icon} size={24} color={theme.colors.accent.primary} />
             </View>
             <View
-              className="rounded-full border px-3 py-1"
+              className="rounded-tag border px-3 py-1"
               style={{
                 backgroundColor: difficultyColors.bg,
                 borderColor: difficultyColors.border,
               }}
             >
-              <Text
-                className="text-[10px] font-bold uppercase tracking-wider"
-                style={{ color: difficultyColors.text }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: difficultyColors.text }}>
                 {t(`workouts.browseTemplatesModal.tabs.${template.difficulty}`)}
               </Text>
             </View>
           </View>
 
           {/* Title */}
-          <Text className="mb-4 text-lg font-bold text-text-primary">{template.title}</Text>
+          <Text className="mb-4 text-lg font-semibold text-text-primary">{template.title}</Text>
 
           {/* Stats */}
           <View className="flex-row items-center gap-6 border-t border-ink/5 pt-3">
             <View className="flex-col gap-0.5">
-              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
+              <Text className="text-xs font-semibold text-text-secondary">
                 {t('workouts.browseTemplatesModal.stats.duration')}
               </Text>
               <View className="flex-row items-center gap-1.5">
@@ -221,7 +218,7 @@ export function BrowseTemplatesModal({
               </View>
             </View>
             <View className="flex-col gap-0.5">
-              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
+              <Text className="text-xs font-semibold text-text-secondary">
                 {t('workouts.browseTemplatesModal.stats.exercises')}
               </Text>
               <View className="flex-row items-center gap-1.5">
@@ -236,7 +233,7 @@ export function BrowseTemplatesModal({
               </View>
             </View>
             <View className="flex-col gap-0.5">
-              <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
+              <Text className="text-xs font-semibold text-text-secondary">
                 {t('workouts.browseTemplatesModal.stats.sets')}
               </Text>
               <View className="flex-row items-center gap-1.5">

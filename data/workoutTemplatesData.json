@@ -1740,5 +1740,245 @@
       }
     ],
     "icon": "fitness-center"
+  },
+  {
+    "__title": "Short Full Body — Gym",
+    "difficulty": "beginner",
+    "duration": 30,
+    "exercises": [
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Machine_Bench_Press",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Machine_Shoulder_Military_Press",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dead_Bug",
+        "day": 1,
+        "sets": 2,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Stiff-Legged_Dumbbell_Deadlift",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bench_Press",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shoulder_Press",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Reverse_Crunch",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      }
+    ],
+    "icon": "fitness-center"
+  },
+  {
+    "__title": "Short Full Body — Home",
+    "difficulty": "beginner",
+    "duration": 30,
+    "exercises": [
+      {
+        "exerciseSlug": "Goblet_Squat",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Stiff-Legged_Dumbbell_Deadlift",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Pushups",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Bent_Over_Two-Dumbbell_Row",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shoulder_Press",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dead_Bug",
+        "day": 1,
+        "sets": 2,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Dumbbell_Step_Ups",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Butt_Lift_Bridge",
+        "day": 2,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Push-Up_Wide",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "One-Arm_Dumbbell_Row",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Band_Pull_Apart",
+        "day": 2,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Reverse_Crunch",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      }
+    ],
+    "icon": "fitness-center"
+  },
+  {
+    "__title": "Short Full Body — No Equipment",
+    "difficulty": "beginner",
+    "duration": 30,
+    "exercises": [
+      {
+        "exerciseSlug": "Bodyweight_Squat",
+        "day": 1,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Band_Good_Morning",
+        "day": 1,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Incline_Push-Up",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Bodyweight_Mid_Row",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Shoulder_Press_-_With_Bands",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dead_Bug",
+        "day": 1,
+        "sets": 2,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Squats_-_With_Bands",
+        "day": 2,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Butt_Lift_Bridge",
+        "day": 2,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Pushups",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Band_Pull_Apart",
+        "day": 2,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Hip_Lift_with_Band",
+        "day": 2,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Reverse_Crunch",
+        "day": 2,
+        "sets": 2,
+        "reps": 10
+      }
+    ],
+    "icon": "fitness-center"
   }
 ]

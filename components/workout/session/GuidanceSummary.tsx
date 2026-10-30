@@ -8,7 +8,7 @@ import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { GuidanceState } from '@/utils/progressionProjection';
-import type { ProgressionRule } from '@/utils/progressionRules';
+import type { ProgressionRule } from '@/utils/progressionRuleSchema';
 import type { SetAdjustment } from '@/utils/setAdjustment';
 
 import { GUIDANCE_STATE_KEYS, PROGRESSION_METHOD_KEYS } from './sessionModel';
@@ -38,8 +38,8 @@ export function GuidanceBadgeLine({
       : null;
   return (
     <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-2">
-      <View className={`rounded-full px-2.5 py-1 ${badge.surface}`}>
-        <Text className={`text-xs font-bold uppercase ${badge.text}`}>
+      <View className={`rounded-tag px-2.5 py-1 ${badge.surface}`}>
+        <Text className={`text-xs font-semibold ${badge.text}`}>
           {t(GUIDANCE_STATE_KEYS[state])}
         </Text>
       </View>
@@ -91,7 +91,9 @@ export function GuidanceSummary({
 
   return (
     <View
-      className={flat ? 'gap-1' : 'gap-2 rounded-xl border border-border-light bg-bg-secondary p-3'}
+      className={
+        flat ? 'gap-1' : 'gap-2 rounded-control border border-border-light bg-bg-secondary p-3'
+      }
     >
       <Pressable
         accessibilityRole="button"

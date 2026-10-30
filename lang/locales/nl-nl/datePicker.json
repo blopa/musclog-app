@@ -7,6 +7,10 @@
     "nextMonday": "Volgende maandag",
     "selectDate": "Selecteer datum",
     "selectMonthYear": "Selecteer maand en jaar",
+    "status": {
+      "fasted": "Gevast",
+      "tracked": "Eten gelogd"
+    },
     "today": "Vandaag",
     "tomorrow": "Morgen",
     "year": "Jaar",

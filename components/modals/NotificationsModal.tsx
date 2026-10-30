@@ -138,9 +138,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
       <View className="gap-8 p-4">
         {NOTIFICATIONS_DATA.map((section) => (
           <View key={section.section} className="gap-4">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
-              {section.section}
-            </Text>
+            <Text className="text-xs font-semibold text-text-secondary">{section.section}</Text>
             <View className="gap-3">
               {section.items.map((notification) => (
                 <NotificationCard

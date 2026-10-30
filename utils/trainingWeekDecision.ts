@@ -46,6 +46,8 @@ export const TRAINING_REASON_CODES = [
   'lowReserveStalled',
   'dueForLighter',
   'onTrack',
+  /** A comeback check-in answered the training half; older builds drop this reason and keep the decision. */
+  'comeback',
 ] as const;
 export type TrainingReasonCode = (typeof TRAINING_REASON_CODES)[number];
 export type TrainingReason = { code: TrainingReasonCode; count?: number };

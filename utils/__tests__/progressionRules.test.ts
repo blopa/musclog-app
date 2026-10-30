@@ -1,13 +1,15 @@
 import {
-  defaultProgressionRule,
-  parseProgressionRule,
   planRuleChanges,
   carriedSessionState,
   resolveTrainingMax,
-  serializeSessionProgression,
   type HistorySession,
-  type ProgressionRule,
 } from '../progressionRules';
+import {
+  defaultProgressionRule,
+  parseProgressionRule,
+  serializeSessionProgression,
+  type ProgressionRule,
+} from '../progressionRuleSchema';
 import { projectExerciseProgression } from '../progressionProjection';
 import { parseSetPrescription, serializeSetPrescription } from '../setPrescription';
 

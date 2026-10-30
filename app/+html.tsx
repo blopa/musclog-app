@@ -1,4 +1,4 @@
-import { ScrollViewStyleReset } from 'expo-router/html';
+import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
 import { qrCodeSvgData } from '@/components/website/qrCodeSvg';
@@ -166,10 +166,10 @@ const LANDING_GATE_SCRIPT = `(${landingPanelGate.toString()})(${_base});`;
 // Web-only: configures the root HTML for every web page during static rendering.
 // Only runs in Node.js; has no access to the DOM or browser APIs.
 export default function Root({ children }: PropsWithChildren) {
+  const { htmlAttributes, bodyAttributes, headNodes, bodyNodes } = useServerDocumentContext();
   return (
-    <html lang="en">
+    <html lang="en" {...htmlAttributes}>
       <head>
-        <title data-landing-i18n="title">Musclog - Lift, Log, Repeat</title>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="application-name" content="Musclog" />
@@ -219,8 +219,12 @@ export default function Root({ children }: PropsWithChildren) {
             min-height: 0 !important;
           }
         `}</style>
+        {headNodes}
       </head>
-      <body className="expo-web-body">
+      <body
+        {...bodyAttributes}
+        className={[bodyAttributes?.className, 'expo-web-body'].filter(Boolean).join(' ')}
+      >
         {/* Desktop-only landing panel — hidden on mobile via CSS */}
         <div className="expo-web-landing">
           <a href={withExpoBaseUrl('/')} className="expo-web-landing-brand">
@@ -368,6 +372,7 @@ export default function Root({ children }: PropsWithChildren) {
             draggable={false}
           />
         </div>
+        {bodyNodes}
       </body>
     </html>
   );

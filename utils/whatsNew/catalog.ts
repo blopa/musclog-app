@@ -1,7 +1,7 @@
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
+import { aiSetupRoute } from '@/utils/onboardingRoutes';
 
 export const WHATS_NEW_ICONS = [
-  'sparkles',
   'layout',
   'list',
   'target',
@@ -14,8 +14,16 @@ export const WHATS_NEW_ICONS = [
   'shield',
   'flame',
   'settings',
+  'bot',
 ] as const;
 export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
+
+/** Facts about the person's data that can gate a whole page of a release. */
+export const WHATS_NEW_CONDITIONS = ['cycleTracking'] as const;
+export type WhatsNewCondition = (typeof WHATS_NEW_CONDITIONS)[number];
+export type WhatsNewContext = Record<WhatsNewCondition, boolean>;
+/** Nothing is known: every conditional page stays hidden. */
+export const EMPTY_WHATS_NEW_CONTEXT: WhatsNewContext = { cycleTracking: false };
 
 export const WHATS_NEW_SETTINGS = [
   'workoutView',
@@ -68,6 +76,7 @@ export const WHATS_NEW_ACTIONS = [
   'openCardioLog',
   'openWeeklyReview',
   'openWorkouts',
+  'openProfileAiSetup',
 ] as const;
 export type WhatsNewAction = (typeof WHATS_NEW_ACTIONS)[number];
 export const WHATS_NEW_ACTION_CATALOG = {
@@ -75,6 +84,7 @@ export const WHATS_NEW_ACTION_CATALOG = {
   openCardioLog: { kind: 'modal' },
   openWeeklyReview: { kind: 'route', route: WEEKLY_REVIEW_ROUTE },
   openWorkouts: { kind: 'route', route: '/app/workout/workouts' },
+  openProfileAiSetup: { kind: 'route', route: aiSetupRoute('setup', 'profile') },
 } as const satisfies Record<WhatsNewAction, { kind: 'modal' } | { kind: 'route'; route: string }>;
 export type WhatsNewRoute = Extract<
   (typeof WHATS_NEW_ACTION_CATALOG)[WhatsNewAction],

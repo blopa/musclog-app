@@ -1,10 +1,6 @@
 {
   "home": {
-    "greeting": {
-      "goodMorning": "Buenos Días",
-      "goodAfternoon": "Buenas Tardes",
-      "goodEvening": "Buenas Noches"
-    },
+    "accountMenu": "Abrir el menú de la cuenta",
     "actions": {
       "startWorkout": "Iniciar\nEntrenamiento",
       "trackFood": "Registrar\nComida",
@@ -43,6 +39,37 @@
       "surplus": "Superávit",
       "even": "Equilibrio",
       "kcal": "kcal"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Última semana",
+      "lastWeeks_few": "Últimas {{count}} semanas",
+      "lastWeeks_many": "Últimas {{count}} semanas",
+      "lastWeeks_other": "Últimas {{count}} semanas",
+      "lastDays_one": "Último día",
+      "lastDays_few": "Últimos {{count}} días",
+      "lastDays_many": "Últimos {{count}} días",
+      "lastDays_other": "Últimos {{count}} días",
+      "tapHint": "Toca un día para ver los detalles",
+      "less": "Menos",
+      "more": "Más",
+      "earlierWeeks": "Mostrar semanas anteriores",
+      "laterWeeks": "Mostrar semanas posteriores",
+      "workouts": {
+        "title": "Entrenamientos",
+        "none": "Sin entrenamiento",
+        "count_one": "{{count}} entrenamiento",
+        "count_few": "{{count}} entrenamientos",
+        "count_many": "{{count}} entrenamientos",
+        "count_other": "{{count}} entrenamientos"
+      },
+      "nutrition": {
+        "title": "Nutrición",
+        "none": "Nada registrado",
+        "count_one": "{{count}} comida registrada",
+        "count_few": "{{count}} comidas registradas",
+        "count_many": "{{count}} comidas registradas",
+        "count_other": "{{count}} comidas registradas"
+      }
     }
   }
 }

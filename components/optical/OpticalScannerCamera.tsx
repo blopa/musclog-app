@@ -124,7 +124,7 @@ export function OpticalScannerCamera({
   if (!hasPermission) {
     return (
       <View className="flex-1 items-center justify-center gap-4 p-6">
-        <Text className="text-center text-base font-bold text-text-primary">
+        <Text className="text-center text-base font-semibold text-text-primary">
           {t('opticalTransfer.receive.cameraPermissionTitle')}
         </Text>
         <Text className="text-center text-sm text-text-secondary">

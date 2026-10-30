@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ScrollViewInstance } from 'react-native';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -53,8 +54,8 @@ export function TimePickerModal({
 }: TimePickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const hoursScrollRef = useRef<ScrollView>(null);
-  const minutesScrollRef = useRef<ScrollView>(null);
+  const hoursScrollRef = useRef<ScrollViewInstance>(null);
+  const minutesScrollRef = useRef<ScrollViewInstance>(null);
 
   const h24 = selectedTime.getHours();
   const isPm = h24 >= 12;
@@ -194,7 +195,7 @@ export function TimePickerModal({
           />
           <Pressable onPress={onClose} className="py-2">
             <Text
-              className="font-semibold uppercase tracking-widest"
+              className="font-semibold"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 color: addOpacityToHex(theme.colors.text.primary, 0.4),
@@ -212,7 +213,7 @@ export function TimePickerModal({
         <View className="items-center gap-2">
           <View className="flex-row items-end">
             <Text
-              className="font-bold tracking-tight text-text-primary"
+              className="font-bold text-text-primary"
               style={{
                 fontSize: theme.typography.fontSize['8xl'],
                 textShadowColor: theme.colors.background.scrim30,
@@ -234,7 +235,7 @@ export function TimePickerModal({
             </Text>
           </View>
           <Text
-            className="font-semibold uppercase"
+            className="font-semibold"
             style={{
               fontSize: theme.typography.fontSize.xxs,
               color: addOpacityToHex(theme.colors.text.primary, 0.4),
@@ -247,13 +248,13 @@ export function TimePickerModal({
 
         {/* Picker card */}
         <View
-          className="w-full max-w-sm rounded-3xl px-5 py-5"
+          className="w-full max-w-sm rounded-card px-5 py-5"
           style={{ backgroundColor: theme.colors.background.ink5 }}
         >
           {/* Column labels */}
           <View className="mb-3 flex-row justify-around">
             <Text
-              className="font-semibold uppercase"
+              className="font-semibold"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 color: addOpacityToHex(theme.colors.text.primary, 0.4),
@@ -263,7 +264,7 @@ export function TimePickerModal({
               {t('timePicker.hours')}
             </Text>
             <Text
-              className="font-semibold uppercase"
+              className="font-semibold"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
                 color: addOpacityToHex(theme.colors.text.primary, 0.4),
@@ -278,7 +279,7 @@ export function TimePickerModal({
           <View className="relative" style={{ height: PICKER_VIEW_HEIGHT }}>
             {/* Selection highlight */}
             <View
-              className="absolute left-0 right-0 rounded-xl"
+              className="absolute left-0 right-0 rounded-control"
               style={{
                 top: PICKER_VIEW_HEIGHT / 2 - ITEM_HEIGHT / 2,
                 height: ITEM_HEIGHT,

@@ -65,8 +65,8 @@
       }
     },
     "typeTags": {
-      "bodyweight": "PESO CORPORAL",
-      "equipment": "EQUIPO"
+      "bodyweight": "Peso corporal",
+      "equipment": "Equipo"
     },
     "emptyGroupMessage": "Toca para ver los ejercicios de {{muscleGroup}}.",
     "createExercise": {
@@ -119,14 +119,14 @@
       }
     },
     "viewExercise": {
-      "watchTechnique": "VER TÉCNICA",
+      "watchTechnique": "Ver técnica",
       "primaryMuscle": "Músculo Primario",
       "equipment": "Equipo",
       "mechanic": "Mecánica",
       "personalBest": "Récord Personal",
       "avgFrequency": "Frecuencia Promedio",
       "workoutsUsingThis": "Entrenamientos que usan esto",
-      "templates": "PLANTILLAS",
+      "templates": "Plantillas",
       "exerciseOptions": "Opciones de Ejercicio",
       "editExercise": "Editar Ejercicio",
       "editExerciseDescription": "Modificar detalles del ejercicio",

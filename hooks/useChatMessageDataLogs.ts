@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useCoachPersona } from '@/context/CoachPersonaContext';
 import { ChatService } from '@/database/services/ChatService';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 
@@ -12,7 +13,7 @@ import { useTheme } from './useTheme';
 
 export type ChatMessageDataDisplayItem = {
   id: string;
-  name: string; // sender label: "You" | "Loggy"
+  name: string; // sender label: "You" or the coach's name
   messageText: string; // truncated message preview
   icon: string; // MaterialIcons name
   iconColor: string;
@@ -155,6 +156,7 @@ export function useChatMessageDataLogs({
 }: UseChatMessageDataLogsParams = {}): UseChatMessageDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
+  const persona = useCoachPersona();
   const dateFnsLocale = useDateFnsLocale();
 
   const userColor = useMemo(
@@ -178,14 +180,14 @@ export function useChatMessageDataLogs({
       const colors = isUser ? userColor : coachColor;
       return {
         id: record.id,
-        name: isUser ? t('coach.you') : t('coach.name'),
+        name: isUser ? t('coach.you') : persona.name,
         messageText: truncate(record.message, PREVIEW_LENGTH),
         icon: isUser ? 'person' : 'smart-toy',
         iconColor: colors.color,
         iconBgColor: colors.bg,
       };
     },
-    [t, userColor, coachColor]
+    [t, persona.name, userColor, coachColor]
   );
 
   const loadInitial = useCallback(async () => {

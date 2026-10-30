@@ -1,10 +1,8 @@
 import type { Locale } from 'date-fns';
-import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
 import type { LucideIcon } from 'lucide-react-native';
 import type { ComponentType } from 'react';
 
-import type { LineChartDataPoint } from '@/components/charts/LineChart';
 import type { Units } from '@/constants/settings';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
@@ -15,10 +13,10 @@ import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/
 import { type Theme } from '@/theme';
 
 import { isCardioActivity } from './cardioEnergy';
-import { getXAxisLabels, XAxisLabel } from './chartUtils';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { displayWeightKgNumeric } from './formatDisplayWeight';
 import { getWeightUnitI18nKey } from './units';
+import { buildVolumeTrend, EMPTY_VOLUME_TREND, type VolumeTrend } from './volumeTrend';
 import { calculateSetVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
 import {
@@ -66,11 +64,7 @@ export type WorkoutDetailData = {
   notes?: string;
   /** A quick walk/run log: distance in metres and which activity it was. */
   cardio?: { distanceM: number; durationS: number; activity: 'walk' | 'run' };
-  volumeTrend: {
-    percentage: number;
-    data: LineChartDataPoint[];
-    labels: XAxisLabel[];
-  };
+  volumeTrend: VolumeTrend;
   exercises: WorkoutExercise[];
 };
 
@@ -114,96 +108,51 @@ async function calculateVolumeTrend(
   currentWorkoutLog: WorkoutLog,
   t: TFunction,
   locale: Locale
-): Promise<{
-  percentage: number;
-  data: LineChartDataPoint[];
-  labels: XAxisLabel[];
-}> {
+): Promise<VolumeTrend> {
   if (!currentWorkoutLog.templateId || !currentWorkoutLog.totalVolume) {
-    return {
-      percentage: 0,
-      data: [],
-      labels: [],
-    };
+    return EMPTY_VOLUME_TREND;
   }
 
   const historicalLogs = await WorkoutService.getWorkoutLogsByTemplate(
     currentWorkoutLog.templateId,
-    10
+    { limit: 10 }
   );
 
   if (historicalLogs.length < 2) {
-    return {
-      percentage: 0,
-      data: [],
-      labels: [],
-    };
+    return EMPTY_VOLUME_TREND;
   }
 
   const allLogs = [...historicalLogs];
   const isCurrentIncluded = allLogs.some((log) => log.id === currentWorkoutLog.id);
 
-  if (!isCurrentIncluded && currentWorkoutLog.totalVolume && currentWorkoutLog.completedAt) {
+  if (!isCurrentIncluded && currentWorkoutLog.completedAt) {
     allLogs.unshift(currentWorkoutLog);
   }
 
-  const sortedLogs = allLogs
-    .filter((log) => log.totalVolume && log.completedAt)
-    .sort((a, b) => (a.startedAt || 0) - (b.startedAt || 0));
-
-  if (sortedLogs.length < 2) {
-    return {
-      percentage: 0,
-      data: [],
-      labels: [],
-    };
-  }
-
-  const currentVolume = currentWorkoutLog.totalVolume || 0;
-  const currentIndex = sortedLogs.findIndex((log) => log.id === currentWorkoutLog.id);
-  const previousVolume = currentIndex > 0 ? sortedLogs[currentIndex - 1].totalVolume || 0 : 0;
-  const percentageChange =
-    previousVolume > 0 && currentIndex > 0
-      ? Math.round(((currentVolume - previousVolume) / previousVolume) * 100)
-      : 0;
-
-  const maxVolume = Math.max(...sortedLogs.map((log) => log.totalVolume || 0));
-  const minVolume = Math.min(...sortedLogs.map((log) => log.totalVolume || 0));
-  const volumeRange = maxVolume - minVolume || 1;
-
-  const chartHeight = 100;
-
-  const data: LineChartDataPoint[] = sortedLogs.map((log, index) => {
-    const x = index; // Use index as x for getXAxisLabels
-    const normalizedVolume = ((log.totalVolume || 0) - minVolume) / volumeRange;
-    const y = chartHeight - normalizedVolume * chartHeight;
-    return { x, y };
-  });
-
-  const labels = getXAxisLabels(
-    sortedLogs.map((log, index) => ({
-      x: index,
-      date: new Date(log.startedAt || log.completedAt || Date.now()),
-    })),
-    (x) => {
-      const log = sortedLogs[x];
-      const date = new Date(log.startedAt || log.completedAt || Date.now());
-      return format(date, 'MMM d', { locale });
-    },
+  return buildVolumeTrend(
+    allLogs
+      .filter((log) => log.totalVolume && log.completedAt)
+      .map((log) => ({
+        id: log.id,
+        date: log.startedAt || log.completedAt || Date.now(),
+        volume: log.totalVolume || 0,
+      })),
+    currentWorkoutLog.id,
     locale
   );
+}
 
-  // LineChart can use the point indices directly for its x domain and labels.
-  const chartData: LineChartDataPoint[] = data.map((d, i) => ({
-    x: i,
-    y: d.y,
-  }));
-
-  return {
-    percentage: percentageChange,
-    data: chartData,
-    labels,
-  };
+/**
+ * Volume trend of ONE exercise across the sessions of the same workout, ending at this session.
+ * Empty when the workout has no template or fewer than two sessions trained the exercise.
+ */
+export async function calculateExerciseVolumeTrend(
+  workoutLogId: string,
+  exerciseId: string,
+  locale: Locale
+): Promise<VolumeTrend> {
+  const entries = await WorkoutService.getExerciseVolumeHistory(workoutLogId, exerciseId, 10);
+  return buildVolumeTrend(entries, workoutLogId, locale);
 }
 
 /**

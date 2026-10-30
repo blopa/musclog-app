@@ -1,3 +1,4 @@
+import { settingsGetMock } from './settingsGetMock';
 import { database } from '@/database/database-instance';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import { GymService } from '@/database/services/GymService';
@@ -1419,6 +1420,116 @@ describe('WorkoutTemplateService', () => {
       });
     });
 
+    it('pins the workouts to the chosen weekdays, alternating A/B, in a weekly plan', async () => {
+      const squat = createMockExercise({
+        id: 'fx-Bodyweight_Squat',
+        name: 'Bodyweight Squat',
+        equipmentType: 'bodyweight',
+        loadMultiplier: 0.5,
+        orderIndex: 0,
+      });
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'exercises') {
+          return collection({ fetch: jest.fn().mockResolvedValue([squat]) }) as any;
+        }
+        return collection() as any;
+      });
+      jest.spyOn(UserService, 'getCurrentUser').mockResolvedValue(null);
+      jest.spyOn(UserMetricService, 'getLatest').mockResolvedValue(null);
+      jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockReturnValue(0);
+      const createPlanWithTemplates = jest
+        .spyOn(WorkoutTemplateService, 'createPlanWithTemplates')
+        .mockResolvedValue({ plan: { id: 'plan-1' } as any, templates: [] });
+      const program = {
+        title: 'Short',
+        dayNames: { '1': 'Workout A', '2': 'Workout B' },
+        exercises: [
+          { exerciseSlug: 'Bodyweight_Squat', day: 1, sets: 2, reps: 10 },
+          { exerciseSlug: 'Bodyweight_Squat', day: 2, sets: 2, reps: 10 },
+        ],
+      };
+
+      await WorkoutTemplateService.createWorkoutsFromJsonTemplate(program, {
+        cycleType: 'weekly',
+        weekDays: [0, 2, 4],
+      });
+
+      expect(createPlanWithTemplates).toHaveBeenCalledWith(
+        expect.objectContaining({ cycleType: 'weekly' }),
+        [
+          expect.objectContaining({ weekDays: [0, 4], position: 0 }),
+          expect.objectContaining({ weekDays: [2], position: 1 }),
+        ]
+      );
+    });
+
+    it('leaves out the workout that gets no weekday when only one day is chosen', async () => {
+      const squat = createMockExercise({
+        id: 'fx-Bodyweight_Squat',
+        name: 'Bodyweight Squat',
+        equipmentType: 'bodyweight',
+        loadMultiplier: 0.5,
+        orderIndex: 0,
+      });
+      mockDatabase.get.mockImplementation((table: string) =>
+        table === 'exercises'
+          ? (collection({ fetch: jest.fn().mockResolvedValue([squat]) }) as any)
+          : (collection() as any)
+      );
+      jest.spyOn(UserService, 'getCurrentUser').mockResolvedValue(null);
+      jest.spyOn(UserMetricService, 'getLatest').mockResolvedValue(null);
+      jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockReturnValue(0);
+      const createPlanWithTemplates = jest
+        .spyOn(WorkoutTemplateService, 'createPlanWithTemplates')
+        .mockResolvedValue({ plan: { id: 'plan-1' } as any, templates: [] });
+
+      await WorkoutTemplateService.createWorkoutsFromJsonTemplate(
+        {
+          title: 'Short',
+          exercises: [
+            { exerciseSlug: 'Bodyweight_Squat', day: 1, sets: 2, reps: 10 },
+            { exerciseSlug: 'Bodyweight_Squat', day: 2, sets: 2, reps: 10 },
+          ],
+        },
+        { cycleType: 'weekly', weekDays: [3] }
+      );
+
+      const inputs = createPlanWithTemplates.mock.calls[0][1];
+      expect(inputs).toHaveLength(1);
+      expect(inputs[0]).toMatchObject({ weekDays: [3], position: 0 });
+    });
+
+    it('still creates a rotating plan with no weekdays by default', async () => {
+      const squat = createMockExercise({
+        id: 'fx-Bodyweight_Squat',
+        name: 'Bodyweight Squat',
+        equipmentType: 'bodyweight',
+        loadMultiplier: 0.5,
+        orderIndex: 0,
+      });
+      mockDatabase.get.mockImplementation((table: string) =>
+        table === 'exercises'
+          ? (collection({ fetch: jest.fn().mockResolvedValue([squat]) }) as any)
+          : (collection() as any)
+      );
+      jest.spyOn(UserService, 'getCurrentUser').mockResolvedValue(null);
+      jest.spyOn(UserMetricService, 'getLatest').mockResolvedValue(null);
+      jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockReturnValue(0);
+      const createPlanWithTemplates = jest
+        .spyOn(WorkoutTemplateService, 'createPlanWithTemplates')
+        .mockResolvedValue({ plan: { id: 'plan-1' } as any, templates: [] });
+
+      await WorkoutTemplateService.createWorkoutsFromJsonTemplate({
+        title: 'Short',
+        exercises: [{ exerciseSlug: 'Bodyweight_Squat', day: 1, sets: 2, reps: 10 }],
+      });
+
+      expect(createPlanWithTemplates).toHaveBeenCalledWith(
+        expect.objectContaining({ cycleType: 'rotating' }),
+        [expect.not.objectContaining({ weekDays: expect.anything() })]
+      );
+    });
+
     it('does not create an empty plan when every day has no matching exercises', async () => {
       mockDatabase.get.mockImplementation((table: string) => {
         if (table === 'exercises') {
@@ -2747,7 +2858,9 @@ describe('WorkoutTemplateService.getSuggestedWeightAndRepsForExercise', () => {
     jest.restoreAllMocks();
     mockDatabase.get.mockReset();
     jest.spyOn(SettingsService, 'getProgressionMode').mockResolvedValue('weight_first');
-    jest.spyOn(SettingsService, 'getWorkoutAutonomy').mockResolvedValue('suggest');
+    jest
+      .spyOn(SettingsService, 'get')
+      .mockImplementation(settingsGetMock({ workoutAutonomy: 'suggest' }));
     jest.spyOn(SettingsService, 'getUnits').mockResolvedValue('metric');
   });
 

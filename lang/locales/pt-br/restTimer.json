@@ -3,15 +3,15 @@
     "resting": "Descansando...",
     "minus5s": "- 5s",
     "plus5s": "+ 5s",
-    "skipRest": "PULAR DESCANSO",
+    "skipRest": "Pular descanso",
     "done": "Concluído",
     "reps": "repetições",
     "repsWithCount": "{{count}} repetições",
-    "upNext": "PRÓXIMO",
+    "upNext": "Próximo",
     "missingWorkoutData": "Dados do treino ausentes",
     "completedSetNotFound": "Série completada não encontrada",
     "getReady": "Prepare-se",
-    "go": "Vai!",
+    "go": "Vai",
     "a11yRemaining": "Faltam {{time}}"
   }
 }

@@ -18,13 +18,16 @@ import {
 } from '@/constants/misc';
 import { getWorkoutTemplates, type RawWorkoutTemplate } from '@/data/workoutTemplates';
 import type { LiftingExperience } from '@/database/models/User';
-import { ActiveWorkoutExistsError, WorkoutService } from '@/database/services/WorkoutService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
+import { PERSONALIZED_SETUP_STEPS } from '@/utils/onboardingRoutes';
 import {
   parseTrainingSetup,
   pickStarterTemplateIndex,
+  shortPlanTemplateIndex,
   type TrainingSetupData,
 } from '@/utils/onboardingTraining';
 
@@ -51,16 +54,18 @@ const isExperience = (value: unknown): value is LiftingExperience =>
 
 /**
  * Where onboarding ends for anyone who answered the training questions: a concrete first workout
- * rather than an empty Home. Plans exist only for gym equipment, so home/minimal trainers are
- * offered an empty workout instead of a plan they could not do.
+ * rather than an empty Home. The long catalogue plans are gym-only, so home/minimal trainers are
+ * offered the short full-body plan for their equipment instead of a plan they could not do.
  */
 export default function FirstWorkoutScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode?: string }>();
-  // The last step of the quick (7) or personalized (10) setup; absent when opened directly.
-  const totalSteps = mode === 'personalized' ? 10 : mode === 'quick' ? 7 : null;
+  // The last step of the quick (7) or personalized (11) setup; absent when opened directly.
+  const totalSteps =
+    mode === 'personalized' ? PERSONALIZED_SETUP_STEPS : mode === 'quick' ? 7 : null;
 
   const [setup, setSetup] = useState<TrainingSetupData | null>(null);
   const [experience, setExperience] = useState<LiftingExperience>('beginner');
@@ -69,7 +74,7 @@ export default function FirstWorkoutScreen() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const load = async () => {
       try {
         const [rawTraining, rawPersonalized] = await Promise.all([
           AsyncStorage.getItem(TRAINING_SETUP_DATA),
@@ -107,7 +112,9 @@ export default function FirstWorkoutScreen() {
           setIsLoading(false);
         }
       }
-    })();
+    };
+
+    void load();
 
     return () => {
       cancelled = true;
@@ -119,7 +126,10 @@ export default function FirstWorkoutScreen() {
       return null;
     }
 
-    const index = pickStarterTemplateIndex(setup.location, experience, setup.daysPerWeek);
+    // Someone coming back starts on the short plan for their equipment, gym included.
+    const index = setup.comingBack
+      ? shortPlanTemplateIndex(setup.location)
+      : pickStarterTemplateIndex(setup.location, experience, setup.daysPerWeek);
     return index === null
       ? null
       : (getWorkoutTemplates(i18n.resolvedLanguage ?? i18n.language)[index] ?? null);
@@ -127,9 +137,15 @@ export default function FirstWorkoutScreen() {
 
   const stats = useMemo(() => {
     const exercises = Array.isArray(template?.exercises) ? template.exercises : [];
+    const perDay = new Map<number, number>();
+    exercises.forEach((exercise) => {
+      const day = exercise.day ?? 1;
+      perDay.set(day, (perDay.get(day) ?? 0) + 1);
+    });
     return {
       exerciseCount: exercises.length,
-      dayCount: new Set(exercises.map((exercise) => exercise.day)).size,
+      dayCount: perDay.size,
+      days: [...perDay.entries()].sort((a, b) => a[0] - b[0]),
     };
   }, [template]);
 
@@ -147,32 +163,19 @@ export default function FirstWorkoutScreen() {
     router.replace(destination as never);
   };
 
-  const handleStartPlan = async (startNow: boolean) => {
+  const handleAddPlan = async () => {
     if (!template) {
       return;
     }
 
     setIsBusy(true);
     try {
-      const created = await WorkoutTemplateService.createWorkoutsFromJsonTemplate(template);
-      const first = created.templates[0];
-      if (startNow && first) {
-        const workoutLog = await WorkoutService.startWorkoutFromTemplate(
-          first.id,
-          created.plan?.id
-        );
-        await finish(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`, true);
-        return;
-      }
-
-      await finish('/app', true);
+      await WorkoutTemplateService.createWorkoutsFromJsonTemplate(template);
+      // The Workouts screen's Today card offers the plan's first workout with one "Start" tap, so
+      // the new plan leads somewhere instead of leaving the person on Home to look for it.
+      await finish('/app/workout/workouts', true);
     } catch (error) {
-      if (error instanceof ActiveWorkoutExistsError) {
-        await finish('/app', true);
-        return;
-      }
-
-      handleError(error, 'firstWorkout.startPlan', {
+      handleError(error, 'firstWorkout.addPlan', {
         snackbarMessage: t('errors.somethingWentWrong'),
       });
     } finally {
@@ -206,7 +209,7 @@ export default function FirstWorkoutScreen() {
 
   const chip = (icon: React.ReactNode, label: string) => (
     <View
-      className="flex-row items-center gap-1.5 rounded-full px-3 py-1.5"
+      className="flex-row items-center gap-1.5 rounded-tag px-3 py-1.5"
       style={{ backgroundColor: theme.colors.background.cardElevated }}
     >
       {icon}
@@ -228,10 +231,7 @@ export default function FirstWorkoutScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-6 pt-10">
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.firstWorkout.title')}
             </Text>
             <Text
@@ -288,6 +288,36 @@ export default function FirstWorkoutScreen() {
                       )
                     : null}
                 </View>
+                <View className="gap-2">
+                  {stats.days.map(([day, count]) => (
+                    <View
+                      key={day}
+                      className="flex-row items-center justify-between px-4 py-3"
+                      style={{
+                        backgroundColor: theme.colors.background.card,
+                        borderRadius: theme.borderRadius.lg,
+                      }}
+                    >
+                      <Text
+                        className="font-semibold"
+                        style={{
+                          color: theme.colors.text.primary,
+                          fontSize: theme.typography.fontSize.base,
+                        }}
+                      >
+                        {t('onboarding.firstWorkout.dayLabel', { day: formatInteger(day) })}
+                      </Text>
+                      <Text
+                        style={{
+                          color: theme.colors.text.secondary,
+                          fontSize: theme.typography.fontSize.sm,
+                        }}
+                      >
+                        {t('onboarding.firstWorkout.dayExercises', { count })}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
                 <Text
                   style={{
                     color: theme.colors.text.tertiary,
@@ -334,7 +364,7 @@ export default function FirstWorkoutScreen() {
                 }}
               >
                 {t('onboarding.firstWorkout.planHint', {
-                  action: t('onboarding.firstWorkout.startNow'),
+                  action: t('onboarding.firstWorkout.addPlan'),
                   later: t('onboarding.firstWorkout.notNow'),
                 })}
               </Text>
@@ -342,7 +372,7 @@ export default function FirstWorkoutScreen() {
             {!template ? (
               <View className="mt-8 gap-3">
                 <Text
-                  className="font-bold uppercase tracking-wider"
+                  className="font-bold"
                   style={{
                     color: theme.colors.text.tertiary,
                     fontSize: theme.typography.fontSize.xs,
@@ -394,8 +424,8 @@ export default function FirstWorkoutScreen() {
         <BottomButtonWrapper>
           {template ? (
             <Button
-              label={t('onboarding.firstWorkout.startNow')}
-              onPress={() => handleStartPlan(true)}
+              label={t('onboarding.firstWorkout.addPlan')}
+              onPress={handleAddPlan}
               variant="gradientCta"
               size="md"
               width="full"

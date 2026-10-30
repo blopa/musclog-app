@@ -1,0 +1,20 @@
+{
+  "workoutReminder": {
+    "why": {
+      "title": "Waarom kreeg ik dit?",
+      "thisWorkout": "deze training",
+      "setting": "Trainingsherinneringen staan aan en {{workout}} staat gepland voor {{day}}.",
+      "settingNoDay": "Trainingsherinneringen staan aan en {{workout}} staat in je plan.",
+      "fromPlan": "Die dag komt uit een trainingsplan.",
+      "fromSchedule": "Die dag komt uit het schema dat je bij de training hebt ingesteld.",
+      "timing": "De herinnering staat op {{time}}, de geplande tijd.",
+      "timingLead": "Hij komt {{minutes}} minuten voor de geplande tijd, {{time}}.",
+      "pause": "Alle herinneringen {{days}} dagen pauzeren",
+      "paused": "Herinneringen {{days}} dagen gepauzeerd.",
+      "turnOff": "Trainingsherinneringen uitzetten",
+      "turnedOff": "Trainingsherinneringen staan uit.",
+      "settings": "Meldingsinstellingen",
+      "failed": "De herinneringen konden niet worden aangepast. Probeer het opnieuw."
+    }
+  }
+}

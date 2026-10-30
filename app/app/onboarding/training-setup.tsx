@@ -1,7 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Activity, Check, Dumbbell, Home, SlidersHorizontal, Sparkles } from 'lucide-react-native';
-import { type ComponentType, useState } from 'react';
+import {
+  Activity,
+  Check,
+  Dumbbell,
+  Home,
+  SlidersHorizontal,
+  TrendingUp,
+} from 'lucide-react-native';
+import { type ComponentType, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,13 +18,19 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
+import { ListRow } from '@/components/theme/ListRow';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { ToggleInput } from '@/components/theme/ToggleInput';
 import { TRAINING_SETUP_DATA } from '@/constants/misc';
 import type { WorkoutAutonomy } from '@/constants/settings';
 import type { LiftingExperience } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
+import { BREAK_LENGTH_LABEL_KEYS } from '@/utils/comeback/comebackCopy';
+import { BREAK_LENGTHS, type BreakLength } from '@/utils/comeback/comebackState';
+import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import {
   DEFAULT_TRAINING_DAYS,
+  parseTrainingSetup,
   TRAINING_DAYS_OPTIONS,
   type TrainingLocation,
   type TrainingSetupData,
@@ -58,7 +71,7 @@ const AUTONOMY_OPTIONS: CardOption<WorkoutAutonomy>[] = [
     value: 'suggest',
     labelKey: 'onboarding.trainingSetup.help.suggest',
     descKey: 'onboarding.trainingSetup.help.suggestDesc',
-    icon: Sparkles,
+    icon: TrendingUp,
   },
   {
     value: 'manual',
@@ -90,15 +103,44 @@ export default function TrainingSetupScreen() {
   const defaultNextRoute =
     mode === 'quick' ? '/app/onboarding/quick-goals' : '/app/onboarding/personalized-experience';
   const nextRoute = params.nextRoute ? decodeURIComponent(params.nextRoute) : defaultNextRoute;
-  const step = params.quickStep ? Number(params.quickStep) : 2;
-  const defaultTotal = mode === 'quick' ? 7 : 10;
+  const step = params.quickStep ? Number(params.quickStep) : PERSONALIZED_STEP.training;
+  const defaultTotal = mode === 'quick' ? 7 : PERSONALIZED_SETUP_STEPS;
   const total = params.quickTotal ? Number(params.quickTotal) : defaultTotal;
 
   const [location, setLocation] = useState<TrainingLocation>('gym');
   const [experience, setExperience] = useState<LiftingExperience>('beginner');
   const [days, setDays] = useState<number>(DEFAULT_TRAINING_DAYS);
   const [autonomy, setAutonomy] = useState<WorkoutAutonomy>('suggest');
+  const [comingBack, setComingBack] = useState(false);
+  const [breakLength, setBreakLength] = useState<BreakLength>('1to3m');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Come back to what was answered before (here earlier, or in the AI setup) rather than defaults.
+  useEffect(() => {
+    let cancelled = false;
+    AsyncStorage.getItem(TRAINING_SETUP_DATA).then((raw) => {
+      const saved = parseTrainingSetup(raw);
+      if (cancelled || !saved) {
+        return;
+      }
+
+      setLocation(saved.location);
+      setDays(saved.daysPerWeek);
+      setAutonomy(saved.autonomy);
+      if (saved.experience) {
+        setExperience(saved.experience);
+      }
+
+      if (saved.comingBack) {
+        setComingBack(true);
+        setBreakLength(saved.comingBack.breakLength);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleContinue = async () => {
     setIsSaving(true);
@@ -108,6 +150,7 @@ export default function TrainingSetupScreen() {
         experience: mode === 'quick' ? experience : undefined,
         daysPerWeek: days,
         autonomy,
+        ...(comingBack ? { comingBack: { breakLength } } : {}),
       };
       await AsyncStorage.setItem(TRAINING_SETUP_DATA, JSON.stringify(data));
       router.navigate(nextRoute as never);
@@ -198,10 +241,7 @@ export default function TrainingSetupScreen() {
   );
 
   const sectionLabel = (key: string) => (
-    <Text
-      className="text-xs font-semibold tracking-widest"
-      style={{ color: theme.colors.text.tertiary }}
-    >
+    <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
       {t(key).toUpperCase()}
     </Text>
   );
@@ -217,10 +257,7 @@ export default function TrainingSetupScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-6 pt-6">
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.trainingSetup.title')}
             </Text>
             <Text
@@ -264,6 +301,41 @@ export default function TrainingSetupScreen() {
                 onValueChange={(v) => setDays(Number(v))}
                 variant="gradient"
               />
+            </View>
+
+            <View className="mb-8 gap-3">
+              {sectionLabel('onboarding.trainingSetup.comingBackLabel')}
+              <ToggleInput
+                items={[
+                  {
+                    key: 'coming-back',
+                    label: t('onboarding.trainingSetup.comingBack'),
+                    subtitle: t('onboarding.trainingSetup.comingBackDesc'),
+                    value: comingBack,
+                    onValueChange: setComingBack,
+                  },
+                ]}
+              />
+              {comingBack ? (
+                <View className="gap-2">
+                  <Text
+                    style={{
+                      color: theme.colors.text.secondary,
+                      fontSize: theme.typography.fontSize.sm,
+                    }}
+                  >
+                    {t('onboarding.trainingSetup.breakLengthLabel')}
+                  </Text>
+                  {BREAK_LENGTHS.map((value) => (
+                    <ListRow
+                      key={value}
+                      title={t(BREAK_LENGTH_LABEL_KEYS[value])}
+                      selected={breakLength === value}
+                      onPress={() => setBreakLength(value)}
+                    />
+                  ))}
+                </View>
+              ) : null}
             </View>
 
             <View className="mb-4 gap-3">

@@ -18,11 +18,10 @@ export function NoteCard({ note, relativeTime, onPress, onMenuPress }: NoteListI
       onPress={onPress}
       className="flex-1 overflow-hidden active:opacity-80"
       style={{
-        borderRadius: theme.borderRadius.xl,
+        borderRadius: theme.borderRadius.card,
         backgroundColor: theme.colors.background.cardElevated,
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.accent.primary20,
-        ...theme.shadows.md,
       }}
     >
       <View className="gap-3 p-4">
@@ -33,7 +32,7 @@ export function NoteCard({ note, relativeTime, onPress, onMenuPress }: NoteListI
         {/* minHeight keeps a pair of one-line notes from collapsing into squat tiles. */}
         <View style={{ minHeight: theme.size['18'] }}>
           {note.title ? (
-            <Text className="mb-1 text-sm font-bold text-text-primary" numberOfLines={1}>
+            <Text className="mb-1 text-sm font-semibold text-text-primary" numberOfLines={1}>
               {note.title}
             </Text>
           ) : null}

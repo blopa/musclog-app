@@ -1,10 +1,11 @@
 {
   "pastWorkoutHistory": {
-    "title": "Workout History",
+    "title": "Workout history",
     "searchPlaceholder": "Search sessions...",
     "noWorkoutsFound": "No workouts found matching your search.",
     "noWorkoutHistory": "No workout history yet.",
-    "loadMore": "Load More",
+    "noWorkoutsInRange": "No workouts in this date range. Try increasing the filter range.",
+    "loadMore": "Load more",
     "loadingMore": "Loading...",
     "stats": {
       "duration": "Duration",
@@ -18,11 +19,11 @@
       "plural": "{{count}} PRs"
     },
     "filters": {
-      "title": "Filter Workouts",
-      "workoutType": "WORKOUT TYPE",
-      "minDuration": "MIN. DURATION",
+      "title": "Filter workouts",
+      "workoutType": "Workout type",
+      "minDuration": "Min. duration",
       "reset": "Reset",
-      "applyFilters": "Apply Filters",
+      "applyFilters": "Apply filters",
       "durationFormats": {
         "zero": "0m",
         "minutes": "{{minutes}}m",
@@ -30,27 +31,27 @@
         "max": "120m+"
       },
       "workoutTypes": {
-        "all": "All Types",
+        "all": "All types",
         "strength": "Strength",
         "cardio": "Cardio",
         "hiit": "HIIT",
         "yoga": "Yoga"
       },
       "dateRange": {
-        "title": "DATE RANGE",
-        "30days": "Last 30 Days",
-        "90days": "Last 90 Days",
-        "custom": "Custom"
+        "title": "Date range",
+        "30days": "Last 30 days",
+        "90days": "Last 90 days",
+        "allTime": "All time"
       },
       "muscleGroups": {
-        "title": "MUSCLE GROUP (MULTI-SELECT)",
+        "title": "Muscle group (multi-select)",
         "chest": "Chest",
         "back": "Back",
         "legs": "Legs",
         "shoulders": "Shoulders",
         "arms": "Arms",
         "core": "Core",
-        "fullBody": "Full Body"
+        "fullBody": "Full body"
       }
     }
   }

@@ -10,12 +10,18 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { restoreDatabase } from '@/database/importDb';
-import { type BackupFileMeta, deleteBackup, getStoredBackups } from '@/database/preMigrationBackup';
+import {
+  type BackupFileMeta,
+  deleteBackup,
+  exportPortableRecoveryPoint,
+  getStoredBackups,
+} from '@/database/preMigrationBackup';
 import { SettingsService } from '@/database/services/SettingsService';
 import {
   convertSqliteBackupToJson,
   exportSqliteBackupAsJsonFile,
 } from '@/database/sqliteBackupConvert';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
 import { downloadFile, readFileAsStringAsync } from '@/utils/file';
@@ -41,6 +47,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [restoreModalVisible, setRestoreModalVisible] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  useKeepScreenAwake('local-backups-processing', isProcessing);
   const [requireExportEncryption, setRequireExportEncryption] = useState(true);
   const [databaseFailedToInitiate, setDatabaseFailedToInitiate] = useState(false);
 
@@ -101,8 +108,10 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         const jsonUri = await exportSqliteBackupAsJsonFile(selectedBackup);
         await downloadFile(jsonUri, jsonUri.split('/').pop());
       } else {
-        const fileName = selectedBackup.uri.split('/').pop();
-        await downloadFile(selectedBackup.uri, fileName);
+        // Recovery points keep cycle records encrypted with this device's key; the copy the person
+        // takes away is decrypted so it can be restored on another phone.
+        const jsonUri = await exportPortableRecoveryPoint(selectedBackup.uri);
+        await downloadFile(jsonUri, selectedBackup.uri.split('/').pop());
       }
     } catch (error) {
       console.error('Export failed:', error);
@@ -177,6 +186,10 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
       return t('settings.advancedSettings.localBackups.exerciseCatalogueBackup');
     }
 
+    if (backup.reason === 'cycle-encryption') {
+      return t('settings.advancedSettings.localBackups.cycleEncryptionBackup');
+    }
+
     if (backup.reason === 'pre-restore') {
       return t('settings.advancedSettings.localBackups.preRestoreBackup');
     }
@@ -195,9 +208,6 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     {
       icon: (props) => <MaterialIcons name="share" {...props} />,
       iconColor: canExport ? theme.colors.text.primary : theme.colors.text.tertiary,
-      iconBgColor: canExport
-        ? theme.colors.background.iconDarker
-        : theme.colors.background.neutralWash,
       title: t('settings.advancedSettings.localBackups.export'),
       description: canExport ? '' : t('settings.advancedSettings.localBackups.exportDisabled'),
       onPress: canExport ? handleExport : () => {},
@@ -205,7 +215,6 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     {
       icon: (props) => <MaterialIcons name="restore" {...props} />,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.background.iconDarker,
       title: t('settings.advancedSettings.localBackups.restore'),
       description: '',
       onPress: handleRestore,
@@ -213,7 +222,6 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     {
       icon: (props) => <MaterialIcons name="delete" {...props} />,
       iconColor: theme.colors.status.error50,
-      iconBgColor: theme.colors.status.error10,
       title: t('settings.advancedSettings.localBackups.delete'),
       description: '',
       onPress: handleDelete,

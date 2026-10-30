@@ -54,18 +54,22 @@ function ensureBackgroundSubscription(): void {
  * a manual theme change: the icon cannot follow anything that happens while the app
  * is not running, and iOS alerts on every switch. The `system` preference keeps the
  * default icon. Never throws — a failed switch leaves the old icon and is reported.
+ *
+ * Resolves `true` when the switch was deferred until the app is next backgrounded (Android), so the
+ * caller can say so instead of leaving the person wondering whether the pick worked.
  */
-export async function syncAppIconWithTheme(preference: ThemeOption): Promise<void> {
+export async function syncAppIconWithTheme(preference: ThemeOption): Promise<boolean> {
   if (!themeAppIconModule) {
-    return;
+    return false;
   }
 
   const name = appIconNameForPreference(preference);
   if (Platform.OS === 'android') {
     pendingAndroidIcon = name;
     ensureBackgroundSubscription();
-    return;
+    return true;
   }
 
   await applyAppIcon(name).catch(reportFailure);
+  return false;
 }

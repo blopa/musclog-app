@@ -5,25 +5,25 @@
     "title": "Vrije training",
     "titleSession": "Sessie",
     "subtitle": "Stel je workout samen terwijl je traint. Geen sjablonen, alleen voortgang.",
-    "addFirstExercise": "EERSTE OEFENING TOEVOEGEN",
+    "addFirstExercise": "Eerste oefening toevoegen",
     "tip": "Tip: Je kunt op elk moment meer oefeningen toevoegen.",
     "startFreeTraining": "Vrije training starten",
     "startFreeTrainingSubtitle": "Stel je workout samen terwijl je traint. Geen sjablonen, alleen voortgang.",
-    "duration": "DUUR",
-    "calories": "CALORIEËN",
-    "volume": "VOLUME",
+    "duration": "Duur",
+    "calories": "Calorieën",
+    "volume": "Volume",
     "inProgress": "In uitvoering",
     "addExercise": {
       "title": "Oefening toevoegen",
-      "numberOfSets": "AANTAL SETS",
-      "addToWorkout": "TOEVOEGEN AAN WORKOUT",
+      "numberOfSets": "Aantal sets",
+      "addToWorkout": "Toevoegen aan workout",
       "menuDescription": "Voeg oefeningen en sets toe aan deze sessie"
     },
     "exerciseComplete": {
-      "title": "Goed werk!",
+      "title": "Oefening voltooid",
       "subtitle": "Oefening voltooid. Klaar voor meer?",
       "setsCompleted": "{{count}} sets voltooid",
-      "totalVolume": "TOTAAL VOLUME",
+      "totalVolume": "Totaal volume",
       "addNextExercise": "Volgende oefening toevoegen",
       "finishWorkout": "Workout beëindigen"
     }

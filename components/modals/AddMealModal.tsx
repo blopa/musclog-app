@@ -32,7 +32,6 @@ export function AddMealModal({
     {
       icon: Plus,
       iconColor: theme.colors.text.primary,
-      iconBgColor: theme.colors.text.primary20,
       title: t('addMeal.createMeal'),
       description: t('addMeal.createMealDesc'),
       onPress: () => onCreateMeal?.(),
@@ -42,7 +41,6 @@ export function AddMealModal({
           {
             icon: Layers,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.background.iconDarker,
             title: t('addMeal.dynamicCreator'),
             description: t('addMeal.dynamicCreatorDesc'),
             onPress: onDynamicMealCreator,
@@ -54,7 +52,6 @@ export function AddMealModal({
           {
             icon: ScanLine,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('addMeal.importFromPhone'),
             description: t('addMeal.importFromPhoneDesc'),
             onPress: onImportFromPhone,
@@ -66,7 +63,6 @@ export function AddMealModal({
           {
             icon: Sparkles,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('addMeal.generateMealAI'),
             description: t('addMeal.generateMealAIDesc'),
             onPress: () => onGenerateMealAI?.(),
@@ -78,7 +74,6 @@ export function AddMealModal({
           {
             icon: Folder,
             iconColor: theme.colors.text.primary,
-            iconBgColor: theme.colors.text.primary20,
             title: t('addMeal.manageCategories'),
             description: t('addMeal.manageCategoriesDesc'),
             onPress: onManageCategories,

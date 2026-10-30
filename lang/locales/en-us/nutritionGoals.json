@@ -1,36 +1,36 @@
 {
   "nutritionGoals": {
-    "title": "Set Nutrition & Body Goals",
+    "title": "Set nutrition & body goals",
     "subtitle": "Define your targets for nutrition and body composition.",
-    "dailyMacroTargets": "Daily Macro Targets",
-    "totalDailyCalories": "Total Daily Calories",
+    "dailyMacroTargets": "Daily macro targets",
+    "totalDailyCalories": "Total daily calories",
     "tdeeHint": "TDEE: {{kcal}} kcal",
     "kcalPerKgTissueHint": "Based on {{kcal}} kcal per 1 kg of tissue (Hall 2008 + Forbes 2007)",
     "kcalPerLbTissueHint": "Based on {{kcal}} kcal per 1 lb of tissue (Hall 2008 + Forbes 2007)",
     "calorieDeficit": "−{{kcal}} kcal deficit",
     "calorieSurplus": "+{{kcal}} kcal surplus",
     "atMaintenance": "At maintenance",
-    "targetBodyMetrics": "Target Body Metrics",
-    "macrosDistribution": "Macros Distribution",
+    "targetBodyMetrics": "Target body metrics",
+    "macrosDistribution": "Macros distribution",
     "balance": "Balance",
     "optimal": "Optimal",
     "protein": "Protein",
     "carbohydrates": "Carbohydrates",
     "fats": "Fats",
-    "targetWeight": "Target Weight",
-    "targetBodyFat": "Target Body Fat",
+    "targetWeight": "Target weight",
+    "targetBodyFat": "Target body fat",
     "targetBMI": "Target BMI",
     "targetFFMI": "Target FFMI",
     "targetDate": "Target date",
     "targetDateNotSet": "Not set",
     "targetDateSublabel": "When you want to reach your body targets",
     "targetDateClear": "Clear",
-    "editTitle": "Edit Goal",
-    "updateGoal": "Update Goal",
-    "goalStartDate": "Goal Start Date",
+    "editTitle": "Edit goal",
+    "updateGoal": "Update goal",
+    "goalStartDate": "Goal start date",
     "goalStartDateSublabel": "When this goal period started",
     "goalStartDateToday": "Today",
-    "saveGoals": "Save Goals",
+    "saveGoals": "Save goals",
     "settingsNote": "You can change these values anytime in Settings.",
     "kcalPerGram": {
       "protein": "4 kcal/g",
@@ -41,31 +41,31 @@
     "sublabels": {
       "targetWeight": "Target weight in {{unit}}",
       "targetBodyFat": "% percentage",
-      "targetBMI": "Body Mass Index",
-      "targetFFMI": "Fat-Free Mass Index"
+      "targetBMI": "Body mass index",
+      "targetFFMI": "Fat-Free mass index"
     },
-    "acceptAndContinue": "Accept and Continue",
-    "adjustGoalsManually": "Adjust Goals Manually",
+    "acceptAndContinue": "Accept and continue",
+    "adjustGoalsManually": "Adjust goals manually",
     "continue": "Continue",
     "results": {
-      "aiCalculationComplete": "Calculation Complete",
+      "aiCalculationComplete": "Calculation complete",
       "your": "Your",
-      "nutritionPlan": "Nutrition Plan",
+      "nutritionPlan": "Nutrition plan",
       "aiDescription": "Based on your body metrics and activity levels, our calculations has optimized your daily targets.",
       "manualDescription": "Here are the nutrition goals you set. You can continue or go back to adjust them.",
       "manualPlanBadge": "Your custom plan",
       "macroSplit": "Macro split",
       "manualTipsTitle": "You're all set",
       "manualTipsDescription": "Start logging meals to track your progress. You can change these goals anytime in Settings.",
-      "dailyCalorieTarget": "Daily Calorie Target",
-      "kcal": "KCAL",
+      "dailyCalorieTarget": "Daily calorie target",
+      "kcal": "kcal",
       "protein": "Protein",
       "carbs": "Carbs",
       "fats": "Fats",
-      "estimatedWeightLoss": "Estimated Weight Loss",
-      "estimatedWeightGain": "Estimated Weight Gain",
-      "estimatedMaintenance": "Estimated Maintenance",
-      "projectionTitle": "{{days}}-Day Projection",
+      "estimatedWeightLoss": "Estimated weight loss",
+      "estimatedWeightGain": "Estimated weight gain",
+      "estimatedMaintenance": "Estimated maintenance",
+      "projectionTitle": "{{days}}-day projection",
       "projectionDescription": "By tracking these goals, you are projected to reach {{value}} {{unit}} in {{days}} days.",
       "projectionMaintenanceTitle": "Maintaining weight",
       "projectionMaintenanceMuscleGain": "With consistent training and nutrition, natural muscle gain in {{days}} days is typically {{range}} {{unit}}, depending on genetics and experience.",
@@ -75,64 +75,75 @@
       "dailySurplus": "Daily surplus: {{kcal}} kcal",
       "projectionFat": "Fat: {{value}} {{unit}}",
       "projectionLean": "Lean: {{value}} {{unit}}",
-      "leanMassClarification": "Lean mass includes water, glycogen, and other non-fat tissue—not just muscle.",
+      "leanMassClarification": "Lean mass includes water, glycogen, and other non-fat tissue, not just muscle.",
       "formulasBasedOn": "Based on Hall/Forbes body composition model & metabolizable energy (Int J Obes 2008; Br J Nutr 2007).",
       "macroSourcesNote": "Macro targets based on IOM AMDR, ISSN Position Stand (2017), ACSM/ADA/DC Joint Position Stand (2016), and Helms et al. (2014).",
       "goalLabels": {
-        "weight_loss": "Weight Loss",
-        "muscle_gain": "Muscle Gain",
+        "weight_loss": "Weight loss",
+        "muscle_gain": "Muscle gain",
         "maintenance": "Maintenance",
-        "moderateWeightLoss": "Moderate Weight Loss Strategy",
-        "enduranceTraining": "Endurance Training",
-        "generalFitness": "General Fitness",
-        "leanBulk": "Lean Bulk Strategy",
-        "strengthSurplus": "Strength Surplus Strategy"
+        "moderateWeightLoss": "Moderate weight loss strategy",
+        "enduranceTraining": "Endurance training",
+        "generalFitness": "General fitness",
+        "leanBulk": "Lean bulk strategy",
+        "strengthSurplus": "Strength surplus strategy"
       }
     },
-    "errorSaving": "Error Saving",
+    "errorSaving": "Error saving",
     "dietTypes": {
       "keto": {
         "title": "Keto",
-        "subtitle": "Low Carb"
+        "subtitle": "Low carb"
       },
       "lowCarb": {
-        "title": "Low Carb",
-        "subtitle": "Fat Adapted"
+        "title": "Low carb",
+        "subtitle": "Fat adapted"
       },
       "highProteinMuscle": {
-        "title": "High Protein",
-        "subtitle": "Muscle Building"
+        "title": "High protein",
+        "subtitle": "Muscle building"
       },
       "highProteinFatLoss": {
-        "title": "High Protein",
-        "subtitle": "Fat Loss"
+        "title": "High protein",
+        "subtitle": "Fat loss"
       },
       "highCarb": {
-        "title": "High Carb",
-        "subtitle": "Energy Focus"
+        "title": "High carb",
+        "subtitle": "Energy focus"
       },
       "balanced": {
         "title": "Balanced",
         "subtitle": "Optimal"
       },
       "moderateFat": {
-        "title": "Moderate Fat",
-        "subtitle": "Sustained Energy"
+        "title": "Moderate fat",
+        "subtitle": "Sustained energy"
       },
       "lowFat": {
-        "title": "Low Fat",
-        "subtitle": "Lean Diet"
+        "title": "Low fat",
+        "subtitle": "Lean diet"
       },
       "custom": {
         "title": "Custom",
-        "subtitle": "Your Plan"
+        "subtitle": "Your plan"
       }
     },
-    "goalMode": "Goal Mode",
+    "goalMode": "Goal mode",
+    "modeOptions": {
+      "manual": "Manual",
+      "daily": "Daily",
+      "weekly": "Weekly"
+    },
+    "modeHints": {
+      "manual": "Set your own targets. They stay the same until you edit them.",
+      "daily": "Targets update automatically each day based on your stats and goal date.",
+      "weekly": "Review and approve targets each week. They stay the same between reviews."
+    },
     "manual": "Manual",
     "dynamic": "Dynamic",
     "dynamicInfo": "Daily targets are auto-calculated each day from your current stats and goal timeline. Your current calorie target is {{kcal}} kcal.",
     "dynamicBadge": "Dynamic",
-    "dynamicRequiredFields": "Target weight and target date are required for dynamic goals."
+    "dynamicRequiredFields": "Target weight and target date are required for dynamic goals.",
+    "keepCurrentTargets": "Keep my current targets"
   }
 }

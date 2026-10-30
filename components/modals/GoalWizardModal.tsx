@@ -559,7 +559,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
             marginBottom: 2,
           }}
         >
-          <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="text-xs font-semibold text-text-secondary">
             {t('goalsManagement.goalWizard.targetDate.label')}
           </Text>
         </View>
@@ -706,8 +706,6 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.accent.primary,
-              letterSpacing: 1.4,
-              textTransform: 'uppercase',
               marginBottom: 10,
             }}
           >

@@ -1,6 +1,7 @@
 import { LucideIcon, Minus, Plus } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TextInputInstance } from 'react-native';
 import { Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -62,7 +63,7 @@ export function StepperInlineInput({
 
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(() => formatValue(value));
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
 
   useEffect(() => {
     if (!editing) {
@@ -161,11 +162,11 @@ export function StepperInlineInput({
   );
 
   return (
-    <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-border-accent bg-bg-card p-5">
+    <View className="flex-row items-center justify-between overflow-hidden rounded-control border border-border-accent bg-bg-card p-5">
       <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-3">
         {Icon ? (
           <View
-            className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-lg`}
+            className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-control`}
             style={{ backgroundColor: theme.colors.status.brandVivid20 }}
           >
             <Icon

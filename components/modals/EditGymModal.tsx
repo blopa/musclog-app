@@ -281,10 +281,10 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
           {plates.map((plate) => (
             <View
               key={plate.weightKg}
-              className="flex-row items-center justify-between gap-3 rounded-lg px-4 py-3"
+              className="flex-row items-center justify-between gap-3 rounded-control px-4 py-3"
               style={{ backgroundColor: theme.colors.background.card }}
             >
-              <Text className="text-lg font-bold" style={{ color: theme.colors.text.primary }}>
+              <Text className="text-lg font-semibold" style={{ color: theme.colors.text.primary }}>
                 {showKg(plate.weightKg)} {unit}
               </Text>
               <View className="flex-row items-center gap-3">

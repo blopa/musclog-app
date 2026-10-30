@@ -95,7 +95,10 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
               <GenericCard key={prompt.id} variant="flat">
                 <View className="p-4">
                   <View className="flex-row items-center justify-between">
-                    <Text className="flex-1 text-lg font-bold text-text-primary" numberOfLines={1}>
+                    <Text
+                      className="flex-1 text-lg font-semibold text-text-primary"
+                      numberOfLines={1}
+                    >
                       {prompt.name}
                     </Text>
                     <View className="flex-row items-center gap-2">

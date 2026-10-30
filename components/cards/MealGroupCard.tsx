@@ -21,6 +21,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
+import { CardSelectionCheck } from './CardSelectionCheck';
 import { GenericCard } from './GenericCard';
 
 type MealGroupCardProps = {
@@ -33,6 +34,10 @@ type MealGroupCardProps = {
   imageUrl?: string;
   onPress?: () => void;
   onMorePress?: () => void;
+  onLongPress?: () => void;
+  /** A selection is running: the menu button gives way to a checkbox. */
+  selectionMode?: boolean;
+  selected?: boolean;
   intuitiveMode?: boolean;
 };
 
@@ -133,6 +138,9 @@ export const MealGroupCard = memo(function MealGroupCard({
   imageUrl,
   onPress,
   onMorePress,
+  onLongPress,
+  selectionMode = false,
+  selected = false,
   intuitiveMode = false,
 }: MealGroupCardProps) {
   const theme = useTheme();
@@ -140,12 +148,26 @@ export const MealGroupCard = memo(function MealGroupCard({
 
   const { Icon, bgColor, iconColor } = getMealIconAndColor(mealType, theme);
 
+  // While a selection runs the menu button gives way to the card's checkbox.
+  let trailingControl = null;
+  if (selectionMode) {
+    trailingControl = <CardSelectionCheck selected={selected} />;
+  } else if (onMorePress) {
+    trailingControl = <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />;
+  }
+
   return (
-    <GenericCard variant="flat" isPressable={!!onPress} onPress={onPress}>
+    <GenericCard
+      variant="flat"
+      isPressable={!!onPress}
+      onPress={onPress}
+      onLongPress={onLongPress}
+      selected={selected}
+    >
       <View className="flex-row items-center gap-4 p-4">
         {/* Meal icon or photo */}
         <View
-          className="h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl"
+          className="h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-control"
           style={{ backgroundColor: imageUrl ? undefined : bgColor }}
         >
           {imageUrl ? (
@@ -164,7 +186,7 @@ export const MealGroupCard = memo(function MealGroupCard({
               {name}
             </Text>
             <View
-              className="rounded-full px-2 py-0.5"
+              className="rounded-tag px-2 py-0.5"
               style={{ backgroundColor: theme.colors.status.indigo10 }}
             >
               <Text className="text-xs font-semibold" style={{ color: theme.colors.status.indigo }}>
@@ -213,9 +235,7 @@ export const MealGroupCard = memo(function MealGroupCard({
           </View>
         </View>
 
-        {onMorePress ? (
-          <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />
-        ) : null}
+        {trailingControl}
       </View>
     </GenericCard>
   );

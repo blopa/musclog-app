@@ -19,15 +19,17 @@ export const MigrationSection = () => {
   } = useOldDatabaseMigration();
 
   return (
-    <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">
+    <View className="gap-4 rounded-card border border-border-accent bg-bg-overlay p-4">
       <View className="flex-row items-center gap-2">
         <Download size={theme.iconSize.lg} color={theme.colors.text.primary} />
-        <Text className="text-lg font-bold text-text-primary">{t('settings.migration.title')}</Text>
+        <Text className="text-lg font-semibold text-text-primary">
+          {t('settings.migration.title')}
+        </Text>
       </View>
       <Text className="text-sm text-text-secondary">{t('settings.migration.description')}</Text>
       <View className="flex-row gap-2">
         <Pressable
-          className={`flex-1 flex-row items-center justify-center gap-2 rounded-lg p-3 ${
+          className={`flex-1 flex-row items-center justify-center gap-2 rounded-control p-3 ${
             checkingOldDatabase ? 'bg-border-light' : 'bg-accent-primary'
           }`}
           onPress={checkMigrationData}
@@ -38,7 +40,7 @@ export const MigrationSection = () => {
             color={checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.onAccent}
           />
           <Text
-            className={`text-sm font-bold ${
+            className={`text-sm font-semibold ${
               checkingOldDatabase ? 'text-text-tertiary' : 'text-text-on-accent'
             }`}
           >
@@ -47,7 +49,7 @@ export const MigrationSection = () => {
         </Pressable>
 
         <Pressable
-          className={`flex-1 flex-row items-center justify-center gap-2 rounded-lg p-3 ${
+          className={`flex-1 flex-row items-center justify-center gap-2 rounded-control p-3 ${
             migrating ? 'bg-border-light' : 'bg-success-primary'
           }`}
           onPress={executeMigration}
@@ -58,15 +60,15 @@ export const MigrationSection = () => {
             color={migrating ? theme.colors.text.tertiary : theme.colors.text.onAccent}
           />
           <Text
-            className={`text-sm font-bold ${migrating ? 'text-text-tertiary' : 'text-text-on-accent'}`}
+            className={`text-sm font-semibold ${migrating ? 'text-text-tertiary' : 'text-text-on-accent'}`}
           >
             {migrating ? t('settings.migration.migrating') : t('settings.migration.importData')}
           </Text>
         </Pressable>
       </View>
       {migrationSummary ? (
-        <View className="rounded-lg border border-border-light bg-bg-primary p-3">
-          <Text className="mb-2 text-sm font-bold text-text-primary">
+        <View className="rounded-control border border-border-light bg-bg-primary p-3">
+          <Text className="mb-2 text-sm font-semibold text-text-primary">
             {t('settings.migration.summary')}
           </Text>
           <Text className="text-sm text-text-secondary">
@@ -146,14 +148,14 @@ export const MigrationSection = () => {
       ) : null}
       {migrationResult ? (
         <View
-          className={`rounded-lg border p-3 ${
+          className={`rounded-control border p-3 ${
             migrationResult.success
               ? 'bg-bg-success border-status-success'
               : 'bg-bg-error border-status-error'
           }`}
         >
           <Text
-            className={`mb-2 text-sm font-bold ${
+            className={`mb-2 text-sm font-semibold ${
               migrationResult.success ? 'text-status-success' : 'text-status-error'
             }`}
           >
@@ -219,7 +221,7 @@ export const MigrationSection = () => {
       ) : null}
       {migrationResult ? (
         <Pressable
-          className="mt-2 self-center rounded-lg border border-border-light bg-bg-primary px-4 py-2"
+          className="mt-2 self-center rounded-control border border-border-light bg-bg-primary px-4 py-2"
           onPress={resetMigration}
         >
           <Text className="text-sm text-text-secondary">

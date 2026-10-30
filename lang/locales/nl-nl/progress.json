@@ -8,11 +8,12 @@
     "averageIntakeFiber": "Vezels",
     "caloriesBurnedToday": "Vandaag Verbrande Calorieën",
     "caloriesBurnedSubtitle": "Gebaseerd op TDEE van {{tdee}} kcal/dag",
+    "pastTdeeWindow": "Berekend op basis van je registratie tussen {{start}} en {{end}}. Houd een week of twee je eten en gewicht bij om het bij te werken.",
     "caloriesBurnedProgress": "{{percent}}% van de dag verstreken",
     "circadianModal": {
       "title": "Wetenschap achter Calorieënverbranding",
       "subtitle": "Circadiaans metabolisch model · Live",
-      "liveCounter": "VANDAAG VERBRAND · LIVE",
+      "liveCounter": "Vandaag verbrand · live",
       "perHour": "kcal / uur",
       "perMinute": "kcal / min",
       "perSecond": "kcal / sec",
@@ -31,7 +32,7 @@
         "nadir": "Biologisch dieptepunt. Kerntemperatuur en rustenergieverbruik bereiken hun 24-uurs minimum rond 5u, in lijn met het circadiane nadir.",
         "morning": "Scherpe metabolische stijging bij het wakker worden. Rechtop staan voegt ~10% toe aan je basislijn. Het thermisch effect van ontbijt is tot 2,5× sterker dan een identieke avondmaaltijd.",
         "midday": "Metabolisme blijft nabij het dagelijkse hoogtepunt. De lunch triggert een nieuwe TEF-piek en spontane beweging (NEAT) houdt de output stabiel.",
-        "peak": "Circadiaans REE-hoogtepunt rond 17u — ongeveer 10% boven het vroege ochtendnadir, zelfs in volledig rust. Gestructureerde beweging in dit venster versterkt de verbranding aanzienlijk.",
+        "peak": "Circadiaans REE-hoogtepunt rond 17u, ongeveer 10% boven het vroege ochtendnadir, zelfs in volledig rust. Gestructureerde beweging in dit venster versterkt de verbranding aanzienlijk.",
         "evening": "Het thermisch effect van het avondeten is aanzienlijk gedempt ten opzichte van de ochtend. Terwijl de biologische klok de kerntemperatuur begint te koelen, daalt het metabolisme terug naar de nachtelijke basislijn."
       }
     },
@@ -45,8 +46,8 @@
     },
     "metabolicSummary": "Metabolische samenvatting",
     "currentTdee": "Huidige TDEE",
-    "basedOnRecentActivity": "GEBASEERD OP RECENTE ACTIVITEIT & VOEDING",
-    "basedOnActivityLevel": "GEBASEERD OP ACTIVITEITSNIVEAU & STATS",
+    "basedOnRecentActivity": "Gebaseerd op recente activiteit & voeding",
+    "basedOnActivityLevel": "Gebaseerd op activiteitsniveau & stats",
     "kcalPerDay": "kcal/dag",
     "kcal": "kcal",
     "title": "Voortgang",
@@ -143,6 +144,11 @@
     "proteinIntake": "Eiwitinname",
     "proteinVsWeightChange": "Eiwit vs Gewichtswijziging ({{unit}})",
     "chartExported": "Grafiek opgeslagen",
-    "chartExportFailed": "Exporteren van grafiek mislukt"
+    "chartExportFailed": "Exporteren van grafiek mislukt",
+    "cycleBand": {
+      "period": "Geregistreerde menstruatie",
+      "before": "Dagen ervoor",
+      "other": "Overige dagen"
+    }
   }
 }

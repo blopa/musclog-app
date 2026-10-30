@@ -2,8 +2,11 @@ import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 
 import {
   draftFromSet,
+  linkEffortPatch,
   liveWeightKg,
   reconcileWeightDraft,
+  effortDraftProblems,
+  setDraftProblem,
   stampWeightPatch,
   stepInput,
   valuesFromDraft,
@@ -138,5 +141,116 @@ describe('typed weights across a unit switch', () => {
       )
     ).toBeNull();
     expect(reconcileWeightDraft({ weight: '60' }, 'imperial', 'en-US')).toBeNull();
+  });
+});
+
+describe('setDraftProblem', () => {
+  const draft = (weight: string, reps: string) => ({ weight, reps });
+
+  it('accepts a set that can be saved as typed, bodyweight (0) included', () => {
+    expect(setDraftProblem(draft('62.5', '8'), 'en-US')).toBeNull();
+    expect(setDraftProblem(draft('62,5', '8'), 'nl-NL')).toBeNull();
+    expect(setDraftProblem(draft('0', '12'), 'en-US')).toBeNull();
+  });
+
+  it('refuses an emptied reps field instead of saving a performed set of 0 reps', () => {
+    expect(setDraftProblem(draft('60', ''), 'en-US')).toBe('reps');
+    expect(setDraftProblem(draft('60', '  '), 'en-US')).toBe('reps');
+    // Number('') is 0: this is exactly what used to reach the writer.
+    expect(valuesFromDraft(draft('60', ''), 'metric', 'en-US', false).reps).toBe(0);
+  });
+
+  it('refuses zero, fractional and absurd reps: a set not done is skipped, not completed', () => {
+    expect(setDraftProblem(draft('60', '0'), 'en-US')).toBe('reps');
+    expect(setDraftProblem(draft('60', '8.5'), 'en-US')).toBe('reps');
+    expect(setDraftProblem(draft('60', '1000'), 'en-US')).toBe('reps');
+  });
+
+  it('names the weight when it is empty, unreadable or negative', () => {
+    expect(setDraftProblem(draft('', '8'), 'en-US')).toBe('weight');
+    expect(setDraftProblem(draft('abc', '8'), 'en-US')).toBe('weight');
+    expect(setDraftProblem(draft('-5', '8'), 'en-US')).toBe('weight');
+    // Dutch writes 62,5; the lenient parser reads "62.5" there as 625, so it must not pass.
+    expect(setDraftProblem(draft('62.5', '8'), 'nl-NL')).toBe('weight');
+  });
+});
+
+describe('linkEffortPatch', () => {
+  it('fills RPE from reps in reserve and back, so the two can never disagree', () => {
+    expect(linkEffortPatch({ rir: '2' }, 'en-US')).toEqual({ rir: '2', rpe: '8' });
+    expect(linkEffortPatch({ rpe: '8.5' }, 'en-US')).toEqual({ rpe: '8.5', rir: '1.5' });
+    expect(linkEffortPatch({ rpe: '8,5' }, 'nl-NL')).toEqual({ rpe: '8,5', rir: '1,5' });
+    expect(linkEffortPatch({ rir: '0' }, 'en-US')).toEqual({ rir: '0', rpe: '10' });
+  });
+
+  it('clears both when either is cleared: unrated, never half-rated', () => {
+    expect(linkEffortPatch({ rir: '' }, 'en-US')).toEqual({ rir: '', rpe: '' });
+    expect(linkEffortPatch({ rpe: '' }, 'en-US')).toEqual({ rpe: '', rir: '' });
+  });
+
+  it('leaves a value still being typed, and unrelated patches, alone', () => {
+    expect(linkEffortPatch({ rpe: '1.' }, 'de-DE')).toEqual({ rpe: '1.' });
+    expect(linkEffortPatch({ rpe: '12' }, 'en-US')).toEqual({ rpe: '12' });
+    expect(linkEffortPatch({ weight: '60' }, 'en-US')).toEqual({ weight: '60' });
+  });
+});
+
+describe('effort recorded as RPE alone', () => {
+  it('still rates the set for progression, which runs on reps in reserve', () => {
+    const values = valuesFromDraft({ weight: '60', reps: '8', rpe: '8' }, 'metric', 'en-US', false);
+    expect(values).toMatchObject({ difficultyLevel: 8, repsInReserve: 2 });
+  });
+
+  it('prefers reps in reserve when both are present', () => {
+    const values = valuesFromDraft(
+      { weight: '60', reps: '8', rir: '1', rpe: '8' },
+      'metric',
+      'en-US',
+      false
+    );
+    expect(values.repsInReserve).toBe(1);
+  });
+});
+
+describe('liveWeightKg with a stamped draft', () => {
+  it('reads the draft in the unit it was typed in after the user switches units', () => {
+    const typed = {
+      weight: '100',
+      reps: '8',
+      weightUnits: 'metric' as const,
+      weightLocale: 'en-US',
+    };
+    expect(liveWeightKg(set(), typed, 'imperial', 'en-US')).toBe(100);
+  });
+});
+
+describe('effort field ranges', () => {
+  const base = { weight: '60', reps: '8' };
+
+  it('accepts empty fields and in-range values', () => {
+    expect(effortDraftProblems(base, 'en-US')).toEqual([]);
+    expect(effortDraftProblems({ ...base, rir: '0', rpe: '10', partials: '3' }, 'en-US')).toEqual(
+      []
+    );
+    expect(effortDraftProblems({ ...base, rir: '1.5', rpe: '8.5' }, 'en-US')).toEqual([]);
+    expect(effortDraftProblems({ ...base, rir: '1,5', rpe: '8,5' }, 'nl-NL')).toEqual([]);
+  });
+
+  it('refuses values outside the scale instead of storing them', () => {
+    expect(effortDraftProblems({ ...base, rpe: '400' }, 'en-US')).toEqual(['rpe']);
+    expect(effortDraftProblems({ ...base, rpe: '0' }, 'en-US')).toEqual(['rpe']);
+    expect(effortDraftProblems({ ...base, rir: '10' }, 'en-US')).toEqual(['rir']);
+    expect(effortDraftProblems({ ...base, rir: '-1' }, 'en-US')).toEqual(['rir']);
+    expect(effortDraftProblems({ ...base, rir: 'abc' }, 'en-US')).toEqual(['rir']);
+  });
+
+  it('wants whole, bounded partial reps', () => {
+    expect(effortDraftProblems({ ...base, partials: '2.5' }, 'en-US')).toEqual(['partials']);
+    expect(effortDraftProblems({ ...base, partials: '1000' }, 'en-US')).toEqual(['partials']);
+  });
+
+  it('blocks completing a set, after weight and reps are checked', () => {
+    expect(setDraftProblem({ ...base, rpe: '400' }, 'en-US')).toBe('rpe');
+    expect(setDraftProblem({ ...base, reps: '', rpe: '400' }, 'en-US')).toBe('reps');
   });
 });

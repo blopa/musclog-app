@@ -1,6 +1,6 @@
 {
   "currentGoalsCard": {
-    "dailyTarget": "Daily Target",
+    "dailyTarget": "Daily target",
     "kcal": "kcal",
     "protein": "Protein",
     "proteinShort": "P",
@@ -8,8 +8,8 @@
     "carbsShort": "C",
     "fats": "Fats",
     "fatsShort": "F",
-    "targetWeight": "Target Weight",
-    "bodyFat": "Body Fat",
+    "targetWeight": "Target weight",
+    "bodyFat": "Body fat",
     "ffmi": "FFMI",
     "bmi": "BMI",
     "g": "g",

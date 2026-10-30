@@ -1,8 +1,12 @@
 import workoutTemplatesData from '@/data/workoutTemplatesData.json';
 import {
   equipmentForLocation,
+  inferTrainingLocation,
   parseTrainingSetup,
+  planWeightGoal,
   pickStarterTemplateIndex,
+  SHORT_PLAN_TITLES,
+  shortPlanTemplateIndex,
   STARTER_PLAN_TITLES,
   TRAINING_DAYS_OPTIONS,
 } from '@/utils/onboardingTraining';
@@ -28,9 +32,18 @@ describe('onboardingTraining', () => {
     }
   });
 
-  it('never recommends a gym-equipment plan for home or minimal training', () => {
-    expect(pickStarterTemplateIndex('home', 'beginner', 3)).toBeNull();
-    expect(pickStarterTemplateIndex('minimal', 'advanced', 5)).toBeNull();
+  it('never recommends a gym-equipment plan for home or minimal training: the short plan for their equipment', () => {
+    const home = pickStarterTemplateIndex('home', 'beginner', 3);
+    const minimal = pickStarterTemplateIndex('minimal', 'advanced', 5);
+
+    expect(titles[home as number]).toBe(SHORT_PLAN_TITLES.home);
+    expect(titles[minimal as number]).toBe(SHORT_PLAN_TITLES.minimal);
+  });
+
+  it('finds the short plan for every place to train', () => {
+    for (const location of ['gym', 'home', 'minimal'] as const) {
+      expect(titles[shortPlanTemplateIndex(location) as number]).toBe(SHORT_PLAN_TITLES[location]);
+    }
   });
 
   it('keeps beginners on full-body plans and clamps odd day counts', () => {
@@ -57,5 +70,46 @@ describe('onboardingTraining', () => {
         JSON.stringify({ location: 'gym', experience: 'x', daysPerWeek: 'abc', autonomy: 'manual' })
       )
     ).toEqual({ location: 'gym', experience: undefined, daysPerWeek: 3, autonomy: 'manual' });
+  });
+});
+
+describe('inferTrainingLocation', () => {
+  it('reads each place back from the equipment it creates', () => {
+    for (const location of ['gym', 'home', 'minimal'] as const) {
+      expect(inferTrainingLocation(equipmentForLocation(location))).toBe(location);
+    }
+  });
+
+  it('treats a profile with nothing recognisable as minimal', () => {
+    expect(inferTrainingLocation([])).toBe('minimal');
+    expect(inferTrainingLocation(['bodyweight'])).toBe('minimal');
+  });
+});
+
+describe('coming back after a break', () => {
+  const base = { location: 'home', daysPerWeek: 3, autonomy: 'suggest' };
+
+  it('reads a valid break length back and drops an unknown one', () => {
+    expect(
+      parseTrainingSetup(JSON.stringify({ ...base, comingBack: { breakLength: '3to6m' } }))
+        ?.comingBack
+    ).toEqual({ breakLength: '3to6m' });
+    expect(
+      parseTrainingSetup(JSON.stringify({ ...base, comingBack: { breakLength: 'forever' } }))
+        ?.comingBack
+    ).toBeUndefined();
+  });
+
+  it('still reads answers saved before the field existed', () => {
+    const parsed = parseTrainingSetup(JSON.stringify(base));
+    expect(parsed).toMatchObject({ location: 'home', daysPerWeek: 3 });
+    expect(parsed?.comingBack).toBeUndefined();
+  });
+
+  it('calculates the first plan at maintenance, whatever goal was picked', () => {
+    expect(planWeightGoal({ comingBack: { breakLength: '1to3m' } }, 'lose')).toBe('maintain');
+    expect(planWeightGoal({ comingBack: { breakLength: '1to3m' } }, 'gain')).toBe('maintain');
+    expect(planWeightGoal({}, 'lose')).toBe('lose');
+    expect(planWeightGoal(null, 'gain')).toBe('gain');
   });
 });

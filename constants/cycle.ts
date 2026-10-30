@@ -1,7 +1,24 @@
-import type { LifeStage } from '@/database/models/MenstrualCycle';
-import type { PredictionConfidence } from '@/database/services/MenstrualService';
+import type { CyclePhase } from '@/utils/cycle/cycleTimeline';
 
 export type PeriodLogMode = 'start' | 'end' | 'past';
+
+/** Whole keys, so `check-translations` sees them; a new phase fails the build until it has one. */
+export const CYCLE_PHASE_LABEL_KEYS: Record<CyclePhase, string> = {
+  menstrual: 'cycle.phase.menstrual',
+  between: 'cycle.phase.between',
+  follicular: 'cycle.phase.follicular',
+  ovulatory: 'cycle.phase.ovulatory',
+  luteal: 'cycle.phase.luteal',
+};
+
+export const ENERGY_LEVEL_LABEL_KEYS = {
+  1: 'cycle.daySheet.energyLevel.1',
+  2: 'cycle.daySheet.energyLevel.2',
+  3: 'cycle.daySheet.energyLevel.3',
+  4: 'cycle.daySheet.energyLevel.4',
+  5: 'cycle.daySheet.energyLevel.5',
+} as const;
+export type EnergyLevel = keyof typeof ENERGY_LEVEL_LABEL_KEYS;
 
 export const DEFAULT_PERIOD_DURATION = 5;
 
@@ -13,19 +30,6 @@ export const FLOW_LEVEL_KEYS: Record<number, string> = {
   3: 'cycle.flow.medium',
   4: 'cycle.flow.heavy',
   5: 'cycle.flow.veryHeavy',
-};
-
-export const LIFE_STAGE_WARNING_KEYS: Partial<Record<LifeStage, string>> = {
-  pcos: 'cycle.lifeStage.pcos',
-  post_pill: 'cycle.lifeStage.postPill',
-  postpartum: 'cycle.lifeStage.postpartum',
-  perimenopause: 'cycle.lifeStage.perimenopause',
-};
-
-export const CONFIDENCE_LABEL_KEYS: Partial<Record<PredictionConfidence, string>> = {
-  low: 'cycle.confidence.low',
-  medium: 'cycle.confidence.medium',
-  high: 'cycle.confidence.high',
 };
 
 export const PHYSICAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
@@ -52,3 +56,62 @@ export const EMOTIONAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
   { key: 'cycle.symptoms.brainFog', value: 'brain_fog' },
   { key: 'cycle.symptoms.lowLibido', value: 'low_libido' },
 ];
+
+/** Shortest interval between two period starts that is treated as a real cycle (days). */
+export const MIN_PLAUSIBLE_CYCLE_DAYS = 15;
+/** A cycle this many times the median of the others is flagged as a possibly missed period. */
+export const MISSED_PERIOD_RATIO = 1.8;
+/** Only this many of the most recent usable cycles feed predictions. */
+export const MAX_CYCLES_FOR_STATS = 12;
+/** Spread (longest - shortest usable cycle, days) up to which cycles count as regular (ACOG). */
+export const REGULAR_SPREAD_MAX_DAYS = 9;
+/** Spread above which a single predicted date is not meaningful. */
+export const HIGHLY_VARIABLE_SPREAD_DAYS = 20;
+export const MIN_CYCLES_MODERATE_CONFIDENCE = 2;
+export const MIN_CYCLES_HIGH_CONFIDENCE = 4;
+/**
+ * From this many usable cycles, the single cycle farthest from the median is left out of the
+ * variability spread, so one unusual month does not mark otherwise steady cycles as variable for
+ * a year. With fewer, one odd cycle cannot be told apart from genuine variation.
+ */
+export const MIN_CYCLES_TO_DISCOUNT_OUTLIER = 6;
+/** The predicted length weights each older cycle less; a cycle this many back counts half. */
+export const RECENT_CYCLE_HALF_LIFE = 6;
+/**
+ * Usable cycles needed before the prediction window's extra margin drops from 7 to 3 days, and
+ * from 3 to 1. Deliberately not the confidence thresholds above: moving these to 2 and 4 narrowed
+ * windows by half a day but missed about 2% more starts in the prediction benchmark.
+ */
+export const MIN_CYCLES_MEDIUM_WINDOW_MARGIN = 3;
+export const MIN_CYCLES_SMALL_WINDOW_MARGIN = 5;
+/** The luteal phase (ovulation to next period) is the steadiest part of the cycle. */
+export const LUTEAL_PHASE_DAYS = 14;
+export const OVULATORY_HALF_WINDOW_DAYS = 2;
+
+/** A period still "open" this long after it started was forgotten, not ongoing. */
+export const STALE_OPEN_PERIOD_DAYS = 14;
+/** Reminder lead time: the period reminder fires this many days before the predicted start. */
+export const PERIOD_REMINDER_LEAD_DAYS = 2;
+
+/** Symptom key (as stored) -> translation key, across both groups. */
+export const SYMPTOM_LABEL_KEYS: Record<string, string> = Object.fromEntries(
+  [...PHYSICAL_SYMPTOM_KEYS, ...EMOTIONAL_SYMPTOM_KEYS].map((option) => [option.value, option.key])
+);
+
+export const BLEEDING_LABEL_KEYS = {
+  none: 'cycle.calendar.bleeding.none',
+  spotting: 'cycle.calendar.bleeding.spotting',
+  light: 'cycle.calendar.bleeding.light',
+  medium: 'cycle.calendar.bleeding.medium',
+  heavy: 'cycle.calendar.bleeding.heavy',
+  very_heavy: 'cycle.calendar.bleeding.very_heavy',
+} as const;
+
+export const SEVERITY_LABEL_KEYS = {
+  1: 'cycle.severity.mild',
+  2: 'cycle.severity.moderate',
+  3: 'cycle.severity.severe',
+} as const;
+
+/** Device-local bookkeeping; excluded from portable backups. */
+export const CYCLE_BACKUP_STATUS_KEY = 'musclog_cycle_backup_prepared_at';

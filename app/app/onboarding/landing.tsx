@@ -1,9 +1,8 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Download, Lock, ScanLine, Settings2, Star, Zap } from 'lucide-react-native';
+import { Bot, Download, Lock, ScanLine, Settings2, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Dimensions, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MasterLayout } from '@/components/MasterLayout';
@@ -16,13 +15,13 @@ import { seedDevData } from '@/database/seeders/dev';
 import { seedProductionData } from '@/database/seeders/prod';
 import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { isProduction } from '@/utils/app';
 import { importDatabase, shouldSeedDevData } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
+import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function LandingScreen() {
   const theme = useTheme();
@@ -54,6 +53,7 @@ export default function LandingScreen() {
   const [opticalImportVisible, setOpticalImportVisible] = useState(false);
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [loading, setLoading] = useState(false);
+  useKeepScreenAwake('onboarding-import', loading);
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function LandingScreen() {
         if (!isProduction()) {
           const result = await verifyDatabaseTables();
           if (!result.success) {
-            console.error('⚠️  DATABASE NOT INITIALIZED PROPERLY');
+            console.error('[WARN] DATABASE NOT INITIALIZED PROPERLY');
             console.error('Missing tables:', result.missingTables);
             console.error('Solution: Uninstall the app completely and reinstall it.');
           }
@@ -102,7 +102,12 @@ export default function LandingScreen() {
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
     try {
-      await importDatabase(decryptionPhrase || undefined);
+      const imported = await importDatabase(decryptionPhrase || undefined);
+      if (!imported) {
+        // The picker was dismissed: stay on the landing screen with the confirmation modal open.
+        return;
+      }
+
       await setOnboardingCompleted(undefined, { markAnnouncementsSeen: false });
       setImportModalVisible(false);
       setDecryptionPhrase('');
@@ -118,46 +123,24 @@ export default function LandingScreen() {
 
   return (
     <MasterLayout showNavigationMenu={false}>
-      {/* Main Background Gradient */}
-      <LinearGradient
-        colors={theme.colors.gradients.landingBackground}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      {/* A flat surface: the landing used to float an indigo and a green blob behind the content. */}
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: theme.colors.background.primary,
+        }}
       />
-
-      {/* Ambient Background Effects */}
-      <View className="absolute inset-0 overflow-hidden" pointerEvents="none">
-        {/* Top left blob */}
-        <View
-          className="absolute rounded-full opacity-60"
-          style={{
-            top: -SCREEN_HEIGHT * 0.2,
-            left: -SCREEN_WIDTH * 0.1,
-            width: SCREEN_WIDTH * 1.2,
-            height: SCREEN_HEIGHT * 0.6,
-            backgroundColor: theme.colors.status.indigo10, // indigo-600/20 equivalent
-          }}
-        />
-        {/* Bottom right blob */}
-        <View
-          className="absolute rounded-full opacity-60"
-          style={{
-            bottom: -SCREEN_HEIGHT * 0.1,
-            right: -SCREEN_WIDTH * 0.2,
-            width: SCREEN_WIDTH * 0.8,
-            height: SCREEN_HEIGHT * 0.5,
-            backgroundColor: theme.colors.status.brandVivid20, // primary/10 equivalent
-          }}
-        />
-      </View>
 
       {/* Main Content */}
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
         {/* Import actions - Top Right */}
         <View className="absolute right-4 top-4 z-10 flex-row gap-2">
           <TouchableOpacity
-            className="rounded-lg p-2"
+            className="rounded-control p-2"
             style={{
               backgroundColor: theme.colors.background.scrim30,
               opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
@@ -170,7 +153,7 @@ export default function LandingScreen() {
             <Download size={20} color={theme.colors.text.primary} />
           </TouchableOpacity>
           <TouchableOpacity
-            className="rounded-lg p-2"
+            className="rounded-control p-2"
             style={{
               backgroundColor: theme.colors.background.scrim30,
               opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
@@ -190,35 +173,22 @@ export default function LandingScreen() {
 
           {/* Hero Section */}
           <View className="flex-1 items-center justify-center gap-8 py-6">
-            {/* Logo Icon with Gradient Background */}
-            <View className="mb-4">
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  width: theme.size['12'],
-                  height: theme.size['12'],
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  ...theme.shadows.lg,
-                }}
-              >
-                <Star size={theme.iconSize['3xl']} color={theme.colors.accent.primary} />
-              </LinearGradient>
-            </View>
+            {/* The app's own mark, the same one the splash screen shows. */}
+            <Image
+              source={require('@/assets/logo.png')}
+              accessibilityIgnoresInvertColors
+              style={{ width: theme.size['96'], height: theme.size['96'] }}
+              resizeMode="contain"
+            />
 
             {/* Typography Section */}
             <View className="mt-4 items-center gap-2">
               {/* App Name */}
               <Text
-                className="font-black leading-none tracking-tight"
+                className="font-bold leading-none"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize['4xl'],
-                  letterSpacing: theme.typography.letterSpacing.tight,
                   lineHeight: theme.typography.fontSize['4xl'] * 1.1,
                 }}
               >
@@ -227,11 +197,10 @@ export default function LandingScreen() {
 
               {/* Tagline */}
               <Text
-                className="font-bold tracking-wide"
+                className="font-bold"
                 style={{
                   color: theme.colors.accent.primary,
                   fontSize: theme.typography.fontSize.lg,
-                  letterSpacing: theme.typography.letterSpacing.wide,
                 }}
               >
                 {t('onboarding.landing.tagline')}
@@ -356,6 +325,27 @@ export default function LandingScreen() {
                   }}
                 >
                   {t('onboarding.landing.quickSetupSubtitle')}
+                </Text>
+
+                {/* Set up with AI — shown whether or not an AI is configured: the ChatGPT/Claude
+                    hand-off and the file import need none, and the screen offers free AI. */}
+                <Button
+                  label={t('onboarding.landing.aiSetup')}
+                  onPress={() => router.navigate(aiSetupRoute('setup', 'onboarding') as never)}
+                  icon={Bot}
+                  iconPosition="left"
+                  variant="outline"
+                  size="md"
+                  width="full"
+                />
+                <Text
+                  className="text-center"
+                  style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.typography.fontSize.xs,
+                  }}
+                >
+                  {t('onboarding.landing.aiSetupSubtitle')}
                 </Text>
 
                 {/* Terms / Footer Text */}

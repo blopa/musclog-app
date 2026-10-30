@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Download,
   FileJson,
@@ -39,6 +37,7 @@ import {
   MUTED,
   scrim,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import {
   buildChartData,
   type ChartData,
@@ -46,6 +45,7 @@ import {
   type RecordingJson,
   type RepMarker,
 } from '@/utils/repMarkerData';
+('use client');
 
 // ── Main page ───────────────────────────────────────────────────────────────
 
@@ -541,4 +541,8 @@ export default function RepMarkerPage() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('repMarker');
 }

@@ -5,10 +5,13 @@ import { useSettings } from '@/hooks/useSettings';
 import i18n from '@/lang/lang';
 
 export function LanguageInitializer() {
-  const { language } = useSettings();
+  const { isLoading, language } = useSettings();
 
   useEffect(() => {
-    if (isStaticExport) {
+    // Until settings load, `language` is a default (or the mirrored value that
+    // `AppDbReadyGate` has already applied); switching to a default would flash
+    // English before the stored language arrives.
+    if (isStaticExport || isLoading) {
       return;
     }
 
@@ -18,7 +21,7 @@ export function LanguageInitializer() {
         console.warn('[LanguageInitializer] Failed to change language:', err);
       });
     }
-  }, [language]);
+  }, [isLoading, language]);
 
   return null;
 }

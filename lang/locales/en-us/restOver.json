@@ -1,13 +1,13 @@
 {
   "restOver": {
-    "startNextSet": "Start Next Set",
-    "upNext": "Up Next",
+    "startNextSet": "Start next set",
+    "upNext": "Up next",
     "weight": "Weight",
     "weightWithUnit": "{{value}} {{unit}}",
     "reps": "Reps",
     "set": "Set",
     "restTimeIs": "Rest time is",
-    "over": "over!",
+    "over": "over",
     "timeToGo": "Time to go! Next set is up.",
     "noWorkoutId": "No workout ID provided",
     "workoutDeleted": "Workout has been deleted",

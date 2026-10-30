@@ -20,8 +20,11 @@ import { CoachProvider } from '@/components/CoachContext';
 import { DocumentTitle } from '@/components/DocumentTitle';
 import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
+import { AppLockOverlay } from '@/components/lock/AppLockOverlay';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
 import { isStaticExport } from '@/constants/platform';
+import { AppLockProvider } from '@/context/AppLockContext';
+import { CoachPersonaProvider } from '@/context/CoachPersonaContext';
 import { ConfettiInteractionsProvider } from '@/context/ConfettiInteractionsContext';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { SmartCameraProvider } from '@/context/SmartCameraContext';
@@ -31,6 +34,7 @@ import { UnreadChatProvider } from '@/context/UnreadChatContext';
 import { WebModalShellProvider } from '@/context/WebModalShellContext';
 import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
 import { handleError } from '@/utils/handleError';
+import { WidgetSync } from '@/widgets/WidgetSync';
 
 // Fix NativeWind className support on iOS for these components
 // These components don't properly support className on iOS without cssInterop
@@ -104,6 +108,7 @@ function AppContent() {
         <SystemBars style={themeMode === 'dark' ? 'light' : 'dark'} />
       ) : null}
       <LanguageInitializer />
+      <WidgetSync />
       <Stack
         screenOptions={{
           headerShown: false,
@@ -112,6 +117,7 @@ function AppContent() {
           animationDuration: 200,
         }}
       />
+      <AppLockOverlay />
     </>
   );
 }
@@ -138,21 +144,25 @@ function RootLayout() {
               >
                 <AppDbReadyGate>
                   <SettingsProvider>
-                    <ConfettiInteractionsProvider>
-                      <MenstrualCycleProvider>
-                        <ThemeProvider>
-                          <UnreadChatProvider>
-                            <SnackbarProvider>
-                              <SmartCameraProvider>
-                                <CoachProvider>
-                                  <AppContent />
-                                </CoachProvider>
-                              </SmartCameraProvider>
-                            </SnackbarProvider>
-                          </UnreadChatProvider>
-                        </ThemeProvider>
-                      </MenstrualCycleProvider>
-                    </ConfettiInteractionsProvider>
+                    <AppLockProvider>
+                      <ConfettiInteractionsProvider>
+                        <MenstrualCycleProvider>
+                          <ThemeProvider>
+                            <UnreadChatProvider>
+                              <SnackbarProvider>
+                                <SmartCameraProvider>
+                                  <CoachPersonaProvider>
+                                    <CoachProvider>
+                                      <AppContent />
+                                    </CoachProvider>
+                                  </CoachPersonaProvider>
+                                </SmartCameraProvider>
+                              </SnackbarProvider>
+                            </UnreadChatProvider>
+                          </ThemeProvider>
+                        </MenstrualCycleProvider>
+                      </ConfettiInteractionsProvider>
+                    </AppLockProvider>
                   </SettingsProvider>
                 </AppDbReadyGate>
               </Sentry.ErrorBoundary>

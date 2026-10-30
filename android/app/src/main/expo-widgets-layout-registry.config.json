@@ -1,0 +1,20 @@
+{
+  "widgets": [
+    {
+      "name": "Nutrition",
+      "initialLayout": "widgets/NutritionWidget.android.tsx"
+    },
+    {
+      "name": "SmartCamera",
+      "initialLayout": "widgets/SmartCameraWidget.android.tsx"
+    },
+    {
+      "name": "ActivityHeatmap",
+      "initialLayout": "widgets/ActivityHeatmapWidget.android.tsx"
+    },
+    {
+      "name": "Cycle",
+      "initialLayout": "widgets/CycleWidget.android.tsx"
+    }
+  ]
+}

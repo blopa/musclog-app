@@ -11,6 +11,7 @@ import {
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
+import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { SUPPORT_EMAIL, SUPPORT_MAILTO_URL } from '@/constants/misc';
 
 const DEFINITION_KEYS = [
@@ -597,4 +598,8 @@ export default function Privacy() {
       </main>
     </>
   );
+}
+
+export function generateMetadata() {
+  return fixedPageMetadata('privacy');
 }

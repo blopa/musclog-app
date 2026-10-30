@@ -12,10 +12,13 @@ import {
 } from '@/database/dbReady';
 import { waitForPreMigrationBackup } from '@/database/preMigrationBackup';
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
+import { CycleDataEncryptionMigration } from '@/database/services/CycleDataEncryptionMigration';
+import { CycleRecordPurge } from '@/database/services/CycleRecordPurge';
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { FoodService } from '@/database/services/FoodService';
 import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
+import { LegacyWorkoutTemplateIdRepair } from '@/database/services/LegacyWorkoutTemplateIdRepair';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -80,6 +83,7 @@ async function getRunOnceMigrationCutoff(tag: string): Promise<number> {
 const BOOT_MIGRATIONS: BootMigration[] = [
   {
     tag: 'fixNegativeFiber',
+    // Both are `fiber < 0` filters on plaintext columns, so they cost nothing once clean.
     run: () =>
       Promise.all([
         NutritionGoalService.fixNegativeFiber().catch((err) =>
@@ -88,10 +92,16 @@ const BOOT_MIGRATIONS: BootMigration[] = [
         FoodService.fixNegativeFiber().catch((err) =>
           captureBootException(err, 'FoodService.fixNegativeFiber')
         ),
-        NutritionService.fixNegativeFiber().catch((err) =>
-          captureBootException(err, 'NutritionService.fixNegativeFiber')
-        ),
       ]),
+  },
+  {
+    tag: 'NutritionService.fixNegativeFiber',
+    // Logged fiber is encrypted, so finding negatives means loading and decrypting every log the
+    // user has — seconds on a multi-year diary, on every boot. Every writer now clamps fiber and
+    // getNutrients() clamps on read, so only rows from before that fix can be negative. A restore
+    // of a backup without the done-flag runs it again.
+    runOnce: true,
+    run: () => NutritionService.fixNegativeFiber(),
   },
   {
     tag: 'ExerciseService.backfillExerciseSources',
@@ -134,6 +144,26 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     webOnly: true,
     runOnce: true,
     run: () => WorkoutSetStatusMigration.run(),
+  },
+  {
+    tag: 'CycleDataEncryptionMigration.run',
+    // Converts the plaintext pre-v36 cycle data into encrypted records. Idempotent by data (a
+    // cycle without `config`, a leftover flow/symptom metric) rather than `runOnce`, so a restored
+    // backup that still carries old rows is converted on the next boot as well.
+    run: () => CycleDataEncryptionMigration.run(),
+  },
+  {
+    tag: 'CycleRecordPurge.purgeDeleted',
+    // Removed cycle records are destroyed once their in-session undo window is over.
+    run: () => CycleRecordPurge.purgeDeleted(),
+  },
+  {
+    tag: 'LegacyWorkoutTemplateIdRepair.run',
+    // Logs converted from Musclog 1.x before the id mapping was fixed hold the old numeric workout
+    // id as `template_id`. Run once: the converter now writes the right id, and a restore that
+    // brings old rows back also restores the AsyncStorage flag from before this ran.
+    runOnce: true,
+    run: () => LegacyWorkoutTemplateIdRepair.run(),
   },
   {
     tag: 'WorkoutService.backfillNullTotalVolumes',

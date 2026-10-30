@@ -196,18 +196,16 @@ export default function EditWorkoutMetadataModal({
       <ScrollView className="flex-1">
         <View className="gap-6 p-4">
           <View
-            className="items-center justify-center rounded-2xl p-6"
+            className="items-center justify-center rounded-card p-6"
             style={{ backgroundColor: theme.colors.background.ink5 }}
           >
-            <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
+            <Text className="text-xs font-semibold text-text-tertiary">
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="mt-1 flex-row items-baseline gap-1">
-              <Text className="text-4xl font-extrabold text-text-primary">
-                {durationDisplay.value}
-              </Text>
+              <Text className="text-4xl font-bold text-text-primary">{durationDisplay.value}</Text>
               {durationDisplay.suffix ? (
-                <Text className="text-lg font-bold text-text-secondary">
+                <Text className="text-lg font-semibold text-text-secondary">
                   {durationDisplay.suffix}
                 </Text>
               ) : null}
@@ -258,7 +256,7 @@ export default function EditWorkoutMetadataModal({
             <>
               <SectionDivider />
               <View>
-                <Text className="mb-4 text-xs font-bold uppercase tracking-widest text-text-tertiary">
+                <Text className="mb-4 text-xs font-semibold text-text-tertiary">
                   {t('workoutDetail.reorderTitle')}
                 </Text>
                 <OptionsMultiSelector

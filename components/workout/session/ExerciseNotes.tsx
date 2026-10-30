@@ -24,7 +24,7 @@ export function ExerciseNotes({ notes, onPress }: { notes: SessionNote[]; onPres
       accessibilityRole="button"
       accessibilityLabel={t('workoutSession.notes.edit')}
       onPress={onPress}
-      className="gap-1 rounded-lg bg-bg-overlay p-3"
+      className="gap-1 rounded-control bg-bg-overlay p-3"
     >
       {notes.map((note) => {
         const Icon = note.kind === 'pinned' ? Pin : StickyNote;

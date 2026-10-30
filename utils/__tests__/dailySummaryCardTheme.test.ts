@@ -13,6 +13,23 @@ const kineticVoltTheme = THEMES['kinetic-volt'];
  * stops lives in `theme.audit.js` and is asserted for all of them at once.
  */
 describe('Daily Summary card theme', () => {
+  it.each(Object.entries(THEMES))(
+    '%s builds its sweep from its own brand hue, never from indigo',
+    (_id, theme) => {
+      const hue = (hex: string) => chroma(hex).hsl()[0];
+      const brand = hue(theme.colors.accent.primary);
+      const stops = theme.colors.gradients.colorfulCard;
+      for (const stop of stops) {
+        if (chroma(stop).hsl()[1] < 0.08) {
+          continue; // flat, desaturated card surface (Kinetic Light)
+        }
+
+        const delta = Math.abs(hue(stop) - brand);
+        expect(Math.min(delta, 360 - delta)).toBeLessThanOrEqual(25);
+      }
+    }
+  );
+
   it('keeps the established saturated sweep in every dark theme', () => {
     expect(darkTheme.colors.gradients.colorfulCard).toEqual(darkTheme.colors.gradients.progress);
     expect(darkTheme.colors.colorfulCard.ink).toBe('#ffffff');
@@ -27,7 +44,7 @@ describe('Daily Summary card theme', () => {
       lightTheme.colors.background.card,
       lightTheme.colors.background.card,
     ]);
-    expect(lightTheme.colors.colorfulCard.ink).toBe('#30413a');
+    expect(lightTheme.colors.colorfulCard.ink).toBe('#353f3b');
     expect(lightTheme.colors.colorfulCard.ink70).toBe(lightTheme.colors.text.secondary);
     expect(
       contrast(lightTheme.colors.background.card, lightTheme.colors.colorfulCard.ink70)
@@ -39,8 +56,8 @@ describe('Daily Summary card theme', () => {
 
   it('uses warm-black ink on Kinetic Volt’s bright gradient', () => {
     expect(kineticVoltTheme.colors.gradients.colorfulCard).toEqual([
-      '#818cf8',
       '#ca8a04',
+      '#f5c842',
       '#eab308',
     ]);
     expect(kineticVoltTheme.colors.colorfulCard.ink).toBe('#151208');

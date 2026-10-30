@@ -8,9 +8,16 @@ import { CardVariant, resolveCardSurface } from './cardSurface';
 
 export type { CardVariant };
 
+/** The same hold the coach's chat bubbles use. */
+const LONG_PRESS_DELAY_MS = 350;
+
 type GenericCardProps = {
   children: ReactNode;
   onPress?: () => void;
+  /** Long-press, e.g. to start a selection. Only fires on a pressable card. */
+  onLongPress?: () => void;
+  /** Draws the card as part of a selection (accent hairline). */
+  selected?: boolean;
   /** 'flat' (default) for almost every card; 'raised' for the one emphasis
    *  card on a screen; 'hero' is reserved for DailySummaryCard. See
    *  cardSurface.ts for the full contract. */
@@ -29,6 +36,8 @@ type GenericCardProps = {
 export function GenericCard({
   children,
   onPress,
+  onLongPress,
+  selected = false,
   variant = 'flat',
   isPressable = false,
   fill = false,
@@ -43,9 +52,8 @@ export function GenericCard({
     overflow: 'hidden',
     borderRadius: surface.borderRadius,
     backgroundColor: surface.backgroundColor,
-    borderColor: surface.borderColor,
+    borderColor: selected ? theme.colors.accent.primary : surface.borderColor,
     borderWidth: surface.borderWidth,
-    ...surface.shadow,
   };
 
   const content = isHero ? (
@@ -65,11 +73,10 @@ export function GenericCard({
     return (
       <Pressable
         onPress={onPress}
-        style={({ pressed }) => [
-          cardStyle,
-          containerStyle,
-          { transform: [{ scale: pressed ? 0.98 : 1 }] },
-        ]}
+        onLongPress={onLongPress}
+        delayLongPress={LONG_PRESS_DELAY_MS}
+        accessibilityState={onLongPress ? { selected } : undefined}
+        style={({ pressed }) => [cardStyle, containerStyle, pressed ? { opacity: 0.85 } : null]}
       >
         {content}
       </Pressable>

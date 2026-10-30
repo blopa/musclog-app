@@ -31,12 +31,14 @@ jest.mock('expo-router', () => ({
   }),
 }));
 
+// Keep t stable like the real hook: a new function on every render retriggers template loading.
+const mockTranslate = (key: string, defaultValue?: string) => defaultValue || key;
 jest.mock('react-i18next', () => ({
   // `lang/lang.ts` loads for real further down the graph and calls
   // `i18n.use(initReactI18next)`, which throws on an undefined module.
   initReactI18next: jest.requireActual('react-i18next').initReactI18next,
   useTranslation: () => ({
-    t: (key: string, defaultValue?: string) => defaultValue || key,
+    t: mockTranslate,
   }),
 }));
 
@@ -536,8 +538,64 @@ describe('hooks/useWorkoutForm', () => {
       expect(mockWorkoutTemplateService.saveTemplate).not.toHaveBeenCalled();
     });
 
-    it.skip('should save workout template in edit mode', async () => {
-      // TODO: Implement edit mode save test
+    it('should save workout template in edit mode', async () => {
+      const existingTemplate = {
+        ...mockTemplate,
+        workoutInsightsType: 'algorithm',
+        type: 'calisthenics',
+        icon: 'dumbbell',
+      };
+      const existingExercises = [
+        { ...mockExerciseOption, sets: 3, reps: 10, weight: 20, isBodyweight: false },
+      ];
+      mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
+        template: existingTemplate,
+        templateExercises: [],
+        sets: [],
+        schedule: [],
+      });
+      mockWorkoutTemplateService.convertTemplateExercisesToUI.mockResolvedValue(existingExercises);
+      mockWorkoutUtils.exercisesToWorkoutFormat.mockReturnValue(existingExercises);
+      mockWorkoutUtils.transformScheduleDays.mockReturnValue([0, 2]);
+      mockWorkoutPlanRepository.getMembershipsForTemplate.mockReturnValue({
+        fetch: jest.fn().mockResolvedValue([{ planId: 'plan-1' }]),
+      } as any);
+
+      const { result } = renderHook(() =>
+        useWorkoutForm({ templateId: existingTemplate.id, onSaveSuccess: mockOnSaveSuccess })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.workoutTitle).toBe(existingTemplate.name);
+      expect(mockWorkoutTemplateService.saveTemplate).not.toHaveBeenCalled();
+
+      act(() => {
+        result.current.setWorkoutTitle('Updated Workout');
+        result.current.setDescription('Updated description');
+      });
+
+      await act(async () => {
+        await result.current.handleSave();
+      });
+
+      expect(mockWorkoutTemplateService.saveTemplate).toHaveBeenCalledTimes(1);
+      expect(mockWorkoutTemplateService.saveTemplate).toHaveBeenCalledWith({
+        templateId: existingTemplate.id,
+        name: 'Updated Workout',
+        description: 'Updated description',
+        workoutInsightsType: 'algorithm',
+        type: 'calisthenics',
+        icon: 'dumbbell',
+        exercises: existingExercises,
+        selectedDays: [0, 2],
+        planIds: ['plan-1'],
+      });
+      expect(mockOnSaveSuccess).toHaveBeenCalledTimes(1);
+      expect(mockHandleError).not.toHaveBeenCalled();
+      expect(result.current.isSaving).toBe(false);
     });
 
     it('should trim title and description', async () => {

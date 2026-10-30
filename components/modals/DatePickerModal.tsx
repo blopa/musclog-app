@@ -1,9 +1,6 @@
 import {
   addDays,
   addMonths,
-  eachDayOfInterval,
-  endOfMonth,
-  endOfWeek,
   format,
   getMonth,
   getYear,
@@ -17,15 +14,16 @@ import {
   subMonths,
 } from 'date-fns';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, Text, View, type ViewStyle } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import i18n, { DEFAULT_LANG, LanguageKeys, LOCALE_MAP } from '@/lang/lang';
-import { localCalendarDayDate } from '@/utils/calendarDate';
+import { localCalendarDayDate, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
+import { monthGridDays } from '@/utils/monthGrid';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -34,6 +32,9 @@ type QuickDateOption = {
   label: string;
   date: Date;
 };
+
+/** How a day is marked in the grid: `tracked` is a filled circle, `fasted` a dashed ring. */
+export type DatePickerDayStatus = 'tracked' | 'fasted';
 
 type DatePickerModalProps = {
   visible: boolean;
@@ -45,6 +46,15 @@ type DatePickerModalProps = {
   minYear?: number;
   maxYear?: number;
   quickDates?: QuickDateOption[];
+  /**
+   * Marks days in the grid. Called with the first and last day on screen (including the
+   * neighbouring months' days) each time the modal opens or the month changes; the result is
+   * keyed by `utcDayKeyFromLocalDate(day)`, and days absent from it are left unmarked.
+   */
+  loadDayStatuses?: (
+    gridStart: Date,
+    gridEnd: Date
+  ) => Promise<ReadonlyMap<number, DatePickerDayStatus>>;
 };
 
 export function DatePickerModal({
@@ -57,6 +67,7 @@ export function DatePickerModal({
   minYear,
   maxYear,
   quickDates,
+  loadDayStatuses,
 }: DatePickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -67,6 +78,10 @@ export function DatePickerModal({
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
   const [selectedYear, setSelectedYear] = useState(getYear(currentMonth));
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(getMonth(currentMonth));
+
+  const [dayStatuses, setDayStatuses] = useState<ReadonlyMap<number, DatePickerDayStatus>>(
+    () => new Map()
+  );
 
   const syncPickerState = () => {
     setCurrentMonth(selectedDate);
@@ -79,12 +94,49 @@ export function DatePickerModal({
   const currentLanguage = (i18n.language || DEFAULT_LANG) as LanguageKeys;
   const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP[DEFAULT_LANG];
 
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 }); // Sunday = 0
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+  const days = monthGridDays(currentMonth).map((day) => day.date);
+  const gridStartMs = days[0].getTime();
+  const gridEndMs = days[days.length - 1].getTime();
 
-  const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  // Statuses are fetched per visible grid and kept while the next month loads, so the marks do
+  // not flicker away on every month change. A failed read just leaves the grid unmarked.
+  useEffect(() => {
+    if (!visible || !loadDayStatuses) {
+      return;
+    }
+
+    let cancelled = false;
+    loadDayStatuses(new Date(gridStartMs), new Date(gridEndMs))
+      .then((statuses) => {
+        if (!cancelled) {
+          setDayStatuses(statuses);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDayStatuses(new Map());
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [visible, loadDayStatuses, gridStartMs, gridEndMs]);
+
+  const dayMarkStyle = (status: DatePickerDayStatus): ViewStyle =>
+    status === 'tracked'
+      ? { backgroundColor: theme.colors.accent.primary10 }
+      : { borderWidth: 1.5, borderStyle: 'dashed', borderColor: theme.colors.accent.primary };
+
+  const statusLabels: Record<DatePickerDayStatus, string> = {
+    tracked: t('datePicker.status.tracked'),
+    fasted: t('datePicker.status.fasted'),
+  };
+  const statusOf = (day: Date): DatePickerDayStatus | undefined =>
+    dayStatuses.get(utcDayKeyFromLocalDate(day));
+  const legendStatuses = (['tracked', 'fasted'] as const).filter((status) =>
+    days.some((day) => statusOf(day) === status)
+  );
   const weekRefStart = startOfWeek(today, { weekStartsOn: 0 });
   const weekDayLetters = Array.from({ length: 7 }, (_, i) =>
     format(addDays(weekRefStart, i), 'EEEEE', { locale })
@@ -176,11 +228,11 @@ export function DatePickerModal({
         >
           {/* Title Section */}
           <View className="px-4 pb-6 pt-2">
-            <Text className="mb-1 text-sm font-semibold uppercase tracking-wider text-accent-primary">
+            <Text className="mb-1 text-sm font-semibold text-accent-primary">
               {t('datePicker.selectDate')}
             </Text>
             <Text
-              className="font-bold leading-tight tracking-tight text-text-primary"
+              className="font-bold leading-tight text-text-primary"
               style={{ fontSize: theme.typography.fontSize['4xl'] }}
             >
               {formatSelectedDate(tempSelectedDate)}
@@ -190,13 +242,13 @@ export function DatePickerModal({
           {/* Calendar */}
           <View className="px-4">
             <View
-              className="rounded-2xl border bg-bg-cardDark p-5"
+              className="rounded-card border bg-bg-cardDark p-5"
               style={{ borderColor: theme.colors.background.ink5 }}
             >
               {/* Month Navigation */}
               <View className="mb-6 flex-row items-center justify-between px-1">
                 <Pressable
-                  className="flex-row items-center gap-1 rounded-lg px-2 py-1"
+                  className="flex-row items-center gap-1 rounded-control px-2 py-1"
                   onPress={handleMonthYearPickerOpen}
                 >
                   <Text className="text-base font-semibold text-text-primary">
@@ -218,7 +270,7 @@ export function DatePickerModal({
               <View className="mb-4 flex-row">
                 {weekDayLetters.map((day, index) => (
                   <View key={index} className="flex-1">
-                    <Text className="text-center text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                    <Text className="text-center text-xs font-semibold text-text-secondary">
                       {day}
                     </Text>
                   </View>
@@ -233,6 +285,7 @@ export function DatePickerModal({
                   const isSelected = isSameDay(day, tempSelectedDate);
                   const isOtherMonth = !isCurrentMonth;
                   const isDisabled = !isDateSelectable(day);
+                  const status = statusOf(day);
 
                   return (
                     <Pressable
@@ -240,6 +293,11 @@ export function DatePickerModal({
                       className="h-10 items-center justify-center"
                       style={{ width: '14.28%' }}
                       disabled={isDisabled}
+                      accessibilityLabel={
+                        status
+                          ? `${format(day, 'PPPP', { locale })}, ${statusLabels[status]}`
+                          : undefined
+                      }
                       onPress={() => handleDateSelect(day)}
                     >
                       {isSelected ? (
@@ -256,7 +314,7 @@ export function DatePickerModal({
                             }}
                           />
                           <Text
-                            className="relative z-10 text-sm font-bold"
+                            className="relative z-10 text-sm font-semibold"
                             style={{
                               color: isDisabled
                                 ? theme.colors.text.secondary
@@ -269,11 +327,14 @@ export function DatePickerModal({
                       ) : (
                         <View
                           className={`h-10 w-10 items-center justify-center rounded-full ${
-                            isToday ? 'border border-accent-primary' : ''
+                            isToday && !status ? 'border border-accent-primary' : ''
                           }`}
+                          style={status ? dayMarkStyle(status) : undefined}
                         >
                           <Text
-                            className={`text-sm font-medium ${
+                            className={`text-sm ${
+                              status || isToday ? 'font-semibold' : 'font-medium'
+                            } ${
                               isOtherMonth || isDisabled
                                 ? 'text-text-secondary'
                                 : 'text-text-primary'
@@ -287,6 +348,23 @@ export function DatePickerModal({
                   );
                 })}
               </View>
+
+              {/* Legend: only the marks that actually appear on screen */}
+              {legendStatuses.length > 0 ? (
+                <View
+                  className="mt-4 flex-row flex-wrap items-center justify-center"
+                  style={{ gap: theme.spacing.gap.lg }}
+                >
+                  {legendStatuses.map((status) => (
+                    <View key={status} className="flex-row items-center gap-2">
+                      <View className="h-4 w-4 rounded-full" style={dayMarkStyle(status)} />
+                      <Text className="text-xs font-medium text-text-secondary">
+                        {statusLabels[status]}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ) : null}
             </View>
 
             {/* Quick Date Buttons */}
@@ -378,24 +456,24 @@ export function DatePickerModal({
             onPress={() => setIsMonthYearPickerVisible(false)}
           >
             <Pressable
-              className="w-full max-w-sm rounded-2xl border bg-bg-cardDark p-6"
+              className="w-full max-w-sm rounded-card border bg-bg-cardDark p-6"
               style={{ borderColor: theme.colors.background.ink10 }}
               onPress={(e) => e.stopPropagation()}
             >
-              <Text className="mb-4 text-lg font-bold text-text-primary">
+              <Text className="mb-4 text-lg font-semibold text-text-primary">
                 {t('datePicker.selectMonthYear')}
               </Text>
 
               {/* Month Grid */}
               <View className="mb-6">
-                <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                <Text className="mb-3 text-sm font-semibold text-text-secondary">
                   {t('datePicker.month')}
                 </Text>
                 <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.sm }}>
                   {monthNames.map((month, index) => (
                     <Pressable
                       key={index}
-                      className={`flex-1 rounded-lg border px-3 py-2 ${
+                      className={`flex-1 rounded-control border px-3 py-2 ${
                         selectedMonthIndex === index
                           ? 'border-accent-primary bg-accent-primary/10'
                           : ''
@@ -428,11 +506,11 @@ export function DatePickerModal({
 
               {/* Year List */}
               <View>
-                <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
+                <Text className="mb-3 text-sm font-semibold text-text-secondary">
                   {t('datePicker.year')}
                 </Text>
                 <ScrollView
-                  className="max-h-48 rounded-lg border"
+                  className="max-h-48 rounded-control border"
                   style={{
                     borderColor: theme.colors.background.ink10,
                     backgroundColor: theme.colors.background.ink5,

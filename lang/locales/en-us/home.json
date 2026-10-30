@@ -1,23 +1,19 @@
 {
   "home": {
-    "greeting": {
-      "goodMorning": "Good Morning",
-      "goodAfternoon": "Good Afternoon",
-      "goodEvening": "Good Evening"
-    },
+    "accountMenu": "Open account menu",
     "actions": {
-      "startWorkout": "Start\nWorkout",
-      "trackFood": "Track\nFood",
-      "scanBarcode": "Scan\nBarcode",
-      "aiPhoto": "AI\nPhoto",
-      "myMeals": "My\nMeals",
-      "addNote": "Add\nNote",
-      "logCardio": "Log\nWalk/Run"
+      "startWorkout": "Start\nworkout",
+      "trackFood": "Track\nfood",
+      "scanBarcode": "Scan\nbarcode",
+      "aiPhoto": "AI\nphoto",
+      "myMeals": "My\nmeals",
+      "addNote": "Add\nnote",
+      "logCardio": "Log\nwalk/run"
     },
     "sections": {
-      "recentWorkouts": "Recent Workouts",
-      "recentFoods": "Recent Foods",
-      "dailySummary": "Daily Summary"
+      "recentWorkouts": "Recent workouts",
+      "recentFoods": "Recent foods",
+      "dailySummary": "Daily summary"
     },
     "activityRings": {
       "move": "Move",
@@ -43,6 +39,37 @@
       "surplus": "Surplus",
       "even": "Balanced",
       "kcal": "kcal"
+    },
+    "heatmaps": {
+      "lastWeeks_one": "Last week",
+      "lastWeeks_few": "Last {{count}} weeks",
+      "lastWeeks_many": "Last {{count}} weeks",
+      "lastWeeks_other": "Last {{count}} weeks",
+      "lastDays_one": "Last day",
+      "lastDays_few": "Last {{count}} days",
+      "lastDays_many": "Last {{count}} days",
+      "lastDays_other": "Last {{count}} days",
+      "tapHint": "Tap a day for details",
+      "less": "Less",
+      "more": "More",
+      "earlierWeeks": "Show earlier weeks",
+      "laterWeeks": "Show later weeks",
+      "workouts": {
+        "title": "Workouts",
+        "none": "No workout",
+        "count_one": "{{count}} workout",
+        "count_few": "{{count}} workouts",
+        "count_many": "{{count}} workouts",
+        "count_other": "{{count}} workouts"
+      },
+      "nutrition": {
+        "title": "Nutrition",
+        "none": "Nothing logged",
+        "count_one": "{{count}} meal logged",
+        "count_few": "{{count}} meals logged",
+        "count_many": "{{count}} meals logged",
+        "count_other": "{{count}} meals logged"
+      }
     }
   }
 }

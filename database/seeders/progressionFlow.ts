@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { Dumbbell } from 'lucide-react-native';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import User from '@/database/models/User';
@@ -28,10 +29,10 @@ export async function seedProgressionFlow(locale = 'en-US', theme: 'light' | 'da
   await SettingsService.setLanguage(locale);
   await SettingsService.setTheme(DEFAULT_THEME_BY_MODE[theme]);
   await SettingsService.setUnits('metric');
-  await SettingsService.setWorkoutAutonomy('manual');
-  await SettingsService.setAutoStartRestTimer(true);
-  await SettingsService.setWorkoutView('inline');
-  await SettingsService.setReviewWeekday(1);
+  await SettingsService.set(SETTINGS.workoutAutonomy, 'manual');
+  await SettingsService.set(SETTINGS.autoStartRestTimer, true);
+  await SettingsService.set(SETTINGS.workoutView, 'inline');
+  await SettingsService.set(SETTINGS.reviewWeekday, 1);
   await setOnboardingCompleted();
   const today = localDayStartMs(new Date());
   const period = weeklyReviewPeriod();

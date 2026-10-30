@@ -1,0 +1,12 @@
+{
+  "widgets": [
+    {
+      "name": "Nutrition",
+      "initialLayout": "widgets/NutritionWidget.tsx"
+    },
+    {
+      "name": "SmartCamera",
+      "initialLayout": "widgets/SmartCameraWidget.tsx"
+    }
+  ]
+}

@@ -113,12 +113,11 @@ export function TrainingConsistencyChart({
           ) : null}
           {subtitle != null ? (
             <Text
-              className="mt-0.5 text-xs uppercase tracking-widest"
+              className="mt-0.5 text-xs"
               style={{
                 fontSize: theme.typography?.fontSize?.xs ?? 12,
                 color: mutedColor,
                 marginTop: 2,
-                letterSpacing: 4,
               }}
             >
               {subtitle}
@@ -141,7 +140,6 @@ export function TrainingConsistencyChart({
                 fontSize: 10,
                 color: mutedColor,
                 marginTop: 2,
-                textTransform: 'uppercase',
               }}
             >
               {percentageLabel}
@@ -222,7 +220,6 @@ export function TrainingConsistencyChart({
         <Text
           style={{
             fontSize: 10,
-            textTransform: 'uppercase',
             color: mutedColor,
             fontWeight: '500',
           }}
@@ -268,7 +265,6 @@ export function TrainingConsistencyChart({
         <Text
           style={{
             fontSize: 10,
-            textTransform: 'uppercase',
             color: mutedColor,
             fontWeight: '500',
           }}

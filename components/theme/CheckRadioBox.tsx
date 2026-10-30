@@ -36,7 +36,7 @@ export function CheckRadioBox({ label, value, onValueChange, type = 'checkbox' }
     >
       <View
         className={`h-6 w-6 items-center justify-center border border-ink/20 bg-bg-card ${
-          type === 'radio' ? 'rounded-full' : 'rounded'
+          type === 'radio' ? 'rounded-full' : 'rounded-tag'
         }`}
       >
         {renderIndicator()}

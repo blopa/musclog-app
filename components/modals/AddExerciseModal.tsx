@@ -35,7 +35,7 @@ import {
   getMuscleGroupTranslationKey,
 } from '@/utils/exerciseTranslation';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
-import type { ProgressionRule } from '@/utils/progressionRules';
+import type { ProgressionRule } from '@/utils/progressionRuleSchema';
 import { displayToKg } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -464,10 +464,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     () =>
       setTypeOptions.map((option) => ({
         icon: option.icon,
-        iconColor: option.iconColor,
-        iconBgColor: option.iconBgColor,
         title: option.label,
-        description: '',
         onPress: () => setSetType(option.value),
       })),
     [setTypeOptions]
@@ -536,8 +533,6 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: theme.typography.fontWeight.bold,
                     color: theme.colors.text.secondary,
-                    textTransform: 'uppercase',
-                    letterSpacing: theme.typography.letterSpacing.extraWide,
                   }}
                 >
                   {t('workouts.addExercise.targetMuscle')}
@@ -571,7 +566,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
 
         {/* Create Set Card */}
         <View
-          className="rounded-2xl border bg-bg-card p-5"
+          className="rounded-card border bg-bg-card p-5"
           style={{ borderColor: theme.colors.background.ink5 }}
         >
           <View className="mb-6 flex-row items-center justify-between">
@@ -691,7 +686,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
               </Text>
               <Pressable
                 onPress={() => setIsSetTypePickerVisible(true)}
-                className="overflow-hidden rounded-lg border border-border-default bg-bg-overlay active:opacity-70"
+                className="overflow-hidden rounded-control border border-border-default bg-bg-overlay active:opacity-70"
               >
                 <View className="flex-row items-center justify-between px-4 py-3">
                   <Text

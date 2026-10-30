@@ -56,7 +56,7 @@ test.each([
 });
 test('keeps supported block types, settings and optional fields', () => {
   const result = parse([
-    { ...info, icon: 'sparkles', descriptionKey: 'whatsNew.copy', supersededIn: '2.14.0' },
+    { ...info, icon: 'layout', descriptionKey: 'whatsNew.copy', supersededIn: '2.14.0' },
     { id: 'choice', type: 'choice', titleKey: 'whatsNew.title', setting: 'workoutView', options },
     { id: 'boolean', type: 'choice', titleKey: 'whatsNew.title', setting: 'restTimerHaptics' },
     { id: 'weekday', type: 'choice', titleKey: 'whatsNew.title', setting: 'reviewWeekday' },
@@ -107,5 +107,24 @@ test('rejects wrong filenames and invalid release versions', () => {
   expect(parseWhatsNewRelease(null, '2.13.0.json').release).toBeNull();
   expect(parseWhatsNewRelease({ version: '2.13.0', pages: [] }, '2.13.0.json').issues).not.toEqual(
     []
+  );
+});
+
+test('accepts a known page condition and rejects an unknown one', () => {
+  const page = (requires: string) => ({
+    version: '2.14.2',
+    pages: [
+      {
+        id: 'p',
+        requires,
+        blocks: [{ id: 'b', type: 'info', titleKey: 'whatsNew.title' }],
+      },
+    ],
+  });
+  expect(
+    parseWhatsNewRelease(page('cycleTracking'), '2.14.2.json').release?.pages[0].requires
+  ).toBe('cycleTracking');
+  expect(parseWhatsNewRelease(page('nope'), '2.14.2.json').issues.join()).toContain(
+    'unknown requires condition'
   );
 });

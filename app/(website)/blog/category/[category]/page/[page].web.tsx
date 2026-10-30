@@ -1,7 +1,9 @@
 import { useLoaderData } from 'expo-router';
+import type { GenerateMetadataFunction } from 'expo-router/server';
 import { createStaticLoader } from 'expo-router/server';
 
 import { BlogListingPage } from '@/components/website/BlogListingPage';
+import { blogListingSeo, metadataForPage } from '@/components/website/websiteMetadata';
 
 export async function generateStaticParams(): Promise<{ category: string; page: string }[]> {
   const { getBlogCategories, loadBlogPostSummaries, paginateBlogPosts } =
@@ -28,3 +30,6 @@ export const loader = createStaticLoader(async (params) => {
 export default function PaginatedBlogCategory() {
   return <BlogListingPage {...useLoaderData<typeof loader>()} />;
 }
+
+export const generateMetadata: GenerateMetadataFunction = (_request, params) =>
+  metadataForPage(blogListingSeo(Number(params.page), String(params.category)));

@@ -159,7 +159,7 @@ export function SavedForLaterModal({
           <GenericCard variant="flat">
             <View className="flex-row items-center justify-between p-4">
               <View className="flex-1 pr-4">
-                <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>
+                <Text className="text-lg font-semibold text-text-primary" numberOfLines={1}>
                   {item.group.name}
                 </Text>
                 <Text className="text-xs text-text-secondary">
@@ -248,7 +248,6 @@ export function SavedForLaterModal({
           {
             icon: Utensils,
             iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.accent.primary10,
             title: t('food.mealGroup.savedForLaterModal.trackThisMeal'),
             description: t('food.mealGroup.savedForLaterModal.trackThisMealDesc'),
             onPress: handleTrackPress,
@@ -256,7 +255,6 @@ export function SavedForLaterModal({
           {
             icon: Trash2,
             iconColor: theme.colors.status.error,
-            iconBgColor: theme.colors.status.error20,
             title: t('food.mealGroup.savedForLaterModal.deleteMeal'),
             description: t('food.mealGroup.savedForLaterModal.deleteMealDesc'),
             onPress: handleDeletePress,

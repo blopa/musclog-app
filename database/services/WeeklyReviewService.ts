@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type NutritionGoal from '@/database/models/NutritionGoal';
@@ -16,6 +17,8 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
+import { checkpointsDue, currentWorkoutRamp } from '@/utils/comeback/comebackProgram';
+import { tracksWorkouts } from '@/utils/comeback/comebackState';
 import { resolveWeeklyRecommendation } from '@/utils/dynamicNutritionTarget';
 import { parseSetPrescription } from '@/utils/setPrescription';
 import {
@@ -34,7 +37,9 @@ import { storedWeightToKg } from '@/utils/unitConversion';
 import { weeklyReviewPeriod } from '@/utils/weeklyReviewPeriod';
 import {
   consistencySuggestion,
+  decidedWeeksSinceLighter,
   goalVerdicts,
+  isSelfInitiatedDeload,
   recommendTrainingWeek,
 } from '@/utils/weeklyTrainingRecommendation';
 import { widgetEvents } from '@/utils/widgetEvents';
@@ -112,27 +117,6 @@ const trainingReviewedAtFor = (reviews: readonly WeeklyReview[], periodEnd: numb
   reviews.find((row) => row.periodEnd === periodEnd && row.trainingReviewedAt)?.trainingReviewedAt;
 
 /**
- * Weeks with a training decision since the last lighter week (all of them if there never was
- * one): the "you are due" signal. Newest first in, one count per reviewed period.
- */
-const decidedWeeksSinceLighter = (reviews: readonly WeeklyReview[]): number => {
-  const seen = new Set<number>();
-  for (const row of reviews) {
-    if (!row.trainingDecision || seen.has(row.periodEnd)) {
-      continue;
-    }
-
-    if (row.trainingDecision === 'lighter') {
-      break;
-    }
-
-    seen.add(row.periodEnd);
-  }
-
-  return seen.size;
-};
-
-/**
  * What the reviewed week holds, counted from the records themselves rather than the account's age
  * (restores and imports rewrite that), plus whether the user has EVER logged a workout or a meal —
  * which is what tells a first week apart from a week off.
@@ -144,6 +128,43 @@ export type WeeklyActivity = {
   everWorkout: boolean;
   everFood: boolean;
 };
+
+/** The training half's choice, with the evidence the review showed when it was made. */
+export type TrainingReviewChoice = { decision: TrainingDecision } & Pick<
+  TrainingDecisionSnapshot,
+  'recommended' | 'reasons' | 'goals'
+>;
+
+type ReviewDecisionCommon = { period: ReturnType<typeof weeklyReviewPeriod> };
+
+/**
+ * One half of a Weekly Review being decided. A union rather than one shape with every field
+ * optional: a nutrition decision always names its goal, an applied one always carries the
+ * recommendation it applies and the targets accepted, and a training decision always carries its
+ * choice — so none of that is re-checked, or asserted with `!`, inside `decide`.
+ */
+export type WeeklyReviewDecisionInput =
+  | (ReviewDecisionCommon & {
+      section: 'training';
+      /** The goal the review was shown for, when there was one; it keys the review row. */
+      goalId?: string;
+      training: TrainingReviewChoice;
+    })
+  | (ReviewDecisionCommon & {
+      section: 'nutrition';
+      goalId: string;
+      decision: 'keep';
+      recommendation?: WeeklyNutritionRecommendation;
+      /** The targets kept, recorded for the history. */
+      accepted?: NutritionTargets;
+    })
+  | (ReviewDecisionCommon & {
+      section: 'nutrition';
+      goalId: string;
+      decision: 'apply';
+      recommendation: WeeklyNutritionRecommendation;
+      accepted: NutritionTargets;
+    });
 
 export class WeeklyReviewService {
   /** The week's activity, [start, end). One definition shared by the overview and the status badge. */
@@ -199,7 +220,7 @@ export class WeeklyReviewService {
       .fetch();
   }
   static async overview(reviewId?: string, reviewDay?: Date) {
-    const weekday = await SettingsService.getReviewWeekday();
+    const weekday = await SettingsService.get(SETTINGS.reviewWeekday);
     const saved = reviewId
       ? await database.get<WeeklyReview>('weekly_reviews').find(reviewId)
       : undefined;
@@ -268,8 +289,18 @@ export class WeeklyReviewService {
     });
     // Once a repeat or lighter week is chosen, the session will not follow the plain progression
     // these targets project, so showing them would promise numbers the session never uses.
+    // During a comeback ramp the session starts from the eased numbers, so these targets would
+    // promise loads it never uses; the check-in below replaces the three-way decision instead.
+    const comebackState = await SettingsService.get(SETTINGS.comebackState);
+    const comebackRamp = tracksWorkouts(comebackState.track)
+      ? currentWorkoutRamp(comebackState, localDayStartMs(new Date()))
+      : null;
+    const comebackWeek = comebackRamp
+      ? (checkpointsDue(comebackState, localDayStartMs(new Date())).find((week) => week <= 4) ??
+        null)
+      : null;
     const targets =
-      next && (trainingDecision?.decision ?? 'progress') === 'progress'
+      next && !comebackRamp && (trainingDecision?.decision ?? 'progress') === 'progress'
         ? await WorkoutProgressionService.projectTemplate(next.template.id)
         : [];
     const current = goal
@@ -314,6 +345,8 @@ export class WeeklyReviewService {
         targets,
         next,
         decision: trainingDecision,
+        /** The ramp check-in (week 2 or 4) that answers this half during a comeback, or null. */
+        comebackCheckin: comebackWeek === 2 || comebackWeek === 4 ? { week: comebackWeek } : null,
         proposal: trainingEvidence.proposal,
         consistencySuggestion: trainingEvidence.suggestion,
         // Only the latest review can still shape a week, and only until the next review is due.
@@ -346,11 +379,15 @@ export class WeeklyReviewService {
     suggestion: ReturnType<typeof consistencySuggestion>;
   }> {
     const { period, workouts, details, workingSets, activity, reviews } = input;
-    const [goals, windows, previousWeek] = await Promise.all([
+    const [goals, windows, previousWeek, comeback] = await Promise.all([
       ExerciseGoalService.getActiveGoals(),
       TrainingWeekRepository.lighterWeekWindows(),
       this.weekActivity(localDayKeyPlusCalendarDays(period.start, -7), period.start),
+      SettingsService.get(SETTINGS.comebackState),
     ]);
+    // A comeback's eased weeks are a deliberate lighter stretch, so weeks before it never count
+    // towards "you are due for a lighter week".
+    const comebackStartedAt = comeback.startedAt;
     const consistencyGoal = goals.find(
       (goal) => goal.goalType === 'consistency' && goal.targetSessionsPerWeek != null
     );
@@ -374,13 +411,14 @@ export class WeeklyReviewService {
         : null,
       oneRm,
     });
-    // Exercises the automatic path deloaded on its own this week. A deload the REVIEW chose does
-    // not count: it would recommend a lighter week for having had one.
+    // Exercises the automatic path deloaded on its own this week. A deload somebody chose — the
+    // review's lighter week, a comeback's eased restart — does not count: it would recommend a
+    // lighter week for having had one.
     const deloaded = new Set<string>();
     for (const detail of details) {
       for (const set of detail.sets) {
         const explanation = parseSetPrescription(set.prescriptionJson)?.explanation;
-        if (explanation?.cause === 'deload' && explanation.source !== 'weekly_review') {
+        if (isSelfInitiatedDeload(explanation)) {
           deloaded.add(set.exerciseId);
         }
       }
@@ -396,7 +434,7 @@ export class WeeklyReviewService {
         ? rated.reduce((sum, set) => sum + set.repsInReserve, 0) / rated.length
         : null,
       goals: verdicts,
-      decidedWeeksSinceLighter: decidedWeeksSinceLighter(reviews),
+      decidedWeeksSinceLighter: decidedWeeksSinceLighter(reviews, comebackStartedAt),
     });
     return {
       proposal: { recommended: decision, reasons, goals: verdicts },
@@ -513,44 +551,30 @@ export class WeeklyReviewService {
     return { nutrition, trendWeight, gaps };
   }
 
-  static async decide(input: {
-    period: ReturnType<typeof weeklyReviewPeriod>;
-    goalId?: string;
-    section: 'training' | 'nutrition';
-    decision?: 'apply' | 'keep';
-    /** The training half's choice, with the evidence the review showed when it was made. */
-    training?: {
-      decision: TrainingDecision;
-    } & Pick<TrainingDecisionSnapshot, 'recommended' | 'reasons' | 'goals'>;
-    recommendation?: WeeklyNutritionRecommendation;
-    accepted?: NutritionTargets;
-  }): Promise<string> {
-    if (input.section === 'nutrition' && (!input.goalId || !input.decision)) {
-      throw new Error('A nutrition decision requires a goal');
-    }
-
-    if (
-      input.section === 'training' &&
-      (!input.training || !TRAINING_DECISIONS.includes(input.training.decision))
-    ) {
+  static async decide(input: WeeklyReviewDecisionInput): Promise<string> {
+    // The union already guarantees a goal for nutrition and a choice for training; this guards the
+    // VALUE, which comes from a stored proposal rather than from the type.
+    if (input.section === 'training' && !TRAINING_DECISIONS.includes(input.training.decision)) {
       throw new Error('A training decision is required');
     }
 
     // A review shapes the days until the next one is due. Once that has passed, training decisions
     // and approved targets would describe a week that is no longer the one being lived, so both are
     // refused; acknowledging ("keep") a past nutrition review changes nothing and stays possible.
-    if (
-      (input.section === 'training' || input.decision === 'apply') &&
-      Date.now() >= input.period.next
-    ) {
+    const shapesTheWeek = input.section === 'training' || input.decision === 'apply';
+    if (shapesTheWeek && Date.now() >= input.period.next) {
       throw new Error('This review has ended; refresh the review');
     }
 
-    if (input.decision === 'apply' && (!input.recommendation?.canApply || !input.accepted)) {
+    if (
+      input.section === 'nutrition' &&
+      input.decision === 'apply' &&
+      !input.recommendation.canApply
+    ) {
       throw new Error('More logged data is required');
     }
 
-    if (input.accepted) {
+    if (input.section === 'nutrition' && input.accepted) {
       NutritionTargetService.validateTargets(input.accepted);
     }
 
@@ -569,24 +593,28 @@ export class WeeklyReviewService {
 
       const goal =
         input.section === 'nutrition'
-          ? await database.get<NutritionGoal>('nutrition_goals').find(input.goalId!)
+          ? await database.get<NutritionGoal>('nutrition_goals').find(input.goalId)
           : null;
       if (goal && (goal.deletedAt || goal.effectiveUntil != null)) {
         throw new Error('Goal has changed; refresh the review');
       }
 
-      if (input.decision === 'apply' && goal && nutritionTargetMode(goal) !== 'weekly') {
+      // The approved targets, when this decision installs any: only an applied nutrition review does.
+      const applied =
+        input.section === 'nutrition' && input.decision === 'apply' && goal
+          ? { goal, targets: input.accepted }
+          : null;
+      if (applied && nutritionTargetMode(applied.goal) !== 'weekly') {
         throw new Error('Switch to weekly targets before applying');
       }
 
       const from = localDayKeyPlusCalendarDays(localDayStartMs(new Date()), 1);
-      const periods =
-        input.decision === 'apply' && goal
-          ? await database
-              .get<NutritionTargetPeriod>('nutrition_target_periods')
-              .query(Q.where('nutrition_goal_id', goal.id), Q.where('deleted_at', Q.eq(null)))
-              .fetch()
-          : [];
+      const periods = applied
+        ? await database
+            .get<NutritionTargetPeriod>('nutrition_target_periods')
+            .query(Q.where('nutrition_goal_id', applied.goal.id), Q.where('deleted_at', Q.eq(null)))
+            .fetch()
+        : [];
       const now = Date.now();
       const populate = (record: WeeklyReview) => {
         if (!existing) {
@@ -599,9 +627,9 @@ export class WeeklyReviewService {
         record.nutritionGoalId = input.goalId;
         if (input.section === 'training') {
           record.trainingReviewedAt = now;
-          record.trainingDecision = input.training!.decision;
+          record.trainingDecision = input.training.decision;
           record.trainingJson = serializeTrainingDecisionSnapshot({
-            ...input.training!,
+            ...input.training,
             // The decision shapes workouts from now until the next review is due.
             window: { from: now, until: input.period.next },
           });
@@ -626,7 +654,7 @@ export class WeeklyReviewService {
           ? existing.prepareUpdate(populate)
           : database.get<WeeklyReview>('weekly_reviews').prepareCreate(populate);
         const operations: Model[] = [review];
-        if (input.decision === 'apply' && goal) {
+        if (applied) {
           operations.push(
             ...periods
               .filter((row) => row.effectiveUntil == null || row.effectiveUntil > from)
@@ -636,7 +664,13 @@ export class WeeklyReviewService {
                   record.updatedAt = now;
                 })
               ),
-            NutritionTargetService.preparePeriod(goal.id, input.accepted!, from, now, review.id)
+            NutritionTargetService.preparePeriod(
+              applied.goal.id,
+              applied.targets,
+              from,
+              now,
+              review.id
+            )
           );
         }
 

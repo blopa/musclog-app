@@ -332,9 +332,10 @@ describe('MealService', () => {
     });
 
     it('orders non-favourite meals by how often they were logged, then newest first', async () => {
-      // Logs link back to a saved meal by `logged_meal_name` — never by `group_id`, which
-      // is a per-log-instance UUID. A fixture keyed on meal ids would pass against a
-      // frequency map that can never match anything in production.
+      // Usage is counted by `logged_meal_name` — never by `group_id`, which is a fresh UUID
+      // for AI meals and, for saved meals, the same `meal.id` on every logging (so distinct
+      // group ids collapse every use into one). A fixture keyed on meal ids would pass
+      // against a frequency map that cannot count anything correctly in production.
       wire({
         mealRows: [
           stubMeal({ id: 'a', name: 'Favourite', isFavorite: true }),
@@ -472,13 +473,56 @@ describe('MealService', () => {
     it.each([
       ['deleteMeal', () => MealService.deleteMeal('meal-1')],
       ['toggleMealFavorite', () => MealService.toggleMealFavorite('meal-1')],
-      ['removeFoodFromMeal', () => MealService.removeFoodFromMeal('meal-food-1')],
     ])('%s delegates to the model @writer without opening a nested write', async (_name, run) => {
       wire({ mealFind: stubMeal(), mealFoodFind: stubMealFood() });
 
       await run();
 
       expect(mockDatabase.write).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('removeFoodsFromMeal', () => {
+    function liveMealFood(id: string) {
+      const record: any = { id, deletedAt: undefined, updatedAt: 1 };
+      record.prepareUpdate = jest.fn((mutator: (r: any) => void) => {
+        mutator(record);
+        return record;
+      });
+      return record;
+    }
+
+    it('retires every removed food in one write and one batch', async () => {
+      const first = liveMealFood('mf-1');
+      const second = liveMealFood('mf-2');
+      const { mealFoods } = wire({ mealFoodRows: [first, second] });
+
+      await MealService.removeFoodsFromMeal(['mf-1', 'mf-2']);
+
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+      expect(mealFoods.query).toHaveBeenCalledTimes(1);
+      expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+      expect((mockDatabase.batch as jest.Mock).mock.calls[0]).toEqual([first, second]);
+      expect(first.deletedAt).toBeGreaterThan(0);
+      expect(second.deletedAt).toBe(first.deletedAt);
+    });
+
+    it('only selects foods that are still live', async () => {
+      const { mealFoods } = wire({ mealFoodRows: [] });
+
+      await MealService.removeFoodsFromMeal(['mf-1']);
+
+      expect(mealFoods.queryClauses[0]).toContainEqual({ field: 'deleted_at', condition: IS_NULL });
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    it('does nothing for an empty list', async () => {
+      wire();
+
+      await MealService.removeFoodsFromMeal([]);
+
+      expect(mockDatabase.write).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
     });
   });
 

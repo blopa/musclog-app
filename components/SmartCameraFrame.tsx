@@ -179,7 +179,7 @@ function ScanLine({ active, frameHeight }: ScanLineProps) {
   const transparentAccent = addOpacityToHex(theme.colors.accent.primary, theme.colors.opacity.zero);
 
   return (
-    <View pointerEvents="none" className="absolute inset-0 overflow-hidden rounded-2xl">
+    <View pointerEvents="none" className="absolute inset-0 overflow-hidden rounded-card">
       <Animated.View
         style={[
           {
@@ -240,7 +240,7 @@ export function SmartCameraFrame({ isCapturing = false, variant }: SmartCameraFr
 
   return (
     <View
-      className="relative w-full rounded-2xl"
+      className="relative w-full rounded-card"
       onLayout={(event) => setFrameHeight(event.nativeEvent.layout.height)}
       style={{
         ...getFrameSizeStyle(variant, isSmallScreen, screenHeight, theme),
@@ -256,19 +256,19 @@ export function SmartCameraFrame({ isCapturing = false, variant }: SmartCameraFr
 
       {/* Corner Markers */}
       <View
-        className="absolute -left-1 -top-1 h-8 w-8 rounded-tl-lg border-l-2 border-t-2"
+        className="absolute -left-1 -top-1 h-8 w-8 rounded-tl-control border-l-2 border-t-2"
         style={{ borderColor: theme.colors.accent.primary }}
       />
       <View
-        className="absolute -right-1 -top-1 h-8 w-8 rounded-tr-lg border-r-2 border-t-2"
+        className="absolute -right-1 -top-1 h-8 w-8 rounded-tr-control border-r-2 border-t-2"
         style={{ borderColor: theme.colors.accent.primary }}
       />
       <View
-        className="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-lg border-b-2 border-l-2"
+        className="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-control border-b-2 border-l-2"
         style={{ borderColor: theme.colors.accent.primary }}
       />
       <View
-        className="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-lg border-b-2 border-r-2"
+        className="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-control border-b-2 border-r-2"
         style={{ borderColor: theme.colors.accent.primary }}
       />
 

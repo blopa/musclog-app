@@ -1,3 +1,5 @@
+import chroma from 'chroma-js';
+
 import { THEME_IDS } from '@/constants/settings';
 import { auditThemes } from '@/theme.audit';
 import { THEME_DEFINITIONS } from '@/theme.registry';
@@ -52,6 +54,31 @@ describe('named theme selection', () => {
     expect(auditThemes()).toEqual([]);
   });
 
+  it.each(THEME_IDS)('%s keeps accent labels readable across the entire gradient', (themeId) => {
+    const colors = themeColorsById[themeId];
+    expect(colors.gradients.cta).toEqual(colors.gradients.accent);
+    const [start, end] = colors.gradients.cta;
+    for (let percent = 0; percent <= 100; percent += 1) {
+      const background = chroma.mix(start, end, percent / 100, 'rgb');
+      expect(chroma.contrast(colors.text.onAccent, background)).toBeGreaterThanOrEqual(4.5);
+    }
+    expect(
+      chroma.contrast(colors.text.secondary, colors.background.cardElevated)
+    ).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('preserves already-readable accent gradient stops', () => {
+    for (const themeId of THEME_IDS) {
+      const palette = THEME_DEFINITIONS[themeId].palette;
+      if (chroma.contrast(palette.inkOnAccent, palette.brandDeep) >= 4.5) {
+        expect(themeColorsById[themeId].gradients.cta).toEqual([
+          palette.brandVivid,
+          palette.brandDeep,
+        ]);
+      }
+    }
+  });
+
   // These ten had zero consumers when the card/gradient cleanup landed — pinned
   // so a future copy-paste doesn't quietly reintroduce an unused gradient.
   it('keeps the retired gradient tokens gone', () => {
@@ -66,6 +93,11 @@ describe('named theme selection', () => {
       'onboardingAmbient',
       'inkSubtle',
       'backdrop90',
+      'userBubble',
+      'celebrationGlow',
+      'blueEmerald',
+      'landingBackground',
+      'workoutStats',
     ];
     for (const themeId of THEME_IDS) {
       for (const key of retired) {

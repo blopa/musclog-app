@@ -16,13 +16,13 @@ import { waitForDbReady } from '@/database/dbReady';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { MealService } from '@/database/services/MealService';
-import { MenstrualBackfillService } from '@/database/services/MenstrualBackfillService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
 import { healthDataSyncService } from '@/services/healthDataSync';
+import { refreshAllNotifications } from '@/services/notificationRefresh';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
 import { captureBootException } from '@/utils/bootErrorReporting';
@@ -115,10 +115,7 @@ export function AppBoot() {
 
         await waitForDbReady();
 
-        NotificationService.scheduleWorkoutReminders();
-        NotificationService.scheduleNutritionOverview();
-        NotificationService.scheduleMenstrualCycleNotifications();
-        NotificationService.scheduleCheckinNotifications();
+        await refreshAllNotifications();
       })
       .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
 
@@ -230,19 +227,19 @@ export function AppBoot() {
       if (Platform.OS !== 'web') {
         focusManager.setFocused(status === 'active');
       }
+
+      // Reminders are one-offs laid out over the next days, so each foreground tops the window up
+      // (and applies a pause or quiet hours that changed since).
+      if (status === 'active' && Platform.OS !== 'web') {
+        void waitForDbReady()
+          .then(() => refreshAllNotifications())
+          .catch(() => undefined);
+      }
     }
 
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
-  }, []);
-
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    void MenstrualBackfillService.runV22Backfill();
   }, []);
 
   return null;

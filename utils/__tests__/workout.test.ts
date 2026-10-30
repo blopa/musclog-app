@@ -686,6 +686,20 @@ describe('utils/workout', () => {
         });
       });
 
+      it('flags notes with hasNotes and keeps the description plain text', () => {
+        const [withNotes, withoutNotes] = transformExercisesToOptions(
+          [
+            createMockExerciseInWorkout({ notes: 'Slow negatives' }),
+            createMockExerciseInWorkout({ notes: undefined }),
+          ],
+          'metric'
+        );
+        expect(withNotes.hasNotes).toBe(true);
+        expect(withoutNotes.hasNotes).toBe(false);
+        expect(withNotes.description).toBe(withoutNotes.description);
+        expect(withNotes.description).not.toMatch(/\p{Extended_Pictographic}/u);
+      });
+
       it('should preserve groupId when present', () => {
         const exercisesInWorkout: ExerciseInWorkout[] = [
           createMockExerciseInWorkout({ groupId: 'group-123' }),

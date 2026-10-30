@@ -48,7 +48,7 @@ export function CenteredModal({
         <Pressable style={StyleSheet.absoluteFill} onPress={isLoading ? undefined : onClose} />
         <View className="flex-1 items-center justify-center p-4" pointerEvents="box-none">
           <View
-            className="w-full overflow-hidden rounded-xl border border-border-dark"
+            className="w-full overflow-hidden rounded-card border border-border-dark"
             style={{
               backgroundColor: sheetSurfaceColor(theme),
               maxWidth: maxWidth || theme.size['384'],
@@ -61,15 +61,16 @@ export function CenteredModal({
                 borderBottomColor: theme.colors.border.dark,
               }}
             >
-              <View className="flex-row items-center justify-between px-4 py-5">
+              <View className="flex-row items-center justify-between py-3 pl-5 pr-2">
                 <View className="flex-1">
-                  <Text className="text-xl font-bold text-text-primary">{title}</Text>
+                  <Text className="text-lg font-semibold text-text-primary">{title}</Text>
                   {subtitle ? (
-                    <Text className="mt-1 text-xs font-medium text-text-secondary">{subtitle}</Text>
+                    <Text className="mt-0.5 text-sm text-text-secondary">{subtitle}</Text>
                   ) : null}
                 </View>
                 <Pressable
-                  className="h-10 w-10 items-center justify-center"
+                  accessibilityRole="button"
+                  className="h-11 w-11 items-center justify-center"
                   onPress={isLoading ? undefined : onClose}
                   disabled={isLoading}
                 >
@@ -79,11 +80,11 @@ export function CenteredModal({
             </View>
 
             {/* Content */}
-            <View className="p-6">{children}</View>
+            <View className="p-5">{children}</View>
 
             {/* Footer */}
             {footer ? (
-              <View className="border-t border-border-dark bg-bg-overlay/50 px-4 py-4">
+              <View className="border-t border-border-dark bg-bg-overlay/50 px-5 py-3">
                 {footer}
               </View>
             ) : null}

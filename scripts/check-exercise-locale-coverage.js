@@ -32,7 +32,7 @@ function loadJson(filePath) {
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
   } catch (err) {
-    console.error(`✗ Failed to read ${path.relative(ROOT, filePath)}: ${err.message}`);
+    console.error(`[ERROR] Failed to read ${path.relative(ROOT, filePath)}: ${err.message}`);
     process.exit(1);
   }
 }
@@ -69,7 +69,7 @@ const tmSources = new Map();
 
 for (const filePath of EXERCISE_DATA_FILES) {
   if (!fs.existsSync(filePath)) {
-    console.warn(`⚠  Data file not found, skipping: ${path.relative(ROOT, filePath)}`);
+    console.warn(`[WARN] Data file not found, skipping: ${path.relative(ROOT, filePath)}`);
     continue;
   }
 
@@ -77,7 +77,7 @@ for (const filePath of EXERCISE_DATA_FILES) {
   const filename = path.relative(ROOT, filePath);
 
   if (!Array.isArray(exercises)) {
-    console.warn(`⚠  Expected an array in ${filename}, skipping.`);
+    console.warn(`[WARN] Expected an array in ${filename}, skipping.`);
     continue;
   }
 
@@ -157,13 +157,13 @@ console.log(`  Covered in locale: ${muscleGroups.size - missingMg.length}`);
 console.log(`  Missing          : ${missingMg.length}`);
 
 if (missingMg.length > 0) {
-  console.log('\n  ❌ Missing muscleGroup keys:');
+  console.log('\n  [ERROR] Missing muscleGroup keys:');
   for (const mg of missingMg) {
     const sources = [...(mgSources.get(mg) ?? [])].join(', ');
     console.log(`     • "${mg}"  (from: ${sources})`);
   }
 
-  console.log('\n  💡 Add these under exercises.muscleGroups in exercises.json:');
+  console.log('\n  Add these under exercises.muscleGroups in exercises.json:');
   console.log('  {');
   for (const mg of missingMg) {
     console.log(`    "${mg}": "TODO",`);
@@ -171,7 +171,7 @@ if (missingMg.length > 0) {
 
   console.log('  }');
 } else {
-  console.log('\n  ✅ All muscleGroup values are covered.');
+  console.log('\n  [OK] All muscleGroup values are covered.');
 }
 
 console.log('\n' + '─'.repeat(60));
@@ -182,13 +182,13 @@ console.log(`  Covered in locale: ${targetMuscles.size - missingTm.length}`);
 console.log(`  Missing          : ${missingTm.length}`);
 
 if (missingTm.length > 0) {
-  console.log('\n  ❌ Missing targetMuscles keys:');
+  console.log('\n  [ERROR] Missing targetMuscles keys:');
   for (const tm of missingTm) {
     const sources = [...(tmSources.get(tm) ?? [])].join(', ');
     console.log(`     • "${tm}"  (from: ${sources})`);
   }
 
-  console.log('\n  💡 Add these under exercises.muscleGroups in exercises.json:');
+  console.log('\n  Add these under exercises.muscleGroups in exercises.json:');
   console.log('  {');
   for (const tm of missingTm) {
     console.log(`    "${tm}": "TODO",`);
@@ -196,15 +196,15 @@ if (missingTm.length > 0) {
 
   console.log('  }');
 } else {
-  console.log('\n  ✅ All targetMuscles values are covered.');
+  console.log('\n  [OK] All targetMuscles values are covered.');
 }
 
 console.log('\n' + '='.repeat(60));
 
 const totalMissing = missingMg.length + missingTm.length;
 if (totalMissing > 0) {
-  console.log(`\n⚠  ${totalMissing} value(s) are not covered in the locale file.\n`);
+  console.log(`\n[WARN] ${totalMissing} value(s) are not covered in the locale file.\n`);
   process.exit(1);
 } else {
-  console.log('\n✅ Full coverage — no missing locale entries.\n');
+  console.log('\n[OK] Full coverage — no missing locale entries.\n');
 }

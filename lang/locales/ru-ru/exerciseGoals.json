@@ -25,7 +25,7 @@
       "chooseExercise": "Выберите упражнение",
       "searchPlaceholder": "Поиск упражнений…",
       "currentEstimated1RM": "Ваш расчётный текущий 1ПМ: {{value}} {{unit}}",
-      "noHistoryForExercise": "Пока нет истории — начнём отслеживать с первой тренировки.",
+      "noHistoryForExercise": "Пока нет истории. Начнём отслеживать с первой тренировки.",
       "targetWeight": "Цель {{unit}}",
       "sessionsPerWeek": "Тренировок в неделю",
       "targetDate": "Целевая дата (необязательно)",

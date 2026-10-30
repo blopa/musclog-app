@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Activity } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -75,11 +74,12 @@ export function RestTimer({
     >
       {/* Background glow */}
       <View className="absolute inset-4 overflow-hidden rounded-full">
-        <LinearGradient
-          colors={[theme.colors.accent.primary20, theme.colors.status.purple20]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{ flex: 1, borderRadius: theme.borderRadius.full }}
+        <View
+          style={{
+            flex: 1,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: theme.colors.accent.primary10,
+          }}
         />
       </View>
 
@@ -120,7 +120,7 @@ export function RestTimer({
       {/* Timer Text */}
       <View className="absolute inset-0 items-center justify-center">
         <Text
-          className="font-bold tabular-nums leading-none tracking-tighter text-text-primary"
+          className="font-bold tabular-nums leading-none text-text-primary"
           style={{ fontSize: digitsSize }}
         >
           {formatRestTime(restTime)}
@@ -131,7 +131,7 @@ export function RestTimer({
           </Animated.View>
           {/* A polite live region: spoken when the phase changes, not every second. */}
           <Text
-            className="text-lg font-semibold tracking-wide"
+            className="text-lg font-semibold"
             style={{ color: phase === 'resting' ? theme.colors.text.secondary : phaseColor }}
             accessibilityLiveRegion="polite"
             testID="rest-phase-label"

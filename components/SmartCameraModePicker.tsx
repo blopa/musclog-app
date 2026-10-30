@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { FileText, type LucideIcon, ScanBarcode, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -27,13 +26,13 @@ function ModePickerTab({
 }: ModePickerTabProps) {
   const theme = useTheme();
   const isActive = mode === activeMode;
-  const color = isActive ? theme.colors.text.primary : theme.colors.text.secondary;
+  const color = isActive ? theme.colors.text.onAccent : theme.colors.text.secondary;
 
   return (
     <Pressable
       onPress={() => onSelect(mode)}
       disabled={disabled}
-      className="flex-1 rounded-xl px-2"
+      className="flex-1 rounded-control px-2"
       style={[
         {
           overflow: 'hidden',
@@ -44,10 +43,7 @@ function ModePickerTab({
       ]}
     >
       {isActive ? (
-        <LinearGradient
-          colors={theme.colors.gradients.cta}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+        <View
           style={{
             position: 'absolute',
             top: 0,
@@ -55,17 +51,14 @@ function ModePickerTab({
             right: 0,
             bottom: 0,
             borderRadius: theme.borderRadius.md,
-            overflow: 'hidden',
+            backgroundColor: theme.colors.accent.primary,
           }}
         />
       ) : null}
       <View className="flex-row items-center justify-center gap-1.5">
         <Icon size={theme.iconSize.md} color={color} />
         {!isSmallScreen ? (
-          <Text
-            className="font-bold uppercase tracking-wide"
-            style={{ fontSize: theme.typography.fontSize.xs, color }}
-          >
+          <Text className="font-bold" style={{ fontSize: theme.typography.fontSize.xs, color }}>
             {label}
           </Text>
         ) : null}
@@ -111,7 +104,7 @@ export function SmartCameraModePicker({
   return (
     <View className={isSmallScreen ? 'mb-3 w-full items-center' : 'mb-6 w-full items-center'}>
       <View
-        className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
+        className="w-full max-w-sm flex-row items-stretch justify-between rounded-card p-1.5"
         style={{
           backgroundColor: theme.colors.background.neutralWash,
           borderWidth: theme.borderWidth.thin,

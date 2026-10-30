@@ -21,7 +21,7 @@ export function OpticalMealSharePreview({ summary }: OpticalMealSharePreviewProp
         ) : null}
       </View>
 
-      <Text className="text-sm font-bold text-text-primary">
+      <Text className="text-sm font-semibold text-text-primary">
         {t('food.meals.manageMealData.caloriesMacrosFormat', {
           calories: formatInteger(summary.totals.calories),
           carbs: formatRoundedDecimal(summary.totals.carbs, 1),

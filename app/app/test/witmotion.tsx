@@ -305,7 +305,7 @@ function SignedChart({ data, yRange, unitLabel, color = '#4ade80', zeroLabel }: 
   ];
 
   return (
-    <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
+    <View className="overflow-hidden rounded-control border border-border-light bg-bg-primary">
       <Svg width={WIDTH} height={HEIGHT}>
         <SvgLine
           x1={PAD_LEFT}
@@ -378,7 +378,7 @@ function RangeChart({ series, minY, maxY }: RangeChartProps) {
   const ticks = [1.1, 1.0, 0.8, 0.6, 0.4, 0.2, 0, -0.2];
 
   return (
-    <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
+    <View className="overflow-hidden rounded-control border border-border-light bg-bg-primary">
       <Svg width={WIDTH} height={HEIGHT}>
         {ticks.map((tick) => {
           const clamped = Math.max(minY, Math.min(maxY, tick));
@@ -463,7 +463,7 @@ function CompressedSignalChart({ payload }: { payload: BleSetChartPayload }) {
 
   return (
     <View>
-      <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
+      <View className="overflow-hidden rounded-control border border-border-light bg-bg-primary">
         <Svg width={WIDTH} height={HEIGHT}>
           {reps.map((rep, i) => {
             const x1 = toX(rep.startS);
@@ -939,10 +939,10 @@ export default function WitMotionTestScreen() {
           </View>
 
           {/* Rep Counter — primary card */}
-          <View className="rounded-xl border-2 border-border-accent bg-bg-overlay p-5">
+          <View className="rounded-control border-2 border-border-accent bg-bg-overlay p-5">
             <View className="mb-3 flex-row items-center justify-between">
               <View>
-                <Text className="text-lg font-bold text-text-primary">Rep Recorder</Text>
+                <Text className="text-lg font-semibold text-text-primary">Rep Recorder</Text>
                 <Text className="text-xs text-text-tertiary">
                   Record a set, then analyze it when you stop
                 </Text>
@@ -953,10 +953,10 @@ export default function WitMotionTestScreen() {
             {/* Recording controls + live signal readout */}
             <View className="mb-3 flex-row items-center gap-3">
               <View
-                className="rounded-full px-3 py-1"
+                className="rounded-tag px-3 py-1"
                 style={{ backgroundColor: recordingColor + '33' }}
               >
-                <Text className="text-sm font-bold" style={{ color: recordingColor }}>
+                <Text className="text-sm font-semibold" style={{ color: recordingColor }}>
                   {recordingLabel}
                 </Text>
               </View>
@@ -1006,7 +1006,7 @@ export default function WitMotionTestScreen() {
                 <Text className="mt-1 text-xs text-text-tertiary">
                   {pipelineResult.candidateSegments} candidates · {pipelineResult.classifiedAsRep}{' '}
                   classified
-                  {pipelineResult.error ? `  ⚠ ${pipelineResult.error}` : ''}
+                  {pipelineResult.error ? `  Warning: ${pipelineResult.error}` : ''}
                 </Text>
               ) : null}
             </View>
@@ -1017,7 +1017,7 @@ export default function WitMotionTestScreen() {
             {/* Per-rep breakdown table */}
             {pipelineResult && pipelineResult.reps.length > 0 ? (
               <View className="mt-4">
-                <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
                   Per-rep breakdown
                 </Text>
 
@@ -1026,7 +1026,7 @@ export default function WitMotionTestScreen() {
                   {['#', 'Total', 'Ph A', 'Ph B', 'Spd A', 'Spd B', 'Conf'].map((h) => (
                     <Text
                       key={h}
-                      className="text-center text-xs font-bold text-text-tertiary"
+                      className="text-center text-xs font-semibold text-text-tertiary"
                       style={{ flex: h === '#' ? 0.5 : 1 }}
                     >
                       {h}
@@ -1037,10 +1037,10 @@ export default function WitMotionTestScreen() {
                 {pipelineResult.reps.map((rep: PerRepResult) => (
                   <View
                     key={rep.index}
-                    className="mb-1 flex-row gap-1 rounded-md bg-bg-primary px-2 py-2"
+                    className="mb-1 flex-row gap-1 rounded-inner bg-bg-primary px-2 py-2"
                   >
                     <Text
-                      className="text-center text-xs font-bold text-text-primary"
+                      className="text-center text-xs font-semibold text-text-primary"
                       style={{ flex: 0.5 }}
                     >
                       {rep.index}
@@ -1072,9 +1072,9 @@ export default function WitMotionTestScreen() {
                   const avg = (fn: (r: PerRepResult) => number) =>
                     reps.reduce((s, r) => s + fn(r), 0) / reps.length;
                   return (
-                    <View className="mt-1 flex-row gap-1 rounded-md bg-bg-overlay px-2 py-2">
+                    <View className="mt-1 flex-row gap-1 rounded-inner bg-bg-overlay px-2 py-2">
                       <Text
-                        className="text-center text-xs font-bold text-text-tertiary"
+                        className="text-center text-xs font-semibold text-text-tertiary"
                         style={{ flex: 0.5 }}
                       >
                         avg
@@ -1112,7 +1112,7 @@ export default function WitMotionTestScreen() {
           </View>
 
           {pipelineResult?.chartPayload ? (
-            <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+            <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
               <Text className="mb-1 font-bold text-text-primary">Compressed signal</Text>
               <Text className="mb-3 text-xs text-text-tertiary">
                 Preprocessed 1D signal · {pipelineResult.chartPayload.signal.length} pts stored
@@ -1122,8 +1122,8 @@ export default function WitMotionTestScreen() {
             </View>
           ) : null}
 
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
-            <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
+            <Text className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
               Status
             </Text>
             <Text className="text-sm text-text-primary">Bluetooth: {String(wit.bleState)}</Text>
@@ -1137,7 +1137,7 @@ export default function WitMotionTestScreen() {
             {wit.error ? <Text className="mt-2 text-sm text-status-error">{wit.error}</Text> : null}
           </View>
 
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-3 font-bold text-text-primary">Scan</Text>
             <View className="flex-row gap-3">
               <Button
@@ -1165,14 +1165,14 @@ export default function WitMotionTestScreen() {
 
             {wit.discoveredDevices.length > 0 ? (
               <View className="mt-4 gap-2">
-                <Text className="text-xs font-bold uppercase tracking-wider text-text-tertiary">
+                <Text className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
                   Found devices ({wit.discoveredDevices.length})
                 </Text>
                 {wit.discoveredDevices.map((device) => (
                   <Pressable
                     key={device.id}
                     onPress={() => void wit.connect(device)}
-                    className="rounded-lg border border-border-light bg-bg-primary p-3"
+                    className="rounded-control border border-border-light bg-bg-primary p-3"
                   >
                     <Text className="font-medium text-text-primary">{device.name}</Text>
                     <Text className="text-xs text-text-tertiary">{device.id}</Text>
@@ -1182,7 +1182,7 @@ export default function WitMotionTestScreen() {
             ) : null}
           </View>
 
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-3 font-bold text-text-primary">Live data</Text>
             <Text className="text-sm text-text-primary">
               Accel: {valueOrDash(wit.liveData.accel?.x)} / {valueOrDash(wit.liveData.accel?.y)} /{' '}
@@ -1208,7 +1208,7 @@ export default function WitMotionTestScreen() {
           </View>
 
           {/* Pitch angle from anchor */}
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <View className="mb-2 flex-row items-start justify-between">
               <View className="flex-1 pr-2">
                 <Text className="font-bold text-text-primary">Tilt from anchor</Text>
@@ -1231,7 +1231,7 @@ export default function WitMotionTestScreen() {
                 zeroLabel="anchor"
               />
             ) : (
-              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+              <View className="items-center rounded-control border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">
                   Press Set Anchor then tilt the device
                 </Text>
@@ -1240,7 +1240,7 @@ export default function WitMotionTestScreen() {
           </View>
 
           {/* Raw acceleration chart, close to the official app's display */}
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-1 font-bold text-text-primary">Raw acceleration</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
               Direct accel values from the sensor · slow movement still shows here
@@ -1275,7 +1275,7 @@ export default function WitMotionTestScreen() {
                 </View>
               </>
             ) : (
-              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+              <View className="items-center rounded-control border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">
                   Connect a device to see raw accel
                 </Text>
@@ -1283,7 +1283,7 @@ export default function WitMotionTestScreen() {
             )}
           </View>
 
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-1 font-bold text-text-primary">Rep signal (adaptive)</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
               |mag − 1g| · peak when &gt;{REP_PEAK_THRESHOLD_G} g · now: {liveFeature.toFixed(3)} g
@@ -1297,14 +1297,14 @@ export default function WitMotionTestScreen() {
                 zeroLabel="0g"
               />
             ) : (
-              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+              <View className="items-center rounded-control border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">Connect a device to see data</Text>
               </View>
             )}
           </View>
 
           {/* Vertical velocity */}
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-1 font-bold text-text-primary">Vertical velocity</Text>
             <Text className="mb-3 text-xs text-text-tertiary">
               HPF-integrated acceleration · + = up · − = down · Velocity:{' '}
@@ -1313,14 +1313,14 @@ export default function WitMotionTestScreen() {
             {velData.length > 1 ? (
               <SignedChart data={velData} yRange={80} unitLabel="cm/s" color="#4ade80" />
             ) : (
-              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+              <View className="items-center rounded-control border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">Connect a device to see data</Text>
               </View>
             )}
           </View>
 
           {/* Vertical position */}
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <View className="mb-3 flex-row items-center justify-between">
               <View>
                 <Text className="font-bold text-text-primary">Vertical position</Text>
@@ -1338,7 +1338,7 @@ export default function WitMotionTestScreen() {
                 zeroLabel="anchor"
               />
             ) : (
-              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+              <View className="items-center rounded-control border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">
                   Press Set Anchor then move the device
                 </Text>
@@ -1346,7 +1346,7 @@ export default function WitMotionTestScreen() {
             )}
           </View>
 
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-3 font-bold text-text-primary">Commands</Text>
             <View className="flex-row flex-wrap gap-2">
               <Button
@@ -1388,7 +1388,7 @@ export default function WitMotionTestScreen() {
             </View>
           </View>
 
-          <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+          <View className="rounded-control border border-border-accent bg-bg-overlay p-4">
             <View className="mb-3 flex-row items-start justify-between gap-3">
               <View className="flex-1">
                 <Text className="font-bold text-text-primary">Saved debug files</Text>
@@ -1418,7 +1418,7 @@ export default function WitMotionTestScreen() {
                   return (
                     <View
                       key={file.uri}
-                      className="rounded-lg border border-border-light bg-bg-primary p-3"
+                      className="rounded-control border border-border-light bg-bg-primary p-3"
                     >
                       <View className="mb-3">
                         <Text className="font-medium text-text-primary" numberOfLines={1}>
@@ -1452,7 +1452,7 @@ export default function WitMotionTestScreen() {
                 })}
               </View>
             ) : (
-              <View className="items-center rounded-lg border border-border-light bg-bg-primary py-8">
+              <View className="items-center rounded-control border border-border-light bg-bg-primary py-8">
                 <Text className="text-xs text-text-tertiary">
                   No saved debug files yet. Press Start, then Stop to create one.
                 </Text>

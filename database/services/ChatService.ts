@@ -1,11 +1,26 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { COACH_WELCOME_PAYLOAD_JSON } from '@/constants/coachWelcome';
+import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import ChatMessage, {
   type ChatMessageContext,
   type ChatMessageType,
   type ChatSender,
 } from '@/database/models/ChatMessage';
+
+function isWelcomeMessage(record: ChatMessage, legacyTexts: ReadonlySet<string>): boolean {
+  if (record.payloadJson) {
+    try {
+      const payload: { type?: unknown } = JSON.parse(record.payloadJson);
+      return payload.type === 'welcome';
+    } catch {
+      return false;
+    }
+  }
+
+  return legacyTexts.has(record.message);
+}
 
 export class ChatService {
   static async saveMessage(params: {
@@ -110,6 +125,64 @@ export class ChatService {
         Q.take(limit)
       )
       .fetch();
+  }
+
+  /**
+   * Rewrites the seeded welcome message of every conversation that still holds nothing else, so a
+   * new coach persona greets the user in its own name. A conversation counts as untouched when its
+   * ONLY live message is a coach message that is the welcome — either marked with the `welcome`
+   * payload or, for installs seeded before the marker existed, one of `legacyTexts` (the welcome in
+   * every bundled language). Anything else (a reply, an insight, an exchange) is real history and
+   * is never touched, nor even loaded: each conversation is counted first and read only when it
+   * holds exactly one message. Reads and the one batch of writes share a writer, so a message
+   * arriving in between cannot be overwritten by a rewrite decided before it.
+   */
+  static async rewriteUntouchedWelcomeMessages(
+    textsByContext: Record<ChatMessageContext, string>,
+    legacyTexts: ReadonlySet<string>
+  ): Promise<void> {
+    const contexts = Object.keys(textsByContext) as ChatMessageContext[];
+
+    await database.write(async () => {
+      const now = Date.now();
+      const messages = database.get<ChatMessage>('chat_messages');
+
+      const loneMessages = await Promise.all(
+        contexts.map(async (context) => {
+          const live = messages.query(
+            Q.where('context', context),
+            Q.where('deleted_at', Q.eq(null))
+          );
+
+          return (await live.fetchCount()) === 1 ? (await live.fetch())[0] : undefined;
+        })
+      );
+
+      const rewrites = contexts.flatMap((context, index) => {
+        const only = loneMessages[index];
+        const text = textsByContext[context];
+        const isStale =
+          only !== undefined &&
+          only.sender === 'coach' &&
+          isWelcomeMessage(only, legacyTexts) &&
+          (only.message !== text || only.payloadJson !== COACH_WELCOME_PAYLOAD_JSON);
+
+        return isStale ? [{ record: only, text }] : [];
+      });
+
+      await commitPrepared(
+        database,
+        rewrites.map(({ record }) => record),
+        () =>
+          rewrites.map(({ record, text }) =>
+            record.prepareUpdate((draft) => {
+              draft.message = text;
+              draft.payloadJson = COACH_WELCOME_PAYLOAD_JSON;
+              draft.updatedAt = now;
+            })
+          )
+      );
+    });
   }
 
   /**

@@ -50,6 +50,8 @@ export async function clearActiveWorkoutLogId(): Promise<void> {
 
     // Dismiss notification after storage is cleared
     await NotificationService.dismissActiveWorkoutNotification();
+    await NotificationService.cancelUnfinishedWorkoutReminder();
+    await NotificationService.cancelRestTimerNotification();
   } catch (error) {
     console.error('Error clearing active workout from storage:', error);
     throw error;
@@ -67,9 +69,7 @@ export async function hasActiveWorkout(): Promise<boolean> {
 /**
  * Get the dismissed insights for a specific workout
  */
-export async function getDismissedInsights(
-  workoutLogId: string
-): Promise<{ hormonal?: boolean; fueling?: boolean }> {
+export async function getDismissedInsights(workoutLogId: string): Promise<{ fueling?: boolean }> {
   try {
     const data = await AsyncStorage.getItem(`${WORKOUT_INSIGHTS_PREFIX}${workoutLogId}`);
     return data ? JSON.parse(data) : {};
@@ -84,7 +84,7 @@ export async function getDismissedInsights(
  */
 export async function setInsightDismissed(
   workoutLogId: string,
-  insightType: 'hormonal' | 'fueling'
+  insightType: 'fueling'
 ): Promise<void> {
   try {
     const current = await getDismissedInsights(workoutLogId);

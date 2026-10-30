@@ -23,7 +23,7 @@ export default function EmptyStatesTestScreen() {
         >
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
-        <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
+        <Text className="flex-1 text-center text-lg font-semibold leading-tight text-text-primary">
           System Specs
         </Text>
         <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-ink/10">
@@ -35,7 +35,7 @@ export default function EmptyStatesTestScreen() {
         {/* Title Section */}
         <View className="px-6 pb-2 pt-6">
           <Text
-            className="font-extrabold leading-tight tracking-tight text-text-primary"
+            className="font-bold leading-tight text-text-primary"
             style={{ fontSize: theme.typography.fontSize['3xl'] }}
           >
             System States
@@ -74,7 +74,7 @@ export default function EmptyStatesTestScreen() {
           <View className="gap-4">
             {/* Workout Card Skeleton */}
             <View
-              className="flex-col gap-4 rounded-lg border bg-bg-card p-4"
+              className="flex-col gap-4 rounded-control border bg-bg-card p-4"
               style={{ borderColor: theme.colors.background.ink5 }}
             >
               <View className="flex-row items-center gap-3">
@@ -104,7 +104,7 @@ export default function EmptyStatesTestScreen() {
 
             {/* Food Item Skeleton */}
             <View
-              className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
+              className="flex-row items-center justify-between rounded-control border bg-bg-card p-4"
               style={{ borderColor: theme.colors.background.ink5 }}
             >
               <View className="flex-row items-center gap-3">

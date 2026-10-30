@@ -7,6 +7,7 @@ import { FilterTabs } from '@/components/FilterTabs';
 import { Button } from '@/components/theme/Button';
 import { Slider } from '@/components/theme/Slider';
 import type { MealType } from '@/database/models';
+import { KEEP_MEAL_TYPES, type MealTypeTarget } from '@/database/models/mealTypeTarget';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
@@ -17,9 +18,13 @@ import { DatePickerModal } from './DatePickerModal';
 type MoveCopyMealModalProps = {
   visible: boolean;
   onClose: () => void;
+  /**
+   * `targetMealType` is {@link KEEP_MEAL_TYPES} only when `allowKeepMealTypes` is set and the
+   * mode is not `split`: a split puts its share into one concrete meal.
+   */
   onConfirm: (
     targetDate: Date,
-    targetMealType: MealType,
+    targetMealType: MealTypeTarget,
     splitPercentage?: number
   ) => Promise<void>;
   mode: 'move' | 'copy' | 'split';
@@ -27,6 +32,11 @@ type MoveCopyMealModalProps = {
   sourceMealType: MealType;
   sourceDate: Date;
   isLoading?: boolean;
+  /**
+   * Offer "Keep their meals" (selected by default) for a set of items that spans several
+   * meals, where one target meal would merge them.
+   */
+  allowKeepMealTypes?: boolean;
 };
 
 const SPLIT_PRESETS = [25, 33, 50, 75];
@@ -40,11 +50,14 @@ export function MoveCopyMealModal({
   sourceMealType,
   sourceDate,
   isLoading = false,
+  allowKeepMealTypes = false,
 }: MoveCopyMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [targetDate, setTargetDate] = useState(() => localCalendarDayDate(sourceDate));
-  const [targetMealType, setTargetMealType] = useState<MealType>(sourceMealType);
+  const offersKeep = allowKeepMealTypes && mode !== 'split';
+  const initialMealType: MealTypeTarget = offersKeep ? KEEP_MEAL_TYPES : sourceMealType;
+  const [targetMealType, setTargetMealType] = useState<MealTypeTarget>(initialMealType);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [splitPercentage, setSplitPercentage] = useState(50);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,7 +68,7 @@ export function MoveCopyMealModal({
     const syncOrReset = () => {
       if (visible) {
         setTargetDate(localCalendarDayDate(sourceDate));
-        setTargetMealType(sourceMealType);
+        setTargetMealType(initialMealType);
         setSplitPercentage(50);
       } else {
         setIsSubmitting(false);
@@ -63,7 +76,7 @@ export function MoveCopyMealModal({
     };
 
     syncOrReset();
-  }, [visible, sourceDate, sourceMealType]);
+  }, [visible, sourceDate, initialMealType]);
 
   useEffect(() => {
     if (!visible) {
@@ -86,7 +99,10 @@ export function MoveCopyMealModal({
     }
   }
 
-  const mealTabs: { id: MealType; label: string }[] = [
+  const mealTabs: { id: MealTypeTarget; label: string }[] = [
+    ...(offersKeep
+      ? [{ id: KEEP_MEAL_TYPES, label: t('food.actions.keepMealTypes') } as const]
+      : []),
     { id: 'breakfast', label: t('food.meals.breakfast') },
     { id: 'lunch', label: t('food.meals.lunch') },
     { id: 'dinner', label: t('food.meals.dinner') },
@@ -104,6 +120,8 @@ export function MoveCopyMealModal({
     try {
       await onConfirm(targetDate, targetMealType, mode === 'split' ? splitPercentage : undefined);
       onClose();
+    } catch {
+      // The caller has reported the failure; stay open so the chosen day and meal are not lost.
     } finally {
       setIsSubmitting(false);
     }
@@ -162,7 +180,7 @@ export function MoveCopyMealModal({
           <View className="gap-2">
             <View className="flex-row items-center justify-between">
               <Text
-                className="text-xs font-bold uppercase tracking-wider"
+                className="text-xs font-semibold"
                 style={{ color: theme.colors.text.secondary }}
               >
                 {t('food.actions.splitPercentage')}
@@ -182,7 +200,7 @@ export function MoveCopyMealModal({
               {SPLIT_PRESETS.map((preset) => (
                 <Pressable
                   key={preset}
-                  className="flex-1 items-center justify-center rounded-xl border py-2"
+                  className="flex-1 items-center justify-center rounded-control border py-2"
                   style={{
                     borderColor:
                       splitPercentage === preset
@@ -223,16 +241,13 @@ export function MoveCopyMealModal({
 
         {/* Target Meal Type */}
         <View className="gap-2">
-          <Text
-            className="text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('food.actions.targetMealType')}
           </Text>
           <FilterTabs
             tabs={mealTabs}
             activeTab={targetMealType}
-            onTabChange={(tabId) => setTargetMealType(tabId as MealType)}
+            onTabChange={(tabId) => setTargetMealType(tabId as MealTypeTarget)}
             showContainer={false}
             scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
           />

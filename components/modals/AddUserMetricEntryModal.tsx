@@ -8,6 +8,7 @@ import { GenericCard } from '@/components/cards/GenericCard';
 import { MoodSelectorCard } from '@/components/cards/MoodSelectorCard';
 import { PagerView, type PagerViewRef } from '@/components/PagerView/PagerView';
 import { Button } from '@/components/theme/Button';
+import { Chip } from '@/components/theme/Chip';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -326,7 +327,7 @@ export default function AddUserMetricEntryModal({
       <View className="p-6">
         {/* Metric Input Section */}
         <View>
-          <Text className="mb-4 text-center text-xs font-bold uppercase tracking-wider text-text-secondary">
+          <Text className="mb-4 text-center text-xs font-semibold text-text-secondary">
             {config.label} ({config.unit})
           </Text>
 
@@ -352,7 +353,7 @@ export default function AddUserMetricEntryModal({
             </Pressable>
 
             <View className="flex-1 items-center">
-              <Text className="text-center text-6xl font-extrabold text-text-primary">
+              <Text className="text-center text-6xl font-bold text-text-primary">
                 {config.step < 1 ? formatDecimal(value, 1) : formatInteger(Math.round(value))}
               </Text>
             </View>
@@ -371,24 +372,21 @@ export default function AddUserMetricEntryModal({
           </View>
 
           {/* Quick Increment Buttons */}
-          <View className="mb-6 flex-row justify-center" style={{ gap: theme.spacing.gap['2'] }}>
+          <View
+            className="mb-6 flex-row flex-wrap justify-center"
+            style={{ gap: theme.spacing.gap.md }}
+          >
             {config.quickIncrements.map((increment) => (
-              <Pressable
+              <Chip
                 key={increment}
+                role="button"
                 onPress={() => handleIncrement(increment)}
-                className="rounded-full border px-3 py-1"
-                style={{
-                  backgroundColor: theme.colors.accent.primary10,
-                  borderColor: theme.colors.accent.primary20,
-                }}
-              >
-                <Text className="text-xs font-bold text-accent-primary">
-                  +
-                  {increment % 1 === 0
+                label={`+${
+                  increment % 1 === 0
                     ? formatInteger(increment, { useGrouping: false })
-                    : formatDecimal(increment, 1)}
-                </Text>
-              </Pressable>
+                    : formatDecimal(increment, 1)
+                }`}
+              />
             ))}
           </View>
         </View>
@@ -456,12 +454,17 @@ export default function AddUserMetricEntryModal({
       <View className="flex-1">
         {/* Content */}
         <KeyboardAwareScrollView
-          className="flex-1 px-4 pb-12"
+          className="flex-1"
           showsVerticalScrollIndicator={false}
           bottomOffset={16}
         >
-          <View className="h-4" />
-          <View style={{ gap: theme.spacing.gap['2xl'] }}>
+          <View
+            className="px-4 pt-4"
+            style={{
+              gap: theme.spacing.gap['2xl'],
+              paddingBottom: theme.spacing.padding['3xl'] * 2,
+            }}
+          >
             {/* Metric Selector */}
             <SegmentedControl
               options={metricOptions}
@@ -509,7 +512,6 @@ export default function AddUserMetricEntryModal({
             {/* Mood Slider Section */}
             <MoodSelectorCard value={mood} onChange={setMood} />
           </View>
-          <View style={{ height: theme.spacing.padding['3xl'] * 2 }} />
         </KeyboardAwareScrollView>
       </View>
 

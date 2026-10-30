@@ -98,24 +98,28 @@ export function FullScreenModal({
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: 16,
-                  paddingHorizontal: 16,
-                  paddingVertical: 16,
+                  gap: theme.spacing.gap.sm,
+                  minHeight: theme.size['14'],
+                  paddingLeft: closable ? theme.spacing.padding.sm : theme.spacing.padding.base,
+                  paddingRight: theme.spacing.padding.base,
+                  paddingVertical: theme.spacing.padding.sm,
                 }}
               >
                 {closable ? (
                   <Pressable
-                    style={{ padding: 12, borderRadius: 9999 }}
+                    accessibilityRole="button"
+                    style={{
+                      padding: theme.spacing.padding.md,
+                      borderRadius: theme.borderRadius.full,
+                    }}
                     onPress={onClose}
-                    hitSlop={12}
+                    hitSlop={4}
                   >
                     <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
                   </Pressable>
                 ) : null}
                 <View style={{ flex: 1 }}>
-                  <Text className="text-xl font-bold tracking-tight text-text-primary">
-                    {title}
-                  </Text>
+                  <Text className="text-lg font-semibold text-text-primary">{title}</Text>
                   {subtitle ? (
                     <Text className="mt-0.5 text-sm font-normal text-text-secondary">
                       {subtitle}

@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  testMatch: ['**/tests/screenshot-automation.spec.ts'],
+  testMatch: ['**/tests/screenshot-automation.spec.ts', '**/tests/upgrade-compatibility.spec.ts'],
   timeout: 600000,
   use: {
     headless: true,

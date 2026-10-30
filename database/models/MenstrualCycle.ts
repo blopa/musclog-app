@@ -1,7 +1,9 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
 
-export type BirthControlType = 'pill' | 'iud' | 'implant' | 'patch' | 'ring' | 'shot' | 'other';
+/** `iud` is the legacy value that did not say hormonal or copper; new picks use the two below. */
+export type BirthControlType =
+  'pill' | 'iud' | 'hormonal_iud' | 'copper_iud' | 'implant' | 'patch' | 'ring' | 'shot' | 'other';
 export type SyncGoal = 'performance' | 'symptoms' | 'energy';
 export type LifeStage = 'regular' | 'pcos' | 'perimenopause' | 'postpartum' | 'post_pill';
 
@@ -29,6 +31,8 @@ export default class MenstrualCycle extends Model {
   @field('sync_goal') declare syncGoal: SyncGoal | null;
   @field('life_stage') declare lifeStage: LifeStage | null;
   @field('is_active') declare isActive: boolean;
+  /** Encrypted JSON { fallbackCycleLength, fallbackPeriodDuration }; null before the v36 conversion. */
+  @field('config') declare config: string | null;
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') declare deletedAt: number | null;

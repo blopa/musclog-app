@@ -29,7 +29,7 @@ export type WorkoutType = 'strength' | 'cardio' | 'hiit' | 'yoga';
 
 export type WorkoutFilters = {
   workoutType?: 'all' | 'strength' | 'cardio' | 'hiit' | 'yoga';
-  dateRange?: '30' | '90' | 'custom';
+  dateRange?: '30' | '90' | 'all';
   muscleGroups: string[];
   minDuration: number;
 };
@@ -241,7 +241,7 @@ export function normalizeMuscleGroup(group: string): string {
 /**
  * Calculate date range from filter
  */
-export function calculateDateRange(dateRange: '30' | '90' | 'custom'): DateRange | undefined {
+export function calculateDateRange(dateRange: '30' | '90' | 'all'): DateRange | undefined {
   if (dateRange === '30') {
     const endDate = Date.now();
     const startDate = localDayKeyPlusCalendarDaysFromNow(-30);
@@ -254,7 +254,7 @@ export function calculateDateRange(dateRange: '30' | '90' | 'custom'): DateRange
     return { startDate, endDate };
   }
 
-  // 'custom' date range would need a date picker, skip for now
+  // 'all' has no bounds
   return undefined;
 }
 

@@ -108,10 +108,7 @@ export function FreeSessionExerciseCompleteModal({
       <View className="flex-1 px-4">
         <View className="flex-row items-center justify-between pb-4 pt-2">
           <View className="flex-1 items-center justify-center px-2">
-            <Text
-              className="text-[14px] font-bold uppercase tracking-widest"
-              style={{ color: emerald }}
-            >
+            <Text className="text-[14px] font-bold" style={{ color: emerald }}>
               {t('freeTraining.inProgress')}
             </Text>
           </View>
@@ -156,7 +153,7 @@ export function FreeSessionExerciseCompleteModal({
 
           <View className="mb-10 items-center gap-2">
             <Text
-              className="text-center font-bold tracking-tight text-text-primary"
+              className="text-center font-bold text-text-primary"
               style={{ fontSize: theme.typography.fontSize['3xl'] }}
             >
               {t('freeTraining.exerciseComplete.title')}
@@ -179,7 +176,7 @@ export function FreeSessionExerciseCompleteModal({
               style={{ padding: theme.spacing.padding.lg }}
             >
               <View
-                className="shrink-0 items-center justify-center overflow-hidden rounded-xl border"
+                className="shrink-0 items-center justify-center overflow-hidden rounded-control border"
                 style={{
                   width: CARD_IMAGE_SIZE,
                   height: CARD_IMAGE_SIZE,
@@ -225,13 +222,13 @@ export function FreeSessionExerciseCompleteModal({
                 </View>
                 <View className="mt-1 border-t pt-3" style={{ borderColor: borderDark }}>
                   <Text
-                    className="mb-1 text-xs font-semibold uppercase tracking-wider"
+                    className="mb-1 text-xs font-semibold"
                     style={{ color: textMuted, fontSize: theme.typography.fontSize.xs }}
                   >
                     {t('freeTraining.exerciseComplete.totalVolume')}
                   </Text>
                   <Text
-                    className="font-bold tracking-tight text-text-primary"
+                    className="font-bold text-text-primary"
                     style={{ fontSize: theme.typography.fontSize['2xl'] }}
                   >
                     {displayVolumeStr}{' '}
@@ -254,7 +251,7 @@ export function FreeSessionExerciseCompleteModal({
           <View className="w-full gap-3">
             <Button
               label={t('freeTraining.exerciseComplete.addNextExercise')}
-              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
+              icon={Plus}
               size="md"
               width="full"
               variant="gradientCta"

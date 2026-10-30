@@ -34,7 +34,7 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
       return (
         <View className="gap-4">
           {Icon ? <WhatsNewIconBadge icon={Icon} size="page" /> : null}
-          <Text accessibilityRole="header" className="text-3xl font-bold text-text-primary">
+          <Text accessibilityRole="header" className="text-2xl font-bold text-text-primary">
             {t(block.titleKey)}
           </Text>
           {description ? (
@@ -57,7 +57,7 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
       return (
         <View className="gap-3">
           {block.titleKey ? (
-            <Text accessibilityRole="header" className="text-2xl font-bold text-text-primary">
+            <Text accessibilityRole="header" className="text-xl font-semibold text-text-primary">
               {t(block.titleKey)}
             </Text>
           ) : null}
@@ -125,7 +125,7 @@ function ChoiceBlock({ block, choices, description, disabled }: ChoiceBlockProps
   const unavailable = disabled || !!choices.saving[block.setting];
   const failed = choices.errors[block.setting];
   const heading = (
-    <Text accessibilityRole="header" className="text-base font-bold text-text-primary">
+    <Text accessibilityRole="header" className="text-base font-semibold text-text-primary">
       {t(block.titleKey)}
     </Text>
   );

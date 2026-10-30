@@ -1,16 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import {
-  Check,
-  Dumbbell,
-  Equal,
-  Flame,
-  Heart,
-  LucideIcon,
-  TrendingDown,
-  TrendingUp,
-  Zap,
-} from 'lucide-react-native';
+import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -18,36 +8,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { MasterLayout } from '@/components/MasterLayout';
+import { FITNESS_OPTIONS, WEIGHT_OPTIONS } from '@/components/onboarding/onboardingOptions';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { QUICK_SETUP_DATA } from '@/constants/misc';
 import { type FitnessGoal, type WeightGoal } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
-
-type FitnessOption = {
-  value: FitnessGoal;
-  labelKey: string;
-  icon: LucideIcon;
-};
-
-const FITNESS_OPTIONS: FitnessOption[] = [
-  { value: 'hypertrophy', labelKey: 'onboarding.quickGoals.buildMuscle', icon: Dumbbell },
-  { value: 'strength', labelKey: 'onboarding.quickGoals.strength', icon: Zap },
-  { value: 'endurance', labelKey: 'onboarding.quickGoals.endurance', icon: Flame },
-  { value: 'general', labelKey: 'onboarding.quickGoals.general', icon: Heart },
-];
-
-type WeightOption = {
-  value: WeightGoal;
-  labelKey: string;
-  icon: LucideIcon;
-};
-
-const WEIGHT_OPTIONS: WeightOption[] = [
-  { value: 'lose', labelKey: 'onboarding.quickGoals.lose', icon: TrendingDown },
-  { value: 'maintain', labelKey: 'onboarding.quickGoals.maintain', icon: Equal },
-  { value: 'gain', labelKey: 'onboarding.quickGoals.gain', icon: TrendingUp },
-];
 
 export default function QuickGoalsScreen() {
   const theme = useTheme();
@@ -87,10 +53,7 @@ export default function QuickGoalsScreen() {
         >
           <View className="px-6 pt-6">
             {/* Title */}
-            <Text
-              className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.primary }}
-            >
+            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('onboarding.quickGoals.title')}
             </Text>
             <Text
@@ -105,10 +68,7 @@ export default function QuickGoalsScreen() {
 
             {/* Fitness Focus */}
             <View className="mb-8 gap-3">
-              <Text
-                className="text-xs font-semibold tracking-widest"
-                style={{ color: theme.colors.text.tertiary }}
-              >
+              <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>
                 {t('onboarding.quickGoals.fitnessFocus').toUpperCase()}
               </Text>
 
@@ -176,7 +136,7 @@ export default function QuickGoalsScreen() {
             <View className="gap-3">
               <View className="flex-row items-center gap-1">
                 <Text
-                  className="text-xs font-semibold tracking-widest"
+                  className="text-xs font-semibold"
                   style={{ color: theme.colors.text.tertiary }}
                 >
                   {t('onboarding.quickGoals.weightGoal').toUpperCase()}
@@ -194,7 +154,7 @@ export default function QuickGoalsScreen() {
                     <Pressable
                       key={opt.value}
                       onPress={() => setWeightGoal(opt.value)}
-                      className="flex-1 items-center justify-center rounded-xl py-4"
+                      className="flex-1 items-center justify-center rounded-control py-4"
                       style={{
                         backgroundColor: theme.colors.background.cardElevated,
                         borderWidth: 1.5,

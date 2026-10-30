@@ -209,7 +209,7 @@ export function FilterWorkoutsModal({
                   <Text
                     style={{
                       fontSize: theme.typography.fontSize.sm,
-                      fontWeight: theme.typography.fontWeight.extrabold,
+                      fontWeight: theme.typography.fontWeight.bold,
                       color: theme.colors.text.primary,
                     }}
                   >
@@ -246,8 +246,6 @@ export function FilterWorkoutsModal({
               fontSize: theme.typography.fontSize.xs,
               fontWeight: theme.typography.fontWeight.bold,
               color: theme.colors.text.secondary,
-              textTransform: 'uppercase',
-              letterSpacing: theme.typography.letterSpacing.extraWide,
               marginBottom: theme.spacing.padding.base,
               paddingHorizontal: theme.spacing.padding.xs,
             }}
@@ -276,7 +274,6 @@ export function FilterWorkoutsModal({
                     borderColor: isSelected
                       ? theme.colors.accent.primary
                       : theme.colors.border.light,
-                    ...(isSelected ? theme.shadows.accentGlow : {}),
                   }}
                 >
                   <Text
@@ -317,8 +314,6 @@ export function FilterWorkoutsModal({
                 fontSize: theme.typography.fontSize.xs,
                 fontWeight: theme.typography.fontWeight.bold,
                 color: theme.colors.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: theme.typography.letterSpacing.extraWide,
               }}
             >
               {t('workouts.filterWorkouts.duration')}

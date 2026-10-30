@@ -31,7 +31,7 @@
       "version": "Versão (x.y.z)"
     },
     "releases": {
-      "v2_13_1": {
+      "v2_15_2": {
         "view": {
           "title": "Seu treino, sua visualização",
           "description": "A visualização guiada ajuda você a focar em uma série por vez. Prefere ver tudo? A visualização em lista continua disponível."
@@ -49,8 +49,8 @@
           }
         },
         "targets": {
-          "title": "Uma ajuda para a próxima série",
-          "description": "O Musclog sugere metas iniciais com base no seu histórico. Números alterados são marcados, e você sempre pode editá-los."
+          "title": "Metas que combinam com você e sua academia",
+          "description": "O Musclog sugere metas iniciais com base no seu histórico e marca os números que alterou, então você sempre pode editá-los. Adicione a barra e as anilhas da sua academia para obter cargas que você realmente consegue montar."
         },
         "workoutAutonomy": {
           "title": "Metas iniciais",
@@ -64,35 +64,6 @@
             "description": "Começar com as metas salvas no meu treino."
           }
         },
-        "progressionMode": {
-          "title": "Preferência de progressão",
-          "description": "O que sobe primeiro quando as metas mudam.",
-          "reps_first": {
-            "label": "Repetições primeiro",
-            "description": "Aumentar as repetições antes de adicionar peso."
-          },
-          "weight_first": {
-            "label": "Peso primeiro",
-            "description": "Priorizar o peso ao ajustar as metas."
-          }
-        },
-        "rest": {
-          "title": "Descanse sem olhar o relógio",
-          "description": "O timer de descanso pode começar automaticamente após uma série. Escolha se você também quer vibrações."
-        },
-        "autoStartRestTimer": {
-          "title": "Iniciar descanso automaticamente",
-          "description": "Iniciar o timer ao concluir uma série."
-        },
-        "restTimerHaptics": {
-          "title": "Vibrações do timer",
-          "description": "Usar resposta tátil no timer de descanso."
-        },
-        "openSettings": "Abrir configurações de treino",
-        "gyms": {
-          "title": "Metas que combinam com sua academia",
-          "description": "Adicione os equipamentos, o peso da barra e as anilhas disponíveis. O Musclog pode usá-los para sugerir cargas possíveis e calcular anilhas."
-        },
         "setupGym": "Configurar academias e anilhas",
         "review": {
           "title": "Um momento semanal para refletir",
@@ -103,8 +74,8 @@
           "description": "Escolha um dia que combine com sua rotina. Suas preferências de lembretes serão mantidas."
         },
         "openReview": "Abrir revisão semanal",
-        "also": {
-          "title": "Também é novo",
+        "workoutMore": {
+          "title": "Mais para seus treinos",
           "plans": {
             "label": "Planos de treino",
             "description": "Organize treinos em planos semanais ou rotativos."
@@ -124,7 +95,47 @@
           "warmups": {
             "label": "Séries de aquecimento",
             "description": "Mantenha os aquecimentos separados das séries de trabalho."
+          },
+          "restTimer": {
+            "label": "Descanso automático",
+            "description": "Inicie o timer de descanso após cada série, com vibração opcional."
           }
+        },
+        "heatmaps": {
+          "title": "Sua atividade num relance",
+          "description": "Veja no Início os dias em que você treinou e registrou refeições como um calendário de quadradinhos: quanto mais escuro, mais intenso, e tocar num quadrado mostra aquele dia. Ative em Configurações → Aparência e início → Mapas de atividade, onde você também escolhe o layout."
+        },
+        "aiSetup": {
+          "title": "Configure o Musclog conversando",
+          "description": "Responda a algumas perguntas num chat em vez de preencher formulários, com a IA gratuita do Musclog, sua própria chave do Gemini ou OpenAI, ou o ChatGPT ou Claude. Você revisa e edita cada resposta antes de salvar qualquer coisa."
+        },
+        "openAiSetup": "Atualizar meu perfil com IA",
+        "coachPersona": {
+          "title": "Escolha quem é seu treinador de IA",
+          "description": "Fique com o Loggy, escolha o Conde Drácula, o Cthulhu ou o Sherlock Holmes, ou crie o seu com nome, voz e imagem. Só o jeito de falar muda, nunca os números nem os conselhos de segurança. Você encontra em Configurações → IA."
+        },
+        "appWide": {
+          "title": "Também é novo em todo o app",
+          "home": {
+            "label": "Um Início mais organizado",
+            "description": "Primeiro os números de hoje, atalhos menores e o cartão de Revisão semanal só enquanto há uma pendente."
+          },
+          "menus": {
+            "label": "Menus e Configurações mais calmos",
+            "description": "Listas agrupadas simples em vez de pilhas de cartões, com as Configurações divididas em sete grupos mais claros."
+          },
+          "widgets": {
+            "label": "Widgets no iOS e no Android",
+            "description": "Progresso nutricional e Câmera inteligente agora também funcionam no iOS. No Android, remova os widgets antigos do Musclog e adicione-os novamente pelo seletor de widgets."
+          },
+          "lock": {
+            "label": "Bloqueie partes do app",
+            "description": "Em Configurações → Bloqueio do app, proteja seu ciclo, treinos, nutrição, progresso ou o app inteiro com a credencial do seu dispositivo."
+          }
+        },
+        "cycleDiary": {
+          "title": "Um diário do ciclo privado e criptografado",
+          "description": "Suas menstruações e registros diários agora ficam criptografados no seu dispositivo. As previsões mostram o nível de confiança e a estimativa da janela fértil é opcional e vem desativada. Os lembretes podem ser tão discretos quanto você quiser, e um widget de ciclo somente leitura não mostra nada pessoal com o bloqueio do app ativado."
         }
       }
     }

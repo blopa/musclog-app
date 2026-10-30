@@ -1,18 +1,18 @@
 {
   "bodyMetrics": {
     "header": {
-      "title": "Body Metrics",
-      "newMetric": "New Metric"
+      "title": "Body metrics",
+      "newMetric": "New metric"
     },
     "metrics": {
       "weight": "Weight",
-      "bodyFat": "Body Fat",
-      "body_fat": "Body Fat",
-      "muscle_mass": "Muscle Mass",
-      "lean_body_mass": "Lean Body Mass",
-      "basal_metabolic_rate": "Basal Metabolic Rate",
-      "total_calories_burned": "Total Calories Burned",
-      "active_calories_burned": "Active Calories Burned",
+      "bodyFat": "Body fat",
+      "body_fat": "Body fat",
+      "muscle_mass": "Muscle mass",
+      "lean_body_mass": "Lean body mass",
+      "basal_metabolic_rate": "Basal metabolic rate",
+      "total_calories_burned": "Total calories burned",
+      "active_calories_burned": "Active calories burned",
       "bmi": "BMI",
       "height": "Height",
       "chest": "Chest",
@@ -59,12 +59,12 @@
       }
     },
     "current": {
-      "label": "CURRENT"
+      "label": "Current"
     },
     "history": {
       "title": "History",
       "filter": "Filter",
-      "loadMore": "Load More",
+      "loadMore": "Load more",
       "loadingMore": "Loading...",
       "notes": {
         "baseline": "Baseline",
@@ -73,21 +73,21 @@
         "increased": "Increased"
       },
       "filters": {
-        "title": "Filter History",
+        "title": "Filter history",
         "sortOrder": {
-          "title": "SORT ORDER",
-          "newestFirst": "Newest First",
-          "oldestFirst": "Oldest First"
+          "title": "Sort order",
+          "newestFirst": "Newest first",
+          "oldestFirst": "Oldest first"
         },
         "trend": {
-          "title": "TREND",
+          "title": "Trend",
           "all": "All",
           "increased": "Increased",
           "decreased": "Decreased",
-          "noChange": "No Change"
+          "noChange": "No change"
         },
         "reset": "Reset",
-        "apply": "Apply Filters"
+        "apply": "Apply filters"
       }
     },
     "dateFormats": {
@@ -97,7 +97,7 @@
     "noDataAvailable": "No data available",
     "noHistoryDataAvailable": "No history data available",
     "manageMetricData": {
-      "title": "Metric History",
+      "title": "Metric history",
       "searchPlaceholder": "Search by metric type...",
       "noEntries": "No metric entries yet",
       "noEntriesDesc": "Add body metric entries to see them here",
@@ -111,12 +111,12 @@
       "deleteEntryDesc": "Remove this metric entry"
     },
     "addEntry": {
-      "title": "Add Entry",
-      "enterType": "Enter Type",
+      "title": "Add entry",
+      "enterType": "Enter type",
       "description": "Record a new body metric measurement",
-      "enterWeight": "Enter Weight",
-      "enterBodyFat": "Enter Body Fat",
-      "enterHeight": "Enter Height",
+      "enterWeight": "Enter weight",
+      "enterBodyFat": "Enter body fat",
+      "enterHeight": "Enter height",
       "date": "Date",
       "time": "Time",
       "moodQuestion": "How do you feel today?",
@@ -130,9 +130,9 @@
         "3": "Good",
         "4": "Great"
       },
-      "saveEntry": "Save Entry",
+      "saveEntry": "Save entry",
       "saveSuccess": "Entry saved successfully",
-      "errorSaving": "Error Saving",
+      "errorSaving": "Error saving",
       "yes": "Yes",
       "no": "No",
       "taken": "Taken",

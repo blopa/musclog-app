@@ -4,6 +4,7 @@
     "searchPlaceholder": "Buscar sesiones...",
     "noWorkoutsFound": "No se encontraron entrenamientos que coincidan con tu búsqueda.",
     "noWorkoutHistory": "Aún no hay historial de entrenamientos.",
+    "noWorkoutsInRange": "No hay entrenamientos en este rango de fechas. Prueba a ampliar el rango del filtro.",
     "loadMore": "Cargar Más",
     "loadingMore": "Cargando...",
     "stats": {
@@ -19,8 +20,8 @@
     },
     "filters": {
       "title": "Filtrar Entrenamientos",
-      "workoutType": "TIPO DE ENTRENAMIENTO",
-      "minDuration": "DURACIÓN MÍN.",
+      "workoutType": "Tipo de entrenamiento",
+      "minDuration": "Duración mín.",
       "reset": "Restablecer",
       "applyFilters": "Aplicar Filtros",
       "durationFormats": {
@@ -37,13 +38,13 @@
         "yoga": "Yoga"
       },
       "dateRange": {
-        "title": "RANGO DE FECHAS",
+        "title": "Rango de fechas",
         "30days": "Últimos 30 Días",
         "90days": "Últimos 90 Días",
-        "custom": "Personalizado"
+        "allTime": "Todo el tiempo"
       },
       "muscleGroups": {
-        "title": "GRUPO MUSCULAR (MULTISELECCIÓN)",
+        "title": "Grupo muscular (multiselección)",
         "chest": "Pecho",
         "back": "Espalda",
         "legs": "Piernas",

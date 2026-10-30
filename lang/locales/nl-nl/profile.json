@@ -28,7 +28,9 @@
       "editFitness": "Fitnessgegevens bewerken",
       "editFitnessDesc": "Werk je fitnessdoelen en voorkeuren bij",
       "appPreferences": "App-voorkeuren",
-      "appPreferencesDesc": "Pas app-instellingen en voorkeuren aan"
+      "appPreferencesDesc": "Pas app-instellingen en voorkeuren aan",
+      "aiUpdate": "Bijwerken met AI",
+      "aiUpdateDesc": "Vertel een AI wat er veranderd is en controleer voor het opslaan"
     },
     "stats": {
       "weight": "Gewicht",

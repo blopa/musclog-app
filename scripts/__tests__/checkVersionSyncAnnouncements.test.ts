@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 let mockFiles = ['2.13.0.json'];
 let mockVersion = '2.12.5';
-jest.mock('fs', () => ({ existsSync: () => true, readdirSync: () => mockFiles }));
+let mockWidgetVersion: string | undefined;
+jest.mock('fs', () => ({
+  existsSync: () => true,
+  readdirSync: () => mockFiles,
+  readFileSync: () =>
+    `<key>CFBundleShortVersionString</key><string>${mockWidgetVersion ?? mockVersion}</string><key>CFBundleVersion</key><string>123</string>`,
+}));
 jest.mock('../bump', () => ({
   assertReleaseVersionsMatch: () => ({ appVersion: mockVersion, appBuild: 123 }),
 }));
@@ -25,4 +31,12 @@ test('warns for future announcements without failing version sync', () => {
   expect(warn).not.toHaveBeenCalled();
   warn.mockRestore();
   log.mockRestore();
+});
+
+test('rejects a widget extension with an obsolete version', () => {
+  mockWidgetVersion = '1.0.0';
+  expect(() => jest.isolateModules(() => require('../check-version-sync'))).toThrow(
+    'Widget extension version/build mismatch'
+  );
+  mockWidgetVersion = undefined;
 });

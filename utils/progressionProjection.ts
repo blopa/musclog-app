@@ -5,10 +5,9 @@ import {
   type HistorySession,
   type PlannedRuleSet,
   planRuleChanges,
-  type ProgressionRule,
-  type ProgressionSessionState,
   type RuleLoadStep,
 } from './progressionRules';
+import { type ProgressionRule, type ProgressionSessionState } from './progressionRuleSchema';
 import { sameLoad } from './sameLoad';
 import { computeStartTarget, planStartChanges, type StartSetChange } from './setProgression';
 
@@ -54,6 +53,8 @@ function summarize(session: HistorySession) {
     averageRepsInReserve: rated.length
       ? rated.reduce((sum, set) => sum + set.repsInReserve, 0) / rated.length
       : 0,
+    failed:
+      rated.length > 0 && rated.filter((set) => set.repsInReserve === 0).length * 2 >= rated.length,
     rirRecorded: rated.length > 0,
   };
 }
@@ -96,7 +97,7 @@ export function projectExerciseProgression(input: {
     const failedBefore =
       before != null &&
       before.rirRecorded &&
-      before.averageRepsInReserve === 0 &&
+      before.failed &&
       sameLoad(before.weightKg, last.weightKg);
     const planReps = input.plannedFromHistory ? undefined : planned[0]?.reps;
     const missedPlanBefore =

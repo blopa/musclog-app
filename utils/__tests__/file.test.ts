@@ -1,8 +1,12 @@
 import ExpoImageCropTool from '@bsky.app/expo-image-crop-tool';
 
-import { openCropperAsync } from '@/utils/file';
+import * as DocumentPicker from 'expo-document-picker';
+import { readAsStringAsync } from 'expo-file-system/legacy';
 
-jest.mock('expo-document-picker', () => ({}));
+import { restoreDatabase } from '@/database/importDb';
+import { importDatabase, openCropperAsync } from '@/utils/file';
+
+jest.mock('expo-document-picker', () => ({ getDocumentAsync: jest.fn() }));
 jest.mock('expo-file-system', () => ({
   Directory: jest.fn(),
   File: jest.fn(),
@@ -79,5 +83,43 @@ describe('openCropperAsync', () => {
     mockOpenCropper.mockRejectedValue(failure);
 
     await expect(openCropperAsync(CROP_OPTIONS)).rejects.toBe(failure);
+  });
+});
+
+describe('importDatabase', () => {
+  const mockPick = DocumentPicker.getDocumentAsync as jest.Mock;
+  const mockRestore = restoreDatabase as jest.Mock;
+  const mockRead = readAsStringAsync as jest.Mock;
+
+  beforeEach(() => {
+    mockPick.mockReset();
+    mockRestore.mockReset();
+    mockRead.mockReset();
+  });
+
+  // The onboarding landing screen marks onboarding complete and opens the app once this resolves,
+  // so a dismissed picker must be distinguishable from a restored database.
+  it('resolves false and restores nothing when the picker is cancelled', async () => {
+    mockPick.mockResolvedValue({ canceled: true, assets: null });
+
+    await expect(importDatabase()).resolves.toBe(false);
+    expect(mockRestore).not.toHaveBeenCalled();
+  });
+
+  it('resolves true after restoring the picked file', async () => {
+    mockPick.mockResolvedValue({ canceled: false, assets: [{ uri: 'file:///backup.json' }] });
+    mockRead.mockResolvedValue('{"dump":true}');
+
+    await expect(importDatabase('phrase')).resolves.toBe(true);
+    expect(mockRestore).toHaveBeenCalledWith('{"dump":true}', 'phrase');
+  });
+
+  it('rethrows restore failures', async () => {
+    const failure = new Error('bad file');
+    mockPick.mockResolvedValue({ canceled: false, assets: [{ uri: 'file:///backup.json' }] });
+    mockRead.mockResolvedValue('x');
+    mockRestore.mockRejectedValue(failure);
+
+    await expect(importDatabase()).rejects.toBe(failure);
   });
 });

@@ -39,6 +39,24 @@ export interface DecryptedNutritionLogSnapshot {
   snapshotBasis?: FoodNutritionBasis;
 }
 
+/** The snapshot fields getNutrients() reads: the macros and micros, never the food name. */
+type LoggedNutrientSnapshot = Pick<
+  DecryptedNutritionLogSnapshot,
+  'loggedCalories' | 'loggedProtein' | 'loggedCarbs' | 'loggedFat' | 'loggedFiber' | 'loggedMicros'
+>;
+
+/** Whether the decrypted macros form a usable snapshot (legacy rows fall back to the food). */
+function isCompleteSnapshot(s: LoggedNutrientSnapshot): boolean {
+  return (
+    typeof s.loggedCalories === 'number' &&
+    !Number.isNaN(s.loggedCalories) &&
+    typeof s.loggedProtein === 'number' &&
+    typeof s.loggedCarbs === 'number' &&
+    typeof s.loggedFat === 'number' &&
+    typeof s.loggedFiber === 'number'
+  );
+}
+
 export default class NutritionLog extends Model {
   static table = 'nutrition_logs';
 
@@ -179,15 +197,33 @@ export default class NutritionLog extends Model {
    * Legacy rows without snapshot fall back to resolving the food.
    */
   async hasSnapshot(): Promise<boolean> {
-    const s = await this.getDecryptedSnapshot();
-    return (
-      typeof s.loggedCalories === 'number' &&
-      !Number.isNaN(s.loggedCalories) &&
-      typeof s.loggedProtein === 'number' &&
-      typeof s.loggedCarbs === 'number' &&
-      typeof s.loggedFat === 'number' &&
-      typeof s.loggedFiber === 'number'
-    );
+    return isCompleteSnapshot(await this.getDecryptedNutrients());
+  }
+
+  /**
+   * Decrypts only what nutrient math needs. Every value is a separate AES decrypt with its own
+   * key derivation, and summaries call this for every log in a range, so decrypting the food
+   * name (or the whole snapshot twice) here multiplied startup cost on large diaries.
+   */
+  private async getDecryptedNutrients(): Promise<LoggedNutrientSnapshot> {
+    const [loggedCalories, loggedProtein, loggedCarbs, loggedFat, loggedFiber, loggedMicros] =
+      await Promise.all([
+        decryptNumber(this.loggedCaloriesRaw),
+        decryptNumber(this.loggedProteinRaw),
+        decryptNumber(this.loggedCarbsRaw),
+        decryptNumber(this.loggedFatRaw),
+        decryptNumber(this.loggedFiberRaw),
+        decryptJson(this.loggedMicrosRaw),
+      ]);
+
+    return {
+      loggedCalories,
+      loggedProtein,
+      loggedCarbs,
+      loggedFat,
+      loggedFiber,
+      loggedMicros: Object.keys(loggedMicros).length > 0 ? loggedMicros : undefined,
+    };
   }
 
   // Get the actual gram weight for this nutrition log entry
@@ -239,10 +275,10 @@ export default class NutritionLog extends Model {
     fiber: number;
     alcohol: number;
   }> {
-    const hasSnap = await this.hasSnapshot();
-    if (hasSnap) {
-      const s = await this.getDecryptedSnapshot();
-      if (s.snapshotBasis === 'per_serving') {
+    // Decrypt once: hasSnapshot() + getDecryptedSnapshot() used to decrypt every field twice.
+    const s = await this.getDecryptedNutrients();
+    if (isCompleteSnapshot(s)) {
+      if (this.snapshotBasis === 'per_serving') {
         const servings = this.amount;
         return {
           calories: Math.max(0, s.loggedCalories ?? 0) * servings,

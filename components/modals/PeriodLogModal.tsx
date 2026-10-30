@@ -3,11 +3,14 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import { PeriodEndChoice } from '@/components/cycle/PeriodEndChoice';
 import { Button } from '@/components/theme/Button';
 import { type PeriodLogMode } from '@/constants/cycle';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
+import { type EndChoice, resolveEnd } from '@/utils/cycle/periodEnd';
+import { periodErrorKey } from '@/utils/cycle/periodErrors';
 import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
 import { handleError } from '@/utils/handleError';
 
@@ -43,12 +46,14 @@ export function PeriodLogModal({
 }: PeriodLogModalProps) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
-  const { logPeriodStart, logPeriodEnd, addPastPeriod, activePeriodLog } = useMenstrualCycle();
+  const { startPeriod, endPeriod, addPastPeriod, activePeriod, config } = useMenstrualCycle();
 
   const [selectedDate, setSelectedDate] = useState<Date>(() =>
     localCalendarDayDate(initialDate ?? new Date())
   );
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  // One picker serves both dates: a modal may not contain sibling modals.
+  const [picker, setPicker] = useState<'start' | 'end' | null>(null);
+  const [endChoice, setEndChoice] = useState<EndChoice>({ kind: 'unknown', date: null });
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -58,7 +63,8 @@ export function PeriodLogModal({
 
     const frame = requestAnimationFrame(() => {
       setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
-      setIsDatePickerVisible(false);
+      setPicker(null);
+      setEndChoice({ kind: 'unknown', date: null });
     });
 
     return () => cancelAnimationFrame(frame);
@@ -68,32 +74,30 @@ export function PeriodLogModal({
   const descriptionKey = DESCRIPTION_KEYS[mode];
   const today = localCalendarDayDate(new Date());
   const minDate =
-    mode === 'end' && activePeriodLog
-      ? localCalendarDayDate(new Date(activePeriodLog.startDate))
+    mode === 'end' && activePeriod
+      ? localCalendarDayDate(new Date(activePeriod.startDate))
       : undefined;
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
       const dateMs = localDayStartMs(selectedDate);
-      const todayMs = localDayStartMs(today);
-
-      if (dateMs > todayMs) {
-        throw new Error('period_date_in_future');
-      }
 
       if (mode === 'end') {
-        await logPeriodEnd(dateMs);
+        await endPeriod(dateMs);
       } else if (mode === 'past') {
-        await addPastPeriod({ startDate: dateMs });
+        await addPastPeriod({
+          startDate: dateMs,
+          ...resolveEnd(endChoice, dateMs, config.fallbackPeriodDuration),
+        });
       } else {
-        await logPeriodStart({ startDate: dateMs });
+        await startPeriod(dateMs);
       }
 
       onClose();
     } catch (error) {
       handleError(error, 'PeriodLogModal.handleSave', {
-        snackbarMessage: t('errors.somethingWentWrong'),
+        snackbarMessage: t(periodErrorKey(error)),
       });
     } finally {
       setIsSaving(false);
@@ -133,16 +137,16 @@ export function PeriodLogModal({
       <View className="gap-4">
         <Text className="text-sm text-text-secondary">{t(descriptionKey)}</Text>
 
-        {mode === 'end' && activePeriodLog ? (
+        {mode === 'end' && activePeriod ? (
           <View
-            className="rounded-xl px-4 py-3"
+            className="rounded-control px-4 py-3"
             style={{ backgroundColor: theme.colors.background.card }}
           >
-            <Text className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
+            <Text className="text-xs font-semibold text-text-secondary">
               {t('cycle.periodLog.startedOn')}
             </Text>
-            <Text className="mt-1 text-base font-bold text-text-primary">
-              {new Date(activePeriodLog.startDate).toLocaleDateString(
+            <Text className="mt-1 text-base font-semibold text-text-primary">
+              {new Date(activePeriod.startDate).toLocaleDateString(
                 i18n.resolvedLanguage ?? i18n.language,
                 { weekday: 'long', month: 'long', day: 'numeric' }
               )}
@@ -155,8 +159,19 @@ export function PeriodLogModal({
             mode === 'end' ? t('cycle.periodLog.endDateLabel') : t('cycle.periodLog.startDateLabel')
           }
           selectedDate={selectedDate}
-          onPress={() => setIsDatePickerVisible(true)}
+          onPress={() => setPicker('start')}
         />
+
+        {mode === 'past' ? (
+          <PeriodEndChoice
+            value={endChoice}
+            onChange={setEndChoice}
+            usualDuration={config.fallbackPeriodDuration}
+            startDate={localDayStartMs(selectedDate)}
+            allowOpen={false}
+            onPickDate={() => setPicker('end')}
+          />
+        ) : null}
 
         {mode !== 'end' ? (
           <TouchableOpacity
@@ -173,14 +188,23 @@ export function PeriodLogModal({
       </View>
 
       <DatePickerModal
-        visible={isDatePickerVisible}
-        onClose={() => setIsDatePickerVisible(false)}
-        selectedDate={selectedDate}
+        visible={picker != null}
+        onClose={() => setPicker(null)}
+        selectedDate={
+          picker === 'end'
+            ? localCalendarDayDate(new Date(endChoice.date ?? selectedDate.getTime()))
+            : selectedDate
+        }
         onDateSelect={(date) => {
-          setSelectedDate(localCalendarDayDate(date));
-          setIsDatePickerVisible(false);
+          if (picker === 'end') {
+            setEndChoice({ kind: 'logged', date: localDayStartMs(date) });
+          } else {
+            setSelectedDate(localCalendarDayDate(date));
+          }
+
+          setPicker(null);
         }}
-        minDate={minDate}
+        minDate={picker === 'end' ? selectedDate : minDate}
         maxDate={today}
         maxYear={getLocalCalendarYear(new Date())}
         quickDates={quickDates}

@@ -10,11 +10,23 @@ export const ONBOARDING_CURRENT_STEP = 'onboardingCurrentStep';
 // Temporary storage key used to pass an AI-generated nutrition plan between screens
 export const TEMP_NUTRITION_PLAN = 'tempNutritionPlan';
 
+// First-frame copy of a few settings (theme, language, units, lock scopes); see `utils/settingsMirror.ts`
+export const SETTINGS_MIRROR_STORAGE_KEY = 'musclog_settings_mirror';
+
 // Temporary storage key for quick-setup data accumulated across steps
 export const QUICK_SETUP_DATA = 'quickSetupData';
 
 // Temporary storage key for personalized-setup data accumulated across steps
 export const PERSONALIZED_SETUP_DATA = 'personalizedSetupData';
+
+/**
+ * AI-assisted onboarding: the unfinished setup conversation and its draft answers. Encrypted, local
+ * only, and deliberately separate from `chat_messages` so it can never show up in coach history.
+ */
+export const AI_ONBOARDING_DRAFT = 'aiOnboardingDraft';
+
+// Encrypted birthday/height/weight/body-fat answers the guided body-stats screen is prefilled from
+export const PERSONALIZED_BODY_DRAFT = 'personalizedBodyDraft';
 
 // Current user (sync_id) for multi-user / future sync support
 export const CURRENT_USER_SYNC_ID = 'currentUserSyncId';
@@ -42,6 +54,12 @@ export const SUPPORT_EMAIL: string = projectLinks.supportEmail;
 export const SUPPORT_MAILTO_URL = `mailto:${SUPPORT_EMAIL}`;
 /** There is no community server yet. While this is null, nothing links to one. */
 export const DISCORD_INVITE_URL: string | null = projectLinks.discordInviteUrl;
+/**
+ * A directory of free helplines by country (run by a non-profit), linked quietly from comeback mode's
+ * wellbeing question. A directory rather than one number because a single hotline is wrong in most
+ * countries.
+ */
+export const WELLBEING_SUPPORT_URL: string = projectLinks.wellbeingSupportUrl;
 
 // Training answers collected during onboarding (see `utils/onboardingTraining.ts`). Cleared once
 // the first-workout screen has been dealt with.

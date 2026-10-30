@@ -119,11 +119,11 @@ async function compressImage(inputPath) {
       case '.webp':
         return await compressWebp(inputPath);
       default:
-        console.warn(`⚠️  Unsupported format: ${ext}`);
+        console.warn(`[WARN] Unsupported format: ${ext}`);
         return null;
     }
   } catch (error) {
-    console.error(`❌ Error compressing ${path.basename(inputPath)}:`, error.message);
+    console.error(`[ERROR] Error compressing ${path.basename(inputPath)}:`, error.message);
     return null;
   }
 }
@@ -132,11 +132,11 @@ async function compressImage(inputPath) {
  * Main compression function
  */
 async function compressScreenshots() {
-  console.log('🖼️  App Store Screenshots Compression');
+  console.log('App Store Screenshots Compression');
   console.log('=====================================\n');
 
   if (!fs.existsSync(SCREENSHOTS_DIR)) {
-    console.error('❌ Screenshots directory not found:', SCREENSHOTS_DIR);
+    console.error('[ERROR] Screenshots directory not found:', SCREENSHOTS_DIR);
     process.exit(1);
   }
 
@@ -144,11 +144,11 @@ async function compressScreenshots() {
   const imageFiles = getImageFiles(SCREENSHOTS_DIR);
 
   if (imageFiles.length === 0) {
-    console.log('ℹ️  No image files found in', SCREENSHOTS_DIR);
+    console.log('[INFO] No image files found in', SCREENSHOTS_DIR);
     return;
   }
 
-  console.log(`📁 Found ${imageFiles.length} image(s) to compress\n`);
+  console.log(`Found ${imageFiles.length} image(s) to compress\n`);
 
   let totalOriginalSize = 0;
   let totalCompressedSize = 0;
@@ -180,7 +180,7 @@ async function compressScreenshots() {
         totalOriginalSize += originalSize;
         totalCompressedSize += compressedSize;
 
-        console.log(`✅ ${fileName}`);
+        console.log(`[OK] ${fileName}`);
         console.log(
           `   ${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)} (${savingsPercent}% smaller)\n`
         );
@@ -191,28 +191,28 @@ async function compressScreenshots() {
       }
     } catch (error) {
       errorCount++;
-      console.error(`❌ ${fileName}`);
+      console.error(`[ERROR] ${fileName}`);
       console.error(`   Error: ${error.message}\n`);
     }
   }
 
   // Print summary
   console.log('=====================================');
-  console.log('📊 Compression Summary');
+  console.log('Compression Summary');
   console.log('=====================================');
-  console.log(`✅ Processed: ${processedCount}`);
+  console.log(`[OK] Processed: ${processedCount}`);
   console.log(`⏭️  Skipped:   ${skippedCount}`);
-  console.log(`❌ Errors:    ${errorCount}`);
+  console.log(`[ERROR] Errors:    ${errorCount}`);
 
   if (processedCount > 0 && totalOriginalSize > 0) {
     const totalSavings = totalOriginalSize - totalCompressedSize;
     const totalSavingsPercent = ((totalSavings / totalOriginalSize) * 100).toFixed(1);
     console.log(
-      `\n💾 Total size reduction: ${formatFileSize(totalOriginalSize)} → ${formatFileSize(totalCompressedSize)} (${totalSavingsPercent}%)`
+      `\nTotal size reduction: ${formatFileSize(totalOriginalSize)} → ${formatFileSize(totalCompressedSize)} (${totalSavingsPercent}%)`
     );
   }
 
-  console.log('\n🎉 Done!');
+  console.log('\nDone!');
 }
 
 // Main execution

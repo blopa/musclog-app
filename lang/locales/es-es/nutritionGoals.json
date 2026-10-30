@@ -58,7 +58,7 @@
       "manualTipsTitle": "Todo listo",
       "manualTipsDescription": "Empieza a registrar comidas para seguir tu progreso. Puedes cambiar estos objetivos en cualquier momento en Ajustes.",
       "dailyCalorieTarget": "Objetivo de Calorías Diarias",
-      "kcal": "KCAL",
+      "kcal": "kcal",
       "protein": "Proteínas",
       "carbs": "Carbohidratos",
       "fats": "Grasas",
@@ -129,10 +129,21 @@
       }
     },
     "goalMode": "Modo de objetivo",
+    "modeOptions": {
+      "manual": "Manual",
+      "daily": "Diario",
+      "weekly": "Semanal"
+    },
+    "modeHints": {
+      "manual": "Define tus objetivos. Se mantienen hasta que los cambies.",
+      "daily": "Los objetivos se actualizan automáticamente cada día según tus datos y la fecha de tu meta.",
+      "weekly": "Revisa y aprueba los objetivos cada semana. Se mantienen entre revisiones."
+    },
     "manual": "Manual",
     "dynamic": "Dinámico",
     "dynamicInfo": "Los objetivos diarios se calculan automáticamente cada día a partir de tus datos actuales y del plazo de tu objetivo. Tu objetivo actual de calorías es {{kcal}} kcal.",
     "dynamicBadge": "Dinámico",
-    "dynamicRequiredFields": "El peso objetivo y la fecha objetivo son obligatorios para los objetivos dinámicos."
+    "dynamicRequiredFields": "El peso objetivo y la fecha objetivo son obligatorios para los objetivos dinámicos.",
+    "keepCurrentTargets": "Mantener mis objetivos actuales"
   }
 }

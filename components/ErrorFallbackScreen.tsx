@@ -46,7 +46,7 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
         <View className="mb-4 w-full">
           <Pressable
             onPress={() => setShowDetails(!showDetails)}
-            className="mb-2 rounded bg-bg-secondary p-2"
+            className="mb-2 rounded-tag bg-bg-secondary p-2"
           >
             <Text className="text-center text-sm text-text-primary">
               {showDetails ? t('common.hide') : t('common.show')} {t('common.debugDetails')}
@@ -54,7 +54,7 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
           </Pressable>
 
           {showDetails ? (
-            <ScrollView className="max-h-64 w-full rounded bg-bg-secondary p-3">
+            <ScrollView className="max-h-64 w-full rounded-tag bg-bg-secondary p-3">
               <Text className="mb-2 font-mono text-xs text-text-primary">
                 {t('common.errorMessage')}: {errorMessage}
               </Text>
@@ -82,7 +82,7 @@ export function ErrorFallbackScreen({ error, resetError, errorInfo }: ErrorFallb
 
       <Pressable
         onPress={handleReload}
-        className="rounded-lg bg-accent-primary px-6 py-3 active:opacity-80"
+        className="rounded-control bg-accent-primary px-6 py-3 active:opacity-80"
       >
         <Text className="text-base font-semibold text-text-on-accent">{t('errors.reload')}</Text>
       </Pressable>

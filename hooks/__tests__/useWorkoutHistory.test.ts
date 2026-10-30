@@ -64,6 +64,7 @@ jest.mock('../../database/database-instance', () => ({
 jest.mock('../../database/services/WorkoutService', () => ({
   WorkoutService: {
     getWorkoutHistory: jest.fn(),
+    getWorkoutLogsByTemplate: jest.fn(),
   },
 }));
 
@@ -82,11 +83,6 @@ jest.mock('../../utils/workoutHistory', () => ({
     }
     if (range === '90') {
       const startDate = endDate - 90 * 24 * 60 * 60 * 1000;
-      return { startDate, endDate };
-    }
-    if (range === 'custom') {
-      // For custom, return a specific range (e.g., last 7 days)
-      const startDate = endDate - 7 * 24 * 60 * 60 * 1000;
       return { startDate, endDate };
     }
     return undefined;
@@ -204,7 +200,53 @@ describe('useWorkoutHistory', () => {
     jest.clearAllMocks();
     mockQuery.observe.mockReturnValue(createMockObservable([], false) as any);
     (WorkoutService.getWorkoutHistory as jest.Mock).mockResolvedValue([]);
+    (WorkoutService.getWorkoutLogsByTemplate as jest.Mock).mockResolvedValue([]);
     (WorkoutAnalytics.detectPersonalRecords as jest.Mock).mockResolvedValue([]);
+  });
+
+  describe('templateId', () => {
+    it('scopes every fetch to the template and lists all time by default', async () => {
+      const { result } = renderHook(() =>
+        useWorkoutHistory({ initialLimit: 5, groupByMonth: true, templateId: 'template-1' })
+      );
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(WorkoutService.getWorkoutLogsByTemplate).toHaveBeenCalledWith('template-1', {
+        timeframe: undefined,
+        limit: 5,
+        offset: 0,
+      });
+      expect(WorkoutService.getWorkoutHistory).not.toHaveBeenCalled();
+      expect((result.current as any).filters.dateRange).toBe('all');
+    });
+
+    it('pages through the same template, not through all sessions', async () => {
+      (WorkoutService.getWorkoutLogsByTemplate as jest.Mock).mockResolvedValue([
+        { id: 'w1', workoutName: 'A', startedAt: 1000, completedAt: 2000 },
+      ]);
+      const { result } = renderHook(() =>
+        useWorkoutHistory({ initialLimit: 1, groupByMonth: true, templateId: 'template-1' })
+      );
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      // The "is there more?" probe asks for the one row after the first page.
+      expect(WorkoutService.getWorkoutLogsByTemplate).toHaveBeenCalledWith('template-1', {
+        timeframe: undefined,
+        limit: 1,
+        offset: 1,
+      });
+    });
+
+    it('starts the all-sessions list at the last 30 days', async () => {
+      const { result } = renderHook(() => useWorkoutHistory({ groupByMonth: true }));
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect((result.current as any).filters.dateRange).toBe('30');
+      expect(WorkoutService.getWorkoutLogsByTemplate).not.toHaveBeenCalled();
+    });
   });
 
   describe('Flat mode (groupByMonth = false)', () => {

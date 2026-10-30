@@ -66,6 +66,29 @@ export function mealGroupShareTarget(group: MealGroup): ShareSendTarget {
   };
 }
 
+/**
+ * The ingredients a saved meal built from logged entries starts with. A per-serving food
+ * carries its serving count, everything else its gram weight. Entries whose food was
+ * deleted are skipped: a meal ingredient needs a food row, and the log only has a snapshot.
+ */
+export function mealFoodsFromEntries(
+  entries: ResolvedLogEntry[]
+): { food: Food; amount: number }[] {
+  return entries.flatMap((entry) =>
+    entry.food
+      ? [
+          {
+            food: entry.food,
+            amount:
+              entry.food.resolvedNutritionBasis === 'per_serving'
+                ? entry.log.amount
+                : Math.round(entry.gramWeight),
+          },
+        ]
+      : []
+  );
+}
+
 const EMPTY_MACROS: MacroTotals = { calories: 0, protein: 0, carbs: 0, fat: 0 };
 const EMPTY_NUTRIENTS: NutrientTotals = { ...EMPTY_MACROS, fiber: 0, alcohol: 0 };
 

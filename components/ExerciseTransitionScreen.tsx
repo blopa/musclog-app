@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowRight, Check } from 'lucide-react-native';
+import { Armchair, ArrowRight, Check, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, View } from 'react-native';
 
@@ -46,13 +46,13 @@ export function ExerciseTransitionScreen({
       {/* Header: Total Time */}
       <View className="z-10 flex items-center justify-center px-4 pb-2 pt-6">
         <Text
-          className="text-4xl font-bold tabular-nums leading-none tracking-tight"
+          className="text-4xl font-bold tabular-nums leading-none"
           style={{ color: theme.colors.text.primary }}
         >
           {totalTime}
         </Text>
         <Text
-          className="mt-1.5 text-xs font-semibold uppercase tracking-widest"
+          className="mt-1.5 text-xs font-semibold"
           style={{ color: theme.colors.accent.primary }}
         >
           {t('exerciseTransition.totalTime')}
@@ -91,10 +91,7 @@ export function ExerciseTransitionScreen({
         {/* Up Next Divider */}
         <View className="mt-2 flex-row items-center gap-4">
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
-          <Text
-            className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: theme.colors.text.secondary }}
-          >
+          <Text className="text-xs font-semibold" style={{ color: theme.colors.text.secondary }}>
             {t('exerciseTransition.upNext')}
           </Text>
           <View className="h-px flex-1" style={{ backgroundColor: theme.colors.border.default }} />
@@ -135,7 +132,7 @@ export function ExerciseTransitionScreen({
                   {nextExercise.name}
                 </Text>
                 <Text
-                  className="text-sm font-semibold uppercase tracking-wide"
+                  className="text-sm font-semibold"
                   style={{
                     color: theme.colors.accent.primary,
                     textShadowColor: theme.colors.overlay.scrim60,
@@ -159,7 +156,7 @@ export function ExerciseTransitionScreen({
               >
                 <View className="flex flex-col">
                   <Text
-                    className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
+                    className="mb-1 text-xs font-semibold"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     {t('exerciseTransition.target')}
@@ -203,7 +200,7 @@ export function ExerciseTransitionScreen({
                 </View>
                 <View className="flex flex-col items-end">
                   <Text
-                    className="mb-1 text-[10px] font-semibold uppercase tracking-wider"
+                    className="mb-1 text-xs font-semibold"
                     style={{ color: theme.colors.text.secondary }}
                   >
                     {t('exerciseTransition.rest')}
@@ -225,7 +222,7 @@ export function ExerciseTransitionScreen({
               {/* Equipment */}
               <View className="flex flex-col gap-2">
                 <Text
-                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  className="text-xs font-semibold"
                   style={{ color: theme.colors.text.secondary }}
                 >
                   {t('exerciseTransition.equipment')}
@@ -234,16 +231,18 @@ export function ExerciseTransitionScreen({
                   {nextExercise.equipment.map((item, index) => (
                     <View
                       key={index}
-                      className="flex-row items-center gap-1.5 rounded-lg border px-3 py-2"
+                      className="flex-row items-center gap-1.5 rounded-control border px-3 py-2"
                       style={{
                         borderColor: theme.colors.border.default,
                         backgroundColor:
                           theme.colors.background.secondary ?? theme.colors.background.primary,
                       }}
                     >
-                      <Text className="text-base">
-                        {item.toLowerCase().includes('barbell') ? '🏋️' : '🪑'}
-                      </Text>
+                      {item.toLowerCase().includes('barbell') ? (
+                        <Dumbbell size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                      ) : (
+                        <Armchair size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                      )}
                       <Text
                         className="text-xs font-medium"
                         style={{ color: theme.colors.text.primary }}
