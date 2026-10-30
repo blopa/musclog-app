@@ -1151,8 +1151,11 @@ export function CoachModal({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="px-4 py-3"
-        contentContainerStyle={{ gap: theme.spacing.gap.sm }}
+        className="py-3"
+        contentContainerStyle={{
+          gap: theme.spacing.gap.sm,
+          paddingHorizontal: theme.spacing.padding.base,
+        }}
       >
         {CHAT_INTENTIONS.map((intention) => {
           const { icon: Icon, iconColor, labelKey } = COACH_INTENTIONS[intention];

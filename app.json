@@ -139,14 +139,14 @@
               "displayName": "Activity Heatmap",
               "description": "Shows your last 30 days of workouts and food logging",
               "ios": {
-                "supportedFamilies": ["systemMedium"],
+                "supportedFamilies": ["systemSmall", "systemMedium"],
                 "initialLayout": "widgets/ActivityHeatmapWidget.tsx"
               },
               "android": {
-                "minWidth": 250,
-                "minHeight": 110,
-                "targetCellWidth": 4,
-                "targetCellHeight": 2,
+                "minWidth": 200,
+                "minHeight": 40,
+                "targetCellWidth": 3,
+                "targetCellHeight": 1,
                 "resizeMode": "none",
                 "initialLayout": "widgets/ActivityHeatmapWidget.android.tsx"
               }
