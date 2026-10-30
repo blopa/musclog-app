@@ -2,7 +2,6 @@
   "coach": {
     "title": "Chat",
     "you": "You",
-    "name": "Loggy",
     "status": "Online",
     "statusOffline": "Offline",
     "context": {

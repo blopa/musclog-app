@@ -115,6 +115,15 @@ describe('AI setup routes', () => {
     ).toBe(true);
   });
 
+  it('appends extra parameters, encoded, after the mode', () => {
+    expect(aiSetupRoute('provider', 'profile', { entry: 'gemini' })).toBe(
+      '/app/onboarding/ai-provider?mode=profile&entry=gemini'
+    );
+    expect(aiSetupRoute('provider', 'onboarding', { entry: 'a b&c' })).toBe(
+      '/app/onboarding/ai-provider?mode=onboarding&entry=a%20b%26c'
+    );
+  });
+
   it('reads the mode, treating anything but profile as onboarding', () => {
     expect(resolveAiSetupMode('profile')).toBe('profile');
     expect(resolveAiSetupMode(['profile', 'onboarding'])).toBe('profile');

@@ -1,5 +1,4 @@
 import * as Clipboard from 'expo-clipboard';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ClipboardPaste, Copy, FileUp, Share2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,8 +11,7 @@ import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SectionLabel } from '@/components/theme/SectionLabel';
 import { TextButton } from '@/components/theme/TextButton';
 import { useSnackbar } from '@/context/SnackbarContext';
-import { useAiGuidedExit } from '@/hooks/useAiGuidedExit';
-import { useAiOnboardingDraft } from '@/hooks/useAiOnboardingDraft';
+import { useAiSetupSession } from '@/hooks/useAiSetupSession';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useTheme } from '@/hooks/useTheme';
 import { MAX_CONTRACT_BYTES } from '@/utils/aiOnboarding/contract';
@@ -24,7 +22,6 @@ import {
   type ExternalTarget,
 } from '@/utils/aiOnboarding/instructions';
 import { handleError } from '@/utils/handleError';
-import { aiSetupRoute, resolveAiSetupMode } from '@/utils/onboardingRoutes';
 import { pickTextFile } from '@/utils/pickTextFile';
 
 /** What the person is told for each way an imported file can be unusable. */
@@ -46,12 +43,9 @@ const IMPORT_ERROR_KEYS: Record<ContractParseError, string> = {
 export default function AiExternalScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
-  const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const { shareText } = useNativeShareText();
-  const mode = resolveAiSetupMode(useLocalSearchParams<{ mode?: string }>().mode);
-  const draftApi = useAiOnboardingDraft(mode);
-  const goGuided = useAiGuidedExit(mode, draftApi);
+  const { copy, draftApi, goGuided, go } = useAiSetupSession();
 
   const [pasteOpen, setPasteOpen] = useState(false);
   const [pasteError, setPasteError] = useState<string | null>(null);
@@ -112,7 +106,7 @@ export default function AiExternalScreen() {
       answers: result.draft,
       importNotes: { ignoredKeys: result.droppedKeys, issues: result.issues },
     });
-    router.navigate(aiSetupRoute('review', mode) as never);
+    go('review');
     return null;
   };
 
@@ -257,16 +251,7 @@ export default function AiExternalScreen() {
             </Text>
           </View>
 
-          <TextButton
-            label={t(
-              mode === 'profile'
-                ? 'aiOnboarding.common.editManually'
-                : 'aiOnboarding.common.backToGuided'
-            )}
-            tone="muted"
-            align="center"
-            onPress={goGuided}
-          />
+          <TextButton label={t(copy.exitKey)} tone="muted" align="center" onPress={goGuided} />
         </View>
       </ScrollView>
 

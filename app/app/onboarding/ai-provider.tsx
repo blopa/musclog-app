@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Cloud, KeyRound, Server, Smartphone } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +14,7 @@ import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { TextButton } from '@/components/theme/TextButton';
 import { DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
-import { useAiOnboardingDraft } from '@/hooks/useAiOnboardingDraft';
+import { useAiSetupSession } from '@/hooks/useAiSetupSession';
 import { useTheme } from '@/hooks/useTheme';
 import { enableFreeTier, testAndSaveApiKey } from '@/services/aiProviderSetup';
 import { AiService } from '@/services/AiService';
@@ -22,7 +22,6 @@ import type { AiKeyTestResult } from '@/utils/aiKeyTest';
 import type { CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
-import { aiSetupRoute, resolveAiSetupMode } from '@/utils/onboardingRoutes';
 
 type KeyProvider = 'gemini' | 'openai';
 
@@ -61,10 +60,8 @@ const KEY_PAGE_LABEL_KEYS: Record<KeyProvider, string> = {
 export default function AiProviderScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
-  const params = useLocalSearchParams<{ mode?: string; entry?: string }>();
-  const mode = resolveAiSetupMode(params.mode);
-  const draftApi = useAiOnboardingDraft(mode);
+  const params = useLocalSearchParams<{ entry?: string }>();
+  const { draftApi, go } = useAiSetupSession();
 
   const [ready, setReady] = useState<Partial<Record<CoachAIProvider, boolean>>>({});
   const [entry, setEntry] = useState<KeyProvider | null>(
@@ -96,9 +93,9 @@ export default function AiProviderScreen() {
       // A provider chosen here keeps working afterwards: the later "Musclog AI" step is skipped so
       // the free tier (which outranks a key) cannot quietly replace it.
       await draftApi.update({ provider, skipMusclogApi: true, path: 'chat' });
-      router.navigate(aiSetupRoute('chat', mode) as never);
+      go('chat');
     },
-    [draftApi, mode, router]
+    [draftApi, go]
   );
 
   const attempt = useCallback(async (work: () => Promise<void>) => {
@@ -298,7 +295,7 @@ export default function AiProviderScreen() {
             label={t('aiOnboarding.provider.useExternal')}
             tone="muted"
             align="center"
-            onPress={() => router.navigate(aiSetupRoute('external', mode) as never)}
+            onPress={() => go('external')}
           />
         </View>
       </KeyboardAwareScrollView>

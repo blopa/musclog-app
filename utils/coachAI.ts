@@ -116,7 +116,7 @@ export function isAiConnectionError(error: unknown): boolean {
  * shared key or the gateway's daily cap filed an unactionable `429 status code (no body)` event.
  * A dropped connection (`isAiConnectionError`) is likewise the user's network, not ours.
  */
-function reportAiError(error: unknown, context: string): void {
+export function reportAiError(error: unknown, context: string): void {
   handleError(error, context, {
     sendToSentry:
       !isAiCreditsError(error) &&
@@ -578,7 +578,7 @@ function buildResponseSchema(includeUserSummary: boolean) {
  * Consecutive same-role messages are merged (content joined with newline).
  * This is required by Gemini (strict alternation) and produces cleaner context for OpenAI too.
  */
-function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
+export function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
   const result: ChatHistoryEntry[] = [];
   for (const entry of history) {
     const prev = result[result.length - 1];
@@ -596,7 +596,7 @@ function normalizeHistory(history: ChatHistoryEntry[]): ChatHistoryEntry[] {
  * Truncates chat history to fit within a character budget,
  * keeping the most recent messages.
  */
-function truncateHistoryByBudget(
+export function truncateHistoryByBudget(
   history: ChatHistoryEntry[],
   maxChars: number
 ): ChatHistoryEntry[] {
@@ -1114,77 +1114,85 @@ function getSchemaFromFunctionDeclaration(fn: {
   };
 }
 
-async function generateStructured<T>(
-  config: CoachAIConfig,
-  systemPrompt: string,
-  userMessage: string,
-  schema: object,
-  schemaName: string = 'response'
-): Promise<T | null> {
-  // Wrap user message with delimiters to prevent prompt injection
-  const sanitizedUserMessage = wrapUserContent(userMessage);
+export type StructuredDialect = 'openai' | 'gemini' | 'on-device';
 
-  const lang = config.language ?? DEFAULT_LANG;
-  const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
+export type StructuredRequest = {
+  /** Names the call in debug dumps and retry logs. */
+  operation: string;
+  schemaName: string;
+  /** Already carries any language note. */
+  systemPrompt: string;
+  /** The conversation so far, without the message being sent. */
+  history: ChatHistoryEntry[];
+  userMessage: string;
+  /** Each provider takes the schema in a slightly different dialect. */
+  buildSchema: (dialect: StructuredDialect) => object;
+};
+
+export type StructuredResult<T = unknown> =
+  { kind: 'ok'; value: T } | { kind: 'malformed'; raw: string };
+
+const MALFORMED_RAW_PREVIEW_CHARS = 500;
+
+function parseStructuredJson<T>(raw: string): StructuredResult<T> {
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim();
+    if (clean) {
+      return { kind: 'ok', value: JSON.parse(clean) as T };
+    }
+  } catch {
+    // Not JSON: reported as malformed below.
+  }
+
+  return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
+}
+
+/**
+ * The one place a reply that must match a JSON schema is requested from a provider: the on-device
+ * model, Gemini, or an OpenAI-compatible endpoint. A reply that is not valid JSON comes back as
+ * `malformed`; a provider failure is thrown as it happened, for the caller to classify.
+ * `generateStructured` (one shot, null on bad output) and `sendStructuredChatTurn` (multi-turn,
+ * typed errors) are both thin callers of this.
+ */
+export async function requestStructured<T = unknown>(
+  config: CoachAIConfig,
+  request: StructuredRequest
+): Promise<StructuredResult<T>> {
+  const { operation, schemaName, systemPrompt, history, userMessage } = request;
 
   if (config.provider === 'on-device') {
-    const messages = [{ role: 'user' as const, content: sanitizedUserMessage }];
-
+    const messages = [
+      ...history.map((entry) => ({
+        role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: entry.content,
+      })),
+      { role: 'user' as const, content: userMessage },
+    ];
+    const schema = request.buildSchema('on-device');
     await logLlmDebugEvent({
       provider: 'on-device',
       direction: 'request',
-      operation: schemaName,
-      payload: { systemPrompt: promptWithLang, messages, schema },
+      operation,
+      payload: { systemPrompt, messages, schema },
       config,
     });
 
-    try {
-      const result = await sendOnDeviceStructured<T>(messages, promptWithLang, schema);
+    const value = await sendOnDeviceStructured<T>(messages, systemPrompt, schema);
+    await logLlmDebugEvent({
+      provider: 'on-device',
+      direction: 'response',
+      operation,
+      payload: value,
+      config,
+    });
 
-      await logLlmDebugEvent({
-        provider: 'on-device',
-        direction: 'response',
-        operation: schemaName,
-        payload: result,
-        config,
-      });
-
-      return result;
-    } catch (error) {
-      reportAiError(error, `coachAI.generateStructured[${schemaName}]`);
-      await logLlmDebugEvent({
-        provider: 'on-device',
-        direction: 'response',
-        operation: schemaName,
-        payload: { error: String(error) },
-        config,
-      });
-
-      return null;
-    }
+    return value === null || value === undefined
+      ? { kind: 'malformed', raw: '' }
+      : { kind: 'ok', value };
   }
 
   if (config.provider === 'gemini') {
-    const requestPayload = {
-      model: config.model,
-      contents: [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }],
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: schema,
-        systemInstruction: {
-          parts: [{ text: promptWithLang } as Part],
-        },
-      },
-    };
-
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation: 'generateStructured',
-      payload: requestPayload,
-      config,
-    });
-
+    const schema = request.buildSchema('gemini');
     const genModel = await configureBasicGenAI(
       {
         apiKey: config.apiKey,
@@ -1196,81 +1204,101 @@ async function generateStructured<T>(
           thinking: (await SettingsService.getUseThinkingMode()) ? 'default' : 'low',
         }),
       },
-      [{ text: promptWithLang } as Part]
+      [{ text: systemPrompt } as Part]
     );
-    const contents: Content[] = [{ parts: [{ text: sanitizedUserMessage } as Part], role: 'user' }];
-    const result = await withLlmRetry('generateStructured', config, (signal) =>
+    const contents = buildGeminiContents(history, userMessage);
+    await logLlmDebugEvent({
+      provider: config.provider,
+      direction: 'request',
+      operation,
+      payload: { model: config.model, contents, systemPrompt, schema },
+      config,
+    });
+
+    const result = await withLlmRetry(operation, config, (signal) =>
       genModel.generateContent({ contents, abortSignal: signal })
     );
-
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',
-      operation: 'generateStructured',
+      operation,
       payload: result,
       config,
     });
 
-    const raw = extractRawText(result);
-    if (!raw?.trim()) {
-      return null;
-    }
-
-    try {
-      const clean = raw.replace(/```json|```/g, '').trim();
-      return JSON.parse(clean) as T;
-    } catch {
-      return null;
-    }
+    return parseStructuredJson<T>(extractRawText(result));
   }
 
   const client = buildOpenAIClient(config);
-  const strictSchema = makeSchemaStrict(schema);
-  const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
+  const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
     messages: [
-      { role: 'system', content: promptWithLang },
-      { role: 'user', content: sanitizedUserMessage },
+      { role: 'system', content: systemPrompt },
+      ...history.map((entry) => ({
+        role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: entry.content,
+      })),
+      { role: 'user', content: userMessage },
     ],
     response_format: {
       type: 'json_schema',
       json_schema: {
         name: schemaName,
         strict: true,
-        schema: strictSchema,
+        schema: makeSchemaStrict(request.buildSchema('openai')),
       },
     },
   };
-
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'request',
-    operation: 'generateStructured',
-    payload: requestPayload,
+    operation,
+    payload,
     config,
   });
 
-  const completion = await withLlmRetry('generateStructured', config, (signal) =>
-    client.chat.completions.create(requestPayload, { signal })
+  const completion = await withLlmRetry(operation, config, (signal) =>
+    client.chat.completions.create(payload, { signal })
   );
-
   await logLlmDebugEvent({
     provider: config.provider,
     direction: 'response',
-    operation: 'generateStructured',
+    operation,
     payload: completion,
     config,
   });
 
-  const raw = completion.choices[0]?.message?.content ?? '';
-  if (!raw?.trim()) {
-    return null;
-  }
+  return parseStructuredJson<T>(completion.choices[0]?.message?.content ?? '');
+}
+
+async function generateStructured<T>(
+  config: CoachAIConfig,
+  systemPrompt: string,
+  userMessage: string,
+  schema: object,
+  schemaName: string = 'response'
+): Promise<T | null> {
+  const lang = config.language ?? DEFAULT_LANG;
 
   try {
-    const clean = raw.replace(/```json|```/g, '').trim();
-    return JSON.parse(clean) as T;
-  } catch {
+    const result = await requestStructured<T>(config, {
+      operation: 'generateStructured',
+      schemaName,
+      systemPrompt: `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`,
+      history: [],
+      // Wrap user message with delimiters to prevent prompt injection
+      userMessage: wrapUserContent(userMessage),
+      buildSchema: () => schema,
+    });
+
+    return result.kind === 'ok' ? result.value : null;
+  } catch (error) {
+    // The on-device model has no retry layer to classify its failures, so a bad run is "no answer".
+    if (config.provider !== 'on-device') {
+      throw error;
+    }
+
+    reportAiError(error, `coachAI.generateStructured[${schemaName}]`);
     return null;
   }
 }
@@ -1685,14 +1713,10 @@ export async function getNutritionInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getNutritionInsightsPrompt(
-      startDate,
-      endDate,
-      lang,
-      undefined,
+    const systemPrompt = await getNutritionInsightsPrompt(startDate, endDate, lang, {
       context,
-      config.provider
-    );
+      provider: config.provider,
+    });
 
     const finalUserMessage = userRemarks?.trim()
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
@@ -1842,12 +1866,9 @@ export async function getWorkoutInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getWorkoutInsightsPrompt(
-      workoutTitle,
-      lang,
-      undefined,
-      config.provider
-    );
+    const systemPrompt = await getWorkoutInsightsPrompt(workoutTitle, lang, {
+      provider: config.provider,
+    });
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
@@ -1866,12 +1887,9 @@ export async function getRecentWorkoutInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(
-      workoutLogId,
-      lang,
-      undefined,
-      config.provider
-    );
+    const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(workoutLogId, lang, {
+      provider: config.provider,
+    });
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
@@ -1896,14 +1914,10 @@ export async function getRecentWorkoutsInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getRecentWorkoutsInsightsPrompt(
-      startDate,
-      endDate,
-      lang,
-      undefined,
+    const systemPrompt = await getRecentWorkoutsInsightsPrompt(startDate, endDate, lang, {
       context,
-      config.provider
-    );
+      provider: config.provider,
+    });
 
     const finalUserMessage = userRemarks?.trim()
       ? `User's remarks before analysis: ${userRemarks.trim()}\n\nProvide your analysis.`
@@ -1937,12 +1951,9 @@ export async function getWorkoutVolumeInsights(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getWorkoutVolumeInsightsPrompt(
-      workoutTitle,
-      lang,
-      undefined,
-      config.provider
-    );
+    const systemPrompt = await getWorkoutVolumeInsightsPrompt(workoutTitle, lang, {
+      provider: config.provider,
+    });
     const text = await generateText(config, systemPrompt);
     return text || null;
   } catch (error) {
@@ -2247,14 +2258,10 @@ export async function getMealCritique(
 ): Promise<string | null> {
   try {
     const lang = config.language ?? DEFAULT_LANG;
-    const systemPrompt = await getMealCritiquePrompt(
-      mealType,
-      foods,
-      totals,
-      lang,
-      'nutrition',
-      config.provider
-    );
+    const systemPrompt = await getMealCritiquePrompt(mealType, foods, totals, lang, {
+      context: 'nutrition',
+      provider: config.provider,
+    });
     const finalUserMessage = userRemarks?.trim()
       ? userRemarks.trim()
       : 'Please critique this meal.';
@@ -2264,187 +2271,5 @@ export async function getMealCritique(
     notifyUserFacingAiError(error);
     console.error('[coachAI] getMealCritique error:', error);
     return null;
-  }
-}
-
-// --- Multi-turn structured chat (AI-assisted onboarding) ---
-
-export type StructuredTurnDialect = 'openai' | 'gemini' | 'on-device';
-
-export type StructuredTurnRequest = {
-  /** Names the call in debug dumps and retry logs. */
-  operation: string;
-  systemPrompt: string;
-  /** The conversation so far, without the message being sent. */
-  history: ChatHistoryEntry[];
-  userMessage: string;
-  /** Each provider takes the schema in a slightly different dialect. */
-  buildSchema: (dialect: StructuredTurnDialect) => object;
-  schemaName: string;
-};
-
-export type StructuredTurnResult =
-  { kind: 'ok'; value: unknown } | { kind: 'malformed'; raw: string };
-
-/** A person's chat message is capped, not rewritten: nothing here executes what the model returns. */
-const STRUCTURED_TURN_MAX_USER_CHARS = 2000;
-const MALFORMED_RAW_PREVIEW_CHARS = 500;
-
-function parseStructuredJson(raw: string): StructuredTurnResult {
-  try {
-    const clean = raw.replace(/```json|```/g, '').trim();
-    return clean
-      ? { kind: 'ok', value: JSON.parse(clean) }
-      : { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
-  } catch {
-    return { kind: 'malformed', raw: raw.slice(0, MALFORMED_RAW_PREVIEW_CHARS) };
-  }
-}
-
-/**
- * One turn of a multi-turn conversation whose reply must match a JSON schema. Unlike
- * `generateStructured` it keeps history, and it throws typed errors (bad key, timeout, cancel,
- * exhausted credits, dropped connection) instead of returning null, so the caller can offer the
- * right next step. A reply that is not valid JSON comes back as `malformed` rather than an error.
- *
- * The message is trusted no more than any other user text: it is length-capped, and the caller
- * validates what comes back before using any of it.
- */
-export async function sendStructuredChatTurn(
-  config: CoachAIConfig,
-  request: StructuredTurnRequest
-): Promise<StructuredTurnResult> {
-  const lang = config.language ?? DEFAULT_LANG;
-  const userMessage = request.userMessage.trim().slice(0, STRUCTURED_TURN_MAX_USER_CHARS);
-  const systemPrompt = `${request.systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output must be in this language.`;
-
-  const budget =
-    PROVIDER_CONFIGS[config.provider].maxCharBudget - systemPrompt.length - userMessage.length;
-  const fitted = budget > 0 ? truncateHistoryByBudget(request.history, budget) : [];
-  const history = normalizeHistory(fitted);
-  // Providers want the conversation to open with the person, not the assistant.
-  while (history.length > 0 && history[0].role === 'coach') {
-    history.shift();
-  }
-
-  try {
-    if (config.provider === 'on-device') {
-      const messages = [
-        ...history.map((entry) => ({
-          role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-          content: entry.content,
-        })),
-        { role: 'user' as const, content: userMessage },
-      ];
-      const schema = request.buildSchema('on-device');
-      await logLlmDebugEvent({
-        provider: 'on-device',
-        direction: 'request',
-        operation: request.operation,
-        payload: { systemPrompt, messages, schema },
-        config,
-      });
-
-      const value = await sendOnDeviceStructured<unknown>(messages, systemPrompt, schema);
-      await logLlmDebugEvent({
-        provider: 'on-device',
-        direction: 'response',
-        operation: request.operation,
-        payload: value,
-        config,
-      });
-
-      return value === null || value === undefined
-        ? { kind: 'malformed', raw: '' }
-        : { kind: 'ok', value };
-    }
-
-    if (config.provider === 'gemini') {
-      const schema = request.buildSchema('gemini');
-      const genModel = await configureBasicGenAI(
-        {
-          apiKey: config.apiKey,
-          model: config.model,
-          generationConfig: buildGeminiGenerationConfig(config.model, {
-            responseSchema: schema,
-            thinking: (await SettingsService.getUseThinkingMode()) ? 'default' : 'low',
-          }),
-        },
-        [{ text: systemPrompt } as Part]
-      );
-      const contents = buildGeminiContents(history, userMessage);
-      await logLlmDebugEvent({
-        provider: config.provider,
-        direction: 'request',
-        operation: request.operation,
-        payload: { model: config.model, contents, systemPrompt, schema },
-        config,
-      });
-
-      const result = await withLlmRetry(request.operation, config, (signal) =>
-        genModel.generateContent({ contents, abortSignal: signal })
-      );
-      await logLlmDebugEvent({
-        provider: config.provider,
-        direction: 'response',
-        operation: request.operation,
-        payload: result,
-        config,
-      });
-
-      return parseStructuredJson(extractRawText(result));
-    }
-
-    const client = buildOpenAIClient(config);
-    const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
-      model: config.model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...history.map((entry) => ({
-          role: (entry.role === 'coach' ? 'assistant' : 'user') as 'user' | 'assistant',
-          content: entry.content,
-        })),
-        { role: 'user', content: userMessage },
-      ],
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: request.schemaName,
-          strict: true,
-          schema: makeSchemaStrict(request.buildSchema('openai')),
-        },
-      },
-    };
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'request',
-      operation: request.operation,
-      payload,
-      config,
-    });
-
-    const completion = await withLlmRetry(request.operation, config, (signal) =>
-      client.chat.completions.create(payload, { signal })
-    );
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: request.operation,
-      payload: completion,
-      config,
-    });
-
-    return parseStructuredJson(completion.choices[0]?.message?.content ?? '');
-  } catch (error) {
-    rethrowUserFacingAiError(error);
-    reportAiError(error, `coachAI.sendStructuredChatTurn[${request.operation}]`);
-
-    if (isAiCreditsError(error)) {
-      throw config.provider === 'gateway'
-        ? new GatewayRateLimitError(i18n.t('errors.gatewayDailyLimitError'))
-        : new AiCreditsError(i18n.t('errors.aiCreditsError'));
-    }
-
-    throw error;
   }
 }

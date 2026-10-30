@@ -11,6 +11,7 @@ import {
 } from '@/utils/aiOnboarding/contract';
 import type { CoachAIProvider } from '@/utils/coachAI';
 import { readEncryptedJson, writeEncryptedJson } from '@/utils/encryptedJsonStorage';
+import { isRecord } from '@/utils/isRecord';
 
 export type AiOnboardingMode = 'onboarding' | 'profile';
 export type AiOnboardingPath = 'chat' | 'external' | 'import';
@@ -52,9 +53,6 @@ const PROVIDERS: readonly CoachAIProvider[] = ['gemini', 'openai', 'on-device', 
 const PATHS: readonly AiOnboardingPath[] = ['chat', 'external', 'import'];
 const MAX_MESSAGE_CHARS = 4000;
 const MAX_COMPOSER_CHARS = 4000;
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 function parseImportNotes(raw: unknown): ImportNotes | undefined {
   if (!isRecord(raw)) {
@@ -119,6 +117,8 @@ export function parseDraftRecord(raw: unknown, today: Date): AiOnboardingDraftRe
     return null;
   }
 
+  const importNotes = parseImportNotes(raw.importNotes);
+
   return {
     v: 1,
     draftId: raw.draftId,
@@ -131,9 +131,7 @@ export function parseDraftRecord(raw: unknown, today: Date): AiOnboardingDraftRe
     messages: parseMessages(raw.messages),
     composer: typeof raw.composer === 'string' ? raw.composer.slice(0, MAX_COMPOSER_CHARS) : '',
     answers: sanitizeDraft(raw.answers, today),
-    ...(parseImportNotes(raw.importNotes)
-      ? { importNotes: parseImportNotes(raw.importNotes) }
-      : {}),
+    ...(importNotes ? { importNotes } : {}),
     ...(raw.applyState === 'applying' || raw.applyState === 'applied'
       ? { applyState: raw.applyState }
       : {}),

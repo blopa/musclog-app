@@ -8,6 +8,7 @@ import {
   normalizeAnswers,
   type OnboardingAnswersDraft,
 } from '@/utils/aiOnboarding/contract';
+import { isRecord } from '@/utils/isRecord';
 
 export type ContractParseError =
   | 'empty'
@@ -104,9 +105,6 @@ export function extractJsonCandidate(text: string): string | null {
 
   return firstBalancedObject(trimmed);
 }
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 function unknownKeys(value: unknown, known: readonly string[], path: string): string[] {
   return isRecord(value)

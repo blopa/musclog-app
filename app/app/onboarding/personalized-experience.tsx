@@ -21,6 +21,7 @@ import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { type LiftingExperience } from '@/database/models/User';
 import { useTheme } from '@/hooks/useTheme';
+import { type ActivityLevel } from '@/utils/aiOnboarding/contract';
 import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
 import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
@@ -33,7 +34,7 @@ type ExperienceOption = {
 };
 
 type ActivityOption = {
-  value: number;
+  value: ActivityLevel;
   labelKey: string;
   descKey: string;
   icon: LucideIcon;
@@ -99,7 +100,7 @@ export default function PersonalizedExperienceScreen() {
   const router = useRouter();
 
   const [experience, setExperience] = useState<LiftingExperience>('beginner');
-  const [activityLevel, setActivityLevel] = useState(2);
+  const [activityLevel, setActivityLevel] = useState<ActivityLevel>(2);
   const [isSaving, setIsSaving] = useState(false);
 
   // Answers given earlier (including through the AI setup) come back prefilled instead of reset.

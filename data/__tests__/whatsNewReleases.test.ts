@@ -81,3 +81,25 @@ describe('the AI setup page of 2.15.2', () => {
     });
   });
 });
+
+describe('the coach persona page of 2.15.2', () => {
+  const release = whatsNewReleases.find((candidate) => candidate.version === '2.15.2');
+  const page = release?.pages.find((candidate) => candidate.id === 'coachPersona');
+
+  it('is part of the release, leads with a headline the intro can list and has no gate', () => {
+    expect(page).toBeDefined();
+    expect(page?.blocks[0]).toMatchObject({
+      type: 'info',
+      titleKey: 'whatsNew.releases.v2_15_2.coachPersona.title',
+    });
+    expect(page?.requires).toBeUndefined();
+  });
+
+  it('explains the presets, the custom coach and that only the voice changes', () => {
+    expect(page?.blocks.map((block) => block.id)).toEqual([
+      'coachPersona',
+      'coachCustom',
+      'coachVoiceOnly',
+    ]);
+  });
+});

@@ -23,6 +23,8 @@ type ListRowProps = {
   overline?: string;
   icon?: ComponentType<{ size: number; color: string }>;
   iconColor?: string;
+  /** Replaces the icon with any element of the caller's own (a coach's avatar picture). */
+  leading?: ReactNode;
   /** Overrides the title color (a destructive row uses the error color). */
   titleColor?: string;
   /**
@@ -53,6 +55,7 @@ export function ListRow({
   overline,
   icon: Icon,
   iconColor,
+  leading,
   titleColor,
   value,
   trailing,
@@ -109,14 +112,15 @@ export function ListRow({
         flush && isGrouped ? 'min-h-14 px-6 active:bg-ink/5' : 'px-4 active:opacity-80'
       } ${isGrouped && !flush ? 'min-h-[52px]' : 'min-h-14'} ${surface} ${choiceBorder}`}
     >
-      {Icon ? (
-        <Icon
-          size={theme.iconSize.md}
-          color={
-            iconColor ?? (isGrouped ? theme.colors.text.secondary : theme.colors.accent.primary)
-          }
-        />
-      ) : null}
+      {leading ??
+        (Icon ? (
+          <Icon
+            size={theme.iconSize.md}
+            color={
+              iconColor ?? (isGrouped ? theme.colors.text.secondary : theme.colors.accent.primary)
+            }
+          />
+        ) : null)}
       <View className="min-w-0 flex-1">
         {overline ? (
           <Text className="text-xs font-medium text-text-secondary">{overline}</Text>

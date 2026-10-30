@@ -59,6 +59,32 @@
           "icon": "bot"
         }
       ]
+    },
+    {
+      "id": "coachPersona",
+      "blocks": [
+        {
+          "id": "coachPersona",
+          "type": "info",
+          "icon": "bot",
+          "titleKey": "whatsNew.releases.v2_15_2.coachPersona.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.coachPersona.description"
+        },
+        {
+          "id": "coachCustom",
+          "type": "info",
+          "icon": "heart",
+          "titleKey": "whatsNew.releases.v2_15_2.coachCustom.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.coachCustom.description"
+        },
+        {
+          "id": "coachVoiceOnly",
+          "type": "info",
+          "icon": "shield",
+          "titleKey": "whatsNew.releases.v2_15_2.coachVoiceOnly.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.coachVoiceOnly.description"
+        }
+      ]
     }
   ]
 }

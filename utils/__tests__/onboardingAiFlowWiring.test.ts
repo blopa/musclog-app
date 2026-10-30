@@ -20,6 +20,8 @@ const AI_ONBOARDING_FILES = [
   'hooks/useAiOnboardingChat.ts',
   'hooks/useAiOnboardingDraft.ts',
   'hooks/useAiGuidedExit.ts',
+  'hooks/useAiSetupSession.ts',
+  'services/aiOnboardingTurn.ts',
   'services/onboardingAnswersApply.ts',
   'services/aiProviderSetup.ts',
 ];

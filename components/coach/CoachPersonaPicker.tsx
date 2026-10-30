@@ -1,9 +1,8 @@
 import { Pencil } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, type ImageSourcePropType, Text, View } from 'react-native';
 
-import { coachAvatarSource } from '@/components/coach/coachPersonaAvatars';
 import { CustomCoachPersonaModal } from '@/components/modals/CustomCoachPersonaModal';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ListRow } from '@/components/theme/ListRow';
@@ -15,20 +14,20 @@ import {
 } from '@/constants/coachPersonas';
 import { useCoachPersonaPicker } from '@/hooks/useCoachPersonaPicker';
 import { useTheme } from '@/hooks/useTheme';
+import { coachAvatarSource } from '@/utils/coachPersonaAvatar';
 
 const AVATAR_PX = 36;
 
-/** `ListRow` takes an icon component, so an avatar is wrapped as one (the color is not used). */
-const avatarIcon = (source: ImageSourcePropType) =>
-  function AvatarIcon() {
-    return (
-      <Image
-        source={source}
-        style={{ width: AVATAR_PX, height: AVATAR_PX, borderRadius: AVATAR_PX / 2 }}
-        resizeMode="cover"
-      />
-    );
-  };
+/** A coach's picture as the row's leading element. */
+function Avatar({ source }: { source: ImageSourcePropType }) {
+  return (
+    <Image
+      source={source}
+      style={{ width: AVATAR_PX, height: AVATAR_PX, borderRadius: AVATAR_PX / 2 }}
+      resizeMode="cover"
+    />
+  );
+}
 
 /**
  * Who the coach is: Loggy, a character, or a persona the user wrote. One list for Settings and the
@@ -43,17 +42,6 @@ export function CoachPersonaPicker() {
 
   const customComplete = isCustomPersonaComplete(persona.custom);
 
-  const icons = useMemo(
-    () =>
-      Object.fromEntries(
-        COACH_PERSONA_IDS.map((id) => [
-          id,
-          avatarIcon(coachAvatarSource(id, persona.custom.avatar)),
-        ])
-      ) as Record<CoachPersonaId, ReturnType<typeof avatarIcon>>,
-    [persona.custom.avatar]
-  );
-
   const handlePress = (id: CoachPersonaId) => {
     // A custom coach with no name or voice yet cannot be used, so choosing it opens the editor.
     if (id === 'custom' && !customComplete) {
@@ -64,12 +52,13 @@ export function CoachPersonaPicker() {
     void selectPersona(id);
   };
 
-  const titleFor = (id: CoachPersonaId) =>
-    id === 'custom'
-      ? customComplete
-        ? persona.custom.name
-        : t('coach.personas.custom.name')
-      : t(COACH_PRESETS[id].nameKey);
+  const titleFor = (id: CoachPersonaId) => {
+    if (id !== 'custom') {
+      return t(COACH_PRESETS[id].nameKey);
+    }
+
+    return customComplete ? persona.custom.name : t('coach.personas.custom.name');
+  };
 
   const subtitleFor = (id: CoachPersonaId) =>
     id === 'custom' ? t('coach.personas.custom.description') : t(COACH_PRESETS[id].descriptionKey);
@@ -83,7 +72,7 @@ export function CoachPersonaPicker() {
             variant="grouped"
             title={titleFor(id)}
             subtitle={subtitleFor(id)}
-            icon={icons[id]}
+            leading={<Avatar source={coachAvatarSource(id, persona.custom.avatar)} />}
             selected={persona.selectedId === id}
             disabled={!persona.canChoose}
             onPress={() => handlePress(id)}

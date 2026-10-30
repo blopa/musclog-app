@@ -5,9 +5,12 @@ import {
   FIELD_KEYS,
   type FieldIssue,
   type FieldKey,
+  flatToDocument,
   normalizeAnswers,
   type OnboardingAnswersDraft,
 } from '@/utils/aiOnboarding/contract';
+import type { StructuredDialect } from '@/utils/coachAI';
+import { isRecord } from '@/utils/isRecord';
 
 /**
  * The shape of one assistant turn: what to say, what the person just told it, what it is asking
@@ -16,9 +19,11 @@ import {
  * shape and validated by {@link parseAiTurn} before any of it is used.
  */
 
-type PatchField =
-  | { type: 'string' | 'integer' | 'number'; description: string; enum?: readonly string[] }
-  | { type: 'string'; description: string; enum: readonly string[] };
+type PatchField = {
+  type: 'string' | 'integer' | 'number';
+  description: string;
+  enum?: readonly string[];
+};
 
 export const TURN_PATCH_FIELDS = {
   fullName: { type: 'string', description: 'First name or nickname, only if the person gave one.' },
@@ -87,12 +92,10 @@ export const TURN_PATCH_FIELDS = {
 export type TurnPatchKey = keyof typeof TURN_PATCH_FIELDS;
 export const TURN_PATCH_KEYS = Object.keys(TURN_PATCH_FIELDS) as TurnPatchKey[];
 
-export type TurnDialect = 'openai' | 'gemini' | 'on-device';
-
 const MAX_ASKED_FIELDS = 4;
 const MAX_REPLY_CHARS = 1200;
 
-function patchProperty(field: PatchField, dialect: TurnDialect): Record<string, unknown> {
+function patchProperty(field: PatchField, dialect: StructuredDialect): Record<string, unknown> {
   const enumValues = field.enum;
   switch (dialect) {
     case 'openai':
@@ -119,7 +122,7 @@ function patchProperty(field: PatchField, dialect: TurnDialect): Record<string, 
 }
 
 /** The JSON Schema for one assistant turn, in the dialect the provider accepts. */
-export function buildTurnJsonSchema(dialect: TurnDialect): object {
+export function buildTurnJsonSchema(dialect: StructuredDialect): object {
   const patchProperties = Object.fromEntries(
     TURN_PATCH_KEYS.map((key) => [key, patchProperty(TURN_PATCH_FIELDS[key], dialect)])
   );
@@ -151,44 +154,6 @@ export function buildTurnJsonSchema(dialect: TurnDialect): object {
   };
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
-
-/** Rebuilds the contract's nested shape from the flat patch so one validator judges both. */
-export function patchToDocument(patch: Record<string, unknown>): Record<string, unknown> {
-  const has = (key: TurnPatchKey) => patch[key] !== undefined && patch[key] !== null;
-  const training = {
-    location: patch.trainingLocation ?? undefined,
-    daysPerWeek: patch.trainingDaysPerWeek ?? undefined,
-    autonomy: patch.trainingAutonomy ?? undefined,
-    comingBack: has('breakLength') ? { breakLength: patch.breakLength } : undefined,
-  };
-
-  let height: unknown;
-  if (has('heightCm')) {
-    height = { value: patch.heightCm, unit: 'cm' };
-  } else if (has('heightFeet')) {
-    height = { feet: patch.heightFeet, inches: patch.heightInches ?? 0, unit: 'ft_in' };
-  }
-
-  return {
-    fullName: patch.fullName,
-    units: patch.units,
-    gender: patch.gender,
-    birthDate: patch.birthDate,
-    ageYears: patch.ageYears,
-    height,
-    // A weight without its unit is ambiguous (kg vs lb), so it is rejected rather than guessed.
-    weight: has('weightValue') ? { value: patch.weightValue, unit: patch.weightUnit } : undefined,
-    bodyFatPercent: patch.bodyFatPercent,
-    liftingExperience: patch.liftingExperience,
-    activityLevel: patch.activityLevel,
-    fitnessGoal: patch.fitnessGoal,
-    weightGoal: patch.weightGoal,
-    training: Object.values(training).some((value) => value !== undefined) ? training : undefined,
-  };
-}
-
 export type ParsedAiTurn =
   | {
       ok: true;
@@ -208,7 +173,7 @@ export function parseAiTurn(value: unknown, today: Date): ParsedAiTurn {
   }
 
   const { draft, issues } = normalizeAnswers(
-    patchToDocument(isRecord(value.patch) ? value.patch : {}),
+    flatToDocument(isRecord(value.patch) ? value.patch : {}),
     today
   );
   const asked = Array.isArray(value.askedFields)

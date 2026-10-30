@@ -78,7 +78,14 @@ export function BlogMermaid({ containerId }: { containerId: string }) {
       }
     };
 
-    void draw();
+    // Draws run one after another: a theme change during a draw must not start a second run over
+    // the same nodes while Mermaid is still replacing their text.
+    let drawing: Promise<void> = Promise.resolve();
+    const scheduleDraw = () => {
+      drawing = drawing.then(draw, draw);
+    };
+
+    scheduleDraw();
 
     let queued = false;
     const observer = new MutationObserver(() => {
@@ -89,7 +96,7 @@ export function BlogMermaid({ containerId }: { containerId: string }) {
       queued = true;
       requestAnimationFrame(() => {
         queued = false;
-        void draw();
+        scheduleDraw();
       });
     });
     observer.observe(document.documentElement, { attributeFilter: ['style'], attributes: true });

@@ -13,7 +13,7 @@ import { useTheme } from './useTheme';
 
 export type ChatMessageDataDisplayItem = {
   id: string;
-  name: string; // sender label: "You" | "Loggy"
+  name: string; // sender label: "You" or the coach's name
   messageText: string; // truncated message preview
   icon: string; // MaterialIcons name
   iconColor: string;

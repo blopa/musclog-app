@@ -141,6 +141,19 @@ describe('AiService.getAiConfig', () => {
     });
   });
 
+  it('builds only the winning provider, so a provider that loses never saves its model', async () => {
+    setSettings({
+      getUseMusclogFreeTier: true,
+      getEnableGoogleGemini: true,
+      getGoogleGeminiApiKey: 'g',
+      getGoogleGeminiModel: 'gemini-3-pro-preview',
+    });
+    mockSettings.setGoogleGeminiModel = jest.fn().mockResolvedValue(undefined);
+
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({ provider: 'gateway' });
+    expect(mockSettings.setGoogleGeminiModel).not.toHaveBeenCalled();
+  });
+
   it('is null when nothing is enabled with a key', async () => {
     setSettings({ getEnableGoogleGemini: true, getGoogleGeminiApiKey: '   ' });
     await expect(AiService.getAiConfig()).resolves.toBeNull();

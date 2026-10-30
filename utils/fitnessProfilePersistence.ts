@@ -238,17 +238,18 @@ export async function persistFitnessProfile(data: FitnessProfileWrite): Promise<
     });
   }
 
-  if (data.weightKg !== undefined && data.weightKg > 0) {
-    await upsertTodayMetric('weight', data.weightKg, 'kg');
-  }
-
-  if (data.heightCm !== undefined && data.heightCm > 0) {
-    await upsertTodayMetric('height', data.heightCm, 'cm');
-  }
-
-  if (data.bodyFatPercent != null && data.bodyFatPercent > 0) {
-    await upsertTodayMetric('body_fat', data.bodyFatPercent, '%');
-  }
+  // One reading per metric, each its own row, so the three upserts do not wait for each other.
+  await Promise.all([
+    data.weightKg !== undefined && data.weightKg > 0
+      ? upsertTodayMetric('weight', data.weightKg, 'kg')
+      : undefined,
+    data.heightCm !== undefined && data.heightCm > 0
+      ? upsertTodayMetric('height', data.heightCm, 'cm')
+      : undefined,
+    data.bodyFatPercent != null && data.bodyFatPercent > 0
+      ? upsertTodayMetric('body_fat', data.bodyFatPercent, '%')
+      : undefined,
+  ]);
 
   if (data.units) {
     await SettingsService.setUnits(data.units);

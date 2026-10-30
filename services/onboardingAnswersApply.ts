@@ -7,7 +7,6 @@ import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import {
   fromGuidedDrafts,
-  toBodyStatsDraft,
   toPersonalizedSetup,
   toPlanInput,
   toProfileWrite,
@@ -17,6 +16,7 @@ import {
   type CompleteOnboardingAnswers,
   type FieldKey,
   hasRequiredAnswers,
+  isActivityLevel,
   type OnboardingAnswersDraft,
 } from '@/utils/aiOnboarding/contract';
 import {
@@ -32,6 +32,7 @@ import { persistFitnessProfile } from '@/utils/fitnessProfilePersistence';
 import { calculateNutritionPlan, type NutritionPlan } from '@/utils/nutritionCalculator';
 import {
   mergePersonalizedSetup,
+  pickBodyStats,
   readBodyStatsDraft,
   readPersonalizedSetup,
   writeBodyStatsDraft,
@@ -88,13 +89,13 @@ export async function stageAnswersForGuided(
   draft: OnboardingAnswersDraft,
   { skipMusclogApi }: { skipMusclogApi: boolean }
 ): Promise<void> {
-  await mergePersonalizedSetup(toPersonalizedSetup(draft, { skipMusclogApi }));
-  await writeBodyStatsDraft(toBodyStatsDraft(draft));
-
   const training = toTrainingSetup(draft);
-  if (training) {
-    await AsyncStorage.setItem(TRAINING_SETUP_DATA, JSON.stringify(training));
-  }
+  // Three different storage entries, so none waits for another.
+  await Promise.all([
+    mergePersonalizedSetup(toPersonalizedSetup(draft, { skipMusclogApi })),
+    writeBodyStatsDraft(pickBodyStats(draft)),
+    training ? AsyncStorage.setItem(TRAINING_SETUP_DATA, JSON.stringify(training)) : undefined,
+  ]);
 
   await deleteAiDraft();
 }
@@ -119,11 +120,13 @@ export async function commitOnboardingProfile(
 
 /** The answers the guided screens have collected so far, in the contract's shape. */
 export async function readGuidedAnswers(): Promise<OnboardingAnswersDraft> {
-  return fromGuidedDrafts(
-    await readPersonalizedSetup(),
-    await readBodyStatsDraft(),
-    parseTrainingSetup(await AsyncStorage.getItem(TRAINING_SETUP_DATA))
-  );
+  const [personalized, body, training] = await Promise.all([
+    readPersonalizedSetup(),
+    readBodyStatsDraft(),
+    AsyncStorage.getItem(TRAINING_SETUP_DATA),
+  ]);
+
+  return fromGuidedDrafts(personalized, body, parseTrainingSetup(training));
 }
 
 /**
@@ -142,17 +145,16 @@ export function applyOnboardingAnswers(
     await setApplyState('onboarding', draftId, 'applying');
     try {
       const training = toTrainingSetup(answers);
-      if (training) {
-        await AsyncStorage.setItem(TRAINING_SETUP_DATA, JSON.stringify(training));
-      } else {
-        await AsyncStorage.removeItem(TRAINING_SETUP_DATA);
-      }
-
-      await mergePersonalizedSetup({
-        ...toPersonalizedSetup(answers, { skipMusclogApi }),
-        skipMusclogApi,
-      });
-      await writeBodyStatsDraft(toBodyStatsDraft(answers));
+      await Promise.all([
+        training
+          ? AsyncStorage.setItem(TRAINING_SETUP_DATA, JSON.stringify(training))
+          : AsyncStorage.removeItem(TRAINING_SETUP_DATA),
+        mergePersonalizedSetup({
+          ...toPersonalizedSetup(answers, { skipMusclogApi }),
+          skipMusclogApi,
+        }),
+        writeBodyStatsDraft(pickBodyStats(answers)),
+      ]);
       await commitOnboardingProfile(answers, { useBodyFat });
       await setCurrentOnboardingStep(PERSONALIZED_CYCLE_ROUTE);
     } catch (error) {
@@ -196,7 +198,7 @@ export async function loadProfileSnapshot(): Promise<ProfileSnapshot> {
           fitnessGoal: user.fitnessGoal,
           liftingExperience: user.liftingExperience,
           ...(user.weightGoal ? { weightGoal: user.weightGoal } : {}),
-          ...(user.activityLevel ? { activityLevel: user.activityLevel } : {}),
+          ...(isActivityLevel(user.activityLevel) ? { activityLevel: user.activityLevel } : {}),
           ...(user.getAge() > 0
             ? { birthDate: formatLocalCalendarDayIso(new Date(user.dateOfBirth)) }
             : {}),

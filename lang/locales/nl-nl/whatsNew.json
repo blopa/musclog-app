@@ -182,6 +182,18 @@
           "title": "Jij controleert eerst alles",
           "description": "Elk antwoord staat op een controlescherm waar je het kunt aanpassen. Vanuit Profiel staat elke wijziging naast wat je nu hebt en er wordt niets opgeslagen tot je het toepast."
         },
+        "coachPersona": {
+          "title": "Kies wie je AI-coach is",
+          "description": "Houd Loggy, of kies graaf Dracula, Cthulhu of Sherlock Holmes. De naam, de afbeelding en de manier van praten van je coach veranderen in de chat en in de inzichten die hij voor je schrijft. Je vindt het in Instellingen → AI, of je kiest er een tijdens de persoonlijke setup."
+        },
+        "coachCustom": {
+          "title": "Of schrijf je eigen coach",
+          "description": "Geef je coach een naam, beschrijf hoe hij praat en voeg een afbeelding uit je galerij toe. Je coach wordt op dit apparaat bewaard en je kunt hem altijd aanpassen."
+        },
+        "coachVoiceOnly": {
+          "title": "Alleen de stem verandert",
+          "description": "Een coach verandert de woorden, nooit de cijfers, het veiligheidsadvies of waarmee de coach helpt. Met AI op je toestel is de coach altijd Loggy."
+        },
         "openAiSetup": "Mijn profiel bijwerken met AI"
       }
     }

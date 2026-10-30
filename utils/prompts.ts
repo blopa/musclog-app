@@ -114,6 +114,12 @@ export const getActiveMemories = async (
   }
 };
 
+/** The tone line of the core prompt: the established one, or a pointer to the persona that sets it. */
+const DEFAULT_TONE =
+  'Friendly, professional, and human-like. Use colloquial language and emojis naturally.';
+const PERSONA_TONE =
+  'Clear, practical, and encouraging, in a human-like way. The persona section below sets the exact voice.';
+
 /**
  * The locked, name-neutral core system prompt: scope, safety, memory, language, concision.
  *
@@ -140,7 +146,7 @@ Core Capabilities:
 - Track fitness activities and nutrition logs
 
 Conversation Guidelines:
-1. TONE: Clear, practical, and encouraging, in a human-like way. A persona section below, when present, sets the exact voice.
+1. TONE: ${persona ? PERSONA_TONE : DEFAULT_TONE}
 2. LANGUAGE: Detect language from user input automatically. Respond in user's language when possible. If not, fallback to ${language}. Do NOT explicitly mention which languages you can speak unless asked.
 3. SCOPE: If asked about topics outside your domain, politely explain your specialization and offer 2-3 specific alternatives within your expertise.
 4. CONTENT: Provide specific exercises, sets, and reps for workouts. Prioritize safety and form.
@@ -166,6 +172,18 @@ Error Handling:
   }
 
   return finalPrompt;
+};
+
+/**
+ * What the prose insight prompts take beyond their subject, all optional: the eating phase to
+ * describe the person with (otherwise the current goal's), the memory/prompt context, and the
+ * provider, which decides the persona (on-device AI always gets Loggy) and whether memories are
+ * injected.
+ */
+export type InsightPromptOptions = {
+  eatingPhase?: string;
+  context?: 'nutrition' | 'exercise' | 'general';
+  provider?: AiProviderKind;
 };
 
 /**
@@ -777,9 +795,7 @@ export const getNutritionInsightsPrompt = async (
   startDate: string,
   endDate: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string,
-  context?: 'nutrition' | 'exercise' | 'general',
-  provider?: AiProviderKind
+  { eatingPhase, context, provider }: InsightPromptOptions = {}
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -900,8 +916,7 @@ export const getMealCritiquePrompt = async (
   foods: { name: string; gramWeight: number }[],
   totals: { calories: number; protein: number; carbs: number; fat: number },
   language: string = DEFAULT_LANG,
-  context?: 'nutrition' | 'exercise' | 'general',
-  provider?: AiProviderKind
+  { context, provider }: Pick<InsightPromptOptions, 'context' | 'provider'> = {}
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const nutritionGoal = await NutritionGoalService.getCurrent();
@@ -966,9 +981,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
   startDate: string,
   endDate: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string,
-  context?: 'nutrition' | 'exercise' | 'general',
-  provider?: AiProviderKind
+  { eatingPhase, context, provider }: InsightPromptOptions = {}
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -1063,8 +1076,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
 export const getWorkoutInsightsPrompt = async (
   workoutTitle: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string,
-  provider?: AiProviderKind
+  { eatingPhase, provider }: Pick<InsightPromptOptions, 'eatingPhase' | 'provider'> = {}
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -1140,9 +1152,8 @@ export const getWorkoutInsightsPrompt = async (
 export const getRecentWorkoutInsightsPrompt = async (
   workoutTitle: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string,
   workoutJson?: string,
-  provider?: AiProviderKind
+  { eatingPhase, provider }: Pick<InsightPromptOptions, 'eatingPhase' | 'provider'> = {}
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =
@@ -1168,8 +1179,7 @@ export const getRecentWorkoutInsightsPrompt = async (
 export const getRecentWorkoutInsightsPromptByLogId = async (
   workoutLogId: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string,
-  provider?: AiProviderKind
+  options: Pick<InsightPromptOptions, 'eatingPhase' | 'provider'> = {}
 ): Promise<string> => {
   const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
   const units = await SettingsService.getUnits();
@@ -1177,9 +1187,8 @@ export const getRecentWorkoutInsightsPromptByLogId = async (
   return getRecentWorkoutInsightsPrompt(
     details.workoutLog.workoutName,
     language,
-    eatingPhase,
     workoutJson,
-    provider
+    options
   );
 };
 
@@ -1189,8 +1198,7 @@ export const getRecentWorkoutInsightsPromptByLogId = async (
 export const getWorkoutVolumeInsightsPrompt = async (
   workoutTitle: string,
   language: string = DEFAULT_LANG,
-  eatingPhase?: string,
-  provider?: AiProviderKind
+  { eatingPhase, provider }: Pick<InsightPromptOptions, 'eatingPhase' | 'provider'> = {}
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
   const eatingPhaseResolved =

@@ -1,5 +1,12 @@
-import type { Units } from '@/constants/settings';
-import type { FieldKey, OnboardingAnswersDraft } from '@/utils/aiOnboarding/contract';
+import type { Units, WorkoutAutonomy } from '@/constants/settings';
+import type { WeightGoal } from '@/database/models/User';
+import {
+  ACTIVITY_LEVELS,
+  CONTRACT_ENUMS,
+  type FieldKey,
+  type OnboardingAnswersDraft,
+} from '@/utils/aiOnboarding/contract';
+import { TRAINING_DAYS_OPTIONS } from '@/utils/onboardingTraining';
 import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
 
@@ -65,62 +72,75 @@ export const OPTIONAL_FIELDS: ReadonlySet<FieldKey> = new Set<FieldKey>([
 
 export type Choice = { value: string | number; labelKey?: string; labelText?: string };
 
-/** The labels the guided screens already use, reused so the two paths can never name a choice differently. */
+/** The choices of an answer picked from a fixed list, in the contract's own order. */
+function choicesFor<V extends string | number>(
+  values: readonly V[],
+  labelKeys: Record<V, string>
+): Choice[] {
+  return values.map((value) => ({ value, labelKey: labelKeys[value] }));
+}
+
+/**
+ * The offered values come from the contract's enumerations and the labels are the ones the guided
+ * screens already use, so the two paths can never offer or name a choice differently.
+ */
 export const FIELD_CHOICES: Partial<Record<FieldKey, readonly Choice[]>> = {
-  units: [
-    { value: 'metric', labelKey: 'onboarding.quickPreferences.metric' },
-    { value: 'imperial', labelKey: 'onboarding.quickPreferences.imperial' },
-  ],
-  gender: [
-    { value: 'male', labelKey: 'onboarding.quickPreferences.male' },
-    { value: 'female', labelKey: 'onboarding.quickPreferences.female' },
-    { value: 'other', labelKey: 'onboarding.quickPreferences.other' },
-  ],
-  liftingExperience: [
-    { value: 'beginner', labelKey: 'onboarding.personalizedExperience.beginner' },
-    { value: 'intermediate', labelKey: 'onboarding.personalizedExperience.intermediate' },
-    { value: 'advanced', labelKey: 'onboarding.personalizedExperience.advanced' },
-  ],
-  activityLevel: [
-    { value: 1, labelKey: 'onboarding.personalizedExperience.sedentary' },
-    { value: 2, labelKey: 'onboarding.personalizedExperience.lightlyActive' },
-    { value: 3, labelKey: 'onboarding.personalizedExperience.moderatelyActive' },
-    { value: 4, labelKey: 'onboarding.personalizedExperience.veryActive' },
-    { value: 5, labelKey: 'onboarding.personalizedExperience.extremelyActive' },
-  ],
-  fitnessGoal: [
-    { value: 'hypertrophy', labelKey: 'onboarding.quickGoals.buildMuscle' },
-    { value: 'strength', labelKey: 'onboarding.quickGoals.strength' },
-    { value: 'endurance', labelKey: 'onboarding.quickGoals.endurance' },
-    { value: 'weight_loss', labelKey: 'onboarding.quickGoals.weightLoss' },
-    { value: 'general', labelKey: 'onboarding.quickGoals.general' },
-  ],
-  weightGoal: [
-    { value: 'lose', labelKey: 'onboarding.quickGoals.lose' },
-    { value: 'maintain', labelKey: 'onboarding.quickGoals.maintain' },
-    { value: 'gain', labelKey: 'onboarding.quickGoals.gain' },
-  ],
-  trainingLocation: [
-    { value: 'gym', labelKey: 'onboarding.trainingSetup.location.gym' },
-    { value: 'home', labelKey: 'onboarding.trainingSetup.location.home' },
-    { value: 'minimal', labelKey: 'onboarding.trainingSetup.location.minimal' },
-  ],
-  trainingDaysPerWeek: [
-    { value: 2, labelText: '2' },
-    { value: 3, labelText: '3' },
-    { value: 4, labelText: '4' },
-    { value: 5, labelText: '5' },
-  ],
-  trainingAutonomy: [
-    { value: 'suggest', labelKey: 'onboarding.trainingSetup.help.suggest' },
-    { value: 'manual', labelKey: 'onboarding.trainingSetup.help.manual' },
-  ],
-  breakLength: [
-    { value: 'under1m', labelKey: 'comeback.setup.breakLength.under1m' },
-    { value: '1to3m', labelKey: 'comeback.setup.breakLength.1to3m' },
-    { value: '3to6m', labelKey: 'comeback.setup.breakLength.3to6m' },
-    { value: 'over6m', labelKey: 'comeback.setup.breakLength.over6m' },
-  ],
+  units: choicesFor(CONTRACT_ENUMS.units, {
+    metric: 'onboarding.quickPreferences.metric',
+    imperial: 'onboarding.quickPreferences.imperial',
+  }),
+  gender: choicesFor(CONTRACT_ENUMS.gender, {
+    male: 'onboarding.quickPreferences.male',
+    female: 'onboarding.quickPreferences.female',
+    other: 'onboarding.quickPreferences.other',
+  }),
+  liftingExperience: choicesFor(CONTRACT_ENUMS.liftingExperience, {
+    beginner: 'onboarding.personalizedExperience.beginner',
+    intermediate: 'onboarding.personalizedExperience.intermediate',
+    advanced: 'onboarding.personalizedExperience.advanced',
+  }),
+  activityLevel: choicesFor(ACTIVITY_LEVELS, {
+    1: 'onboarding.personalizedExperience.sedentary',
+    2: 'onboarding.personalizedExperience.lightlyActive',
+    3: 'onboarding.personalizedExperience.moderatelyActive',
+    4: 'onboarding.personalizedExperience.veryActive',
+    5: 'onboarding.personalizedExperience.extremelyActive',
+  }),
+  fitnessGoal: choicesFor(CONTRACT_ENUMS.fitnessGoal, {
+    hypertrophy: 'onboarding.quickGoals.buildMuscle',
+    strength: 'onboarding.quickGoals.strength',
+    endurance: 'onboarding.quickGoals.endurance',
+    weight_loss: 'onboarding.quickGoals.weightLoss',
+    general: 'onboarding.quickGoals.general',
+  }),
+  // Offered in the order the guided screen shows them, not the enumeration's.
+  weightGoal: choicesFor(['lose', 'maintain', 'gain'] as const satisfies readonly WeightGoal[], {
+    lose: 'onboarding.quickGoals.lose',
+    maintain: 'onboarding.quickGoals.maintain',
+    gain: 'onboarding.quickGoals.gain',
+  }),
+  trainingLocation: choicesFor(CONTRACT_ENUMS.trainingLocation, {
+    gym: 'onboarding.trainingSetup.location.gym',
+    home: 'onboarding.trainingSetup.location.home',
+    minimal: 'onboarding.trainingSetup.location.minimal',
+  }),
+  trainingDaysPerWeek: TRAINING_DAYS_OPTIONS.map((days) => ({
+    value: days,
+    labelText: String(days),
+  })),
+  trainingAutonomy: choicesFor(
+    ['suggest', 'manual'] as const satisfies readonly WorkoutAutonomy[],
+    {
+      suggest: 'onboarding.trainingSetup.help.suggest',
+      manual: 'onboarding.trainingSetup.help.manual',
+    }
+  ),
+  breakLength: choicesFor(CONTRACT_ENUMS.breakLength, {
+    under1m: 'comeback.setup.breakLength.under1m',
+    '1to3m': 'comeback.setup.breakLength.1to3m',
+    '3to6m': 'comeback.setup.breakLength.3to6m',
+    over6m: 'comeback.setup.breakLength.over6m',
+  }),
 };
 
 export type AnswerFormatters = {
@@ -136,29 +156,31 @@ export function formatAnswer(
   draft: OnboardingAnswersDraft,
   { t, units, formatDecimal, formatDate }: AnswerFormatters
 ): string | null {
-  const value = draft[field];
-  if (value === undefined) {
-    return null;
-  }
+  const { heightCm, weightKg, bodyFatPercent, birthDate, fullName } = draft;
 
   switch (field) {
     case 'heightCm':
-      return `${formatDecimal(cmToDisplay(value as number, units), 1)} ${getHeightUnit(units)}`;
+      return heightCm === undefined
+        ? null
+        : `${formatDecimal(cmToDisplay(heightCm, units), 1)} ${getHeightUnit(units)}`;
     case 'weightKg':
-      return `${formatDecimal(kgToDisplay(value as number, units), 1)} ${getWeightUnit(units)}`;
+      return weightKg === undefined
+        ? null
+        : `${formatDecimal(kgToDisplay(weightKg, units), 1)} ${getWeightUnit(units)}`;
     case 'bodyFatPercent':
-      return `${formatDecimal(value as number, 1)} %`;
+      return bodyFatPercent === undefined ? null : `${formatDecimal(bodyFatPercent, 1)} %`;
     case 'birthDate':
-      return formatDate(value as string);
+      return birthDate === undefined ? null : formatDate(birthDate);
     case 'fullName':
-      return value as string;
+      return fullName ?? null;
     default: {
-      const choice = FIELD_CHOICES[field]?.find((candidate) => candidate.value === value);
-      if (!choice) {
-        return String(value);
+      const value = draft[field];
+      if (value === undefined) {
+        return null;
       }
 
-      return choice.labelKey ? t(choice.labelKey) : (choice.labelText ?? String(value));
+      const choice = FIELD_CHOICES[field]?.find((candidate) => candidate.value === value);
+      return choice ? choiceLabel(choice, t) : String(value);
     }
   }
 }

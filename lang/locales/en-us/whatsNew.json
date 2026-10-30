@@ -182,6 +182,18 @@
           "title": "You check everything first",
           "description": "Every answer shows on a review screen where you can edit it. From Profile, each change sits next to what you have now, and nothing is saved until you apply it."
         },
+        "coachPersona": {
+          "title": "Pick who your AI coach is",
+          "description": "Keep Loggy, or choose Count Dracula, Cthulhu or Sherlock Holmes. Your coach's name, picture and way of talking change in the chat and in the insights it writes for you. Find it in Settings → AI, or choose one during the personalized setup."
+        },
+        "coachCustom": {
+          "title": "Or write your own",
+          "description": "Give your coach a name, describe how it talks and add a picture from your gallery. Your coach is saved on this device and you can edit it any time."
+        },
+        "coachVoiceOnly": {
+          "title": "Only the voice changes",
+          "description": "A coach changes the wording, never the numbers, the safety advice or what the coach helps with. With on-device AI the coach is always Loggy."
+        },
         "openAiSetup": "Update my profile with AI"
       }
     }

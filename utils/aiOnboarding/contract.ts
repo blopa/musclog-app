@@ -5,6 +5,7 @@ import type { Units, WorkoutAutonomy } from '@/constants/settings';
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models/User';
 import { formatLocalCalendarDayIso, parseLocalCalendarDate } from '@/utils/calendarDate';
 import { BREAK_LENGTHS, type BreakLength } from '@/utils/comeback/comebackState';
+import { isRecord } from '@/utils/isRecord';
 import { BODY_FAT_MAX, BODY_FAT_MIN } from '@/utils/nutritionCalculator';
 import {
   TRAINING_DAYS_OPTIONS,
@@ -34,22 +35,26 @@ const ESTIMATED_BIRTHDAY_OFFSET_DAYS = 182;
 const MIN_PLAUSIBLE_BMI = 12;
 const MAX_PLAUSIBLE_BMI = 70;
 
-const GENDERS = ['male', 'female', 'other'] as const satisfies readonly Gender[];
-const EXPERIENCES = [
+export const GENDERS = ['male', 'female', 'other'] as const satisfies readonly Gender[];
+export const EXPERIENCES = [
   'beginner',
   'intermediate',
   'advanced',
 ] as const satisfies readonly LiftingExperience[];
-const FITNESS_GOALS = [
+export const FITNESS_GOALS = [
   'hypertrophy',
   'strength',
   'endurance',
   'weight_loss',
   'general',
 ] as const satisfies readonly FitnessGoal[];
-const WEIGHT_GOALS = ['lose', 'gain', 'maintain'] as const satisfies readonly WeightGoal[];
-const UNIT_SYSTEMS = ['metric', 'imperial'] as const satisfies readonly Units[];
-const AUTONOMIES = ['manual', 'suggest'] as const satisfies readonly WorkoutAutonomy[];
+export const WEIGHT_GOALS = ['lose', 'gain', 'maintain'] as const satisfies readonly WeightGoal[];
+export const UNIT_SYSTEMS = ['metric', 'imperial'] as const satisfies readonly Units[];
+export const AUTONOMIES = ['manual', 'suggest'] as const satisfies readonly WorkoutAutonomy[];
+export const ACTIVITY_LEVELS = [1, 2, 3, 4, 5] as const;
+export type ActivityLevel = (typeof ACTIVITY_LEVELS)[number];
+export const isActivityLevel = (value: unknown): value is ActivityLevel =>
+  (ACTIVITY_LEVELS as readonly unknown[]).includes(value);
 
 export const CONTRACT_ENUMS = {
   units: UNIT_SYSTEMS,
@@ -114,7 +119,7 @@ export type OnboardingAnswersDraft = {
   weightKg?: number;
   bodyFatPercent?: number;
   liftingExperience?: LiftingExperience;
-  activityLevel?: number;
+  activityLevel?: ActivityLevel;
   fitnessGoal?: FitnessGoal;
   weightGoal?: WeightGoal;
   trainingLocation?: TrainingLocation;
@@ -135,6 +140,34 @@ export type AnswerWarning = {
     | 'unusualBodyMeasurements';
 };
 
+const BIRTH_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * One schema per answer. {@link contractDocumentSchema} (what an assistant is told to write) is
+ * assembled from these same objects and {@link normalizeAnswers} judges each answer with them, so
+ * the document we hand out and the document we accept are one definition. Bounds that are checked
+ * here report `outOfRange`; a mismatch of any other kind reports `invalid`.
+ */
+const answerSchemas = {
+  units: z.enum(UNIT_SYSTEMS),
+  gender: z.enum(GENDERS),
+  liftingExperience: z.enum(EXPERIENCES),
+  fitnessGoal: z.enum(FITNESS_GOALS),
+  weightGoal: z.enum(WEIGHT_GOALS),
+  trainingLocation: z.enum(TRAINING_LOCATIONS),
+  trainingAutonomy: z.enum(AUTONOMIES),
+  breakLength: z.enum(BREAK_LENGTHS),
+  birthDate: z.string().regex(BIRTH_DATE_PATTERN),
+  ageYears: z.number().int().min(AGE_MIN).max(AGE_MAX),
+  bodyFatPercent: z.number().min(BODY_FAT_MIN).max(BODY_FAT_MAX),
+  activityLevel: z.number().int().min(ACTIVITY_LEVELS[0]).max(ACTIVITY_LEVELS[4]),
+  trainingDaysPerWeek: z
+    .number()
+    .int()
+    .refine((value) => (TRAINING_DAYS_OPTIONS as readonly number[]).includes(value)),
+  fullName: z.string(),
+};
+
 const heightSchema = z.union([
   z.strictObject({ value: z.number(), unit: z.enum(['cm', 'in']) }),
   z.strictObject({
@@ -144,15 +177,11 @@ const heightSchema = z.union([
   }),
 ]);
 const weightSchema = z.strictObject({ value: z.number(), unit: z.enum(['kg', 'lb']) });
-const comingBackSchema = z.strictObject({ breakLength: z.enum(BREAK_LENGTHS) });
+const comingBackSchema = z.strictObject({ breakLength: answerSchemas.breakLength });
 const trainingSchema = z.strictObject({
-  location: z.enum(TRAINING_LOCATIONS).optional(),
-  daysPerWeek: z
-    .number()
-    .int()
-    .refine((value) => (TRAINING_DAYS_OPTIONS as readonly number[]).includes(value))
-    .optional(),
-  autonomy: z.enum(AUTONOMIES).optional(),
+  location: answerSchemas.trainingLocation.optional(),
+  daysPerWeek: answerSchemas.trainingDaysPerWeek.optional(),
+  autonomy: answerSchemas.trainingAutonomy.optional(),
   comingBack: comingBackSchema.optional(),
 });
 
@@ -163,51 +192,29 @@ const trainingSchema = z.strictObject({
 export const contractDocumentSchema = z.strictObject({
   schema: z.literal(CONTRACT_SCHEMA_ID),
   version: z.literal(CONTRACT_MAJOR),
-  fullName: z.string().max(FULL_NAME_MAX).optional(),
-  units: z.enum(UNIT_SYSTEMS),
-  gender: z.enum(GENDERS),
-  birthDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
-    .optional(),
-  ageYears: z.number().int().min(AGE_MIN).max(AGE_MAX).optional(),
+  fullName: answerSchemas.fullName.max(FULL_NAME_MAX).optional(),
+  units: answerSchemas.units,
+  gender: answerSchemas.gender,
+  birthDate: answerSchemas.birthDate.optional(),
+  ageYears: answerSchemas.ageYears.optional(),
   height: heightSchema,
   weight: weightSchema,
-  bodyFatPercent: z.number().min(BODY_FAT_MIN).max(BODY_FAT_MAX).optional(),
-  liftingExperience: z.enum(EXPERIENCES),
-  activityLevel: z.number().int().min(1).max(5),
-  fitnessGoal: z.enum(FITNESS_GOALS),
-  weightGoal: z.enum(WEIGHT_GOALS),
+  bodyFatPercent: answerSchemas.bodyFatPercent.optional(),
+  liftingExperience: answerSchemas.liftingExperience,
+  activityLevel: answerSchemas.activityLevel,
+  fitnessGoal: answerSchemas.fitnessGoal,
+  weightGoal: answerSchemas.weightGoal,
   training: trainingSchema.optional(),
 });
 
-/** Keys the contract recognises, used to report what was ignored. */
+/** Keys the contract recognises, derived from the schema, used to report what was ignored. */
 export const KNOWN_DOCUMENT_KEYS = {
-  top: [
-    'schema',
-    'version',
-    'fullName',
-    'units',
-    'gender',
-    'birthDate',
-    'ageYears',
-    'height',
-    'weight',
-    'bodyFatPercent',
-    'liftingExperience',
-    'activityLevel',
-    'fitnessGoal',
-    'weightGoal',
-    'training',
-  ],
-  height: ['value', 'unit', 'feet', 'inches'],
-  weight: ['value', 'unit'],
-  training: ['location', 'daysPerWeek', 'autonomy', 'comingBack'],
-  comingBack: ['breakLength'],
-} as const;
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+  top: Object.keys(contractDocumentSchema.shape),
+  height: [...new Set(heightSchema.options.flatMap((option) => Object.keys(option.shape)))],
+  weight: Object.keys(weightSchema.shape),
+  training: Object.keys(trainingSchema.shape),
+  comingBack: Object.keys(comingBackSchema.shape),
+};
 
 const round1 = (value: number): number => Math.round(value * 10) / 10;
 
@@ -222,25 +229,34 @@ export function estimateBirthDateFromAge(ageYears: number, today: Date): string 
   );
 }
 
-function readBirthDate(
-  value: unknown,
-  today: Date
-): { ok: true; value: string } | { ok: false; code: FieldIssue['code'] } {
-  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    return { ok: false, code: 'invalid' };
+type FieldRead<T> = { ok: true; value: T } | { ok: false; code: FieldIssue['code'] };
+
+/** One answer judged by its schema: a bound that was crossed is `outOfRange`, anything else `invalid`. */
+function readField<S extends z.ZodType>(schema: S, value: unknown): FieldRead<z.output<S>> {
+  const result = schema.safeParse(value);
+  if (result.success) {
+    return { ok: true, value: result.data };
   }
 
-  const parsed = parseLocalCalendarDate(value);
-  if (Number.isNaN(parsed.getTime()) || formatLocalCalendarDayIso(parsed) !== value) {
+  const crossedBound = result.error.issues.every(
+    (issue) => issue.code === 'too_small' || issue.code === 'too_big'
+  );
+  return { ok: false, code: crossedBound ? 'outOfRange' : 'invalid' };
+}
+
+function readBirthDate(value: unknown, today: Date): FieldRead<string> {
+  const text = readField(answerSchemas.birthDate, value);
+  if (!text.ok) {
+    return text;
+  }
+
+  const parsed = parseLocalCalendarDate(text.value);
+  if (Number.isNaN(parsed.getTime()) || formatLocalCalendarDayIso(parsed) !== text.value) {
     return { ok: false, code: 'invalid' };
   }
 
   const age = differenceInYears(today, parsed);
-  return age < AGE_MIN || age > AGE_MAX ? { ok: false, code: 'outOfRange' } : { ok: true, value };
-}
-
-function readNumber(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+  return age < AGE_MIN || age > AGE_MAX ? { ok: false, code: 'outOfRange' } : text;
 }
 
 /** Control characters and invisible separators have no place in a display name. */
@@ -276,87 +292,76 @@ export function normalizeAnswers(
   const warnings: AnswerWarning[] = [];
   const source = isRecord(raw) ? raw : {};
   const fail = (field: FieldKey, code: FieldIssue['code']) => issues.push({ field, code });
-  const present = (key: string) => source[key] !== undefined && source[key] !== null;
+  const present = (value: unknown) => value !== undefined && value !== null;
 
-  const pickEnum = <K extends keyof typeof CONTRACT_ENUMS>(
-    key: K,
+  /** Reads one answer through its schema; absent means "not answered", a mismatch is reported. */
+  const read = <S extends z.ZodType>(
     field: FieldKey,
+    schema: S,
     value: unknown
-  ): (typeof CONTRACT_ENUMS)[K][number] | undefined => {
-    if (value === undefined || value === null) {
+  ): z.output<S> | undefined => {
+    if (!present(value)) {
       return undefined;
     }
 
-    if ((CONTRACT_ENUMS[key] as readonly unknown[]).includes(value)) {
-      return value as (typeof CONTRACT_ENUMS)[K][number];
+    const result = readField(schema, value);
+    if (result.ok) {
+      return result.value;
     }
 
-    fail(field, 'invalid');
+    fail(field, result.code);
     return undefined;
   };
 
-  if (present('fullName')) {
-    const name = typeof source.fullName === 'string' ? cleanName(source.fullName) : null;
-    if (name === null) {
-      fail('fullName', 'invalid');
-    } else if (name) {
-      draft.fullName = name;
+  /** `read`, then store the answer under the same name. */
+  const take = <K extends FieldKey>(
+    field: K,
+    schema: z.ZodType<NonNullable<OnboardingAnswersDraft[K]>>,
+    value: unknown
+  ) => {
+    const answer = read(field, schema, value);
+    if (answer !== undefined) {
+      draft[field] = answer;
+    }
+  };
+
+  if (present(source.fullName)) {
+    const name = read('fullName', answerSchemas.fullName, source.fullName);
+    if (name !== undefined && cleanName(name)) {
+      draft.fullName = cleanName(name);
     }
   }
 
-  const units = pickEnum('units', 'units', source.units);
-  if (units) {
-    draft.units = units;
-  }
+  take('units', answerSchemas.units, source.units);
+  take('gender', answerSchemas.gender, source.gender);
+  take('liftingExperience', answerSchemas.liftingExperience, source.liftingExperience);
+  take('fitnessGoal', answerSchemas.fitnessGoal, source.fitnessGoal);
+  take('weightGoal', answerSchemas.weightGoal, source.weightGoal);
 
-  const gender = pickEnum('gender', 'gender', source.gender);
-  if (gender) {
-    draft.gender = gender;
-  }
-
-  const experience = pickEnum('liftingExperience', 'liftingExperience', source.liftingExperience);
-  if (experience) {
-    draft.liftingExperience = experience;
-  }
-
-  const fitnessGoal = pickEnum('fitnessGoal', 'fitnessGoal', source.fitnessGoal);
-  if (fitnessGoal) {
-    draft.fitnessGoal = fitnessGoal;
-  }
-
-  const weightGoal = pickEnum('weightGoal', 'weightGoal', source.weightGoal);
-  if (weightGoal) {
-    draft.weightGoal = weightGoal;
-  }
-
-  if (present('activityLevel')) {
-    const level = readNumber(source.activityLevel);
-    if (level !== null && Number.isInteger(level) && level >= 1 && level <= 5) {
-      draft.activityLevel = level;
-    } else {
-      fail('activityLevel', level === null || !Number.isInteger(level) ? 'invalid' : 'outOfRange');
-    }
+  const activityLevel = read('activityLevel', answerSchemas.activityLevel, source.activityLevel);
+  if (activityLevel !== undefined) {
+    // The schema has just checked the integer range, which is exactly `ActivityLevel`.
+    draft.activityLevel = activityLevel as ActivityLevel;
   }
 
   // Birthday: a real date wins over an age; an age only fills in when no usable date came with it.
-  const birth = present('birthDate') ? readBirthDate(source.birthDate, today) : null;
-  const age = present('ageYears') ? readNumber(source.ageYears) : null;
-  const ageUsable = age !== null && Number.isInteger(age) && age >= AGE_MIN && age <= AGE_MAX;
+  const birth = present(source.birthDate) ? readBirthDate(source.birthDate, today) : null;
+  const age = present(source.ageYears) ? readField(answerSchemas.ageYears, source.ageYears) : null;
   if (birth?.ok) {
     draft.birthDate = birth.value;
-    if (ageUsable && Math.abs(ageFromBirthDate(birth.value, today) - age) > 1) {
+    if (age?.ok && Math.abs(ageFromBirthDate(birth.value, today) - age.value) > 1) {
       warnings.push({ code: 'dobAgeMismatch' });
     }
-  } else if (ageUsable) {
-    draft.birthDate = estimateBirthDateFromAge(age, today);
+  } else if (age?.ok) {
+    draft.birthDate = estimateBirthDateFromAge(age.value, today);
     draft.dobEstimated = true;
   } else if (birth) {
     fail('birthDate', birth.code);
-  } else if (present('ageYears')) {
-    fail('birthDate', age !== null && Number.isInteger(age) ? 'outOfRange' : 'invalid');
+  } else if (age) {
+    fail('birthDate', age.code);
   }
 
-  if (present('height')) {
+  if (present(source.height)) {
     const parsed = heightSchema.safeParse(source.height);
     if (!parsed.success) {
       fail('heightCm', 'invalid');
@@ -375,7 +380,7 @@ export function normalizeAnswers(
     }
   }
 
-  if (present('weight')) {
+  if (present(source.weight)) {
     const parsed = weightSchema.safeParse(source.weight);
     if (!parsed.success) {
       fail('weightKg', 'invalid');
@@ -391,48 +396,29 @@ export function normalizeAnswers(
     }
   }
 
-  if (present('bodyFatPercent')) {
-    const fat = readNumber(source.bodyFatPercent);
-    if (fat === null) {
-      fail('bodyFatPercent', 'invalid');
-    } else if (fat >= BODY_FAT_MIN && fat <= BODY_FAT_MAX) {
-      draft.bodyFatPercent = round1(fat);
-    } else {
-      fail('bodyFatPercent', 'outOfRange');
-    }
+  const bodyFat = read('bodyFatPercent', answerSchemas.bodyFatPercent, source.bodyFatPercent);
+  if (bodyFat !== undefined) {
+    draft.bodyFatPercent = round1(bodyFat);
   }
 
   if (isRecord(source.training)) {
     const training = source.training;
-    const location = pickEnum('trainingLocation', 'trainingLocation', training.location);
-    if (location) {
-      draft.trainingLocation = location;
-    }
+    take('trainingLocation', answerSchemas.trainingLocation, training.location);
+    take('trainingAutonomy', answerSchemas.trainingAutonomy, training.autonomy);
+    take('trainingDaysPerWeek', answerSchemas.trainingDaysPerWeek, training.daysPerWeek);
 
-    const autonomy = pickEnum('trainingAutonomy', 'trainingAutonomy', training.autonomy);
-    if (autonomy) {
-      draft.trainingAutonomy = autonomy;
-    }
-
-    if (training.daysPerWeek !== undefined && training.daysPerWeek !== null) {
-      const days = readNumber(training.daysPerWeek);
-      if (days !== null && (TRAINING_DAYS_OPTIONS as readonly number[]).includes(days)) {
-        draft.trainingDaysPerWeek = days;
+    if (present(training.comingBack)) {
+      const length = readField(
+        answerSchemas.breakLength,
+        isRecord(training.comingBack) ? training.comingBack.breakLength : undefined
+      );
+      if (length.ok) {
+        draft.breakLength = length.value;
       } else {
-        fail('trainingDaysPerWeek', 'invalid');
-      }
-    }
-
-    if (training.comingBack !== undefined && training.comingBack !== null) {
-      const comingBack = isRecord(training.comingBack) ? training.comingBack : {};
-      const length = pickEnum('breakLength', 'breakLength', comingBack.breakLength);
-      if (length) {
-        draft.breakLength = length;
-      } else if (!issues.some((issue) => issue.field === 'breakLength')) {
         fail('breakLength', 'invalid');
       }
     }
-  } else if (present('training')) {
+  } else if (present(source.training)) {
     fail('trainingLocation', 'invalid');
   }
 
@@ -487,31 +473,48 @@ export function isCompleteAnswers(
 }
 
 /**
- * The draft written back in the contract's own shape, so a stored or in-flight draft can be
- * re-validated by the exact code that validates an import. Metric values, so units are explicit.
+ * Flat answers (the draft's own names, or an assistant turn's patch) rebuilt as the contract's
+ * nested document, so one validator, {@link normalizeAnswers}, judges every route in. Height comes
+ * as `heightCm` or `heightFeet` + `heightInches`; weight as `weightKg` or `weightValue` +
+ * `weightUnit`. A weight without its unit is ambiguous (kg vs lb), so it is left to be rejected.
  */
-export function draftToContractShape(draft: OnboardingAnswersDraft): Record<string, unknown> {
+export function flatToDocument(flat: Record<string, unknown>): Record<string, unknown> {
+  const has = (key: string) => flat[key] !== undefined && flat[key] !== null;
   const training = {
-    location: draft.trainingLocation,
-    daysPerWeek: draft.trainingDaysPerWeek,
-    autonomy: draft.trainingAutonomy,
-    ...(draft.breakLength ? { comingBack: { breakLength: draft.breakLength } } : {}),
+    location: flat.trainingLocation ?? undefined,
+    daysPerWeek: flat.trainingDaysPerWeek ?? undefined,
+    autonomy: flat.trainingAutonomy ?? undefined,
+    comingBack: has('breakLength') ? { breakLength: flat.breakLength } : undefined,
   };
-  const hasTraining = Object.values(training).some((value) => value !== undefined);
+
+  let height: unknown;
+  if (has('heightCm')) {
+    height = { value: flat.heightCm, unit: 'cm' };
+  } else if (has('heightFeet')) {
+    height = { feet: flat.heightFeet, inches: flat.heightInches ?? 0, unit: 'ft_in' };
+  }
+
+  let weight: unknown;
+  if (has('weightKg')) {
+    weight = { value: flat.weightKg, unit: 'kg' };
+  } else if (has('weightValue')) {
+    weight = { value: flat.weightValue, unit: flat.weightUnit };
+  }
 
   return {
-    fullName: draft.fullName,
-    units: draft.units,
-    gender: draft.gender,
-    birthDate: draft.birthDate,
-    height: draft.heightCm === undefined ? undefined : { value: draft.heightCm, unit: 'cm' },
-    weight: draft.weightKg === undefined ? undefined : { value: draft.weightKg, unit: 'kg' },
-    bodyFatPercent: draft.bodyFatPercent,
-    liftingExperience: draft.liftingExperience,
-    activityLevel: draft.activityLevel,
-    fitnessGoal: draft.fitnessGoal,
-    weightGoal: draft.weightGoal,
-    training: hasTraining ? training : undefined,
+    fullName: flat.fullName,
+    units: flat.units,
+    gender: flat.gender,
+    birthDate: flat.birthDate,
+    ageYears: flat.ageYears,
+    height,
+    weight,
+    bodyFatPercent: flat.bodyFatPercent,
+    liftingExperience: flat.liftingExperience,
+    activityLevel: flat.activityLevel,
+    fitnessGoal: flat.fitnessGoal,
+    weightGoal: flat.weightGoal,
+    training: Object.values(training).some((value) => value !== undefined) ? training : undefined,
   };
 }
 
@@ -524,10 +527,25 @@ export function sanitizeDraft(raw: unknown, today: Date): OnboardingAnswersDraft
     return {};
   }
 
-  const { draft } = normalizeAnswers(draftToContractShape(raw as OnboardingAnswersDraft), today);
+  const { draft } = normalizeAnswers(flatToDocument(raw), today);
   if (raw.dobEstimated === true && draft.birthDate !== undefined) {
     draft.dobEstimated = true;
   }
 
   return draft;
+}
+
+/** The named answers that are present in a draft; absent ones stay absent, never defaulted. */
+export function pickAnswers<K extends FieldKey>(
+  draft: OnboardingAnswersDraft,
+  keys: readonly K[]
+): Pick<OnboardingAnswersDraft, K> {
+  const picked: OnboardingAnswersDraft = {};
+  for (const key of keys) {
+    if (draft[key] !== undefined) {
+      picked[key] = draft[key];
+    }
+  }
+
+  return picked;
 }

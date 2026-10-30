@@ -473,7 +473,8 @@ describe('Phase 8: screen headers and wayfinding', () => {
     ['app/app/onboarding/ai-provider.tsx', null, null],
     ['app/app/onboarding/ai-chat.tsx', null, null],
     ['app/app/onboarding/ai-external.tsx', null, null],
-    ['app/app/onboarding/ai-review.tsx', null, null],
+    // The review's two modes share one shell, which is where the header is.
+    ['components/aiOnboarding/ReviewScaffold.tsx', null, null],
   ];
 
   it.each(SCREENS)('%s renders ScreenHeader', (file, destination, lockArea) => {

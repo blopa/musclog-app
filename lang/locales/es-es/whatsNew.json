@@ -182,6 +182,18 @@
           "title": "Tú lo revisas todo primero",
           "description": "Cada respuesta aparece en una pantalla de revisión donde puedes editarla. Desde el Perfil, cada cambio se muestra junto a lo que tienes ahora y no se guarda nada hasta que lo apliques."
         },
+        "coachPersona": {
+          "title": "Elige quién es tu entrenador de IA",
+          "description": "Quédate con Loggy o elige al Conde Drácula, a Cthulhu o a Sherlock Holmes. El nombre, la imagen y la forma de hablar de tu entrenador cambian en el chat y en los análisis que te escribe. Lo encuentras en Ajustes → IA, o puedes elegirlo durante la configuración personalizada."
+        },
+        "coachCustom": {
+          "title": "O escribe el tuyo",
+          "description": "Ponle nombre a tu entrenador, describe cómo habla y añade una imagen de tu galería. Se guarda en este dispositivo y puedes editarlo cuando quieras."
+        },
+        "coachVoiceOnly": {
+          "title": "Solo cambia la voz",
+          "description": "El entrenador cambia las palabras, nunca los números, los consejos de seguridad ni aquello en lo que ayuda. Con la IA del dispositivo, el entrenador siempre es Loggy."
+        },
         "openAiSetup": "Actualizar mi perfil con IA"
       }
     }

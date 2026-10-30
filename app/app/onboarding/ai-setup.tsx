@@ -1,4 +1,3 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Bot, ExternalLink } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -9,10 +8,8 @@ import { ListGroup } from '@/components/theme/ListGroup';
 import { ListRow } from '@/components/theme/ListRow';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TextButton } from '@/components/theme/TextButton';
-import { useAiGuidedExit } from '@/hooks/useAiGuidedExit';
-import { useAiOnboardingDraft } from '@/hooks/useAiOnboardingDraft';
+import { useAiSetupSession } from '@/hooks/useAiSetupSession';
 import { useTheme } from '@/hooks/useTheme';
-import { aiSetupRoute, resolveAiSetupMode } from '@/utils/onboardingRoutes';
 
 /**
  * The start of the AI setup: pick how to answer (a chat here, or ChatGPT/Claude outside the app),
@@ -21,28 +18,22 @@ import { aiSetupRoute, resolveAiSetupMode } from '@/utils/onboardingRoutes';
 export default function AiSetupScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
-  const router = useRouter();
-  const mode = resolveAiSetupMode(useLocalSearchParams<{ mode?: string }>().mode);
-  const isProfile = mode === 'profile';
-  const { draft, loading, hasSaved, startOver, discard } = useAiOnboardingDraft(mode);
+  const { copy, goGuided, go, draftApi } = useAiSetupSession();
+  const { draft, loading, hasSaved, startOver } = draftApi;
 
   const resume = () => {
     if (draft?.path === 'external') {
-      router.navigate(aiSetupRoute('external', mode) as never);
+      go('external');
     } else if (draft?.path === 'import') {
-      router.navigate(aiSetupRoute('review', mode) as never);
+      go('review');
     } else {
-      router.navigate(aiSetupRoute(draft?.provider ? 'chat' : 'provider', mode) as never);
+      go(draft?.provider ? 'chat' : 'provider');
     }
   };
 
-  const goGuided = useAiGuidedExit(mode, { draft, hasSaved, discard });
-
   return (
     <MasterLayout showNavigationMenu={false}>
-      <ScreenHeader
-        title={t(isProfile ? 'aiOnboarding.hub.profileTitle' : 'aiOnboarding.hub.title')}
-      />
+      <ScreenHeader title={t(copy.hubTitleKey)} />
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 48 }}
@@ -52,7 +43,7 @@ export default function AiSetupScreen() {
           <Text
             style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.base }}
           >
-            {t(isProfile ? 'aiOnboarding.hub.profileIntro' : 'aiOnboarding.hub.intro')}
+            {t(copy.hubIntroKey)}
           </Text>
 
           {loading ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
@@ -67,21 +58,21 @@ export default function AiSetupScreen() {
               icon={Bot}
               title={t('aiOnboarding.hub.chatTitle')}
               subtitle={t('aiOnboarding.hub.chatSubtitle')}
-              onPress={() => router.navigate(aiSetupRoute('provider', mode) as never)}
+              onPress={() => go('provider')}
             />
             <ListRow
               variant="grouped"
               icon={ExternalLink}
               title={t('aiOnboarding.hub.externalTitle')}
               subtitle={t('aiOnboarding.hub.externalSubtitle')}
-              onPress={() => router.navigate(aiSetupRoute('external', mode) as never)}
+              onPress={() => go('external')}
             />
           </ListGroup>
 
           <TextButton
             label={t('aiOnboarding.hub.haveFile')}
             align="center"
-            onPress={() => router.navigate(aiSetupRoute('external', mode) as never)}
+            onPress={() => go('external')}
           />
 
           <Text
@@ -90,14 +81,7 @@ export default function AiSetupScreen() {
             {t('aiOnboarding.hub.privacy')}
           </Text>
 
-          <TextButton
-            label={t(
-              isProfile ? 'aiOnboarding.common.editManually' : 'aiOnboarding.common.backToGuided'
-            )}
-            tone="muted"
-            align="center"
-            onPress={goGuided}
-          />
+          <TextButton label={t(copy.exitKey)} tone="muted" align="center" onPress={goGuided} />
         </View>
       </ScrollView>
     </MasterLayout>

@@ -6,9 +6,8 @@ import {
   type CoachAIConfig,
   GatewayRateLimitError,
   PROVIDER_CONFIGS,
-  sendStructuredChatTurn,
-  type StructuredTurnRequest,
 } from '../coachAI';
+import { sendStructuredChatTurn, type StructuredTurnRequest } from '../structuredChat';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from '../gemini';
 import { handleError } from '../handleError';
 

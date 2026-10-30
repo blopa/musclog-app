@@ -2,7 +2,6 @@
   "coach": {
     "title": "Чат",
     "you": "Вы",
-    "name": "Loggy",
     "status": "В сети",
     "statusOffline": "Не в сети",
     "context": {

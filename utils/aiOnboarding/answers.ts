@@ -1,13 +1,17 @@
-import type { WorkoutAutonomy } from '@/constants/settings';
 import {
   ageFromBirthDate,
   type CompleteOnboardingAnswers,
   type OnboardingAnswersDraft,
+  pickAnswers,
 } from '@/utils/aiOnboarding/contract';
 import { localDayStartMsFromIsoDateOnly } from '@/utils/calendarDate';
 import type { FitnessProfileWrite } from '@/utils/fitnessProfilePersistence';
 import type { NutritionCalculatorInput } from '@/utils/nutritionCalculator';
-import type { BodyStatsDraft, PersonalizedSetupData } from '@/utils/onboardingDraft';
+import {
+  type BodyStatsDraft,
+  PERSONALIZED_SETUP_KEYS,
+  type PersonalizedSetupData,
+} from '@/utils/onboardingDraft';
 import {
   DEFAULT_TRAINING_DAYS,
   planWeightGoal,
@@ -28,7 +32,7 @@ export function toProfileWrite(answers: OnboardingAnswersDraft): FitnessProfileW
     gender: answers.gender,
     fitnessGoal: answers.fitnessGoal,
     weightGoal: answers.weightGoal,
-    activityLevel: answers.activityLevel as FitnessProfileWrite['activityLevel'],
+    activityLevel: answers.activityLevel,
     liftingExperience: answers.liftingExperience,
     weightKg: answers.weightKg,
     heightCm: answers.heightCm,
@@ -56,24 +60,8 @@ export function toPersonalizedSetup(
   { skipMusclogApi }: { skipMusclogApi: boolean }
 ): PersonalizedSetupData {
   return {
-    ...(answers.fullName ? { fullName: answers.fullName } : {}),
-    ...(answers.units ? { units: answers.units } : {}),
-    ...(answers.gender ? { gender: answers.gender } : {}),
-    ...(answers.liftingExperience ? { liftingExperience: answers.liftingExperience } : {}),
-    ...(answers.activityLevel ? { activityLevel: answers.activityLevel } : {}),
-    ...(answers.fitnessGoal ? { fitnessGoal: answers.fitnessGoal } : {}),
-    ...(answers.weightGoal ? { weightGoal: answers.weightGoal } : {}),
+    ...pickAnswers(answers, PERSONALIZED_SETUP_KEYS),
     ...(skipMusclogApi ? { skipMusclogApi: true } : {}),
-  };
-}
-
-export function toBodyStatsDraft(answers: OnboardingAnswersDraft): BodyStatsDraft {
-  return {
-    ...(answers.birthDate ? { birthDate: answers.birthDate } : {}),
-    ...(answers.birthDate && answers.dobEstimated ? { dobEstimated: true } : {}),
-    ...(answers.heightCm !== undefined ? { heightCm: answers.heightCm } : {}),
-    ...(answers.weightKg !== undefined ? { weightKg: answers.weightKg } : {}),
-    ...(answers.bodyFatPercent !== undefined ? { bodyFatPercent: answers.bodyFatPercent } : {}),
   };
 }
 
@@ -91,7 +79,7 @@ export function toPlanInput(
     weightKg: answers.weightKg,
     heightCm: answers.heightCm,
     age: Math.max(1, ageFromBirthDate(answers.birthDate, today)),
-    activityLevel: answers.activityLevel as NutritionCalculatorInput['activityLevel'],
+    activityLevel: answers.activityLevel,
     weightGoal: planWeightGoal(training, answers.weightGoal),
     fitnessGoal: answers.fitnessGoal,
     liftingExperience: answers.liftingExperience,
@@ -105,27 +93,16 @@ export function fromGuidedDrafts(
   body: BodyStatsDraft,
   training: TrainingSetupData | null
 ): OnboardingAnswersDraft {
-  const autonomy: WorkoutAutonomy | undefined = training?.autonomy;
+  const { skipMusclogApi: _carriedSeparately, ...answers } = personalized;
+
   return {
-    ...(personalized.fullName ? { fullName: personalized.fullName } : {}),
-    ...(personalized.units ? { units: personalized.units } : {}),
-    ...(personalized.gender ? { gender: personalized.gender } : {}),
-    ...(personalized.liftingExperience
-      ? { liftingExperience: personalized.liftingExperience }
-      : {}),
-    ...(personalized.activityLevel ? { activityLevel: personalized.activityLevel } : {}),
-    ...(personalized.fitnessGoal ? { fitnessGoal: personalized.fitnessGoal } : {}),
-    ...(personalized.weightGoal ? { weightGoal: personalized.weightGoal } : {}),
-    ...(body.birthDate ? { birthDate: body.birthDate } : {}),
-    ...(body.birthDate && body.dobEstimated ? { dobEstimated: true } : {}),
-    ...(body.heightCm !== undefined ? { heightCm: body.heightCm } : {}),
-    ...(body.weightKg !== undefined ? { weightKg: body.weightKg } : {}),
-    ...(body.bodyFatPercent !== undefined ? { bodyFatPercent: body.bodyFatPercent } : {}),
+    ...answers,
+    ...body,
     ...(training
       ? {
           trainingLocation: training.location,
           trainingDaysPerWeek: training.daysPerWeek,
-          ...(autonomy ? { trainingAutonomy: autonomy } : {}),
+          ...(training.autonomy ? { trainingAutonomy: training.autonomy } : {}),
           ...(training.comingBack ? { breakLength: training.comingBack.breakLength } : {}),
         }
       : {}),

@@ -112,9 +112,20 @@ export const PROFILE_RESULTS_ROUTE =
 export type AiSetupScreen = 'setup' | 'provider' | 'chat' | 'external' | 'review';
 export type AiSetupMode = 'onboarding' | 'profile';
 
-/** Every AI-setup screen takes the mode as a query parameter; this is the one place that spells it. */
-export function aiSetupRoute(screen: AiSetupScreen, mode: AiSetupMode): string {
-  return `/app/onboarding/ai-${screen}?mode=${mode}`;
+/**
+ * Every AI-setup screen takes the mode as a query parameter; this is the one place that spells it.
+ * `params` adds further query parameters (the provider screen's `entry`), encoded.
+ */
+export function aiSetupRoute(
+  screen: AiSetupScreen,
+  mode: AiSetupMode,
+  params: Record<string, string> = {}
+): string {
+  const extra = Object.entries(params)
+    .map(([key, value]) => `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('');
+
+  return `/app/onboarding/ai-${screen}?mode=${mode}${extra}`;
 }
 
 /** Reads the `mode` parameter; anything but `profile` is first-time onboarding. */

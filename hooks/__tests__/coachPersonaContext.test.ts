@@ -14,7 +14,7 @@ const mockSubject = new Subject<{ name: string; voice: string; avatar: string }>
 
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => `t(${key})` }) }));
 jest.mock('@/hooks/useSettings', () => ({ useSettings: () => mockSettings }));
-jest.mock('@/components/coach/coachPersonaAvatars', () => ({
+jest.mock('@/utils/coachPersonaAvatar', () => ({
   coachAvatarSource: (id: string, custom = '') => ({ id, custom }),
 }));
 jest.mock('@/database/services/SettingsService', () => ({

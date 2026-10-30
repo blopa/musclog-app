@@ -9,7 +9,7 @@ import { AiService } from '@/services/AiService';
 import type { ChatMessage } from '@/utils/aiOnboarding/chatState';
 import { newDraft } from '@/utils/aiOnboarding/draftStorage';
 import { AiInvalidKeyError } from '@/utils/aiErrors';
-import { sendStructuredChatTurn } from '@/utils/coachAI';
+import { sendStructuredChatTurn } from '@/utils/structuredChat';
 
 // The real SDK needs fetch globals jsdom lacks; only its connection-error class is read.
 jest.mock('openai', () => {
@@ -34,10 +34,7 @@ jest.mock('@/database/services/SettingsService', () => ({ SettingsService: {} })
 jest.mock('@/services/AiService', () => ({
   AiService: { getAiConfigForProvider: jest.fn() },
 }));
-jest.mock('@/utils/coachAI', () => ({
-  ...jest.requireActual('@/utils/coachAI'),
-  sendStructuredChatTurn: jest.fn(),
-}));
+jest.mock('@/utils/structuredChat', () => ({ sendStructuredChatTurn: jest.fn() }));
 
 const mockConfig = AiService.getAiConfigForProvider as jest.Mock;
 const mockSend = sendStructuredChatTurn as jest.Mock;

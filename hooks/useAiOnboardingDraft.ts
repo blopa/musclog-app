@@ -30,6 +30,12 @@ export type AiOnboardingDraftApi = {
   discard: () => void;
 };
 
+/** A draft API whose session has been read, so `draft` is there to use. */
+export type LoadedAiDraftApi = AiOnboardingDraftApi & { draft: AiOnboardingDraftRecord };
+
+export const isDraftLoaded = (api: AiOnboardingDraftApi): api is LoadedAiDraftApi =>
+  !api.loading && api.draft !== null;
+
 /**
  * The saved AI-setup session for a mode: transcript, composer text and answers so far. Writes are
  * serialised so a late composer save can never overwrite a newer update, and `discard` ends them

@@ -19,7 +19,6 @@ import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { commitOnboardingProfile } from '@/services/onboardingAnswersApply';
-import { toBodyStatsDraft } from '@/utils/aiOnboarding/answers';
 import type { CompleteOnboardingAnswers } from '@/utils/aiOnboarding/contract';
 import {
   formatLocalCalendarDayIso,
@@ -28,6 +27,7 @@ import {
 } from '@/utils/calendarDate';
 import {
   type PersonalizedSetupData,
+  pickBodyStats,
   readBodyStatsDraft,
   readPersonalizedSetup,
   writeBodyStatsDraft,
@@ -125,7 +125,7 @@ export default function PersonalizedBodyStatsScreen() {
 
       // Kept so going back and forth shows what was typed, and saved through the one profile
       // writer, which updates today's readings instead of stacking new ones.
-      await writeBodyStatsDraft(toBodyStatsDraft(answers));
+      await writeBodyStatsDraft(pickBodyStats(answers));
       await commitOnboardingProfile(answers, { useBodyFat: useBfForCalculations });
       await setCurrentOnboardingStep('/app/onboarding/personalized-body-stats');
       router.navigate('/app/onboarding/personalized-cycle');

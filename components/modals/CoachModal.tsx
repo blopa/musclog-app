@@ -252,6 +252,7 @@ const renderBubble = (
   theme: Theme,
   conversationContext: string,
   locale: string,
+  coachName: string,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
   onLongPress?: (message: ExtendedIMessage) => void,
   onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealIndex: number) => void,
@@ -295,11 +296,9 @@ const renderBubble = (
         onLongPress={() => currentMessage && onLongPress?.(currentMessage)}
         delayLongPress={350}
       >
-        {!!currentMessage?.user.name ? (
-          <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
-            {currentMessage.user.name}
-          </Text>
-        ) : null}
+        <Text className="mb-1 ml-1 text-xs" style={{ color: theme.colors.text.secondary }}>
+          {coachName}
+        </Text>
         {!!currentMessage?.image ? <MessageImage props={props} theme={theme} /> : null}
         {!!currentMessage?.text && !currentMessage?.workoutCompleted ? (
           <View style={styles.aiBubbleContent}>{renderMessageText(props, theme)}</View>
@@ -783,11 +782,11 @@ export function CoachModal({
         _id: `${idPrefix}-${Date.now()}`,
         text: t(promptKey),
         createdAt: new Date(),
-        // The bubble's avatar is drawn by `renderAvatar`, which reads the persona.
-        user: { _id: 2, name: persona.name },
+        // The bubble's name and avatar are drawn from the persona, not from this user object.
+        user: { _id: 2 },
       });
     },
-    [addPendingCoachMessage, persona.name, t]
+    [addPendingCoachMessage, t]
   );
 
   // Arm and disarm are separate primitives on purpose: the chips want the toggle, while an
@@ -1204,6 +1203,7 @@ export function CoachModal({
         theme,
         conversationContext,
         locale,
+        persona.name,
         handleViewWorkoutDetails,
         handleMessageLongPress,
         handleViewMealDetails,
@@ -1223,6 +1223,7 @@ export function CoachModal({
       handleSeeAllMeals,
       handleViewMuscles,
       locale,
+      persona.name,
       t,
     ]
   );

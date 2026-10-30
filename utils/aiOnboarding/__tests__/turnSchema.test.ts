@@ -1,10 +1,5 @@
-import { FIELD_KEYS } from '@/utils/aiOnboarding/contract';
-import {
-  buildTurnJsonSchema,
-  parseAiTurn,
-  patchToDocument,
-  TURN_PATCH_KEYS,
-} from '@/utils/aiOnboarding/turnSchema';
+import { FIELD_KEYS, flatToDocument } from '@/utils/aiOnboarding/contract';
+import { buildTurnJsonSchema, parseAiTurn, TURN_PATCH_KEYS } from '@/utils/aiOnboarding/turnSchema';
 
 const today = new Date(2026, 9, 30);
 
@@ -80,10 +75,10 @@ describe('buildTurnJsonSchema', () => {
   });
 });
 
-describe('patchToDocument', () => {
+describe('flatToDocument', () => {
   it('rebuilds the contract shape from the flat patch', () => {
     expect(
-      patchToDocument({
+      flatToDocument({
         heightCm: 180,
         weightValue: 170,
         weightUnit: 'lb',
@@ -114,25 +109,40 @@ describe('patchToDocument', () => {
   });
 
   it('reads feet and inches, defaulting missing inches to zero', () => {
-    expect(patchToDocument({ heightFeet: 6, heightInches: 2 }).height).toEqual({
+    expect(flatToDocument({ heightFeet: 6, heightInches: 2 }).height).toEqual({
       feet: 6,
       inches: 2,
       unit: 'ft_in',
     });
-    expect(patchToDocument({ heightFeet: 6 }).height).toEqual({
+    expect(flatToDocument({ heightFeet: 6 }).height).toEqual({
       feet: 6,
       inches: 0,
       unit: 'ft_in',
     });
   });
 
+  it('writes a stored draft back in the contract shape, metric and explicit', () => {
+    expect(
+      flatToDocument({
+        heightCm: 180,
+        weightKg: 70,
+        trainingLocation: 'gym',
+        breakLength: 'over6m',
+      })
+    ).toMatchObject({
+      height: { value: 180, unit: 'cm' },
+      weight: { value: 70, unit: 'kg' },
+      training: { location: 'gym', comingBack: { breakLength: 'over6m' } },
+    });
+  });
+
   it('prefers centimetres when both forms are given, and omits empty sections', () => {
-    expect(patchToDocument({ heightCm: 170, heightFeet: 5 }).height).toEqual({
+    expect(flatToDocument({ heightCm: 170, heightFeet: 5 }).height).toEqual({
       value: 170,
       unit: 'cm',
     });
-    expect(patchToDocument({}).training).toBeUndefined();
-    expect(patchToDocument({}).height).toBeUndefined();
+    expect(flatToDocument({}).training).toBeUndefined();
+    expect(flatToDocument({}).height).toBeUndefined();
   });
 });
 

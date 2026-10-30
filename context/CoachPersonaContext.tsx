@@ -2,7 +2,6 @@ import { createContext, type ReactNode, useContext, useEffect, useMemo, useState
 import { useTranslation } from 'react-i18next';
 import type { ImageSourcePropType } from 'react-native';
 
-import { coachAvatarSource } from '@/components/coach/coachPersonaAvatars';
 import {
   coachDisplayName,
   type CoachPersonaId,
@@ -13,6 +12,7 @@ import {
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
+import { coachAvatarSource } from '@/utils/coachPersonaAvatar';
 
 export type CoachPersonaContextType = {
   /** The persona in effect, after the on-device and unfinished-custom fallbacks. */

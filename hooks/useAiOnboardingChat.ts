@@ -1,61 +1,42 @@
 import { randomUUID } from 'expo-crypto';
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
-import { DEFAULT_LANG } from '@/lang/lang';
-import { AiService } from '@/services/AiService';
+import { runOnboardingTurn } from '@/services/aiOnboardingTurn';
 import {
   type AiOnboardingErrorKind,
   type ChatMessage,
   chatReducer,
-  classifyAiOnboardingError,
   initialChatState,
-  toHistory,
 } from '@/utils/aiOnboarding/chatState';
+import { classifyAiOnboardingError } from '@/utils/aiOnboarding/classifyError';
 import type { FieldIssue, FieldKey } from '@/utils/aiOnboarding/contract';
 import type { AiOnboardingDraftRecord } from '@/utils/aiOnboarding/draftStorage';
-import { mergeAnswers } from '@/utils/aiOnboarding/merge';
-import { buildChatSystemPrompt } from '@/utils/aiOnboarding/prompts';
-import { buildTurnJsonSchema, parseAiTurn } from '@/utils/aiOnboarding/turnSchema';
-import { sendStructuredChatTurn } from '@/utils/coachAI';
 
 import type { DraftPatch } from './useAiOnboardingDraft';
-
-/** Models with a small context window get the shorter prompt. */
-const COMPACT_PROVIDERS = new Set(['on-device', 'local']);
-
-const REPAIR_NOTE =
-  '\n\nYour previous reply could not be read. Reply again with ONLY a JSON object that matches the schema exactly.';
 
 type ChatDraftApi = {
   draft: AiOnboardingDraftRecord;
   update: (patch: DraftPatch) => Promise<void>;
 };
 
+/** What the last reply said about the next step: the answers it asked about, and whether to review. */
+type ReplyHints = { askedFields: FieldKey[]; readyForReview: boolean };
+const NO_HINTS: ReplyHints = { askedFields: [], readyForReview: false };
+
 /**
  * The setup conversation. It keeps its own transcript in the AI-setup draft and never touches
- * `chat_messages`, the coach's history, or the coach's prompts. The model's reply is validated
- * before anything from it is merged into the answers, and it has no tools: the worst a reply can
- * do is propose an answer the person then reviews.
+ * `chat_messages`, the coach's history, or the coach's prompts. The turn itself (ask, validate,
+ * merge) is `runOnboardingTurn`; this hook owns the transcript, the in-flight request and saving.
  */
 export function useAiOnboardingChat({ draft, update }: ChatDraftApi) {
+  const { provider, mode } = draft;
   const [chat, dispatch] = useReducer(chatReducer, initialChatState);
-  const [askedFields, setAskedFields] = useState<FieldKey[]>([]);
-  const [readyForReview, setReadyForReview] = useState(false);
+  const [hints, setHints] = useState<ReplyHints>(NO_HINTS);
   const answersRef = useRef(draft.answers);
   const rejectedRef = useRef<FieldIssue[]>([]);
   const abortRef = useRef<AbortController | null>(null);
   const sendingRef = useRef(false);
   const persistedMessages = useRef<ChatMessage[]>(draft.messages);
-  const updateRef = useRef(update);
-  const providerRef = useRef(draft.provider);
-  const modeRef = useRef(draft.mode);
-
-  // Refs hold the latest values for the async turn; they are refreshed after render, not during it.
-  useEffect(() => {
-    updateRef.current = update;
-    providerRef.current = draft.provider;
-    modeRef.current = draft.mode;
-  }, [update, draft.provider, draft.mode]);
 
   // Resume: the saved transcript is the starting state, and a turn cut off mid-flight shows as
   // unanswered with Retry rather than silently vanishing.
@@ -67,9 +48,9 @@ export function useAiOnboardingChat({ draft, update }: ChatDraftApi) {
   useEffect(() => {
     if (chat.messages !== persistedMessages.current) {
       persistedMessages.current = chat.messages;
-      void updateRef.current({ messages: chat.messages });
+      void update({ messages: chat.messages });
     }
-  }, [chat.messages]);
+  }, [chat.messages, update]);
 
   useEffect(
     () => () => {
@@ -78,74 +59,45 @@ export function useAiOnboardingChat({ draft, update }: ChatDraftApi) {
     []
   );
 
-  const runTurn = useCallback(async (history: ChatMessage[], text: string) => {
-    sendingRef.current = true;
-    const controller = new AbortController();
-    abortRef.current = controller;
-    try {
-      const provider = providerRef.current;
-      const config = provider ? await AiService.getAiConfigForProvider(provider) : null;
-      if (!config) {
-        dispatch({ type: 'fail', kind: 'unavailable' });
-        return;
-      }
+  const runTurn = useCallback(
+    async (history: ChatMessage[], text: string) => {
+      sendingRef.current = true;
+      const controller = new AbortController();
+      abortRef.current = controller;
+      try {
+        const outcome = await runOnboardingTurn({
+          provider,
+          mode,
+          answers: answersRef.current,
+          rejected: rejectedRef.current,
+          history,
+          message: text,
+          signal: controller.signal,
+        });
 
-      const ask = (repair: boolean) =>
-        sendStructuredChatTurn(
-          { ...config, signal: controller.signal },
-          {
-            operation: 'aiOnboardingTurn',
-            systemPrompt:
-              buildChatSystemPrompt({
-                mode: modeRef.current,
-                language: config.language ?? DEFAULT_LANG,
-                draft: answersRef.current,
-                compact: COMPACT_PROVIDERS.has(config.provider),
-                today: new Date(),
-                rejected: rejectedRef.current,
-              }) + (repair ? REPAIR_NOTE : ''),
-            history: toHistory(history),
-            userMessage: text,
-            buildSchema: buildTurnJsonSchema,
-            schemaName: 'onboarding_turn',
-          }
-        );
-      const read = (result: Awaited<ReturnType<typeof ask>>) =>
-        result.kind === 'ok' ? parseAiTurn(result.value, new Date()) : ({ ok: false } as const);
+        if (outcome.kind !== 'reply') {
+          dispatch({ type: 'fail', kind: outcome.kind });
+          return;
+        }
 
-      let parsed = read(await ask(false));
-      if (!parsed.ok) {
-        // Models occasionally answer outside the schema; one quiet second try is usually enough.
-        parsed = read(await ask(true));
+        answersRef.current = outcome.answers;
+        rejectedRef.current = outcome.rejected;
+        setHints({ askedFields: outcome.askedFields, readyForReview: outcome.readyForReview });
+        void update({ answers: outcome.answers });
+        dispatch({
+          type: 'reply',
+          message: { id: randomUUID(), role: 'assistant', text: outcome.reply, at: Date.now() },
+        });
+      } catch (error) {
+        const kind: AiOnboardingErrorKind = classifyAiOnboardingError(error);
+        dispatch(kind === 'cancelled' ? { type: 'cancel' } : { type: 'fail', kind });
+      } finally {
+        sendingRef.current = false;
+        abortRef.current = null;
       }
-
-      if (!parsed.ok) {
-        dispatch({ type: 'fail', kind: 'malformed' });
-        return;
-      }
-
-      const { draft: merged } = mergeAnswers(answersRef.current, parsed.draftPatch);
-      answersRef.current = merged;
-      rejectedRef.current = parsed.rejected;
-      setAskedFields(parsed.askedFields);
-      setReadyForReview(parsed.readyForReview);
-      void updateRef.current({ answers: merged });
-      dispatch({
-        type: 'reply',
-        message: { id: randomUUID(), role: 'assistant', text: parsed.reply, at: Date.now() },
-      });
-    } catch (error) {
-      const kind: AiOnboardingErrorKind = classifyAiOnboardingError(error);
-      if (kind === 'cancelled') {
-        dispatch({ type: 'cancel' });
-      } else {
-        dispatch({ type: 'fail', kind });
-      }
-    } finally {
-      sendingRef.current = false;
-      abortRef.current = null;
-    }
-  }, []);
+    },
+    [provider, mode, update]
+  );
 
   const send = useCallback(
     async (text: string) => {
@@ -159,10 +111,10 @@ export function useAiOnboardingChat({ draft, update }: ChatDraftApi) {
         type: 'send',
         message: { id: randomUUID(), role: 'user', text: trimmed, at: Date.now() },
       });
-      void updateRef.current({ composer: '' });
+      void update({ composer: '' });
       await runTurn(history, trimmed);
     },
-    [chat.messages, runTurn]
+    [chat.messages, runTurn, update]
   );
 
   const retry = useCallback(async () => {
@@ -179,18 +131,18 @@ export function useAiOnboardingChat({ draft, update }: ChatDraftApi) {
   const cancel = useCallback(() => {
     const last = chat.messages[chat.messages.length - 1];
     if (last?.role === 'user') {
-      void updateRef.current({ composer: last.text });
+      void update({ composer: last.text });
     }
 
     abortRef.current?.abort();
-  }, [chat.messages]);
+  }, [chat.messages, update]);
 
   return {
     messages: chat.messages,
     status: chat.status,
     errorKind: chat.errorKind,
-    askedFields,
-    readyForReview,
+    askedFields: hints.askedFields,
+    readyForReview: hints.readyForReview,
     answers: draft.answers,
     send,
     retry,

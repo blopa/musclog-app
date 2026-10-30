@@ -35,6 +35,17 @@ describe('getBaseSystemPrompt', () => {
     expect(prompt).toContain('remember_me');
   });
 
+  it('keeps the established tone for a prompt that carries no persona', async () => {
+    const plain = await getBaseSystemPrompt('en-US', 'general', 'gemini');
+    const persona = await getActiveCoachPersona('gemini');
+    const voiced = await getBaseSystemPrompt('en-US', 'general', 'gemini', persona);
+
+    expect(plain).toContain('1. TONE: Friendly, professional, and human-like. Use colloquial');
+    // With a persona the voice is the persona's, so the core's tone line points at it instead.
+    expect(voiced).toContain('1. TONE: Clear, practical');
+    expect(voiced).toContain('The persona section below sets the exact voice');
+  });
+
   it('places the persona after the locked rules and before custom prompts and memories', async () => {
     const persona = await getActiveCoachPersona('gemini');
     const prompt = await getBaseSystemPrompt('en-US', 'general', 'gemini', persona);

@@ -19,6 +19,7 @@ jest.mock('@nozbe/watermelondb', () => ({
 jest.mock('@/database/database-instance', () => ({
   database: {
     get: jest.fn(),
+    batch: jest.fn(async () => undefined),
     write: jest.fn(async (callback: (writer?: unknown) => unknown) => callback({})),
   },
 }));
@@ -34,14 +35,19 @@ function stubQuery(rows: unknown[] = []) {
   return query;
 }
 
-/** A stored message whose `update` applies the mutator to the record itself. */
+/** A stored message whose `update` and `prepareUpdate` apply the mutator to the record itself. */
 function stubMessage(overrides: Record<string, unknown> = {}) {
   const record: any = {
     id: 'msg-1',
     deletedAt: undefined,
+    _raw: {},
     ...overrides,
   };
   record.update = jest.fn(async (mutator: (r: any) => void) => mutator(record));
+  record.prepareUpdate = jest.fn((mutator: (r: any) => void) => {
+    mutator(record);
+    return record;
+  });
   return record;
 }
 
@@ -242,15 +248,27 @@ describe('ChatService', () => {
     };
     const legacy = new Set(["Hi, I'm Loggy, your AI coach."]);
 
-    /** One query serves every context, so the stub returns all rows with their context stamped on. */
+    /**
+     * Every context is counted first and read only when it holds exactly one message, so the stub
+     * answers a count and a fetch from the same rows.
+     */
     function mockContexts(byContext: Record<string, unknown[]>) {
-      const rows = Object.entries(byContext).flatMap(([context, records]) =>
-        records.map((record) => Object.assign(record as object, { context }))
-      );
-      const collectionQuery = jest.fn().mockReturnValue(stubQuery(rows));
+      const contextOf = (clauses: { field: string; condition: unknown }[]) =>
+        String(clauses.find((clause) => clause.field === 'context')?.condition);
+      const queries: { fetchCount: jest.Mock; fetch: jest.Mock }[] = [];
+      const collectionQuery = jest.fn((...clauses: { field: string; condition: unknown }[]) => {
+        const rows = (byContext[contextOf(clauses)] ?? []).map((record) => record);
+        const query = {
+          fetchCount: jest.fn().mockResolvedValue(rows.length),
+          fetch: jest.fn().mockResolvedValue(rows),
+        };
+        queries.push(query);
+
+        return query;
+      });
       mockDatabase.get.mockReturnValue({ query: collectionQuery } as any);
 
-      return collectionQuery;
+      return { collectionQuery, queries };
     }
 
     it('rewrites a lone marked welcome in a single write block', async () => {
@@ -262,15 +280,36 @@ describe('ChatService', () => {
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
       expect(welcome.message).toBe(texts.general);
       expect(welcome.payloadJson).toBe(WELCOME);
+      expect(mockDatabase.batch).toHaveBeenCalledWith(welcome);
     });
 
-    it('reads every context with a single query', async () => {
-      const collectionQuery = mockContexts({ general: [], exercise: [], nutrition: [] });
+    it('counts each conversation and loads only the ones holding a single message', async () => {
+      const welcome = stubMessage({ sender: 'coach', message: 'old', payloadJson: WELCOME });
+      const history = [
+        stubMessage({ id: 'a' }),
+        stubMessage({ id: 'b' }),
+        stubMessage({ id: 'c' }),
+      ];
+      const { collectionQuery, queries } = mockContexts({
+        general: [welcome],
+        exercise: history,
+        nutrition: [],
+      });
 
       await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
 
-      expect(collectionQuery).toHaveBeenCalledTimes(1);
-      expect(Q.oneOf).toHaveBeenCalledWith(['general', 'exercise', 'nutrition']);
+      expect(collectionQuery).toHaveBeenCalledTimes(3);
+      expect(queries.map((query) => query.fetchCount.mock.calls.length)).toEqual([1, 1, 1]);
+      // Real history is counted, never loaded.
+      expect(queries.map((query) => query.fetch.mock.calls.length)).toEqual([1, 0, 0]);
+    });
+
+    it('writes nothing when no conversation is untouched', async () => {
+      mockContexts({ general: [stubMessage({ sender: 'user' }), stubMessage({ id: 'b' })] });
+
+      await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
+
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
     });
 
     it('recognises an unmarked welcome from before the marker existed, and marks it', async () => {
@@ -294,7 +333,7 @@ describe('ChatService', () => {
 
       await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
 
-      expect(welcome.update).not.toHaveBeenCalled();
+      expect(welcome.prepareUpdate).not.toHaveBeenCalled();
       expect(welcome.message).toBe('old');
     });
 
@@ -308,7 +347,7 @@ describe('ChatService', () => {
 
       await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
 
-      expect(insight.update).not.toHaveBeenCalled();
+      expect(insight.prepareUpdate).not.toHaveBeenCalled();
     });
 
     it('does not rewrite a welcome that already says the right thing', async () => {
@@ -321,7 +360,7 @@ describe('ChatService', () => {
 
       await ChatService.rewriteUntouchedWelcomeMessages(texts, legacy);
 
-      expect(welcome.update).not.toHaveBeenCalled();
+      expect(welcome.prepareUpdate).not.toHaveBeenCalled();
     });
   });
 });

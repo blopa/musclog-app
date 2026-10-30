@@ -26,31 +26,19 @@ export function useCoachPersonaPicker() {
   const { aiProvider } = useSettings();
   const persona = useCoachPersona();
 
-  const selectPersona = useCallback(
-    async (id: CoachPersonaId) => {
+  /**
+   * Runs a persona write and then greets the user as the coach it left stored. Both persona
+   * writes share this, so neither can forget the greeting or report its failure differently.
+   */
+  const writeAndGreet = useCallback(
+    async (context: string, write: () => Promise<unknown>): Promise<boolean> => {
       try {
-        await SettingsService.set(SETTINGS.coachPersona, id);
-        await applyPersonaWelcome(aiProvider);
-      } catch (error) {
-        handleError(error, 'useCoachPersonaPicker.selectPersona', {
-          snackbarMessage: t('errors.somethingWentWrong'),
-        });
-      }
-    },
-    [aiProvider, t]
-  );
-
-  /** Saves the custom persona and makes it the coach: a freshly written coach is the one wanted. */
-  const saveCustomPersona = useCallback(
-    async (patch: Partial<CustomCoachPersona>): Promise<boolean> => {
-      try {
-        await SettingsService.updateCoachCustomPersona(patch);
-        await SettingsService.set(SETTINGS.coachPersona, 'custom');
+        await write();
         await applyPersonaWelcome(aiProvider);
 
         return true;
       } catch (error) {
-        handleError(error, 'useCoachPersonaPicker.saveCustomPersona', {
+        handleError(error, `useCoachPersonaPicker.${context}`, {
           snackbarMessage: t('errors.somethingWentWrong'),
         });
 
@@ -58,6 +46,22 @@ export function useCoachPersonaPicker() {
       }
     },
     [aiProvider, t]
+  );
+
+  const selectPersona = useCallback(
+    (id: CoachPersonaId) =>
+      writeAndGreet('selectPersona', () => SettingsService.set(SETTINGS.coachPersona, id)),
+    [writeAndGreet]
+  );
+
+  /** Saves the custom persona and makes it the coach: a freshly written coach is the one wanted. */
+  const saveCustomPersona = useCallback(
+    (patch: Partial<CustomCoachPersona>) =>
+      writeAndGreet('saveCustomPersona', async () => {
+        await SettingsService.updateCoachCustomPersona(patch);
+        await SettingsService.set(SETTINGS.coachPersona, 'custom');
+      }),
+    [writeAndGreet]
   );
 
   /** Picks, crops and shrinks an avatar; resolves the data URI, or null when cancelled or failed. */

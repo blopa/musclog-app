@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
-import { coachAvatarSource } from '@/components/coach/coachPersonaAvatars';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import {
@@ -15,6 +14,7 @@ import {
 import { useCoachPersonaPicker } from '@/hooks/useCoachPersonaPicker';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { coachAvatarSource } from '@/utils/coachPersonaAvatar';
 import { validateInputSafety } from '@/utils/promptSanitizer';
 
 type CustomCoachPersonaModalProps = {

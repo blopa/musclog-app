@@ -1,11 +1,14 @@
 import type { Units } from '@/constants/settings';
 import {
+  CONTRACT_ENUMS,
   type FieldIssue,
   type FieldKey,
+  flatToDocument,
   normalizeAnswers,
   type OnboardingAnswersDraft,
 } from '@/utils/aiOnboarding/contract';
 import { mergeAnswers } from '@/utils/aiOnboarding/merge';
+import { displayToCm, displayToKg } from '@/utils/unitConversion';
 
 /**
  * Edits made on the review screen. They go through the same validator as an import or an assistant
@@ -17,19 +20,8 @@ export type FieldEdit =
   | { field: 'heightCm' | 'weightKg'; text: string; units: Units }
   | { field: 'birthDate'; isoDate: string }
   | { field: 'activityLevel' | 'trainingDaysPerWeek'; value: number }
-  | {
-      field: Exclude<
-        FieldKey,
-        | 'fullName'
-        | 'bodyFatPercent'
-        | 'heightCm'
-        | 'weightKg'
-        | 'birthDate'
-        | 'activityLevel'
-        | 'trainingDaysPerWeek'
-      >;
-      value: string;
-    };
+  /** The answers picked from a fixed list: exactly the contract's enumerations. */
+  | { field: keyof typeof CONTRACT_ENUMS; value: string };
 
 export type FieldEditResult =
   { ok: true; draft: OnboardingAnswersDraft } | { ok: false; code: FieldIssue['code'] };
@@ -55,41 +47,32 @@ export function clearField(draft: OnboardingAnswersDraft, field: FieldKey): Onbo
   return rest;
 }
 
-function toRaw(edit: FieldEdit): Record<string, unknown> | null {
+/** The edit as flat answers in metric, which `flatToDocument` nests into the contract's shape. */
+function toFlat(edit: FieldEdit): Record<string, unknown> | null {
   switch (edit.field) {
     case 'fullName':
       return { fullName: edit.text };
-    case 'bodyFatPercent': {
-      const value = parseDecimalInput(edit.text);
-      return value === null ? null : { bodyFatPercent: value };
-    }
-
-    case 'heightCm': {
-      const value = parseDecimalInput(edit.text);
-      return value === null
-        ? null
-        : { height: { value, unit: edit.units === 'imperial' ? 'in' : 'cm' } };
-    }
-
+    case 'bodyFatPercent':
+    case 'heightCm':
     case 'weightKg': {
-      const value = parseDecimalInput(edit.text);
-      return value === null
-        ? null
-        : { weight: { value, unit: edit.units === 'imperial' ? 'lb' : 'kg' } };
+      const typed = parseDecimalInput(edit.text);
+      if (typed === null) {
+        return null;
+      }
+
+      if (edit.field === 'heightCm') {
+        return { heightCm: displayToCm(typed, edit.units) };
+      }
+
+      if (edit.field === 'weightKg') {
+        return { weightKg: displayToKg(typed, edit.units) };
+      }
+
+      return { bodyFatPercent: typed };
     }
 
     case 'birthDate':
       return { birthDate: edit.isoDate };
-    case 'activityLevel':
-      return { activityLevel: edit.value };
-    case 'trainingDaysPerWeek':
-      return { training: { daysPerWeek: edit.value } };
-    case 'trainingLocation':
-      return { training: { location: edit.value } };
-    case 'trainingAutonomy':
-      return { training: { autonomy: edit.value } };
-    case 'breakLength':
-      return { training: { comingBack: { breakLength: edit.value } } };
     default:
       return { [edit.field]: edit.value };
   }
@@ -106,12 +89,12 @@ export function editField(
     return { ok: true, draft: clearField(draft, edit.field) };
   }
 
-  const raw = toRaw(edit);
-  if (raw === null) {
+  const flat = toFlat(edit);
+  if (flat === null) {
     return { ok: false, code: 'invalid' };
   }
 
-  const { draft: normalized, issues } = normalizeAnswers(raw, today);
+  const { draft: normalized, issues } = normalizeAnswers(flatToDocument(flat), today);
   if (issues.length > 0) {
     return { ok: false, code: issues[0].code };
   }

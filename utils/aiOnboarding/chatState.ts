@@ -1,11 +1,4 @@
-import { AiCancelledError, AiInvalidKeyError, AiTimeoutError } from '@/utils/aiErrors';
-import {
-  AiCreditsError,
-  type ChatHistoryEntry,
-  GatewayRateLimitError,
-  isAiConnectionError,
-  isAiCreditsError,
-} from '@/utils/coachAI';
+import type { ChatHistoryEntry } from '@/utils/coachAI';
 
 /** Most messages kept in a saved conversation; the draft answers carry the state, not the log. */
 export const MAX_STORED_MESSAGES = 80;
@@ -137,29 +130,4 @@ export function toHistory(messages: ChatMessage[]): ChatHistoryEntry[] {
     role: message.role === 'user' ? 'user' : 'coach',
     content: message.text,
   }));
-}
-
-/** Maps whatever a provider call threw to what the person is told and which exits we offer. */
-export function classifyAiOnboardingError(error: unknown): AiOnboardingErrorKind {
-  if (error instanceof AiCancelledError) {
-    return 'cancelled';
-  }
-
-  if (error instanceof AiInvalidKeyError) {
-    return 'invalidKey';
-  }
-
-  if (error instanceof AiTimeoutError) {
-    return 'timeout';
-  }
-
-  if (error instanceof GatewayRateLimitError) {
-    return 'gatewayLimit';
-  }
-
-  if (error instanceof AiCreditsError || isAiCreditsError(error)) {
-    return 'credits';
-  }
-
-  return isAiConnectionError(error) ? 'offline' : 'unknown';
 }

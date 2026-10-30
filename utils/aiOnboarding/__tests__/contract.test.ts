@@ -9,8 +9,10 @@ import {
   FIELD_KEYS,
   hasRequiredAnswers,
   isCompleteAnswers,
+  KNOWN_DOCUMENT_KEYS,
   missingRequiredFields,
   normalizeAnswers,
+  pickAnswers,
   REQUIRED_FIELDS,
   sanitizeDraft,
 } from '@/utils/aiOnboarding/contract';
@@ -414,5 +416,48 @@ describe('contractDocumentSchema (the schema handed to assistants)', () => {
         height: { feet: 5, inches: 9, unit: 'ft_in' },
       }).success
     ).toBe(true);
+  });
+});
+
+describe('activity level', () => {
+  it.each([
+    [0, 'outOfRange'],
+    [6, 'outOfRange'],
+    [2.5, 'invalid'],
+    [7.5, 'invalid'],
+    ['3', 'invalid'],
+  ])('rejects %j as %s', (activityLevel, code) => {
+    expect(normalizeAnswers({ activityLevel }, today).issues).toEqual([
+      { field: 'activityLevel', code },
+    ]);
+  });
+});
+
+describe('KNOWN_DOCUMENT_KEYS', () => {
+  it('is read from the schema, so a key added to the document is known at once', () => {
+    expect(KNOWN_DOCUMENT_KEYS.top).toEqual(Object.keys(contractDocumentSchema.shape));
+    expect(KNOWN_DOCUMENT_KEYS.top).toEqual(
+      expect.arrayContaining(['height', 'weight', 'training'])
+    );
+    expect(KNOWN_DOCUMENT_KEYS.height).toEqual(
+      expect.arrayContaining(['value', 'unit', 'feet', 'inches'])
+    );
+    expect(KNOWN_DOCUMENT_KEYS.weight).toEqual(['value', 'unit']);
+    expect(KNOWN_DOCUMENT_KEYS.training).toEqual(
+      expect.arrayContaining(['location', 'daysPerWeek', 'autonomy', 'comingBack'])
+    );
+    expect(KNOWN_DOCUMENT_KEYS.comingBack).toEqual(['breakLength']);
+  });
+});
+
+describe('pickAnswers', () => {
+  it('keeps only the named answers that are present', () => {
+    expect(
+      pickAnswers({ gender: 'male', heightCm: 180, units: undefined }, [
+        'gender',
+        'units',
+        'weightKg',
+      ])
+    ).toEqual({ gender: 'male' });
   });
 });

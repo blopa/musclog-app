@@ -102,6 +102,15 @@ describe('parseBodyStatsDraft', () => {
     ).toEqual({});
   });
 
+  it('uses the contract’s bounds, so a stored value cannot pass here and fail the review', () => {
+    expect(parseBodyStatsDraft({ heightCm: 100, weightKg: 30 })).toEqual({
+      heightCm: 100,
+      weightKg: 30,
+    });
+    // The guided screens once accepted 50–300 cm and 10–500 kg; the contract is narrower.
+    expect(parseBodyStatsDraft({ heightCm: 60, weightKg: 400 })).toEqual({});
+  });
+
   it('only keeps the estimated flag next to a birthday', () => {
     expect(parseBodyStatsDraft({ dobEstimated: true })).toEqual({});
   });

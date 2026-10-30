@@ -3,8 +3,8 @@ import {
   AGE_MIN,
   BODY_FAT_MAX,
   BODY_FAT_MIN,
-  draftToContractShape,
   type FieldIssue,
+  flatToDocument,
   HEIGHT_CM_RANGE,
   missingRequiredFields,
   type OnboardingAnswersDraft,
@@ -52,7 +52,7 @@ const REQUIRED_NOTES: Record<(typeof REQUIRED_FIELDS)[number], string> = {
 
 export function buildChatSystemPrompt(input: ChatPromptInput): string {
   const { mode, language, draft, compact, today, rejected = [] } = input;
-  const known = JSON.stringify(draftToContractShape(draft));
+  const known = JSON.stringify(flatToDocument(draft));
   const missing = missingRequiredFields(draft);
 
   const lines = [

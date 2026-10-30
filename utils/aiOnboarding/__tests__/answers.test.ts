@@ -1,11 +1,11 @@
 import {
   fromGuidedDrafts,
-  toBodyStatsDraft,
   toPersonalizedSetup,
   toPlanInput,
   toProfileWrite,
   toTrainingSetup,
 } from '@/utils/aiOnboarding/answers';
+import { pickBodyStats } from '@/utils/onboardingDraft';
 import type {
   CompleteOnboardingAnswers,
   OnboardingAnswersDraft,
@@ -96,16 +96,16 @@ describe('toPersonalizedSetup', () => {
   });
 });
 
-describe('toBodyStatsDraft', () => {
+describe('pickBodyStats', () => {
   it('keeps body answers and the estimated flag', () => {
-    expect(toBodyStatsDraft({ ...complete, dobEstimated: true })).toEqual({
+    expect(pickBodyStats({ ...complete, dobEstimated: true })).toEqual({
       birthDate: '1996-05-01',
       dobEstimated: true,
       heightCm: 168,
       weightKg: 62,
       bodyFatPercent: 22,
     });
-    expect(toBodyStatsDraft({})).toEqual({});
+    expect(pickBodyStats({})).toEqual({});
   });
 });
 
@@ -162,7 +162,7 @@ describe('fromGuidedDrafts', () => {
 
     const rebuilt = fromGuidedDrafts(
       toPersonalizedSetup(draft, { skipMusclogApi: false }),
-      toBodyStatsDraft(draft),
+      pickBodyStats(draft),
       toTrainingSetup(draft)
     );
 
