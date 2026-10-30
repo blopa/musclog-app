@@ -1,0 +1,167 @@
+{
+  "currentPage": 2,
+  "posts": [
+    {
+      "category": "product-updates",
+      "date": "2026-10-14",
+      "excerpt": "Musclog 2.13 adds settings that change how a workout feels, and nobody who already has the app would ever find them. So I built a \"what's new\" tour that is just JSON per release, with real controls on the pages, and a lot of rules about when it is allowed to appear.",
+      "slug": "2026/10/existing-users-never-see-onboarding-so-i-built-a-mini-one",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Onboarding",
+        "UX",
+        "TypeScript"
+      ],
+      "title": "Existing users never see onboarding, so I built a mini one"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-14",
+      "excerpt": "Musclog’s cycle-tracking update adds a flexible daily diary, editable history, transparent predictions, personal patterns, reminders that explain themselves, privacy controls and portable backups. Here is what changed, what a second review caught, and why a failed save belongs in that story too.",
+      "slug": "2026/10/i-rebuilt-cycle-tracking-around-the-days-you-actually-log",
+      "tags": [
+        "Musclog",
+        "Cycle Tracking",
+        "Privacy",
+        "Notifications",
+        "UX",
+        "React Native",
+        "WatermelonDB"
+      ],
+      "title": "I rebuilt cycle tracking around the days you actually log"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-13",
+      "excerpt": "I made the Musclog icon once, by hand, and kept nothing. When the app grew six themes I rebuilt it as three layers and a script, then made the launcher icon follow the theme on Android and iOS without breaking deep links.",
+      "slug": "2026/10/i-lost-my-app-icon-so-a-script-draws-six-of-them",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Android",
+        "iOS",
+        "sharp",
+        "App Icons",
+        "Design"
+      ],
+      "title": "I lost my app icon, so now a script draws six of them"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-09-03",
+      "excerpt": "Musclog already had a theme file. Then I added five selectable palettes and discovered that colors, NativeWind variables, system mode, camera overlays, and component decisions were all separate systems pretending to be one.",
+      "slug": "2026/09/adding-light-mode-exposed-my-fake-theme-system",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "NativeWind",
+        "TypeScript",
+        "Design Systems"
+      ],
+      "title": "Adding light mode exposed my fake theme system"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-08-24",
+      "excerpt": "A shutter stall that only existed in release builds, survived eight versions and four wrong root causes, and turned out to be one background thread shared by every Expo module in the app.",
+      "slug": "2026/08/my-camera-took-25-seconds-to-take-a-photo",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Android",
+        "CameraX",
+        "Kotlin",
+        "Performance",
+        "Debugging"
+      ],
+      "title": "My camera took 25 seconds to take a photo"
+    },
+    {
+      "category": "retro",
+      "date": "2026-08-17",
+      "excerpt": "I logged a few weeks of food on a 1998 cartridge and then realised it was stuck in there for life. So the Game Boy now beams its save into my phone as a stream of fountain-coded QR codes — no cable, no network, no handshake.",
+      "slug": "2026/08/breaking-my-data-out-of-a-game-boy-cartridge",
+      "tags": [
+        "Game Boy",
+        "GBDK",
+        "C",
+        "QR Codes",
+        "Retro",
+        "Homebrew",
+        "Optical Transfer"
+      ],
+      "title": "Breaking my data out of a Game Boy cartridge"
+    },
+    {
+      "category": "web-development",
+      "date": "2026-08-09",
+      "excerpt": "The page you are reading is a statically exported Expo Router route. Here is how generateStaticParams turns a folder of Markdown into HTML — and the three-hunk patch to expo-router I needed to make catch-all routes work at all.",
+      "slug": "2026/08/this-blog-was-built-using-expo",
+      "tags": [
+        "Expo",
+        "Expo Router",
+        "Static Site",
+        "React Native",
+        "TypeScript"
+      ],
+      "title": "This blog was built using Expo"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-08-06",
+      "excerpt": "I saw a repo that sends files between two devices using only a screen and a camera, and I could not stop thinking about it. So I built it into Musclog — here is how fountain-coded QR streams actually work.",
+      "slug": "2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices",
+      "tags": [
+        "Open Source",
+        "QR Codes",
+        "Privacy",
+        "React Native",
+        "TypeScript"
+      ],
+      "title": "Using Decimen Optical Transfer FOSS to transfer data between devices"
+    },
+    {
+      "category": "retro",
+      "date": "2026-08-01",
+      "excerpt": "I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, charts drawn with background tiles, and 291 free bytes in the one bank that cannot be paged out.",
+      "slug": "2026/08/creating-a-calorie-tracker-for-the-game-boy-color",
+      "tags": [
+        "Game Boy",
+        "GBDK",
+        "C",
+        "Retro",
+        "Homebrew",
+        "Nutrition",
+        "WasmBoy"
+      ],
+      "title": "Creating a calorie tracker for the Game Boy Color"
+    },
+    {
+      "category": "machine-learning",
+      "date": "2026-07-14",
+      "excerpt": "A €20 sensor, a RandomForest, and Claude writing the ML code because I have no idea what spectral entropy means.",
+      "slug": "2026/08/i-trained-my-own-model-to-get-rep-insights",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Machine Learning",
+        "Python",
+        "BLE",
+        "Bluetooth",
+        "Fitness",
+        "3D Printing",
+        "Tinkercad",
+        "WitMotion"
+      ],
+      "title": "I trained my own model to get rep insights"
+    }
+  ],
+  "totalPages": 3,
+  "totalPosts": 21
+}

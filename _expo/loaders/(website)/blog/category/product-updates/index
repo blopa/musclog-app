@@ -1,0 +1,130 @@
+{
+  "category": "product-updates",
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "product-updates",
+      "date": "2026-11-05",
+      "excerpt": "You can now choose who your Musclog coach is: Loggy, Dracula, Cthulhu, Sherlock Holmes, or a coach you write yourself. The interesting part is the rule behind it. A persona only changes how the coach talks, never the rules, the summaries or any structured result.",
+      "slug": "2026/11/my-ai-coach-can-be-dracula-but-it-cannot-change-your-numbers",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "AI",
+        "Prompt Engineering",
+        "TypeScript",
+        "Onboarding"
+      ],
+      "title": "My AI coach can be Dracula, but it cannot change your numbers"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-11-03",
+      "excerpt": "Musclog can now be set up by talking: in a chat inside the app, or in ChatGPT or Claude. The interesting part is not the chat. It is the one data contract all three routes share, and the rule that the AI only collects answers while Musclog does every calculation and every write.",
+      "slug": "2026/10/i-let-an-ai-set-up-musclog-but-it-never-touches-your-data",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "AI",
+        "Onboarding",
+        "TypeScript",
+        "Privacy"
+      ],
+      "title": "I let an AI set up Musclog, but it never touches your data"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-22",
+      "excerpt": "Musclog can now show your workouts and your food logging as GitHub-style heatmaps on Home. Here is what each square means, the three layouts (full width, side by side, compact), why the half-width version got redesigned, the home screen widget that shows the compact one without opening the app, and why it is all off until you ask for it.",
+      "slug": "2026/10/a-calendar-of-squares-on-your-home-screen-in-three-sizes",
+      "tags": [
+        "Musclog",
+        "Heatmap",
+        "React Native",
+        "Home Screen",
+        "Fitness",
+        "UX"
+      ],
+      "title": "I put a calendar of squares on the home screen, in three sizes"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-19",
+      "excerpt": "Swapping an exercise mid-workout sounds like one feature. In Musclog it turned into three: a swap that only touches today, restrictions that remember what hurts, and a single answer to \"what is the app allowed to suggest?\" that even an AI-generated plan has to obey.",
+      "slug": "2026/10/a-busy-cable-machine-should-not-rewrite-your-program",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "TypeScript",
+        "Fitness",
+        "UX",
+        "AI"
+      ],
+      "title": "A busy cable machine shouldn't rewrite your program"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-15",
+      "excerpt": "Musclog has no backend, so every reminder has to be planned on your phone. Here is the new notification system: a rest alert that actually arrives, reminders that skip days you already trained, quiet hours, and why nothing repeats on its own.",
+      "slug": "2026/10/i-rebuilt-my-workout-notifications-with-no-server",
+      "tags": [
+        "Musclog",
+        "Notifications",
+        "React Native",
+        "Privacy",
+        "Fitness",
+        "UX"
+      ],
+      "title": "I rebuilt my workout notifications to work with no server"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-14",
+      "excerpt": "Musclog 2.13 adds settings that change how a workout feels, and nobody who already has the app would ever find them. So I built a \"what's new\" tour that is just JSON per release, with real controls on the pages, and a lot of rules about when it is allowed to appear.",
+      "slug": "2026/10/existing-users-never-see-onboarding-so-i-built-a-mini-one",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Onboarding",
+        "UX",
+        "TypeScript"
+      ],
+      "title": "Existing users never see onboarding, so I built a mini one"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-14",
+      "excerpt": "Musclog’s cycle-tracking update adds a flexible daily diary, editable history, transparent predictions, personal patterns, reminders that explain themselves, privacy controls and portable backups. Here is what changed, what a second review caught, and why a failed save belongs in that story too.",
+      "slug": "2026/10/i-rebuilt-cycle-tracking-around-the-days-you-actually-log",
+      "tags": [
+        "Musclog",
+        "Cycle Tracking",
+        "Privacy",
+        "Notifications",
+        "UX",
+        "React Native",
+        "WatermelonDB"
+      ],
+      "title": "I rebuilt cycle tracking around the days you actually log"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-03-19",
+      "excerpt": "Musclog started in 2024 as an app I built for myself. Version 2 is a full rewrite — new UI layer, one database instead of two, and a much clearer answer to the question of where your data lives.",
+      "slug": "2026/03/musclog-version-2-is-out",
+      "tags": [
+        "Release",
+        "React Native",
+        "Rewrite",
+        "Privacy",
+        "TypeScript"
+      ],
+      "title": "Musclog version 2 is out!"
+    }
+  ],
+  "totalPages": 1,
+  "totalPosts": 8
+}

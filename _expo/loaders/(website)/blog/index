@@ -1,0 +1,159 @@
+{
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "product-updates",
+      "date": "2026-11-05",
+      "excerpt": "You can now choose who your Musclog coach is: Loggy, Dracula, Cthulhu, Sherlock Holmes, or a coach you write yourself. The interesting part is the rule behind it. A persona only changes how the coach talks, never the rules, the summaries or any structured result.",
+      "slug": "2026/11/my-ai-coach-can-be-dracula-but-it-cannot-change-your-numbers",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "AI",
+        "Prompt Engineering",
+        "TypeScript",
+        "Onboarding"
+      ],
+      "title": "My AI coach can be Dracula, but it cannot change your numbers"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-11-03",
+      "excerpt": "Musclog can now be set up by talking: in a chat inside the app, or in ChatGPT or Claude. The interesting part is not the chat. It is the one data contract all three routes share, and the rule that the AI only collects answers while Musclog does every calculation and every write.",
+      "slug": "2026/10/i-let-an-ai-set-up-musclog-but-it-never-touches-your-data",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "AI",
+        "Onboarding",
+        "TypeScript",
+        "Privacy"
+      ],
+      "title": "I let an AI set up Musclog, but it never touches your data"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-29",
+      "excerpt": "On a big diary, Musclog opened in the default theme, in the wrong language and with your lock off, then corrected itself seconds later. Here is the small settings mirror that fixed the first frame, and the repeated decryption that was making the wait so long.",
+      "slug": "2026/10/the-first-frame-should-already-know-your-theme",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "WatermelonDB",
+        "Performance",
+        "Startup",
+        "Encryption"
+      ],
+      "title": "The first frame should already know your theme"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-22",
+      "excerpt": "Musclog can now show your workouts and your food logging as GitHub-style heatmaps on Home. Here is what each square means, the three layouts (full width, side by side, compact), why the half-width version got redesigned, the home screen widget that shows the compact one without opening the app, and why it is all off until you ask for it.",
+      "slug": "2026/10/a-calendar-of-squares-on-your-home-screen-in-three-sizes",
+      "tags": [
+        "Musclog",
+        "Heatmap",
+        "React Native",
+        "Home Screen",
+        "Fitness",
+        "UX"
+      ],
+      "title": "I put a calendar of squares on the home screen, in three sizes"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-19",
+      "excerpt": "Swapping an exercise mid-workout sounds like one feature. In Musclog it turned into three: a swap that only touches today, restrictions that remember what hurts, and a single answer to \"what is the app allowed to suggest?\" that even an AI-generated plan has to obey.",
+      "slug": "2026/10/a-busy-cable-machine-should-not-rewrite-your-program",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "TypeScript",
+        "Fitness",
+        "UX",
+        "AI"
+      ],
+      "title": "A busy cable machine shouldn't rewrite your program"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-18",
+      "excerpt": "Musclog now changes your calorie targets once a week, after you look at the evidence and say yes. Building it meant dated target periods, an honest definition of \"enough data\", and fixing two buttons that pointed at the one day that could never help.",
+      "slug": "2026/10/my-weekly-review-had-buttons-that-could-never-work",
+      "tags": [
+        "Musclog",
+        "Nutrition",
+        "React Native",
+        "WatermelonDB",
+        "TypeScript",
+        "UX"
+      ],
+      "title": "My weekly review had buttons that could never work"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-17",
+      "excerpt": "The live workout screen in Musclog had grown into a single 1,662-line file. Rebuilding it as two views (one set at a time, or the whole workout as a table) over one shared controller fixed bugs I did not know I had, starting with the second exercise calling its first set \"Set 4\".",
+      "slug": "2026/10/one-workout-screen-two-views-and-1662-lines-i-deleted",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "TypeScript",
+        "Refactoring",
+        "UX"
+      ],
+      "title": "One workout screen, two views, and 1,662 lines I got to delete"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-16",
+      "excerpt": "Progressive overload that silently rewrites your weights is a bug you can't see. Here is how Musclog turned every automatic change into data with a reason attached, and the three coaching bugs the explanations helped me find before release.",
+      "slug": "2026/10/my-app-now-explains-every-number-it-changes",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "TypeScript",
+        "Progressive Overload",
+        "Fitness",
+        "UX"
+      ],
+      "title": "My workout app now explains every number it changes"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-10-15",
+      "excerpt": "Putting the heaviest plate that fits on the bar works until your gym only owns one pair of each. Musclog now models your gym and solves plate loading as a small bounded knapsack, so the weights it suggests are weights you can actually load.",
+      "slug": "2026/10/greedy-plate-math-is-wrong-the-moment-your-gym-runs-out-of-plates",
+      "tags": [
+        "Musclog",
+        "TypeScript",
+        "Algorithms",
+        "Fitness",
+        "Dynamic Programming"
+      ],
+      "title": "Greedy plate math is wrong the moment your gym runs out of plates"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-10-15",
+      "excerpt": "Musclog has no backend, so every reminder has to be planned on your phone. Here is the new notification system: a rest alert that actually arrives, reminders that skip days you already trained, quiet hours, and why nothing repeats on its own.",
+      "slug": "2026/10/i-rebuilt-my-workout-notifications-with-no-server",
+      "tags": [
+        "Musclog",
+        "Notifications",
+        "React Native",
+        "Privacy",
+        "Fitness",
+        "UX"
+      ],
+      "title": "I rebuilt my workout notifications to work with no server"
+    }
+  ],
+  "totalPages": 3,
+  "totalPosts": 21
+}

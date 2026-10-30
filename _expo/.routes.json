@@ -1,0 +1,599 @@
+{
+  "pageHeaders": [
+    {
+      "namedRegex": "^/\\(website\\)/blog(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/03/musclog\\-version\\-2\\-is\\-out(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/08/breaking\\-my\\-data\\-out\\-of\\-a\\-game\\-boy\\-cartridge(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/08/creating\\-a\\-calorie\\-tracker\\-for\\-the\\-game\\-boy\\-color(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/08/i\\-trained\\-my\\-own\\-model\\-to\\-get\\-rep\\-insights(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/08/my\\-camera\\-took\\-25\\-seconds\\-to\\-take\\-a\\-photo(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/08/this\\-blog\\-was\\-built\\-using\\-expo(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/08/using\\-decimen\\-optical\\-transfer\\-foss\\-to\\-transfer\\-data\\-between\\-devices(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/09/adding\\-light\\-mode\\-exposed\\-my\\-fake\\-theme\\-system(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/a\\-busy\\-cable\\-machine\\-should\\-not\\-rewrite\\-your\\-program(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/a\\-calendar\\-of\\-squares\\-on\\-your\\-home\\-screen\\-in\\-three\\-sizes(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/existing\\-users\\-never\\-see\\-onboarding\\-so\\-i\\-built\\-a\\-mini\\-one(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/greedy\\-plate\\-math\\-is\\-wrong\\-the\\-moment\\-your\\-gym\\-runs\\-out\\-of\\-plates(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/i\\-let\\-an\\-ai\\-set\\-up\\-musclog\\-but\\-it\\-never\\-touches\\-your\\-data(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/i\\-lost\\-my\\-app\\-icon\\-so\\-a\\-script\\-draws\\-six\\-of\\-them(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/i\\-rebuilt\\-cycle\\-tracking\\-around\\-the\\-days\\-you\\-actually\\-log(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/i\\-rebuilt\\-my\\-workout\\-notifications\\-with\\-no\\-server(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/my\\-app\\-now\\-explains\\-every\\-number\\-it\\-changes(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/my\\-weekly\\-review\\-had\\-buttons\\-that\\-could\\-never\\-work(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/one\\-workout\\-screen\\-two\\-views\\-and\\-1662\\-lines\\-i\\-deleted(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/10/the\\-first\\-frame\\-should\\-already\\-know\\-your\\-theme(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/2026/11/my\\-ai\\-coach\\-can\\-be\\-dracula\\-but\\-it\\-cannot\\-change\\-your\\-numbers(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/\\[\\.\\.\\.slug\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/category/\\[category\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/category/\\[category\\]/page/\\[page\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/category/engineering(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/category/machine\\-learning(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/category/product\\-updates(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/category/retro(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/category/web\\-development(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/page/2(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/page/3(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/\\(website\\)/blog/page/\\[page\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/03/musclog\\-version\\-2\\-is\\-out(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/08/breaking\\-my\\-data\\-out\\-of\\-a\\-game\\-boy\\-cartridge(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/08/creating\\-a\\-calorie\\-tracker\\-for\\-the\\-game\\-boy\\-color(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/08/i\\-trained\\-my\\-own\\-model\\-to\\-get\\-rep\\-insights(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/08/my\\-camera\\-took\\-25\\-seconds\\-to\\-take\\-a\\-photo(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/08/this\\-blog\\-was\\-built\\-using\\-expo(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/08/using\\-decimen\\-optical\\-transfer\\-foss\\-to\\-transfer\\-data\\-between\\-devices(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/09/adding\\-light\\-mode\\-exposed\\-my\\-fake\\-theme\\-system(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/a\\-busy\\-cable\\-machine\\-should\\-not\\-rewrite\\-your\\-program(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/a\\-calendar\\-of\\-squares\\-on\\-your\\-home\\-screen\\-in\\-three\\-sizes(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/existing\\-users\\-never\\-see\\-onboarding\\-so\\-i\\-built\\-a\\-mini\\-one(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/greedy\\-plate\\-math\\-is\\-wrong\\-the\\-moment\\-your\\-gym\\-runs\\-out\\-of\\-plates(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/i\\-let\\-an\\-ai\\-set\\-up\\-musclog\\-but\\-it\\-never\\-touches\\-your\\-data(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/i\\-lost\\-my\\-app\\-icon\\-so\\-a\\-script\\-draws\\-six\\-of\\-them(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/i\\-rebuilt\\-cycle\\-tracking\\-around\\-the\\-days\\-you\\-actually\\-log(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/i\\-rebuilt\\-my\\-workout\\-notifications\\-with\\-no\\-server(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/my\\-app\\-now\\-explains\\-every\\-number\\-it\\-changes(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/my\\-weekly\\-review\\-had\\-buttons\\-that\\-could\\-never\\-work(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/one\\-workout\\-screen\\-two\\-views\\-and\\-1662\\-lines\\-i\\-deleted(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/10/the\\-first\\-frame\\-should\\-already\\-know\\-your\\-theme(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/2026/11/my\\-ai\\-coach\\-can\\-be\\-dracula\\-but\\-it\\-cannot\\-change\\-your\\-numbers(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/\\[\\.\\.\\.slug\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/category/\\[category\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/category/\\[category\\]/page/\\[page\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/category/engineering(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/category/machine\\-learning(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/category/product\\-updates(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/category/retro(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/category/web\\-development(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/page/2(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/page/3(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/blog/page/\\[page\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/03/musclog\\-version\\-2\\-is\\-out(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/08/breaking\\-my\\-data\\-out\\-of\\-a\\-game\\-boy\\-cartridge(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/08/creating\\-a\\-calorie\\-tracker\\-for\\-the\\-game\\-boy\\-color(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/08/i\\-trained\\-my\\-own\\-model\\-to\\-get\\-rep\\-insights(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/08/my\\-camera\\-took\\-25\\-seconds\\-to\\-take\\-a\\-photo(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/08/this\\-blog\\-was\\-built\\-using\\-expo(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/08/using\\-decimen\\-optical\\-transfer\\-foss\\-to\\-transfer\\-data\\-between\\-devices(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/09/adding\\-light\\-mode\\-exposed\\-my\\-fake\\-theme\\-system(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/a\\-busy\\-cable\\-machine\\-should\\-not\\-rewrite\\-your\\-program(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/a\\-calendar\\-of\\-squares\\-on\\-your\\-home\\-screen\\-in\\-three\\-sizes(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/existing\\-users\\-never\\-see\\-onboarding\\-so\\-i\\-built\\-a\\-mini\\-one(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/greedy\\-plate\\-math\\-is\\-wrong\\-the\\-moment\\-your\\-gym\\-runs\\-out\\-of\\-plates(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/i\\-let\\-an\\-ai\\-set\\-up\\-musclog\\-but\\-it\\-never\\-touches\\-your\\-data(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/i\\-lost\\-my\\-app\\-icon\\-so\\-a\\-script\\-draws\\-six\\-of\\-them(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/i\\-rebuilt\\-cycle\\-tracking\\-around\\-the\\-days\\-you\\-actually\\-log(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/i\\-rebuilt\\-my\\-workout\\-notifications\\-with\\-no\\-server(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/my\\-app\\-now\\-explains\\-every\\-number\\-it\\-changes(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/my\\-weekly\\-review\\-had\\-buttons\\-that\\-could\\-never\\-work(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/one\\-workout\\-screen\\-two\\-views\\-and\\-1662\\-lines\\-i\\-deleted(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/10/the\\-first\\-frame\\-should\\-already\\-know\\-your\\-theme(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/2026/11/my\\-ai\\-coach\\-can\\-be\\-dracula\\-but\\-it\\-cannot\\-change\\-your\\-numbers(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/\\[\\.\\.\\.slug\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/category/\\[category\\]/index(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/category/\\[category\\]/page/\\[page\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/category/engineering/index(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/category/machine\\-learning/index(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/category/product\\-updates/index(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/category/retro/index(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/category/web\\-development/index(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/index(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/page/2(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/page/3(?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    },
+    {
+      "namedRegex": "^/_expo/loaders/\\(website\\)/blog/page/\\[page\\](?:/)?$",
+      "headers": {
+        "Cache-Control": "private, must-revalidate, max-age=0"
+      }
+    }
+  ],
+  "redirects": []
+}
