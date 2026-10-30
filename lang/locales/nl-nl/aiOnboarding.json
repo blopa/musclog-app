@@ -181,7 +181,6 @@
         "invalid": "Die waarde is ongeldig.",
         "outOfRange": "Die waarde valt buiten het toegestane bereik."
       },
-      "estimatedFromAge": "geschat op basis van leeftijd",
       "ignored": "Genegeerd omdat Musclog ze niet gebruikt: {{keys}}",
       "intro": "Controleer je antwoorden. Tik op een antwoord om het te wijzigen. Er wordt niets opgeslagen tot je doorgaat.",
       "missing": "Nog nodig: {{fields}}",

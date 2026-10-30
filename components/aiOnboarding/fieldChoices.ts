@@ -149,9 +149,7 @@ export function formatAnswer(
     case 'bodyFatPercent':
       return `${formatDecimal(value as number, 1)} %`;
     case 'birthDate':
-      return draft.dobEstimated
-        ? `${formatDate(value as string)} (${t('aiOnboarding.review.estimatedFromAge')})`
-        : formatDate(value as string);
+      return formatDate(value as string);
     case 'fullName':
       return value as string;
     default: {

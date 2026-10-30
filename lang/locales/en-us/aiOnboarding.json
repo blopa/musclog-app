@@ -181,7 +181,6 @@
         "invalid": "That value isn't valid.",
         "outOfRange": "That value is outside the allowed range."
       },
-      "estimatedFromAge": "estimated from age",
       "ignored": "Ignored because Musclog doesn't use them: {{keys}}",
       "intro": "Check your answers. Tap one to change it. Nothing is saved until you continue.",
       "missing": "Still needed: {{fields}}",

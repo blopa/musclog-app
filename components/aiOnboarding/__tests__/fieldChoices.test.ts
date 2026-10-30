@@ -61,12 +61,12 @@ describe('formatAnswer', () => {
     expect(formatAnswer('heightCm', { heightCm: 177.8 }, imperial)).toBe('70.0 in');
   });
 
-  it('formats body fat, name and birthday, flagging an estimated birthday', () => {
+  it('formats body fat, name and birthday, with no note about an estimated birthday', () => {
     expect(formatAnswer('bodyFatPercent', { bodyFatPercent: 18.5 }, base)).toBe('18.5 %');
     expect(formatAnswer('fullName', { fullName: 'Ana' }, base)).toBe('Ana');
     expect(formatAnswer('birthDate', { birthDate: '1990-01-01' }, base)).toBe('date:1990-01-01');
     expect(formatAnswer('birthDate', { birthDate: '1990-01-01', dobEstimated: true }, base)).toBe(
-      'date:1990-01-01 («aiOnboarding.review.estimatedFromAge»)'
+      'date:1990-01-01'
     );
   });
 
