@@ -95,11 +95,13 @@ describe('the coach persona page of 2.15.2', () => {
     expect(page?.requires).toBeUndefined();
   });
 
-  it('explains the presets, the custom coach and that only the voice changes', () => {
-    expect(page?.blocks.map((block) => block.id)).toEqual([
-      'coachPersona',
-      'coachCustom',
-      'coachVoiceOnly',
-    ]);
+  it('is a single screen, with the copy covering presets, a custom coach and voice-only changes', () => {
+    expect(page?.blocks.map((block) => block.id)).toEqual(['coachPersona']);
+
+    const copy = JSON.parse(readFileSync(join(root, 'lang/locales/en-us/whatsNew.json'), 'utf8'));
+    const { description } = copy.whatsNew.releases.v2_15_2.coachPersona;
+    expect(description).toMatch(/Dracula/);
+    expect(description).toMatch(/write your own/);
+    expect(description).toMatch(/Only the wording changes/);
   });
 });

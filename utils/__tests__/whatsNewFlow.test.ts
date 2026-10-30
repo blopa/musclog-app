@@ -202,7 +202,7 @@ describe('pageHeadlineDetailKeys', () => {
     ).toEqual(['whatsNew.detail']);
   });
 
-  it('explains every page of the published tour, including the Also new features', () => {
+  it('explains every page of the published tour, including the feature-list pages', () => {
     const { whatsNewReleases } = jest.requireActual('@/data/whatsNew/releases') as {
       whatsNewReleases: WhatsNewRelease[];
     };
@@ -212,14 +212,15 @@ describe('pageHeadlineDetailKeys', () => {
       context: { cycleTracking: true },
     });
     const details = flow.pages.map(pageHeadlineDetailKeys);
-    expect(details).toHaveLength(12);
+    expect(details).toHaveLength(9);
     expect(details.every((keys) => keys.length > 0)).toBe(true);
-    expect(details[5]).toEqual([
-      'whatsNew.releases.v2_15_2.also.plans.label',
-      'whatsNew.releases.v2_15_2.also.cardio.label',
-      'whatsNew.releases.v2_15_2.also.swaps.label',
-      'whatsNew.releases.v2_15_2.also.restrictions.label',
-      'whatsNew.releases.v2_15_2.also.warmups.label',
+    expect(details[3]).toEqual([
+      'whatsNew.releases.v2_15_2.workoutMore.plans.label',
+      'whatsNew.releases.v2_15_2.workoutMore.cardio.label',
+      'whatsNew.releases.v2_15_2.workoutMore.swaps.label',
+      'whatsNew.releases.v2_15_2.workoutMore.restrictions.label',
+      'whatsNew.releases.v2_15_2.workoutMore.warmups.label',
+      'whatsNew.releases.v2_15_2.workoutMore.restTimer.label',
     ]);
   });
 });

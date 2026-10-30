@@ -66,72 +66,6 @@
           ]
         },
         {
-          "id": "progressionMode",
-          "type": "choice",
-          "setting": "progressionMode",
-          "titleKey": "whatsNew.releases.v2_15_2.progressionMode.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.progressionMode.description",
-          "options": [
-            {
-              "value": "reps_first",
-              "labelKey": "whatsNew.releases.v2_15_2.progressionMode.reps_first.label",
-              "descriptionKey": "whatsNew.releases.v2_15_2.progressionMode.reps_first.description",
-              "icon": "trendingUp"
-            },
-            {
-              "value": "weight_first",
-              "labelKey": "whatsNew.releases.v2_15_2.progressionMode.weight_first.label",
-              "descriptionKey": "whatsNew.releases.v2_15_2.progressionMode.weight_first.description",
-              "icon": "dumbbell"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "rest",
-      "blocks": [
-        {
-          "id": "rest",
-          "type": "info",
-          "icon": "timer",
-          "titleKey": "whatsNew.releases.v2_15_2.rest.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.rest.description"
-        },
-        {
-          "id": "autoStartRestTimer",
-          "type": "choice",
-          "setting": "autoStartRestTimer",
-          "titleKey": "whatsNew.releases.v2_15_2.autoStartRestTimer.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.autoStartRestTimer.description"
-        },
-        {
-          "id": "restTimerHaptics",
-          "type": "choice",
-          "setting": "restTimerHaptics",
-          "titleKey": "whatsNew.releases.v2_15_2.restTimerHaptics.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.restTimerHaptics.description"
-        },
-        {
-          "id": "openSettings",
-          "type": "action",
-          "action": "openWorkoutSettings",
-          "labelKey": "whatsNew.releases.v2_15_2.openSettings",
-          "icon": "settings"
-        }
-      ]
-    },
-    {
-      "id": "gyms",
-      "blocks": [
-        {
-          "id": "gyms",
-          "type": "info",
-          "icon": "dumbbell",
-          "titleKey": "whatsNew.releases.v2_15_2.gyms.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.gyms.description"
-        },
-        {
           "id": "setupGym",
           "type": "action",
           "action": "openWorkoutSettings",
@@ -167,112 +101,54 @@
       ]
     },
     {
-      "id": "also",
+      "id": "workoutMore",
       "blocks": [
         {
           "id": "features",
           "type": "featureList",
-          "titleKey": "whatsNew.releases.v2_15_2.also.title",
+          "titleKey": "whatsNew.releases.v2_15_2.workoutMore.title",
           "items": [
             {
               "id": "plans",
               "icon": "calendar",
-              "labelKey": "whatsNew.releases.v2_15_2.also.plans.label",
-              "descriptionKey": "whatsNew.releases.v2_15_2.also.plans.description",
+              "labelKey": "whatsNew.releases.v2_15_2.workoutMore.plans.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.workoutMore.plans.description",
               "action": "openWorkouts"
             },
             {
               "id": "cardio",
               "icon": "heart",
-              "labelKey": "whatsNew.releases.v2_15_2.also.cardio.label",
-              "descriptionKey": "whatsNew.releases.v2_15_2.also.cardio.description",
+              "labelKey": "whatsNew.releases.v2_15_2.workoutMore.cardio.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.workoutMore.cardio.description",
               "action": "openCardioLog"
             },
             {
               "id": "swaps",
               "icon": "shuffle",
-              "labelKey": "whatsNew.releases.v2_15_2.also.swaps.label",
-              "descriptionKey": "whatsNew.releases.v2_15_2.also.swaps.description"
+              "labelKey": "whatsNew.releases.v2_15_2.workoutMore.swaps.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.workoutMore.swaps.description"
             },
             {
               "id": "restrictions",
               "icon": "shield",
-              "labelKey": "whatsNew.releases.v2_15_2.also.restrictions.label",
-              "descriptionKey": "whatsNew.releases.v2_15_2.also.restrictions.description",
+              "labelKey": "whatsNew.releases.v2_15_2.workoutMore.restrictions.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.workoutMore.restrictions.description",
               "action": "openWorkoutSettings"
             },
             {
               "id": "warmups",
               "icon": "flame",
-              "labelKey": "whatsNew.releases.v2_15_2.also.warmups.label",
-              "descriptionKey": "whatsNew.releases.v2_15_2.also.warmups.description"
+              "labelKey": "whatsNew.releases.v2_15_2.workoutMore.warmups.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.workoutMore.warmups.description"
+            },
+            {
+              "id": "restTimer",
+              "icon": "timer",
+              "labelKey": "whatsNew.releases.v2_15_2.workoutMore.restTimer.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.workoutMore.restTimer.description",
+              "action": "openWorkoutSettings"
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "widgets",
-      "blocks": [
-        {
-          "id": "widgets",
-          "type": "info",
-          "icon": "layout",
-          "titleKey": "whatsNew.releases.v2_15_2.widgets.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.widgets.description"
-        },
-        {
-          "id": "migration",
-          "type": "info",
-          "icon": "settings",
-          "titleKey": "whatsNew.releases.v2_15_2.migration.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.migration.description"
-        }
-      ]
-    },
-    {
-      "id": "redesign",
-      "blocks": [
-        {
-          "id": "menus",
-          "type": "info",
-          "icon": "list",
-          "titleKey": "whatsNew.releases.v2_15_2.menus.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.menus.description"
-        },
-        {
-          "id": "home",
-          "type": "info",
-          "icon": "layout",
-          "titleKey": "whatsNew.releases.v2_15_2.home.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.home.description"
-        }
-      ]
-    },
-    {
-      "id": "cycle",
-      "requires": "cycleTracking",
-      "blocks": [
-        {
-          "id": "cycleDiary",
-          "type": "info",
-          "icon": "shield",
-          "titleKey": "whatsNew.releases.v2_15_2.cycleDiary.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.cycleDiary.description"
-        },
-        {
-          "id": "cycleReminders",
-          "type": "info",
-          "icon": "calendar",
-          "titleKey": "whatsNew.releases.v2_15_2.cycleReminders.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.cycleReminders.description"
-        },
-        {
-          "id": "cycleLock",
-          "type": "info",
-          "icon": "heart",
-          "titleKey": "whatsNew.releases.v2_15_2.cycleLock.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.cycleLock.description"
         }
       ]
     },
@@ -285,20 +161,6 @@
           "icon": "calendar",
           "titleKey": "whatsNew.releases.v2_15_2.heatmaps.title",
           "descriptionKey": "whatsNew.releases.v2_15_2.heatmaps.description"
-        },
-        {
-          "id": "layouts",
-          "type": "info",
-          "icon": "layout",
-          "titleKey": "whatsNew.releases.v2_15_2.layouts.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.layouts.description"
-        },
-        {
-          "id": "setup",
-          "type": "info",
-          "icon": "settings",
-          "titleKey": "whatsNew.releases.v2_15_2.setup.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.setup.description"
         }
       ]
     },
@@ -311,20 +173,6 @@
           "icon": "bot",
           "titleKey": "whatsNew.releases.v2_15_2.aiSetup.title",
           "descriptionKey": "whatsNew.releases.v2_15_2.aiSetup.description"
-        },
-        {
-          "id": "aiOptions",
-          "type": "info",
-          "icon": "shuffle",
-          "titleKey": "whatsNew.releases.v2_15_2.aiOptions.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.aiOptions.description"
-        },
-        {
-          "id": "aiReview",
-          "type": "info",
-          "icon": "shield",
-          "titleKey": "whatsNew.releases.v2_15_2.aiReview.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.aiReview.description"
         },
         {
           "id": "openAiSetup",
@@ -344,20 +192,55 @@
           "icon": "bot",
           "titleKey": "whatsNew.releases.v2_15_2.coachPersona.title",
           "descriptionKey": "whatsNew.releases.v2_15_2.coachPersona.description"
-        },
+        }
+      ]
+    },
+    {
+      "id": "appWide",
+      "blocks": [
         {
-          "id": "coachCustom",
-          "type": "info",
-          "icon": "heart",
-          "titleKey": "whatsNew.releases.v2_15_2.coachCustom.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.coachCustom.description"
-        },
+          "id": "features",
+          "type": "featureList",
+          "titleKey": "whatsNew.releases.v2_15_2.appWide.title",
+          "items": [
+            {
+              "id": "home",
+              "icon": "layout",
+              "labelKey": "whatsNew.releases.v2_15_2.appWide.home.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.appWide.home.description"
+            },
+            {
+              "id": "menus",
+              "icon": "list",
+              "labelKey": "whatsNew.releases.v2_15_2.appWide.menus.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.appWide.menus.description"
+            },
+            {
+              "id": "widgets",
+              "icon": "layout",
+              "labelKey": "whatsNew.releases.v2_15_2.appWide.widgets.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.appWide.widgets.description"
+            },
+            {
+              "id": "lock",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_15_2.appWide.lock.label",
+              "descriptionKey": "whatsNew.releases.v2_15_2.appWide.lock.description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cycle",
+      "requires": "cycleTracking",
+      "blocks": [
         {
-          "id": "coachVoiceOnly",
+          "id": "cycleDiary",
           "type": "info",
           "icon": "shield",
-          "titleKey": "whatsNew.releases.v2_15_2.coachVoiceOnly.title",
-          "descriptionKey": "whatsNew.releases.v2_15_2.coachVoiceOnly.description"
+          "titleKey": "whatsNew.releases.v2_15_2.cycleDiary.title",
+          "descriptionKey": "whatsNew.releases.v2_15_2.cycleDiary.description"
         }
       ]
     }

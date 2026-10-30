@@ -49,8 +49,8 @@
           }
         },
         "targets": {
-          "title": "Hulp bij je volgende set",
-          "description": "Musclog stelt startdoelen voor op basis van je geschiedenis. Gewijzigde getallen worden gemarkeerd en je kunt ze altijd aanpassen."
+          "title": "Doelen die bij jou en je sportschool passen",
+          "description": "Musclog stelt startdoelen voor op basis van je geschiedenis en markeert de getallen die het wijzigt, dus je kunt ze altijd aanpassen. Voeg de stang en schijven van je sportschool toe voor gewichten die je echt kunt laden."
         },
         "workoutAutonomy": {
           "title": "Startdoelen",
@@ -64,35 +64,6 @@
             "description": "Begin met de doelen die in mijn training zijn opgeslagen."
           }
         },
-        "progressionMode": {
-          "title": "Progressievoorkeur",
-          "description": "Wat eerst omhoog gaat als doelen veranderen.",
-          "reps_first": {
-            "label": "Eerst herhalingen",
-            "description": "Bouw herhalingen op voordat je gewicht toevoegt."
-          },
-          "weight_first": {
-            "label": "Eerst gewicht",
-            "description": "Geef gewicht voorrang bij het aanpassen van doelen."
-          }
-        },
-        "rest": {
-          "title": "Rust zonder op de klok te kijken",
-          "description": "Je rusttimer kan automatisch starten na een set. Kies of je ook trillingen wilt."
-        },
-        "autoStartRestTimer": {
-          "title": "Rust automatisch starten",
-          "description": "Start de rusttimer zodra je een set voltooit."
-        },
-        "restTimerHaptics": {
-          "title": "Trillingen van de rusttimer",
-          "description": "Gebruik haptische feedback voor de rusttimer."
-        },
-        "openSettings": "Trainingsinstellingen openen",
-        "gyms": {
-          "title": "Doelen die bij je sportschool passen",
-          "description": "Voeg de apparatuur, het stanggewicht en de beschikbare schijven toe. Musclog kan ze gebruiken voor haalbare gewichten en schijfberekeningen."
-        },
         "setupGym": "Sportscholen en schijven instellen",
         "review": {
           "title": "Elke week even terugkijken",
@@ -103,8 +74,8 @@
           "description": "Kies een dag die bij je ritme past. Je bestaande herinneringsvoorkeuren blijven behouden."
         },
         "openReview": "Weekoverzicht openen",
-        "also": {
-          "title": "Ook nieuw",
+        "workoutMore": {
+          "title": "Meer voor je trainingen",
           "plans": {
             "label": "Trainingsplannen",
             "description": "Organiseer trainingen in wekelijkse of roterende plannen."
@@ -124,73 +95,48 @@
           "warmups": {
             "label": "Opwarmsets",
             "description": "Houd opwarmsets gescheiden van je werksets."
+          },
+          "restTimer": {
+            "label": "Automatische rusttimer",
+            "description": "Start de rusttimer na elke set, met optionele trillingen."
           }
-        },
-        "widgets": {
-          "title": "Widgets op beide platforms",
-          "description": "Voedingsvoortgang en Slimme camera werken nu ook op iOS en volgen het thema en de taal van de app. Houd op iOS het beginscherm ingedrukt, kies Voeg widget toe en vervolgens Musclog."
-        },
-        "migration": {
-          "title": "Voeg je Android-widgets opnieuw toe",
-          "description": "Verwijder je oude Musclog-widgets en voeg Voedingsvoortgang of Slimme camera opnieuw toe via de widgetkiezer."
-        },
-        "menus": {
-          "title": "Rustigere menu’s en instellingen",
-          "description": "Menu’s en Instellingen zijn nu eenvoudige gegroepeerde lijsten in plaats van stapels kaarten, en Instellingen is verdeeld in zeven duidelijkere groepen."
-        },
-        "home": {
-          "title": "Een overzichtelijker startscherm",
-          "description": "Het startscherm opent met de cijfers van vandaag, de datum bovenaan en kleinere snelkoppelingen. De kaart Wekelijkse review verschijnt alleen als er een review klaarstaat."
-        },
-        "cycleDiary": {
-          "title": "Een privé, versleuteld cyclusdagboek",
-          "description": "Je menstruaties, dagregistraties en context worden nu versleuteld op je apparaat opgeslagen. Voorspellingen tonen hoe zeker ze zijn en een schatting van het vruchtbare venster is optioneel en staat standaard uit."
-        },
-        "cycleReminders": {
-          "title": "Herinneringen en een cycluswidget",
-          "description": "Kies hoeveel een herinnering vertelt, van volledig discreet tot uitgebreid, en voeg de nieuwe alleen-lezen cycluswidget toe. Met een app-vergrendeling aan toont de widget niets persoonlijks."
-        },
-        "cycleLock": {
-          "title": "Vergrendel alleen je cyclus",
-          "description": "In Instellingen → App-vergrendeling kun je nu je cyclus, trainingen, voeding, voortgang of de hele app beschermen met de beveiliging van je apparaat."
         },
         "heatmaps": {
           "title": "Je activiteit in één oogopslag",
-          "description": "Zie op Start de dagen waarop je trainde en de dagen waarop je maaltijden logde als een kalender van vierkantjes. Donkerdere vierkantjes zijn drukkere dagen. Tik op een vierkantje, of beweeg eroverheen op web, om die dag te lezen."
-        },
-        "layouts": {
-          "title": "Drie manieren om ze te tonen",
-          "description": "Volledige breedte toont ongeveer vier maanden van elke kaart, onder elkaar. Naast elkaar zet beide in één rij als twee kleine kaarten met de laatste 30 dagen. Compact brengt ze samen in één korte kaart met een dunne rij van 30 dagen per kaart."
-        },
-        "setup": {
-          "title": "Uit tot je ze aanzet",
-          "description": "Ga naar Instellingen → Uiterlijk en start → Activiteitskaarten om trainingen, voeding of beide te tonen en de indeling te kiezen. Met maar één kaart aan gebruikt die altijd de volledige breedte."
+          "description": "Zie op Start de dagen waarop je trainde en maaltijden logde als een kalender van vierkantjes: donkerder betekent drukker en een tik op een vierkantje toont die dag. Zet het aan in Instellingen → Uiterlijk en start → Activiteitskaarten, waar je ook de indeling kiest."
         },
         "aiSetup": {
           "title": "Stel Musclog in door te praten",
-          "description": "Beantwoord een paar vragen in een chat in plaats van formulieren in te vullen. Nieuwe installaties vinden het op het eerste scherm en je kunt het altijd gebruiken om je profiel bij te werken."
+          "description": "Beantwoord een paar vragen in een chat in plaats van formulieren in te vullen, met gratis Musclog AI, je eigen Gemini- of OpenAI-sleutel, of ChatGPT of Claude. Je controleert en bewerkt elk antwoord voordat er iets wordt opgeslagen."
         },
-        "aiOptions": {
-          "title": "Chat hier, of in ChatGPT of Claude",
-          "description": "Chat binnen Musclog met de gratis Musclog AI of je eigen Gemini- of OpenAI-sleutel. Of laat ChatGPT of Claude de vragen stellen: Musclog kopieert de instructies voor je en daarna breng je een bestand terug of plak je de tekst."
-        },
-        "aiReview": {
-          "title": "Jij controleert eerst alles",
-          "description": "Elk antwoord staat op een controlescherm waar je het kunt aanpassen. Vanuit Profiel staat elke wijziging naast wat je nu hebt en er wordt niets opgeslagen tot je het toepast."
-        },
+        "openAiSetup": "Mijn profiel bijwerken met AI",
         "coachPersona": {
           "title": "Kies wie je AI-coach is",
-          "description": "Houd Loggy, of kies graaf Dracula, Cthulhu of Sherlock Holmes. De naam, de afbeelding en de manier van praten van je coach veranderen in de chat en in de inzichten die hij voor je schrijft. Je vindt het in Instellingen → AI, of je kiest er een tijdens de persoonlijke setup."
+          "description": "Houd Loggy, kies graaf Dracula, Cthulhu of Sherlock Holmes, of schrijf je eigen coach met een naam, een stem en een afbeelding. Alleen de woordkeuze verandert, nooit de cijfers of het veiligheidsadvies. Je vindt het in Instellingen → AI."
         },
-        "coachCustom": {
-          "title": "Of schrijf je eigen coach",
-          "description": "Geef je coach een naam, beschrijf hoe hij praat en voeg een afbeelding uit je galerij toe. Je coach wordt op dit apparaat bewaard en je kunt hem altijd aanpassen."
+        "appWide": {
+          "title": "Ook nieuw in de hele app",
+          "home": {
+            "label": "Een overzichtelijker Start",
+            "description": "Eerst de cijfers van vandaag, kleinere snelkoppelingen en de kaart Wekelijkse review alleen als er een klaarstaat."
+          },
+          "menus": {
+            "label": "Rustigere menu’s en instellingen",
+            "description": "Eenvoudige gegroepeerde lijsten in plaats van stapels kaarten, met Instellingen verdeeld in zeven duidelijkere groepen."
+          },
+          "widgets": {
+            "label": "Widgets op iOS en Android",
+            "description": "Voedingsvoortgang en Slimme camera werken nu ook op iOS. Verwijder op Android je oude Musclog-widgets en voeg ze opnieuw toe via de widgetkiezer."
+          },
+          "lock": {
+            "label": "Vergrendel delen van de app",
+            "description": "Bescherm in Instellingen → App-vergrendeling je cyclus, trainingen, voeding, voortgang of de hele app met de beveiliging van je apparaat."
+          }
         },
-        "coachVoiceOnly": {
-          "title": "Alleen de stem verandert",
-          "description": "Een coach verandert de woorden, nooit de cijfers, het veiligheidsadvies of waarmee de coach helpt. Met AI op je toestel is de coach altijd Loggy."
-        },
-        "openAiSetup": "Mijn profiel bijwerken met AI"
+        "cycleDiary": {
+          "title": "Een privé, versleuteld cyclusdagboek",
+          "description": "Je menstruaties en dagregistraties worden nu versleuteld op je apparaat opgeslagen. Voorspellingen tonen hoe zeker ze zijn en de schatting van het vruchtbare venster is optioneel en staat standaard uit. Herinneringen kunnen zo discreet zijn als je wilt, en een alleen-lezen cycluswidget toont niets persoonlijks onder een app-vergrendeling."
+        }
       }
     }
   }

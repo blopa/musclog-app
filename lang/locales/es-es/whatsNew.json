@@ -49,8 +49,8 @@
           }
         },
         "targets": {
-          "title": "Una ayuda para tu próxima serie",
-          "description": "Musclog sugiere objetivos iniciales según tu historial. Los números cambiados se marcan y siempre puedes editarlos."
+          "title": "Objetivos a tu medida y a la de tu gimnasio",
+          "description": "Musclog sugiere objetivos iniciales según tu historial y marca los números que cambia, así que siempre puedes editarlos. Añade la barra y los discos de tu gimnasio para obtener cargas que realmente puedas montar."
         },
         "workoutAutonomy": {
           "title": "Objetivos iniciales",
@@ -64,35 +64,6 @@
             "description": "Empezar con los objetivos guardados en mi entrenamiento."
           }
         },
-        "progressionMode": {
-          "title": "Preferencia de progresión",
-          "description": "Qué sube primero cuando cambian los objetivos.",
-          "reps_first": {
-            "label": "Repeticiones primero",
-            "description": "Aumentar las repeticiones antes de añadir peso."
-          },
-          "weight_first": {
-            "label": "Peso primero",
-            "description": "Priorizar el peso al ajustar los objetivos."
-          }
-        },
-        "rest": {
-          "title": "Descansa sin mirar el reloj",
-          "description": "El temporizador de descanso puede empezar automáticamente tras una serie. Elige si también quieres que vibre."
-        },
-        "autoStartRestTimer": {
-          "title": "Iniciar descanso automáticamente",
-          "description": "Iniciar el temporizador al completar una serie."
-        },
-        "restTimerHaptics": {
-          "title": "Vibraciones del temporizador",
-          "description": "Usar respuesta háptica en el temporizador de descanso."
-        },
-        "openSettings": "Abrir ajustes del entrenamiento",
-        "gyms": {
-          "title": "Objetivos que encajan con tu gimnasio",
-          "description": "Añade el equipamiento, el peso de la barra y los discos disponibles. Musclog puede usarlos para sugerir cargas posibles y calcular los discos."
-        },
         "setupGym": "Configurar gimnasios y discos",
         "review": {
           "title": "Un momento semanal para reflexionar",
@@ -103,8 +74,8 @@
           "description": "Elige un día que encaje con tu rutina. Tus preferencias de recordatorios se mantienen."
         },
         "openReview": "Abrir revisión semanal",
-        "also": {
-          "title": "También es nuevo",
+        "workoutMore": {
+          "title": "Más para tus entrenamientos",
           "plans": {
             "label": "Planes de entrenamiento",
             "description": "Organiza entrenamientos en planes semanales o rotativos."
@@ -124,73 +95,48 @@
           "warmups": {
             "label": "Series de calentamiento",
             "description": "Separa los calentamientos de tus series de trabajo."
+          },
+          "restTimer": {
+            "label": "Descanso automático",
+            "description": "Inicia el temporizador de descanso tras cada serie, con vibración opcional."
           }
-        },
-        "widgets": {
-          "title": "Widgets en ambas plataformas",
-          "description": "Progreso nutricional y Cámara inteligente ahora están disponibles en iOS y siguen el tema y el idioma de la app. En iOS, mantén pulsada la pantalla de inicio, elige Añadir widget y luego Musclog."
-        },
-        "migration": {
-          "title": "Vuelve a añadir tus widgets de Android",
-          "description": "Elimina los widgets antiguos de Musclog y añade de nuevo Progreso nutricional o Cámara inteligente desde el selector de widgets."
-        },
-        "menus": {
-          "title": "Menús y Ajustes más tranquilos",
-          "description": "Los menús y Ajustes ahora son listas agrupadas sencillas en lugar de pilas de tarjetas, y Ajustes se organiza en siete grupos más claros."
-        },
-        "home": {
-          "title": "Una pantalla de inicio más ordenada",
-          "description": "Inicio se abre con los números de hoy, la fecha arriba y accesos directos más pequeños. La tarjeta de Revisión semanal solo aparece cuando hay una pendiente."
-        },
-        "cycleDiary": {
-          "title": "Un diario del ciclo privado y cifrado",
-          "description": "Tus periodos, registros diarios y contexto ahora se guardan cifrados en tu dispositivo. Las predicciones indican su nivel de confianza y la estimación de la ventana fértil es opcional y viene desactivada."
-        },
-        "cycleReminders": {
-          "title": "Recordatorios y widget del ciclo",
-          "description": "Elige cuánto dice un recordatorio, desde totalmente discreto hasta detallado, y añade el nuevo widget de ciclo de solo lectura. Con un bloqueo de la app activado, el widget no muestra nada personal."
-        },
-        "cycleLock": {
-          "title": "Bloquea solo tu ciclo",
-          "description": "En Ajustes → Bloqueo de la app ahora puedes proteger tu ciclo, entrenamientos, nutrición, progreso o toda la app con la credencial de tu dispositivo."
         },
         "heatmaps": {
           "title": "Tu actividad de un vistazo",
-          "description": "Mira en Inicio los días que entrenaste y los días que registraste comidas como un calendario de cuadrados. Cuanto más oscuro, más intenso el día. Toca un cuadrado, o pasa el cursor en la web, para ver ese día."
-        },
-        "layouts": {
-          "title": "Tres formas de mostrarlos",
-          "description": "Ancho completo muestra unos cuatro meses de cada mapa, uno sobre otro. Lado a lado pone ambos en una fila como dos tarjetas pequeñas con los últimos 30 días. Compacto los reúne en una sola tarjeta corta con una fila fina de 30 días para cada uno."
-        },
-        "setup": {
-          "title": "Desactivados hasta que los actives",
-          "description": "Ve a Ajustes → Apariencia e inicio → Mapas de actividad para mostrar entrenamientos, nutrición o ambos, y elegir el diseño. Con un solo mapa activado, siempre usa el ancho completo."
+          "description": "Mira en Inicio los días que entrenaste y registraste comidas como un calendario de cuadrados: cuanto más oscuro, más intenso, y al tocar un cuadrado ves ese día. Actívalo en Ajustes → Apariencia e inicio → Mapas de actividad, donde también eliges el diseño."
         },
         "aiSetup": {
           "title": "Configura Musclog hablando",
-          "description": "Responde unas preguntas en un chat en vez de rellenar formularios. Las instalaciones nuevas lo encuentran en la primera pantalla, y puedes usarlo cuando quieras para actualizar tu perfil."
+          "description": "Responde unas preguntas en un chat en vez de rellenar formularios, con la IA gratuita de Musclog, tu propia clave de Gemini u OpenAI, o ChatGPT o Claude. Revisas y editas cada respuesta antes de guardar nada."
         },
-        "aiOptions": {
-          "title": "Chatea aquí, o en ChatGPT o Claude",
-          "description": "Chatea dentro de Musclog con la IA gratuita o con tu propia clave de Gemini u OpenAI. O deja que ChatGPT o Claude hagan las preguntas: Musclog copia las instrucciones por ti y luego traes un archivo o pegas su texto."
-        },
-        "aiReview": {
-          "title": "Tú lo revisas todo primero",
-          "description": "Cada respuesta aparece en una pantalla de revisión donde puedes editarla. Desde el Perfil, cada cambio se muestra junto a lo que tienes ahora y no se guarda nada hasta que lo apliques."
-        },
+        "openAiSetup": "Actualizar mi perfil con IA",
         "coachPersona": {
           "title": "Elige quién es tu entrenador de IA",
-          "description": "Quédate con Loggy o elige al Conde Drácula, a Cthulhu o a Sherlock Holmes. El nombre, la imagen y la forma de hablar de tu entrenador cambian en el chat y en los análisis que te escribe. Lo encuentras en Ajustes → IA, o puedes elegirlo durante la configuración personalizada."
+          "description": "Quédate con Loggy, elige al Conde Drácula, a Cthulhu o a Sherlock Holmes, o crea el tuyo con nombre, voz e imagen. Solo cambia la forma de decir las cosas, nunca los números ni los consejos de seguridad. Lo encuentras en Ajustes → IA."
         },
-        "coachCustom": {
-          "title": "O escribe el tuyo",
-          "description": "Ponle nombre a tu entrenador, describe cómo habla y añade una imagen de tu galería. Se guarda en este dispositivo y puedes editarlo cuando quieras."
+        "appWide": {
+          "title": "También es nuevo en toda la app",
+          "home": {
+            "label": "Un Inicio más ordenado",
+            "description": "Primero los números de hoy, accesos más pequeños y la tarjeta de Revisión semanal solo cuando hay una pendiente."
+          },
+          "menus": {
+            "label": "Menús y Ajustes más tranquilos",
+            "description": "Listas agrupadas sencillas en lugar de pilas de tarjetas, con Ajustes dividido en siete grupos más claros."
+          },
+          "widgets": {
+            "label": "Widgets en iOS y Android",
+            "description": "Progreso nutricional y Cámara inteligente ahora también funcionan en iOS. En Android, elimina tus widgets antiguos de Musclog y vuelve a añadirlos desde el selector de widgets."
+          },
+          "lock": {
+            "label": "Bloquea partes de la app",
+            "description": "En Ajustes → Bloqueo de la app, protege tu ciclo, entrenamientos, nutrición, progreso o toda la app con la credencial de tu dispositivo."
+          }
         },
-        "coachVoiceOnly": {
-          "title": "Solo cambia la voz",
-          "description": "El entrenador cambia las palabras, nunca los números, los consejos de seguridad ni aquello en lo que ayuda. Con la IA del dispositivo, el entrenador siempre es Loggy."
-        },
-        "openAiSetup": "Actualizar mi perfil con IA"
+        "cycleDiary": {
+          "title": "Un diario del ciclo privado y cifrado",
+          "description": "Tus periodos y registros diarios ahora se cifran en tu dispositivo. Las predicciones indican su nivel de confianza y la estimación de la ventana fértil es opcional y viene desactivada. Los recordatorios pueden ser tan discretos como quieras, y un widget de ciclo de solo lectura no muestra nada personal con un bloqueo de la app."
+        }
       }
     }
   }

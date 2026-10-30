@@ -49,8 +49,8 @@
           }
         },
         "targets": {
-          "title": "Uma ajuda para a próxima série",
-          "description": "O Musclog sugere metas iniciais com base no seu histórico. Números alterados são marcados, e você sempre pode editá-los."
+          "title": "Metas que combinam com você e sua academia",
+          "description": "O Musclog sugere metas iniciais com base no seu histórico e marca os números que alterou, então você sempre pode editá-los. Adicione a barra e as anilhas da sua academia para obter cargas que você realmente consegue montar."
         },
         "workoutAutonomy": {
           "title": "Metas iniciais",
@@ -64,35 +64,6 @@
             "description": "Começar com as metas salvas no meu treino."
           }
         },
-        "progressionMode": {
-          "title": "Preferência de progressão",
-          "description": "O que sobe primeiro quando as metas mudam.",
-          "reps_first": {
-            "label": "Repetições primeiro",
-            "description": "Aumentar as repetições antes de adicionar peso."
-          },
-          "weight_first": {
-            "label": "Peso primeiro",
-            "description": "Priorizar o peso ao ajustar as metas."
-          }
-        },
-        "rest": {
-          "title": "Descanse sem olhar o relógio",
-          "description": "O timer de descanso pode começar automaticamente após uma série. Escolha se você também quer vibrações."
-        },
-        "autoStartRestTimer": {
-          "title": "Iniciar descanso automaticamente",
-          "description": "Iniciar o timer ao concluir uma série."
-        },
-        "restTimerHaptics": {
-          "title": "Vibrações do timer",
-          "description": "Usar resposta tátil no timer de descanso."
-        },
-        "openSettings": "Abrir configurações de treino",
-        "gyms": {
-          "title": "Metas que combinam com sua academia",
-          "description": "Adicione os equipamentos, o peso da barra e as anilhas disponíveis. O Musclog pode usá-los para sugerir cargas possíveis e calcular anilhas."
-        },
         "setupGym": "Configurar academias e anilhas",
         "review": {
           "title": "Um momento semanal para refletir",
@@ -103,8 +74,8 @@
           "description": "Escolha um dia que combine com sua rotina. Suas preferências de lembretes serão mantidas."
         },
         "openReview": "Abrir revisão semanal",
-        "also": {
-          "title": "Também é novo",
+        "workoutMore": {
+          "title": "Mais para seus treinos",
           "plans": {
             "label": "Planos de treino",
             "description": "Organize treinos em planos semanais ou rotativos."
@@ -124,73 +95,48 @@
           "warmups": {
             "label": "Séries de aquecimento",
             "description": "Mantenha os aquecimentos separados das séries de trabalho."
+          },
+          "restTimer": {
+            "label": "Descanso automático",
+            "description": "Inicie o timer de descanso após cada série, com vibração opcional."
           }
-        },
-        "widgets": {
-          "title": "Widgets nas duas plataformas",
-          "description": "Progresso nutricional e Câmera inteligente agora funcionam no iOS e seguem o tema e o idioma do app. No iOS, mantenha a tela inicial pressionada, escolha Adicionar widget e depois Musclog."
-        },
-        "migration": {
-          "title": "Adicione seus widgets Android novamente",
-          "description": "Remova os widgets antigos do Musclog e adicione Progresso nutricional ou Câmera inteligente novamente pelo seletor de widgets."
-        },
-        "menus": {
-          "title": "Menus e Configurações mais calmos",
-          "description": "Menus e Configurações agora são listas agrupadas simples em vez de pilhas de cartões, e as Configurações estão organizadas em sete grupos mais claros."
-        },
-        "home": {
-          "title": "Uma tela inicial mais organizada",
-          "description": "O Início abre com os números de hoje, a data no topo e atalhos menores. O cartão de Revisão semanal só aparece enquanto há uma revisão pendente."
-        },
-        "cycleDiary": {
-          "title": "Um diário do ciclo privado e criptografado",
-          "description": "Suas menstruações, registros diários e contexto agora ficam criptografados no seu dispositivo. As previsões mostram o nível de confiança e a estimativa da janela fértil é opcional e vem desativada."
-        },
-        "cycleReminders": {
-          "title": "Lembretes e widget do ciclo",
-          "description": "Escolha o quanto um lembrete revela, de totalmente discreto a detalhado, e adicione o novo widget de ciclo somente leitura. Com o bloqueio do app ativado, o widget não mostra nada pessoal."
-        },
-        "cycleLock": {
-          "title": "Bloqueie só o seu ciclo",
-          "description": "Em Configurações → Bloqueio do app, agora você pode proteger seu ciclo, treinos, nutrição, progresso ou o app inteiro com a credencial do seu dispositivo."
         },
         "heatmaps": {
           "title": "Sua atividade num relance",
-          "description": "Veja no Início os dias em que você treinou e registrou refeições como um calendário de quadradinhos. Quanto mais escuro, mais intenso o dia. Toque num quadrado, ou passe o cursor na web, para ver aquele dia."
-        },
-        "layouts": {
-          "title": "Três formas de mostrar",
-          "description": "Largura total mostra cerca de quatro meses de cada mapa, um acima do outro. Lado a lado coloca os dois numa linha como dois cartões pequenos com os últimos 30 dias. Compacto reúne tudo num único cartão curto, com uma linha fina de 30 dias para cada um."
-        },
-        "setup": {
-          "title": "Desativados até você ligar",
-          "description": "Vá em Configurações → Aparência e início → Mapas de atividade para mostrar treinos, nutrição ou os dois e escolher o layout. Com apenas um mapa ligado, ele sempre usa a largura total."
+          "description": "Veja no Início os dias em que você treinou e registrou refeições como um calendário de quadradinhos: quanto mais escuro, mais intenso, e tocar num quadrado mostra aquele dia. Ative em Configurações → Aparência e início → Mapas de atividade, onde você também escolhe o layout."
         },
         "aiSetup": {
           "title": "Configure o Musclog conversando",
-          "description": "Responda a algumas perguntas num chat em vez de preencher formulários. Instalações novas encontram isso na primeira tela, e você pode usar a qualquer momento para atualizar seu perfil."
+          "description": "Responda a algumas perguntas num chat em vez de preencher formulários, com a IA gratuita do Musclog, sua própria chave do Gemini ou OpenAI, ou o ChatGPT ou Claude. Você revisa e edita cada resposta antes de salvar qualquer coisa."
         },
-        "aiOptions": {
-          "title": "Converse aqui, ou no ChatGPT ou no Claude",
-          "description": "Converse dentro do Musclog com a IA gratuita ou com sua própria chave do Gemini ou da OpenAI. Ou deixe o ChatGPT ou o Claude fazer as perguntas: o Musclog copia as instruções para você e depois você traz um arquivo ou cola o texto."
-        },
-        "aiReview": {
-          "title": "Você confere tudo primeiro",
-          "description": "Cada resposta aparece numa tela de revisão onde você pode editar. No Perfil, cada mudança fica ao lado do que você tem agora, e nada é salvo até você aplicar."
-        },
+        "openAiSetup": "Atualizar meu perfil com IA",
         "coachPersona": {
           "title": "Escolha quem é seu treinador de IA",
-          "description": "Fique com o Loggy ou escolha o Conde Drácula, o Cthulhu ou o Sherlock Holmes. O nome, a imagem e o jeito de falar do seu treinador mudam no chat e nas análises que ele escreve para você. Você encontra em Configurações → IA, ou escolhe durante a configuração personalizada."
+          "description": "Fique com o Loggy, escolha o Conde Drácula, o Cthulhu ou o Sherlock Holmes, ou crie o seu com nome, voz e imagem. Só o jeito de falar muda, nunca os números nem os conselhos de segurança. Você encontra em Configurações → IA."
         },
-        "coachCustom": {
-          "title": "Ou escreva o seu",
-          "description": "Dê um nome ao seu treinador, descreva como ele fala e adicione uma imagem da sua galeria. Ele fica salvo neste dispositivo e você pode editar quando quiser."
+        "appWide": {
+          "title": "Também é novo em todo o app",
+          "home": {
+            "label": "Um Início mais organizado",
+            "description": "Primeiro os números de hoje, atalhos menores e o cartão de Revisão semanal só enquanto há uma pendente."
+          },
+          "menus": {
+            "label": "Menus e Configurações mais calmos",
+            "description": "Listas agrupadas simples em vez de pilhas de cartões, com as Configurações divididas em sete grupos mais claros."
+          },
+          "widgets": {
+            "label": "Widgets no iOS e no Android",
+            "description": "Progresso nutricional e Câmera inteligente agora também funcionam no iOS. No Android, remova os widgets antigos do Musclog e adicione-os novamente pelo seletor de widgets."
+          },
+          "lock": {
+            "label": "Bloqueie partes do app",
+            "description": "Em Configurações → Bloqueio do app, proteja seu ciclo, treinos, nutrição, progresso ou o app inteiro com a credencial do seu dispositivo."
+          }
         },
-        "coachVoiceOnly": {
-          "title": "Só a voz muda",
-          "description": "O treinador muda as palavras, nunca os números, os conselhos de segurança nem aquilo em que ele ajuda. Com a IA do dispositivo, o treinador é sempre o Loggy."
-        },
-        "openAiSetup": "Atualizar meu perfil com IA"
+        "cycleDiary": {
+          "title": "Um diário do ciclo privado e criptografado",
+          "description": "Suas menstruações e registros diários agora ficam criptografados no seu dispositivo. As previsões mostram o nível de confiança e a estimativa da janela fértil é opcional e vem desativada. Os lembretes podem ser tão discretos quanto você quiser, e um widget de ciclo somente leitura não mostra nada pessoal com o bloqueio do app ativado."
+        }
       }
     }
   }

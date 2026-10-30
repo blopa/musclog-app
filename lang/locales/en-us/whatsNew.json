@@ -49,8 +49,8 @@
           }
         },
         "targets": {
-          "title": "A little help with your next set",
-          "description": "Musclog suggests starting targets from your history. Changed numbers are marked, and you can always edit them."
+          "title": "Targets that fit you and your gym",
+          "description": "Musclog suggests starting targets from your history and marks the numbers it changed, so you can always edit them. Add your gym’s bar and plates to get loads you can actually put on the bar."
         },
         "workoutAutonomy": {
           "title": "Starting targets",
@@ -64,35 +64,6 @@
             "description": "Start with the targets saved in my workout."
           }
         },
-        "progressionMode": {
-          "title": "Progression preference",
-          "description": "What goes up first when targets change.",
-          "reps_first": {
-            "label": "Reps first",
-            "description": "Build up repetitions before adding weight."
-          },
-          "weight_first": {
-            "label": "Weight first",
-            "description": "Prioritize weight when adjusting targets."
-          }
-        },
-        "rest": {
-          "title": "Rest without watching the clock",
-          "description": "Your rest timer can start automatically after a set. Choose whether you want it to vibrate, too."
-        },
-        "autoStartRestTimer": {
-          "title": "Start rest automatically",
-          "description": "Start the rest timer when you complete a set."
-        },
-        "restTimerHaptics": {
-          "title": "Rest timer vibrations",
-          "description": "Use haptic feedback for the rest timer."
-        },
-        "openSettings": "Open workout settings",
-        "gyms": {
-          "title": "Targets that fit your gym",
-          "description": "Add your gym’s equipment, bar weight and available plates. Musclog can use them for loadable targets and plate calculations."
-        },
         "setupGym": "Set up gyms and plates",
         "review": {
           "title": "One weekly moment to reflect",
@@ -103,8 +74,8 @@
           "description": "Pick a day that fits your routine. Existing reminder preferences stay in place."
         },
         "openReview": "Open Weekly Review",
-        "also": {
-          "title": "Also new",
+        "workoutMore": {
+          "title": "More for your workouts",
           "plans": {
             "label": "Workout plans",
             "description": "Organize workouts into weekly or rotating plans."
@@ -124,73 +95,48 @@
           "warmups": {
             "label": "Warm-up sets",
             "description": "Keep warm-ups separate from your working sets."
+          },
+          "restTimer": {
+            "label": "Automatic rest timer",
+            "description": "Start the rest timer after each set, with optional vibration."
           }
-        },
-        "widgets": {
-          "title": "Widgets on both platforms",
-          "description": "Nutrition Progress and Smart Camera now support iOS and follow your app theme and language. On iOS, touch and hold the Home Screen, choose Add Widget, then Musclog."
-        },
-        "migration": {
-          "title": "Re-add your Android widgets",
-          "description": "Remove your old Musclog widgets and add Nutrition Progress or Smart Camera again from your launcher’s widget picker."
-        },
-        "menus": {
-          "title": "Calmer menus and Settings",
-          "description": "Menus and Settings are now simple grouped lists instead of stacks of cards, and Settings is organized into seven clearer groups."
-        },
-        "home": {
-          "title": "A tidier Home screen",
-          "description": "Home opens on today’s numbers with the date on top and smaller shortcut tiles. The Weekly Review card appears only while a review is due."
-        },
-        "cycleDiary": {
-          "title": "A private, encrypted cycle diary",
-          "description": "Your periods, day logs and context are now stored encrypted on your device. Predictions show how confident they are, and a fertile-window estimate is optional and off by default."
-        },
-        "cycleReminders": {
-          "title": "Reminders and a Cycle widget",
-          "description": "Choose how much a reminder says, from fully discreet to detailed, and add the new read-only Cycle widget. With an app lock on, the widget shows nothing personal."
-        },
-        "cycleLock": {
-          "title": "Lock just your cycle",
-          "description": "In Settings → App lock you can now protect your cycle, workouts, nutrition, progress, or the whole app behind your device credential."
         },
         "heatmaps": {
           "title": "Your activity at a glance",
-          "description": "See the days you trained and the days you logged meals as a calendar of squares on Home. Darker squares are busier days. Tap a square, or hover on web, to read out that day."
-        },
-        "layouts": {
-          "title": "Three ways to show them",
-          "description": "Full width shows about four months of each heatmap, one above the other. Side by side puts both in one row as two small cards with the last 30 days. Compact squeezes them into a single short card with a thin 30-day row for each."
-        },
-        "setup": {
-          "title": "Off until you turn them on",
-          "description": "Go to Settings → Appearance and home → Home heatmaps to show workouts, nutrition, or both, and pick the layout. With only one heatmap on, it always uses the full width."
+          "description": "See the days you trained and logged meals as a calendar of squares on Home: darker means busier, and tapping a square reads out that day. Turn it on in Settings → Appearance and home → Home heatmaps, where you also pick the layout."
         },
         "aiSetup": {
           "title": "Set up Musclog by talking",
-          "description": "Answer a few questions in a chat instead of filling in forms. New installs find it on the first screen, and you can use it any time to update your profile."
+          "description": "Answer a few questions in a chat instead of filling in forms, using free Musclog AI, your own Gemini or OpenAI key, or ChatGPT or Claude. You review and edit every answer before anything is saved."
         },
-        "aiOptions": {
-          "title": "Chat here, or in ChatGPT or Claude",
-          "description": "Chat inside Musclog with free Musclog AI or your own Gemini or OpenAI key. Or let ChatGPT or Claude ask the questions: Musclog copies the instructions for you, then you bring back a file or paste its text."
-        },
-        "aiReview": {
-          "title": "You check everything first",
-          "description": "Every answer shows on a review screen where you can edit it. From Profile, each change sits next to what you have now, and nothing is saved until you apply it."
-        },
+        "openAiSetup": "Update my profile with AI",
         "coachPersona": {
           "title": "Pick who your AI coach is",
-          "description": "Keep Loggy, or choose Count Dracula, Cthulhu or Sherlock Holmes. Your coach's name, picture and way of talking change in the chat and in the insights it writes for you. Find it in Settings → AI, or choose one during the personalized setup."
+          "description": "Keep Loggy, or pick Count Dracula, Cthulhu or Sherlock Holmes, or write your own with a name, a voice and a picture. Only the wording changes, never the numbers or the safety advice. Find it in Settings → AI."
         },
-        "coachCustom": {
-          "title": "Or write your own",
-          "description": "Give your coach a name, describe how it talks and add a picture from your gallery. Your coach is saved on this device and you can edit it any time."
+        "appWide": {
+          "title": "Also new across the app",
+          "home": {
+            "label": "A tidier Home",
+            "description": "Today’s numbers first, smaller shortcuts, and a Weekly Review card only while one is due."
+          },
+          "menus": {
+            "label": "Calmer menus and Settings",
+            "description": "Simple grouped lists instead of stacks of cards, with Settings split into seven clearer groups."
+          },
+          "widgets": {
+            "label": "Widgets on iOS and Android",
+            "description": "Nutrition Progress and Smart Camera now work on iOS too. On Android, remove your old Musclog widgets and add them again from the widget picker."
+          },
+          "lock": {
+            "label": "Lock parts of the app",
+            "description": "In Settings → App lock, protect your cycle, workouts, nutrition, progress or the whole app with your device credential."
+          }
         },
-        "coachVoiceOnly": {
-          "title": "Only the voice changes",
-          "description": "A coach changes the wording, never the numbers, the safety advice or what the coach helps with. With on-device AI the coach is always Loggy."
-        },
-        "openAiSetup": "Update my profile with AI"
+        "cycleDiary": {
+          "title": "A private, encrypted cycle diary",
+          "description": "Your periods and day logs are now encrypted on your device. Predictions show how confident they are, and the fertile-window estimate is optional and off by default. Reminders can be as discreet as you like, and a read-only Cycle widget shows nothing personal under an app lock."
+        }
       }
     }
   }
