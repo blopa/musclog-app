@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 
 import { isInvalidApiKeyError } from './aiErrors';
 import { resolveGeminiModel } from './aiModels';
+import { buildClaudeClient } from './claude';
 import { configureBasicGenAI } from './gemini';
 
 export type AiKeyTestResult = 'ok' | 'rejected' | 'network';
@@ -30,7 +31,7 @@ async function withTimeout<T>(work: Promise<T>): Promise<T> {
  * "network" — the key may be fine, and saying it was rejected would send the user to retype it.
  */
 export async function testApiKey(
-  provider: 'gemini' | 'openai',
+  provider: 'gemini' | 'openai' | 'claude',
   apiKey: string,
   model?: string
 ): Promise<AiKeyTestResult> {
@@ -49,6 +50,9 @@ export async function testApiKey(
       await withTimeout(
         client.generateContent({ contents: [{ role: 'user', parts: [{ text: 'ping' }] }] })
       );
+    } else if (provider === 'claude') {
+      // Listing models is free and needs only a valid key, so no model has to be chosen or billed.
+      await withTimeout(buildClaudeClient(key, 0).models.list({ limit: 1 }));
     } else {
       const client = new OpenAI({ apiKey: key, dangerouslyAllowBrowser: true, maxRetries: 0 });
       await withTimeout(client.models.list());

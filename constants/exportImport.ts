@@ -9,6 +9,7 @@ import {
   TEMP_NUTRITION_PLAN,
 } from '@/constants/misc';
 import {
+  CLAUDE_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
 } from '@/constants/settings';
@@ -131,4 +132,5 @@ export const RESTORE_ORDER: string[] = [
 export const SETTINGS_EXCLUDED_TYPES = [
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
+  CLAUDE_API_KEY_SETTING_TYPE,
 ];

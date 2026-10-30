@@ -1,3 +1,4 @@
+import Anthropic from '@anthropic-ai/sdk';
 import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
@@ -15,6 +16,15 @@ import {
   rethrowUserFacingAiError,
   toUserFacingAiError,
 } from './aiErrors';
+import {
+  buildClaudeClient,
+  buildClaudeMessages,
+  CLAUDE_MAX_TOKENS,
+  CLAUDE_STREAM_MAX_TOKENS,
+  claudeEffort,
+  claudeStreamDelta,
+  extractClaudeText,
+} from './claude';
 import { buildGeminiGenerationConfig, configureBasicGenAI, extractGeminiText } from './gemini';
 import { handleError } from './handleError';
 import { readJsonStringField } from './jsonStringFieldStream';
@@ -86,7 +96,8 @@ export function isAiCreditsError(error: any): boolean {
     message.includes('quota') ||
     message.includes('insufficient_quota') ||
     message.includes('resource_exhausted') ||
-    message.includes('billing')
+    message.includes('billing') ||
+    message.includes('credit balance')
   ) {
     return true;
   }
@@ -103,7 +114,7 @@ export function isAiCreditsError(error: any): boolean {
  * `Network request failed`.
  */
 export function isAiConnectionError(error: unknown): boolean {
-  if (error instanceof OpenAI.APIConnectionError) {
+  if (error instanceof OpenAI.APIConnectionError || error instanceof Anthropic.APIConnectionError) {
     return true;
   }
 
@@ -296,7 +307,7 @@ export async function withLlmRetry<T>(
   }
 }
 
-export type CoachAIProvider = 'gemini' | 'openai' | 'on-device' | 'local' | 'gateway';
+export type CoachAIProvider = 'gemini' | 'openai' | 'claude' | 'on-device' | 'local' | 'gateway';
 
 export interface ProviderConfig {
   maxCharBudget: number; // Maximum character budget for the total request context
@@ -322,6 +333,13 @@ export const PROVIDER_CONFIGS: Record<CoachAIProvider, ProviderConfig> = {
     enableMemories: true,
   },
   openai: {
+    maxCharBudget: 64000,
+    promptComplexity: 'standard',
+    enableContextInjection: true,
+    enableFoundationFoods: true,
+    enableMemories: true,
+  },
+  claude: {
     maxCharBudget: 64000,
     promptComplexity: 'standard',
     enableContextInjection: true,
@@ -513,6 +531,94 @@ async function streamOpenAiText(
     },
     { hasStreamed: sink.hasEmitted }
   );
+}
+
+type ClaudeParams = Anthropic.MessageCreateParamsNonStreaming;
+
+/**
+ * One Claude request. Structured output goes through `output_config.format` rather than a forced
+ * tool call, which the newest models reject; the schema is made strict because Claude requires
+ * `additionalProperties: false` on every object.
+ */
+async function buildClaudeParams(
+  config: CoachAIConfig,
+  system: string,
+  messages: Anthropic.MessageParam[],
+  options?: { schema?: object }
+): Promise<ClaudeParams> {
+  return {
+    model: config.model,
+    max_tokens: CLAUDE_MAX_TOKENS,
+    system,
+    messages,
+    output_config: {
+      effort: claudeEffort(await SettingsService.getUseThinkingMode()),
+      ...(options?.schema
+        ? { format: { type: 'json_schema', schema: makeSchemaStrict(options.schema) } }
+        : {}),
+    },
+  };
+}
+
+/**
+ * Sends a Claude request and returns the reply text, logging both sides for the debug dump. With a
+ * `sink` the reply is streamed into it (and `max_tokens` is raised, since a stream has no HTTP
+ * timeout to stay under); without one it is a single request.
+ */
+async function runClaude(
+  config: CoachAIConfig,
+  operation: string,
+  params: ClaudeParams,
+  sink?: StreamSink | null
+): Promise<string> {
+  const client = buildClaudeClient(config.apiKey);
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'request',
+    operation,
+    payload: params,
+    config,
+  });
+
+  let text: string;
+  if (sink) {
+    text = await withLlmRetry(
+      operation,
+      config,
+      async (signal, touch) => {
+        sink.reset();
+        const events = client.messages.stream(
+          { ...params, max_tokens: CLAUDE_STREAM_MAX_TOKENS },
+          { signal }
+        );
+        for await (const event of events) {
+          touch();
+          const delta = claudeStreamDelta(event);
+          if (delta) {
+            sink.onDelta(delta);
+          }
+        }
+
+        return sink.raw();
+      },
+      { hasStreamed: sink.hasEmitted }
+    );
+  } else {
+    const message = await withLlmRetry(operation, config, (signal) =>
+      client.messages.create(params, { signal })
+    );
+    text = extractClaudeText(message).text;
+  }
+
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation,
+    payload: { text },
+    config,
+  });
+
+  return text;
 }
 
 /**
@@ -1004,36 +1110,79 @@ async function sendViaOpenAI(
     const raw = completion.choices[0]?.message?.content ?? '{}';
     return parseCoachResponse(raw);
   } catch (error) {
-    rethrowUserFacingAiError(error);
-    // A reply that was already on screen is taken back by the caller; a friendly error message
-    // saved as the coach's answer would sit next to half of the real one.
-    if (sink?.hasEmitted()) {
-      throw error;
-    }
+    return failedCoachReply(error, config, 'sendViaOpenAI', sink);
+  }
+}
 
-    await logLlmDebugEvent({
-      provider: config.provider,
-      direction: 'response',
-      operation: 'sendViaOpenAI',
-      payload: { error },
-      config,
-    });
-    console.error('[coachAI] sendViaOpenAI error:', error);
+/**
+ * What a chat request that threw turns into: a typed, user-actionable error is rethrown; a reply
+ * that was already on screen is taken back by the caller (a friendly error message saved as the
+ * coach's answer would sit next to half of the real one); a spent quota is an `AiCreditsError`;
+ * anything else becomes a generic apology without the internals.
+ */
+async function failedCoachReply(
+  error: unknown,
+  config: CoachAIConfig,
+  operation: string,
+  sink: StreamSink | null
+): Promise<CoachResponse> {
+  rethrowUserFacingAiError(error);
+  if (sink?.hasEmitted()) {
+    throw error;
+  }
 
-    // Log detailed error for debugging but don't expose internals to user
-    reportAiError(error, 'coachAI.sendViaOpenAI');
+  await logLlmDebugEvent({
+    provider: config.provider,
+    direction: 'response',
+    operation,
+    payload: { error },
+    config,
+  });
+  console.error(`[coachAI] ${operation} error:`, error);
 
-    if (isAiCreditsError(error)) {
-      throw config.provider === 'gateway'
-        ? new GatewayRateLimitError(i18n.t('errors.gatewayDailyLimitError'))
-        : new AiCreditsError(i18n.t('errors.aiCreditsError'));
-    }
+  // Log detailed error for debugging but don't expose internals to user
+  reportAiError(error, `coachAI.${operation}`);
 
-    // Return a user-friendly error message without exposing internal details
-    return {
-      msg4User: i18n.t('errors.aiProcessingError'),
-      sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
-    };
+  if (isAiCreditsError(error)) {
+    throw config.provider === 'gateway'
+      ? new GatewayRateLimitError(i18n.t('errors.gatewayDailyLimitError'))
+      : new AiCreditsError(i18n.t('errors.aiCreditsError'));
+  }
+
+  return {
+    msg4User: i18n.t('errors.aiProcessingError'),
+    sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
+  };
+}
+
+async function sendViaClaude(
+  config: CoachAIConfig,
+  history: ChatHistoryEntry[],
+  userMessage: string,
+  context?: 'nutrition' | 'exercise' | 'general',
+  stream?: CoachStream
+): Promise<CoachResponse> {
+  const includeUserSummary = userMessage.length > LENGTH_SOFT_LIMIT;
+  const systemPrompt = await getChatMessagePromptContent(
+    config.language,
+    undefined,
+    context,
+    config.provider
+  );
+  const truncatedHistory = truncateHistoryByBudget(history, PROVIDER_CONFIGS.claude.maxCharBudget);
+  const params = await buildClaudeParams(
+    config,
+    systemPrompt,
+    buildClaudeMessages(truncatedHistory, userMessage),
+    { schema: buildResponseSchema(includeUserSummary) }
+  );
+
+  const sink = stream ? createStreamSink(stream, 'coachJson') : null;
+  try {
+    const raw = await runClaude(config, 'sendViaClaude', params, sink);
+    return parseCoachResponse(raw || '{}');
+  } catch (error) {
+    return failedCoachReply(error, config, 'sendViaClaude', sink);
   }
 }
 
@@ -1234,6 +1383,20 @@ async function generateText(
     return raw?.trim() ?? '';
   }
 
+  if (config.provider === 'claude') {
+    const params = await buildClaudeParams(config, promptWithLang, [
+      { role: 'user', content: sanitizedUserMessage },
+    ]);
+    const raw = await runClaude(
+      config,
+      'generateText',
+      params,
+      stream ? createStreamSink(stream, 'plain') : null
+    );
+
+    return raw.trim();
+  }
+
   const client = buildOpenAIClient(config);
   const requestPayload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
@@ -1371,6 +1534,22 @@ async function generateTextWithHistory(
     return raw?.trim() ?? '';
   }
 
+  if (config.provider === 'claude') {
+    const params = await buildClaudeParams(
+      config,
+      systemPrompt,
+      buildClaudeMessages(recentConversation, sanitizedFinalUserMessage)
+    );
+    const raw = await runClaude(
+      config,
+      'generateTextWithHistory',
+      params,
+      stream ? createStreamSink(stream, 'plain') : null
+    );
+
+    return raw.trim();
+  }
+
   const client = buildOpenAIClient(config);
   const historyMessages: OpenAI.Chat.ChatCompletionMessageParam[] = recentConversation.map((e) => ({
     role: (e.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
@@ -1444,7 +1623,7 @@ function getSchemaFromFunctionDeclaration(fn: {
   };
 }
 
-export type StructuredDialect = 'openai' | 'gemini' | 'on-device';
+export type StructuredDialect = 'openai' | 'gemini' | 'claude' | 'on-device';
 
 export type StructuredRequest = {
   /** Names the call in debug dumps and retry logs. */
@@ -1479,7 +1658,7 @@ function parseStructuredJson<T>(raw: string): StructuredResult<T> {
 
 /**
  * The one place a reply that must match a JSON schema is requested from a provider: the on-device
- * model, Gemini, or an OpenAI-compatible endpoint. A reply that is not valid JSON comes back as
+ * model, Gemini, Claude, or an OpenAI-compatible endpoint. A reply that is not valid JSON comes back as
  * `malformed`; a provider failure is thrown as it happened, for the caller to classify.
  * `generateStructured` (one shot, null on bad output) and `sendStructuredChatTurn` (multi-turn,
  * typed errors) are both thin callers of this.
@@ -1559,6 +1738,17 @@ export async function requestStructured<T = unknown>(
     return parseStructuredJson<T>(extractRawText(result));
   }
 
+  if (config.provider === 'claude') {
+    const params = await buildClaudeParams(
+      config,
+      systemPrompt,
+      buildClaudeMessages(history, userMessage),
+      { schema: request.buildSchema('claude') }
+    );
+
+    return parseStructuredJson<T>(await runClaude(config, operation, params));
+  }
+
   const client = buildOpenAIClient(config);
   const payload: OpenAI.Chat.ChatCompletionCreateParamsNonStreaming = {
     model: config.model,
@@ -1631,6 +1821,20 @@ async function generateStructured<T>(
     reportAiError(error, `coachAI.generateStructured[${schemaName}]`);
     return null;
   }
+}
+
+type ClaudeImageType = Anthropic.Base64ImageSource['media_type'];
+
+const CLAUDE_IMAGE_TYPES: readonly ClaudeImageType[] = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+];
+
+/** Claude takes four image types; anything else is sent as the JPEG the camera pipeline produces. */
+function claudeImageType(mimeType: string): ClaudeImageType {
+  return CLAUDE_IMAGE_TYPES.find((type) => type === mimeType) ?? 'image/jpeg';
 }
 
 async function generateWithImageStructured<T>(
@@ -1737,6 +1941,31 @@ async function generateWithImageStructured<T>(
     } catch {
       return null;
     }
+  }
+
+  if (config.provider === 'claude') {
+    const params = await buildClaudeParams(
+      config,
+      systemPrompt,
+      [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: claudeImageType(mimeType), data: base64Image },
+            },
+            { type: 'text', text: userText },
+          ],
+        },
+      ],
+      { schema }
+    );
+    const result = parseStructuredJson<T>(
+      await runClaude(config, 'generateWithImageStructured', params)
+    );
+
+    return result.kind === 'ok' ? result.value : null;
   }
 
   const client = buildOpenAIClient(config);
@@ -2009,6 +2238,10 @@ export async function sendCoachMessage(
 
   if (config.provider === 'gemini') {
     return sendViaGemini(config, history, sanitizedMessage, context, stream);
+  }
+
+  if (config.provider === 'claude') {
+    return sendViaClaude(config, history, sanitizedMessage, context, stream);
   }
 
   // Local provider uses OpenAI-compatible API but with a custom base URL

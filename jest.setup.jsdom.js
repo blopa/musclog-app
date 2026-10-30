@@ -7,6 +7,13 @@ Object.defineProperty(global, '__DEV__', {
   value: true,
 });
 
+// jsdom does not expose TextEncoder/TextDecoder, and `@anthropic-ai/sdk` builds one at import time.
+// Browsers and Hermes (React Native 0.88) have both, so this only fills the test environment's gap.
+if (typeof global.TextEncoder === 'undefined') {
+  const { TextDecoder, TextEncoder } = require('util');
+  Object.assign(global, { TextDecoder, TextEncoder });
+}
+
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );

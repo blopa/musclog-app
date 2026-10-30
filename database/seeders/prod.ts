@@ -320,7 +320,8 @@ export async function seedDatabaseContents(
 
   await SettingsService.setEnableGoogleGemini(false);
   await SettingsService.setEnableOpenAi(false);
-  console.log('Set default Gemini and OpenAI enabled to false');
+  await SettingsService.set(SETTINGS.enableClaude, false);
+  console.log('Set default Gemini, OpenAI and Claude enabled to false');
 
   await SettingsService.setUseMusclogFreeTier(false);
   console.log('Set default Musclog free tier to false');

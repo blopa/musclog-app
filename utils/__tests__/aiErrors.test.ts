@@ -138,6 +138,7 @@ describe('describeAiError', () => {
       'errors.aiInvalidApiKey:{"provider":"Gemini"}'
     );
     expect(describeAiError(new AiInvalidKeyError('openai'), t)).toContain('OpenAI');
+    expect(describeAiError(new AiInvalidKeyError('claude'), t)).toContain('Claude');
   });
 
   it('describes a timeout and says nothing about anything else', () => {

@@ -49,7 +49,14 @@ export type AiOnboardingDraftRecord = {
   updatedAt: number;
 };
 
-const PROVIDERS: readonly CoachAIProvider[] = ['gemini', 'openai', 'on-device', 'local', 'gateway'];
+const PROVIDERS: readonly CoachAIProvider[] = [
+  'gemini',
+  'openai',
+  'claude',
+  'on-device',
+  'local',
+  'gateway',
+];
 const PATHS: readonly AiOnboardingPath[] = ['chat', 'external', 'import'];
 const MAX_MESSAGE_CHARS = 4000;
 const MAX_COMPOSER_CHARS = 4000;

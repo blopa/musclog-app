@@ -1,7 +1,12 @@
 import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
-import { type AiProviderKind, DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
+import {
+  type AiProviderKind,
+  DEFAULT_CLAUDE_MODEL,
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_OPENAI_MODEL,
+} from '@/constants/ai';
 import type { CoachPersonaId } from '@/constants/coachPersonas';
 import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
@@ -14,6 +19,7 @@ import {
   BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   type ChartTooltipPosition,
+  CLAUDE_API_KEY_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   type CycleNotificationStyle,
@@ -88,7 +94,7 @@ import { isDbReady, waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
-import { resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
+import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import {
   getSettingsMirror,
@@ -109,11 +115,14 @@ type SettingsState = {
   googleGeminiModel: string;
   openAiApiKey: string;
   openAiModel: string;
+  claudeApiKey: string;
+  claudeModel: string;
   localLlmApiKey: string;
   localLlmModel: string;
   localLlmBaseUrl: string;
   enableGoogleGemini: boolean;
   enableOpenAi: boolean;
+  enableClaude: boolean;
   enableLocalLlm: boolean;
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
@@ -226,11 +235,14 @@ const DEFAULT_STATE: SettingsState = {
   googleGeminiModel: DEFAULT_GEMINI_MODEL,
   openAiApiKey: '',
   openAiModel: DEFAULT_OPENAI_MODEL,
+  claudeApiKey: '',
+  claudeModel: DEFAULT_CLAUDE_MODEL,
   localLlmApiKey: '',
   localLlmModel: 'llama3',
   localLlmBaseUrl: 'http://localhost:11434/v1',
   enableGoogleGemini: true,
   enableOpenAi: true,
+  enableClaude: SETTINGS.enableClaude.defaultValue,
   enableLocalLlm: false,
   dailyNutritionInsights: true,
   workoutInsights: false,
@@ -388,11 +400,14 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     openAiModel: resolveOpenAiModel(
       getString(map, OPENAI_MODEL_SETTING_TYPE, DEFAULT_OPENAI_MODEL)
     ),
+    claudeApiKey: getString(map, CLAUDE_API_KEY_SETTING_TYPE),
+    claudeModel: resolveClaudeModel(readSetting(map, SETTINGS.claudeModel)),
     localLlmApiKey: getString(map, LOCAL_LLM_API_KEY_SETTING_TYPE),
     localLlmModel: getString(map, LOCAL_LLM_MODEL_SETTING_TYPE, 'llama3'),
     localLlmBaseUrl: getString(map, LOCAL_LLM_BASE_URL_SETTING_TYPE, 'http://localhost:11434/v1'),
     enableGoogleGemini: getBoolean(map, ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true),
     enableOpenAi: getBoolean(map, ENABLE_OPENAI_SETTING_TYPE, true),
+    enableClaude: readSetting(map, SETTINGS.enableClaude),
     enableLocalLlm: getBoolean(map, ENABLE_LOCAL_LLM_SETTING_TYPE, false),
     dailyNutritionInsights: getBoolean(map, DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, true),
     workoutInsights: getBoolean(map, WORKOUT_INSIGHTS_SETTING_TYPE),
@@ -468,11 +483,14 @@ export type SettingsContextType = UseSettingsResult & {
   googleGeminiModel: string;
   openAiApiKey: string;
   openAiModel: string;
+  claudeApiKey: string;
+  claudeModel: string;
   localLlmApiKey: string;
   localLlmModel: string;
   localLlmBaseUrl: string;
   enableGoogleGemini: boolean;
   enableOpenAi: boolean;
+  enableClaude: boolean;
   enableLocalLlm: boolean;
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
@@ -560,6 +578,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [decryptedApiKeys, setDecryptedApiKeys] = useState({
     googleGeminiApiKey: '',
     openAiApiKey: '',
+    claudeApiKey: '',
     localLlmApiKey: '',
   });
 
@@ -626,13 +645,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     Promise.all([
       SettingsService.getGoogleGeminiApiKey(),
       SettingsService.getOpenAiApiKey(),
+      SettingsService.getClaudeApiKey(),
       SettingsService.getLocalLlmApiKey(),
     ])
-      .then(([gemini, openAi, localLlm]) => {
+      .then(([gemini, openAi, claude, localLlm]) => {
         if (!cancelled) {
           setDecryptedApiKeys({
             googleGeminiApiKey: gemini,
             openAiApiKey: openAi,
+            claudeApiKey: claude,
             localLlmApiKey: localLlm,
           });
         }
@@ -645,6 +666,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, [
     state.googleGeminiApiKey,
     state.openAiApiKey,
+    state.claudeApiKey,
     state.localLlmApiKey,
     state.isLoading,
     canReadSettingsDb,
@@ -658,7 +680,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       state.useOnDeviceAi ||
       (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
       (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
-      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '')
+      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') ||
+      (state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '')
     );
   }, [
     state.useMusclogFreeTier,
@@ -669,6 +692,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.googleGeminiApiKey,
     state.enableOpenAi,
     decryptedApiKeys.openAiApiKey,
+    state.enableClaude,
+    decryptedApiKeys.claudeApiKey,
   ]);
 
   const aiProvider = useMemo<AiProviderKind | null>(() => {
@@ -688,7 +713,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       return 'gemini';
     }
 
-    return state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '' ? 'openai' : null;
+    if (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') {
+      return 'openai';
+    }
+
+    return state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '' ? 'claude' : null;
   }, [
     state.useMusclogFreeTier,
     state.useOnDeviceAi,
@@ -698,9 +727,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.googleGeminiApiKey,
     state.enableOpenAi,
     decryptedApiKeys.openAiApiKey,
+    state.enableClaude,
+    decryptedApiKeys.claudeApiKey,
   ]);
 
-  // Mirrors AiService.getAiConfig() priority: gateway → on-device → local → gemini → openai.
+  // Mirrors AiService.getAiConfig() priority: gateway → on-device → local → gemini → openai → claude.
   // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
   // when it would be the active provider.
   const isAiMealPhotoEnabled = useMemo(() => {
@@ -715,7 +746,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return (
       (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
       (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
-      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '')
+      (state.enableOpenAi && decryptedApiKeys.openAiApiKey.trim() !== '') ||
+      (state.enableClaude && decryptedApiKeys.claudeApiKey.trim() !== '')
     );
   }, [
     state.useMusclogFreeTier,
@@ -726,6 +758,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.googleGeminiApiKey,
     state.enableOpenAi,
     decryptedApiKeys.openAiApiKey,
+    state.enableClaude,
+    decryptedApiKeys.claudeApiKey,
   ]);
 
   // Parsed here rather than in `deriveStateFromMap`, so the array is allocated once per
@@ -750,6 +784,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       ...publicState,
       googleGeminiApiKey: decryptedApiKeys.googleGeminiApiKey,
       openAiApiKey: decryptedApiKeys.openAiApiKey,
+      claudeApiKey: decryptedApiKeys.claudeApiKey,
       localLlmApiKey: decryptedApiKeys.localLlmApiKey,
       homeActions,
       appLockScopes,

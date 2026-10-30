@@ -121,6 +121,7 @@
     "sharp": "^0.35.5"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "1.3.0",
     "@bsky.app/expo-image-crop-tool": "^0.5.1",
     "@ericblade/quagga2": "^1.13.0",
     "@expo/ui": "~58.0.25",

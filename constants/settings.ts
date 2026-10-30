@@ -61,6 +61,24 @@ export const OPENAI_API_KEY_SETTING_TYPE = 'openai_api_key';
 export const OPENAI_MODEL_SETTING_TYPE = 'openai_model';
 
 /**
+ * Setting type for Anthropic Claude API key (stored encrypted in WatermelonDB settings table).
+ * value: string.
+ */
+export const CLAUDE_API_KEY_SETTING_TYPE = 'claude_api_key';
+
+/**
+ * Setting type for Anthropic Claude model (stored in WatermelonDB settings table).
+ * value: string.
+ */
+export const CLAUDE_MODEL_SETTING_TYPE = 'claude_model';
+
+/**
+ * Setting type for enabling Anthropic Claude (stored in WatermelonDB settings table).
+ * value: 'true' | 'false'.
+ */
+export const ENABLE_CLAUDE_SETTING_TYPE = 'enable_claude';
+
+/**
  * Setting type for enabling Google Gemini (stored in WatermelonDB settings table).
  * value: 'true' | 'false'.
  */
