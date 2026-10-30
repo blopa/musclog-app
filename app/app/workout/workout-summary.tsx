@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
 import { ComebackSummaryLine } from '@/components/comeback/ComebackSummaryLine';
+import { useCoach } from '@/components/CoachContext';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
@@ -18,6 +19,7 @@ import { useUnreadChat } from '@/context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
 import { ChatService } from '@/database/services/ChatService';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
+import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
@@ -25,14 +27,15 @@ import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
-import { getRecentWorkoutInsights } from '@/utils/coachAI';
+import { isCoachReplyBusy } from '@/services/coachReplyStore';
+import { startCoachReply } from '@/services/coachReplyStream';
 import { formatAppInteger } from '@/utils/formatAppNumber';
 import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
-import { buildWorkoutCompletedSummaryForLLM, processFeedbackResponse } from '@/utils/workoutAI';
+import { buildWorkoutCompletedSummaryForLLM } from '@/utils/workoutAI';
 
 export default function WorkoutSummaryScreen() {
   const theme = useTheme();
@@ -41,6 +44,7 @@ export default function WorkoutSummaryScreen() {
   const params = useLocalSearchParams<{ workoutLogId?: string; showSessionFeedback?: string }>();
   const workoutLogId = params.workoutLogId;
   const { setUnreadCount } = useUnreadChat();
+  const { openCoach } = useCoach();
   const { units } = useSettings();
   const { shareText } = useNativeShareText();
   const processedWorkoutRef = useRef<string | null>(null);
@@ -275,21 +279,25 @@ export default function WorkoutSummaryScreen() {
       const aiConfig = await AiService.getAiConfig();
       if (!aiConfig) {
         showSnackbar('error', t('ai.settings.notConfigured'));
-        setIsFeedbackLoading(false);
         return;
       }
 
-      const feedback = await getRecentWorkoutInsights(aiConfig, workoutLogId);
-
-      if (feedback) {
-        await processFeedbackResponse(feedback);
-        // `processFeedbackResponse` saves into the exercise context.
-        setUnreadCount('exercise', (prev) => prev + 1);
-        showSnackbar('success', t('workout.summary.feedbackReceived'));
-        router.replace('/app');
-      } else {
-        showSnackbar('error', t('workout.summary.failedToGetFeedback'));
+      if (isCoachReplyBusy()) {
+        showSnackbar('error', t('coach.errors.replyInProgress'));
+        return;
       }
+
+      // The coach writes the feedback where the person can watch it, so leave for Home and open
+      // the coach there right away.
+      await SettingsService.setCoachConversationContext('exercise');
+      void startCoachReply({
+        kind: 'workoutFeedback',
+        aiConfig,
+        context: 'exercise',
+        workoutLogId,
+      });
+      router.replace('/app');
+      openCoach();
     } catch (err) {
       await handleError(err, 'workout-summary.getFeedback', {
         snackbarMessage: t('workout.summary.failedToGetFeedback'),

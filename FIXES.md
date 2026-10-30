@@ -3,6 +3,24 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## On-device AI insights sent their prompt to OpenAI and always failed (October 2026)
+
+### Symptom
+
+With Apple Intelligence as the only provider, Analyze Progress, Nutrition Check, meal critique, post-workout feedback and the daily insights all failed (the coach chat itself worked).
+
+### Cause
+
+`generateText` and `generateTextWithHistory` (`utils/coachAI.ts`) branched only on `gemini`; every other provider, `on-device` included, fell through to `buildOpenAIClient`, which has no base URL and the API key `"unused"` for it. The request — carrying the person's workout and nutrition data — went to `api.openai.com`, was rejected, and surfaced as a generic failure. The prompt builders already took the provider and produced the on-device variant, so the feature was meant to work.
+
+### Fix
+
+An `on-device` branch in both (`generateTextOnDevice`), with history cut to the on-device budget like `sendViaOnDevice`. `utils/__tests__/coachAIStreaming.test.ts` asserts no OpenAI client is built for `on-device`. Any new plain-text generator must handle `on-device` explicitly: "not Gemini" is not "OpenAI-compatible".
+
+## The dev CORS proxy buffered whole responses (October 2026)
+
+`cors-server.js` collected the upstream body and replied once it ended, so a streamed (SSE) AI reply through the gateway arrived all at once on web dev builds. It now forwards headers and each chunk as it arrives (logging from a teed copy on `end`) and destroys the upstream request when the browser aborts.
+
 ## Guided body-stats stacked a weight and height reading on every Continue (October 2026)
 
 `personalized-body-stats.tsx` created new weight, height and body-fat metric rows each time Continue was pressed, so going back and forth in onboarding left duplicates, and it computed age as a calendar-year difference. It now saves through `commitOnboardingProfile` and `persistFitnessProfile`, which update today's reading instead of adding one and use `differenceInYears`. Pinned by `utils/__tests__/fitnessProfilePersistence.test.ts` and `onboardingAiFlowWiring.test.ts`.

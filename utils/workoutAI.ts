@@ -61,30 +61,6 @@ export async function processCalculateVolumeResponse(
   }
 }
 
-/**
- * Process recent workout insights response from AI
- * Saves feedback to chat
- */
-export async function processFeedbackResponse(feedbackMessage: string): Promise<void> {
-  try {
-    // Save AI feedback message to chat
-    await ChatService.saveMessage({
-      sender: 'coach',
-      message: feedbackMessage,
-      context: 'exercise',
-      messageType: 'text',
-      summarizedMessage: feedbackMessage.substring(0, 200),
-    });
-  } catch (error) {
-    console.error('[workoutAI] Error processing feedback response:', error);
-    throw error;
-  }
-}
-
-/**
- * Process generated workout plan response from AI
- * Creates new workout templates in the database and saves feedback to chat
- */
 export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanResponse): Promise<{
   templateIds: string[];
   description: string;

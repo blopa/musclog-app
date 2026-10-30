@@ -131,10 +131,27 @@ const server = http.createServer((req, res) => {
     }
 
     const proxyReq = transport.request(options, (proxyRes) => {
-      // Collect response body for logging before piping
+      // Forward headers and every chunk as soon as it arrives: buffering the body until the end
+      // would hold a streamed (SSE) AI reply back and show it all at once. The chunks are also
+      // kept, only to log the response when it ends.
+      const responseHeaders = {};
+      for (const [key, value] of Object.entries(proxyRes.headers)) {
+        const lower = key.toLowerCase();
+        if (!HOP_BY_HOP.has(lower) && !lower.startsWith('access-control-')) {
+          responseHeaders[key] = value;
+        }
+      }
+
+      Object.assign(responseHeaders, getCorsHeaders(req));
+      res.writeHead(proxyRes.statusCode, responseHeaders);
+
       const resChunks = [];
-      proxyRes.on('data', (chunk) => resChunks.push(chunk));
+      proxyRes.on('data', (chunk) => {
+        resChunks.push(chunk);
+        res.write(chunk);
+      });
       proxyRes.on('end', () => {
+        res.end();
         const resBody = Buffer.concat(resChunks);
         console.log(`← ${proxyRes.statusCode} ${targetUrl}`);
         try {
@@ -142,20 +159,18 @@ const server = http.createServer((req, res) => {
         } catch {
           console.log('  response (raw):', resBody.toString().slice(0, 500));
         }
-
-        const responseHeaders = {};
-        for (const [key, value] of Object.entries(proxyRes.headers)) {
-          const lower = key.toLowerCase();
-          if (!HOP_BY_HOP.has(lower) && !lower.startsWith('access-control-')) {
-            responseHeaders[key] = value;
-          }
-        }
-
-        Object.assign(responseHeaders, getCorsHeaders(req));
-
-        res.writeHead(proxyRes.statusCode, responseHeaders);
-        res.end(resBody);
       });
+      proxyRes.on('error', (err) => {
+        console.error(`[ERROR] Upstream response error for ${targetUrl}:`, err.message);
+        res.destroy(err);
+      });
+    });
+
+    // The app aborted (closed the screen, cancelled): stop the upstream request too.
+    res.on('close', () => {
+      if (!res.writableEnded) {
+        proxyReq.destroy();
+      }
     });
 
     proxyReq.on('error', (err) => {

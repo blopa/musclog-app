@@ -110,6 +110,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 - Choose who your coach is: Loggy, Dracula, Cthulhu, Sherlock Holmes, or a custom coach with your own name, voice description and avatar. Picked in Settings → AI settings or during the personalized setup. Only the way the coach talks changes (chat replies and written insights); summaries, memories, plans and every structured result stay neutral, and on-device AI always uses Loggy
 - Chat-based AI coach for workout, nutrition, and general fitness questions
+- Replies appear as the coach writes them, word by word, in chat, Analyze Progress and Nutrition Check. A reply keeps arriving and is saved if you close the coach, and if the app is closed mid-reply, what had arrived is kept the next time it opens (or your message goes back in the box if nothing had). Only one reply is written at a time
+- Meal critique (food diary) and post-workout feedback open the coach and are written there, instead of showing a spinner and then a finished message
 - Choose between Google Gemini or OpenAI models (or a local LLM)
 - AI retains contextual memory of your preferences and history for relevant advice
 - AI food photo and nutrition label analysis

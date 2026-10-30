@@ -23,6 +23,15 @@ export async function sendOnDeviceMessage(
   return '';
 }
 
+export async function streamOnDeviceMessage(
+  messages: OnDeviceMessage[],
+  systemPrompt: string | undefined,
+  onDelta: (delta: string) => void,
+  signal?: AbortSignal
+): Promise<string> {
+  return '';
+}
+
 export async function sendOnDeviceStructured<T>(
   messages: OnDeviceMessage[],
   systemPrompt: string,

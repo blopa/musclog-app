@@ -43,7 +43,6 @@
       "failedToLoad": "Falha ao carregar",
       "noWorkoutId": "Nenhum ID de treino",
       "unableToLoad": "Não foi possível carregar",
-      "feedbackReceived": "Feedback do treino enviado com sucesso.",
       "failedToGetFeedback": "Não foi possível obter feedback. Por favor, tente novamente.",
       "healthPrompt": {
         "title": "Conectar seus dados de saúde?",
