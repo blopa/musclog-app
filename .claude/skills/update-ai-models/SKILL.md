@@ -2,9 +2,10 @@
 name: update-ai-models
 description: >-
   Refresh Musclog's supported Google Gemini, OpenAI and Anthropic Claude model lists against the providers' current
-  docs. Use when the user asks to update, refresh or check the AI models, or on the monthly model
-  review. Researches live model and deprecation pages, edits constants/ai.ts and the Gemini
-  thinking-level table, updates tests and docs, and reports what changed and what is uncertain.
+  docs, plus the free-tier gateway model. Use when the user asks to update, refresh or check the AI
+  models, or on the monthly model review. Researches live model and deprecation pages, edits
+  constants/ai.ts, constants/gateway.ts and the Gemini thinking-level table, updates tests and docs,
+  and reports what changed and what is uncertain.
 ---
 
 # Update AI models
@@ -89,11 +90,32 @@ that none of these are needed, and that `effort` accepts the `low`/`high` values
 (`utils/claude.ts`). If a new model needs a different shape, report it rather than special-casing it
 silently. A model that only works with a refusal fallback or a beta header goes in the report too.
 
-### 4. Things to report, not change, without asking
+### 4. Gateway model (the free tier)
 
-- `constants/gateway.ts` `MUSCLOG_GATEWAY_MODEL` default (free tier through Cloudflare, env
-  overridable, costs the user money). Say whether it is still a supported model and what you'd
-  move it to.
+`constants/gateway.ts` `MUSCLOG_GATEWAY_MODEL` is the model behind the Musclog free-tier gateway
+(Cloudflare AI Gateway, Google AI Studio provider). Its default is a string literal of the form
+`google-ai-studio/<gemini-model-id>`, and `EXPO_PUBLIC_MUSCLOG_GATEWAY_MODEL` overrides it. Every free
+tier request uses it, so it is the one model the maintainer pays for. Update the default the same
+way as the lists:
+
+- Keep the `google-ai-studio/` prefix and the `??` env override; change only the model id after the
+  prefix.
+- Pick from the Gemini list you just decided, in the cheap/fast tier (Flash or Flash-Lite), not the
+  flagship. It must meet the step 2 rules: image input and text output, not shut down or limited to
+  existing users, no shutdown date within ~90 days, stable over `-preview` unless no stable
+  equivalent exists.
+- If the current default still meets those rules, **leave it**; do not churn it just because a
+  newer model exists. Say so in the report.
+- Cross-check the exact id in two sources, and confirm Cloudflare's Google AI Studio provider docs
+  (https://developers.cloudflare.com/ai-gateway/usage/providers/google-ai-studio/) accept it.
+  Cloudflare can lag Google by days, so an id found only on Google's side goes in the report as
+  unverified and the default stays as is.
+- Gateway requests go through the OpenAI-compatible path, so none of the Gemini thinking-level
+  work in step 3 applies to it. Still check that the new model does not reject a parameter that
+  `GatewayService`/`utils/coachAI.ts` send.
+
+### 4b. Things to report, not change, without asking
+
 - Any parameter incompatibility you notice (e.g. a new model family rejecting `temperature` or
   `max_tokens`; grep `utils/coachAI.ts` and `services/`).
 
@@ -104,11 +126,11 @@ Run (never `npm run lint:all`, it stages files and dirties the tree):
 ```bash
 npx jest --selectProjects node --runTestsByPath utils/__tests__/aiModels.test.ts utils/__tests__/geminiGenerationConfig.test.ts services/__tests__/AiService.test.ts utils/__tests__/llmRetry.test.ts utils/__tests__/claude.test.ts utils/__tests__/coachAIClaude.test.ts
 npx tsc --noEmit -p .
-npx eslint constants/ai.ts utils/aiModels.ts utils/gemini.ts utils/claude.ts services/AiService.ts
-npx prettier --check constants/ai.ts utils/gemini.ts utils/__tests__/geminiGenerationConfig.test.ts
+npx eslint constants/ai.ts constants/gateway.ts utils/aiModels.ts utils/gemini.ts utils/claude.ts services/AiService.ts
+npx prettier --check constants/ai.ts constants/gateway.ts utils/gemini.ts utils/__tests__/geminiGenerationConfig.test.ts
 ```
 
-Search for stragglers: `grep -rnE "gemini-[0-9]|gpt-[0-9]|claude-(opus|sonnet|haiku|fable)" --include=*.ts --include=*.tsx . --exclude-dir=node_modules`
+Search for stragglers: `grep -rnE "gemini-[0-9]|gpt-[0-9]|claude-(opus|sonnet|haiku|fable)|google-ai-studio/" --include=*.ts --include=*.tsx . --exclude-dir=node_modules`
 (test fixtures that use a model purely as an arbitrary string are fine).
 
 ### 6. Report
@@ -119,5 +141,6 @@ Do not commit unless asked. Finish with:
 - New defaults, if they changed.
 - Thinking-level decisions per new Gemini model, and the request-parameter check per new Claude model.
 - Unverified claims and anything single-sourced.
-- Gateway default status and any parameter concerns from step 4.
+- Gateway default (`MUSCLOG_GATEWAY_MODEL`): old value, new value (or "kept, still eligible") and
+  why, plus any parameter concerns from step 4b.
 - Source links.
