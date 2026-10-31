@@ -2,11 +2,14 @@ import { CYCLE_BACKUP_STATUS_KEY } from '@/constants/cycle';
 import { ENCRYPTION_KEY } from '@/constants/database';
 import {
   AI_ONBOARDING_DRAFT,
+  COACH_REPLY_JOURNAL,
+  COACH_RESTORED_COMPOSER,
   PERSONALIZED_BODY_DRAFT,
   SETTINGS_MIRROR_STORAGE_KEY,
   TEMP_NUTRITION_PLAN,
 } from '@/constants/misc';
 import {
+  CLAUDE_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
 } from '@/constants/settings';
@@ -22,6 +25,10 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   // unfinished onboarding conversation is not part of anyone's data.
   AI_ONBOARDING_DRAFT,
   PERSONALIZED_BODY_DRAFT,
+  // A reply that was mid-stream, and a message waiting to be put back in the composer: both are
+  // moments of one session, not data.
+  COACH_REPLY_JOURNAL,
+  COACH_RESTORED_COMPOSER,
 ]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';
@@ -125,4 +132,5 @@ export const RESTORE_ORDER: string[] = [
 export const SETTINGS_EXCLUDED_TYPES = [
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   OPENAI_API_KEY_SETTING_TYPE,
+  CLAUDE_API_KEY_SETTING_TYPE,
 ];

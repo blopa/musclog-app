@@ -23,6 +23,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { COMEBACK_ROUTE } from '@/constants/comebackRoute';
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -39,6 +40,8 @@ export default function SettingsScreen() {
     googleGeminiModel,
     openAiApiKey,
     openAiModel,
+    claudeApiKey,
+    claudeModel,
     localLlmApiKey,
     localLlmModel,
     localLlmBaseUrl,
@@ -68,6 +71,14 @@ export default function SettingsScreen() {
 
   const handleOpenAiModelChange = async (value: string) => {
     await SettingsService.setOpenAiModel(value);
+  };
+
+  const handleClaudeApiKeyChange = async (value: string) => {
+    await SettingsService.setClaudeApiKey(value);
+  };
+
+  const handleClaudeModelChange = async (value: string) => {
+    await SettingsService.set(SETTINGS.claudeModel, value);
   };
 
   const handleLocalLlmApiKeyChange = async (value: string) => {
@@ -211,6 +222,10 @@ export default function SettingsScreen() {
         onOpenAiApiKeyChange={handleOpenAiApiKeyChange}
         openAiModel={openAiModel}
         onOpenAiModelPress={handleOpenAiModelChange}
+        claudeApiKey={claudeApiKey}
+        onClaudeApiKeyChange={handleClaudeApiKeyChange}
+        claudeModel={claudeModel}
+        onClaudeModelPress={handleClaudeModelChange}
         localLlmApiKey={localLlmApiKey}
         onLocalLlmApiKeyChange={handleLocalLlmApiKeyChange}
         localLlmModel={localLlmModel}

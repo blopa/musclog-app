@@ -35,7 +35,7 @@ export class AiCancelledError extends Error {
 }
 
 /** Providers where the user supplies the key. Gateway and on-device never become a key error. */
-const USER_KEY_PROVIDERS: ReadonlySet<CoachAIProvider> = new Set(['gemini', 'openai']);
+const USER_KEY_PROVIDERS: ReadonlySet<CoachAIProvider> = new Set(['gemini', 'openai', 'claude']);
 
 /** The fields the provider SDKs put on a failure; every one may be absent. */
 interface SdkErrorShape {
@@ -160,6 +160,7 @@ export function rethrowUserFacingAiError(error: unknown): void {
 const PROVIDER_LABELS: Record<CoachAIProvider, string> = {
   gemini: 'Gemini',
   openai: 'OpenAI',
+  claude: 'Claude',
   local: 'Local',
   gateway: 'Musclog',
   'on-device': 'On-device',

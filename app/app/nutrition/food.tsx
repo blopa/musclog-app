@@ -81,7 +81,6 @@ import Food from '@/database/models/Food';
 import { KEEP_MEAL_TYPES } from '@/database/models/mealTypeTarget';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import { loadNutritionDayStatuses } from '@/database/nutritionDayStatusRange';
-import { ChatService } from '@/database/services/ChatService';
 import { MealService } from '@/database/services/MealService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
@@ -102,6 +101,8 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 import AiService from '@/services/AiService';
+import { isCoachReplyBusy } from '@/services/coachReplyStore';
+import { startCoachReply } from '@/services/coachReplyStream';
 import {
   calendarDateFromRecordDay,
   formatLocalCalendarDayIso,
@@ -109,7 +110,6 @@ import {
   localCalendarDayFromParam,
 } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
-import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
 import { handleError } from '@/utils/handleError';
@@ -656,15 +656,22 @@ export default function FoodScreen() {
       // Get the meal type from the first entry
       const mealType = selectedMealGroup.entries[0]?.log.type || 'other';
 
-      const response = await getMealCritique(aiConfig, mealType, foods, totals, userRemarks);
-
-      if (!response) {
-        showSnackbar('error', t('food.actions.getMealInsightsError'));
+      if (isCoachReplyBusy()) {
+        showSnackbar('error', t('coach.errors.replyInProgress'));
         return;
       }
 
-      await ChatService.saveMessage({ sender: 'coach', message: response, context: 'nutrition' });
+      // The coach writes the critique where the person can watch it, so open it straight away.
       await SettingsService.setCoachConversationContext('nutrition');
+      void startCoachReply({
+        kind: 'mealCritique',
+        aiConfig,
+        context: 'nutrition',
+        mealType,
+        foods,
+        totals,
+        userRemarks,
+      });
       closeGroupInsights();
       openCoach();
     } catch (error) {
@@ -988,21 +995,21 @@ export default function FoodScreen() {
       const foods = mealFoods.map((e) => ({ name: e.displayName, gramWeight: e.gramWeight }));
       const totals = sumMacros(mealFoods);
 
-      const response = await getMealCritique(
-        aiConfig,
-        selectedMealForMenu,
-        foods,
-        totals,
-        userRemarks
-      );
-
-      if (!response) {
-        showSnackbar('error', t('food.actions.getMealInsightsError'));
+      if (isCoachReplyBusy()) {
+        showSnackbar('error', t('coach.errors.replyInProgress'));
         return;
       }
 
-      await ChatService.saveMessage({ sender: 'coach', message: response, context: 'nutrition' });
       await SettingsService.setCoachConversationContext('nutrition');
+      void startCoachReply({
+        kind: 'mealCritique',
+        aiConfig,
+        context: 'nutrition',
+        mealType: selectedMealForMenu,
+        foods,
+        totals,
+        userRemarks,
+      });
       closeMealInsights();
       openCoach();
     } catch (error) {

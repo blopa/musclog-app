@@ -11,6 +11,7 @@ import {
   APP_LOCK_SCOPES_SETTING_TYPE,
   type AppLockScope,
   AUTO_START_REST_TIMER_SETTING_TYPE,
+  CLAUDE_MODEL_SETTING_TYPE,
   COACH_CUSTOM_PERSONA_SETTING_TYPE,
   COACH_PERSONA_SETTING_TYPE,
   COMEBACK_STATE_SETTING_TYPE,
@@ -22,6 +23,7 @@ import {
   CYCLE_VARIABILITY_HINT_SETTING_TYPE,
   type CycleNotificationStyle,
   DEFAULT_REST_SECONDS_SETTING_TYPE,
+  ENABLE_CLAUDE_SETTING_TYPE,
   HOME_HEATMAP_LAYOUT_SETTING_TYPE,
   HOME_HEATMAPS_SETTING_TYPE,
   type HomeHeatmapLayout,
@@ -98,6 +100,9 @@ const isWeekday = (value: number) => Number.isInteger(value) && value >= 0 && va
 export type WorkoutView = 'inline' | 'guided';
 
 export const SETTINGS = {
+  /** Raw stored model; read it through `resolveClaudeModel` (`utils/aiModels.ts`). */
+  claudeModel: textSetting(CLAUDE_MODEL_SETTING_TYPE),
+  enableClaude: booleanSetting(ENABLE_CLAUDE_SETTING_TYPE, true),
   cycleShowPredictions: booleanSetting(CYCLE_SHOW_PREDICTIONS_SETTING_TYPE, true),
   cycleShowFertility: booleanSetting(CYCLE_SHOW_FERTILITY_SETTING_TYPE, false),
   cycleNotificationStyle: choiceSetting<CycleNotificationStyle>(

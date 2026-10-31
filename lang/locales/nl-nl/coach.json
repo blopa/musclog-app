@@ -44,6 +44,7 @@
       "filePickFailed": "Bestand kiezen mislukt. Probeer het opnieuw.",
       "creditsExhausted": "Het lijkt erop dat je AI-tegoed op is. Controleer je API-sleutel of facturering bij de Instellingen.",
       "rateLimited": "Wacht een moment voordat je nog een bericht stuurt.",
+      "replyInProgress": "Ik ben nog een ander antwoord aan het schrijven. Wacht tot het klaar is.",
       "toolRequestFailed": "Ik kon dat verzoek niet verwerken. Probeer het opnieuw.",
       "conversationFallback": "Ik kan je helpen met fitness- en voedingsvragen. Wat wil je weten?",
       "requestProcessingFailed": "Ik had moeite met het verwerken van je verzoek. Kon je het anders formuleren?"

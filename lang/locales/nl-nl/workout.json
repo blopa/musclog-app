@@ -43,7 +43,6 @@
       "failedToLoad": "Laden mislukt",
       "noWorkoutId": "Geen workout-ID",
       "unableToLoad": "Niet in staat om te laden",
-      "feedbackReceived": "Workout-feedback succesvol ingediend.",
       "failedToGetFeedback": "Kon geen feedback ophalen. Probeer het opnieuw.",
       "healthPrompt": {
         "title": "Gezondheidsgegevens koppelen?",
