@@ -28,6 +28,8 @@ const mockEmptyQuery = {
     },
   }),
 };
+let mockDbReady: Promise<void> = Promise.resolve();
+jest.mock('@/database/dbReady', () => ({ waitForDbReady: () => mockDbReady }));
 jest.mock('@/constants/platform', () => ({ isStaticExport: false }));
 jest.mock('@/context/SettingsContext', () => ({
   useSettingsContext: () => ({ cycleShowPredictions: true, cycleShowFertility: false }),
@@ -77,6 +79,7 @@ const wrapper = ({ children }: { children: ReactNode }) =>
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockDbReady = Promise.resolve();
   mockCycle = { id: 'cycle', isActive: true, config: 'old' };
   mockReadConfig.mockImplementation(async (cycle) => (cycle?.config === 'new' ? updated : initial));
 });
@@ -132,5 +135,49 @@ it('observes shared mood once for every cycle surface, and only while a cycle ex
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   expect(result.current.today).toBe(today.getTime());
+  unmount();
+});
+
+it('does not observe cycles until the database is ready, then shows the cycle created meanwhile', async () => {
+  // A new install mounts the provider while first-run seeding still resets the database.
+  let markReady!: () => void;
+  mockDbReady = new Promise<void>((resolve) => {
+    markReady = resolve;
+  });
+  mockObserver = undefined as unknown as Observer;
+  const { result, unmount } = renderHook(() => useMenstrualCycleContext(), { wrapper });
+  await act(async () => {});
+  expect(mockObserver).toBeUndefined();
+  expect(result.current.cycle).toBeNull();
+  expect(result.current.isLoading).toBe(true);
+
+  await act(async () => markReady());
+  await waitFor(() => expect(result.current.cycle?.id).toBe('cycle'));
+  expect(result.current.isLoading).toBe(false);
+  unmount();
+  expect(mockUnsubscribe).toHaveBeenCalled();
+});
+
+it('stops waiting for the database when the provider unmounts first', async () => {
+  let markReady!: () => void;
+  mockDbReady = new Promise<void>((resolve) => {
+    markReady = resolve;
+  });
+  mockObserver = undefined as unknown as Observer;
+  const { unmount } = renderHook(() => useMenstrualCycleContext(), { wrapper });
+  unmount();
+  await act(async () => markReady());
+  expect(mockObserver).toBeUndefined();
+});
+
+it('shows no cycle, not a spinner, when the database never becomes ready', async () => {
+  mockDbReady = Promise.reject(new Error('seeding failed'));
+  mockDbReady.catch(() => {});
+  mockObserver = undefined as unknown as Observer;
+  const { result, unmount } = renderHook(() => useMenstrualCycleContext(), { wrapper });
+  await waitFor(() => expect(result.current.isLoading).toBe(false));
+  expect(result.current.cycle).toBeNull();
+  expect(result.current.pausedCycle).toBeNull();
+  expect(mockObserver).toBeUndefined();
   unmount();
 });

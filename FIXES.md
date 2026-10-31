@@ -3,6 +3,20 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Cycle tracking looked switched off right after setup on a new install (October 2026)
+
+### Symptom
+
+On a fresh install, finishing cycle setup returned to a screen that still said "Start tracking your cycle", and Cycle settings never showed the Health Connect section. The cycle existed in the database; a restart made everything appear. A reviewer following the in-app path hit the same wall.
+
+### Cause
+
+`AppDbReadyGate` mounts the providers of an install that hasn't finished onboarding before the database is ready, so `seedProductionData()` can finish. `MenstrualCycleProvider` observed `menstrual_cycles` at mount, inside the window where `unsafeResetDatabase()` swaps in an `ErrorAdapter`. That observable errored once, the error handler set "no cycle", and nothing ever re-subscribed, so the cycle that setup created later was never seen.
+
+### Fix
+
+The provider awaits `waitForDbReady()` before observing (the pattern `SettingsContext` already uses); a failed ready check shows "no cycle" instead of a spinner, and unmounting first cancels the subscription. `hooks/__tests__/cycleProvider.test.ts` pins all three. Any other provider that observes the database at mount and is rendered before onboarding completes needs the same wait.
+
 ## On-device AI insights sent their prompt to OpenAI and always failed (October 2026)
 
 ### Symptom
