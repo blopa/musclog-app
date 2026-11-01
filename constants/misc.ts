@@ -34,6 +34,19 @@ export const CURRENT_USER_SYNC_ID = 'currentUserSyncId';
 export const UNREAD_CHAT_MESSAGES_COUNT = 'unreadChatMessages';
 
 /**
+ * A coach reply that is being streamed: what has arrived so far, written while it arrives so an
+ * app that is closed mid-reply can keep it (`recoverInterruptedCoachReply`). Encrypted, local only,
+ * and gone as soon as the reply is saved or fails.
+ */
+export const COACH_REPLY_JOURNAL = 'coachReplyJournal';
+
+/**
+ * The text of a message whose reply failed while nobody was looking at the chat, kept so the
+ * composer is filled with it the next time that conversation opens. Encrypted, local only.
+ */
+export const COACH_RESTORED_COMPOSER = 'coachRestoredComposer';
+
+/**
  * AsyncStorage key for the cached macro-logging streak state.
  * Stores JSON `{ computedDayKey, currentStreak, bestStreak }` so the streak is recomputed
  * at most once per local calendar day. See `utils/macroStreak.ts`.

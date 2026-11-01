@@ -4,6 +4,7 @@ import type { CoachAIProvider } from '@/utils/coachAI';
 export const PROVIDER_NAME_KEYS: Record<CoachAIProvider, string> = {
   gemini: 'aiOnboarding.provider.names.gemini',
   openai: 'aiOnboarding.provider.names.openai',
+  claude: 'aiOnboarding.provider.names.claude',
   gateway: 'aiOnboarding.provider.names.gateway',
   'on-device': 'aiOnboarding.provider.names.onDevice',
   local: 'aiOnboarding.provider.names.local',

@@ -57,7 +57,7 @@ const getGenerativeAI = async ({
   };
 
   return {
-    models: { generateContent: fail },
+    models: { generateContent: fail, generateContentStream: fail },
     chats: { create: () => ({ sendMessage: fail }) },
   } as unknown as GoogleGenAI;
 };
@@ -81,22 +81,32 @@ export const configureBasicGenAI = async (
   const genAI = await getGenerativeAI({ apiKey, httpOptions });
   const modelName = model || (await getModel());
 
+  const buildConfig = (abortSignal?: AbortSignal) => ({
+    safetySettings,
+    ...(generationConfig as any),
+    systemInstruction: systemParts
+      ? {
+          parts: systemParts,
+        }
+      : undefined,
+    ...(tools && { tools }),
+    ...(abortSignal && { abortSignal }),
+  });
+
   return {
     generateContent: async (params: { contents: Content[]; abortSignal?: AbortSignal }) => {
       return genAI.models.generateContent({
         model: modelName,
         contents: params.contents,
-        config: {
-          safetySettings,
-          ...(generationConfig as any),
-          systemInstruction: systemParts
-            ? {
-                parts: systemParts,
-              }
-            : undefined,
-          ...(tools && { tools }),
-          ...(params.abortSignal && { abortSignal: params.abortSignal }),
-        },
+        config: buildConfig(params.abortSignal),
+      });
+    },
+    /** Same request as `generateContent`, answered as chunks while the model is still writing. */
+    generateContentStream: async (params: { contents: Content[]; abortSignal?: AbortSignal }) => {
+      return genAI.models.generateContentStream({
+        model: modelName,
+        contents: params.contents,
+        config: buildConfig(params.abortSignal),
       });
     },
   };

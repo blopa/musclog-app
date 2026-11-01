@@ -13,7 +13,7 @@ import { ListRow } from '@/components/theme/ListRow';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { TextButton } from '@/components/theme/TextButton';
-import { DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
+import { DEFAULT_CLAUDE_MODEL, DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '@/constants/ai';
 import { useAiSetupSession } from '@/hooks/useAiSetupSession';
 import { useTheme } from '@/hooks/useTheme';
 import { enableFreeTier, testAndSaveApiKey } from '@/services/aiProviderSetup';
@@ -23,16 +23,18 @@ import type { CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 
-type KeyProvider = 'gemini' | 'openai';
+type KeyProvider = 'gemini' | 'openai' | 'claude';
 
 /** Where a person gets a key, kept to the one page per provider rather than a tutorial. */
 const KEY_PAGES: Record<KeyProvider, string> = {
   gemini: 'https://aistudio.google.com/apikey',
   openai: 'https://platform.openai.com/api-keys',
+  claude: 'https://platform.claude.com/settings/keys',
 };
 const DEFAULT_MODELS: Record<KeyProvider, string> = {
   gemini: DEFAULT_GEMINI_MODEL,
   openai: DEFAULT_OPENAI_MODEL,
+  claude: DEFAULT_CLAUDE_MODEL,
 };
 const KEY_STEP_KEYS: Record<KeyProvider, readonly string[]> = {
   gemini: [
@@ -45,14 +47,20 @@ const KEY_STEP_KEYS: Record<KeyProvider, readonly string[]> = {
     'aiOnboarding.provider.steps.openai.two',
     'aiOnboarding.provider.steps.openai.three',
   ],
+  claude: [
+    'aiOnboarding.provider.steps.claude.one',
+    'aiOnboarding.provider.steps.claude.two',
+    'aiOnboarding.provider.steps.claude.three',
+  ],
 };
 const KEY_PAGE_LABEL_KEYS: Record<KeyProvider, string> = {
   gemini: 'aiOnboarding.provider.openGemini',
   openai: 'aiOnboarding.provider.openOpenAi',
+  claude: 'aiOnboarding.provider.openClaude',
 };
 
 /**
- * Picks the AI that runs the setup chat: free Musclog AI, the person's own Gemini or OpenAI key,
+ * Picks the AI that runs the setup chat: free Musclog AI, the person's own Gemini, OpenAI or Claude key,
  * or a provider already set up. A key is saved (through the app's normal encrypted settings) only
  * after the provider accepts it, and stays saved if they leave: it belongs to the app, not to this
  * flow, and Settings → AI removes it.
@@ -65,7 +73,9 @@ export default function AiProviderScreen() {
 
   const [ready, setReady] = useState<Partial<Record<CoachAIProvider, boolean>>>({});
   const [entry, setEntry] = useState<KeyProvider | null>(
-    params.entry === 'gemini' || params.entry === 'openai' ? params.entry : null
+    params.entry === 'gemini' || params.entry === 'openai' || params.entry === 'claude'
+      ? params.entry
+      : null
   );
   const [keyText, setKeyText] = useState('');
   const [checking, setChecking] = useState(false);
@@ -74,7 +84,7 @@ export default function AiProviderScreen() {
 
   useEffect(() => {
     let cancelled = false;
-    const providers: CoachAIProvider[] = ['gemini', 'openai', 'on-device', 'local'];
+    const providers: CoachAIProvider[] = ['gemini', 'openai', 'claude', 'on-device', 'local'];
     Promise.all(providers.map((provider) => AiService.getAiConfigForProvider(provider))).then(
       (configs) => {
         if (!cancelled) {
@@ -166,7 +176,7 @@ export default function AiProviderScreen() {
                 }
               />
             ) : null}
-            {(['gemini', 'openai'] as const).map((provider) => (
+            {(['gemini', 'openai', 'claude'] as const).map((provider) => (
               <ListRow
                 key={provider}
                 variant="grouped"

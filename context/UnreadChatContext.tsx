@@ -13,6 +13,7 @@ import {
 import { CONVERSATION_CONTEXTS, type ConversationContext } from '@/constants/chat';
 import { UNREAD_CHAT_MESSAGES_COUNT } from '@/constants/misc';
 import { isStaticExport } from '@/constants/platform';
+import { subscribeCoachReplyEvents } from '@/services/coachReplyStore';
 
 type SetUnreadCountArg = number | ((prev: number) => number);
 
@@ -117,6 +118,18 @@ export function UnreadChatProvider({ children }: { children: ReactNode }) {
       });
     },
     [persistCounts]
+  );
+
+  // A reply that finished while that conversation was not on screen (the coach was closed, or open
+  // on another conversation) is unread. One shown live is not.
+  useEffect(
+    () =>
+      subscribeCoachReplyEvents((event) => {
+        if (event.type === 'saved' && !event.viewed) {
+          void setUnreadCount(event.context, (previous) => previous + 1);
+        }
+      }),
+    [setUnreadCount]
   );
 
   const clearUnreadCount = useCallback(

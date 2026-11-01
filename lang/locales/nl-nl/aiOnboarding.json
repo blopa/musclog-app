@@ -96,6 +96,7 @@
       "keyStorage": "De sleutel wordt versleuteld op dit apparaat opgeslagen en gebruikt voor de AI-functies van Musclog. Standaard wordt {{model}} gebruikt; je kunt dat wijzigen of de sleutel verwijderen in Instellingen, AI.",
       "keyTitle": "Je {{provider}}-sleutel",
       "names": {
+        "claude": "Claude",
         "gateway": "Gratis Musclog AI",
         "gemini": "Google Gemini",
         "local": "Lokaal model",
@@ -103,11 +104,17 @@
         "openai": "OpenAI"
       },
       "openGemini": "Google AI Studio openen",
+      "openClaude": "De Claude-sleutelpagina openen",
       "openOpenAi": "De OpenAI-sleutelpagina openen",
       "ownKey": "Gebruik je eigen sleutel",
       "problem": "Er ging iets mis. Probeer opnieuw of kies een andere optie.",
       "simpleHint": "Draait op je apparaat. Eenvoudigere modellen hebben mogelijk moeite met deze chat.",
       "steps": {
+        "claude": {
+          "one": "Open de sleutelpagina van Claude Console en log in.",
+          "three": "Kopieer hem en plak hem hieronder.",
+          "two": "Maak een nieuwe API-sleutel aan. Je account heeft tegoed nodig."
+        },
         "gemini": {
           "one": "Open Google AI Studio en log in.",
           "three": "Kopieer hem en plak hem hieronder.",

@@ -1,6 +1,7 @@
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
-import { resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
+import { resolveClaudeModel, resolveGeminiModel, resolveOpenAiModel } from '@/utils/aiModels';
 import type { CoachAIConfig, CoachAIProvider } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
@@ -28,6 +29,18 @@ async function currentOpenAiModel(): Promise<string> {
   if (stored && stored !== model) {
     await SettingsService.setOpenAiModel(model).catch((error) =>
       handleError(error, 'currentOpenAiModel')
+    );
+  }
+
+  return model;
+}
+
+async function currentClaudeModel(): Promise<string> {
+  const stored = await SettingsService.get(SETTINGS.claudeModel);
+  const model = resolveClaudeModel(stored);
+  if (stored && stored !== model) {
+    await SettingsService.set(SETTINGS.claudeModel, model).catch((error) =>
+      handleError(error, 'currentClaudeModel')
     );
   }
 
@@ -62,6 +75,15 @@ async function openAiConfig(apiKey: string, language: string): Promise<CoachAICo
     provider: 'openai',
     apiKey,
     model: await currentOpenAiModel(),
+    language,
+  };
+}
+
+async function claudeConfig(apiKey: string, language: string): Promise<CoachAIConfig> {
+  return {
+    provider: 'claude',
+    apiKey,
+    model: await currentClaudeModel(),
     language,
   };
 }
@@ -112,6 +134,15 @@ const PROVIDER_PROBES: Record<CoachAIProvider, () => Promise<ProviderBuilder | n
 
     return enabled && key ? (language) => openAiConfig(key, language) : null;
   },
+  claude: async () => {
+    const [enabled, keyRaw] = await Promise.all([
+      SettingsService.get(SETTINGS.enableClaude),
+      SettingsService.getClaudeApiKey(),
+    ]);
+    const key = keyRaw.trim();
+
+    return enabled && key ? (language) => claudeConfig(key, language) : null;
+  },
 };
 
 /** Which provider wins when several are usable, first to last. */
@@ -121,13 +152,14 @@ const PROVIDER_PRIORITY = [
   'local',
   'gemini',
   'openai',
+  'claude',
 ] as const satisfies readonly CoachAIProvider[];
 
 export class AiService {
   /**
    * Resolves the AI configuration based on user settings, from the first usable provider in
    * `PROVIDER_PRIORITY`: the Musclog free-tier gateway (it overrides every other provider when
-   * enabled), on-device AI, a local LLM, then a Gemini or an OpenAI key. Every provider is probed in
+   * enabled), on-device AI, a local LLM, then a Gemini, an OpenAI or a Claude key. Every provider is probed in
    * parallel, since the first AI call of a session used to wait for a dozen settings read one
    * after another; the priority only decides which of the answers wins.
    */

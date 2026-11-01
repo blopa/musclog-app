@@ -349,6 +349,16 @@ export default function Privacy() {
                     </a>
                     ,{' '}
                     <a
+                      href="https://www.anthropic.com/legal/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                      style={{ color: BRAND_GREEN_BRIGHT }}
+                    >
+                      {t('sections.collecting.optionalAi.anthropicPrivacyPolicy')}
+                    </a>
+                    ,{' '}
+                    <a
                       href="https://policies.google.com/privacy"
                       target="_blank"
                       rel="noopener noreferrer"

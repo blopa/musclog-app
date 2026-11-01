@@ -1,4 +1,11 @@
-import { DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL, OPENAI_MODELS } from '@/constants/ai';
+import {
+  CLAUDE_MODELS,
+  DEFAULT_CLAUDE_MODEL,
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_OPENAI_MODEL,
+  OPENAI_MODELS,
+} from '@/constants/ai';
+import { CLAUDE_MODEL_SETTING_TYPE, ENABLE_CLAUDE_SETTING_TYPE } from '@/constants/settings';
 
 import AiService from '../AiService';
 
@@ -19,7 +26,13 @@ jest.mock('@/utils/onDeviceAi', () => ({
 }));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
-function setSettings(values: Record<string, unknown>) {
+/** Settings read through a `SettingDefinition`, keyed by their stored type. */
+function setSettings(values: Record<string, unknown>, definitions: Record<string, unknown> = {}) {
+  const stored = { [ENABLE_CLAUDE_SETTING_TYPE]: false, ...definitions };
+  mockSettings.get = jest.fn(async (definition: { type: string; defaultValue: unknown }) =>
+    definition.type in stored ? stored[definition.type] : definition.defaultValue
+  );
+  mockSettings.set = jest.fn().mockResolvedValue(undefined);
   const defaults: Record<string, unknown> = {
     getUseMusclogFreeTier: false,
     getUseOnDeviceAi: false,
@@ -33,6 +46,7 @@ function setSettings(values: Record<string, unknown>) {
     getEnableOpenAi: false,
     getOpenAiApiKey: '',
     getOpenAiModel: '',
+    getClaudeApiKey: '',
     getLanguage: 'en-US',
     ...values,
   };
@@ -263,5 +277,62 @@ describe('AiService.getAiConfigForProvider', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
     await expect(AiService.getAiConfigForProvider('openai')).resolves.toBeNull();
+  });
+});
+
+describe('AiService Claude', () => {
+  it('is used when enabled with a key, after OpenAI in the priority order', async () => {
+    setSettings({ getClaudeApiKey: ' c ' }, { [ENABLE_CLAUDE_SETTING_TYPE]: true });
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({
+      provider: 'claude',
+      apiKey: 'c',
+      model: DEFAULT_CLAUDE_MODEL,
+    });
+
+    setSettings(
+      { getClaudeApiKey: 'c', getEnableOpenAi: true, getOpenAiApiKey: 'o' },
+      { [ENABLE_CLAUDE_SETTING_TYPE]: true }
+    );
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({ provider: 'openai' });
+  });
+
+  it('is not used when switched off or without a key', async () => {
+    setSettings({ getClaudeApiKey: 'c' });
+    await expect(AiService.getAiConfig()).resolves.toBeNull();
+
+    setSettings({ getClaudeApiKey: '  ' }, { [ENABLE_CLAUDE_SETTING_TYPE]: true });
+    await expect(AiService.getAiConfig()).resolves.toBeNull();
+  });
+
+  it('answers for Claude by name even while another provider would win', async () => {
+    setSettings(
+      { getClaudeApiKey: 'c', getUseOnDeviceAi: true },
+      { [ENABLE_CLAUDE_SETTING_TYPE]: true }
+    );
+    await expect(AiService.getAiConfigForProvider('claude')).resolves.toMatchObject({
+      provider: 'claude',
+    });
+  });
+
+  it('replaces and saves a stored model that is not supported, keeps one that is', async () => {
+    setSettings(
+      { getClaudeApiKey: 'c' },
+      { [ENABLE_CLAUDE_SETTING_TYPE]: true, [CLAUDE_MODEL_SETTING_TYPE]: 'claude-3-opus' }
+    );
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({ model: DEFAULT_CLAUDE_MODEL });
+    expect(mockSettings.set).toHaveBeenCalledWith(
+      expect.objectContaining({ type: CLAUDE_MODEL_SETTING_TYPE }),
+      DEFAULT_CLAUDE_MODEL
+    );
+
+    setSettings(
+      { getClaudeApiKey: 'c' },
+      {
+        [ENABLE_CLAUDE_SETTING_TYPE]: true,
+        [CLAUDE_MODEL_SETTING_TYPE]: CLAUDE_MODELS.CLAUDE_HAIKU_5_5.value,
+      }
+    );
+    await expect(AiService.getAiConfig()).resolves.toMatchObject({ model: 'claude-haiku-5-5' });
+    expect(mockSettings.set).not.toHaveBeenCalled();
   });
 });

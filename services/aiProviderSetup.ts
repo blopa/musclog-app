@@ -1,7 +1,8 @@
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { SettingsService } from '@/database/services/SettingsService';
 import { type AiKeyTestResult, testApiKey } from '@/utils/aiKeyTest';
 
-export type AiKeyProvider = 'gemini' | 'openai';
+export type AiKeyProvider = 'gemini' | 'openai' | 'claude';
 
 /**
  * Saves an API key typed during AI setup, but only once the provider has accepted it. The key goes
@@ -24,6 +25,9 @@ export async function testAndSaveApiKey(
   if (provider === 'gemini') {
     await SettingsService.setGoogleGeminiApiKey(key);
     await SettingsService.setEnableGoogleGemini(true);
+  } else if (provider === 'claude') {
+    await SettingsService.setClaudeApiKey(key);
+    await SettingsService.set(SETTINGS.enableClaude, true);
   } else {
     await SettingsService.setOpenAiApiKey(key);
     await SettingsService.setEnableOpenAi(true);

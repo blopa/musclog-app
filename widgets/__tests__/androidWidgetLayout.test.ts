@@ -20,8 +20,10 @@ const mockSupportedViews = [
 const SUPPORTED_VIEWS = new Set(mockSupportedViews);
 // Glance containers hold at most this many children.
 const MAX_CHILDREN = 10;
-// The activity widget's declared minWidth in app.json, in dp.
-const ACTIVITY_MIN_WIDTH_DP = 250;
+// The activity widget's declared minWidth in app.json, in dp: the narrowest 3-cell footprint.
+const ACTIVITY_MIN_WIDTH_DP = 200;
+// The shortest one-cell height a portrait launcher gives a widget, in dp.
+const ACTIVITY_MIN_HEIGHT_DP = 80;
 // The nutrition widget's declared minWidth in app.json, in dp: the narrowest it can be placed.
 const NUTRITION_MIN_WIDTH_DP = 250;
 // Room the macro column needs for a label, its value and a readable bar.
@@ -188,27 +190,56 @@ describe('Android widget layouts', () => {
     // 30 squares for each of the two sources, each a fixed box in a level color.
     expect(squares).toHaveLength(2 * 30);
     const colors = new Set(activity.levelColors);
+    const SQUARE = { width: 4, height: 12 };
     for (const square of squares) {
-      const size = modifiersOf(square).find((modifier) => modifier.$type === 'size') as {
-        $type: string;
-        width: number;
-      };
+      const size = modifiersOf(square).find((modifier) => modifier.$type === 'size');
       const fill = modifiersOf(square).find((modifier) => modifier.$type === 'background');
-      expect(size.width).toBe(5);
+      expect(size).toMatchObject(SQUARE);
       expect(colors.has(fill?.color as string)).toBe(true);
     }
 
-    // The widest row is its 30 squares and gaps; the runtime has no weights to shrink it.
-    const GAP_DP = 2;
-    const rowWidth = 30 * (5 + GAP_DP);
-    const padding = modifiersOf(root.children[0]).find(
-      (modifier) => modifier.$type === 'padding'
-    ) as {
+    // The runtime has no weights to shrink a row, so its squares and gaps (one between each pair,
+    // none trailing) must fit the narrowest footprint.
+    const content = root.children[0];
+    const padding = modifiersOf(content).find((modifier) => modifier.$type === 'padding') as {
       $type: string;
       start: number;
       end: number;
+      top: number;
+      bottom: number;
     };
-    expect(rowWidth + padding.start + padding.end).toBeLessThanOrEqual(ACTIVITY_MIN_WIDTH_DP);
+    const strips: Node[] = [];
+    walk(content, (node) => {
+      if (node.name === 'Row' && node.children.every((child) => child.name === 'Row')) {
+        strips.push(node);
+      }
+    });
+    expect(strips).toHaveLength(2);
+    for (const strip of strips) {
+      let rowWidth = 0;
+      walk(strip, (node) => {
+        const fixed = modifiersOf(node).find(
+          (modifier) => modifier.$type === 'size' || modifier.$type === 'width'
+        );
+        if (node.name !== 'Row' && fixed) {
+          rowWidth += fixed.width as number;
+        }
+      });
+      expect(rowWidth).toBe(30 * SQUARE.width + 29 * 2);
+      expect(rowWidth + padding.start + padding.end).toBeLessThanOrEqual(ACTIVITY_MIN_WIDTH_DP);
+    }
+
+    // One cell of height: two labels (10sp, about 13dp), their strips and the spacers between.
+    let spacers = 0;
+    walk(content, (node) => {
+      const fixed = modifiersOf(node).find((modifier) => modifier.$type === 'height');
+      if (node.name === 'Spacer' && fixed) {
+        spacers += fixed.height as number;
+      }
+    });
+    const LABEL_DP = 13;
+    const columnHeight = 2 * (LABEL_DP + SQUARE.height) + spacers;
+    expect(columnHeight + padding.top + padding.bottom).toBeLessThanOrEqual(ACTIVITY_MIN_HEIGHT_DP);
   });
 
   it('draws the calories on a ring tinted from the palette', () => {

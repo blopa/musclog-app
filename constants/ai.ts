@@ -34,8 +34,26 @@ export const OPENAI_MODELS = {
 
 export const DEFAULT_OPENAI_MODEL = OPENAI_MODELS.GPT_6_LUNA.value;
 
+// https://platform.claude.com/docs/en/about-claude/models/overview
+// Every model listed supports vision and structured outputs. Anything a user has stored that is not
+// listed is replaced by the default (see `utils/aiModels.ts`), so removing one retires it.
+export const CLAUDE_MODELS = {
+  CLAUDE_OPUS_5_5: { model: 'claude-opus-5-5', value: 'claude-opus-5-5' },
+  CLAUDE_SONNET_5_5: { model: 'claude-sonnet-5-5', value: 'claude-sonnet-5-5' },
+  CLAUDE_HAIKU_5_5: { model: 'claude-haiku-5-5', value: 'claude-haiku-5-5' },
+} as const;
+
+export const DEFAULT_CLAUDE_MODEL = CLAUDE_MODELS.CLAUDE_OPUS_5_5.value;
+
 /** Which provider answers AI requests; the order mirrors `AiService.getAiConfig()`'s priority. */
-export const AI_PROVIDER_KINDS = ['gateway', 'on-device', 'local', 'gemini', 'openai'] as const;
+export const AI_PROVIDER_KINDS = [
+  'gateway',
+  'on-device',
+  'local',
+  'gemini',
+  'openai',
+  'claude',
+] as const;
 export type AiProviderKind = (typeof AI_PROVIDER_KINDS)[number];
 
 /**
@@ -47,6 +65,7 @@ export const AI_PROVIDER_STRENGTH: Record<AiProviderKind, 'strong' | 'basic'> = 
   gateway: 'strong',
   gemini: 'strong',
   openai: 'strong',
+  claude: 'strong',
   'on-device': 'basic',
   local: 'basic',
 };

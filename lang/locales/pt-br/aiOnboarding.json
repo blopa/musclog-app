@@ -96,6 +96,7 @@
       "keyStorage": "A chave fica criptografada neste dispositivo e é usada nos recursos de IA do Musclog. Por padrão usa {{model}}; você pode mudar isso ou remover a chave em Configurações, IA.",
       "keyTitle": "Sua chave do {{provider}}",
       "names": {
+        "claude": "Claude",
         "gateway": "IA gratuita do Musclog",
         "gemini": "Google Gemini",
         "local": "Modelo local",
@@ -103,11 +104,17 @@
         "openai": "OpenAI"
       },
       "openGemini": "Abrir o Google AI Studio",
+      "openClaude": "Abrir a página de chaves da Claude",
       "openOpenAi": "Abrir a página de chaves da OpenAI",
       "ownKey": "Use sua própria chave",
       "problem": "Algo deu errado. Tente de novo ou escolha outra opção.",
       "simpleHint": "Roda no seu dispositivo. Modelos mais simples podem ter dificuldade com este chat.",
       "steps": {
+        "claude": {
+          "one": "Abra a página de chaves do Claude Console e entre.",
+          "three": "Copie e cole abaixo.",
+          "two": "Crie uma nova chave de API. Sua conta precisa ter créditos adicionados."
+        },
         "gemini": {
           "one": "Abra o Google AI Studio e entre.",
           "three": "Copie e cole abaixo.",

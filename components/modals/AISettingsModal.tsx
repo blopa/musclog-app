@@ -22,6 +22,8 @@ import { SectionLabel } from '@/components/theme/SectionLabel';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import {
+  CLAUDE_MODELS,
+  DEFAULT_CLAUDE_MODEL,
   DEFAULT_GEMINI_MODEL,
   DEFAULT_OPENAI_MODEL,
   GEMINI_MODELS,
@@ -254,6 +256,11 @@ type AISettingsModalProps = {
   onGetOpenAiKeyPress?: () => void;
   openAiModel?: string;
   onOpenAiModelPress?: (model: string) => void;
+  // Anthropic Claude
+  claudeApiKey?: string;
+  onClaudeApiKeyChange?: (value: string) => void;
+  claudeModel?: string;
+  onClaudeModelPress?: (model: string) => void;
   // Local LLM
   localLlmApiKey?: string;
   onLocalLlmApiKeyChange?: (value: string) => void;
@@ -275,6 +282,10 @@ export function AISettingsModal({
   onGetOpenAiKeyPress,
   openAiModel = DEFAULT_OPENAI_MODEL,
   onOpenAiModelPress,
+  claudeApiKey = '',
+  onClaudeApiKeyChange,
+  claudeModel = DEFAULT_CLAUDE_MODEL,
+  onClaudeModelPress,
   localLlmApiKey = '',
   onLocalLlmApiKeyChange,
   localLlmModel = 'llama3',
@@ -286,6 +297,7 @@ export function AISettingsModal({
   const { t } = useTranslation();
   const [geminiModelMenuVisible, setGeminiModelMenuVisible] = useState(false);
   const [openAiModelMenuVisible, setOpenAiModelMenuVisible] = useState(false);
+  const [claudeModelMenuVisible, setClaudeModelMenuVisible] = useState(false);
   const [isCustomPromptsVisible, setIsCustomPromptsVisible] = useState(false);
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
@@ -295,6 +307,7 @@ export function AISettingsModal({
   const {
     enableGoogleGemini: debouncedEnableGoogleGemini,
     enableOpenAi: debouncedEnableOpenAi,
+    enableClaude: debouncedEnableClaude,
     enableLocalLlm: debouncedEnableLocalLlm,
     dailyNutritionInsights: debouncedDailyNutritionInsights,
     workoutInsights: debouncedWorkoutInsights,
@@ -305,6 +318,7 @@ export function AISettingsModal({
     useThinkingMode: debouncedUseThinkingMode,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
+    handleEnableClaudeChange,
     handleEnableLocalLlmChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,
@@ -371,6 +385,7 @@ export function AISettingsModal({
   // Local state for API keys & local LLM configs (to avoid saving on every keystroke)
   const [localGeminiApiKey, setLocalGeminiApiKey] = useState(googleGeminiApiKey);
   const [localOpenAiApiKey, setLocalOpenAiApiKey] = useState(openAiApiKey);
+  const [localClaudeApiKey, setLocalClaudeApiKey] = useState(claudeApiKey);
   const [localStateLlmApiKey, setLocalStateLlmApiKey] = useState(localLlmApiKey);
   const [localStateLlmModel, setLocalStateLlmModel] = useState(localLlmModel);
   const [localStateLlmBaseUrl, setLocalStateLlmBaseUrl] = useState(localLlmBaseUrl);
@@ -378,6 +393,7 @@ export function AISettingsModal({
   // Track if there are unsaved changes
   const hasGeminiKeyChanges = localGeminiApiKey !== googleGeminiApiKey;
   const hasOpenAiKeyChanges = localOpenAiApiKey !== openAiApiKey;
+  const hasClaudeKeyChanges = localClaudeApiKey !== claudeApiKey;
   const hasLocalLlmChanges =
     localStateLlmApiKey !== localLlmApiKey ||
     localStateLlmModel !== localLlmModel ||
@@ -386,6 +402,10 @@ export function AISettingsModal({
   // Save handlers
   const handleSaveGeminiApiKey = () => {
     onGoogleGeminiApiKeyChange?.(localGeminiApiKey);
+  };
+
+  const handleSaveClaudeApiKey = () => {
+    onClaudeApiKeyChange?.(localClaudeApiKey);
   };
 
   const handleSaveOpenAiApiKey = () => {
@@ -403,13 +423,21 @@ export function AISettingsModal({
     const sync = () => {
       setLocalGeminiApiKey(googleGeminiApiKey);
       setLocalOpenAiApiKey(openAiApiKey);
+      setLocalClaudeApiKey(claudeApiKey);
       setLocalStateLlmApiKey(localLlmApiKey);
       setLocalStateLlmModel(localLlmModel);
       setLocalStateLlmBaseUrl(localLlmBaseUrl);
     };
 
     sync();
-  }, [googleGeminiApiKey, openAiApiKey, localLlmApiKey, localLlmModel, localLlmBaseUrl]);
+  }, [
+    googleGeminiApiKey,
+    openAiApiKey,
+    claudeApiKey,
+    localLlmApiKey,
+    localLlmModel,
+    localLlmBaseUrl,
+  ]);
 
   const geminiToggleItems = [
     {
@@ -525,6 +553,29 @@ export function AISettingsModal({
     },
   ];
 
+  const claudeToggleItems = [
+    {
+      key: 'enable-claude',
+      label: t('settings.aiSettings.enableClaude'),
+      value: debouncedEnableClaude,
+      onValueChange: handleEnableClaudeChange,
+      icon: (
+        <View
+          style={{
+            width: theme.size['8'],
+            height: theme.size['8'],
+            borderRadius: theme.borderRadius.full / 2,
+            backgroundColor: theme.colors.status.indigo10,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Bot size={theme.iconSize.md} color={theme.colors.status.indigo} />
+        </View>
+      ),
+    },
+  ];
+
   const geminiModelMenuItems: BottomPopUpMenuItem[] = Object.values(GEMINI_MODELS).map((model) => ({
     icon: Bot,
     selected: model.model === geminiModel,
@@ -539,6 +590,14 @@ export function AISettingsModal({
     title: model.model,
     description: `OpenAI ${model.model}`,
     onPress: () => onOpenAiModelPress?.(model.model),
+  }));
+
+  const claudeModelMenuItems: BottomPopUpMenuItem[] = Object.values(CLAUDE_MODELS).map((model) => ({
+    icon: Bot,
+    selected: model.model === claudeModel,
+    title: model.model,
+    description: `Anthropic ${model.model}`,
+    onPress: () => onClaudeModelPress?.(model.model),
   }));
 
   return (
@@ -624,6 +683,25 @@ export function AISettingsModal({
               modelLabel={t('settings.aiSettings.openAiModel')}
               modelValue={openAiModel}
               onModelPress={() => setOpenAiModelMenuVisible(true)}
+              modelFallbackText={t('settings.aiSettings.selectModel')}
+            />
+
+            {/* Anthropic Claude Integration Section */}
+            <AIIntegrationCard
+              sectionTitle={t('settings.aiSettings.claudeIntegration')}
+              sectionTitleColor={theme.colors.accent.primary}
+              toggleItems={claudeToggleItems}
+              enabled={debouncedEnableClaude}
+              apiKeyLabel={t('settings.aiSettings.claudeApiKey')}
+              apiKeyValue={localClaudeApiKey}
+              onApiKeyChange={setLocalClaudeApiKey}
+              apiKeyPlaceholder={t('settings.aiSettings.apiKeyPlaceholder')}
+              onSaveApiKey={handleSaveClaudeApiKey}
+              onTestKey={() => testApiKey('claude', localClaudeApiKey)}
+              hasUnsavedChanges={hasClaudeKeyChanges}
+              modelLabel={t('settings.aiSettings.claudeModel')}
+              modelValue={claudeModel}
+              onModelPress={() => setClaudeModelMenuVisible(true)}
               modelFallbackText={t('settings.aiSettings.selectModel')}
             />
 
@@ -915,6 +993,14 @@ export function AISettingsModal({
           title={t('settings.aiSettings.selectOpenAiModel')}
           subtitle={t('settings.aiSettings.selectOpenAiModelSubtitle')}
           items={openAiModelMenuItems}
+        />
+
+        <BottomPopUpMenu
+          visible={claudeModelMenuVisible}
+          onClose={() => setClaudeModelMenuVisible(false)}
+          title={t('settings.aiSettings.selectClaudeModel')}
+          subtitle={t('settings.aiSettings.selectClaudeModelSubtitle')}
+          items={claudeModelMenuItems}
         />
       </View>
 

@@ -53,7 +53,7 @@ function ChatBody({ session, draftApi }: { session: AiSetupSession; draftApi: Lo
       case 'replaceKey':
         go(
           'provider',
-          draft.provider === 'gemini' || draft.provider === 'openai'
+          draft.provider === 'gemini' || draft.provider === 'openai' || draft.provider === 'claude'
             ? { entry: draft.provider }
             : {}
         );

@@ -121,4 +121,87 @@ describe('withLlmRetry', () => {
     expect(error).not.toBeInstanceOf(AiInvalidKeyError);
     expect(request).toHaveBeenCalledTimes(1);
   });
+
+  describe('streaming requests', () => {
+    it('retries a transient failure while nothing has been shown', async () => {
+      const request = jest
+        .fn()
+        .mockRejectedValueOnce(status(503, 'overloaded'))
+        .mockResolvedValue('ok');
+
+      const promise = withLlmRetry('t', gemini, request, { hasStreamed: () => false });
+      await jest.advanceTimersByTimeAsync(1500);
+
+      expect(await promise).toBe('ok');
+      expect(request).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not retry once text has been shown', async () => {
+      let shown = false;
+      const request = jest.fn(async () => {
+        shown = true;
+        throw status(503, 'overloaded');
+      });
+
+      const error = await withLlmRetry('t', gemini, request, { hasStreamed: () => shown }).catch(
+        (e) => e
+      );
+
+      expect(error.status).toBe(503);
+      expect(request).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not retry a timeout once text has been shown, and still reports it as one', async () => {
+      let shown = false;
+      const request = jest.fn(
+        (signal: AbortSignal) =>
+          new Promise((_resolve, reject) => {
+            shown = true;
+            signal.addEventListener('abort', () => reject(new Error('aborted')));
+          })
+      );
+
+      const settled = withLlmRetry('t', { ...gemini, timeoutMs: 1000 }, request, {
+        hasStreamed: () => shown,
+      }).catch((e) => e);
+      await jest.advanceTimersByTimeAsync(5000);
+
+      expect(await settled).toBeInstanceOf(AiTimeoutError);
+      expect(request).toHaveBeenCalledTimes(1);
+    });
+
+    it('treats the timeout as an idle timeout: touch() keeps a flowing stream alive', async () => {
+      const request = jest.fn(
+        (_signal: AbortSignal, touch: () => void) =>
+          new Promise<string>((resolve) => {
+            // three chunks 800 ms apart: 2400 ms in total, over the 1000 ms timeout
+            setTimeout(touch, 800);
+            setTimeout(touch, 1600);
+            setTimeout(() => resolve('done'), 2400);
+          })
+      );
+
+      const promise = withLlmRetry('t', { ...gemini, timeoutMs: 1000 }, request);
+      await jest.advanceTimersByTimeAsync(3000);
+
+      expect(await promise).toBe('done');
+      expect(request).toHaveBeenCalledTimes(1);
+    });
+
+    it('still times out a stream that goes quiet', async () => {
+      const request = jest.fn(
+        (signal: AbortSignal, touch: () => void) =>
+          new Promise((_resolve, reject) => {
+            setTimeout(touch, 800); // one chunk, then silence
+            signal.addEventListener('abort', () => reject(new Error('aborted')));
+          })
+      );
+
+      const settled = withLlmRetry('t', { ...gemini, timeoutMs: 1000 }, request).catch((e) => e);
+      await jest.advanceTimersByTimeAsync(6000); // the one allowed timeout retry stalls as well
+
+      expect(await settled).toBeInstanceOf(AiTimeoutError);
+      expect(request).toHaveBeenCalledTimes(2);
+    });
+  });
 });

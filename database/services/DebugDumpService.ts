@@ -105,6 +105,7 @@ export class DebugDumpService {
     const settingsSecrets = await Promise.all([
       SettingsService.getGoogleGeminiApiKey(),
       SettingsService.getOpenAiApiKey(),
+      SettingsService.getClaudeApiKey(),
       SettingsService.getLocalLlmApiKey(),
     ]);
 

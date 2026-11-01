@@ -1,7 +1,7 @@
 import { apple } from '@react-native-ai/apple';
 // Keep the AI SDK on v6: this provider still depends on the v3 provider stack,
 // and letting `ai` float to v7 breaks the iOS build.
-import { generateText, jsonSchema, Output } from 'ai';
+import { generateText, jsonSchema, Output, streamText } from 'ai';
 import { Platform } from 'react-native';
 
 export type OnDeviceMessage = { role: 'user' | 'assistant'; content: string };
@@ -48,6 +48,39 @@ export async function sendOnDeviceMessage(
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
   });
   return result.text ?? '';
+}
+
+/**
+ * Same request as `sendOnDeviceMessage`, handing each piece of text to `onDelta` as the model
+ * writes it. Resolves to the whole reply. `streamText` swallows failures into its `error` parts
+ * rather than throwing from the text stream, so those are rethrown here.
+ */
+export async function streamOnDeviceMessage(
+  messages: OnDeviceMessage[],
+  systemPrompt: string | undefined,
+  onDelta: (delta: string) => void,
+  signal?: AbortSignal
+): Promise<string> {
+  const result = streamText({
+    model: apple(),
+    system: systemPrompt,
+    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    abortSignal: signal,
+  });
+
+  let text = '';
+  for await (const part of result.fullStream) {
+    if (part.type === 'error') {
+      throw part.error;
+    }
+
+    if (part.type === 'text-delta' && part.text) {
+      text += part.text;
+      onDelta(part.text);
+    }
+  }
+
+  return text;
 }
 
 export async function sendOnDeviceStructured<T>(

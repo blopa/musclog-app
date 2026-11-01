@@ -29,7 +29,6 @@ import ChatMessage, {
   type TrackMealPayload,
   type WorkoutPlanPayload,
 } from '@/database/models/ChatMessage';
-import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
 import { ChatService } from '@/database/services/ChatService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
@@ -37,8 +36,19 @@ import { NutritionTargetService } from '@/database/services/NutritionTargetServi
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
+import { useCoachReply } from '@/hooks/useCoachReply';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import AiService from '@/services/AiService';
+import {
+  isCoachReplyBusy,
+  registerCoachReplyViewer,
+  subscribeCoachReplyEvents,
+} from '@/services/coachReplyStore';
+import {
+  consumeRestoredComposerText,
+  persistCoachReply,
+  startCoachReply,
+} from '@/services/coachReplyStream';
 import { describeAiError } from '@/utils/aiErrors';
 import {
   formatLocalCalendarDayIso,
@@ -51,10 +61,7 @@ import {
   type CoachResponse,
   generateMealPlan,
   generateWorkoutPlan,
-  getNutritionInsights,
-  getRecentWorkoutsInsights,
   isAiCreditsError,
-  sendCoachMessage,
   trackMeal,
   type TrackMealIngredient,
 } from '@/utils/coachAI';
@@ -201,6 +208,11 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
 export type UseChatMessagesResult = {
   messages: ExtendedIMessage[];
   pendingCoachMessage: ExtendedIMessage | null;
+  /**
+   * The coach's reply while it is being written (never saved as such): its text so far. Null
+   * until the first words arrive, and again once the finished reply is among `messages`.
+   */
+  streamingMessage: ExtendedIMessage | null;
   pendingIntention: ChatIntention | null;
   isLoading: boolean;
   isLoadingMore: boolean;
@@ -262,6 +274,7 @@ export function useChatMessages(
   const [ephemeralErrorMessage, setEphemeralErrorMessage] = useState<string | null>(null);
   const [ephemeralCreditsError, setEphemeralCreditsError] = useState(false);
   const [pendingIntention, setPendingIntention] = useState<ChatIntention | null>(null);
+  const coachReply = useCoachReply();
 
   // Consumed exactly once, by the first run of the load effect below. Switching conversation
   // context re-runs that effect, and re-arming an intention the user has since cleared would be
@@ -317,6 +330,13 @@ export function useChatMessages(
         rawMessagesRef.current = [...records].reverse();
         setCurrentOffset(records.length);
 
+        // A message whose reply failed while nobody was looking (or that the app was closed on)
+        // goes back into the composer, like any failed send.
+        const restoredText = await consumeRestoredComposerText(conversationContext);
+        if (!cancelled && restoredText !== null) {
+          setFailedMessageText(restoredText);
+        }
+
         // Check if there are older messages
         const lookAhead = await ChatService.getMessagesByContext(
           conversationContext,
@@ -342,6 +362,60 @@ export function useChatMessages(
       cancelled = true;
     };
   }, [conversationContext]);
+
+  // Tells the reply service this conversation is on screen (so a reply for it is not "unread").
+  useEffect(() => registerCoachReplyViewer(conversationContext), [conversationContext]);
+
+  // The reply is written by `coachReplyStream`, which outlives this hook; this is how its outcome
+  // reaches the chat that is showing.
+  useEffect(
+    () =>
+      subscribeCoachReplyEvents((event) => {
+        if (event.context !== conversationContext) {
+          return;
+        }
+
+        if (event.type === 'saved') {
+          if (rawMessagesRef.current.some((record) => record.id === event.record.id)) {
+            return;
+          }
+
+          rawMessagesRef.current = [...rawMessagesRef.current, event.record];
+          setMessages((prev) => [toGiftedMessage(event.record), ...prev]);
+          setCurrentOffset((prev) => prev + 1);
+          if (event.consumedIntention) {
+            setPendingIntention(null);
+          }
+
+          return;
+        }
+
+        // The reply failed: the message sent for it was taken back, and the person gets it again.
+        const takenBack = event.userRecordId;
+        if (takenBack) {
+          rawMessagesRef.current = rawMessagesRef.current.filter(
+            (record) => record.id !== takenBack
+          );
+          setMessages((prev) => prev.filter((message) => message._id !== takenBack));
+          setCurrentOffset((prev) => Math.max(0, prev - 1));
+        }
+
+        if (event.restoredText !== undefined) {
+          setFailedMessageText(event.restoredText);
+          void consumeRestoredComposerText(conversationContext);
+        }
+
+        if (event.error instanceof AiCreditsError || isAiCreditsError(event.error)) {
+          setEphemeralCreditsError(true);
+          setEphemeralErrorMessage(t('coach.errors.creditsExhausted'));
+        } else {
+          // A rejected key or a timeout is something the user can act on, so say which.
+          const actionable = event.error ? describeAiError(event.error, t) : null;
+          setEphemeralErrorMessage(actionable ?? event.fallbackMessage);
+        }
+      }),
+    [conversationContext, t]
+  );
 
   const loadMore = useCallback(async () => {
     if (isLoadingMore || !hasMore) {
@@ -454,6 +528,12 @@ export function useChatMessages(
   const sendMessage = useCallback(
     async (text: string, base64Image?: string) => {
       if ((!text.trim() && !base64Image) || isSending) {
+        return;
+      }
+
+      // One reply is written at a time, whichever conversation it is for.
+      if (isCoachReplyBusy()) {
+        setEphemeralErrorMessage(t('coach.errors.replyInProgress'));
         return;
       }
 
@@ -720,66 +800,27 @@ export function useChatMessages(
             );
             return;
           }
-        } else if (pendingIntention === ANALYZE_PROGRESS) {
-          const end = localCalendarDayDate(new Date());
-          const start = localCalendarDayPlusDays(end, -7);
-          const startDate = formatLocalCalendarDayIso(start);
-          const endDate = formatLocalCalendarDayIso(end);
-          const recentConversation = historyEntries.slice(-3);
-          const result = await getRecentWorkoutsInsights(
-            aiConfig,
-            startDate,
-            endDate,
-            text.trim(),
-            recentConversation,
-            conversationContext
-          );
-          if (!result?.trim()) {
-            if (userRecord) {
-              const recordId = userRecord.id;
-              await ChatService.deleteMessage(recordId);
-              rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
-              setMessages((prev) => prev.filter((m) => m._id !== recordId));
-            }
-
-            setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(t('coach.errors.progressInsightFailed'));
-            return;
+        } else if (pendingIntention === ANALYZE_PROGRESS || pendingIntention === NUTRITION_CHECK) {
+          if (!userRecord) {
+            throw new Error('The message was not saved');
           }
 
-          reply = { msg4User: result, sumMsg: result.substring(0, 200) };
-          await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-          setPendingIntention(null);
-        } else if (pendingIntention === NUTRITION_CHECK) {
           const end = localCalendarDayDate(new Date());
           const start = localCalendarDayPlusDays(end, -7);
-          const startDate = formatLocalCalendarDayIso(start);
-          const endDate = formatLocalCalendarDayIso(end);
-          const recentConversation = historyEntries.slice(-3);
-          const result = await getNutritionInsights(
+
+          // Written by the reply service, which saves it (and uses up the armed intention) even
+          // if the coach is closed meanwhile; this send is done once the request is on its way.
+          void startCoachReply({
+            kind: pendingIntention === ANALYZE_PROGRESS ? 'analyzeProgress' : 'nutritionCheck',
             aiConfig,
-            startDate,
-            endDate,
-            text.trim(),
-            recentConversation,
-            conversationContext
-          );
-          if (!result?.trim()) {
-            if (userRecord) {
-              const recordId = userRecord.id;
-              await ChatService.deleteMessage(recordId);
-              rawMessagesRef.current = rawMessagesRef.current.filter((r) => r.id !== recordId);
-              setMessages((prev) => prev.filter((m) => m._id !== recordId));
-            }
-
-            setFailedMessageText(text.trim());
-            setEphemeralErrorMessage(t('coach.errors.nutritionInsightFailed'));
-            return;
-          }
-
-          reply = { msg4User: result, sumMsg: result.substring(0, 200) };
-          await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-          setPendingIntention(null);
+            context: conversationContext,
+            text: text.trim(),
+            userRecord,
+            startDate: formatLocalCalendarDayIso(start),
+            endDate: formatLocalCalendarDayIso(end),
+            recentConversation: historyEntries.slice(-3),
+          });
+          return;
         } else if (pendingIntention === TRACK_MEAL) {
           const result = await trackMeal(aiConfig, text.trim(), base64Image);
           if (!result || result.meals.length === 0) {
@@ -839,42 +880,32 @@ export function useChatMessages(
           await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
           setPendingIntention(null);
         } else {
-          // Default: send regular chat message
-          reply = await sendCoachMessage(
+          // Default: a regular chat message, written (and saved) by the reply service
+          if (!userRecord) {
+            throw new Error('The message was not saved');
+          }
+
+          void startCoachReply({
+            kind: 'chat',
             aiConfig,
-            historyEntries,
-            text.trim(),
-            conversationContext
-          );
+            context: conversationContext,
+            text: text.trim(),
+            userRecord,
+            history: historyEntries,
+          });
+          return;
         }
 
         if (!reply) {
           throw new Error('No response from AI');
         }
 
-        // 5b. If the AI returned a summary of the user's message, persist it
-        if (reply.sumUserMsg && userRecord) {
-          await ChatService.updateMessageSummary(userRecord, reply.sumUserMsg);
-        }
-
-        // 5c. If the AI returned a memory about the user, persist it
-        if (reply.rememberMe?.trim()) {
-          await AiCustomPromptService.createPrompt(
-            `Memory from ${formatLocalCalendarDayIso(new Date())}`,
-            reply.rememberMe.trim(),
-            true,
-            conversationContext,
-            'memory'
-          );
-        }
-
-        // 6. Persist coach reply and prepend to UI
-        const coachRecord = await ChatService.saveMessage({
-          sender: 'coach',
-          message: reply.msg4User,
-          summarizedMessage: reply.sumMsg,
-          payloadJson,
+        // 6. Persist the coach reply (the streamed replies are saved by the reply service)
+        const coachRecord = await persistCoachReply({
           context: conversationContext,
+          reply,
+          userRecord,
+          payloadJson,
         });
         rawMessagesRef.current = [...rawMessagesRef.current, coachRecord];
         setMessages((prev) => [toGiftedMessage(coachRecord), ...prev]);
@@ -1008,6 +1039,20 @@ export function useChatMessages(
     [triggerConfetti]
   );
 
+  // The reply being written, if it is for the conversation on screen. It stays a draft here: the
+  // reply service saves it and announces it, and `messages` then gets the real record.
+  const replyHere = coachReply?.context === conversationContext ? coachReply : null;
+  const streamingMessage: ExtendedIMessage | null = replyHere?.text
+    ? {
+        _id: 'streaming-reply',
+        text: replyHere.text,
+        createdAt: new Date(replyHere.startedAt),
+        user: COACH_USER,
+      }
+    : null;
+  // Sending stays off from the moment the message goes out until the reply is saved.
+  const isReplyPending = replyHere !== null;
+
   const ephemeralErrorAsMessage = useMemo((): ExtendedIMessage | null => {
     if (!ephemeralErrorMessage) {
       return null;
@@ -1025,9 +1070,10 @@ export function useChatMessages(
   return {
     messages,
     pendingCoachMessage,
+    streamingMessage,
     isLoading,
     isLoadingMore,
-    isSending,
+    isSending: isSending || isReplyPending,
     hasMore,
     loadMore,
     sendMessage,

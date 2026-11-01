@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type {
   NutritionLogHistoryDays,
   ProgressionMode,
@@ -57,6 +58,7 @@ export function useDebouncedSettings(debounceMs = 200) {
         'anonymousBugReport',
         'enableGoogleGemini',
         'enableOpenAi',
+        'enableClaude',
         'enableLocalLlm',
         'dailyNutritionInsights',
         'workoutInsights',
@@ -195,6 +197,9 @@ export function useDebouncedSettings(debounceMs = 200) {
   const handleEnableOpenAiChange = createSettingHandler(
     'enableOpenAi',
     SettingsService.setEnableOpenAi
+  );
+  const handleEnableClaudeChange = createSettingHandler('enableClaude', (value: boolean) =>
+    SettingsService.set(SETTINGS.enableClaude, value)
   );
   const handleEnableLocalLlmChange = createSettingHandler(
     'enableLocalLlm',
@@ -412,6 +417,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'enableOpenAi':
             await SettingsService.setEnableOpenAi(value as boolean);
             break;
+          case 'enableClaude':
+            await SettingsService.set(SETTINGS.enableClaude, value as boolean);
+            break;
           case 'enableLocalLlm':
             await SettingsService.setEnableLocalLlm(value as boolean);
             break;
@@ -554,6 +562,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     enableGoogleGemini:
       (localSettings.enableGoogleGemini as boolean) ?? actualSettings.enableGoogleGemini,
     enableOpenAi: (localSettings.enableOpenAi as boolean) ?? actualSettings.enableOpenAi,
+    enableClaude: (localSettings.enableClaude as boolean) ?? actualSettings.enableClaude,
     enableLocalLlm: (localSettings.enableLocalLlm as boolean) ?? actualSettings.enableLocalLlm,
     dailyNutritionInsights:
       (localSettings.dailyNutritionInsights as boolean) ?? actualSettings.dailyNutritionInsights,
@@ -640,6 +649,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleAnonymousBugReportChange,
     handleEnableGoogleGeminiChange,
     handleEnableOpenAiChange,
+    handleEnableClaudeChange,
     handleEnableLocalLlmChange,
     handleDailyNutritionInsightsChange,
     handleWorkoutInsightsChange,

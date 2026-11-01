@@ -11,6 +11,7 @@ import {
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
   BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
+  CLAUDE_API_KEY_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
@@ -292,6 +293,13 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the Anthropic Claude API key setting (stored encrypted)
+   */
+  static async setClaudeApiKey(value: string) {
+    await SettingsService.setEncryptedStringSetting(CLAUDE_API_KEY_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the Local LLM API key setting (stored encrypted)
    */
   static async setLocalLlmApiKey(value: string) {
@@ -532,6 +540,10 @@ export class SettingsService {
 
   static async getOpenAiModel(): Promise<string> {
     return SettingsService.getStringSetting(OPENAI_MODEL_SETTING_TYPE, '');
+  }
+
+  static async getClaudeApiKey(): Promise<string> {
+    return SettingsService.getEncryptedStringSetting(CLAUDE_API_KEY_SETTING_TYPE);
   }
 
   static async getLocalLlmApiKey(): Promise<string> {
@@ -1201,6 +1213,7 @@ export class SettingsService {
     await Promise.all([
       SettingsService.migrateApiKey(GOOGLE_GEMINI_API_KEY_SETTING_TYPE),
       SettingsService.migrateApiKey(OPENAI_API_KEY_SETTING_TYPE),
+      SettingsService.migrateApiKey(CLAUDE_API_KEY_SETTING_TYPE),
       SettingsService.migrateApiKey(LOCAL_LLM_API_KEY_SETTING_TYPE),
     ]);
   }

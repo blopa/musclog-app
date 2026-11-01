@@ -26,6 +26,7 @@ import { refreshAllNotifications } from '@/services/notificationRefresh';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
 import { captureBootException } from '@/utils/bootErrorReporting';
+import { recoverInterruptedCoachReply } from '@/services/coachReplyStream';
 import { configureDailyTasks } from '@/utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,
@@ -127,9 +128,12 @@ export function AppBoot() {
           // purposely error silently since the user choose to not allow it.
           .catch(() => undefined)
       ),
-      configureDailyTasks().catch((err) =>
-        captureBootException(err, 'configureDailyTasks.bootStartup')
-      ),
+      // Before the daily insights, so a reply the app was closed on is settled first.
+      waitForDbReady()
+        .then(() => recoverInterruptedCoachReply())
+        .catch((err) => captureBootException(err, 'recoverInterruptedCoachReply'))
+        .then(() => configureDailyTasks())
+        .catch((err) => captureBootException(err, 'configureDailyTasks.bootStartup')),
       notificationInit,
     ]).catch((err) => captureBootException(err, 'AppBoot.nativeBootTasks'));
   }, []);

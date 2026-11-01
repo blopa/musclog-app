@@ -1,4 +1,6 @@
 import {
+  CLAUDE_MODELS,
+  DEFAULT_CLAUDE_MODEL,
   DEFAULT_GEMINI_MODEL,
   DEFAULT_OPENAI_MODEL,
   GEMINI_MODELS,
@@ -7,6 +9,9 @@ import {
 
 const SUPPORTED_GEMINI_MODELS: ReadonlySet<string> = new Set(
   Object.values(GEMINI_MODELS).map((entry) => entry.value)
+);
+const SUPPORTED_CLAUDE_MODELS: ReadonlySet<string> = new Set(
+  Object.values(CLAUDE_MODELS).map((entry) => entry.value)
 );
 const SUPPORTED_OPENAI_MODELS: ReadonlySet<string> = new Set(
   Object.values(OPENAI_MODELS).map((entry) => entry.value)
@@ -26,4 +31,9 @@ export function resolveGeminiModel(stored: string | null | undefined): string {
 export function resolveOpenAiModel(stored: string | null | undefined): string {
   const model = stored?.trim();
   return model && SUPPORTED_OPENAI_MODELS.has(model) ? model : DEFAULT_OPENAI_MODEL;
+}
+
+export function resolveClaudeModel(stored: string | null | undefined): string {
+  const model = stored?.trim();
+  return model && SUPPORTED_CLAUDE_MODELS.has(model) ? model : DEFAULT_CLAUDE_MODEL;
 }

@@ -44,6 +44,7 @@
       "filePickFailed": "Failed to pick file. Please try again.",
       "creditsExhausted": "It looks like your AI credits have run out. Please check your API key or billing in Settings.",
       "rateLimited": "Please wait a moment before sending another message.",
+      "replyInProgress": "I'm still writing another reply. Please wait for it to finish.",
       "toolRequestFailed": "I could not process that request. Please try again.",
       "conversationFallback": "I can help you with fitness and nutrition questions. What would you like to know?",
       "requestProcessingFailed": "I had trouble processing your request. Could you try rephrasing that?"

@@ -633,6 +633,7 @@ export function CoachModal({
   const {
     messages,
     pendingCoachMessage,
+    streamingMessage,
     pendingIntention,
     isSending,
     isLoadingMore,
@@ -751,7 +752,12 @@ export function CoachModal({
     };
   }, []);
 
+  // The typing dots are for the wait before the reply starts; once its words are showing they
+  // would sit under them.
+  const isWaitingForReply = isSending && !streamingMessage;
+
   const displayMessages = [
+    ...(streamingMessage ? [streamingMessage] : []),
     ...(ephemeralErrorAsMessage ? [ephemeralErrorAsMessage] : []),
     ...(pendingCoachMessage ? [pendingCoachMessage] : []),
     ...messages,
@@ -1151,8 +1157,11 @@ export function CoachModal({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="px-4 py-3"
-        contentContainerStyle={{ gap: theme.spacing.gap.sm }}
+        className="py-3"
+        contentContainerStyle={{
+          gap: theme.spacing.gap.sm,
+          paddingHorizontal: theme.spacing.padding.base,
+        }}
       >
         {CHAT_INTENTIONS.map((intention) => {
           const { icon: Icon, iconColor, labelKey } = COACH_INTENTIONS[intention];
@@ -1436,7 +1445,7 @@ export function CoachModal({
             messages={displayMessages}
             onSend={onSend}
             user={{ _id: 1 }}
-            isTyping={isSending}
+            isTyping={isWaitingForReply}
             renderBubble={gcRenderBubble}
             renderAvatar={gcRenderAvatar}
             renderCustomView={gcRenderCustomView}

@@ -12,6 +12,7 @@ import { AppState } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
 import { useSettingsContext } from '@/context/SettingsContext';
+import { waitForDbReady } from '@/database/dbReady';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import {
   CycleRepository,
@@ -168,31 +169,59 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const today = useLocalToday();
 
   // Observe every cycle row; the active one drives the app, a paused one is kept for resuming.
+  // A new install mounts this provider while first-run seeding still resets the database, and a
+  // query observed in that window errors once and never emits again, so the cycle that setup
+  // creates would stay invisible until the app restarted. Subscribe only once the database is ready.
   useEffect(() => {
     if (isStaticExport) {
       return;
     }
 
-    const subscription = CycleRepository.cycles()
-      .observeWithColumns(['is_active', 'config', 'updated_at', 'deleted_at'])
-      .subscribe({
-        next: (cycles) => {
-          const active = cycles.find((c) => c.isActive) ?? null;
-          const paused = active ? null : (cycles[0] ?? null);
-          setTracked({
-            cycle: active,
-            pausedCycle: paused,
-            configCipher: (active ?? paused)?.config ?? null,
-          });
-          setIsLoading(false);
-        },
-        error: () => {
-          setTracked({ cycle: null, pausedCycle: null, configCipher: null });
-          setIsLoading(false);
-        },
-      });
+    let cancelled = false;
+    let subscription: { unsubscribe: () => void } | undefined;
+    const showNoCycle = () => {
+      setTracked({ cycle: null, pausedCycle: null, configCipher: null });
+      setIsLoading(false);
+    };
 
-    return () => subscription.unsubscribe();
+    const subscribeWhenDbReady = async () => {
+      try {
+        await waitForDbReady();
+      } catch {
+        if (!cancelled) {
+          showNoCycle();
+        }
+
+        return;
+      }
+
+      if (cancelled) {
+        return;
+      }
+
+      subscription = CycleRepository.cycles()
+        .observeWithColumns(['is_active', 'config', 'updated_at', 'deleted_at'])
+        .subscribe({
+          next: (cycles) => {
+            const active = cycles.find((c) => c.isActive) ?? null;
+            const paused = active ? null : (cycles[0] ?? null);
+            setTracked({
+              cycle: active,
+              pausedCycle: paused,
+              configCipher: (active ?? paused)?.config ?? null,
+            });
+            setIsLoading(false);
+          },
+          error: showNoCycle,
+        });
+    };
+
+    void subscribeWhenDbReady();
+
+    return () => {
+      cancelled = true;
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const trackedCycle = cycle ?? pausedCycle;

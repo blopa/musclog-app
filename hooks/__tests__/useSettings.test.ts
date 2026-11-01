@@ -77,6 +77,7 @@ jest.mock('../../database/services/SettingsService', () => ({
     getGoogleGeminiApiKey: jest.fn().mockResolvedValue(''),
     getLocalLlmApiKey: jest.fn().mockResolvedValue(''),
     getOpenAiApiKey: jest.fn().mockResolvedValue(''),
+    getClaudeApiKey: jest.fn().mockResolvedValue(''),
   },
 }));
 
