@@ -39,8 +39,22 @@ type TimedItem = {
   id: string;
 };
 
-function representativeLog(item: DiaryItem) {
-  return item.kind === 'log' ? item.entry.log : item.group.entries[0].log;
+/** Resolve the same member for both a group's section and its displayed time. */
+function representativeTime(item: DiaryItem) {
+  const logs =
+    item.kind === 'log' ? [item.entry.log] : item.group.entries.map((entry) => entry.log);
+  let log = logs[0];
+  let timeOfDayMs = usableTimeOfDayMs(log);
+
+  for (const candidate of logs.slice(1)) {
+    const candidateTime = usableTimeOfDayMs(candidate);
+    if (candidateTime !== null && (timeOfDayMs === null || candidateTime < timeOfDayMs)) {
+      log = candidate;
+      timeOfDayMs = candidateTime;
+    }
+  }
+
+  return { log, timeOfDayMs };
 }
 
 /**
@@ -48,17 +62,13 @@ function representativeLog(item: DiaryItem) {
  * share one stamp). A group with no usable time at all has no time.
  */
 function timedItem(item: DiaryItem): TimedItem {
-  const logs = item.kind === 'log' ? [item.entry.log] : item.group.entries.map((e) => e.log);
-  const times = logs
-    .map((log) => usableTimeOfDayMs(log))
-    .filter((time): time is number => time !== null);
-  const first = representativeLog(item);
+  const { log, timeOfDayMs } = representativeTime(item);
 
   return {
     item,
-    timeOfDayMs: times.length > 0 ? Math.min(...times) : null,
-    createdAt: first.createdAt ?? 0,
-    id: first.id,
+    timeOfDayMs,
+    createdAt: log.createdAt ?? 0,
+    id: log.id,
   };
 }
 
@@ -156,8 +166,8 @@ export function formatHourLabel(hour: number, localeTag: string): string {
  * when the log has no usable time.
  */
 export function formatItemTime(item: DiaryItem, localeTag: string): string | undefined {
-  const log = representativeLog(item);
-  if (usableTimeOfDayMs(log) === null) {
+  const { log, timeOfDayMs } = representativeTime(item);
+  if (timeOfDayMs === null) {
     return undefined;
   }
 

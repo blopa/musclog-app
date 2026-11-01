@@ -22,14 +22,32 @@ Fix: records Musclog writes carry the local log id (`clientRecordId` / `HKExtern
 never imported or overwritten (the local log is the authority and just adopts the platform id);
 orphaned copies of deleted logs are deleted from the platform; another app's record that the user
 deleted is not re-created. `services/nutritionHealthExport.ts` mirrors creates, edits, moves, copies,
-splits and deletes (best effort, never throws). Editing a log imported from another app writes
+splits and deletes (best effort, never throws). User mutations share `publishNutritionChanges` in
+`NutritionService`, including scaling, duplication and meal-category regrouping; the tracking
+dispatcher uses the typed service edit rather than probing a model and casting it. Editing a log imported from another app writes
 Musclog's own corrected record next to the original (the platform won't let us change it) and
-ignores the original from then on, so other apps see both. Android
+ignores the original from then on, so other apps see both. Ownership and ignored-original facts
+are permanent indexed rows in `nutrition_health_ownership` (schema v37), written before the
+platform call. The previous JSON setting evicted facts after 1,000 takeovers; its remaining facts
+now migrate without a cap, atomically with clearing the setting. Backups retain the new table. Android
 re-writes an edited record with the same `clientRecordId` and a higher `clientRecordVersion`;
-iOS deletes the old correlation (and its samples) and saves a new one. Copy and move keep each
+iOS deletes the old correlation (and its dietary samples) and saves a new one. Replacement
+returns an explicit written/not-written result and aborts saving when cleanup fails, avoiding a
+second correlation after a failed delete. If saving fails after deletion, both platform pulls
+protect the locally owned log from missing-record reconciliation; its previous id is retained
+for retry. Replacements of the same log are serialized, and deletion waits for a pending export.
+If saving the returned platform id fails, the just-written platform record is removed best effort
+to avoid leaving an untracked correlation; the primary failure is still reported. Owned records
+also bypass incoming updates when their platform origin metadata is missing.
+A retry of a failed takeover never tries to replace the other app’s ignored original. Copy and move keep each
 log's wall-clock time (`reanchoredOnDay`). **Not verified on a device**: confirm on Android that
 an edit updates the record in place (otherwise fall back to delete + insert) and on iOS that
-deleting a correlation removes its samples.
+replacement and sample cleanup behave as expected on a device. Automated tests cover cleanup
+and save failures, denied/disabled writes, both missing-record sweeps, migration failure/retry,
+and takeover histories larger than 1,000 entries.
+
+The time-grouped diary also resolves a grouped meal’s earliest usable member once for both
+bucketing and its exact-time label, including midnight placeholders and mixed recorded timezones.
 
 ## Cycle tracking looked switched off right after setup on a new install (October 2026)
 

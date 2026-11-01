@@ -41,6 +41,7 @@ import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectC
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
 import { classifyHealthRecord, loadOwnershipContext } from './nutritionHealthOwnership';
+import type { NutritionHealthWriteResult } from './nutritionHealthTypes';
 
 async function isSettingEnabled(type: string): Promise<boolean> {
   const settings = await database
@@ -163,8 +164,9 @@ export async function writeNutritionLogToHealthConnect(
  */
 export async function replaceNutritionLogInHealthConnect(
   params: NutritionWriteParams & { externalId?: string }
-): Promise<string | undefined> {
-  return writeNutritionLogToHealthConnect(params);
+): Promise<NutritionHealthWriteResult> {
+  const externalId = await writeNutritionLogToHealthConnect(params);
+  return externalId ? { status: 'written', externalId } : { status: 'not-written' };
 }
 
 /**
@@ -405,12 +407,6 @@ async function syncNutritionOnce(timeRange: {
     });
   }
 
-  const ownership = await loadOwnershipContext(
-    [...hcMap.values()].flatMap((entry) => (entry.originLogId ? [entry.originLogId] : [])),
-    [...hcMap.keys()]
-  );
-  const orphanedOwnRecordIds: string[] = [];
-
   // 3. Load local HC-sourced nutrition logs in the time window
   const localLogs = await database
     .get<NutritionLog>('nutrition_logs')
@@ -421,6 +417,13 @@ async function syncNutritionOnce(timeRange: {
       Q.where('date', Q.lte(timeRange.endTime))
     )
     .fetch();
+
+  const ownership = await loadOwnershipContext(
+    [...hcMap.values()].flatMap((entry) => (entry.originLogId ? [entry.originLogId] : [])),
+    [...hcMap.keys()],
+    localLogs
+  );
+  const orphanedOwnRecordIds: string[] = [];
 
   const localByExternalId = new Map<string, NutritionLog>();
   for (const log of localLogs) {
@@ -445,7 +448,9 @@ async function syncNutritionOnce(timeRange: {
           orphanedOwnRecordIds.push(externalId);
         } else if (disposition === 'adopt') {
           const own = ownership.ownLogs.get(entry.originLogId ?? '');
-          if (own && own.externalId !== externalId) {
+          // A pull may have read an older mirror before a replacement finished.
+          // Adopt only a missing link; never overwrite a newer export’s stored id.
+          if (own && !own.externalId) {
             await own.update((log) => {
               log.externalId = externalId;
             });
@@ -536,6 +541,11 @@ async function syncNutritionOnce(timeRange: {
     //  2. Grace period — records created recently may not be indexed by HC yet.
     if (allHcRecords.length > 0) {
       for (const [localExternalId, localLog] of localByExternalId.entries()) {
+        // Local logs are authoritative even when a mirror write failed or is not indexed yet.
+        if (ownership.ownedLogIds.has(localLog.id)) {
+          continue;
+        }
+
         if (!hcMap.has(localExternalId)) {
           if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
             continue;

@@ -10,11 +10,11 @@
 
 import { Platform } from 'react-native';
 
-import { SETTINGS } from '@/constants/settingDefinitions';
 import { database } from '@/database/database-instance';
+import { decryptOptionalString } from '@/database/encryptionHelpers';
 import type Food from '@/database/models/Food';
 import type NutritionLog from '@/database/models/NutritionLog';
-import SettingsService from '@/database/services/SettingsService';
+import { NutritionHealthRepository } from '@/database/repositories/NutritionHealthRepository';
 import { handleError } from '@/utils/handleError';
 
 import { HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
@@ -27,24 +27,8 @@ function hasHealthPlatform(): boolean {
   return Platform.OS === 'android' || Platform.OS === 'ios';
 }
 
-/** True for a log the pull created from another app's record that Musclog hasn't taken over. */
-async function isImportedFromHealthPlatform(log: NutritionLog): Promise<boolean> {
-  if (!log.externalId) {
-    return false;
-  }
-
-  const takeovers = await SettingsService.get(SETTINGS.healthNutritionTakeovers);
-  if (takeovers.ownedLogIds.includes(log.id)) {
-    return false;
-  }
-
-  try {
-    const food = await database.get<Food>('foods').find(log.foodId);
-    return food.source === HC_SENTINEL_FOOD_SOURCE;
-  } catch {
-    return false;
-  }
-}
+// Serialize replacements of one log so concurrent edits cannot leave duplicate iOS correlations.
+const pendingExports = new Map<string, Promise<void>>();
 
 /**
  * Write `log` to the health platform as it is now: a new log is created there, an edited one
@@ -56,21 +40,57 @@ export async function exportLogToHealthPlatform(log: NutritionLog, label: string
     return;
   }
 
+  const previous = pendingExports.get(log.id) ?? Promise.resolve();
+  const current = previous.then(() => exportCurrentLog(log, label));
+  pendingExports.set(log.id, current);
   try {
-    // An imported log's record belongs to another app: leave it alone and write our own copy.
-    const originalRecordId = (await isImportedFromHealthPlatform(log)) ? log.externalId : undefined;
+    await current;
+  } finally {
+    if (pendingExports.get(log.id) === current) {
+      pendingExports.delete(log.id);
+    }
+  }
+}
 
-    const [nutrients, snapshot] = await Promise.all([
+async function exportCurrentLog(log: NutritionLog, label: string): Promise<void> {
+  if (log.deletedAt) {
+    return;
+  }
+
+  try {
+    const ownership = await NutritionHealthRepository.loadState(
+      [log.id],
+      log.externalId ? [log.externalId] : []
+    );
+    // A failed first takeover still points at the other app's ignored record. A retry must
+    // never try to delete that original just because we already own the local log.
+    let originalRecordId =
+      log.externalId && ownership.ignoredRecordIds.has(log.externalId) ? log.externalId : undefined;
+    if (log.externalId && !ownership.ownedLogIds.has(log.id)) {
+      const food = await database.get<Food>('foods').find(log.foodId);
+      if (food.source === HC_SENTINEL_FOOD_SOURCE) {
+        originalRecordId = log.externalId;
+      }
+    }
+
+    // Persist authority before touching the mirror. A failed write must not revert the edit.
+    if (originalRecordId) {
+      await NutritionHealthRepository.recordTakeover(log.id, originalRecordId);
+    } else {
+      await NutritionHealthRepository.recordOwned(log.id);
+    }
+
+    const [nutrients, foodName] = await Promise.all([
       log.getNutrients(),
-      log.getDecryptedSnapshot(),
+      decryptOptionalString(log.loggedFoodNameRaw),
     ]);
 
-    const externalId = await replaceNutritionLogInHealthConnect({
+    const result = await replaceNutritionLogInHealthConnect({
       logId: log.id,
       externalId: originalRecordId ? undefined : log.externalId,
       date: log.date,
       mealType: log.type,
-      foodName: snapshot.loggedFoodName ?? '',
+      foodName,
       calories: nutrients.calories,
       protein: nutrients.protein,
       carbs: nutrients.carbs,
@@ -78,17 +98,24 @@ export async function exportLogToHealthPlatform(log: NutritionLog, label: string
       fiber: nutrients.fiber,
     });
 
-    if (externalId && externalId !== log.externalId) {
-      if (originalRecordId) {
-        // Remember first: if the id write below failed, the next pull must still skip the original.
-        await SettingsService.recordHealthTakeover(log.id, originalRecordId);
-      }
-
-      await database.write(async () => {
-        await log.update((record) => {
-          record.externalId = externalId;
+    if (result.status === 'written' && result.externalId !== log.externalId) {
+      try {
+        await database.write(async () => {
+          await log.update((record) => {
+            record.externalId = result.externalId;
+          });
         });
-      });
+      } catch (idPersistenceError) {
+        // Without the returned id, a retry or delete cannot find this new mirror.
+        // Keep ownership facts, but compensate for the untracked platform write.
+        try {
+          await deleteNutritionLogsFromHealthConnect([result.externalId]);
+        } catch (cleanupError) {
+          handleError(cleanupError, `${label}.cleanupUntrackedMirror`);
+        }
+
+        throw idPersistenceError;
+      }
     }
   } catch (err) {
     handleError(err, label);
@@ -105,13 +132,15 @@ export async function exportLogsToHealthPlatform(
 
 /** Remove the platform copies of deleted logs. Logs that were never exported are skipped. */
 export async function removeLogsFromHealthPlatform(
-  logs: readonly Pick<NutritionLog, 'externalId'>[],
+  logs: readonly Pick<NutritionLog, 'id' | 'externalId'>[],
   label: string
 ): Promise<void> {
   if (!hasHealthPlatform()) {
     return;
   }
 
+  // A delete can race a pending export; remove the final returned platform id, not its predecessor.
+  await Promise.all(logs.map((log) => pendingExports.get(log.id)));
   const externalIds = logs.flatMap((log) => (log.externalId ? [log.externalId] : []));
   if (externalIds.length === 0) {
     return;

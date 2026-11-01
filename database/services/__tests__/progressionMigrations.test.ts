@@ -4,6 +4,8 @@ import migration32 from '@/database/migrations/2026/10/migration-v32';
 import migration33 from '@/database/migrations/2026/10/migration-v33';
 import migration34 from '@/database/migrations/2026/10/migration-v34';
 import migration35 from '@/database/migrations/2026/10/migration-v35';
+import migration37 from '@/database/migrations/2026/11/migration-v37';
+import { migrations } from '@/database/migrations';
 import { weeklyReviewTrainingColumns } from '@/database/weeklyReviewSchema';
 import { RESTORE_ORDER } from '@/constants/exportImport';
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
@@ -34,7 +36,7 @@ it('keeps v31 purely additive and includes all new optional columns in the schem
   expect(schema.tables.nutrition_goals.columns.target_mode.isOptional).toBe(true);
 });
 it('uses identical target/review table definitions for native migration and Loki schema with restore dependencies', () => {
-  expect(CURRENT_DATABASE_VERSION).toBe(36);
+  expect(CURRENT_DATABASE_VERSION).toBe(37);
   const laterColumns = new Set(weeklyReviewTrainingColumns.map((column) => column.name));
   for (const step of migration32.steps.filter((step) => step.type === 'create_table')) {
     // v32 created the table; v34 added the training columns on top of it.
@@ -54,6 +56,70 @@ it('uses identical target/review table definitions for native migration and Loki
   expect(RESTORE_ORDER.indexOf('weekly_reviews')).toBeLessThan(
     RESTORE_ORDER.indexOf('nutrition_target_periods')
   );
+});
+
+it('upgrades SQLite v36 with durable ownership storage while preserving legacy nutrition and settings', () => {
+  const { DatabaseSync } = require('node:sqlite');
+  const {
+    encodeSchema,
+    encodeMigrationSteps,
+  } = require('@nozbe/watermelondb/adapters/sqlite/encodeSchema');
+  const tables = Object.fromEntries(
+    Object.entries(schema.tables).filter(([name]) => name !== 'nutrition_health_ownership')
+  );
+  const registered = migrations.sortedMigrations.find(({ toVersion }) => toVersion === 37);
+  expect(registered).toEqual(migration37);
+  const create = migration37.steps[0];
+  expect(create.type).toBe('create_table');
+  expect(create.schema).toEqual(schema.tables.nutrition_health_ownership);
+  expect(RESTORE_ORDER).toContain('nutrition_health_ownership');
+
+  const sqlite = new DatabaseSync(':memory:');
+  try {
+    sqlite.exec(encodeSchema({ ...schema, version: 36, tables }));
+    sqlite.exec(
+      `INSERT INTO nutrition_logs (id, food_id, date, type, amount, external_id) VALUES ('legacy-log', 'food', 1793534400000, 'lunch', 125, 'old-record');`
+    );
+    const legacyValue = JSON.stringify({
+      ownedLogIds: ['legacy-log'],
+      ignoredRecordIds: ['original'],
+    });
+    sqlite
+      .prepare('INSERT INTO settings (id, type, value) VALUES (?, ?, ?)')
+      .run('takeovers', 'health_nutrition_takeovers', legacyValue);
+
+    sqlite.exec(encodeMigrationSteps(registered!.steps));
+
+    expect({
+      ...sqlite
+        .prepare('SELECT food_id, date, type, amount, external_id FROM nutrition_logs WHERE id = ?')
+        .get('legacy-log'),
+    }).toEqual({
+      food_id: 'food',
+      date: 1793534400000,
+      type: 'lunch',
+      amount: 125,
+      external_id: 'old-record',
+    });
+    expect(sqlite.prepare('SELECT value FROM settings WHERE id = ?').get('takeovers').value).toBe(
+      legacyValue
+    );
+    expect(
+      sqlite.prepare('SELECT COUNT(*) AS count FROM nutrition_health_ownership').get().count
+    ).toBe(0);
+    sqlite
+      .prepare(
+        'INSERT INTO nutrition_health_ownership (id, kind, record_id, created_at) VALUES (?, ?, ?, ?)'
+      )
+      .run('ownership', 'owned_log', 'legacy-log', 123);
+    expect({
+      ...sqlite
+        .prepare('SELECT kind, record_id, created_at FROM nutrition_health_ownership WHERE id = ?')
+        .get('ownership'),
+    }).toEqual({ kind: 'owned_log', record_id: 'legacy-log', created_at: 123 });
+  } finally {
+    sqlite.close();
+  }
 });
 
 function schemaBeforeProgression() {

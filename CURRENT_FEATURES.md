@@ -211,7 +211,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 ## Health Integrations
 
 - **Android**: Health Connect sync — workouts, weight, nutrition, body composition (bidirectional)
-- Nutrition stays in step with Health Connect / Apple Health: edits, moves, copies and deletes of food are mirrored there (editing food imported from another app saves your corrected version alongside the original) (and are no longer reverted or re-imported by the next sync); copied or moved food keeps the time it was eaten at
+- Nutrition stays in step with Health Connect / Apple Health: edits, portion scaling, meal-category changes, duplication, moves, copies, splits and deletes are mirrored there. Editing an import saves a corrected copy alongside the original; permanent takeover history prevents re-imports, and a failed mirror write cannot delete locally owned food. Copied or moved food keeps the time it was eaten at.
 - **iOS**: HealthKit integration — workouts, weight, nutrition, body composition (bidirectional)
 - Historical health data import from connected health apps
 - Bluetooth device support: wireless scales, heart rate monitors, fitness trackers

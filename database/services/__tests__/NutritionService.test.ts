@@ -1,4 +1,5 @@
 import { database } from '@/database/database-instance';
+import { encryptNutritionLogSnapshot } from '@/database/encryptionHelpers';
 import { KEEP_MEAL_TYPES } from '@/database/models/mealTypeTarget';
 import type NutritionLog from '@/database/models/NutritionLog';
 import {
@@ -750,6 +751,124 @@ describe('NutritionService.splitNutritionLogsToDate', () => {
 describe('NutritionService health platform mirroring', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it.each([undefined, 'imported-record'])(
+    'mirrors newly logged food only when it is not imported (%s)',
+    async (externalId) => {
+      jest.mocked(encryptNutritionLogSnapshot).mockResolvedValue({
+        loggedFoodName: 'name',
+        loggedCalories: 'cal',
+        loggedProtein: 'pro',
+        loggedCarbs: 'carb',
+        loggedFat: 'fat',
+        loggedFiber: 'fiber',
+        loggedMicrosJson: '{}',
+      });
+      const create = jest.fn(async (callback: (record: Record<string, unknown>) => void) => {
+        const log = { id: 'new-log' };
+        callback(log);
+        return log;
+      });
+      mockDatabase.get.mockImplementation(
+        (table: string) =>
+          (table === 'foods'
+            ? {
+                find: jest
+                  .fn()
+                  .mockResolvedValue({ id: 'food', resolvedNutritionBasis: 'per_100g' }),
+              }
+            : { create }) as any
+      );
+
+      const log = await NutritionService.logFood(
+        'food',
+        new Date(2026, 6, 14, 12),
+        'lunch',
+        100,
+        undefined,
+        externalId
+      );
+
+      expect(log.externalId).toBe(externalId);
+      if (externalId) {
+        expect(mockExportLogs).not.toHaveBeenCalled();
+      } else {
+        expect(mockExportLogs).toHaveBeenCalledWith([log], expect.any(String));
+      }
+    }
+  );
+
+  it('does not mirror an edit whose database update failed', async () => {
+    const log = mockLog();
+    Object.assign(log, { update: jest.fn().mockRejectedValue(new Error('write failed')) });
+    mockDatabase.get.mockReturnValue({ find: jest.fn().mockResolvedValue(log) } as any);
+
+    await expect(NutritionService.updateNutritionLog(log.id, { amount: 200 })).rejects.toThrow(
+      'write failed'
+    );
+    expect(mockExportLogs).not.toHaveBeenCalled();
+  });
+
+  it('mirrors meal scaling and grouping meal-type changes but not display-only regrouping', async () => {
+    const log = mockLog({ id: 'a', type: 'breakfast' });
+    capturePreparedUpdate(log);
+
+    await scaleMealNutritionLogsToTotalGrams([{ log, gramWeight: 100 }], 200);
+    expect(mockExportLogs).toHaveBeenCalledWith([log], expect.any(String));
+
+    mockExportLogs.mockClear();
+    await NutritionService.groupNutritionLogs([log], { groupId: 'group', mealType: 'dinner' });
+    expect(mockExportLogs).toHaveBeenCalledWith([log], expect.any(String));
+
+    mockExportLogs.mockClear();
+    await NutritionService.groupNutritionLogs([log], { groupId: 'another-group' });
+    expect(mockExportLogs).not.toHaveBeenCalled();
+  });
+
+  it('duplicates a log as a new platform record without copying its external id', async () => {
+    const original = mockLog({ id: 'original', externalId: 'foreign-record' });
+    const create = jest.fn(async (callback: (record: Record<string, unknown>) => void) => {
+      const copy = { id: 'copy' };
+      callback(copy);
+      return copy;
+    });
+    mockDatabase.get.mockReturnValue({
+      find: jest.fn().mockResolvedValue(original),
+      create,
+    } as any);
+
+    const copy = await NutritionService.duplicateNutritionLog(original.id);
+
+    expect(copy).toMatchObject({ id: 'copy', amount: original.amount, date: original.date });
+    expect(copy.externalId).toBeUndefined();
+    expect(mockExportLogs).toHaveBeenCalledWith([copy], expect.any(String));
+  });
+
+  it('updates tracking fields through the service before mirroring, clearing a portion explicitly', async () => {
+    const log = mockLog({ id: 'a' });
+    const update = jest.fn(async (callback: (record: NutritionLog) => void) => callback(log));
+    Object.assign(log, { portionId: 'old-portion', update });
+    mockDatabase.get.mockReturnValue({ find: jest.fn().mockResolvedValue(log) } as any);
+
+    await NutritionService.updateNutritionLog(log.id, {
+      amount: 250,
+      date: 42,
+      mealType: 'dinner',
+      timezone: '+02:00',
+      portionId: null,
+    });
+
+    expect(log).toMatchObject({ amount: 250, date: 42, type: 'dinner', timezone: '+02:00' });
+    expect(log.portionId).toBeUndefined();
+    expect(mockExportLogs).toHaveBeenCalledWith([log], expect.any(String));
+    expect(update.mock.invocationCallOrder[0]).toBeLessThan(
+      mockExportLogs.mock.invocationCallOrder[0]
+    );
+
+    Object.assign(log, { portionId: 'preserved' });
+    await NutritionService.updateNutritionLog(log.id, { amount: 100 });
+    expect(log.portionId).toBe('preserved');
   });
 
   it('removes the platform copies of batch-deleted logs', async () => {

@@ -1,6 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
-import { Platform } from 'react-native';
 
 import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database/database-instance';
@@ -17,10 +16,8 @@ import { getNutritionDayCoverage, loggedOrFastedDayKeys } from '@/database/nutri
 import { fetchMapByIds } from '@/database/queryByIds';
 import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
-import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
   exportLogsToHealthPlatform,
-  exportLogToHealthPlatform,
   removeLogsFromHealthPlatform,
 } from '@/services/nutritionHealthExport';
 import {
@@ -52,6 +49,21 @@ function fetchLiveFoodsByIds(foodIds: readonly string[]): Promise<Map<string, Fo
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
+}
+
+/** One completion path for user mutations: refresh local surfaces and mirror changed records. */
+async function publishNutritionChanges(
+  label: string,
+  {
+    updated = [],
+    deleted = [],
+  }: { updated?: readonly NutritionLog[]; deleted?: readonly NutritionLog[] }
+): Promise<void> {
+  triggerWidgetUpdate();
+  await Promise.all([
+    updated.length > 0 ? exportLogsToHealthPlatform(updated, label) : undefined,
+    deleted.length > 0 ? removeLogsFromHealthPlatform(deleted, label) : undefined,
+  ]);
 }
 
 /**
@@ -169,7 +181,9 @@ export async function scaleMealNutritionLogsToTotalGrams(
     );
   });
 
-  triggerWidgetUpdate();
+  await publishNutritionChanges('NutritionService.scaleMealNutritionLogsToTotalGrams', {
+    updated: entries.map(({ log }) => log),
+  });
 }
 
 export class NutritionService {
@@ -257,40 +271,10 @@ export class NutritionService {
         });
       });
 
-      if (Platform.OS === 'android') {
-        triggerWidgetUpdate();
-      }
-
-      // Health Connect / Apple Health (user-entered only — health-sourced records
-      // already have externalId set and must not be written back to avoid an echo loop).
-      if ((Platform.OS === 'android' || Platform.OS === 'ios') && !externalId) {
-        const [nutrients, snapshot] = await Promise.all([
-          log.getNutrients(),
-          log.getDecryptedSnapshot(),
-        ]);
-
-        const hcId = await writeNutritionLogToHealthConnect({
-          logId: log.id,
-          date: consumed.timestamp,
-          mealType,
-          foodName: snapshot.loggedFoodName ?? '',
-          calories: nutrients.calories,
-          protein: nutrients.protein,
-          carbs: nutrients.carbs,
-          fat: nutrients.fat,
-          fiber: nutrients.fiber,
-        }).catch((err) => {
-          handleError(err, 'NutritionService.addNutritionLog.healthConnect');
-        });
-
-        if (hcId) {
-          await database.write(async () => {
-            await log.update((record) => {
-              record.externalId = hcId;
-            });
-          });
-        }
-      }
+      // Imported records already exist on the platform and must not be echoed back.
+      await publishNutritionChanges('NutritionService.logFood', {
+        updated: externalId ? [] : [log],
+      });
 
       return log;
     } catch (error) {
@@ -604,8 +588,9 @@ export class NutritionService {
     updates: {
       amount?: number;
       mealType?: MealType;
-      portionId?: string;
+      portionId?: string | null;
       timezone?: string;
+      date?: number;
     }
   ): Promise<NutritionLog> {
     const updatedLog = await database.write(async () => {
@@ -625,7 +610,11 @@ export class NutritionService {
         }
 
         if (updates.portionId !== undefined) {
-          record.portionId = updates.portionId;
+          record.portionId = updates.portionId ?? undefined;
+        }
+
+        if (updates.date !== undefined) {
+          record.date = updates.date;
         }
 
         if (updates.timezone !== undefined) {
@@ -638,11 +627,7 @@ export class NutritionService {
       return log;
     });
 
-    triggerWidgetUpdate();
-    await exportLogToHealthPlatform(
-      updatedLog,
-      'NutritionService.updateNutritionLog.healthConnect'
-    );
+    await publishNutritionChanges('NutritionService.updateNutritionLog', { updated: [updatedLog] });
 
     return updatedLog;
   }
@@ -662,11 +647,7 @@ export class NutritionService {
       const log = await database.get<NutritionLog>('nutrition_logs').find(id);
       // markAsDeleted is a @writer method, so it already manages its own write transaction
       await log.markAsDeleted();
-      triggerWidgetUpdate();
-      await removeLogsFromHealthPlatform(
-        [log],
-        'NutritionService.deleteNutritionLog.healthConnect'
-      );
+      await publishNutritionChanges('NutritionService.deleteNutritionLog', { deleted: [log] });
     } catch (error) {
       if (!repairAttempted) {
         const repair = await DatabaseRepairService.repairIfNeeded(
@@ -721,15 +702,10 @@ export class NutritionService {
       );
     });
 
-    triggerWidgetUpdate();
-    await exportLogsToHealthPlatform(
-      toUpdate.map(({ log }) => log),
-      'NutritionService.mergeDuplicateNutritionLogs.healthConnect'
-    );
-    await removeLogsFromHealthPlatform(
-      toDelete,
-      'NutritionService.mergeDuplicateNutritionLogs.healthConnect'
-    );
+    await publishNutritionChanges('NutritionService.mergeDuplicateNutritionLogs', {
+      updated: toUpdate.map(({ log }) => log),
+      deleted: toDelete,
+    });
   }
 
   /**
@@ -748,8 +724,7 @@ export class NutritionService {
       );
     });
 
-    triggerWidgetUpdate();
-    await removeLogsFromHealthPlatform(logs, 'NutritionService.deleteNutritionLogsBatch');
+    await publishNutritionChanges('NutritionService.deleteNutritionLogsBatch', { deleted: logs });
   }
 
   /**
@@ -831,14 +806,9 @@ export class NutritionService {
       );
     });
 
-    triggerWidgetUpdate();
-
-    // A move changes the day, time and meal of logs the health platform already holds; a copy is
-    // a new entry that gets its own platform record (`externalId` is deliberately not copied).
-    await exportLogsToHealthPlatform(
-      mode === 'move' ? logs : copies,
-      'NutritionService.transferNutritionLogs.healthConnect'
-    );
+    await publishNutritionChanges('NutritionService.transferNutritionLogs', {
+      updated: mode === 'move' ? logs : copies,
+    });
 
     return logs.length;
   }
@@ -931,7 +901,9 @@ export class NutritionService {
       );
     });
 
-    triggerWidgetUpdate();
+    await publishNutritionChanges('NutritionService.groupNutritionLogs', {
+      updated: group.mealType ? logs : [],
+    });
   }
 
   /**
@@ -1019,12 +991,9 @@ export class NutritionService {
       );
     });
 
-    triggerWidgetUpdate();
-    // Both halves are mirrored: the reduced originals are edits, the split-off portions are new.
-    await exportLogsToHealthPlatform(
-      [...logs, ...splitOff],
-      'NutritionService.splitNutritionLogsToDate.healthConnect'
-    );
+    await publishNutritionChanges('NutritionService.splitNutritionLogsToDate', {
+      updated: [...logs, ...splitOff],
+    });
   }
 
   /**
@@ -1331,7 +1300,7 @@ export class NutritionService {
    * Duplicate nutrition log (create a copy)
    */
   static async duplicateNutritionLog(id: string): Promise<NutritionLog> {
-    return await database.write(async () => {
+    const copy = await database.write(async () => {
       const originalLog = await database.get<NutritionLog>('nutrition_logs').find(id);
 
       if (originalLog.deletedAt) {
@@ -1363,6 +1332,9 @@ export class NutritionService {
         log.updatedAt = now;
       });
     });
+
+    await publishNutritionChanges('NutritionService.duplicateNutritionLog', { updated: [copy] });
+    return copy;
   }
 
   /**
@@ -1467,11 +1439,7 @@ export class NutritionService {
       });
     });
 
-    if (Platform.OS === 'android') {
-      triggerWidgetUpdate();
-    }
-
-    await exportLogToHealthPlatform(log, 'NutritionService.logCustomMeal.healthConnect');
+    await publishNutritionChanges('NutritionService.logCustomMeal', { updated: [log] });
 
     return log;
   }
@@ -1674,13 +1642,7 @@ export class NutritionService {
       });
     }
 
-    if (Platform.OS === 'android') {
-      triggerWidgetUpdate();
-    }
-
-    for (const log of logs) {
-      await exportLogToHealthPlatform(log, 'NutritionService.syncLogToHealthPlatform');
-    }
+    await publishNutritionChanges('NutritionService.logCustomMealsBatch', { updated: logs });
 
     return logs;
   }

@@ -116,6 +116,60 @@ describe('buildTimeSections', () => {
     expect(sections[0].totals.calories).toBe(500);
   });
 
+  it.each([
+    {
+      name: 'the earliest member follows a later member',
+      entries: [
+        entry('late', '2026-03-01T19:00:00Z', 200),
+        entry('early', '2026-03-01T12:15:00Z', 300),
+      ],
+      hour: 12,
+      label: '12:15',
+    },
+    {
+      name: 'a midnight placeholder precedes a usable member',
+      entries: [
+        entry('placeholder', '2026-03-01T00:00:00Z', 200),
+        entry('timed', '2026-03-01T12:15:00Z', 300),
+      ],
+      hour: 12,
+      label: '12:15',
+    },
+    {
+      name: 'members have different recorded timezones',
+      entries: [
+        entry('earlier-instant', '2026-03-01T10:00:00Z', 200, '+05:00'),
+        entry('earlier-wall-clock', '2026-03-01T14:15:00Z', 300, '-02:00'),
+      ],
+      hour: 12,
+      label: '12:15',
+    },
+  ])('uses the section time on the group card when $name', ({ entries, hour, label }) => {
+    const groups = emptyByType<MealGroup>();
+    groups.lunch.push(group('meal', entries));
+
+    const sections = buildTimeSections(emptyByType(), groups);
+
+    expect(sections).toHaveLength(1);
+    expect(sections[0].hour).toBe(hour);
+    expect(formatItemTime(sections[0].items[0], 'de-DE')).toBe(label);
+  });
+
+  it('omits the group card time when every member has only a midnight placeholder', () => {
+    const groups = emptyByType<MealGroup>();
+    groups.lunch.push(
+      group('meal', [
+        entry('utc-midnight', '2026-03-01T00:00:00Z', 200),
+        entry('local-midnight', '2026-03-01T22:00:00Z', 300, '+02:00'),
+      ])
+    );
+
+    const sections = buildTimeSections(emptyByType(), groups);
+
+    expect(sections[0].key).toBe('no-time');
+    expect(formatItemTime(sections[0].items[0], 'de-DE')).toBeUndefined();
+  });
+
   it("buckets by each entry's recorded timezone, so travel does not move a meal", () => {
     const ungrouped = emptyByType<ResolvedLogEntry>();
     // 23:30 at -05:00 is 04:30Z next day, still hour 23 on the wall clock it was eaten at.

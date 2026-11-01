@@ -86,7 +86,6 @@ import {
   serializeComebackState,
 } from '@/utils/comeback/comebackState';
 import { decryptDatabaseValue } from '@/utils/encryption';
-import { withHealthTakeover } from '@/utils/healthTakeover';
 import {
   type NotificationPreferences,
   parseNotificationPreferences,
@@ -125,9 +124,6 @@ function createUpdateQueue(): <T>(run: () => Promise<T>) => Promise<T> {
 
 /** See `SettingsService.updateComebackState`. */
 const enqueueComebackUpdate = createUpdateQueue();
-
-/** See `SettingsService.recordHealthTakeover`. */
-const enqueueHealthTakeoverUpdate = createUpdateQueue();
 
 /** See `SettingsService.updateCoachCustomPersona`. */
 const enqueueCoachPersonaUpdate = createUpdateQueue();
@@ -662,20 +658,6 @@ export class SettingsService {
       await SettingsService.set(SETTINGS.coachCustomPersona, next);
 
       return next;
-    });
-  }
-
-  /**
-   * Remember that Musclog now owns `logId` on the health platform and that the platform record
-   * it was imported from (`originalRecordId`) must never be imported again. Queued read-merge-write.
-   */
-  static recordHealthTakeover(logId: string, originalRecordId: string): Promise<void> {
-    return enqueueHealthTakeoverUpdate(async () => {
-      const current = await SettingsService.get(SETTINGS.healthNutritionTakeovers);
-      await SettingsService.set(
-        SETTINGS.healthNutritionTakeovers,
-        withHealthTakeover(current, logId, originalRecordId)
-      );
     });
   }
 

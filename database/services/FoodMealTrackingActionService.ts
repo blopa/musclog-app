@@ -4,7 +4,6 @@ import type Food from '@/database/models/Food';
 import type FoodPortion from '@/database/models/FoodPortion';
 import type Meal from '@/database/models/Meal';
 import type NutritionLog from '@/database/models/NutritionLog';
-import { exportLogToHealthPlatform } from '@/services/nutritionHealthExport';
 import type { EditedFoodOverrides } from '@/types/foodEditing';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import { combineLocalDateAndTime, instantForDateTimeInTimezone } from '@/utils/calendarDate';
@@ -32,17 +31,7 @@ export type FoodMealTrackingNutritionData = {
   sodium: number;
 };
 
-type FoodLogTrackingDetails = {
-  timezone?: string;
-  portionId?: string;
-  updateTrackingDetails: (details: {
-    amount: number;
-    date: number;
-    mealType: MealType;
-    portionId?: string;
-    timezone?: string;
-  }) => Promise<void>;
-};
+type FoodLogTrackingDetails = Pick<NutritionLog, 'id' | 'timezone' | 'portionId'>;
 
 /** External-catalog product context, shared by the `externalProduct` target and the public creator. */
 type ExternalProductContext = {
@@ -265,20 +254,13 @@ export class FoodMealTrackingActionService {
       timezone
     );
 
-    await foodLog.updateTrackingDetails({
+    await NutritionService.updateNutritionLog(foodLog.id, {
       amount: selection.servingSize,
       date: dateTimestamp,
       mealType: selection.selectedMeal,
-      portionId: selection.resolvedFoodServingMode ? foodLog.portionId : undefined,
+      portionId: selection.resolvedFoodServingMode ? (foodLog.portionId ?? null) : null,
       timezone,
     });
-    // Re-write the health platform copy so an edit isn't reverted (or duplicated) by the next sync.
-    if ('getNutrients' in foodLog) {
-      await exportLogToHealthPlatform(
-        foodLog as unknown as NutritionLog,
-        'FoodMealTrackingActionService.updateFoodLog'
-      );
-    }
   }
 
   private static async persistExistingFoodUpdates(

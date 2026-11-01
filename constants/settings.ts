@@ -501,8 +501,8 @@ export const COACH_CUSTOM_PERSONA_SETTING_TYPE = 'coach_custom_persona';
 export const HOME_HEATMAP_LAYOUT_SETTING_TYPE = 'home_heatmap_layout';
 
 /**
- * Setting type for nutrition logs Musclog took over from another app after an edit, and the
- * original platform records to ignore. value: JSON `HealthTakeovers`. Not in `SettingsState`.
+ * Legacy takeover JSON, migrated losslessly into nutrition_health_ownership by
+ * NutritionHealthRepository. No new writes; retained so older backups can be imported.
  */
 export const HEALTH_NUTRITION_TAKEOVERS_SETTING_TYPE = 'health_nutrition_takeovers';
 
