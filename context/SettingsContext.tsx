@@ -30,6 +30,7 @@ import {
   ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
   FOOD_SEARCH_SOURCE_SETTING_TYPE,
+  type FoodDiaryGrouping,
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
@@ -204,6 +205,8 @@ type SettingsState = {
    */
   homeActionsRaw: string;
   showHomeSteps: boolean;
+  foodDiaryCompact: boolean;
+  foodDiaryGrouping: FoodDiaryGrouping;
   isLoading: boolean;
 };
 
@@ -302,6 +305,8 @@ const DEFAULT_STATE: SettingsState = {
   coachPersona: SETTINGS.coachPersona.defaultValue,
   homeActionsRaw: '',
   showHomeSteps: SETTINGS.showHomeSteps.defaultValue,
+  foodDiaryCompact: SETTINGS.foodDiaryCompact.defaultValue,
+  foodDiaryGrouping: SETTINGS.foodDiaryGrouping.defaultValue,
   isLoading: true,
 };
 
@@ -469,6 +474,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     coachPersona: readSetting(map, SETTINGS.coachPersona),
     homeActionsRaw: map.get(HOME_ACTIONS_SETTING_TYPE) ?? '',
     showHomeSteps: readSetting(map, SETTINGS.showHomeSteps),
+    foodDiaryCompact: readSetting(map, SETTINGS.foodDiaryCompact),
+    foodDiaryGrouping: readSetting(map, SETTINGS.foodDiaryGrouping),
     isLoading: false,
   };
 }
@@ -557,6 +564,8 @@ export type SettingsContextType = UseSettingsResult & {
   coachPersona: CoachPersonaId;
   homeActions: readonly HomeActionKey[];
   showHomeSteps: boolean;
+  foodDiaryCompact: boolean;
+  foodDiaryGrouping: FoodDiaryGrouping;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

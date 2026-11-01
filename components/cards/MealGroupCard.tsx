@@ -39,6 +39,10 @@ type MealGroupCardProps = {
   selectionMode?: boolean;
   selected?: boolean;
   intuitiveMode?: boolean;
+  /** Compact: small photo, one-line name, kcal only (macros are in the details modal). */
+  variant?: 'default' | 'compact';
+  /** Exact time the meal was eaten, shown in the time-grouped diary. */
+  timeLabel?: string;
 };
 
 const MacroItem = ({
@@ -142,9 +146,12 @@ export const MealGroupCard = memo(function MealGroupCard({
   selectionMode = false,
   selected = false,
   intuitiveMode = false,
+  variant = 'default',
+  timeLabel,
 }: MealGroupCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const isCompact = variant === 'compact';
 
   const { Icon, bgColor, iconColor } = getMealIconAndColor(mealType, theme);
 
@@ -164,15 +171,21 @@ export const MealGroupCard = memo(function MealGroupCard({
       onLongPress={onLongPress}
       selected={selected}
     >
-      <View className="flex-row items-center gap-4 p-4">
+      <View className={`flex-row items-center ${isCompact ? 'gap-3 px-4 py-2' : 'gap-4 p-4'}`}>
         {/* Meal icon or photo */}
         <View
-          className="h-16 w-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-control"
+          className={`flex-shrink-0 items-center justify-center overflow-hidden rounded-control ${
+            isCompact ? 'h-10 w-10' : 'h-16 w-16'
+          }`}
           style={{ backgroundColor: imageUrl ? undefined : bgColor }}
         >
           {imageUrl ? (
             <ZoomableThumbnail uri={imageUrl}>
-              <Image source={{ uri: imageUrl }} className="h-16 w-16" resizeMode="cover" />
+              <Image
+                source={{ uri: imageUrl }}
+                className={isCompact ? 'h-10 w-10' : 'h-16 w-16'}
+                resizeMode="cover"
+              />
             </ZoomableThumbnail>
           ) : (
             <Icon size={theme.iconSize.lg} color={iconColor} />
@@ -182,7 +195,10 @@ export const MealGroupCard = memo(function MealGroupCard({
         <View className="min-w-0 flex-1">
           {/* Meal name + badge */}
           <View className="mb-1 flex-row items-center gap-2">
-            <Text className="flex-1 text-lg font-semibold text-text-primary" numberOfLines={2}>
+            <Text
+              className={`flex-1 font-semibold text-text-primary ${isCompact ? 'text-base' : 'text-lg'}`}
+              numberOfLines={isCompact ? 1 : 2}
+            >
               {name}
             </Text>
             <View
@@ -197,6 +213,11 @@ export const MealGroupCard = memo(function MealGroupCard({
 
           {/* Calories row */}
           <View className="mb-0.5 flex-row items-center gap-3">
+            {timeLabel ? (
+              <Text className="text-xs font-semibold tabular-nums text-text-primary">
+                {timeLabel}
+              </Text>
+            ) : null}
             <MacroItem
               icon={Flame}
               value={calories}
@@ -207,32 +228,34 @@ export const MealGroupCard = memo(function MealGroupCard({
           </View>
 
           {/* Macros row */}
-          <View className="flex-row items-center gap-3">
-            <MacroItem
-              icon={Zap}
-              value={protein}
-              label={t('food.macros.protein')}
-              shortLabel={t('food.macros.proteinShort')}
-              unit="g"
-              intuitiveMode={intuitiveMode}
-            />
-            <MacroItem
-              icon={Wheat}
-              value={carbs}
-              label={t('food.macros.carbs')}
-              shortLabel={t('food.macros.carbsShort')}
-              unit="g"
-              intuitiveMode={intuitiveMode}
-            />
-            <MacroItem
-              icon={Droplet}
-              value={fat}
-              label={t('food.macros.fat')}
-              shortLabel={t('food.macros.fatShort')}
-              unit="g"
-              intuitiveMode={intuitiveMode}
-            />
-          </View>
+          {isCompact ? null : (
+            <View className="flex-row items-center gap-3">
+              <MacroItem
+                icon={Zap}
+                value={protein}
+                label={t('food.macros.protein')}
+                shortLabel={t('food.macros.proteinShort')}
+                unit="g"
+                intuitiveMode={intuitiveMode}
+              />
+              <MacroItem
+                icon={Wheat}
+                value={carbs}
+                label={t('food.macros.carbs')}
+                shortLabel={t('food.macros.carbsShort')}
+                unit="g"
+                intuitiveMode={intuitiveMode}
+              />
+              <MacroItem
+                icon={Droplet}
+                value={fat}
+                label={t('food.macros.fat')}
+                shortLabel={t('food.macros.fatShort')}
+                unit="g"
+                intuitiveMode={intuitiveMode}
+              />
+            </View>
+          )}
         </View>
 
         {trailingControl}

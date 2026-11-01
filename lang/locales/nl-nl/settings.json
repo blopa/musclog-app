@@ -345,6 +345,28 @@
       "fiber": "Vezels",
       "alcohol": "Alcohol"
     },
+    "foodDiary": {
+      "sectionTitle": "Voedingsdagboek",
+      "sectionSubtitle": "Kies hoe het voedingsdagboek wordt opgebouwd en gegroepeerd.",
+      "compact": {
+        "title": "Compacte weergave",
+        "description": "Verberg lege maaltijden en toon dichtere items. Tik op een item om de macro's te zien."
+      },
+      "grouping": {
+        "popupTitle": "Eten groeperen op",
+        "popupSubtitle": "Verandert alleen hoe het dagboek wordt getoond, niet je maaltijden of voedingsgegevens.",
+        "options": {
+          "categories": {
+            "label": "Maaltijdcategorieën",
+            "description": "Ontbijt, lunch, avondeten, snacks en overig."
+          },
+          "time": {
+            "label": "Tijdstip",
+            "description": "Secties per uur, in de volgorde waarin je at."
+          }
+        }
+      }
+    },
     "notificationsSettings": {
       "title": "Meldingen",
       "subtitle": "Workout-, voedings- en cyclusmeldingen",

@@ -142,8 +142,15 @@ export default function FoodScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { formatInteger, locale: appLocale } = useFormatAppNumber();
-  const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay, enableFastedDay } =
-    useSettings();
+  const {
+    units,
+    isAiConfigured,
+    intuitiveEatingMode,
+    nutritionDisplay,
+    enableFastedDay,
+    foodDiaryCompact,
+    foodDiaryGrouping,
+  } = useSettings();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
@@ -1431,6 +1438,9 @@ export default function FoodScreen() {
                       mealGroupsByType={mealGroupsByType}
                       mealGroupImageUrls={mealGroupImageUrls}
                       intuitiveMode={intuitiveEatingMode}
+                      compact={foodDiaryCompact}
+                      grouping={foodDiaryGrouping}
+                      localeTag={i18n.resolvedLanguage ?? i18n.language}
                       callbacks={{
                         onAddFood: handleAddFoodToMeal,
                         onMealMenuPress: handleMealMenuPress,

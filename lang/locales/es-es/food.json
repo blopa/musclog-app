@@ -272,6 +272,10 @@
         "other": "Otro"
       }
     },
+    "diary": {
+      "noTime": "Sin hora",
+      "addFoodTo": "Añadir comida a"
+    },
     "addFoodModal": {
       "title": "Añadir Alimento",
       "subtitle": "Elige un método para registrar tu comida",

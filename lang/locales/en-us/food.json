@@ -272,6 +272,10 @@
         "other": "Other"
       }
     },
+    "diary": {
+      "noTime": "No time",
+      "addFoodTo": "Add food to"
+    },
     "addFoodModal": {
       "title": "Add food",
       "subtitle": "Choose a method to track your meal",

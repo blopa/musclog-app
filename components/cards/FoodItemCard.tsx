@@ -44,6 +44,8 @@ type FoodItemCardProps = {
   mealType?: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
   variant?: 'default' | 'compact';
   intuitiveMode?: boolean;
+  /** Exact time the food was eaten, shown in the time-grouped diary. */
+  timeLabel?: string;
 };
 
 const MacroItem = ({
@@ -118,6 +120,7 @@ export const FoodItemCard = memo(function FoodItemCard({
   portion,
   variant = 'default',
   intuitiveMode = false,
+  timeLabel,
 }: FoodItemCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -170,7 +173,9 @@ export const FoodItemCard = memo(function FoodItemCard({
       onLongPress={onLongPress}
       selected={selected}
     >
-      <View className="flex-row items-center gap-3 px-4 py-3">
+      <View
+        className={`flex-row items-center gap-3 px-4 ${variant === 'compact' ? 'py-2' : 'py-3'}`}
+      >
         <View
           className={`flex-shrink-0 overflow-hidden rounded-control ${
             variant === 'compact' ? 'h-10 w-10' : 'h-12 w-12'
@@ -203,6 +208,11 @@ export const FoodItemCard = memo(function FoodItemCard({
             <Text className="mb-1 truncate text-sm text-text-secondary">{description}</Text>
           ) : null}
           <View className="flex-row items-center gap-3">
+            {timeLabel ? (
+              <Text className="text-xs font-semibold tabular-nums text-text-primary">
+                {timeLabel}
+              </Text>
+            ) : null}
             <MacroItem icon={LucideScale} value={g} unit={massUnit} />
             <MacroItem
               icon={Flame}
