@@ -3,6 +3,8 @@ import type { MealType, MicrosData } from '@/database/models';
 import type Food from '@/database/models/Food';
 import type FoodPortion from '@/database/models/FoodPortion';
 import type Meal from '@/database/models/Meal';
+import type NutritionLog from '@/database/models/NutritionLog';
+import { exportLogToHealthPlatform } from '@/services/nutritionHealthExport';
 import type { EditedFoodOverrides } from '@/types/foodEditing';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import { combineLocalDateAndTime, instantForDateTimeInTimezone } from '@/utils/calendarDate';
@@ -270,6 +272,13 @@ export class FoodMealTrackingActionService {
       portionId: selection.resolvedFoodServingMode ? foodLog.portionId : undefined,
       timezone,
     });
+    // Re-write the health platform copy so an edit isn't reverted (or duplicated) by the next sync.
+    if ('getNutrients' in foodLog) {
+      await exportLogToHealthPlatform(
+        foodLog as unknown as NutritionLog,
+        'FoodMealTrackingActionService.updateFoodLog'
+      );
+    }
   }
 
   private static async persistExistingFoodUpdates(

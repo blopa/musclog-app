@@ -26,6 +26,14 @@ export async function writeNutritionLogToHealthConnect(
   return undefined;
 }
 
+export async function replaceNutritionLogInHealthConnect(
+  _params: NutritionWriteParams & { externalId?: string }
+): Promise<string | undefined> {
+  return undefined;
+}
+
+export async function deleteNutritionLogsFromHealthConnect(_externalIds: string[]): Promise<void> {}
+
 export async function syncNutritionFromHealthConnect(
   _timeRange?: { startTime: number; endTime: number },
   _options?: { retryAttempts?: number; reportErrors?: boolean }

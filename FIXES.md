@@ -3,6 +3,32 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Nutrition kept disagreeing with Health Connect / Apple Health (November 2026)
+
+Four sync defects, found while adding the time-grouped food diary (which relies on a log's
+consumed time staying put):
+
+- **Edits reverted.** Editing a log's time, meal or portion never reached the health platform,
+  and the next pull (keyed by `external_id`) overwrote the local values with the stale copy,
+  also flattening the log to `amount = 100` with the platform's macros.
+- **Deleted food came back.** Deletes were local soft-deletes only; the platform record was
+  still there, so the pull created it again.
+- **Duplicates from AI/custom meals.** `logCustomMeal` and the batch path wrote to the platform
+  but threw away the returned id, so the pull imported Musclog's own record as a second log.
+- **Copy/move stamped "now".** A copied or moved log lost the time it was eaten at.
+
+Fix: records Musclog writes carry the local log id (`clientRecordId` / `HKExternalUUID`), and
+`services/nutritionHealthOwnership.ts` classifies each pulled record. Musclog's own records are
+never imported or overwritten (the local log is the authority and just adopts the platform id);
+orphaned copies of deleted logs are deleted from the platform; another app's record that the user
+deleted is not re-created. `services/nutritionHealthExport.ts` mirrors creates, edits, moves and
+deletes (best effort, never throws; logs imported from another app are left alone). Android
+re-writes an edited record with the same `clientRecordId` and a higher `clientRecordVersion`;
+iOS deletes the old correlation (and its samples) and saves a new one. Copy and move keep each
+log's wall-clock time (`reanchoredOnDay`). **Not verified on a device**: confirm on Android that
+an edit updates the record in place (otherwise fall back to delete + insert) and on iOS that
+deleting a correlation removes its samples.
+
 ## Cycle tracking looked switched off right after setup on a new install (October 2026)
 
 ### Symptom
