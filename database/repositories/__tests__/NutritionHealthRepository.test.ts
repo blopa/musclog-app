@@ -4,6 +4,7 @@ import { restoreDatabase } from '@/database/importDb';
 import type NutritionHealthOwnership from '@/database/models/NutritionHealthOwnership';
 import type Setting from '@/database/models/Setting';
 import { NutritionHealthRepository } from '@/database/repositories/NutritionHealthRepository';
+import { NutritionHealthOwnershipMigration } from '@/database/services/NutritionHealthOwnershipMigration';
 import { classifyHealthRecord, loadOwnershipContext } from '@/services/nutritionHealthOwnership';
 
 jest.mock('@/database/adapter', () => {
@@ -109,6 +110,7 @@ describe('NutritionHealthRepository', () => {
     const external = Array.from({ length: 1005 }, (_, index) => `hc-${index}`);
     const setting = await legacySetting(logs, external);
 
+    await NutritionHealthOwnershipMigration.run();
     const state = await NutritionHealthRepository.loadState(logs, external);
 
     expect(state.ownedLogIds).toEqual(new Set(logs));
@@ -116,7 +118,7 @@ describe('NutritionHealthRepository', () => {
     expect(setting.value).toBe('{}');
     expect(await ownershipRows()).toHaveLength(2010);
 
-    await NutritionHealthRepository.loadState(logs, external);
+    await NutritionHealthOwnershipMigration.run();
     expect(await ownershipRows()).toHaveLength(2010);
   });
 
@@ -125,13 +127,12 @@ describe('NutritionHealthRepository', () => {
     const before = setting.value;
     jest.spyOn(database, 'batch').mockRejectedValueOnce(new Error('adapter failed'));
 
-    await expect(NutritionHealthRepository.loadState(['log'], ['hc'])).rejects.toThrow(
-      'adapter failed'
-    );
+    await expect(NutritionHealthOwnershipMigration.run()).rejects.toThrow('adapter failed');
 
     expect(setting.value).toBe(before);
     expect(await ownershipRows()).toEqual([]);
 
+    await NutritionHealthOwnershipMigration.run();
     const recovered = await NutritionHealthRepository.loadState(['log'], ['hc']);
     expect(recovered.ownedLogIds.has('log')).toBe(true);
     expect(recovered.ignoredRecordIds.has('hc')).toBe(true);

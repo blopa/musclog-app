@@ -109,10 +109,21 @@ const HOME_HEATMAPS_ICON: Record<HomeHeatmaps, typeof LayoutGrid> = {
   both: LayoutGrid,
 };
 
-/** Food diary grouping choices and their icons. Exhaustive by type. */
-const FOOD_DIARY_GROUPING_ICON: Record<FoodDiaryGrouping, typeof Clock> = {
-  categories: Rows3,
-  time: Clock,
+/** Food diary grouping choices: icon and whole translation keys. Exhaustive by type. */
+const FOOD_DIARY_GROUPING_CHOICES: Record<
+  FoodDiaryGrouping,
+  { icon: typeof Clock; labelKey: string; descriptionKey: string }
+> = {
+  categories: {
+    icon: Rows3,
+    labelKey: 'settings.foodDiary.grouping.options.categories.label',
+    descriptionKey: 'settings.foodDiary.grouping.options.categories.description',
+  },
+  time: {
+    icon: Clock,
+    labelKey: 'settings.foodDiary.grouping.options.time.label',
+    descriptionKey: 'settings.foodDiary.grouping.options.time.description',
+  },
 };
 
 const HOME_HEATMAP_LAYOUT_ICON: Record<HomeHeatmapLayout, typeof LayoutGrid> = {
@@ -239,7 +250,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     await SettingsService.set(SETTINGS.foodDiaryGrouping, grouping);
   };
 
-  const FoodGroupingIcon = FOOD_DIARY_GROUPING_ICON[foodDiaryGrouping];
+  const foodGrouping = FOOD_DIARY_GROUPING_CHOICES[foodDiaryGrouping];
   const ThemeIcon = THEME_ICON[themePreference];
 
   const handleMacrosChange = async (ids: MacroKey[]) => {
@@ -414,8 +425,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             {t('settings.foodDiary.sectionSubtitle')}
           </Text>
           <PickerButton
-            icon={<FoodGroupingIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />}
-            label={t(`settings.foodDiary.grouping.options.${foodDiaryGrouping}.label`)}
+            icon={
+              <foodGrouping.icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            }
+            label={t(foodGrouping.labelKey)}
             onPress={() => setFoodGroupingPopupVisible(true)}
           />
           <View className="mt-4">
@@ -582,10 +595,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         title={t('settings.foodDiary.grouping.popupTitle')}
         subtitle={t('settings.foodDiary.grouping.popupSubtitle')}
         items={FOOD_DIARY_GROUPING_OPTIONS.map((grouping) => ({
-          icon: FOOD_DIARY_GROUPING_ICON[grouping],
+          icon: FOOD_DIARY_GROUPING_CHOICES[grouping].icon,
           selected: grouping === foodDiaryGrouping,
-          title: t(`settings.foodDiary.grouping.options.${grouping}.label`),
-          description: t(`settings.foodDiary.grouping.options.${grouping}.description`),
+          title: t(FOOD_DIARY_GROUPING_CHOICES[grouping].labelKey),
+          description: t(FOOD_DIARY_GROUPING_CHOICES[grouping].descriptionKey),
           onPress: () => handleFoodGroupingChange(grouping),
         }))}
       />

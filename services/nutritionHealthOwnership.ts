@@ -62,6 +62,51 @@ export function classifyHealthRecord(
     : 'foreign';
 }
 
+/**
+ * Applies the local-authority rule to a record that is not a plain foreign import: Musclog's own
+ * mirror (link it to its log when the link is missing) or a stale/deleted one. Returns its
+ * disposition; anything but `foreign` means the pull must skip the record. Call inside the
+ * writer, and delete the `orphan` records from the platform afterwards.
+ */
+export async function reconcileOwnedRecord(
+  externalId: string,
+  originLogId: string | undefined,
+  context: OwnershipContext
+): Promise<HealthRecordDisposition> {
+  const disposition = classifyHealthRecord(externalId, originLogId, context);
+  if (disposition === 'adopt') {
+    const own = context.ownLogs.get(originLogId ?? '');
+    // A pull may have read an older mirror before a replacement finished.
+    // Adopt only a missing link; never overwrite a newer export’s stored id.
+    if (own && !own.externalId) {
+      await own.update((log) => {
+        log.externalId = externalId;
+      });
+    }
+  }
+
+  return disposition;
+}
+
+/**
+ * The other app's record an exported log was imported from, if Musclog has not taken it over
+ * yet or a takeover is still being retried. Such a record is never replaced or deleted.
+ * `context` must come from `loadOwnershipContext([], [log.externalId], [log])`.
+ */
+export function importedOriginalRecordId(
+  log: Pick<NutritionLog, 'id' | 'externalId'>,
+  context: OwnershipContext
+): string | undefined {
+  if (!log.externalId) {
+    return undefined;
+  }
+
+  // A failed first takeover is already owned, yet still points at the ignored original.
+  return context.ignoredRecordIds.has(log.externalId) || !context.ownedLogIds.has(log.id)
+    ? log.externalId
+    : undefined;
+}
+
 export async function loadOwnershipContext(
   originLogIds: readonly string[],
   externalIds: readonly string[],

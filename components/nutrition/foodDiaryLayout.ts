@@ -104,31 +104,30 @@ export function buildTimeSections(
     });
   });
 
+  // Eaten order; entries without a usable time trail, ordered by creation.
   timed.sort((a, b) => {
     if (a.timeOfDayMs !== b.timeOfDayMs) {
-      // `null` (no time) is never compared here: those are split out below.
-      return (a.timeOfDayMs ?? 0) - (b.timeOfDayMs ?? 0);
+      if (a.timeOfDayMs === null) {
+        return 1;
+      }
+
+      return b.timeOfDayMs === null ? -1 : a.timeOfDayMs - b.timeOfDayMs;
     }
 
     return a.createdAt - b.createdAt || a.id.localeCompare(b.id);
   });
 
-  const sections: TimeSection[] = [];
-  const byKey = new Map<string, TimeSection>();
-  const noTime: TimedItem[] = [];
-
-  const push = (key: string, hour: number | null, item: DiaryItem) => {
-    let section = byKey.get(key);
-    if (!section) {
-      section = {
-        key,
-        hour,
-        items: [],
-        totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
-      };
-      byKey.set(key, section);
-      sections.push(section);
-    }
+  const sections = new Map<string, TimeSection>();
+  for (const { item, timeOfDayMs } of timed) {
+    const hour = timeOfDayMs === null ? null : Math.min(23, Math.floor(timeOfDayMs / MS_PER_HOUR));
+    const key = hour === null ? 'no-time' : `hour-${hour}`;
+    const section = sections.get(key) ?? {
+      key,
+      hour,
+      items: [],
+      totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
+    };
+    sections.set(key, section);
 
     const macros = itemMacros(item);
     section.items.push(item);
@@ -138,20 +137,9 @@ export function buildTimeSections(
       carbs: section.totals.carbs + macros.carbs,
       fat: section.totals.fat + macros.fat,
     };
-  };
+  }
 
-  timed.forEach((entry) => {
-    if (entry.timeOfDayMs === null) {
-      noTime.push(entry);
-      return;
-    }
-
-    const hour = Math.min(23, Math.floor(entry.timeOfDayMs / MS_PER_HOUR));
-    push(`hour-${hour}`, hour, entry.item);
-  });
-  noTime.forEach((entry) => push('no-time', null, entry.item));
-
-  return sections;
+  return [...sections.values()];
 }
 
 /** Locale-aware label for an hourly section ("2 PM" / "14"), rendered in UTC so it can't shift. */

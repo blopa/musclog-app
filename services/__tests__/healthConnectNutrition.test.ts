@@ -40,13 +40,14 @@ jest.mock('../healthConnect', () => ({
 }));
 jest.mock('../nutritionHealthOwnership', () => ({
   classifyHealthRecord: (...args: unknown[]) => mockClassifyRecord(...args),
+  reconcileOwnedRecord: async (...args: unknown[]) => mockClassifyRecord(...args),
   loadOwnershipContext: (...args: unknown[]) => mockLoadOwnership(...args),
 }));
 
 import type { NutritionWriteParams } from '../healthConnectNutrition';
 
 // Jest's React Native preset prefers the iOS sibling; explicitly exercise the Android adapter.
-const { replaceNutritionLogInHealthConnect, syncNutritionFromHealthConnect } = jest.requireActual<
+const { writeNutritionLogToHealthConnect, syncNutritionFromHealthConnect } = jest.requireActual<
   typeof import('../healthConnectNutrition')
 >('../healthConnectNutrition.ts');
 
@@ -78,7 +79,7 @@ beforeEach(() => {
 
 describe('Android nutrition replacement', () => {
   it('returns the platform id after writing with the same client record identity', async () => {
-    await expect(replaceNutritionLogInHealthConnect(params)).resolves.toEqual({
+    await expect(writeNutritionLogToHealthConnect(params)).resolves.toEqual({
       status: 'written',
       externalId: 'new-record',
     });
@@ -106,7 +107,7 @@ describe('Android nutrition replacement', () => {
         mockGetCollection.mockImplementation(() => queriedRows([{ value: 'false' }]));
       }
 
-      await expect(replaceNutritionLogInHealthConnect(params)).resolves.toEqual({
+      await expect(writeNutritionLogToHealthConnect(params)).resolves.toEqual({
         status: 'not-written',
       });
       expect(mockInsertRecords).not.toHaveBeenCalled();

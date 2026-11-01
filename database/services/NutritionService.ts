@@ -51,19 +51,26 @@ function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
 }
 
-/** One completion path for user mutations: refresh local surfaces and mirror changed records. */
-async function publishNutritionChanges(
+/**
+ * One completion path for user mutations: refresh local surfaces and mirror changed records.
+ * The mirror is best effort and slow (permission checks, platform round trips), so it never
+ * holds up the edit that triggered it; the exports serialize per log and never throw.
+ */
+function publishNutritionChanges(
   label: string,
   {
     updated = [],
     deleted = [],
   }: { updated?: readonly NutritionLog[]; deleted?: readonly NutritionLog[] }
-): Promise<void> {
+): void {
   triggerWidgetUpdate();
-  await Promise.all([
-    updated.length > 0 ? exportLogsToHealthPlatform(updated, label) : undefined,
-    deleted.length > 0 ? removeLogsFromHealthPlatform(deleted, label) : undefined,
-  ]);
+  if (updated.length > 0) {
+    void exportLogsToHealthPlatform(updated, label);
+  }
+
+  if (deleted.length > 0) {
+    void removeLogsFromHealthPlatform(deleted, label);
+  }
 }
 
 /**
@@ -181,7 +188,7 @@ export async function scaleMealNutritionLogsToTotalGrams(
     );
   });
 
-  await publishNutritionChanges('NutritionService.scaleMealNutritionLogsToTotalGrams', {
+  publishNutritionChanges('NutritionService.scaleMealNutritionLogsToTotalGrams', {
     updated: entries.map(({ log }) => log),
   });
 }
@@ -272,7 +279,7 @@ export class NutritionService {
       });
 
       // Imported records already exist on the platform and must not be echoed back.
-      await publishNutritionChanges('NutritionService.logFood', {
+      publishNutritionChanges('NutritionService.logFood', {
         updated: externalId ? [] : [log],
       });
 
@@ -627,7 +634,7 @@ export class NutritionService {
       return log;
     });
 
-    await publishNutritionChanges('NutritionService.updateNutritionLog', { updated: [updatedLog] });
+    publishNutritionChanges('NutritionService.updateNutritionLog', { updated: [updatedLog] });
 
     return updatedLog;
   }
@@ -647,7 +654,7 @@ export class NutritionService {
       const log = await database.get<NutritionLog>('nutrition_logs').find(id);
       // markAsDeleted is a @writer method, so it already manages its own write transaction
       await log.markAsDeleted();
-      await publishNutritionChanges('NutritionService.deleteNutritionLog', { deleted: [log] });
+      publishNutritionChanges('NutritionService.deleteNutritionLog', { deleted: [log] });
     } catch (error) {
       if (!repairAttempted) {
         const repair = await DatabaseRepairService.repairIfNeeded(
@@ -702,7 +709,7 @@ export class NutritionService {
       );
     });
 
-    await publishNutritionChanges('NutritionService.mergeDuplicateNutritionLogs', {
+    publishNutritionChanges('NutritionService.mergeDuplicateNutritionLogs', {
       updated: toUpdate.map(({ log }) => log),
       deleted: toDelete,
     });
@@ -724,7 +731,7 @@ export class NutritionService {
       );
     });
 
-    await publishNutritionChanges('NutritionService.deleteNutritionLogsBatch', { deleted: logs });
+    publishNutritionChanges('NutritionService.deleteNutritionLogsBatch', { deleted: logs });
   }
 
   /**
@@ -806,7 +813,7 @@ export class NutritionService {
       );
     });
 
-    await publishNutritionChanges('NutritionService.transferNutritionLogs', {
+    publishNutritionChanges('NutritionService.transferNutritionLogs', {
       updated: mode === 'move' ? logs : copies,
     });
 
@@ -901,7 +908,7 @@ export class NutritionService {
       );
     });
 
-    await publishNutritionChanges('NutritionService.groupNutritionLogs', {
+    publishNutritionChanges('NutritionService.groupNutritionLogs', {
       updated: group.mealType ? logs : [],
     });
   }
@@ -991,7 +998,7 @@ export class NutritionService {
       );
     });
 
-    await publishNutritionChanges('NutritionService.splitNutritionLogsToDate', {
+    publishNutritionChanges('NutritionService.splitNutritionLogsToDate', {
       updated: [...logs, ...splitOff],
     });
   }
@@ -1333,7 +1340,7 @@ export class NutritionService {
       });
     });
 
-    await publishNutritionChanges('NutritionService.duplicateNutritionLog', { updated: [copy] });
+    publishNutritionChanges('NutritionService.duplicateNutritionLog', { updated: [copy] });
     return copy;
   }
 
@@ -1439,7 +1446,7 @@ export class NutritionService {
       });
     });
 
-    await publishNutritionChanges('NutritionService.logCustomMeal', { updated: [log] });
+    publishNutritionChanges('NutritionService.logCustomMeal', { updated: [log] });
 
     return log;
   }
@@ -1642,7 +1649,7 @@ export class NutritionService {
       });
     }
 
-    await publishNutritionChanges('NutritionService.logCustomMealsBatch', { updated: logs });
+    publishNutritionChanges('NutritionService.logCustomMealsBatch', { updated: logs });
 
     return logs;
   }

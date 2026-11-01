@@ -1,8 +1,9 @@
 import type { MealType } from '@/database/models/NutritionLog';
 
-import type { NutritionHealthWriteResult } from './nutritionHealthTypes';
+import { NOT_WRITTEN, type NutritionHealthWriteResult } from './nutritionHealthTypes';
 
 export interface NutritionWriteParams {
+  externalId?: string;
   logId: string;
   date: number;
   mealType: MealType;
@@ -24,14 +25,8 @@ export interface NutritionSyncCounts {
 
 export async function writeNutritionLogToHealthConnect(
   _params: NutritionWriteParams
-): Promise<string | undefined> {
-  return undefined;
-}
-
-export async function replaceNutritionLogInHealthConnect(
-  _params: NutritionWriteParams & { externalId?: string }
 ): Promise<NutritionHealthWriteResult> {
-  return { status: 'not-written' };
+  return NOT_WRITTEN;
 }
 
 export async function deleteNutritionLogsFromHealthConnect(_externalIds: string[]): Promise<void> {}

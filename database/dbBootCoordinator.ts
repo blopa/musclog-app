@@ -20,6 +20,7 @@ import { FoodService } from '@/database/services/FoodService';
 import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
 import { LegacyWorkoutTemplateIdRepair } from '@/database/services/LegacyWorkoutTemplateIdRepair';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionHealthOwnershipMigration } from '@/database/services/NutritionHealthOwnershipMigration';
 import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { TimezoneMigrationService } from '@/database/services/TimezoneMigrationService';
@@ -151,6 +152,12 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     // cycle without `config`, a leftover flow/symptom metric) rather than `runOnce`, so a restored
     // backup that still carries old rows is converted on the next boot as well.
     run: () => CycleDataEncryptionMigration.run(),
+  },
+  {
+    tag: 'NutritionHealthOwnershipMigration.run',
+    // Converts the legacy takeover JSON setting into ownership rows. Idempotent by data (a
+    // converted setting reads `{}`), so a restored backup that still carries it is converted too.
+    run: () => NutritionHealthOwnershipMigration.run(),
   },
   {
     tag: 'CycleRecordPurge.purgeDeleted',

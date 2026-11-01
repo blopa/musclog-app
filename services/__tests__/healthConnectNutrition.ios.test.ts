@@ -29,13 +29,18 @@ jest.mock('@/database/database-instance', () => ({
 jest.mock('@/database/encryptionHelpers', () => ({ encryptNutritionLogSnapshot: jest.fn() }));
 jest.mock('@/database/services/FoodPortionService', () => ({ FoodPortionService: {} }));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
-jest.mock('../nutritionHealthOwnership', () => ({
-  classifyHealthRecord: jest.fn(() => 'adopt'),
-  loadOwnershipContext: (...args: unknown[]) => mockLoadOwnership(...args),
-}));
+jest.mock('../nutritionHealthOwnership', () => {
+  const classifyHealthRecord = jest.fn(() => 'adopt');
+
+  return {
+    classifyHealthRecord,
+    reconcileOwnedRecord: async (...args: unknown[]) => (classifyHealthRecord as any)(...args),
+    loadOwnershipContext: (...args: unknown[]) => mockLoadOwnership(...args),
+  };
+});
 
 import {
-  replaceNutritionLogInHealthConnect,
+  writeNutritionLogToHealthConnect,
   syncNutritionFromHealthConnect,
   type NutritionWriteParams,
 } from '../healthConnectNutrition.ios';
@@ -93,7 +98,7 @@ describe('iOS nutrition replacement', () => {
         });
       }
 
-      await expect(replaceNutritionLogInHealthConnect(params)).resolves.toEqual({
+      await expect(writeNutritionLogToHealthConnect(params)).resolves.toEqual({
         status: 'not-written',
       });
       expect(mockSaveCorrelation).not.toHaveBeenCalled();
@@ -103,7 +108,7 @@ describe('iOS nutrition replacement', () => {
   it('reports a failed save after successful deletion without claiming a new id', async () => {
     mockSaveCorrelation.mockRejectedValue(new Error('save failed'));
 
-    await expect(replaceNutritionLogInHealthConnect(params)).resolves.toEqual({
+    await expect(writeNutritionLogToHealthConnect(params)).resolves.toEqual({
       status: 'not-written',
     });
     expect(mockDeleteObjects).toHaveBeenCalledWith('HKCorrelationTypeIdentifierFood', {
@@ -120,7 +125,7 @@ describe('iOS nutrition replacement', () => {
         mockAuthorization.mockReturnValue(0);
       }
 
-      await expect(replaceNutritionLogInHealthConnect(params)).resolves.toEqual({
+      await expect(writeNutritionLogToHealthConnect(params)).resolves.toEqual({
         status: 'not-written',
       });
       expect(mockQueryCorrelations).not.toHaveBeenCalled();
@@ -130,7 +135,7 @@ describe('iOS nutrition replacement', () => {
   );
 
   it('deletes quantity samples and the old correlation before saving its replacement', async () => {
-    await expect(replaceNutritionLogInHealthConnect(params)).resolves.toEqual({
+    await expect(writeNutritionLogToHealthConnect(params)).resolves.toEqual({
       status: 'written',
       externalId: 'new-correlation',
     });
@@ -165,7 +170,7 @@ describe('iOS replacement cleanup counts', () => {
           .mockResolvedValueOnce(1)
           .mockResolvedValueOnce(0);
       }
-      await expect(replaceNutritionLogInHealthConnect(params)).resolves.toEqual({
+      await expect(writeNutritionLogToHealthConnect(params)).resolves.toEqual({
         status: 'not-written',
       });
       expect(mockSaveCorrelation).not.toHaveBeenCalled();

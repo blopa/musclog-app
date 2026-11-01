@@ -31,8 +31,6 @@ export type FoodMealTrackingNutritionData = {
   sodium: number;
 };
 
-type FoodLogTrackingDetails = Pick<NutritionLog, 'id' | 'timezone' | 'portionId'>;
-
 /** External-catalog product context, shared by the `externalProduct` target and the public creator. */
 type ExternalProductContext = {
   productDetails: ProductDetailsQueryData | null | undefined;
@@ -49,7 +47,7 @@ type ExternalProductContext = {
  */
 export type FoodMealTrackingActionTarget =
   | { kind: 'meal'; meal: Meal }
-  | { kind: 'foodLog'; foodLog: FoodLogTrackingDetails }
+  | { kind: 'foodLog'; foodLog: NutritionLog }
   | {
       kind: 'existingFood';
       food: Food;
@@ -244,7 +242,7 @@ export class FoodMealTrackingActionService {
   }
 
   private static async updateFoodLog(
-    foodLog: FoodLogTrackingDetails,
+    foodLog: NutritionLog,
     selection: FoodMealTrackingActionSelection
   ): Promise<void> {
     const timezone = foodLog.timezone;

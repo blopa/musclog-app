@@ -12,16 +12,15 @@ import { Platform } from 'react-native';
 
 import { database } from '@/database/database-instance';
 import { decryptOptionalString } from '@/database/encryptionHelpers';
-import type Food from '@/database/models/Food';
 import type NutritionLog from '@/database/models/NutritionLog';
 import { NutritionHealthRepository } from '@/database/repositories/NutritionHealthRepository';
 import { handleError } from '@/utils/handleError';
 
-import { HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
 import {
   deleteNutritionLogsFromHealthConnect,
-  replaceNutritionLogInHealthConnect,
+  writeNutritionLogToHealthConnect,
 } from './healthConnectNutrition';
+import { importedOriginalRecordId, loadOwnershipContext } from './nutritionHealthOwnership';
 
 function hasHealthPlatform(): boolean {
   return Platform.OS === 'android' || Platform.OS === 'ios';
@@ -58,34 +57,19 @@ async function exportCurrentLog(log: NutritionLog, label: string): Promise<void>
   }
 
   try {
-    const ownership = await NutritionHealthRepository.loadState(
-      [log.id],
-      log.externalId ? [log.externalId] : []
-    );
-    // A failed first takeover still points at the other app's ignored record. A retry must
-    // never try to delete that original just because we already own the local log.
-    let originalRecordId =
-      log.externalId && ownership.ignoredRecordIds.has(log.externalId) ? log.externalId : undefined;
-    if (log.externalId && !ownership.ownedLogIds.has(log.id)) {
-      const food = await database.get<Food>('foods').find(log.foodId);
-      if (food.source === HC_SENTINEL_FOOD_SOURCE) {
-        originalRecordId = log.externalId;
-      }
-    }
+    const ownership = await loadOwnershipContext([], log.externalId ? [log.externalId] : [], [log]);
+    const originalRecordId = importedOriginalRecordId(log, ownership);
 
     // Persist authority before touching the mirror. A failed write must not revert the edit.
-    if (originalRecordId) {
-      await NutritionHealthRepository.recordTakeover(log.id, originalRecordId);
-    } else {
-      await NutritionHealthRepository.recordOwned(log.id);
-    }
-
-    const [nutrients, foodName] = await Promise.all([
+    const [, nutrients, foodName] = await Promise.all([
+      originalRecordId
+        ? NutritionHealthRepository.recordTakeover(log.id, originalRecordId)
+        : NutritionHealthRepository.recordOwned(log.id),
       log.getNutrients(),
       decryptOptionalString(log.loggedFoodNameRaw),
     ]);
 
-    const result = await replaceNutritionLogInHealthConnect({
+    const result = await writeNutritionLogToHealthConnect({
       logId: log.id,
       externalId: originalRecordId ? undefined : log.externalId,
       date: log.date,

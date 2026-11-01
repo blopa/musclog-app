@@ -40,8 +40,8 @@ import { healthConnectService } from './healthConnect';
 import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
-import { classifyHealthRecord, loadOwnershipContext } from './nutritionHealthOwnership';
-import type { NutritionHealthWriteResult } from './nutritionHealthTypes';
+import { loadOwnershipContext, reconcileOwnedRecord } from './nutritionHealthOwnership';
+import { NOT_WRITTEN, type NutritionHealthWriteResult } from './nutritionHealthTypes';
 
 async function isSettingEnabled(type: string): Promise<boolean> {
   const settings = await database
@@ -90,6 +90,8 @@ function mealTypeToHC(mealType: MealType): number {
 }
 
 export interface NutritionWriteParams {
+  /** The record this write replaces. Health Connect replaces by `logId`; only HealthKit needs it. */
+  externalId?: string;
   logId: string; // WatermelonDB record ID – used as clientRecordId for deduplication
   date: number; // unix ms – the consumed datetime (day + time of day), not a day key
   mealType: MealType;
@@ -102,25 +104,26 @@ export interface NutritionWriteParams {
 }
 
 /**
- * Write a single nutrition log to Health Connect.
- * Returns the HC-assigned record ID (to store as externalId), or undefined on failure.
+ * Write a nutrition log to Health Connect, replacing its earlier record: Health Connect
+ * replaces a record with the same clientRecordId and a higher version, so a new log and an edit
+ * are the same call. Returns the id to store as `external_id`.
  * Never throws – all errors are caught and logged.
  */
 export async function writeNutritionLogToHealthConnect(
   params: NutritionWriteParams
-): Promise<string | undefined> {
+): Promise<NutritionHealthWriteResult> {
   if (!(await isWriteSyncEnabled())) {
-    return undefined;
+    return NOT_WRITTEN;
   }
 
   const isAvailable = await healthConnectService.checkAvailability();
   if (!isAvailable) {
-    return undefined;
+    return NOT_WRITTEN;
   }
 
   const hasPermission = await healthConnectService.hasPermissionForRecordType('Nutrition', 'write');
   if (!hasPermission) {
-    return undefined;
+    return NOT_WRITTEN;
   }
 
   try {
@@ -148,25 +151,13 @@ export async function writeNutritionLogToHealthConnect(
       },
     };
 
-    const ids = await healthConnectService.insertRecords([record]);
-    return ids[0];
+    const [externalId] = await healthConnectService.insertRecords([record]);
+    return externalId ? { status: 'written', externalId } : NOT_WRITTEN;
   } catch (err) {
     handleError(err, 'healthConnectNutrition.android.writeNutritionLogToHealthConnect');
     console.warn('[healthConnectNutrition] writeNutritionLogToHealthConnect failed:', err);
-    return undefined;
+    return NOT_WRITTEN;
   }
-}
-
-/**
- * Re-export an edited log. Health Connect replaces a record that has the same clientRecordId and
- * a higher clientRecordVersion, so this is the same call as the first write; returns the id to
- * store as `external_id`.
- */
-export async function replaceNutritionLogInHealthConnect(
-  params: NutritionWriteParams & { externalId?: string }
-): Promise<NutritionHealthWriteResult> {
-  const externalId = await writeNutritionLogToHealthConnect(params);
-  return externalId ? { status: 'written', externalId } : { status: 'not-written' };
 }
 
 /**
@@ -440,21 +431,12 @@ async function syncNutritionOnce(timeRange: {
     const sentinelFood = await getOrCreateSentinelFood();
 
     for (const [externalId, entry] of hcMap.entries()) {
-      const disposition = classifyHealthRecord(externalId, entry.originLogId, ownership);
+      const disposition = await reconcileOwnedRecord(externalId, entry.originLogId, ownership);
       if (disposition !== 'foreign') {
         // Musclog's own record or one the user deleted: the local side is the authority, so
         // never import it again nor overwrite the log from the (possibly stale) copy.
         if (disposition === 'orphan') {
           orphanedOwnRecordIds.push(externalId);
-        } else if (disposition === 'adopt') {
-          const own = ownership.ownLogs.get(entry.originLogId ?? '');
-          // A pull may have read an older mirror before a replacement finished.
-          // Adopt only a missing link; never overwrite a newer export’s stored id.
-          if (own && !own.externalId) {
-            await own.update((log) => {
-              log.externalId = externalId;
-            });
-          }
         }
 
         counts.skipped++;

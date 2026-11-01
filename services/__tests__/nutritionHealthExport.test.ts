@@ -2,7 +2,6 @@ import type NutritionLog from '@/database/models/NutritionLog';
 import { decryptOptionalString } from '@/database/encryptionHelpers';
 import { handleError } from '@/utils/handleError';
 
-const mockFind = jest.fn();
 const mockWrite = jest.fn();
 const mockReplace = jest.fn();
 const mockDelete = jest.fn();
@@ -12,7 +11,6 @@ const mockRecordTakeover = jest.fn();
 
 jest.mock('@/database/database-instance', () => ({
   database: {
-    get: () => ({ find: (...args: unknown[]) => mockFind(...args) }),
     write: (fn: unknown) => mockWrite(fn),
   },
 }));
@@ -23,12 +21,16 @@ jest.mock('@/database/repositories/NutritionHealthRepository', () => ({
     recordTakeover: (...args: unknown[]) => mockRecordTakeover(...args),
   },
 }));
+jest.mock('../nutritionHealthOwnership', () => ({
+  ...jest.requireActual('../nutritionHealthOwnership'),
+  loadOwnershipContext: (...args: unknown[]) => mockLoadState(...args),
+}));
 jest.mock('@/database/encryptionHelpers', () => ({
   decryptOptionalString: jest.fn(async () => 'Rice'),
 }));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 jest.mock('../healthConnectNutrition', () => ({
-  replaceNutritionLogInHealthConnect: (...args: unknown[]) => mockReplace(...args),
+  writeNutritionLogToHealthConnect: (...args: unknown[]) => mockReplace(...args),
   deleteNutritionLogsFromHealthConnect: (...args: unknown[]) => mockDelete(...args),
 }));
 
@@ -58,8 +60,11 @@ describe('nutritionHealthExport', () => {
     jest.resetAllMocks();
     jest.mocked(decryptOptionalString).mockResolvedValue('Rice');
     Object.defineProperty(Platform, 'OS', { value: 'android', configurable: true });
-    mockFind.mockResolvedValue({ source: 'user' });
-    mockLoadState.mockResolvedValue({ ignoredRecordIds: new Set(), ownedLogIds: new Set() });
+    // Imported (sentinel-food) logs are the ones missing from `ownedLogIds`.
+    mockLoadState.mockResolvedValue({
+      ignoredRecordIds: new Set(),
+      ownedLogIds: new Set(['log-1']),
+    });
     mockWrite.mockImplementation(async (fn: () => Promise<unknown>) => fn());
   });
 
@@ -96,7 +101,7 @@ describe('nutritionHealthExport', () => {
   });
 
   it('writes its own corrected copy of an imported log and ignores the original', async () => {
-    mockFind.mockResolvedValue({ source: 'health_connect' });
+    mockLoadState.mockResolvedValue({ ignoredRecordIds: new Set(), ownedLogIds: new Set() });
     mockReplace.mockResolvedValue({ status: 'written', externalId: 'hc-own' });
     const log = makeLog({ externalId: 'hc-foreign' });
 
@@ -109,7 +114,6 @@ describe('nutritionHealthExport', () => {
   });
 
   it('treats an imported log Musclog already took over as its own', async () => {
-    mockFind.mockResolvedValue({ source: 'health_connect' });
     mockLoadState.mockResolvedValue({
       ignoredRecordIds: new Set(['hc-foreign']),
       ownedLogIds: new Set(['log-1']),
@@ -160,7 +164,7 @@ describe('nutritionHealthExport', () => {
   });
 
   it('keeps a failed takeover authoritative and never replaces its foreign original on retry', async () => {
-    mockFind.mockResolvedValue({ source: 'health_connect' });
+    mockLoadState.mockResolvedValue({ ignoredRecordIds: new Set(), ownedLogIds: new Set() });
     mockReplace.mockResolvedValueOnce({ status: 'not-written' });
     const log = makeLog({ externalId: 'hc-foreign' });
     await exportLogToHealthPlatform(log, 'test');
@@ -223,7 +227,6 @@ describe('nutritionHealthExport', () => {
       ownedLogIds.add(logId);
       ignoredRecordIds.add(originalId);
     });
-    mockFind.mockResolvedValue({ source: 'health_connect' });
     mockReplace.mockResolvedValueOnce({ status: 'written', externalId: 'hc-untracked' });
     mockWrite.mockRejectedValueOnce(new Error('id commit failed'));
     const log = makeLog({ externalId: 'hc-foreign' });

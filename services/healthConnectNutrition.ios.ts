@@ -33,8 +33,8 @@ import { getTimezoneAt, ianaZoneToTimezoneAt } from '@/utils/timezone';
 
 import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
 import { RETRY_CONFIG } from './healthConnectErrors';
-import { classifyHealthRecord, loadOwnershipContext } from './nutritionHealthOwnership';
-import type { NutritionHealthWriteResult } from './nutritionHealthTypes';
+import { loadOwnershipContext, reconcileOwnedRecord } from './nutritionHealthOwnership';
+import { NOT_WRITTEN, type NutritionHealthWriteResult } from './nutritionHealthTypes';
 
 async function isSettingEnabled(type: string): Promise<boolean> {
   const settings = await database
@@ -82,6 +82,8 @@ function mealTypeToHc(mealType: MealType): number {
 }
 
 export interface NutritionWriteParams {
+  /** The record this write replaces (the log's earlier correlation). It is deleted first. */
+  externalId?: string;
   logId: string;
   date: number;
   mealType: MealType;
@@ -110,18 +112,19 @@ function extractQuantity(objects: readonly unknown[], id: string): number {
   return 0;
 }
 
+/**
+ * Local ownership is persisted before this call. If deletion or saving fails, the caller keeps
+ * the earlier id for a retry, and a missing platform record must never delete the local log.
+ */
 export async function writeNutritionLogToHealthConnect(
   params: NutritionWriteParams
-): Promise<string | undefined> {
-  if (!(await isWriteSyncEnabled())) {
-    return undefined;
-  }
-
+): Promise<NutritionHealthWriteResult> {
   if (
+    !(await isWriteSyncEnabled()) ||
     authorizationStatusFor('HKCorrelationTypeIdentifierFood' as ObjectTypeIdentifier) !==
-    AuthorizationStatus.sharingAuthorized
+      AuthorizationStatus.sharingAuthorized
   ) {
-    return undefined;
+    return NOT_WRITTEN;
   }
 
   const start = new Date(params.date);
@@ -166,6 +169,10 @@ export async function writeNutritionLogToHealthConnect(
   ];
 
   try {
+    if (params.externalId) {
+      await deleteNutritionRecords([params.externalId]);
+    }
+
     const correlation = await saveCorrelationSample(
       'HKCorrelationTypeIdentifierFood',
       samples,
@@ -177,11 +184,11 @@ export async function writeNutritionLogToHealthConnect(
         HKExternalUUID: params.logId,
       } as any
     );
-    return correlation?.uuid;
+    return correlation?.uuid ? { status: 'written', externalId: correlation.uuid } : NOT_WRITTEN;
   } catch (err) {
     handleError(err, 'healthConnectNutrition.ios.writeNutritionLogToHealthConnect');
     console.warn('[healthConnectNutrition.iOS] writeNutritionLogToHealthConnect failed:', err);
-    return undefined;
+    return NOT_WRITTEN;
   }
 }
 
@@ -240,34 +247,6 @@ export async function deleteNutritionLogsFromHealthConnect(externalIds: string[]
     await deleteNutritionRecords(externalIds);
   } catch (err) {
     handleError(err, 'healthConnectNutrition.ios.deleteNutritionLogsFromHealthConnect');
-  }
-}
-
-/**
- * Local ownership is persisted before this call. If deletion or saving fails, the caller keeps
- * the earlier id for a retry, and a missing platform record must never delete the local log.
- */
-export async function replaceNutritionLogInHealthConnect(
-  params: NutritionWriteParams & { externalId?: string }
-): Promise<NutritionHealthWriteResult> {
-  if (
-    !(await isWriteSyncEnabled()) ||
-    authorizationStatusFor('HKCorrelationTypeIdentifierFood') !==
-      AuthorizationStatus.sharingAuthorized
-  ) {
-    return { status: 'not-written' };
-  }
-
-  try {
-    if (params.externalId) {
-      await deleteNutritionRecords([params.externalId]);
-    }
-
-    const externalId = await writeNutritionLogToHealthConnect(params);
-    return externalId ? { status: 'written', externalId } : { status: 'not-written' };
-  } catch (err) {
-    handleError(err, 'healthConnectNutrition.ios.replaceNutritionLogInHealthConnect');
-    return { status: 'not-written' };
   }
 }
 
@@ -482,20 +461,12 @@ async function syncNutritionOnce(timeRange: {
     const sentinelFood = await getOrCreateSentinelFood();
 
     for (const [externalId, entry] of hcMap.entries()) {
-      const disposition = classifyHealthRecord(externalId, entry.originLogId, ownership);
+      const disposition = await reconcileOwnedRecord(externalId, entry.originLogId, ownership);
       if (disposition !== 'foreign') {
-        // Musclog's own correlation or one the user deleted: the local side is the authority.
+        // Musclog's own record or one the user deleted: the local side is the authority, so
+        // never import it again nor overwrite the log from the (possibly stale) copy.
         if (disposition === 'orphan') {
           orphanedOwnRecordIds.push(externalId);
-        } else if (disposition === 'adopt') {
-          const own = ownership.ownLogs.get(entry.originLogId ?? '');
-          // A pull may have read an older mirror before a replacement finished.
-          // Adopt only a missing link; never overwrite a newer export’s stored id.
-          if (own && !own.externalId) {
-            await own.update((log) => {
-              log.externalId = externalId;
-            });
-          }
         }
 
         counts.skipped++;
