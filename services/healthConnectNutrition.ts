@@ -38,9 +38,9 @@ import { getTimezoneAt, offsetMinutesToTimezone } from '@/utils/timezone';
 
 import { healthConnectService } from './healthConnect';
 import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
-import { classifyHealthRecord, loadOwnershipContext } from './nutritionHealthOwnership';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
+import { classifyHealthRecord, loadOwnershipContext } from './nutritionHealthOwnership';
 
 async function isSettingEnabled(type: string): Promise<boolean> {
   const settings = await database
