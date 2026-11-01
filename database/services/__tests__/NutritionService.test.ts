@@ -761,7 +761,7 @@ describe('NutritionService health platform mirroring', () => {
     expect(mockRemoveLogs).toHaveBeenCalledWith(logs, expect.any(String));
   });
 
-  it('re-exports moved logs but not copies', async () => {
+  it('re-exports moved logs and exports the new copies of copied ones', async () => {
     const log = mockLog({ id: 'a', type: 'breakfast' });
     capturePreparedUpdate(log);
 
@@ -769,9 +769,23 @@ describe('NutritionService health platform mirroring', () => {
     expect(mockExportLogs).toHaveBeenCalledWith([log], expect.any(String));
 
     mockExportLogs.mockClear();
-    captureCreatedRecords();
+    const { created } = captureCreatedRecords();
     await NutritionService.transferNutritionLogs([log], 'copy', new Date(2026, 7, 1), 'lunch');
-    expect(mockExportLogs).not.toHaveBeenCalled();
+    const exported = mockExportLogs.mock.calls[0][0] as unknown[];
+    expect(exported).toHaveLength(created.length);
+    expect(exported).not.toContain(log);
+  });
+
+  it('exports both the reduced original and the split-off portion', async () => {
+    const log = mockLog({ id: 'a', type: 'dinner' });
+    capturePreparedUpdate(log);
+    captureCreatedRecords();
+
+    await NutritionService.splitNutritionLogsToDate([log], new Date(2026, 7, 1), 'snack', 50);
+
+    const exported = mockExportLogs.mock.calls[0][0] as unknown[];
+    expect(exported).toHaveLength(2);
+    expect(exported).toContain(log);
   });
 
   it('re-exports merged logs and removes the ones it deleted', async () => {

@@ -27,6 +27,7 @@ import {
   FOOD_DIARY_COMPACT_SETTING_TYPE,
   FOOD_DIARY_GROUPING_SETTING_TYPE,
   type FoodDiaryGrouping,
+  HEALTH_NUTRITION_TAKEOVERS_SETTING_TYPE,
   HOME_HEATMAP_LAYOUT_SETTING_TYPE,
   HOME_HEATMAPS_SETTING_TYPE,
   type HomeHeatmapLayout,
@@ -61,6 +62,12 @@ import {
   parseComebackState,
   serializeComebackState,
 } from '@/utils/comeback/comebackState';
+import {
+  EMPTY_HEALTH_TAKEOVERS,
+  type HealthTakeovers,
+  parseHealthTakeovers,
+  serializeHealthTakeovers,
+} from '@/utils/healthTakeover';
 import { clampRestSeconds } from '@/utils/restTimer';
 
 /**
@@ -166,6 +173,13 @@ export const SETTINGS = {
     HOME_HEATMAP_LAYOUT_SETTING_TYPE,
     parseHomeHeatmapLayout
   ),
+  /** Logs taken over from another app after an edit; read by the health pulls, not the context. */
+  healthNutritionTakeovers: {
+    type: HEALTH_NUTRITION_TAKEOVERS_SETTING_TYPE,
+    defaultValue: EMPTY_HEALTH_TAKEOVERS,
+    parse: parseHealthTakeovers,
+    serialize: serializeHealthTakeovers,
+  } satisfies SettingDefinition<HealthTakeovers>,
   foodDiaryCompact: booleanSetting(FOOD_DIARY_COMPACT_SETTING_TYPE, false),
   foodDiaryGrouping: choiceSetting<FoodDiaryGrouping>(
     FOOD_DIARY_GROUPING_SETTING_TYPE,

@@ -785,6 +785,7 @@ export class NutritionService {
       type: target === KEEP_MEAL_TYPES ? log.type : target,
     });
 
+    const copies: NutritionLog[] = [];
     await database.write(async () => {
       const now = Date.now();
       await database.batch(
@@ -800,7 +801,7 @@ export class NutritionService {
             });
           }
 
-          return database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
+          const copy = database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
             record.date = consumed.timestamp;
             record.timezone = consumed.timezone;
@@ -823,20 +824,21 @@ export class NutritionService {
             record.createdAt = now;
             record.updatedAt = now;
           });
+          copies.push(copy);
+
+          return copy;
         })
       );
     });
 
     triggerWidgetUpdate();
 
-    if (mode === 'move') {
-      // A copy is a new local entry (see above); a move changes the day, time and meal of the
-      // logs the health platform already holds.
-      await exportLogsToHealthPlatform(
-        logs,
-        'NutritionService.transferNutritionLogs.healthConnect'
-      );
-    }
+    // A move changes the day, time and meal of logs the health platform already holds; a copy is
+    // a new entry that gets its own platform record (`externalId` is deliberately not copied).
+    await exportLogsToHealthPlatform(
+      mode === 'move' ? logs : copies,
+      'NutritionService.transferNutritionLogs.healthConnect'
+    );
 
     return logs.length;
   }
@@ -972,12 +974,13 @@ export class NutritionService {
     const splitRatio = splitPercentage / 100;
     const remainRatio = 1 - splitRatio;
 
+    const splitOff: NutritionLog[] = [];
     await database.write(async () => {
       const now = Date.now();
       await database.batch(
         // Create new logs at splitRatio of the original amount
-        ...logs.map((log) =>
-          database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
+        ...logs.map((log) => {
+          const created = database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             // Keeps the time of day the food was eaten at (see `transferNutritionLogs`).
             const consumed = reanchoredOnDay(log, targetDate);
             record.foodId = log.foodId;
@@ -1001,8 +1004,11 @@ export class NutritionService {
             record.loggedMealName = log.loggedMealName;
             record.createdAt = now;
             record.updatedAt = now;
-          })
-        ),
+          });
+          splitOff.push(created);
+
+          return created;
+        }),
         // Reduce original logs to remainRatio of the original amount
         ...logs.map((log) =>
           log.prepareUpdate((record) => {
@@ -1014,9 +1020,9 @@ export class NutritionService {
     });
 
     triggerWidgetUpdate();
-    // The reduced originals are mirrored; the split-off copies stay local like any copy.
+    // Both halves are mirrored: the reduced originals are edits, the split-off portions are new.
     await exportLogsToHealthPlatform(
-      logs,
+      [...logs, ...splitOff],
       'NutritionService.splitNutritionLogsToDate.healthConnect'
     );
   }

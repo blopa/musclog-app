@@ -4,11 +4,20 @@ const mockFind = jest.fn();
 const mockWrite = jest.fn();
 const mockReplace = jest.fn();
 const mockDelete = jest.fn();
+const mockGetSetting = jest.fn();
+const mockRecordTakeover = jest.fn();
 
 jest.mock('@/database/database-instance', () => ({
   database: {
     get: () => ({ find: (...args: unknown[]) => mockFind(...args) }),
     write: (fn: unknown) => mockWrite(fn),
+  },
+}));
+jest.mock('@/database/services/SettingsService', () => ({
+  __esModule: true,
+  default: {
+    get: (...args: unknown[]) => mockGetSetting(...args),
+    recordHealthTakeover: (...args: unknown[]) => mockRecordTakeover(...args),
   },
 }));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
@@ -43,6 +52,7 @@ describe('nutritionHealthExport', () => {
     jest.clearAllMocks();
     Object.defineProperty(Platform, 'OS', { value: 'android', configurable: true });
     mockFind.mockResolvedValue({ source: 'user' });
+    mockGetSetting.mockResolvedValue({ ignoredRecordIds: [], ownedLogIds: [] });
     mockWrite.mockImplementation(async (fn: () => Promise<unknown>) => fn());
   });
 
@@ -78,12 +88,28 @@ describe('nutritionHealthExport', () => {
     expect(log.update).not.toHaveBeenCalled();
   });
 
-  it('never rewrites a log imported from another app', async () => {
+  it('writes its own corrected copy of an imported log and ignores the original', async () => {
     mockFind.mockResolvedValue({ source: 'health_connect' });
+    mockReplace.mockResolvedValue('hc-own');
+    const log = makeLog({ externalId: 'hc-foreign' });
 
-    await exportLogToHealthPlatform(makeLog({ externalId: 'hc-foreign' }), 'test');
+    await exportLogToHealthPlatform(log, 'test');
 
-    expect(mockReplace).not.toHaveBeenCalled();
+    // The other app's record is never replaced or deleted: no earlier id is passed.
+    expect(mockReplace).toHaveBeenCalledWith(expect.objectContaining({ externalId: undefined }));
+    expect(mockRecordTakeover).toHaveBeenCalledWith('log-1', 'hc-foreign');
+    expect(log.externalId).toBe('hc-own');
+  });
+
+  it('treats an imported log Musclog already took over as its own', async () => {
+    mockFind.mockResolvedValue({ source: 'health_connect' });
+    mockGetSetting.mockResolvedValue({ ignoredRecordIds: ['hc-foreign'], ownedLogIds: ['log-1'] });
+    mockReplace.mockResolvedValue('hc-own');
+
+    await exportLogToHealthPlatform(makeLog({ externalId: 'hc-own' }), 'test');
+
+    expect(mockReplace).toHaveBeenCalledWith(expect.objectContaining({ externalId: 'hc-own' }));
+    expect(mockRecordTakeover).not.toHaveBeenCalled();
   });
 
   it('does nothing on web and swallows platform failures', async () => {

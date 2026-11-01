@@ -4,14 +4,17 @@
  * Everything here is best effort and never throws: the health platform is a mirror, and a
  * failed mirror must not fail a log, an edit or a delete. Logs imported from another app
  * (their food is the Health Connect sentinel) are never rewritten or deleted through here;
- * that record belongs to the other app and the pull treats it as the authority.
+ * that record belongs to the other app, so editing one writes Musclog's own corrected record
+ * beside the original (the platform won't let us change it) and remembers to ignore the original.
  */
 
 import { Platform } from 'react-native';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import { database } from '@/database/database-instance';
 import type Food from '@/database/models/Food';
 import type NutritionLog from '@/database/models/NutritionLog';
+import SettingsService from '@/database/services/SettingsService';
 import { handleError } from '@/utils/handleError';
 
 import { HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
@@ -24,9 +27,14 @@ function hasHealthPlatform(): boolean {
   return Platform.OS === 'android' || Platform.OS === 'ios';
 }
 
-/** True for a log the pull created from another app's record. */
+/** True for a log the pull created from another app's record that Musclog hasn't taken over. */
 async function isImportedFromHealthPlatform(log: NutritionLog): Promise<boolean> {
   if (!log.externalId) {
+    return false;
+  }
+
+  const takeovers = await SettingsService.get(SETTINGS.healthNutritionTakeovers);
+  if (takeovers.ownedLogIds.includes(log.id)) {
     return false;
   }
 
@@ -49,9 +57,8 @@ export async function exportLogToHealthPlatform(log: NutritionLog, label: string
   }
 
   try {
-    if (await isImportedFromHealthPlatform(log)) {
-      return;
-    }
+    // An imported log's record belongs to another app: leave it alone and write our own copy.
+    const originalRecordId = (await isImportedFromHealthPlatform(log)) ? log.externalId : undefined;
 
     const [nutrients, snapshot] = await Promise.all([
       log.getNutrients(),
@@ -60,7 +67,7 @@ export async function exportLogToHealthPlatform(log: NutritionLog, label: string
 
     const externalId = await replaceNutritionLogInHealthConnect({
       logId: log.id,
-      externalId: log.externalId,
+      externalId: originalRecordId ? undefined : log.externalId,
       date: log.date,
       mealType: log.type,
       foodName: snapshot.loggedFoodName ?? '',
@@ -72,6 +79,11 @@ export async function exportLogToHealthPlatform(log: NutritionLog, label: string
     });
 
     if (externalId && externalId !== log.externalId) {
+      if (originalRecordId) {
+        // Remember first: if the id write below failed, the next pull must still skip the original.
+        await SettingsService.recordHealthTakeover(log.id, originalRecordId);
+      }
+
       await database.write(async () => {
         await log.update((record) => {
           record.externalId = externalId;

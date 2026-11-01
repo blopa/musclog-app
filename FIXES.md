@@ -15,14 +15,16 @@ consumed time staying put):
   still there, so the pull created it again.
 - **Duplicates from AI/custom meals.** `logCustomMeal` and the batch path wrote to the platform
   but threw away the returned id, so the pull imported Musclog's own record as a second log.
-- **Copy/move stamped "now".** A copied or moved log lost the time it was eaten at.
+- **Copy/move stamped "now".** A copied or moved log lost the time it was eaten at, and copies and split-off portions never reached the platform.
 
 Fix: records Musclog writes carry the local log id (`clientRecordId` / `HKExternalUUID`), and
 `services/nutritionHealthOwnership.ts` classifies each pulled record. Musclog's own records are
 never imported or overwritten (the local log is the authority and just adopts the platform id);
 orphaned copies of deleted logs are deleted from the platform; another app's record that the user
-deleted is not re-created. `services/nutritionHealthExport.ts` mirrors creates, edits, moves and
-deletes (best effort, never throws; logs imported from another app are left alone). Android
+deleted is not re-created. `services/nutritionHealthExport.ts` mirrors creates, edits, moves, copies,
+splits and deletes (best effort, never throws). Editing a log imported from another app writes
+Musclog's own corrected record next to the original (the platform won't let us change it) and
+ignores the original from then on, so other apps see both. Android
 re-writes an edited record with the same `clientRecordId` and a higher `clientRecordVersion`;
 iOS deletes the old correlation (and its samples) and saves a new one. Copy and move keep each
 log's wall-clock time (`reanchoredOnDay`). **Not verified on a device**: confirm on Android that

@@ -28,6 +28,11 @@ describe('classifyHealthRecord', () => {
     expect(classifyHealthRecord('hc-9', undefined, ctx)).toBe('tombstoned');
   });
 
+  it('does not import an original Musclog superseded with its own copy', () => {
+    const ctx = context({ ignoredRecordIds: new Set(['hc-orig']) });
+    expect(classifyHealthRecord('hc-orig', undefined, ctx)).toBe('tombstoned');
+  });
+
   it('treats a record naming an unknown origin as foreign', () => {
     expect(classifyHealthRecord('hc-2', 'someone-elses-id', context())).toBe('foreign');
   });

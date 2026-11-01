@@ -10,14 +10,18 @@
 
 import { Q } from '@nozbe/watermelondb';
 
+import { SETTINGS } from '@/constants/settingDefinitions';
 import type NutritionLog from '@/database/models/NutritionLog';
 import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
+import SettingsService from '@/database/services/SettingsService';
 
 export type OwnershipContext = {
   /** Local logs (live or soft-deleted) whose id some health record names as its origin. */
   ownLogs: ReadonlyMap<string, NutritionLog>;
   /** `external_id`s of soft-deleted logs: the user removed these, they must not come back. */
   tombstonedExternalIds: ReadonlySet<string>;
+  /** Originals superseded by Musclog's own corrected copy (see `utils/healthTakeover.ts`). */
+  ignoredRecordIds?: ReadonlySet<string>;
 };
 
 /**
@@ -39,14 +43,16 @@ export function classifyHealthRecord(
     return own.deletedAt ? 'orphan' : 'adopt';
   }
 
-  return context.tombstonedExternalIds.has(externalId) ? 'tombstoned' : 'foreign';
+  return context.tombstonedExternalIds.has(externalId) || context.ignoredRecordIds?.has(externalId)
+    ? 'tombstoned'
+    : 'foreign';
 }
 
 export async function loadOwnershipContext(
   originLogIds: readonly string[],
   externalIds: readonly string[]
 ): Promise<OwnershipContext> {
-  const [ownLogs, tombstones] = await Promise.all([
+  const [ownLogs, tombstones, takeovers] = await Promise.all([
     fetchMapByIds<NutritionLog>('nutrition_logs', 'id', originLogIds),
     fetchByIds<NutritionLog>(
       'nutrition_logs',
@@ -54,6 +60,7 @@ export async function loadOwnershipContext(
       externalIds,
       Q.where('deleted_at', Q.notEq(null))
     ),
+    SettingsService.get(SETTINGS.healthNutritionTakeovers),
   ]);
 
   return {
@@ -61,5 +68,6 @@ export async function loadOwnershipContext(
     tombstonedExternalIds: new Set(
       tombstones.flatMap((log) => (log.externalId ? [log.externalId] : []))
     ),
+    ignoredRecordIds: new Set(takeovers.ignoredRecordIds),
   };
 }

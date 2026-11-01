@@ -500,6 +500,12 @@ export const COACH_CUSTOM_PERSONA_SETTING_TYPE = 'coach_custom_persona';
  */
 export const HOME_HEATMAP_LAYOUT_SETTING_TYPE = 'home_heatmap_layout';
 
+/**
+ * Setting type for nutrition logs Musclog took over from another app after an edit, and the
+ * original platform records to ignore. value: JSON `HealthTakeovers`. Not in `SettingsState`.
+ */
+export const HEALTH_NUTRITION_TAKEOVERS_SETTING_TYPE = 'health_nutrition_takeovers';
+
 /** Setting type for the dense food diary layout. value: 'true' | 'false'. Default: off. */
 export const FOOD_DIARY_COMPACT_SETTING_TYPE = 'food_diary_compact';
 
