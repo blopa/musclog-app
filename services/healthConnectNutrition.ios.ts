@@ -5,6 +5,7 @@
 import {
   AuthorizationStatus,
   authorizationStatusFor,
+  deleteObjects,
   queryCorrelationSamples,
   saveCorrelationSample,
 } from '@kingstinct/react-native-healthkit';
@@ -32,6 +33,7 @@ import { getTimezoneAt, ianaZoneToTimezoneAt } from '@/utils/timezone';
 
 import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
 import { RETRY_CONFIG } from './healthConnectErrors';
+import { classifyHealthRecord, loadOwnershipContext } from './nutritionHealthOwnership';
 
 async function isSettingEnabled(type: string): Promise<boolean> {
   const settings = await database
@@ -182,6 +184,58 @@ export async function writeNutritionLogToHealthConnect(
   }
 }
 
+/**
+ * Delete food correlations Musclog saved, together with the samples inside them (deleting a
+ * correlation alone leaves its quantity samples behind). HealthKit only lets an app delete
+ * what it wrote, so other apps' ids fail and are ignored. Best effort, never throws.
+ */
+export async function deleteNutritionLogsFromHealthConnect(externalIds: string[]): Promise<void> {
+  if (externalIds.length === 0 || !(await isWriteSyncEnabled())) {
+    return;
+  }
+
+  try {
+    const correlations = await queryCorrelationSamples('HKCorrelationTypeIdentifierFood', {
+      limit: 0,
+      ascending: false,
+      filter: { uuids: externalIds },
+    } as any);
+
+    const sampleUuidsByType = new Map<string, string[]>();
+    for (const corr of correlations) {
+      for (const sample of (corr.objects ?? []) as QuantitySample[]) {
+        const qt = sample.quantityType;
+        const ident = typeof qt === 'string' ? qt : (qt as { identifier?: string })?.identifier;
+        if (ident && sample.uuid) {
+          sampleUuidsByType.set(ident, [...(sampleUuidsByType.get(ident) ?? []), sample.uuid]);
+        }
+      }
+    }
+
+    for (const [type, uuids] of sampleUuidsByType) {
+      await deleteObjects(type as any, { uuids } as any);
+    }
+
+    await deleteObjects('HKCorrelationTypeIdentifierFood' as any, { uuids: externalIds } as any);
+  } catch (err) {
+    console.warn('[healthConnectNutrition.iOS] deleteNutritionLogsFromHealthConnect failed:', err);
+  }
+}
+
+/**
+ * Re-export an edited log. A saved correlation is immutable, so the previous one (when known)
+ * is deleted first and a new one saved; returns the new uuid to store as `external_id`.
+ */
+export async function replaceNutritionLogInHealthConnect(
+  params: NutritionWriteParams & { externalId?: string }
+): Promise<string | undefined> {
+  if (params.externalId) {
+    await deleteNutritionLogsFromHealthConnect([params.externalId]);
+  }
+
+  return writeNutritionLogToHealthConnect(params);
+}
+
 export interface NutritionSyncCounts {
   totalRead: number;
   written: number;
@@ -322,6 +376,8 @@ async function syncNutritionOnce(timeRange: {
     fat: number;
     fiber: number;
     timezone: string;
+    /** `nutrition_logs.id` Musclog stamped as HKExternalUUID when it saved this correlation. */
+    originLogId?: string;
   };
 
   const hcMap = new Map<string, Entry>();
@@ -356,8 +412,15 @@ async function syncNutritionOnce(timeRange: {
       fat: Math.max(0, fat),
       fiber: Math.max(0, fiber),
       timezone,
+      originLogId: (corr.metadata as { HKExternalUUID?: string })?.HKExternalUUID,
     });
   }
+
+  const ownership = await loadOwnershipContext(
+    [...hcMap.values()].flatMap((entry) => (entry.originLogId ? [entry.originLogId] : [])),
+    [...hcMap.keys()]
+  );
+  const orphanedOwnRecordIds: string[] = [];
 
   const localLogs = await database
     .get<NutritionLog>('nutrition_logs')
@@ -383,6 +446,24 @@ async function syncNutritionOnce(timeRange: {
     const sentinelFood = await getOrCreateSentinelFood();
 
     for (const [externalId, entry] of hcMap.entries()) {
+      const disposition = classifyHealthRecord(externalId, entry.originLogId, ownership);
+      if (disposition !== 'foreign') {
+        // Musclog's own correlation or one the user deleted: the local side is the authority.
+        if (disposition === 'orphan') {
+          orphanedOwnRecordIds.push(externalId);
+        } else if (disposition === 'adopt') {
+          const own = ownership.ownLogs.get(entry.originLogId ?? '');
+          if (own && own.externalId !== externalId) {
+            await own.update((log) => {
+              log.externalId = externalId;
+            });
+          }
+        }
+
+        counts.skipped++;
+        continue;
+      }
+
       const existing = localByExternalId.get(externalId);
 
       if (!existing) {
@@ -470,6 +551,8 @@ async function syncNutritionOnce(timeRange: {
       }
     }
   });
+
+  await deleteNutritionLogsFromHealthConnect(orphanedOwnRecordIds);
 
   return counts;
 }

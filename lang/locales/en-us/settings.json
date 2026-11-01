@@ -345,6 +345,28 @@
       "fiber": "Fiber",
       "alcohol": "Alcohol"
     },
+    "foodDiary": {
+      "sectionTitle": "Food diary",
+      "sectionSubtitle": "Choose how the food diary is laid out and grouped.",
+      "compact": {
+        "title": "Compact view",
+        "description": "Hide empty meals and show denser entries. Tap an entry to see its macros."
+      },
+      "grouping": {
+        "popupTitle": "Group food by",
+        "popupSubtitle": "Only changes how the diary is shown, not your meals or nutrition data.",
+        "options": {
+          "categories": {
+            "label": "Meal categories",
+            "description": "Breakfast, lunch, dinner, snacks and other."
+          },
+          "time": {
+            "label": "Time of day",
+            "description": "Hourly sections, in the order you ate."
+          }
+        }
+      }
+    },
     "notificationsSettings": {
       "title": "Notifications",
       "subtitle": "Workout, nutrition, and cycle alerts",

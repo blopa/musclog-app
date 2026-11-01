@@ -272,6 +272,10 @@
         "other": "Overig"
       }
     },
+    "diary": {
+      "noTime": "Geen tijd",
+      "addFoodTo": "Eten toevoegen aan"
+    },
     "addFoodModal": {
       "title": "Item toevoegen",
       "subtitle": "Kies een methode om je maaltijd bij te houden",

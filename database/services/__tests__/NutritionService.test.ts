@@ -12,6 +12,10 @@ import {
 } from '@/utils/calendarDate';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+const mockExportLog = jest.fn();
+const mockExportLogs = jest.fn();
+const mockRemoveLogs = jest.fn();
+
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     where: jest.fn((field: string, condition: unknown) => ({ field, condition })),
@@ -44,6 +48,12 @@ jest.mock('@/utils/widgetEvents', () => ({
 
 jest.mock('@/services/healthConnectNutrition', () => ({
   writeNutritionLogToHealthConnect: jest.fn(),
+}));
+
+jest.mock('@/services/nutritionHealthExport', () => ({
+  exportLogToHealthPlatform: (...args: unknown[]) => mockExportLog(...args),
+  exportLogsToHealthPlatform: (...args: unknown[]) => mockExportLogs(...args),
+  removeLogsFromHealthPlatform: (...args: unknown[]) => mockRemoveLogs(...args),
 }));
 
 jest.mock('@/database/services/MealService', () => ({ MealService: {} }));
@@ -635,26 +645,27 @@ describe('NutritionService.transferNutritionLogs (into one meal)', () => {
     jest.clearAllMocks();
   });
 
-  it('copies every log into the chosen meal at the current time of day on the target day', async () => {
+  it("copies every log into the chosen meal, keeping each log's own time of day", async () => {
     const { created } = captureCreatedRecords();
     const targetDate = new Date(2026, 7, 1);
+    const early = mockLog({ id: 'a', type: 'breakfast', date: Date.UTC(2026, 6, 14, 8, 30) });
+    const late = mockLog({ id: 'b', type: 'dinner', date: Date.UTC(2026, 6, 14, 19, 45) });
 
-    await NutritionService.transferNutritionLogs(
-      [mockLog({ id: 'a', type: 'breakfast' }), mockLog({ id: 'b', type: 'dinner' })],
-      'copy',
-      targetDate,
-      'lunch'
-    );
+    await NutritionService.transferNutritionLogs([early, late], 'copy', targetDate, 'lunch');
 
     expect(created.map((r) => r.type)).toEqual(['lunch', 'lunch']);
-    for (const record of created) {
+    created.forEach((record, index) => {
+      const source = [early, late][index];
       expect(utcNormalizedDayKey(record.date as number, record.timezone as string)).toBe(
         utcDayKeyFromLocalDate(targetDate)
       );
-    }
+      const consumed = wallClockDateInTimezone(record.date as number, record.timezone as string);
+      const original = wallClockDateInTimezone(source.date, source.timezone);
+      expect(consumed.getHours()).toBe(original.getHours());
+      expect(consumed.getMinutes()).toBe(original.getMinutes());
+    });
 
-    // One shared instant: unlike "keep", the source times are not reproduced.
-    expect(created[0].date).toBe(created[1].date);
+    expect(created[0].date).not.toBe(created[1].date);
   });
 
   it('moves every log into the chosen meal, updating the rows in place', async () => {
@@ -709,6 +720,83 @@ describe('NutritionService.transferNutritionLogs (move, keeping meals)', () => {
     }
 
     expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('NutritionService.splitNutritionLogsToDate', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("puts the split portion on the target day at the log's own time of day", async () => {
+    const { created } = captureCreatedRecords();
+    const targetDate = new Date(2026, 7, 1);
+    const log = mockLog({ id: 'a', type: 'dinner', date: Date.UTC(2026, 6, 14, 19, 45) });
+    capturePreparedUpdate(log);
+
+    await NutritionService.splitNutritionLogsToDate([log], targetDate, 'snack', 50);
+
+    expect(created).toHaveLength(1);
+    expect(created[0].type).toBe('snack');
+    expect(utcNormalizedDayKey(created[0].date as number, created[0].timezone as string)).toBe(
+      utcDayKeyFromLocalDate(targetDate)
+    );
+    expect(
+      wallClockDateInTimezone(created[0].date as number, created[0].timezone as string).getHours()
+    ).toBe(wallClockDateInTimezone(log.date, log.timezone).getHours());
+  });
+});
+
+describe('NutritionService health platform mirroring', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('removes the platform copies of batch-deleted logs', async () => {
+    const logs = [mockLog({ id: 'a' }), mockLog({ id: 'b' })];
+    logs.forEach(capturePreparedUpdate);
+
+    await NutritionService.deleteNutritionLogsBatch(logs);
+
+    expect(mockRemoveLogs).toHaveBeenCalledWith(logs, expect.any(String));
+  });
+
+  it('re-exports moved logs and exports the new copies of copied ones', async () => {
+    const log = mockLog({ id: 'a', type: 'breakfast' });
+    capturePreparedUpdate(log);
+
+    await NutritionService.transferNutritionLogs([log], 'move', new Date(2026, 7, 1), 'lunch');
+    expect(mockExportLogs).toHaveBeenCalledWith([log], expect.any(String));
+
+    mockExportLogs.mockClear();
+    const { created } = captureCreatedRecords();
+    await NutritionService.transferNutritionLogs([log], 'copy', new Date(2026, 7, 1), 'lunch');
+    const exported = mockExportLogs.mock.calls[0][0] as unknown[];
+    expect(exported).toHaveLength(created.length);
+    expect(exported).not.toContain(log);
+  });
+
+  it('exports both the reduced original and the split-off portion', async () => {
+    const log = mockLog({ id: 'a', type: 'dinner' });
+    capturePreparedUpdate(log);
+    captureCreatedRecords();
+
+    await NutritionService.splitNutritionLogsToDate([log], new Date(2026, 7, 1), 'snack', 50);
+
+    const exported = mockExportLogs.mock.calls[0][0] as unknown[];
+    expect(exported).toHaveLength(2);
+    expect(exported).toContain(log);
+  });
+
+  it('re-exports merged logs and removes the ones it deleted', async () => {
+    const kept = mockLog({ id: 'a' });
+    const dropped = mockLog({ id: 'b' });
+    [kept, dropped].forEach(capturePreparedUpdate);
+
+    await NutritionService.mergeDuplicateNutritionLogs([{ log: kept, newAmount: 250 }], [dropped]);
+
+    expect(mockExportLogs).toHaveBeenCalledWith([kept], expect.any(String));
+    expect(mockRemoveLogs).toHaveBeenCalledWith([dropped], expect.any(String));
   });
 });
 
