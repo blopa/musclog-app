@@ -1,10 +1,17 @@
 import type { Database, Model } from '@nozbe/watermelondb';
 
-/** WatermelonDB prepares updates in its model cache before SQLite/Loki commits them. */
+/**
+ * WatermelonDB prepares updates in its model cache before SQLite/Loki commits them.
+ *
+ * `prepare` may be async (it can still read), but every existing record it will touch must be in
+ * `existing`: a `prepareUpdate` that throws part-way leaves the records prepared before it with a
+ * pending state, and WatermelonDB then rejects every later update of them ("Cannot update a record
+ * with pending changes") until the app restarts. The snapshot is what puts them back.
+ */
 export async function commitPrepared(
   db: Database,
   existing: Model[],
-  prepare: () => Model[]
+  prepare: () => Model[] | Promise<Model[]>
 ): Promise<void> {
   const snapshots = existing.map((record) => ({
     record,
@@ -12,7 +19,7 @@ export async function commitPrepared(
     state: record._preparedState,
   }));
   try {
-    const operations = prepare();
+    const operations = await prepare();
     if (operations.length) {
       await db.batch(...operations);
     }

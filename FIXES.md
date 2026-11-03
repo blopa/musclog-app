@@ -3,6 +3,31 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Saving a workout failed until the app restarted: "Cannot update a record with pending changes" (November 2026)
+
+### Symptom
+
+Sentry WORKOUT-M1 / WORKOUT-M2 (2.15.4): editing a workout showed the save-error snackbar, and every
+retry failed the same way (on the template, or on one of its sets) until the app was restarted.
+Handled errors, not crashes.
+
+### Cause
+
+`saveTemplate` prepares updates on the template, its exercises, sets, schedules and plan memberships
+before one `database.batch`. A `prepareUpdate` that throws mid-pass leaves everything already prepared
+with a pending state in WatermelonDB's model cache (`batch` itself clears that state before it commits,
+so only a throw during preparation strands records), and each retry then trips over the stale records.
+One real trigger was a workout with standalone `schedules` joining a plan: the membership sync
+(`prepareStandaloneScheduleCleanup`) and the save's own soft-delete both prepared the same schedule rows.
+
+### Fix
+
+The edit path (`WorkoutTemplateService.saveExistingTemplate`) snapshots every existing record it can
+touch and prepares and commits through `commitPrepared`, which now accepts an async `prepare` and restores
+the snapshots on failure. Schedules the membership sync already prepared are not prepared a second time.
+Pinned by `database/services/__tests__/WorkoutTemplateService.test.ts`. Any new writer that prepares
+several existing records must go through `commitPrepared` with all of them listed.
+
 ## Nutrition kept disagreeing with Health Connect / Apple Health (November 2026)
 
 Four sync defects, found while adding the time-grouped food diary (which relies on a log's

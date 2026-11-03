@@ -990,6 +990,95 @@ describe('WorkoutTemplateService', () => {
       expect(getActivePlanIds).not.toHaveBeenCalled();
     });
 
+    /**
+     * A record that behaves like WatermelonDB's: `prepareUpdate` marks it pending and throws when it
+     * already is, which is the "Cannot update a record with pending changes" error from Sentry
+     * WORKOUT-M1/M2.
+     */
+    function pendingAwareRecord<T extends Record<string, any>>(record: T): T {
+      const model: any = record;
+      model._preparedState = null;
+      model._raw = { id: record.id };
+      model.prepareUpdate = jest.fn((callback: (draft: any) => void) => {
+        if (model._preparedState) {
+          throw new Error(`Cannot update a record with pending changes (${model.id})`);
+        }
+
+        model._preparedState = 'update';
+        callback(model);
+        return model;
+      });
+      return model;
+    }
+
+    it('puts prepared records back when a later prepare throws, so a retry can save', async () => {
+      const existingTemplate = pendingAwareRecord(createMockWorkoutTemplate({ id: 'template-1' }));
+      const existingExercise = pendingAwareRecord(
+        createMockWorkoutTemplateExercise({
+          id: 'te-1',
+          exerciseId: 'ex-1',
+          templateId: 'template-1',
+        })
+      );
+      const existingSet = pendingAwareRecord(
+        createMockWorkoutTemplateSet({ id: 'set-1', templateExerciseId: 'te-1', setOrder: 1 })
+      );
+      // The same set is already pending (a stale state from elsewhere), so preparing it throws
+      // after the template and exercise were prepared.
+      existingSet._preparedState = 'update';
+      stubCollections({
+        existingTemplate,
+        rowsByTable: {
+          workout_template_exercises: [existingExercise],
+          workout_template_sets: [existingSet],
+        },
+      });
+
+      await expect(
+        WorkoutTemplateService.saveTemplate({ ...saveData, templateId: 'template-1' })
+      ).rejects.toThrow('pending changes');
+
+      // Nothing was committed, and the records prepared before the failure are not left pending.
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+      expect(existingTemplate._preparedState).toBeNull();
+      expect(existingExercise._preparedState).toBeNull();
+
+      // The stale state is gone, so the next save goes through.
+      existingSet._preparedState = null;
+      await expect(
+        WorkoutTemplateService.saveTemplate({ ...saveData, templateId: 'template-1' })
+      ).resolves.toBe(existingTemplate);
+      expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    });
+
+    it('prepares a standalone schedule once when the workout joins a plan', async () => {
+      const existingTemplate = pendingAwareRecord(createMockWorkoutTemplate({ id: 'template-1' }));
+      const existingSchedule = pendingAwareRecord(createMockSchedule({ id: 'schedule-1' }));
+      // The membership sync retires the standalone schedules itself; the save must not prepare the
+      // same row again.
+      jest
+        .spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships')
+        .mockImplementation(async () => ({
+          activePlanIds: ['plan-1'],
+          records: [existingSchedule.prepareUpdate(() => undefined)],
+        }));
+      stubCollections({
+        existingTemplate,
+        rowsByTable: { schedules: [existingSchedule] },
+      });
+
+      await WorkoutTemplateService.saveTemplate({
+        templateId: 'template-1',
+        name: 'Push',
+        exercises: [],
+        selectedDays: [0],
+        planIds: ['plan-1'],
+      });
+
+      expect(existingSchedule.prepareUpdate).toHaveBeenCalledTimes(1);
+      expect(batchedRecords().filter((record) => record === existingSchedule)).toHaveLength(1);
+    });
+
     it('should create new template successfully', async () => {
       const prepared = stubCollections();
 
