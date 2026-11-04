@@ -1,6 +1,7 @@
 import {
   BarChart3,
   Beef,
+  Clock,
   Columns2,
   Crosshair,
   Droplets,
@@ -46,6 +47,8 @@ import {
 } from '@/constants/homeActions';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import {
+  FOOD_DIARY_GROUPING_OPTIONS,
+  type FoodDiaryGrouping,
   HOME_HEATMAP_LAYOUT_OPTIONS,
   HOME_HEATMAPS_OPTIONS,
   type HomeHeatmapLayout,
@@ -106,6 +109,23 @@ const HOME_HEATMAPS_ICON: Record<HomeHeatmaps, typeof LayoutGrid> = {
   both: LayoutGrid,
 };
 
+/** Food diary grouping choices: icon and whole translation keys. Exhaustive by type. */
+const FOOD_DIARY_GROUPING_CHOICES: Record<
+  FoodDiaryGrouping,
+  { icon: typeof Clock; labelKey: string; descriptionKey: string }
+> = {
+  categories: {
+    icon: Rows3,
+    labelKey: 'settings.foodDiary.grouping.options.categories.label',
+    descriptionKey: 'settings.foodDiary.grouping.options.categories.description',
+  },
+  time: {
+    icon: Clock,
+    labelKey: 'settings.foodDiary.grouping.options.time.label',
+    descriptionKey: 'settings.foodDiary.grouping.options.time.description',
+  },
+};
+
 const HOME_HEATMAP_LAYOUT_ICON: Record<HomeHeatmapLayout, typeof LayoutGrid> = {
   full: Rows2,
   side_by_side: Columns2,
@@ -135,7 +155,14 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
-  const { theme: themePreference, showHomeSteps, homeHeatmaps, homeHeatmapLayout } = useSettings();
+  const {
+    theme: themePreference,
+    showHomeSteps,
+    homeHeatmaps,
+    homeHeatmapLayout,
+    foodDiaryCompact,
+    foodDiaryGrouping,
+  } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
@@ -144,6 +171,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const [homeCardPopupVisible, setHomeCardPopupVisible] = useState(false);
   const [heatmapsPopupVisible, setHeatmapsPopupVisible] = useState(false);
   const [heatmapLayoutPopupVisible, setHeatmapLayoutPopupVisible] = useState(false);
+  const [foodGroupingPopupVisible, setFoodGroupingPopupVisible] = useState(false);
   const [homeSummaryCard, setHomeSummaryCard] = useState<HomeSummaryCard>('daily_summary');
   const [homeActionsPopupVisible, setHomeActionsPopupVisible] = useState(false);
   const [selectedHomeActions, setSelectedHomeActions] = useState<readonly HomeActionKey[]>([]);
@@ -217,6 +245,12 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     await SettingsService.set(SETTINGS.homeHeatmapLayout, layout);
   };
 
+  const handleFoodGroupingChange = async (grouping: FoodDiaryGrouping) => {
+    setFoodGroupingPopupVisible(false);
+    await SettingsService.set(SETTINGS.foodDiaryGrouping, grouping);
+  };
+
+  const foodGrouping = FOOD_DIARY_GROUPING_CHOICES[foodDiaryGrouping];
   const ThemeIcon = THEME_ICON[themePreference];
 
   const handleMacrosChange = async (ids: MacroKey[]) => {
@@ -383,6 +417,36 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
           />
         </View>
 
+        <View style={{ marginHorizontal: theme.spacing.padding.base }}>
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
+            {t('settings.foodDiary.sectionTitle')}
+          </Text>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.foodDiary.sectionSubtitle')}
+          </Text>
+          <PickerButton
+            icon={
+              <foodGrouping.icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            }
+            label={t(foodGrouping.labelKey)}
+            onPress={() => setFoodGroupingPopupVisible(true)}
+          />
+          <View className="mt-4">
+            <ToggleInput
+              items={[
+                {
+                  key: 'food_diary_compact',
+                  label: t('settings.foodDiary.compact.title'),
+                  subtitle: t('settings.foodDiary.compact.description'),
+                  value: foodDiaryCompact,
+                  onValueChange: (v: boolean) =>
+                    void SettingsService.set(SETTINGS.foodDiaryCompact, v),
+                },
+              ]}
+            />
+          </View>
+        </View>
+
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
@@ -523,6 +587,19 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
           title: t(`settings.homeHeatmaps.options.${choice}.label`),
           description: t(`settings.homeHeatmaps.options.${choice}.description`),
           onPress: () => handleHeatmapsChange(choice),
+        }))}
+      />
+      <BottomPopUpMenu
+        visible={foodGroupingPopupVisible}
+        onClose={() => setFoodGroupingPopupVisible(false)}
+        title={t('settings.foodDiary.grouping.popupTitle')}
+        subtitle={t('settings.foodDiary.grouping.popupSubtitle')}
+        items={FOOD_DIARY_GROUPING_OPTIONS.map((grouping) => ({
+          icon: FOOD_DIARY_GROUPING_CHOICES[grouping].icon,
+          selected: grouping === foodDiaryGrouping,
+          title: t(FOOD_DIARY_GROUPING_CHOICES[grouping].labelKey),
+          description: t(FOOD_DIARY_GROUPING_CHOICES[grouping].descriptionKey),
+          onPress: () => handleFoodGroupingChange(grouping),
         }))}
       />
       <BottomPopUpMenu

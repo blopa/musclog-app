@@ -19,6 +19,8 @@ type MealSectionProps = {
   onAddFood?: () => void;
   menuButton?: ReactNode;
   intuitiveMode?: boolean;
+  /** Tighter spacing and no per-section add button (the diary offers one slim add row instead). */
+  compact?: boolean;
 };
 
 type AddFoodButtonProps = {
@@ -51,6 +53,7 @@ export type MealSectionHeaderProps = {
   totalFat?: number;
   menuButton?: ReactNode;
   intuitiveMode?: boolean;
+  compact?: boolean;
 };
 
 export const MealSectionHeader = memo(function MealSectionHeader({
@@ -61,13 +64,16 @@ export const MealSectionHeader = memo(function MealSectionHeader({
   totalFat = 0,
   menuButton,
   intuitiveMode = false,
+  compact = false,
 }: MealSectionHeaderProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
 
   return (
-    <View className="mb-2 mt-5 flex-row items-center justify-between gap-3">
+    <View
+      className={`flex-row items-center justify-between gap-3 ${compact ? 'mb-1 mt-3' : 'mb-2 mt-5'}`}
+    >
       <Text className="shrink text-lg font-semibold text-text-primary">{title}</Text>
       <View className="flex-row items-center gap-1">
         <View className="items-end">
@@ -138,6 +144,7 @@ export const MealSection = memo(function MealSection({
   onAddFood,
   menuButton,
   intuitiveMode = false,
+  compact = false,
 }: MealSectionProps) {
   return (
     <View>
@@ -149,13 +156,14 @@ export const MealSection = memo(function MealSection({
         totalFat={totalFat}
         menuButton={menuButton}
         intuitiveMode={intuitiveMode}
+        compact={compact}
       />
 
-      <View className="gap-3">
+      <View className={compact ? 'gap-2' : 'gap-3'}>
         {children}
 
         {/* Add Food Button */}
-        <AddFoodButton mealType={title} onPress={onAddFood} />
+        {compact ? null : <AddFoodButton mealType={title} onPress={onAddFood} />}
       </View>
     </View>
   );

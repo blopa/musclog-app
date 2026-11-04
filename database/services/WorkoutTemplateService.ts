@@ -7,6 +7,7 @@ import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import type { Units } from '@/constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import type { RawWorkoutTemplate, RawWorkoutTemplateExercise } from '@/data/workoutTemplates';
+import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
@@ -16,6 +17,7 @@ import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { fetchByIds } from '@/database/queryByIds';
+import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
@@ -405,48 +407,60 @@ export class WorkoutTemplateService {
    * NOT roll back a batch that already landed, so anything committed before a later step throws
    * stays committed — the reason this returns records instead of writing them itself.
    */
-  private static async prepareSaveTemplate(
+  private static async prepareNewTemplateSave(
     data: SaveTemplateData,
     now: number
   ): Promise<{ template: WorkoutTemplate; records: Model[] }> {
-    if (!data.templateId) {
-      const created = this.prepareNewTemplate(data, now);
-      // Nothing exists to conflict with a brand-new template, so membership and schedules are the
-      // only remaining question and `activePlanIds` decides it exactly as in the edit path — which
-      // is why this is written the same way, rather than as a ternary whose empty arm needs casts
-      // to line up with the call's return type.
-      let activePlanIds: string[] = [];
-      let membershipRecords: Model[] = [];
+    const created = this.prepareNewTemplate(data, now);
+    // Nothing exists to conflict with a brand-new template, so membership and schedules are the
+    // only remaining question and `activePlanIds` decides it exactly as in the edit path — which
+    // is why this is written the same way, rather than as a ternary whose empty arm needs casts
+    // to line up with the call's return type.
+    let activePlanIds: string[] = [];
+    let membershipRecords: Model[] = [];
 
-      if (data.planIds?.length) {
-        ({ activePlanIds, records: membershipRecords } =
-          await WorkoutPlanService.prepareSyncTemplateMemberships(
-            created.template.id,
-            data.planIds,
-            now
-          ));
-      }
-
-      return {
-        template: created.template,
-        records: [
-          ...created.records,
-          ...membershipRecords,
-          ...(activePlanIds.length === 0
-            ? this.prepareSchedules(created.template.id, data.selectedDays, now)
-            : []),
-        ],
-      };
+    if (data.planIds?.length) {
+      ({ activePlanIds, records: membershipRecords } =
+        await WorkoutPlanService.prepareSyncTemplateMemberships(
+          created.template.id,
+          data.planIds,
+          now
+        ));
     }
 
-    const templateId = data.templateId;
+    return {
+      template: created.template,
+      records: [
+        ...created.records,
+        ...membershipRecords,
+        ...(activePlanIds.length === 0
+          ? this.prepareSchedules(created.template.id, data.selectedDays, now)
+          : []),
+      ],
+    };
+  }
+
+  /**
+   * The edit path of {@link saveTemplate}: reads everything the save will touch, then prepares and
+   * commits it all inside `commitPrepared`.
+   *
+   * Every existing record is snapshotted first. If any `prepareUpdate` throws mid-pass, the ones
+   * already prepared would stay "pending" in WatermelonDB's model cache and make every retry fail
+   * on the template itself until the app restarts (Sentry WORKOUT-M1/M2). `commitPrepared` restores
+   * them, and `database.batch` clears pending state itself, so a failed batch is already safe.
+   */
+  private static async saveExistingTemplate(
+    data: SaveTemplateData,
+    templateId: string,
+    now: number
+  ): Promise<WorkoutTemplate> {
     const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
     const existingExercises = await database
       .get<WorkoutTemplateExercise>('workout_template_exercises')
       .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
       .fetch();
     const existingExerciseIds = existingExercises.map((te) => te.id);
-    const [existingSets, existingSchedules] = await Promise.all([
+    const [existingSets, existingSchedules, existingMemberships] = await Promise.all([
       existingExerciseIds.length > 0
         ? database
             .get<WorkoutTemplateSet>('workout_template_sets')
@@ -460,67 +474,93 @@ export class WorkoutTemplateService {
         .get<Schedule>('schedules')
         .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
         .fetch(),
+      // Only a membership sync prepares updates on these rows; otherwise they are never touched.
+      data.planIds !== undefined
+        ? WorkoutPlanRepository.getMembershipsForTemplate(templateId).fetch()
+        : Promise.resolve([]),
     ]);
 
-    // Resolve plan membership BEFORE deciding schedules: calendar ownership depends on the
-    // outcome. A template with at least one active membership takes its weekdays from that
-    // membership, so writing standalone `schedules` for it too would leave two live calendar
-    // stores for one workout — dormant rows that silently resurrect if it later leaves the plan.
-    let membershipRecords: Model[] = [];
-    let activePlanIds: string[] = [];
-
-    if (data.planIds !== undefined) {
-      ({ activePlanIds, records: membershipRecords } =
-        await WorkoutPlanService.prepareSyncTemplateMemberships(templateId, data.planIds, now));
-    } else if (data.selectedDays.length > 0) {
-      // planIds omitted means "leave memberships alone", so read the current set. Only worth a
-      // query when there are days that would otherwise be written.
-      activePlanIds = await WorkoutPlanService.getActivePlanIdsForTemplate(templateId);
-    }
-
-    const softDelete = <T extends Model & { deletedAt?: number; updatedAt: number }>(record: T) =>
-      record.prepareUpdate((draft) => {
-        draft.deletedAt = now;
-        draft.updatedAt = now;
-      });
-
-    return {
-      template,
-      records: [
-        template.prepareUpdate((t) => {
-          t.name = data.name;
-          t.description = data.description || undefined;
-          t.workoutInsightsType =
-            data.workoutInsightsType != null
-              ? parseWorkoutInsightsType(data.workoutInsightsType)
-              : parseWorkoutInsightsType(t.workoutInsightsType);
-          t.type = data.type ?? t.type;
-          t.icon = data.icon ?? t.icon;
-          // Standalone calendar data lives in schedules. Clear any deprecated compatibility copy.
-          t.weekDaysJson = undefined;
-          t.updatedAt = now;
-        }),
-        ...existingSchedules.map(softDelete),
-        ...this.prepareTemplateExerciseGraph(
-          templateId,
-          data.exercises,
-          now,
-          existingExercises,
-          existingSets
-        ),
-        ...membershipRecords,
-        ...(activePlanIds.length === 0
-          ? this.prepareSchedules(templateId, data.selectedDays, now)
-          : []),
+    await commitPrepared(
+      database,
+      [
+        template,
+        ...existingExercises,
+        ...existingSets,
+        ...existingSchedules,
+        ...existingMemberships,
       ],
-    };
+      async () => {
+        // Resolve plan membership BEFORE deciding schedules: calendar ownership depends on the
+        // outcome. A template with at least one active membership takes its weekdays from that
+        // membership, so writing standalone `schedules` for it too would leave two live calendar
+        // stores for one workout — dormant rows that silently resurrect if it later leaves the plan.
+        let membershipRecords: Model[] = [];
+        let activePlanIds: string[] = [];
+
+        if (data.planIds !== undefined) {
+          ({ activePlanIds, records: membershipRecords } =
+            await WorkoutPlanService.prepareSyncTemplateMemberships(templateId, data.planIds, now));
+        } else if (data.selectedDays.length > 0) {
+          // planIds omitted means "leave memberships alone", so read the current set. Only worth a
+          // query when there are days that would otherwise be written.
+          activePlanIds = await WorkoutPlanService.getActivePlanIdsForTemplate(templateId);
+        }
+
+        // Joining a plan already retires the standalone schedules (the membership sync prepares
+        // them). Preparing the same row twice in one pass is the "pending changes" error.
+        const alreadyPrepared = new Set(membershipRecords.map((record) => record.id));
+        const softDelete = <T extends Model & { deletedAt?: number; updatedAt: number }>(
+          record: T
+        ) =>
+          record.prepareUpdate((draft) => {
+            draft.deletedAt = now;
+            draft.updatedAt = now;
+          });
+
+        return [
+          template.prepareUpdate((t) => {
+            t.name = data.name;
+            t.description = data.description || undefined;
+            t.workoutInsightsType =
+              data.workoutInsightsType != null
+                ? parseWorkoutInsightsType(data.workoutInsightsType)
+                : parseWorkoutInsightsType(t.workoutInsightsType);
+            t.type = data.type ?? t.type;
+            t.icon = data.icon ?? t.icon;
+            // Standalone calendar data lives in schedules. Clear any deprecated compatibility copy.
+            t.weekDaysJson = undefined;
+            t.updatedAt = now;
+          }),
+          ...existingSchedules
+            .filter((schedule) => !alreadyPrepared.has(schedule.id))
+            .map(softDelete),
+          ...this.prepareTemplateExerciseGraph(
+            templateId,
+            data.exercises,
+            now,
+            existingExercises,
+            existingSets
+          ),
+          ...membershipRecords,
+          ...(activePlanIds.length === 0
+            ? this.prepareSchedules(templateId, data.selectedDays, now)
+            : []),
+        ];
+      }
+    );
+
+    return template;
   }
 
   private static async saveTemplateInWriter(
     data: SaveTemplateData,
     now: number
   ): Promise<WorkoutTemplate> {
-    const { records, template } = await this.prepareSaveTemplate(data, now);
+    if (data.templateId) {
+      return this.saveExistingTemplate(data, data.templateId, now);
+    }
+
+    const { records, template } = await this.prepareNewTemplateSave(data, now);
     await database.batch(...records);
     return template;
   }

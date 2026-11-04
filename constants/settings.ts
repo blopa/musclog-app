@@ -501,6 +501,22 @@ export const COACH_CUSTOM_PERSONA_SETTING_TYPE = 'coach_custom_persona';
 export const HOME_HEATMAP_LAYOUT_SETTING_TYPE = 'home_heatmap_layout';
 
 /**
+ * Legacy takeover JSON, migrated losslessly into nutrition_health_ownership by
+ * NutritionHealthRepository. No new writes; retained so older backups can be imported.
+ */
+export const HEALTH_NUTRITION_TAKEOVERS_SETTING_TYPE = 'health_nutrition_takeovers';
+
+/** Setting type for the dense food diary layout. value: 'true' | 'false'. Default: off. */
+export const FOOD_DIARY_COMPACT_SETTING_TYPE = 'food_diary_compact';
+
+/**
+ * Setting type for how the food diary groups entries.
+ * value: 'categories' | 'time'. Default: 'categories'. Display only: it never changes a log's
+ * meal type or consumed time.
+ */
+export const FOOD_DIARY_GROUPING_SETTING_TYPE = 'food_diary_grouping';
+
+/**
  * Setting type for which quick actions the home screen shows.
  * value: JSON array of `HomeActionKey`, at most `MAX_HOME_ACTIONS` entries.
  * Parse it with `parseHomeActions` from `@/constants/homeActions`.
@@ -590,6 +606,14 @@ export function parseHomeHeatmaps(raw: string | null | undefined): HomeHeatmaps 
 
 export function parseHomeHeatmapLayout(raw: string | null | undefined): HomeHeatmapLayout {
   return HOME_HEATMAP_LAYOUT_OPTIONS.find((option) => option === raw) ?? 'full';
+}
+
+export const FOOD_DIARY_GROUPING_OPTIONS = ['categories', 'time'] as const;
+export type FoodDiaryGrouping = (typeof FOOD_DIARY_GROUPING_OPTIONS)[number];
+
+/** Anything unrecognized (a newer build, a hand-edited backup) keeps today's category layout. */
+export function parseFoodDiaryGrouping(raw: string | null | undefined): FoodDiaryGrouping {
+  return FOOD_DIARY_GROUPING_OPTIONS.find((option) => option === raw) ?? 'categories';
 }
 
 /** The heatmaps a `homeHeatmaps` choice shows, in display order. */
@@ -691,6 +715,8 @@ export type UseSettingsResult = {
   homeHeatmaps: HomeHeatmaps;
   homeHeatmapLayout: HomeHeatmapLayout;
   showHomeSteps: boolean;
+  foodDiaryCompact: boolean;
+  foodDiaryGrouping: FoodDiaryGrouping;
 };
 
 /** Unknown names (a newer build, a hand-edited backup) and 'off' are dropped; order is canonical. */

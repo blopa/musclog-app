@@ -35,6 +35,7 @@ import Muscle from './models/Muscle';
 import Note from './models/Note';
 import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
+import NutritionHealthOwnership from './models/NutritionHealthOwnership';
 import NutritionLog from './models/NutritionLog';
 import NutritionTargetPeriod from './models/NutritionTargetPeriod';
 import PeriodLog from './models/PeriodLog';
@@ -92,6 +93,7 @@ export const database = new Database({
     WorkoutLogExercise,
     WorkoutLogSet,
     NutritionGoal,
+    NutritionHealthOwnership,
     NutritionTargetPeriod,
     WeeklyReview,
     NutritionCheckin,

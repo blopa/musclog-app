@@ -345,6 +345,28 @@
       "fiber": "Fibra",
       "alcohol": "Álcool"
     },
+    "foodDiary": {
+      "sectionTitle": "Diário alimentar",
+      "sectionSubtitle": "Escolha como o diário alimentar é organizado e agrupado.",
+      "compact": {
+        "title": "Visualização compacta",
+        "description": "Oculta refeições vazias e mostra entradas mais densas. Toque em uma entrada para ver os macros."
+      },
+      "grouping": {
+        "popupTitle": "Agrupar alimentos por",
+        "popupSubtitle": "Muda apenas como o diário é exibido, não suas refeições nem seus dados nutricionais.",
+        "options": {
+          "categories": {
+            "label": "Categorias de refeição",
+            "description": "Café da manhã, almoço, jantar, lanches e outros."
+          },
+          "time": {
+            "label": "Horário",
+            "description": "Seções por hora, na ordem em que você comeu."
+          }
+        }
+      }
+    },
     "notificationsSettings": {
       "title": "Notificações",
       "subtitle": "Alertas de treino, nutrição e ciclo",

@@ -40,6 +40,8 @@ import { healthConnectService } from './healthConnect';
 import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
+import { loadOwnershipContext, reconcileOwnedRecord } from './nutritionHealthOwnership';
+import { NOT_WRITTEN, type NutritionHealthWriteResult } from './nutritionHealthTypes';
 
 async function isSettingEnabled(type: string): Promise<boolean> {
   const settings = await database
@@ -88,8 +90,10 @@ function mealTypeToHC(mealType: MealType): number {
 }
 
 export interface NutritionWriteParams {
+  /** The record this write replaces. Health Connect replaces by `logId`; only HealthKit needs it. */
+  externalId?: string;
   logId: string; // WatermelonDB record ID – used as clientRecordId for deduplication
-  date: number; // unix ms (midnight of the log date)
+  date: number; // unix ms – the consumed datetime (day + time of day), not a day key
   mealType: MealType;
   foodName: string;
   calories: number;
@@ -100,25 +104,26 @@ export interface NutritionWriteParams {
 }
 
 /**
- * Write a single nutrition log to Health Connect.
- * Returns the HC-assigned record ID (to store as externalId), or undefined on failure.
+ * Write a nutrition log to Health Connect, replacing its earlier record: Health Connect
+ * replaces a record with the same clientRecordId and a higher version, so a new log and an edit
+ * are the same call. Returns the id to store as `external_id`.
  * Never throws – all errors are caught and logged.
  */
 export async function writeNutritionLogToHealthConnect(
   params: NutritionWriteParams
-): Promise<string | undefined> {
+): Promise<NutritionHealthWriteResult> {
   if (!(await isWriteSyncEnabled())) {
-    return undefined;
+    return NOT_WRITTEN;
   }
 
   const isAvailable = await healthConnectService.checkAvailability();
   if (!isAvailable) {
-    return undefined;
+    return NOT_WRITTEN;
   }
 
   const hasPermission = await healthConnectService.hasPermissionForRecordType('Nutrition', 'write');
   if (!hasPermission) {
-    return undefined;
+    return NOT_WRITTEN;
   }
 
   try {
@@ -138,17 +143,44 @@ export async function writeNutritionLogToHealthConnect(
       fiber: { value: params.fiber, unit: 'grams' as const },
       metadata: {
         clientRecordId: params.logId,
+        // Health Connect only replaces a record with the same clientRecordId when the version is
+        // higher, so an edited log is re-written with a monotonically increasing one.
+        clientRecordVersion: Date.now(),
         dataOrigin: 'Musclog',
         recordingMethod: RecordingMethod.RECORDING_METHOD_MANUAL_ENTRY,
       },
     };
 
-    const ids = await healthConnectService.insertRecords([record]);
-    return ids[0];
+    const [externalId] = await healthConnectService.insertRecords([record]);
+    return externalId ? { status: 'written', externalId } : NOT_WRITTEN;
   } catch (err) {
     handleError(err, 'healthConnectNutrition.android.writeNutritionLogToHealthConnect');
     console.warn('[healthConnectNutrition] writeNutritionLogToHealthConnect failed:', err);
-    return undefined;
+    return NOT_WRITTEN;
+  }
+}
+
+/**
+ * Delete records Musclog wrote from Health Connect. Best effort: Health Connect only lets an
+ * app delete its own records, so ids from other apps fail and are ignored. Never throws.
+ */
+export async function deleteNutritionLogsFromHealthConnect(externalIds: string[]): Promise<void> {
+  if (externalIds.length === 0 || !(await isWriteSyncEnabled())) {
+    return;
+  }
+
+  try {
+    if (!(await healthConnectService.checkAvailability())) {
+      return;
+    }
+
+    if (!(await healthConnectService.hasPermissionForRecordType('Nutrition', 'write'))) {
+      return;
+    }
+
+    await healthConnectService.deleteRecordsByUuids('Nutrition', externalIds);
+  } catch (err) {
+    console.warn('[healthConnectNutrition] deleteNutritionLogsFromHealthConnect failed:', err);
   }
 }
 
@@ -339,6 +371,8 @@ async function syncNutritionOnce(timeRange: {
     fat: number;
     fiber: number;
     timezone: string;
+    /** `nutrition_logs.id` Musclog stamped as clientRecordId when it wrote this record. */
+    originLogId?: string;
   };
 
   const hcMap = new Map<string, HCNutritionEntry>();
@@ -360,6 +394,7 @@ async function syncNutritionOnce(timeRange: {
       fat: Math.max(0, rec.totalFat?.inGrams ?? 0),
       fiber: Math.max(0, rec.dietaryFiber?.inGrams ?? 0),
       timezone: extractHcRecordTimezone(rec) ?? getTimezoneAt(new Date(rec.startTime)),
+      originLogId: rec.metadata?.clientRecordId,
     });
   }
 
@@ -373,6 +408,13 @@ async function syncNutritionOnce(timeRange: {
       Q.where('date', Q.lte(timeRange.endTime))
     )
     .fetch();
+
+  const ownership = await loadOwnershipContext(
+    [...hcMap.values()].flatMap((entry) => (entry.originLogId ? [entry.originLogId] : [])),
+    [...hcMap.keys()],
+    localLogs
+  );
+  const orphanedOwnRecordIds: string[] = [];
 
   const localByExternalId = new Map<string, NutritionLog>();
   for (const log of localLogs) {
@@ -389,6 +431,18 @@ async function syncNutritionOnce(timeRange: {
     const sentinelFood = await getOrCreateSentinelFood();
 
     for (const [externalId, entry] of hcMap.entries()) {
+      const disposition = await reconcileOwnedRecord(externalId, entry.originLogId, ownership);
+      if (disposition !== 'foreign') {
+        // Musclog's own record or one the user deleted: the local side is the authority, so
+        // never import it again nor overwrite the log from the (possibly stale) copy.
+        if (disposition === 'orphan') {
+          orphanedOwnRecordIds.push(externalId);
+        }
+
+        counts.skipped++;
+        continue;
+      }
+
       const existing = localByExternalId.get(externalId);
 
       if (!existing) {
@@ -469,6 +523,11 @@ async function syncNutritionOnce(timeRange: {
     //  2. Grace period — records created recently may not be indexed by HC yet.
     if (allHcRecords.length > 0) {
       for (const [localExternalId, localLog] of localByExternalId.entries()) {
+        // Local logs are authoritative even when a mirror write failed or is not indexed yet.
+        if (ownership.ownedLogIds.has(localLog.id)) {
+          continue;
+        }
+
         if (!hcMap.has(localExternalId)) {
           if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
             continue;
@@ -483,6 +542,9 @@ async function syncNutritionOnce(timeRange: {
       }
     }
   });
+
+  // Records Musclog wrote for logs the user has since deleted: clean the stale copy up.
+  await deleteNutritionLogsFromHealthConnect(orphanedOwnRecordIds);
 
   return counts;
 }

@@ -21,12 +21,12 @@ import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
+import { recoverInterruptedCoachReply } from '@/services/coachReplyStream';
 import { healthDataSyncService } from '@/services/healthDataSync';
 import { refreshAllNotifications } from '@/services/notificationRefresh';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
 import { captureBootException } from '@/utils/bootErrorReporting';
-import { recoverInterruptedCoachReply } from '@/services/coachReplyStream';
 import { configureDailyTasks } from '@/utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,

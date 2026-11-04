@@ -3,6 +3,7 @@ import type { MealType, MicrosData } from '@/database/models';
 import type Food from '@/database/models/Food';
 import type FoodPortion from '@/database/models/FoodPortion';
 import type Meal from '@/database/models/Meal';
+import type NutritionLog from '@/database/models/NutritionLog';
 import type { EditedFoodOverrides } from '@/types/foodEditing';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import { combineLocalDateAndTime, instantForDateTimeInTimezone } from '@/utils/calendarDate';
@@ -30,18 +31,6 @@ export type FoodMealTrackingNutritionData = {
   sodium: number;
 };
 
-type FoodLogTrackingDetails = {
-  timezone?: string;
-  portionId?: string;
-  updateTrackingDetails: (details: {
-    amount: number;
-    date: number;
-    mealType: MealType;
-    portionId?: string;
-    timezone?: string;
-  }) => Promise<void>;
-};
-
 /** External-catalog product context, shared by the `externalProduct` target and the public creator. */
 type ExternalProductContext = {
   productDetails: ProductDetailsQueryData | null | undefined;
@@ -58,7 +47,7 @@ type ExternalProductContext = {
  */
 export type FoodMealTrackingActionTarget =
   | { kind: 'meal'; meal: Meal }
-  | { kind: 'foodLog'; foodLog: FoodLogTrackingDetails }
+  | { kind: 'foodLog'; foodLog: NutritionLog }
   | {
       kind: 'existingFood';
       food: Food;
@@ -253,7 +242,7 @@ export class FoodMealTrackingActionService {
   }
 
   private static async updateFoodLog(
-    foodLog: FoodLogTrackingDetails,
+    foodLog: NutritionLog,
     selection: FoodMealTrackingActionSelection
   ): Promise<void> {
     const timezone = foodLog.timezone;
@@ -263,11 +252,11 @@ export class FoodMealTrackingActionService {
       timezone
     );
 
-    await foodLog.updateTrackingDetails({
+    await NutritionService.updateNutritionLog(foodLog.id, {
       amount: selection.servingSize,
       date: dateTimestamp,
       mealType: selection.selectedMeal,
-      portionId: selection.resolvedFoodServingMode ? foodLog.portionId : undefined,
+      portionId: selection.resolvedFoodServingMode ? (foodLog.portionId ?? null) : null,
       timezone,
     });
   }

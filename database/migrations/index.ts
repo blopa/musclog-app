@@ -35,6 +35,7 @@ import migrationV33 from '@/database/migrations/2026/10/migration-v33';
 import migrationV34 from '@/database/migrations/2026/10/migration-v34';
 import migrationV35 from '@/database/migrations/2026/10/migration-v35';
 import migrationV36 from '@/database/migrations/2026/10/migration-v36';
+import migrationV37 from '@/database/migrations/2026/11/migration-v37';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -161,5 +162,7 @@ export const migrations = schemaMigrations({
     migrationV35,
     // Version 36: Encrypted cycle records (cycle_periods, cycle_day_logs, cycle_contexts).
     migrationV36,
+    // Version 37: Durable nutrition health ownership and ignored-original records.
+    migrationV37,
   ],
 });

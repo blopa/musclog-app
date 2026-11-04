@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
-import { ComebackSummaryLine } from '@/components/comeback/ComebackSummaryLine';
 import { useCoach } from '@/components/CoachContext';
+import { ComebackSummaryLine } from '@/components/comeback/ComebackSummaryLine';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';

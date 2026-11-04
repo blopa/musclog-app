@@ -3,6 +3,77 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Saving a workout failed until the app restarted: "Cannot update a record with pending changes" (November 2026)
+
+### Symptom
+
+Sentry WORKOUT-M1 / WORKOUT-M2 (2.15.4): editing a workout showed the save-error snackbar, and every
+retry failed the same way (on the template, or on one of its sets) until the app was restarted.
+Handled errors, not crashes.
+
+### Cause
+
+`saveTemplate` prepares updates on the template, its exercises, sets, schedules and plan memberships
+before one `database.batch`. A `prepareUpdate` that throws mid-pass leaves everything already prepared
+with a pending state in WatermelonDB's model cache (`batch` itself clears that state before it commits,
+so only a throw during preparation strands records), and each retry then trips over the stale records.
+One real trigger was a workout with standalone `schedules` joining a plan: the membership sync
+(`prepareStandaloneScheduleCleanup`) and the save's own soft-delete both prepared the same schedule rows.
+
+### Fix
+
+The edit path (`WorkoutTemplateService.saveExistingTemplate`) snapshots every existing record it can
+touch and prepares and commits through `commitPrepared`, which now accepts an async `prepare` and restores
+the snapshots on failure. Schedules the membership sync already prepared are not prepared a second time.
+Pinned by `database/services/__tests__/WorkoutTemplateService.test.ts`. Any new writer that prepares
+several existing records must go through `commitPrepared` with all of them listed.
+
+## Nutrition kept disagreeing with Health Connect / Apple Health (November 2026)
+
+Four sync defects, found while adding the time-grouped food diary (which relies on a log's
+consumed time staying put):
+
+- **Edits reverted.** Editing a log's time, meal or portion never reached the health platform,
+  and the next pull (keyed by `external_id`) overwrote the local values with the stale copy,
+  also flattening the log to `amount = 100` with the platform's macros.
+- **Deleted food came back.** Deletes were local soft-deletes only; the platform record was
+  still there, so the pull created it again.
+- **Duplicates from AI/custom meals.** `logCustomMeal` and the batch path wrote to the platform
+  but threw away the returned id, so the pull imported Musclog's own record as a second log.
+- **Copy/move stamped "now".** A copied or moved log lost the time it was eaten at, and copies and split-off portions never reached the platform.
+
+Fix: records Musclog writes carry the local log id (`clientRecordId` / `HKExternalUUID`), and
+`services/nutritionHealthOwnership.ts` classifies each pulled record. Musclog's own records are
+never imported or overwritten (the local log is the authority and just adopts the platform id);
+orphaned copies of deleted logs are deleted from the platform; another app's record that the user
+deleted is not re-created. `services/nutritionHealthExport.ts` mirrors creates, edits, moves, copies,
+splits and deletes (best effort, never throws). User mutations share `publishNutritionChanges` in
+`NutritionService`, including scaling, duplication and meal-category regrouping; the tracking
+dispatcher uses the typed service edit rather than probing a model and casting it. Editing a log imported from another app writes
+Musclog's own corrected record next to the original (the platform won't let us change it) and
+ignores the original from then on, so other apps see both. Ownership and ignored-original facts
+are permanent indexed rows in `nutrition_health_ownership` (schema v37), written before the
+platform call. The previous JSON setting evicted facts after 1,000 takeovers; its remaining facts
+now migrate without a cap, atomically with clearing the setting. Backups retain the new table. Android
+re-writes an edited record with the same `clientRecordId` and a higher `clientRecordVersion`;
+iOS deletes the old correlation (and its dietary samples) and saves a new one. Replacement
+returns an explicit written/not-written result and aborts saving when cleanup fails, avoiding a
+second correlation after a failed delete. If saving fails after deletion, both platform pulls
+protect the locally owned log from missing-record reconciliation; its previous id is retained
+for retry. Replacements of the same log are serialized, and deletion waits for a pending export.
+If saving the returned platform id fails, the just-written platform record is removed best effort
+to avoid leaving an untracked correlation; the primary failure is still reported. Owned records
+also bypass incoming updates when their platform origin metadata is missing.
+A retry of a failed takeover never tries to replace the other app’s ignored original. Copy and move keep each
+log's wall-clock time (`reanchoredOnDay`). **Not verified on a device**: confirm on Android that
+an edit updates the record in place (otherwise fall back to delete + insert) and on iOS that
+replacement and sample cleanup behave as expected on a device. Automated tests cover cleanup
+and save failures, denied/disabled writes, both missing-record sweeps, migration failure/retry,
+and takeover histories larger than 1,000 entries.
+
+The time-grouped diary also resolves a grouped meal’s earliest usable member once for both
+bucketing and its exact-time label, including midnight placeholders and mixed recorded timezones.
+
 ## Cycle tracking looked switched off right after setup on a new install (October 2026)
 
 ### Symptom
