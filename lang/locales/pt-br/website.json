@@ -75,8 +75,8 @@
       "qrcode_text": "Escaneie para baixar o Musclog"
     },
     "hero": {
-      "badge1": "★ GRÁTIS E OPEN SOURCE",
-      "badge2": "FOCO NA PRIVACIDADE (SEM LOGIN NECESSÁRIO)",
+      "badge1": "Grátis e open source",
+      "badge2": "Sem conta necessária",
       "title1": "Controle Seus",
       "title2": "Dados de Fitness",
       "subheading": "Um rastreador de fitness local-first, open-source. Sem contas, sem rastreamento, sem nuvem. Apenas você e seus ganhos.",
@@ -124,17 +124,14 @@
             "alt": "Captura da biblioteca de treinos do Musclog"
           }
         }
-      }
+      },
+      "screenshotAlt": "Captura de tela do app Musclog"
     },
     "screenshots": {
-      "eyebrow": "Carrossel de capturas",
       "title": "Veja o Musclog em movimento",
       "description": "Uma visualização lenta de telas reais do app. Passe o mouse para pausar e clique em qualquer cartão para abrir ampliado.",
-      "hint": "Passe o mouse para pausar, clique para ampliar",
       "openSlide": "Abrir captura",
       "modalAriaLabel": "Prévia de capturas do Musclog",
-      "modalEyebrow": "Prévia de capturas",
-      "modalDetails": "O que você está vendo",
       "close": "Fechar",
       "previous": "Captura anterior",
       "next": "Próxima captura",
@@ -197,7 +194,7 @@
       }
     },
     "themes": {
-      "title": "Seis temas, um app",
+      "title": "Escolha seu tema",
       "description": "Escolha a paleta que combina com o seu treino. Todas as telas seguem ela, incluindo gráficos, câmera e a barra de abas.",
       "footnote": "Troque quando quiser nas Configurações. O Musclog também segue o modo claro ou escuro do seu aparelho, se você preferir não escolher."
     },
@@ -206,18 +203,17 @@
       "description": "Sem telemetria, sem rastreamento, sem assinatura. Apenas um motor poderoso para sua jornada de fitness.",
       "strengthTracking": {
         "title": "Rastreamento de Força Offline",
-        "description": "Registre seus sets e repetições diretamente no seu dispositivo. Sem internet necessária. Seus dados nunca saem do seu bolso.",
-        "link": "VER MAIS"
+        "description": "Registre seus sets e repetições diretamente no seu dispositivo. Sem internet necessária. Seus dados nunca saem do seu bolso."
       },
       "privacyFirst": {
         "title": "Privacidade em Primeiro Lugar",
         "description": "Sem cadastros, sem logins e sem rastreamento de terceiros. O Musclog respeita sua soberania digital.",
-        "link": "MANIFESTO DE PRIVACIDADE"
+        "link": "Política de privacidade"
       },
       "openSource": {
         "title": "Open Source",
         "description": "O Musclog é movido pela comunidade. Audite o código, contribua com recursos ou faça um fork para personalizá-lo.",
-        "link": "VER CÓDIGO"
+        "link": "Ver código"
       }
     },
     "featureGrid": {
@@ -242,7 +238,7 @@
         },
         "cycle": {
           "title": "Consciência do Ciclo",
-          "description": "Rastreie as fases menstruais e receba recomendações de treino otimizadas para seu ciclo."
+          "description": "Registre menstruações e sintomas e veja padrões nos seus próprios dados. As previsões ficam desativadas até você ativá-las."
         },
         "templates": {
           "title": "Modelos de Treino",
@@ -258,35 +254,13 @@
         }
       }
     },
-    "stats": {
-      "vitamins": {
-        "value": "40+",
-        "label": "Vitaminas e Minerais",
-        "description": "Que você pode rastrear diariamente"
-      },
-      "offline": {
-        "value": "100%",
-        "label": "Pronto para Offline",
-        "description": "Sem internet necessária"
-      },
-      "cloud": {
-        "value": "0",
-        "label": "Uploads para Nuvem",
-        "description": "Dados permanecem locais"
-      },
-      "encryption": {
-        "value": "AES",
-        "label": "Criptografia",
-        "description": "Segurança em repouso"
-      }
-    },
     "howItWorks": {
       "title": "Como Funciona",
       "description": "Comece em minutos. Sem configuração complicada, sem assinaturas, sem coleta de dados.",
       "steps": {
         "step1": {
           "title": "Baixe e Comece",
-          "description": "Instale o Musclog na App Store ou Google Play. Sem conta necessária — apenas abra e comece a rastrear."
+          "description": "Instale o Musclog na App Store ou no Google Play. Sem conta: basta abrir e começar a registrar."
         },
         "step2": {
           "title": "Registre Seu Treino",
@@ -298,14 +272,9 @@
         }
       }
     },
-    "testimonial": {
-      "quote": "\"O Musclog é o primeiro aplicativo que respeita minha privacidade enquanto oferece uma experiência de treino de classe mundial. Local-first é o futuro.\"",
-      "author": "Laura F.",
-      "role": "Desenvolvedora Ocupada"
-    },
     "cta": {
       "title": "Pronto para começar?",
-      "description": "Junte-se a milhares de atletas que usam o Musclog para rastrear seu progresso sem comprometer a privacidade.",
+      "description": "Baixe o Musclog e mantenha seus registros de treino e alimentação no seu próprio dispositivo. Sem conta, sem assinatura.",
       "download": "Baixar Agora",
       "close": "Fechar",
       "sourceCode": "Ver Código Fonte"

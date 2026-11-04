@@ -7,20 +7,16 @@ import {
   LineChart as LineChartIcon,
   LoaderCircle,
   Scale,
-  Sparkles,
   Upload,
 } from 'lucide-react-native';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
-  brand,
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
-  brandBright,
   HEADING_TEXT,
   hue,
   ink,
@@ -151,7 +147,7 @@ function PresetPill({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] transition-colors"
+      className="rounded-full border px-3 py-2 text-xs font-bold transition-colors"
       style={{
         backgroundColor: active ? BRAND_GREEN : ink(0.04),
         borderColor: active ? BRAND_GREEN : ink(0.1),
@@ -176,12 +172,12 @@ function SectionCard({
 }) {
   return (
     <section
-      className="rounded-[28px] border p-6 shadow-[0_24px_80px_rgb(var(--c-scrim-base)/0.22)] md:p-7"
+      className="rounded-[28px] border p-6 md:p-7"
       style={{ background: CARD_BG, borderColor: CARD_BORDER }}
     >
       <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="text-xl font-black tracking-tight text-text-primary md:text-2xl">
+          <h2 className="text-xl font-bold tracking-tight text-text-primary md:text-2xl">
             {title}
           </h2>
           {subtitle ? (
@@ -212,27 +208,24 @@ function StatCard({
 }) {
   return (
     <div
-      className="rounded-3xl border p-5"
+      className="rounded-sheet border p-5"
       style={{
-        background: `linear-gradient(180deg, ${ink(0.045)} 0%, ${ink(0.025)} 100%)`,
+        backgroundColor: ink(0.035),
         borderColor: CARD_BORDER,
       }}
     >
       <div className="mb-4 flex items-center justify-between gap-3">
         <div
-          className="flex h-11 w-11 items-center justify-center rounded-2xl"
+          className="flex h-11 w-11 items-center justify-center rounded-card"
           style={{ backgroundColor: `${accent}22`, color: accent }}
         >
           {icon}
         </div>
-        <span
-          className="text-[11px] font-semibold uppercase tracking-[0.22em]"
-          style={{ color: SOFT_TEXT }}
-        >
+        <span className="text-[11px] font-semibold" style={{ color: SOFT_TEXT }}>
           {label}
         </span>
       </div>
-      <div className="text-3xl font-black tracking-tight text-text-primary">{value}</div>
+      <div className="text-3xl font-bold tracking-tight text-text-primary">{value}</div>
       {hint ? (
         <p className="mt-2 text-sm leading-relaxed" style={{ color: SOFT_TEXT }}>
           {hint}
@@ -262,7 +255,7 @@ function MiniLineChart({
 
   if (points.length < 2) {
     return (
-      <div className="rounded-2xl border p-4" style={{ borderColor: ink(0.08) }}>
+      <div className="rounded-card border p-4" style={{ borderColor: ink(0.08) }}>
         <p className="text-sm" style={{ color: SOFT_TEXT }}>
           {labels.title}
         </p>
@@ -278,7 +271,7 @@ function MiniLineChart({
   const maxValue = Math.max(...values);
 
   return (
-    <div className="rounded-2xl border p-4" style={{ borderColor: ink(0.08) }}>
+    <div className="rounded-card border p-4" style={{ borderColor: ink(0.08) }}>
       <div className="mb-4 flex items-center justify-between gap-3">
         <p className="text-sm font-semibold text-text-primary">{labels.title}</p>
         <p className="text-xs" style={{ color: SOFT_TEXT }}>
@@ -332,7 +325,7 @@ function VerticalBarChart({
         return (
           <div
             key={item.label}
-            className="rounded-2xl border p-4"
+            className="rounded-card border p-4"
             style={{ borderColor: ink(0.08) }}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
@@ -341,12 +334,12 @@ function VerticalBarChart({
                 {formatter ? formatter(item.value) : formatCompactNumber(locale, item.value)}
               </div>
             </div>
-            <div className="flex h-28 items-end rounded-2xl bg-ink/[0.03] px-3 py-2">
+            <div className="flex h-28 items-end rounded-card bg-ink/[0.03] px-3 py-2">
               <div
-                className="w-full rounded-xl transition-all"
+                className="w-full rounded-control transition-all"
                 style={{
                   height: `${height}%`,
-                  background: `linear-gradient(180deg, ${color} 0%, ${color}88 100%)`,
+                  backgroundColor: color,
                 }}
               />
             </div>
@@ -386,7 +379,7 @@ function HorizontalBars({
               className="h-3 rounded-full"
               style={{
                 width: `${Math.max((item.value / maxValue) * 100, 4)}%`,
-                background: `linear-gradient(90deg, ${color} 0%, ${color}aa 100%)`,
+                backgroundColor: color,
               }}
             />
           </div>
@@ -413,7 +406,7 @@ function ScatterCard({
 
   if (points.length === 0) {
     return (
-      <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+      <div className="rounded-card border p-5" style={{ borderColor: ink(0.08) }}>
         <p className="text-sm" style={{ color: SOFT_TEXT }}>
           No data
         </p>
@@ -429,7 +422,7 @@ function ScatterCard({
   const yRange = yMax - yMin || 1;
 
   return (
-    <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+    <div className="rounded-card border p-5" style={{ borderColor: ink(0.08) }}>
       <svg viewBox={`0 0 ${width} ${height}`} className="h-64 w-full">
         <line
           x1={padding}
@@ -494,7 +487,7 @@ function MacroComposition({ items, locale }: { items: DailyNutrition[]; locale: 
                 className="h-1 rounded-full"
                 style={{
                   width: `${Math.max((item.calories / maxTotal) * 100, 4)}%`,
-                  background: `linear-gradient(90deg, ${ink(0.16)} 0%, ${ink(0.38)} 100%)`,
+                  backgroundColor: ink(0.3),
                 }}
               />
             </div>
@@ -526,33 +519,10 @@ function EmptyState({
 }) {
   return (
     <main className="relative overflow-hidden pb-24 pt-24 md:pt-28">
-      <GridPattern className="text-accent-primary/35" />
-      <FloatingShapes />
-      <div
-        className="absolute left-1/4 top-36 h-72 w-72 rounded-full blur-[120px]"
-        style={{ backgroundColor: brandBright(0.1) }}
-      />
-      <div
-        className="absolute bottom-16 right-1/4 h-64 w-64 rounded-full blur-[100px]"
-        style={{ backgroundColor: hue('info', 0.08) }}
-      />
-
       <div className="container relative z-10 mx-auto max-w-6xl px-4">
         <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div>
-            <div
-              className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.22em]"
-              style={{
-                borderColor: brand(0.22),
-                color: BRAND_GREEN_BRIGHT,
-                backgroundColor: brand(0.1),
-              }}
-            >
-              <Sparkles className="h-4 w-4" />
-              {t('website.progress.hero.eyebrow')}
-            </div>
-
-            <h1 className="max-w-3xl text-4xl font-black tracking-tight text-text-primary md:text-6xl">
+            <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-text-primary md:text-6xl">
               {t('website.progress.hero.title')}
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed" style={{ color: BODY_TEXT }}>
@@ -579,10 +549,10 @@ function EmptyState({
               ].map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-3xl border p-5"
+                  className="rounded-sheet border p-5"
                   style={{ borderColor: CARD_BORDER, backgroundColor: ink(0.03) }}
                 >
-                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-ink/[0.05] text-accent-bright">
+                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-card bg-ink/[0.05] text-accent-bright">
                     {item.icon}
                   </div>
                   <div className="text-base font-bold text-text-primary">{item.title}</div>
@@ -595,25 +565,22 @@ function EmptyState({
           </div>
 
           <div
-            className="rounded-[32px] border p-6 shadow-[0_28px_90px_rgb(var(--c-scrim-base)/0.28)] md:p-8"
+            className="rounded-[32px] border p-6 md:p-8"
             style={{
               borderColor: ink(0.12),
-              background: `linear-gradient(180deg, ${surface(0.92)} 0%, ${surface(0.92)} 100%)`,
+              backgroundColor: surface(0.92),
             }}
           >
             <div className="mb-6 flex items-center justify-between gap-4">
               <div>
-                <div
-                  className="text-sm font-semibold uppercase tracking-[0.22em]"
-                  style={{ color: BRAND_GREEN_BRIGHT }}
-                >
+                <div className="text-sm font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
                   {t('website.progress.importCard.badge')}
                 </div>
-                <h2 className="mt-2 text-2xl font-black tracking-tight text-text-primary">
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-text-primary">
                   {t('website.progress.importCard.title')}
                 </h2>
               </div>
-              <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-ink/[0.05] text-accent-bright">
+              <div className="flex h-14 w-14 items-center justify-center rounded-sheet bg-ink/[0.05] text-accent-bright">
                 <Upload className="h-7 w-7" />
               </div>
             </div>
@@ -623,10 +590,7 @@ function EmptyState({
             </p>
 
             <label className="mt-6 block">
-              <span
-                className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em]"
-                style={{ color: SOFT_TEXT }}
-              >
+              <span className="mb-2 block text-xs font-semibold" style={{ color: SOFT_TEXT }}>
                 {t('website.progress.importCard.passphraseLabel')}
               </span>
               <input
@@ -634,7 +598,7 @@ function EmptyState({
                 value={decryptionPhrase}
                 onChange={(event) => onPhraseChange(event.target.value)}
                 placeholder={t('website.progress.importCard.passphrasePlaceholder')}
-                className="w-full rounded-2xl border px-4 py-3 text-sm text-text-primary outline-none transition-colors"
+                className="w-full rounded-card border px-4 py-3 text-sm text-text-primary outline-none transition-colors"
                 style={{
                   backgroundColor: ink(0.05),
                   borderColor: ink(0.1),
@@ -646,7 +610,7 @@ function EmptyState({
               type="button"
               onClick={onImport}
               disabled={isImporting}
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-4 text-sm font-bold transition-transform disabled:cursor-wait disabled:opacity-70"
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-card px-5 py-4 text-sm font-bold transition-transform disabled:cursor-wait disabled:opacity-70"
               style={{ backgroundColor: BRAND_GREEN, color: ON_BRAND }}
             >
               {isImporting ? (
@@ -667,7 +631,7 @@ function EmptyState({
 
             {error ? (
               <div
-                className="mt-4 rounded-2xl border px-4 py-3 text-sm"
+                className="mt-4 rounded-card border px-4 py-3 text-sm"
                 style={{
                   borderColor: hue('rose', 0.3),
                   backgroundColor: hue('rose', 0.08),
@@ -679,7 +643,7 @@ function EmptyState({
             ) : null}
 
             <div
-              className="mt-8 rounded-3xl border p-5"
+              className="mt-8 rounded-sheet border p-5"
               style={{
                 borderColor: ink(0.08),
                 backgroundColor: ink(0.025),
@@ -969,39 +933,17 @@ export default function ProgressWebsitePage() {
       />
 
       <main className="relative overflow-hidden pb-24 pt-24 md:pt-28">
-        <GridPattern className="text-accent-primary/35" />
-        <FloatingShapes />
-        <div
-          className="absolute left-1/4 top-28 h-72 w-72 rounded-full blur-[120px]"
-          style={{ backgroundColor: brandBright(0.08) }}
-        />
-        <div
-          className="absolute bottom-24 right-1/4 h-72 w-72 rounded-full blur-[120px]"
-          style={{ backgroundColor: hue('info', 0.08) }}
-        />
-
         <div className="container relative z-10 mx-auto max-w-7xl space-y-8 px-4">
           <section
             className="rounded-[32px] border p-6 md:p-8"
             style={{
               borderColor: CARD_BORDER,
-              background: `linear-gradient(180deg, ${surface(0.88)} 0%, ${surface(0.9)} 100%)`,
+              backgroundColor: surface(0.9),
             }}
           >
             <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
               <div>
-                <div
-                  className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.22em]"
-                  style={{
-                    borderColor: brand(0.22),
-                    color: BRAND_GREEN_BRIGHT,
-                    backgroundColor: brand(0.1),
-                  }}
-                >
-                  <Database className="h-4 w-4" />
-                  {t('website.progress.dashboard.eyebrow')}
-                </div>
-                <h1 className="mt-5 max-w-4xl text-4xl font-black tracking-tight text-text-primary md:text-6xl">
+                <h1 className="mt-5 max-w-4xl text-4xl font-bold tracking-tight text-text-primary md:text-6xl">
                   {t('website.progress.dashboard.title')}
                 </h1>
                 <p className="mt-4 max-w-3xl text-lg leading-relaxed" style={{ color: BODY_TEXT }}>
@@ -1013,7 +955,7 @@ export default function ProgressWebsitePage() {
                 <button
                   type="button"
                   onClick={handleImportClick}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-4 text-sm font-bold"
+                  className="inline-flex items-center justify-center gap-2 rounded-card px-5 py-4 text-sm font-bold"
                   style={{ backgroundColor: BRAND_GREEN, color: ON_BRAND }}
                 >
                   {isImporting ? (
@@ -1024,7 +966,7 @@ export default function ProgressWebsitePage() {
                   {t('website.progress.dashboard.replaceData')}
                 </button>
                 <div
-                  className="rounded-2xl border px-5 py-4 text-sm"
+                  className="rounded-card border px-5 py-4 text-sm"
                   style={{ borderColor: ink(0.08), color: SOFT_TEXT }}
                 >
                   {selectedFileName
@@ -1218,7 +1160,7 @@ export default function ProgressWebsitePage() {
                       locale={locale}
                       formatter={(value) => `${formatCompactNumber(locale, value)} kcal`}
                     />
-                    <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+                    <div className="rounded-card border p-5" style={{ borderColor: ink(0.08) }}>
                       <div className="mb-4 text-sm font-semibold text-text-primary">
                         {t('website.progress.sections.nutrition.macroSplit')}
                       </div>
@@ -1249,14 +1191,14 @@ export default function ProgressWebsitePage() {
                   subtitle={t('website.progress.sections.training.description')}
                 >
                   <div className="space-y-6">
-                    <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+                    <div className="rounded-card border p-5" style={{ borderColor: ink(0.08) }}>
                       <div className="mb-4 text-sm font-semibold text-text-primary">
                         {t('progress.workoutVolume')}
                       </div>
                       <VerticalBarChart items={workoutBars} color={INDIGO} locale={locale} />
                     </div>
                     {muscleGroupItems.length > 0 ? (
-                      <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+                      <div className="rounded-card border p-5" style={{ borderColor: ink(0.08) }}>
                         <div className="mb-4 text-sm font-semibold text-text-primary">
                           {t('progress.setsPerMuscleGroup')}
                         </div>
@@ -1322,30 +1264,24 @@ export default function ProgressWebsitePage() {
                       }}
                       locale={locale}
                     />
-                    <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+                    <div className="rounded-card border p-5" style={{ borderColor: ink(0.08) }}>
                       <div className="mb-4 text-sm font-semibold text-text-primary">
                         {t('website.progress.sections.mood.summaryTitle')}
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2">
-                        <div className="rounded-2xl bg-ink/[0.03] p-4">
-                          <div
-                            className="text-xs uppercase tracking-[0.18em]"
-                            style={{ color: SOFT_TEXT }}
-                          >
+                        <div className="rounded-card bg-ink/[0.03] p-4">
+                          <div className="text-xs" style={{ color: SOFT_TEXT }}>
                             {t('website.progress.sections.mood.totalEntries')}
                           </div>
-                          <div className="mt-2 text-2xl font-black text-text-primary">
+                          <div className="mt-2 text-2xl font-bold text-text-primary">
                             {formatNumber(locale, summaryCounts.moodEntries, 0)}
                           </div>
                         </div>
-                        <div className="rounded-2xl bg-ink/[0.03] p-4">
-                          <div
-                            className="text-xs uppercase tracking-[0.18em]"
-                            style={{ color: SOFT_TEXT }}
-                          >
+                        <div className="rounded-card bg-ink/[0.03] p-4">
+                          <div className="text-xs" style={{ color: SOFT_TEXT }}>
                             {t('website.progress.sections.mood.averageScore')}
                           </div>
-                          <div className="mt-2 text-2xl font-black text-text-primary">
+                          <div className="mt-2 text-2xl font-bold text-text-primary">
                             {aggregationData?.moodHistory?.length
                               ? formatNumber(
                                   locale,
@@ -1391,7 +1327,7 @@ export default function ProgressWebsitePage() {
                     </div>
                   ) : (
                     <div
-                      className="rounded-2xl border p-5 text-sm"
+                      className="rounded-card border p-5 text-sm"
                       style={{ borderColor: ink(0.08), color: SOFT_TEXT }}
                     >
                       {t('website.progress.sections.measurements.empty')}

@@ -2,7 +2,6 @@ import { Dumbbell, Info, Search, X } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -10,6 +9,7 @@ import {
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
   brandBright,
+  HEADING_TEXT,
   hue,
   ink,
   MUTED,
@@ -97,11 +97,10 @@ function ExerciseCard({
 
   return (
     <div
-      className="group flex flex-col overflow-hidden rounded-2xl border transition-all duration-200 hover:-translate-y-1 hover:border-ink/20 hover:shadow-[0_12px_40px_rgb(var(--c-scrim-base)/0.4)]"
+      className="group flex flex-col overflow-hidden rounded-card border transition-colors hover:border-ink/30"
       style={{
         borderColor: ink(0.08),
         backgroundColor: ink(0.03),
-        backdropFilter: 'blur(8px)',
         contentVisibility: 'auto',
         containIntrinsicSize: '420px 520px',
       }}
@@ -113,7 +112,7 @@ function ExerciseCard({
             src={withExpoBaseUrl(buildExerciseImagePath(exercise.exerciseSlug))}
             alt={localizedName}
             loading="lazy"
-            className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+            className="h-full w-full object-contain p-4"
             onError={() => setImgError(true)}
           />
         ) : (
@@ -124,12 +123,11 @@ function ExerciseCard({
 
         {/* Muscle group badge */}
         <div
-          className="absolute left-2 top-2 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+          className="absolute left-2 top-2 rounded-tag px-2 py-1 text-xs font-semibold"
           style={{
-            backgroundColor: scrim(0.7),
-            color: muscleColor.text,
+            backgroundColor: surface(),
+            color: HEADING_TEXT,
             border: `1px solid ${muscleColor.active}`,
-            backdropFilter: 'blur(6px)',
           }}
         >
           {muscleGroupLabel}
@@ -144,7 +142,6 @@ function ExerciseCard({
             style={{
               backgroundColor: scrim(0.6),
               border: `1px solid ${ink(0.18)}`,
-              backdropFilter: 'blur(6px)',
               opacity: 0.7,
             }}
             aria-label="Exercise info"
@@ -157,7 +154,7 @@ function ExerciseCard({
         {showInfo && description ? (
           <div
             className="absolute inset-0 z-10 flex flex-col p-4"
-            style={{ backgroundColor: scrim(0.88), backdropFilter: 'blur(6px)' }}
+            style={{ backgroundColor: scrim(0.88) }}
           >
             <button
               type="button"
@@ -308,22 +305,8 @@ export default function ExercisesPage() {
       <main>
         {/* Page header */}
         <section className="relative overflow-hidden pb-12 pt-24 md:pb-16 md:pt-32">
-          <SectionBackground variant="grid" />
-          <div
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[480px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
-            style={{
-              background: `radial-gradient(circle, ${brandBright(0.1)} 0%, ${brand(0.07)} 36%, ${scrim(0)} 72%)`,
-            }}
-            aria-hidden="true"
-          />
           <div className="container relative z-10 mx-auto px-4 text-center">
-            <p
-              className="mb-3 text-xs font-bold uppercase tracking-[0.32em]"
-              style={{ color: BRAND_GREEN_BRIGHT }}
-            >
-              {t('eyebrow')}
-            </p>
-            <h1 className="mb-4 text-balance text-4xl font-extrabold text-text-primary md:text-5xl">
+            <h1 className="mb-4 text-balance text-4xl font-bold text-text-primary md:text-5xl">
               {t('pageTitle')}
             </h1>
             <p className="mx-auto max-w-xl text-balance text-lg" style={{ color: BODY_TEXT }}>
@@ -339,7 +322,7 @@ export default function ExercisesPage() {
             <div className="mt-8 flex flex-wrap justify-center gap-8">
               {pageStats.map((stat) => (
                 <div key={stat.label} className="text-center">
-                  <div className="text-3xl font-extrabold" style={{ color: BRAND_GREEN_BRIGHT }}>
+                  <div className="text-3xl font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>
                     {stat.value}
                   </div>
                   <div className="mt-0.5 text-xs font-medium" style={{ color: BODY_TEXT_SOFT }}>
@@ -353,7 +336,7 @@ export default function ExercisesPage() {
 
         {/* Sticky filter bar */}
         <section
-          className="sticky top-16 z-40 border-b backdrop-blur-md"
+          className="sticky top-16 z-40 border-b"
           style={{
             backgroundColor: surface(0.94),
             borderColor: ink(0.08),
@@ -368,7 +351,7 @@ export default function ExercisesPage() {
                 value={search}
                 onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
                 placeholder={t('searchPlaceholder')}
-                className="w-full rounded-xl py-2.5 pl-9 pr-9 text-sm text-text-primary outline-none transition-all placeholder:text-text-tertiary"
+                className="w-full rounded-control py-2.5 pl-9 pr-9 text-sm text-text-primary outline-none transition-all placeholder:text-text-tertiary"
                 style={{
                   backgroundColor: ink(0.06),
                   boxShadow: `0 0 0 1px ${ink(0.1)}`,

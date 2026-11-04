@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
 import { GOOGLE_PLAY_URL, TESTFLIGHT_URL } from '@/components/website/storeLinks';
-import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { BRAND_GREEN_BRIGHT, hue } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
@@ -50,14 +49,8 @@ export default function Download() {
   return (
     <>
       <main className="relative flex min-h-[calc(100vh-8rem)] items-center justify-center overflow-hidden px-4 py-20">
-        <DotPattern className="text-accent-primary/30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-transparent to-bg-primary/80" />
-
         <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col items-center text-center">
-          <p className="mb-4 rounded-full border border-accent-bright/25 bg-accent-bright/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-accent-bright">
-            {t('eyebrow')}
-          </p>
-          <h1 className="max-w-lg text-balance text-4xl font-black leading-tight text-text-primary sm:text-5xl">
+          <h1 className="max-w-lg text-balance text-4xl font-bold leading-tight text-text-primary sm:text-5xl">
             {t('title')}
           </h1>
           <p className="mt-4 max-w-md text-balance text-base leading-7 text-text-secondary sm:text-lg">
@@ -70,7 +63,7 @@ export default function Download() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={t('googleLabel')}
-              className="flex h-28 w-28 items-center justify-center rounded-2xl border border-ink/15 bg-bg-card text-text-primary shadow-2xl transition-all hover:-translate-y-1 hover:border-ink/35 hover:bg-bg-cardElevated focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary sm:h-32 sm:w-32"
+              className="flex h-28 w-28 items-center justify-center rounded-card border border-ink/15 bg-bg-card text-text-primary transition-all hover:-translate-y-1 hover:border-ink/35 hover:bg-bg-cardElevated focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary sm:h-32 sm:w-32"
               onClick={() =>
                 trackStoreButtonClick({ store: 'google_play', availability: 'available' })
               }
@@ -83,7 +76,7 @@ export default function Download() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={t('appleLabel')}
-              className="flex h-28 w-28 items-center justify-center rounded-2xl border border-ink/15 bg-bg-card text-text-primary shadow-2xl transition-all hover:-translate-y-1 hover:border-ink/35 hover:bg-bg-cardElevated focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary sm:h-32 sm:w-32"
+              className="flex h-28 w-28 items-center justify-center rounded-card border border-ink/15 bg-bg-card text-text-primary transition-all hover:-translate-y-1 hover:border-ink/35 hover:bg-bg-cardElevated focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary sm:h-32 sm:w-32"
               onClick={() =>
                 trackStoreButtonClick({ store: 'app_store', availability: 'testflight' })
               }

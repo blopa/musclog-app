@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 
 import { computePopoverTop } from '@/components/website/popoverPlacement';
 import { StoreButtons } from '@/components/website/StoreButtons';
-import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -17,7 +16,6 @@ import {
   ON_BRAND,
   scrim,
   surface,
-  surfaceCard,
 } from '@/components/website/websiteColors';
 import { WebsitePreferences } from '@/components/website/WebsitePreferences';
 import { GITHUB_LICENSE_URL, GITHUB_REPO_URL } from '@/constants/misc';
@@ -137,7 +135,7 @@ export function DownloadModal({
     <div className="relative inline-flex" ref={triggerRef}>
       <button
         type="button"
-        className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 font-semibold transition-colors ${buttonClasses[variant]} ${className ?? ''}`}
+        className={`inline-flex items-center justify-center gap-2 rounded-control px-5 py-3 font-semibold transition-colors ${buttonClasses[variant]} ${className ?? ''}`}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         onClick={() => setIsOpen((current) => !current)}
@@ -150,9 +148,9 @@ export function DownloadModal({
         ? createPortal(
             <div
               ref={popoverContentRef}
-              className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-2xl border p-4 shadow-2xl backdrop-blur-xl ${popoverClasses[variant]}`}
+              className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-card border p-4 ${popoverClasses[variant]}`}
               style={{
-                backgroundColor: surface(0.96),
+                backgroundColor: surface(),
                 borderColor: CARD_BORDER,
                 top: popoverTop,
                 left: centeredLeft,
@@ -250,7 +248,7 @@ export function MobileMenu() {
     { text: t('github'), href: GITHUB_REPO_URL },
   ];
   const linkClasses =
-    'rounded-xl px-4 py-3 text-base font-semibold transition-colors hover:bg-ink/10';
+    'rounded-control px-4 py-3 text-base font-semibold transition-colors hover:bg-ink/10';
 
   return (
     <>
@@ -261,7 +259,7 @@ export function MobileMenu() {
         aria-expanded={isOpen}
         aria-controls={MOBILE_MENU_ID}
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors hover:border-ink/20 hover:bg-ink/10 lg:hidden"
+        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control border transition-colors hover:border-ink/20 hover:bg-ink/10 lg:hidden"
         style={{
           borderColor: isOpen ? brand(0.4) : ink(0.08),
           backgroundColor: isOpen ? ink(0.08) : ink(0.04),
@@ -279,7 +277,7 @@ export function MobileMenu() {
             <div className="fixed inset-0 top-16 z-[140] lg:hidden">
               <div
                 aria-hidden="true"
-                className="absolute inset-0 backdrop-blur-sm"
+                className="absolute inset-0"
                 style={{ backgroundColor: scrim(0.6) }}
                 onClick={() => setIsOpen(false)}
               />
@@ -288,10 +286,10 @@ export function MobileMenu() {
                 ref={panelRef}
                 id={MOBILE_MENU_ID}
                 tabIndex={-1}
-                className="absolute inset-x-0 top-0 max-h-full overflow-y-auto border-b shadow-2xl backdrop-blur-xl"
+                className="absolute inset-x-0 top-0 max-h-full overflow-y-auto border-b"
                 style={{
                   borderColor: ink(0.08),
-                  background: `linear-gradient(180deg, ${surface(0.98)} 0%, ${surfaceCard(0.97)} 100%)`,
+                  backgroundColor: surface(),
                 }}
               >
                 <nav
@@ -327,10 +325,7 @@ export function MobileMenu() {
                   className="container mx-auto border-t px-4 py-5"
                   style={{ borderColor: ink(0.08) }}
                 >
-                  <p
-                    className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
-                    style={{ color: BODY_TEXT_SOFT }}
-                  >
+                  <p className="mb-3 text-sm font-semibold" style={{ color: BODY_TEXT_SOFT }}>
                     {t('download')}
                   </p>
                   <StoreButtons />
@@ -349,13 +344,13 @@ export function Header() {
 
   return (
     <header
-      className="fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md"
-      style={{ backgroundColor: surface(0.86), borderColor: ink(0.08) }}
+      className="fixed left-0 right-0 top-0 z-50 border-b"
+      style={{ backgroundColor: surface(), borderColor: ink(0.08) }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-inner"
             style={{ backgroundColor: BRAND_GREEN }}
           >
             <Dumbbell className="h-5 w-5 text-text-on-accent" />
@@ -397,7 +392,7 @@ export function Header() {
           </Link>
           <DownloadModal
             variant="default"
-            className="shrink-0 whitespace-nowrap px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
+            className="shrink-0 whitespace-nowrap px-5 py-2.5 text-sm font-bold"
             style={{ backgroundColor: BRAND_GREEN, color: ON_BRAND }}
           >
             {t('download')}
@@ -408,7 +403,7 @@ export function Header() {
         <div className="flex items-center gap-2 lg:hidden">
           <DownloadModal
             variant="default"
-            className="hidden min-h-11 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgb(var(--c-accent-primary)/0.18)] [@media(min-width:550px)]:inline-flex"
+            className="hidden min-h-11 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold [@media(min-width:550px)]:inline-flex"
           >
             <Download className="h-4 w-4" />
             <span>{t('download')}</span>
@@ -440,13 +435,12 @@ export function Footer() {
   ];
 
   return (
-    <footer className="relative overflow-hidden border-t py-8" style={{ borderColor: ink(0.08) }}>
-      <SectionBackground variant="grid" />
+    <footer className="border-t py-8" style={{ borderColor: ink(0.08) }}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <Link href="/" className="flex items-center gap-3">
             <div
-              className="flex h-8 w-8 items-center justify-center rounded-lg"
+              className="flex h-8 w-8 items-center justify-center rounded-inner"
               style={{ backgroundColor: BRAND_GREEN }}
             >
               <Dumbbell className="h-5 w-5 text-text-on-accent" />

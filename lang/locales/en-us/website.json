@@ -75,10 +75,10 @@
       "qrcode_text": "Scan to download Musclog"
     },
     "hero": {
-      "badge1": "★ FREE & OPEN SOURCE",
-      "badge2": "PRIVACY FOCUSED (NO LOGIN REQUIRED)",
-      "title1": "Own Your",
-      "title2": "Fitness Data",
+      "badge1": "Free and open source",
+      "badge2": "No account required",
+      "title1": "Own your",
+      "title2": "fitness data",
       "subheading": "A local-first, open-source fitness tracker. No accounts, no tracking, and no cloud. Just you and your gains.",
       "github": "View on GitHub",
       "demoEyebrow": "Instant preview",
@@ -124,17 +124,14 @@
             "alt": "Musclog workout library screenshot"
           }
         }
-      }
+      },
+      "screenshotAlt": "Musclog app screenshot"
     },
     "screenshots": {
-      "eyebrow": "Screenshot reel",
       "title": "See Musclog in motion",
       "description": "A slow scrolling preview of real app screens. Hover to pause and click any card to open it larger.",
-      "hint": "Hover to pause, click to zoom",
       "openSlide": "Open screenshot",
       "modalAriaLabel": "Musclog screenshot preview",
-      "modalEyebrow": "Screenshot preview",
-      "modalDetails": "What you're seeing",
       "close": "Close",
       "previous": "Previous screenshot",
       "next": "Next screenshot",
@@ -197,31 +194,30 @@
       }
     },
     "themes": {
-      "title": "Six Themes, One App",
+      "title": "Pick your theme",
       "description": "Pick the palette that fits your training. Every screen follows it, including charts, camera overlays, and the tab bar.",
       "footnote": "Switch any time in Settings. Musclog also follows your device's light and dark setting if you would rather not choose."
     },
     "features": {
-      "title": "Built for Performance & Privacy",
+      "title": "Built for performance and privacy",
       "description": "No telemetry, no tracking, no subscription. Just a powerful engine for your fitness journey.",
       "strengthTracking": {
         "title": "Offline Strength Tracking",
-        "description": "Log your sets and reps directly to your device. No internet required. Your data never leaves your pocket.",
-        "link": "VIEW MORE"
+        "description": "Log your sets and reps directly to your device. No internet required. Your data never leaves your pocket."
       },
       "privacyFirst": {
         "title": "Privacy First",
         "description": "No sign-ups, no logins, and no third-party tracking. Musclog respects your digital sovereignty.",
-        "link": "PRIVACY MANIFESTO"
+        "link": "Privacy policy"
       },
       "openSource": {
         "title": "Open Source",
         "description": "Musclog is community-driven. Audit the code, contribute features, or fork it to make it your own.",
-        "link": "VIEW SOURCE"
+        "link": "View source"
       }
     },
     "featureGrid": {
-      "title": "Everything You Need to Train Smarter",
+      "title": "Everything you need to train smarter",
       "description": "From AI-powered coaching to detailed analytics, Musclog gives you the tools to take full control of your fitness journey.",
       "items": {
         "aiCoach": {
@@ -242,7 +238,7 @@
         },
         "cycle": {
           "title": "Cycle Awareness",
-          "description": "Track menstrual phases and receive training recommendations optimized for your cycle."
+          "description": "Log periods and symptoms, and see patterns in your own records. Predictions stay off unless you turn them on."
         },
         "templates": {
           "title": "Workout Templates",
@@ -258,57 +254,30 @@
         }
       }
     },
-    "stats": {
-      "vitamins": {
-        "value": "40+",
-        "label": "Vitamins & Minerals",
-        "description": "That you can track daily"
-      },
-      "offline": {
-        "value": "100%",
-        "label": "Offline Ready",
-        "description": "No internet needed"
-      },
-      "cloud": {
-        "value": "0",
-        "label": "Cloud Uploads",
-        "description": "Data stays local"
-      },
-      "encryption": {
-        "value": "AES",
-        "label": "Encryption",
-        "description": "At-rest security"
-      }
-    },
     "howItWorks": {
-      "title": "How It Works",
+      "title": "How it works",
       "description": "Get started in minutes. No complicated setup, no subscriptions, no data harvesting.",
       "steps": {
         "step1": {
-          "title": "Download & Go",
-          "description": "Install Musclog from the App Store or Google Play. No account required — just open and start tracking."
+          "title": "Download and go",
+          "description": "Install Musclog from the App Store or Google Play. No account required, just open it and start logging."
         },
         "step2": {
-          "title": "Log Your Training",
+          "title": "Log your training",
           "description": "Record sets, reps, and weights. Scan barcodes or snap photos to log meals. Everything stays on your device."
         },
         "step3": {
-          "title": "Track Progress",
+          "title": "Track progress",
           "description": "Review weekly check-ins, visualize trends, and let the AI coach help you optimize your approach."
         }
       }
     },
-    "testimonial": {
-      "quote": "\"Musclog is the first app that respects my privacy while providing a world-class training experience. Local-first is the future.\"",
-      "author": "Laura F.",
-      "role": "Busy Developer"
-    },
     "cta": {
       "title": "Ready to start?",
-      "description": "Join thousands of athletes who use Musclog to track their progress without compromising privacy.",
-      "download": "Download Now",
+      "description": "Download Musclog and keep your training and food logs on your own device. No account, no subscription.",
+      "download": "Download now",
       "close": "Close",
-      "sourceCode": "View Source Code"
+      "sourceCode": "View source code"
     },
     "navigation": {
       "appName": "Musclog",

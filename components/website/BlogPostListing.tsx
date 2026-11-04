@@ -14,8 +14,7 @@ import type { BlogPostPage } from '@/utils/blogPosts.server';
 
 import { useBlogListingCopy } from './blogListingCopy';
 import { blogCategoryPath, blogListingPath, blogPostPath } from './blogRoutes';
-import { GridPattern } from './WebsiteBackgrounds';
-import { BODY_TEXT, BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT, brandBright } from './websiteColors';
+import { BODY_TEXT, BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT } from './websiteColors';
 
 function formatPostDate(date: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, {
@@ -96,13 +95,6 @@ export function BlogPostListing({
 
   return (
     <main className="relative min-h-[70vh] overflow-hidden pb-24 pt-28">
-      <GridPattern className="text-accent-bright/10" />
-      <div
-        className="pointer-events-none absolute left-1/2 top-0 h-[480px] w-[760px] -translate-x-1/2 rounded-full blur-[150px]"
-        style={{ backgroundColor: brandBright(0.1) }}
-        aria-hidden="true"
-      />
-
       <div className="container relative z-10 mx-auto max-w-4xl px-4">
         {category ? (
           <a
@@ -116,13 +108,10 @@ export function BlogPostListing({
         ) : null}
 
         <header className="mx-auto mb-14 max-w-3xl text-center">
-          <p
-            className="mb-4 text-sm font-bold uppercase tracking-[0.24em]"
-            style={{ color: BRAND_GREEN_BRIGHT }}
-          >
+          <p className="mb-4 text-sm font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>
             {copy.eyebrow}
           </p>
-          <h1 className="text-balance text-4xl font-extrabold text-text-primary md:text-6xl">
+          <h1 className="text-balance text-4xl font-bold text-text-primary md:text-6xl">
             {copy.title}
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
@@ -132,7 +121,7 @@ export function BlogPostListing({
 
         {posts.length === 0 ? (
           <p
-            className="border-ink/12 rounded-3xl border border-dashed px-6 py-16 text-center"
+            className="border-ink/12 rounded-sheet border border-dashed px-6 py-16 text-center"
             style={{ color: BODY_TEXT_SOFT }}
           >
             {copy.empty}
@@ -142,10 +131,10 @@ export function BlogPostListing({
             {posts.map((post) => (
               <article
                 key={post.slug}
-                className="group relative rounded-3xl border border-ink/10 bg-gradient-to-br from-ink/[0.06] to-ink/[0.015] p-6 shadow-[0_22px_70px_rgb(var(--c-scrim-base)/0.24)] backdrop-blur-sm transition duration-200 hover:border-accent-bright/40 hover:from-ink/[0.09] hover:shadow-[0_28px_80px_rgb(var(--c-scrim-base)/0.34)] md:p-8"
+                className="group relative rounded-card border border-ink/10 p-6 transition-colors hover:border-accent-bright/40 md:p-8"
               >
                 <div
-                  className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold uppercase tracking-[0.14em]"
+                  className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold"
                   style={{ color: BODY_TEXT_SOFT }}
                 >
                   <time dateTime={post.date} className="inline-flex items-center gap-2">
@@ -169,7 +158,7 @@ export function BlogPostListing({
                     className="text-text-primary transition-colors group-hover:text-accent-bright"
                   >
                     {post.title}
-                    <span className="absolute inset-0 rounded-3xl" aria-hidden="true" />
+                    <span className="absolute inset-0 rounded-sheet" aria-hidden="true" />
                   </a>
                 </h2>
 
@@ -248,7 +237,7 @@ export function BlogPostListing({
                     key={item}
                     aria-current="page"
                     aria-label={t('pageLabel', { page: item })}
-                    className="inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-extrabold text-text-on-accent"
+                    className="inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-bold text-text-on-accent"
                     style={{ backgroundColor: BRAND_GREEN_BRIGHT }}
                   >
                     {item}

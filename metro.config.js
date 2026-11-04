@@ -34,6 +34,19 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     };
   }
 
+  // The Anthropic SDK's ESM build has an import cycle (resources/beta/messages/messages.mjs <->
+  // index.mjs) whose `export const BETA_*` values are read through re-export getters. In dev,
+  // React Refresh walks every module's exports on load, hits a getter while the cycle is still
+  // initializing and throws "can't access lexical declaration 'BETA_BROWSER_MEMBER_NAME_VALUES'
+  // before initialization", which stops app/_layout.tsx from loading. The CommonJS build assigns
+  // plain properties, so the same cycle is harmless. Resolve the package root to it everywhere.
+  if (moduleName === '@anthropic-ai/sdk') {
+    return {
+      filePath: require.resolve('@anthropic-ai/sdk'),
+      type: 'sourceFile',
+    };
+  }
+
   // VisionCamera throws on import under web. See vision-camera-web-stub.js.
   if (platform === 'web' && moduleName === 'react-native-vision-camera') {
     return {

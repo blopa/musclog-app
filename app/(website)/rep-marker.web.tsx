@@ -21,7 +21,6 @@ import {
 } from '@/components/website/repMarker/chartChannels';
 import { ChartPanel } from '@/components/website/repMarker/ChartPanel';
 import { DropZone } from '@/components/website/repMarker/DropZone';
-import { GridPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -217,16 +216,10 @@ export default function RepMarkerPage() {
   return (
     <>
       <main className="relative min-h-screen overflow-hidden pb-20 pt-28">
-        <GridPattern className="opacity-30" />
-        <div
-          className="absolute left-1/4 top-32 h-72 w-72 rounded-full blur-[100px]"
-          style={{ backgroundColor: brandBright(0.06) }}
-        />
-
         <div className="container relative z-10 mx-auto max-w-7xl px-4">
           {/* Title */}
           <div className="mb-8 text-center">
-            <h1 className="mb-3 text-4xl font-black tracking-tight text-text-primary md:text-5xl">
+            <h1 className="mb-3 text-4xl font-bold tracking-tight text-text-primary md:text-5xl">
               {t('title')}
             </h1>
             <p
@@ -271,7 +264,7 @@ export default function RepMarkerPage() {
               <div className="grid gap-4 lg:grid-cols-2">
                 {/* Video player */}
                 <div
-                  className="self-start overflow-hidden rounded-2xl border"
+                  className="self-start overflow-hidden rounded-card border"
                   // The letterbox behind the video stays dark in every palette.
                   style={{ backgroundColor: scrim(1), borderColor: CARD_BORDER }}
                 >
@@ -320,13 +313,13 @@ export default function RepMarkerPage() {
 
               {/* Controls bar */}
               <div
-                className="flex flex-wrap items-center gap-2 rounded-2xl border px-5 py-4"
+                className="flex flex-wrap items-center gap-2 rounded-card border px-5 py-4"
                 style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
               >
                 <button
                   type="button"
                   onClick={triggerMarkStart}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors"
+                  className="flex items-center gap-2 rounded-control px-4 py-2.5 text-sm font-bold transition-colors"
                   style={{
                     backgroundColor:
                       markState === 'waitingEnd' ? hue('amber', 0.2) : brandBright(0.15),
@@ -342,7 +335,7 @@ export default function RepMarkerPage() {
                   type="button"
                   onClick={triggerMarkEnd}
                   disabled={markState !== 'waitingEnd'}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors"
+                  className="flex items-center gap-2 rounded-control px-4 py-2.5 text-sm font-bold transition-colors"
                   style={{
                     backgroundColor: markState === 'waitingEnd' ? brand(0.2) : INPUT_BG,
                     border: `1px solid ${markState === 'waitingEnd' ? BRAND_GREEN : INPUT_BORDER}`,
@@ -365,7 +358,7 @@ export default function RepMarkerPage() {
                     type="button"
                     onClick={handleUndo}
                     disabled={markerCount === 0}
-                    className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors"
+                    className="flex items-center gap-1.5 rounded-control px-3 py-2 text-xs font-semibold transition-colors"
                     style={{
                       backgroundColor: INPUT_BG,
                       border: `1px solid ${INPUT_BORDER}`,
@@ -381,7 +374,7 @@ export default function RepMarkerPage() {
                     type="button"
                     onClick={handleClearAll}
                     disabled={markerCount === 0}
-                    className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors"
+                    className="flex items-center gap-1.5 rounded-control px-3 py-2 text-xs font-semibold transition-colors"
                     style={{
                       backgroundColor: markerCount > 0 ? hue('error', 0.12) : INPUT_BG,
                       border: `1px solid ${markerCount > 0 ? hue('error', 0.4) : INPUT_BORDER}`,
@@ -402,7 +395,7 @@ export default function RepMarkerPage() {
 
               {/* Markers table */}
               <div
-                className="overflow-hidden rounded-2xl border"
+                className="overflow-hidden rounded-card border"
                 style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
               >
                 <div
@@ -416,7 +409,7 @@ export default function RepMarkerPage() {
                     type="button"
                     onClick={handleDownload}
                     disabled={markerCount === 0}
-                    className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-colors"
+                    className="flex items-center gap-2 rounded-control px-4 py-2 text-sm font-bold transition-colors"
                     style={{
                       backgroundColor: markerCount > 0 ? brandBright(0.15) : INPUT_BG,
                       border: `1px solid ${markerCount > 0 ? BRAND_GREEN_BRIGHT : INPUT_BORDER}`,
@@ -477,7 +470,7 @@ export default function RepMarkerPage() {
                               onClick={() =>
                                 setMarkers((prev) => prev.filter((_, idx) => idx !== i))
                               }
-                              className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition-colors"
+                              className="flex items-center gap-1 rounded-control px-2 py-1 text-xs transition-colors"
                               style={{ border: '1px solid transparent', color: MUTED }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.color = ACCENT_RED;

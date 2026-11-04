@@ -69,7 +69,7 @@ export function DropZone({
       }}
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}
-      className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-8 transition-colors"
+      className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-card border-2 border-dashed p-8 transition-colors"
       style={{
         backgroundColor: dragging ? brandBright(0.06) : CARD_BG,
         borderColor,
@@ -88,7 +88,7 @@ export function DropZone({
         }}
       />
       <div
-        className="flex h-12 w-12 items-center justify-center rounded-xl"
+        className="flex h-12 w-12 items-center justify-center rounded-control"
         style={{
           backgroundColor: isLoaded ? brand(0.15) : INPUT_BG,
           border: `1px solid ${isLoaded ? brand(0.4) : INPUT_BORDER}`,

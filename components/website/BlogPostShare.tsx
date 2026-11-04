@@ -78,10 +78,7 @@ export function BlogPostShare({ canonicalPath, description, title }: BlogPostSha
 
   return (
     <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-      <h2
-        className="text-xs font-bold uppercase tracking-[0.18em]"
-        style={{ color: BODY_TEXT_SOFT }}
-      >
+      <h2 className="text-xs font-bold" style={{ color: BODY_TEXT_SOFT }}>
         {t('title')}
       </h2>
 

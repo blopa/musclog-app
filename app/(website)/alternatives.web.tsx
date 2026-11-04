@@ -8,12 +8,10 @@ import {
   Minus,
   Salad,
   ShieldCheck,
-  Sparkles,
   Trophy,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT_SOFT,
   BRAND_GREEN,
@@ -378,35 +376,9 @@ export default function Alternatives() {
 
   return (
     <main className="relative overflow-hidden pb-24 pt-24">
-      <DotPattern className="text-accent-primary/20" />
-      <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-transparent to-bg-primary/60" />
-
-      {/* Ambient glows */}
-      <div
-        className="absolute left-1/4 top-32 h-96 w-96 rounded-full blur-[120px]"
-        style={{ backgroundColor: brandBright(0.06) }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-32 right-1/4 h-80 w-80 rounded-full blur-[100px]"
-        style={{ backgroundColor: hue('info', 0.06) }}
-        aria-hidden="true"
-      />
-
       <div className="container relative z-10 mx-auto max-w-5xl px-4">
         {/* Hero */}
         <div className="mb-10 text-center">
-          <div
-            className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest"
-            style={{
-              backgroundColor: brandBright(0.06),
-              borderColor: brandBright(0.25),
-              color: BRAND_GREEN_BRIGHT,
-            }}
-          >
-            <Sparkles size={12} color={BRAND_GREEN_BRIGHT} />
-            {t('badge')}
-          </div>
           <h1 className="mb-4 text-4xl font-bold text-text-primary md:text-5xl">
             {t('titlePrefix')}{' '}
             <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('titleHighlight')}</span>
@@ -421,16 +393,13 @@ export default function Alternatives() {
 
         {/* Legend */}
         <div
-          className="mx-auto mb-4 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-2xl border px-5 py-3"
+          className="mx-auto mb-4 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-card border px-5 py-3"
           style={{
             backgroundColor: ink(0.02),
             borderColor: ink(0.08),
           }}
         >
-          <span
-            className="text-xs font-semibold uppercase tracking-widest"
-            style={{ color: MUTED }}
-          >
+          <span className="text-xs font-semibold tracking-widest" style={{ color: MUTED }}>
             {t('legend.title')}
           </span>
           <span
@@ -475,7 +444,7 @@ export default function Alternatives() {
               <section key={section.id}>
                 <div className="mb-5 flex items-center gap-3">
                   <div
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control border"
                     style={{
                       backgroundColor: `${section.accent}14`,
                       borderColor: `${section.accent}40`,
@@ -502,7 +471,7 @@ export default function Alternatives() {
         <section className="mt-20">
           <div className="mb-5 flex items-center gap-3">
             <div
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control border"
               style={{
                 backgroundColor: hue('amber', 0.1),
                 borderColor: hue('amber', 0.35),
@@ -515,18 +484,18 @@ export default function Alternatives() {
             </h2>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border" style={{ borderColor: ink(0.08) }}>
+          <div className="overflow-hidden rounded-card border" style={{ borderColor: ink(0.08) }}>
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ backgroundColor: ink(0.03) }}>
                   <th
-                    className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                    className="px-5 py-3 text-left text-xs font-semibold tracking-wider"
                     style={{ color: MUTED }}
                   >
                     {t('winners.categoryHeader')}
                   </th>
                   <th
-                    className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                    className="px-5 py-3 text-left text-xs font-semibold tracking-wider"
                     style={{ color: MUTED }}
                   >
                     {t('winners.winnerHeader')}
@@ -565,7 +534,7 @@ export default function Alternatives() {
         {/* Conclusion */}
         <section className="mt-16">
           <div
-            className="rounded-2xl border p-6 md:p-8"
+            className="rounded-card border p-6 md:p-8"
             style={{ backgroundColor: brandBright(0.04), borderColor: brandBright(0.2) }}
           >
             <h2 className="mb-4 text-lg font-bold text-text-primary md:text-xl">
@@ -581,7 +550,7 @@ export default function Alternatives() {
               {t('conclusion.body')}
             </p>
             <div
-              className="mb-4 rounded-xl border px-4 py-3 text-center text-sm font-semibold"
+              className="mb-4 rounded-control border px-4 py-3 text-center text-sm font-semibold"
               style={{
                 backgroundColor: ink(0.03),
                 borderColor: ink(0.1),
@@ -636,7 +605,7 @@ function SectionTable({
   const musclogTint = brandBright(0.05);
 
   return (
-    <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: ink(0.08) }}>
+    <div className="overflow-x-auto rounded-card border" style={{ borderColor: ink(0.08) }}>
       <table
         className="w-full border-collapse text-left"
         style={{ minWidth: FEATURE_COL_WIDTH + APPS.length * APP_COL_WIDTH }}
@@ -644,7 +613,7 @@ function SectionTable({
         <thead>
           <tr style={{ backgroundColor: ink(0.03) }}>
             <th
-              className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+              className="px-4 py-3 text-left text-xs font-semibold tracking-wider"
               style={{ width: FEATURE_COL_WIDTH, minWidth: FEATURE_COL_WIDTH, color: MUTED }}
             >
               {t('featureColumn')}
