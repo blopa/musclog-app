@@ -279,6 +279,22 @@ the same moment) and shows the default theme's app icon at a fixed 128pt. Pinned
 `components/__tests__/splashLoading.test.ts`. Anything rendered from `app/_layout.tsx` or
 `app/index.tsx` must not rely on `className`.
 
+## Native splash and app splash looked like two different screens (November 2026)
+
+### Symptom
+
+The native launch screen showed the old round `assets/splash.png` logo at 200pt on `#0c1a13`; the
+app's own `SplashLoading` then showed the theme icon at 128pt on `#0d1210`.
+
+### Fix
+
+The `expo-splash-screen` plugin in `app.json` now uses `assets/theme-icons/icon-bg-kinetic-depth.png`,
+`imageWidth` 128 (= `LOGO_SIZE` in `SplashLoading`) and the default dark `surfaceBase`. The committed
+Android `splashscreen_logo.png` drawables (icon at 128dp centred in the 288dp Android 12 canvas), the
+iOS `SplashScreenLogo` imageset, the storyboard frame and both background colours mirror that config;
+`npm run prebuild` regenerates them identically. Pinned by `components/__tests__/splashLoading.test.ts`.
+Change the icon, size or background in both places together.
+
 ## Raw translation keys in the live session: equipment labels built at runtime (October 2026)
 
 ### Symptom

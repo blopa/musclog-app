@@ -1,6 +1,8 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
+import { darkColors } from '@/theme.tokens';
+
 const root = join(__dirname, '..', '..');
 
 /** Source without comments, so the explanatory comment naming `className` cannot match. */
@@ -25,5 +27,21 @@ describe('SplashLoading', () => {
     expect(source).toMatch(
       /<Image[\s\S]*?style=\{\{\s*width:\s*LOGO_SIZE,\s*height:\s*LOGO_SIZE\s*\}\}/
     );
+  });
+
+  it('matches the native splash: same icon, same size, same background', () => {
+    // The native splash (expo-splash-screen) hands over to this screen, so any
+    // difference in artwork, size or background shows as a visible jump.
+    const appJson = JSON.parse(readFileSync(join(root, 'app.json'), 'utf8'));
+    const plugin = appJson.expo.plugins.find(
+      (entry: unknown) => Array.isArray(entry) && entry[0] === 'expo-splash-screen'
+    );
+    const native = plugin[1];
+    const logoSize = Number(/const LOGO_SIZE = (\d+);/.exec(source)?.[1]);
+    const logoPath = /require\('@\/(assets\/[^']+)'\)/.exec(source)?.[1];
+
+    expect(native.image).toBe(`./${logoPath}`);
+    expect(native.imageWidth).toBe(logoSize);
+    expect(native.backgroundColor.toLowerCase()).toBe(darkColors.surfaceBase.toLowerCase());
   });
 });
