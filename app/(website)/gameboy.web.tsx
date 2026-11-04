@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WasmBoyJoypadState } from 'wasmboy';
 
-import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { isProduction } from '@/utils/app';
 import {
@@ -310,7 +309,7 @@ export default function GameBoy() {
     <button
       type="button"
       onClick={start}
-      className="rounded-full bg-accent-bright px-8 py-3 text-base font-bold text-text-on-accent shadow-lg transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary"
+      className="rounded-full bg-accent-bright px-8 py-3 text-base font-bold text-text-on-accent transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary"
     >
       {t('playButton')}
     </button>
@@ -336,11 +335,8 @@ export default function GameBoy() {
   return (
     <>
       <main className="relative flex min-h-[calc(100vh-8rem)] flex-col items-center overflow-hidden px-4 py-16">
-        <DotPattern className="text-accent-primary/30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-transparent to-bg-primary/80" />
-
         <div className="relative z-10 mx-auto mt-4 flex w-full max-w-xl flex-col items-center text-center">
-          <h1 className="max-w-lg text-balance text-4xl font-black leading-tight text-text-primary sm:text-5xl">
+          <h1 className="max-w-lg text-balance text-4xl font-bold leading-tight text-text-primary sm:text-5xl">
             {t('title')}
           </h1>
           <p className="mt-4 max-w-md text-balance text-base leading-7 text-text-secondary sm:text-lg">
@@ -348,8 +344,8 @@ export default function GameBoy() {
           </p>
 
           {/* Console screen */}
-          <div className="relative mt-10 w-full max-w-sm rounded-3xl border border-ink/10 bg-scrim-base/70 p-4 shadow-2xl">
-            <div className="relative aspect-[160/144] w-full overflow-hidden rounded-xl bg-scrim-base">
+          <div className="relative mt-10 w-full max-w-sm rounded-sheet border border-ink/10 bg-scrim-base/70 p-4">
+            <div className="relative aspect-[160/144] w-full overflow-hidden rounded-control bg-scrim-base">
               <canvas
                 ref={canvasRef}
                 width={GB_SCREEN_WIDTH}
@@ -359,7 +355,7 @@ export default function GameBoy() {
               />
 
               {status !== 'playing' ? (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-scrim-base/80 backdrop-blur-sm">
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-scrim-base/80">
                   {screenOverlay}
                 </div>
               ) : null}
@@ -578,7 +574,7 @@ function PillButton({ button, label, onPress, disabled, children }: ButtonProps)
       aria-label={label}
       disabled={disabled}
       {...handlers}
-      className="rounded-full border border-ink/15 bg-ink/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-text-primary transition-colors active:bg-accent-bright/40"
+      className="rounded-full border border-ink/15 bg-ink/10 px-4 py-1.5 text-[10px] font-bold tracking-wider text-text-primary transition-colors active:bg-accent-bright/40"
     >
       {children}
     </button>

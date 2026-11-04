@@ -52,7 +52,7 @@ function PreferenceOption({
         className="peer sr-only"
       />
       <span
-        className="flex min-h-12 items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-ink/[0.06] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-accent-primary"
+        className="flex min-h-12 items-center gap-3 rounded-control px-3 py-3 text-sm font-medium text-text-secondary transition-colors hover:bg-ink/[0.06] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-accent-primary"
         style={selected ? { backgroundColor: brand(0.12), color: HEADING_TEXT } : undefined}
       >
         {children}
@@ -158,10 +158,10 @@ export function WebsitePreferences() {
               id={id}
               role="dialog"
               aria-labelledby={`${id}-title`}
-              className="fixed z-[170] max-h-[calc(100dvh-2rem)] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border p-3 text-text-primary shadow-2xl backdrop-blur-xl"
+              className="fixed z-[170] max-h-[calc(100dvh-2rem)] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto rounded-card border p-3 text-text-primary"
               style={{
                 ...position,
-                background: `linear-gradient(180deg, ${surfaceCard(0.98)}, ${surface(0.98)})`,
+                backgroundColor: surface(),
                 borderColor: ink(0.12),
                 boxShadow: `0 24px 70px ${scrim(0.3)}, 0 0 0 1px ${ink(0.03)}`,
               }}
@@ -194,7 +194,7 @@ export function WebsitePreferences() {
               <div
                 role="tablist"
                 aria-label={title}
-                className="mb-3 grid grid-cols-2 gap-1 rounded-xl bg-ink/[0.04] p-1"
+                className="mb-3 grid grid-cols-2 gap-1 rounded-control bg-ink/[0.04] p-1"
                 onKeyDown={(event) => {
                   if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
                     event.preventDefault();
@@ -218,7 +218,7 @@ export function WebsitePreferences() {
                     aria-controls={`${id}-${tab}-panel`}
                     tabIndex={activeTab === tab ? 0 : -1}
                     onClick={() => setActiveTab(tab)}
-                    className="flex min-h-11 items-center justify-center gap-2 rounded-lg px-2 text-sm font-semibold transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-primary"
+                    className="flex min-h-11 items-center justify-center gap-2 rounded-control px-2 text-sm font-semibold transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-primary"
                     style={{
                       backgroundColor: activeTab === tab ? surfaceCard() : 'transparent',
                       color: activeTab === tab ? HEADING_TEXT : undefined,

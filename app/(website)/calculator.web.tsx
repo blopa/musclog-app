@@ -2,7 +2,6 @@ import { BarChart3, ChevronDown, Zap } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
@@ -139,7 +138,7 @@ function WebSelect<T extends string | number>({
 
       {open ? (
         <div
-          className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-xl border p-1 shadow-2xl backdrop-blur-xl"
+          className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-control border p-1"
           style={{
             backgroundColor: surface(0.96),
             borderColor: brandBright(0.22),
@@ -160,7 +159,7 @@ function WebSelect<T extends string | number>({
                     onChange(option.value);
                     setOpen(false);
                   }}
-                  className="flex w-full items-center rounded-lg px-3 py-2.5 text-sm transition-colors"
+                  className="flex w-full items-center rounded-control px-3 py-2.5 text-sm transition-colors"
                   style={{
                     backgroundColor: active ? brand(0.22) : 'transparent',
                     color: active ? HEADING_TEXT : BODY_TEXT,
@@ -222,7 +221,7 @@ export default function Calculator() {
 
   const inputStyle = { backgroundColor: INPUT_BG, borderColor: INPUT_BORDER, color: HEADING_TEXT };
   const inputClass =
-    'w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-accent-bright/40';
+    'w-full rounded-control border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-accent-bright/40';
   const selectOptions = {
     activity: ([1, 2, 3, 4, 5] as const).map((level) => ({
       label: t(`form.activity${level}`),
@@ -250,22 +249,10 @@ export default function Calculator() {
   return (
     <>
       <main className="relative overflow-hidden pb-20 pt-28">
-        <GridPattern className="text-accent-primary/50" />
-        <FloatingShapes />
-        <div
-          className="absolute left-1/4 top-32 h-72 w-72 rounded-full blur-[100px]"
-          style={{ backgroundColor: brandBright(0.08) }}
-        />
-        <div
-          className="absolute bottom-32 right-1/4 h-64 w-64 rounded-full blur-[80px]"
-          style={{ backgroundColor: hue('info', 0.08) }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/30 via-transparent to-bg-primary/30" />
-
         <div className="container relative z-10 mx-auto max-w-6xl px-4">
           {/* Title */}
           <div className="mb-10 text-center">
-            <h1 className="mb-3 text-4xl font-black tracking-tight text-text-primary md:text-6xl">
+            <h1 className="mb-3 text-4xl font-bold tracking-tight text-text-primary md:text-6xl">
               {t('titleStart')}{' '}
               <span className="italic" style={{ color: BRAND_GREEN_BRIGHT }}>
                 {t('titleHighlight')}
@@ -283,13 +270,13 @@ export default function Calculator() {
           <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
             {/* ── Form ─────────────────────────────────────────────────── */}
             <div
-              className="rounded-2xl border p-6 md:p-8"
+              className="rounded-card border p-6 md:p-8"
               style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
             >
               {/* Form header */}
               <div className="mb-6 flex items-center gap-2">
                 <div
-                  className="flex h-7 w-7 items-center justify-center rounded-md border"
+                  className="flex h-7 w-7 items-center justify-center rounded-inner border"
                   style={{
                     backgroundColor: brandBright(0.12),
                     borderColor: brandBright(0.3),
@@ -336,7 +323,7 @@ export default function Calculator() {
                         key={g}
                         type="button"
                         onClick={() => set({ gender: g })}
-                        className="rounded-lg border py-2 text-xs font-semibold transition-colors"
+                        className="rounded-control border py-2 text-xs font-semibold transition-colors"
                         style={toggleStyle(form.gender === g)}
                       >
                         {t(`form.${g}`)}
@@ -473,7 +460,7 @@ export default function Calculator() {
                       key={goal}
                       type="button"
                       onClick={() => set({ weightGoal: goal })}
-                      className="rounded-lg border py-2.5 text-sm font-semibold transition-colors"
+                      className="rounded-control border py-2.5 text-sm font-semibold transition-colors"
                       style={toggleStyle(form.weightGoal === goal)}
                     >
                       {t(`form.${key}`)}
@@ -499,7 +486,7 @@ export default function Calculator() {
                         key={goal}
                         type="button"
                         onClick={() => set({ fitnessGoal: goal })}
-                        className={`rounded-xl border p-3 text-left transition-colors${isLast ? 'col-span-2' : ''}`}
+                        className={`rounded-control border p-3 text-left transition-colors${isLast ? 'col-span-2' : ''}`}
                         style={{
                           backgroundColor: active ? brandBright(0.08) : INPUT_BG,
                           borderColor: active ? brandBright(0.4) : INPUT_BORDER,
@@ -522,9 +509,9 @@ export default function Calculator() {
 
               {/* Realtime badge */}
               <div
-                className="flex items-center justify-center gap-2 rounded-xl py-3"
+                className="flex items-center justify-center gap-2 rounded-control py-3"
                 style={{
-                  background: `linear-gradient(to right, ${hue('indigo', 0.7)}, ${brandBright(0.7)})`,
+                  backgroundColor: brandBright(0.7),
                 }}
               >
                 <Zap className="h-4 w-4" color={HEADING_TEXT} />
@@ -539,7 +526,7 @@ export default function Calculator() {
               {/* BMR + TDEE */}
               <div className="grid grid-cols-2 gap-3">
                 <div
-                  className="rounded-2xl border p-4"
+                  className="rounded-card border p-4"
                   style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
                 >
                   <p
@@ -548,13 +535,13 @@ export default function Calculator() {
                   >
                     {t('results.bmr')}
                   </p>
-                  <p className="text-3xl font-black text-text-primary">{fmt(bmr)}</p>
-                  <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
+                  <p className="text-3xl font-bold text-text-primary">{fmt(bmr)}</p>
+                  <p className="mt-2 text-[9px] leading-relaxed" style={{ color: MUTED }}>
                     {t('results.bmrDesc')}
                   </p>
                 </div>
                 <div
-                  className="relative rounded-2xl border p-4"
+                  className="relative rounded-card border p-4"
                   style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
                 >
                   <div
@@ -573,10 +560,10 @@ export default function Calculator() {
                   >
                     {t('results.tdee')}
                   </p>
-                  <p className="text-3xl font-black" style={{ color: BRAND_GREEN_BRIGHT }}>
+                  <p className="text-3xl font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>
                     {fmt(tdee)}
                   </p>
-                  <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
+                  <p className="mt-2 text-[9px] leading-relaxed" style={{ color: MUTED }}>
                     {t('results.tdeeDesc')}
                   </p>
                 </div>
@@ -585,7 +572,7 @@ export default function Calculator() {
               {/* BMI + FFMI */}
               <div className="grid grid-cols-2 gap-3">
                 <div
-                  className="rounded-2xl border p-4"
+                  className="rounded-card border p-4"
                   style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
                 >
                   <p
@@ -594,13 +581,13 @@ export default function Calculator() {
                   >
                     {t('results.bmi')}
                   </p>
-                  <p className="text-3xl font-black text-text-primary">{fmt(bmi, 1)}</p>
-                  <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
+                  <p className="text-3xl font-bold text-text-primary">{fmt(bmi, 1)}</p>
+                  <p className="mt-2 text-[9px] leading-relaxed" style={{ color: MUTED }}>
                     {t('results.bmiDesc')}
                   </p>
                 </div>
                 <div
-                  className="rounded-2xl border p-4"
+                  className="rounded-card border p-4"
                   style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
                 >
                   <p
@@ -609,10 +596,10 @@ export default function Calculator() {
                   >
                     {t('results.ffmi')}
                   </p>
-                  <p className="text-3xl font-black text-text-primary">
+                  <p className="text-3xl font-bold text-text-primary">
                     {ffmi !== null ? fmt(ffmi, 1) : '–'}
                   </p>
-                  <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
+                  <p className="mt-2 text-[9px] leading-relaxed" style={{ color: MUTED }}>
                     {t('results.ffmiDesc')}
                   </p>
                 </div>
@@ -620,7 +607,7 @@ export default function Calculator() {
 
               {/* Macro Profile */}
               <div
-                className="rounded-2xl border p-5"
+                className="rounded-card border p-5"
                 style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
               >
                 <div className="mb-4 flex items-center justify-between">
@@ -688,12 +675,12 @@ export default function Calculator() {
 
               {/* Metabolic Velocity */}
               <div
-                className="rounded-2xl border p-4"
+                className="rounded-card border p-4"
                 style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control border"
                     style={{
                       backgroundColor: brandBright(0.1),
                       borderColor: brandBright(0.2),
@@ -715,7 +702,7 @@ export default function Calculator() {
 
               {/* Daily Calorie Target */}
               <div
-                className="rounded-2xl border p-4"
+                className="rounded-card border p-4"
                 style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
               >
                 <p
@@ -725,7 +712,7 @@ export default function Calculator() {
                   {t('results.dailyTarget')}
                 </p>
                 <div className="flex items-end justify-between">
-                  <p className="text-3xl font-black" style={{ color: BRAND_GREEN_BRIGHT }}>
+                  <p className="text-3xl font-bold" style={{ color: BRAND_GREEN_BRIGHT }}>
                     {fmt(target)}{' '}
                     <span className="text-sm font-bold" style={{ color: MUTED }}>
                       {t('results.kcal')}
@@ -733,7 +720,7 @@ export default function Calculator() {
                   </p>
                   <div className="text-right">
                     <p
-                      className="text-[9px] font-semibold uppercase tracking-widest"
+                      className="text-[9px] font-semibold tracking-widest"
                       style={{ color: MUTED }}
                     >
                       {t('results.tdee')}

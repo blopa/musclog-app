@@ -588,3 +588,56 @@ describe('Phase 10: geometry and type', () => {
     }
   });
 });
+
+/**
+ * The public website is outside the app-wide ratchets above (it is plain HTML, not React Native),
+ * so it carries its own: the decorative layers the homepage audit removed must not come back.
+ * Every count here is zero. Backgrounds, glows and frosted panels are not allowed to return
+ * without an entry in the audit notes in `AGENTS.md`.
+ */
+describe('Website: no decorative layers', () => {
+  function websiteFiles(dir: string, out: string[] = []): string[] {
+    for (const name of readdirSync(dir)) {
+      const full = join(dir, name);
+      if (name === '__tests__' || name === 'node_modules' || name === 'posts') {
+        continue;
+      }
+
+      if (statSync(full).isDirectory()) {
+        websiteFiles(full, out);
+      } else if (/\.tsx$/.test(name) && name !== 'test.tsx') {
+        out.push(full);
+      }
+    }
+
+    return out;
+  }
+
+  const files = [
+    ...websiteFiles(join(root, 'app', '(website)')),
+    ...websiteFiles(join(root, 'components', 'website')),
+  ];
+
+  function offenders(pattern: RegExp): string[] {
+    return files
+      .filter((file) => pattern.test(stripComments(readFileSync(file, 'utf8'))))
+      .map((file) => relative(root, file).replace(/\\/g, '/'));
+  }
+
+  it.each([
+    ['blurred glow blobs', /blur-\[\d+px\]|blur-[23]xl/],
+    ['frosted glass', /backdrop-blur|backdropFilter/],
+    [
+      'dot and grid patterns',
+      /DotPattern|GridPattern|FloatingShapes|SectionBackground|HeroBackground/,
+    ],
+    ['gradient surfaces', /bg-gradient-to|linear-gradient\(/],
+    ['letter-spaced microtext', /tracking-\[[\d.]+em\]/],
+    ['all-caps labels', /["' `]uppercase["' `]/],
+    ['weights above bold', /font-(extrabold|black)\b/],
+    ['size-named radii', /rounded-(sm|md|lg|xl|2xl|3xl)\b/],
+    ['cast shadows', /shadow-(\[|2xl|xl|lg)/],
+  ])('has no %s', (_label, pattern) => {
+    expect(offenders(pattern)).toEqual([]);
+  });
+});

@@ -9,7 +9,6 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT_SOFT,
   BRAND_GREEN_BRIGHT,
@@ -113,7 +112,7 @@ function CitationChip({ label, url }: Citation) {
 function FormulaBlock({ formula, caption }: { formula: string; caption?: string }) {
   return (
     <div
-      className="my-4 overflow-x-auto rounded-xl border px-5 py-3"
+      className="my-4 overflow-x-auto rounded-control border px-5 py-3"
       style={{
         backgroundColor: brandBright(0.04),
         borderColor: brandBright(0.2),
@@ -133,7 +132,7 @@ function FormulaBlock({ formula, caption }: { formula: string; caption?: string 
 
 function DataTable({ head, rows }: { head: string[]; rows: string[][] }) {
   return (
-    <div className="my-4 overflow-x-auto rounded-xl border" style={{ borderColor: ink(0.08) }}>
+    <div className="my-4 overflow-x-auto rounded-control border" style={{ borderColor: ink(0.08) }}>
       <table className="w-full min-w-[520px] text-sm">
         <thead>
           <tr style={{ backgroundColor: ink(0.04) }}>
@@ -182,7 +181,7 @@ function AccordionItem({
 }) {
   return (
     <div
-      className="overflow-hidden rounded-2xl border transition-all"
+      className="overflow-hidden rounded-card border transition-all"
       style={{
         backgroundColor: isOpen ? ink(0.03) : ink(0.015),
         borderColor: isOpen ? `${accentColor}33` : ink(0.08),
@@ -237,10 +236,7 @@ function AccordionItem({
 
           {item.citations && item.citations.length > 0 ? (
             <div className="mt-4">
-              <p
-                className="mb-2.5 text-xs font-semibold uppercase tracking-widest"
-                style={{ color: MUTED }}
-              >
+              <p className="mb-2.5 text-xs font-semibold tracking-widest" style={{ color: MUTED }}>
                 {sourcesLabel}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -298,35 +294,9 @@ export default function Faq() {
     <>
       <FaqPageJsonLd items={jsonLdItems} />
       <main className="relative overflow-hidden pb-24 pt-24">
-        <DotPattern className="text-accent-primary/20" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-transparent to-bg-primary/60" />
-
-        {/* Ambient glows */}
-        <div
-          className="absolute left-1/4 top-32 h-96 w-96 rounded-full blur-[120px]"
-          style={{ backgroundColor: brandBright(0.07) }}
-          aria-hidden="true"
-        />
-        <div
-          className="absolute bottom-32 right-1/4 h-80 w-80 rounded-full blur-[100px]"
-          style={{ backgroundColor: hue('info', 0.07) }}
-          aria-hidden="true"
-        />
-
         <div className="container relative z-10 mx-auto max-w-4xl px-4">
           {/* Hero */}
           <div className="mb-14 text-center">
-            <div
-              className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest"
-              style={{
-                backgroundColor: brandBright(0.06),
-                borderColor: brandBright(0.25),
-                color: BRAND_GREEN_BRIGHT,
-              }}
-            >
-              <FlaskConical size={12} color={BRAND_GREEN_BRIGHT} />
-              {t('badge')}
-            </div>
             <h1 className="mb-4 text-4xl font-bold text-text-primary md:text-5xl">
               {t('titlePrefix')}{' '}
               <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('titleHighlight')}</span>
@@ -365,7 +335,7 @@ export default function Faq() {
 
           {/* Category header */}
           <div
-            className="mb-6 flex items-center gap-3 rounded-2xl border px-5 py-4"
+            className="mb-6 flex items-center gap-3 rounded-card border px-5 py-4"
             style={{
               backgroundColor: activeCategory.bgColor,
               borderColor: activeCategory.borderColor,
@@ -375,7 +345,7 @@ export default function Faq() {
               const Icon = activeCategory.icon;
               return (
                 <div
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border"
                   style={{
                     backgroundColor: `${activeCategory.color}18`,
                     borderColor: activeCategory.borderColor,
@@ -411,7 +381,7 @@ export default function Faq() {
 
           {/* Footer note */}
           <div
-            className="mt-14 rounded-2xl border p-6 text-center"
+            className="mt-14 rounded-card border p-6 text-center"
             style={{
               backgroundColor: ink(0.02),
               borderColor: ink(0.08),

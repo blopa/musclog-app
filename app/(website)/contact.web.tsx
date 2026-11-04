@@ -2,12 +2,11 @@ import { ExternalLink, Mail, MessageSquare, Send, Shield } from 'lucide-react-na
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT_SOFT,
+  BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
   brandBright,
-  hue,
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
@@ -65,19 +64,6 @@ export default function Contact() {
   return (
     <>
       <main className="relative overflow-hidden pb-20 pt-28">
-        <GridPattern className="text-accent-primary/50" />
-        <FloatingShapes />
-
-        <div
-          className="absolute left-1/4 top-40 h-72 w-72 rounded-full blur-[100px]"
-          style={{ backgroundColor: brandBright(0.1) }}
-        />
-        <div
-          className="absolute bottom-20 right-1/4 h-64 w-64 rounded-full blur-[80px]"
-          style={{ backgroundColor: hue('info', 0.1) }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/30 via-transparent to-bg-primary/30" />
-
         <div className="container relative z-10 mx-auto max-w-5xl px-4">
           {/* Title */}
           <div className="mb-12 text-center">
@@ -94,7 +80,7 @@ export default function Contact() {
           <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
             {/* Contact Form */}
             <div
-              className="rounded-2xl border p-6 md:p-8"
+              className="rounded-card border p-6 md:p-8"
               style={{
                 backgroundColor: ink(0.03),
                 borderColor: ink(0.1),
@@ -115,7 +101,7 @@ export default function Contact() {
                         setForm({ ...form, name: (e.target as HTMLInputElement).value })
                       }
                       required
-                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
+                      className="w-full rounded-control border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
                       style={{
                         backgroundColor: ink(0.05),
                         borderColor: ink(0.12),
@@ -135,7 +121,7 @@ export default function Contact() {
                         setForm({ ...form, email: (e.target as HTMLInputElement).value })
                       }
                       required
-                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
+                      className="w-full rounded-control border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
                       style={{
                         backgroundColor: ink(0.05),
                         borderColor: ink(0.12),
@@ -157,7 +143,7 @@ export default function Contact() {
                       setForm({ ...form, subject: (e.target as HTMLInputElement).value })
                     }
                     required
-                    className="w-full rounded-lg border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
+                    className="w-full rounded-control border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
                     style={{
                       backgroundColor: ink(0.05),
                       borderColor: ink(0.12),
@@ -178,7 +164,7 @@ export default function Contact() {
                       setForm({ ...form, message: (e.target as HTMLTextAreaElement).value })
                     }
                     required
-                    className="w-full resize-none rounded-lg border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
+                    className="w-full resize-none rounded-control border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
                     style={{
                       backgroundColor: ink(0.05),
                       borderColor: ink(0.12),
@@ -189,8 +175,8 @@ export default function Contact() {
                 {!submitted ? (
                   <button
                     type="submit"
-                    className="flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 active:opacity-80"
-                    style={{ background: 'linear-gradient(to right, #4f46e5, #10b981)' }}
+                    className="flex w-full items-center justify-center gap-2 rounded-control px-6 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 active:opacity-80"
+                    style={{ backgroundColor: BRAND_GREEN }}
                   >
                     <Send className="h-4 w-4" color="white" />
                     {t('form.submit')}
@@ -199,8 +185,8 @@ export default function Contact() {
                   <div className="space-y-4">
                     <a
                       href={mailtoUrl}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 active:opacity-80"
-                      style={{ background: 'linear-gradient(to right, #4f46e5, #10b981)' }}
+                      className="flex w-full items-center justify-center gap-2 rounded-control px-6 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 active:opacity-80"
+                      style={{ backgroundColor: BRAND_GREEN }}
                     >
                       <Mail className="h-4 w-4" color="white" />
                       {t('form.mailto')}
@@ -228,7 +214,7 @@ export default function Contact() {
             <div className="flex flex-col gap-4">
               {/* Connect with Us */}
               <div
-                className="rounded-2xl border p-6"
+                className="rounded-card border p-6"
                 style={{
                   backgroundColor: ink(0.03),
                   borderColor: ink(0.1),
@@ -241,7 +227,7 @@ export default function Contact() {
                   {connectLinks.map(({ description, href, icon: Icon, title }) => (
                     <a key={title} href={href} className="group flex items-start gap-4">
                       <div
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control border transition-colors"
                         style={{
                           backgroundColor: ink(0.04),
                           borderColor: ink(0.1),
@@ -261,7 +247,7 @@ export default function Contact() {
 
                 <div className="mt-6 border-t pt-5" style={{ borderColor: ink(0.08) }}>
                   <p
-                    className="mb-3 text-xs font-semibold uppercase tracking-widest"
+                    className="mb-3 text-xs font-semibold tracking-widest"
                     style={{ color: MUTED }}
                   >
                     {t('connect.follow')}
@@ -270,7 +256,7 @@ export default function Contact() {
                     <a
                       href="#"
                       aria-label="YouTube"
-                      className="hover:border-primary/40 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:text-text-primary"
+                      className="hover:border-primary/40 flex h-9 w-9 items-center justify-center rounded-control border transition-colors hover:text-text-primary"
                       style={{
                         backgroundColor: ink(0.04),
                         borderColor: ink(0.1),
@@ -284,7 +270,7 @@ export default function Contact() {
                     <a
                       href="#"
                       aria-label="X (Twitter)"
-                      className="hover:border-primary/40 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:text-text-primary"
+                      className="hover:border-primary/40 flex h-9 w-9 items-center justify-center rounded-control border transition-colors hover:text-text-primary"
                       style={{
                         backgroundColor: ink(0.04),
                         borderColor: ink(0.1),
@@ -301,14 +287,14 @@ export default function Contact() {
 
               {/* Privacy First notice */}
               <div
-                className="flex items-start gap-4 rounded-2xl border p-5"
+                className="flex items-start gap-4 rounded-card border p-5"
                 style={{
                   backgroundColor: brandBright(0.04),
                   borderColor: brandBright(0.2),
                 }}
               >
                 <div
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control border"
                   style={{
                     backgroundColor: brandBright(0.1),
                     borderColor: brandBright(0.2),

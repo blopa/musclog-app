@@ -3,7 +3,6 @@ import type { ChangeEvent, DragEvent } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
-import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { BODY_TEXT_SOFT, hue } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -390,9 +389,6 @@ export default function Test() {
   return (
     <>
       <main className="relative min-h-screen overflow-hidden bg-bg-primary px-4 py-8 text-text-primary">
-        <DotPattern className="text-accent-bright/10" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgb(var(--c-accent-bright)/0.22),transparent_42%),radial-gradient(circle_at_bottom_right,rgb(var(--c-status-amber)/0.08),transparent_30%)]" />
-
         <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6">
           <section className="rounded-[2rem] border border-accent-primary/15 bg-gradient-to-b from-bg-overlay to-bg-card p-5 shadow-[0_24px_80px_rgb(var(--c-scrim-base)/0.45)] md:p-8">
             <div className="mb-6">

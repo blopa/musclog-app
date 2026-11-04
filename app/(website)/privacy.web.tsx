@@ -1,7 +1,6 @@
 import { Database, Globe, Lock, Mail, Shield, Smartphone } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT_SOFT,
   brand,
@@ -93,9 +92,6 @@ export default function Privacy() {
   return (
     <>
       <main className="relative overflow-hidden pb-20 pt-24">
-        <DotPattern className="text-accent-primary/30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/50 via-transparent to-bg-primary/50" />
-
         <div className="container relative z-10 mx-auto max-w-5xl px-4">
           {/* Title */}
           <div className="mb-10 text-center">
@@ -113,7 +109,7 @@ export default function Privacy() {
             {highlights.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
-                className="flex flex-col items-center gap-3 rounded-xl border p-5 text-center"
+                className="flex flex-col items-center gap-3 rounded-control border p-5 text-center"
                 style={{
                   borderColor: ink(0.1),
                   backgroundColor: ink(0.03),
@@ -170,7 +166,7 @@ export default function Privacy() {
                   }) => (
                     <div
                       key={key}
-                      className="rounded-2xl border p-5"
+                      className="rounded-card border p-5"
                       style={{ borderColor, backgroundColor }}
                     >
                       <div className="mb-3 flex items-center gap-3">
@@ -583,7 +579,7 @@ export default function Privacy() {
 
           {/* Contact callout */}
           <div
-            className="mt-14 rounded-xl border p-6"
+            className="mt-14 rounded-control border p-6"
             style={{
               borderColor: ink(0.1),
               backgroundColor: ink(0.03),

@@ -1,42 +1,16 @@
 import { Link } from 'expo-router';
-import {
-  ArrowRight,
-  Calendar,
-  Code2,
-  Download,
-  Dumbbell,
-  Heart,
-  Lock,
-  Quote,
-  ScanBarcode,
-  Shield,
-  Smartphone,
-  Sparkles,
-  TrendingUp,
-  X,
-} from 'lucide-react-native';
+import { ArrowRight, Code2, Download, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { StoreButtons } from '@/components/website/StoreButtons';
 import {
-  DotPattern,
-  HeroBackground,
-  SectionBackground,
-} from '@/components/website/WebsiteBackgrounds';
-import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
-  brand,
-  BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
-  brandBright,
   HEADING_TEXT,
-  hue,
   ink,
-  ON_BRAND,
-  scrim,
 } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { SoftwareApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
@@ -49,11 +23,10 @@ import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`);
 const PHONE_SCREENSHOT = (filename: string) => STATIC_IMAGE(`phone/${filename}`);
-const HERO_AVATAR = STATIC_IMAGE('user-avatar.jpg');
 const THEME_SCREENSHOT = (themeId: ThemeShowcaseId) => STATIC_IMAGE(`themes/${themeId}.webp`);
 
 /**
- * The gallery shows every palette side by side, so — unlike the rest of the page —
+ * The gallery shows every palette side by side, so, unlike the rest of the page,
  * its accents are read from the registry rather than from the active theme. The
  * labels come from the same `settings.theme.options` strings the in-app picker uses.
  */
@@ -64,252 +37,137 @@ const THEME_SHOWCASE = THEME_IDS.map((id) => ({
 
 type ThemeShowcaseId = ThemeId;
 
+const SECTION_RULE = { borderColor: ink(0.08) };
+
 export function CTA() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
-  return (
-    <section className="relative overflow-hidden px-4 py-16 md:py-20">
-      <SectionBackground variant="grid" />
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[440px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
-        style={{
-          background: `radial-gradient(circle, ${brandBright(0.12)} 0%, ${brand(0.08)} 34%, ${scrim(0)} 72%)`,
-        }}
-        aria-hidden="true"
-      />
-      <div className="container relative z-10 mx-auto">
-        <div
-          className="relative overflow-hidden rounded-3xl border border-ink/10 bg-gradient-to-r p-10 md:p-16"
-          style={{
-            backgroundImage: `linear-gradient(90deg, #0f766ecc 0%, #0891b2dd 42%, ${BRAND_GREEN}ee 100%)`,
-          }}
-        >
-          {/* Background Glow */}
-          <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/20 to-transparent" />
-
-          <div className="relative z-10 mx-auto max-w-2xl space-y-6 text-center">
-            <h2 className="text-balance text-3xl font-extrabold text-text-primary md:text-4xl lg:text-5xl">
-              {t('title')}
-            </h2>
-            <p className="text-balance text-lg font-medium text-ink/90">{t('description')}</p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <DownloadModal variant="white">
-                <Download className="h-4 w-4" />
-                {t('download')}
-              </DownloadModal>
-              <a
-                href={GITHUB_REPO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink/40 bg-ink/5 px-4 py-3 font-semibold text-text-primary transition-colors hover:border-ink/70 hover:text-text-primary"
-              >
-                <Code2 className="h-4 w-4" />
-                {t('sourceCode')}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function FeatureGrid() {
-  const { t } = useTranslation(undefined, { keyPrefix: 'website.featureGrid' });
-
-  const features = [
-    {
-      icon: Sparkles,
-      title: t('items.aiCoach.title'),
-      description: t('items.aiCoach.description'),
-    },
-    {
-      icon: ScanBarcode,
-      title: t('items.barcode.title'),
-      description: t('items.barcode.description'),
-    },
-    {
-      icon: Calendar,
-      title: t('items.checkins.title'),
-      description: t('items.checkins.description'),
-    },
-    {
-      icon: TrendingUp,
-      title: t('items.analytics.title'),
-      description: t('items.analytics.description'),
-    },
-    {
-      icon: Heart,
-      title: t('items.cycle.title'),
-      description: t('items.cycle.description'),
-    },
-    {
-      icon: Dumbbell,
-      title: t('items.templates.title'),
-      description: t('items.templates.description'),
-    },
-    {
-      icon: Smartphone,
-      title: t('items.healthConnect.title'),
-      description: t('items.healthConnect.description'),
-    },
-    {
-      icon: Lock,
-      title: t('items.encryption.title'),
-      description: t('items.encryption.description'),
-    },
-  ];
 
   return (
-    <section className="bg-card/50 relative overflow-hidden py-16 md:py-20">
-      <SectionBackground variant="grid" />
-      <div
-        className="pointer-events-none absolute left-1/2 top-[54%] h-[640px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[150px]"
-        style={{
-          background: `radial-gradient(circle, ${brandBright(0.15)} 0%, ${brand(0.11)} 32%, ${scrim(0)} 74%)`,
-        }}
-        aria-hidden="true"
-      />
-      <div className="container relative z-10 mx-auto px-4">
-        <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
+    <section className="border-t px-4 py-16 md:py-20" style={SECTION_RULE}>
+      <div className="container mx-auto flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-xl">
+          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
-          <p
-            className="mx-auto max-w-2xl text-balance text-base md:text-lg"
-            style={{ color: BODY_TEXT_SOFT }}
-          >
+          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
             {t('description')}
           </p>
         </div>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="group rounded-2xl border p-6 transition-colors hover:border-ink/20"
-              style={{
-                borderColor: ink(0.1),
-                backgroundColor: ink(0.03),
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <div
-                className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors group-hover:bg-ink/10"
-                style={{ backgroundColor: brand(0.12) }}
-              >
-                <feature.icon className="h-6 w-6" color={BRAND_GREEN_BRIGHT} />
-              </div>
-              <h3 className="mb-2 text-lg font-bold text-text-primary">{feature.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
-                {feature.description}
-              </p>
-            </div>
-          ))}
+        <div className="flex flex-wrap gap-3">
+          <DownloadModal>
+            <Download className="h-4 w-4" />
+            {t('download')}
+          </DownloadModal>
+          <a
+            href={GITHUB_REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-control border border-ink/25 px-5 py-3 font-semibold text-text-primary transition-colors hover:bg-ink/10"
+          >
+            <Code2 className="h-4 w-4" />
+            {t('sourceCode')}
+          </a>
         </div>
       </div>
     </section>
   );
 }
 
+/** The three product principles, as plain columns rather than three matching cards. */
 export function Features() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.features' });
 
-  // `linkClass` restates `iconColor` as a class because the "view more" link is
-  // an expo-router `Link` — a React Native component, whose `style` goes through
-  // RNW's colour parser and is dropped when it holds a `var()`. Plain DOM nodes
-  // on this page take the inline form.
-  const features = [
+  const principles = [
     {
-      icon: Dumbbell,
-      iconColor: BRAND_GREEN_BRIGHT,
-      linkClass: 'text-accent-bright',
-      iconBg: brand(0.13),
       title: t('strengthTracking.title'),
       description: t('strengthTracking.description'),
-      link: { text: t('strengthTracking.link'), href: '#features' },
     },
     {
-      icon: Shield,
-      iconColor: hue('info'),
-      linkClass: 'text-status-info',
-      iconBg: hue('info', 0.12),
       title: t('privacyFirst.title'),
       description: t('privacyFirst.description'),
       link: { text: t('privacyFirst.link'), href: '/privacy' },
     },
     {
-      icon: Code2,
-      iconColor: hue('purple'),
-      linkClass: 'text-status-purple',
-      iconBg: hue('purple', 0.12),
       title: t('openSource.title'),
       description: t('openSource.description'),
-      link: {
-        text: t('openSource.link'),
-        href: GITHUB_REPO_URL,
-        external: true,
-      },
+      link: { text: t('openSource.link'), href: GITHUB_REPO_URL, external: true },
     },
   ];
 
   return (
-    <section id="features" className="relative overflow-hidden py-16 md:py-20">
-      <SectionBackground variant="dots" />
-      <div className="container relative z-10 mx-auto px-4">
-        {/* Section Header */}
-        <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
+    <section id="features" className="border-t py-16 md:py-20" style={SECTION_RULE}>
+      <div className="container mx-auto px-4">
+        <div className="mb-10 max-w-2xl md:mb-12">
+          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
-          <p
-            className="mx-auto max-w-xl text-balance text-base md:text-lg"
-            style={{ color: BODY_TEXT }}
-          >
+          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
             {t('description')}
           </p>
         </div>
 
-        {/* Feature Cards */}
-        <div className="grid gap-6 md:grid-cols-3">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="space-y-4 rounded-2xl border bg-bg-card p-7 transition-colors hover:border-ink/20"
-              style={{ borderColor: ink(0.1) }}
-            >
-              <div
-                className="flex h-14 w-14 items-center justify-center rounded-xl"
-                style={{ backgroundColor: feature.iconBg }}
-              >
-                <feature.icon className="h-7 w-7" color={feature.iconColor} />
-              </div>
-              <h3 className="text-xl font-bold text-text-primary">{feature.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
-                {feature.description}
+        <div className="grid gap-x-12 gap-y-10 md:grid-cols-3">
+          {principles.map((item) => (
+            <div key={item.title}>
+              <h3 className="text-xl font-bold text-text-primary">{item.title}</h3>
+              <p className="mt-2 leading-relaxed" style={{ color: BODY_TEXT }}>
+                {item.description}
               </p>
-              {feature.link.external ? (
+              {item.link ? (
                 <a
-                  href={feature.link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
-                  style={{ color: feature.iconColor }}
+                  href={item.link.href}
+                  {...(item.link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="mt-3 inline-block text-sm font-semibold underline underline-offset-4 hover:text-accent-bright"
+                  style={{ color: HEADING_TEXT }}
                 >
-                  {feature.link.text}
-                  <ArrowRight className="h-4 w-4" />
+                  {item.link.text}
                 </a>
-              ) : (
-                <Link
-                  href={feature.link.href}
-                  className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline ${feature.linkClass}`}
-                >
-                  {feature.link.text}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              )}
+              ) : null}
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+/** Every capability as one scannable list; the section is the container, not each row. */
+export function FeatureGrid() {
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.featureGrid' });
+
+  const items = [
+    'aiCoach',
+    'barcode',
+    'checkins',
+    'analytics',
+    'cycle',
+    'templates',
+    'healthConnect',
+    'encryption',
+  ] as const;
+
+  return (
+    <section className="border-t py-16 md:py-20" style={SECTION_RULE}>
+      <div className="container mx-auto px-4">
+        <div className="mb-10 max-w-2xl md:mb-12">
+          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
+            {t('title')}
+          </h2>
+          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
+            {t('description')}
+          </p>
+        </div>
+
+        <dl className="grid gap-x-12 md:grid-cols-2">
+          {items.map((key) => (
+            <div key={key} className="border-t py-5" style={SECTION_RULE}>
+              <dt className="text-lg font-bold text-text-primary">{t(`items.${key}.title`)}</dt>
+              <dd className="mt-1 text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
+                {t(`items.${key}.description`)}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );
@@ -429,62 +287,28 @@ export function ScreenshotShowcase() {
   const isTrackPaused = isPaused || activeModalIndex !== null;
 
   return (
-    <section className="relative overflow-hidden py-16 md:py-20">
-      <SectionBackground variant="dots" />
-      <div
-        className="pointer-events-none absolute left-1/2 top-[50%] h-[520px] w-[980px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[160px]"
-        style={{
-          background: `radial-gradient(circle, ${brandBright(0.14)} 0%, ${brand(0.1)} 34%, ${scrim(0)} 74%)`,
-        }}
-        aria-hidden="true"
-      />
-
+    <section className="overflow-hidden border-t py-16 md:py-20" style={{ borderColor: ink(0.08) }}>
       <style>{`
         @keyframes musclog-screenshot-marquee {
           from { transform: translate3d(0, 0, 0); }
           to { transform: translate3d(-50%, 0, 0); }
         }
+        @media (prefers-reduced-motion: reduce) {
+          .musclog-screenshot-track { animation: none !important; }
+        }
       `}</style>
 
       <div className="container relative z-10 mx-auto px-4">
-        <div className="mb-10 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-2xl space-y-3">
-            <p
-              className="text-xs font-bold uppercase tracking-[0.32em]"
-              style={{ color: BRAND_GREEN_BRIGHT }}
-            >
-              {t('eyebrow')}
-            </p>
-            <h2 className="text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
-              {t('title')}
-            </h2>
-            <p
-              className="text-balance text-base leading-7 md:text-lg"
-              style={{ color: BODY_TEXT_SOFT }}
-            >
-              {t('description')}
-            </p>
-          </div>
-
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-ink/10 bg-ink/5 px-4 py-2 text-sm font-semibold text-ink/80 backdrop-blur-sm">
-            <span
-              className="h-2 w-2 rounded-full"
-              style={{
-                backgroundColor: BRAND_GREEN_BRIGHT,
-                boxShadow: `0 0 14px ${brandBright(0.8)}`,
-              }}
-            />
-            {t('hint')}
-          </div>
+        <div className="mb-10 max-w-2xl md:mb-12">
+          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
+            {t('title')}
+          </h2>
+          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
+            {t('description')}
+          </p>
         </div>
 
-        <div
-          className="relative overflow-hidden rounded-[2.5rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.95)_0%,rgb(var(--c-bg-card)/0.92)_100%)] p-4 shadow-[0_24px_72px_rgb(var(--c-scrim-base)/0.16)] md:p-6"
-          style={{ backdropFilter: 'blur(16px)' }}
-        >
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-bg-primary to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-bg-primary to-transparent" />
-
+        <div>
           <div
             className="relative overflow-hidden py-2"
             onMouseEnter={() => setIsPaused(true)}
@@ -493,7 +317,7 @@ export function ScreenshotShowcase() {
             onBlurCapture={() => setIsPaused(false)}
           >
             <div
-              className="flex w-max will-change-transform"
+              className="musclog-screenshot-track flex w-max will-change-transform"
               style={{
                 animation: 'musclog-screenshot-marquee 68s linear infinite',
                 animationPlayState: isTrackPaused ? 'paused' : 'running',
@@ -509,17 +333,12 @@ export function ScreenshotShowcase() {
                       aria-label={`${t('openSlide')} ${slide.title}`}
                       className="group flex w-[180px] shrink-0 flex-col text-left sm:w-[200px] md:w-[220px]"
                     >
-                      <div
-                        className="rounded-[2rem] border border-ink/10 bg-bg-card p-2 shadow-[0_18px_48px_rgb(var(--c-scrim-base)/0.34)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:border-ink/20"
-                        style={{
-                          boxShadow: `0 14px 36px ${scrim(0.18)}, 0 0 0 1px ${ink(0.02)}`,
-                        }}
-                      >
-                        <div className="overflow-hidden rounded-[1.5rem] bg-bg-primary">
+                      <div className="rounded-sheet border border-ink/10 bg-bg-card p-1.5 transition-colors group-hover:border-ink/30">
+                        <div className="overflow-hidden rounded-card bg-bg-primary">
                           <img
                             src={slide.src}
                             alt={slide.alt}
-                            className="aspect-[537/1165] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.015]"
+                            className="aspect-[537/1165] w-full object-cover object-top"
                             loading={loopIndex === 0 && index < 3 ? 'eager' : 'lazy'}
                           />
                         </div>
@@ -527,7 +346,7 @@ export function ScreenshotShowcase() {
 
                       <div className="px-1 pt-3">
                         <p className="text-sm font-bold text-text-primary">{slide.title}</p>
-                        <p className="mt-1 text-xs leading-5 text-text-tertiary">
+                        <p className="mt-1 text-xs leading-5" style={{ color: BODY_TEXT_SOFT }}>
                           {slide.description}
                         </p>
                       </div>
@@ -543,7 +362,7 @@ export function ScreenshotShowcase() {
       {activeModalIndex !== null && isMobileModal && typeof document !== 'undefined'
         ? createPortal(
             <div
-              className="fixed inset-0 z-[220] flex items-center justify-center bg-scrim-base/90 p-3 backdrop-blur-md"
+              className="fixed inset-0 z-[220] flex items-center justify-center bg-scrim-base/90 p-3"
               onClick={() => setActiveModalIndex(null)}
             >
               <div
@@ -557,7 +376,7 @@ export function ScreenshotShowcase() {
                   type="button"
                   onClick={() => setActiveModalIndex(null)}
                   aria-label={t('close')}
-                  className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-ink/10 bg-scrim-base/60 text-text-primary shadow-[0_12px_30px_rgb(var(--c-scrim-base)/0.35)]"
+                  className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-control border border-ink/10 bg-scrim-base/60 text-text-primary"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -576,28 +395,22 @@ export function ScreenshotShowcase() {
       {activeModalIndex !== null && !isMobileModal && typeof document !== 'undefined'
         ? createPortal(
             <div
-              className="fixed inset-0 z-[220] flex items-center justify-center bg-scrim-base/70 p-4 backdrop-blur-md"
+              className="fixed inset-0 z-[220] flex items-center justify-center bg-scrim-base/70 p-4"
               onClick={() => setActiveModalIndex(null)}
             >
               <div
                 role="dialog"
                 aria-modal="true"
                 aria-label={t('modalAriaLabel')}
-                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.98)_0%,rgb(var(--c-bg-card)/0.96)_100%)] shadow-[0_30px_90px_rgb(var(--c-scrim-base)/0.6)]"
+                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-sheet border border-ink/10 bg-bg-primary"
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="flex items-start justify-between gap-4 border-b border-ink/10 p-4 md:p-5">
                   <div className="space-y-1">
-                    <p
-                      className="text-xs font-bold uppercase tracking-[0.3em]"
-                      style={{ color: BRAND_GREEN_BRIGHT }}
-                    >
-                      {t('modalEyebrow')}
-                    </p>
-                    <h3 className="text-xl font-extrabold text-text-primary md:text-2xl">
+                    <h3 className="text-xl font-bold text-text-primary md:text-2xl">
                       {slides[activeModalIndex].title}
                     </h3>
-                    <p className="max-w-2xl text-sm leading-6 text-text-tertiary">
+                    <p className="max-w-2xl text-sm leading-6" style={{ color: BODY_TEXT }}>
                       {slides[activeModalIndex].description}
                     </p>
                   </div>
@@ -606,7 +419,7 @@ export function ScreenshotShowcase() {
                     type="button"
                     onClick={() => setActiveModalIndex(null)}
                     aria-label={t('close')}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/10 bg-ink/5 text-text-primary transition-colors hover:border-ink/20 hover:bg-ink/10"
+                    className="flex h-10 w-10 items-center justify-center rounded-control border border-ink/10 text-text-primary transition-colors hover:bg-ink/10"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -625,12 +438,15 @@ export function ScreenshotShowcase() {
                           )
                         }
                         aria-label={t('previous')}
-                        className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/10 bg-ink/5 text-text-primary transition-colors hover:border-ink/20 hover:bg-ink/10"
+                        className="flex h-11 w-11 items-center justify-center rounded-control border border-ink/10 text-text-primary transition-colors hover:bg-ink/10"
                       >
                         <ArrowRight className="h-4 w-4 rotate-180" />
                       </button>
 
-                      <div className="rounded-full border border-ink/10 bg-ink/5 px-3 py-1 text-xs font-semibold text-ink/70">
+                      <div
+                        className="text-sm font-semibold tabular-nums"
+                        style={{ color: BODY_TEXT }}
+                      >
                         {activeModalIndex + 1} / {slides.length}
                       </div>
 
@@ -642,13 +458,13 @@ export function ScreenshotShowcase() {
                           )
                         }
                         aria-label={t('next')}
-                        className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/10 bg-ink/5 text-text-primary transition-colors hover:border-ink/20 hover:bg-ink/10"
+                        className="flex h-11 w-11 items-center justify-center rounded-control border border-ink/10 text-text-primary transition-colors hover:bg-ink/10"
                       >
                         <ArrowRight className="h-4 w-4" />
                       </button>
                     </div>
 
-                    <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[1.75rem] border border-ink/10 bg-bg-primary shadow-[0_20px_60px_rgb(var(--c-scrim-base)/0.45)]">
+                    <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-card border border-ink/10 bg-bg-primary">
                       <img
                         src={slides[activeModalIndex].src}
                         alt={slides[activeModalIndex].alt}
@@ -660,19 +476,10 @@ export function ScreenshotShowcase() {
                   <div className="border-t border-ink/10 bg-ink/[0.03] p-4 md:border-l md:border-t-0 md:p-6 lg:overflow-y-auto">
                     <div className="space-y-4">
                       <div>
-                        <p
-                          className="text-xs font-bold uppercase tracking-[0.28em]"
-                          style={{ color: BRAND_GREEN_BRIGHT }}
-                        >
-                          {t('modalDetails')}
-                        </p>
-                      </div>
-
-                      <div className="rounded-[1.25rem] border border-ink/10 bg-bg-card p-4">
                         <p className="text-sm font-semibold text-text-primary">
                           {slides[activeModalIndex].title}
                         </p>
-                        <p className="mt-2 text-sm leading-6 text-text-tertiary">
+                        <p className="mt-2 text-sm leading-6" style={{ color: BODY_TEXT }}>
                           {slides[activeModalIndex].description}
                         </p>
                       </div>
@@ -687,10 +494,9 @@ export function ScreenshotShowcase() {
                               type="button"
                               onClick={() => setActiveModalIndex(index)}
                               aria-label={`${t('openSlide')} ${slide.title}`}
-                              className="overflow-hidden rounded-xl border transition-all"
+                              className="overflow-hidden rounded-inner border-2 transition-colors"
                               style={{
-                                borderColor: isActive ? BRAND_GREEN_BRIGHT : ink(0.08),
-                                boxShadow: isActive ? `0 0 0 1px ${brandBright(0.24)}` : 'none',
+                                borderColor: isActive ? BRAND_GREEN_BRIGHT : 'transparent',
                               }}
                             >
                               <img
@@ -722,22 +528,18 @@ export function Themes() {
     THEME_SHOWCASE.find((theme) => theme.id === activeThemeId) ?? THEME_SHOWCASE[0];
 
   return (
-    <section id="themes" className="relative overflow-hidden py-16 md:py-20">
-      <SectionBackground variant="dots" />
-      <div className="container relative z-10 mx-auto px-4">
-        <div className="mb-10 text-center md:mb-14">
-          <h2 className="mb-4 text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
+    <section id="themes" className="border-t py-16 md:py-20" style={{ borderColor: ink(0.08) }}>
+      <div className="container mx-auto px-4">
+        <div className="mb-10 max-w-2xl md:mb-12">
+          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
             {t('website.themes.title')}
           </h2>
-          <p
-            className="mx-auto max-w-xl text-balance text-base md:text-lg"
-            style={{ color: BODY_TEXT }}
-          >
+          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
             {t('website.themes.description')}
           </p>
         </div>
 
-        <div className="mb-10 flex flex-wrap justify-center gap-2">
+        <div className="mb-10 flex flex-wrap gap-2">
           {THEME_SHOWCASE.map((theme) => {
             const isActive = theme.id === activeThemeId;
 
@@ -747,11 +549,11 @@ export function Themes() {
                 type="button"
                 onClick={() => setActiveThemeId(theme.id)}
                 aria-pressed={isActive}
-                className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors"
+                className="flex items-center gap-2 rounded-control border px-4 py-2 text-sm font-semibold transition-colors"
                 style={{
-                  backgroundColor: isActive ? `${theme.accent}1f` : ink(0.03),
-                  borderColor: isActive ? theme.accent : ink(0.1),
-                  color: isActive ? theme.accent : BODY_TEXT,
+                  backgroundColor: isActive ? ink(0.08) : 'transparent',
+                  borderColor: isActive ? theme.accent : ink(0.12),
+                  color: isActive ? HEADING_TEXT : BODY_TEXT,
                 }}
               >
                 <span
@@ -766,13 +568,10 @@ export function Themes() {
         </div>
 
         <div className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-          <div className="flex justify-center">
+          <div className="flex justify-center md:justify-start">
             <div
-              className="w-full max-w-[16rem] overflow-hidden rounded-[1.75rem] border"
-              style={{
-                borderColor: `${activeTheme.accent}59`,
-                boxShadow: `0 24px 70px ${activeTheme.accent}33`,
-              }}
+              className="w-full max-w-[16rem] overflow-hidden rounded-sheet border"
+              style={{ borderColor: ink(0.12) }}
             >
               <img
                 src={THEME_SCREENSHOT(activeTheme.id)}
@@ -782,15 +581,12 @@ export function Themes() {
             </div>
           </div>
 
-          <div className="space-y-5 text-center md:text-left">
+          <div className="space-y-5">
             <div>
-              <p
-                className="text-xs font-bold uppercase tracking-[0.28em]"
-                style={{ color: activeTheme.accent }}
-              >
+              <h3 className="text-xl font-bold text-text-primary">
                 {t(`settings.theme.options.${activeTheme.id}.label`)}
-              </p>
-              <p className="mt-3 text-lg leading-relaxed text-text-primary md:text-xl">
+              </h3>
+              <p className="mt-3 text-lg leading-relaxed text-text-primary">
                 {t(`settings.theme.options.${activeTheme.id}.description`)}
               </p>
             </div>
@@ -799,7 +595,7 @@ export function Themes() {
               {t('website.themes.footnote')}
             </p>
 
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 md:max-w-md">
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 md:max-w-md">
               {THEME_SHOWCASE.map((theme) => {
                 const isActive = theme.id === activeThemeId;
 
@@ -809,9 +605,9 @@ export function Themes() {
                     type="button"
                     onClick={() => setActiveThemeId(theme.id)}
                     aria-label={t(`settings.theme.options.${theme.id}.label`)}
-                    className="overflow-hidden rounded-xl border transition-all"
+                    className="overflow-hidden rounded-inner border-2 transition-colors"
                     style={{
-                      borderColor: isActive ? theme.accent : ink(0.08),
+                      borderColor: isActive ? theme.accent : 'transparent',
                     }}
                   >
                     <img
@@ -830,192 +626,41 @@ export function Themes() {
   );
 }
 
-export function Testimonial() {
-  const { t } = useTranslation(undefined, { keyPrefix: 'website.testimonial' });
-
-  return (
-    <section className="relative overflow-hidden py-16 md:py-20">
-      <DotPattern className="text-accent-primary/50" />
-      <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/50 via-transparent to-bg-primary/50" />
-      <div className="container relative z-10 mx-auto px-4">
-        <div className="mx-auto max-w-3xl space-y-8 text-center">
-          {/* Quote Icon */}
-          <div className="flex justify-center">
-            <Quote className="h-12 w-12 rotate-180" color={BRAND_GREEN_BRIGHT} />
-          </div>
-
-          {/* Quote Text */}
-          <blockquote className="text-balance text-2xl font-bold leading-relaxed text-text-primary md:text-3xl lg:text-4xl">
-            {t('quote')}
-          </blockquote>
-
-          {/* Author */}
-          <div className="flex flex-col items-center gap-3">
-            <div className="bg-secondary border-primary/30 h-14 w-14 overflow-hidden rounded-full border-2">
-              <img
-                src={HERO_AVATAR}
-                alt={t('author')}
-                width={56}
-                height={56}
-                className="h-full w-full object-cover"
-              />
-            </div>
-            <div>
-              <p className="font-bold text-text-primary">{t('author')}</p>
-              <p className="text-sm" style={{ color: BODY_TEXT_SOFT }}>
-                {t('role')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function Stats() {
-  const { t } = useTranslation(undefined, { keyPrefix: 'website.stats' });
-
-  const stats = [
-    {
-      value: t('vitamins.value'),
-      label: t('vitamins.label'),
-      description: t('vitamins.description'),
-    },
-    {
-      value: t('offline.value'),
-      label: t('offline.label'),
-      description: t('offline.description'),
-    },
-    {
-      value: t('cloud.value'),
-      label: t('cloud.label'),
-      description: t('cloud.description'),
-    },
-    {
-      value: t('encryption.value'),
-      label: t('encryption.label'),
-      description: t('encryption.description'),
-    },
-  ];
-
-  return (
-    <section
-      className="relative overflow-hidden border-y py-20 md:py-24"
-      style={{ borderColor: ink(0.08) }}
-    >
-      <DotPattern className="text-accent-primary/40" />
-      <div className="absolute inset-0 bg-gradient-to-r from-bg-primary/80 via-transparent to-bg-primary/80" />
-      <div className="container relative z-10 mx-auto px-4">
-        <div className="grid grid-cols-2 gap-8 md:gap-12 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div
-                className="mb-2 text-4xl font-extrabold md:text-5xl"
-                style={{ color: BRAND_GREEN_BRIGHT }}
-              >
-                {stat.value}
-              </div>
-              <div className="mb-1 font-bold text-text-primary">{stat.label}</div>
-              <div className="text-sm" style={{ color: BODY_TEXT }}>
-                {stat.description}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export function HowItWorks() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.howItWorks' });
 
-  const steps = [
-    {
-      icon: Download,
-      step: '01',
-      title: t('steps.step1.title'),
-      description: t('steps.step1.description'),
-    },
-    {
-      icon: Dumbbell,
-      step: '02',
-      title: t('steps.step2.title'),
-      description: t('steps.step2.description'),
-    },
-    {
-      icon: TrendingUp,
-      step: '03',
-      title: t('steps.step3.title'),
-      description: t('steps.step3.description'),
-    },
-  ];
+  const steps = ['step1', 'step2', 'step3'] as const;
 
   return (
-    <section className="relative overflow-hidden py-20 md:py-24">
-      <SectionBackground variant="grid" />
-      <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-transparent to-bg-primary" />
-      <div
-        className="pointer-events-none absolute left-1/2 top-[48%] h-[420px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
-        style={{
-          background: `radial-gradient(circle, ${brandBright(0.1)} 0%, ${brand(0.07)} 34%, ${scrim(0)} 72%)`,
-        }}
-        aria-hidden="true"
-      />
-      <div className="container relative z-10 mx-auto px-4">
-        <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
+    <section className="border-t py-16 md:py-20" style={SECTION_RULE}>
+      <div className="container mx-auto px-4">
+        <div className="mb-10 max-w-2xl md:mb-12">
+          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
-          <p
-            className="mx-auto max-w-xl text-balance text-base md:text-lg"
-            style={{ color: BODY_TEXT }}
-          >
+          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
             {t('description')}
           </p>
         </div>
 
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-3 md:gap-12">
-          {steps.map((item, index) => (
-            <div key={item.step} className="relative flex justify-center">
-              {/* Connector line for desktop */}
-              {index < steps.length - 1 ? (
-                <div
-                  className="absolute left-[62%] top-12 hidden h-px w-[76%] md:block"
-                  style={{
-                    background: `linear-gradient(90deg, ${brand(0.24)} 0%, ${ink(0.18)} 100%)`,
-                  }}
-                />
-              ) : null}
-
-              <div className="flex max-w-sm flex-col items-center text-center">
-                <div className="relative mb-6">
-                  <div
-                    className="flex h-24 w-24 items-center justify-center rounded-full border"
-                    style={{
-                      backgroundColor: brand(0.12),
-                      borderColor: ink(0.08),
-                      boxShadow: `0 0 0 10px ${brand(0.03)}, 0 0 40px ${brandBright(0.12)}`,
-                    }}
-                  >
-                    <item.icon className="h-10 w-10" color={BRAND_GREEN_BRIGHT} />
-                  </div>
-                  <span
-                    className="absolute right-0 top-0 flex h-8 w-8 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full text-[11px] font-bold"
-                    style={{ backgroundColor: BRAND_GREEN_BRIGHT, color: ON_BRAND }}
-                  >
-                    {item.step}
-                  </span>
-                </div>
-                <h3 className="mb-3 text-xl font-bold text-text-primary">{item.title}</h3>
-                <p className="max-w-xs leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
-                  {item.description}
-                </p>
-              </div>
-            </div>
+        <ol className="grid gap-x-12 gap-y-8 md:grid-cols-3">
+          {steps.map((step, index) => (
+            <li key={step}>
+              <span
+                className="text-sm font-bold tabular-nums"
+                style={{ color: BRAND_GREEN_BRIGHT }}
+              >
+                {index + 1}
+              </span>
+              <h3 className="mt-1 text-xl font-bold text-text-primary">
+                {t(`steps.${step}.title`)}
+              </h3>
+              <p className="mt-2 leading-relaxed" style={{ color: BODY_TEXT }}>
+                {t(`steps.${step}.description`)}
+              </p>
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );
@@ -1024,112 +669,60 @@ export function HowItWorks() {
 export function Hero() {
   const themeId = useThemeId();
   const { t } = useTranslation(undefined, { keyPrefix: 'website.hero' });
-  return (
-    <section className="relative overflow-hidden pb-16 pt-24 md:pb-20 md:pt-32">
-      <HeroBackground />
-      <div className="container relative z-10 mx-auto px-4">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* Left Content */}
-          <div className="space-y-6">
-            {/* Badges */}
-            <div className="flex flex-wrap gap-3">
-              <span
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
-                style={{ backgroundColor: BRAND_GREEN, color: HEADING_TEXT }}
-              >
-                <span className="text-text-primary">★</span> {t('badge1')}
-              </span>
-              <span
-                className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold"
-                style={{
-                  borderColor: ink(0.1),
-                  color: BODY_TEXT,
-                  backgroundColor: ink(0.04),
-                }}
-              >
-                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
-                </svg>
-                {t('badge2')}
-              </span>
-            </div>
 
-            {/* Heading */}
-            <h1 className="text-balance text-4xl font-extrabold leading-tight text-text-primary md:text-6xl lg:text-[4.6rem]">
-              {t('title1')}
-              <br />
-              <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('title2')}</span>
+  return (
+    <section className="pb-16 pt-24 md:pb-20 md:pt-32">
+      <div className="container mx-auto px-4">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="space-y-6">
+            <h1 className="text-balance text-4xl font-bold leading-tight text-text-primary md:text-6xl lg:text-[4.25rem]">
+              {t('title1')} {t('title2')}
             </h1>
 
-            {/* Subheading */}
-            <p className="max-w-md text-lg leading-9" style={{ color: BODY_TEXT }}>
+            <p className="max-w-lg text-lg leading-8" style={{ color: BODY_TEXT }}>
               {t('subheading')}
             </p>
 
-            {/* CTA Buttons */}
+            <p className="text-sm font-semibold" style={{ color: BODY_TEXT_SOFT }}>
+              {t('badge1')}. {t('badge2')}.
+            </p>
+
             <StoreButtons />
 
-            {/* GitHub Link */}
-            <a
-              href={GITHUB_REPO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:text-text-primary"
-              style={{ color: BODY_TEXT }}
-            >
-              <Code2 className="h-4 w-4" />
-              {t('github')}
-            </a>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-semibold">
+              <Link
+                href="/app"
+                className="inline-flex items-center gap-2 text-text-primary underline underline-offset-4 hover:text-accent-bright"
+              >
+                {t('demoButton')}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={GITHUB_REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 transition-colors hover:text-text-primary"
+                style={{ color: BODY_TEXT }}
+              >
+                <Code2 className="h-4 w-4" />
+                {t('github')}
+              </a>
+            </div>
           </div>
 
-          {/* Right Content - Phone Mockup with Screenshot */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-[420px]">
-              <div
-                className="absolute inset-0 rounded-full blur-[110px]"
-                style={{
-                  background: `radial-gradient(circle, ${brandBright(0.16)} 0%, ${brand(0.11)} 38%, ${scrim(0)} 74%)`,
-                  transform: 'translate(6%, 10%) scale(1.12)',
-                }}
-                aria-hidden="true"
-              />
-              <div className="flex justify-center">
-                {/* Phone Frame */}
-                <div
-                  className="relative w-[280px] rounded-[2.5rem] border-2 bg-scrim-base/40 p-2 shadow-2xl md:w-[320px]"
-                  style={{
-                    borderColor: ink(0.65),
-                    boxShadow: `0 0 0 1px ${brand(0.22)}, 0 30px 80px ${scrim(0.55)}`,
-                  }}
-                >
-                  <div className="overflow-hidden rounded-[2rem]">
-                    <img
-                      src={THEME_SCREENSHOT(themeId)}
-                      alt="Musclog app screenshot"
-                      width={320}
-                      height={640}
-                      className="h-auto w-full"
-                      style={{ filter: 'saturate(1.22) contrast(1.08) brightness(1.04)' }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 flex justify-center">
-                <Link
-                  href="/app"
-                  className="inline-flex min-w-44 items-center justify-center gap-2 rounded-full border border-accent-bright/30 bg-bg-primary px-5 py-3 text-sm font-bold text-text-primary shadow-[0_12px_30px_rgb(var(--c-scrim-base)/0.22)] transition-all duration-200 hover:-translate-y-0.5"
-                >
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{
-                      backgroundColor: BRAND_GREEN_BRIGHT,
-                      boxShadow: `0 0 14px ${brandBright(0.8)}`,
-                    }}
-                  />
-                  <span>{t('demoButton')}</span>
-                  <ArrowRight className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
-                </Link>
+            <div
+              className="w-[280px] rounded-sheet border p-1.5 md:w-[320px]"
+              style={{ borderColor: ink(0.2) }}
+            >
+              <div className="overflow-hidden rounded-card">
+                <img
+                  src={THEME_SCREENSHOT(themeId)}
+                  alt={t('screenshotAlt')}
+                  width={320}
+                  height={640}
+                  className="h-auto w-full"
+                />
               </div>
             </div>
           </div>
@@ -1148,12 +741,10 @@ export default function Home() {
       <main>
         <Hero />
         <Features />
-        <FeatureGrid />
         <ScreenshotShowcase />
+        <FeatureGrid />
         <Themes />
-        <Stats />
         <HowItWorks />
-        <Testimonial />
         <CTA />
       </main>
     </>

@@ -142,7 +142,7 @@ export function ChartPanel({
 
   return (
     <div
-      className="flex flex-col rounded-2xl border p-3"
+      className="flex flex-col rounded-card border p-3"
       style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
     >
       <div className="mb-1 flex items-baseline gap-2">
@@ -178,7 +178,7 @@ export function ChartPanel({
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
-        className="w-full cursor-crosshair rounded-xl"
+        className="w-full cursor-crosshair rounded-control"
         style={{ height: 220 }}
       />
     </div>

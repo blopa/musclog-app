@@ -7,14 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { BlogMermaid } from '@/components/website/BlogMermaid';
 import { BlogPostShare } from '@/components/website/BlogPostShare';
 import { blogPostPath } from '@/components/website/blogRoutes';
-import { GridPattern } from '@/components/website/WebsiteBackgrounds';
-import {
-  BODY_TEXT_SOFT,
-  brand,
-  BRAND_GREEN_BRIGHT,
-  brandBright,
-  hue,
-} from '@/components/website/websiteColors';
+import { BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT, hue } from '@/components/website/websiteColors';
 import { metadataForPage, websiteCopy } from '@/components/website/websiteMetadata';
 import { BlogPostSeo } from '@/components/website/WebsiteSeo';
 import { BlogPostingJsonLd } from '@/components/website/WebsiteStructuredData';
@@ -70,13 +63,6 @@ export default function BlogPostPage() {
       />
 
       <main className="relative min-h-[70vh] overflow-hidden pb-24 pt-24 md:pt-28">
-        <GridPattern className="text-accent-bright/[0.06]" />
-        <div
-          className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full blur-[160px]"
-          style={{ backgroundColor: brandBright(0.08) }}
-          aria-hidden="true"
-        />
-
         <article className="container relative z-10 mx-auto max-w-4xl px-4">
           <Link
             href="/blog"
@@ -107,7 +93,7 @@ export default function BlogPostPage() {
               </span>
             </div>
 
-            <h1 className="text-balance text-4xl font-extrabold leading-tight text-text-primary md:text-6xl">
+            <h1 className="text-balance text-4xl font-bold leading-tight text-text-primary md:text-6xl">
               {post.title}
             </h1>
 
@@ -134,7 +120,7 @@ export default function BlogPostPage() {
           {!isEnglish ? (
             <p
               role="note"
-              className="mt-10 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium"
+              className="mt-10 flex items-center gap-3 rounded-control border px-4 py-3 text-sm font-medium"
               style={{
                 backgroundColor: hue('amber', 0.08),
                 borderColor: hue('amber', 0.24),

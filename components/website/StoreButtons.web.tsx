@@ -56,7 +56,7 @@ interface StoreButtonProps {
 
 function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: StoreButtonProps) {
   const className =
-    'inline-flex min-w-[175px] items-center gap-3 rounded-xl border border-ink/15 bg-bg-card px-4 py-2.5 text-text-primary shadow-[0_0_0_1px_rgb(var(--c-ink-DEFAULT)/0.03)] transition-colors hover:border-ink/35';
+    'inline-flex min-w-[175px] items-center gap-3 rounded-control border border-ink/15 bg-bg-card px-4 py-2.5 text-text-primary transition-colors hover:border-ink/35';
 
   const content = (
     <>
@@ -140,13 +140,9 @@ function QRCodeCard({
   }, [alt, href]);
 
   return (
-    <div className="flex flex-1 flex-col items-center rounded-2xl border border-ink/10 bg-ink/[0.03] p-4">
+    <div className="flex flex-1 flex-col items-center rounded-card border border-ink/10 p-4">
       <span className="mb-3 text-sm font-semibold text-text-primary">{label}</span>
-      <div
-        ref={qrCodeRef}
-        className="rounded-xl bg-text-always-white p-2 shadow-[0_10px_30px_rgb(var(--c-scrim-base)/0.3)]"
-        aria-hidden="true"
-      />
+      <div ref={qrCodeRef} className="rounded-inner bg-text-always-white p-2" aria-hidden="true" />
       <a
         href={href}
         target="_blank"
@@ -254,7 +250,7 @@ export function StoreButtons() {
           aria-label={t('qrButton')}
           aria-expanded={isQrOpen}
           aria-haspopup="dialog"
-          className="inline-flex h-[58px] w-[58px] items-center justify-center rounded-xl border border-ink/15 bg-bg-card text-text-primary shadow-[0_0_0_1px_rgb(var(--c-ink-DEFAULT)/0.03)] transition-colors hover:border-ink/35"
+          className="inline-flex h-[58px] w-[58px] items-center justify-center rounded-control border border-ink/15 bg-bg-card text-text-primary transition-colors hover:border-ink/35"
           onClick={() => setIsQrOpen((current) => !current)}
         >
           <QRCodeIcon />
@@ -266,7 +262,7 @@ export function StoreButtons() {
                 ref={qrPopoverRef}
                 role="dialog"
                 aria-labelledby="store-qr-popover-title"
-                className="border-ink/12 fixed z-[170] max-h-[calc(100vh-2rem)] w-[min(calc(100vw-2rem),30rem)] overflow-y-auto rounded-3xl border bg-bg-primary/[0.97] p-5 shadow-2xl backdrop-blur-xl"
+                className="border-ink/12 fixed z-[170] max-h-[calc(100vh-2rem)] w-[min(calc(100vw-2rem),30rem)] overflow-y-auto rounded-sheet border bg-bg-primary p-5"
                 style={{
                   top: qrPopoverTop,
                   left: qrPopoverLeft,

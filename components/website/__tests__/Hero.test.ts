@@ -16,7 +16,6 @@ jest.mock('react-i18next', () => ({
 jest.mock('expo-router', () => ({ Link: 'a' }));
 jest.mock('lucide-react-native', () => ({ Code2: () => null, ArrowRight: () => null }));
 jest.mock('@/components/website/StoreButtons', () => ({ StoreButtons: () => null }));
-jest.mock('@/components/website/WebsiteBackgrounds', () => ({ HeroBackground: () => null }));
 jest.mock('@/components/website/WebsiteStructuredData', () => ({}));
 jest.mock('@/components/website/WebsiteWrapper', () => ({}));
 
@@ -28,7 +27,7 @@ describe('website hero screenshot', () => {
     for (const themeId of THEME_IDS) {
       jest.mocked(useThemeId).mockReturnValue(themeId);
       rerender(createElement(Hero));
-      expect(screen.getByAltText('Musclog app screenshot').getAttribute('src')).toBe(
+      expect(screen.getByAltText('screenshotAlt').getAttribute('src')).toBe(
         `/images/themes/${themeId}.webp`
       );
       expect(existsSync(join(process.cwd(), 'public/images/themes', `${themeId}.webp`))).toBe(true);
@@ -38,13 +37,13 @@ describe('website hero screenshot', () => {
   it('uses the resolved palette when system appearance changes', () => {
     jest.mocked(useThemeId).mockReturnValue(DEFAULT_THEME_BY_MODE.light);
     const { rerender } = render(createElement(Hero));
-    expect(screen.getByAltText('Musclog app screenshot').getAttribute('src')).toBe(
+    expect(screen.getByAltText('screenshotAlt').getAttribute('src')).toBe(
       `/images/themes/${DEFAULT_THEME_BY_MODE.light}.webp`
     );
 
     jest.mocked(useThemeId).mockReturnValue(DEFAULT_THEME_BY_MODE.dark);
     rerender(createElement(Hero));
-    expect(screen.getByAltText('Musclog app screenshot').getAttribute('src')).toBe(
+    expect(screen.getByAltText('screenshotAlt').getAttribute('src')).toBe(
       `/images/themes/${DEFAULT_THEME_BY_MODE.dark}.webp`
     );
   });

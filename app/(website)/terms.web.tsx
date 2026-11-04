@@ -1,7 +1,6 @@
 import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
-import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT_SOFT,
   brand,
@@ -152,9 +151,6 @@ export default function Terms() {
   return (
     <>
       <main className="relative overflow-hidden pb-20 pt-24">
-        <DotPattern className="text-accent-primary/30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/50 via-transparent to-bg-primary/50" />
-
         <div className="container relative z-10 mx-auto max-w-5xl px-4">
           {/* Title */}
           <div className="mb-10 text-center">
@@ -171,7 +167,7 @@ export default function Terms() {
             {highlights.map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
-                className="flex flex-col items-center gap-3 rounded-xl border p-5 text-center"
+                className="flex flex-col items-center gap-3 rounded-control border p-5 text-center"
                 style={{
                   borderColor: ink(0.1),
                   backgroundColor: ink(0.03),
@@ -215,7 +211,7 @@ export default function Terms() {
 
           {/* Contact callout */}
           <div
-            className="mt-14 rounded-xl border p-6"
+            className="mt-14 rounded-control border p-6"
             style={{
               borderColor: ink(0.1),
               backgroundColor: ink(0.03),

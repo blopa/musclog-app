@@ -3,6 +3,20 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Dev web bundle crashed on `BETA_BROWSER_MEMBER_NAME_VALUES` (November 2026)
+
+### Symptom
+
+`npm run web` rendered nothing; the console showed `Cannot access 'BETA_BROWSER_MEMBER_NAME_VALUES' before initialization` from `app/_layout.tsx`, and `AppBoot.deferredLoad` warned with the same message. Static exports were fine.
+
+### Cause
+
+`@anthropic-ai/sdk`'s ESM build has a cycle between `resources/beta/messages/messages.mjs` and `index.mjs`, and `index.mjs` re-exports the `export const BETA_*` values through getters. In development React Refresh walks every module's exports as it loads (`registerExportsForReactRefresh`), reads a getter while the cycle is still initializing and hits the temporal dead zone. Production bundles never run React Refresh.
+
+### Fix
+
+`metro.config.js` resolves `@anthropic-ai/sdk` to its CommonJS entry (`index.js`, `require.resolve`) on every platform; the CJS build assigns plain properties, so the cycle is harmless. Pinned by `utils/__tests__/anthropicSdkMetroResolution.test.ts`. A running Metro server needs a restart (`npm run start-clear`) to pick the resolver change up. Revisit when upgrading the SDK.
+
 ## Saving a workout failed until the app restarted: "Cannot update a record with pending changes" (November 2026)
 
 ### Symptom

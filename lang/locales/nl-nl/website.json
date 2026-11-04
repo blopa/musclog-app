@@ -75,8 +75,8 @@
       "qrcode_text": "Scan om te downloaden Musclog"
     },
     "hero": {
-      "badge1": "★ GRATIS & OPEN SOURCE",
-      "badge2": "FOCUS OP PRIVACY (GEEN LOGIN NODIG)",
+      "badge1": "Gratis en open source",
+      "badge2": "Geen account nodig",
       "title1": "Beheers Uw",
       "title2": "Fitness Gegevens",
       "subheading": "Een lokaal-eerst, open-source fitnesstracker. Geen accounts, geen tracking, geen cloud. Alleen u en uw gains.",
@@ -124,17 +124,14 @@
             "alt": "Screenshot van de workoutbibliotheek van Musclog"
           }
         }
-      }
+      },
+      "screenshotAlt": "Schermafbeelding van de Musclog-app"
     },
     "screenshots": {
-      "eyebrow": "Screenshotreeks",
       "title": "Zie Musclog in beweging",
       "description": "Een trage weergave van echte app-schermen. Beweeg erover om te pauzeren en klik op een kaart om deze groter te openen.",
-      "hint": "Beweeg om te pauzeren, klik om te vergroten",
       "openSlide": "Screenshot openen",
       "modalAriaLabel": "Musclog screenshotvoorbeeld",
-      "modalEyebrow": "Screenshotvoorbeeld",
-      "modalDetails": "Wat u ziet",
       "close": "Sluiten",
       "previous": "Vorige screenshot",
       "next": "Volgende screenshot",
@@ -197,7 +194,7 @@
       }
     },
     "themes": {
-      "title": "Zes thema's, één app",
+      "title": "Kies je thema",
       "description": "Kies het palet dat bij jouw training past. Elk scherm volgt het, inclusief grafieken, camera-overlays en de tabbalk.",
       "footnote": "Wissel wanneer je wilt in Instellingen. Musclog volgt ook de lichte of donkere modus van je apparaat als je liever niet kiest."
     },
@@ -206,18 +203,17 @@
       "description": "Geen telemetrie, geen tracking, geen abonnement. Gewoon een krachtige motor voor uw fitnessreis.",
       "strengthTracking": {
         "title": "Offline Krachttraining Tracking",
-        "description": "Registreer uw sets en herhalingen direct op uw apparaat. Geen internet nodig. Uw gegevens verlaten nooit uw zak.",
-        "link": "MEER BEKIJKEN"
+        "description": "Registreer uw sets en herhalingen direct op uw apparaat. Geen internet nodig. Uw gegevens verlaten nooit uw zak."
       },
       "privacyFirst": {
         "title": "Privacy Eerst",
         "description": "Geen registraties, geen logins, en geen tracking door derden. Musclog respecteert uw digitale soevereiniteit.",
-        "link": "PRIVACY MANIFEST"
+        "link": "Privacybeleid"
       },
       "openSource": {
         "title": "Open Source",
         "description": "Musclog wordt gedreven door de community. Controleer de code, draag functies bij, of fork het om het uw eigen te maken.",
-        "link": "BRONCODE BEKIJKEN"
+        "link": "Broncode bekijken"
       }
     },
     "featureGrid": {
@@ -242,7 +238,7 @@
         },
         "cycle": {
           "title": "Cyclus Bewustzijn",
-          "description": "Volg menstruele fasen en ontvang trainingsaanbevelingen geoptimaliseerd voor uw cyclus."
+          "description": "Registreer menstruaties en symptomen en zie patronen in je eigen gegevens. Voorspellingen staan uit tot je ze aanzet."
         },
         "templates": {
           "title": "Workout Sjablonen",
@@ -258,35 +254,13 @@
         }
       }
     },
-    "stats": {
-      "vitamins": {
-        "value": "40+",
-        "label": "Vitaminen & Mineralen",
-        "description": "Die u dagelijks kunt volgen"
-      },
-      "offline": {
-        "value": "100%",
-        "label": "Offline Klaar",
-        "description": "Geen internet nodig"
-      },
-      "cloud": {
-        "value": "0",
-        "label": "Cloud Uploads",
-        "description": "Gegevens blijven lokaal"
-      },
-      "encryption": {
-        "value": "AES",
-        "label": "Encryptie",
-        "description": "Veiligheid in rust"
-      }
-    },
     "howItWorks": {
       "title": "Hoe Het Werkt",
       "description": "Begin binnen enkele minuten. Geen ingewikkelde setup, geen abonnementen, geen gegevensverzameling.",
       "steps": {
         "step1": {
           "title": "Download & Ga",
-          "description": "Installeer Musclog vanuit de App Store of Google Play. Geen account nodig — gewoon openen en beginnen met volgen."
+          "description": "Installeer Musclog vanuit de App Store of Google Play. Geen account nodig: open de app en begin met loggen."
         },
         "step2": {
           "title": "Registreer Uw Training",
@@ -298,14 +272,9 @@
         }
       }
     },
-    "testimonial": {
-      "quote": "\"Musclog is de eerste app die mijn privacy respecteert terwijl het een wereldklasse trainingservaring biedt. Lokaal-eerst is de toekomst.\"",
-      "author": "Laura F.",
-      "role": "Drukke Ontwikkelaar"
-    },
     "cta": {
       "title": "Klaar om te starten?",
-      "description": "Sluit u aan bij duizenden atleten die Musclog gebruiken om hun voortgang te volgen zonder hun privacy op te geven.",
+      "description": "Download Musclog en bewaar je trainings- en voedingslogs op je eigen apparaat. Geen account, geen abonnement.",
       "download": "Nu Downloaden",
       "close": "Sluiten",
       "sourceCode": "Bekijk Broncode"

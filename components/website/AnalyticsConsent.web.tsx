@@ -79,9 +79,9 @@ export function AnalyticsConsent() {
       <div
         role="dialog"
         aria-label={t('ariaLabel')}
-        className="pointer-events-auto flex w-full max-w-2xl flex-col items-start gap-4 rounded-2xl border p-5 shadow-2xl backdrop-blur-xl sm:flex-row sm:items-center"
+        className="pointer-events-auto flex w-full max-w-2xl flex-col items-start gap-4 rounded-card border p-5 sm:flex-row sm:items-center"
         style={{
-          background: `linear-gradient(180deg, ${surface(0.98)} 0%, ${surface(0.96)} 100%)`,
+          backgroundColor: surface(),
           borderColor: ink(0.08),
           boxShadow: `0 24px 70px ${scrim(0.45)}, 0 0 0 1px ${ink(0.03)}, 0 0 30px ${brand(0.08)}`,
         }}
