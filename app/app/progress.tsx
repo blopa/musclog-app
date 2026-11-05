@@ -25,6 +25,7 @@ import { ProgressChartSection } from '@/components/progress/ProgressChartSection
 import { ProgressDateFilter } from '@/components/progress/ProgressDateFilter';
 import { ProgressInsightsSection } from '@/components/progress/ProgressInsightsSection';
 import { RecoveryTrainingChart } from '@/components/progress/RecoveryTrainingChart';
+import { StrengthLevelsCard } from '@/components/progress/StrengthLevelsCard';
 import { VolumeCaloriesChart } from '@/components/progress/VolumeCaloriesChart';
 import { WeeklyMuscleSetsCard } from '@/components/progress/WeeklyMuscleSetsCard';
 import { WorkoutCharts } from '@/components/progress/WorkoutCharts';
@@ -310,6 +311,9 @@ function ProgressScreenContent({
                   </View>
                   <View style={{ marginBottom: 16 }}>
                     <WeeklyMuscleSetsCard load={muscleLoad.load} />
+                  </View>
+                  <View style={{ marginBottom: 16 }}>
+                    <StrengthLevelsCard />
                   </View>
                 </>
               ) : null}

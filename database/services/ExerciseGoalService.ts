@@ -19,6 +19,7 @@ export interface OneRmGoalInputs {
   bodyWeight: number;
   loadMultiplier: number;
   userGender: 'male' | 'female' | 'other';
+  muscleGroup: string | null;
 }
 
 /** A span of time whose training should not count as evidence (a deliberately lighter week). */
@@ -89,6 +90,7 @@ export class ExerciseGoalService {
       bodyWeight,
       loadMultiplier: exercise.loadMultiplier ?? 1.0,
       userGender: user?.gender ?? 'other',
+      muscleGroup: exercise.muscleGroup ?? null,
     };
   }
 
@@ -115,6 +117,7 @@ export class ExerciseGoalService {
       bodyWeight: inputs.bodyWeight,
       loadMultiplier: inputs.loadMultiplier,
       userGender: inputs.userGender,
+      muscleGroup: inputs.muscleGroup,
       hasPerformed1RMDate: inputs.hasPerformed1RMDate,
       currentEstimated1RM: inputs.recentAverage1RM ?? undefined,
     });

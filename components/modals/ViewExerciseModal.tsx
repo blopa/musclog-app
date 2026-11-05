@@ -11,12 +11,17 @@ import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMe
 import { GenericCard } from '@/components/cards/GenericCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
+import {
+  StrengthLevelSummary,
+  StrengthSourceNote,
+} from '@/components/strength/StrengthLevelSummary';
 import { Button } from '@/components/theme/Button';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { ExerciseAliasesSection } from '@/components/workout/ExerciseAliasesSection';
 import { ExerciseRestrictionSection } from '@/components/workout/ExerciseRestrictionSection';
 import { ExerciseUserSettingsSection } from '@/components/workout/ExerciseUserSettingsSection';
+import { useAppLock } from '@/context/AppLockContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import type ExerciseModel from '@/database/models/Exercise';
@@ -28,6 +33,7 @@ import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
+import { useStrengthLevels } from '@/hooks/useStrengthLevels';
 import { useTheme } from '@/hooks/useTheme';
 import { defaultRepCeilingFor } from '@/utils/bodyweightRepCeiling';
 import {
@@ -42,6 +48,7 @@ import {
 } from '@/utils/exerciseTranslation';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { summarizeOneRepMaxTrend } from '@/utils/oneRepMaxTrend';
+import { isStrengthGraded } from '@/utils/strengthGradedLifts';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { ConfirmationModal } from './ConfirmationModal';
@@ -99,6 +106,13 @@ export default function ViewExerciseModal({
   const [editRecordId, setEditRecordId] = useState<string | null>(null);
 
   const resolvedId = exerciseId ?? exerciseProp?.id ?? null;
+  const { isLocked } = useAppLock();
+  const workoutLocked = isLocked('workout');
+  const strengthIds = resolvedId && isStrengthGraded(resolvedId) ? [resolvedId] : [];
+  const { grades: strengthGrades } = useStrengthLevels(strengthIds, {
+    enabled: visible && !workoutLocked,
+  });
+  const strengthGrade = resolvedId ? strengthGrades.get(resolvedId) : undefined;
 
   const {
     initialValues: editInitialValues,
@@ -644,6 +658,23 @@ export default function ViewExerciseModal({
           />
 
           <ExerciseRestrictionSection exerciseId={exercise.id} />
+
+          {!workoutLocked && strengthGrade ? (
+            <View className="px-4 pb-2">
+              <Text
+                className="mb-4 text-lg font-semibold"
+                style={{ color: theme.colors.text.primary }}
+              >
+                {t('strengthLevels.title')}
+              </Text>
+              <GenericCard variant="flat">
+                <View className="gap-4 p-4">
+                  <StrengthLevelSummary exerciseId={exercise.id} grade={strengthGrade.grade} />
+                  <StrengthSourceNote />
+                </View>
+              </GenericCard>
+            </View>
+          ) : null}
 
           <View className="px-4 pb-2">
             <Text

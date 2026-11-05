@@ -1,0 +1,18 @@
+{
+  "strengthLevels": {
+    "title": "Strength levels",
+    "levels": {
+      "beginner": "Beginner",
+      "novice": "Novice",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "elite": "Elite"
+    },
+    "rangeLabel": "{{lower}} to {{upper}}",
+    "otherNote": "Shown on both the men's and women's scales, because no single table fits.",
+    "nextLevel": "Next level at {{value}} {{unit}}",
+    "addWeighIn": "Add a weigh-in to see strength levels.",
+    "sourceNote": "Levels compare your estimated 1RM with your body weight. They are a Musclog rule of thumb, checked against public powerlifting results from OpenPowerlifting.",
+    "sourceLink": "OpenPowerlifting website"
+  }
+}

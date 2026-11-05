@@ -93,6 +93,7 @@ import enUsSettings from './locales/en-us/settings.json';
 import enUsSnackbar from './locales/en-us/snackbar.json';
 import enUsSpiderChart from './locales/en-us/spiderChart.json';
 import enUsStartWorkout from './locales/en-us/startWorkout.json';
+import enUsStrengthLevels from './locales/en-us/strengthLevels.json';
 import enUsTimePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
@@ -181,6 +182,7 @@ import esEsSettings from './locales/es-es/settings.json';
 import esEsSnackbar from './locales/es-es/snackbar.json';
 import esEsSpiderChart from './locales/es-es/spiderChart.json';
 import esEsStartWorkout from './locales/es-es/startWorkout.json';
+import esEsStrengthLevels from './locales/es-es/strengthLevels.json';
 import esEsTimePicker from './locales/es-es/timePicker.json';
 import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
@@ -269,6 +271,7 @@ import nlNlSettings from './locales/nl-nl/settings.json';
 import nlNlSnackbar from './locales/nl-nl/snackbar.json';
 import nlNlSpiderChart from './locales/nl-nl/spiderChart.json';
 import nlNlStartWorkout from './locales/nl-nl/startWorkout.json';
+import nlNlStrengthLevels from './locales/nl-nl/strengthLevels.json';
 import nlNlTimePicker from './locales/nl-nl/timePicker.json';
 import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
@@ -357,6 +360,7 @@ import ptBrSettings from './locales/pt-br/settings.json';
 import ptBrSnackbar from './locales/pt-br/snackbar.json';
 import ptBrSpiderChart from './locales/pt-br/spiderChart.json';
 import ptBrStartWorkout from './locales/pt-br/startWorkout.json';
+import ptBrStrengthLevels from './locales/pt-br/strengthLevels.json';
 import ptBrTimePicker from './locales/pt-br/timePicker.json';
 import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
@@ -445,6 +449,7 @@ import ruRuSettings from './locales/ru-ru/settings.json';
 import ruRuSnackbar from './locales/ru-ru/snackbar.json';
 import ruRuSpiderChart from './locales/ru-ru/spiderChart.json';
 import ruRuStartWorkout from './locales/ru-ru/startWorkout.json';
+import ruRuStrengthLevels from './locales/ru-ru/strengthLevels.json';
 import ruRuTimePicker from './locales/ru-ru/timePicker.json';
 import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
@@ -564,6 +569,7 @@ const resources = {
       ...enUsSnackbar,
       ...enUsSpiderChart,
       ...enUsStartWorkout,
+      ...enUsStrengthLevels,
       ...enUsTimePicker,
       ...enUsTokenType,
       ...enUsUserMenu,
@@ -656,6 +662,7 @@ const resources = {
       ...esEsSnackbar,
       ...esEsSpiderChart,
       ...esEsStartWorkout,
+      ...esEsStrengthLevels,
       ...esEsTimePicker,
       ...esEsTokenType,
       ...esEsUserMenu,
@@ -748,6 +755,7 @@ const resources = {
       ...nlNlSnackbar,
       ...nlNlSpiderChart,
       ...nlNlStartWorkout,
+      ...nlNlStrengthLevels,
       ...nlNlTimePicker,
       ...nlNlTokenType,
       ...nlNlUserMenu,
@@ -840,6 +848,7 @@ const resources = {
       ...ptBrSnackbar,
       ...ptBrSpiderChart,
       ...ptBrStartWorkout,
+      ...ptBrStrengthLevels,
       ...ptBrTimePicker,
       ...ptBrTokenType,
       ...ptBrUserMenu,
@@ -932,6 +941,7 @@ const resources = {
       ...ruRuSnackbar,
       ...ruRuSpiderChart,
       ...ruRuStartWorkout,
+      ...ruRuStrengthLevels,
       ...ruRuTimePicker,
       ...ruRuTokenType,
       ...ruRuUserMenu,

@@ -607,6 +607,29 @@ A review of workout-app notifications (Hevy, MacroFactor Workouts, Strong, Fitbo
 
 Cycle-phase effects on strength and performance are small and inconsistent (a trivial reduction in the early follicular phase in pooled data, with low-certainty evidence), and follicular-phase length, hence ovulation day, varies widely between and within people. The app therefore draws no phase-based training conclusions and shows no cycle card in the live workout session, where an observation would read as a prediction about today. The personal "lower volume near a period start" observation compares each session only with the same workout away from period starts, excludes deliberate lighter weeks, and needs four comparable cycles.
 
+## Strength levels: what the numbers are
+
+Levels are thresholds on the same relative strength goal projection uses: estimated 1RM ÷ (body weight × `loadMultiplier` × a sex factor). They are product choices, not published norms. Commercial strength-standard tables were deliberately not used; we can't cite or license them.
+
+**Checked against [OpenPowerlifting](https://www.openpowerlifting.org) data** (public domain; the 2026-10-31 export from [opl-data](https://gitlab.com/openpowerlifting/opl-data)). Method: 4.06M entries, keeping `Raw` and `Wraps`, ages 18 to 39 or unknown, body weight of at least 40 kg, no disqualified or no-show results, and each lifter's single best lift ÷ body weight, leaving 507k lifters.
+
+| Best lift ÷ body weight | p10  | p25  | p50  | p75  | p90  | p99  | Lifters |
+| ----------------------- | ---- | ---- | ---- | ---- | ---- | ---- | ------- |
+| Men, squat              | 1.62 | 1.91 | 2.22 | 2.52 | 2.81 | 3.36 | 271,617 |
+| Men, bench              | 1.09 | 1.29 | 1.50 | 1.72 | 1.92 | 2.32 | 351,270 |
+| Men, deadlift           | 1.91 | 2.22 | 2.55 | 2.87 | 3.18 | 3.76 | 297,534 |
+| Women, squat            | 1.11 | 1.35 | 1.64 | 1.93 | 2.21 | 2.78 | 121,265 |
+| Women, bench            | 0.60 | 0.73 | 0.89 | 1.07 | 1.26 | 1.67 | 137,696 |
+| Women, deadlift         | 1.37 | 1.64 | 1.95 | 2.27 | 2.58 | 3.15 | 130,092 |
+
+**`loadMultiplier` anchors stay as they are.** The men's medians run squat : bench : deadlift at 1.48 : 1 : 1.70; the anchors (1.4, 1.0, 1.8) run 1.40 : 1 : 1.80. That is within about 6%, under the noise of the model, and the anchors also drive the energy estimate, so moving them would change calories for no real gain. The data only covers these three lifts; every other multiplier is derived from them.
+
+**The flat 0.7 sex factor did not hold up, so it is now split by region.** The women's-to-men's ratio of medians is 0.74 for squat, 0.76 for deadlift and 0.59 for bench. A single 0.7 graded women's bench about 15% too harshly. `strengthGenderFactor` uses 0.75 for legs and 0.6 for torso and arms, keeping 0.7 where the data says nothing (core, unknown).
+
+**Boundaries.** Intermediate 1.0, advanced 1.5 and elite 1.8 are the tiers goal projection already used, so the two features can't disagree; novice 0.6 is new. On the men's data a normalized 1.5 sits near the competitor median (squat 1.59, bench 1.50, deadlift 1.42) and 1.0 sits just below the 10th percentile (1.16, 1.09, 1.06).
+
+**What this sample can't say.** Competitors are a strong, self-selected group, so no percentile is ever shown to the user, and "advanced" means roughly "a typical raw competitor", not "top X% of gym-goers". Federation mix and weigh-in timing also shift these figures. The age adjustment was left out: it was allowed only with a primary source for the McCulloch coefficients, and a search found only secondary pages that disagree on who made the table, where it starts and how it is applied.
+
 ## Recent training load and weekly sets
 
 The body map on Progress describes what was trained recently. It does not say a muscle has recovered or is ready, because a set count can't know that.

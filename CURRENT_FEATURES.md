@@ -135,6 +135,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - AI-generated progress insights
 - **Recent training load**: a front and back body map shaded by what you trained in the last 7 days, recent sessions counting most; tap a muscle for its sets. It shows load, never whether a muscle is ready
 - **Weekly sets per muscle**: each trained muscle against a 10 to 20 set range, plus your own push/pull and quads/hamstrings totals
+- **Strength levels**: Beginner to Elite for 15 main barbell and dumbbell lifts, from estimated 1RM relative to body weight, with the weight for the next level, on Progress and on each lift. Needs a weigh-in
 - Data export: encrypted JSON backup or human-readable Excel spreadsheet
 
 ---

@@ -132,6 +132,7 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 - Track body metrics with a smoothed weight trend, editable scale readings, body fat %, and custom measurements
 - Daily and weekly AI-generated insights on workouts and nutrition
 - **Recent training load**: a body map of what you trained this week, and weekly sets per muscle
+- **Strength levels** for your main lifts, compared with your body weight
 - **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and days around recorded periods over time
 
 ### 🧠 AI Coach
