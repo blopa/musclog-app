@@ -26,6 +26,12 @@ crop('ref.png', 25, 230, 150, 300, 'left.png', zoom=3)
 proof('left.png', [], 'left-grid.png', grid=50)
 ```
 
+The labels are crop pixels, the same units paths are authored in, so a point read off the grid goes straight into a path. Three habits make it work:
+
+- **Crop with headroom.** A shape that touches the crop edge, such as a brow under a band, gets clipped. Take a second, shorter crop that starts higher (`T7-grid.png`) and read those coordinates, which can be negative.
+- **Grid the target too.** When new art has to meet existing art, render the target with the part hidden and measure its edge column by column, then grid the crop and the render at the same scale. Reading the join off the target avoids guessing from the reference, whose band or outline is a different curve.
+- **Sample colours from the reference's own pixels** with `magick ref.png -format '%[hex:p{x,y}]' info:`, then map them to the nearest class in `palette(svg)` rather than copying them.
+
 View the gridded crop, and write down before drawing:
 
 - how many shapes there are, and which are only lines inside a larger shape
