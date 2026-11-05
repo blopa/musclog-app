@@ -10,6 +10,7 @@ import {
   Database,
   Download,
   Dumbbell,
+  FileUp,
   Flag,
   Lock,
   MessageSquare,
@@ -60,6 +61,7 @@ import {
 import { FullScreenModal } from './FullScreenModal';
 import { LocalBackupsModal } from './LocalBackupsModal';
 import { OpticalTransferModal } from './OpticalTransferModal';
+import { WorkoutImportModal } from './WorkoutImportModal';
 
 type AdvancedDataModalProps = {
   visible: boolean;
@@ -97,6 +99,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
   useKeepScreenAwake('data-settings-transfer', loading);
   const [localBackupsModalVisible, setLocalBackupsModalVisible] = useState(false);
   const [opticalTransferVisible, setOpticalTransferVisible] = useSubModalVisibility(visible);
+  const [workoutImportVisible, setWorkoutImportVisible] = useSubModalVisibility(visible);
 
   // Disable encryption confirmation modal state
   const [disableEncryptionModalVisible, setDisableEncryptionModalVisible] = useState(false);
@@ -295,6 +298,12 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
               title={t('settings.advancedSettings.opticalTransfer')}
               subtitle={t('settings.advancedSettings.opticalTransferSubtitle')}
               onPress={() => setOpticalTransferVisible(true)}
+            />
+            <SettingsCard
+              icon={<FileUp size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              title={t('workoutImport.entry.title')}
+              subtitle={t('workoutImport.entry.subtitle')}
+              onPress={() => setWorkoutImportVisible(true)}
             />
           </ListGroup>
           <View className="mt-4" />
@@ -733,6 +742,10 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
       <OpticalTransferModal
         visible={opticalTransferVisible}
         onClose={() => setOpticalTransferVisible(false)}
+      />
+      <WorkoutImportModal
+        visible={workoutImportVisible}
+        onClose={() => setWorkoutImportVisible(false)}
       />
       <BleWorkoutDataModal
         visible={showBleWorkoutDataModal}

@@ -15,7 +15,7 @@ import { UserMetricService } from './UserMetricService';
  * entry in free-exercise-db; the trail one is the closest, and the treadmill entries exist for
  * both activities.
  */
-const CARDIO_CATALOGUE_SLUGS = {
+export const CARDIO_CATALOGUE_SLUGS = {
   outdoor: { walk: 'Trail_Running_Walking', run: 'Trail_Running_Walking' },
   treadmill: { walk: 'Walking_Treadmill', run: 'Running_Treadmill' },
 } as const;

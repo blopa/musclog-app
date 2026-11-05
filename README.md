@@ -160,6 +160,7 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 
 - Export your full database as an encrypted JSON file (encryption optional, configurable)
 - Import data across devices or as a backup, including optical QR transfer directly from the first onboarding screen
+- **Bring your history**: import workouts from Strong, Hevy and FitNotes CSV exports; importing again adds nothing, and an import can be undone
 - Import the complete Musclog GB cartridge database by scanning its Share Data QR stream on Android, iOS, or web
 - Support for JSON format
 

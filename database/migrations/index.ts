@@ -36,6 +36,7 @@ import migrationV34 from '@/database/migrations/2026/10/migration-v34';
 import migrationV35 from '@/database/migrations/2026/10/migration-v35';
 import migrationV36 from '@/database/migrations/2026/10/migration-v36';
 import migrationV37 from '@/database/migrations/2026/11/migration-v37';
+import migrationV38 from '@/database/migrations/2026/11/migration-v38';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -164,5 +165,7 @@ export const migrations = schemaMigrations({
     migrationV36,
     // Version 37: Durable nutrition health ownership and ignored-original records.
     migrationV37,
+    // Version 38: Identity of workouts imported from other apps (re-import and undo).
+    migrationV38,
   ],
 });

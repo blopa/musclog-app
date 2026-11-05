@@ -108,6 +108,7 @@ import enUsWorkoutTemplateSets from './locales/en-us/workout_template_sets.json'
 import enUsWorkoutDetail from './locales/en-us/workoutDetail.json';
 import enUsWorkoutDetails from './locales/en-us/workoutDetails.json';
 import enUsWorkoutHistory from './locales/en-us/workoutHistory.json';
+import enUsWorkoutImport from './locales/en-us/workoutImport.json';
 import enUsWorkoutLog from './locales/en-us/workoutLog.json';
 import enUsWorkoutOptions from './locales/en-us/workoutOptions.json';
 import enUsWorkoutReminder from './locales/en-us/workoutReminder.json';
@@ -197,6 +198,7 @@ import esEsWorkoutTemplateSets from './locales/es-es/workout_template_sets.json'
 import esEsWorkoutDetail from './locales/es-es/workoutDetail.json';
 import esEsWorkoutDetails from './locales/es-es/workoutDetails.json';
 import esEsWorkoutHistory from './locales/es-es/workoutHistory.json';
+import esEsWorkoutImport from './locales/es-es/workoutImport.json';
 import esEsWorkoutLog from './locales/es-es/workoutLog.json';
 import esEsWorkoutOptions from './locales/es-es/workoutOptions.json';
 import esEsWorkoutReminder from './locales/es-es/workoutReminder.json';
@@ -286,6 +288,7 @@ import nlNlWorkoutTemplateSets from './locales/nl-nl/workout_template_sets.json'
 import nlNlWorkoutDetail from './locales/nl-nl/workoutDetail.json';
 import nlNlWorkoutDetails from './locales/nl-nl/workoutDetails.json';
 import nlNlWorkoutHistory from './locales/nl-nl/workoutHistory.json';
+import nlNlWorkoutImport from './locales/nl-nl/workoutImport.json';
 import nlNlWorkoutLog from './locales/nl-nl/workoutLog.json';
 import nlNlWorkoutOptions from './locales/nl-nl/workoutOptions.json';
 import nlNlWorkoutReminder from './locales/nl-nl/workoutReminder.json';
@@ -375,6 +378,7 @@ import ptBrWorkoutTemplateSets from './locales/pt-br/workout_template_sets.json'
 import ptBrWorkoutDetail from './locales/pt-br/workoutDetail.json';
 import ptBrWorkoutDetails from './locales/pt-br/workoutDetails.json';
 import ptBrWorkoutHistory from './locales/pt-br/workoutHistory.json';
+import ptBrWorkoutImport from './locales/pt-br/workoutImport.json';
 import ptBrWorkoutLog from './locales/pt-br/workoutLog.json';
 import ptBrWorkoutOptions from './locales/pt-br/workoutOptions.json';
 import ptBrWorkoutReminder from './locales/pt-br/workoutReminder.json';
@@ -464,6 +468,7 @@ import ruRuWorkoutTemplateSets from './locales/ru-ru/workout_template_sets.json'
 import ruRuWorkoutDetail from './locales/ru-ru/workoutDetail.json';
 import ruRuWorkoutDetails from './locales/ru-ru/workoutDetails.json';
 import ruRuWorkoutHistory from './locales/ru-ru/workoutHistory.json';
+import ruRuWorkoutImport from './locales/ru-ru/workoutImport.json';
 import ruRuWorkoutLog from './locales/ru-ru/workoutLog.json';
 import ruRuWorkoutOptions from './locales/ru-ru/workoutOptions.json';
 import ruRuWorkoutReminder from './locales/ru-ru/workoutReminder.json';
@@ -582,6 +587,7 @@ const resources = {
       ...enUsWorkoutDetail,
       ...enUsWorkoutDetails,
       ...enUsWorkoutHistory,
+      ...enUsWorkoutImport,
       ...enUsWorkoutLog,
       ...enUsWorkoutOptions,
       ...enUsWorkoutReminder,
@@ -675,6 +681,7 @@ const resources = {
       ...esEsWorkoutDetail,
       ...esEsWorkoutDetails,
       ...esEsWorkoutHistory,
+      ...esEsWorkoutImport,
       ...esEsWorkoutLog,
       ...esEsWorkoutOptions,
       ...esEsWorkoutReminder,
@@ -768,6 +775,7 @@ const resources = {
       ...nlNlWorkoutDetail,
       ...nlNlWorkoutDetails,
       ...nlNlWorkoutHistory,
+      ...nlNlWorkoutImport,
       ...nlNlWorkoutLog,
       ...nlNlWorkoutOptions,
       ...nlNlWorkoutReminder,
@@ -861,6 +869,7 @@ const resources = {
       ...ptBrWorkoutDetail,
       ...ptBrWorkoutDetails,
       ...ptBrWorkoutHistory,
+      ...ptBrWorkoutImport,
       ...ptBrWorkoutLog,
       ...ptBrWorkoutOptions,
       ...ptBrWorkoutReminder,
@@ -954,6 +963,7 @@ const resources = {
       ...ruRuWorkoutDetail,
       ...ruRuWorkoutDetails,
       ...ruRuWorkoutHistory,
+      ...ruRuWorkoutImport,
       ...ruRuWorkoutLog,
       ...ruRuWorkoutOptions,
       ...ruRuWorkoutReminder,

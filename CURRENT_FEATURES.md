@@ -334,6 +334,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Sensitive metrics (weight, body fat) and nutrition logs encrypted at rest with AES
 - Fully offline — core features work without internet
 - Full data export (encrypted JSON or Excel) and import for portability
+- **Import workout history** from Strong, Hevy and FitNotes (Android and iOS) CSV exports, in Settings → Data. Exercises are matched by name, and you choose for anything unclear (pick one, create a custom exercise, or skip); manual matches are remembered. Importing the same file again adds nothing, and an import can be undone
 - Musclog 1.x data comes along: an app upgrade migrates the old on-device database on first launch, and a 1.x JSON backup (passphrase-protected or not) imports through the same Import button, replacing the current data after a recovery point like any restore. Android and iOS only; the web app refuses 1.x backups without touching existing data
 - **Optical Transfer** — move everything, an individual food, a saved meal, a named meal from the
   nutrition diary, a whole breakfast/lunch/dinner section, or an entire day of eating to another

@@ -645,6 +645,12 @@ The body map on Progress describes what was trained recently. It does not say a 
 
 **Deliberately not done:** lift-ratio "structural balance" tables (weak source). The push/pull and quad/hamstring lines state the person's own weekly sets and assert no ideal ratio. Sets are counted per body-map region, so a set listing two deltoid heads is one shoulder set.
 
+## Importing history from other apps
+
+Column layouts were checked against real exports, not only documented headers: [openweight](https://github.com/radupana/openweight) (Apache-2.0) ships real Strong and Hevy files plus hostile variants, [workout-data-sync](https://github.com/matanabudy/workout-data-sync) a Hevy sample, and [gymruntohevy](https://github.com/aimarchirico/gymruntohevy) Strong's current semicolon format. FitNotes (Android) is confirmed only by the columns [fitnotes2fit](https://github.com/tihawk/fitnotes2fit) binds, and FitNotes 2 (iOS) by no public file at all. None of these files are in this repository; our fixtures are hand-written.
+
+Sanity limits (1000 kg, 1000 reps, 1000 km, 24 h per set) are product limits for spotting a broken cell, not physiological claims. A day-only date is stored at local noon, the same rule as Game Boy imports, so it stays on its day in every timezone. A timed set has no column of its own, so it keeps zero reps with the time in the exercise note rather than inventing reps.
+
 ## Comeback mode: what the research says and which numbers are our choices
 
 The brief (`get-the-routine-back-research.md`, a literature and practitioner synthesis on restarting training and eating after a long break) agrees on the shape, not on numbers: there is no single right plan; start deliberately small; progress by how recovery feels rather than a fixed percentage; make a minimum viable day count; never double up after a miss; judge progress against week 1, not the old peak; plan with if-then cues; check in at weeks 2, 4, 8 and 12; ease into nutrition (maintenance, then a modest deficit, protein first); and use self-compassion, not guilt.
