@@ -137,6 +137,24 @@
           "title": "A private, encrypted cycle diary",
           "description": "Your periods and day logs are now encrypted on your device. Predictions show how confident they are, and the fertile-window estimate is optional and off by default. Reminders can be as discreet as you like, and a read-only Cycle widget shows nothing personal under an app lock."
         }
+      },
+      "v2_16_0": {
+        "importHistory": {
+          "title": "Bring your training history",
+          "description": "Import your workouts from Strong, Hevy or FitNotes in Settings. Importing the same file twice adds nothing, and you can undo an import."
+        },
+        "yearInReview": {
+          "title": "Your year in Musclog",
+          "description": "Each December, look back at your year: sessions, records and the days you trained. Share it if you like; weight and nutrition stay out unless you add them."
+        },
+        "strengthLevels": {
+          "title": "Strength levels",
+          "description": "See how your main lifts compare with your body weight, and what the next level takes. You'll find them on Progress and on each lift."
+        },
+        "trainingLoad": {
+          "title": "Recent training load",
+          "description": "A body map on Progress shows what you trained in the last week, with your weekly sets per muscle beside it."
+        }
       }
     }
   }

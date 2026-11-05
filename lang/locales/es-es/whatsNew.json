@@ -137,6 +137,24 @@
           "title": "Un diario del ciclo privado y cifrado",
           "description": "Tus periodos y registros diarios ahora se cifran en tu dispositivo. Las predicciones indican su nivel de confianza y la estimación de la ventana fértil es opcional y viene desactivada. Los recordatorios pueden ser tan discretos como quieras, y un widget de ciclo de solo lectura no muestra nada personal con un bloqueo de la app."
         }
+      },
+      "v2_16_0": {
+        "importHistory": {
+          "title": "Trae tu historial de entrenamiento",
+          "description": "Importa tus entrenamientos de Strong, Hevy o FitNotes desde Ajustes. Importar el mismo archivo dos veces no añade nada, y puedes deshacer una importación."
+        },
+        "yearInReview": {
+          "title": "Tu año en Musclog",
+          "description": "Cada diciembre, repasa tu año: sesiones, récords y los días que entrenaste. Compártelo si quieres; el peso y la nutrición quedan fuera salvo que los añadas."
+        },
+        "strengthLevels": {
+          "title": "Niveles de fuerza",
+          "description": "Mira cómo se comparan tus levantamientos principales con tu peso corporal y qué necesitas para el siguiente nivel. Están en Progreso y en cada ejercicio."
+        },
+        "trainingLoad": {
+          "title": "Carga de entrenamiento reciente",
+          "description": "Un mapa corporal en Progreso muestra lo que entrenaste la última semana, junto a tus series semanales por músculo."
+        }
       }
     }
   }

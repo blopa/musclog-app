@@ -175,6 +175,30 @@ and the existing 1RM/consistency behavior intact.
 - Cycle widget follow-ups: a tap-through to a confirm screen for logging a period start (never a direct write from the home screen, which would bypass the cycle lock), and more sizes.
 - Health-backed reinstall recovery once stable cross-source deduplication identifiers exist.
 
+## Follow-ups from importing history, year in review, strength levels and training load
+
+- **More import sources.** Liftosaur, JEFIT, StrongLifts and Fitbod files, and Hevy's own API (the
+  key used once and never stored). Each is a column map plus fixtures; FitNotes 2 (iOS) is still
+  checked against documented headers only, so a real export would be worth a fixture.
+- **Imported history without a time of day** is stored at local noon with no duration. A date and
+  time picker on the review screen would let a person fix a file that has none.
+- **Year in review.** Bodyweight movements rank personal records by logged load only, because the
+  loader doesn't decrypt a weight per session; a figure that matches the in-session banner would
+  need a cached, once-computed bodyweight series. A season-end notification for January is not
+  planned (it opens December 1).
+- **Strength levels.** A masters age adjustment, only if a primary source for the coefficients is
+  found (see `RESEARCH.md`). Grading more lifts means adding slugs to `strengthGradedLifts.ts`.
+- **Programme waves (design only).** If people ask for percentage programmes (5/3/1-style weeks),
+  add an optional repeating wave of `{ percent, reps }` steps to the percentage progression rule,
+  advanced once per completed session and kept inside the rule projection. A dated multi-week
+  "programme" layer is not worth building: plans, progression rules and Weekly Review already cover
+  most of it, and a block would add pause, missed-week and schedule hand-back rules of its own. If
+  a programme week ever overrides a start, it ranks below a comeback ramp and a chosen Weekly
+  Review week in `resolveStartOverride`, and its deload weeks must be excluded from history the way
+  a lighter week is.
+- **Training load.** A per-muscle half-life table and weighting by recorded effort stay out until
+  Musclog's own data can support them.
+
 ## Cross-cutting UX
 
 - Put concise explanations next to computed metrics; use the coach as a follow-up, not the only

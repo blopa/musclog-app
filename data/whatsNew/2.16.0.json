@@ -1,0 +1,53 @@
+{
+  "version": "2.16.0",
+  "pages": [
+    {
+      "id": "importHistory",
+      "blocks": [
+        {
+          "id": "importHistory",
+          "type": "info",
+          "icon": "shuffle",
+          "titleKey": "whatsNew.releases.v2_16_0.importHistory.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.importHistory.description"
+        }
+      ]
+    },
+    {
+      "id": "yearInReview",
+      "blocks": [
+        {
+          "id": "yearInReview",
+          "type": "info",
+          "icon": "calendar",
+          "titleKey": "whatsNew.releases.v2_16_0.yearInReview.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.yearInReview.description"
+        }
+      ]
+    },
+    {
+      "id": "strengthLevels",
+      "blocks": [
+        {
+          "id": "strengthLevels",
+          "type": "info",
+          "icon": "dumbbell",
+          "titleKey": "whatsNew.releases.v2_16_0.strengthLevels.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.strengthLevels.description"
+        }
+      ]
+    },
+    {
+      "id": "trainingLoad",
+      "blocks": [
+        {
+          "id": "trainingLoad",
+          "type": "info",
+          "icon": "trendingUp",
+          "titleKey": "whatsNew.releases.v2_16_0.trainingLoad.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.trainingLoad.description"
+        }
+      ]
+    }
+  ]
+}
