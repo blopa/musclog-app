@@ -729,3 +729,6 @@ export function parseAppLockScopes(raw: string | undefined | null): AppLockScope
 export function serializeAppLockScopes(scopes: readonly AppLockScope[]): string {
   return parseAppLockScopes(scopes.join(',')).join(',');
 }
+
+/** Year-in-review card dismissed for this year (number), or unset (empty). value: integer year. */
+export const YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE = 'year_review_dismissed_year';

@@ -133,6 +133,7 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 - Daily and weekly AI-generated insights on workouts and nutrition
 - **Recent training load**: a body map of what you trained this week, and weekly sets per muscle
 - **Strength levels** for your main lifts, compared with your body weight
+- **Your year in Musclog**: a shareable look back at your year, each December
 - **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and days around recorded periods over time
 
 ### 🧠 AI Coach

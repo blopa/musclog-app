@@ -1,0 +1,123 @@
+{
+  "yearInReview": {
+    "title": "Your year in Musclog",
+    "empty": "Nothing is logged for this year yet. The review fills in as you train and track.",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "stepOf": "{{current}} of {{total}}",
+    "shareButton": "Share",
+    "shareSheetTitle": "Share your year",
+    "includeWeight": "Include weight change",
+    "includeNutrition": "Include nutrition",
+    "shareHint": "Both are off unless you turn them on. Without them the image has no body weight and no food figures.",
+    "shareAction": "Share image",
+    "intro": {
+      "title": "Your {{year}} in Musclog",
+      "body": "Here is what your training and tracking looked like."
+    },
+    "sessions": {
+      "title": "Workouts",
+      "body_one": "You finished {{n}} workout.",
+      "body_few": "You finished {{n}} workouts.",
+      "body_many": "You finished {{n}} workouts.",
+      "body_other": "You finished {{n}} workouts.",
+      "activeDays_one": "{{n}} active day",
+      "activeDays_few": "{{n}} active days",
+      "activeDays_many": "{{n}} active days",
+      "activeDays_other": "{{n}} active days"
+    },
+    "heatmap": {
+      "title": "Training days",
+      "describeDay_one": "{{n}} workout",
+      "describeDay_few": "{{n}} workouts",
+      "describeDay_many": "{{n}} workouts",
+      "describeDay_other": "{{n}} workouts",
+      "legendLess": "Fewer",
+      "legendMore": "More",
+      "scrollEarlier": "Earlier weeks",
+      "scrollLater": "Later weeks",
+      "summary": "Tap a square to see that day."
+    },
+    "streak": {
+      "title": "Longest run",
+      "body_one": "{{n}} week in a row with a workout.",
+      "body_few": "{{n}} weeks in a row with a workout.",
+      "body_many": "{{n}} weeks in a row with a workout.",
+      "body_other": "{{n}} weeks in a row with a workout."
+    },
+    "volume": {
+      "title": "Total lifted",
+      "body": "Weight times reps across your working sets."
+    },
+    "topExercises": {
+      "title": "Most trained",
+      "sets_one": "{{n}} set",
+      "sets_few": "{{n}} sets",
+      "sets_many": "{{n}} sets",
+      "sets_other": "{{n}} sets"
+    },
+    "records": {
+      "title": "Personal records",
+      "body_one": "{{n}} new personal record.",
+      "body_few": "{{n}} new personal records.",
+      "body_many": "{{n}} new personal records.",
+      "body_other": "{{n}} new personal records."
+    },
+    "busiestMonth": {
+      "title": "Busiest month",
+      "body_one": "{{n}} workout that month.",
+      "body_few": "{{n}} workouts that month.",
+      "body_many": "{{n}} workouts that month.",
+      "body_other": "{{n}} workouts that month."
+    },
+    "trainingTime": {
+      "title": "Usual training time",
+      "hours": "{{n}} hours trained, from sessions with a recorded length.",
+      "buckets": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "night": "Night"
+      }
+    },
+    "nutrition": {
+      "title": "Food logged",
+      "body": "Meals logged: {{meals}}. Days with food logged: {{days}}."
+    },
+    "weight": {
+      "title": "Body weight",
+      "lost": "Down {{amount}} {{unit}} from your first weigh-in to your last.",
+      "gained": "Up {{amount}} {{unit}} from your first weigh-in to your last.",
+      "unchanged": "No change between your first and last weigh-in."
+    },
+    "outro": {
+      "title": "That is the year",
+      "body": "Keep logging to see next year’s story."
+    },
+    "share": {
+      "brand": "Musclog",
+      "sessions": "Workouts",
+      "activeDays": "Active days",
+      "volume": "Total lifted",
+      "topExercise": "Most trained",
+      "records": "Personal records",
+      "meals": "Meals logged",
+      "weight": "Weight change"
+    },
+    "homeCard": {
+      "title": "Your {{year}} in Musclog",
+      "body": "See what your training looked like.",
+      "open": "Open your year",
+      "dismiss": "Dismiss"
+    },
+    "settingsRow": {
+      "title": "Your year in Musclog",
+      "subtitle": "A look back at your training and tracking"
+    },
+    "notification": {
+      "title": "Your {{year}} in Musclog is ready",
+      "body": "See what your training looked like this year."
+    }
+  }
+}

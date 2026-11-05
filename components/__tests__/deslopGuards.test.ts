@@ -466,6 +466,7 @@ describe('Phase 8: screen headers and wayfinding', () => {
     ['app/app/cycle.tsx', 'cycle', '"cycle"'],
     ['app/app/weekly-review.tsx', 'checkin', '{WEEKLY_REVIEW_LOCK_AREAS}'],
     ['app/app/comeback.tsx', null, '{COMEBACK_LOCK_AREAS}'],
+    ['app/app/year-in-review.tsx', null, '{YEAR_IN_REVIEW_LOCK_AREAS}'],
     ['app/app/workout/workouts.tsx', 'workouts', '"workout"'],
     ['app/app/nutrition/food.tsx', 'food', '"nutrition"'],
     // The AI setup screens hide the bar and gate nothing: they hold no records, only answers.

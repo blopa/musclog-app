@@ -19,6 +19,7 @@ import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
 import { HomeActionsRow } from '@/components/home/HomeActionsRow';
 import { HomeHeatmaps } from '@/components/home/HomeHeatmaps';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
+import { YearInReviewCard } from '@/components/home/YearInReviewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
@@ -450,6 +451,7 @@ export default function HomeScreen() {
 
         <View className="mx-4 mb-4 gap-4">
           <ComebackCard />
+          <YearInReviewCard />
           <WorkoutTodayCard activeOnly />
         </View>
         {/* Daily Summary Card */}

@@ -117,6 +117,7 @@ import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSettings from './locales/en-us/workoutSettings.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
 import enUsWorkTimer from './locales/en-us/workTimer.json';
+import enUsYearInReview from './locales/en-us/yearInReview.json';
 // es-es
 import esEsAccessToken from './locales/es-es/access_token.json';
 import esEsAddMeal from './locales/es-es/addMeal.json';
@@ -207,6 +208,7 @@ import esEsWorkoutSession from './locales/es-es/workoutSession.json';
 import esEsWorkoutSettings from './locales/es-es/workoutSettings.json';
 import esEsWorkoutSummary from './locales/es-es/workoutSummary.json';
 import esEsWorkTimer from './locales/es-es/workTimer.json';
+import esEsYearInReview from './locales/es-es/yearInReview.json';
 // nl-nl
 import nlNlAccessToken from './locales/nl-nl/access_token.json';
 import nlNlAddMeal from './locales/nl-nl/addMeal.json';
@@ -297,6 +299,7 @@ import nlNlWorkoutSession from './locales/nl-nl/workoutSession.json';
 import nlNlWorkoutSettings from './locales/nl-nl/workoutSettings.json';
 import nlNlWorkoutSummary from './locales/nl-nl/workoutSummary.json';
 import nlNlWorkTimer from './locales/nl-nl/workTimer.json';
+import nlNlYearInReview from './locales/nl-nl/yearInReview.json';
 // pt-br
 import ptBrAccessToken from './locales/pt-br/access_token.json';
 import ptBrAddMeal from './locales/pt-br/addMeal.json';
@@ -387,6 +390,7 @@ import ptBrWorkoutSession from './locales/pt-br/workoutSession.json';
 import ptBrWorkoutSettings from './locales/pt-br/workoutSettings.json';
 import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
 import ptBrWorkTimer from './locales/pt-br/workTimer.json';
+import ptBrYearInReview from './locales/pt-br/yearInReview.json';
 // ru-ru
 import ruRuAccessToken from './locales/ru-ru/access_token.json';
 import ruRuAddMeal from './locales/ru-ru/addMeal.json';
@@ -477,6 +481,7 @@ import ruRuWorkoutSession from './locales/ru-ru/workoutSession.json';
 import ruRuWorkoutSettings from './locales/ru-ru/workoutSettings.json';
 import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
 import ruRuWorkTimer from './locales/ru-ru/workTimer.json';
+import ruRuYearInReview from './locales/ru-ru/yearInReview.json';
 // untranslated
 import untranslated from './locales/untranslated.json';
 
@@ -598,6 +603,7 @@ const resources = {
       ...enUsWorkoutLogs,
       ...enUsWorkoutTemplateSets,
       ...enUsWorkouts,
+      ...enUsYearInReview,
     },
   },
   [ES_ES]: {
@@ -692,6 +698,7 @@ const resources = {
       ...esEsWorkoutLogs,
       ...esEsWorkoutTemplateSets,
       ...esEsWorkouts,
+      ...esEsYearInReview,
     },
   },
   [NL_NL]: {
@@ -786,6 +793,7 @@ const resources = {
       ...nlNlWorkoutLogs,
       ...nlNlWorkoutTemplateSets,
       ...nlNlWorkouts,
+      ...nlNlYearInReview,
     },
   },
   [PT_BR]: {
@@ -880,6 +888,7 @@ const resources = {
       ...ptBrWorkoutLogs,
       ...ptBrWorkoutTemplateSets,
       ...ptBrWorkouts,
+      ...ptBrYearInReview,
     },
   },
   [RU_RU]: {
@@ -974,6 +983,7 @@ const resources = {
       ...ruRuWorkoutLogs,
       ...ruRuWorkoutTemplateSets,
       ...ruRuWorkouts,
+      ...ruRuYearInReview,
     },
   },
 };

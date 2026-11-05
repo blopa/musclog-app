@@ -1,0 +1,123 @@
+{
+  "yearInReview": {
+    "title": "Seu ano no Musclog",
+    "empty": "Nada foi registrado neste ano ainda. O resumo se completa conforme você treina e registra.",
+    "back": "Voltar",
+    "next": "Próximo",
+    "done": "Concluir",
+    "stepOf": "{{current}} de {{total}}",
+    "shareButton": "Compartilhar",
+    "shareSheetTitle": "Compartilhe seu ano",
+    "includeWeight": "Incluir variação de peso",
+    "includeNutrition": "Incluir nutrição",
+    "shareHint": "As duas opções vêm desativadas. Sem elas, a imagem não mostra peso corporal nem números de alimentação.",
+    "shareAction": "Compartilhar imagem",
+    "intro": {
+      "title": "Seu {{year}} no Musclog",
+      "body": "Veja como foram seus treinos e registros."
+    },
+    "sessions": {
+      "title": "Treinos",
+      "body_one": "Você concluiu {{n}} treino.",
+      "body_few": "Você concluiu {{n}} treinos.",
+      "body_many": "Você concluiu {{n}} treinos.",
+      "body_other": "Você concluiu {{n}} treinos.",
+      "activeDays_one": "{{n}} dia ativo",
+      "activeDays_few": "{{n}} dias ativos",
+      "activeDays_many": "{{n}} dias ativos",
+      "activeDays_other": "{{n}} dias ativos"
+    },
+    "heatmap": {
+      "title": "Dias de treino",
+      "describeDay_one": "{{n}} treino",
+      "describeDay_few": "{{n}} treinos",
+      "describeDay_many": "{{n}} treinos",
+      "describeDay_other": "{{n}} treinos",
+      "legendLess": "Menos",
+      "legendMore": "Mais",
+      "scrollEarlier": "Semanas anteriores",
+      "scrollLater": "Semanas seguintes",
+      "summary": "Toque em um quadrado para ver aquele dia."
+    },
+    "streak": {
+      "title": "Maior sequência",
+      "body_one": "{{n}} semana seguida com treino.",
+      "body_few": "{{n}} semanas seguidas com treino.",
+      "body_many": "{{n}} semanas seguidas com treino.",
+      "body_other": "{{n}} semanas seguidas com treino."
+    },
+    "volume": {
+      "title": "Total levantado",
+      "body": "Carga vezes repetições nas suas séries de trabalho."
+    },
+    "topExercises": {
+      "title": "Mais treinados",
+      "sets_one": "{{n}} série",
+      "sets_few": "{{n}} séries",
+      "sets_many": "{{n}} séries",
+      "sets_other": "{{n}} séries"
+    },
+    "records": {
+      "title": "Recordes pessoais",
+      "body_one": "{{n}} novo recorde pessoal.",
+      "body_few": "{{n}} novos recordes pessoais.",
+      "body_many": "{{n}} novos recordes pessoais.",
+      "body_other": "{{n}} novos recordes pessoais."
+    },
+    "busiestMonth": {
+      "title": "Mês mais intenso",
+      "body_one": "{{n}} treino nesse mês.",
+      "body_few": "{{n}} treinos nesse mês.",
+      "body_many": "{{n}} treinos nesse mês.",
+      "body_other": "{{n}} treinos nesse mês."
+    },
+    "trainingTime": {
+      "title": "Horário habitual de treino",
+      "hours": "{{n}} horas treinadas, em sessões com duração registrada.",
+      "buckets": {
+        "morning": "Manhã",
+        "afternoon": "Tarde",
+        "evening": "Fim de tarde",
+        "night": "Noite"
+      }
+    },
+    "nutrition": {
+      "title": "Alimentação registrada",
+      "body": "Refeições registradas: {{meals}}. Dias com alimentação registrada: {{days}}."
+    },
+    "weight": {
+      "title": "Peso corporal",
+      "lost": "Você perdeu {{amount}} {{unit}} entre a primeira e a última pesagem.",
+      "gained": "Você ganhou {{amount}} {{unit}} entre a primeira e a última pesagem.",
+      "unchanged": "Sem variação entre a primeira e a última pesagem."
+    },
+    "outro": {
+      "title": "Esse foi o ano",
+      "body": "Continue registrando para ver a história do próximo ano."
+    },
+    "share": {
+      "brand": "Musclog",
+      "sessions": "Treinos",
+      "activeDays": "Dias ativos",
+      "volume": "Total levantado",
+      "topExercise": "Mais treinado",
+      "records": "Recordes pessoais",
+      "meals": "Refeições registradas",
+      "weight": "Variação de peso"
+    },
+    "homeCard": {
+      "title": "Seu {{year}} no Musclog",
+      "body": "Veja como foram seus treinos.",
+      "open": "Abrir seu ano",
+      "dismiss": "Dispensar"
+    },
+    "settingsRow": {
+      "title": "Seu ano no Musclog",
+      "subtitle": "Um olhar sobre seus treinos e registros"
+    },
+    "notification": {
+      "title": "Seu {{year}} no Musclog está pronto",
+      "body": "Veja como foram seus treinos este ano."
+    }
+  }
+}

@@ -7,6 +7,7 @@ import { ComebackNotificationService } from '@/services/ComebackNotificationServ
 import { CycleNotificationService } from '@/services/CycleNotificationService';
 import { NotificationService } from '@/services/NotificationService';
 import { NutritionNotificationService } from '@/services/NutritionNotificationService';
+import { YearReviewNotificationService } from '@/services/YearReviewNotificationService';
 import {
   type ComebackReminderContext,
   shouldBackOffReminders,
@@ -56,5 +57,7 @@ export async function refreshAllNotifications(): Promise<void> {
     NutritionNotificationService.scheduleCheckinNotifications(),
     CycleNotificationService.scheduleMenstrualCycleNotifications(),
     ComebackNotificationService.scheduleWelcomeBack(comeback),
+    // A failed year-review plan must not stop the reminders above (or the rest of this pass).
+    YearReviewNotificationService.scheduleYearReview({ backOff }).catch(() => undefined),
   ]);
 }

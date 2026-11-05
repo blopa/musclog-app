@@ -55,6 +55,7 @@ import {
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
   type WorkoutAutonomy,
+  YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
 } from '@/constants/settings';
 import {
   type ComebackState,
@@ -199,6 +200,16 @@ export const SETTINGS = {
     parse: parseComebackState,
     serialize: serializeComebackState,
   } satisfies SettingDefinition<ComebackState>,
+  /** Null until the user dismisses this year's card; a stored year hides that year's card only. */
+  yearReviewDismissedYear: {
+    type: YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
+    defaultValue: null,
+    parse: (raw: string) => {
+      const year = Number(raw);
+      return raw !== '' && Number.isInteger(year) ? year : null;
+    },
+    serialize: (value: number | null) => (value === null ? '' : String(value)),
+  } satisfies SettingDefinition<number | null>,
 } as const;
 
 /** Reads a setting out of an already-loaded `type → value` map (the reactive context's view). */

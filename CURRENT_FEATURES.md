@@ -136,6 +136,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - **Recent training load**: a front and back body map shaded by what you trained in the last 7 days, recent sessions counting most; tap a muscle for its sets. It shows load, never whether a muscle is ready
 - **Weekly sets per muscle**: each trained muscle against a 10 to 20 set range, plus your own push/pull and quads/hamstrings totals
 - **Strength levels**: Beginner to Elite for 15 main barbell and dumbbell lifts, from estimated 1RM relative to body weight, with the weight for the next level, on Progress and on each lift. Needs a weigh-in
+- **Your year in Musclog**: a card-by-card look back at a year (sessions, active days, longest weekly run, volume, top exercises, records, busiest month, usual training time, food logged, weight change). Offered on Home from December 1 to January 31, with one reminder, and replayable from Settings. The share image leaves out body weight and nutrition unless you add them, and never includes cycle data
 - Data export: encrypted JSON backup or human-readable Excel spreadsheet
 
 ---

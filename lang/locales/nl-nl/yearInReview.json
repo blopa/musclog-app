@@ -1,0 +1,123 @@
+{
+  "yearInReview": {
+    "title": "Jouw jaar in Musclog",
+    "empty": "Er is dit jaar nog niets vastgelegd. Het overzicht vult zich terwijl je traint en bijhoudt.",
+    "back": "Terug",
+    "next": "Volgende",
+    "done": "Klaar",
+    "stepOf": "{{current}} van {{total}}",
+    "shareButton": "Delen",
+    "shareSheetTitle": "Deel je jaar",
+    "includeWeight": "Gewichtsverandering toevoegen",
+    "includeNutrition": "Voeding toevoegen",
+    "shareHint": "Beide staan standaard uit. Zonder deze opties toont de afbeelding geen lichaamsgewicht en geen voedingscijfers.",
+    "shareAction": "Afbeelding delen",
+    "intro": {
+      "title": "Jouw {{year}} in Musclog",
+      "body": "Zo zagen je training en bijhouden eruit."
+    },
+    "sessions": {
+      "title": "Trainingen",
+      "body_one": "Je rondde {{n}} training af.",
+      "body_few": "Je rondde {{n}} trainingen af.",
+      "body_many": "Je rondde {{n}} trainingen af.",
+      "body_other": "Je rondde {{n}} trainingen af.",
+      "activeDays_one": "{{n}} actieve dag",
+      "activeDays_few": "{{n}} actieve dagen",
+      "activeDays_many": "{{n}} actieve dagen",
+      "activeDays_other": "{{n}} actieve dagen"
+    },
+    "heatmap": {
+      "title": "Trainingsdagen",
+      "describeDay_one": "{{n}} training",
+      "describeDay_few": "{{n}} trainingen",
+      "describeDay_many": "{{n}} trainingen",
+      "describeDay_other": "{{n}} trainingen",
+      "legendLess": "Minder",
+      "legendMore": "Meer",
+      "scrollEarlier": "Eerdere weken",
+      "scrollLater": "Latere weken",
+      "summary": "Tik op een vakje om die dag te zien."
+    },
+    "streak": {
+      "title": "Langste reeks",
+      "body_one": "{{n}} week achter elkaar met een training.",
+      "body_few": "{{n}} weken achter elkaar met een training.",
+      "body_many": "{{n}} weken achter elkaar met een training.",
+      "body_other": "{{n}} weken achter elkaar met een training."
+    },
+    "volume": {
+      "title": "Totaal getild",
+      "body": "Gewicht maal herhalingen over je werkseries."
+    },
+    "topExercises": {
+      "title": "Meest getraind",
+      "sets_one": "{{n}} serie",
+      "sets_few": "{{n}} series",
+      "sets_many": "{{n}} series",
+      "sets_other": "{{n}} series"
+    },
+    "records": {
+      "title": "Persoonlijke records",
+      "body_one": "{{n}} nieuw persoonlijk record.",
+      "body_few": "{{n}} nieuwe persoonlijke records.",
+      "body_many": "{{n}} nieuwe persoonlijke records.",
+      "body_other": "{{n}} nieuwe persoonlijke records."
+    },
+    "busiestMonth": {
+      "title": "Drukste maand",
+      "body_one": "{{n}} training in die maand.",
+      "body_few": "{{n}} trainingen in die maand.",
+      "body_many": "{{n}} trainingen in die maand.",
+      "body_other": "{{n}} trainingen in die maand."
+    },
+    "trainingTime": {
+      "title": "Gebruikelijk trainingsmoment",
+      "hours": "{{n}} uur getraind, uit sessies met een bekende lengte.",
+      "buckets": {
+        "morning": "Ochtend",
+        "afternoon": "Middag",
+        "evening": "Avond",
+        "night": "Nacht"
+      }
+    },
+    "nutrition": {
+      "title": "Voeding bijgehouden",
+      "body": "Maaltijden vastgelegd: {{meals}}. Dagen met voeding vastgelegd: {{days}}."
+    },
+    "weight": {
+      "title": "Lichaamsgewicht",
+      "lost": "Je daalde {{amount}} {{unit}} van je eerste tot je laatste weging.",
+      "gained": "Je steeg {{amount}} {{unit}} van je eerste tot je laatste weging.",
+      "unchanged": "Geen verschil tussen je eerste en laatste weging."
+    },
+    "outro": {
+      "title": "Dat was het jaar",
+      "body": "Blijf bijhouden om het verhaal van volgend jaar te zien."
+    },
+    "share": {
+      "brand": "Musclog",
+      "sessions": "Trainingen",
+      "activeDays": "Actieve dagen",
+      "volume": "Totaal getild",
+      "topExercise": "Meest getraind",
+      "records": "Persoonlijke records",
+      "meals": "Maaltijden vastgelegd",
+      "weight": "Gewichtsverandering"
+    },
+    "homeCard": {
+      "title": "Jouw {{year}} in Musclog",
+      "body": "Bekijk hoe je training eruitzag.",
+      "open": "Open je jaar",
+      "dismiss": "Verbergen"
+    },
+    "settingsRow": {
+      "title": "Jouw jaar in Musclog",
+      "subtitle": "Een terugblik op je training en bijhouden"
+    },
+    "notification": {
+      "title": "Jouw {{year}} in Musclog is klaar",
+      "body": "Bekijk hoe je training er dit jaar uitzag."
+    }
+  }
+}

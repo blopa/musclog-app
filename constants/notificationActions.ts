@@ -41,3 +41,5 @@ export const UNFINISHED_WORKOUT_NOTIFICATION_ID = 'unfinished-workout-notificati
 export const GOAL_AT_RISK_NOTIFICATION_TYPE = 'goal-at-risk';
 /** `data.type` of the single welcome-back nudge; tapping it opens Home, where the offer is. */
 export const COMEBACK_WELCOME_NOTIFICATION_TYPE = 'comeback-welcome';
+/** `data.type` of the year-in-review nudge; `data.year` names the year it opens. */
+export const YEAR_REVIEW_NOTIFICATION_TYPE = 'year-review';
