@@ -4,6 +4,7 @@ import { subDays } from 'date-fns';
 
 import { ENCRYPTION_KEY } from '@/constants/database';
 import { database } from '@/database/database-instance';
+import { waitForBootMigrations, waitForDbReady } from '@/database/dbReady';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
 import ChatMessage from '@/database/models/ChatMessage';
 import Exercise, {
@@ -2218,6 +2219,13 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
 
   if (clear) {
     try {
+      // The boot migration chain starts right after markDbReady(); resetting under it throws
+      // "database is being reset" in every migration. Wait for readiness, yield one macrotask so
+      // the chain has registered itself, then drain it (see waitForBootMigrations()).
+      await waitForDbReady();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await waitForBootMigrations();
+
       // Note: unsafeResetDatabase() MUST be called inside a write transaction
       await database.write(async () => {
         await database.unsafeResetDatabase();
