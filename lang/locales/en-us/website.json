@@ -481,7 +481,7 @@
     "privacy": {
       "titleStart": "Privacy",
       "titleHighlight": "Policy",
-      "lastUpdated": "Last updated: April 25, 2026",
+      "lastUpdated": "Last updated: November 5, 2026",
       "highlights": {
         "dataProtection": {
           "title": "Data Protection",
@@ -689,12 +689,14 @@
             "General geographic location (country or city level, not precise location)",
             "Browser type, device type, and operating system",
             "Referring website or search engine",
-            "Anonymous interaction events (e.g. link clicks)"
+            "Anonymous interaction events (e.g. link clicks)",
+            "The campaign tags (utm_source, utm_medium, utm_campaign) of the link you arrived from, attached to Google Play, App Store and demo clicks"
           ],
           "content4": "Legal basis for GA4: Consent (GDPR Art. 6(1)(a)). You may withdraw your consent at any time by clicking \"Cookie settings\" in the page footer. Withdrawal of consent will prevent any further collection and does not affect the lawfulness of processing carried out before withdrawal.",
           "content5": "GA4 data is retained in Google Analytics for 14 months by default. Google acts as a data processor under a Data Processing Agreement. For more information on how Google handles data, see the",
           "googlePrivacyPolicy": "Google Privacy Policy",
-          "content6": "Your consent choice is stored locally in your browser (localStorage) and is never sent to our servers. It is used solely to remember your preference between visits."
+          "content6": "Your consent choice is stored locally in your browser (localStorage) and is never sent to our servers. It is used solely to remember your preference between visits.",
+          "content7": "If the link you followed carries campaign tags (for example ?utm_source=reddit), the website keeps them in your browser's session storage until you close the tab, so it can tell which post or announcement led to a visit. They are sent to Google Analytics only after you accept analytics. When you open Google Play from this website, the same tags are added to the store link as an install referrer, which lets us see in Google Play Console how many installs came from each campaign; Google Play receives them because you followed that link, not from your browser storage. The tags describe the link, never you, and contain no personal data."
         }
       },
       "appVsWebsite": {

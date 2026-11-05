@@ -481,7 +481,7 @@
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidade",
-      "lastUpdated": "Última atualização: 25 de abril de 2026",
+      "lastUpdated": "Última atualização: 5 de novembro de 2026",
       "highlights": {
         "dataProtection": {
           "title": "Proteção de dados",
@@ -689,12 +689,14 @@
             "Localização geográfica geral (em nível de país ou cidade, não localização precisa)",
             "Tipo de navegador, tipo de dispositivo e sistema operacional",
             "Site ou mecanismo de pesquisa de referência",
-            "Eventos de interação anônimos (p. ex. cliques em links)"
+            "Eventos de interação anônimos (p. ex. cliques em links)",
+            "As etiquetas de campanha (utm_source, utm_medium, utm_campaign) do link pelo qual você chegou, associadas aos cliques no Google Play, na App Store e na demonstração"
           ],
           "content4": "Base legal para o GA4: Consentimento (RGPD Art. 6(1)(a)). Você pode retirar seu consentimento a qualquer momento clicando em \"Configurações de cookies\" no rodapé da página. A retirada do consentimento impedirá qualquer coleta adicional e não afetará a legalidade do processamento realizado antes da retirada.",
           "content5": "Os dados do GA4 são retidos no Google Analytics por 14 meses por padrão. O Google atua como processador de dados sob um Acordo de Processamento de Dados. Para mais informações sobre como o Google lida com dados, consulte a",
           "googlePrivacyPolicy": "Política de Privacidade do Google",
-          "content6": "Sua escolha de consentimento é armazenada localmente no seu navegador (localStorage) e nunca é enviada para nossos servidores. É usada exclusivamente para lembrar sua preferência entre visitas."
+          "content6": "Sua escolha de consentimento é armazenada localmente no seu navegador (localStorage) e nunca é enviada para nossos servidores. É usada exclusivamente para lembrar sua preferência entre visitas.",
+          "content7": "Se o link que você seguiu tiver etiquetas de campanha (por exemplo ?utm_source=reddit), o site as guarda no armazenamento de sessão do seu navegador até você fechar a aba, para saber qual publicação ou anúncio levou à visita. Elas só são enviadas ao Google Analytics depois que você aceita a análise. Quando você abre o Google Play a partir deste site, as mesmas etiquetas são adicionadas ao link da loja como referência de instalação, o que nos permite ver no Google Play Console quantas instalações vieram de cada campanha; o Google Play as recebe porque você seguiu esse link, não a partir do armazenamento do seu navegador. As etiquetas descrevem o link, nunca você, e não contêm dados pessoais."
         }
       },
       "appVsWebsite": {
@@ -728,7 +730,7 @@
     "terms": {
       "titleStart": "Termos e",
       "conditions": "Condições",
-      "lastUpdated": "Última atualização: 25 de abril de 2026",
+      "lastUpdated": "Última atualização: 5 de novembro de 2026",
       "highlights": {
         "agreement": {
           "title": "Acordo de uso",

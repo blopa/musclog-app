@@ -481,7 +481,7 @@
     "privacy": {
       "titleStart": "Privacybeleid",
       "titleHighlight": "",
-      "lastUpdated": "Laatst bijgewerkt: 25 april 2026",
+      "lastUpdated": "Laatst bijgewerkt: 5 november 2026",
       "highlights": {
         "dataProtection": {
           "title": "Gegevensbescherming",
@@ -689,12 +689,14 @@
             "Algemene geografische locatie (op land- of stadsniveau, niet precieze locatie)",
             "Browsertype, apparaattype en besturingssysteem",
             "Verwijzende website of zoekmachine",
-            "Anonieme interactiegebeurtenissen (bijv. linkklikken)"
+            "Anonieme interactiegebeurtenissen (bijv. linkklikken)",
+            "De campagnetags (utm_source, utm_medium, utm_campaign) van de link waarmee u binnenkwam, gekoppeld aan klikken op Google Play, App Store en de demo"
           ],
           "content4": "Rechtsgrondslag voor GA4: Toestemming (AVG Art. 6(1)(a)). U kunt uw toestemming op elk moment intrekken door op \"Cookie-instellingen\" in de paginavoettekst te klikken. Intrekking van toestemming voorkomt verdere verzameling en heeft geen invloed op de rechtmatigheid van de verwerking vóór de intrekking.",
           "content5": "GA4-gegevens worden standaard 14 maanden bewaard in Google Analytics. Google treedt op als gegevensverwerker onder een Gegevensverwerkingsovereenkomst. Voor meer informatie over hoe Google gegevens verwerkt, zie het",
           "googlePrivacyPolicy": "Privacybeleid van Google",
-          "content6": "Uw toestemmingskeuze wordt lokaal opgeslagen in uw browser (localStorage) en wordt nooit naar onze servers verzonden. Het wordt uitsluitend gebruikt om uw voorkeur tussen bezoeken te onthouden."
+          "content6": "Uw toestemmingskeuze wordt lokaal opgeslagen in uw browser (localStorage) en wordt nooit naar onze servers verzonden. Het wordt uitsluitend gebruikt om uw voorkeur tussen bezoeken te onthouden.",
+          "content7": "Als de link die u volgde campagnetags bevat (bijvoorbeeld ?utm_source=reddit), bewaart de website die in de sessieopslag van uw browser tot u het tabblad sluit, zodat we kunnen zien welk bericht of welke aankondiging tot een bezoek leidde. Ze worden pas naar Google Analytics gestuurd nadat u analyse accepteert. Wanneer u Google Play vanaf deze website opent, worden dezelfde tags als installatieverwijzing aan de winkellink toegevoegd, zodat we in Google Play Console kunnen zien hoeveel installaties uit elke campagne kwamen; Google Play ontvangt ze omdat u die link volgde, niet uit de opslag van uw browser. De tags beschrijven de link, nooit u, en bevatten geen persoonsgegevens."
         }
       },
       "appVsWebsite": {
@@ -728,7 +730,7 @@
     "terms": {
       "titleStart": "Algemene",
       "conditions": "Voorwaarden",
-      "lastUpdated": "Laatst bijgewerkt: 25 april 2026",
+      "lastUpdated": "Laatst bijgewerkt: 5 november 2026",
       "highlights": {
         "agreement": {
           "title": "Gebruikersovereenkomst",
