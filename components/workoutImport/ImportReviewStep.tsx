@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 
 import { SectionLabel } from '@/components/theme/SectionLabel';
+import { useTheme } from '@/hooks/useTheme';
 import type { ExerciseMatch } from '@/utils/workoutImport/exerciseMatch';
 import { type ExerciseChoice, reviewSections } from '@/utils/workoutImport/importFlow';
 import type { SkippedRow, SkipReason } from '@/utils/workoutImport/types';
@@ -38,6 +39,7 @@ type ListItem =
 
 export function ImportReviewStep(props: ImportReviewStepProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { needsChoice, matched } = useMemo(() => reviewSections(props.matches), [props.matches]);
 
   const items = useMemo<ListItem[]>(() => {
@@ -94,6 +96,8 @@ export function ImportReviewStep(props: ImportReviewStepProps) {
       data={items}
       keyExtractor={(item) => item.key}
       ListHeaderComponent={header}
+      // The modal's footer is overlaid on the list, so leave room to scroll past it.
+      contentContainerStyle={{ paddingBottom: theme.spacing.padding['4xl'] }}
       initialNumToRender={20}
       maxToRenderPerBatch={20}
       windowSize={7}
