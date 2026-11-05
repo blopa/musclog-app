@@ -133,6 +133,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Correlation charts: volume vs. calories, body composition vs. protein, mood vs. macros/volume, etc.
 - Workout performance charted against days near a logged period (logged data only, no estimated phases)
 - AI-generated progress insights
+- **Recent training load**: a front and back body map shaded by what you trained in the last 7 days, recent sessions counting most; tap a muscle for its sets. It shows load, never whether a muscle is ready
+- **Weekly sets per muscle**: each trained muscle against a 10 to 20 set range, plus your own push/pull and quads/hamstrings totals
 - Data export: encrypted JSON backup or human-readable Excel spreadsheet
 
 ---

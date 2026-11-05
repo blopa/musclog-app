@@ -607,6 +607,21 @@ A review of workout-app notifications (Hevy, MacroFactor Workouts, Strong, Fitbo
 
 Cycle-phase effects on strength and performance are small and inconsistent (a trivial reduction in the early follicular phase in pooled data, with low-certainty evidence), and follicular-phase length, hence ovulation day, varies widely between and within people. The app therefore draws no phase-based training conclusions and shows no cycle card in the live workout session, where an observation would read as a prediction about today. The personal "lower volume near a period start" observation compares each session only with the same workout away from period starts, excludes deliberate lighter weeks, and needs four comparable cycles.
 
+## Recent training load and weekly sets
+
+The body map on Progress describes what was trained recently. It does not say a muscle has recovered or is ready, because a set count can't know that.
+
+**Sourced:** 10 to 20 sets per muscle per week, and diminishing value past about 10 sets per muscle in one session, both from Schoenfeld, _Science and Development of Muscle Hypertrophy_, 2nd ed.
+
+**Product choices, not research results:**
+
+- A secondary mover counts as half a set. The other choices are 0 (ignores real work) and 1 (double-counts every press as a triceps session); half is the simple middle.
+- One 48-hour half-life for every muscle, and a 7-day window. A per-muscle table of half-lives would look more precise without any data behind it.
+- Shading edges of 0.5, 3 and 6 decayed sets.
+- Rated and unrated sets count the same. Effort ratings are too sparse to weight by, and an unrated set is not an easy one.
+
+**Deliberately not done:** lift-ratio "structural balance" tables (weak source). The push/pull and quad/hamstring lines state the person's own weekly sets and assert no ideal ratio. Sets are counted per body-map region, so a set listing two deltoid heads is one shoulder set.
+
 ## Comeback mode: what the research says and which numbers are our choices
 
 The brief (`get-the-routine-back-research.md`, a literature and practitioner synthesis on restarting training and eating after a long break) agrees on the shape, not on numbers: there is no single right plan; start deliberately small; progress by how recovery feels rather than a fixed percentage; make a minimum viable day count; never double up after a miss; judge progress against week 1, not the old peak; plan with if-then cues; check in at weeks 2, 4, 8 and 12; ease into nutrition (maintenance, then a modest deficit, protein first); and use self-compassion, not guilt.

@@ -72,6 +72,7 @@ import enUsLock from './locales/en-us/lock.json';
 import enUsLogSetPerformance from './locales/en-us/logSetPerformance.json';
 import enUsMealFoods from './locales/en-us/meal_foods.json';
 import enUsMeals from './locales/en-us/meals.json';
+import enUsMuscleLoad from './locales/en-us/muscleLoad.json';
 import enUsNotes from './locales/en-us/notes.json';
 import enUsNotifications from './locales/en-us/notifications.json';
 import enUsNutrition from './locales/en-us/nutrition.json';
@@ -159,6 +160,7 @@ import esEsLock from './locales/es-es/lock.json';
 import esEsLogSetPerformance from './locales/es-es/logSetPerformance.json';
 import esEsMealFoods from './locales/es-es/meal_foods.json';
 import esEsMeals from './locales/es-es/meals.json';
+import esEsMuscleLoad from './locales/es-es/muscleLoad.json';
 import esEsNotes from './locales/es-es/notes.json';
 import esEsNotifications from './locales/es-es/notifications.json';
 import esEsNutrition from './locales/es-es/nutrition.json';
@@ -246,6 +248,7 @@ import nlNlLock from './locales/nl-nl/lock.json';
 import nlNlLogSetPerformance from './locales/nl-nl/logSetPerformance.json';
 import nlNlMealFoods from './locales/nl-nl/meal_foods.json';
 import nlNlMeals from './locales/nl-nl/meals.json';
+import nlNlMuscleLoad from './locales/nl-nl/muscleLoad.json';
 import nlNlNotes from './locales/nl-nl/notes.json';
 import nlNlNotifications from './locales/nl-nl/notifications.json';
 import nlNlNutrition from './locales/nl-nl/nutrition.json';
@@ -333,6 +336,7 @@ import ptBrLock from './locales/pt-br/lock.json';
 import ptBrLogSetPerformance from './locales/pt-br/logSetPerformance.json';
 import ptBrMealFoods from './locales/pt-br/meal_foods.json';
 import ptBrMeals from './locales/pt-br/meals.json';
+import ptBrMuscleLoad from './locales/pt-br/muscleLoad.json';
 import ptBrNotes from './locales/pt-br/notes.json';
 import ptBrNotifications from './locales/pt-br/notifications.json';
 import ptBrNutrition from './locales/pt-br/nutrition.json';
@@ -420,6 +424,7 @@ import ruRuLock from './locales/ru-ru/lock.json';
 import ruRuLogSetPerformance from './locales/ru-ru/logSetPerformance.json';
 import ruRuMealFoods from './locales/ru-ru/meal_foods.json';
 import ruRuMeals from './locales/ru-ru/meals.json';
+import ruRuMuscleLoad from './locales/ru-ru/muscleLoad.json';
 import ruRuNotes from './locales/ru-ru/notes.json';
 import ruRuNotifications from './locales/ru-ru/notifications.json';
 import ruRuNutrition from './locales/ru-ru/nutrition.json';
@@ -538,6 +543,7 @@ const resources = {
       ...enUsLogSetPerformance,
       ...enUsMealFoods,
       ...enUsMeals,
+      ...enUsMuscleLoad,
       ...enUsNotes,
       ...enUsNotifications,
       ...enUsNutrition,
@@ -629,6 +635,7 @@ const resources = {
       ...esEsLogSetPerformance,
       ...esEsMealFoods,
       ...esEsMeals,
+      ...esEsMuscleLoad,
       ...esEsNotes,
       ...esEsNotifications,
       ...esEsNutrition,
@@ -720,6 +727,7 @@ const resources = {
       ...nlNlLogSetPerformance,
       ...nlNlMealFoods,
       ...nlNlMeals,
+      ...nlNlMuscleLoad,
       ...nlNlNotes,
       ...nlNlNotifications,
       ...nlNlNutrition,
@@ -811,6 +819,7 @@ const resources = {
       ...ptBrLogSetPerformance,
       ...ptBrMealFoods,
       ...ptBrMeals,
+      ...ptBrMuscleLoad,
       ...ptBrNotes,
       ...ptBrNotifications,
       ...ptBrNutrition,
@@ -902,6 +911,7 @@ const resources = {
       ...ruRuLogSetPerformance,
       ...ruRuMealFoods,
       ...ruRuMeals,
+      ...ruRuMuscleLoad,
       ...ruRuNotes,
       ...ruRuNotifications,
       ...ruRuNutrition,

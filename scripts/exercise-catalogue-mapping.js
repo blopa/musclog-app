@@ -265,52 +265,72 @@ const OBLIQUES =
 const DEEP_CORE =
   /\b(plank|bridge|vacuum|hollow|dead bug|pallof|fallout|rollout|roller|bird dog)\b/i;
 
-function resolveTargetMuscles(entry) {
-  const muscles = [];
-  const push = (m) => {
-    if (m && !muscles.includes(m)) {
-      muscles.push(m);
+/**
+ * Resolves both halves of an entry's muscles in one pass, so the merged list and the
+ * secondary subset cannot drift apart. `primary` comes from `primaryMuscles` and
+ * `secondary` from `secondaryMuscles`; a muscle named by both is primary.
+ */
+function resolveMuscleRoles(entry) {
+  const primary = [];
+  const secondary = [];
+  const pushTo = (list, m) => {
+    if (m && !list.includes(m)) {
+      list.push(m);
     }
   };
 
   for (const source of entry.primaryMuscles) {
     if (source === 'shoulders') {
       if (LATERAL_DELT.test(entry.name)) {
-        push('lateral_deltoid');
+        pushTo(primary, 'lateral_deltoid');
       } else if (POSTERIOR_DELT.test(entry.name)) {
-        push('posterior_deltoid');
+        pushTo(primary, 'posterior_deltoid');
       } else if (ANTERIOR_DELT.test(entry.name)) {
-        push('anterior_deltoid');
+        pushTo(primary, 'anterior_deltoid');
       } else {
-        push('shoulders');
+        pushTo(primary, 'shoulders');
       }
 
       continue;
     }
 
-    push(MUSCLE_BY_SOURCE[source]);
+    pushTo(primary, MUSCLE_BY_SOURCE[source]);
   }
 
   if (entry.primaryMuscles.includes('abdominals')) {
     if (OBLIQUES.test(entry.name)) {
-      push('external_obliques');
+      pushTo(primary, 'external_obliques');
     }
 
     if (DEEP_CORE.test(entry.name)) {
-      push('transverse_abdominis');
+      pushTo(primary, 'transverse_abdominis');
     }
   }
 
   for (const source of entry.secondaryMuscles) {
     if (source === 'shoulders') {
-      push(POSTERIOR_DELT.test(entry.name) ? 'posterior_deltoid' : 'anterior_deltoid');
+      pushTo(secondary, POSTERIOR_DELT.test(entry.name) ? 'posterior_deltoid' : 'anterior_deltoid');
       continue;
     }
 
-    push(MUSCLE_BY_SOURCE[source]);
+    pushTo(secondary, MUSCLE_BY_SOURCE[source]);
   }
 
-  return muscles;
+  return {
+    primary,
+    secondary: secondary.filter((muscle) => !primary.includes(muscle)),
+  };
+}
+
+/** Every target muscle, primary first, then the secondary-only ones. */
+function resolveTargetMuscles(entry) {
+  const { primary, secondary } = resolveMuscleRoles(entry);
+  return [...primary, ...secondary];
+}
+
+/** The subset of `resolveTargetMuscles` that came only from secondary muscles. */
+function resolveSecondaryMuscles(entry) {
+  return resolveMuscleRoles(entry).secondary;
 }
 
 function assertSourceMusclesMapped(source) {
@@ -331,5 +351,6 @@ module.exports = {
   resolveEquipment,
   resolveMechanic,
   resolveMuscleGroup,
+  resolveSecondaryMuscles,
   resolveTargetMuscles,
 };

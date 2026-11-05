@@ -28,6 +28,9 @@
  *   - `targetMuscles`  primary + secondary muscles mapped onto the
  *                      `MUSCLE_SEED_DATA` vocabulary, refined by name for
  *                      deltoid heads and obliques.
+ *   - `secondaryMuscles` the subset of `targetMuscles` that came only from
+ *                      free-exercise-db's secondary muscles (omitted when empty).
+ *                      A muscle named by both halves is primary.
  *   - `loadMultiplier` an exercise that also exists in the frozen legacy catalogue
  *                      inherits its value verbatim (see MUSCLOG_ANCHORS); the
  *                      rest are derived from the movement family by the rules
@@ -46,6 +49,7 @@ const {
   resolveEquipment,
   resolveMechanic,
   resolveMuscleGroup,
+  resolveSecondaryMuscles,
   resolveTargetMuscles,
 } = require('./exercise-catalogue-mapping');
 const { resolveLoadMultiplier } = require('./exercise-load-multiplier-policy');
@@ -97,6 +101,7 @@ async function main() {
   const output = sorted.map((entry, i) => {
     const equipmentType = resolveEquipment(entry);
     const mechanicType = resolveMechanic(entry);
+    const secondaryMuscles = resolveSecondaryMuscles(entry);
 
     return {
       exerciseIndex: firstExerciseIndex + i,
@@ -104,6 +109,7 @@ async function main() {
       equipmentType,
       mechanicType,
       targetMuscles: resolveTargetMuscles(entry),
+      ...(secondaryMuscles.length > 0 ? { secondaryMuscles } : {}),
       loadMultiplier: resolveLoadMultiplier(
         entry,
         equipmentType,

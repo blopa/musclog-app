@@ -17,6 +17,8 @@ export interface ExerciseCatalogueEntry {
   equipmentType: EquipmentType;
   mechanicType: MechanicType;
   targetMuscles: string[];
+  /** Subset of `targetMuscles` that is secondary only; absent when every target is primary. */
+  secondaryMuscles?: string[];
   loadMultiplier: number;
 }
 
@@ -26,6 +28,7 @@ interface StructuralExerciseEntry {
   equipmentType: EquipmentType;
   mechanicType: MechanicType;
   targetMuscles: string[];
+  secondaryMuscles?: string[];
   loadMultiplier: number;
   __freeExerciseDbId: string;
 }
@@ -75,6 +78,7 @@ export function getExerciseCatalogue(
       equipmentType: data.equipmentType,
       mechanicType: data.mechanicType,
       targetMuscles: data.targetMuscles,
+      ...(data.secondaryMuscles ? { secondaryMuscles: data.secondaryMuscles } : {}),
       loadMultiplier: data.loadMultiplier,
     };
   });
