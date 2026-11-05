@@ -1,11 +1,11 @@
 import { BrowserQRCodeSvgWriter } from '@zxing/library';
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { computePopoverTop } from '@/components/website/popoverPlacement';
 import { GOOGLE_PLAY_URL, TESTFLIGHT_URL } from '@/components/website/storeLinks';
-import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
+import { trackStoreButtonClick, withPlayReferrer } from '@/utils/websiteAnalytics';
 
 function AppleLogo() {
   return (
@@ -51,7 +51,7 @@ interface StoreButtonProps {
   storeName: string;
   onClick?: () => void;
   href?: string;
-  onLinkClick?: () => void;
+  onLinkClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: StoreButtonProps) {
@@ -231,9 +231,10 @@ export function StoreButtons() {
         title={t('googleTitle')}
         storeName={t('googleStore')}
         href={GOOGLE_PLAY_URL}
-        onLinkClick={() =>
-          trackStoreButtonClick({ store: 'google_play', availability: 'available' })
-        }
+        onLinkClick={(event) => {
+          event.currentTarget.href = withPlayReferrer(GOOGLE_PLAY_URL);
+          trackStoreButtonClick({ store: 'google_play', availability: 'available' });
+        }}
       />
       <StoreButton
         logo={<AppleLogo />}

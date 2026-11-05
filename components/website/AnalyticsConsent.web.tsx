@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ANALYTICS_RESET_EVENT,
   AnalyticsConsentState,
+  captureCampaign,
   disableAnalytics,
   ensureAnalytics,
   getAnalyticsConsent,
@@ -22,6 +23,10 @@ export function AnalyticsConsent() {
   const pathname = usePathname();
   const [consent, setConsent] = useState<AnalyticsConsentState>(() => getAnalyticsConsent());
   const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    captureCampaign();
+  }, []);
 
   useEffect(() => {
     if (consent !== null) {

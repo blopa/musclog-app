@@ -26,3 +26,17 @@ export function trackStoreButtonClick(_params: {
   store: 'google_play' | 'app_store';
   availability: 'available' | 'coming_soon' | 'testflight';
 }) {}
+
+export type CampaignParams = Partial<Record<'utm_source' | 'utm_medium' | 'utm_campaign', string>>;
+
+export function captureCampaign() {}
+
+export function getCampaign(): CampaignParams {
+  return {};
+}
+
+export function withPlayReferrer(url: string): string {
+  return url;
+}
+
+export function trackDemoStart() {}
