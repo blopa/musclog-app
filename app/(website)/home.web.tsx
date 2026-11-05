@@ -19,6 +19,7 @@ import { GITHUB_REPO_URL } from '@/constants/misc';
 import { THEME_IDS, type ThemeId } from '@/constants/settings';
 import { useThemeId } from '@/hooks/useTheme';
 import { THEME_DEFINITIONS } from '@/theme.registry';
+import { trackDemoStart } from '@/utils/websiteAnalytics';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`);
@@ -692,6 +693,7 @@ export function Hero() {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-semibold">
               <Link
                 href="/app"
+                onPress={trackDemoStart}
                 className="inline-flex items-center gap-2 text-text-primary underline underline-offset-4 hover:text-accent-bright"
               >
                 {t('demoButton')}

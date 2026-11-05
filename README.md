@@ -7,13 +7,20 @@
     <h1 align="center">Musclog - Lift, Log, Repeat</h1>
 </p>
 <p align="center">
-    <em>Your all-in-one fitness companion for tracking workouts, nutrition, and health — powered by AI.</em>
+    <em>Free, open-source workout and nutrition tracker. No account, no ads, your data stays on your phone.</em>
 </p>
 <p align="center">
     <img src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=default&logo=TypeScript&logoColor=white" alt="TypeScript">
     <img src="https://img.shields.io/badge/React_Native-61DAFB.svg?style=default&logo=React&logoColor=black" alt="React Native">
     <img src="https://img.shields.io/badge/Expo-000020.svg?style=default&logo=Expo&logoColor=white" alt="Expo">
     <img src="https://img.shields.io/badge/NativeWind-06B6D4.svg?style=default&logo=Tailwind-CSS&logoColor=white" alt="NativeWind">
+</p>
+
+<p align="center">
+    <a href="https://play.google.com/store/apps/details?id=com.werules.logger">Google Play</a> ·
+    <a href="https://testflight.apple.com/join/mq3QMSHU">iOS (TestFlight)</a> ·
+    <a href="https://musclog.app/app">Try the web demo</a> ·
+    <a href="https://musclog.app">Website</a>
 </p>
 
 <br>
@@ -27,7 +34,13 @@
   <img src="screenshots/workout-tracking.jpg" alt="Workout Logging" width="400"/>
 </div>
 
-Musclog is a cross-platform mobile fitness application built with React Native and Expo. It combines workout logging, nutrition tracking, menstrual cycle awareness, and AI-powered coaching into a single, cohesive experience — all stored locally with WatermelonDB.
+Musclog logs your lifts **and** your food in one app, with no account and no server to run. Everything is stored on your device (encrypted where it is sensitive), works offline, and can be exported or moved to another phone without the cloud.
+
+- **Train:** workout plans, progression that explains every number it changes, plate math, rest timers and a weekly review.
+- **Eat:** food diary, barcode and label scanning, macros and an energy target that adapts to your real weight trend.
+- **Optional extras:** AI coaching with your own API key (or none at all), cycle tracking, Health Connect and HealthKit.
+
+It is built with React Native and Expo (Android, iOS and web) and stores data locally with WatermelonDB.
 
 > **Note:** Kinetic Depth, Kinetic Light, Kinetic Shock, and Kinetic Volt are available under Settings →
 > Interface → Appearance. Choose one directly or let System follow your device's light/dark mode.

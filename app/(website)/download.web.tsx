@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { GOOGLE_PLAY_URL, TESTFLIGHT_URL } from '@/components/website/storeLinks';
 import { BRAND_GREEN_BRIGHT, hue } from '@/components/website/websiteColors';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
-import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
+import { trackStoreButtonClick, withPlayReferrer } from '@/utils/websiteAnalytics';
 
 function AppleLogo() {
   return (
@@ -64,9 +64,10 @@ export default function Download() {
               rel="noopener noreferrer"
               aria-label={t('googleLabel')}
               className="flex h-28 w-28 items-center justify-center rounded-card border border-ink/15 bg-bg-card text-text-primary transition-all hover:-translate-y-1 hover:border-ink/35 hover:bg-bg-cardElevated focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary sm:h-32 sm:w-32"
-              onClick={() =>
-                trackStoreButtonClick({ store: 'google_play', availability: 'available' })
-              }
+              onClick={(event) => {
+                event.currentTarget.href = withPlayReferrer(GOOGLE_PLAY_URL);
+                trackStoreButtonClick({ store: 'google_play', availability: 'available' });
+              }}
             >
               <GooglePlayLogo />
             </a>

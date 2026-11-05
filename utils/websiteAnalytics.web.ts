@@ -179,6 +179,78 @@ export function trackPageView(pagePath: string, pageTitle?: string) {
   });
 }
 
+const CAMPAIGN_STORAGE_KEY = 'musclog.campaign';
+const CAMPAIGN_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign'] as const;
+
+export type CampaignParams = Partial<Record<(typeof CAMPAIGN_PARAMS)[number], string>>;
+
+/**
+ * Remembers the `utm_*` tags of the landing URL for the tab's session (first touch wins), so a
+ * store click several pages later can still say which post sent the visitor. Stays in
+ * sessionStorage: nothing leaves the browser until the visitor accepts analytics.
+ */
+export function captureCampaign() {
+  if (!canUseDom()) {
+    return;
+  }
+
+  try {
+    if (window.sessionStorage.getItem(CAMPAIGN_STORAGE_KEY)) {
+      return;
+    }
+
+    const search = new URLSearchParams(window.location.search);
+    const campaign: CampaignParams = {};
+    for (const key of CAMPAIGN_PARAMS) {
+      const value = search.get(key)?.slice(0, 64);
+      if (value) {
+        campaign[key] = value;
+      }
+    }
+
+    if (Object.keys(campaign).length > 0) {
+      window.sessionStorage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify(campaign));
+    }
+  } catch {
+    // Storage can be blocked (private windows); attribution is best effort.
+  }
+}
+
+export function getCampaign(): CampaignParams {
+  if (!canUseDom()) {
+    return {};
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(CAMPAIGN_STORAGE_KEY);
+    const parsed: unknown = raw ? JSON.parse(raw) : {};
+    const campaign: CampaignParams = {};
+    if (typeof parsed === 'object' && parsed !== null) {
+      for (const key of CAMPAIGN_PARAMS) {
+        const value = (parsed as Record<string, unknown>)[key];
+        if (typeof value === 'string') {
+          campaign[key] = value;
+        }
+      }
+    }
+
+    return campaign;
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Adds the remembered campaign to a Google Play URL as the install `referrer`, which Play Console
+ * reports per tag. Without a campaign the URL is returned unchanged.
+ */
+export function withPlayReferrer(url: string): string {
+  const campaign = getCampaign();
+  const referrer = new URLSearchParams(campaign as Record<string, string>).toString();
+
+  return referrer ? `${url}&referrer=${encodeURIComponent(referrer)}` : url;
+}
+
 export function trackStoreButtonClick(params: {
   store: 'google_play' | 'app_store';
   availability: 'available' | 'coming_soon' | 'testflight';
@@ -186,5 +258,10 @@ export function trackStoreButtonClick(params: {
   trackAnalyticsEvent('store_button_click', {
     availability: params.availability,
     store: params.store,
+    ...getCampaign(),
   });
+}
+
+export function trackDemoStart() {
+  trackAnalyticsEvent('demo_start', getCampaign());
 }
