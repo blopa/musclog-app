@@ -1,0 +1,3 @@
+var _sentryDebugIds,_sentryDebugIdIdentifier;void 0===_sentryDebugIds&&(_sentryDebugIds={});try{var stack=(new Error).stack;stack&&(_sentryDebugIds[stack]="a7c3a95b-a10f-45b2-bbb0-b7ef87fc8a32",_sentryDebugIdIdentifier="sentry-dbid-a7c3a95b-a10f-45b2-bbb0-b7ef87fc8a32")}catch(e){}
+var SENTRY_RELEASE;SENTRY_RELEASE={name: "Musclog - Lift, Log, Repeat", version: "2.15.5"};
+__d(function(g,r,i,a,m,e,d){"use strict";Object.defineProperty(e,'__esModule',{value:!0}),Object.defineProperty(e,"CynefinModule",{enumerable:!0,get:function(){return n.CynefinModule}}),Object.defineProperty(e,"createCynefinServices",{enumerable:!0,get:function(){return n.createCynefinServices}});var n=r(d[0]);r(d[1])},2128,[2129,2101]);
