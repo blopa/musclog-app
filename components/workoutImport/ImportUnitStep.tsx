@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { SegmentedControl } from '@/components/theme/SegmentedControl';
+import { ListRow } from '@/components/theme/ListRow';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { kgToDisplay } from '@/utils/unitConversion';
@@ -22,23 +22,34 @@ export function ImportUnitStep({ unit, onUnitChange, firstWeightKg, units }: Imp
 
   return (
     <View className="gap-6 px-4 py-6">
-      <Text className="text-base text-text-primary">{t('workoutImport.unit.message')}</Text>
-      <SegmentedControl
-        fullWidth
-        value={unit}
-        onValueChange={(value) => onUnitChange(value as ImportWeightUnit)}
-        options={[
-          { label: t('workoutImport.unit.kg'), value: 'kg' },
-          { label: t('workoutImport.unit.lb'), value: 'lbs' },
-        ]}
-      />
+      <Text className="text-lg font-semibold text-text-primary">
+        {t('workoutImport.unit.message')}
+      </Text>
+
+      <View className="gap-3" accessibilityRole="radiogroup">
+        <ListRow
+          variant="card"
+          title={t('workoutImport.unit.kg')}
+          selected={unit === 'kg'}
+          onPress={() => onUnitChange('kg')}
+        />
+        <ListRow
+          variant="card"
+          title={t('workoutImport.unit.lb')}
+          selected={unit === 'lbs'}
+          onPress={() => onUnitChange('lbs')}
+        />
+      </View>
+
       {firstWeightKg !== null ? (
-        <Text className="text-sm text-text-secondary">
-          {t('workoutImport.unit.preview', {
-            value: formatDecimal(kgToDisplay(firstWeightKg, units), 1),
-            unit: t(getWeightUnitI18nKey(units)),
-          })}
-        </Text>
+        <View className="rounded-card border border-border-light bg-bg-card p-4">
+          <Text className="text-base text-text-primary">
+            {t('workoutImport.unit.preview', {
+              value: formatDecimal(kgToDisplay(firstWeightKg, units), 1),
+              unit: t(getWeightUnitI18nKey(units)),
+            })}
+          </Text>
+        </View>
       ) : null}
     </View>
   );

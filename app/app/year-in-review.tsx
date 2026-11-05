@@ -90,6 +90,16 @@ export default function YearInReviewScreen() {
         title={t('yearInReview.title')}
         subtitle={String(year)}
         lockArea={YEAR_IN_REVIEW_LOCK_AREAS}
+        actions={
+          review !== null && review.sessions !== null ? (
+            <IconButton
+              icon={Share2}
+              accessibilityLabel={t('yearInReview.shareButton')}
+              onPress={() => setShareOpen(true)}
+              variant="ghost"
+            />
+          ) : null
+        }
       />
       <AreaLockGate area={YEAR_IN_REVIEW_LOCK_AREAS}>
         <View className="flex-1 gap-4 p-4">
@@ -103,43 +113,49 @@ export default function YearInReviewScreen() {
           ) : null}
           {review !== null && review.hasContent && card ? (
             <>
-              <View className="flex-1 rounded-card border border-border-light bg-bg-card px-5">
+              <View
+                className="flex-row gap-1"
+                accessible
+                accessibilityLabel={t('yearInReview.stepOf', {
+                  current: formatInteger(current + 1),
+                  total: formatInteger(cards.length),
+                })}
+              >
+                {cards.map((item, i) => (
+                  <View
+                    key={`${item.kind}-${i}`}
+                    className="h-1 flex-1 rounded-tag"
+                    style={{
+                      backgroundColor:
+                        i <= current ? theme.colors.accent.primary : theme.colors.border.light,
+                    }}
+                  />
+                ))}
+              </View>
+              <View className="flex-1 rounded-card border border-border-light bg-bg-card px-6">
                 <YearStoryCardView card={card} review={review} units={units} locale={locale} />
               </View>
 
-              <View className="flex-row items-center justify-between gap-3">
-                <Button
-                  label={t('yearInReview.back')}
-                  variant="outline"
-                  size="md"
-                  disabled={current === 0}
-                  onPress={() => setIndex(Math.max(0, current - 1))}
-                />
-                <Text className="text-sm font-semibold tabular-nums text-text-secondary">
-                  {t('yearInReview.stepOf', {
-                    current: formatInteger(current + 1),
-                    total: formatInteger(cards.length),
-                  })}
-                </Text>
-                <Button
-                  label={isLast ? t('yearInReview.done') : t('yearInReview.next')}
-                  variant="accent"
-                  size="md"
-                  onPress={() => (isLast ? router.back() : setIndex(current + 1))}
-                />
+              <View className="flex-row gap-3">
+                <View className="flex-1">
+                  <Button
+                    label={t('yearInReview.back')}
+                    variant="outline"
+                    disabled={current === 0}
+                    onPress={() => setIndex(Math.max(0, current - 1))}
+                    width="full"
+                  />
+                </View>
+                <View className="flex-1">
+                  <Button
+                    label={isLast ? t('yearInReview.done') : t('yearInReview.next')}
+                    variant="accent"
+                    onPress={() => (isLast ? router.back() : setIndex(current + 1))}
+                    width="full"
+                  />
+                </View>
               </View>
             </>
-          ) : null}
-
-          {review !== null && review.sessions !== null ? (
-            <View className="flex-row justify-end">
-              <IconButton
-                icon={Share2}
-                accessibilityLabel={t('yearInReview.shareButton')}
-                onPress={() => setShareOpen(true)}
-                variant="ghost"
-              />
-            </View>
           ) : null}
         </View>
 

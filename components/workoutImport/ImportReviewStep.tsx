@@ -65,7 +65,7 @@ export function ImportReviewStep(props: ImportReviewStepProps) {
 
   const header = (
     <View className="gap-2 px-4 py-4">
-      <Text className="text-base text-text-primary">
+      <Text className="text-lg font-semibold text-text-primary">
         {t('workoutImport.review.newSessions', { count: props.newCount })}
       </Text>
       {props.alreadyHereCount > 0 ? (

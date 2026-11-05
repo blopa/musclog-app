@@ -32,7 +32,7 @@ type Props = {
 function Frame({ title, children }: { title: string; children: ReactNode }) {
   return (
     <View className="flex-1 justify-center gap-5 px-1 py-6">
-      <Text className="text-sm font-semibold text-text-secondary">{title}</Text>
+      <Text className="text-base font-semibold text-text-secondary">{title}</Text>
       {children}
     </View>
   );
@@ -41,8 +41,8 @@ function Frame({ title, children }: { title: string; children: ReactNode }) {
 function Figure({ value, caption }: { value: string; caption: string }) {
   return (
     <View className="gap-1">
-      <Text className="text-3xl font-bold tabular-nums text-text-primary">{value}</Text>
-      <Text className="text-base text-text-secondary">{caption}</Text>
+      <Text className="text-4xl font-bold tabular-nums text-text-primary">{value}</Text>
+      <Text className="text-lg text-text-secondary">{caption}</Text>
     </View>
   );
 }

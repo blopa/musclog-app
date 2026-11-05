@@ -160,8 +160,6 @@ export function WorkoutImportModal({ visible, onClose }: WorkoutImportModalProps
       case 'pick':
         return (
           <ImportPickStep
-            onChooseFile={() => void flow.pickFile()}
-            onPasteText={isAiConfigured ? () => setPanel({ kind: 'paste' }) : undefined}
             batches={batches}
             onUndo={(batch) => setPanel({ kind: 'undo', batchId: batch.batchId })}
           />
@@ -207,6 +205,25 @@ export function WorkoutImportModal({ visible, onClose }: WorkoutImportModalProps
   };
 
   const renderFooter = () => {
+    if (state.step === 'pick') {
+      return (
+        <View className="gap-1">
+          <Button
+            label={t('workoutImport.pick.chooseFile')}
+            onPress={() => void flow.pickFile()}
+            width="full"
+          />
+          {isAiConfigured ? (
+            <TextButton
+              label={t('workoutImport.pick.pasteInstead')}
+              align="center"
+              onPress={() => setPanel({ kind: 'paste' })}
+            />
+          ) : null}
+        </View>
+      );
+    }
+
     if (state.step === 'unit') {
       return (
         <Button label={t('workoutImport.unit.continue')} onPress={flow.confirmUnit} width="full" />
@@ -240,12 +257,13 @@ export function WorkoutImportModal({ visible, onClose }: WorkoutImportModalProps
     if (state.step === 'summary' && state.summary) {
       const { batchId } = state.summary;
       return (
-        <View className="gap-2">
+        <View className="gap-3">
           <Button label={t('workoutImport.summary.done')} onPress={handleClose} width="full" />
-          <TextButton
+          <Button
             label={t('workoutImport.summary.undoThis')}
-            tone="danger"
+            variant="outline"
             onPress={() => setPanel({ kind: 'undo', batchId })}
+            width="full"
           />
         </View>
       );

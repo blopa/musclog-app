@@ -102,23 +102,20 @@ export function WeeklyMuscleSetsCard({ load }: WeeklyMuscleSetsCardProps) {
                   {setsText(row.weeklySets)}
                 </Text>
               </View>
-              <View className="bg-background-secondary h-2 overflow-hidden rounded-tag">
+              <View className="relative h-2 overflow-hidden rounded-tag bg-ink/5">
+                <View
+                  className="absolute top-0 h-2 bg-ink/15"
+                  style={{
+                    left: `${rangeMinPercent}%`,
+                    width: `${rangeMaxPercent - rangeMinPercent}%`,
+                  }}
+                />
                 <View
                   className="h-full rounded-tag"
                   style={{
                     width: `${(row.weeklySets / scale) * 100}%`,
                     backgroundColor: theme.colors.accent.primary,
                   }}
-                />
-              </View>
-              <View className="relative h-2">
-                <View
-                  className="absolute top-0 h-2 border-l border-border-default"
-                  style={{ left: `${rangeMinPercent}%` }}
-                />
-                <View
-                  className="absolute top-0 h-2 border-l border-border-default"
-                  style={{ left: `${rangeMaxPercent}%` }}
                 />
               </View>
               <Text className="text-xs text-text-tertiary">{statusText(row.weeklyStatus)}</Text>
