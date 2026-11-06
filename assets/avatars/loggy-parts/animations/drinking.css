@@ -1,0 +1,67 @@
+/* Loggy taking a swig. The bottle, the hand holding it and the water pouring out of it tip
+   together from the thumb, where the hand meets the arm, so the stream stays on the cap. The
+   cheek gulps twice per sip, the drops fly off and fade back in, and the shoes stay planted
+   while the upper body bobs. Every layer opens and ends on the still's own frame. */
+#upper {
+    animation: loggy-bob 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#bottle, #stream, #hand-l {
+    transform-origin: 92px 335px;
+    animation: loggy-sip 3.2s ease-in-out infinite;
+}
+#face-drinking-cheek {
+    transform-origin: 285px 337px;
+    animation: loggy-gulp 3.2s ease-in-out infinite;
+}
+#drop-l {
+    animation: loggy-drop-l 3.2s ease-out infinite;
+}
+#drop-r-1 {
+    animation: loggy-drop-r-1 3.2s ease-out infinite;
+}
+#drop-r-2 {
+    animation: loggy-drop-r-2 3.2s ease-out infinite;
+}
+
+@keyframes loggy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-sip {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 62% { transform: rotate(2deg); }
+}
+@keyframes loggy-gulp {
+    0%, 30%, 44%, 58%, 72%, 100% { transform: scale(1, 1); }
+    37%, 65% { transform: scale(1.09, 1.04); }
+}
+@keyframes loggy-drop-l {
+    0% { transform: translate(0, 0); opacity: 1; }
+    40% { transform: translate(-6px, -7px); opacity: 0; }
+    41% { transform: translate(0, 0); opacity: 0; }
+    60%, 100% { transform: translate(0, 0); opacity: 1; }
+}
+@keyframes loggy-drop-r-1 {
+    0%, 12% { transform: translate(0, 0); opacity: 1; }
+    52% { transform: translate(7px, -5px); opacity: 0; }
+    53% { transform: translate(0, 0); opacity: 0; }
+    72%, 100% { transform: translate(0, 0); opacity: 1; }
+}
+@keyframes loggy-drop-r-2 {
+    0%, 24% { transform: translate(0, 0); opacity: 1; }
+    64% { transform: translate(6px, 6px); opacity: 0; }
+    65% { transform: translate(0, 0); opacity: 0; }
+    84%, 100% { transform: translate(0, 0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

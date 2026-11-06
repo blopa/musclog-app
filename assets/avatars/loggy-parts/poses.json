@@ -41,7 +41,8 @@
     "panicked",
     "energetic",
     "overjoyed",
-    "pondering"
+    "pondering",
+    "drinking"
   ],
   "poses": {
     "celebrating": {
@@ -97,6 +98,34 @@
       ],
       "animated": {
         "alternateFaces": true
+      }
+    },
+    "drinking": {
+      "viewBox": "-40 0 540 640",
+      "face": "drinking",
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "arm-l/drinking",
+        {
+          "group": "body",
+          "children": [
+            "log/default",
+            "log-side/drinking",
+            "leaf/default",
+            "sweatband/default",
+            "@face"
+          ]
+        },
+        "arm-r/hip",
+        "hand-r/hip",
+        "stream/drinking",
+        "bottle/drinking",
+        "hand-l/drinking",
+        "drops/drinking"
+      ],
+      "animated": {
+        "upper": ["arm-l", "body", "arm-r", "hand-r", "stream", "bottle", "hand-l"]
       }
     },
     "flex": {

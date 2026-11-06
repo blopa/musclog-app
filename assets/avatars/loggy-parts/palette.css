@@ -39,6 +39,9 @@
 .s15 {
   fill: #000000;
 } /* black */
+.s16 {
+  fill: #8ad4ec;
+} /* sky: water */
 
 /* filled shapes with their own ink outline (face extras and held props) */
 .s4 {

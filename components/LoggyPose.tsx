@@ -6,6 +6,7 @@ import type { SvgProps } from 'react-native-svg';
 import Celebrating from '@/assets/avatars/loggy-poses/loggy-celebrating.svg';
 import Coffee from '@/assets/avatars/loggy-poses/loggy-coffee.svg';
 import Default from '@/assets/avatars/loggy-poses/loggy-default.svg';
+import Drinking from '@/assets/avatars/loggy-poses/loggy-drinking.svg';
 import Flex from '@/assets/avatars/loggy-poses/loggy-flex.svg';
 import Magnify from '@/assets/avatars/loggy-poses/loggy-magnify.svg';
 import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
@@ -16,6 +17,7 @@ import Writing from '@/assets/avatars/loggy-poses/loggy-writing.svg';
 import { LoggyCelebratingAnimated } from '@/components/loggy/animated/LoggyCelebratingAnimated';
 import { LoggyCoffeeAnimated } from '@/components/loggy/animated/LoggyCoffeeAnimated';
 import { LoggyDefaultAnimated } from '@/components/loggy/animated/LoggyDefaultAnimated';
+import { LoggyDrinkingAnimated } from '@/components/loggy/animated/LoggyDrinkingAnimated';
 import { LoggyFlexAnimated } from '@/components/loggy/animated/LoggyFlexAnimated';
 import { LoggyMagnifyAnimated } from '@/components/loggy/animated/LoggyMagnifyAnimated';
 import { LoggyPanicAnimated } from '@/components/loggy/animated/LoggyPanicAnimated';
@@ -31,6 +33,7 @@ export type LoggyPoseName =
   | 'celebrating'
   | 'coffee'
   | 'default'
+  | 'drinking'
   | 'flex'
   | 'magnify'
   | 'panic'
@@ -54,6 +57,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
   celebrating: { Art: Celebrating, aspect: 0.875 },
   coffee: { Art: Coffee, aspect: 0.859 },
   default: { Art: Default, aspect: 0.8 },
+  drinking: { Art: Drinking, aspect: 0.844 },
   flex: { Art: Flex, aspect: 0.8 },
   magnify: { Art: Magnify, aspect: 0.844 },
   panic: { Art: Panic, aspect: 0.8 },
@@ -72,6 +76,7 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   celebrating: LoggyCelebratingAnimated,
   coffee: LoggyCoffeeAnimated,
   default: LoggyDefaultAnimated,
+  drinking: LoggyDrinkingAnimated,
   flex: LoggyFlexAnimated,
   magnify: LoggyMagnifyAnimated,
   panic: LoggyPanicAnimated,
