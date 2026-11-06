@@ -12,6 +12,8 @@ export const SCREENSHOT_DIR = path.join(REPORT_DIR, 'screens');
 export const BASELINE_PATH = path.resolve(process.cwd(), 'tests', 'layoutAudit', 'baseline.json');
 
 export type Surface = 'screen' | 'modal';
+/** Where `report.html` files an entry: the three tests of the audit. */
+export type ReportGroup = 'screens' | 'onboarding' | 'modals';
 export type EntryStatus = 'audited' | 'redirected' | 'skipped' | 'failed';
 
 /** One audited page or modal under one profile and locale. */
@@ -22,6 +24,7 @@ export interface ShardEntry {
   fontScale: number;
   viewport: Viewport;
   surface: Surface;
+  group: ReportGroup;
   name: string;
   url: string;
   status: EntryStatus;
@@ -269,6 +272,8 @@ export function renderMarkdown(report: Report): string {
     '# Layout audit',
     '',
     `Generated ${report.generatedAt}. ${report.entries} audited pages across ${report.profiles.length} profile(s) and ${report.locales.length} locale(s).`,
+    '',
+    'Open `report.html` to browse every screen as a screenshot, by language and phone size, with the findings outlined.',
     '',
     `**${count('error')} errors, ${count('warn')} warnings, ${count('info')} notes** (${report.groups.length - open.length} accepted in the baseline).`,
     '',
