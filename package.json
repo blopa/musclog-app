@@ -46,7 +46,6 @@
     "generate-exercise-locales": "node scripts/generate-exercise-locales.js",
     "generate-exercise-images": "node scripts/generate-exercise-images.js",
     "generate-theme-icon-backgrounds": "node scripts/generate-theme-icon-backgrounds.js",
-    "generate-loggy-poses": "node scripts/generate-loggy-poses.js",
     "gb": "flatpak run io.mgba.mGBA gameboy/build/musclog.gbc",
     "gb:gen-foods": "node gameboy/tools/gen-foundation-foods.mjs",
     "gb:gen-exercises": "node gameboy/tools/gen-exercises.mjs",
@@ -284,6 +283,7 @@
     "patch-package": "^8.0.1",
     "prettier": "3.9.10",
     "prettier-plugin-tailwindcss": "0.8.1",
+    "react-native-svg-transformer": "1.5.3",
     "tailwindcss": "3.4.19",
     "typescript": "~6.0.3"
   },

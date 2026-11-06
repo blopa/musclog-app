@@ -1,28 +1,43 @@
-import { existsSync, readdirSync, readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 const root = join(__dirname, '..', '..');
 const POSES = join(root, 'assets', 'avatars', 'loggy-poses');
 const source = readFileSync(join(root, 'components', 'LoggyPose.tsx'), 'utf8');
 
-/** A PNG stores its size in the IHDR chunk, right after the 16-byte header. */
-function pngAspect(file: string): number {
-  const bytes = readFileSync(file);
-  return bytes.readUInt32BE(16) / bytes.readUInt32BE(20);
+/** The aspect the component draws at: width over height of the SVG's own `viewBox`. */
+function viewBoxAspect(file: string): number {
+  const match = /viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)\s*"/.exec(
+    readFileSync(file, 'utf8')
+  );
+
+  if (!match) {
+    throw new Error(`${file} has no viewBox`);
+  }
+
+  return Number(match[1]) / Number(match[2]);
 }
 
 describe('LoggyPose', () => {
   const svgs = readdirSync(POSES).filter((name) => name.endsWith('.svg'));
 
-  it.each(svgs)('%s has a generated PNG', (svg) => {
-    expect(existsSync(join(POSES, svg.replace(/\.svg$/, '.png')))).toBe(true);
+  it('finds the poses', () => {
+    expect(svgs.length).toBeGreaterThan(0);
+  });
+
+  it.each(svgs)('%s is imported by the pose table', (svg) => {
+    expect(source).toContain(`'@/assets/avatars/loggy-poses/${svg}'`);
   });
 
   it.each(svgs)('%s is in the pose table at its real proportions', (svg) => {
-    const png = svg.replace(/\.svg$/, '.png');
-    const entry = new RegExp(`${png.replace('.', '\\.')}'\\),\\s*aspect: ([0-9.]+)`).exec(source);
+    const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
+    const entry = new RegExp(`\\b${pose}: \\{\\s*Art: \\w+,\\s*aspect: ([0-9.]+)`).exec(source);
 
     expect(entry).not.toBeNull();
-    expect(Number(entry?.[1])).toBeCloseTo(pngAspect(join(POSES, png)), 2);
+    expect(Number(entry?.[1])).toBeCloseTo(viewBoxAspect(join(POSES, svg)), 2);
+  });
+
+  it('ships no rasterised copies beside the SVGs', () => {
+    expect(readdirSync(POSES).filter((name) => name.endsWith('.png'))).toEqual([]);
   });
 });
