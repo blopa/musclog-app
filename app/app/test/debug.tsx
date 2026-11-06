@@ -95,6 +95,7 @@ const APP_SCREENS = [
   { name: 'Test: Cards', route: '/app/test/cards', category: 'Test' },
   { name: 'Test: Empty States', route: '/app/test/empty-states', category: 'Test' },
   { name: 'Test: Inputs', route: '/app/test/inputs', category: 'Test' },
+  { name: 'Test: Loggy', route: '/app/test/loggy', category: 'Test' },
   { name: 'Test: Modals', route: '/app/test/modals', category: 'Test' },
   { name: 'Test: Graphs', route: '/app/test/graphs', category: 'Test' },
   { name: 'Test: Snackbar', route: '/app/test/snackbar', category: 'Test' },

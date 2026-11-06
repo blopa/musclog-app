@@ -346,13 +346,15 @@ describe('Phase 5: Home and the hero surfaces', () => {
 });
 
 /**
- * Phase 6: motion and decoration have to carry information. The two loops left are progress
- * spinners (rotation, on the native driver); TextInput's border colour cannot use the native
- * driver, which is why it is the one JS-driven animation.
+ * Phase 6: motion and decoration have to carry information. The loops left are progress spinners
+ * (rotation, on the native driver) and the animated Loggy's clock (`LoggyPose animated`, opt-in per
+ * use and drawn as the still under reduced motion); TextInput's border colour cannot use the
+ * native driver, which is why it is the one JS-driven animation.
  */
 const ANIMATED_LOOP_ALLOWLIST = [
   'app/app/workout/rest-timer.tsx',
   'components/CameraProcessingIndicator.tsx',
+  'components/loggy/useLoggyClock.ts',
 ];
 
 describe('Phase 6: empty states, illustrations and decorative motion', () => {

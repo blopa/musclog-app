@@ -66,6 +66,15 @@ describe('animated Loggy', () => {
     expect(paths.filter((path) => !still.has(path))).toEqual([]);
   });
 
+  // The component is generated (`npm run generate-loggy-animated`); this checks it is registered.
+  it.each(animated)('%s has its generated component in the animated pose table', (svg) => {
+    const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
+    const component = `Loggy${pose.charAt(0).toUpperCase()}${pose.slice(1)}Animated`;
+
+    expect(source).toContain(`'@/components/loggy/animated/${component}'`);
+    expect(source).toMatch(new RegExp(`\\b${pose}: ${component},`));
+  });
+
   it.each(animated)('%s stands still under reduced motion', (svg) => {
     expect(readFileSync(join(ANIMATED, svg), 'utf8')).toMatch(
       /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*animation:\s*none\s*!important/
