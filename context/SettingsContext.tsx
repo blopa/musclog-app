@@ -207,6 +207,7 @@ type SettingsState = {
   showHomeSteps: boolean;
   foodDiaryCompact: boolean;
   animatedLoggy: boolean;
+  showLoggy: boolean;
   foodDiaryGrouping: FoodDiaryGrouping;
   isLoading: boolean;
 };
@@ -308,6 +309,7 @@ const DEFAULT_STATE: SettingsState = {
   showHomeSteps: SETTINGS.showHomeSteps.defaultValue,
   foodDiaryCompact: SETTINGS.foodDiaryCompact.defaultValue,
   animatedLoggy: SETTINGS.animatedLoggy.defaultValue,
+  showLoggy: SETTINGS.showLoggy.defaultValue,
   foodDiaryGrouping: SETTINGS.foodDiaryGrouping.defaultValue,
   isLoading: true,
 };
@@ -478,6 +480,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     showHomeSteps: readSetting(map, SETTINGS.showHomeSteps),
     foodDiaryCompact: readSetting(map, SETTINGS.foodDiaryCompact),
     animatedLoggy: readSetting(map, SETTINGS.animatedLoggy),
+    showLoggy: readSetting(map, SETTINGS.showLoggy),
     foodDiaryGrouping: readSetting(map, SETTINGS.foodDiaryGrouping),
     isLoading: false,
   };
@@ -569,6 +572,7 @@ export type SettingsContextType = UseSettingsResult & {
   showHomeSteps: boolean;
   foodDiaryCompact: boolean;
   animatedLoggy: boolean;
+  showLoggy: boolean;
   foodDiaryGrouping: FoodDiaryGrouping;
 };
 

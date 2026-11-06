@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './cards/GenericCard';
 import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
-import { LoggyPose } from './LoggyPose';
+import { LoggyPose, useLoggyVisible } from './LoggyPose';
 import { Button } from './theme/Button';
 import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
 
@@ -42,6 +42,7 @@ export function WorkoutSummaryCelebration({
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const showLoggy = useLoggyVisible();
   const insets = useAppSafeAreaInsets();
 
   // Web-specific styles for proper viewport positioning
@@ -77,9 +78,11 @@ export function WorkoutSummaryCelebration({
       >
         <View className="flex-1 items-center justify-center px-6 py-8">
           {/* The finished workout's face. The confetti above it brings no second Loggy. */}
-          <View className="mb-6">
-            <LoggyPose pose="celebrating" height={SUMMARY_POSE_HEIGHT} />
-          </View>
+          {showLoggy ? (
+            <View className="mb-6">
+              <LoggyPose pose="celebrating" height={SUMMARY_POSE_HEIGHT} />
+            </View>
+          ) : null}
           <WorkoutSummaryHeader />
           <WorkoutSummaryStatsCard
             totalTime={totalTime}

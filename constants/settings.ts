@@ -512,6 +512,13 @@ export const HEALTH_NUTRITION_TAKEOVERS_SETTING_TYPE = 'health_nutrition_takeove
  */
 export const ANIMATED_LOGGY_SETTING_TYPE = 'animated_loggy';
 
+/**
+ * Setting type for whether Loggy appears at all. value: 'true' | 'false'. Default: on. Off removes
+ * every `LoggyPose` and `LoggyCameo` (empty states fall back to their icon); the AI coach's avatar
+ * is the persona's picture, not a pose, and stays.
+ */
+export const SHOW_LOGGY_SETTING_TYPE = 'show_loggy';
+
 /** Setting type for the dense food diary layout. value: 'true' | 'false'. Default: off. */
 export const FOOD_DIARY_COMPACT_SETTING_TYPE = 'food_diary_compact';
 
@@ -723,6 +730,7 @@ export type UseSettingsResult = {
   showHomeSteps: boolean;
   foodDiaryCompact: boolean;
   animatedLoggy: boolean;
+  showLoggy: boolean;
   foodDiaryGrouping: FoodDiaryGrouping;
 };
 

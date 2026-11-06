@@ -2,7 +2,7 @@ import { Dumbbell, Flame, Home, MessageCircle, Star, Timer, TrendingUp } from 'l
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { LoggyPose } from '@/components/LoggyPose';
+import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { useTheme } from '@/hooks/useTheme';
 import { splitDurationLabel } from '@/utils/workout';
 
@@ -117,6 +117,7 @@ export function WorkoutSummaryCelebration({
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const showLoggy = useLoggyVisible();
 
   const gradientCtaStr = theme.colors.accent.primary;
   const workoutStatsStr = theme.colors.accent.primary;
@@ -141,9 +142,11 @@ export function WorkoutSummaryCelebration({
       }}
     >
       {/* The finished workout's face, in place of the trophy and its three stars. */}
-      <div style={{ marginBottom: 24 }}>
-        <LoggyPose pose="celebrating" height={SUMMARY_POSE_HEIGHT} />
-      </div>
+      {showLoggy ? (
+        <div style={{ marginBottom: 24 }}>
+          <LoggyPose pose="celebrating" height={SUMMARY_POSE_HEIGHT} />
+        </div>
+      ) : null}
 
       {/* Title */}
       <span

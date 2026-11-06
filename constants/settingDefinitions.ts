@@ -52,6 +52,7 @@ import {
   REVIEW_WEEKDAY_SETTING_TYPE,
   serializeAppLockScopes,
   SHOW_HOME_STEPS_SETTING_TYPE,
+  SHOW_LOGGY_SETTING_TYPE,
   WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE,
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
@@ -170,6 +171,7 @@ export const SETTINGS = {
   ),
   foodDiaryCompact: booleanSetting(FOOD_DIARY_COMPACT_SETTING_TYPE, false),
   animatedLoggy: booleanSetting(ANIMATED_LOGGY_SETTING_TYPE, true),
+  showLoggy: booleanSetting(SHOW_LOGGY_SETTING_TYPE, true),
   foodDiaryGrouping: choiceSetting<FoodDiaryGrouping>(
     FOOD_DIARY_GROUPING_SETTING_TYPE,
     parseFoodDiaryGrouping

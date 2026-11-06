@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
-import { LoggyPose } from '@/components/LoggyPose';
+import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { IconButton } from '@/components/theme/IconButton';
 import { LOGGY_PALETTE, POSTER_GROUNDS } from '@/constants/loggyPalette';
 import { SETTINGS } from '@/constants/settingDefinitions';
@@ -23,6 +23,7 @@ const POSE_HEIGHT = 112;
  */
 export function YearInReviewCard() {
   const { t } = useTranslation();
+  const showLoggy = useLoggyVisible();
   const router = useRouter();
   const season = useMemo(() => yearReviewSeason(new Date()), []);
   // The year the card is about, once it has decided to show it.
@@ -82,9 +83,11 @@ export function YearInReviewCard() {
             {t('yearInReview.homeCard.body')}
           </Text>
         </View>
-        <View className="-mb-1 mr-8">
-          <LoggyPose pose="wave" height={POSE_HEIGHT} />
-        </View>
+        {showLoggy ? (
+          <View className="-mb-1 mr-8">
+            <LoggyPose pose="wave" height={POSE_HEIGHT} />
+          </View>
+        ) : null}
       </Pressable>
       <View className="absolute right-1 top-1">
         <IconButton

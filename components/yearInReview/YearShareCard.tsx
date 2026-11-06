@@ -2,7 +2,7 @@ import type { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View, type ViewInstance } from 'react-native';
 
-import { LoggyPose } from '@/components/LoggyPose';
+import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { POSTER_GROUNDS } from '@/constants/loggyPalette';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -63,6 +63,7 @@ function Stat({ label, value }: { label: string; value: string }) {
  */
 export function YearShareCard({ captureRef, fields, units }: Props) {
   const { t } = useTranslation();
+  const showLoggy = useLoggyVisible();
   const { formatGroupedInteger, formatDecimal } = useFormatAppNumber();
   const unit = t(getWeightUnitI18nKey(units));
   const weightChange =
@@ -81,9 +82,11 @@ export function YearShareCard({ captureRef, fields, units }: Props) {
       }}
       testID="year-share-card"
     >
-      <View style={{ bottom: -4, position: 'absolute', right: -10 }}>
-        <LoggyPose pose="flex" height={POSE_HEIGHT} animated={false} />
-      </View>
+      {showLoggy ? (
+        <View style={{ bottom: -4, position: 'absolute', right: -10 }}>
+          <LoggyPose pose="flex" height={POSE_HEIGHT} animated={false} />
+        </View>
+      ) : null}
 
       <Text
         allowFontScaling={false}

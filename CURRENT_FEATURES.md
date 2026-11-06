@@ -368,6 +368,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Skeleton loaders and progress indicators throughout
 - Helpful empty state messages when no data exists
 - Loggy moves a little when he appears; Settings → Visual → Loggy turns the animation off (it is also off whenever the system asks for reduced motion)
+- Settings → Visual → Loggy → Show Loggy hides the mascot everywhere (welcome screens, empty states, celebrations, the year story and its share image); empty states fall back to their icon, and the AI coach keeps its avatar
 - Loggy, the app's mascot, appears only at moments: the onboarding landing, the last setup step, the first page of What's new, finishing a workout, the first meal, workout or goal you ever log, the offer to ease back in after a long break, an empty Notes screen or workout library, and the import and year-in-review screens. He is never on the coach, cycle tracking, locks, body measurements, settings or a permanent card, and never in a notification
 - Safety confirmation modals for destructive actions
 - One consistent screen header: a screen in your bottom bar shows a large title, and any other screen (Profile, Cycle, Notes, Progress, Weekly Review, Settings, or a tab you moved out of the bar) shows a back button. Back still works while that area is behind the app lock

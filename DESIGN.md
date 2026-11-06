@@ -497,6 +497,11 @@ subtitle.
   - **He never praises or scolds in words.** The pose may be cheerful on an outcome; the copy next
     to it states a fact. The import is already the densest place (four of its five steps), so it
     gets no more.
+  - **He can be turned off.** Visual settings → Loggy → Show Loggy (`show_loggy`, default on)
+    removes every appearance above; nothing else on the page may depend on him being there. A
+    wrapper that would leave a gap (a margin, a positioned box) or stands in for something else
+    reads `useLoggyVisible()`: the empty state draws its icon, the year story's text takes the
+    full width. The coach avatar is the persona's picture, not a pose, and stays.
 - A dashed outline means "add another item to this list": the button at the end of any list the
   user appends to (meals in the food diary, exercises, sets, ingredients, portions, past periods),
   whether the list is empty or full. Use `Button variant="dashed"` (`DashedButton` where it already

@@ -2,7 +2,7 @@ import { LucideIcon } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
-import { LoggyPose, type LoggyPoseName } from '@/components/LoggyPose';
+import { LoggyPose, type LoggyPoseName, useLoggyVisible } from '@/components/LoggyPose';
 import { useTheme } from '@/hooks/useTheme';
 
 import { Button } from './Button';
@@ -49,9 +49,11 @@ export function EmptyStateCard({
   pose,
 }: EmptyStateCardProps) {
   const theme = useTheme();
+  // With "Show Loggy" off the whole-screen form keeps its icon, like every other empty state.
+  const showLoggy = useLoggyVisible();
   const content = (
     <View className={`flex-col items-center gap-4 ${bare ? 'py-8' : 'p-6'}`}>
-      {pose ? (
+      {pose && showLoggy ? (
         <LoggyPose pose={pose} height={EMPTY_POSE_HEIGHT} />
       ) : (
         <Icon size={theme.iconSize['5xl']} color={theme.colors.text.tertiary} />

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
-import { LoggyPose } from '@/components/LoggyPose';
+import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { YEAR_STORY_ART } from '@/components/yearInReview/yearStoryArt';
 import {
   YearCalendar,
@@ -78,10 +78,11 @@ function Poster({ card, size, title, poseShare = 0.5, children }: PosterProps) {
   const { ground: groundName, pose } = YEAR_STORY_ART[card.kind];
   const ground = POSTER_GROUNDS[groundName];
   const scale = storyScale(size.height);
+  const showLoggy = useLoggyVisible();
 
   return (
     <View className="flex-1 overflow-hidden" style={{ backgroundColor: ground.background }}>
-      {pose ? (
+      {pose && showLoggy ? (
         <Animated.View
           entering={FadeInDown.duration(360)}
           pointerEvents="none"
@@ -171,10 +172,15 @@ function SideStat({ value, label, ground, size }: SideStatProps) {
   );
 }
 
-/** Keeps text off the mascot: the bottom-left column beside it. */
+/** Keeps text off the mascot: the bottom-left column beside it (the full width when he is hidden). */
 function BesideLoggy({ children, size }: { children: ReactNode; size: PosterSize }) {
+  const showLoggy = useLoggyVisible();
+
   return (
-    <View className="mt-auto gap-4" style={{ maxWidth: size.width * BESIDE_LOGGY_SHARE }}>
+    <View
+      className="mt-auto gap-4"
+      style={showLoggy ? { maxWidth: size.width * BESIDE_LOGGY_SHARE } : undefined}
+    >
       {children}
     </View>
   );

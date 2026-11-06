@@ -348,6 +348,10 @@
     "loggy": {
       "sectionTitle": "Loggy",
       "sectionSubtitle": "Kies hoe de mascotte verschijnt.",
+      "show": {
+        "title": "Loggy tonen",
+        "description": "De mascotte verschijnt op welkomstschermen, lege schermen en bij vieringen. Zet uit om hem overal te verbergen. Je AI-coach houdt zijn afbeelding."
+      },
       "animated": {
         "title": "Geanimeerde Loggy",
         "description": "Loggy beweegt een beetje als hij verschijnt. Zet uit om hem altijd stilstaand te zien."

@@ -163,6 +163,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     foodDiaryCompact,
     foodDiaryGrouping,
     animatedLoggy,
+    showLoggy,
   } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
@@ -518,12 +519,25 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
           <ToggleInput
             items={[
               {
-                key: 'animated_loggy',
-                label: t('settings.loggy.animated.title'),
-                subtitle: t('settings.loggy.animated.description'),
-                value: animatedLoggy,
-                onValueChange: (v: boolean) => void SettingsService.set(SETTINGS.animatedLoggy, v),
+                key: 'show_loggy',
+                label: t('settings.loggy.show.title'),
+                subtitle: t('settings.loggy.show.description'),
+                value: showLoggy,
+                onValueChange: (v: boolean) => void SettingsService.set(SETTINGS.showLoggy, v),
               },
+              // How he moves only matters while he is shown.
+              ...(showLoggy
+                ? [
+                    {
+                      key: 'animated_loggy',
+                      label: t('settings.loggy.animated.title'),
+                      subtitle: t('settings.loggy.animated.description'),
+                      value: animatedLoggy,
+                      onValueChange: (v: boolean) =>
+                        void SettingsService.set(SETTINGS.animatedLoggy, v),
+                    },
+                  ]
+                : []),
             ]}
           />
         </View>

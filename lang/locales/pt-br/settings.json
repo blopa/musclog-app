@@ -348,6 +348,10 @@
     "loggy": {
       "sectionTitle": "Loggy",
       "sectionSubtitle": "Escolha como o mascote aparece.",
+      "show": {
+        "title": "Mostrar o Loggy",
+        "description": "O mascote aparece em telas de boas-vindas, telas vazias e comemorações. Desative para escondê-lo em todo lugar. Seu coach de IA mantém a imagem."
+      },
       "animated": {
         "title": "Loggy animado",
         "description": "O Loggy se mexe um pouco quando aparece. Desative para vê-lo sempre parado."

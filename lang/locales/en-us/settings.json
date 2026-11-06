@@ -348,6 +348,10 @@
     "loggy": {
       "sectionTitle": "Loggy",
       "sectionSubtitle": "Choose how the mascot appears.",
+      "show": {
+        "title": "Show Loggy",
+        "description": "The mascot appears on welcome screens, empty screens and celebrations. Turn off to hide him everywhere. Your AI coach keeps its picture."
+      },
       "animated": {
         "title": "Animated Loggy",
         "description": "Loggy moves a little when he shows up. Turn off to always see him standing still."

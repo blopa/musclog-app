@@ -93,6 +93,11 @@ type LoggyPoseProps = {
    * still is drawn when the system asks for reduced motion.
    */
   animated?: boolean;
+  /**
+   * Whether he is drawn at all. Left out, it follows the "Show Loggy" setting (on by default);
+   * only the `/app/test/loggy` comparison forces it.
+   */
+  visible?: boolean;
   pose: LoggyPoseName;
   height: number;
 };
@@ -126,13 +131,27 @@ function AnimatedLoggy({
   return <Art {...HIDDEN_FROM_ASSISTIVE_TECH} clock={clock} height={height} width={width} />;
 }
 
+/**
+ * Whether the person wants Loggy on screen (the "Show Loggy" setting). `LoggyPose` and
+ * `LoggyCameo` already render nothing when it is off; a caller reads this only when the wrapper
+ * around him would otherwise leave a gap (a margin, a positioned box) or stand in for something
+ * else (`EmptyStateCard` draws its icon instead).
+ */
+export function useLoggyVisible(): boolean {
+  return useSettings().showLoggy;
+}
+
 /** The mascot at a given height. Always decorative: the words around it carry the meaning. */
-export function LoggyPose({ pose, height, animated }: LoggyPoseProps) {
+export function LoggyPose({ pose, height, animated, visible }: LoggyPoseProps) {
   const reduceMotion = useReducedMotion();
-  const { animatedLoggy } = useSettings();
+  const { animatedLoggy, showLoggy } = useSettings();
   const shouldAnimate = animated ?? animatedLoggy;
   const { Art, aspect } = POSES[pose];
   const width = height * aspect;
+
+  if (!(visible ?? showLoggy)) {
+    return null;
+  }
 
   if (shouldAnimate && !reduceMotion) {
     return <AnimatedLoggy pose={pose} height={height} width={width} />;

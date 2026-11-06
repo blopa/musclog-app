@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
-import { LoggyPose } from '@/components/LoggyPose';
+import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -29,6 +29,8 @@ export function WeeklyReviewWelcome({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const showLoggy = useLoggyVisible();
+
   return (
     <BottomPopUp
       visible
@@ -39,9 +41,11 @@ export function WeeklyReviewWelcome({
     >
       <View className="gap-4 pb-4" testID="weekly-review-welcome">
         {/* Shown once, the first time a review has something in it: Loggy introduces the ritual. */}
-        <View className="items-center">
-          <LoggyPose pose="default" height={WELCOME_POSE_HEIGHT} />
-        </View>
+        {showLoggy ? (
+          <View className="items-center">
+            <LoggyPose pose="default" height={WELCOME_POSE_HEIGHT} />
+          </View>
+        ) : null}
         {POINTS.map(({ key, icon: Icon, textKey }) => (
           <View key={key} className="flex-row items-start gap-3">
             <View className="h-10 w-10 items-center justify-center rounded-control bg-accent-primary/10">

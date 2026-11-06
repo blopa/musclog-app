@@ -348,6 +348,10 @@
     "loggy": {
       "sectionTitle": "Loggy",
       "sectionSubtitle": "Elige cómo aparece la mascota.",
+      "show": {
+        "title": "Mostrar a Loggy",
+        "description": "La mascota aparece en pantallas de bienvenida, pantallas vacías y celebraciones. Desactívalo para ocultarlo en todas partes. Tu coach de IA conserva su imagen."
+      },
       "animated": {
         "title": "Loggy animado",
         "description": "Loggy se mueve un poco cuando aparece. Desactívalo para verlo siempre quieto."

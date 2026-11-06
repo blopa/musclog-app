@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeOut, ZoomIn } from 'react-native-reanimated';
 
-import { LoggyPose, type LoggyPoseName } from '@/components/LoggyPose';
+import { LoggyPose, type LoggyPoseName, useLoggyVisible } from '@/components/LoggyPose';
 
 /** Long enough to register, short enough that he is gone before the screen needs the space. */
 const CAMEO_VISIBLE_MS = 3200;
@@ -22,16 +22,25 @@ type Props = {
  * Loggy pops in with the confetti for a moment and leaves. It is the face of a once-ever first (the
  * first meal, the first workout), and the whole overlay ignores touches, so the screen under it
  * stays usable. Entering and leaving use Reanimated's default reduce-motion handling, so under the
- * system setting he simply appears and disappears.
+ * system setting he simply appears and disappears. With "Show Loggy" off only the confetti remains.
  */
 export function LoggyCameo({ pose = 'celebrating', height = 200 }: Props) {
+  const showLoggy = useLoggyVisible();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    if (!showLoggy) {
+      return;
+    }
+
     const timer = setTimeout(() => setVisible(false), CAMEO_VISIBLE_MS);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [showLoggy]);
+
+  if (!showLoggy) {
+    return null;
+  }
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
