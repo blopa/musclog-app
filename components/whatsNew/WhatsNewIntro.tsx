@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { LoggyPose } from '@/components/LoggyPose';
+import { LoggyPose, type LoggyPoseName } from '@/components/LoggyPose';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { pageHeadlineDetailKeys, pageHeadlineKey, type WhatsNewFlow } from '@/utils/whatsNew/flow';
@@ -9,8 +10,15 @@ import { pageHeadlineDetailKeys, pageHeadlineKey, type WhatsNewFlow } from '@/ut
 /** Modest on purpose: an upgrade intro already runs past one screen. */
 const INTRO_POSE_HEIGHT = 144;
 
+/** The poses that can open the tour; one is picked each time it opens. */
+const INTRO_POSES: readonly LoggyPoseName[] = ['flex', 'coffee', 'default'];
+
+function pickIntroPose(): LoggyPoseName {
+  return INTRO_POSES[Math.floor(Math.random() * INTRO_POSES.length)];
+}
+
 /**
- * The tour's first page. It is centred in the space the footer leaves, leads with Loggy waving and
+ * The tour's first page. It is centred in the space the footer leaves, leads with Loggy in a random pose and
  * larger type than the pages after it, and — for an upgrade — lists what the pages cover, so the
  * person knows what the tour holds before choosing to take it or skip it.
  */
@@ -24,6 +32,8 @@ export function WhatsNewIntro({
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
+  // Lazy initial state: picked once per mount, so a re-render never swaps the pose under the reader.
+  const [pose] = useState(pickIntroPose);
   const headlines = showHighlights
     ? flow.pages.flatMap((page) => {
         const key = pageHeadlineKey(page);
@@ -35,7 +45,7 @@ export function WhatsNewIntro({
     <View className="flex-1 justify-center gap-6 py-6">
       <View className="items-center gap-5">
         {/* Loggy opens the tour, and only the first page: every later page keeps its own icon. */}
-        <LoggyPose pose="wave" height={INTRO_POSE_HEIGHT} />
+        <LoggyPose pose={pose} height={INTRO_POSE_HEIGHT} />
         <Text
           accessibilityRole="header"
           className="text-center text-4xl font-bold text-text-primary"
