@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { Platform } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
 
 import Celebrating from '@/assets/avatars/loggy-poses/loggy-celebrating.svg';
@@ -59,17 +60,23 @@ type LoggyPoseProps = {
   height: number;
 };
 
+/**
+ * On web react-native-svg forwards unknown props straight to the DOM `<svg>`, so the native
+ * accessibility props trigger React's "non-boolean attribute" and "does not recognize the prop"
+ * warnings there; `aria-hidden` is the web equivalent.
+ */
+const HIDDEN_FROM_ASSISTIVE_TECH: SvgProps =
+  Platform.OS === 'web'
+    ? { 'aria-hidden': true }
+    : {
+        accessible: false,
+        accessibilityElementsHidden: true,
+        importantForAccessibility: 'no-hide-descendants',
+      };
+
 /** The mascot at a given height. Always decorative: the words around it carry the meaning. */
 export function LoggyPose({ pose, height }: LoggyPoseProps) {
   const { Art, aspect } = POSES[pose];
 
-  return (
-    <Art
-      accessible={false}
-      accessibilityElementsHidden
-      importantForAccessibility="no-hide-descendants"
-      height={height}
-      width={height * aspect}
-    />
-  );
+  return <Art {...HIDDEN_FROM_ASSISTIVE_TECH} height={height} width={height * aspect} />;
 }
