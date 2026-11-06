@@ -46,7 +46,8 @@ Components outside the viewfinder keep following the user's selected theme.
 Loggy is the other such surface. His artwork has fixed colors, like a photo, and a green log on an
 emerald or rose brand fill disappears, so anything built around him takes its ground from
 `LOGGY_PALETTE` (`constants/loggyPalette.ts`, the artwork's own colors) instead of the theme: the
-year story's posters, the share image and the Home offer. `POSTER_GROUNDS` lists each ground with
+year story's posters and the share image. The Home offer is an ordinary themed card (`bg-bg-card`,
+accent `Button`) that only carries a Loggy. `POSTER_GROUNDS` lists each ground with
 the ink, highlight, mark and track drawn on it, and is held to AA in
 `constants/__tests__/loggyPalette.test.ts`. Keep it to those surfaces: the chrome around a poster
 (header, progress, buttons) still follows the theme.
