@@ -459,7 +459,7 @@ export function YearStoryCardView({ card, review, units, locale, size }: Props) 
           card={card}
           size={size}
           title={t('yearInReview.trainingTime.title')}
-          poseShare={0.42}
+          poseShare={0.32}
         >
           {card.bucket ? (
             <Hero value={t(BUCKET_KEYS[card.bucket])} ground={ground} size={size} maxSize={64} />
@@ -696,7 +696,7 @@ export function YearStoryCardView({ card, review, units, locale, size }: Props) 
 
     case 'outro':
       return (
-        <Poster card={card} size={size} title={t('yearInReview.outro.title')} poseShare={0.44}>
+        <Poster card={card} size={size} title={t('yearInReview.outro.title')} poseShare={0.38}>
           <Hero value={String(card.year)} ground={ground} size={size} maxSize={88} />
           <View className="mt-2 gap-1">
             {review.sessions !== null ? (
@@ -719,6 +719,24 @@ export function YearStoryCardView({ card, review, units, locale, size }: Props) 
               <RecapLine
                 label={t('yearInReview.share.records')}
                 value={formatGroupedInteger(review.personalRecords)}
+                ground={ground}
+                scale={scale}
+              />
+            ) : null}
+            {review.mealsLogged !== null ? (
+              <RecapLine
+                label={t('yearInReview.share.meals')}
+                value={formatGroupedInteger(review.mealsLogged)}
+                ground={ground}
+                scale={scale}
+              />
+            ) : null}
+            {review.macroGrams !== null && review.macroGrams.protein > 0 ? (
+              <RecapLine
+                label={`${t('yearInReview.share.protein')} (${t(getWeightUnitI18nKey(units))})`}
+                value={formatGroupedInteger(
+                  Math.round(macroMassInUnits(review.macroGrams.protein, units))
+                )}
                 ground={ground}
                 scale={scale}
               />
