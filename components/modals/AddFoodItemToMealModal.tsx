@@ -55,11 +55,6 @@ function FoodResultCard({
         padding: theme.spacing.padding.md,
         borderWidth: theme.borderWidth.thin,
         borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
-        shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
-        shadowOffset: theme.shadowOffset.zero,
-        shadowOpacity: isSelected ? theme.shadowOpacity.mediumHeavy : 0,
-        shadowRadius: isSelected ? theme.shadowRadius.md : 0,
-        elevation: isSelected ? theme.elevation.md : 0,
       }}
     >
       <Pressable onPress={onToggle} style={{ flexDirection: 'row', gap: theme.spacing.gap.md }}>
@@ -74,10 +69,6 @@ function FoodResultCard({
               borderColor: theme.colors.text.tertiary,
               alignItems: 'center',
               justifyContent: 'center',
-              shadowColor: isSelected ? theme.colors.accent.primary : 'transparent',
-              shadowOffset: theme.shadowOffset.zero,
-              shadowOpacity: theme.colors.opacity.subtle,
-              shadowRadius: theme.shadows.radius4.shadowRadius,
             }}
           >
             {isSelected ? (
@@ -452,7 +443,11 @@ export function AddFoodItemToMealModal({
             onChangeText={setSearchQuery}
             placeholder={t('food.addFoodItemToMeal.searchPlaceholder')}
             icon={
-              <Pressable onPress={openScanner}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('common.a11y.scanBarcode')}
+                onPress={openScanner}
+              >
                 <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
               </Pressable>
             }

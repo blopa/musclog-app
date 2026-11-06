@@ -208,6 +208,8 @@ export function UserMenuModal({
                   </View>
                 </View>
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.close')}
                   className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
                   onPress={onClose}
                 >

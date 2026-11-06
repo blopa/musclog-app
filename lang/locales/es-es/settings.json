@@ -166,7 +166,7 @@
       "progressionModeWeightFirst": "Priorizar Progresión de Peso",
       "progressionModeWeightFirstSubtitle": "Aumentar el peso directamente cuando el RIR sea alto, en lugar de añadir repeticiones",
       "enableAdvancedDataManagement": "Habilitar Gestión de Datos Avanzada",
-      "enableAdvancedDataManagementSubtitle": "Desbloquea el acceso directo a los datos de tu app (solo para usuarios avanzados)",
+      "enableAdvancedDataManagementSubtitle": "Permite el acceso directo a los datos de tu app (solo para usuarios avanzados)",
       "enableAdvancedDataManagementConfirmTitle": "Solo Usuarios Avanzados",
       "enableAdvancedDataManagementConfirmMessage": "Esto es solo para usuarios avanzados. Jugar con los datos aquí puede romper tu app de forma irreparable. Úsalo solo si sabes lo que haces.",
       "dataManagement": "Gestión de datos",

@@ -79,7 +79,7 @@
       "badge2": "No account required",
       "title1": "Own your",
       "title2": "fitness data",
-      "subheading": "A local-first, open-source fitness tracker. No accounts, no tracking, and no cloud. Just you and your gains.",
+      "subheading": "Log workouts, meals and body measurements. Your data stays on your device, and the app works offline.",
       "github": "View on GitHub",
       "demoEyebrow": "Instant preview",
       "demoTitle": "Try the web demo",
@@ -198,27 +198,9 @@
       "description": "Pick the palette that fits your training. Every screen follows it, including charts, camera overlays, and the tab bar.",
       "footnote": "Switch any time in Settings. Musclog also follows your device's light and dark setting if you would rather not choose."
     },
-    "features": {
-      "title": "Built for performance and privacy",
-      "description": "No telemetry, no tracking, no subscription. Just a powerful engine for your fitness journey.",
-      "strengthTracking": {
-        "title": "Offline Strength Tracking",
-        "description": "Log your sets and reps directly to your device. No internet required. Your data never leaves your pocket."
-      },
-      "privacyFirst": {
-        "title": "Privacy First",
-        "description": "No sign-ups, no logins, and no third-party tracking. Musclog respects your digital sovereignty.",
-        "link": "Privacy policy"
-      },
-      "openSource": {
-        "title": "Open Source",
-        "description": "Musclog is community-driven. Audit the code, contribute features, or fork it to make it your own.",
-        "link": "View source"
-      }
-    },
     "featureGrid": {
-      "title": "Everything you need to train smarter",
-      "description": "From AI-powered coaching to detailed analytics, Musclog gives you the tools to take full control of your fitness journey.",
+      "title": "What Musclog does",
+      "description": "Logging, planning and review tools. Features that use AI are optional.",
       "items": {
         "aiCoach": {
           "title": "AI Coach (Loggy)",
@@ -254,27 +236,9 @@
         }
       }
     },
-    "howItWorks": {
-      "title": "How it works",
-      "description": "Get started in minutes. No complicated setup, no subscriptions, no data harvesting.",
-      "steps": {
-        "step1": {
-          "title": "Download and go",
-          "description": "Install Musclog from the App Store or Google Play. No account required, just open it and start logging."
-        },
-        "step2": {
-          "title": "Log your training",
-          "description": "Record sets, reps, and weights. Scan barcodes or snap photos to log meals. Everything stays on your device."
-        },
-        "step3": {
-          "title": "Track progress",
-          "description": "Review weekly check-ins, visualize trends, and let the AI coach help you optimize your approach."
-        }
-      }
-    },
     "cta": {
-      "title": "Ready to start?",
-      "description": "Download Musclog and keep your training and food logs on your own device. No account, no subscription.",
+      "title": "Get Musclog",
+      "description": "Keep your training and food logs on your own device. Free and open source.",
       "download": "Download now",
       "close": "Close",
       "sourceCode": "View source code"
@@ -358,7 +322,7 @@
       "hero": {
         "eyebrow": "Desktop progress viewer",
         "title": "Import the exported data from your Musclog app here",
-        "description": "Drop in your Musclog JSON export to unlock a browser-based progress dashboard with weight trends, nutrition patterns, workout volume, and key correlations rendered for larger screens.",
+        "description": "Drop in your Musclog JSON export to open a browser-based progress dashboard with weight trends, nutrition patterns, workout volume, and key correlations rendered for larger screens.",
         "points": {
           "weight": {
             "title": "Weight and body composition",
@@ -456,7 +420,7 @@
     "download": {
       "pageTitle": "Download Musclog",
       "eyebrow": "Start tracking today",
-      "title": "Ready to lock in?",
+      "title": "Download Musclog",
       "subtitle": "Download Musclog now and keep your training, nutrition, and progress in one private place.",
       "googleLabel": "Download Musclog on Google Play",
       "appleLabel": "Download Musclog on the App Store"

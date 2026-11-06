@@ -102,6 +102,25 @@ describe('buildDailyStatCells', () => {
     expect(cells.find((cell) => cell.key === 'steps')?.showsUnit).toBe(false);
   });
 
+  // The daily summary card prints today's calories, so the strip under it must not state them a
+  // second time; the balance is still burned minus the figure on the card above.
+  it('leaves out the eaten cell when the card above already shows the calories', () => {
+    const cells = buildDailyStatCells({
+      steps: 8241,
+      energyBalance: balance(),
+      includeEaten: false,
+    });
+
+    expect(cells.map((cell) => cell.key)).toEqual(['steps', 'burned', 'balance']);
+    expect(cells.find((cell) => cell.key === 'balance')?.value).toBe(500);
+  });
+
+  it('keeps the eaten cell by default, for the card that does not print it', () => {
+    const cells = buildDailyStatCells({ steps: null, energyBalance: balance() });
+
+    expect(cells.map((cell) => cell.key)).toContain('eaten');
+  });
+
   it('keeps a zero step count as a rendered cell', () => {
     const cells = buildDailyStatCells({ steps: 0, energyBalance: null });
 

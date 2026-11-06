@@ -6,7 +6,7 @@
     "getStarted": "Empezar",
     "steps": {
       "step1": {
-        "title": "Seguimiento sin Esfuerzo",
+        "title": "Registra en Segundos",
         "description": "Olvida el cuaderno. Registra tus series, repeticiones y pesos en segundos y visualiza tus ganancias de fuerza con el tiempo."
       },
       "step2": {
@@ -19,7 +19,7 @@
       },
       "step4": {
         "title": "Hagámoslo Personal",
-        "description": "Para adaptar tu viaje y seguir tus ganancias con precisión, nos encantaría saber un poco más sobre tu historial de fitness."
+        "description": "Unas preguntas sobre tu historial de entrenamiento nos ayudan a fijar objetivos iniciales realistas."
       }
     },
     "fitnessInfo": {
@@ -237,7 +237,7 @@
     "musclogApi": {
       "title": "Musclog AI",
       "freeBadge": "Gratis",
-      "subtitle": "Mejora tu viaje fitness con información impulsada por IA.",
+      "subtitle": "Obtén información de IA sobre tu entrenamiento y tu nutrición.",
       "features": {
         "coach": {
           "title": "Asistente de Entrenamiento IA",
@@ -365,7 +365,7 @@
       "stepAddBody": "Busca en la biblioteca y añade movimientos mientras entrenas.",
       "stepLogTitle": "Registra tus series",
       "stepLogBody": "Introduce peso y repeticiones y el temporizador de descanso arranca solo.",
-      "stepNextTitle": "Más inteligente la próxima vez",
+      "stepNextTitle": "Próxima carga sugerida",
       "stepNextBody": "Recordamos tus marcas y te sugerimos la próxima carga.",
       "planHint": "Toca \"{{action}}\" para añadir este plan a tu perfil, o \"{{later}}\" para elegir un entrenamiento más tarde."
     },

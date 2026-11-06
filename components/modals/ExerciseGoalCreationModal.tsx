@@ -837,6 +837,8 @@ export default function ExerciseGoalCreationModal({
             }}
           >
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.decrease')}
               onPress={() => {
                 if (goalType === '1rm') {
                   setTargetWeightDisplay((parseFloat(targetWeightDisplay) - 2.5).toString());
@@ -876,6 +878,8 @@ export default function ExerciseGoalCreationModal({
               </Text>
             </View>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.increase')}
               onPress={() => {
                 if (goalType === '1rm') {
                   setTargetWeightDisplay((parseFloat(targetWeightDisplay) + 2.5).toString());

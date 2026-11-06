@@ -36,8 +36,6 @@ export type TrainingConsistencyChartProps = {
   accentColor?: string;
   /** Color for empty/low cells (default: theme border) */
   emptyColor?: string;
-  /** Whether to show glow on max-intensity cells (default: true) */
-  showGlowOnMax?: boolean;
   /** Height of the grid area in pixels (default: 128) */
   gridHeight?: number;
   /** Gap between cells (default: 6) */
@@ -65,7 +63,6 @@ export function TrainingConsistencyChart({
   columns = 12,
   accentColor,
   emptyColor,
-  showGlowOnMax = true,
   gridHeight = 128,
   gap = 6,
   className,
@@ -205,7 +202,6 @@ export function TrainingConsistencyChart({
               const intensity = Math.max(0, Math.min(5, Math.floor(value)));
               const opacity = OPACITIES[intensity] ?? 0;
               const isEmpty = intensity === 0;
-              const isMax = intensity === 5;
 
               return (
                 <Pressable
@@ -220,15 +216,6 @@ export function TrainingConsistencyChart({
                     borderRadius: 4,
                     backgroundColor: isEmpty ? borderColor : accentColorResolved,
                     opacity: isEmpty ? 1 : opacity,
-                    ...(showGlowOnMax && isMax && !isEmpty
-                      ? {
-                          shadowColor: accentColorResolved,
-                          shadowOffset: { width: 0, height: 0 },
-                          shadowOpacity: 0.4,
-                          shadowRadius: 8,
-                          elevation: 4,
-                        }
-                      : {}),
                   }}
                 />
               );

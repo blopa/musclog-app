@@ -65,6 +65,8 @@ function SearchAndFilterHeader({
           />
         </View>
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.filter')}
           className="h-12 w-12 items-center justify-center border"
           style={{
             backgroundColor: theme.colors.background.card,

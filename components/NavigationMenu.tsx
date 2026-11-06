@@ -248,12 +248,14 @@ export const NavigationMenu = memo(function NavigationMenu({
 
         {/* Camera - always fixed */}
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.openCamera')}
           className="z-10 items-center justify-center gap-1"
           style={isSmallScreen ? { width: '20%' } : { flex: 1 }}
           onPress={onCameraPress}
         >
           <View
-            className="items-center justify-center rounded-full shadow-lg shadow-accent-primary/50"
+            className="items-center justify-center rounded-full"
             style={[
               isSmallScreen
                 ? { width: screenWidth * 0.2, height: screenWidth * 0.2 }

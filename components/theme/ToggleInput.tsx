@@ -33,10 +33,6 @@ export function ToggleInput(props: TogglableSettingsProps) {
         overflow: 'hidden',
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
-        shadowColor: theme.colors.accent.primary,
-        shadowOpacity: theme.shadowOpacity.veryLight,
-        shadowRadius: theme.shadowRadius.sm,
-        shadowOffset: theme.shadowOffset.sm,
       }}
     >
       {props.header}

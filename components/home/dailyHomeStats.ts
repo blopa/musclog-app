@@ -45,9 +45,16 @@ const DIRECTION_TONE: Record<EnergyDirection, StatTone> = {
 export function buildDailyStatCells({
   steps,
   energyBalance,
+  includeEaten = true,
 }: {
   steps: null | number;
   energyBalance: EnergyBalance | null;
+  /**
+   * Whether the strip states what was eaten. The daily summary card above it already prints
+   * the day's calories, so there it is left out (the balance is still burned minus that
+   * figure); under the weekly streak card nothing else on screen says it.
+   */
+  includeEaten?: boolean;
 }): DailyStatCell[] {
   const cells: DailyStatCell[] = [];
 
@@ -70,13 +77,17 @@ export function buildDailyStatCells({
         tone: 'neutral',
         showsUnit: true,
       },
-      {
-        key: 'eaten',
-        labelKey: 'home.dailyStats.eaten',
-        value: energyBalance.eaten,
-        tone: 'neutral',
-        showsUnit: true,
-      },
+      ...(includeEaten
+        ? [
+            {
+              key: 'eaten' as const,
+              labelKey: 'home.dailyStats.eaten' as const,
+              value: energyBalance.eaten,
+              tone: 'neutral' as const,
+              showsUnit: true,
+            },
+          ]
+        : []),
       {
         key: 'balance',
         labelKey: DIRECTION_LABEL_KEY[energyBalance.direction],

@@ -179,6 +179,8 @@ export function MealEstimationScreen({
                   {/* Action Buttons */}
                   <View className="flex-row gap-2">
                     <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.edit')}
                       onPress={() => onEditItem(item)}
                       className="rounded-control p-2"
                       style={{ backgroundColor: theme.colors.background.secondary }}
@@ -186,6 +188,8 @@ export function MealEstimationScreen({
                       <Edit2 size={16} color={theme.colors.text.secondary} />
                     </TouchableOpacity>
                     <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.delete')}
                       onPress={() => onDeleteItem(item.id)}
                       className="rounded-control p-2"
                       style={{ backgroundColor: theme.colors.background.secondary }}

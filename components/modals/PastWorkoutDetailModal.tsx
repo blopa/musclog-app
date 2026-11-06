@@ -84,6 +84,8 @@ function WorkoutSummaryCard({
       >
         {onEdit ? (
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('common.edit')}
             onPress={onEdit}
             className="absolute right-3 top-3 z-10 h-8 w-8 items-center justify-center rounded-full"
             style={{ backgroundColor: theme.colors.background.ink10 }}

@@ -189,6 +189,8 @@ export function SameAsYesterdayCard({
             }}
           >
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('foodSearch.addAll')}
               onPress={(e) => {
                 e?.stopPropagation?.();
                 onAddAllPress();

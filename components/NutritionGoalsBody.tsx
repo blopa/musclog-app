@@ -1063,6 +1063,8 @@ export function NutritionGoalsBody({
               </Text>
               <View className="w-full flex-row items-center justify-center gap-6">
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.decrease')}
                   onPress={() => {
                     if (!isDynamic) {
                       handleCaloriesChange(totalCalories - CALORIES_STEP);
@@ -1114,6 +1116,8 @@ export function NutritionGoalsBody({
                 </View>
 
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.increase')}
                   onPress={() => {
                     if (!isDynamic) {
                       handleCaloriesChange(totalCalories + CALORIES_STEP);

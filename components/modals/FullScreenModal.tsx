@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject, useLayoutEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
@@ -13,7 +14,6 @@ import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
-
 type FullScreenModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -45,6 +45,7 @@ export function FullScreenModal({
   scrollViewRef,
   showConfetti = false,
 }: FullScreenModalProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
@@ -107,6 +108,7 @@ export function FullScreenModal({
               >
                 {closable ? (
                   <Pressable
+                    accessibilityLabel={t('common.back')}
                     accessibilityRole="button"
                     style={{
                       padding: theme.spacing.padding.md,

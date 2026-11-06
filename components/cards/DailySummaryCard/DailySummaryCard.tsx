@@ -332,11 +332,6 @@ export function DailySummaryCard({
                         {getStatusLabel(calorieStatus, t)}
                       </Text>
                     ) : null}
-                    {intuitiveMode ? null : (
-                      <Text className="text-xs" style={{ color: theme.colors.colorfulCard.ink70 }}>
-                        {`${formatInteger(Math.round(calorieProgress))}%`}
-                      </Text>
-                    )}
                   </View>
                 </View>
                 <View
@@ -413,31 +408,21 @@ export function DailySummaryCard({
                         </View>
                       ) : null}
                     </View>
-                    {/* The percentage rides beside the bar rather than on a line of its own. */}
-                    <View className="flex-row items-center gap-1.5">
+                    {/* Value over goal and the bar already say how far along it is; a percentage
+                        was a third encoding of the same number. */}
+                    <View
+                      className="h-1 overflow-hidden rounded-full"
+                      style={{ backgroundColor: theme.colors.colorfulCard.track }}
+                    >
                       <View
-                        className="h-1 flex-1 overflow-hidden rounded-full"
-                        style={{ backgroundColor: theme.colors.colorfulCard.track }}
-                      >
-                        <View
-                          className="h-full rounded-full"
-                          style={{
-                            width: intuitiveMode ? '0%' : `${Math.min(macro.progress, 100)}%`,
-                            backgroundColor: showColoredIndicators
-                              ? getProgressBarColor(macro.status, theme)
-                              : theme.colors.colorfulCard.ink90,
-                          }}
-                        />
-                      </View>
-                      {intuitiveMode ? null : (
-                        <Text
-                          className="text-xs"
-                          numberOfLines={1}
-                          style={{ color: theme.colors.colorfulCard.ink70 }}
-                        >
-                          {`${formatInteger(Math.round(macro.progress))}%`}
-                        </Text>
-                      )}
+                        className="h-full rounded-full"
+                        style={{
+                          width: intuitiveMode ? '0%' : `${Math.min(macro.progress, 100)}%`,
+                          backgroundColor: showColoredIndicators
+                            ? getProgressBarColor(macro.status, theme)
+                            : theme.colors.colorfulCard.ink90,
+                        }}
+                      />
                     </View>
                   </View>
                 ))}

@@ -66,6 +66,8 @@ export function MealNutritionHighlightCard({
         <View className="relative">
           {showInfoButton ? (
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.moreInfo')}
               onPress={() => setIngredientsModalVisible(true)}
               hitSlop={8}
               className="absolute right-3 top-3 z-20 active:opacity-60"

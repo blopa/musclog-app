@@ -43,6 +43,7 @@ export function StepperInlineInput({
   step = 1,
   maxFractionDigits = 1,
 }: StepperInlineInputProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { i18n } = useTranslation();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
@@ -188,6 +189,8 @@ export function StepperInlineInput({
       </View>
       <View className="flex-shrink-0 flex-row items-center gap-2">
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.decrease')}
           className="h-10 min-w-[40px] items-center justify-center rounded-full border"
           style={{
             backgroundColor: theme.colors.accent.primary10,
@@ -251,6 +254,8 @@ export function StepperInlineInput({
           </Pressable>
         )}
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.increase')}
           className="h-10 min-w-[40px] items-center justify-center rounded-full border"
           style={{
             backgroundColor: theme.colors.accent.primary10,

@@ -145,6 +145,8 @@ export function FoodSearchItemCard({
 
       {/* Add Button */}
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('common.a11y.add')}
         className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
         onPress={onAddPress}
         style={{

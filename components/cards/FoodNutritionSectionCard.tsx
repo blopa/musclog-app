@@ -176,6 +176,8 @@ export function FoodNutritionSectionCard({
         />
         {canEdit && mode !== 'meal' && onEditPress ? (
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('common.edit')}
             onPress={onEditPress}
             className="absolute bottom-3 right-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
             style={{

@@ -313,6 +313,8 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
 
       {/* Add Button */}
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('common.a11y.add')}
         className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
         onPress={onAddPress}
         style={{
@@ -1263,6 +1265,8 @@ export function FoodSearchModal({
                 autoFocus
               />
               <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('common.a11y.scanBarcode')}
                 className="absolute inset-y-0 right-0 items-center justify-center pr-2"
                 onPress={onBarcodeScanPress}
                 hitSlop={12}

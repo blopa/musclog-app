@@ -341,6 +341,8 @@ export default function AddUserMetricEntryModal({
             }}
           >
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.decrease')}
               onPress={handleDecrement}
               className="h-14 w-14 items-center justify-center rounded-full"
               style={{
@@ -359,6 +361,8 @@ export default function AddUserMetricEntryModal({
             </View>
 
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.increase')}
               onPress={handleIncrementAction}
               className="h-14 w-14 items-center justify-center rounded-full"
               style={{

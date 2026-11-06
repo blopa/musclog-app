@@ -1242,6 +1242,8 @@ export function DataLogModal({
           </View>
         </View>
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.moreOptions')}
           className="size-8 items-center justify-center rounded-full active:opacity-70"
           onPress={() => handleItemPress(item)}
         >

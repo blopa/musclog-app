@@ -282,6 +282,8 @@ export function OptionsMultiSelector<T extends string | number>({
             }}
           >
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.moveUp')}
               onPress={() => handleMoveUp(index)}
               disabled={isGroupFirst}
               hitSlop={8}
@@ -294,6 +296,8 @@ export function OptionsMultiSelector<T extends string | number>({
               />
             </Pressable>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.moveDown')}
               onPress={() => handleMoveDown(index)}
               disabled={isGroupLast}
               hitSlop={8}

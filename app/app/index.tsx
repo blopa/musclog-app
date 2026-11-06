@@ -437,6 +437,8 @@ export default function HomeScreen() {
           </Text>
           {SHOW_NOTIFICATIONS ? (
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.notifications')}
               className="relative rounded-full bg-bg-overlay p-3"
               onPress={() => setIsNotificationsVisible(true)}
             >
@@ -475,6 +477,8 @@ export default function HomeScreen() {
             <DailyHomeFooter
               date={today}
               tdee={currentTdee}
+              // The daily summary card prints today's calories; the streak card does not.
+              cardShowsEaten={homeSummaryCard !== 'weekly_streak'}
               // `null` withholds the energy half of the strip: there is no goal to balance
               // against in intuitive-eating mode, or before one has been set.
               consumedKcal={

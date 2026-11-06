@@ -94,11 +94,6 @@ export function AINotConfiguredModal({
             borderColor: theme.colors.border.light,
             padding: theme.spacing.padding.xl,
             gap: theme.spacing.gap.lg,
-            shadowColor: theme.colors.status.purple,
-            shadowOffset: { width: 0, height: 10 },
-            shadowOpacity: 0.1,
-            shadowRadius: 20,
-            elevation: 5,
           }}
         >
           <View className="flex-row gap-4">

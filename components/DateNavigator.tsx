@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -7,7 +8,6 @@ import { localCalendarDayDate, localCalendarDayPlusDays } from '@/utils/calendar
 
 import { DatePickerInput } from './modals/DatePickerInput';
 import { type DatePickerDayStatus, DatePickerModal } from './modals/DatePickerModal';
-
 type DateNavigatorProps = {
   selectedDate: Date;
   onDateChange: (date: Date) => void | Promise<void>;
@@ -26,6 +26,7 @@ export function DateNavigator({
   compact = false,
   loadDayStatuses,
 }: DateNavigatorProps) {
+  const { t } = useTranslation();
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const theme = useTheme();
 
@@ -41,6 +42,8 @@ export function DateNavigator({
     <>
       <View className={`flex-row items-center justify-between ${compact ? '' : 'px-4 py-4'}`}>
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.previousDay')}
           onPress={goToPreviousDay}
           className="rounded-control p-3 active:bg-bg-secondary"
           style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
@@ -55,6 +58,8 @@ export function DateNavigator({
         />
 
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.nextDay')}
           onPress={goToNextDay}
           className="rounded-control p-3 active:bg-bg-secondary"
           style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}

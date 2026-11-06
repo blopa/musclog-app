@@ -165,12 +165,15 @@ function StepperButton({
   disabled: boolean;
   onPress: () => void;
 }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const color = disabled ? theme.colors.text.tertiary : theme.colors.text.primary;
   const Icon = icon === 'minus' ? Minus : Plus;
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t(icon === 'minus' ? 'common.a11y.decrease' : 'common.a11y.increase')}
       disabled={disabled}
       hitSlop={8}
       onPress={onPress}

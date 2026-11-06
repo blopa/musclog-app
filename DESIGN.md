@@ -446,6 +446,11 @@ compact (64pt, the icon beside a short label, `rounded-control`), with no tinted
 no faded watermark copy of the icon; the selection, picker and reconciliation rules in `AGENTS.md`
 are unchanged. Home shows a compact Weekly Review card while a week is waiting (or half
 reviewed); otherwise it is one line naming the next review (`WeeklyReviewCard compact quietUntilReady`).
+A waiting review gets one accent signal, the icon and the status words, on a plain card; it used to
+stack a border, tinted fill, solid icon chip and solid badge and competed with the primary actions.
+Each daily-summary figure is stated once: the calorie and macro bars carry no percentage beside a
+"value / goal" figure, and the stat strip under the card omits "Eaten" because the card prints it
+(under the weekly streak card, which does not, the strip keeps it).
 Cycle shows the cycle day once, inside the wheel, with a one-word title and the phase as its
 subtitle.
 
@@ -465,6 +470,8 @@ subtitle.
   user appends to (meals in the food diary, exercises, sets, ingredients, portions, past periods),
   whether the list is empty or full. Use `Button variant="dashed"` (`DashedButton` where it already
   stands); do not swap it for a `TextButton` once the list has entries.
+- No colored shadow either: selection, focus and completion are a fill, a border or an icon, never a
+  halo (`shadowColor` only takes the neutral shadow tokens; `deslopGuards.test.ts` enforces it).
 - No decoration that conveys nothing: no background blobs or blurred glows, no floating icon
   clusters around an illustration, no gradient icon tiles. Onboarding shows the real app mark
   (`assets/logo.png`), not a placeholder glyph.

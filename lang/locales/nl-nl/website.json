@@ -79,7 +79,7 @@
       "badge2": "Geen account nodig",
       "title1": "Beheers Uw",
       "title2": "Fitness Gegevens",
-      "subheading": "Een lokaal-eerst, open-source fitnesstracker. Geen accounts, geen tracking, geen cloud. Alleen u en uw gains.",
+      "subheading": "Log trainingen, maaltijden en lichaamsmetingen. Uw gegevens blijven op uw apparaat en de app werkt offline.",
       "github": "Bekijk op GitHub",
       "demoEyebrow": "Directe preview",
       "demoTitle": "Probeer de webdemo",
@@ -198,27 +198,9 @@
       "description": "Kies het palet dat bij jouw training past. Elk scherm volgt het, inclusief grafieken, camera-overlays en de tabbalk.",
       "footnote": "Wissel wanneer je wilt in Instellingen. Musclog volgt ook de lichte of donkere modus van je apparaat als je liever niet kiest."
     },
-    "features": {
-      "title": "Gebouwd voor Prestatie & Privacy",
-      "description": "Geen telemetrie, geen tracking, geen abonnement. Gewoon een krachtige motor voor uw fitnessreis.",
-      "strengthTracking": {
-        "title": "Offline Krachttraining Tracking",
-        "description": "Registreer uw sets en herhalingen direct op uw apparaat. Geen internet nodig. Uw gegevens verlaten nooit uw zak."
-      },
-      "privacyFirst": {
-        "title": "Privacy Eerst",
-        "description": "Geen registraties, geen logins, en geen tracking door derden. Musclog respecteert uw digitale soevereiniteit.",
-        "link": "Privacybeleid"
-      },
-      "openSource": {
-        "title": "Open Source",
-        "description": "Musclog wordt gedreven door de community. Controleer de code, draag functies bij, of fork het om het uw eigen te maken.",
-        "link": "Broncode bekijken"
-      }
-    },
     "featureGrid": {
-      "title": "Alles Wat U Nodig Heeft om Slimmer te Trainen",
-      "description": "Van AI-gestuurde coaching tot gedetailleerde analyses, Musclog geeft u de tools om volledige controle te nemen over uw fitnessreis.",
+      "title": "Wat Musclog Doet",
+      "description": "Tools om te loggen, plannen en terug te kijken. Functies met AI zijn optioneel.",
       "items": {
         "aiCoach": {
           "title": "AI Coach (Loggy)",
@@ -254,27 +236,9 @@
         }
       }
     },
-    "howItWorks": {
-      "title": "Hoe Het Werkt",
-      "description": "Begin binnen enkele minuten. Geen ingewikkelde setup, geen abonnementen, geen gegevensverzameling.",
-      "steps": {
-        "step1": {
-          "title": "Download & Ga",
-          "description": "Installeer Musclog vanuit de App Store of Google Play. Geen account nodig: open de app en begin met loggen."
-        },
-        "step2": {
-          "title": "Registreer Uw Training",
-          "description": "Registreer sets, herhalingen en gewichten. Scan barcodes of maak foto's om maaltijden te loggen. Alles blijft op uw apparaat."
-        },
-        "step3": {
-          "title": "Volg Voortgang",
-          "description": "Bekijk wekelijkse check-ins, visualiseer trends en laat de AI coach u helpen uw aanpak te optimaliseren."
-        }
-      }
-    },
     "cta": {
-      "title": "Klaar om te starten?",
-      "description": "Download Musclog en bewaar je trainings- en voedingslogs op je eigen apparaat. Geen account, geen abonnement.",
+      "title": "Download Musclog",
+      "description": "Bewaar je trainings- en voedingslogs op je eigen apparaat. Gratis en open source.",
       "download": "Nu Downloaden",
       "close": "Sluiten",
       "sourceCode": "Bekijk Broncode"
@@ -456,7 +420,7 @@
     "download": {
       "pageTitle": "Musclog downloaden",
       "eyebrow": "Begin vandaag met tracken",
-      "title": "Klaar om te focussen?",
+      "title": "Download Musclog",
       "subtitle": "Download Musclog nu en houd je training, voeding en voortgang op een priveplek bij.",
       "googleLabel": "Download Musclog via Google Play",
       "appleLabel": "Download Musclog via de App Store"

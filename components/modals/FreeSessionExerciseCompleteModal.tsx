@@ -140,11 +140,6 @@ export function FreeSessionExerciseCompleteModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: theme.colors.accent.primary,
-                shadowColor: emerald,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.2,
-                shadowRadius: 12,
-                elevation: 4,
               }}
             >
               <CheckCircle size={48} color={theme.colors.text.onAccent} strokeWidth={2.5} />

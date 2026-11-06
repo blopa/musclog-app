@@ -27,7 +27,12 @@ export function WorkoutTimeTracker({
 
   return (
     <View className="flex-row items-center justify-between p-4">
-      <Pressable className="h-12 w-12 items-center justify-center" onPress={onClose}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('common.close')}
+        className="h-12 w-12 items-center justify-center"
+        onPress={onClose}
+      >
         <X size={theme.iconSize.xl} color={theme.colors.text.primary} />
       </Pressable>
       <View className="items-center">

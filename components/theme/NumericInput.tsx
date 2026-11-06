@@ -1,10 +1,10 @@
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { TextInputInstance } from 'react-native';
 import { Pressable, Text, TextInput as RNTextInput, TextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
-
 type TestNumericInputProps = {
   label: string;
   value: string;
@@ -26,6 +26,7 @@ export function NumericInput({
   onDecrement,
   // variant = 'vertical',
 }: TestNumericInputProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const unitColorFinal = unitColor || theme.colors.accent.primary;
   const inputRef = useRef<TextInputInstance | null>(null);
@@ -40,6 +41,8 @@ export function NumericInput({
       </Text>
       {onIncrement ? (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.increase')}
           className="w-full items-center justify-center rounded-control bg-accent-primary py-1.5 active:opacity-80"
           onPress={onIncrement}
         >
@@ -61,6 +64,8 @@ export function NumericInput({
       </Text>
       {onDecrement ? (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.decrease')}
           className="w-full items-center justify-center rounded-control bg-accent-primary py-1.5 active:opacity-80"
           onPress={onDecrement}
         >
