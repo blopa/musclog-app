@@ -1689,7 +1689,7 @@ export default function FoodScreen() {
 
         {/* Optical send. A screen-level sibling on purpose: the menu that opens it dismisses itself
           first, so a modal parked in its children would unmount before it could appear
-          (FIXES.md). */}
+          (docs/FIXES.md). */}
         {shareTarget ? (
           <ShareOpticalSendModal
             onClose={() => setShareTarget(null)}

@@ -263,7 +263,7 @@ Interactive mobile controls need an effective target of at least 44×44 points, 
 Dense controls may draw smaller and pad their hit area with `hitSlop` (`Chip` and filter tabs draw
 36pt, `IconButton sm` 36pt, a segment 40pt, each padded to 44–48). Expand targets with internal
 padding or `hitSlop`; on iOS, negative margins and out-of-bounds `hitSlop` can be clipped by the
-parent; see `FIXES.md`.
+parent; see `docs/FIXES.md`.
 
 ## Components
 
@@ -429,7 +429,7 @@ underneath it. Do not substitute a fixed scrim: `background.scrim30` darkened th
 themes into a grey slab and dropped their supporting ink under AA.
 
 Use the existing `FullScreenModal`, `CenteredModal`, `BottomPopUp`, and platform variants. A modal
-that opens another modal must follow the presenter rules in `FIXES.md`; visual nesting and React
+that opens another modal must follow the presenter rules in `docs/FIXES.md`; visual nesting and React
 tree ownership are separate concerns. All three shells title the modal at `text-lg font-semibold`,
 the same as a pushed screen header, with a 36pt control-radius close button (a dialog's sits on its
 `card` radius). Modal headers sit on the modal's own surface — none of the

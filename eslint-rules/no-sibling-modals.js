@@ -12,7 +12,7 @@
  * active modal in the React tree so React Native presents them from the correct
  * native controller.
  *
- * See FIXES.md for the full explanation and fixed examples.
+ * See docs/FIXES.md for the full explanation and fixed examples.
  *
  * This rule flags any JSX parent (fragment or non-modal element) that has 2+ direct
  * modal-like children — the structural pattern that triggers the iOS bug.
@@ -141,7 +141,7 @@ module.exports = {
         'On iOS this triggers a UIViewController hierarchy bug: the second modal is silently ' +
         'dropped because the original host controller is no longer the active presenter. ' +
         "Move <{{name}}> inside the first modal's children tree. " +
-        'See FIXES.md for the correct pattern.',
+        'See docs/FIXES.md for the correct pattern.',
     },
   },
 

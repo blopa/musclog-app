@@ -679,7 +679,7 @@ export default function CardsTestScreen() {
                 <Text className="text-lg font-semibold text-text-primary">Hero</Text>
                 <Text className="mt-2 text-sm text-text-secondary">
                   The colorfulCard gradient. Reserved for DailySummaryCard — do not add a second
-                  consumer without updating DESIGN.md.
+                  consumer without updating docs/DESIGN.md.
                 </Text>
               </View>
             </GenericCard>

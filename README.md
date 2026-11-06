@@ -69,8 +69,8 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 
 ## Key Features
 
-> See [CURRENT_FEATURES.md](CURRENT_FEATURES.md) for the complete shipped feature list and
-> [FUTURE_FEATURES.md](FUTURE_FEATURES.md) for the roadmap.
+> See [CURRENT_FEATURES.md](docs/CURRENT_FEATURES.md) for the complete shipped feature list and
+> [FUTURE_FEATURES.md](docs/FUTURE_FEATURES.md) for the roadmap.
 
 ### 🏋️ Track Workouts
 
@@ -348,11 +348,11 @@ npm run submit-ios                # Submit to App Store Connect
 ## Project Documentation
 
 - [AGENTS.md](AGENTS.md): implementation rules and repository invariants
-- [CURRENT_FEATURES.md](CURRENT_FEATURES.md): complete shipped feature list
-- [FUTURE_FEATURES.md](FUTURE_FEATURES.md): prioritized backlog and scope decisions
-- [DESIGN.md](DESIGN.md): visual system and interaction standards
-- [FIXES.md](FIXES.md): incidents, workarounds, and regression guardrails
-- [RESEARCH.md](RESEARCH.md): consolidated technical and product research
+- [CURRENT_FEATURES.md](docs/CURRENT_FEATURES.md): complete shipped feature list
+- [FUTURE_FEATURES.md](docs/FUTURE_FEATURES.md): prioritized backlog and scope decisions
+- [DESIGN.md](docs/DESIGN.md): visual system and interaction standards
+- [FIXES.md](docs/FIXES.md): incidents, workarounds, and regression guardrails
+- [RESEARCH.md](docs/RESEARCH.md): consolidated technical and product research
 
 ---
 

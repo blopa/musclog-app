@@ -3,7 +3,7 @@
 This file consolidates the research that still informs the product or implementation. Historical
 code dumps, speculative week-by-week plans, repeated setup instructions, and conclusions superseded
 by the current code have been removed. For implementation rules use `AGENTS.md`; for incident
-history use `FIXES.md`.
+history use `docs/FIXES.md`.
 
 ## Nutrition and energy balance
 
@@ -53,7 +53,7 @@ point band around the entered value and surfaces a range rather than false preci
 
 Progress charts, nutrition charts, check-ins, and empirical-TDEE endpoints share this series. The
 remaining limitation is that empirical TDEE uses its start/end values rather than a fit over every
-point; whole-series regression is tracked in `FUTURE_FEATURES.md`.
+point; whole-series regression is tracked in `docs/FUTURE_FEATURES.md`.
 
 ### Macronutrients and label conventions
 
@@ -123,7 +123,7 @@ weight-smoothing tools, and resistance-training products produced a consistent p
 - Notifications and streaks should be configurable and non-punitive.
 - Progress photos are motivating but require a private, local-first comparison flow.
 
-Those conclusions are translated into the prioritized backlog in `FUTURE_FEATURES.md`.
+Those conclusions are translated into the prioritized backlog in `docs/FUTURE_FEATURES.md`.
 
 ## OCR and barcode scanning
 
@@ -144,7 +144,7 @@ Current platform split:
 The useful conclusion from the earlier comparison remains: simulator compatibility is a native
 binary-distribution problem, not an OCR-accuracy problem. A cloud service avoids native linkage but
 changes privacy, cost, offline behavior, and key management, so it should not be introduced merely
-as a development workaround. The Apple Silicon compatibility patch is documented in `FIXES.md`.
+as a development workaround. The Apple Silicon compatibility patch is documented in `docs/FIXES.md`.
 
 ### Barcode decision
 
@@ -192,7 +192,7 @@ Current reference: `NoteService.notesQuery` with `hooks/useNotes.ts`.
 
 ## Exercise search
 
-Product research (see `FUTURE_FEATURES.md`) found that logger users lose time to literal search: a
+Product research (see `docs/FUTURE_FEATURES.md`) found that logger users lose time to literal search: a
 long-term Strong user could not find "fly" by typing "flys", and gyms call identical movements by
 different names. Musclog's search used to be `LIKE '%term%'` on `exercises.name`, with three
 compounding problems: no plural or abbreviation handling, SQLite `LIKE` folding case for ASCII only
@@ -309,7 +309,7 @@ value (Gemini 3 Pro `LOW`, 2.5 Pro budget 128) rather than zero.
 **Cold-start scan latency** has not been measured on a release build. The scan now logs
 `[SmartCamera.aiPhoto] image-read=… settings-read=… request=… total=…` (`adb logcat`), and
 `AiService.getAiConfig` no longer awaits up to a dozen settings reads in sequence. If the log shows a
-slow `settings-read` or `image-read` on the first scan after boot, record the cause in `FIXES.md`.
+slow `settings-read` or `image-read` on the first scan after boot, record the cause in `docs/FIXES.md`.
 
 ## Photo viewer, saving and feedback links
 
@@ -318,7 +318,7 @@ declares read permissions of its own (`READ_MEDIA_*` on Android) that the commit
 have to be diffed and stripped of, and an iOS add-only usage string; the app's rule is that photo
 picking needs no media permission at all. The share sheet reaches the same place ("Save image" / "Save
 to Photos") with no permission, so the manual save shipped on it and the automatic save-after-logging
-setting is parked in `FUTURE_FEATURES.md` until someone can run a prebuild and read the manifest.
+setting is parked in `docs/FUTURE_FEATURES.md` until someone can run a prebuild and read the manifest.
 
 **Zoom math is focal-point based.** The image point under the focal is `(focal − t) / s`; holding it
 fixed while the scale changes gives `t' = focal − (focal − t) · s'/s`, clamped to the scaled image's
@@ -366,7 +366,7 @@ Health data needs four safeguards:
 - Keep local-only records and provider-written records distinguishable; an imported optical share
   must not inherit another device's Health Connect external ID.
 
-The duplicate Health Connect package failure is documented in `FIXES.md`.
+The duplicate Health Connect package failure is documented in `docs/FIXES.md`.
 
 ## Optical transfer
 
@@ -591,7 +591,7 @@ A review of period-tracker notifications (Flo, Clue, Period Calendar, Natural Cy
 
 - **A button is a second lock-screen surface.** The pill reminder's actions are worded Done / Later / Skip, not "Taken", because the notification text can be set to say nothing about pills and an action row reading "Taken" would give it away. "Done" and "Skip" write the answer straight onto the day (`observations.pill`, shown and correctable in the day sheet); "Later" and "Snooze" re-send the same wording once as a separate `menstrual-cycle-snooze` notification, which an ordinary reschedule must not erase but must re-check — a pause or a context change that removes the prediction cancels a snoozed estimate, and only the pill (pause-exempt) and routines the person scheduled survive it.
 
-Per-category lock-screen levels and wearable sync alerts are recorded in `FUTURE_FEATURES.md`.
+Per-category lock-screen levels and wearable sync alerts are recorded in `docs/FUTURE_FEATURES.md`.
 
 ## Workout notifications: what is a notification and what is a surface
 
@@ -600,8 +600,8 @@ A review of workout-app notifications (Hevy, MacroFactor Workouts, Strong, Fitbo
 - **Four jobs hide behind one permission prompt**: in-workout timing, adherence reminders, coaching/social, and marketing. Musclog sends only the first two, each with its own switch and Android channel, and nothing promotional or social.
 - **The rest alert is infrastructure, not engagement.** The complaint that recurs is not "too many" but "too quiet, delayed, indistinguishable or missing". So it is the only `timeSensitive` notification, keeps the loudest channel, can repeat once, and is configurable on three independent axes rather than one "stronger" default: the chime (off moves it to a vibrate-only channel — Android fixes a channel's sound at creation), the haptic firmness, and a "get ready" heads-up (off / 10 / 20 / 30 s) that is both a visual state with a single buzz and, backgrounded, a quiet notification. Users disagree sharply on volume, which is why there is no single right default.
 - **A timed set is not a rest.** Strong's threads show lifters repurposing the rest timer for planks and holds. The work timer is a separate primitive that counts a duration down and then hands over to the rest timer — and because logging the set a moment later would start a second rest, the timer remembers the rest it started and the next set completion skips its own.
-- **A reminder should say why it exists and offer a narrower exit than "turn everything off".** A tapped workout reminder opens a sheet that names the workout, the planned weekday and time and whether that day came from a plan or the workout's own schedule, and offers a one-week pause, turning workout reminders off, or the notification settings. A per-workout mute and an editable per-plan reminder time are not built (see `FUTURE_FEATURES.md`).
-- **Persistent surfaces beat repeated pushes** (a Live Activity or chronometer notification over a stream of banners). That is the largest remaining item and the only one needing native code; it is specified in `FUTURE_FEATURES.md`.
+- **A reminder should say why it exists and offer a narrower exit than "turn everything off".** A tapped workout reminder opens a sheet that names the workout, the planned weekday and time and whether that day came from a plan or the workout's own schedule, and offers a one-week pause, turning workout reminders off, or the notification settings. A per-workout mute and an editable per-plan reminder time are not built (see `docs/FUTURE_FEATURES.md`).
+- **Persistent surfaces beat repeated pushes** (a Live Activity or chronometer notification over a stream of banners). That is the largest remaining item and the only one needing native code; it is specified in `docs/FUTURE_FEATURES.md`.
 
 ### Cycle phase and training
 

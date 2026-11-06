@@ -1,7 +1,7 @@
 /**
  * The colours of Loggy's own artwork (`assets/avatars/loggy-poses/*.svg`). They are fixed, like a
  * photo's: a green log on an emerald or rose brand fill disappears, so a surface built around Loggy
- * takes its ground from here and not from the theme (see DESIGN.md, "Surfaces that do not follow
+ * takes its ground from here and not from the theme (see docs/DESIGN.md, "Surfaces that do not follow
  * the theme"). `constants/__tests__/loggyPalette.test.ts` holds them to the artwork.
  */
 export const LOGGY_PALETTE = {

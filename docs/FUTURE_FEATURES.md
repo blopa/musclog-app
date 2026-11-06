@@ -119,7 +119,7 @@ collects.
 
 ### Notification follow-ups
 
-Three notification items that are designed but not built. Each lists what exists today, the intended shape, and what to check first. The research behind them is summarised in `RESEARCH.md` (competitor notification review); nothing below changes the offline-only rule — every one of these is a local schedule or a local native surface.
+Three notification items that are designed but not built. Each lists what exists today, the intended shape, and what to check first. The research behind them is summarised in `docs/RESEARCH.md` (competitor notification review); nothing below changes the offline-only rule — every one of these is a local schedule or a local native surface.
 
 **Live workout surface (iOS Live Activity / Dynamic Island, Android chronometer notification).** A persistent, glanceable session state on the lock screen: current exercise, next set, a rest countdown, and +15 s / Skip actions. This is the highest-impact item of the three and the only one that needs native work.
 
@@ -167,7 +167,7 @@ and the existing 1RM/consistency behavior intact.
   that also purges the index.
 - Watch companion, in two steps: first a read-only snapshot (a watchOS target over WatchConnectivity
   and a Wear OS tile showing today's workout, the current set and the rest timer), then writes from
-  the watch once a conflict policy exists (see RESEARCH.md, "Watch companion").
+  the watch once a conflict policy exists (see docs/RESEARCH.md, "Watch companion").
 - Notes per set, and editing a finished workout's note from its detail view (today the workout note
   is written when finishing, and exercise notes in the session).
 - iOS widget parity and more focused widgets backed by versioned snapshots rather than direct
@@ -187,7 +187,7 @@ and the existing 1RM/consistency behavior intact.
   need a cached, once-computed bodyweight series. A season-end notification for January is not
   planned (it opens December 1).
 - **Strength levels.** A masters age adjustment, only if a primary source for the coefficients is
-  found (see `RESEARCH.md`). Grading more lifts means adding slugs to `strengthGradedLifts.ts`.
+  found (see `docs/RESEARCH.md`). Grading more lifts means adding slugs to `strengthGradedLifts.ts`.
 - **Programme waves (design only).** If people ask for percentage programmes (5/3/1-style weeks),
   add an optional repeating wave of `{ percent, reps }` steps to the percentage progression rule,
   advanced once per completed session and kept inside the rule projection. A dated multi-week

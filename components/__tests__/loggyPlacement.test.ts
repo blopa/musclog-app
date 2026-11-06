@@ -4,7 +4,7 @@ import { join, relative } from 'path';
 const root = join(__dirname, '..', '..');
 
 /**
- * The files that may draw Loggy (DESIGN.md → "Empty states, decoration and motion"). Adding one is
+ * The files that may draw Loggy (docs/DESIGN.md → "Empty states, decoration and motion"). Adding one is
  * a design decision with a reason, not a convenience: he marks a moment, not a list, and a mascot
  * on every screen stops meaning anything.
  */

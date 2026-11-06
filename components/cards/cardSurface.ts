@@ -2,7 +2,7 @@ import type { Theme } from '@/theme';
 
 /**
  * The app's card system has exactly two styles, plus one documented brand
- * exception (see DESIGN.md § Components → Cards and modals):
+ * exception (see docs/DESIGN.md § Components → Cards and modals):
  *
  * - 'flat' (default): background.card + an ink/5 hairline, no shadow. Use for
  *   almost every card — lists, stats, settings rows.
@@ -12,7 +12,7 @@ import type { Theme } from '@/theme';
  *   cardElevated, so a raised card disappears into it (Android elevation can
  *   also leak through a SurfaceColorProvider fade; see AGENTS.md).
  * - 'hero': the colorfulCard gradient fill. Reserved for DailySummaryCard —
- *   DESIGN.md forbids deriving its presentation from themeMode, and adding a
+ *   docs/DESIGN.md forbids deriving its presentation from themeMode, and adding a
  *   second consumer needs a documented decision, not a copy-paste.
  */
 export type CardVariant = 'flat' | 'raised' | 'hero';

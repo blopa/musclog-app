@@ -531,8 +531,8 @@ function createThemeColors(colors) {
       button: [colors.surfaceTint, colors.surfaceCard],
       progress: [colors.brandDeep, colors.brandPrimary, colors.brandVivid],
       colorfulCard: [colors.colorfulCardStart, colors.colorfulCardMiddle, colors.colorfulCardEnd],
-      // DESIGN.md: a primary action is emerald or the approved emerald-to-teal gradient. It was
-      // indigo-to-green, which DESIGN.md does not allow, so it now uses the accent stops.
+      // docs/DESIGN.md: a primary action is emerald or the approved emerald-to-teal gradient. It was
+      // indigo-to-green, which docs/DESIGN.md does not allow, so it now uses the accent stops.
       cta: [colors.brandVivid, colors.accentGradientEnd],
       // Fades the screen behind the session sheet — follows the theme surface.
       workoutSessionOverlay: [

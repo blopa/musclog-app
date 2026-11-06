@@ -10,7 +10,7 @@
  * Which of the eight screens is showing is decided once, by `resolveOpticalReceiveScreen` — see
  * `./opticalReceiveScreen.ts` for why that is not inlined here.
  *
- * Progress is FRAMES COLLECTED, not blocks solved — see `RESEARCH.md`.
+ * Progress is FRAMES COLLECTED, not blocks solved — see `docs/RESEARCH.md`.
  */
 
 import { useCallback, useMemo, useState } from 'react';
@@ -570,7 +570,7 @@ export function OpticalReceiveModal({
 
         {/* ONE destructive confirmation for the whole screen, not one per action. Two of these as
             siblings is the iOS presenter bug `local/no-sibling-modals` exists to catch (see
-            FIXES.md), and they could never both be up anyway: a restore belongs to the `database`
+            docs/FIXES.md), and they could never both be up anyway: a restore belongs to the `database`
             screen and a day replace to the `share` screen. */}
         <ConfirmationModal
           confirmLabel={confirmation?.confirmLabel ?? ''}

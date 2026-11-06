@@ -130,7 +130,7 @@ target.
   - **Browse / detail** (look at or navigate through content): Exercises, Nutrition log, Past
     workouts history, Past workout detail, Body metrics history, Goals management. These become real
     routes under `app/app/` so they push, swipe back, and can be deep-linked.
-- **Risks**: `pageSheet` must be checked against the nested-modal presenter rules in `FIXES.md` and
+- **Risks**: `pageSheet` must be checked against the nested-modal presenter rules in `docs/FIXES.md` and
   the `local/no-sibling-modals` lint rule; keyboard avoidance inside a page sheet; `AppLockOverlay`
   must still cover it. Verify on a **release** build on both platforms.
 
@@ -349,7 +349,7 @@ milestone is shippable on its own and leaves the app consistent.
 - Prototype `pageSheet` on one task modal (Log meal) inside a release build, including a nested
   modal and the keyboard, to de-risk Phase 2.
 - Output: findings written into this file (section 8) and, where they are incidents or
-  workarounds, `FIXES.md`.
+  workarounds, `docs/FIXES.md`.
 
 **M1 — Transitions**
 
@@ -408,7 +408,7 @@ milestone is shippable on its own and leaves the app consistent.
 - Migrate task modals in order: Log meal, Add entry, Create custom food, Create meal, Add exercise,
   Create workout, then the rest.
 - Done when: every task modal swipes down to dismiss on iOS, shows Cancel, and passes the presenter
-  rules in `FIXES.md` on a release build.
+  rules in `docs/FIXES.md` on a release build.
 
 **M9 — Browse modals become routes**
 
@@ -478,7 +478,7 @@ milestone is shippable on its own and leaves the app consistent.
 - Re-measure all four screens with the section 1 method in at least `kinetic-depth` and
   `kinetic-light`, record the numbers in section 8, and fix any screen above target.
 - If open question 5 is answered yes, drop the hero card's four percentages and update
-  `DESIGN.md` and the `DailySummaryCard` tests.
+  `docs/DESIGN.md` and the `DailySummaryCard` tests.
 - Done when: every target in U11 is met, or the miss is recorded with a reason.
 
 ## 6. Requirements for every milestone
@@ -498,9 +498,9 @@ These come from `AGENTS.md` and apply to each milestone, not just the last one:
   stages files and dirties `app.json` / iOS.)
 - **Translations**: new or changed copy (confirmation titles, Undo, Cancel/Add) lands in all five
   locales.
-- **Docs in the same change**: `DESIGN.md` (Buttons, Cards and modals, Home, Inputs sections),
-  `AGENTS.md` (Weekly Review entry points, modal rules), `FIXES.md` for any device-specific
-  workaround found, `CURRENT_FEATURES.md` when a user-visible flow changes (swipe to delete, undo).
+- **Docs in the same change**: `docs/DESIGN.md` (Buttons, Cards and modals, Home, Inputs sections),
+  `AGENTS.md` (Weekly Review entry points, modal rules), `docs/FIXES.md` for any device-specific
+  workaround found, `docs/CURRENT_FEATURES.md` when a user-visible flow changes (swipe to delete, undo).
 - **Screenshots**: re-run `npm run screenshots` and compare against the baseline captures.
 - **Device check**: gestures, haptics, transitions and sheets cannot be judged from web screenshots.
   Each milestone is checked on a physical iOS and Android device; Phase 2 on a **release** build.
@@ -510,15 +510,15 @@ These come from `AGENTS.md` and apply to each milestone, not just the last one:
 
 ## 7. Risks
 
-| Risk                                                                 | Mitigation                                                                             |
-| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `pageSheet` conflicts with nested-modal presenter rules (`FIXES.md`) | M0 spike on a release build before M8; keep `kind` defaulting to the current behaviour |
-| Pan-to-dismiss fights inner scroll views in sheets                   | Hand off only at scroll top; test long sheets (Replace exercise, Edit set details)     |
-| Swipe actions are invisible to screen readers                        | `accessibilityActions` mirror every swipe and long-press action                        |
-| `Alert` is a no-op on web                                            | `confirm()` falls back to `ConfirmationModal` on web                                   |
-| Turning modals into routes breaks app-lock gating                    | New routes sit inside `AreaLockGate`; extend `appLockCoverage.test.ts`                 |
-| Haptics feel excessive                                               | Only semantic moments, never on scroll or re-render; see open question 3               |
-| Back-history changes surprise existing users                         | Decide in M0, pin with a test, note in the release's What's new if it is visible       |
+| Risk                                                                      | Mitigation                                                                             |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `pageSheet` conflicts with nested-modal presenter rules (`docs/FIXES.md`) | M0 spike on a release build before M8; keep `kind` defaulting to the current behaviour |
+| Pan-to-dismiss fights inner scroll views in sheets                        | Hand off only at scroll top; test long sheets (Replace exercise, Edit set details)     |
+| Swipe actions are invisible to screen readers                             | `accessibilityActions` mirror every swipe and long-press action                        |
+| `Alert` is a no-op on web                                                 | `confirm()` falls back to `ConfirmationModal` on web                                   |
+| Turning modals into routes breaks app-lock gating                         | New routes sit inside `AreaLockGate`; extend `appLockCoverage.test.ts`                 |
+| Haptics feel excessive                                                    | Only semantic moments, never on scroll or re-render; see open question 3               |
+| Back-history changes surprise existing users                              | Decide in M0, pin with a test, note in the release's What's new if it is visible       |
 
 ## 8. Open questions and M0 findings
 

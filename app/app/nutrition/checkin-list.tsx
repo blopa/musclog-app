@@ -38,7 +38,7 @@ import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
  *      only: nothing imports it.)
  *   3. The "Weekly Review screen is `app/app/weekly-review.tsx`..." paragraph in `AGENTS.md` that says
  *      `checkin-list.tsx` is "only a `<Redirect>`... keep it". It then becomes false.
- *   4. The "old links and notifications still open it" clause in `CURRENT_FEATURES.md`.
+ *   4. The "old links and notifications still open it" clause in `docs/CURRENT_FEATURES.md`.
  *
  * Then check, in this order, that removal is safe:
  *   - `grep -rn "checkin-list" --include=*.ts --include=*.tsx --include=*.md .` finds nothing outside

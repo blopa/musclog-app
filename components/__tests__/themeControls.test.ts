@@ -155,7 +155,7 @@ describe('theme controls', () => {
   it('uses the full-width pill for every setting value in the notification settings', () => {
     // A form of settings mixed four pills with one full-width elevated control, which looks like
     // a view switcher and made the same kind of choice look like two; and pills that hugged their
-    // options left a ragged edge beside the full-width cards (see DESIGN.md → Buttons).
+    // options left a ragged edge beside the full-width cards (see docs/DESIGN.md → Buttons).
     const source = code('components/modals/NotificationsSettingsModal.tsx');
     const controls = source.split('<SegmentedControl').slice(1);
     expect(controls.length).toBeGreaterThan(0);

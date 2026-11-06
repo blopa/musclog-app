@@ -25,7 +25,7 @@ export function SettingsCard({
   titleColor?: string;
 }) {
   const theme = useTheme();
-  // The icon is naked and neutral wherever it is drawn (DESIGN.md, Components): callers pass the
+  // The icon is naked and neutral wherever it is drawn (docs/DESIGN.md, Components): callers pass the
   // glyph, this row decides its size and color.
   const neutralIcon = isValidElement(icon)
     ? cloneElement(icon as ReactElement<{ size?: number; color?: string }>, {
