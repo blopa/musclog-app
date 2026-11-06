@@ -82,7 +82,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "android-device": "expo run:android --no-build-cache --device",
-    "web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && expo start --web",
+    "web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && NODE_OPTIONS=--max-old-space-size=8192 expo start --web",
     "test": "jest --watchAll",
     "test:ci": "jest --ci --runInBand --silent",
     "lint": "expo lint",
