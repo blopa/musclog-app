@@ -7,8 +7,12 @@ import type { Finding, LayoutNode, LayoutSnapshot, Rect, Severity } from './type
 
 /** Overlaps thinner than this (px) are sub-pixel rounding or touching edges, not collisions. */
 export const MIN_OVERLAP_PX = 3;
-/** Interactive neighbours closer than this (px) but not touching are "cramped". */
+/**
+ * Interactive neighbours closer than this (px), yet not flush, are "cramped". Flush neighbours
+ * (a tab bar, a segmented control) are deliberate and fall under `FLUSH_GAP_PX`.
+ */
 export const TIGHT_GAP_PX = 4;
+export const FLUSH_GAP_PX = 0.5;
 /** Ink loss below this is anti-aliasing at an edge; above `HIDDEN_LOSS` it was hidden on purpose. */
 export const MIN_LOSS_RATIO = 0.04;
 export const HIDDEN_LOSS = 0.98;
@@ -293,7 +297,7 @@ function targetFindings(snapshot: LayoutSnapshot): Finding[] {
       }
 
       const gap = gapBetween(a.visible[0], b.visible[0]);
-      if (gap !== null && gap < TIGHT_GAP_PX) {
+      if (gap !== null && gap >= FLUSH_GAP_PX && gap < TIGHT_GAP_PX) {
         findings.push({
           kind: 'tight-gap',
           severity: 'warn',

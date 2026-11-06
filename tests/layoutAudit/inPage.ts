@@ -263,8 +263,14 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     const inner: Context = { ...own };
     if (hasArea && (overflowX !== 'visible' || overflowY !== 'visible')) {
       inner.soft = own.soft.concat([boxRect]);
+      if (scrollerX || scrollerY) {
+        // Content inside a scroller can be scrolled into view, so a clip established outside it
+        // (the box the scroller sits in) is the scroll edge, not content that is cut off.
+        inner.hard = [];
+      }
+
       if (hidesX || hidesY) {
-        inner.hard = own.hard.concat([
+        inner.hard = inner.hard.concat([
           {
             x: hidesX ? boxRect.x : -FAR,
             y: hidesY ? boxRect.y : -FAR,
