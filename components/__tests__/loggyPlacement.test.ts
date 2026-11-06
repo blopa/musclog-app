@@ -10,7 +10,8 @@ const root = join(__dirname, '..', '..');
  */
 const MAY_RENDER_LOGGY: Record<string, string> = {
   'app/app/onboarding/first-workout.tsx': 'the last step of setup, ready to train',
-  'app/app/onboarding/landing.tsx': 'setup opens with him waving; the splash showed the mark',
+  'app/app/onboarding/landing.tsx':
+    'setup opens with him in his default pose; the splash showed the mark',
   'app/app/year-in-review.tsx': 'the year story had nothing to tell, or failed to load',
   'components/ConfettiOverlay.tsx': 'the once-ever firsts bring him with the confetti',
   'components/ConfettiOverlay.web.tsx': 'the once-ever firsts bring him with the confetti',

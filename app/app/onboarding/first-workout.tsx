@@ -254,7 +254,7 @@ export default function FirstWorkoutScreen() {
                     : t('onboarding.firstWorkout.subtitleEmpty')}
                 </Text>
               </View>
-              <LoggyPose pose="flex" height={FIRST_WORKOUT_POSE_HEIGHT} />
+              <LoggyPose pose="default" height={FIRST_WORKOUT_POSE_HEIGHT} />
             </View>
 
             {template ? (

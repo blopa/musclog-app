@@ -194,9 +194,10 @@ export default function LandingScreen() {
 
           {/* Hero Section */}
           <View className="flex-1 items-center justify-center gap-8 py-6">
-            {/* The splash screen already showed the app's mark; this is where Loggy says hello. */}
+            {/* The splash screen already showed the app's mark; this is where Loggy shows up, in
+                his default pose (pencil and clipboard: he is here to keep your log). */}
             {poseHeight >= LANDING_POSE_MIN_HEIGHT ? (
-              <LoggyPose pose="wave" height={poseHeight} />
+              <LoggyPose pose="default" height={poseHeight} />
             ) : null}
 
             {/* Typography Section */}

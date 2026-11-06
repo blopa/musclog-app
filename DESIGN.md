@@ -504,8 +504,9 @@ subtitle.
 - No colored shadow either: selection, focus and completion are a fill, a border or an icon, never a
   halo (`shadowColor` only takes the neutral shadow tokens; `deslopGuards.test.ts` enforces it).
 - No decoration that conveys nothing: no background blobs or blurred glows, no floating icon
-  clusters around an illustration, no gradient icon tiles. The onboarding landing shows Loggy waving
-  (the splash screen carries the app mark), not a placeholder glyph.
+  clusters around an illustration, no gradient icon tiles. The onboarding landing and its last step show
+  Loggy in his default pose, pencil and clipboard in hand (the splash screen carries the app
+  mark), not a placeholder glyph.
 - App-owned visuals are Lucide icons, never emoji: moods, equipment, source headings and the notes
   marker are icons sized and tinted from theme tokens, and data strings (such as an exercise row's
   description) stay plain text, with a flag like `hasNotes` telling the UI which icon to draw.
