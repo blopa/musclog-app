@@ -3,6 +3,30 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Workout summary stats were white on a light card (November 2026)
+
+### Symptom
+
+On Kinetic Light and Kinetic Blush the web workout summary's stats card read as white values and
+pale grey labels on a light card (1.26:1 and 1.35:1 for the value), with no row dividers. Dark
+themes looked right.
+
+### Cause
+
+`WorkoutSummaryCelebration.web.tsx` drew its stat rows with `var(--text-primary, #fff)`,
+`var(--text-secondary, …)`, `var(--text-tertiary, …)` and a hardcoded `rgba(255,255,255,0.05)`
+divider. The app's custom properties are `--c-*` channel triplets, so those names never existed and
+the dark-theme fallback written beside each one was what every theme got.
+
+### Fix
+
+The row reads `theme.colors.text.primary|secondary|tertiary` and `theme.colors.background.ink5`,
+like the rest of the file and the native `WorkoutSummaryStatRow`. All three inks are at least 4.5:1
+on the card in every theme (`npm run check-palette` already audits that ground). Pinned by
+`components/__tests__/webThemeInk.test.ts`, which also fails on any `var(--text-…)` in
+`components/`, `app/`, `hooks/` or `utils/`. A hand-written `var(--name, fallback)` in a web
+component is the same bug waiting: use a theme token.
+
 ## Dev web bundle crashed on `BETA_BROWSER_MEMBER_NAME_VALUES` (November 2026)
 
 ### Symptom

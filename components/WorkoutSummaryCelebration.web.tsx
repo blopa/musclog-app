@@ -45,6 +45,11 @@ function StatRow({
   showStarIcon = false,
   starColor,
 }: StatRowProps) {
+  // Theme tokens, not hand-named CSS variables: the app's custom properties are `--c-*` channel
+  // triplets, so an invented name never resolved and every theme drew the fallback written beside
+  // it (white values on a light card). The divider likewise has to be the theme's ink hairline.
+  const theme = useTheme();
+
   return (
     <div
       style={{
@@ -53,7 +58,7 @@ function StatRow({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingBottom: showDivider ? 16 : 0,
-        borderBottom: showDivider ? '1px solid rgba(255,255,255,0.05)' : 'none',
+        borderBottom: showDivider ? `1px solid ${theme.colors.background.ink5}` : 'none',
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -69,7 +74,7 @@ function StatRow({
         >
           <Icon size={iconSize} color={iconColor} />
         </div>
-        <span style={{ fontWeight: 500, color: 'var(--text-secondary, #9ca3af)' }}>{label}</span>
+        <span style={{ fontWeight: 500, color: theme.colors.text.secondary }}>{label}</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
         {showStarIcon && starColor ? <Star size={16} color={starColor} fill={starColor} /> : null}
@@ -77,13 +82,20 @@ function StatRow({
           style={{
             fontSize: 24,
             fontWeight: 700,
-            color: 'var(--text-primary, #fff)',
+            fontVariantNumeric: 'tabular-nums',
+            color: theme.colors.text.primary,
           }}
         >
           {value}
         </span>
         {valueSuffix ? (
-          <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-tertiary, #6b7280)' }}>
+          <span
+            style={{
+              fontSize: 14,
+              fontWeight: 400,
+              color: theme.colors.text.tertiary,
+            }}
+          >
             {valueSuffix}
           </span>
         ) : null}
