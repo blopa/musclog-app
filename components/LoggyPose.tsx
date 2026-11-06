@@ -5,6 +5,7 @@ import type { SvgProps } from 'react-native-svg';
 
 import Celebrating from '@/assets/avatars/loggy-poses/loggy-celebrating.svg';
 import Coffee from '@/assets/avatars/loggy-poses/loggy-coffee.svg';
+import Creatine from '@/assets/avatars/loggy-poses/loggy-creatine.svg';
 import Default from '@/assets/avatars/loggy-poses/loggy-default.svg';
 import Drinking from '@/assets/avatars/loggy-poses/loggy-drinking.svg';
 import Flex from '@/assets/avatars/loggy-poses/loggy-flex.svg';
@@ -16,6 +17,7 @@ import Wave from '@/assets/avatars/loggy-poses/loggy-wave.svg';
 import Writing from '@/assets/avatars/loggy-poses/loggy-writing.svg';
 import { LoggyCelebratingAnimated } from '@/components/loggy/animated/LoggyCelebratingAnimated';
 import { LoggyCoffeeAnimated } from '@/components/loggy/animated/LoggyCoffeeAnimated';
+import { LoggyCreatineAnimated } from '@/components/loggy/animated/LoggyCreatineAnimated';
 import { LoggyDefaultAnimated } from '@/components/loggy/animated/LoggyDefaultAnimated';
 import { LoggyDrinkingAnimated } from '@/components/loggy/animated/LoggyDrinkingAnimated';
 import { LoggyFlexAnimated } from '@/components/loggy/animated/LoggyFlexAnimated';
@@ -32,6 +34,7 @@ import { useSettings } from '@/hooks/useSettings';
 export type LoggyPoseName =
   | 'celebrating'
   | 'coffee'
+  | 'creatine'
   | 'default'
   | 'drinking'
   | 'flex'
@@ -56,6 +59,7 @@ export type LoggyPoseName =
 const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: number }> = {
   celebrating: { Art: Celebrating, aspect: 0.875 },
   coffee: { Art: Coffee, aspect: 0.859 },
+  creatine: { Art: Creatine, aspect: 0.8 },
   default: { Art: Default, aspect: 0.8 },
   drinking: { Art: Drinking, aspect: 0.844 },
   flex: { Art: Flex, aspect: 0.8 },
@@ -75,6 +79,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
 const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   celebrating: LoggyCelebratingAnimated,
   coffee: LoggyCoffeeAnimated,
+  creatine: LoggyCreatineAnimated,
   default: LoggyDefaultAnimated,
   drinking: LoggyDrinkingAnimated,
   flex: LoggyFlexAnimated,
