@@ -3,8 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { LoggyPose } from '@/components/LoggyPose';
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
+
+const WELCOME_POSE_HEIGHT = 128;
 
 const POINTS: readonly { key: string; icon: LucideIcon; textKey: string }[] = [
   { key: 'training', icon: Dumbbell, textKey: 'weeklyReview.welcome.training' },
@@ -35,6 +38,10 @@ export function WeeklyReviewWelcome({
       footer={<Button label={t('weeklyReview.welcome.cta')} width="full" onPress={onClose} />}
     >
       <View className="gap-4 pb-4" testID="weekly-review-welcome">
+        {/* Shown once, the first time a review has something in it: Loggy introduces the ritual. */}
+        <View className="items-center">
+          <LoggyPose pose="default" height={WELCOME_POSE_HEIGHT} />
+        </View>
         {POINTS.map(({ key, icon: Icon, textKey }) => (
           <View key={key} className="flex-row items-start gap-3">
             <View className="h-10 w-10 items-center justify-center rounded-control bg-accent-primary/10">

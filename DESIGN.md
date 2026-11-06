@@ -464,11 +464,39 @@ subtitle.
   empty state is the screen and its button is that screen's one primary action. When the empty
   state is the whole screen (Notes), pass `bare` so there is no card around the only thing on the
   page.
-- Loggy (`components/LoggyPose.tsx`) marks a moment, not a list. He belongs on an outcome or a
-  one-question step that would otherwise be a lone sentence (an import's start, result or failure,
-  a year with nothing in it) and on the year story, where each pose is that page's joke: the
-  longest run is `running`, the busiest month is `panic`. He never praises and never sits in an
-  ordinary empty list. Pick the pose for the situation, and let one screen show him once.
+- **Loggy (`components/LoggyPose.tsx`) marks a moment, not a list.** A mascot on every screen stops
+  meaning anything, so every appearance is on a short list and
+  `components/__tests__/loggyPlacement.test.ts` holds that list: adding a screen to it is a design
+  decision, written here first. One screen shows him once, and he arrives with a reason:
+  - **Outcomes and one-question steps** that would otherwise be a lone sentence: an import's start,
+    result or failure, a year with nothing in it, the year story (each pose is that page's joke:
+    the longest run is `running`, the busiest month is `panic`).
+  - **Beginnings.** The onboarding landing (`wave`, in place of the app mark the splash already
+    showed), the last setup step (`flex`), the first page of What's new (`wave`; later pages keep
+    their icons) and the one-time Weekly Review welcome (`default`).
+  - **Finishing a workout** (`celebrating`, in place of the trophy). The confetti on that screen
+    brings no second Loggy (`ConfettiOverlay withLoggy={false}`).
+  - **Once-ever firsts** (first meal, workout, goal, `ConfettiActivity`): `ConfettiOverlay` shows a
+    `LoggyCameo` that pops in where the confetti bursts (40% down, clear of the tab bar and any
+    Save button) for about three seconds and leaves; it ignores touches. Never on
+    a surface the coach persona owns (`FullScreenModal confettiWithLoggy={false}` in `CoachModal`),
+    or someone who picked Sherlock sees Loggy in their chat.
+  - **A welcome back.** Only the offer on `ComebackCard` (`coffee`). The running ramp and the
+    stalled card stay plain: a face there reads as being watched, and a lapse never gets a sad or
+    disappointed Loggy. From 1 December to 31 January the offer is plain too, because Home's year
+    card sits right below it with its own Loggy and one screen shows him once.
+  - **A whole-screen first use**: `EmptyStateCard` takes a `pose` only in its `bare` form (Notes,
+    the empty workout library), where he stands in for the icon and leaves when the first item
+    appears. The type refuses a pose on the carded form. An empty list inside a card keeps its icon.
+  - **A recoverable failure** uses `LOGGY_FAILURE_POSE`, never `panic`: a wrong file is not an
+    emergency. It is `thinking` until a puzzled pose is drawn, and then one line changes.
+  - **Never** on the coach (the persona owns that avatar), cycle tracking, app locks, weight, body
+    fat or calorie-target screens, settings, destructive confirmations, the live workout session
+    or a permanent card such as the strength levels (a flexing Loggy beside a Novice grade reads as
+    a taunt). Never in a notification.
+  - **He never praises or scolds in words.** The pose may be cheerful on an outcome; the copy next
+    to it states a fact. The import is already the densest place (four of its five steps), so it
+    gets no more.
 - A dashed outline means "add another item to this list": the button at the end of any list the
   user appends to (meals in the food diary, exercises, sets, ingredients, portions, past periods),
   whether the list is empty or full. Use `Button variant="dashed"` (`DashedButton` where it already
@@ -476,8 +504,8 @@ subtitle.
 - No colored shadow either: selection, focus and completion are a fill, a border or an icon, never a
   halo (`shadowColor` only takes the neutral shadow tokens; `deslopGuards.test.ts` enforces it).
 - No decoration that conveys nothing: no background blobs or blurred glows, no floating icon
-  clusters around an illustration, no gradient icon tiles. Onboarding shows the real app mark
-  (`assets/logo.png`), not a placeholder glyph.
+  clusters around an illustration, no gradient icon tiles. The onboarding landing shows Loggy waving
+  (the splash screen carries the app mark), not a placeholder glyph.
 - App-owned visuals are Lucide icons, never emoji: moods, equipment, source headings and the notes
   marker are icons sized and tinted from theme tokens, and data strings (such as an exercise row's
   description) stay plain text, with a flag like `hasNotes` telling the UI which icon to draw.

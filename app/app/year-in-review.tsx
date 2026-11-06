@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, type LayoutChangeEvent, Pressable, Text, View } from 'react-native';
 
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
-import { LoggyPose } from '@/components/LoggyPose';
+import { LOGGY_FAILURE_POSE, LoggyPose, type LoggyPoseName } from '@/components/LoggyPose';
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import { IconButton } from '@/components/theme/IconButton';
@@ -128,7 +128,7 @@ export default function YearInReviewScreen() {
           ) : null}
           {loadFailed ? (
             <YearMessage
-              pose="panic"
+              pose={LOGGY_FAILURE_POSE}
               message={t('yearInReview.loadFailed')}
               actionLabel={t('yearInReview.retry')}
               onAction={() => {
@@ -261,7 +261,7 @@ export default function YearInReviewScreen() {
 }
 
 type YearMessageProps = {
-  pose: 'magnify' | 'panic';
+  pose: LoggyPoseName;
   message: string;
   actionLabel?: string;
   onAction: () => void;

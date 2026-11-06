@@ -28,6 +28,11 @@ type FullScreenModalProps = {
   closable?: boolean;
   scrollViewRef?: RefObject<KeyboardAwareScrollViewRef | null>;
   showConfetti?: boolean;
+  /**
+   * Whether Loggy pops in with the confetti. `false` on a surface the coach persona owns: someone who
+   * picked Sherlock must not see Loggy appear in their chat.
+   */
+  confettiWithLoggy?: boolean;
 };
 
 export function FullScreenModal({
@@ -44,6 +49,7 @@ export function FullScreenModal({
   closable = true,
   scrollViewRef,
   showConfetti = false,
+  confettiWithLoggy = true,
 }: FullScreenModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -164,7 +170,7 @@ export function FullScreenModal({
           </View>
         </SwipeToReturnWrapper>
       </SafeAreaView>
-      {showConfetti ? <ConfettiOverlay /> : null}
+      {showConfetti ? <ConfettiOverlay withLoggy={confettiWithLoggy} /> : null}
     </Modal>
   );
 }

@@ -8,9 +8,11 @@ import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './cards/GenericCard';
 import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
+import { LoggyPose } from './LoggyPose';
 import { Button } from './theme/Button';
 import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
-import { WorkoutSummaryTrophy } from './WorkoutSummaryTrophy';
+
+const SUMMARY_POSE_HEIGHT = 176;
 
 type WorkoutSummaryCelebrationProps = {
   children?: ReactNode;
@@ -74,7 +76,10 @@ export function WorkoutSummaryCelebration({
         ]}
       >
         <View className="flex-1 items-center justify-center px-6 py-8">
-          <WorkoutSummaryTrophy />
+          {/* The finished workout's face. The confetti above it brings no second Loggy. */}
+          <View className="mb-6">
+            <LoggyPose pose="celebrating" height={SUMMARY_POSE_HEIGHT} />
+          </View>
           <WorkoutSummaryHeader />
           <WorkoutSummaryStatsCard
             totalTime={totalTime}

@@ -133,22 +133,27 @@ export function WorkoutLibraryContent({
   if (resultCount === 0) {
     return (
       <>
-        <EmptyStateCard
-          icon={hasSearchQuery ? Search : Dumbbell}
-          title={hasSearchQuery ? t('workouts.noSearchResults') : t('emptyStates.workouts.title')}
-          description={
-            hasSearchQuery
-              ? t('workouts.noSearchResultsDescription', { query: searchQuery })
-              : t('emptyStates.workouts.description')
-          }
-          buttonLabel={
-            hasSearchQuery
-              ? t('workouts.noSearchResultsButtonLabel')
-              : t('emptyStates.workouts.buttonLabel')
-          }
-          buttonVariant={hasSearchQuery ? undefined : 'gradientCta'}
-          onButtonPress={hasSearchQuery ? onClearSearch : onCreateWorkout}
-        />
+        {hasSearchQuery ? (
+          <EmptyStateCard
+            icon={Search}
+            title={t('workouts.noSearchResults')}
+            description={t('workouts.noSearchResultsDescription', { query: searchQuery })}
+            buttonLabel={t('workouts.noSearchResultsButtonLabel')}
+            onButtonPress={onClearSearch}
+          />
+        ) : (
+          // First use: the library is the screen, so Loggy stands where the icon would.
+          <EmptyStateCard
+            icon={Dumbbell}
+            pose="default"
+            bare
+            title={t('emptyStates.workouts.title')}
+            description={t('emptyStates.workouts.description')}
+            buttonLabel={t('emptyStates.workouts.buttonLabel')}
+            buttonVariant="gradientCta"
+            onButtonPress={onCreateWorkout}
+          />
+        )}
         {createWorkoutButton}
       </>
     );

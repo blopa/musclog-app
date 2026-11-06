@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { LoggyPose } from '@/components/LoggyPose';
+import { LOGGY_FAILURE_POSE, LoggyPose } from '@/components/LoggyPose';
 import { StatStrip, type StatStripItem } from '@/components/StatStrip';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -53,12 +53,13 @@ export function ImportSavingView({ done, total }: { done: number; total: number 
 
 export function ImportFailedView({ failure }: { failure: ImportFailureKind }) {
   const { t } = useTranslation();
-  // Nothing new is good news: everything is already here, so Loggy can relax.
+  // Nothing new is good news: everything is already here, so Loggy can relax. Every other failure
+  // is a file that did not fit, which is not an emergency, so he is puzzled, never in a panic.
   const nothingNew = failure === 'nothingNew';
 
   return (
     <View className="items-center gap-3 px-6 py-10">
-      <LoggyPose pose={nothingNew ? 'coffee' : 'panic'} height={OUTCOME_POSE_HEIGHT} />
+      <LoggyPose pose={nothingNew ? 'coffee' : LOGGY_FAILURE_POSE} height={OUTCOME_POSE_HEIGHT} />
       <Text className="mt-2 text-center text-2xl font-bold text-text-primary">
         {t(nothingNew ? 'workoutImport.failure.nothingNewTitle' : 'workoutImport.failure.title')}
       </Text>

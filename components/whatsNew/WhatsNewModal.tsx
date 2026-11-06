@@ -1,7 +1,6 @@
 import { X } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ScrollViewInstance } from 'react-native';
 import { AccessibilityInfo, ScrollView, Text, View } from 'react-native';
 
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
@@ -11,6 +10,7 @@ import { Button } from '@/components/theme/Button';
 import { IconButton } from '@/components/theme/IconButton';
 import { PageIndicators } from '@/components/theme/PageIndicators';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useScrollFade } from '@/hooks/useScrollFade';
 import { useSubModalState } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { useWhatsNewChoiceValues } from '@/hooks/useWhatsNewChoiceValues';
@@ -67,7 +67,9 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
   const [closing, setClosing] = useState(false);
   const [closeFailed, setCloseFailed] = useSubModalState(visible, false);
   const closingRef = useRef(false);
-  const scrollRef = useRef<ScrollViewInstance>(null);
+  // The tour can run past one screen (an upgrade across releases lists every page), so it shows
+  // a fade and a chevron while there is more below.
+  const { scrollProps, FadeIndicator, scrollRef } = useScrollFade();
   const choices = useWhatsNewChoiceValues(visible && activeAction === null);
   const busy = closing || Object.values(choices.saving).some(Boolean);
   const total = flow.pages.length + 1;
@@ -81,7 +83,7 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
       scrollRef.current?.scrollTo({ y: 0, animated: false });
       AccessibilityInfo.announceForAccessibility(pageLabel);
     }
-  }, [visible, pageIndex, pageLabel]);
+  }, [visible, pageIndex, pageLabel, scrollRef]);
 
   const dismiss = async (route?: WhatsNewRoute) => {
     if (closingRef.current || busy || activeAction !== null) {
@@ -147,21 +149,24 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
           onPress={() => void dismiss()}
         />
       </View>
-      <ScrollView
-        ref={scrollRef}
-        className="flex-1"
-        contentContainerStyle={{
-          flexGrow: 1,
-          padding: theme.spacing.padding.lg,
-          gap: theme.spacing.gap.xl,
-        }}
-      >
-        {pageIndex === 0 ? (
-          <WhatsNewIntro flow={flow} showHighlights={mode === 'upgrade'} />
-        ) : (
-          pageBlocks
-        )}
-      </ScrollView>
+      <View className="flex-1">
+        <ScrollView
+          {...scrollProps}
+          className="flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            padding: theme.spacing.padding.lg,
+            gap: theme.spacing.gap.xl,
+          }}
+        >
+          {pageIndex === 0 ? (
+            <WhatsNewIntro flow={flow} showHighlights={mode === 'upgrade'} />
+          ) : (
+            pageBlocks
+          )}
+        </ScrollView>
+        {FadeIndicator}
+      </View>
       <View className="gap-4 border-t border-border-light bg-bg-primary px-4 py-4">
         {closeFailed ? (
           <Text accessibilityRole="alert" className="text-sm text-status-error">

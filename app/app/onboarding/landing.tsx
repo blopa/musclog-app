@@ -2,9 +2,17 @@ import { useRouter } from 'expo-router';
 import { Bot, Download, Lock, ScanLine, Settings2, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Linking,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LoggyPose } from '@/components/LoggyPose';
 import { MasterLayout } from '@/components/MasterLayout';
 import { CenteredModal } from '@/components/modals/CenteredModal';
 import { OpticalReceiveModal } from '@/components/modals/OpticalReceiveModal';
@@ -23,11 +31,24 @@ import { handleError } from '@/utils/handleError';
 import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 
+/** The most Loggy takes, on a tall phone. */
+const LANDING_POSE_MAX_HEIGHT = 152;
+/** Below this he reads as a smudge, so a short phone gets no Loggy rather than a tiny one. */
+const LANDING_POSE_MIN_HEIGHT = 88;
+/**
+ * What the rest of the screen needs: the three setup buttons and their notes, the title block and
+ * its padding. The hero is a flex child with no scroll, so a pose taller than what is left pushes
+ * the description under the buttons (it did on a 640pt phone, with the old 96pt logo too).
+ */
+const LANDING_RESERVED_HEIGHT = 640;
+
 export default function LandingScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
+  const { height: windowHeight } = useWindowDimensions();
+  const poseHeight = Math.min(LANDING_POSE_MAX_HEIGHT, windowHeight - LANDING_RESERVED_HEIGHT);
   const getInitStatusText = () => {
     if (initPhase === 'migrating' && initStep) {
       return t('onboarding.landing.migratingStep', {
@@ -173,13 +194,10 @@ export default function LandingScreen() {
 
           {/* Hero Section */}
           <View className="flex-1 items-center justify-center gap-8 py-6">
-            {/* The app's own mark, the same one the splash screen shows. */}
-            <Image
-              source={require('@/assets/logo.png')}
-              accessibilityIgnoresInvertColors
-              style={{ width: theme.size['96'], height: theme.size['96'] }}
-              resizeMode="contain"
-            />
+            {/* The splash screen already showed the app's mark; this is where Loggy says hello. */}
+            {poseHeight >= LANDING_POSE_MIN_HEIGHT ? (
+              <LoggyPose pose="wave" height={poseHeight} />
+            ) : null}
 
             {/* Typography Section */}
             <View className="mt-4 items-center gap-2">

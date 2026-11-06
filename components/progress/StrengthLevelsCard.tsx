@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
-import { LoggyPose } from '@/components/LoggyPose';
 import {
   StrengthHowItWorks,
   StrengthLevelSummary,
@@ -14,7 +13,6 @@ import { STRENGTH_GRADED_EXERCISE_IDS } from '@/utils/strengthGradedLifts';
 import { STRENGTH_LEVELS } from '@/utils/strengthLevel';
 
 const GRADED_IDS = [...STRENGTH_GRADED_EXERCISE_IDS];
-const HEADER_POSE_HEIGHT = 72;
 
 /** Strongest level first; within a level, the higher relative strength first. */
 function strongestFirst(a: ExerciseStrengthGrade, b: ExerciseStrengthGrade): number {
@@ -44,12 +42,9 @@ export function StrengthLevelsCard() {
   return (
     <GenericCard variant="flat">
       <View className="gap-4 p-4">
-        <View className="flex-row items-center justify-between gap-3">
-          <Text className="min-w-0 flex-1 text-lg font-semibold text-text-primary">
-            {t('strengthLevels.title')}
-          </Text>
-          <LoggyPose pose="flex" height={HEADER_POSE_HEIGHT} />
-        </View>
+        {/* No mascot here: this card is a permanent part of Progress, and a flexing Loggy beside a
+            Novice grade reads as a taunt. He belongs to moments, not to a list. */}
+        <Text className="text-lg font-semibold text-text-primary">{t('strengthLevels.title')}</Text>
         {rows.length === 0 ? (
           <Text className="text-base text-text-secondary">{t('strengthLevels.addWeighIn')}</Text>
         ) : (

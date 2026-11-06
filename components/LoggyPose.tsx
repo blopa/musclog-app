@@ -29,6 +29,14 @@ const POSES: Record<LoggyPoseName, { source: ImageSourcePropType; aspect: number
   writing: { source: require('../assets/avatars/loggy-poses/loggy-writing.png'), aspect: 0.8 },
 };
 
+/**
+ * The pose for a recoverable failure (a file that would not import, a screen that failed to load).
+ * `panic` is an alarm and these are not emergencies: it stays on the year story's busiest month.
+ * `thinking` is the calm stand-in until a puzzled or apologetic pose is drawn, and then this one
+ * line is the only thing to change.
+ */
+export const LOGGY_FAILURE_POSE: LoggyPoseName = 'thinking';
+
 type LoggyPoseProps = {
   pose: LoggyPoseName;
   height: number;

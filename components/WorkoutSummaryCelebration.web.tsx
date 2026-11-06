@@ -1,18 +1,12 @@
-import {
-  Dumbbell,
-  Flame,
-  Home,
-  MessageCircle,
-  Star,
-  Timer,
-  TrendingUp,
-  Trophy,
-} from 'lucide-react-native';
+import { Dumbbell, Flame, Home, MessageCircle, Star, Timer, TrendingUp } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { LoggyPose } from '@/components/LoggyPose';
 import { useTheme } from '@/hooks/useTheme';
 import { splitDurationLabel } from '@/utils/workout';
+
+const SUMMARY_POSE_HEIGHT = 176;
 
 type WorkoutSummaryCelebrationProps = {
   children?: ReactNode;
@@ -134,49 +128,9 @@ export function WorkoutSummaryCelebration({
         boxSizing: 'border-box',
       }}
     >
-      {/* Trophy */}
-      <div style={{ position: 'relative', marginBottom: 32 }}>
-        <div
-          style={{
-            width: 128,
-            height: 128,
-            borderRadius: 64,
-            border: `1px solid ${theme.colors.background.ink5}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            overflow: 'hidden',
-            background: `linear-gradient(135deg, ${theme.colors.status.indigo10}, ${theme.colors.status.brandVivid10})`,
-          }}
-        >
-          <Trophy
-            size={theme.size['16']}
-            color={theme.colors.accent.primary}
-            strokeWidth={theme.strokeWidth.medium}
-          />
-        </div>
-        <div style={{ position: 'absolute', top: -8, right: -8 }}>
-          <Star
-            size={theme.iconSize.lg}
-            color={theme.colors.status.amber}
-            fill={theme.colors.status.amber}
-          />
-        </div>
-        <div style={{ position: 'absolute', bottom: -4, left: -16 }}>
-          <Star
-            size={theme.iconSize.md}
-            color={theme.colors.accent.primary}
-            fill={theme.colors.accent.primary}
-          />
-        </div>
-        <div style={{ position: 'absolute', top: 0, left: -8 }}>
-          <Star
-            size={theme.iconSize.sm}
-            color={theme.colors.status.indigoLight}
-            fill={theme.colors.status.indigoLight}
-          />
-        </div>
+      {/* The finished workout's face, in place of the trophy and its three stars. */}
+      <div style={{ marginBottom: 24 }}>
+        <LoggyPose pose="celebrating" height={SUMMARY_POSE_HEIGHT} />
       </div>
 
       {/* Title */}

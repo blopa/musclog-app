@@ -1,15 +1,16 @@
-import { Megaphone } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { LoggyPose } from '@/components/LoggyPose';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { pageHeadlineDetailKeys, pageHeadlineKey, type WhatsNewFlow } from '@/utils/whatsNew/flow';
 
-import { WhatsNewIconBadge } from './WhatsNewIconBadge';
+/** Modest on purpose: an upgrade intro already runs past one screen. */
+const INTRO_POSE_HEIGHT = 144;
 
 /**
- * The tour's first page. It is centred in the space the footer leaves, leads with a large icon and
+ * The tour's first page. It is centred in the space the footer leaves, leads with Loggy waving and
  * larger type than the pages after it, and — for an upgrade — lists what the pages cover, so the
  * person knows what the tour holds before choosing to take it or skip it.
  */
@@ -33,7 +34,8 @@ export function WhatsNewIntro({
   return (
     <View className="flex-1 justify-center gap-6 py-6">
       <View className="items-center gap-5">
-        <WhatsNewIconBadge icon={Megaphone} size="hero" />
+        {/* Loggy opens the tour, and only the first page: every later page keeps its own icon. */}
+        <LoggyPose pose="wave" height={INTRO_POSE_HEIGHT} />
         <Text
           accessibilityRole="header"
           className="text-center text-4xl font-bold text-text-primary"

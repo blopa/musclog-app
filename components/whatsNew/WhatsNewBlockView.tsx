@@ -33,7 +33,7 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
       const Icon = block.icon ? whatsNewIcons[block.icon] : null;
       return (
         <View className="gap-4">
-          {Icon ? <WhatsNewIconBadge icon={Icon} size="page" /> : null}
+          {Icon ? <WhatsNewIconBadge icon={Icon} /> : null}
           <Text accessibilityRole="header" className="text-2xl font-bold text-text-primary">
             {t(block.titleKey)}
           </Text>

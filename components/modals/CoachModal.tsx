@@ -1380,6 +1380,7 @@ export function CoachModal({
       headerRight={headerRight}
       scrollable={false}
       showConfetti={showConfetti}
+      confettiWithLoggy={false}
     >
       <View className="flex-1 bg-bg-primary">
         <View
