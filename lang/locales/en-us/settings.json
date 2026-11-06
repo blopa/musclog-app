@@ -345,6 +345,14 @@
       "fiber": "Fiber",
       "alcohol": "Alcohol"
     },
+    "loggy": {
+      "sectionTitle": "Loggy",
+      "sectionSubtitle": "Choose how the mascot appears.",
+      "animated": {
+        "title": "Animated Loggy",
+        "description": "Loggy moves a little when he shows up. Turn off to always see him standing still."
+      }
+    },
     "foodDiary": {
       "sectionTitle": "Food diary",
       "sectionSubtitle": "Choose how the food diary is laid out and grouped.",

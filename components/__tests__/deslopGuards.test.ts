@@ -347,8 +347,8 @@ describe('Phase 5: Home and the hero surfaces', () => {
 
 /**
  * Phase 6: motion and decoration have to carry information. The loops left are progress spinners
- * (rotation, on the native driver) and the animated Loggy's clock (`LoggyPose animated`, opt-in per
- * use and drawn as the still under reduced motion); TextInput's border colour cannot use the
+ * (rotation, on the native driver) and the animated Loggy's clock (`LoggyPose`, following the
+ * `animated_loggy` setting and drawn as the still under reduced motion); TextInput's border colour cannot use the
  * native driver, which is why it is the one JS-driven animation.
  */
 const ANIMATED_LOOP_ALLOWLIST = [

@@ -82,7 +82,7 @@ export function YearShareCard({ captureRef, fields, units }: Props) {
       testID="year-share-card"
     >
       <View style={{ bottom: -4, position: 'absolute', right: -10 }}>
-        <LoggyPose pose="flex" height={POSE_HEIGHT} />
+        <LoggyPose pose="flex" height={POSE_HEIGHT} animated={false} />
       </View>
 
       <Text

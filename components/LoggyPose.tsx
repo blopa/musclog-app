@@ -25,6 +25,7 @@ import { LoggyWaveAnimated } from '@/components/loggy/animated/LoggyWaveAnimated
 import { LoggyWritingAnimated } from '@/components/loggy/animated/LoggyWritingAnimated';
 import type { LoggyAnimatedPose } from '@/components/loggy/LoggyLayer';
 import { useLoggyClock } from '@/components/loggy/useLoggyClock';
+import { useSettings } from '@/hooks/useSettings';
 
 export type LoggyPoseName =
   | 'celebrating'
@@ -87,8 +88,9 @@ export const LOGGY_FAILURE_POSE: LoggyPoseName = 'thinking';
 
 type LoggyPoseProps = {
   /**
-   * Loops the pose's idle motion. Off by default, since a mascot that moves everywhere is noise;
-   * ignored (the still is drawn) when the system asks for reduced motion.
+   * Loops the pose's idle motion. Left out, it follows the "Animated Loggy" setting (on by
+   * default); `true`/`false` force it either way (the test screen, the share image). Either way the
+   * still is drawn when the system asks for reduced motion.
    */
   animated?: boolean;
   pose: LoggyPoseName;
@@ -125,12 +127,14 @@ function AnimatedLoggy({
 }
 
 /** The mascot at a given height. Always decorative: the words around it carry the meaning. */
-export function LoggyPose({ pose, height, animated = false }: LoggyPoseProps) {
+export function LoggyPose({ pose, height, animated }: LoggyPoseProps) {
   const reduceMotion = useReducedMotion();
+  const { animatedLoggy } = useSettings();
+  const shouldAnimate = animated ?? animatedLoggy;
   const { Art, aspect } = POSES[pose];
   const width = height * aspect;
 
-  if (animated && !reduceMotion) {
+  if (shouldAnimate && !reduceMotion) {
     return <AnimatedLoggy pose={pose} height={height} width={width} />;
   }
 

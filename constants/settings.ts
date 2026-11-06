@@ -506,6 +506,12 @@ export const HOME_HEATMAP_LAYOUT_SETTING_TYPE = 'home_heatmap_layout';
  */
 export const HEALTH_NUTRITION_TAKEOVERS_SETTING_TYPE = 'health_nutrition_takeovers';
 
+/**
+ * Setting type for whether Loggy moves. value: 'true' | 'false'. Default: on. Off draws every pose
+ * as the still; the system's reduced-motion setting always wins over it.
+ */
+export const ANIMATED_LOGGY_SETTING_TYPE = 'animated_loggy';
+
 /** Setting type for the dense food diary layout. value: 'true' | 'false'. Default: off. */
 export const FOOD_DIARY_COMPACT_SETTING_TYPE = 'food_diary_compact';
 
@@ -716,6 +722,7 @@ export type UseSettingsResult = {
   homeHeatmapLayout: HomeHeatmapLayout;
   showHomeSteps: boolean;
   foodDiaryCompact: boolean;
+  animatedLoggy: boolean;
   foodDiaryGrouping: FoodDiaryGrouping;
 };
 

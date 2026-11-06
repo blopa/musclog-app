@@ -31,7 +31,7 @@ export default function LoggyTestScreen() {
             <View key={pose} className="gap-2" testID={`loggy-${pose}`}>
               <Text className="text-base font-semibold text-text-primary">{pose}</Text>
               <View className="flex-row items-end gap-6">
-                <LoggyPose pose={pose} height={180} />
+                <LoggyPose pose={pose} height={180} animated={false} />
                 <LoggyPose pose={pose} height={180} animated />
               </View>
               <View style={{ height: 1, backgroundColor: theme.colors.border.light }} />

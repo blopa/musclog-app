@@ -8,6 +8,7 @@ import {
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
+  ANIMATED_LOGGY_SETTING_TYPE,
   APP_LOCK_SCOPES_SETTING_TYPE,
   type AppLockScope,
   AUTO_START_REST_TIMER_SETTING_TYPE,
@@ -168,6 +169,7 @@ export const SETTINGS = {
     parseHomeHeatmapLayout
   ),
   foodDiaryCompact: booleanSetting(FOOD_DIARY_COMPACT_SETTING_TYPE, false),
+  animatedLoggy: booleanSetting(ANIMATED_LOGGY_SETTING_TYPE, true),
   foodDiaryGrouping: choiceSetting<FoodDiaryGrouping>(
     FOOD_DIARY_GROUPING_SETTING_TYPE,
     parseFoodDiaryGrouping

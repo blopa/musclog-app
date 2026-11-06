@@ -345,6 +345,14 @@
       "fiber": "Fibra",
       "alcohol": "Alcohol"
     },
+    "loggy": {
+      "sectionTitle": "Loggy",
+      "sectionSubtitle": "Elige cómo aparece la mascota.",
+      "animated": {
+        "title": "Loggy animado",
+        "description": "Loggy se mueve un poco cuando aparece. Desactívalo para verlo siempre quieto."
+      }
+    },
     "foodDiary": {
       "sectionTitle": "Diario de comidas",
       "sectionSubtitle": "Elige cómo se organiza y agrupa el diario de comidas.",

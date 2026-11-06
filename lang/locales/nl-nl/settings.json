@@ -345,6 +345,14 @@
       "fiber": "Vezels",
       "alcohol": "Alcohol"
     },
+    "loggy": {
+      "sectionTitle": "Loggy",
+      "sectionSubtitle": "Kies hoe de mascotte verschijnt.",
+      "animated": {
+        "title": "Geanimeerde Loggy",
+        "description": "Loggy beweegt een beetje als hij verschijnt. Zet uit om hem altijd stilstaand te zien."
+      }
+    },
     "foodDiary": {
       "sectionTitle": "Voedingsdagboek",
       "sectionSubtitle": "Kies hoe het voedingsdagboek wordt opgebouwd en gegroepeerd.",
