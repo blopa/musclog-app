@@ -10,9 +10,11 @@
     },
     "rangeLabel": "{{lower}} tot {{upper}}",
     "otherNote": "Getoond op de schaal voor mannen en die voor vrouwen, omdat geen enkele tabel goed past.",
-    "nextLevel": "Volgend niveau bij {{value}} {{unit}}",
     "addWeighIn": "Voeg een gewicht toe om krachtniveaus te zien.",
     "sourceNote": "Niveaus vergelijken je geschatte 1RM met je lichaamsgewicht. Het is een vuistregel van Musclog, getoetst aan openbare powerliftingresultaten van OpenPowerlifting.",
-    "sourceLink": "Website van OpenPowerlifting"
+    "sourceLink": "Website van OpenPowerlifting",
+    "estimated1rm": "Geschatte 1RM",
+    "toReach": "Voor {{level}}",
+    "howItWorks": "Hoe niveaus werken"
   }
 }

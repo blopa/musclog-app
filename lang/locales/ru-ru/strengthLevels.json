@@ -10,9 +10,11 @@
     },
     "rangeLabel": "от {{lower}} до {{upper}}",
     "otherNote": "Показано по мужской и женской шкале, потому что ни одна таблица не подходит целиком.",
-    "nextLevel": "Следующий уровень от {{value}} {{unit}}",
     "addWeighIn": "Добавьте запись веса, чтобы увидеть уровни силы.",
     "sourceNote": "Уровни сравнивают ваш расчётный 1RM с весом тела. Это практическое правило Musclog, проверенное по открытым результатам пауэрлифтинга OpenPowerlifting.",
-    "sourceLink": "Сайт OpenPowerlifting"
+    "sourceLink": "Сайт OpenPowerlifting",
+    "estimated1rm": "Расчётный 1RM",
+    "toReach": "До уровня «{{level}}»",
+    "howItWorks": "Как работают уровни"
   }
 }

@@ -30,6 +30,8 @@ type ThemeButtonProps = {
   className?: string;
   style?: React.CSSProperties;
   testID?: string;
+  /** What a screen reader says instead of the label, when the label needs its row for context. */
+  accessibilityLabel?: string;
 };
 
 function getWidthStyle(width: ThemeButtonWidth): React.CSSProperties {
@@ -116,6 +118,7 @@ export function Button({
   loading = false,
   style,
   testID,
+  accessibilityLabel,
 }: ThemeButtonProps) {
   const theme = useTheme();
   const config = getButtonMetrics(theme)[size];
@@ -157,6 +160,7 @@ export function Button({
 
   return (
     <button
+      aria-label={accessibilityLabel}
       onClick={isDisabled ? undefined : onPress}
       disabled={isDisabled}
       style={buttonStyle}

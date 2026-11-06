@@ -10,9 +10,11 @@
     },
     "rangeLabel": "{{lower}} a {{upper}}",
     "otherNote": "Se muestra en la escala masculina y en la femenina, porque ninguna tabla por sí sola encaja.",
-    "nextLevel": "Siguiente nivel a {{value}} {{unit}}",
     "addWeighIn": "Añade un pesaje para ver los niveles de fuerza.",
     "sourceNote": "Los niveles comparan tu 1RM estimado con tu peso corporal. Son una regla práctica de Musclog, contrastada con resultados públicos de powerlifting de OpenPowerlifting.",
-    "sourceLink": "Sitio web de OpenPowerlifting"
+    "sourceLink": "Sitio web de OpenPowerlifting",
+    "estimated1rm": "1RM estimado",
+    "toReach": "Para {{level}}",
+    "howItWorks": "Cómo funcionan los niveles"
   }
 }

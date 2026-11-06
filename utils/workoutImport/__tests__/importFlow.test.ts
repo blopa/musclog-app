@@ -2,6 +2,7 @@ import type { ExerciseMatch } from '../exerciseMatch';
 import {
   canSaveImport,
   defaultChoicesFor,
+  firstWeightedSet,
   importFlowReducer,
   INITIAL_IMPORT_FLOW,
   partitionSessions,
@@ -152,6 +153,22 @@ describe('importFlowReducer', () => {
     expect(canSaveImport(state)).toBe(false);
   });
 
+  it('puts a matched name back on its match when its choice is reset', () => {
+    let state = reviewed([session('a', ['Bench Press'])], [matched]);
+    const proposed = state.choices['Bench Press'];
+    state = importFlowReducer(state, {
+      type: 'choose',
+      name: 'Bench Press',
+      choice: { kind: 'skip' },
+    });
+
+    state = importFlowReducer(state, { type: 'clearChoice', name: 'Bench Press' });
+
+    // With no choice the commit would skip the name, and its sets would silently vanish.
+    expect(state.choices['Bench Press']).toEqual(proposed);
+    expect(resolutionsFor(state).get('Bench Press')?.kind).toBe('existing');
+  });
+
   it('enables save once each unmatched name is created or skipped', () => {
     let state = reviewed([session('a', ['Bench Press', 'Zercher Squat'])], [matched, unmatched]);
     state = importFlowReducer(state, {
@@ -269,5 +286,25 @@ describe('importFlowReducer', () => {
     expect(defaultChoicesFor([matched])).toEqual({
       [matched.name]: expect.objectContaining({ exerciseName: 'Barbell Bench Press' }),
     });
+  });
+});
+
+describe('firstWeightedSet', () => {
+  it('finds the first set with a weight, naming its exercise', () => {
+    const bodyweightFirst = session('a', ['Pull Up', 'Bench Press']);
+    bodyweightFirst.exercises[0].sets[0].weightKg = 0;
+
+    expect(firstWeightedSet([bodyweightFirst])).toEqual({
+      exerciseName: 'Bench Press',
+      weightKg: 60,
+      reps: 5,
+    });
+  });
+
+  it('is null for a file with no weighted set', () => {
+    const bodyweight = session('a', ['Pull Up']);
+    bodyweight.exercises[0].sets[0].weightKg = 0;
+
+    expect(firstWeightedSet([bodyweight])).toBeNull();
   });
 });

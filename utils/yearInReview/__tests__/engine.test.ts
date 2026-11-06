@@ -191,6 +191,7 @@ describe('buildYearInReview: empty year', () => {
       personalRecords: null,
       busiestMonth: null,
       favouriteTrainingTime: null,
+      trainingTimeCounts: null,
       mealsLogged: null,
       nutritionDaysLogged: null,
       weightChangeKg: null,
@@ -252,6 +253,7 @@ describe('buildYearInReview: imported sessions', () => {
 
     expect(result.sessions).toBe(8);
     expect(result.favouriteTrainingTime).toBe('morning');
+    expect(result.trainingTimeCounts?.morning).toBeGreaterThan(0);
   });
 
   it('needs the minimum number of timed sessions before naming a favourite time', () => {

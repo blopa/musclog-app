@@ -13,42 +13,33 @@
     "shareHint": "Both are off unless you turn them on. Without them the image has no body weight and no food figures.",
     "shareAction": "Share image",
     "intro": {
-      "title": "Your {{year}} in Musclog",
       "body": "Here is what your training and tracking looked like."
     },
     "sessions": {
       "title": "Workouts",
-      "body_one": "You finished {{n}} workout.",
-      "body_few": "You finished {{n}} workouts.",
-      "body_many": "You finished {{n}} workouts.",
-      "body_other": "You finished {{n}} workouts.",
-      "activeDays_one": "{{n}} active day",
-      "activeDays_few": "{{n}} active days",
-      "activeDays_many": "{{n}} active days",
-      "activeDays_other": "{{n}} active days"
+      "body_one": "workout finished",
+      "body_few": "workouts finished",
+      "body_many": "workouts finished",
+      "body_other": "workouts finished"
     },
     "heatmap": {
       "title": "Training days",
-      "describeDay_one": "{{n}} workout",
-      "describeDay_few": "{{n}} workouts",
-      "describeDay_many": "{{n}} workouts",
-      "describeDay_other": "{{n}} workouts",
-      "legendLess": "Fewer",
-      "legendMore": "More",
-      "scrollEarlier": "Earlier weeks",
-      "scrollLater": "Later weeks",
-      "summary": "Tap a square to see that day."
+      "days_one": "day trained",
+      "days_few": "days trained",
+      "days_many": "days trained",
+      "days_other": "days trained"
     },
     "streak": {
       "title": "Longest run",
-      "body_one": "{{n}} week in a row with a workout.",
-      "body_few": "{{n}} weeks in a row with a workout.",
-      "body_many": "{{n}} weeks in a row with a workout.",
-      "body_other": "{{n}} weeks in a row with a workout."
+      "body_one": "week in a row with a workout",
+      "body_few": "weeks in a row with a workout",
+      "body_many": "weeks in a row with a workout",
+      "body_other": "weeks in a row with a workout"
     },
     "volume": {
       "title": "Total lifted",
-      "body": "Weight times reps across your working sets."
+      "body": "Weight times reps across your working sets.",
+      "perWorkout": "{{unit}} per workout"
     },
     "topExercises": {
       "title": "Most trained",
@@ -59,10 +50,10 @@
     },
     "records": {
       "title": "Personal records",
-      "body_one": "{{n}} new personal record.",
-      "body_few": "{{n}} new personal records.",
-      "body_many": "{{n}} new personal records.",
-      "body_other": "{{n}} new personal records."
+      "body_one": "new personal record",
+      "body_few": "new personal records",
+      "body_many": "new personal records",
+      "body_other": "new personal records"
     },
     "busiestMonth": {
       "title": "Busiest month",
@@ -83,20 +74,25 @@
     },
     "nutrition": {
       "title": "Food logged",
-      "body": "Meals logged: {{meals}}. Days with food logged: {{days}}."
+      "meals_one": "meal logged",
+      "meals_few": "meals logged",
+      "meals_many": "meals logged",
+      "meals_other": "meals logged",
+      "days_one": "day with food logged",
+      "days_few": "days with food logged",
+      "days_many": "days with food logged",
+      "days_other": "days with food logged"
     },
     "weight": {
       "title": "Body weight",
-      "lost": "Down {{amount}} {{unit}} from your first weigh-in to your last.",
-      "gained": "Up {{amount}} {{unit}} from your first weigh-in to your last.",
-      "unchanged": "No change between your first and last weigh-in."
+      "unchanged": "No change between your first and last weigh-in.",
+      "caption": "From your first weigh-in to your last."
     },
     "outro": {
       "title": "That is the year",
       "body": "Keep logging to see next year’s story."
     },
     "share": {
-      "brand": "Musclog",
       "sessions": "Workouts",
       "activeDays": "Active days",
       "volume": "Total lifted",
@@ -118,6 +114,9 @@
     "notification": {
       "title": "Your {{year}} in Musclog is ready",
       "body": "See what your training looked like this year."
-    }
+    },
+    "loadFailed": "Your year couldn't be loaded.",
+    "retry": "Try again",
+    "seeYear": "See {{year}} so far"
   }
 }

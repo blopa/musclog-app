@@ -244,8 +244,16 @@ export function importFlowReducer(
     case 'choose':
       return { ...state, choices: { ...state.choices, [action.name]: action.choice } };
     case 'clearChoice': {
+      // Back to what the matcher proposed. A name left with no choice is skipped at commit, so a
+      // matched name must never end up without one or its sets would silently vanish.
       const choices = { ...state.choices };
-      delete choices[action.name];
+      const proposed = defaultChoicesFor(state.matches)[action.name];
+      if (proposed) {
+        choices[action.name] = proposed;
+      } else {
+        delete choices[action.name];
+      }
+
       return { ...state, choices };
     }
 
@@ -309,13 +317,19 @@ export function reviewSections(matches: readonly ExerciseMatch[]): ReviewSection
   };
 }
 
-/** The first weighted set in the file, in kg: the number the unit question is answered against. */
-export function firstWeightedSetKg(sessions: readonly ImportedSession[]): number | null {
+export interface FirstWeightedSet {
+  exerciseName: string;
+  weightKg: number;
+  reps: number;
+}
+
+/** The first weighted set in the file: the figure the unit question is answered against. */
+export function firstWeightedSet(sessions: readonly ImportedSession[]): FirstWeightedSet | null {
   for (const session of sessions) {
     for (const block of session.exercises) {
       const set = block.sets.find((candidate) => candidate.weightKg > 0);
       if (set) {
-        return set.weightKg;
+        return { exerciseName: block.name, weightKg: set.weightKg, reps: set.reps };
       }
     }
   }

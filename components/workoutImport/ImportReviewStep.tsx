@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 
+import { StatStrip, type StatStripItem } from '@/components/StatStrip';
 import { SectionLabel } from '@/components/theme/SectionLabel';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { ExerciseMatch } from '@/utils/workoutImport/exerciseMatch';
 import { type ExerciseChoice, reviewSections } from '@/utils/workoutImport/importFlow';
@@ -61,20 +63,55 @@ export function ImportReviewStep(props: ImportReviewStepProps) {
     return out;
   }, [needsChoice, matched]);
 
-  const unresolved = needsChoice.filter((match) => !props.choices[match.name]).length;
+  const [openRow, setOpenRow] = useState<string | null>(null);
+  const { formatInteger } = useFormatAppNumber();
 
+  const unresolved = needsChoice.filter((match) => !props.choices[match.name]).length;
+  const settled = props.matches.filter((match) => {
+    const choice = props.choices[match.name];
+    return choice !== undefined && choice.kind !== 'skip';
+  }).length;
   const skipReasons = [...new Set(props.skipped.map((row) => row.reason))];
 
+  const stat = (key: string, value: number, label: string, color?: string): StatStripItem => ({
+    key,
+    value: formatInteger(value),
+    label,
+    valueColor: color ?? theme.colors.text.primary,
+  });
+
+  const stats = [
+    stat('matched', settled, t('workoutImport.review.matched')),
+    stat(
+      'unresolved',
+      unresolved,
+      t('workoutImport.review.needsChoice'),
+      unresolved > 0 ? theme.colors.status.warning : undefined
+    ),
+    ...(props.alreadyHereCount > 0
+      ? [stat('here', props.alreadyHereCount, t('workoutImport.review.alreadyHereLabel'))]
+      : []),
+  ];
+
   const header = (
-    <View className="gap-2 px-4 py-4">
-      <Text className="text-lg font-semibold text-text-primary">
+    <View className="gap-4 px-4 pb-2 pt-4">
+      <Text className="text-2xl font-bold text-text-primary">
         {t('workoutImport.review.newSessions', { count: props.newCount })}
       </Text>
-      {props.alreadyHereCount > 0 ? (
-        <Text className="text-sm text-text-secondary">
-          {t('workoutImport.review.alreadyHere', { count: props.alreadyHereCount })}
-        </Text>
-      ) : null}
+      {props.loading ? (
+        <Text className="text-base text-text-secondary">{t('workoutImport.review.matching')}</Text>
+      ) : (
+        <StatStrip
+          size="lg"
+          items={stats}
+          palette={{
+            background: theme.colors.background.card,
+            border: theme.colors.border.light,
+            label: theme.colors.text.secondary,
+            unit: theme.colors.text.secondary,
+          }}
+        />
+      )}
       {props.skipped.length > 0 ? (
         <Text className="text-sm text-text-secondary">
           {t('workoutImport.review.rowsSkipped', { count: props.skipped.length })}{' '}
@@ -83,11 +120,6 @@ export function ImportReviewStep(props: ImportReviewStepProps) {
           })}
         </Text>
       ) : null}
-      {props.loading ? (
-        <Text className="text-sm text-text-secondary">{t('workoutImport.review.matching')}</Text>
-      ) : (
-        <UnresolvedNotice count={unresolved} />
-      )}
     </View>
   );
 
@@ -119,6 +151,8 @@ export function ImportReviewStep(props: ImportReviewStepProps) {
           <ImportReviewRow
             match={match}
             choice={props.choices[match.name]}
+            expanded={openRow === match.name}
+            onToggle={() => setOpenRow(openRow === match.name ? null : match.name)}
             onChoose={() => props.onChoose(match.name)}
             onCreate={() => props.onCreate(match.name)}
             onSkip={() => props.onSkip(match.name)}
@@ -128,18 +162,5 @@ export function ImportReviewStep(props: ImportReviewStepProps) {
         );
       }}
     />
-  );
-}
-
-function UnresolvedNotice({ count }: { count: number }) {
-  const { t } = useTranslation();
-  if (count === 0) {
-    return null;
-  }
-
-  return (
-    <Text className="text-sm font-semibold text-status-warning">
-      {t('workoutImport.review.unresolved', { count })}
-    </Text>
   );
 }

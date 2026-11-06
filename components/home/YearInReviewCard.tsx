@@ -4,13 +4,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { LoggyPose } from '@/components/LoggyPose';
 import { IconButton } from '@/components/theme/IconButton';
+import { LOGGY_PALETTE, POSTER_GROUNDS } from '@/constants/loggyPalette';
 import { SETTINGS } from '@/constants/settingDefinitions';
 import { YEAR_IN_REVIEW_ROUTE } from '@/constants/yearInReviewRoute';
 import { YearInReviewRepository } from '@/database/repositories/YearInReviewRepository';
 import { SettingsService } from '@/database/services/SettingsService';
 import { handleError } from '@/utils/handleError';
 import { yearReviewSeason } from '@/utils/yearInReview/season';
+
+const POSE_HEIGHT = 112;
 
 /**
  * Home's offer of the year-end review. It shows only in the season, only when the year has a
@@ -60,27 +64,38 @@ export function YearInReviewCard() {
 
   return (
     <View
-      className="flex-row items-center gap-3 rounded-card border border-border-light bg-bg-card p-4"
+      className="overflow-hidden rounded-card"
+      style={{ backgroundColor: POSTER_GROUNDS.yellow.background }}
       testID="year-in-review-card"
     >
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('yearInReview.homeCard.open')}
         onPress={() => router.push(`${YEAR_IN_REVIEW_ROUTE}?year=${offerYear}`)}
-        className="min-w-0 flex-1 gap-0.5 active:opacity-80"
+        className="flex-row items-end active:opacity-80"
       >
-        <Text className="text-base font-semibold text-text-primary">
-          {t('yearInReview.homeCard.title', { year: String(offerYear) })}
-        </Text>
-        <Text className="text-sm text-text-secondary">{t('yearInReview.homeCard.body')}</Text>
+        <View className="min-w-0 flex-1 gap-1 p-4">
+          <Text className="text-xl font-bold" style={{ color: LOGGY_PALETTE.ink }}>
+            {t('yearInReview.homeCard.title', { year: String(offerYear) })}
+          </Text>
+          <Text className="text-base" style={{ color: LOGGY_PALETTE.ink }}>
+            {t('yearInReview.homeCard.body')}
+          </Text>
+        </View>
+        <View className="-mb-1 mr-8">
+          <LoggyPose pose="wave" height={POSE_HEIGHT} />
+        </View>
       </Pressable>
-      <IconButton
-        icon={X}
-        variant="ghost"
-        size="sm"
-        accessibilityLabel={t('yearInReview.homeCard.dismiss')}
-        onPress={dismiss}
-      />
+      <View className="absolute right-1 top-1">
+        <IconButton
+          icon={X}
+          variant="ghost"
+          size="sm"
+          color={LOGGY_PALETTE.ink}
+          accessibilityLabel={t('yearInReview.homeCard.dismiss')}
+          onPress={dismiss}
+        />
+      </View>
     </View>
   );
 }

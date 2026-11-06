@@ -1,3 +1,4 @@
+import { Share2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -66,22 +67,35 @@ export function YearShareSheet({ visible, onClose, review, units, weightAvailabl
   ];
 
   return (
-    <BottomPopUp visible={visible} onClose={handleClose} title={t('yearInReview.shareSheetTitle')}>
-      <View className="gap-4 pb-4">
-        <View className="items-center">
-          <YearShareCard captureRef={captureRef} fields={fields} units={units} />
-        </View>
-        {toggles.length > 0 ? (
-          <ToggleInput items={toggles.map((toggle) => ({ ...toggle, disabled: isCapturing }))} />
-        ) : null}
-        <Text className="text-sm text-text-secondary">{t('yearInReview.shareHint')}</Text>
+    <BottomPopUp
+      visible={visible}
+      onClose={handleClose}
+      title={t('yearInReview.shareSheetTitle')}
+      // Pinned: the poster fills the sheet, and sharing is the reason it is open.
+      footer={
         <Button
           label={t('yearInReview.shareAction')}
+          icon={Share2}
           variant="accent"
-          size="md"
+          size="lg"
+          width="full"
           loading={isCapturing}
           onPress={() => void captureAndShare(`year-${review.year}`)}
         />
+      }
+    >
+      <View className="gap-4 pb-4">
+        <View className="items-center">
+          <View className="overflow-hidden rounded-card">
+            <YearShareCard captureRef={captureRef} fields={fields} units={units} />
+          </View>
+        </View>
+        {toggles.length > 0 ? (
+          <View className="gap-2">
+            <ToggleInput items={toggles.map((toggle) => ({ ...toggle, disabled: isCapturing }))} />
+            <Text className="text-sm text-text-secondary">{t('yearInReview.shareHint')}</Text>
+          </View>
+        ) : null}
       </View>
     </BottomPopUp>
   );

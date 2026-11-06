@@ -256,26 +256,41 @@ function busiestMonthOf(sessions: YearSession[]): YearInReview['busiestMonth'] {
   return best;
 }
 
-function favouriteTrainingTimeOf(sessions: YearSession[]): TrainingTimeBucket | null {
+/** Sessions per time-of-day bucket, or `null` below the number of timed sessions that makes a pattern. */
+function trainingTimeCountsOf(sessions: YearSession[]): Record<TrainingTimeBucket, number> | null {
   const timed = sessions.filter(({ workout }) => workout.timeKnown);
   if (timed.length < YEAR_REVIEW_MIN_TIMED_SESSIONS) {
     return null;
   }
 
-  const counts = new Map<TrainingTimeBucket, number>();
+  const counts: Record<TrainingTimeBucket, number> = {
+    morning: 0,
+    afternoon: 0,
+    evening: 0,
+    night: 0,
+  };
   for (const { workout } of timed) {
     const bucket = trainingTimeBucketForHour(
       localPartsOf(workout.startedAt, workout.timezone).hour
     );
-    counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+    counts[bucket] += 1;
+  }
+
+  return counts;
+}
+
+function favouriteTrainingTimeOf(
+  counts: Record<TrainingTimeBucket, number> | null
+): TrainingTimeBucket | null {
+  if (counts === null) {
+    return null;
   }
 
   let favourite: TrainingTimeBucket | null = null;
   let best = 0;
   for (const bucket of TRAINING_TIME_ORDER) {
-    const count = counts.get(bucket) ?? 0;
-    if (count > best) {
-      best = count;
+    if (counts[bucket] > best) {
+      best = counts[bucket];
       favourite = bucket;
     }
   }
@@ -348,6 +363,7 @@ export function buildYearInReview(input: YearInReviewInput): YearInReview {
   const weightChangeKg = weightChangeOf(input);
   const activeDayCount = activeDaySet.size;
   const nutritionDayCount = mealsByDay.size;
+  const trainingTimeCounts = trainingTimeCountsOf(sessions);
 
   const hasContent =
     sessionCount > 0 ||
@@ -367,7 +383,8 @@ export function buildYearInReview(input: YearInReviewInput): YearInReview {
     topExercises: sessions.length > 0 ? topExercisesOf(sessions) : [],
     personalRecords: prsInYear > 0 ? prsInYear : null,
     busiestMonth: busiestMonthOf(sessions),
-    favouriteTrainingTime: favouriteTrainingTimeOf(sessions),
+    favouriteTrainingTime: favouriteTrainingTimeOf(trainingTimeCounts),
+    trainingTimeCounts,
     mealsLogged: mealsLogged > 0 ? mealsLogged : null,
     nutritionDaysLogged: nutritionDayCount > 0 ? nutritionDayCount : null,
     weightChangeKg,

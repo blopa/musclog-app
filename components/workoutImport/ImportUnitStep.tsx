@@ -1,54 +1,70 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { ListRow } from '@/components/theme/ListRow';
+import { LoggyPose } from '@/components/LoggyPose';
+import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import type { FirstWeightedSet } from '@/utils/workoutImport/importFlow';
 import type { ImportWeightUnit } from '@/utils/workoutImport/types';
 
 type ImportUnitStepProps = {
   unit: ImportWeightUnit;
   onUnitChange: (unit: ImportWeightUnit) => void;
   /** The first weighted set, in kg as it would be stored under the chosen unit. */
-  firstWeightKg: number | null;
+  firstSet: FirstWeightedSet | null;
   units: Units;
 };
 
-export function ImportUnitStep({ unit, onUnitChange, firstWeightKg, units }: ImportUnitStepProps) {
+const POSE_HEIGHT = 168;
+
+/** One question, answered against a real number from the file so a wrong unit looks wrong. */
+export function ImportUnitStep({ unit, onUnitChange, firstSet, units }: ImportUnitStepProps) {
   const { t } = useTranslation();
-  const { formatDecimal } = useFormatAppNumber();
+  const { formatDecimal, formatInteger } = useFormatAppNumber();
 
   return (
-    <View className="gap-6 px-4 py-6">
-      <Text className="text-lg font-semibold text-text-primary">
-        {t('workoutImport.unit.message')}
-      </Text>
-
-      <View className="gap-3" accessibilityRole="radiogroup">
-        <ListRow
-          variant="card"
-          title={t('workoutImport.unit.kg')}
-          selected={unit === 'kg'}
-          onPress={() => onUnitChange('kg')}
-        />
-        <ListRow
-          variant="card"
-          title={t('workoutImport.unit.lb')}
-          selected={unit === 'lbs'}
-          onPress={() => onUnitChange('lbs')}
-        />
+    <View className="gap-6 px-4 py-4">
+      <View className="gap-2">
+        <Text className="text-2xl font-bold text-text-primary">
+          {t('workoutImport.unit.title')}
+        </Text>
+        <Text className="text-base text-text-secondary">{t('workoutImport.unit.message')}</Text>
       </View>
 
-      {firstWeightKg !== null ? (
-        <View className="rounded-card border border-border-light bg-bg-card p-4">
-          <Text className="text-base text-text-primary">
-            {t('workoutImport.unit.preview', {
-              value: formatDecimal(kgToDisplay(firstWeightKg, units), 1),
-              unit: t(getWeightUnitI18nKey(units)),
-            })}
-          </Text>
+      <SegmentedControl
+        value={unit}
+        onValueChange={(value) => onUnitChange(value as ImportWeightUnit)}
+        options={[
+          { label: t('workoutImport.unit.kg'), value: 'kg' },
+          { label: t('workoutImport.unit.lb'), value: 'lbs' },
+        ]}
+      />
+
+      {firstSet !== null ? (
+        <View className="flex-row items-end overflow-hidden rounded-card border border-border-light bg-bg-card">
+          <View className="min-w-0 flex-1 gap-1 p-4">
+            <Text className="text-base font-medium text-text-secondary">
+              {t('workoutImport.unit.previewTitle')}
+            </Text>
+            <Text className="text-4xl font-bold tabular-nums text-text-primary">
+              {`${formatDecimal(kgToDisplay(firstSet.weightKg, units), 1)} ${t(getWeightUnitI18nKey(units))}`}
+            </Text>
+            <Text className="text-base text-text-primary" numberOfLines={2}>
+              {firstSet.exerciseName}
+            </Text>
+            {firstSet.reps > 0 ? (
+              <Text className="text-base text-text-secondary">
+                {t('workoutImport.unit.reps', {
+                  count: firstSet.reps,
+                  n: formatInteger(firstSet.reps),
+                })}
+              </Text>
+            ) : null}
+          </View>
+          <LoggyPose pose="thinking" height={POSE_HEIGHT} />
         </View>
       ) : null}
     </View>

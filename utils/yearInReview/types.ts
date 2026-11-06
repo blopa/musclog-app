@@ -78,6 +78,8 @@ export interface YearInReview {
   /** Month index 0-11; ties go to the earlier month. */
   busiestMonth: { month: number; sessions: number } | null;
   favouriteTrainingTime: TrainingTimeBucket | null;
+  /** Sessions started in each bucket; `null` exactly when `favouriteTrainingTime` is. */
+  trainingTimeCounts: Record<TrainingTimeBucket, number> | null;
   /** Sum of meals across the year's logged days; `null` when zero. */
   mealsLogged: number | null;
   /** Days in the year with at least one logged meal; `null` when zero. */

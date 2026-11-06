@@ -12,8 +12,8 @@ import { GenericCard } from '@/components/cards/GenericCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
 import {
+  StrengthHowItWorks,
   StrengthLevelSummary,
-  StrengthSourceNote,
 } from '@/components/strength/StrengthLevelSummary';
 import { Button } from '@/components/theme/Button';
 import { ListGroup } from '@/components/theme/ListGroup';
@@ -669,8 +669,12 @@ export default function ViewExerciseModal({
               </Text>
               <GenericCard variant="flat">
                 <View className="gap-4 p-4">
-                  <StrengthLevelSummary exerciseId={exercise.id} grade={strengthGrade.grade} />
-                  <StrengthSourceNote />
+                  <StrengthLevelSummary
+                    exerciseId={exercise.id}
+                    grade={strengthGrade.grade}
+                    estimated1RmKg={strengthGrade.estimated1RmKg}
+                  />
+                  <StrengthHowItWorks />
                 </View>
               </GenericCard>
             </View>

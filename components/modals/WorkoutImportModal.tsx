@@ -22,7 +22,8 @@ import { handleError } from '@/utils/handleError';
 import {
   canSaveImport,
   type ExerciseChoice,
-  firstWeightedSetKg,
+  firstWeightedSet,
+  unresolvedNames,
 } from '@/utils/workoutImport/importFlow';
 
 import ExercisesModal, { type ExerciseData } from './ExercisesModal';
@@ -171,7 +172,7 @@ export function WorkoutImportModal({ visible, onClose }: WorkoutImportModalProps
           <ImportUnitStep
             unit={state.assumedWeightUnit}
             onUnitChange={(unit) => void flow.setAssumedUnit(unit)}
-            firstWeightKg={firstWeightedSetKg(state.newSessions)}
+            firstSet={firstWeightedSet(state.newSessions)}
             units={units}
           />
         );
@@ -231,11 +232,17 @@ export function WorkoutImportModal({ visible, onClose }: WorkoutImportModalProps
     }
 
     if (state.step === 'review') {
+      const unresolved = unresolvedNames(state).length;
       return (
         <View className="gap-2">
           {state.saveFailed ? <ImportSaveFailedNotice /> : null}
           <Button
-            label={t('workoutImport.review.importSessions', { count: state.newSessions.length })}
+            // A disabled button says what it is waiting for, right where the thumb is.
+            label={
+              unresolved > 0 && !state.matchesLoading
+                ? t('workoutImport.review.unresolved', { count: unresolved })
+                : t('workoutImport.review.importSessions', { count: state.newSessions.length })
+            }
             onPress={() => void handleSave()}
             disabled={!canSaveImport(state)}
             width="full"
@@ -257,13 +264,13 @@ export function WorkoutImportModal({ visible, onClose }: WorkoutImportModalProps
     if (state.step === 'summary' && state.summary) {
       const { batchId } = state.summary;
       return (
-        <View className="gap-3">
+        <View className="gap-1">
           <Button label={t('workoutImport.summary.done')} onPress={handleClose} width="full" />
-          <Button
+          <TextButton
             label={t('workoutImport.summary.undoThis')}
-            variant="outline"
+            tone="danger"
+            align="center"
             onPress={() => setPanel({ kind: 'undo', batchId })}
-            width="full"
           />
         </View>
       );

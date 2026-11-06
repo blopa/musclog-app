@@ -16,6 +16,7 @@ const REVIEW: YearInReview = {
   personalRecords: 3,
   busiestMonth: { month: 4, sessions: 7 },
   favouriteTrainingTime: 'evening',
+  trainingTimeCounts: { morning: 1, afternoon: 2, evening: 5, night: 0 },
   mealsLogged: 900,
   nutritionDaysLogged: 200,
   weightChangeKg: -4.2,

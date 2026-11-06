@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { LoggyPose } from '@/components/LoggyPose';
 import { ListGroup } from '@/components/theme/ListGroup';
 import { ListRow } from '@/components/theme/ListRow';
 import type { ImportBatch } from '@/database/services/WorkoutImportService';
@@ -14,11 +15,13 @@ type ImportPickStepProps = {
   onUndo: (batch: ImportBatch) => void;
 };
 
-/** Where to find each app's export: one line per app, whole keys only. */
+const HERO_POSE_HEIGHT = 156;
+
+/** Where to find each app's export: one row per app, whole keys only. */
 const EXPORT_HINTS = [
-  'workoutImport.pick.strongHint',
-  'workoutImport.pick.hevyHint',
-  'workoutImport.pick.fitnotesHint',
+  { app: 'Strong', hintKey: 'workoutImport.pick.strongHint' },
+  { app: 'Hevy', hintKey: 'workoutImport.pick.hevyHint' },
+  { app: 'FitNotes', hintKey: 'workoutImport.pick.fitnotesHint' },
 ] as const;
 
 /** The file and paste actions live in the modal footer, pinned where the thumb is. */
@@ -27,22 +30,36 @@ export function ImportPickStep({ batches, onUndo }: ImportPickStepProps) {
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
   return (
-    <View className="gap-6 px-4 py-6">
-      <Text className="text-lg font-semibold text-text-primary">
-        {t('workoutImport.pick.supportedApps')}
-      </Text>
+    <View className="gap-6 px-4 py-4">
+      <View className="flex-row items-center gap-2">
+        <View className="min-w-0 flex-1 gap-2">
+          <Text className="text-2xl font-bold text-text-primary">
+            {t('workoutImport.pick.title')}
+          </Text>
+          <Text className="text-base text-text-secondary">
+            {t('workoutImport.pick.supportedApps')}
+          </Text>
+        </View>
+        <LoggyPose pose="writing" height={HERO_POSE_HEIGHT} />
+      </View>
 
       <ListGroup title={t('workoutImport.pick.whereToFind')}>
-        {EXPORT_HINTS.map((key) => (
-          <ListRow key={key} variant="grouped" title={t(key)} trailing={null} />
+        {EXPORT_HINTS.map(({ app, hintKey }) => (
+          <View key={app} className="gap-0.5 px-4 py-3">
+            <Text className="text-base font-semibold text-text-primary">{app}</Text>
+            <Text className="text-base text-text-secondary">{t(hintKey)}</Text>
+          </View>
         ))}
       </ListGroup>
+
+      <Text className="text-base text-text-secondary">{t('workoutImport.pick.safety')}</Text>
 
       {batches.length > 0 ? (
         <ListGroup title={t('workoutImport.pick.past')}>
           {batches.map((batch) => (
             <ListRow
               key={batch.batchId}
+              variant="grouped"
               title={t('workoutImport.pick.pastEntry', {
                 source: IMPORT_SOURCE_NAMES[batch.source as WorkoutImportSource] ?? batch.source,
                 from: formatImportRange(locale, batch.firstStartedAt),

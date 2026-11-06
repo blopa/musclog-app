@@ -43,6 +43,14 @@ with `ThemeScope` from `context/ThemeContext.tsx`. A scope changes the context v
 variables together; do not add a second forced-theme context or hand-pick a parallel set of tokens.
 Components outside the viewfinder keep following the user's selected theme.
 
+Loggy is the other such surface. His artwork has fixed colors, like a photo, and a green log on an
+emerald or rose brand fill disappears, so anything built around him takes its ground from
+`LOGGY_PALETTE` (`constants/loggyPalette.ts`, the artwork's own colors) instead of the theme: the
+year story's posters, the share image and the Home offer. `POSTER_GROUNDS` lists each ground with
+the ink, highlight, mark and track drawn on it, and is held to AA in
+`constants/__tests__/loggyPalette.test.ts`. Keep it to those surfaces: the chrome around a poster
+(header, progress, buttons) still follows the theme.
+
 Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, never a literal
 white or the regular on-surface ink.
 
@@ -410,7 +418,8 @@ A row of small figures read side by side — today's energy under the home card,
 macros inside it — is always `components/StatStrip.tsx`: hairline-divided cells, the number first
 and its sentence-case label under it (`text-xs`, no tracking). The component reads no theme of its own; the caller passes a
 `StatStripPalette` so the same row works on a plain card and on the hero gradient. Do not draw a
-second variant of this row.
+second variant of this row. `size="lg"` (`2xl` figures, `sm` labels) is for a strip that is the
+screen's main read: an import's results, where a lift stands against its next level.
 
 On the hero gradient that palette's fill is `colorfulCard.panel`, the one translucent surface that
 sits on the gradient itself. It washes away from the card's ink — towards the scrim under light
@@ -447,6 +456,11 @@ subtitle.
   empty state is the screen and its button is that screen's one primary action. When the empty
   state is the whole screen (Notes), pass `bare` so there is no card around the only thing on the
   page.
+- Loggy (`components/LoggyPose.tsx`) marks a moment, not a list. He belongs on an outcome or a
+  one-question step that would otherwise be a lone sentence (an import's start, result or failure,
+  a year with nothing in it) and on the year story, where each pose is that page's joke: the
+  longest run is `running`, the busiest month is `panic`. He never praises and never sits in an
+  ordinary empty list. Pick the pose for the situation, and let one screen show him once.
 - A dashed outline means "add another item to this list": the button at the end of any list the
   user appends to (meals in the food diary, exercises, sets, ingredients, portions, past periods),
   whether the list is empty or full. Use `Button variant="dashed"` (`DashedButton` where it already
@@ -529,6 +543,23 @@ belongs in both the desktop nav bar and the burger menu.
 - Works in all themes: check Kinetic Light, Kinetic Shock, Kinetic Volt and Kinetic Blush, and confirm nothing
   relies on a literal `text-white` or an emerald-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.
+
+## Your year in Musclog
+
+The story is the one place the app is a poster instead of a tool, because it is the screen people
+screenshot. Each page is a flat ground from `POSTER_GROUNDS` filling the screen between the header
+and one row of controls (no bottom bar), with a title, one figure as large as the width allows
+(`fitFontSize`, up to 132pt) and Loggy standing in the corner, cut off slightly by the edge. A page
+has one figure, not a figure and a sentence repeating it: "7 / workouts finished", never "7 / You
+finished 7 workouts". Show the shape of the data when there is one (the year as twelve month grids
+that fit without scrolling, the weeks as bars with the longest run marked, the months as bars)
+rather than another number. Neighbouring pages change ground, so moving on reads as turning a page.
+Cards still state numbers: no invented comparisons, no praise, and a weight change is a plain sign,
+never "lost" or "gained".
+
+Tapping the poster moves on and tapping its left 30% goes back, but the buttons under it stay,
+because they are the way in for a screen reader. The last page's primary action is Share. The share
+image is its own poster at a fixed size, with type that ignores the device's font scale.
 
 ## Everyday progression and Weekly Review
 
