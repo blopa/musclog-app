@@ -80,32 +80,43 @@ export function WeeklyReviewCard({
     );
   }
 
-  // A review that is waiting gets one accent signal, the icon and the status words. It used to
-  // stack a border, a tinted fill, a solid icon chip and a solid badge, which made it as loud as
-  // the primary actions above it.
+  // A review that is waiting is deliberately loud: accent border, tinted fill, solid icon chip and
+  // solid status badge. It is a once-a-week call to action, and the accent frame is what makes it
+  // read as "something is due" rather than another row. A deslop pass flattened it once and the
+  // owner asked for it back, so deslopGuards.test.ts pins it. Do not strip it again.
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`${t('weeklyReview.title')}, ${statusLabel}`}
       onPress={() => router.push(WEEKLY_REVIEW_ROUTE)}
-      className={`flex-row items-center gap-3 rounded-card border border-border-light bg-bg-card active:opacity-70 ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
+      className={`flex-row items-center gap-3 rounded-card border active:opacity-70 ${ready ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'} ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
       testID="weekly-review-entry"
     >
-      <Icon
-        size={compact ? theme.iconSize.md : theme.iconSize.lg}
-        color={ready ? theme.colors.accent.primary : theme.colors.text.secondary}
-      />
-      <View className="min-w-0 flex-1 gap-0.5">
+      <View
+        className={`items-center justify-center rounded-control ${ready ? 'bg-accent-primary' : 'bg-bg-overlay'} ${compact ? 'h-9 w-9' : 'h-11 w-11'}`}
+      >
+        <Icon
+          size={compact ? theme.iconSize.sm : theme.iconSize.md}
+          color={ready ? theme.colors.text.onAccent : theme.colors.text.secondary}
+        />
+      </View>
+      <View className="min-w-0 flex-1 gap-1">
         <Text className={`font-semibold text-text-primary ${compact ? 'text-sm' : 'text-base'}`}>
           {t('weeklyReview.title')}
         </Text>
-        {/* The status and the week it refers to share one line. */}
+        {/* Status as its own badge on the second line: beside the title it ran into it, and in
+            compact mode the week it refers to was not shown at all. */}
         <View className="flex-row flex-wrap items-center" style={{ gap: 6 }}>
-          <Text
-            className={`text-xs font-semibold ${ready ? 'text-accent-primary' : 'text-text-secondary'}`}
+          <View
+            className={`flex-row items-center rounded-tag px-2 py-0.5 ${ready ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
+            style={{ gap: 4 }}
           >
-            {statusLabel}
-          </Text>
+            <Text
+              className={`text-xs font-semibold ${ready ? 'text-text-on-accent' : 'text-text-secondary'}`}
+            >
+              {statusLabel}
+            </Text>
+          </View>
           {detail ? (
             <Text className="text-xs text-text-secondary" numberOfLines={1}>
               {detail}

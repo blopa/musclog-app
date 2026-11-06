@@ -328,9 +328,15 @@ describe('Phase 5: Home and the hero surfaces', () => {
     expect(home).toMatch(/cardShowsEaten=\{homeSummaryCard !== 'weekly_streak'\}/);
   });
 
-  it('gives a waiting Weekly Review one accent signal, not a border, fill, chip and badge', () => {
+  // Deliberate exception to the "one accent signal" rule: the waiting Weekly Review is the app's
+  // once-a-week call to action, so it keeps its accent border, tinted fill, solid icon chip and
+  // solid badge. A deslop pass removed them and the owner asked for them back; this stops it
+  // happening again.
+  it('keeps the waiting Weekly Review loud: accent border, tinted fill, icon chip and badge', () => {
     const card = stripComments(readFileSync(join(root, 'components/WeeklyReviewCard.tsx'), 'utf8'));
-    expect(card).not.toMatch(/border-accent-primary|bg-accent-primary/);
+    expect(card).toMatch(/border-accent-primary bg-accent-primary\/10/);
+    expect(card).toMatch(/rounded-control \$\{ready \? 'bg-accent-primary'/);
+    expect(card).toMatch(/rounded-tag px-2 py-0\.5 \$\{ready \? 'bg-accent-primary'/);
   });
 
   it('shows the cycle day once, inside the wheel', () => {

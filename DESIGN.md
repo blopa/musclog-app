@@ -446,8 +446,11 @@ compact (64pt, the icon beside a short label, `rounded-control`), with no tinted
 no faded watermark copy of the icon; the selection, picker and reconciliation rules in `AGENTS.md`
 are unchanged. Home shows a compact Weekly Review card while a week is waiting (or half
 reviewed); otherwise it is one line naming the next review (`WeeklyReviewCard compact quietUntilReady`).
-A waiting review gets one accent signal, the icon and the status words, on a plain card; it used to
-stack a border, tinted fill, solid icon chip and solid badge and competed with the primary actions.
+A waiting review keeps its full accent treatment (accent border, tinted fill, solid icon chip and
+solid status badge) on purpose: it is the once-a-week call to action, and the accent frame is what
+reads as "something is due". It is the one deliberate exception to "one accent signal per card"; a
+deslop pass flattened it and the owner asked for it back, so `deslopGuards.test.ts` pins it. A
+review that is not waiting is a plain `border-border-light` card.
 Each daily-summary figure is stated once: the calorie and macro bars carry no percentage beside a
 "value / goal" figure, and the stat strip under the card omits "Eaten" because the card prints it
 (under the weekly streak card, which does not, the strip keeps it).

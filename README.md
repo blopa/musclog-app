@@ -301,6 +301,7 @@ npm run typecheck                 # TypeScript type checking
 npm run check-translations        # Validate used i18n keys
 npm run check-locale-consistency  # Validate key parity across locales
 npm run screenshots               # Build web and capture Playwright screenshots
+npm run screenshots:wrapped       # Build web and capture only "Your year in Musclog"
 npm run start-clear               # Start Expo with a cleared cache
 ```
 
@@ -314,7 +315,8 @@ MUSCLOG_SCREENSHOT_THEME=kinetic-shock npm run playwright-runner -- tests/screen
 
 Valid themes are `kinetic-depth`, `kinetic-light`, `kinetic-shock`, `kinetic-volt`,
 `kinetic-blush`, `kinetic-varia`, and `kinetic-scope`. Images are saved under
-`screenshots/app-store/<theme>/<device>/`. The screenshot suite enables reduced
+`screenshots/app-store/<theme>/<device>/` (the Wrapped story goes in its `wrapped/`
+subfolder; `npm run screenshots:all` runs both suites and the website images). The screenshot suite enables reduced
 motion, which disables web confetti for every screen and modal. Screenshot commands
 run only the capture suite; SDK compatibility tests remain available separately.
 They use `npm run screenshots:build` to enable the modal fixture in the web export.
