@@ -8,6 +8,7 @@ import Coffee from '@/assets/avatars/loggy-poses/loggy-coffee.svg';
 import Creatine from '@/assets/avatars/loggy-poses/loggy-creatine.svg';
 import Default from '@/assets/avatars/loggy-poses/loggy-default.svg';
 import Drinking from '@/assets/avatars/loggy-poses/loggy-drinking.svg';
+import Eating from '@/assets/avatars/loggy-poses/loggy-eating.svg';
 import Flex from '@/assets/avatars/loggy-poses/loggy-flex.svg';
 import Magnify from '@/assets/avatars/loggy-poses/loggy-magnify.svg';
 import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
@@ -20,6 +21,7 @@ import { LoggyCoffeeAnimated } from '@/components/loggy/animated/LoggyCoffeeAnim
 import { LoggyCreatineAnimated } from '@/components/loggy/animated/LoggyCreatineAnimated';
 import { LoggyDefaultAnimated } from '@/components/loggy/animated/LoggyDefaultAnimated';
 import { LoggyDrinkingAnimated } from '@/components/loggy/animated/LoggyDrinkingAnimated';
+import { LoggyEatingAnimated } from '@/components/loggy/animated/LoggyEatingAnimated';
 import { LoggyFlexAnimated } from '@/components/loggy/animated/LoggyFlexAnimated';
 import { LoggyMagnifyAnimated } from '@/components/loggy/animated/LoggyMagnifyAnimated';
 import { LoggyPanicAnimated } from '@/components/loggy/animated/LoggyPanicAnimated';
@@ -37,6 +39,7 @@ export type LoggyPoseName =
   | 'creatine'
   | 'default'
   | 'drinking'
+  | 'eating'
   | 'flex'
   | 'magnify'
   | 'panic'
@@ -62,6 +65,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
   creatine: { Art: Creatine, aspect: 0.8 },
   default: { Art: Default, aspect: 0.8 },
   drinking: { Art: Drinking, aspect: 0.844 },
+  eating: { Art: Eating, aspect: 0.8 },
   flex: { Art: Flex, aspect: 0.8 },
   magnify: { Art: Magnify, aspect: 0.844 },
   panic: { Art: Panic, aspect: 0.8 },
@@ -82,6 +86,7 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   creatine: LoggyCreatineAnimated,
   default: LoggyDefaultAnimated,
   drinking: LoggyDrinkingAnimated,
+  eating: LoggyEatingAnimated,
   flex: LoggyFlexAnimated,
   magnify: LoggyMagnifyAnimated,
   panic: LoggyPanicAnimated,

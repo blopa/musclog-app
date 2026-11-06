@@ -1,0 +1,57 @@
+/* Loggy seated with a plate of chicken, rice and broccoli. He breathes gently, the steam curls
+   above his spoonful of rice, the spoon tips toward his grin, and his sneakers swing slightly.
+   Every layer opens and ends on the still's own frame. */
+#body {
+    transform-origin: 265px 440px;
+    animation: loggy-breathe 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#spoon, #hand-l {
+    transform-origin: 36px 312px;
+    animation: loggy-spoon-bite 3.2s ease-in-out infinite;
+}
+#steam {
+    transform-origin: 100px 235px;
+    animation: loggy-steam 3.2s ease-in-out infinite;
+}
+#leg-l {
+    transform-origin: 105px 460px;
+    animation: loggy-leg-swing 3.2s ease-in-out infinite;
+}
+#foot-r {
+    transform-origin: 210px 510px;
+    animation: loggy-foot-swing 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-breathe {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.01, .992); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-spoon-bite {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 62% { transform: rotate(3deg); }
+}
+@keyframes loggy-steam {
+    0%, 100% { transform: skewX(0deg) scale(1, 1); }
+    25% { transform: skewX(5deg) scale(.96, 1.05); }
+    75% { transform: skewX(-5deg) scale(1.04, .97); }
+}
+@keyframes loggy-leg-swing {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-2deg); }
+}
+@keyframes loggy-foot-swing {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

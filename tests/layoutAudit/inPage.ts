@@ -592,32 +592,3 @@ export function applyPseudoLocale(factor: number): number {
 
   return changed;
 }
-
-/** Draws red outlines over the given rects (viewport coordinates) for a screenshot. */
-export function drawOutlines(rects: Rect[]): void {
-  const host = document.createElement('div');
-  host.id = 'la-outlines';
-  host.style.cssText =
-    'position:fixed;left:0;top:0;width:0;height:0;z-index:2147483647;pointer-events:none';
-  for (let i = 0; i < rects.length; i++) {
-    const outline = document.createElement('div');
-    outline.style.cssText =
-      'position:fixed;box-sizing:border-box;border:2px solid #ff1744;background:rgba(255,23,68,0.12);' +
-      'left:' +
-      rects[i].x +
-      'px;top:' +
-      rects[i].y +
-      'px;width:' +
-      rects[i].w +
-      'px;height:' +
-      rects[i].h +
-      'px';
-    host.appendChild(outline);
-  }
-
-  document.body.appendChild(host);
-}
-
-export function clearOutlines(): void {
-  document.getElementById('la-outlines')?.remove();
-}

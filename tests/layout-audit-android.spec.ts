@@ -128,6 +128,7 @@ test.describe('layout audit [android]', () => {
             entries.push({
               ...base,
               surface: 'screen',
+              group: 'screens',
               name: route.name,
               url,
               status: 'audited',
@@ -138,6 +139,7 @@ test.describe('layout audit [android]', () => {
             entries.push({
               ...base,
               surface: 'screen',
+              group: 'screens',
               name: route.name,
               url,
               status: 'failed',
@@ -168,6 +170,7 @@ test.describe('layout audit [android]', () => {
                 entries.push({
                   ...base,
                   surface: 'modal',
+                  group: 'modals',
                   name: text,
                   url,
                   status: 'skipped',
@@ -191,6 +194,7 @@ test.describe('layout audit [android]', () => {
               entries.push({
                 ...base,
                 surface: 'modal',
+                group: 'modals',
                 name: text,
                 url,
                 status: layer.nodes.length > 0 ? 'audited' : 'skipped',
@@ -202,6 +206,7 @@ test.describe('layout audit [android]', () => {
               entries.push({
                 ...base,
                 surface: 'modal',
+                group: 'modals',
                 name: text,
                 url,
                 status: 'failed',

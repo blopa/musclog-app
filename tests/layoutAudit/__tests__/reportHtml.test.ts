@@ -117,7 +117,9 @@ describe('buildViewerData', () => {
 
   it('caps the outline rects of one finding', () => {
     const many = entry({
-      findings: [finding({ rects: Array.from({ length: 20 }, () => ({ x: 0, y: 0, w: 1, h: 1 })) })],
+      findings: [
+        finding({ rects: Array.from({ length: 20 }, () => ({ x: 0, y: 0, w: 1, h: 1 })) }),
+      ],
     });
     expect(buildViewerData([many]).entries[0].findings[0].r).toHaveLength(6);
   });
@@ -177,7 +179,10 @@ function openReport(data: ViewerData) {
   delete (window as unknown as Record<string, unknown>).LayoutReport;
   window.eval(parsed.getElementById('viewer')?.textContent ?? '');
   type Api = {
-    init: (d: ViewerData, root: HTMLElement) => { state: Record<string, unknown>; render: () => void };
+    init: (
+      d: ViewerData,
+      root: HTMLElement
+    ) => { state: Record<string, unknown>; render: () => void };
     filterEntries: (d: ViewerData, s: Record<string, unknown>) => unknown[];
     defaultState: (d: ViewerData) => Record<string, unknown>;
     groupSections: (
@@ -246,7 +251,9 @@ describe('the viewer', () => {
       (section) => text(section.querySelector('h3')) === 'ai-chat'
     ) as HTMLElement;
     expect(redirected.querySelector('img')).toBeNull();
-    expect(text(redirected.querySelector('.missing'))).toContain('redirected to /app/onboarding/landing');
+    expect(text(redirected.querySelector('.missing'))).toContain(
+      'redirected to /app/onboarding/landing'
+    );
   });
 
   it('hides notes by default and everything else follows the severity filter', () => {
@@ -288,8 +295,9 @@ describe('the viewer', () => {
       state.hideAccepted = hide;
       return api
         .filterEntries(accepted, state)
-        .filter((item) => (item as { findings: Array<{ s: string }> }).findings.some((f) => f.s === 'error'))
-        .length;
+        .filter((item) =>
+          (item as { findings: Array<{ s: string }> }).findings.some((f) => f.s === 'error')
+        ).length;
     };
     expect(withFindings(true)).toBe(0);
     expect(withFindings(false)).toBe(2);

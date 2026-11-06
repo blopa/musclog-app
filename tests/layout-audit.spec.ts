@@ -6,9 +6,7 @@ import { installFixtureRoutes, APP_URL, seedDemoData } from './helpers/screensho
 import { analyzeSnapshot } from './layoutAudit/analyze';
 import {
   applyPseudoLocale,
-  clearOutlines,
   collectLayoutSnapshot,
-  drawOutlines,
   markBaseline,
   scrollLargestToEnd,
 } from './layoutAudit/inPage';
@@ -18,6 +16,7 @@ import {
   REPORT_DIR,
   SCREENSHOT_DIR,
   SHARD_DIR,
+  type ReportGroup,
   type ShardEntry,
   type Surface,
 } from './layoutAudit/report';
@@ -73,7 +72,11 @@ interface Auditor {
     url: string;
     onlyNew: boolean;
   }) => Promise<void>;
-  record: (entry: Pick<ShardEntry, 'surface' | 'name' | 'url' | 'status' | 'note'>) => void;
+  record: (
+    entry: Pick<ShardEntry, 'surface' | 'name' | 'url' | 'status' | 'note' | 'screenshot'>
+  ) => void;
+  /** Screenshot of the page as it is now, for the report; undefined when it cannot be taken. */
+  capture: (surface: Surface, name: string, pass: 'top' | 'end') => Promise<string | undefined>;
   flush: (suffix: string) => void;
 }
 
@@ -81,7 +84,8 @@ function createAuditor(
   page: Page,
   testInfo: TestInfo,
   localeSpec: string,
-  signatures: string[]
+  signatures: string[],
+  group: ReportGroup
 ): Auditor {
   const profile = testInfo.project.name;
   const fontScale = Number(/-fs([\d.]+)$/.exec(profile)?.[1] ?? 1);
@@ -89,6 +93,7 @@ function createAuditor(
   const entries: ShardEntry[] = [];
   const base = () => ({
     platform: 'web' as const,
+    group,
     profile,
     locale: localeSpec,
     fontScale,
@@ -117,6 +122,27 @@ function createAuditor(
     entries.push({ ...base(), pass: 'top', findings: [], ...entry });
   };
 
+  /**
+   * Every audited page is kept as a clean JPEG for `report.html`, which draws the findings over it
+   * from their rects (so the outlines can be switched off). JPEG, because a full run holds
+   * thousands of them.
+   */
+  const capture: Auditor['capture'] = async (surface, name, pass) => {
+    const file = path.join(
+      SCREENSHOT_DIR,
+      profile,
+      slug(localeSpec),
+      `${surface}-${slug(name)}-${pass}.jpg`
+    );
+    try {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      await page.screenshot({ path: file, type: 'jpeg', quality: 80, fullPage: false });
+      return path.relative(REPORT_DIR, file);
+    } catch {
+      return undefined;
+    }
+  };
+
   const audit: Auditor['audit'] = async ({ surface, name, url, onlyNew }) => {
     for (const pass of ['top', 'end'] as const) {
       if (pass === 'end') {
@@ -143,25 +169,9 @@ function createAuditor(
           status: 'skipped',
           note: 'nothing rendered to measure',
           findings: [],
+          screenshot: await capture(surface, name, pass),
         });
         return;
-      }
-
-      const findings = analyzeSnapshot(snapshot);
-      const notable = findings.filter((finding) => finding.severity !== 'info');
-      let screenshot: string | undefined;
-      if (notable.length > 0) {
-        const file = path.join(
-          SCREENSHOT_DIR,
-          profile,
-          slug(localeSpec),
-          `${surface}-${slug(name)}-${pass}.png`
-        );
-        fs.mkdirSync(path.dirname(file), { recursive: true });
-        await page.evaluate(drawOutlines, notable.flatMap((finding) => finding.rects).slice(0, 40));
-        await page.screenshot({ path: file, fullPage: false });
-        await page.evaluate(clearOutlines);
-        screenshot = path.relative(REPORT_DIR, file);
       }
 
       entries.push({
@@ -172,8 +182,8 @@ function createAuditor(
         pass,
         status: 'audited',
         note: snapshot.capped ? 'node cap reached; later content not examined' : undefined,
-        findings,
-        screenshot,
+        findings: analyzeSnapshot(snapshot),
+        screenshot: await capture(surface, name, pass),
       });
     }
   };
@@ -186,7 +196,7 @@ function createAuditor(
     );
   };
 
-  return { entries, settle, audit, record, flush };
+  return { entries, settle, audit, record, capture, flush };
 }
 
 /** True once any of the locale-only strings is on screen. */
@@ -265,6 +275,7 @@ async function auditRoutes(
           url,
           status: 'redirected',
           note: `redirected to ${moved}`,
+          screenshot: await auditor.capture('screen', route.name, 'top'),
         });
         continue;
       }
@@ -286,6 +297,7 @@ async function auditRoutes(
         url,
         status: 'failed',
         note: (error as Error).message.split('\n')[0],
+        screenshot: await auditor.capture('screen', route.name, 'top'),
       });
     }
   }
@@ -392,6 +404,7 @@ async function auditModals(page: Page, auditor: Auditor): Promise<void> {
         url: fixtureUrl,
         status: 'failed',
         note: (error as Error).message.split('\n')[0],
+        screenshot: await auditor.capture('modal', text, 'top'),
       });
     } finally {
       // Some fixture modals cannot be dismissed with Escape; a reload starts the next one clean.
@@ -437,7 +450,7 @@ for (const localeSpec of LOCALES) {
 
       test('screens', async ({ page }, testInfo) => {
         test.skip(!SURFACES.has('screens'), 'screens are not selected');
-        const auditor = createAuditor(page, testInfo, localeSpec, signatures);
+        const auditor = createAuditor(page, testInfo, localeSpec, signatures, 'screens');
         try {
           await installFixtureRoutes(page);
           await seedInLocale(page, auditor, locale, signatures);
@@ -450,7 +463,7 @@ for (const localeSpec of LOCALES) {
 
       test('modals', async ({ page }, testInfo) => {
         test.skip(!SURFACES.has('modals'), 'modals are not selected');
-        const auditor = createAuditor(page, testInfo, localeSpec, signatures);
+        const auditor = createAuditor(page, testInfo, localeSpec, signatures, 'modals');
         try {
           await installFixtureRoutes(page);
           await seedInLocale(page, auditor, locale, signatures);
@@ -467,7 +480,7 @@ for (const localeSpec of LOCALES) {
 
       test('onboarding', async ({ page }, testInfo) => {
         test.skip(!SURFACES.has('onboarding'), 'onboarding is not selected');
-        const auditor = createAuditor(page, testInfo, localeSpec, signatures);
+        const auditor = createAuditor(page, testInfo, localeSpec, signatures, 'onboarding');
         try {
           await installFixtureRoutes(page);
           await auditRoutes(page, auditor, ONBOARDING_ROUTES, 'onboarding', locale, signatures);

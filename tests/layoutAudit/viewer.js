@@ -1,5 +1,3 @@
-/* eslint-env browser */
-/* eslint-disable no-undef */
 /**
  * The browser half of `report.html`: reads the audit data embedded in the page and draws every
  * audited screen as a thumbnail, grouped by screen and compared across languages and phone
@@ -113,7 +111,7 @@
         (a, b) =>
           localeOrder.get(a.entry.locale) - localeOrder.get(b.entry.locale) ||
           profileOrder.get(a.entry.profile) - profileOrder.get(b.entry.profile) ||
-          (a.entry.pass === b.entry.pass ? 0 : a.entry.pass === 'top' ? -1 : 1)
+          passRank(a.entry.pass) - passRank(b.entry.pass)
       );
     });
 
@@ -134,6 +132,10 @@
     });
 
     return list;
+  }
+
+  function passRank(pass) {
+    return pass === 'top' ? 0 : 1;
   }
 
   function groupIndex(group) {

@@ -1,13 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import {
-  type Baseline,
-  emptyBaseline,
-  fingerprint,
-  REPORT_DIR,
-  type ShardEntry,
-} from './report';
+import { type Baseline, emptyBaseline, fingerprint, REPORT_DIR, type ShardEntry } from './report';
 import type { Finding, Severity } from './types';
 
 /**
@@ -84,11 +78,7 @@ export function compareLocales(a: string, b: string): number {
   return rank(a) - rank(b) || a.localeCompare(b);
 }
 
-function viewerFinding(
-  finding: Finding,
-  entry: ShardEntry,
-  baseline: Baseline
-): ViewerFinding {
+function viewerFinding(finding: Finding, entry: ShardEntry, baseline: Baseline): ViewerFinding {
   const key = fingerprint(finding, entry.surface, entry.name);
   return {
     k: finding.kind,

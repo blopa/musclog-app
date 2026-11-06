@@ -42,7 +42,8 @@
     "energetic",
     "overjoyed",
     "pondering",
-    "drinking"
+    "drinking",
+    "creatine"
   ],
   "poses": {
     "celebrating": {
@@ -78,6 +79,27 @@
         "mug/coffee",
         "hand-r/coffee"
       ]
+    },
+    "creatine": {
+      "viewBox": "20 0 512 640",
+      "face": "creatine",
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "arm-l/creatine",
+        "hand-l/creatine",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "scoop/creatine",
+        "arm-r/creatine",
+        "tub/creatine",
+        "hand-r/creatine"
+      ],
+      "animated": {
+        "upper": ["arm-l", "hand-l", "body", "scoop", "arm-r", "tub", "hand-r"]
+      }
     },
     "default": {
       "viewBox": "0 0 512 640",
@@ -127,6 +149,25 @@
       "animated": {
         "upper": ["arm-l", "body", "arm-r", "hand-r", "stream", "bottle", "hand-l"]
       }
+    },
+    "eating": {
+      "viewBox": "-56 0 512 640",
+      "face": "cheerful",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/eating",
+        "arm-l/eating",
+        "hand-l/eating",
+        "spoon/eating",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "plate/eating",
+        "leg-r/eating",
+        "arm-r/eating",
+        "hand-r/eating"
+      ]
     },
     "flex": {
       "viewBox": "0 0 512 640",

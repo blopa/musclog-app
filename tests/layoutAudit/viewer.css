@@ -37,7 +37,12 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 14px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font:
+    14px/1.45 system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
 button,
@@ -328,8 +333,10 @@ main {
 
 .box.hot {
   border-width: 3px;
-  background: rgba(255, 255, 255, 0.0);
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+  background: rgba(255, 255, 255, 0);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #000;
   z-index: 2;
 }
 

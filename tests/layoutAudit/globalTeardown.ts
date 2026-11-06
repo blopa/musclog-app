@@ -10,6 +10,7 @@ import {
   REPORT_DIR,
   writeReport,
 } from './report';
+import { writeHtmlReport } from './reportHtml';
 
 /**
  * Merges the shards every project wrote into `layout-audit-report/report.{md,json}`.
@@ -34,10 +35,11 @@ export default async function globalTeardown(): Promise<void> {
   }
 
   writeReport(report);
+  const html = writeHtmlReport(entries, readBaseline());
   const open = report.groups.filter((group) => !group.accepted);
   const count = (severity: string) => open.filter((group) => group.severity === severity).length;
   console.log(
-    `[layout] ${count('error')} errors, ${count('warn')} warnings, ${count('info')} notes → ${REPORT_DIR}/report.md`
+    `[layout] ${count('error')} errors, ${count('warn')} warnings, ${count('info')} notes → ${REPORT_DIR}/report.md\n[layout] browse every screen: ${html}`
   );
 
   const failing = newErrors(report);

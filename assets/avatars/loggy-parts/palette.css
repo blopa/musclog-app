@@ -42,6 +42,9 @@
 .s16 {
   fill: #8ad4ec;
 } /* sky: water */
+.s17 {
+  fill: #d3966e;
+} /* roast: chicken */
 
 /* filled shapes with their own ink outline (face extras and held props) */
 .s4 {

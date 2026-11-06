@@ -36,6 +36,7 @@ function entry(overrides: Partial<ShardEntry> = {}): ShardEntry {
     fontScale: 1.3,
     viewport: { width: 264, height: 678 },
     surface: 'screen',
+    group: 'screens',
     name: 'food',
     url: 'http://localhost:8081/app/nutrition/food',
     status: 'audited',
