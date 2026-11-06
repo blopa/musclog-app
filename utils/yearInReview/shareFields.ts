@@ -21,6 +21,8 @@ export interface YearShareFields {
   weightChangeKg: number | null;
   mealsLogged: number | null;
   nutritionDaysLogged: number | null;
+  /** Grams of protein in the year's food logs. */
+  proteinGrams: number | null;
 }
 
 export function selectShareFields(
@@ -39,5 +41,6 @@ export function selectShareFields(
     weightChangeKg: includeWeight ? review.weightChangeKg : null,
     mealsLogged: includeNutrition ? review.mealsLogged : null,
     nutritionDaysLogged: includeNutrition ? review.nutritionDaysLogged : null,
+    proteinGrams: includeNutrition ? (review.macroGrams?.protein ?? null) : null,
   };
 }

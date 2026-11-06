@@ -19,6 +19,11 @@ const REVIEW: YearInReview = {
   trainingTimeCounts: { morning: 1, afternoon: 2, evening: 5, night: 0 },
   mealsLogged: 900,
   nutritionDaysLogged: 200,
+  nutritionDays: [],
+  longestFoodStreakDays: 12,
+  mealTypeDays: { breakfast: 100, lunch: 120, dinner: 110, snack: 150, other: 0 },
+  favouriteMealType: 'snack',
+  macroGrams: { protein: 45_000, carbs: 130_000, fat: 40_000 },
   weightChangeKg: -4.2,
   hasContent: true,
 };
@@ -30,6 +35,7 @@ describe('selectShareFields', () => {
     expect(fields.weightChangeKg).toBeNull();
     expect(fields.mealsLogged).toBeNull();
     expect(fields.nutritionDaysLogged).toBeNull();
+    expect(fields.proteinGrams).toBeNull();
   });
 
   it('keeps the training figures in every case', () => {
@@ -56,6 +62,16 @@ describe('selectShareFields', () => {
 
     expect(fields.mealsLogged).toBe(900);
     expect(fields.nutritionDaysLogged).toBe(200);
+    expect(fields.proteinGrams).toBe(45_000);
+  });
+
+  it('has no protein figure to share when none was found', () => {
+    const fields = selectShareFields(
+      { ...REVIEW, macroGrams: null },
+      { includeWeight: false, includeNutrition: true }
+    );
+
+    expect(fields.proteinGrams).toBeNull();
   });
 
   it('shows no top exercise when the year has none', () => {

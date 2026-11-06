@@ -23,6 +23,10 @@ const STORY_ORDER = [
   'busiestMonth',
   'trainingTime',
   'nutrition',
+  'foodStreak',
+  'favouriteMeal',
+  'protein',
+  'macros',
   'weight',
   'outro',
 ] as const;

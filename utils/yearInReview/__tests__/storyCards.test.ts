@@ -16,6 +16,11 @@ const EMPTY: YearInReview = {
   trainingTimeCounts: null,
   mealsLogged: null,
   nutritionDaysLogged: null,
+  nutritionDays: [],
+  longestFoodStreakDays: null,
+  mealTypeDays: null,
+  favouriteMealType: null,
+  macroGrams: null,
   weightChangeKg: null,
   hasContent: false,
 };
@@ -35,6 +40,11 @@ const FULL: YearInReview = {
   trainingTimeCounts: { morning: 1, afternoon: 2, evening: 5, night: 0 },
   mealsLogged: 900,
   nutritionDaysLogged: 200,
+  nutritionDays: [{ day: '2026-03-01', value: 3 }],
+  longestFoodStreakDays: 12,
+  mealTypeDays: { breakfast: 100, lunch: 120, dinner: 110, snack: 150, other: 0 },
+  favouriteMealType: 'snack',
+  macroGrams: { protein: 45_000, carbs: 130_000, fat: 40_000 },
   weightChangeKg: -4.2,
   hasContent: true,
 };
@@ -58,6 +68,10 @@ describe('buildYearStoryCards', () => {
       'busiestMonth',
       'trainingTime',
       'nutrition',
+      'foodStreak',
+      'favouriteMeal',
+      'protein',
+      'macros',
       'weight',
       'outro',
     ]);
@@ -79,6 +93,53 @@ describe('buildYearStoryCards', () => {
     expect(
       kinds(buildYearStoryCards({ ...FULL, nutritionDaysLogged: null }, { showWeight: true }))
     ).not.toContain('nutrition');
+  });
+
+  it('leaves the protein and macro cards out when no food macros were found', () => {
+    const kindList = kinds(
+      buildYearStoryCards({ ...FULL, macroGrams: null }, { showWeight: true })
+    );
+
+    expect(kindList).not.toContain('protein');
+    expect(kindList).not.toContain('macros');
+    expect(kindList).toContain('favouriteMeal');
+  });
+
+  it('keeps the macro card but not the protein card when only carbs and fat were logged', () => {
+    const kindList = kinds(
+      buildYearStoryCards(
+        { ...FULL, macroGrams: { protein: 0, carbs: 5_000, fat: 1_000 } },
+        { showWeight: true }
+      )
+    );
+
+    expect(kindList).not.toContain('protein');
+    expect(kindList).toContain('macros');
+  });
+
+  it('carries grams, not display units, on the food cards', () => {
+    const cards = buildYearStoryCards(FULL, { showWeight: true });
+
+    expect(cards.find((card) => card.kind === 'protein')).toEqual({
+      kind: 'protein',
+      proteinG: 45_000,
+    });
+    expect(cards.find((card) => card.kind === 'macros')).toEqual({
+      kind: 'macros',
+      proteinG: 45_000,
+      carbsG: 130_000,
+      fatG: 40_000,
+    });
+    expect(cards.find((card) => card.kind === 'foodStreak')).toEqual({
+      kind: 'foodStreak',
+      days: 12,
+    });
+  });
+
+  it('skips the logging run card when there is no run of two days', () => {
+    expect(
+      kinds(buildYearStoryCards({ ...FULL, longestFoodStreakDays: null }, { showWeight: true }))
+    ).not.toContain('foodStreak');
   });
 
   it('never shows the weight card while the progress lock is held', () => {

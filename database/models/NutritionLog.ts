@@ -245,6 +245,28 @@ export default class NutritionLog extends Model {
     return { value: await this.getGramWeight(), unit: 'g' };
   }
 
+  /**
+   * Protein, carbs and fat of this entry in grams, from the same snapshot and the same scaling as
+   * `getNutrients()` (they agree: `NutritionLog.test.ts`). It decrypts only those three values:
+   * the year in review adds them up over a whole year of logs, and every decrypt is an AES call
+   * with its own key derivation, so skipping calories, fiber and micros is half the cost.
+   */
+  async getMacroGrams(): Promise<{ protein: number; carbs: number; fat: number }> {
+    const [protein, carbs, fat] = await Promise.all([
+      decryptNumber(this.loggedProteinRaw),
+      decryptNumber(this.loggedCarbsRaw),
+      decryptNumber(this.loggedFatRaw),
+    ]);
+    const scale =
+      this.snapshotBasis === 'per_serving' ? this.amount : (await this.getGramWeight()) / 100;
+
+    return {
+      protein: Math.max(0, protein) * scale,
+      carbs: Math.max(0, carbs) * scale,
+      fat: Math.max(0, fat) * scale,
+    };
+  }
+
   // Get nutrients for this specific nutrition log entry (uses snapshot when present)
   async getNutrients(): Promise<{
     calories: number;

@@ -17,11 +17,24 @@ import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import {
+  chickenBreastsOf,
+  macroMassInUnits,
+  massFractionDigits,
+  proteinComparison,
+  type ProteinComparisonId,
+} from '@/utils/yearInReview/foodFigures';
 import type { YearStoryCard } from '@/utils/yearInReview/storyCards';
 import { volumeInUnits } from '@/utils/yearInReview/storyCards';
 import { fitFontSize, storyScale } from '@/utils/yearInReview/storyLayout';
-import type { TrainingTimeBucket, YearInReview } from '@/utils/yearInReview/types';
 import {
+  type TrainingTimeBucket,
+  YEAR_MEAL_TYPES,
+  type YearInReview,
+  type YearMealType,
+} from '@/utils/yearInReview/types';
+import {
+  monthlyLoggedDays,
   monthlySessions,
   yearCalendarMonths,
   yearWeekStrip,
@@ -34,6 +47,30 @@ const BUCKET_KEYS: Record<TrainingTimeBucket, string> = {
   evening: 'yearInReview.trainingTime.buckets.evening',
   night: 'yearInReview.trainingTime.buckets.night',
 };
+
+/** Whole keys: the diary's own meal names, so the poster says what the diary says. */
+const MEAL_LABEL_KEYS: Record<YearMealType, string> = {
+  breakfast: 'food.meals.breakfast',
+  lunch: 'food.meals.lunch',
+  dinner: 'food.meals.dinner',
+  snack: 'food.meals.snacks',
+  other: 'food.meals.other',
+};
+
+/** The one-line joke under the winning meal. Statements about the meal, never about the person. */
+const MEAL_CAPTION_KEYS: Record<YearMealType, string> = {
+  breakfast: 'yearInReview.favouriteMeal.captions.breakfast',
+  lunch: 'yearInReview.favouriteMeal.captions.lunch',
+  dinner: 'yearInReview.favouriteMeal.captions.dinner',
+  snack: 'yearInReview.favouriteMeal.captions.snack',
+  other: 'yearInReview.favouriteMeal.captions.other',
+};
+
+const MACRO_LABEL_KEYS = {
+  protein: 'yearInReview.macros.protein',
+  carbs: 'yearInReview.macros.carbs',
+  fat: 'yearInReview.macros.fat',
+} as const;
 
 const BUCKET_ORDER: TrainingTimeBucket[] = ['morning', 'afternoon', 'evening', 'night'];
 
@@ -197,6 +234,22 @@ export function YearStoryCardView({ card, review, units, locale, size }: Props) 
   const scale = storyScale(size.height);
   const innerWidth = size.width - POSTER_PADDING * 2;
   const bodyStyle = { color: ground.ink, fontSize: 20 * scale, lineHeight: 26 * scale };
+
+  // A `switch` of literal `t()` calls rather than a table of keys: each is a plural base key
+  // (`_one`, `_other`, ...) that `check-translations` only recognises inside a call.
+  const proteinComparisonText = (id: ProteinComparisonId, count: number): string => {
+    const options = { count, n: formatInteger(count) };
+    switch (id) {
+      case 'wheyBag':
+        return t('yearInReview.protein.compare.wheyBag', options);
+      case 'cat':
+        return t('yearInReview.protein.compare.cat', options);
+      case 'bowlingBall':
+        return t('yearInReview.protein.compare.bowlingBall', options);
+      case 'barbell':
+        return t('yearInReview.protein.compare.barbell', options);
+    }
+  };
 
   switch (card.kind) {
     case 'intro':
@@ -462,6 +515,155 @@ export function YearStoryCardView({ card, review, units, locale, size }: Props) 
           </BesideLoggy>
         </Poster>
       );
+
+    case 'foodStreak': {
+      const logged = monthlyLoggedDays(review.nutritionDays);
+      return (
+        <Poster card={card} size={size} title={t('yearInReview.foodStreak.title')} poseShare={0.3}>
+          <Hero
+            value={formatGroupedInteger(card.days)}
+            caption={t('yearInReview.foodStreak.body', { count: card.days })}
+            ground={ground}
+            size={size}
+          />
+          {/* The caption sits above the bars: below them it runs behind Loggy's head. */}
+          <Text
+            className="mt-4 font-medium"
+            maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+            style={{ ...bodyStyle, fontSize: 16 * scale, lineHeight: 21 * scale }}
+          >
+            {t('yearInReview.foodStreak.chart')}
+          </Text>
+          <View className="mt-2">
+            <YearMonthBars
+              counts={logged}
+              labels={monthNames(locale, 'narrow')}
+              highlight={logged.indexOf(Math.max(...logged))}
+              height={40 * scale}
+              ground={ground}
+            />
+          </View>
+        </Poster>
+      );
+    }
+
+    case 'favouriteMeal': {
+      const most = Math.max(...YEAR_MEAL_TYPES.map((type) => card.counts[type]), 1);
+      return (
+        <Poster
+          card={card}
+          size={size}
+          title={t('yearInReview.favouriteMeal.title')}
+          poseShare={0.38}
+        >
+          <Hero
+            value={t(MEAL_LABEL_KEYS[card.mealType])}
+            caption={t(MEAL_CAPTION_KEYS[card.mealType])}
+            ground={ground}
+            size={size}
+            maxSize={72}
+          />
+          <View className="mt-3 gap-2" style={{ maxWidth: size.width * 0.58 }}>
+            {/* A type never logged is no row: "Other, 0 days" is clutter, not a figure. */}
+            {YEAR_MEAL_TYPES.filter((type) => card.counts[type] > 0).map((type) => (
+              <YearShareBar
+                key={type}
+                label={t(MEAL_LABEL_KEYS[type])}
+                value={t('yearInReview.favouriteMeal.days', {
+                  count: card.counts[type],
+                  n: formatInteger(card.counts[type]),
+                })}
+                share={card.counts[type] / most}
+                highlighted={type === card.mealType}
+                ground={ground}
+                compact
+              />
+            ))}
+          </View>
+        </Poster>
+      );
+    }
+
+    case 'protein': {
+      const display = macroMassInUnits(card.proteinG, units);
+      const comparison = proteinComparison(card.proteinG);
+      const breasts = chickenBreastsOf(card.proteinG);
+      const unit = t(getWeightUnitI18nKey(units));
+      return (
+        <Poster card={card} size={size} title={t('yearInReview.protein.title')} poseShare={0.38}>
+          <Hero
+            value={formatDecimal(display, massFractionDigits(display))}
+            caption={t('yearInReview.protein.caption', { unit })}
+            ground={ground}
+            size={size}
+          />
+          {/* The sum is the point, so say where it comes from: grams of protein, not of food. */}
+          <Text
+            className="mt-3 font-medium"
+            maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+            style={bodyStyle}
+          >
+            {t('yearInReview.protein.body')}
+          </Text>
+          {comparison ? (
+            <Text
+              className="mt-3 font-semibold"
+              maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+              // Narrower than the poster: the line otherwise runs into the leaf on Loggy's head.
+              style={{ ...bodyStyle, maxWidth: size.width * 0.7 }}
+            >
+              {proteinComparisonText(comparison.id, comparison.count)}
+            </Text>
+          ) : null}
+          {breasts >= 1 ? (
+            <BesideLoggy size={size}>
+              <SideStat
+                value={formatGroupedInteger(breasts)}
+                label={t('yearInReview.protein.chicken', { count: breasts })}
+                ground={ground}
+                size={size}
+              />
+            </BesideLoggy>
+          ) : null}
+        </Poster>
+      );
+    }
+
+    case 'macros': {
+      const unit = t(getWeightUnitI18nKey(units));
+      const rows = [
+        { key: 'protein', grams: card.proteinG },
+        { key: 'carbs', grams: card.carbsG },
+        { key: 'fat', grams: card.fatG },
+      ] as const;
+      const most = Math.max(...rows.map((row) => row.grams), 1);
+      return (
+        <Poster card={card} size={size} title={t('yearInReview.macros.title')} poseShare={0.4}>
+          <View className="mt-5 gap-5" style={{ maxWidth: size.width * 0.66 }}>
+            {rows.map((row) => {
+              const display = macroMassInUnits(row.grams, units);
+              return (
+                <YearShareBar
+                  key={row.key}
+                  label={t(MACRO_LABEL_KEYS[row.key])}
+                  value={`${formatDecimal(display, massFractionDigits(display))} ${unit}`}
+                  share={row.grams / most}
+                  highlighted={row.grams === most}
+                  ground={ground}
+                />
+              );
+            })}
+          </View>
+          <Text
+            className="mt-4 font-medium"
+            maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+            style={bodyStyle}
+          >
+            {t('yearInReview.macros.body')}
+          </Text>
+        </Poster>
+      );
+    }
 
     case 'weight': {
       const change = kgToDisplay(card.changeKg, units);

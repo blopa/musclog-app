@@ -83,6 +83,62 @@
       "days_many": "dagen met voeding vastgelegd",
       "days_other": "dagen met voeding vastgelegd"
     },
+    "foodStreak": {
+      "title": "Langste logreeks",
+      "body_one": "dag op rij met eten gelogd",
+      "body_few": "dagen op rij met eten gelogd",
+      "body_many": "dagen op rij met eten gelogd",
+      "body_other": "dagen op rij met eten gelogd",
+      "chart": "Dagen met eten gelogd, maand voor maand."
+    },
+    "favouriteMeal": {
+      "title": "Meest gelogde maaltijd",
+      "days_one": "{{n}} dag",
+      "days_few": "{{n}} dagen",
+      "days_many": "{{n}} dagen",
+      "days_other": "{{n}} dagen",
+      "captions": {
+        "breakfast": "Belangrijkste maaltijd van de dag, volgens elke cornflakesdoos.",
+        "lunch": "De brandstof voor halverwege de dag.",
+        "dinner": "De grote aan het eind van de dag.",
+        "snack": "Tussendoortjes tellen ook mee.",
+        "other": "Lastig te plaatsen, makkelijk te loggen."
+      }
+    },
+    "protein": {
+      "title": "Eiwit, bij elkaar opgeteld",
+      "caption": "{{unit}} eiwit",
+      "body": "Gram voor gram, uit het eiwit in elke maaltijd die je logde. Niet het gewicht van het eten.",
+      "compare": {
+        "wheyBag_one": "Dat is ongeveer {{n}} zak wei-eiwit.",
+        "wheyBag_few": "Dat is ongeveer {{n}} zakken wei-eiwit.",
+        "wheyBag_many": "Dat is ongeveer {{n}} zakken wei-eiwit.",
+        "wheyBag_other": "Dat is ongeveer {{n}} zakken wei-eiwit.",
+        "cat_one": "Dat is ongeveer {{n}} kat.",
+        "cat_few": "Dat is ongeveer {{n}} katten.",
+        "cat_many": "Dat is ongeveer {{n}} katten.",
+        "cat_other": "Dat is ongeveer {{n}} katten.",
+        "bowlingBall_one": "Dat is ongeveer {{n}} bowlingbal.",
+        "bowlingBall_few": "Dat is ongeveer {{n}} bowlingballen.",
+        "bowlingBall_many": "Dat is ongeveer {{n}} bowlingballen.",
+        "bowlingBall_other": "Dat is ongeveer {{n}} bowlingballen.",
+        "barbell_one": "Dat is ongeveer {{n}} olympische halterstang.",
+        "barbell_few": "Dat is ongeveer {{n}} olympische halterstangen.",
+        "barbell_many": "Dat is ongeveer {{n}} olympische halterstangen.",
+        "barbell_other": "Dat is ongeveer {{n}} olympische halterstangen."
+      },
+      "chicken_one": "kipfilet aan eiwit, broccoli niet inbegrepen",
+      "chicken_few": "kipfilets aan eiwit, broccoli niet inbegrepen",
+      "chicken_many": "kipfilets aan eiwit, broccoli niet inbegrepen",
+      "chicken_other": "kipfilets aan eiwit, broccoli niet inbegrepen"
+    },
+    "macros": {
+      "title": "Waar de grammen heen gingen",
+      "protein": "Eiwit",
+      "carbs": "Koolhydraten",
+      "fat": "Vet",
+      "body": "Alle grammen in het eten dat je logde, bij elkaar opgeteld."
+    },
     "weight": {
       "title": "Lichaamsgewicht",
       "unchanged": "Geen verschil tussen je eerste en laatste weging.",
@@ -99,6 +155,7 @@
       "topExercise": "Meest getraind",
       "records": "Persoonlijke records",
       "meals": "Maaltijden vastgelegd",
+      "protein": "Eiwit",
       "weight": "Gewichtsverandering"
     },
     "homeCard": {

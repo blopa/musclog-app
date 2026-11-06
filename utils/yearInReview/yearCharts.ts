@@ -38,6 +38,16 @@ export function monthlySessions(workoutDays: WorkoutDays): number[] {
   return counts;
 }
 
+/** Days with food logged in each month, January first. One per day however many meals it held. */
+export function monthlyLoggedDays(nutritionDays: YearInReview['nutritionDays']): number[] {
+  const counts = new Array<number>(MONTHS_PER_YEAR).fill(0);
+  for (const { day } of nutritionDays) {
+    counts[Number(day.slice(5, 7)) - 1] += 1;
+  }
+
+  return counts;
+}
+
 export type YearWeekCell = 'empty' | 'trained' | 'longestRun';
 
 /**

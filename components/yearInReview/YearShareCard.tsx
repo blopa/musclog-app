@@ -8,12 +8,17 @@ import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { macroMassInUnits, massFractionDigits } from '@/utils/yearInReview/foodFigures';
 import type { YearShareFields } from '@/utils/yearInReview/shareFields';
 import { fitFontSize } from '@/utils/yearInReview/storyLayout';
 
 /** Fixed logical size, so the captured PNG has the same proportions on every device. */
 export const YEAR_SHARE_CARD_WIDTH = 330;
-export const YEAR_SHARE_CARD_HEIGHT = 500;
+/**
+ * 9:16, a story's shape. Seven figures fill four rows, and the third row's right-hand figure has to
+ * clear Loggy's raised arm: at 500 the protein (and, before it, the weight) label sat behind him.
+ */
+export const YEAR_SHARE_CARD_HEIGHT = 587;
 
 const PADDING = 20;
 const POSE_HEIGHT = 210;
@@ -66,6 +71,8 @@ export function YearShareCard({ captureRef, fields, units }: Props) {
   const showLoggy = useLoggyVisible();
   const { formatGroupedInteger, formatDecimal } = useFormatAppNumber();
   const unit = t(getWeightUnitI18nKey(units));
+  const protein =
+    fields.proteinGrams !== null ? macroMassInUnits(fields.proteinGrams, units) : null;
   const weightChange =
     fields.weightChangeKg !== null ? kgToDisplay(fields.weightChangeKg, units) : null;
 
@@ -132,6 +139,12 @@ export function YearShareCard({ captureRef, fields, units }: Props) {
           <Stat
             label={t('yearInReview.share.meals')}
             value={formatGroupedInteger(fields.mealsLogged)}
+          />
+        ) : null}
+        {protein !== null ? (
+          <Stat
+            label={`${t('yearInReview.share.protein')} (${unit})`}
+            value={formatDecimal(protein, massFractionDigits(protein))}
           />
         ) : null}
         {weightChange !== null ? (

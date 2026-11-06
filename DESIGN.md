@@ -599,8 +599,13 @@ has one figure, not a figure and a sentence repeating it: "7 / workouts finished
 finished 7 workouts". Show the shape of the data when there is one (the year as twelve month grids
 that fit without scrolling, the weeks as bars with the longest run marked, the months as bars)
 rather than another number. Neighbouring pages change ground, so moving on reads as turning a page.
-Cards still state numbers: no invented comparisons, no praise, and a weight change is a plain sign,
-never "lost" or "gained".
+Cards still state numbers: no praise, no comparison with other people or an average, and a weight
+change is a plain sign, never "lost" or "gained". The food posters follow the same rule. They add up
+grams (protein, carbs, fat) rather than calories, and the only comparison is arithmetic on the
+person's own protein total, in objects that read the same in kilograms and pounds ("about 2 bags of
+whey protein", "chicken breasts' worth, broccoli not included"). Their jokes are about the food
+("Between meals counts too"), never about how someone eats. Keep text clear of Loggy: a caption goes
+above a chart, not under it, and a poster with a chart gives him a smaller `poseShare`.
 
 Tapping the poster moves on and tapping its left 30% goes back, but the buttons under it stay,
 because they are the way in for a screen reader. The last page's primary action is Share. The share

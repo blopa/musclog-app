@@ -46,6 +46,8 @@ const emptyInput = (year: number): YearInReviewInput => ({
   workouts: [],
   personalRecords: [],
   nutritionDays: [],
+  mealEntries: [],
+  nutritionTotals: null,
   firstWeighIn: null,
   lastWeighIn: null,
 });
@@ -194,6 +196,11 @@ describe('buildYearInReview: empty year', () => {
       trainingTimeCounts: null,
       mealsLogged: null,
       nutritionDaysLogged: null,
+      nutritionDays: [],
+      longestFoodStreakDays: null,
+      mealTypeDays: null,
+      favouriteMealType: null,
+      macroGrams: null,
       weightChangeKg: null,
       hasContent: false,
     });
@@ -422,6 +429,112 @@ describe('buildYearInReview: malformed timezone', () => {
 
     expect(result.workoutDays).toEqual([{ day: '2026-01-15', value: 1 }]);
     expect(localPartsOf(localAt(2026, 1, 15, 23, 30), 'Mars/Olympus').hour).toBe(23);
+  });
+});
+
+describe('buildYearInReview: food logging', () => {
+  const days = (...keys: string[]) => keys.map((day) => ({ day, meals: 1 }));
+
+  it('finds the longest run of consecutive logged days, across a month end', () => {
+    const result = buildYearInReview({
+      ...emptyInput(2026),
+      nutritionDays: days('2026-03-01', '2026-03-30', '2026-03-31', '2026-04-01', '2026-04-03'),
+    });
+
+    expect(result.longestFoodStreakDays).toBe(3);
+  });
+
+  it('counts a run across a daylight-saving change as consecutive', () => {
+    const result = buildYearInReview({
+      ...emptyInput(2026),
+      nutritionDays: days('2026-03-07', '2026-03-08', '2026-03-09', '2026-03-10'),
+    });
+
+    expect(result.longestFoodStreakDays).toBe(4);
+  });
+
+  it('has no run for single days or an empty year', () => {
+    expect(
+      buildYearInReview({ ...emptyInput(2026), nutritionDays: days('2026-05-01', '2026-05-03') })
+        .longestFoodStreakDays
+    ).toBeNull();
+    expect(buildYearInReview(emptyInput(2026)).longestFoodStreakDays).toBeNull();
+  });
+
+  it('lists the logged days in ascending order with their meal counts', () => {
+    const result = buildYearInReview({
+      ...emptyInput(2026),
+      nutritionDays: [
+        { day: '2026-06-02', meals: 2 },
+        { day: '2026-06-01', meals: 3 },
+      ],
+    });
+
+    expect(result.nutritionDays).toEqual([
+      { day: '2026-06-01', value: 3 },
+      { day: '2026-06-02', value: 2 },
+    ]);
+  });
+
+  it('counts the days each meal type was logged, once per day however many rows it had', () => {
+    const result = buildYearInReview({
+      ...emptyInput(2026),
+      mealEntries: [
+        { day: '2026-06-01', type: 'snack' },
+        { day: '2026-06-01', type: 'snack' },
+        { day: '2026-06-02', type: 'snack' },
+        { day: '2026-06-02', type: 'lunch' },
+        { day: '2026-06-03', type: 'mystery' },
+        { day: '2025-12-31', type: 'dinner' },
+      ],
+    });
+
+    expect(result.mealTypeDays).toEqual({
+      breakfast: 0,
+      lunch: 1,
+      dinner: 0,
+      snack: 2,
+      other: 1,
+    });
+    expect(result.favouriteMealType).toBe('snack');
+  });
+
+  it('gives a tie to the earlier meal type', () => {
+    const result = buildYearInReview({
+      ...emptyInput(2026),
+      mealEntries: [
+        { day: '2026-06-01', type: 'dinner' },
+        { day: '2026-06-02', type: 'breakfast' },
+      ],
+    });
+
+    expect(result.favouriteMealType).toBe('breakfast');
+  });
+
+  it('has no favourite meal without any entries', () => {
+    const result = buildYearInReview(emptyInput(2026));
+
+    expect(result.mealTypeDays).toBeNull();
+    expect(result.favouriteMealType).toBeNull();
+  });
+
+  it('passes macro grams through, dropping negatives and non-numbers', () => {
+    const result = buildYearInReview({
+      ...emptyInput(2026),
+      nutritionTotals: { proteinG: 45_000, carbsG: Number.NaN, fatG: -5 },
+    });
+
+    expect(result.macroGrams).toEqual({ protein: 45_000, carbs: 0, fat: 0 });
+  });
+
+  it('has no macros when the totals are missing or all zero', () => {
+    expect(buildYearInReview(emptyInput(2026)).macroGrams).toBeNull();
+    expect(
+      buildYearInReview({
+        ...emptyInput(2026),
+        nutritionTotals: { proteinG: 0, carbsG: 0, fatG: 0 },
+      }).macroGrams
+    ).toBeNull();
   });
 });
 

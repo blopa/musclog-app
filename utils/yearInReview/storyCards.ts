@@ -1,5 +1,5 @@
 import { kgToDisplay } from '@/utils/unitConversion';
-import type { TrainingTimeBucket, YearInReview } from '@/utils/yearInReview/types';
+import type { TrainingTimeBucket, YearInReview, YearMealType } from '@/utils/yearInReview/types';
 
 /**
  * The story is a list of cards, one per statistic, in the order the screen shows them. Each card
@@ -16,6 +16,10 @@ export type YearStoryCard =
   | { kind: 'busiestMonth'; month: number; sessions: number }
   | { kind: 'trainingTime'; bucket: TrainingTimeBucket | null; seconds: number | null }
   | { kind: 'nutrition'; meals: number; days: number }
+  | { kind: 'foodStreak'; days: number }
+  | { kind: 'favouriteMeal'; mealType: YearMealType; counts: Record<YearMealType, number> }
+  | { kind: 'protein'; proteinG: number }
+  | { kind: 'macros'; proteinG: number; carbsG: number; fatG: number }
   | { kind: 'weight'; changeKg: number }
   | { kind: 'outro'; year: number };
 
@@ -69,6 +73,27 @@ export function buildYearStoryCards(
       : null,
     review.mealsLogged !== null && review.nutritionDaysLogged !== null
       ? { kind: 'nutrition', meals: review.mealsLogged, days: review.nutritionDaysLogged }
+      : null,
+    review.longestFoodStreakDays !== null
+      ? { kind: 'foodStreak', days: review.longestFoodStreakDays }
+      : null,
+    review.favouriteMealType !== null && review.mealTypeDays !== null
+      ? {
+          kind: 'favouriteMeal',
+          mealType: review.favouriteMealType,
+          counts: review.mealTypeDays,
+        }
+      : null,
+    review.macroGrams !== null && review.macroGrams.protein > 0
+      ? { kind: 'protein', proteinG: review.macroGrams.protein }
+      : null,
+    review.macroGrams !== null
+      ? {
+          kind: 'macros',
+          proteinG: review.macroGrams.protein,
+          carbsG: review.macroGrams.carbs,
+          fatG: review.macroGrams.fat,
+        }
       : null,
     showWeight && review.weightChangeKg !== null
       ? { kind: 'weight', changeKg: review.weightChangeKg }

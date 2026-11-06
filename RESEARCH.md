@@ -665,3 +665,15 @@ The brief (`get-the-routine-back-research.md`, a literature and practitioner syn
 - The 14-day lapse threshold, the 30-day re-offer, and 10 days of silence as "stalled".
 
 **Deliberately not done:** phase- or mood-based prescriptions, a guilt-framed streak (the card counts active days instead), automatic deficits, and any clinical screening beyond a one-line see-a-doctor note for long breaks and a quiet support link. Wellbeing is a light touch: one optional energy question that makes the start gentler.
+
+## Your year in Musclog: the food posters
+
+The protein poster states a total, in the person's own units, and one comparison. Which numbers are
+ours: a medium cooked chicken breast is counted as 40 g of protein (USDA FoodData Central lists
+roasted chicken breast at about 31 g per 100 g; a medium breast is roughly 130 g), and the weighed
+objects are everyday sizes (a 1 kg bag of whey at about 80% protein, a cat 4.5 kg, a bowling ball
+7.3 kg, an Olympic barbell 20 kg). A comparison appears only from about two of the object (ratio
+1.75), so the rounded count is never more than a seventh off. Calories are deliberately never
+compared with food: "that is 300 pizzas" reads as a verdict on eating. The jokes borrow shared gym
+and diary culture (the chicken, rice and broccoli meal that [Mel Magazine](https://melmagazine.com/en-us/story/chicken-broccoli-rice-bodybuilding-meme)
+traces to bodybuilding, and "I'll log it later", the usual way diary tracking lapses) and stay on the food, never the person.

@@ -1,9 +1,13 @@
-import type {
-  TrainingTimeBucket,
-  YearInReview,
-  YearInReviewInput,
-  YearNutritionDayInput,
-  YearWorkoutInput,
+import {
+  type TrainingTimeBucket,
+  YEAR_MEAL_TYPES,
+  type YearInReview,
+  type YearInReviewInput,
+  type YearMealEntryInput,
+  type YearMealType,
+  type YearNutritionDayInput,
+  type YearNutritionTotalsInput,
+  type YearWorkoutInput,
 } from '@/utils/yearInReview/types';
 
 /** A favourite training time needs this many timed sessions; two sessions are not a pattern. */
@@ -319,6 +323,79 @@ function mealsByDayOf(
   return byDay;
 }
 
+/** Most consecutive calendar days among `days`; `null` below two, since one day is no run. */
+function longestDayRunOf(days: Iterable<string>): number | null {
+  const numbers = [...days]
+    .map((day) => {
+      const [year, month, date] = day.split('-').map(Number);
+      return Math.round(Date.UTC(year, month - 1, date) / DAY_MS);
+    })
+    .sort((a, b) => a - b);
+
+  let best = 0;
+  let run = 0;
+  let previous = Number.NaN;
+  for (const dayNumber of numbers) {
+    run = dayNumber === previous + 1 ? run + 1 : 1;
+    best = Math.max(best, run);
+    previous = dayNumber;
+  }
+
+  return best >= 2 ? best : null;
+}
+
+/** Days on which each meal type was logged, with the favourite (ties go to the earlier type). */
+function mealTypesOf(
+  entries: readonly YearMealEntryInput[],
+  year: number
+): { counts: Record<YearMealType, number>; favourite: YearMealType } | null {
+  const seen = new Set<string>();
+  const counts = Object.fromEntries(YEAR_MEAL_TYPES.map((type) => [type, 0])) as Record<
+    YearMealType,
+    number
+  >;
+
+  for (const { day, type } of entries) {
+    if (!DAY_KEY_PATTERN.test(day) || !day.startsWith(`${year}-`)) {
+      continue;
+    }
+
+    const mealType = YEAR_MEAL_TYPES.find((known) => known === type) ?? 'other';
+    const key = `${day}|${mealType}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      counts[mealType] += 1;
+    }
+  }
+
+  let favourite: YearMealType | null = null;
+  for (const type of YEAR_MEAL_TYPES) {
+    if (counts[type] > 0 && (favourite === null || counts[type] > counts[favourite])) {
+      favourite = type;
+    }
+  }
+
+  return favourite === null ? null : { counts, favourite };
+}
+
+/** Finite, non-negative grams of each macro; `null` when nothing was logged. */
+function macroGramsOf(
+  totals: YearNutritionTotalsInput | null
+): { protein: number; carbs: number; fat: number } | null {
+  if (!totals) {
+    return null;
+  }
+
+  const clean = (grams: number) => (Number.isFinite(grams) && grams > 0 ? grams : 0);
+  const macros = {
+    protein: clean(totals.proteinG),
+    carbs: clean(totals.carbsG),
+    fat: clean(totals.fatG),
+  };
+
+  return macros.protein + macros.carbs + macros.fat > 0 ? macros : null;
+}
+
 function weightChangeOf(input: YearInReviewInput): number | null {
   const { firstWeighIn, lastWeighIn } = input;
   if (!firstWeighIn || !lastWeighIn) {
@@ -364,6 +441,7 @@ export function buildYearInReview(input: YearInReviewInput): YearInReview {
   const activeDayCount = activeDaySet.size;
   const nutritionDayCount = mealsByDay.size;
   const trainingTimeCounts = trainingTimeCountsOf(sessions);
+  const mealTypes = mealTypesOf(input.mealEntries, year);
 
   const hasContent =
     sessionCount > 0 ||
@@ -387,6 +465,13 @@ export function buildYearInReview(input: YearInReviewInput): YearInReview {
     trainingTimeCounts,
     mealsLogged: mealsLogged > 0 ? mealsLogged : null,
     nutritionDaysLogged: nutritionDayCount > 0 ? nutritionDayCount : null,
+    nutritionDays: [...mealsByDay]
+      .map(([day, value]) => ({ day, value }))
+      .sort((a, b) => a.day.localeCompare(b.day)),
+    longestFoodStreakDays: longestDayRunOf(mealsByDay.keys()),
+    mealTypeDays: mealTypes?.counts ?? null,
+    favouriteMealType: mealTypes?.favourite ?? null,
+    macroGrams: macroGramsOf(input.nutritionTotals),
     weightChangeKg,
     hasContent,
   };

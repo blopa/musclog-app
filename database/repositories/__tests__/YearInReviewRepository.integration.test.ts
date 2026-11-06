@@ -1,5 +1,6 @@
 import { database } from '@/database/database-instance';
 import type Exercise from '@/database/models/Exercise';
+import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
@@ -108,6 +109,34 @@ async function addSession(
         });
       });
     }
+  });
+}
+
+/** One food log; the macros are the per-100g values the snapshot stores, as plain numbers here. */
+async function addFood(
+  date: number,
+  type: string,
+  macros: { protein: number; carbs: number; fat: number },
+  extra: { amount?: number; deleted?: boolean } = {}
+) {
+  await database.write(async () => {
+    await database.get<NutritionLog>('nutrition_logs').create((record) => {
+      Object.assign(record._raw, {
+        food_id: 'food',
+        type,
+        amount: extra.amount ?? 100,
+        logged_calories: '100',
+        logged_protein: String(macros.protein),
+        logged_carbs: String(macros.carbs),
+        logged_fat: String(macros.fat),
+        logged_fiber: '0',
+        date,
+        timezone: null,
+        deleted_at: extra.deleted ? date : null,
+        created_at: date,
+        updated_at: date,
+      });
+    });
   });
 }
 
@@ -227,5 +256,51 @@ describe('YearInReviewRepository', () => {
 
     expect(await YearInReviewRepository.hasCompletedSession(2026)).toBe(true);
     expect(await YearInReviewRepository.hasCompletedSession(2024)).toBe(false);
+  });
+
+  it('adds up the macro grams of the year’s live food logs', async () => {
+    await addFood(
+      at(2026, 0, 5, 8),
+      'breakfast',
+      { protein: 20, carbs: 50, fat: 10 },
+      { amount: 200 }
+    );
+    await addFood(at(2026, 0, 5, 13), 'lunch', { protein: 10, carbs: 5, fat: 2 });
+    await addFood(
+      at(2026, 5, 5, 13),
+      'snack',
+      { protein: 100, carbs: 0, fat: 0 },
+      { deleted: true }
+    );
+    await addFood(at(2025, 11, 31, 13), 'dinner', { protein: 500, carbs: 0, fat: 0 });
+
+    const input = await YearInReviewRepository.load(2026);
+
+    // 200 g at 20/50/10 per 100 g, plus 100 g at 10/5/2.
+    expect(input.nutritionTotals).toEqual({ proteinG: 50, carbsG: 105, fatG: 22 });
+    expect(buildYearInReview(input).macroGrams).toEqual({ protein: 50, carbs: 105, fat: 22 });
+  });
+
+  it('derives the days and meal types from the same logs', async () => {
+    await addFood(at(2026, 0, 5, 8), 'breakfast', { protein: 1, carbs: 1, fat: 1 });
+    await addFood(at(2026, 0, 5, 9), 'breakfast', { protein: 1, carbs: 1, fat: 1 });
+    await addFood(at(2026, 0, 6, 20), 'snack', { protein: 1, carbs: 1, fat: 1 });
+
+    const input = await YearInReviewRepository.load(2026);
+    const review = buildYearInReview(input);
+
+    expect(input.nutritionDays).toEqual([
+      { day: '2026-01-05', meals: 1 },
+      { day: '2026-01-06', meals: 1 },
+    ]);
+    expect(review.longestFoodStreakDays).toBe(2);
+    expect(review.mealTypeDays).toMatchObject({ breakfast: 1, snack: 1 });
+  });
+
+  it('has no totals for a year without food logs', async () => {
+    const input = await YearInReviewRepository.load(2026);
+
+    expect(input.nutritionTotals).toBeNull();
+    expect(input.mealEntries).toEqual([]);
   });
 });

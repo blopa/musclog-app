@@ -1,4 +1,5 @@
 import {
+  monthlyLoggedDays,
   monthlySessions,
   yearCalendarMonths,
   yearWeekStrip,
@@ -14,6 +15,20 @@ describe('monthlySessions', () => {
     expect(counts[0]).toBe(3);
     expect(counts[11]).toBe(1);
     expect(counts.slice(1, 11).every((count) => count === 0)).toBe(true);
+  });
+});
+
+describe('monthlyLoggedDays', () => {
+  it('counts days, not meals, per month', () => {
+    const counts = monthlyLoggedDays([
+      day('2026-02-01', 5),
+      day('2026-02-02', 1),
+      day('2026-12-31'),
+    ]);
+
+    expect(counts[1]).toBe(2);
+    expect(counts[11]).toBe(1);
+    expect(counts.reduce((sum, count) => sum + count, 0)).toBe(3);
   });
 });
 

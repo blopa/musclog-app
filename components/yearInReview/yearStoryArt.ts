@@ -20,6 +20,10 @@ export const YEAR_STORY_ART: Record<YearStoryCard['kind'], StoryArt> = {
   busiestMonth: { ground: 'coral', pose: 'panic' },
   trainingTime: { ground: 'tan', pose: 'coffee' },
   nutrition: { ground: 'sky', pose: 'writing' },
+  foodStreak: { ground: 'coral', pose: 'running' },
+  favouriteMeal: { ground: 'yellow', pose: 'thinking' },
+  protein: { ground: 'ink', pose: 'drinking' },
+  macros: { ground: 'tan', pose: 'magnify' },
   weight: { ground: 'paper', pose: 'thinking' },
   outro: { ground: 'ink', pose: 'wave' },
 };

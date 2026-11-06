@@ -83,6 +83,62 @@
       "days_many": "dias com alimentação registrada",
       "days_other": "dias com alimentação registrada"
     },
+    "foodStreak": {
+      "title": "Maior sequência de registros",
+      "body_one": "dia seguido com comida registrada",
+      "body_few": "dias seguidos com comida registrada",
+      "body_many": "dias seguidos com comida registrada",
+      "body_other": "dias seguidos com comida registrada",
+      "chart": "Dias com comida registrada, mês a mês."
+    },
+    "favouriteMeal": {
+      "title": "Refeição mais registrada",
+      "days_one": "{{n}} dia",
+      "days_few": "{{n}} dias",
+      "days_many": "{{n}} dias",
+      "days_other": "{{n}} dias",
+      "captions": {
+        "breakfast": "A refeição mais importante do dia, segundo toda caixa de cereal.",
+        "lunch": "O reforço do meio-dia.",
+        "dinner": "A grande do fim do dia.",
+        "snack": "Lanchinho também conta.",
+        "other": "Difícil de classificar, fácil de registrar."
+      }
+    },
+    "protein": {
+      "title": "Proteína, somada",
+      "caption": "{{unit}} de proteína",
+      "body": "Grama a grama, da proteína de cada refeição que você registrou. Não o peso da comida.",
+      "compare": {
+        "wheyBag_one": "Isso dá cerca de {{n}} saco de whey protein.",
+        "wheyBag_few": "Isso dá cerca de {{n}} sacos de whey protein.",
+        "wheyBag_many": "Isso dá cerca de {{n}} sacos de whey protein.",
+        "wheyBag_other": "Isso dá cerca de {{n}} sacos de whey protein.",
+        "cat_one": "Isso dá cerca de {{n}} gato.",
+        "cat_few": "Isso dá cerca de {{n}} gatos.",
+        "cat_many": "Isso dá cerca de {{n}} gatos.",
+        "cat_other": "Isso dá cerca de {{n}} gatos.",
+        "bowlingBall_one": "Isso dá cerca de {{n}} bola de boliche.",
+        "bowlingBall_few": "Isso dá cerca de {{n}} bolas de boliche.",
+        "bowlingBall_many": "Isso dá cerca de {{n}} bolas de boliche.",
+        "bowlingBall_other": "Isso dá cerca de {{n}} bolas de boliche.",
+        "barbell_one": "Isso dá cerca de {{n}} barra olímpica.",
+        "barbell_few": "Isso dá cerca de {{n}} barras olímpicas.",
+        "barbell_many": "Isso dá cerca de {{n}} barras olímpicas.",
+        "barbell_other": "Isso dá cerca de {{n}} barras olímpicas."
+      },
+      "chicken_one": "peito de frango de proteína, brócolis não incluído",
+      "chicken_few": "peitos de frango de proteína, brócolis não incluído",
+      "chicken_many": "peitos de frango de proteína, brócolis não incluído",
+      "chicken_other": "peitos de frango de proteína, brócolis não incluído"
+    },
+    "macros": {
+      "title": "Para onde foram os gramas",
+      "protein": "Proteína",
+      "carbs": "Carboidratos",
+      "fat": "Gordura",
+      "body": "Todos os gramas da comida que você registrou, somados."
+    },
     "weight": {
       "title": "Peso corporal",
       "unchanged": "Sem variação entre a primeira e a última pesagem.",
@@ -99,6 +155,7 @@
       "topExercise": "Mais treinado",
       "records": "Recordes pessoais",
       "meals": "Refeições registradas",
+      "protein": "Proteína",
       "weight": "Variação de peso"
     },
     "homeCard": {

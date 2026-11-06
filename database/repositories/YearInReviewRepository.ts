@@ -2,25 +2,36 @@ import { Q } from '@nozbe/watermelondb';
 import { endOfDay, startOfDay } from 'date-fns';
 
 import { database } from '@/database/database-instance';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
 import type Exercise from '@/database/models/Exercise';
+import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
-import { ActivityHeatmapRepository } from '@/database/repositories/ActivityHeatmapRepository';
 import { toWorkoutLogSetSnapshot } from '@/database/workoutLogSetSnapshot';
+import { nutritionHeatmapDays, nutritionMealEntries } from '@/utils/activityHeatmapData';
+import { dayKeyRange, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { isWorkingSet } from '@/utils/workoutSetCompletion';
 import {
   findPersonalRecords,
   type PersonalRecordSession,
 } from '@/utils/yearInReview/personalRecords';
-import type { YearInReviewInput, YearSetInput, YearWorkoutInput } from '@/utils/yearInReview/types';
+import type {
+  YearInReviewInput,
+  YearNutritionTotalsInput,
+  YearSetInput,
+  YearWorkoutInput,
+} from '@/utils/yearInReview/types';
 
 export interface YearInReviewLoadOptions {
   /** False skips the two weight decrypts, e.g. while the progress lock is held. */
   includeWeight: boolean;
 }
+
+/** Logs between two awaits of the macro walk, so a big year yields to the UI instead of freezing it. */
+const NUTRITION_LOGS_PER_SLICE = 50;
 
 /** Imports from these apps carry no time of day, so the session's clock time is not a fact. */
 const TIMELESS_IMPORT_SOURCES = new Set(['fitnotes', 'fitnotes2']);
@@ -66,8 +77,9 @@ function importFlags(log: WorkoutLog): { durationKnown: boolean; timeKnown: bool
 
 /**
  * Reads the data for "Your year in Musclog". Everything comes from plaintext columns except the
- * two weight rows, which are decrypted only when the weight card can show them. Nutrition logs are
- * never decrypted (the heatmap reads meal types), and the cycle tables are never read.
+ * two weight rows (decrypted only when the weight card can show them) and the macros of the year's
+ * food logs: the protein and macro posters add those up, three decrypts per log, the one place the
+ * review decrypts food. The cycle tables are never read.
  */
 export class YearInReviewRepository {
   /** Whether any completed session could fall in `year`. A single-row read, for the Home card. */
@@ -191,9 +203,13 @@ export class YearInReviewRepository {
 
     const personalRecords = findPersonalRecords(allSessions);
 
-    const nutritionDays = (
-      await ActivityHeatmapRepository.fetchDays('nutrition', yearStart, yearEnd)
-    ).map((day) => ({ day: day.date, meals: day.value }));
+    const foodLogs = await YearInReviewRepository.readFoodLogs(yearStart, yearEnd);
+    const nutritionDays = nutritionHeatmapDays(foodLogs).map((day) => ({
+      day: day.date,
+      meals: day.value,
+    }));
+    const mealEntries = nutritionMealEntries(foodLogs);
+    const nutritionTotals = await YearInReviewRepository.sumMacros(foodLogs);
 
     const { firstWeighIn, lastWeighIn } = options.includeWeight
       ? await YearInReviewRepository.readWeighIns(yearStart, yearEnd)
@@ -204,9 +220,45 @@ export class YearInReviewRepository {
       workouts,
       personalRecords,
       nutritionDays,
+      mealEntries,
+      nutritionTotals,
       firstWeighIn,
       lastWeighIn,
     };
+  }
+
+  /** The year's live food logs, trimmed to the days asked for (the query widens the range). */
+  private static async readFoodLogs(yearStart: Date, yearEnd: Date): Promise<NutritionLog[]> {
+    const range = dayKeyRange(utcDayKeyFromLocalDate(yearStart), utcDayKeyFromLocalDate(yearEnd));
+    const logs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range))
+      .fetch();
+
+    return range.filterRecords(logs);
+  }
+
+  /** Protein, carbs and fat of every log, in grams; `null` when there are no logs. */
+  private static async sumMacros(
+    logs: readonly NutritionLog[]
+  ): Promise<YearNutritionTotalsInput | null> {
+    if (logs.length === 0) {
+      return null;
+    }
+
+    const totals = { proteinG: 0, carbsG: 0, fatG: 0 };
+    for (let index = 0; index < logs.length; index++) {
+      const { protein, carbs, fat } = await logs[index].getMacroGrams();
+      totals.proteinG += protein;
+      totals.carbsG += carbs;
+      totals.fatG += fat;
+
+      if ((index + 1) % NUTRITION_LOGS_PER_SLICE === 0) {
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      }
+    }
+
+    return totals;
   }
 
   /** The earliest and latest weigh-in of the year. Two rows, so at most two decrypts. */
