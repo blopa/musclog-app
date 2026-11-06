@@ -44,6 +44,8 @@ export interface LayoutNode {
   spillsY: boolean;
   /** Text shortened on purpose (ellipsis or line clamp) and actually cut. */
   truncated: boolean;
+  /** Words the layout split across lines with no hyphen or break point of their own. */
+  brokenWords: string[];
   /** Label/path of whatever sits on top of this node's hit points, null when nothing does. */
   coveredBy: string | null;
   /** Fraction of the sampled hit points that something else receives. */
@@ -66,6 +68,7 @@ export type FindingKind =
   | 'occluded'
   | 'clipped'
   | 'truncated'
+  | 'word-break'
   | 'overflow-x'
   | 'unreachable'
   | 'small-target'

@@ -4,7 +4,7 @@
  * that is listed in neither place, so coverage cannot rot silently.
  */
 
-import { MODAL_BUTTON_TEXTS } from '../helpers/modalFixture';
+import { MODAL_BUTTON_TEXTS } from '@/tests/helpers/modalFixture';
 
 export interface AuditRoute {
   /** The report name. */
@@ -98,7 +98,11 @@ export const ONBOARDING_ROUTES: AuditRoute[] = [
   },
   { name: 'cycle-setup', path: '/onboarding/cycle-setup', file: 'onboarding/cycle-setup' },
   { name: 'coach-persona', path: '/onboarding/coach-persona', file: 'onboarding/coach-persona' },
-  { name: 'nutrition-goals', path: '/onboarding/nutrition-goals', file: 'onboarding/nutrition-goals' },
+  {
+    name: 'nutrition-goals',
+    path: '/onboarding/nutrition-goals',
+    file: 'onboarding/nutrition-goals',
+  },
   {
     name: 'nutrition-goals-results',
     path: '/onboarding/nutrition-goals-results',

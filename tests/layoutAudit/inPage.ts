@@ -54,6 +54,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
 
     return sum;
   };
+
   const intersect = (a: Rect, b: Rect): Rect | null => {
     const x = Math.max(a.x, b.x);
     const y = Math.max(a.y, b.y);
@@ -61,6 +62,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     const bottom = Math.min(a.y + a.h, b.y + b.h);
     return right <= x || bottom <= y ? null : { x, y, w: right - x, h: bottom - y };
   };
+
   const clipAll = (rects: Rect[], clips: Rect[]): Rect[] => {
     const result: Rect[] = [];
     for (let i = 0; i < rects.length; i++) {
@@ -76,25 +78,32 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
 
     return result;
   };
+
   const shorten = (text: string, max: number): string => {
     const flat = text.replace(/\s+/g, ' ').trim();
     return flat.length > max ? flat.slice(0, max - 1) + '…' : flat;
   };
+
   const pathOf = (element: Element): string => {
     const parts: string[] = [];
     let current: Element | null = element;
     for (let depth = 0; current && depth < 3 && current !== document.body; depth++) {
       const testId = current.getAttribute('data-testid');
       const role = current.getAttribute('role');
-      parts.unshift(
-        current.tagName.toLowerCase() +
-          (testId ? '[data-testid=' + testId + ']' : role ? '[role=' + role + ']' : '')
-      );
+      let hint = '';
+      if (testId) {
+        hint = '[data-testid=' + testId + ']';
+      } else if (role) {
+        hint = '[role=' + role + ']';
+      }
+
+      parts.unshift(current.tagName.toLowerCase() + hint);
       current = current.parentElement;
     }
 
     return parts.join(' > ');
   };
+
   const ownText = (element: Element): Text[] => {
     const found: Text[] = [];
     for (let i = 0; i < element.childNodes.length; i++) {
@@ -106,6 +115,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
 
     return found;
   };
+
   const lineRects = (texts: Text[]): Rect[] => {
     const rects: Rect[] = [];
     for (let i = 0; i < texts.length; i++) {
@@ -121,6 +131,49 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
 
     return rects;
   };
+
+  /**
+   * Words the layout cut across lines although they hold no hyphen or soft hyphen: "Сканиро/вать".
+   * Only multi-line text can hold one, and words under four letters are never reported.
+   */
+  const splitWords = (texts: Text[], lineCount: number): string[] => {
+    const found: string[] = [];
+    if (lineCount < 2) {
+      return found;
+    }
+
+    for (let i = 0; i < texts.length && found.length < 5; i++) {
+      const data = texts[i].data;
+      const words = /\S+/g;
+      let match = words.exec(data);
+      while (match && found.length < 5) {
+        const word = match[0];
+        if (word.length >= 4 && !/[-\u2010\u2011\u2013\u2014\u00ad/]/.test(word)) {
+          const range = document.createRange();
+          range.setStart(texts[i], match.index);
+          range.setEnd(texts[i], match.index + word.length);
+          const rects = range.getClientRects();
+          let lines = 0;
+          let lastTop = -1e9;
+          for (let j = 0; j < rects.length; j++) {
+            if (Math.abs(rects[j].top - lastTop) > 2) {
+              lines++;
+              lastTop = rects[j].top;
+            }
+          }
+
+          if (lines > 1) {
+            found.push(word);
+          }
+        }
+
+        match = words.exec(data);
+      }
+    }
+
+    return found;
+  };
+
   const describeHit = (element: Element): string => {
     const label = element.getAttribute('aria-label') ?? shorten(element.textContent ?? '', 30);
     return (label ? '"' + label + '" ' : '') + pathOf(element);
@@ -144,7 +197,8 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     hard: [],
     soft: [{ x: 0, y: 0, w: viewportWidth, h: viewportHeight }],
     scrollContext: 'root',
-    scrollsY: !!documentScroller && documentScroller.scrollHeight > documentScroller.clientHeight + 1,
+    scrollsY:
+      !!documentScroller && documentScroller.scrollHeight > documentScroller.clientHeight + 1,
     scrollsX: false,
   };
 
@@ -164,7 +218,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     kind: LayoutNode['kind'],
     label: string,
     rects: Rect[],
-    flags: { spillsX: boolean; spillsY: boolean; truncated: boolean }
+    flags: { spillsX: boolean; spillsY: boolean; truncated: boolean; brokenWords?: string[] }
   ): number => {
     const contentRects = clipAll(rects, context.hard);
     const visibleRects = clipAll(contentRects, context.soft);
@@ -203,6 +257,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
       spillsX: flags.spillsX,
       spillsY: flags.spillsY,
       truncated: flags.truncated,
+      brokenWords: flags.brokenWords ?? [],
       coveredBy: null,
       coveredShare: 0,
       reachable,
@@ -234,10 +289,13 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     const boxRect = toRect(element.getBoundingClientRect());
     const hasArea = boxRect.w > 0 && boxRect.h > 0;
     const isNew = !options.onlyNew || !element.hasAttribute(BASE_ATTR);
-    const isInput = element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT';
+    const isInput =
+      element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT';
     const isMedia = MEDIA_TAGS.has(element.tagName);
     const isInteractive =
-      !isInput && !isMedia && (element.matches(INTERACTIVE_SELECTOR) || isPointerRoot(element, style));
+      !isInput &&
+      !isMedia &&
+      (element.matches(INTERACTIVE_SELECTOR) || isPointerRoot(element, style));
 
     // A fixed or sticky element is not moved or clipped by the scroller it sits in.
     const fixed = style.position === 'fixed' || style.position === 'sticky';
@@ -257,9 +315,11 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     const hidesX = overflowX === 'hidden' || overflowX === 'clip';
     const hidesY = overflowY === 'hidden' || overflowY === 'clip';
     const scrollerX =
-      (overflowX === 'auto' || overflowX === 'scroll') && element.scrollWidth > element.clientWidth + 1;
+      (overflowX === 'auto' || overflowX === 'scroll') &&
+      element.scrollWidth > element.clientWidth + 1;
     const scrollerY =
-      (overflowY === 'auto' || overflowY === 'scroll') && element.scrollHeight > element.clientHeight + 1;
+      (overflowY === 'auto' || overflowY === 'scroll') &&
+      element.scrollHeight > element.clientHeight + 1;
     const inner: Context = { ...own };
     if (hasArea && (overflowX !== 'visible' || overflowY !== 'visible')) {
       inner.soft = own.soft.concat([boxRect]);
@@ -302,19 +362,18 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
               ''),
         48
       );
-      boxNodeId = record(
-        element,
-        own,
-        own.parentId,
-        isMedia ? 'image' : isInput ? 'input' : 'interactive',
-        label,
-        [boxRect],
-        {
-          spillsX: !isMedia && hidesX && element.scrollWidth > element.clientWidth + 1,
-          spillsY: !isMedia && hidesY && element.scrollHeight > element.clientHeight + 1,
-          truncated: false,
-        }
-      );
+      let boxKind: LayoutNode['kind'] = 'interactive';
+      if (isMedia) {
+        boxKind = 'image';
+      } else if (isInput) {
+        boxKind = 'input';
+      }
+
+      boxNodeId = record(element, own, own.parentId, boxKind, label, [boxRect], {
+        spillsX: !isMedia && hidesX && element.scrollWidth > element.clientWidth + 1,
+        spillsY: !isMedia && hidesY && element.scrollHeight > element.clientHeight + 1,
+        truncated: false,
+      });
       inner.parentId = boxNodeId;
     }
 
@@ -345,6 +404,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
             spillsX: standalone && !truncated && hidesX && cutX,
             spillsY: standalone && !truncated && hidesY && cutY,
             truncated,
+            brokenWords: truncated ? [] : splitWords(texts, rects.length),
           }
         );
       }
@@ -363,7 +423,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
 
   // Hit-test every control at five points: whatever receives the touch instead of the control is
   // sitting on top of it.
-  const SAMPLE_POINTS: Array<[number, number]> = [
+  const SAMPLE_POINTS: [number, number][] = [
     [0.5, 0.5],
     [0.25, 0.25],
     [0.75, 0.25],
@@ -543,7 +603,15 @@ export function drawOutlines(rects: Rect[]): void {
     const outline = document.createElement('div');
     outline.style.cssText =
       'position:fixed;box-sizing:border-box;border:2px solid #ff1744;background:rgba(255,23,68,0.12);' +
-      'left:' + rects[i].x + 'px;top:' + rects[i].y + 'px;width:' + rects[i].w + 'px;height:' + rects[i].h + 'px';
+      'left:' +
+      rects[i].x +
+      'px;top:' +
+      rects[i].y +
+      'px;width:' +
+      rects[i].w +
+      'px;height:' +
+      rects[i].h +
+      'px';
     host.appendChild(outline);
   }
 

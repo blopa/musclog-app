@@ -24,7 +24,10 @@ const ENTITIES: Record<string, string> = {
 };
 
 function decode(value: string): string {
-  return value.replace(/&(?:amp|lt|gt|quot|apos|#10|#13);/g, (entity) => ENTITIES[entity] ?? entity);
+  return value.replace(
+    /&(?:amp|lt|gt|quot|apos|#10|#13);/g,
+    (entity) => ENTITIES[entity] ?? entity
+  );
 }
 
 function parseAttributes(tag: string): Record<string, string> {
@@ -96,7 +99,9 @@ export function parseUiAutomatorDump(
     const attributes = parseAttributes(tag[2]);
     const parent = stack[stack.length - 1];
     const scrollable = attributes.scrollable === 'true';
-    const scrollContext = scrollable ? `scroll:${scrollerCount++}` : (parent?.scrollContext ?? 'root');
+    const scrollContext = scrollable
+      ? `scroll:${scrollerCount++}`
+      : (parent?.scrollContext ?? 'root');
     const bounds = parseBounds(attributes.bounds);
     const className = attributes.class ?? '';
     const text = shorten(attributes.text ?? '');
@@ -122,7 +127,10 @@ export function parseUiAutomatorDump(
       const rect = toDp(bounds, density);
       const visible = intersectWithScreen(rect, viewport);
       const outside =
-        rect.x < -1 || rect.y < -1 || rect.x + rect.w > viewport.width + 1 || rect.y + rect.h > viewport.height + 1;
+        rect.x < -1 ||
+        rect.y < -1 ||
+        rect.x + rect.w > viewport.width + 1 ||
+        rect.y + rect.h > viewport.height + 1;
       const insideScroller = scrollContext !== 'root';
       recordedId = nodes.length;
       nodes.push({
@@ -138,11 +146,14 @@ export function parseUiAutomatorDump(
         spillsX: false,
         spillsY: false,
         truncated: false,
+        brokenWords: [],
         coveredBy: null,
         coveredShare: 0,
         reachable: !outside || insideScroller,
       });
-      keys.push([className, attributes['resource-id'], text, description, attributes.bounds].join('|'));
+      keys.push(
+        [className, attributes['resource-id'], text, description, attributes.bounds].join('|')
+      );
     }
 
     if (tag[3] !== '/') {
@@ -182,14 +193,18 @@ export function newSince(parsed: ParsedDump, baseline: Set<string>): LayoutSnaps
 
 export function parseWmSize(output: string): { width: number; height: number } | null {
   const lines = output.split('\n');
-  const line = lines.find((entry) => entry.startsWith('Override size')) ?? lines.find((entry) => entry.startsWith('Physical size'));
+  const line =
+    lines.find((entry) => entry.startsWith('Override size')) ??
+    lines.find((entry) => entry.startsWith('Physical size'));
   const match = /(\d+)x(\d+)/.exec(line ?? '');
   return match ? { width: Number(match[1]), height: Number(match[2]) } : null;
 }
 
 export function parseWmDensity(output: string): number | null {
   const lines = output.split('\n');
-  const line = lines.find((entry) => entry.startsWith('Override density')) ?? lines.find((entry) => entry.startsWith('Physical density'));
+  const line =
+    lines.find((entry) => entry.startsWith('Override density')) ??
+    lines.find((entry) => entry.startsWith('Physical density'));
   const match = /(\d+)/.exec(line ?? '');
   return match ? Number(match[1]) : null;
 }

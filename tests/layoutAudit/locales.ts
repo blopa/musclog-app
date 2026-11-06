@@ -22,12 +22,20 @@ export function localeDirectory(locale: string): string {
   return locale.toLowerCase();
 }
 
+function englishFirst(a: string, b: string): number {
+  if (a === 'en-US' || b === 'en-US') {
+    return a === 'en-US' ? -1 : 1;
+  }
+
+  return a.localeCompare(b);
+}
+
 export function bundledLocales(localesDir = LOCALES_DIR): string[] {
   return fs
     .readdirSync(localesDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => localeTag(entry.name))
-    .sort((a, b) => (a === 'en-US' ? -1 : b === 'en-US' ? 1 : a.localeCompare(b)));
+    .sort(englishFirst);
 }
 
 /**
@@ -39,7 +47,9 @@ export function resolveLocales(value: string | undefined, localesDir = LOCALES_D
     .split(',')
     .map((part) => part.trim())
     .filter(Boolean);
-  const expanded = requested.flatMap((part) => (part === 'all' ? bundledLocales(localesDir) : [part]));
+  const expanded = requested.flatMap((part) =>
+    part === 'all' ? bundledLocales(localesDir) : [part]
+  );
   return [...new Set(expanded)];
 }
 
@@ -58,7 +68,9 @@ function localeStrings(directory: string, localesDir: string): string[] {
   return fs
     .readdirSync(folder)
     .filter((file) => file.endsWith('.json') && file !== 'untranslated.json')
-    .flatMap((file) => flattenStrings(JSON.parse(fs.readFileSync(path.join(folder, file), 'utf8'))));
+    .flatMap((file) =>
+      flattenStrings(JSON.parse(fs.readFileSync(path.join(folder, file), 'utf8')))
+    );
 }
 
 /**

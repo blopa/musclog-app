@@ -12,7 +12,8 @@ import {
   markBaseline,
   scrollLargestToEnd,
 } from './layoutAudit/inPage';
-import { localeSignatures, resolveLocales, showsLocale } from './layoutAudit/locales';
+import { selectAppLanguage } from './layoutAudit/language';
+import { localeSignatures, resolveLocales } from './layoutAudit/locales';
 import {
   REPORT_DIR,
   SCREENSHOT_DIR,
@@ -47,24 +48,41 @@ const ONLY = (process.env.MUSCLOG_LAYOUT_ONLY ?? '')
   .map((value) => value.trim().toLowerCase())
   .filter(Boolean);
 const SURFACES = new Set(
-  (process.env.MUSCLOG_LAYOUT_SURFACES ?? 'screens,modals,onboarding').split(',').map((s) => s.trim())
+  (process.env.MUSCLOG_LAYOUT_SURFACES ?? 'screens,modals,onboarding')
+    .split(',')
+    .map((s) => s.trim())
 );
 const PSEUDO_FACTOR = Number(process.env.MUSCLOG_LAYOUT_PSEUDO_FACTOR ?? 1.4);
 /** The locale a `pseudo` run renders in before its text is stretched. */
 const PSEUDO_BASE_LOCALE = 'en-US';
 
-const wanted = (name: string) => ONLY.length === 0 || ONLY.some((part) => name.toLowerCase().includes(part));
-const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const wanted = (name: string) =>
+  ONLY.length === 0 || ONLY.some((part) => name.toLowerCase().includes(part));
+const slug = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 
 interface Auditor {
   entries: ShardEntry[];
   settle: (extraMs?: number) => Promise<void>;
-  audit: (target: { surface: Surface; name: string; url: string; onlyNew: boolean }) => Promise<void>;
+  audit: (target: {
+    surface: Surface;
+    name: string;
+    url: string;
+    onlyNew: boolean;
+  }) => Promise<void>;
   record: (entry: Pick<ShardEntry, 'surface' | 'name' | 'url' | 'status' | 'note'>) => void;
   flush: (suffix: string) => void;
 }
 
-function createAuditor(page: Page, testInfo: TestInfo, localeSpec: string): Auditor {
+function createAuditor(
+  page: Page,
+  testInfo: TestInfo,
+  localeSpec: string,
+  signatures: string[]
+): Auditor {
   const profile = testInfo.project.name;
   const fontScale = Number(/-fs([\d.]+)$/.exec(profile)?.[1] ?? 1);
   const pseudo = localeSpec === 'pseudo';
@@ -81,8 +99,17 @@ function createAuditor(page: Page, testInfo: TestInfo, localeSpec: string): Audi
     await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => undefined);
     // A cold route is a blank page until its bundle runs; wait for any text before measuring.
     await page
-      .waitForFunction(() => document.body.innerText.trim().length > 0, undefined, { timeout: 15000 })
+      .waitForFunction(() => document.body.innerText.trim().length > 0, undefined, {
+        timeout: 15000,
+      })
       .catch(() => undefined);
+    // The app draws in English until its settings load from the database. Measuring that frame
+    // would audit the wrong language (and a half-loaded screen), so wait for the locale's copy.
+    if (signatures.length > 0) {
+      await waitForLocale(page, signatures, 8000);
+    }
+
+    await waitForStableText(page);
     await page.waitForTimeout(extraMs);
   };
 
@@ -131,10 +158,7 @@ function createAuditor(page: Page, testInfo: TestInfo, localeSpec: string): Audi
           `${surface}-${slug(name)}-${pass}.png`
         );
         fs.mkdirSync(path.dirname(file), { recursive: true });
-        await page.evaluate(
-          drawOutlines,
-          notable.flatMap((finding) => finding.rects).slice(0, 40)
-        );
+        await page.evaluate(drawOutlines, notable.flatMap((finding) => finding.rects).slice(0, 40));
         await page.screenshot({ path: file, fullPage: false });
         await page.evaluate(clearOutlines);
         screenshot = path.relative(REPORT_DIR, file);
@@ -165,24 +189,55 @@ function createAuditor(page: Page, testInfo: TestInfo, localeSpec: string): Audi
   return { entries, settle, audit, record, flush };
 }
 
+/** True once any of the locale-only strings is on screen. */
+function waitForLocale(page: Page, signatures: string[], timeout: number): Promise<boolean> {
+  return page
+    .waitForFunction(
+      (candidates) => {
+        const text = document.body.innerText;
+        return candidates.some((candidate) => text.includes(candidate));
+      },
+      signatures,
+      { timeout }
+    )
+    .then(() => true)
+    .catch(() => false);
+}
+
+/** Waits until the page text stops changing (loading skeletons, counters, late data). */
+async function waitForStableText(page: Page): Promise<void> {
+  let previous = '';
+  let stableReads = 0;
+  for (let attempt = 0; attempt < 25 && stableReads < 2; attempt++) {
+    const text = await page.evaluate(() => document.body.innerText).catch(() => '');
+    stableReads = text === previous ? stableReads + 1 : 0;
+    previous = text;
+    await page.waitForTimeout(400);
+  }
+}
 
 /**
  * A run labelled `ru-RU` that quietly rendered English would report a layout nobody sees. The
  * first page of every test must show copy that only the requested locale has.
  */
-async function assertRendersLocale(page: Page, locale: string): Promise<void> {
-  const signatures = localeSignatures(locale);
-  const text = await page.evaluate(() => document.body.innerText);
-  if (!showsLocale(text, signatures)) {
-    throw new Error(
-      `the app is not rendering in ${locale}: none of its ${signatures.length} locale-only strings are on screen`
-    );
+async function assertRendersLocale(
+  page: Page,
+  locale: string,
+  signatures: string[]
+): Promise<void> {
+  if (signatures.length === 0 || (await waitForLocale(page, signatures, 30000))) {
+    return;
   }
+
+  throw new Error(
+    `the app is not rendering in ${locale}: none of its ${signatures.length} locale-only strings are on screen`
+  );
 }
 
 /** The route's final pathname differs from the requested one: the app redirected. */
 function redirectedTo(page: Page, requestedUrl: string): string | null {
-  const strip = (value: string) => new URL(value).pathname.replace(/\/+$/, '').replace(/\.html$/, '');
+  const strip = (value: string) =>
+    new URL(value).pathname.replace(/\/+$/, '').replace(/\.html$/, '');
   const final = strip(page.url());
   return final === strip(requestedUrl) ? null : final;
 }
@@ -192,7 +247,8 @@ async function auditRoutes(
   auditor: Auditor,
   routes: AuditRoute[],
   label: string,
-  locale: string
+  locale: string,
+  signatures: string[]
 ): Promise<void> {
   let localeChecked = false;
   for (const route of routes.filter((candidate) => wanted(candidate.name))) {
@@ -214,7 +270,7 @@ async function auditRoutes(
       }
 
       if (!localeChecked) {
-        await assertRendersLocale(page, locale);
+        await assertRendersLocale(page, locale, signatures);
         localeChecked = true;
       }
 
@@ -345,51 +401,80 @@ async function auditModals(page: Page, auditor: Auditor): Promise<void> {
   }
 }
 
+/**
+ * Seeds the demo data (in English: the labels clicked below are English), then moves the app to
+ * `locale` the way a person does and proves it renders there.
+ */
+async function seedInLocale(
+  page: Page,
+  auditor: Auditor,
+  locale: string,
+  signatures: string[]
+): Promise<void> {
+  await seedDemoData(page);
+  if (signatures.length > 0) {
+    await selectAppLanguage(page, locale);
+  }
+
+  await page.goto(APP_URL, { timeout: 60000 });
+  await auditor.settle();
+  await assertRendersLocale(page, locale, signatures);
+}
+
 for (const localeSpec of LOCALES) {
   const pseudo = localeSpec === 'pseudo';
   const locale = pseudo ? PSEUDO_BASE_LOCALE : localeSpec;
+  const signatures = localeSignatures(locale);
 
   test.describe(`layout audit [${localeSpec}]`, () => {
-    test.use({ locale, reducedMotion: 'reduce', actionTimeout: 15000 });
+    test.use({ reducedMotion: 'reduce', actionTimeout: 15000 });
     test.setTimeout(3_600_000);
 
-    test('screens', async ({ page }, testInfo) => {
-      test.skip(!SURFACES.has('screens'), 'screens are not selected');
-      const auditor = createAuditor(page, testInfo, localeSpec);
-      try {
-        await installFixtureRoutes(page);
-        await seedDemoData(page);
-        await auditRoutes(page, auditor, MAIN_ROUTES, 'screen', locale);
-        await auditWorkoutSession(page, auditor, locale);
-      } finally {
-        auditor.flush('screens');
-      }
+    // Demo seeding leaves the stored language English whatever the browser says, so a seeded app
+    // is audited in a browser that says English and then switched through Settings.
+    test.describe('seeded', () => {
+      test.use({ locale: 'en-US' });
+
+      test('screens', async ({ page }, testInfo) => {
+        test.skip(!SURFACES.has('screens'), 'screens are not selected');
+        const auditor = createAuditor(page, testInfo, localeSpec, signatures);
+        try {
+          await installFixtureRoutes(page);
+          await seedInLocale(page, auditor, locale, signatures);
+          await auditRoutes(page, auditor, MAIN_ROUTES, 'screen', locale, signatures);
+          await auditWorkoutSession(page, auditor, locale);
+        } finally {
+          auditor.flush('screens');
+        }
+      });
+
+      test('modals', async ({ page }, testInfo) => {
+        test.skip(!SURFACES.has('modals'), 'modals are not selected');
+        const auditor = createAuditor(page, testInfo, localeSpec, signatures);
+        try {
+          await installFixtureRoutes(page);
+          await seedInLocale(page, auditor, locale, signatures);
+          await auditModals(page, auditor);
+        } finally {
+          auditor.flush('modals');
+        }
+      });
     });
 
-    test('modals', async ({ page }, testInfo) => {
-      test.skip(!SURFACES.has('modals'), 'modals are not selected');
-      const auditor = createAuditor(page, testInfo, localeSpec);
-      try {
-        await installFixtureRoutes(page);
-        await seedDemoData(page);
-        // The fixture's own buttons are English; Home, where seeding ends, shows the locale.
-        await auditor.settle();
-        await assertRendersLocale(page, locale);
-        await auditModals(page, auditor);
-      } finally {
-        auditor.flush('modals');
-      }
-    });
+    // A fresh install has no stored language yet, so it follows the browser's locale.
+    test.describe('fresh install', () => {
+      test.use({ locale });
 
-    test('onboarding', async ({ page }, testInfo) => {
-      test.skip(!SURFACES.has('onboarding'), 'onboarding is not selected');
-      const auditor = createAuditor(page, testInfo, localeSpec);
-      try {
-        await installFixtureRoutes(page);
-        await auditRoutes(page, auditor, ONBOARDING_ROUTES, 'onboarding', locale);
-      } finally {
-        auditor.flush('onboarding');
-      }
+      test('onboarding', async ({ page }, testInfo) => {
+        test.skip(!SURFACES.has('onboarding'), 'onboarding is not selected');
+        const auditor = createAuditor(page, testInfo, localeSpec, signatures);
+        try {
+          await installFixtureRoutes(page);
+          await auditRoutes(page, auditor, ONBOARDING_ROUTES, 'onboarding', locale, signatures);
+        } finally {
+          auditor.flush('onboarding');
+        }
+      });
     });
   });
 }

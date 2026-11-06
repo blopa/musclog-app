@@ -119,7 +119,9 @@ export function readShards(shardDir = SHARD_DIR): ShardEntry[] {
   return fs
     .readdirSync(shardDir)
     .filter((file) => file.endsWith('.json'))
-    .flatMap((file) => JSON.parse(fs.readFileSync(path.join(shardDir, file), 'utf8')) as ShardEntry[]);
+    .flatMap(
+      (file) => JSON.parse(fs.readFileSync(path.join(shardDir, file), 'utf8')) as ShardEntry[]
+    );
 }
 
 export function aggregate(
@@ -170,7 +172,9 @@ export function aggregate(
       if (
         !group.occurrences.some(
           (seen) =>
-            seen.profile === entry.profile && seen.locale === entry.locale && seen.pass === entry.pass
+            seen.profile === entry.profile &&
+            seen.locale === entry.locale &&
+            seen.pass === entry.pass
         )
       ) {
         group.occurrences.push({ profile: entry.profile, locale: entry.locale, pass: entry.pass });
@@ -249,7 +253,10 @@ function cell(text: string): string {
 
 function groupLine(group: GroupedFinding): string {
   const where = group.occurrences
-    .map((occurrence) => `${occurrence.profile}/${occurrence.locale}${occurrence.pass === 'end' ? '↓' : ''}`)
+    .map(
+      (occurrence) =>
+        `${occurrence.profile}/${occurrence.locale}${occurrence.pass === 'end' ? '↓' : ''}`
+    )
     .join(', ');
   const shot = group.screenshot ? ` — [screenshot](${group.screenshot})` : '';
   return `- **${group.kind}** ${group.messages[0] ?? ''}${shot}\n  seen on: ${where}`;
@@ -305,7 +312,14 @@ export function renderMarkdown(report: Report): string {
 
   const notes = open.filter((group) => group.severity === 'info');
   if (notes.length > 0) {
-    lines.push('<details><summary>Notes (' + notes.length + ')</summary>', '', ...notes.map(groupLine), '', '</details>', '');
+    lines.push(
+      '<details><summary>Notes (' + notes.length + ')</summary>',
+      '',
+      ...notes.map(groupLine),
+      '',
+      '</details>',
+      ''
+    );
   }
 
   const notAudited = report.screens.filter(

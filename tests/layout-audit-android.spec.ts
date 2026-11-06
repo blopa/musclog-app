@@ -53,7 +53,11 @@ function readDisplay(adb: Adb): DisplayState {
   return { size, density: dpi / 160, fontScale: fontScale === 'null' ? '1.0' : fontScale };
 }
 
-const slug = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const slug = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 
 function swipeUp(adb: Adb, size: { width: number; height: number }): void {
   const x = Math.round(size.width / 2);
@@ -96,7 +100,16 @@ test.describe('layout audit [android]', () => {
           height: profile.device.pxHeight,
         });
       const open = (routePath: string) => {
-        adb.shell('am', 'start', '-W', '-a', 'android.intent.action.VIEW', '-d', deepLink(routePath), APP_PACKAGE);
+        adb.shell(
+          'am',
+          'start',
+          '-W',
+          '-a',
+          'android.intent.action.VIEW',
+          '-d',
+          deepLink(routePath),
+          APP_PACKAGE
+        );
         return new Promise<void>((resolve) => setTimeout(resolve, 2500));
       };
 

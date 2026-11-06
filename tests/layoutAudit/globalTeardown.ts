@@ -2,8 +2,8 @@ import fs from 'fs';
 
 import {
   aggregate,
-  baselineFrom,
   BASELINE_PATH,
+  baselineFrom,
   newErrors,
   readBaseline,
   readShards,
@@ -28,10 +28,7 @@ export default async function globalTeardown(): Promise<void> {
   const previous = readBaseline();
   let report = aggregate(entries, previous);
   if (process.env.MUSCLOG_LAYOUT_UPDATE_BASELINE === '1') {
-    fs.writeFileSync(
-      BASELINE_PATH,
-      JSON.stringify(baselineFrom(report, previous), null, 2) + '\n'
-    );
+    fs.writeFileSync(BASELINE_PATH, JSON.stringify(baselineFrom(report, previous), null, 2) + '\n');
     report = aggregate(entries, readBaseline());
     console.log(`[layout] baseline updated: ${BASELINE_PATH}`);
   }

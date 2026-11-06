@@ -588,6 +588,26 @@ belongs in both the desktop nav bar and the burger menu.
 - Works in all themes: check Kinetic Light, Kinetic Shock, Kinetic Volt and Kinetic Blush, and confirm nothing
   relies on a literal `text-white` or an emerald-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.
+- `npm run layout:audit` reports nothing new at the tightest phone size, with large text, in every bundled language.
+
+## Layout audit
+
+Three layers find cramped layouts without looking at every screen by hand. None proves a layout is good; each narrows what a person has to review.
+
+1. **Runtime geometry audit (`npm run layout:audit`).** Drives the web build with Playwright at the phone sizes in `docs/SCREEN_SIZES.md` (CSS pixels derived from assumed densities, at normal and 1.3× text), in every bundled language, over every screen, onboarding step and `/app/test/modals` button. One in-page pass measures every text line and control and the analyzers report:
+   - **overlap**: text on text, or text partly over a control it does not belong to. Text fully inside a control is only a note (a layered design).
+   - **occluded**: a control whose hit points land on something else (a pinned bar over the last row), found with `elementFromPoint` at five points, again after scrolling the main scroller to its end.
+   - **clipped / unreachable / overflow-x**: ink cut by an `overflow: hidden` parent, content off screen that nothing scrolls into view, a page wider than the viewport.
+   - **word-break**: a word split across lines with no hyphen ("Сканиро/вать"); an error when it is a control's label.
+   - **truncated, small-target, tight-gap**: ellipsised text, controls under 32 px, neighbours 0.5–4 px apart. Notes and warnings.
+
+   `quick` is the default set; `MUSCLOG_LAYOUT_SET=phones|all` widens it. It is slow by design (a full default run is every screen × 3 profiles × 5 languages), so narrow with `MUSCLOG_LAYOUT_ONLY=food,home`, `MUSCLOG_LAYOUT_SURFACES=screens,modals,onboarding` and `MUSCLOG_LAYOUT_LOCALES=ru-RU,nl-NL`. Add `pseudo` to the locales to stretch English by 40% when a translation does not exist yet.
+
+2. **Static scan (`npm run layout:scan`).** Ranks files by risky JSX patterns (a flex-row of text that cannot shrink, Buttons sharing a row without `flex-1`, literal widths of 240+ px, literal heights around text, absolute siblings of text, manual window math). Noisy; use it to choose where to look and to catch a pattern before it ships.
+
+3. **Device audit (`npm run layout:audit:android`).** The same analyzers over `uiautomator dump`, with the device's display size, density and font scale set per profile and restored afterwards. Experimental: not yet exercised on hardware. It sees the accessibility tree only, so no clipping, truncation or hit-test results.
+
+Reading the report: findings are grouped across profiles and languages, ranked by severity and reach, and each links an annotated screenshot. A hit is a candidate. The web build uses browser fonts, so confirm on a device before redesigning around a borderline one. Fix a real one in the component, then accept what is deliberate in `tests/layoutAudit/baseline.json` with a reason, so `MUSCLOG_LAYOUT_STRICT=1` can gate on new errors only.
 
 ## Your year in Musclog
 

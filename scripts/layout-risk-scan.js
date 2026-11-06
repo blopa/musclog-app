@@ -35,7 +35,8 @@ const SKIPPED_PATH = /(^|\/)(__tests__|test|website)(\/|$)|\.(test|spec)\.tsx?$|
 const RULES = {
   'row-text-no-shrink': {
     weight: 3,
-    message: 'flex-row holds text that cannot shrink or truncate (no flex-1, shrink or numberOfLines)',
+    message:
+      'flex-row holds text that cannot shrink or truncate (no flex-1, shrink or numberOfLines)',
   },
   'row-buttons': {
     weight: 2,
@@ -78,7 +79,10 @@ function collectStrings(node, into = []) {
       collectStrings(span.expression, into);
     });
   } else {
-    ts.forEachChild(node, (child) => collectStrings(child, into));
+    // The callback must return nothing: forEachChild stops at the first truthy result.
+    ts.forEachChild(node, (child) => {
+      collectStrings(child, into);
+    });
   }
 
   return into;
@@ -101,10 +105,7 @@ function classTokens(attributes) {
     return [];
   }
 
-  return collectStrings(initializer)
-    .join(' ')
-    .split(/\s+/)
-    .filter(Boolean);
+  return collectStrings(initializer).join(' ').split(/\s+/).filter(Boolean);
 }
 
 /** `style={{ width: 300 }}` or an array of such objects, as name → literal text. */
@@ -115,7 +116,10 @@ function styleProps(attributes) {
     if (ts.isObjectLiteralExpression(node)) {
       node.properties.forEach((property) => {
         if (ts.isPropertyAssignment(property)) {
-          props.set(property.name.getText().replace(/['"]/g, ''), property.initializer.getText().replace(/['"]/g, ''));
+          props.set(
+            property.name.getText().replace(/['"]/g, ''),
+            property.initializer.getText().replace(/['"]/g, '')
+          );
         }
       });
     } else if (ts.isArrayLiteralExpression(node)) {
@@ -124,6 +128,7 @@ function styleProps(attributes) {
       read(node.expression);
     }
   };
+
   if (initializer) {
     read(initializer);
   }
@@ -150,7 +155,9 @@ function isTextLike(tag) {
 
 function isRow(tokens, style) {
   return (
-    tokens.includes('flex-row') || tokens.includes('flex-row-reverse') || style.get('flexDirection') === 'row'
+    tokens.includes('flex-row') ||
+    tokens.includes('flex-row-reverse') ||
+    style.get('flexDirection') === 'row'
   );
 }
 
@@ -181,7 +188,9 @@ function childElements(element) {
     return [];
   }
 
-  return element.children.filter((child) => ts.isJsxElement(child) || ts.isJsxSelfClosingElement(child));
+  return element.children.filter(
+    (child) => ts.isJsxElement(child) || ts.isJsxSelfClosingElement(child)
+  );
 }
 
 /**
@@ -190,7 +199,13 @@ function childElements(element) {
  * @returns {{ file: string, score: number, findings: Array<{ rule: string, weight: number, line: number, message: string }> }}
  */
 function scanSource(source, fileName) {
-  const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX
+  );
   const findings = [];
   const report = (rule, node, detail) => {
     const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
@@ -213,32 +228,52 @@ function scanSource(source, fileName) {
       const widths = [
         ...arbitraryPx(tokens, 'w'),
         ...arbitraryPx(tokens, 'min-w'),
-        ...[style.get('width'), style.get('minWidth')].filter((value) => /^\d+$/.test(value ?? '')).map(Number),
+        ...[style.get('width'), style.get('minWidth')]
+          .filter((value) => /^\d+$/.test(value ?? ''))
+          .map(Number),
       ].filter((value) => value >= FIXED_WIDTH_PX);
       if (widths.length > 0) {
         report('fixed-width', opening, `${Math.max(...widths)}px on <${tag}>`);
       }
 
       const children = childElements(node);
-      const hasDynamicChildren = ts.isJsxElement(node) && node.children.some((child) => ts.isJsxExpression(child) && child.expression);
+      const hasDynamicChildren =
+        ts.isJsxElement(node) &&
+        node.children.some((child) => ts.isJsxExpression(child) && child.expression);
 
-      if (isRow(tokens, style) && !tokens.includes('flex-wrap') && style.get('flexWrap') !== 'wrap') {
+      if (
+        isRow(tokens, style) &&
+        !tokens.includes('flex-wrap') &&
+        style.get('flexWrap') !== 'wrap'
+      ) {
         const texts = children.filter((child) => isTextLike(tagOf(child)));
         const canShrink = (child) => {
           const childAttributes = attributeMap(openingOf(child));
-          return shrinks(classTokens(childAttributes), childAttributes, styleProps(childAttributes));
+          return shrinks(
+            classTokens(childAttributes),
+            childAttributes,
+            styleProps(childAttributes)
+          );
         };
+
         const rigid = texts.filter((child) => !canShrink(child));
         // A flexible sibling (flex-1, a truncating text) absorbs a longer string, so the row only
         // holds a risk when nothing in it can give.
         if (children.length >= 2 && rigid.length > 0 && !children.some(canShrink)) {
-          report('row-text-no-shrink', opening, `${rigid.length} of ${texts.length} text child(ren)`);
+          report(
+            'row-text-no-shrink',
+            opening,
+            `${rigid.length} of ${texts.length} text child(ren)`
+          );
         }
 
         const buttons = children.filter((child) => tagOf(child) === 'Button');
         const sharing = buttons.filter((child) => {
           const childAttributes = attributeMap(openingOf(child));
-          return !classTokens(childAttributes).includes('flex-1') && !styleProps(childAttributes).has('flex');
+          return (
+            !classTokens(childAttributes).includes('flex-1') &&
+            !styleProps(childAttributes).has('flex')
+          );
         });
         if (buttons.length >= 2 && sharing.length >= 2) {
           report('row-buttons', opening, `${buttons.length} Buttons`);
@@ -285,6 +320,7 @@ function scanSource(source, fileName) {
 
     ts.forEachChild(node, visit);
   };
+
   visit(sourceFile);
 
   return {
@@ -340,17 +376,27 @@ function parseArguments(argv) {
 }
 
 function main() {
+  // Piping into `head` closes stdout early; that is the reader being done, not an error.
+  process.stdout.on('error', (error) => {
+    if (error.code === 'EPIPE') {
+      process.exit(0);
+    }
+
+    throw error;
+  });
   const options = parseArguments(process.argv.slice(2));
-  const results = scanFiles(options.directories.length > 0 ? options.directories : DEFAULT_DIRS).filter(
-    (result) => result.score >= options.minScore
-  );
+  const results = scanFiles(
+    options.directories.length > 0 ? options.directories : DEFAULT_DIRS
+  ).filter((result) => result.score >= options.minScore);
   if (options.json) {
     process.stdout.write(JSON.stringify(results, null, 2) + '\n');
     return;
   }
 
   const shown = results.slice(0, options.top);
-  process.stdout.write(`${results.length} file(s) with layout risk signals; showing ${shown.length}.\n\n`);
+  process.stdout.write(
+    `${results.length} file(s) with layout risk signals; showing ${shown.length}.\n\n`
+  );
   shown.forEach((result) => {
     process.stdout.write(`${String(result.score).padStart(3)}  ${result.file}\n`);
     result.findings

@@ -145,7 +145,8 @@ function describe(node: LayoutNode): string {
 function overlapFindings(snapshot: LayoutSnapshot): Finding[] {
   const byId = new Map(snapshot.nodes.map((node) => [node.id, node]));
   const candidates = snapshot.nodes.filter(
-    (node) => !isBackdrop(node, snapshot.viewport) && (node.rects.length > 0 || node.visible.length > 0)
+    (node) =>
+      !isBackdrop(node, snapshot.viewport) && (node.rects.length > 0 || node.visible.length > 0)
   );
   const findings: Finding[] = [];
   for (let i = 0; i < candidates.length; i++) {
@@ -231,6 +232,25 @@ function truncationFindings(snapshot: LayoutSnapshot): Finding[] {
         kind: 'truncated' as const,
         severity: matters ? ('warn' as const) : ('info' as const),
         message: `${describe(node)} is shortened with an ellipsis or line limit`,
+        labels: [node.label],
+        paths: [node.path],
+        rects: node.visible.length > 0 ? node.visible : node.rects,
+      };
+    });
+}
+
+function wordBreakFindings(snapshot: LayoutSnapshot): Finding[] {
+  const byId = new Map(snapshot.nodes.map((node) => [node.id, node]));
+  return snapshot.nodes
+    .filter((node) => node.brokenWords.length > 0)
+    .map((node) => {
+      const parent = node.parent === null ? undefined : byId.get(node.parent);
+      // A control's label split mid-word is plainly broken; body text that does it is merely tight.
+      const onControl = parent !== undefined && isTouchable(parent);
+      return {
+        kind: 'word-break' as const,
+        severity: onControl ? ('error' as const) : ('warn' as const),
+        message: `${describe(node)} breaks ${node.brokenWords.map((word) => `"${word}"`).join(', ')} across lines`,
         labels: [node.label],
         paths: [node.path],
         rects: node.visible.length > 0 ? node.visible : node.rects,
@@ -355,6 +375,7 @@ export function analyzeSnapshot(snapshot: LayoutSnapshot): Finding[] {
     ...occlusionFindings(snapshot),
     ...clippingFindings(snapshot),
     ...truncationFindings(snapshot),
+    ...wordBreakFindings(snapshot),
     ...pageFindings(snapshot),
     ...targetFindings(snapshot),
   ]);
