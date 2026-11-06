@@ -56,6 +56,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
 export const LOGGY_FAILURE_POSE: LoggyPoseName = 'thinking';
 
 type LoggyPoseProps = {
+  animated?: boolean; // TODO: implement this
   pose: LoggyPoseName;
   height: number;
 };
@@ -75,7 +76,7 @@ const HIDDEN_FROM_ASSISTIVE_TECH: SvgProps =
       };
 
 /** The mascot at a given height. Always decorative: the words around it carry the meaning. */
-export function LoggyPose({ pose, height }: LoggyPoseProps) {
+export function LoggyPose({ pose, height, animated = false }: LoggyPoseProps) {
   const { Art, aspect } = POSES[pose];
 
   return <Art {...HIDDEN_FROM_ASSISTIVE_TECH} height={height} width={height * aspect} />;
