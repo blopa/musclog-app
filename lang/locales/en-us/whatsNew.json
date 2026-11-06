@@ -139,6 +139,18 @@
         }
       },
       "v2_16_0": {
+        "loggy": {
+          "title": "Meet Loggy",
+          "description": "Loggy is Musclog's mascot. He welcomes you, keeps empty screens company and turns up when you reach a first. You can change how he appears below, or later in Settings → Appearance and home.",
+          "show": {
+            "title": "Show Loggy",
+            "description": "Turn off to hide him everywhere. Your AI coach keeps its picture."
+          },
+          "animated": {
+            "title": "Animated Loggy",
+            "description": "Turn off to always see him standing still. Only applies while Loggy is shown."
+          }
+        },
         "importHistory": {
           "title": "Bring your training history",
           "description": "Import your workouts from Strong, Hevy or FitNotes in Settings. Importing the same file twice adds nothing, and you can undo an import."

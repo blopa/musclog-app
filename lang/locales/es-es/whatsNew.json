@@ -139,6 +139,18 @@
         }
       },
       "v2_16_0": {
+        "loggy": {
+          "title": "Conoce a Loggy",
+          "description": "Loggy es la mascota de Musclog. Te da la bienvenida, acompaña las pantallas vacías y aparece cuando logras algo por primera vez. Puedes cambiar cómo aparece aquí abajo o más tarde en Ajustes → Apariencia e inicio.",
+          "show": {
+            "title": "Mostrar a Loggy",
+            "description": "Desactívalo para ocultarlo en todas partes. Tu coach de IA conserva su imagen."
+          },
+          "animated": {
+            "title": "Loggy animado",
+            "description": "Desactívalo para verlo siempre quieto. Solo se aplica mientras Loggy se muestra."
+          }
+        },
         "importHistory": {
           "title": "Trae tu historial de entrenamiento",
           "description": "Importa tus entrenamientos de Strong, Hevy o FitNotes desde Ajustes. Importar el mismo archivo dos veces no añade nada, y puedes deshacer una importación."

@@ -2,6 +2,32 @@
   "version": "2.16.0",
   "pages": [
     {
+      "id": "loggy",
+      "blocks": [
+        {
+          "id": "loggy",
+          "type": "info",
+          "icon": "smile",
+          "titleKey": "whatsNew.releases.v2_16_0.loggy.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.loggy.description"
+        },
+        {
+          "id": "showLoggy",
+          "type": "choice",
+          "setting": "showLoggy",
+          "titleKey": "whatsNew.releases.v2_16_0.loggy.show.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.loggy.show.description"
+        },
+        {
+          "id": "animatedLoggy",
+          "type": "choice",
+          "setting": "animatedLoggy",
+          "titleKey": "whatsNew.releases.v2_16_0.loggy.animated.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.loggy.animated.description"
+        }
+      ]
+    },
+    {
       "id": "importHistory",
       "blocks": [
         {

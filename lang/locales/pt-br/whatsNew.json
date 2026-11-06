@@ -139,6 +139,18 @@
         }
       },
       "v2_16_0": {
+        "loggy": {
+          "title": "Conheça o Loggy",
+          "description": "O Loggy é o mascote do Musclog. Ele te dá as boas-vindas, faz companhia nas telas vazias e aparece quando você conquista algo pela primeira vez. Você pode mudar como ele aparece aqui embaixo ou depois em Configurações → Aparência e início.",
+          "show": {
+            "title": "Mostrar o Loggy",
+            "description": "Desative para escondê-lo em todo lugar. Seu coach de IA mantém a imagem."
+          },
+          "animated": {
+            "title": "Loggy animado",
+            "description": "Desative para vê-lo sempre parado. Só vale enquanto o Loggy aparece."
+          }
+        },
         "importHistory": {
           "title": "Traga seu histórico de treinos",
           "description": "Importe seus treinos do Strong, Hevy ou FitNotes nas Configurações. Importar o mesmo arquivo duas vezes não adiciona nada, e você pode desfazer uma importação."

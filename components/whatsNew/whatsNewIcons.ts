@@ -10,6 +10,7 @@ import {
   Settings,
   Shield,
   Shuffle,
+  Smile,
   Target,
   Timer,
   TrendingUp,
@@ -31,4 +32,5 @@ export const whatsNewIcons: Record<WhatsNewIconName, LucideIcon> = {
   flame: Flame,
   settings: Settings,
   bot: Bot,
+  smile: Smile,
 };

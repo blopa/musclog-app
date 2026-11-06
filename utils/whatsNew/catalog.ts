@@ -15,6 +15,7 @@ export const WHATS_NEW_ICONS = [
   'flame',
   'settings',
   'bot',
+  'smile',
 ] as const;
 export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
 
@@ -32,6 +33,8 @@ export const WHATS_NEW_SETTINGS = [
   'autoStartRestTimer',
   'restTimerHaptics',
   'reviewWeekday',
+  'showLoggy',
+  'animatedLoggy',
 ] as const;
 export type WhatsNewSetting = (typeof WHATS_NEW_SETTINGS)[number];
 
@@ -43,6 +46,8 @@ export const WHATS_NEW_SETTING_CATALOG = {
   autoStartRestTimer: { kind: 'boolean' },
   restTimerHaptics: { kind: 'boolean' },
   reviewWeekday: { kind: 'weekday' },
+  showLoggy: { kind: 'boolean' },
+  animatedLoggy: { kind: 'boolean' },
 } as const satisfies Record<WhatsNewSetting, SettingSpec>;
 
 export type WhatsNewSettingValues = {

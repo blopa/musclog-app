@@ -139,6 +139,18 @@
         }
       },
       "v2_16_0": {
+        "loggy": {
+          "title": "Maak kennis met Loggy",
+          "description": "Loggy is de mascotte van Musclog. Hij heet je welkom, houdt lege schermen gezelschap en verschijnt als je iets voor het eerst bereikt. Je kunt hieronder kiezen hoe hij verschijnt, of later via Instellingen → Uiterlijk en start.",
+          "show": {
+            "title": "Loggy tonen",
+            "description": "Zet uit om hem overal te verbergen. Je AI-coach houdt zijn afbeelding."
+          },
+          "animated": {
+            "title": "Geanimeerde Loggy",
+            "description": "Zet uit om hem altijd stilstaand te zien. Geldt alleen zolang Loggy wordt getoond."
+          }
+        },
         "importHistory": {
           "title": "Neem je trainingsgeschiedenis mee",
           "description": "Importeer je workouts uit Strong, Hevy of FitNotes via Instellingen. Hetzelfde bestand twee keer importeren voegt niets toe, en je kunt een import ongedaan maken."
