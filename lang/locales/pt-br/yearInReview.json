@@ -27,7 +27,12 @@
       "days_one": "dia treinado",
       "days_few": "dias treinados",
       "days_many": "dias treinados",
-      "days_other": "dias treinados"
+      "days_other": "dias treinados",
+      "legend": {
+        "workout": "Treino",
+        "food": "Comida",
+        "both": "Ambos"
+      }
     },
     "streak": {
       "title": "Maior sequência",

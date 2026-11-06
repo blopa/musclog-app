@@ -1,5 +1,3 @@
-import { type ActivityHeatmapLevel, activityLevel } from '@/utils/activityHeatmap';
-import { WORKOUT_HEATMAP_MAX_VALUE } from '@/utils/activityHeatmapData';
 import type { YearInReview } from '@/utils/yearInReview/types';
 
 /**
@@ -9,6 +7,7 @@ import type { YearInReview } from '@/utils/yearInReview/types';
  */
 
 type WorkoutDays = YearInReview['workoutDays'];
+type NutritionDays = YearInReview['nutritionDays'];
 
 const DAY_MS = 86_400_000;
 const DAYS_PER_WEEK = 7;
@@ -92,18 +91,42 @@ export function yearWeekStrip(year: number, workoutDays: WorkoutDays): YearWeekC
   return cells;
 }
 
+/** What a calendar day holds: nothing, food only, a workout only, or both. */
+export type YearCalendarDay = 'none' | 'food' | 'workout' | 'both';
+
+export function calendarDayKind(trained: boolean, fed: boolean): YearCalendarDay {
+  if (trained && fed) {
+    return 'both';
+  }
+
+  if (trained) {
+    return 'workout';
+  }
+
+  return fed ? 'food' : 'none';
+}
+
 export type YearCalendarMonth = {
   /** 0-11. */
   month: number;
   /** Empty cells before the 1st in a Monday-first row. */
   leadingBlanks: number;
-  /** One level per day of the month, on the same scale as the Home heatmap. */
-  levels: ActivityHeatmapLevel[];
+  /** One kind per day of the month. */
+  days: YearCalendarDay[];
 };
 
-/** Twelve small month grids, so a whole year fits one screen without scrolling. */
-export function yearCalendarMonths(year: number, workoutDays: WorkoutDays): YearCalendarMonth[] {
-  const byDay = new Map(workoutDays.map(({ day, value }) => [day, value]));
+/**
+ * Twelve small month grids, so a whole year fits one screen without scrolling. A day counts as
+ * trained when it has a completed session and as fed when it has any logged food, whatever the
+ * amount of either.
+ */
+export function yearCalendarMonths(
+  year: number,
+  workoutDays: WorkoutDays,
+  nutritionDays: NutritionDays
+): YearCalendarMonth[] {
+  const trained = new Set(workoutDays.filter(({ value }) => value > 0).map(({ day }) => day));
+  const fed = new Set(nutritionDays.filter(({ value }) => value > 0).map(({ day }) => day));
 
   return Array.from({ length: MONTHS_PER_YEAR }, (_, month) => {
     const firstDay = dayNumberOf(year, month, 1);
@@ -113,9 +136,9 @@ export function yearCalendarMonths(year: number, workoutDays: WorkoutDays): Year
     return {
       month,
       leadingBlanks: mondayFirstWeekday(firstDay),
-      levels: Array.from({ length: dayCount }, (__, index) => {
-        const value = byDay.get(`${monthKey}-${String(index + 1).padStart(2, '0')}`) ?? 0;
-        return activityLevel(value, WORKOUT_HEATMAP_MAX_VALUE);
+      days: Array.from({ length: dayCount }, (__, index) => {
+        const key = `${monthKey}-${String(index + 1).padStart(2, '0')}`;
+        return calendarDayKind(trained.has(key), fed.has(key));
       }),
     };
   });

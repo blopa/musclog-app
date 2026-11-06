@@ -6,6 +6,7 @@ import {
 } from '@/utils/yearInReview/yearCharts';
 
 const day = (key: string, value = 1) => ({ day: key, value });
+const food = (key: string, value = 1) => ({ day: key, value });
 
 describe('monthlySessions', () => {
   it('sums sessions per month, January first', () => {
@@ -87,14 +88,14 @@ describe('yearWeekStrip', () => {
 describe('yearCalendarMonths', () => {
   it('lays out twelve months with their real lengths, leap years included', () => {
     const lengths = (year: number) =>
-      yearCalendarMonths(year, []).map(({ levels }) => levels.length);
+      yearCalendarMonths(year, [], []).map(({ days }) => days.length);
 
     expect(lengths(2026)).toEqual([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]);
     expect(lengths(2024)[1]).toBe(29);
   });
 
   it('starts each month on its Monday-first weekday', () => {
-    const months = yearCalendarMonths(2026, []);
+    const months = yearCalendarMonths(2026, [], []);
 
     // 1 January 2026 is a Thursday, 1 June 2026 a Monday, 1 March 2026 a Sunday.
     expect(months[0].leadingBlanks).toBe(3);
@@ -102,12 +103,31 @@ describe('yearCalendarMonths', () => {
     expect(months[2].leadingBlanks).toBe(6);
   });
 
-  it('colours a trained day and never an untrained one, on the Home heatmap scale', () => {
-    const months = yearCalendarMonths(2026, [day('2026-03-15'), day('2026-03-16', 2)]);
-    const march = months[2].levels;
+  it('marks a workout day, a food day, both, or neither', () => {
+    const months = yearCalendarMonths(
+      2026,
+      [day('2026-03-15'), day('2026-03-16')],
+      [food('2026-03-16'), food('2026-03-17', 3)]
+    );
+    const march = months[2].days;
 
-    expect(march[14]).toBeGreaterThan(0);
-    expect(march[15]).toBe(4);
-    expect(march.filter((level) => level > 0)).toHaveLength(2);
+    expect(march[13]).toBe('none');
+    expect(march[14]).toBe('workout');
+    expect(march[15]).toBe('both');
+    expect(march[16]).toBe('food');
+    expect(march.filter((kind) => kind !== 'none')).toHaveLength(3);
+  });
+
+  it('counts a day once however many sessions or meals it holds', () => {
+    const months = yearCalendarMonths(2026, [day('2026-03-15', 2)], [food('2026-03-15', 5)]);
+
+    expect(months[2].days[14]).toBe('both');
+  });
+
+  it('ignores a day with no real activity value', () => {
+    const months = yearCalendarMonths(2026, [day('2026-03-15', 0)], [food('2026-03-16', 0)]);
+
+    expect(months[2].days[14]).toBe('none');
+    expect(months[2].days[15]).toBe('none');
   });
 });

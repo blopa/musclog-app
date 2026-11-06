@@ -6,6 +6,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { YEAR_STORY_ART } from '@/components/yearInReview/yearStoryArt';
 import {
+  CalendarLegend,
   YearCalendar,
   YearMonthBars,
   YearShareBar,
@@ -79,6 +80,17 @@ const POSTER_PADDING = 24;
 const HERO_SIZE = 132;
 /** The calendar page's title and figure, at design scale. */
 const CALENDAR_HEADER_HEIGHT = 112;
+/** The colour key under the calendar, at design scale. */
+const CALENDAR_LEGEND_HEIGHT = 32;
+/**
+ * The calendar's three marks. They sit on the paper ground, where teal, coral and ink all read,
+ * and stay distinct from the empty track.
+ */
+const CALENDAR_MARK_COLORS = {
+  workout: LOGGY_PALETTE.teal,
+  food: LOGGY_PALETTE.coral,
+  both: LOGGY_PALETTE.ink,
+} as const;
 /** The free column beside the mascot, as a share of the poster's width. */
 const BESIDE_LOGGY_SHARE = 0.38;
 /** How far the mascot hangs past the poster's edge, so it stands in the frame, not on a shelf. */
@@ -316,14 +328,30 @@ export function YearStoryCardView({ card, review, units, locale, size }: Props) 
               accessibilityLabel={`${formatGroupedInteger(days)} ${caption}`}
             >
               <YearCalendar
-                months={yearCalendarMonths(card.year, review.workoutDays)}
+                months={yearCalendarMonths(card.year, review.workoutDays, review.nutritionDays)}
                 monthLabels={monthNames(locale, 'short')}
                 width={innerWidth}
-                maxHeight={size.height - POSTER_PADDING * 2 - CALENDAR_HEADER_HEIGHT * scale}
+                maxHeight={
+                  size.height -
+                  POSTER_PADDING * 2 -
+                  (CALENDAR_HEADER_HEIGHT + CALENDAR_LEGEND_HEIGHT) * scale
+                }
                 ground={ground}
-                markColor={LOGGY_PALETTE.teal}
+                markColors={CALENDAR_MARK_COLORS}
               />
             </View>
+            <CalendarLegend
+              entries={[
+                {
+                  label: t('yearInReview.heatmap.legend.workout'),
+                  color: CALENDAR_MARK_COLORS.workout,
+                },
+                { label: t('yearInReview.heatmap.legend.food'), color: CALENDAR_MARK_COLORS.food },
+                { label: t('yearInReview.heatmap.legend.both'), color: CALENDAR_MARK_COLORS.both },
+              ]}
+              ground={ground}
+              scale={scale}
+            />
           </View>
         </Poster>
       );

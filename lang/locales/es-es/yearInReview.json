@@ -27,7 +27,12 @@
       "days_one": "día entrenado",
       "days_few": "días entrenados",
       "days_many": "días entrenados",
-      "days_other": "días entrenados"
+      "days_other": "días entrenados",
+      "legend": {
+        "workout": "Entreno",
+        "food": "Comida",
+        "both": "Ambos"
+      }
     },
     "streak": {
       "title": "Racha más larga",

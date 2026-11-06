@@ -27,7 +27,12 @@
       "days_one": "dag getraind",
       "days_few": "dagen getraind",
       "days_many": "dagen getraind",
-      "days_other": "dagen getraind"
+      "days_other": "dagen getraind",
+      "legend": {
+        "workout": "Training",
+        "food": "Eten",
+        "both": "Beide"
+      }
     },
     "streak": {
       "title": "Langste reeks",

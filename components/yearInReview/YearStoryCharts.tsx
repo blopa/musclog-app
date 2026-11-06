@@ -2,8 +2,11 @@ import { Text, View } from 'react-native';
 
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import type { PosterGround } from '@/constants/loggyPalette';
-import { ACTIVITY_LEVEL_OPACITY } from '@/utils/activityHeatmap';
-import type { YearCalendarMonth, YearWeekCell } from '@/utils/yearInReview/yearCharts';
+import type {
+  YearCalendarDay,
+  YearCalendarMonth,
+  YearWeekCell,
+} from '@/utils/yearInReview/yearCharts';
 
 const MONTHS_PER_ROW = 3;
 const CELLS_PER_ROW = 7;
@@ -21,8 +24,8 @@ type CalendarProps = {
   /** The grid must fit this too: on a short phone height runs out before width does. */
   maxHeight: number;
   ground: PosterGround;
-  /** The colour of a trained day. */
-  markColor: string;
+  /** The colour of each kind of marked day. An untouched day is the ground's track. */
+  markColors: Record<Exclude<YearCalendarDay, 'none'>, string>;
 };
 
 /** The whole year on one poster: twelve month grids, three to a row, no scrolling. */
@@ -32,7 +35,7 @@ export function YearCalendar({
   width,
   maxHeight,
   ground,
-  markColor,
+  markColors,
 }: CalendarProps) {
   const monthWidth = (width - MONTH_GAP * (MONTHS_PER_ROW - 1)) / MONTHS_PER_ROW;
   const monthHeight = (maxHeight - MONTH_GAP * (MONTH_ROWS - 1)) / MONTH_ROWS;
@@ -44,7 +47,7 @@ export function YearCalendar({
   );
   const gridWidth = cell * CELLS_PER_ROW + CELL_GAP * (CELLS_PER_ROW - 1);
 
-  const renderMonth = ({ month, leadingBlanks, levels }: YearCalendarMonth) => (
+  const renderMonth = ({ month, leadingBlanks, days }: YearCalendarMonth) => (
     // The column's width, not the grid's: a short screen shrinks the grid but not the month's name.
     <View key={month} style={{ width: monthWidth }}>
       <Text
@@ -59,14 +62,13 @@ export function YearCalendar({
         {Array.from({ length: leadingBlanks }, (_, index) => (
           <View key={`blank-${index}`} style={{ height: cell, width: cell }} />
         ))}
-        {levels.map((level, index) => (
+        {days.map((kind, index) => (
           <View
             key={index}
             className="rounded-tag"
             style={{
-              backgroundColor: level === 0 ? ground.track : markColor,
+              backgroundColor: kind === 'none' ? ground.track : markColors[kind],
               height: cell,
-              opacity: ACTIVITY_LEVEL_OPACITY[level],
               width: cell,
             }}
           />
@@ -81,6 +83,35 @@ export function YearCalendar({
       {Array.from({ length: MONTH_ROWS }, (_, row) => (
         <View key={row} className="flex-row justify-between">
           {months.slice(row * MONTHS_PER_ROW, (row + 1) * MONTHS_PER_ROW).map(renderMonth)}
+        </View>
+      ))}
+    </View>
+  );
+}
+
+type CalendarLegendProps = {
+  entries: { label: string; color: string }[];
+  ground: PosterGround;
+  scale: number;
+};
+
+/** Swatches for the calendar's colours, in the poster's own type. */
+export function CalendarLegend({ entries, ground, scale }: CalendarLegendProps) {
+  return (
+    <View className="flex-row flex-wrap" style={{ columnGap: 16 * scale, rowGap: 4 * scale }}>
+      {entries.map(({ label, color }) => (
+        <View key={label} className="flex-row items-center" style={{ gap: 6 * scale }}>
+          <View
+            className="rounded-tag"
+            style={{ backgroundColor: color, height: 14 * scale, width: 14 * scale }}
+          />
+          <Text
+            className="font-medium"
+            maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
+            style={{ color: ground.ink, fontSize: 16 * scale }}
+          >
+            {label}
+          </Text>
         </View>
       ))}
     </View>

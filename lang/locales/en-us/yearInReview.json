@@ -27,7 +27,12 @@
       "days_one": "day trained",
       "days_few": "days trained",
       "days_many": "days trained",
-      "days_other": "days trained"
+      "days_other": "days trained",
+      "legend": {
+        "workout": "Workout",
+        "food": "Food",
+        "both": "Both"
+      }
     },
     "streak": {
       "title": "Longest run",
