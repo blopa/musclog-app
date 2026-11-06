@@ -54,6 +54,18 @@ describe('animated Loggy', () => {
     expect(viewBoxAspect(join(ANIMATED, svg))).toBeCloseTo(viewBoxAspect(join(POSES, svg)), 2);
   });
 
+  // A copy drawn some other way (the wave was once raster layers) drifts from its still and
+  // splits at the joints it moves.
+  it.each(animated)('%s is drawn from its still, path for path', (svg) => {
+    const file = readFileSync(join(ANIMATED, svg), 'utf8');
+    const still = new Set(readFileSync(join(POSES, svg), 'utf8').match(/<path [^>]*\/>/g) ?? []);
+    const paths = file.match(/<path [^>]*\/>/g) ?? [];
+
+    expect(file).not.toMatch(/<image\b/);
+    expect(paths.length).toBeGreaterThan(0);
+    expect(paths.filter((path) => !still.has(path))).toEqual([]);
+  });
+
   it.each(animated)('%s stands still under reduced motion', (svg) => {
     expect(readFileSync(join(ANIMATED, svg), 'utf8')).toMatch(
       /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*animation:\s*none\s*!important/
