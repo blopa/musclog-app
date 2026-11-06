@@ -8,6 +8,7 @@
           "id": "loggy",
           "type": "info",
           "icon": "smile",
+          "pose": "running",
           "titleKey": "whatsNew.releases.v2_16_0.loggy.title",
           "descriptionKey": "whatsNew.releases.v2_16_0.loggy.description"
         },

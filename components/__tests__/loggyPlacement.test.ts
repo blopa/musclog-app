@@ -23,6 +23,8 @@ const MAY_RENDER_LOGGY: Record<string, string> = {
   'components/theme/EmptyStateCard.tsx': 'whole-screen first use only (the `bare` form)',
   'components/weeklyReview/WeeklyReviewWelcome.tsx': 'the one-time introduction',
   'components/whatsNew/WhatsNewIntro.tsx': 'the first page of the tour only',
+  'components/whatsNew/WhatsNewPicture.tsx':
+    'the "Meet Loggy" page of the 2.16.0 tour (info block `pose`)',
   'components/workoutImport/ImportOutcomeViews.tsx': 'an import saving, failing or finished',
   'components/workoutImport/ImportPickStep.tsx': 'the import starts',
   'components/workoutImport/ImportUnitStep.tsx': 'the import asks its one question',

@@ -15,6 +15,7 @@ test.each([
   null,
   { ...info, type: 'unknown' },
   { ...info, icon: 'unknown' },
+  { ...info, pose: 'unknown' },
   { ...info, titleKey: 'other.title' },
   { ...info, descriptionKey: 'whatsNew.' },
   { ...info, id: '' },
@@ -56,6 +57,7 @@ test.each([
 });
 test('keeps supported block types, settings and optional fields', () => {
   const result = parse([
+    { ...info, id: 'posed', icon: 'smile', pose: 'running' },
     { ...info, icon: 'layout', descriptionKey: 'whatsNew.copy', supersededIn: '2.14.0' },
     { id: 'choice', type: 'choice', titleKey: 'whatsNew.title', setting: 'workoutView', options },
     { id: 'boolean', type: 'choice', titleKey: 'whatsNew.title', setting: 'restTimerHaptics' },
@@ -63,7 +65,7 @@ test('keeps supported block types, settings and optional fields', () => {
     { id: 'action', type: 'action', labelKey: 'whatsNew.title', action: 'openWorkoutSettings' },
   ]);
   expect(result.issues).toEqual([]);
-  expect(result.release?.pages[0].blocks).toHaveLength(5);
+  expect(result.release?.pages[0].blocks).toHaveLength(6);
 });
 test('drops duplicate page, block and feature ids, invalid items and empty pages', () => {
   const feature = { id: 'row', icon: 'heart', labelKey: 'whatsNew.title' };

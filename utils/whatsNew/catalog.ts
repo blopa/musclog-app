@@ -19,6 +19,10 @@ export const WHATS_NEW_ICONS = [
 ] as const;
 export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
 
+/** Loggy poses an info block may show in place of its icon (a subset of `LoggyPoseName`). */
+export const WHATS_NEW_POSES = ['running'] as const;
+export type WhatsNewPoseName = (typeof WHATS_NEW_POSES)[number];
+
 /** Facts about the person's data that can gate a whole page of a release. */
 export const WHATS_NEW_CONDITIONS = ['cycleTracking'] as const;
 export type WhatsNewCondition = (typeof WHATS_NEW_CONDITIONS)[number];
