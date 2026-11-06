@@ -30,9 +30,9 @@ export type LoggyPoseName =
  * compiled to a component at build time by react-native-svg-transformer (`metro.config.js`).
  *
  * These are the static poses. The animated ones (`assets/avatars/loggy-animated/`) are not here on
- * purpose: they are raster layers moved by CSS `@keyframes`, which react-native-svg cannot run, so
- * they will be layers driven by Reanimated. When they arrive, add an `animated` prop to
- * `LoggyPose` that picks them, and leave this table as the still fallback (and for reduced motion).
+ * purpose: they are layers moved by CSS `@keyframes`, which react-native-svg cannot run, so they
+ * will be layers driven by Reanimated. When they arrive, make the `animated` prop of `LoggyPose`
+ * pick them, and leave this table as the still fallback (and for reduced motion).
  */
 const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: number }> = {
   celebrating: { Art: Celebrating, aspect: 0.875 },

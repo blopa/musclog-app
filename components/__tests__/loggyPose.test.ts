@@ -3,6 +3,7 @@ import { join } from 'path';
 
 const root = join(__dirname, '..', '..');
 const POSES = join(root, 'assets', 'avatars', 'loggy-poses');
+const ANIMATED = join(root, 'assets', 'avatars', 'loggy-animated');
 const source = readFileSync(join(root, 'components', 'LoggyPose.tsx'), 'utf8');
 
 /** The aspect the component draws at: width over height of the SVG's own `viewBox`. */
@@ -39,5 +40,33 @@ describe('LoggyPose', () => {
 
   it('ships no rasterised copies beside the SVGs', () => {
     expect(readdirSync(POSES).filter((name) => name.endsWith('.png'))).toEqual([]);
+  });
+});
+
+describe('animated Loggy', () => {
+  const animated = readdirSync(ANIMATED).filter((name) => name.endsWith('.svg'));
+
+  it('finds the animations', () => {
+    expect(animated.length).toBeGreaterThan(0);
+  });
+
+  it.each(animated)('%s animates a pose that exists, at its proportions', (svg) => {
+    expect(viewBoxAspect(join(ANIMATED, svg))).toBeCloseTo(viewBoxAspect(join(POSES, svg)), 2);
+  });
+
+  it.each(animated)('%s stands still under reduced motion', (svg) => {
+    expect(readFileSync(join(ANIMATED, svg), 'utf8')).toMatch(
+      /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*animation:\s*none\s*!important/
+    );
+  });
+
+  it.each(animated)('%s moves only layers it has', (svg) => {
+    const file = readFileSync(join(ANIMATED, svg), 'utf8');
+    const css = /<style>([\s\S]*?)<\/style>/.exec(file)?.[1].replace(/\/\*[\s\S]*?\*\//g, '') ?? '';
+    const selectors = [...css.matchAll(/#([a-z][\w-]*)[^{};]*[,{]/g)].map((match) => match[1]);
+
+    for (const id of selectors) {
+      expect(file).toContain(`id="${id}"`);
+    }
   });
 });
