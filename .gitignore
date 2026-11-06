@@ -101,3 +101,7 @@ devenv.local.yaml
 
 data/common_food_error.txt
 
+
+# Python bytecode (the trace-image-to-svg skill scripts)
+__pycache__/
+*.pyc

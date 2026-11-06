@@ -16,13 +16,10 @@ import { ExerciseAliasService } from '@/database/services/ExerciseAliasService';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutProgressionService } from '@/database/services/WorkoutProgressionService';
 import { WorkoutService } from '@/database/services/WorkoutService';
-import {
-  type ExerciseResolution,
-  sessionStartedAt,
-  WorkoutImportService,
-} from '@/database/services/WorkoutImportService';
+import { WorkoutImportService } from '@/database/services/WorkoutImportService';
 import { validateExportDump } from '@/database/schemaToZod';
 import { appExerciseId } from '@/utils/exerciseImage';
+import { type ExerciseResolution, sessionStartedAt } from '@/utils/workoutImport/commitPlan';
 import { proposeExerciseMatches } from '@/utils/workoutImport/exerciseMatch';
 import type {
   ImportedExerciseBlock,

@@ -2,8 +2,7 @@
  * The import screen's state machine. Pure: the hook performs the file, database and parse work and
  * reports each result as an action, so every transition here is testable in the node project.
  */
-import type { ExerciseResolution } from '@/database/services/WorkoutImportService';
-
+import type { ExerciseResolution } from './commitPlan';
 import type { ExerciseMatch } from './exerciseMatch';
 import { inferCustomExercise } from './exerciseMatch';
 import { sessionImportKeys } from './importKey';

@@ -29,7 +29,7 @@ const MAY_RENDER_LOGGY: Record<string, string> = {
   'components/workoutImport/ImportPickStep.tsx': 'the import starts',
   'components/workoutImport/ImportUnitStep.tsx': 'the import asks its one question',
   'components/yearInReview/YearShareCard.tsx': 'the shared poster',
-  'components/yearInReview/YearStoryCardView.tsx': 'each poster of the story',
+  'components/yearInReview/posterKit.tsx': 'each poster of the story',
 };
 
 /** The two screens whose whole-screen empty state passes `pose` to `EmptyStateCard`. */

@@ -23,6 +23,8 @@ const path = require('node:path');
 const { optimize } = require('svgo'); // Reached through react-native-svg-transformer.
 const prettier = require('prettier');
 
+const { readAttributes } = require('./lib/svgAttributes');
+
 const ROOT = path.join(__dirname, '..');
 const SOURCE_DIR = path.join(ROOT, 'assets', 'avatars', 'loggy-animated');
 const OUTPUT_DIR = path.join(ROOT, 'components', 'loggy', 'animated');
@@ -305,16 +307,6 @@ function dropHiddenGroups(svg) {
   }
 }
 
-function readAttributes(text) {
-  const attributes = {};
-
-  for (const [, name, value] of text.matchAll(/([\w:-]+)="([^"]*)"/g)) {
-    attributes[name] = value;
-  }
-
-  return attributes;
-}
-
 /** The `<g>`/`<path>` tree of an optimized SVG body. */
 function readTree(svg) {
   const root = { children: [] };
@@ -332,7 +324,7 @@ function readTree(svg) {
       continue;
     }
 
-    const node = { tag, attributes: readAttributes(rawAttributes), children: [] };
+    const node = { tag, attributes: readAttributes(rawAttributes, 'optimized SVG'), children: [] };
     stack[stack.length - 1].children.push(node);
 
     if (!selfClosing) {

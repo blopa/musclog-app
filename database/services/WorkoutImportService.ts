@@ -4,7 +4,6 @@ import { randomUUID } from 'expo-crypto';
 import { database } from '@/database/database-instance';
 import { computeExerciseSearchText } from '@/database/exerciseSearchText';
 import type Exercise from '@/database/models/Exercise';
-import type { EquipmentType, MechanicType, MuscleGroup } from '@/database/models/Exercise';
 import type ExerciseAlias from '@/database/models/ExerciseAlias';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
@@ -15,9 +14,20 @@ import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds
 import { estimateCardioKcal } from '@/utils/cardioEnergy';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { normalizeNote } from '@/utils/noteText';
-import { writeSetEffort } from '@/utils/setEffort';
+import { repsInReserveFromRpe, writeSetEffort } from '@/utils/setEffort';
 import { getTimezoneAt } from '@/utils/timezone';
 import { calculateSessionVolumeFromSets, type ExerciseVolumeData } from '@/utils/workoutCalculator';
+import {
+  blockNotes,
+  type CustomExerciseSpec,
+  distinctBlockNames,
+  type ExerciseResolution,
+  isTimedSet,
+  partitionResolutions,
+  type PlannedBlock,
+  plannedBlocks,
+  sessionStartedAt,
+} from '@/utils/workoutImport/commitPlan';
 import type {
   ExerciseMatchCandidate,
   SavedExerciseAlias,
@@ -27,12 +37,7 @@ import {
   cardioImportKey,
   sessionImportKeys,
 } from '@/utils/workoutImport/importKey';
-import type {
-  ImportedExerciseBlock,
-  ImportedSession,
-  ImportedSet,
-  WorkoutImportSource,
-} from '@/utils/workoutImport/types';
+import type { ImportedSession, WorkoutImportSource } from '@/utils/workoutImport/types';
 import {
   estimateWorkoutKcalFromSets,
   type WorkoutEnergyProfile,
@@ -42,18 +47,6 @@ import { CARDIO_CATALOGUE_SLUGS } from './CardioLogService';
 import { ExerciseAliasService, MAX_EXERCISE_ALIAS_LENGTH } from './ExerciseAliasService';
 import { UserMetricService } from './UserMetricService';
 import { loadWorkoutEnergyProfile } from './workoutEnergyProfile';
-
-/** What to do with one exercise name from the file. Keyed by the file's exact name. */
-export type ExerciseResolution =
-  | { kind: 'existing'; exerciseId: string; rememberAlias: boolean }
-  | {
-      kind: 'create';
-      name: string;
-      muscleGroup: MuscleGroup;
-      equipmentType: EquipmentType;
-      mechanicType: MechanicType;
-    }
-  | { kind: 'skip' };
 
 export interface ImportCommitInput {
   source: WorkoutImportSource;
@@ -90,144 +83,7 @@ type ExerciseInfo = Pick<
   'id' | 'mechanicType' | 'muscleGroup' | 'equipmentType' | 'loadMultiplier'
 >;
 
-/** The base key of a stored log: a cardio row's key is the session key plus its suffix. */
-function sessionKeyOf(storedKey: string): string {
-  const at = storedKey.indexOf(CARDIO_KEY_INFIX);
-  return at === -1 ? storedKey : storedKey.slice(0, at);
-}
-
-/**
- * The session's start in local time. A day-only file gets local noon, so the workout stays on its
- * day in every timezone.
- */
-export function sessionStartedAt(day: string, startMinutes: number | null): number {
-  const [year, month, dayOfMonth] = day.split('-').map(Number);
-  if (startMinutes === null) {
-    return new Date(year, month - 1, dayOfMonth, 12, 0).getTime();
-  }
-
-  return new Date(year, month - 1, dayOfMonth, 0, startMinutes).getTime();
-}
-
-function timedNoteLines(set: ImportedSet): string[] {
-  if (set.reps > 0) {
-    return [];
-  }
-
-  // Language-neutral on purpose: a note written in the file's own units, not translated copy.
-  const lines: string[] = [];
-  if (set.durationSeconds !== null && set.durationSeconds > 0) {
-    lines.push(`${Math.round(set.durationSeconds)} s`);
-  }
-
-  if (set.distanceM !== null && set.distanceM > 0) {
-    lines.push(`${Math.round(set.distanceM / 10) / 100} km`);
-  }
-
-  return lines;
-}
-
-function blockNotes(block: ImportedExerciseBlock): string | undefined {
-  const lines = new Set<string>();
-  for (const line of (block.notes ?? '').split('\n')) {
-    if (line.trim()) {
-      lines.add(line.trim());
-    }
-  }
-
-  for (const set of block.sets) {
-    for (const line of timedNoteLines(set)) {
-      lines.add(line);
-    }
-  }
-
-  return normalizeNote([...lines].join('\n'));
-}
-
-/** RPE 8 is two reps in reserve. Unrated stays null, never a fabricated zero. */
-function repsInReserveFromRpe(rpe: number | null): number | null {
-  return rpe === null ? null : Math.min(9, Math.max(0, 10 - rpe));
-}
-
-interface PlannedSet {
-  exerciseId: string;
-  weight: number;
-  reps: number;
-  set: ImportedSet;
-}
-
-interface PlannedBlock {
-  block: ImportedExerciseBlock;
-  exerciseId: string;
-  sets: PlannedSet[];
-}
-
-/** Blocks that will be written: resolved to a live exercise and with at least one set. */
-function plannedBlocks(
-  session: ImportedSession,
-  exerciseIdByName: Map<string, string>
-): PlannedBlock[] {
-  return session.exercises.flatMap((block) => {
-    const exerciseId = exerciseIdByName.get(block.name);
-    if (!exerciseId || block.sets.length === 0) {
-      return [];
-    }
-
-    return [
-      {
-        block,
-        exerciseId,
-        sets: block.sets.map((set) => ({ exerciseId, weight: set.weightKg, reps: set.reps, set })),
-      },
-    ];
-  });
-}
-
-interface StrengthTotals {
-  totalVolume: number;
-  kcal: number;
-}
-
-function strengthTotals(planned: PlannedBlock[], ctx: CommitContext): StrengthTotals {
-  const performed = planned.flatMap((block) =>
-    block.sets.map((set) => ({
-      exerciseId: set.exerciseId,
-      weight: set.weight,
-      reps: set.reps,
-      completionStatus: 'performed' as const,
-      setType: set.set.setType,
-    }))
-  );
-
-  const volumeByExercise = new Map<string, ExerciseVolumeData>(
-    [...ctx.infoById].map(([id, info]) => [id, { equipmentType: info.equipmentType }])
-  );
-  // A timed set has no reps to lift, and the 1RM formula would give a bodyweight plank real volume.
-  const volumeSets = performed.filter((set) => set.reps > 0);
-  const totalVolume = calculateSessionVolumeFromSets(
-    volumeSets,
-    volumeByExercise,
-    ctx.bodyWeightKg,
-    {
-      onlyCompletedSets: true,
-    }
-  );
-  const kcal = ctx.profile
-    ? estimateWorkoutKcalFromSets(
-        ctx.profile,
-        performed.map(({ exerciseId, weight, reps, completionStatus }) => ({
-          exerciseId,
-          weight,
-          reps,
-          completionStatus,
-        })),
-        [...ctx.infoById.values()]
-      )
-    : 0;
-
-  return { totalVolume, kcal };
-}
-
+/** What the writers share. Built once per import, so no session rebuilds a lookup. */
 interface CommitContext {
   source: WorkoutImportSource;
   batchId: string;
@@ -235,9 +91,98 @@ interface CommitContext {
   fallbackWorkoutName: string;
   profile: WorkoutEnergyProfile | null;
   bodyWeightKg: number;
-  exerciseIdByName: Map<string, string>;
-  infoById: Map<string, ExerciseInfo>;
-  liveKeys: Set<string>;
+  exerciseIdByName: ReadonlyMap<string, string>;
+  volumeByExercise: Map<string, ExerciseVolumeData>;
+  exercises: ExerciseInfo[];
+}
+
+/** The base key of a stored log: a cardio row's key is the session key plus its suffix. */
+function sessionKeyOf(storedKey: string): string {
+  const at = storedKey.indexOf(CARDIO_KEY_INFIX);
+  return at === -1 ? storedKey : storedKey.slice(0, at);
+}
+
+function isAlreadyHere(session: ImportedSession, liveKeys: ReadonlySet<string>): boolean {
+  return sessionImportKeys(session).some((key) => liveKeys.has(key));
+}
+
+interface ImportedLogFields {
+  workoutName: string;
+  type: 'free' | 'cardio';
+  importKey: string;
+  startedAt: number;
+  durationSeconds: number | null;
+  totalVolume: number;
+  kcal: number;
+  notes: string | null;
+  cardio?: { activity: 'walk' | 'run'; distanceM: number };
+}
+
+/** The `workout_logs` row of an imported session, strength or cardio. */
+function prepareImportedLog(ctx: CommitContext, fields: ImportedLogFields): WorkoutLog {
+  return database.get<WorkoutLog>('workout_logs').prepareCreate((record) => {
+    record.workoutName = fields.workoutName;
+    record.type = fields.type;
+    record.startedAt = fields.startedAt;
+    record.completedAt = fields.startedAt + Math.round((fields.durationSeconds ?? 0) * 1000);
+    record.timezone = getTimezoneAt(fields.startedAt);
+    record.totalVolume = fields.totalVolume;
+    record.caloriesBurned = fields.kcal > 0 ? fields.kcal : undefined;
+    record.notes = normalizeNote(fields.notes);
+    record.importSource = ctx.source;
+    record.importKey = fields.importKey;
+    record.importBatchId = ctx.batchId;
+    record.createdAt = ctx.now;
+    record.updatedAt = ctx.now;
+    if (fields.cardio) {
+      record.activity = fields.cardio.activity;
+      record.distanceM = fields.cardio.distanceM;
+    }
+  });
+}
+
+function prepareLogExercise(
+  ctx: CommitContext,
+  logId: string,
+  exerciseId: string,
+  exerciseOrder: number,
+  extra: { groupId?: string; notes?: string } = {}
+): WorkoutLogExercise {
+  return database.get<WorkoutLogExercise>('workout_log_exercises').prepareCreate((record) => {
+    record.workoutLogId = logId;
+    record.exerciseId = exerciseId;
+    record.exerciseOrder = exerciseOrder;
+    record.groupId = extra.groupId;
+    record.notes = extra.notes;
+    record.createdAt = ctx.now;
+    record.updatedAt = ctx.now;
+  });
+}
+
+function strengthTotals(
+  planned: PlannedBlock[],
+  ctx: CommitContext
+): { totalVolume: number; kcal: number } {
+  const performed = planned.flatMap(({ exerciseId, sets }) =>
+    sets.map((set) => ({
+      exerciseId,
+      weight: set.weightKg,
+      reps: set.reps,
+      completionStatus: 'performed' as const,
+      setType: set.setType,
+    }))
+  );
+
+  // A timed set has no reps to lift, and the 1RM formula would give a bodyweight plank real volume.
+  const totalVolume = calculateSessionVolumeFromSets(
+    performed.filter((set) => set.reps > 0),
+    ctx.volumeByExercise,
+    ctx.bodyWeightKg,
+    { onlyCompletedSets: true }
+  );
+  const kcal = ctx.profile ? estimateWorkoutKcalFromSets(ctx.profile, performed, ctx.exercises) : 0;
+
+  return { totalVolume, kcal };
 }
 
 function prepareStrengthLog(
@@ -246,68 +191,51 @@ function prepareStrengthLog(
   planned: PlannedBlock[],
   ctx: CommitContext
 ): { ops: Model[]; setCount: number; timedSets: number } {
-  const completedAt =
-    session.durationSeconds === null
-      ? startedAt
-      : startedAt + Math.round(session.durationSeconds * 1000);
   const { totalVolume, kcal } = strengthTotals(planned, ctx);
-
-  const log = database.get<WorkoutLog>('workout_logs').prepareCreate((record) => {
-    record.workoutName = session.name || ctx.fallbackWorkoutName;
-    record.templateId = undefined;
-    record.type = 'free';
-    record.startedAt = startedAt;
-    record.completedAt = completedAt;
-    record.timezone = getTimezoneAt(startedAt);
-    record.totalVolume = totalVolume;
-    record.caloriesBurned = kcal > 0 ? kcal : undefined;
-    record.notes = normalizeNote(session.notes);
-    record.exhaustionLevel = undefined;
-    record.workoutScore = undefined;
-    record.importSource = ctx.source;
-    record.importKey = session.importKey;
-    record.importBatchId = ctx.batchId;
-    record.createdAt = ctx.now;
-    record.updatedAt = ctx.now;
+  const log = prepareImportedLog(ctx, {
+    workoutName: session.name || ctx.fallbackWorkoutName,
+    type: 'free',
+    importKey: session.importKey,
+    startedAt,
+    durationSeconds: session.durationSeconds,
+    totalVolume,
+    kcal,
+    notes: session.notes,
   });
 
   const ops: Model[] = [log];
   const groupIdBySuperset = new Map<string, string>();
+  const groupIdFor = (supersetKey: string | null): string | undefined => {
+    if (!supersetKey) {
+      return undefined;
+    }
+
+    const known = groupIdBySuperset.get(supersetKey);
+    if (known) {
+      return known;
+    }
+
+    const created = randomUUID();
+    groupIdBySuperset.set(supersetKey, created);
+    return created;
+  };
+
   let setOrder = 0;
-  let setCount = 0;
   let timedSets = 0;
 
   planned.forEach(({ block, exerciseId, sets }, exerciseOrder) => {
-    let groupId: string | undefined;
-    if (block.supersetKey) {
-      groupId = groupIdBySuperset.get(block.supersetKey);
-      if (!groupId) {
-        groupId = randomUUID();
-        groupIdBySuperset.set(block.supersetKey, groupId);
-      }
-    }
-
-    const logExercise = database
-      .get<WorkoutLogExercise>('workout_log_exercises')
-      .prepareCreate((record) => {
-        record.workoutLogId = log.id;
-        record.exerciseId = exerciseId;
-        record.exerciseOrder = exerciseOrder;
-        record.groupId = groupId;
-        record.notes = blockNotes(block);
-        record.createdAt = ctx.now;
-        record.updatedAt = ctx.now;
-      });
+    const logExercise = prepareLogExercise(ctx, log.id, exerciseId, exerciseOrder, {
+      groupId: groupIdFor(block.supersetKey),
+      notes: blockNotes(block),
+    });
     ops.push(logExercise);
 
-    for (const { set } of sets) {
+    for (const set of sets) {
       setOrder += 1;
-      setCount += 1;
-      if (set.reps === 0 && (set.durationSeconds ?? set.distanceM ?? 0) > 0) {
+      if (isTimedSet(set)) {
         timedSets += 1;
       }
 
-      const rir = repsInReserveFromRpe(set.rpe);
       ops.push(
         database.get<WorkoutLogSet>('workout_log_sets').prepareCreate((record) => {
           record.logExerciseId = logExercise.id;
@@ -315,7 +243,7 @@ function prepareStrengthLog(
           record.weight = set.weightKg;
           record.partials = 0;
           record.restTimeAfter = 0;
-          writeSetEffort(record, rir);
+          writeSetEffort(record, repsInReserveFromRpe(set.rpe));
           record.completionStatus = 'performed';
           record.difficultyLevel = set.rpe ?? undefined;
           record.setType = set.setType;
@@ -327,7 +255,7 @@ function prepareStrengthLog(
     }
   });
 
-  return { ops, setCount, timedSets };
+  return { ops, setCount: setOrder, timedSets };
 }
 
 function prepareCardioLogs(
@@ -346,38 +274,20 @@ function prepareCardioLogs(
             bodyMassKg: ctx.bodyWeightKg,
           })
         : 0;
-    const completedAt = startedAt + Math.round(durationS * 1000);
-    const log = database.get<WorkoutLog>('workout_logs').prepareCreate((record) => {
-      record.workoutName = cardio.name || session.name || ctx.fallbackWorkoutName;
-      record.templateId = undefined;
-      record.type = 'cardio';
-      record.activity = cardio.activity;
-      record.distanceM = cardio.distanceM;
-      record.startedAt = startedAt;
-      record.completedAt = completedAt;
-      record.timezone = getTimezoneAt(startedAt);
-      record.totalVolume = 0;
-      record.caloriesBurned = kcal > 0 ? kcal : undefined;
-      record.notes = normalizeNote(cardio.notes);
-      record.exhaustionLevel = undefined;
-      record.workoutScore = undefined;
-      record.importSource = ctx.source;
-      record.importKey = cardioImportKey(session.importKey, index);
-      record.importBatchId = ctx.batchId;
-      record.createdAt = ctx.now;
-      record.updatedAt = ctx.now;
+    const log = prepareImportedLog(ctx, {
+      workoutName: cardio.name || session.name || ctx.fallbackWorkoutName,
+      type: 'cardio',
+      importKey: cardioImportKey(session.importKey, index),
+      startedAt,
+      durationSeconds: durationS,
+      totalVolume: 0,
+      kcal,
+      notes: cardio.notes,
+      cardio: { activity: cardio.activity, distanceM: cardio.distanceM },
     });
-    const logExercise = database
-      .get<WorkoutLogExercise>('workout_log_exercises')
-      .prepareCreate((record) => {
-        record.workoutLogId = log.id;
-        record.exerciseId = appExerciseId(CARDIO_CATALOGUE_SLUGS.outdoor[cardio.activity]);
-        record.exerciseOrder = 0;
-        record.createdAt = ctx.now;
-        record.updatedAt = ctx.now;
-      });
+    const exerciseId = appExerciseId(CARDIO_CATALOGUE_SLUGS.outdoor[cardio.activity]);
 
-    return [log, logExercise];
+    return [log, prepareLogExercise(ctx, log.id, exerciseId, 0)];
   });
 }
 
@@ -396,24 +306,13 @@ function prepareSession(session: ImportedSession, ctx: CommitContext): SessionWr
     planned.length > 0
       ? prepareStrengthLog(session, startedAt, planned, ctx)
       : { ops: [], setCount: 0, timedSets: 0 };
-  const cardioOps = prepareCardioLogs(session, startedAt, ctx);
 
   return {
-    ops: [...strength.ops, ...cardioOps],
+    ops: [...strength.ops, ...prepareCardioLogs(session, startedAt, ctx)],
     setCount: strength.setCount,
     cardioCount: session.cardio.length,
     timedSets: strength.timedSets,
   };
-}
-
-async function liveLogKeys(keys: readonly string[]): Promise<Set<string>> {
-  const rows = await fetchByIds<WorkoutLog>(
-    'workout_logs',
-    'import_key',
-    keys,
-    Q.where('deleted_at', Q.eq(null))
-  );
-  return new Set(rows.map((row) => row.importKey).filter((key): key is string => Boolean(key)));
 }
 
 async function loadExerciseInfos(ids: readonly string[]): Promise<Map<string, ExerciseInfo>> {
@@ -427,31 +326,27 @@ async function loadExerciseInfos(ids: readonly string[]): Promise<Map<string, Ex
 }
 
 /**
- * Creates the custom exercises a file needs, one row per distinct name, in the open writer.
- * Returns the ids to use for each name and the rows created.
+ * Prepares the custom exercises a file needs, one row per distinct name. Returns the id to use for
+ * each file name and the row facts the volume and energy maths need.
  */
-function prepareCustomExercises(
-  names: readonly {
-    fileName: string;
-    name: string;
-    muscleGroup: MuscleGroup;
-    equipmentType: EquipmentType;
-    mechanicType: MechanicType;
-  }[]
-): { ops: Model[]; idByName: Map<string, string>; infos: ExerciseInfo[] } {
+function prepareCustomExercises(specs: readonly [fileName: string, spec: CustomExerciseSpec][]): {
+  ops: Model[];
+  idByName: Map<string, string>;
+  infos: ExerciseInfo[];
+} {
   const ops: Model[] = [];
   const idByName = new Map<string, string>();
   const infos: ExerciseInfo[] = [];
   const now = Date.now();
 
-  for (const item of names) {
+  for (const [fileName, spec] of specs) {
     const exercise = database.get<Exercise>('exercises').prepareCreate((record) => {
-      record.name = item.name;
+      record.name = spec.name;
       record.description = '';
       record.imageUrl = undefined;
-      record.muscleGroup = item.muscleGroup;
-      record.equipmentType = item.equipmentType;
-      record.mechanicType = item.mechanicType;
+      record.muscleGroup = spec.muscleGroup;
+      record.equipmentType = spec.equipmentType;
+      record.mechanicType = spec.mechanicType;
       record.source = 'user';
       record.loadMultiplier = 1;
       record.searchText = computeExerciseSearchText(record, []);
@@ -459,12 +354,12 @@ function prepareCustomExercises(
       record.updatedAt = now;
     });
     ops.push(exercise);
-    idByName.set(item.fileName, exercise.id);
+    idByName.set(fileName, exercise.id);
     infos.push({
       id: exercise.id,
-      mechanicType: item.mechanicType,
-      muscleGroup: item.muscleGroup,
-      equipmentType: item.equipmentType,
+      mechanicType: spec.mechanicType,
+      muscleGroup: spec.muscleGroup,
+      equipmentType: spec.equipmentType,
       loadMultiplier: 1,
     });
   }
@@ -472,9 +367,7 @@ function prepareCustomExercises(
   return { ops, idByName, infos };
 }
 
-function distinctBlockNames(sessions: readonly ImportedSession[]): string[] {
-  return [...new Set(sessions.flatMap((session) => session.exercises.map((block) => block.name)))];
-}
+type ImportTotals = Omit<ImportSummary, 'batchId' | 'exercisesCreated' | 'exercisesSkipped'>;
 
 /**
  * Writes the import's sessions. Sessions are packed into `database.batch` calls at session
@@ -484,21 +377,18 @@ function distinctBlockNames(sessions: readonly ImportedSession[]): string[] {
 async function writeSessions(
   sessions: readonly ImportedSession[],
   ctx: CommitContext,
+  liveKeys: ReadonlySet<string>,
   onProgress: ((done: number, total: number) => void) | undefined
-): Promise<{
-  sessionsImported: number;
-  sessionsAlreadyHere: number;
-  setsImported: number;
-  cardioImported: number;
-  timedSets: number;
-}> {
-  const totals = {
+): Promise<ImportTotals> {
+  const totals: ImportTotals = {
     sessionsImported: 0,
     sessionsAlreadyHere: 0,
     setsImported: 0,
     cardioImported: 0,
     timedSets: 0,
   };
+  // A key repeated inside the file counts as already here once its first session is queued.
+  const seenKeys = new Set(liveKeys);
   let pending: Model[] = [];
   let pendingSessions = 0;
   let done = 0;
@@ -516,7 +406,7 @@ async function writeSessions(
   };
 
   for (const session of sessions) {
-    if (sessionImportKeys(session).some((key) => ctx.liveKeys.has(key))) {
+    if (isAlreadyHere(session, seenKeys)) {
       totals.sessionsAlreadyHere += 1;
       done += 1;
       continue;
@@ -538,7 +428,7 @@ async function writeSessions(
     totals.setsImported += writes.setCount;
     totals.cardioImported += writes.cardioCount;
     totals.timedSets += writes.timedSets;
-    ctx.liveKeys.add(session.importKey);
+    seenKeys.add(session.importKey);
   }
 
   await flush();
@@ -548,11 +438,13 @@ async function writeSessions(
 export class WorkoutImportService {
   /** Keys already present on a live log. Soft-deleted logs are ignored so an undo can be re-imported. */
   static async existingKeys(keys: readonly string[]): Promise<Set<string>> {
-    if (keys.length === 0) {
-      return new Set();
-    }
-
-    return await liveLogKeys(keys);
+    const rows = await fetchByIds<WorkoutLog>(
+      'workout_logs',
+      'import_key',
+      keys,
+      Q.where('deleted_at', Q.eq(null))
+    );
+    return new Set(rows.map((row) => row.importKey).filter((key): key is string => Boolean(key)));
   }
 
   /** The candidates and saved aliases `proposeExerciseMatches` needs. */
@@ -595,80 +487,30 @@ export class WorkoutImportService {
       UserMetricService.getUserBodyWeightKgForVolume(),
     ]);
 
-    const existingIds = [
-      ...new Set(
-        [...input.resolutions.values()].flatMap((resolution) =>
-          resolution.kind === 'existing' ? [resolution.exerciseId] : []
-        )
-      ),
-    ];
-    const existingInfos = await loadExerciseInfos(existingIds);
-
+    const chosenIds = [...input.resolutions.values()].flatMap((resolution) =>
+      resolution.kind === 'existing' ? [resolution.exerciseId] : []
+    );
+    const existingInfos = await loadExerciseInfos(chosenIds);
     const names = distinctBlockNames(input.sessions);
-    const skippedNames = new Set<string>();
-    const existingIdByName = new Map<string, string>();
-    const customSpecs: {
-      fileName: string;
-      name: string;
-      muscleGroup: MuscleGroup;
-      equipmentType: EquipmentType;
-      mechanicType: MechanicType;
-    }[] = [];
+    const resolved = partitionResolutions(names, input.resolutions, existingInfos);
 
-    for (const name of names) {
-      const resolution = input.resolutions.get(name);
-      if (!resolution || resolution.kind === 'skip') {
-        skippedNames.add(name);
-      } else if (resolution.kind === 'existing') {
-        if (existingInfos.has(resolution.exerciseId)) {
-          existingIdByName.set(name, resolution.exerciseId);
-        } else {
-          // A resolution naming an exercise that has since been deleted is a skip, not a guess.
-          skippedNames.add(name);
-        }
-      } else {
-        customSpecs.push({
-          fileName: name,
-          name: resolution.name,
-          muscleGroup: resolution.muscleGroup,
-          equipmentType: resolution.equipmentType,
-          mechanicType: resolution.mechanicType,
-        });
-      }
-    }
-
-    const summary: ImportSummary = {
-      batchId,
-      sessionsImported: 0,
-      sessionsAlreadyHere: 0,
-      setsImported: 0,
-      cardioImported: 0,
-      exercisesCreated: 0,
-      exercisesSkipped: 0,
-      timedSets: 0,
-    };
-
-    await database.write(async () => {
-      const allKeys = input.sessions.flatMap(sessionImportKeys);
-      const liveKeys = await liveLogKeys(allKeys);
+    const { totals, exercisesCreated } = await database.write(async () => {
+      const liveKeys = await WorkoutImportService.existingKeys(
+        input.sessions.flatMap(sessionImportKeys)
+      );
 
       // A session already here writes nothing, so it must not leave a new exercise behind either.
       const namesToWrite = new Set(
-        distinctBlockNames(
-          input.sessions.filter(
-            (session) => !sessionImportKeys(session).some((key) => liveKeys.has(key))
-          )
-        )
+        distinctBlockNames(input.sessions.filter((session) => !isAlreadyHere(session, liveKeys)))
       );
       const custom = prepareCustomExercises(
-        customSpecs.filter((spec) => namesToWrite.has(spec.fileName))
+        [...resolved.custom].filter(([fileName]) => namesToWrite.has(fileName))
       );
       for (const chunk of chunked(custom.ops, MAX_BATCH_OPERATIONS)) {
         await database.batch(...chunk);
       }
 
-      const exerciseIdByName = new Map([...existingIdByName, ...custom.idByName]);
-      const infoById = new Map<string, ExerciseInfo>(existingInfos);
+      const infoById = new Map(existingInfos);
       for (const info of custom.infos) {
         infoById.set(info.id, info);
       }
@@ -680,39 +522,39 @@ export class WorkoutImportService {
         fallbackWorkoutName: input.fallbackWorkoutName,
         profile,
         bodyWeightKg,
-        exerciseIdByName,
-        infoById,
-        liveKeys,
+        exerciseIdByName: new Map([
+          ...[...resolved.existing].map(([name, { exerciseId }]): [string, string] => [
+            name,
+            exerciseId,
+          ]),
+          ...custom.idByName,
+        ]),
+        volumeByExercise: new Map(
+          [...infoById].map(([id, info]) => [id, { equipmentType: info.equipmentType }])
+        ),
+        exercises: [...infoById.values()],
       };
 
-      const written = await writeSessions(input.sessions, ctx, input.onProgress);
-      Object.assign(summary, written, { exercisesCreated: custom.idByName.size });
+      return {
+        totals: await writeSessions(input.sessions, ctx, liveKeys, input.onProgress),
+        exercisesCreated: custom.ops.length,
+      };
     });
 
-    summary.exercisesSkipped = skippedNames.size;
-
     // Remembering aliases happens after the import, and a failure here does not undo it.
-    for (const name of names) {
-      const resolution = input.resolutions.get(name);
-      if (resolution?.kind !== 'existing' || !resolution.rememberAlias) {
-        continue;
-      }
-
-      if (
-        name.trim().length > MAX_EXERCISE_ALIAS_LENGTH ||
-        !existingInfos.has(resolution.exerciseId)
-      ) {
+    for (const [name, { exerciseId, rememberAlias }] of resolved.existing) {
+      if (!rememberAlias || name.trim().length > MAX_EXERCISE_ALIAS_LENGTH) {
         continue;
       }
 
       try {
-        await ExerciseAliasService.addAlias(resolution.exerciseId, name);
+        await ExerciseAliasService.addAlias(exerciseId, name);
       } catch (error) {
         console.warn('Could not remember an import exercise alias:', error);
       }
     }
 
-    return summary;
+    return { batchId, ...totals, exercisesCreated, exercisesSkipped: resolved.skipped.size };
   }
 
   static async listBatches(): Promise<ImportBatch[]> {

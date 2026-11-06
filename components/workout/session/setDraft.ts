@@ -8,6 +8,7 @@ import {
   parseLocalizedDecimalString,
   parseStrictLocalizedNumber,
 } from '@/utils/localizedDecimalInput';
+import { RPE_AT_FAILURE } from '@/utils/setEffort';
 import { displayToKg } from '@/utils/unitConversion';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
@@ -195,9 +196,6 @@ export function effortDraftProblems(draft: SessionDraft, locale: string): Effort
 
   return problems;
 }
-
-/** The scale both effort inputs share: RPE 10 is a set with nothing left in reserve. */
-const RPE_AT_FAILURE = 10;
 
 /**
  * Keeps reps in reserve and RPE describing the same set. They are one scale written two ways

@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
+import { usePoster } from '@/components/yearInReview/posterKit';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
-import type { PosterGround } from '@/constants/loggyPalette';
 import type {
   YearCalendarDay,
   YearCalendarMonth,
@@ -19,24 +19,17 @@ const MONTH_LABEL_HEIGHT = 24;
 
 type CalendarProps = {
   months: YearCalendarMonth[];
-  monthLabels: string[];
+  monthLabels: readonly string[];
   width: number;
   /** The grid must fit this too: on a short phone height runs out before width does. */
   maxHeight: number;
-  ground: PosterGround;
   /** The colour of each kind of marked day. An untouched day is the ground's track. */
   markColors: Record<Exclude<YearCalendarDay, 'none'>, string>;
 };
 
 /** The whole year on one poster: twelve month grids, three to a row, no scrolling. */
-export function YearCalendar({
-  months,
-  monthLabels,
-  width,
-  maxHeight,
-  ground,
-  markColors,
-}: CalendarProps) {
+export function YearCalendar({ months, monthLabels, width, maxHeight, markColors }: CalendarProps) {
+  const { ground } = usePoster();
   const monthWidth = (width - MONTH_GAP * (MONTHS_PER_ROW - 1)) / MONTHS_PER_ROW;
   const monthHeight = (maxHeight - MONTH_GAP * (MONTH_ROWS - 1)) / MONTH_ROWS;
   const cell = Math.floor(
@@ -91,12 +84,12 @@ export function YearCalendar({
 
 type CalendarLegendProps = {
   entries: { label: string; color: string }[];
-  ground: PosterGround;
-  scale: number;
 };
 
 /** Swatches for the calendar's colours, in the poster's own type. */
-export function CalendarLegend({ entries, ground, scale }: CalendarLegendProps) {
+export function CalendarLegend({ entries }: CalendarLegendProps) {
+  const { ground, scale } = usePoster();
+
   return (
     <View className="flex-row flex-wrap" style={{ columnGap: 16 * scale, rowGap: 4 * scale }}>
       {entries.map(({ label, color }) => (
@@ -121,11 +114,11 @@ export function CalendarLegend({ entries, ground, scale }: CalendarLegendProps) 
 type WeekStripProps = {
   cells: YearWeekCell[];
   height: number;
-  ground: PosterGround;
 };
 
 /** Every week of the year as a bar, with the longest run standing out. */
-export function YearWeekStrip({ cells, height, ground }: WeekStripProps) {
+export function YearWeekStrip({ cells, height }: WeekStripProps) {
+  const { ground } = usePoster();
   const colorOf: Record<YearWeekCell, string> = {
     empty: ground.track,
     trained: ground.mark,
@@ -148,14 +141,14 @@ export function YearWeekStrip({ cells, height, ground }: WeekStripProps) {
 type MonthBarsProps = {
   counts: number[];
   /** Narrow month names, January first. */
-  labels: string[];
+  labels: readonly string[];
   highlight: number;
   height: number;
-  ground: PosterGround;
 };
 
 /** Sessions per month, the busiest one solid. */
-export function YearMonthBars({ counts, labels, highlight, height, ground }: MonthBarsProps) {
+export function YearMonthBars({ counts, labels, highlight, height }: MonthBarsProps) {
+  const { ground } = usePoster();
   const max = Math.max(...counts, 1);
 
   return (
@@ -192,20 +185,13 @@ type ShareBarProps = {
   /** 0-1, the bar's share of its track. */
   share: number;
   highlighted: boolean;
-  ground: PosterGround;
   /** A shorter row, for a list of four. */
   compact?: boolean;
 };
 
 /** A labelled horizontal bar: a time of day, a most-trained exercise. */
-export function YearShareBar({
-  label,
-  value,
-  share,
-  highlighted,
-  ground,
-  compact = false,
-}: ShareBarProps) {
+export function YearShareBar({ label, value, share, highlighted, compact = false }: ShareBarProps) {
+  const { ground } = usePoster();
   const textSize = compact ? 'text-base' : 'text-lg';
 
   return (

@@ -139,9 +139,11 @@ describe('a part is drawn once', () => {
       )
     );
 
-    // Wave shows it; every pose that keeps the alternates carries it hidden.
+    // Every pose that keeps the alternates carries it hidden; of the animated twins only the
+    // default one does (the rest drop the faces they hide).
     expect(output(files, 'poses', 'wave')).toContain('d="m1 2l3 4z"');
-    expect(output(files, 'animated', 'wave')).toContain('d="m1 2l3 4z"');
+    expect(output(files, 'animated', 'default')).toContain('d="m1 2l3 4z"');
+    expect(output(files, 'animated', 'wave')).not.toContain('d="m1 2l3 4z"');
     expect(output(files, 'poses', 'default')).toContain('d="m1 2l3 4z"');
     // A pose with a single face never drew it.
     expect(output(files, 'poses', 'flex')).not.toContain('d="m1 2l3 4z"');

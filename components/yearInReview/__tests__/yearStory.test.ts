@@ -63,7 +63,9 @@ describe('the year story', () => {
   });
 
   it('never words a weight change as good or bad', () => {
-    const view = code('components', 'yearInReview', 'YearStoryCardView.tsx');
+    const view = ['YearStoryCardView.tsx', 'trainingPosters.tsx', 'foodPosters.tsx']
+      .map((file) => code('components', 'yearInReview', file))
+      .join('\n');
 
     expect(view).not.toMatch(/weight\.(lost|gained)/);
   });

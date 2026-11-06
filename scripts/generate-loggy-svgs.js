@@ -32,6 +32,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
+const { readAttributes } = require('./lib/svgAttributes');
+
 const ROOT = path.join(__dirname, '..');
 const AVATARS_DIR = path.join(ROOT, 'assets', 'avatars');
 const PARTS_DIR = path.join(AVATARS_DIR, 'loggy-parts');
@@ -99,25 +101,6 @@ function readPalette(partsDir) {
 }
 
 // ─── Reading a part ──────────────────────────────────────────────────────────────────────────
-
-function readAttributes(text, where) {
-  const attributes = {};
-
-  for (const [, name, value] of text.matchAll(/([\w:-]+)\s*=\s*"([^"]*)"/g)) {
-    attributes[name] = value;
-  }
-
-  const leftover = text
-    .replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, '')
-    .replace(/\/\s*$/, '')
-    .trim();
-
-  if (leftover) {
-    throw new Error(`${where}: cannot read attributes "${leftover}" (use double quotes)`);
-  }
-
-  return attributes;
-}
 
 function expectOnly(attributes, allowed, where) {
   const stray = Object.keys(attributes).filter((name) => !allowed.includes(name));
