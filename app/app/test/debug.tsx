@@ -21,7 +21,6 @@ import type { MuscleGroup } from '@/database/models';
 import { MigrationService } from '@/database/services/MigrationService';
 import { UserService } from '@/database/services/UserService';
 import { useOldDatabaseMigration } from '@/hooks/useOldDatabaseMigration';
-import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useTheme } from '@/hooks/useTheme';
 import { useUnreadChatMessages } from '@/hooks/useUnreadChatMessages';
 import { NotificationService } from '@/services/NotificationService';
@@ -388,14 +387,10 @@ export default function DebugTestScreen() {
   // Notification Testing Functions
   const [notificationStatus, setNotificationStatus] = useState<string>('');
   const [testWorkoutStartTime, setTestWorkoutStartTime] = useState<number | null>(null);
-  const testWorkoutTime = useSessionTotalTime({ startTime: testWorkoutStartTime ?? undefined });
-  const durationStr = formatDuration(
-    testWorkoutTime.hours,
-    testWorkoutTime.minutes,
-    testWorkoutTime.seconds
-  );
 
-  // Update notification dynamically when test workout is active
+  // Update notification dynamically when test workout is active. This screen must not hold its own
+  // ticking clock: a re-render every second blocks the main thread for hundreds of milliseconds on
+  // web (this page is huge), which made every modal previewed from here (e.g. What's new) stutter.
   useEffect(() => {
     if (testWorkoutStartTime) {
       const interval = setInterval(async () => {
@@ -439,12 +434,13 @@ export default function DebugTestScreen() {
       setNotificationStatus('Starting workout notification...');
       const startTime = Date.now();
       setTestWorkoutStartTime(startTime);
+      const initialDuration = '00:00:00';
       await NotificationService.testActiveWorkoutNotification(
         'Push Day',
-        '00:00:00',
+        initialDuration,
         'Bench Press'
       );
-      setNotificationStatus(`Active workout notification started (${durationStr})`);
+      setNotificationStatus(`Active workout notification started (${initialDuration})`);
       console.log('Active workout notification sent');
     } catch (error) {
       console.error('Error testing active workout notification:', error);
