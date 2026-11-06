@@ -134,7 +134,7 @@ describe('every part in the library', () => {
 describe('a part is drawn once', () => {
   it('takes a face edit into every pose that has it, shown or hidden', () => {
     const files = withTemporaryParts((dir) =>
-      editFile(join(dir, 'faces', 'cheerful.svg'), (text) =>
+      editFile(join(dir, 'faces', 'happy.svg'), (text) =>
         text.replace(/ d="[^"]*"/, ' d="m1 2l3 4z"')
       )
     );
