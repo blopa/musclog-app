@@ -1,0 +1,54 @@
+/* Loggy losing it — contained entirely in this SVG. He trembles, his pupils dart
+   and the alarm lines pulse. The shoes stay planted and the dropped clipboard and
+   pencil never move: they are on the floor. */
+#upper {
+    transform-origin: 270px 440px;
+    animation: loggy-tremble .4s linear infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-shiver .4s linear infinite;
+}
+#pupil-l, #pupil-r {
+    animation: loggy-dart 2.4s ease-out infinite;
+}
+#face-panicked-mouth {
+    transform-origin: 265px 355px;
+    animation: loggy-mouth-wobble .4s ease-in-out infinite;
+}
+#impact {
+    transform-origin: 172px 172px;
+    animation: loggy-alarm 1.2s ease-out infinite;
+}
+
+@keyframes loggy-tremble {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    20% { transform: translate(-2.4px, .6px) rotate(-.5deg); }
+    40% { transform: translate(2px, -.8px) rotate(.4deg); }
+    60% { transform: translate(-1.6px, -.4px) rotate(-.3deg); }
+    80% { transform: translate(2.4px, .6px) rotate(.5deg); }
+}
+@keyframes loggy-leaf-shiver {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+}
+@keyframes loggy-dart {
+    0%, 12%, 88%, 100% { transform: translate(0, 0); }
+    16%, 34% { transform: translate(-4px, 0); }
+    38%, 58% { transform: translate(4px, -1px); }
+    62%, 84% { transform: translate(-3px, 2px); }
+}
+@keyframes loggy-mouth-wobble {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.05, .9); }
+}
+@keyframes loggy-alarm {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    14% { transform: scale(1.16); opacity: 1; }
+    34% { transform: scale(1); opacity: 1; }
+    68% { transform: scale(.92); opacity: .3; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

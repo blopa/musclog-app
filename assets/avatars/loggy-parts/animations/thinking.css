@@ -1,0 +1,62 @@
+/* Loggy mulling it over — contained entirely in this SVG. A slow sway, one brow
+   going up, then two taps of the finger on the chin. */
+#upper {
+    transform-origin: 265px 432px;
+    animation: loggy-ponder 5.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 5.2s ease-in-out infinite;
+}
+/* Pivots on the point where the hand's outline meets the arm's ink: any other
+   origin opens a sliver of green at that join on every tap. */
+#hand-l {
+    transform-origin: 252px 428px;
+    animation: loggy-chin-tap 5.2s ease-in-out infinite;
+}
+#clipboard, #hand-r {
+    transform-origin: 440px 395px;
+    animation: loggy-clipboard-sway 5.2s ease-in-out infinite;
+}
+#face-pondering-eye-l {
+    transform-origin: 224px 288px;
+    animation: loggy-blink 5.2s linear infinite;
+}
+#face-pondering-eye-r {
+    transform-origin: 300px 286px;
+    animation: loggy-blink 5.2s linear infinite;
+}
+#face-pondering-brow-r {
+    animation: loggy-brow-raise 5.2s ease-in-out infinite;
+}
+
+@keyframes loggy-ponder {
+    0%, 100% { transform: rotate(0deg); }
+    35% { transform: rotate(-1deg); }
+    70% { transform: rotate(.8deg); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    35% { transform: rotate(-5deg); }
+    70% { transform: rotate(4deg); }
+}
+@keyframes loggy-chin-tap {
+    0%, 48%, 54%, 62%, 100% { transform: rotate(0deg); }
+    51%, 58% { transform: rotate(-4.5deg); }
+}
+@keyframes loggy-clipboard-sway {
+    0%, 100% { transform: rotate(0deg); }
+    35% { transform: rotate(1.4deg); }
+    70% { transform: rotate(-1deg); }
+}
+@keyframes loggy-blink {
+    0%, 20%, 24%, 100% { transform: scaleY(1); }
+    21.5%, 22.5% { transform: scaleY(.07); }
+}
+@keyframes loggy-brow-raise {
+    0%, 34%, 68%, 100% { transform: translateY(0); }
+    44%, 60% { transform: translateY(-4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

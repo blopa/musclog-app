@@ -107,7 +107,9 @@ Most of the remaining flaws are here, where the reference can't help. The first 
 
 ## House style
 
-`assets/avatars/loggy.svg` is the model for all Musclog art. Its structure is what makes one file able to hold dozens of expressions and still be edited by hand. When in doubt, open it and copy what's there.
+**Loggy's art lives in a parts library, and the pose SVGs are generated from it.** `assets/avatars/loggy-parts/` holds one file per part (`<id>/<variant>.svg`, `faces/<name>.svg`), the shared `palette.css` and `poses.json`; `npm run generate-loggy` builds `assets/avatars/loggy-poses/` and `loggy-animated/` from them. So a traced part is saved as its own part file (a single `<g id>`, palette classes only), then listed in `poses.json`, and the generator is run. Never write into a generated pose SVG: the next build overwrites it. `display="none"` is never stored in a part; the pose decides whether alternate faces are kept hidden. The rules below still describe how a part's groups and paths are named and drawn.
+
+`assets/avatars/loggy-parts/` (a part file, e.g. `leg-l/standing.svg`) is the model for all Musclog art. When in doubt, open one and copy what's there.
 
 `save` handles the file format:
 
@@ -126,7 +128,7 @@ The structure is your call, and these are the rules to follow:
 - **`-l` and `-r` mean the viewer's left and right.** `hand-l` is on the left of the image.
 - **Top level is paint order:** `leg-l`, `leg-r`, `arm-l`, `hand-l`, `arm-r`, `body`, `clipboard`, `hand-r`. A new prop or limb slots in where it should paint.
 - **Nest only what moves with its parent:** `foot-l` in `leg-l`, `pencil` in `hand-l`, and `log`, `leaf`, `sweatband` and `face` in `body`. Arms and hands are siblings, so a hand can sit in front of the body while its arm sits behind.
-- **Variants are hidden sibling groups.** The default `face` has `brow-l`, `brow-r`, `eye-l`, `eye-r`, `nose` and `mouth`. A variant goes in `body` as `<g id="face-wink" display="none">`, with every child prefixed: `face-wink-brow-l`, `face-wink-mouth`. Anything beyond the usual features goes in `face-<name>-extras`, or a named part such as `face-cool-glasses`. Only one face is visible at a time: to swap, add `display="none"` to `face` and remove it from the variant. Keep the comment in `body` that says so.
+- **Variants are hidden sibling groups.** The default `face` has `brow-l`, `brow-r`, `eye-l`, `eye-r`, `nose` and `mouth`. A variant goes in `body` as `<g id="face-wink" display="none">`, with every child prefixed: `face-wink-brow-l`, `face-wink-mouth`. Anything beyond the usual features goes in `face-<name>-extras`, or a named part such as `face-cool-glasses`. In the library a face is its own file, `faces/<name>.svg`, listed in `faceOrder` in `poses.json`, and it carries no `display`: a pose's `face` field picks the one shown and `alternateFaces` keeps the rest hidden in the generated file.
 
 `face_variant` builds that shape, and `append_to_group` puts it at the end of `body`:
 

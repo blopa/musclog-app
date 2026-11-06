@@ -1,0 +1,75 @@
+/* Loggy's happy idle animation — contained entirely in this SVG. */
+#loggy-idle {
+    animation: loggy-bounce 3.8s ease-in-out infinite;
+}
+#body {
+    transform-origin: 256px 405px;
+    animation: loggy-breathe 3.8s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-wiggle 3.8s ease-in-out infinite;
+}
+#arm-l, #hand-l {
+    transform-origin: 153px 316px;
+    animation: loggy-pencil-wave 3.8s ease-in-out infinite;
+}
+#arm-r, #clipboard, #hand-r {
+    transform-origin: 342px 320px;
+    animation: loggy-clipboard-sway 3.8s ease-in-out infinite;
+}
+#eye-l {
+    transform-origin: 221px 286px;
+    animation: loggy-blink 3.8s linear infinite;
+}
+#eye-r {
+    transform-origin: 300px 286px;
+    animation: loggy-blink 3.8s linear infinite;
+}
+/* The left shoe stays attached to its leg; animating it independently
+   caused a small seam at the ankle while the character bounced. */
+#foot-r {
+    transform-origin: 334px 548px;
+    animation: loggy-right-tap 3.8s ease-in-out infinite;
+}
+
+@keyframes loggy-bounce {
+    0%, 100% { transform: translateY(0); }
+    28% { transform: translateY(-1.5px); }
+    50% { transform: translateY(-4px); }
+    75% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-breathe {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.012, .991); }
+}
+@keyframes loggy-leaf-wiggle {
+    0%, 15%, 100% { transform: rotate(0deg); }
+    34% { transform: rotate(-8deg); }
+    53% { transform: rotate(6deg); }
+    73% { transform: rotate(-3deg); }
+}
+@keyframes loggy-pencil-wave {
+    0%, 16%, 100% { transform: rotate(0deg); }
+    29% { transform: rotate(-4deg); }
+    42% { transform: rotate(3deg); }
+    54% { transform: rotate(-2deg); }
+    66% { transform: rotate(0deg); }
+}
+@keyframes loggy-clipboard-sway {
+    0%, 25%, 100% { transform: rotate(0deg); }
+    48% { transform: rotate(1.6deg); }
+    73% { transform: rotate(-1deg); }
+}
+@keyframes loggy-blink {
+    0%, 41%, 44.5%, 77%, 80.5%, 100% { transform: scaleY(1); }
+    42%, 43% { transform: scaleY(.07); }
+    78%, 79% { transform: scaleY(.07); }
+}
+@keyframes loggy-right-tap {
+    0%, 10%, 37%, 100% { transform: rotate(0deg); }
+    24% { transform: rotate(1.6deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

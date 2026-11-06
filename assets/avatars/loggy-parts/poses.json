@@ -1,0 +1,247 @@
+{
+  "faceOrder": [
+    "default",
+    "happy",
+    "grin",
+    "laughing",
+    "wink",
+    "smug",
+    "love",
+    "starstruck",
+    "cool",
+    "nerd",
+    "determined",
+    "beast-mode",
+    "straining",
+    "exhausted",
+    "angry",
+    "sad",
+    "crying",
+    "surprised",
+    "shocked",
+    "worried",
+    "thinking",
+    "skeptical",
+    "side-eye",
+    "content",
+    "sleeping",
+    "yawning",
+    "dizzy",
+    "knocked-out",
+    "silly",
+    "yum",
+    "hungry",
+    "neutral",
+    "shy",
+    "curious",
+    "cheerful",
+    "relaxed",
+    "focused",
+    "proud",
+    "panicked",
+    "energetic",
+    "overjoyed",
+    "pondering"
+  ],
+  "poses": {
+    "celebrating": {
+      "viewBox": "0 0 560 640",
+      "face": "overjoyed",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/celebrating",
+        "leg-r/celebrating",
+        "pencil/celebrating",
+        "arm-l/celebrating",
+        "arm-r/celebrating",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "clipboard/celebrating",
+        "hand-r/celebrating"
+      ]
+    },
+    "coffee": {
+      "viewBox": "0 0 550 640",
+      "face": "relaxed",
+      "alternateFaces": true,
+      "layers": [
+        "leg-r/coffee",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-l/coffee",
+        "leg-l/coffee",
+        "mug/coffee",
+        "hand-r/coffee"
+      ]
+    },
+    "default": {
+      "viewBox": "0 0 512 640",
+      "face": "default",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "arm-l/default",
+        "hand-l/default",
+        "arm-r/default",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "clipboard/default",
+        "hand-r/default"
+      ],
+      "animated": {
+        "alternateFaces": true
+      }
+    },
+    "flex": {
+      "viewBox": "0 0 512 640",
+      "face": "proud",
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "arm-l/flex",
+        "hand-l/flex",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-r/flex",
+        "hand-r/flex"
+      ],
+      "animated": {
+        "upper": ["arm-l", "hand-l", "body", "arm-r", "hand-r"]
+      }
+    },
+    "magnify": {
+      "viewBox": "0 0 540 640",
+      "face": "curious",
+      "layers": [
+        "leg-l/magnify",
+        "leg-r/magnify",
+        "magnifier/magnify",
+        "arm-r/magnify",
+        "hand-r/magnify",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-l/hip",
+        "hand-l/hip"
+      ],
+      "animated": {
+        "upper": ["magnifier", "arm-r", "hand-r", "body", "arm-l", "hand-l"]
+      }
+    },
+    "panic": {
+      "viewBox": "0 0 512 640",
+      "face": "panicked",
+      "alternateFaces": true,
+      "layers": [
+        "clipboard/panic",
+        "leg-l/panic",
+        "leg-r/panic",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-l/panic",
+        "arm-r/panic",
+        "pencil/panic",
+        "impact/panic"
+      ],
+      "animated": {
+        "upper": ["body", "arm-l", "arm-r"]
+      }
+    },
+    "running": {
+      "viewBox": "-30 0 560 640",
+      "face": "energetic",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/running",
+        "leg-r/running",
+        "arm-r/running",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-l/running",
+        "pencil/running"
+      ],
+      "animated": {
+        "upper": ["arm-r", "body", "arm-l", "pencil"]
+      }
+    },
+    "thinking": {
+      "viewBox": "0 0 512 668",
+      "face": "pondering",
+      "layers": [
+        "leg-l/thinking",
+        "leg-r/thinking",
+        {
+          "group": "body",
+          "children": ["log/thinking", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-l/thinking",
+        "hand-l/thinking",
+        "clipboard/thinking",
+        "hand-r/thinking"
+      ],
+      "animated": {
+        "upper": ["body", "arm-l", "hand-l", "clipboard", "hand-r"]
+      }
+    },
+    "wave": {
+      "viewBox": "-30 0 560 640",
+      "face": "cheerful",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "arm-l/hip",
+        "hand-l/hip",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-r/wave",
+        "hand-r/wave"
+      ],
+      "animated": {
+        "upper": ["arm-l", "hand-l", "body", "arm-r", "hand-r"]
+      }
+    },
+    "writing": {
+      "viewBox": "0 0 512 640",
+      "face": "focused",
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        {
+          "group": "body",
+          "children": [
+            "log/default",
+            "log-side/writing",
+            "leaf/default",
+            "sweatband/default",
+            "@face"
+          ]
+        },
+        "log-marks/writing",
+        "clipboard/writing",
+        "pencil/writing",
+        "arm-l/writing",
+        "hand-r/writing"
+      ],
+      "animated": {
+        "upper": ["body", "log-marks", "clipboard", "pencil", "arm-l", "hand-r"]
+      }
+    }
+  }
+}
