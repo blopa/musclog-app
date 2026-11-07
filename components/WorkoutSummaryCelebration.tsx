@@ -80,7 +80,10 @@ export function WorkoutSummaryCelebration({
           {/* The finished workout's face. The confetti above it brings no second Loggy. */}
           {showLoggy ? (
             <View className="mb-6">
-              <LoggyPose pose="celebrating" height={SUMMARY_POSE_HEIGHT} />
+              <LoggyPose
+                pose={personalRecords > 0 ? 'trophy' : 'celebrating'}
+                height={SUMMARY_POSE_HEIGHT}
+              />
             </View>
           ) : null}
           <WorkoutSummaryHeader />

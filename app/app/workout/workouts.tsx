@@ -327,7 +327,7 @@ export default function WorkoutsScreen() {
         }
       />
       <AreaLockGate area="workout">
-        {showConfetti ? <ConfettiOverlay /> : null}
+        {showConfetti ? <ConfettiOverlay pose="lifting" /> : null}
         <View className="flex-1">
           <KeyboardAwareScrollView
             className="flex-1"

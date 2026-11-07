@@ -13,7 +13,7 @@ import { WhatsNewText } from './WhatsNewText';
 const INTRO_POSE_HEIGHT = 144;
 
 /** The poses that can open the tour; one is picked each time it opens. */
-const INTRO_POSES: readonly LoggyPoseName[] = ['flex', 'coffee', 'default'];
+const INTRO_POSES: readonly LoggyPoseName[] = ['pointing', 'wave', 'flex', 'default'];
 
 function pickIntroPose(): LoggyPoseName {
   return INTRO_POSES[Math.floor(Math.random() * INTRO_POSES.length)];

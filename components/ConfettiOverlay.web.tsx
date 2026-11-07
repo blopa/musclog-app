@@ -3,13 +3,16 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 
 import { LoggyCameo } from '@/components/LoggyCameo';
+import type { LoggyPoseName } from '@/components/LoggyPose';
 
 type Props = {
   /** See `ConfettiOverlay.tsx`: the default, and off for a screen that already shows him. */
   withLoggy?: boolean;
+  /** See `ConfettiOverlay.tsx`. */
+  pose?: LoggyPoseName;
 };
 
-const ConfettiOverlay = ({ withLoggy = true }: Props) => {
+const ConfettiOverlay = ({ withLoggy = true, pose }: Props) => {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
@@ -51,7 +54,7 @@ const ConfettiOverlay = ({ withLoggy = true }: Props) => {
         zIndex: 999999,
       }}
     >
-      <LoggyCameo />
+      <LoggyCameo pose={pose} />
     </View>
   );
 };

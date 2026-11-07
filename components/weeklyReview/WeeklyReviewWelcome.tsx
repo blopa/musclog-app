@@ -43,7 +43,7 @@ export function WeeklyReviewWelcome({
         {/* Shown once, the first time a review has something in it: Loggy introduces the ritual. */}
         {showLoggy ? (
           <View className="items-center">
-            <LoggyPose pose="default" height={WELCOME_POSE_HEIGHT} />
+            <LoggyPose pose="pointing" height={WELCOME_POSE_HEIGHT} />
           </View>
         ) : null}
         {POINTS.map(({ key, icon: Icon, textKey }) => (

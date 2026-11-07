@@ -168,7 +168,10 @@ export function WorkoutSummaryCelebration({
       {/* The finished workout's face, in place of the trophy and its three stars. */}
       {showLoggy ? (
         <div style={{ marginBottom: 24 }}>
-          <LoggyPose pose="celebrating" height={SUMMARY_POSE_HEIGHT} />
+          <LoggyPose
+            pose={personalRecords > 0 ? 'trophy' : 'celebrating'}
+            height={SUMMARY_POSE_HEIGHT}
+          />
         </div>
       ) : null}
 

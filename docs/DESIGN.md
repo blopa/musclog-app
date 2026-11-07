@@ -505,16 +505,21 @@ subtitle.
   decision, written here first. One screen shows him once, and he arrives with a reason:
   - **Outcomes and one-question steps** that would otherwise be a lone sentence: an import's start,
     result or failure, a year with nothing in it, the year story (each pose is that page's joke:
-    the longest run is `running`, the busiest month is `panic`).
-  - **Beginnings.** The onboarding landing (`wave`, in place of the app mark the splash already
-    showed), the last setup step (`flex`), the first page of What's new (`wave`; a later page keeps its icon unless it names a
+    the longest run is `running`, the busiest month is `panic`, the personal records get the
+    `trophy`, the macro split the `nutrition` board, the favourite meal `eating`, total volume
+    `lifting`).
+  - **Beginnings.** The onboarding landing (`default`, in place of the app mark the splash already
+    showed), the last setup step (`lifting`), the first page of What's new (a random `pointing`,
+    `wave`, `flex` or `default`; a later page keeps its icon unless it names a
     `pose` — the 2.16.0 pages do, each the page's own subject: `running`, `writing`, `trophy`, `flex`, `magnify`, sized
-    from the window height in `WhatsNewPicture`) and the one-time Weekly Review welcome (`default`).
-  - **Finishing a workout** (`celebrating`, in place of the trophy). The confetti on that screen
+    from the window height in `WhatsNewPicture`) and the one-time Weekly Review welcome (`pointing`, at the board that explains the ritual).
+  - **Finishing a workout** (`celebrating`, or `trophy` when the session set a personal record). The confetti on that screen
     brings no second Loggy (`ConfettiOverlay withLoggy={false}`).
   - **Once-ever firsts** (first meal, workout, goal, `ConfettiActivity`): `ConfettiOverlay` shows a
     `LoggyCameo` that pops in where the confetti bursts (40% down, clear of the tab bar and any
-    Save button) for about three seconds and leaves; it ignores touches. Never on
+    Save button) for about three seconds and leaves; it ignores touches. The screen that fires it names the pose
+    through `ConfettiOverlay`'s `pose` (`lifting` on Workouts, `eating` on the food diary and the
+    meal camera); the default is `celebrating`. Never on
     a surface the coach persona owns (`FullScreenModal confettiWithLoggy={false}` in `CoachModal`),
     or someone who picked Sherlock sees Loggy in their chat.
   - **A welcome back.** Only the offer on `ComebackCard` (`coffee`). The running ramp and the
@@ -522,10 +527,10 @@ subtitle.
     disappointed Loggy. From 1 December to 31 January the offer is plain too, because Home's year
     card sits right below it with its own Loggy and one screen shows him once.
   - **A whole-screen first use**: `EmptyStateCard` takes a `pose` only in its `bare` form (Notes,
-    the empty workout library), where he stands in for the icon and leaves when the first item
+    the empty workout library, `lifting`), where he stands in for the icon and leaves when the first item
     appears. The type refuses a pose on the carded form. An empty list inside a card keeps its icon.
   - **A recoverable failure** uses `LOGGY_FAILURE_POSE`, never `panic`: a wrong file is not an
-    emergency. It is `thinking` until a puzzled pose is drawn, and then one line changes.
+    emergency. It is `shrug`, the puzzled pose, and one line (`LOGGY_FAILURE_POSE`) changes it.
   - **Never** on the coach (the persona owns that avatar), cycle tracking, app locks, weight, body
     fat or calorie-target screens, settings, destructive confirmations, the live workout session
     or a permanent card such as the strength levels (a flexing Loggy beside a Novice grade reads as
@@ -545,7 +550,7 @@ subtitle.
 - No colored shadow either: selection, focus and completion are a fill, a border or an icon, never a
   halo (`shadowColor` only takes the neutral shadow tokens; `deslopGuards.test.ts` enforces it).
 - No decoration that conveys nothing: no background blobs or blurred glows, no floating icon
-  clusters around an illustration, no gradient icon tiles. The onboarding landing and its last step show
+  clusters around an illustration, no gradient icon tiles. The onboarding landing shows
   Loggy in his default pose, pencil and clipboard in hand (the splash screen carries the app
   mark), not a placeholder glyph.
 - App-owned visuals are Lucide icons, never emoji: moods, equipment, source headings and the notes

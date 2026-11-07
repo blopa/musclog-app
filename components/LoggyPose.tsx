@@ -134,10 +134,10 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
 /**
  * The pose for a recoverable failure (a file that would not import, a screen that failed to load).
  * `panic` is an alarm and these are not emergencies: it stays on the year story's busiest month.
- * `thinking` is the calm stand-in until a puzzled or apologetic pose is drawn, and then this one
- * line is the only thing to change.
+ * `shrug` (the question mark over his head) is the puzzled pose: it says "that did not work out",
+ * not "something is on fire".
  */
-export const LOGGY_FAILURE_POSE: LoggyPoseName = 'thinking';
+export const LOGGY_FAILURE_POSE: LoggyPoseName = 'shrug';
 
 type LoggyPoseProps = {
   /**

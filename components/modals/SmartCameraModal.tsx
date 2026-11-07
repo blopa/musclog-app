@@ -837,7 +837,7 @@ export default function SmartCameraModal({
           />
         ) : null}
       </SmartCameraShell>
-      {showConfetti ? <ConfettiOverlay /> : null}
+      {showConfetti ? <ConfettiOverlay pose="eating" /> : null}
     </>
   );
 }

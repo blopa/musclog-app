@@ -1822,7 +1822,7 @@ export default function FoodScreen() {
           onDone={finishActionRequest}
           refresh={refresh}
         />
-        {showConfetti ? <ConfettiOverlay /> : null}
+        {showConfetti ? <ConfettiOverlay pose="eating" /> : null}
       </AreaLockGate>
     </MasterLayout>
   );

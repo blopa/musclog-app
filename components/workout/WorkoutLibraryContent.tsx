@@ -145,7 +145,7 @@ export function WorkoutLibraryContent({
           // First use: the library is the screen, so Loggy stands where the icon would.
           <EmptyStateCard
             icon={Dumbbell}
-            pose="default"
+            pose="lifting"
             bare
             title={t('emptyStates.workouts.title')}
             description={t('emptyStates.workouts.description')}
