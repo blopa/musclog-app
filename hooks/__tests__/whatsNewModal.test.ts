@@ -4,6 +4,12 @@ import { createElement } from 'react';
 import { WhatsNewModal } from '@/components/whatsNew/WhatsNewModal';
 import type { WhatsNewFlow } from '@/utils/whatsNew/flow';
 
+// The tour tests exercise navigation and dismissal; decorative art pulls in Reanimated's
+// native animation runtime, which is unavailable in this jsdom project.
+jest.mock('@/components/LoggyPose', () => ({
+  LoggyPose: () => null,
+  useLoggyVisible: () => true,
+}));
 jest.mock('@/database/services/SettingsService', () => ({ SettingsService: {} }));
 jest.mock('@/hooks/useTheme', () => ({ useTheme: () => require('@/theme').darkTheme }));
 jest.mock('@/hooks/useFormatAppNumber', () => ({
