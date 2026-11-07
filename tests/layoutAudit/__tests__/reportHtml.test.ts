@@ -115,6 +115,15 @@ describe('buildViewerData', () => {
     expect(data.entries[0].findings[0].f).toBe(data.entries[1].findings[0].f);
   });
 
+  it('tags findings in the shared chrome of a screen, but not those of a modal', () => {
+    const chrome = finding({ chrome: true });
+    const onScreen = buildViewerData([entry({ findings: [chrome] })]);
+    const inModal = buildViewerData([entry({ surface: 'modal', findings: [chrome] })]);
+    expect(onScreen.entries[0].findings[0].c).toBe(true);
+    expect(inModal.entries[0].findings[0].c).toBe(false);
+    expect(data.entries[0].findings[0].c).toBe(false);
+  });
+
   it('caps the outline rects of one finding', () => {
     const many = entry({
       findings: [

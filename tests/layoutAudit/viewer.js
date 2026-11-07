@@ -134,6 +134,14 @@
     return list;
   }
 
+  function findingTag(finding) {
+    if (finding.a) {
+      return 'accepted';
+    }
+
+    return finding.c ? 'app chrome, on every screen' : '';
+  }
+
   function passRank(pass) {
     return pass === 'top' ? 0 : 1;
   }
@@ -508,7 +516,7 @@
           },
           [
             createElement('span', { class: 'kind ' + finding.s, text: finding.k }),
-            createElement('span', { class: 'note', text: finding.a ? 'accepted' : '' }),
+            createElement('span', { class: 'note', text: findingTag(finding) }),
             createElement('span', { class: 'msg', text: finding.m }),
           ]
         )

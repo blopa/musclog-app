@@ -115,9 +115,25 @@ function comparableRects(a: LayoutNode, b: LayoutNode): [Rect[], Rect[]] {
   return a.scrollContext === b.scrollContext ? [a.rects, b.rects] : [a.visible, b.visible];
 }
 
+/** App chrome: fixed or sticky, so it does not move with the page it sits over. */
+function isChrome(node: LayoutNode): boolean {
+  return node.scrollContext.startsWith('fixed:');
+}
+
+/** One or two characters: an icon glyph, a unit or a bullet rather than a word. */
+function isGlyph(node: LayoutNode): boolean {
+  return node.kind === 'text' && node.label.length <= 2;
+}
+
 function overlapSeverity(a: LayoutNode, b: LayoutNode, overlap: OverlapMeasure): Severity {
   if (a.kind === 'image' || b.kind === 'image') {
     return overlap.ratio >= 0.5 ? 'warn' : 'info';
+  }
+
+  // An icon glyph or a unit laid over a control or a field is a layered design (the search icon
+  // inside its field, a chevron in a row) far more often than a collision.
+  if ((isGlyph(a) && isTouchable(b)) || (isGlyph(b) && isTouchable(a))) {
+    return 'info';
   }
 
   if (isTouchable(a) && isTouchable(b)) {
@@ -142,7 +158,7 @@ function describe(node: LayoutNode): string {
   return `${node.kind} ${label}`;
 }
 
-function overlapFindings(snapshot: LayoutSnapshot): Finding[] {
+function overlapFindings(snapshot: LayoutSnapshot, pass: AnalyzePass): Finding[] {
   const byId = new Map(snapshot.nodes.map((node) => [node.id, node]));
   const candidates = snapshot.nodes.filter(
     (node) =>
@@ -154,6 +170,14 @@ function overlapFindings(snapshot: LayoutSnapshot): Finding[] {
       const a = candidates[i];
       const b = candidates[j];
       if (isRelated(a, b, byId)) {
+        continue;
+      }
+
+      // Content scrolling under a bar (fixed, or laid over the scroller) is how scrolling works,
+      // and a scroller clips its own content, so two things in different scroll contexts can only
+      // meet where a bar covers the scroller. Only once it is scrolled to its end must the last of
+      // it clear the bar, so the first screenful skips these pairs.
+      if (pass === 'top' && a.scrollContext !== b.scrollContext && !(isChrome(a) && isChrome(b))) {
         continue;
       }
 
@@ -170,6 +194,7 @@ function overlapFindings(snapshot: LayoutSnapshot): Finding[] {
         labels: [a.label, b.label],
         paths: [a.path, b.path],
         rects: [overlap.region],
+        chrome: isChrome(a) && isChrome(b),
       });
     }
   }
@@ -177,9 +202,18 @@ function overlapFindings(snapshot: LayoutSnapshot): Finding[] {
   return findings;
 }
 
-function occlusionFindings(snapshot: LayoutSnapshot): Finding[] {
+function occlusionFindings(snapshot: LayoutSnapshot, pass: AnalyzePass): Finding[] {
   return snapshot.nodes
-    .filter((node) => isTouchable(node) && node.coveredBy !== null && node.coveredShare >= 0.4)
+    .filter(
+      (node) =>
+        isTouchable(node) &&
+        node.coveredBy !== null &&
+        node.coveredShare >= 0.4 &&
+        // A backdrop is covered by the sheet it surrounds, by construction.
+        !isBackdrop(node, snapshot.viewport) &&
+        // Same as for overlaps: content under a fixed bar before it is scrolled to its end.
+        !(pass === 'top' && node.coveredByFixed && !isChrome(node))
+    )
     .map((node) => ({
       kind: 'occluded' as const,
       severity: node.coveredShare >= 0.6 ? ('error' as const) : ('warn' as const),
@@ -187,6 +221,7 @@ function occlusionFindings(snapshot: LayoutSnapshot): Finding[] {
       labels: [node.label],
       paths: [node.path],
       rects: node.visible,
+      chrome: isChrome(node),
     }));
 }
 
@@ -201,6 +236,7 @@ function clippingFindings(snapshot: LayoutSnapshot): Finding[] {
         labels: [node.label],
         paths: [node.path],
         rects: node.visible.length > 0 ? node.visible : node.rects,
+        chrome: isChrome(node),
       });
       continue;
     }
@@ -213,6 +249,7 @@ function clippingFindings(snapshot: LayoutSnapshot): Finding[] {
         labels: [node.label],
         paths: [node.path],
         rects: node.visible.length > 0 ? node.visible : node.rects,
+        chrome: isChrome(node),
       });
     }
   }
@@ -235,6 +272,7 @@ function truncationFindings(snapshot: LayoutSnapshot): Finding[] {
         labels: [node.label],
         paths: [node.path],
         rects: node.visible.length > 0 ? node.visible : node.rects,
+        chrome: isChrome(node),
       };
     });
 }
@@ -254,6 +292,7 @@ function wordBreakFindings(snapshot: LayoutSnapshot): Finding[] {
         labels: [node.label],
         paths: [node.path],
         rects: node.visible.length > 0 ? node.visible : node.rects,
+        chrome: isChrome(node),
       };
     });
 }
@@ -280,6 +319,7 @@ function pageFindings(snapshot: LayoutSnapshot): Finding[] {
         labels: [node.label],
         paths: [node.path],
         rects: node.rects,
+        chrome: isChrome(node),
       });
     }
   }
@@ -304,6 +344,7 @@ function targetFindings(snapshot: LayoutSnapshot): Finding[] {
         labels: [node.label],
         paths: [node.path],
         rects: [rect],
+        chrome: isChrome(node),
       });
     }
   }
@@ -325,6 +366,7 @@ function targetFindings(snapshot: LayoutSnapshot): Finding[] {
           labels: [a.label, b.label],
           paths: [a.path, b.path],
           rects: [a.visible[0], b.visible[0]],
+          chrome: isChrome(a) && isChrome(b),
         });
       }
     }
@@ -334,27 +376,17 @@ function targetFindings(snapshot: LayoutSnapshot): Finding[] {
 }
 
 /**
- * Distance between two non-overlapping rects that sit side by side (or stacked) and face each
- * other for at least 40% of the shorter side; null when they are diagonal, far apart or overlap.
+ * Distance between two non-overlapping rects that sit side by side and face each other for at
+ * least 40% of the shorter height; null when they are stacked, diagonal, far apart or overlap.
+ * Stacked rows a hairline apart are a list, not a cramped row, so they are not measured.
  */
 function gapBetween(a: Rect, b: Rect): number | null {
   if (intersection(a, b)) {
     return null;
   }
 
-  const horizontalFacing =
-    Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) >= 0.4 * Math.min(a.h, b.h);
-  const verticalFacing =
-    Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) >= 0.4 * Math.min(a.w, b.w);
-  if (horizontalFacing) {
-    return Math.max(b.x - (a.x + a.w), a.x - (b.x + b.w));
-  }
-
-  if (verticalFacing) {
-    return Math.max(b.y - (a.y + a.h), a.y - (b.y + b.h));
-  }
-
-  return null;
+  const facing = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) >= 0.4 * Math.min(a.h, b.h);
+  return facing ? Math.max(b.x - (a.x + a.w), a.x - (b.x + b.w)) : null;
 }
 
 function capPerKind(findings: Finding[]): Finding[] {
@@ -368,11 +400,23 @@ function capPerKind(findings: Finding[]): Finding[] {
     });
 }
 
+/**
+ * `top` is the first screenful, `end` the page scrolled to its end. Content that scrolls under a
+ * fixed bar is only a problem at the end, where the last of it must clear the bar.
+ */
+export type AnalyzePass = 'top' | 'end';
+
+export interface AnalyzeOptions {
+  /** Defaults to `end`, the strict reading. */
+  pass?: AnalyzePass;
+}
+
 /** Every finding for one snapshot, most severe first. */
-export function analyzeSnapshot(snapshot: LayoutSnapshot): Finding[] {
+export function analyzeSnapshot(snapshot: LayoutSnapshot, options: AnalyzeOptions = {}): Finding[] {
+  const pass = options.pass ?? 'end';
   return capPerKind([
-    ...overlapFindings(snapshot),
-    ...occlusionFindings(snapshot),
+    ...overlapFindings(snapshot, pass),
+    ...occlusionFindings(snapshot, pass),
     ...clippingFindings(snapshot),
     ...truncationFindings(snapshot),
     ...wordBreakFindings(snapshot),

@@ -148,6 +148,7 @@ export function parseUiAutomatorDump(
         truncated: false,
         brokenWords: [],
         coveredBy: null,
+        coveredByFixed: false,
         coveredShare: 0,
         reachable: !outside || insideScroller,
       });

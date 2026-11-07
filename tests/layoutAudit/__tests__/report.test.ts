@@ -4,6 +4,8 @@ import path from 'path';
 
 import {
   aggregate,
+  markSharedChrome,
+  CHROME_SCOPE_NAME,
   baselineFrom,
   emptyBaseline,
   fingerprint,
@@ -14,6 +16,7 @@ import {
   writeReport,
   type ShardEntry,
 } from '../report';
+import { buildViewerData } from '../reportHtml';
 import type { Finding } from '../types';
 
 function finding(overrides: Partial<Finding> = {}): Finding {
@@ -195,5 +198,89 @@ describe('shards and markdown', () => {
     expect(markdown).toContain('#### screen: food');
     expect(markdown).toContain('[screenshot](screens/x.png)');
     expect(markdown).toContain('Every listed screen was audited at least once.');
+  });
+});
+
+describe('app chrome', () => {
+  const chromeFinding = (labels: string[] = ['Entrenamientos', 'Abrir cámara']) =>
+    finding({ chrome: true, labels, message: 'Entrenamientos overlaps Abrir cámara' });
+
+  it('files one defect in the shared bar once, however many screens show it', () => {
+    const report = aggregate([
+      entry({ name: 'food', findings: [chromeFinding()] }),
+      entry({ name: 'home', findings: [chromeFinding()] }),
+      entry({ name: 'notes', profile: 'b', findings: [chromeFinding()] }),
+    ]);
+    expect(report.groups).toHaveLength(1);
+    expect(report.groups[0]).toMatchObject({ surface: 'screen', name: CHROME_SCOPE_NAME });
+    expect(report.screens.find((screen) => screen.name === CHROME_SCOPE_NAME)?.errors).toBe(1);
+    // The screens it was seen on keep no error of their own.
+    expect(report.screens.find((screen) => screen.name === 'food')?.errors).toBe(0);
+  });
+
+  it('keeps chrome findings of a modal with the modal: a modal is a fixed layer itself', () => {
+    const modal = entry({
+      surface: 'modal',
+      group: 'modals',
+      name: 'Open Add Food Modal',
+      findings: [chromeFinding()],
+    });
+    expect(aggregate([modal]).groups[0]).toMatchObject({
+      surface: 'modal',
+      name: 'Open Add Food Modal',
+    });
+  });
+
+  it('fingerprints by scope, so one baseline entry accepts it on every screen', () => {
+    const a = fingerprint(chromeFinding(), 'screen', 'food');
+    expect(fingerprint(chromeFinding(), 'screen', 'home')).toBe(a);
+    expect(
+      fingerprint(finding({ labels: ['Entrenamientos', 'Abrir cámara'] }), 'screen', 'home')
+    ).not.toBe(a);
+  });
+});
+
+describe('markSharedChrome', () => {
+  const onScreens = (names: string[], overrides: Partial<Finding> = {}) =>
+    names.map((name) => entry({ name, findings: [finding(overrides)] }));
+
+  it('treats a finding on three or more screens as one shared component', () => {
+    const marked = markSharedChrome(onScreens(['food', 'home', 'progress']));
+    expect(marked.every((item) => item.findings[0].chrome === true)).toBe(true);
+    expect(aggregate(onScreens(['food', 'home', 'progress'])).groups).toHaveLength(1);
+  });
+
+  it('leaves a finding on one or two screens with those screens', () => {
+    const marked = markSharedChrome(onScreens(['food', 'home']));
+    expect(marked.every((item) => item.findings[0].chrome !== true)).toBe(true);
+    expect(aggregate(onScreens(['food', 'home'])).groups).toHaveLength(2);
+  });
+
+  it('counts screens, not profiles or languages', () => {
+    const many = ['en-US', 'ru-RU', 'nl-NL'].map((locale) => entry({ locale }));
+    expect(markSharedChrome(many).every((item) => item.findings[0].chrome !== true)).toBe(true);
+  });
+
+  it('keeps what the page itself reported as fixed, whatever the count', () => {
+    const [only] = markSharedChrome([entry({ findings: [finding({ chrome: true })] })]);
+    expect(only.findings[0].chrome).toBe(true);
+  });
+
+  it('never touches a modal', () => {
+    const modals = ['A', 'B', 'C', 'D'].map((name) =>
+      entry({ surface: 'modal', group: 'modals', name })
+    );
+    expect(markSharedChrome(modals).every((item) => item.findings[0].chrome !== true)).toBe(true);
+  });
+
+  it('does not change the entries it was given', () => {
+    const input = onScreens(['food', 'home', 'progress']);
+    markSharedChrome(input);
+    expect(input[0].findings[0].chrome).toBeUndefined();
+  });
+
+  it('puts it in the viewer data too, so the page and the report agree', () => {
+    const data = buildViewerData(onScreens(['food', 'home', 'progress']));
+    expect(data.entries.every((item) => item.findings[0].c)).toBe(true);
   });
 });

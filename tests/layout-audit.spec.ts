@@ -182,7 +182,7 @@ function createAuditor(
         pass,
         status: 'audited',
         note: snapshot.capped ? 'node cap reached; later content not examined' : undefined,
-        findings: analyzeSnapshot(snapshot),
+        findings: analyzeSnapshot(snapshot, { pass }),
         screenshot: await capture(surface, name, pass),
       });
     }

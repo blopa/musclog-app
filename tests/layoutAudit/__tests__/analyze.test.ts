@@ -24,6 +24,7 @@ function node(partial: Partial<LayoutNode> & { rects?: Rect[] }): LayoutNode {
     truncated: false,
     brokenWords: [],
     coveredBy: null,
+    coveredByFixed: false,
     coveredShare: 0,
     reachable: true,
     ...partial,
@@ -320,5 +321,155 @@ describe('ordering', () => {
     expect(findings.map((f) => f.severity)).toEqual(['error', 'warn', 'info']);
     expect(worstSeverity(['info', 'warn'])).toBe('warn');
     expect(worstSeverity([])).toBe('info');
+  });
+});
+
+describe('scrolling under fixed chrome', () => {
+  const bar = () =>
+    node({
+      kind: 'interactive',
+      label: 'Home',
+      scrollContext: 'fixed:1',
+      rects: [box(0, 700, 120, 80)],
+    });
+  const rowUnderBar = () =>
+    node({ label: '107 kcal', scrollContext: 'root', rects: [box(100, 720, 60, 14)] });
+
+  it('does not flag a scrolled row under a fixed bar in the first screenful', () => {
+    expect(kinds(analyzeSnapshot(snapshot([bar(), rowUnderBar()]), { pass: 'top' }))).toEqual([]);
+  });
+
+  it('does flag it once the page is scrolled to its end, where the last row must clear the bar', () => {
+    const findings = analyzeSnapshot(snapshot([bar(), rowUnderBar()]), { pass: 'end' });
+    expect(findings[0]).toMatchObject({ kind: 'overlap', severity: 'error' });
+    expect(findings[0].chrome).toBe(false);
+  });
+
+  it('reads the strict way when no pass is given', () => {
+    expect(kinds(analyzeSnapshot(snapshot([bar(), rowUnderBar()])))).toEqual(['overlap']);
+  });
+
+  it('still flags two pieces of chrome that collide, in any pass', () => {
+    const camera = node({
+      kind: 'interactive',
+      label: 'Open camera',
+      scrollContext: 'fixed:2',
+      rects: [box(100, 700, 60, 80)],
+    });
+    const findings = analyzeSnapshot(snapshot([bar(), camera]), { pass: 'top' });
+    expect(findings[0]).toMatchObject({ kind: 'overlap', chrome: true });
+  });
+
+  it('skips a control under a fixed bar in the first screenful but not at the end', () => {
+    const control = node({
+      kind: 'interactive',
+      label: 'Add food',
+      rects: [box(0, 700, 200, 44)],
+      coveredBy: '"Home" button',
+      coveredByFixed: true,
+      coveredShare: 0.8,
+    });
+    expect(kinds(analyzeSnapshot(snapshot([control]), { pass: 'top' }))).toEqual([]);
+    expect(kinds(analyzeSnapshot(snapshot([control]), { pass: 'end' }))).toEqual(['occluded']);
+  });
+
+  it('still reports a control covered by something that scrolls, in the first screenful', () => {
+    const control = node({
+      kind: 'interactive',
+      rects: [box(0, 100, 200, 44)],
+      coveredBy: '"Banner" div',
+      coveredByFixed: false,
+      coveredShare: 0.8,
+    });
+    expect(kinds(analyzeSnapshot(snapshot([control]), { pass: 'top' }))).toEqual(['occluded']);
+  });
+});
+
+describe('backdrops', () => {
+  it('does not call a page-sized scrim covered by the sheet it surrounds an occluded control', () => {
+    const scrim = node({
+      kind: 'interactive',
+      label: '',
+      rects: [box(0, 0, 360, 780)],
+      coveredBy: '"Track by meal type" div',
+      coveredShare: 1,
+    });
+    expect(kinds(analyzeSnapshot(snapshot([scrim])))).toEqual([]);
+  });
+});
+
+describe('icon glyphs', () => {
+  it('treats a one or two character text over a control or a field as layering, not a collision', () => {
+    const field = node({ kind: 'input', label: 'Search foods', rects: [box(33, 105, 278, 16)] });
+    const icon = node({ label: 'E', rects: [box(291, 105, 20, 16)] });
+    const findings = analyzeSnapshot(snapshot([field, icon]));
+    expect(findings.find((f) => f.kind === 'overlap')?.severity).toBe('info');
+  });
+
+  it('still calls a real word over a control a collision', () => {
+    const control = node({ kind: 'interactive', label: 'Go', rects: [box(0, 0, 100, 40)] });
+    const word = node({ label: 'Collides', rects: [box(80, 10, 60, 20)] });
+    expect(analyzeSnapshot(snapshot([control, word]))[0]).toMatchObject({
+      kind: 'overlap',
+      severity: 'error',
+    });
+  });
+});
+
+describe('chrome findings', () => {
+  it('flags clipped and small controls in fixed chrome, so the report files them once', () => {
+    const tab = node({
+      kind: 'interactive',
+      label: 'Workouts',
+      scrollContext: 'fixed:1',
+      rects: [box(0, 700, 20, 20)],
+      lossRatio: 0.3,
+    });
+    const findings = analyzeSnapshot(snapshot([tab]));
+    expect(findings.length).toBeGreaterThan(1);
+    expect(findings.every((finding) => finding.chrome === true)).toBe(true);
+  });
+
+  it('does not mark content in the page as chrome', () => {
+    const findings = analyzeSnapshot(snapshot([node({ lossRatio: 0.6 })]));
+    expect(findings[0].chrome).toBe(false);
+  });
+});
+
+describe('stacked rows', () => {
+  it('does not call list rows a hairline apart a cramped row', () => {
+    const findings = analyzeSnapshot(
+      snapshot([
+        node({ kind: 'interactive', label: 'Search', rects: [box(25, 484, 294, 64)] }),
+        node({ kind: 'interactive', label: 'Scan', rects: [box(25, 549, 294, 64)] }),
+      ])
+    );
+    expect(kinds(findings)).not.toContain('tight-gap');
+  });
+});
+
+describe('a bar laid over a scroller rather than fixed', () => {
+  const bar = () =>
+    node({
+      kind: 'interactive',
+      label: 'Home',
+      scrollContext: 'root',
+      rects: [box(0, 700, 120, 80)],
+    });
+  const row = () =>
+    node({ label: '107 kcal', scrollContext: 'scroll:1', rects: [box(100, 720, 60, 14)] });
+
+  it('is not an overlap in the first screenful, where content simply scrolls under it', () => {
+    expect(kinds(analyzeSnapshot(snapshot([bar(), row()]), { pass: 'top' }))).toEqual([]);
+  });
+
+  it('is one at the end of the scroll, where the last row has to clear the bar', () => {
+    expect(kinds(analyzeSnapshot(snapshot([bar(), row()]), { pass: 'end' }))).toEqual(['overlap']);
+  });
+
+  it('still compares everything inside one scroll context in the first screenful', () => {
+    const a = node({ label: '/180g', scrollContext: 'scroll:1', rects: [box(100, 10, 40, 14)] });
+    const b = node({ label: '99', scrollContext: 'scroll:1', rects: [box(120, 10, 40, 14)] });
+    expect(kinds(analyzeSnapshot(snapshot([a, b]), { pass: 'top' }))).toEqual(['overlap']);
   });
 });

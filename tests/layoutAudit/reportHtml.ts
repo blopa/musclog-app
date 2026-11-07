@@ -1,7 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 
-import { type Baseline, emptyBaseline, fingerprint, REPORT_DIR, type ShardEntry } from './report';
+import {
+  type Baseline,
+  emptyBaseline,
+  fingerprint,
+  markSharedChrome,
+  REPORT_DIR,
+  type ShardEntry,
+} from './report';
 import type { Finding, Severity } from './types';
 
 /**
@@ -24,6 +31,8 @@ export interface ViewerFinding {
   f: string;
   /** Accepted in the baseline. */
   a: boolean;
+  /** Found in the fixed chrome every screen shares (reported once, not per screen). */
+  c: boolean;
   /** Outline rects `[x, y, w, h]` in the page's own CSS pixels. */
   r: number[][];
 }
@@ -86,6 +95,7 @@ function viewerFinding(finding: Finding, entry: ShardEntry, baseline: Baseline):
     m: finding.message,
     f: key,
     a: key in baseline.accepted,
+    c: finding.chrome === true && entry.surface === 'screen',
     r: finding.rects
       .slice(0, MAX_RECTS_PER_FINDING)
       .map((rect) => [rect.x, rect.y, rect.w, rect.h]),
@@ -102,7 +112,7 @@ export function buildViewerData(
     generatedAt: now.toISOString(),
     locales: unique(entries.map((entry) => entry.locale)).sort(compareLocales),
     profiles: unique(entries.map((entry) => entry.profile)).sort(compareProfiles),
-    entries: entries.map((entry) => ({
+    entries: markSharedChrome(entries).map((entry) => ({
       platform: entry.platform,
       group: entry.group,
       surface: entry.surface,

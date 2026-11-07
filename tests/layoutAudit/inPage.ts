@@ -174,6 +174,21 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     return found;
   };
 
+  /** True when the element, or anything it sits in, is fixed or sticky: a bar or a sheet. */
+  const inFixedBox = (element: Element): boolean => {
+    let current: Element | null = element;
+    while (current && current !== document.body) {
+      const position = window.getComputedStyle(current).position;
+      if (position === 'fixed' || position === 'sticky') {
+        return true;
+      }
+
+      current = current.parentElement;
+    }
+
+    return false;
+  };
+
   const describeHit = (element: Element): string => {
     const label = element.getAttribute('aria-label') ?? shorten(element.textContent ?? '', 30);
     return (label ? '"' + label + '" ' : '') + pathOf(element);
@@ -259,6 +274,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
       truncated: flags.truncated,
       brokenWords: flags.brokenWords ?? [],
       coveredBy: null,
+      coveredByFixed: false,
       coveredShare: 0,
       reachable,
     });
@@ -450,6 +466,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     const owner = elements[i];
     let covered = 0;
     let coveredBy: string | null = null;
+    let coveredByFixed = false;
     for (let p = 0; p < SAMPLE_POINTS.length; p++) {
       const hit = document.elementFromPoint(
         biggest.x + biggest.w * SAMPLE_POINTS[p][0],
@@ -468,10 +485,12 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
 
       covered++;
       coveredBy = coveredBy ?? describeHit(hit);
+      coveredByFixed = coveredByFixed || inFixedBox(hit);
     }
 
     node.coveredShare = covered / SAMPLE_POINTS.length;
     node.coveredBy = covered > 0 ? coveredBy : null;
+    node.coveredByFixed = covered > 0 && coveredByFixed;
   }
 
   return {

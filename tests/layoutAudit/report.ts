@@ -94,7 +94,68 @@ export function fingerprint(finding: Finding, surface: Surface, name: string): s
   const labels = finding.labels
     .map((label) => label.toLowerCase().replace(/\s+/g, ' ').trim().slice(0, MAX_LABEL))
     .sort();
-  return [finding.kind, surface, name, ...labels].join('|');
+  const scope = findingScope(finding, surface, name);
+  return [finding.kind, scope.surface, scope.name, ...labels].join('|');
+}
+
+/** A finding on this many different screens is a component they share, not a defect of each. */
+export const SHARED_CHROME_MIN_SCREENS = 3;
+
+function sharedKey(finding: Finding): string {
+  const labels = finding.labels
+    .map((label) => label.toLowerCase().replace(/\s+/g, ' ').trim().slice(0, MAX_LABEL))
+    .sort();
+  return [finding.kind, ...labels].join('|');
+}
+
+/**
+ * Flags the findings that belong to chrome the screens share. The bottom bar is not always
+ * `position: fixed`, so besides what the page reports as fixed, a finding with the same kind and
+ * labels on `SHARED_CHROME_MIN_SCREENS` or more different screens counts: it is one component.
+ * Modals are left alone, and the result is the same whichever order the entries arrive in.
+ */
+export function markSharedChrome(entries: ShardEntry[]): ShardEntry[] {
+  const screensByKey = new Map<string, Set<string>>();
+  for (const entry of entries) {
+    if (entry.surface !== 'screen') {
+      continue;
+    }
+
+    for (const finding of entry.findings) {
+      const key = sharedKey(finding);
+      screensByKey.set(key, (screensByKey.get(key) ?? new Set()).add(entry.name));
+    }
+  }
+
+  return entries.map((entry) => {
+    if (entry.surface !== 'screen') {
+      return entry;
+    }
+
+    return {
+      ...entry,
+      findings: entry.findings.map((finding) =>
+        finding.chrome === true ||
+        (screensByKey.get(sharedKey(finding))?.size ?? 0) >= SHARED_CHROME_MIN_SCREENS
+          ? { ...finding, chrome: true }
+          : finding
+      ),
+    };
+  });
+}
+
+/** Where a finding is filed in the report: its screen, or the chrome every screen shares. */
+export const CHROME_SCOPE_NAME = 'app chrome (on every screen)';
+
+export function findingScope(
+  finding: Finding,
+  surface: Surface,
+  name: string
+): { surface: Surface; name: string } {
+  // A modal is itself a fixed layer, so everything in it would read as chrome; only screens share one.
+  return finding.chrome === true && surface === 'screen'
+    ? { surface: 'screen', name: CHROME_SCOPE_NAME }
+    : { surface, name };
 }
 
 export function emptyBaseline(): Baseline {
@@ -128,10 +189,11 @@ export function readShards(shardDir = SHARD_DIR): ShardEntry[] {
 }
 
 export function aggregate(
-  entries: ShardEntry[],
+  rawEntries: ShardEntry[],
   baseline: Baseline = emptyBaseline(),
   now = new Date()
 ): Report {
+  const entries = markSharedChrome(rawEntries);
   const groups = new Map<string, GroupedFinding>();
   const screens = new Map<string, ScreenSummary>();
   for (const entry of entries) {
@@ -154,12 +216,26 @@ export function aggregate(
 
     for (const finding of entry.findings) {
       const key = fingerprint(finding, entry.surface, entry.name);
+      const scope = findingScope(finding, entry.surface, entry.name);
+      if (!screens.has(`${scope.surface}:${scope.name}`)) {
+        screens.set(`${scope.surface}:${scope.name}`, {
+          surface: scope.surface,
+          name: scope.name,
+          errors: 0,
+          warnings: 0,
+          infos: 0,
+          profilesAffected: [],
+          statuses: { audited: 0, redirected: 0, skipped: 0, failed: 0 },
+          notes: [],
+        });
+      }
+
       const group = groups.get(key) ?? {
         fingerprint: key,
         kind: finding.kind,
         severity: finding.severity,
-        surface: entry.surface,
-        name: entry.name,
+        surface: scope.surface,
+        name: scope.name,
         labels: finding.labels,
         messages: [],
         occurrences: [],

@@ -48,6 +48,8 @@ export interface LayoutNode {
   brokenWords: string[];
   /** Label/path of whatever sits on top of this node's hit points, null when nothing does. */
   coveredBy: string | null;
+  /** Whatever covers it is fixed or sticky (a bar, a sheet), not content that scrolls. */
+  coveredByFixed: boolean;
   /** Fraction of the sampled hit points that something else receives. */
   coveredShare: number;
   /** False when the node is off screen and no scroller could bring it into view. */
@@ -77,6 +79,11 @@ export type FindingKind =
 export type Severity = 'error' | 'warn' | 'info';
 
 export interface Finding {
+  /**
+   * Every node involved is fixed or sticky: app chrome such as the bottom bar, which every screen
+   * shares, so one defect there is one finding, not one per screen.
+   */
+  chrome?: boolean;
   kind: FindingKind;
   severity: Severity;
   message: string;
