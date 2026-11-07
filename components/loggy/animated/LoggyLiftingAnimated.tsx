@@ -459,7 +459,7 @@ function Art({ clock, ...props }: LoggyAnimatedArtProps) {
           d="M341 253.2c7.6 9.1 13.2 21.7 12.5 30-.7 5.6-5.6 8.4-10.4 6.3-4.9-2.1-6.3-9-4.2-19.5q2.1-10.5 2.1-16.8"
         />
         <Path
-          fill="#fcf9f4"
+          fill="#8ad4ec"
           d="M343.1 262.3c4.1 7 6.9 14.7 6.2 20.3-.7 3.4-3.4 4.1-5.5 2.7-2.1-2.1-2.8-7.6-1.4-15.3z"
         />
         <Path
@@ -467,7 +467,7 @@ function Art({ clock, ...props }: LoggyAnimatedArtProps) {
           d="M334.7 296.5c4.9 7 7.7 15.4 7 20.9-.7 4.2-4.2 5.6-7.7 4.2-3.5-2.1-4.2-7.6-2.1-15.3 1.4-4.9 2.1-7.7 2.8-9.8"
         />
         <Path
-          fill="#fcf9f4"
+          fill="#8ad4ec"
           d="M335.4 302.8c2.8 4.9 4.2 10.5 3.5 14-.7 2-2.8 2.7-4.2 1.3-1.4-1.3-1.4-6.2 0-11.8z"
         />
         <LoggyLayer clock={clock} layer={ANIMATION.layers['dumbbell-l']}>
