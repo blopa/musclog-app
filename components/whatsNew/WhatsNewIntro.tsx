@@ -7,6 +7,8 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { pageHeadlineDetailKeys, pageHeadlineKey, type WhatsNewFlow } from '@/utils/whatsNew/flow';
 
+import { WhatsNewText } from './WhatsNewText';
+
 /** Modest on purpose: an upgrade intro already runs past one screen. */
 const INTRO_POSE_HEIGHT = 144;
 
@@ -46,15 +48,21 @@ export function WhatsNewIntro({
       <View className="items-center gap-5">
         {/* Loggy opens the tour, and only the first page: every later page keeps its own icon. */}
         <LoggyPose pose={pose} height={INTRO_POSE_HEIGHT} />
-        <Text
+        <WhatsNewText
           accessibilityRole="header"
+          size={36}
+          minSize={28}
           className="text-center text-4xl font-bold text-text-primary"
         >
           {t('whatsNew.intro.title')}
-        </Text>
-        <Text className="text-center text-lg leading-7 text-text-secondary">
+        </WhatsNewText>
+        <WhatsNewText
+          size={18}
+          minSize={16}
+          className="text-center text-lg leading-7 text-text-secondary"
+        >
           {t('whatsNew.intro.description')}
-        </Text>
+        </WhatsNewText>
         {showHighlights && flow.truncated ? (
           <Text className="text-center text-sm text-text-secondary">
             {t('whatsNew.intro.truncated')}
@@ -77,12 +85,18 @@ export function WhatsNewIntro({
                   {formatInteger(index + 1)}
                 </Text>
               </View>
-              <View className="flex-1 gap-1">
-                <Text className="text-base font-semibold text-text-primary">{t(headline.key)}</Text>
+              <View className="min-w-0 flex-1 gap-1">
+                <WhatsNewText
+                  size={16}
+                  minSize={14}
+                  className="text-base font-semibold text-text-primary"
+                >
+                  {t(headline.key)}
+                </WhatsNewText>
                 {headline.detailKeys.length > 0 ? (
-                  <Text className="text-sm text-text-secondary">
+                  <WhatsNewText size={14} minSize={12} className="text-sm text-text-secondary">
                     {headline.detailKeys.map((key) => t(key)).join(' · ')}
-                  </Text>
+                  </WhatsNewText>
                 ) : null}
               </View>
             </View>

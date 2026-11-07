@@ -6,10 +6,12 @@ import { useWindowDimensions, View } from 'react-native';
 import { Button } from '@/components/theme/Button';
 
 /**
- * The least room a quick action gets beside its neighbour: icon, padding and a word like
- * "Escanear" at the default text size. Two actions share a row only while both get this much.
+ * The least room a quick action gets beside its neighbour: icon, padding and the longest word of
+ * its label at the default text size ("Дополнительные" in Russian, "Escanear" in Spanish). Two
+ * actions share a row only while both get this much, so on a 344pt phone (312pt of content) the
+ * pairs stack rather than breaking a word; on a 360pt phone (328pt) they still pair.
  */
-export const QUICK_ACTION_MIN_WIDTH = 150;
+export const QUICK_ACTION_MIN_WIDTH = 160;
 
 /**
  * The width a quick action asks for. It grows with the OS text scale, so at large text two actions

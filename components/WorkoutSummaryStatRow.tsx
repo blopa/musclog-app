@@ -30,13 +30,15 @@ export function WorkoutSummaryStatRow({
     <View
       className={`flex-row items-center justify-between ${showDivider ? 'border-b border-ink/5 pb-4' : ''}`}
     >
-      <View className="flex-row items-center gap-3">
-        <View className="rounded-control p-2" style={{ backgroundColor: iconBgColor }}>
+      {/* The label takes what the value leaves and wraps; the value and its unit stay together
+          (shrink-0), so the unit is not pushed past the card's clipped edge at large text. */}
+      <View className="min-w-0 flex-1 flex-row items-center gap-3">
+        <View className="shrink-0 rounded-control p-2" style={{ backgroundColor: iconBgColor }}>
           <Icon size={theme.iconSize.lg} color={iconColor} />
         </View>
-        <Text className="font-medium text-text-secondary">{label}</Text>
+        <Text className="min-w-0 flex-1 font-medium text-text-secondary">{label}</Text>
       </View>
-      <View className="flex-row items-center gap-1">
+      <View className="shrink-0 flex-row items-center gap-1 pl-3">
         {showStarIcon ? (
           <Star
             size={theme.iconSize.sm}

@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Play, WifiOff } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -188,8 +188,21 @@ export default function RestOverScreen() {
           />
         </View>
 
-        {/* Main Content */}
-        <View className="z-10 w-full flex-1 items-center justify-center gap-8 px-6">
+        {/* Main Content. A scroller, not a fixed flex column: on a short or large-text screen the
+            icon and title were centred up over the header and the next-set card ran under the
+            footer button. Centred when it fits, scrolls when it does not. */}
+        <ScrollView
+          className="z-10 flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 32,
+            paddingHorizontal: 24,
+            paddingVertical: 16,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
           <RestOverStatusIcon />
           <RestOverTitle />
           {nextExercise ? (
@@ -201,7 +214,7 @@ export default function RestOverScreen() {
               }}
             />
           ) : null}
-        </View>
+        </ScrollView>
 
         {/* Footer */}
         <View className="z-10 w-full px-6 pb-12">

@@ -8,6 +8,7 @@ import { ListRow } from '@/components/theme/ListRow';
 import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { WeekdayChoiceChips } from '@/components/WeekdayChoiceChips';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 import type { useWhatsNewChoiceValues } from '@/hooks/useWhatsNewChoiceValues';
 import type { WhatsNewAction } from '@/utils/whatsNew/catalog';
@@ -15,6 +16,7 @@ import type { WhatsNewBlock } from '@/utils/whatsNew/schema';
 
 import { whatsNewIcons } from './whatsNewIcons';
 import { WhatsNewPicture } from './WhatsNewPicture';
+import { WhatsNewText } from './WhatsNewText';
 
 type Props = {
   block: WhatsNewBlock;
@@ -26,6 +28,8 @@ type Props = {
 export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
+  // Decoration beside a label gives way when the window is cramped; the label keeps its words.
+  const cramped = useIsCramped();
   const description =
     'descriptionKey' in block && block.descriptionKey ? t(block.descriptionKey) : undefined;
   switch (block.type) {
@@ -34,11 +38,18 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
       return (
         <View className="gap-4">
           <WhatsNewPicture icon={Icon} pose={block.pose} />
-          <Text accessibilityRole="header" className="text-2xl font-bold text-text-primary">
+          <WhatsNewText
+            accessibilityRole="header"
+            size={24}
+            minSize={20}
+            className="text-2xl font-bold text-text-primary"
+          >
             {t(block.titleKey)}
-          </Text>
+          </WhatsNewText>
           {description ? (
-            <Text className="text-lg leading-7 text-text-secondary">{description}</Text>
+            <WhatsNewText size={18} minSize={16} className="text-lg leading-7 text-text-secondary">
+              {description}
+            </WhatsNewText>
           ) : null}
         </View>
       );
@@ -57,9 +68,14 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
       return (
         <View className="gap-3">
           {block.titleKey ? (
-            <Text accessibilityRole="header" className="text-xl font-semibold text-text-primary">
+            <WhatsNewText
+              accessibilityRole="header"
+              size={20}
+              minSize={18}
+              className="text-xl font-semibold text-text-primary"
+            >
               {t(block.titleKey)}
-            </Text>
+            </WhatsNewText>
           ) : null}
           {block.items.map((item) => {
             const Icon = whatsNewIcons[item.icon];
@@ -68,7 +84,7 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
                 key={item.id}
                 title={t(item.labelKey)}
                 subtitle={item.descriptionKey ? t(item.descriptionKey) : undefined}
-                icon={Icon}
+                icon={cramped ? undefined : Icon}
                 disabled={disabled}
                 onPress={() => onAction(item.action!)}
               />
@@ -76,13 +92,21 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
               // Not tappable, so not drawn as a card: a filled row beside the tappable ListRows
               // read as one more button that did nothing.
               <View key={item.id} className="flex-row items-center gap-3 px-4 py-2">
-                <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                <View className="flex-1 gap-1">
-                  <Text className="text-base font-semibold text-text-primary">
+                {cramped ? null : (
+                  <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                )}
+                <View className="min-w-0 flex-1 gap-1">
+                  <WhatsNewText
+                    size={16}
+                    minSize={14}
+                    className="text-base font-semibold text-text-primary"
+                  >
                     {t(item.labelKey)}
-                  </Text>
+                  </WhatsNewText>
                   {item.descriptionKey ? (
-                    <Text className="text-sm text-text-secondary">{t(item.descriptionKey)}</Text>
+                    <WhatsNewText size={14} minSize={12} className="text-sm text-text-secondary">
+                      {t(item.descriptionKey)}
+                    </WhatsNewText>
                   ) : null}
                 </View>
               </View>

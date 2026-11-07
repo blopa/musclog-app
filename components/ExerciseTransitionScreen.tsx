@@ -154,7 +154,9 @@ export function ExerciseTransitionScreen({
                 className="flex-row items-start justify-between border-b pb-4"
                 style={{ borderBottomColor: theme.colors.border.default }}
               >
-                <View className="flex flex-col">
+                {/* The target takes the row's free width so its sets · reps · weight line can wrap;
+                    without a width it ran past the card's clipped edge at large text. */}
+                <View className="min-w-0 flex-1 flex-col pr-3">
                   <Text
                     className="mb-1 text-xs font-semibold"
                     style={{ color: theme.colors.text.secondary }}
@@ -198,7 +200,7 @@ export function ExerciseTransitionScreen({
                     ) : null}
                   </View>
                 </View>
-                <View className="flex flex-col items-end">
+                <View className="shrink-0 flex-col items-end">
                   <Text
                     className="mb-1 text-xs font-semibold"
                     style={{ color: theme.colors.text.secondary }}

@@ -1,7 +1,15 @@
 import { X } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { sheetSurfaceColor } from '@/components/sheetSurfaceColor';
 import { Modal } from '@/components/theme/Modal';
@@ -17,6 +25,11 @@ type CenteredModalProps = {
   maxWidth?: number;
   /** When true, backdrop, X, and Android back do not dismiss the modal. */
   isLoading?: boolean;
+  /**
+   * For a body that can outgrow a short window (large text, a small phone): the sheet is bounded
+   * to the window and only the body scrolls, so the title row and footer stay on screen.
+   */
+  scrollable?: boolean;
 };
 
 export function CenteredModal({
@@ -28,10 +41,13 @@ export function CenteredModal({
   footer,
   maxWidth,
   isLoading = false,
+  scrollable = false,
 }: CenteredModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { height: windowHeight } = useWindowDimensions();
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'layer' });
+  const body = <View className="p-5">{children}</View>;
 
   return (
     <Modal
@@ -53,6 +69,8 @@ export function CenteredModal({
             style={{
               backgroundColor: sheetSurfaceColor(theme),
               maxWidth: maxWidth || theme.size['384'],
+              // The wrapper around the sheet pads it by 16 on each side (p-4).
+              maxHeight: scrollable ? windowHeight - 32 : undefined,
             }}
           >
             {/* Header */}
@@ -82,7 +100,7 @@ export function CenteredModal({
             </View>
 
             {/* Content */}
-            <View className="p-5">{children}</View>
+            {scrollable ? <ScrollView style={{ flexShrink: 1 }}>{body}</ScrollView> : body}
 
             {/* Footer */}
             {footer ? (

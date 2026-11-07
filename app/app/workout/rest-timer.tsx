@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CheckCircle, ChevronRight, Dumbbell, Repeat } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Animated, Text, View } from 'react-native';
+import { ActivityIndicator, Animated, ScrollView, Text, View } from 'react-native';
 
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { AreaLockGate } from '@/components/lock/AreaLockGate';
@@ -421,92 +421,108 @@ export default function RestTimerScreen() {
             />
           </View>
 
-          {/* Main Content */}
-          <View className="z-10 flex-1 items-center justify-center gap-10 px-6">
-            {/* Timer */}
-            <RestTimer
-              restTime={restTime}
-              rotationAnim={rotationAnim}
-              initialRestTime={initialRestTime}
-              phase={phase}
-            />
-
-            {/* What is coming, large enough to read from across the gym */}
-            {nextSet ? (
-              <View className="items-center gap-1" testID="rest-up-next">
-                <Text
-                  className="text-xs font-semibold"
-                  style={{ color: theme.colors.text.secondary }}
-                >
-                  {t('restTimer.upNext')}
-                </Text>
-                <Text
-                  className="text-3xl font-bold tabular-nums"
-                  style={{ color: theme.colors.text.primary }}
-                >
-                  {`${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)} × ${nextSet.set.reps ?? 0}`}
-                </Text>
-              </View>
-            ) : null}
-
-            {/* Controls */}
-            <RestTimerControls
-              onMinus5s={handleMinus5s}
-              onSkipRest={handleSkipRest}
-              onPlus5s={handlePlus5s}
-            />
-          </View>
-          <View className="z-10 mx-auto w-full max-w-lg gap-4 px-4 pb-8">
-            {/* Completed Exercise */}
-            <View className="flex-row items-center justify-between px-2">
-              <View className="flex-row items-center gap-2">
-                <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                <Text className="text-sm" style={{ color: theme.colors.overlay.ink50 }}>
-                  {t('restTimer.done')}:{' '}
-                  <Text className="font-medium text-text-primary">
-                    {completedSet.exercise.name ?? ''}
-                  </Text>
-                </Text>
-              </View>
-              <Text className="font-medium" style={{ color: theme.colors.overlay.ink70 }}>
-                {formatDisplayWeight(completedSet.set.weight ?? 0)} {t(weightUnitKey)}{' '}
-                <Text style={{ color: theme.colors.overlay.ink30 }}>×</Text>{' '}
-                {completedSet.set.reps ?? 0} {t('restTimer.reps')}
-              </Text>
-            </View>
-
-            {/* Next Exercise Card */}
-            {nextSet ? (
-              <DetailedItemCard
-                item={{
-                  name: nextSet.exercise.name ?? '',
-                  media: nextSet.exercise.imageUrl
-                    ? { uri: nextSet.exercise.imageUrl }
-                    : { icon: Dumbbell, color: theme.colors.text.secondary },
-                  itemOne: {
-                    value: `${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)}`,
-                    icon: Dumbbell,
-                  },
-                  itemTwo: {
-                    value: t('restTimer.repsWithCount', {
-                      count: nextSet.set.reps ?? 0,
-                    }),
-                    icon: Repeat,
-                  },
-                  itemThree: {
-                    value: t('restTimer.repsWithCount', {
-                      count: nextSet.set.reps ?? 0,
-                    }),
-                    icon: ChevronRight,
-                  },
-                }}
-                onPress={() => {
-                  navigateToNextScreen();
-                }}
-                ctaLabel={<UpNextLabel />}
+          {/* Main Content. The timer, controls and cards stack in one scroller: a fixed flex column
+              let the controls and the "Done" row overlap the next-set card on short screens. */}
+          <ScrollView
+            className="z-10 flex-1"
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: 'center',
+              gap: 32,
+              paddingTop: 8,
+            }}
+            showsVerticalScrollIndicator={false}
+          >
+            <View className="items-center gap-10 px-6">
+              {/* Timer */}
+              <RestTimer
+                restTime={restTime}
+                rotationAnim={rotationAnim}
+                initialRestTime={initialRestTime}
+                phase={phase}
               />
-            ) : null}
-          </View>
+
+              {/* What is coming, large enough to read from across the gym */}
+              {nextSet ? (
+                <View className="items-center gap-1" testID="rest-up-next">
+                  <Text
+                    className="text-xs font-semibold"
+                    style={{ color: theme.colors.text.secondary }}
+                  >
+                    {t('restTimer.upNext')}
+                  </Text>
+                  <Text
+                    className="text-center text-3xl font-bold tabular-nums"
+                    style={{ color: theme.colors.text.primary }}
+                  >
+                    {`${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)} × ${nextSet.set.reps ?? 0}`}
+                  </Text>
+                </View>
+              ) : null}
+
+              {/* Controls */}
+              <RestTimerControls
+                onMinus5s={handleMinus5s}
+                onSkipRest={handleSkipRest}
+                onPlus5s={handlePlus5s}
+              />
+            </View>
+            <View className="mx-auto w-full max-w-lg gap-4 px-4 pb-8">
+              {/* Completed Exercise. The name and the set summary wrap onto their own lines
+                  instead of pushing each other past the card's edge. */}
+              <View className="flex-row flex-wrap items-center justify-between gap-x-3 gap-y-1 px-2">
+                <View className="min-w-0 grow basis-[160px] flex-row items-center gap-2">
+                  <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
+                  <Text className="flex-1 text-sm" style={{ color: theme.colors.overlay.ink50 }}>
+                    {t('restTimer.done')}:{' '}
+                    <Text className="font-medium text-text-primary">
+                      {completedSet.exercise.name ?? ''}
+                    </Text>
+                  </Text>
+                </View>
+                <Text
+                  className="grow text-right font-medium"
+                  style={{ color: theme.colors.overlay.ink70 }}
+                >
+                  {formatDisplayWeight(completedSet.set.weight ?? 0)} {t(weightUnitKey)}{' '}
+                  <Text style={{ color: theme.colors.overlay.ink30 }}>×</Text>{' '}
+                  {completedSet.set.reps ?? 0} {t('restTimer.reps')}
+                </Text>
+              </View>
+
+              {/* Next Exercise Card */}
+              {nextSet ? (
+                <DetailedItemCard
+                  item={{
+                    name: nextSet.exercise.name ?? '',
+                    media: nextSet.exercise.imageUrl
+                      ? { uri: nextSet.exercise.imageUrl }
+                      : { icon: Dumbbell, color: theme.colors.text.secondary },
+                    itemOne: {
+                      value: `${formatDisplayWeight(nextSet.set.weight ?? 0)} ${t(weightUnitKey)}`,
+                      icon: Dumbbell,
+                    },
+                    itemTwo: {
+                      value: t('restTimer.repsWithCount', {
+                        count: nextSet.set.reps ?? 0,
+                      }),
+                      icon: Repeat,
+                    },
+                    itemThree: {
+                      value: t('restTimer.repsWithCount', {
+                        count: nextSet.set.reps ?? 0,
+                      }),
+                      icon: ChevronRight,
+                    },
+                  }}
+                  onPress={() => {
+                    navigateToNextScreen();
+                  }}
+                  ctaLabel={<UpNextLabel />}
+                />
+              ) : null}
+            </View>
+          </ScrollView>
         </View>
         {isOptionsModalVisible ? (
           <WorkoutOptionsModal

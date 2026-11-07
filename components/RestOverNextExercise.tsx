@@ -37,7 +37,7 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
           <Text className="text-xl font-bold text-text-primary">{exercise.name}</Text>
         </View>
       </View>
-      <View className="flex-row items-center justify-between border-t border-ink/10 pt-3">
+      <View className="flex-row flex-wrap items-center justify-between gap-x-4 gap-y-3 border-t border-ink/10 pt-3">
         <View className="flex-col items-start">
           <Text
             className="font-bold text-ink/40"

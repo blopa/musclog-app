@@ -46,9 +46,9 @@ export function WorkTimerBar({
           style={{ height: '100%', width: `${fraction * 100}%` }}
         />
       </View>
-      <View className="flex-row items-center gap-3 px-4 py-2">
+      <View className="flex-row flex-wrap items-center gap-3 px-4 py-2">
         <View
-          className="min-h-12 flex-1 flex-row items-center gap-2"
+          className="min-h-12 min-w-0 shrink grow flex-row items-center gap-2"
           accessible
           accessibilityLabel={`${t('workTimer.label')} ${clock(remaining)}`}
         >
@@ -57,12 +57,12 @@ export function WorkTimerBar({
             color={running ? theme.colors.accent.primary : theme.colors.text.secondary}
           />
           <Text
-            className={`text-sm font-semibold ${running ? 'text-text-primary' : 'text-text-secondary'}`}
+            className={`min-w-0 shrink text-sm font-semibold ${running ? 'text-text-primary' : 'text-text-secondary'}`}
           >
             {t('workTimer.label')}
           </Text>
           <Text
-            className={`text-xl font-bold tabular-nums ${running ? 'text-text-primary' : 'text-text-tertiary'}`}
+            className={`shrink-0 text-xl font-bold tabular-nums ${running ? 'text-text-primary' : 'text-text-tertiary'}`}
           >
             {clock(remaining)}
           </Text>

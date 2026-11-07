@@ -1,7 +1,7 @@
 import { Activity } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Text, View } from 'react-native';
+import { Animated, Text, useWindowDimensions, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
@@ -19,6 +19,9 @@ type RestTimerProps = {
 // The digits are sized from the ring, not fixed: on a wide screen they grow with it instead of
 // leaving a small number in a big circle. The ring is square, so its width is its diameter.
 const DIGITS_PER_RING_WIDTH = 0.26;
+// The ring is square, so on a short window it must not take more than this share of the height:
+// the screen also has the header, the next set and the controls to fit beneath it.
+const RING_HEIGHT_SHARE = 0.3;
 
 export function RestTimer({
   restTime,
@@ -28,6 +31,7 @@ export function RestTimer({
 }: RestTimerProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { height: windowHeight } = useWindowDimensions();
   const [ringWidth, setRingWidth] = useState(0);
   const digitsSize =
     ringWidth > 0
@@ -67,7 +71,7 @@ export function RestTimer({
   return (
     <View
       className="relative aspect-square w-full items-center justify-center"
-      style={{ maxWidth: theme.maxWidth['400'] }}
+      style={{ maxWidth: Math.min(theme.maxWidth['400'], windowHeight * RING_HEIGHT_SHARE) }}
       onLayout={(event) => setRingWidth(event.nativeEvent.layout.width)}
       accessibilityRole="timer"
       accessibilityLabel={t('restTimer.a11yRemaining', { time: formatRestTime(restTime) })}

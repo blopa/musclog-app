@@ -133,12 +133,10 @@ export function CycleTrends({ onSelectDay }: { onSelectDay: (day: number) => voi
       ))}
       <View className="flex-row flex-wrap gap-2">
         {options.map((key) => (
-          <Chip
-            key={key}
-            label={label(key)}
-            selected={key === metric}
-            onPress={() => setMetric(key)}
-          />
+          // A long translated label wraps inside the chip instead of running past the row.
+          <View key={key} className="max-w-full">
+            <Chip label={label(key)} selected={key === metric} onPress={() => setMetric(key)} />
+          </View>
         ))}
       </View>
       <CycleTrendChart points={points} label={label(metric)} />

@@ -100,6 +100,7 @@ export function CycleContextModal({ visible, onClose, context }: CycleContextMod
       visible={visible}
       onClose={onClose}
       title={t('cycle.context.title')}
+      scrollable
       footer={
         <View className="flex-row gap-4">
           <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />
