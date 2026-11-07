@@ -55,13 +55,27 @@ function StatRow({
       style={{
         display: 'flex',
         flexDirection: 'row',
+        // The figure and its unit drop under the label, right-aligned, when they cannot sit beside
+        // it, instead of running past the card's clipped edge at large text.
+        flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
+        columnGap: 12,
+        rowGap: 8,
         paddingBottom: showDivider ? 16 : 0,
         borderBottom: showDivider ? `1px solid ${theme.colors.background.ink5}` : 'none',
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          flex: '1 1 140px',
+          minWidth: 0,
+        }}
+      >
         <div
           style={{
             borderRadius: 8,
@@ -70,13 +84,23 @@ function StatRow({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            flexShrink: 0,
           }}
         >
           <Icon size={iconSize} color={iconColor} />
         </div>
         <span style={{ fontWeight: 500, color: theme.colors.text.secondary }}>{label}</span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 4,
+          marginLeft: 'auto',
+          flexShrink: 0,
+        }}
+      >
         {showStarIcon && starColor ? <Star size={16} color={starColor} fill={starColor} /> : null}
         <span
           style={{

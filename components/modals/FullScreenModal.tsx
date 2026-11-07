@@ -10,8 +10,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
-import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { footerClearance } from '@/components/modals/footerClearance';
+import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';

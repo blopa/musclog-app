@@ -40,6 +40,7 @@ import {
   type AuditFlow,
   type AuditRoute,
 } from './layoutAudit/routes';
+import { SETTLE_QUIET_MS, waitForQuiet, waitForStableText } from './layoutAudit/settle';
 
 /**
  * Walks the web build at a phone profile and reports the layouts that look cramped. The build is
@@ -70,8 +71,6 @@ const SURFACES = new Set(
 );
 const PSEUDO_FACTOR = Number(process.env.MUSCLOG_LAYOUT_PSEUDO_FACTOR ?? 1.4);
 const TIMING = process.env.MUSCLOG_LAYOUT_TIMING === '1';
-/** How long the DOM must sit still after a page is loaded or tapped before it is measured. */
-const SETTLE_QUIET_MS = 300;
 /** The locale a `pseudo` run renders in before its text is stretched. */
 const PSEUDO_BASE_LOCALE = 'en-US';
 
@@ -278,63 +277,6 @@ function waitForLocale(page: Page, signatures: string[], timeout: number): Promi
     )
     .then(() => true)
     .catch(() => false);
-}
-
-/**
- * Clock-like text (`00:01:44`, `0:58`) changes every second on a live workout, so it is compared
- * with its digits masked: a ticking clock is not "the page is still loading".
- */
-function maskClocks(text: string): string {
-  return text.replace(/\d{1,2}:\d{2}(?::\d{2})?/g, '#:##');
-}
-
-/** Waits until the page text stops changing (loading skeletons, counters, late data). */
-async function waitForStableText(page: Page): Promise<void> {
-  let previous = '';
-  let stableReads = 0;
-  for (let attempt = 0; attempt < 50 && stableReads < 2; attempt++) {
-    const text = maskClocks(await page.evaluate(() => document.body.innerText).catch(() => ''));
-    stableReads = text === previous ? stableReads + 1 : 0;
-    previous = text;
-    await page.waitForTimeout(200);
-  }
-}
-
-/**
- * Waits until nothing in the document has changed for `quietMs`, at most `maxMs`. It replaces a
- * fixed sleep after a tap or a scroll: a page that is ready is measured as soon as it is quiet,
- * and one that never goes quiet (a running animation) still waits the whole `maxMs`, so this is
- * never slower than the sleep it stands in for.
- */
-async function waitForQuiet(page: Page, quietMs: number, maxMs: number): Promise<void> {
-  await page
-    .evaluate(
-      ({ quiet, max }) =>
-        new Promise<void>((resolve) => {
-          let quietTimer: ReturnType<typeof setTimeout>;
-          const finish = () => {
-            observer.disconnect();
-            clearTimeout(quietTimer);
-            clearTimeout(capTimer);
-            resolve();
-          };
-          const arm = () => {
-            clearTimeout(quietTimer);
-            quietTimer = setTimeout(finish, quiet);
-          };
-          const observer = new MutationObserver(arm);
-          observer.observe(document.documentElement, {
-            subtree: true,
-            childList: true,
-            attributes: true,
-            characterData: true,
-          });
-          const capTimer = setTimeout(finish, max);
-          arm();
-        }),
-      { quiet: quietMs, max: maxMs }
-    )
-    .catch(() => undefined);
 }
 
 /**
