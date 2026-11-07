@@ -3,11 +3,13 @@ import {
   WHATS_NEW_ACTIONS,
   WHATS_NEW_CONDITIONS,
   WHATS_NEW_ICONS,
+  WHATS_NEW_POSES,
   WHATS_NEW_SETTING_CATALOG,
   WHATS_NEW_SETTINGS,
   type WhatsNewAction,
   type WhatsNewCondition,
   type WhatsNewIconName,
+  type WhatsNewPoseName,
   type WhatsNewSetting,
 } from './catalog';
 import { compareVersions, parseVersion } from './version';
@@ -24,7 +26,7 @@ export type WhatsNewFeature = Copy & {
 };
 export type WhatsNewBlock = BlockBase &
   (
-    | (Copy & { type: 'info'; titleKey: WhatsNewKey })
+    | (Copy & { type: 'info'; titleKey: WhatsNewKey; pose?: WhatsNewPoseName })
     | (Omit<Copy, 'icon'> & {
         type: 'choice';
         setting: WhatsNewSetting;
@@ -120,7 +122,12 @@ export function parseWhatsNewRelease(
     const common = ['id', 'type', 'supersededIn'];
     switch (value.type) {
       case 'info':
-        properties(value, [...common, 'icon', 'titleKey', 'descriptionKey'], path);
+        properties(value, [...common, 'icon', 'pose', 'titleKey', 'descriptionKey'], path);
+        if (value.pose !== undefined && !contains(WHATS_NEW_POSES, value.pose)) {
+          issue(path, 'unknown pose');
+          return null;
+        }
+
         if (!copy(value, ['titleKey'], path)) {
           return null;
         }

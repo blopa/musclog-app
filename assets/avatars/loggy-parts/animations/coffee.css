@@ -1,0 +1,49 @@
+/* Loggy's slow coffee break — contained entirely in this SVG. Seated, so nothing
+   bounces: he breathes, the steam curls, the top foot swings and he takes a sip. */
+#body {
+    transform-origin: 265px 445px;
+    animation: loggy-breathe 3s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 6s ease-in-out infinite;
+}
+#mug, #hand-r {
+    transform-origin: 440px 345px;
+    animation: loggy-sip 6s ease-in-out infinite;
+}
+#steam {
+    transform-origin: 424px 288px;
+    animation: loggy-steam 3s ease-in-out infinite;
+}
+#leg-l {
+    transform-origin: 222px 450px;
+    animation: loggy-foot-swing 3s ease-in-out infinite;
+}
+
+@keyframes loggy-breathe {
+    0%, 100% { transform: scale(1, 1); }
+    50% { transform: scale(1.012, .991); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    28% { transform: rotate(-5deg); }
+    60% { transform: rotate(4deg); }
+    82% { transform: rotate(-2deg); }
+}
+@keyframes loggy-sip {
+    0%, 30%, 72%, 100% { transform: translate(0, 0) rotate(0deg); }
+    44%, 60% { transform: translate(-4px, -12px) rotate(-5deg); }
+}
+@keyframes loggy-steam {
+    0%, 100% { transform: skewX(0deg) scale(1, 1); }
+    25% { transform: skewX(5deg) scale(.96, 1.05); }
+    75% { transform: skewX(-5deg) scale(1.04, .97); }
+}
+@keyframes loggy-foot-swing {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-2.2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

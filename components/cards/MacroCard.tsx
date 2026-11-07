@@ -62,7 +62,7 @@ export function MacroCard({
   return (
     <GenericCard variant="flat" fill>
       <View className="p-4">
-        <View className="mb-1 flex-row items-baseline gap-1">
+        <View className="mb-1 flex-row flex-wrap items-baseline gap-x-1">
           <Text className="text-sm text-text-secondary">{displayName}</Text>
           <Text className="text-sm font-semibold" style={{ color }}>
             {percentage % 1 === 0
@@ -80,7 +80,9 @@ export function MacroCard({
             </Text>
           </View>
         ) : (
-          <View className="mb-3 flex-row items-baseline gap-1">
+          // The goal drops under the amount when a card is too narrow for both ("42g / 150g" in a
+          // third of a phone at large text), instead of being cut off by the card.
+          <View className="mb-3 flex-row flex-wrap items-baseline gap-x-1">
             <Text className="text-2xl font-bold tabular-nums text-text-primary">{amount}</Text>
             <Text className="text-sm text-text-secondary">
               / {t('common.weightFormatG', { value: formatInteger(goal, { useGrouping: false }) })}

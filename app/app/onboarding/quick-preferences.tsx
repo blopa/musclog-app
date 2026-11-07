@@ -120,7 +120,7 @@ export default function QuickPreferencesScreen() {
                   <Pressable
                     key={opt.value}
                     onPress={() => setGender(opt.value)}
-                    className="flex-row items-center justify-between rounded-control px-4 py-4"
+                    className="flex-row items-center justify-between gap-3 rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,
@@ -129,7 +129,7 @@ export default function QuickPreferencesScreen() {
                     accessibilityRole="radio"
                     accessibilityState={{ checked: isSelected }}
                   >
-                    <View className="flex-row items-center gap-3">
+                    <View className="min-w-0 flex-1 flex-row items-center gap-3">
                       <View
                         className="items-center justify-center rounded-full"
                         style={{
@@ -157,7 +157,7 @@ export default function QuickPreferencesScreen() {
                         )}
                       </View>
                       <Text
-                        className="font-semibold"
+                        className="min-w-0 shrink font-semibold"
                         style={{
                           color: isSelected
                             ? theme.colors.accent.primary
@@ -170,7 +170,7 @@ export default function QuickPreferencesScreen() {
                     </View>
 
                     <View
-                      className="items-center justify-center rounded-full"
+                      className="shrink-0 items-center justify-center rounded-full"
                       style={{
                         width: 24,
                         height: 24,

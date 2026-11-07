@@ -2,7 +2,7 @@
   "emptyStates": {
     "workouts": {
       "title": "No workouts yet",
-      "description": "Your fitness journey starts with your first rep. Plan your routine and track your progress here.",
+      "description": "Plan your routine and log your first session here.",
       "buttonLabel": "Create your first workout"
     },
     "foods": {

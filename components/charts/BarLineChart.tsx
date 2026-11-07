@@ -375,7 +375,10 @@ export function BarLineChart({
       ) : null}
 
       {/* Legend */}
-      <View className="flex-row items-center justify-center gap-6" style={{ marginTop: 16 }}>
+      <View
+        className="flex-row flex-wrap items-center justify-center gap-x-6 gap-y-1"
+        style={{ marginTop: 16 }}
+      >
         <View className="flex-row items-center gap-2">
           <View
             style={{

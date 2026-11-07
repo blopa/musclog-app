@@ -45,7 +45,7 @@ export function CycleSharingSettings() {
           />
         ))}
       </View>
-      <View className="flex-row gap-2">
+      <View className="flex-row flex-wrap gap-2">
         {[30, 90, 365].map((n) => (
           <Chip
             key={n}

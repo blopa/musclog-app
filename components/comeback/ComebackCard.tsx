@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
 import { Check, ChevronRight, HeartHandshake, RotateCcw } from 'lucide-react-native';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { ComebackSetupModal } from '@/components/comeback/ComebackSetupModal';
+import { LoggyPose } from '@/components/LoggyPose';
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
 import { COMEBACK_ROUTE } from '@/constants/comebackRoute';
@@ -24,6 +25,7 @@ import {
 import { minimumDayKey } from '@/utils/comeback/comebackTransitions';
 import { isComebackStalled } from '@/utils/comeback/lapse';
 import { handleError } from '@/utils/handleError';
+import { yearReviewSeason } from '@/utils/yearInReview/season';
 
 /**
  * Home's way into comeback mode. It says nothing at all unless it has something to say:
@@ -32,6 +34,8 @@ import { handleError } from '@/utils/handleError';
  *  - when a running comeback has gone quiet, a gentle "pick up where you left off".
  * The graduation message lives on the workout summary, so it appears once, where it is earned.
  */
+const OFFER_POSE_HEIGHT = 88;
+
 const OFFER_BODY_KEYS: Record<ComebackTrack, string> = {
   workout: 'comeback.offer.bodyWorkout',
   nutrition: 'comeback.offer.bodyFood',
@@ -47,6 +51,8 @@ export function ComebackCard() {
   const { lapse, shouldOffer, refresh } = useComebackOffer();
   const { workoutsThisWeek } = useWeeklyWorkoutProgress();
   const [setupOpen, setSetupOpen] = useState(false);
+  // Fixed for the screen's life, like the year card's own read of the date.
+  const yearCardSeason = useMemo(() => yearReviewSeason(new Date()).active, []);
   // True while a tap's write is in flight, so a second tap cannot race it.
   const [pending, setPending] = useState(false);
 
@@ -211,10 +217,19 @@ export function ComebackCard() {
           className="gap-3 rounded-card border border-border-light bg-bg-card p-4"
           testID="comeback-card-offer"
         >
-          <Text className="text-base font-semibold text-text-primary">
-            {t('comeback.offer.title')}
-          </Text>
-          <Text className="text-sm text-text-secondary">{t(bodyKey, { count: days })}</Text>
+          {/* Loggy only on the offer: a welcome back without a word about the gap. The running
+              ramp and the stalled card stay plain, since a face there would read as watching. In
+              the year-in-review season the year card sits right below with its own Loggy, and one
+              screen shows him once, so the offer is plain then. */}
+          <View className="flex-row items-center gap-3">
+            <View className="min-w-0 flex-1 gap-1">
+              <Text className="text-base font-semibold text-text-primary">
+                {t('comeback.offer.title')}
+              </Text>
+              <Text className="text-sm text-text-secondary">{t(bodyKey, { count: days })}</Text>
+            </View>
+            {yearCardSeason ? null : <LoggyPose pose="coffee" height={OFFER_POSE_HEIGHT} />}
+          </View>
           <View className="flex-row items-center gap-3">
             <Button
               label={t('comeback.offer.start')}

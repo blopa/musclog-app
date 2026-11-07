@@ -332,11 +332,6 @@ export function DailySummaryCard({
                         {getStatusLabel(calorieStatus, t)}
                       </Text>
                     ) : null}
-                    {intuitiveMode ? null : (
-                      <Text className="text-xs" style={{ color: theme.colors.colorfulCard.ink70 }}>
-                        {`${formatInteger(Math.round(calorieProgress))}%`}
-                      </Text>
-                    )}
                   </View>
                 </View>
                 <View
@@ -360,7 +355,7 @@ export function DailySummaryCard({
             {dailyMacroItems.length > 0 ? (
               <View className="flex-row gap-2">
                 {dailyMacroItems.map((macro) => (
-                  <View key={macro.label} className="flex-1 gap-1.5">
+                  <View key={macro.label} className="min-w-0 flex-1 gap-1.5">
                     {/* Label above the figure: side by side they fought for width and the label truncated. */}
                     <View className="gap-0.5">
                       <Text
@@ -388,7 +383,9 @@ export function DailySummaryCard({
                         />
                       ) : null}
                       {!highlightThresholds || macro.status === 'not-reached' ? (
-                        <View className="flex-row items-baseline">
+                        // Wraps: a four-column row is narrow, and "131,9/180g" used to run into
+                        // the next column's figure at large text or in a longer language.
+                        <View className="flex-row flex-wrap items-baseline">
                           <Text
                             className="text-xs font-semibold tabular-nums"
                             style={{
@@ -413,31 +410,21 @@ export function DailySummaryCard({
                         </View>
                       ) : null}
                     </View>
-                    {/* The percentage rides beside the bar rather than on a line of its own. */}
-                    <View className="flex-row items-center gap-1.5">
+                    {/* Value over goal and the bar already say how far along it is; a percentage
+                        was a third encoding of the same number. */}
+                    <View
+                      className="h-1 overflow-hidden rounded-full"
+                      style={{ backgroundColor: theme.colors.colorfulCard.track }}
+                    >
                       <View
-                        className="h-1 flex-1 overflow-hidden rounded-full"
-                        style={{ backgroundColor: theme.colors.colorfulCard.track }}
-                      >
-                        <View
-                          className="h-full rounded-full"
-                          style={{
-                            width: intuitiveMode ? '0%' : `${Math.min(macro.progress, 100)}%`,
-                            backgroundColor: showColoredIndicators
-                              ? getProgressBarColor(macro.status, theme)
-                              : theme.colors.colorfulCard.ink90,
-                          }}
-                        />
-                      </View>
-                      {intuitiveMode ? null : (
-                        <Text
-                          className="text-xs"
-                          numberOfLines={1}
-                          style={{ color: theme.colors.colorfulCard.ink70 }}
-                        >
-                          {`${formatInteger(Math.round(macro.progress))}%`}
-                        </Text>
-                      )}
+                        className="h-full rounded-full"
+                        style={{
+                          width: intuitiveMode ? '0%' : `${Math.min(macro.progress, 100)}%`,
+                          backgroundColor: showColoredIndicators
+                            ? getProgressBarColor(macro.status, theme)
+                            : theme.colors.colorfulCard.ink90,
+                        }}
+                      />
                     </View>
                   </View>
                 ))}

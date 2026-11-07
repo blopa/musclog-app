@@ -2,6 +2,9 @@ import { renderHook } from '@testing-library/react';
 
 import ConfettiOverlay from '@/components/ConfettiOverlay.web';
 
+// Reanimated is ESM-only; the cameo is covered by its own suite.
+jest.mock('@/components/LoggyCameo', () => ({ LoggyCameo: 'LoggyCameo' }));
+
 const mockFire = jest.fn();
 const mockReset = jest.fn();
 
@@ -17,7 +20,7 @@ describe('web confetti motion preference', () => {
 
   it('creates no canvas or particles with reduced motion, as used by screenshots', () => {
     window.matchMedia = jest.fn().mockReturnValue({ matches: true });
-    const { unmount } = renderHook(() => ConfettiOverlay());
+    const { unmount } = renderHook(() => ConfettiOverlay({}));
 
     expect(window.matchMedia).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)');
     expect(document.querySelector('canvas')).toBeNull();
@@ -28,12 +31,22 @@ describe('web confetti motion preference', () => {
 
   it('still celebrates and cleans up when motion is allowed', () => {
     window.matchMedia = jest.fn().mockReturnValue({ matches: false });
-    const { unmount } = renderHook(() => ConfettiOverlay());
+    const { unmount } = renderHook(() => ConfettiOverlay({}));
 
     expect(document.querySelector('canvas')).not.toBeNull();
     expect(mockFire).toHaveBeenCalledWith(expect.objectContaining({ particleCount: 150 }));
     unmount();
     expect(mockReset).toHaveBeenCalledTimes(1);
     expect(document.querySelector('canvas')).toBeNull();
+  });
+
+  it('shows Loggy beside the confetti, even under reduced motion, unless a screen has him already', () => {
+    window.matchMedia = jest.fn().mockReturnValue({ matches: true });
+
+    const { result: withLoggy } = renderHook(() => ConfettiOverlay({}));
+    expect(withLoggy.current).not.toBeNull();
+
+    const { result: without } = renderHook(() => ConfettiOverlay({ withLoggy: false }));
+    expect(without.current).toBeNull();
   });
 });

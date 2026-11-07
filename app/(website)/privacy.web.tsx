@@ -571,8 +571,11 @@ export default function Privacy() {
                 </a>
                 .
               </p>
-              <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+              <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
                 {t('sections.analytics.content6')}
+              </p>
+              <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.analytics.content7')}
               </p>
             </section>
           </div>

@@ -1,0 +1,184 @@
+{
+  "yearInReview": {
+    "title": "Your year in Musclog",
+    "empty": "Nothing is logged for this year yet. The review fills in as you train and track.",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "stepOf": "{{current}} of {{total}}",
+    "shareButton": "Share",
+    "shareSheetTitle": "Share your year",
+    "includeWeight": "Include weight change",
+    "includeNutrition": "Include nutrition",
+    "shareHint": "Both are off unless you turn them on. Without them the image has no body weight and no food figures.",
+    "shareAction": "Share image",
+    "intro": {
+      "body": "Here is what your training and tracking looked like."
+    },
+    "sessions": {
+      "title": "Workouts",
+      "body_one": "workout finished",
+      "body_few": "workouts finished",
+      "body_many": "workouts finished",
+      "body_other": "workouts finished"
+    },
+    "heatmap": {
+      "title": "Training days",
+      "days_one": "day trained",
+      "days_few": "days trained",
+      "days_many": "days trained",
+      "days_other": "days trained",
+      "legend": {
+        "workout": "Workout",
+        "food": "Food",
+        "both": "Both"
+      }
+    },
+    "streak": {
+      "title": "Longest run",
+      "body_one": "week in a row with a workout",
+      "body_few": "weeks in a row with a workout",
+      "body_many": "weeks in a row with a workout",
+      "body_other": "weeks in a row with a workout"
+    },
+    "volume": {
+      "title": "Total lifted",
+      "body": "Weight times reps across your working sets.",
+      "perWorkout": "{{unit}} per workout"
+    },
+    "topExercises": {
+      "title": "Most trained",
+      "sets_one": "{{n}} set",
+      "sets_few": "{{n}} sets",
+      "sets_many": "{{n}} sets",
+      "sets_other": "{{n}} sets"
+    },
+    "records": {
+      "title": "Personal records",
+      "body_one": "new personal record",
+      "body_few": "new personal records",
+      "body_many": "new personal records",
+      "body_other": "new personal records"
+    },
+    "busiestMonth": {
+      "title": "Busiest month",
+      "body_one": "{{n}} workout that month.",
+      "body_few": "{{n}} workouts that month.",
+      "body_many": "{{n}} workouts that month.",
+      "body_other": "{{n}} workouts that month."
+    },
+    "trainingTime": {
+      "title": "Usual training time",
+      "hours": "{{n}} hours trained, from sessions with a recorded length.",
+      "buckets": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "night": "Night"
+      }
+    },
+    "nutrition": {
+      "title": "Food logged",
+      "meals_one": "meal logged",
+      "meals_few": "meals logged",
+      "meals_many": "meals logged",
+      "meals_other": "meals logged",
+      "days_one": "day with food logged",
+      "days_few": "days with food logged",
+      "days_many": "days with food logged",
+      "days_other": "days with food logged"
+    },
+    "foodStreak": {
+      "title": "Longest logging run",
+      "body_one": "day in a row with food logged",
+      "body_few": "days in a row with food logged",
+      "body_many": "days in a row with food logged",
+      "body_other": "days in a row with food logged",
+      "chart": "Days with food logged, month by month."
+    },
+    "favouriteMeal": {
+      "title": "Most logged meal",
+      "days_one": "{{n}} day",
+      "days_few": "{{n}} days",
+      "days_many": "{{n}} days",
+      "days_other": "{{n}} days",
+      "captions": {
+        "breakfast": "Most important meal of the day, says every cereal box.",
+        "lunch": "The midday refuel.",
+        "dinner": "The big one at the end of the day.",
+        "snack": "Between meals counts too.",
+        "other": "Hard to file, easy to log."
+      }
+    },
+    "protein": {
+      "title": "Protein, added up",
+      "caption": "{{unit}} of protein",
+      "body": "Gram by gram, from the protein in every meal you logged. Not the weight of the food.",
+      "compare": {
+        "wheyBag_one": "That is about {{n}} bag of whey protein.",
+        "wheyBag_few": "That is about {{n}} bags of whey protein.",
+        "wheyBag_many": "That is about {{n}} bags of whey protein.",
+        "wheyBag_other": "That is about {{n}} bags of whey protein.",
+        "cat_one": "That is about {{n}} cat.",
+        "cat_few": "That is about {{n}} cats.",
+        "cat_many": "That is about {{n}} cats.",
+        "cat_other": "That is about {{n}} cats.",
+        "bowlingBall_one": "That is about {{n}} bowling ball.",
+        "bowlingBall_few": "That is about {{n}} bowling balls.",
+        "bowlingBall_many": "That is about {{n}} bowling balls.",
+        "bowlingBall_other": "That is about {{n}} bowling balls.",
+        "barbell_one": "That is about {{n}} Olympic barbell.",
+        "barbell_few": "That is about {{n}} Olympic barbells.",
+        "barbell_many": "That is about {{n}} Olympic barbells.",
+        "barbell_other": "That is about {{n}} Olympic barbells."
+      },
+      "chicken_one": "chicken breast’s worth, broccoli not included",
+      "chicken_few": "chicken breasts’ worth, broccoli not included",
+      "chicken_many": "chicken breasts’ worth, broccoli not included",
+      "chicken_other": "chicken breasts’ worth, broccoli not included"
+    },
+    "macros": {
+      "title": "Where the grams went",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat",
+      "body": "All the grams in the food you logged, added up."
+    },
+    "weight": {
+      "title": "Body weight",
+      "unchanged": "No change between your first and last weigh-in.",
+      "caption": "From your first weigh-in to your last."
+    },
+    "outro": {
+      "title": "That is the year",
+      "body": "Keep logging to see next year’s story."
+    },
+    "share": {
+      "sessions": "Workouts",
+      "activeDays": "Active days",
+      "volume": "Total lifted",
+      "topExercise": "Most trained",
+      "records": "Personal records",
+      "meals": "Meals logged",
+      "protein": "Protein",
+      "weight": "Weight change"
+    },
+    "homeCard": {
+      "title": "Your {{year}} in Musclog",
+      "body": "See what your training looked like.",
+      "open": "Open your year",
+      "dismiss": "Dismiss"
+    },
+    "settingsRow": {
+      "title": "Your year in Musclog",
+      "subtitle": "A look back at your training and tracking"
+    },
+    "notification": {
+      "title": "Your {{year}} in Musclog is ready",
+      "body": "See what your training looked like this year."
+    },
+    "loadFailed": "Your year couldn't be loaded.",
+    "retry": "Try again",
+    "seeYear": "See {{year}} so far"
+  }
+}

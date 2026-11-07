@@ -1,9 +1,9 @@
 import { Images, Lightbulb, LightbulbOff, Search, X } from 'lucide-react-native';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
-
 type SmartCameraRoundButtonProps = {
   children: ReactNode;
   disabled?: boolean;
@@ -132,11 +132,14 @@ export function SmartCameraBottomActions({
   onGalleryPress,
   onShutterPress,
 }: SmartCameraBottomActionsProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   return (
     <View className="flex-row items-center justify-between px-2">
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('common.a11y.chooseFromGallery')}
         className="h-12 w-12 items-center justify-center rounded-control active:scale-95"
         style={[
           {
@@ -156,6 +159,8 @@ export function SmartCameraBottomActions({
           the live preview and passes no handler, leaving the slot empty. */}
       {onShutterPress ? (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.takePhoto')}
           onPress={onShutterPress}
           disabled={controlsLocked}
           className="h-20 w-20 items-center justify-center rounded-full active:scale-95"

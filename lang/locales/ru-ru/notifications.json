@@ -29,7 +29,7 @@
       },
       "workoutCompleted": {
         "title": "Тренировка завершена",
-        "description": "Отличная работа на {{workoutName}}. Вы сожгли {{calories}} ккал."
+        "description": "Тренировка {{workoutName}} завершена. Вы сожгли {{calories}} ккал."
       },
       "kudosReceived": {
         "title": "Получены поздравления",
@@ -47,7 +47,7 @@
       },
       "workoutReminderMorning": {
         "title": "Напоминание о тренировке",
-        "body": "Готовы к тренировке {{workoutName}} сегодня??"
+        "body": "Сегодня по плану тренировка {{workoutName}}."
       },
       "nutritionOverview": {
         "title": "Ежедневный обзор питания",

@@ -28,7 +28,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
   if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.macroMuscle')}>
-        <View className="mb-4 flex-row items-center gap-2">
+        <View className="mb-4 flex-row flex-wrap items-center gap-2">
           {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
             <TouchableOpacity
               key={agg}
@@ -73,7 +73,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
 
   return (
     <ProgressChartSection title={t('progress.correlationView.macroMuscle')}>
-      <View className="mb-4 flex-row items-center gap-2">
+      <View className="mb-4 flex-row flex-wrap items-center gap-2">
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}

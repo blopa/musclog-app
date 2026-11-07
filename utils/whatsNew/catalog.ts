@@ -15,8 +15,13 @@ export const WHATS_NEW_ICONS = [
   'flame',
   'settings',
   'bot',
+  'smile',
 ] as const;
 export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
+
+/** Loggy poses an info block may show in place of its icon (a subset of `LoggyPoseName`). */
+export const WHATS_NEW_POSES = ['running'] as const;
+export type WhatsNewPoseName = (typeof WHATS_NEW_POSES)[number];
 
 /** Facts about the person's data that can gate a whole page of a release. */
 export const WHATS_NEW_CONDITIONS = ['cycleTracking'] as const;
@@ -32,6 +37,8 @@ export const WHATS_NEW_SETTINGS = [
   'autoStartRestTimer',
   'restTimerHaptics',
   'reviewWeekday',
+  'showLoggy',
+  'animatedLoggy',
 ] as const;
 export type WhatsNewSetting = (typeof WHATS_NEW_SETTINGS)[number];
 
@@ -43,6 +50,8 @@ export const WHATS_NEW_SETTING_CATALOG = {
   autoStartRestTimer: { kind: 'boolean' },
   restTimerHaptics: { kind: 'boolean' },
   reviewWeekday: { kind: 'weekday' },
+  showLoggy: { kind: 'boolean' },
+  animatedLoggy: { kind: 'boolean' },
 } as const satisfies Record<WhatsNewSetting, SettingSpec>;
 
 export type WhatsNewSettingValues = {

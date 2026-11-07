@@ -1212,17 +1212,17 @@ export function DataLogModal({
 
   const renderItem = (item: DataLogDisplayItem) => (
     <GenericCard key={item.id} variant="flat" isPressable onPress={() => handleItemPress(item)}>
-      <View className="flex-row items-center px-4 py-3">
-        <View className="flex-1 flex-row items-center gap-4">
+      <View className="flex-row items-center gap-2 px-4 py-3">
+        <View className="min-w-0 flex-1 flex-row items-center gap-4">
           <View
             className="size-10 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: item.iconBgColor }}
           >
             <MaterialIcons name={item.icon as any} size={20} color={item.iconColor} />
           </View>
-          <View className="flex-1">
+          <View className="min-w-0 flex-1">
             <View className="flex-row items-center gap-2">
-              <Text className="flex-1 text-base font-semibold leading-snug text-text-primary">
+              <Text className="min-w-0 flex-1 text-base font-semibold leading-snug text-text-primary">
                 {item.name}
               </Text>
               {(variant === 'meal' || variant === 'food') && item.isFavorite ? (
@@ -1242,7 +1242,9 @@ export function DataLogModal({
           </View>
         </View>
         <Pressable
-          className="size-8 items-center justify-center rounded-full active:opacity-70"
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.moreOptions')}
+          className="size-8 shrink-0 items-center justify-center rounded-full active:opacity-70"
           onPress={() => handleItemPress(item)}
         >
           <MaterialIcons name="more-vert" size={20} color={theme.colors.text.secondary} />

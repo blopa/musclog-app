@@ -152,6 +152,36 @@
       "minutes": "{{value}} min geleden",
       "hours": "{{value}} u geleden",
       "days": "{{value}} d geleden"
+    },
+    "a11y": {
+      "notifications": "Meldingen",
+      "editProfile": "Profiel bewerken",
+      "previousDay": "Vorige dag",
+      "nextDay": "Volgende dag",
+      "previousMonth": "Vorige maand",
+      "nextMonth": "Volgende maand",
+      "openCamera": "Camera openen",
+      "chooseFromGallery": "Kiezen uit galerij",
+      "takePhoto": "Foto maken",
+      "increase": "Verhogen",
+      "decrease": "Verlagen",
+      "moreInfo": "Meer informatie",
+      "moreOptions": "Meer opties",
+      "add": "Toevoegen",
+      "dismiss": "Negeren",
+      "remove": "Verwijderen",
+      "scanBarcode": "Barcode scannen",
+      "send": "Verzenden",
+      "attachFile": "Bestand bijvoegen",
+      "removeImage": "Afbeelding verwijderen",
+      "choosePhoto": "Foto kiezen",
+      "chooseIcon": "Pictogram kiezen",
+      "moveUp": "Omhoog verplaatsen",
+      "moveDown": "Omlaag verplaatsen",
+      "filter": "Filteren",
+      "clearSearch": "Zoekopdracht wissen",
+      "showValue": "Waarde tonen",
+      "hideValue": "Waarde verbergen"
     }
   }
 }

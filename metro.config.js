@@ -6,6 +6,17 @@ const config = getSentryExpoConfig(__dirname);
 
 config.resolver.assetExts = [...(config.resolver.assetExts ?? []), 'wasm'];
 
+// `.svg` imports become react-native-svg components (Loggy's poses, `components/LoggyPose.tsx`),
+// compiled at build time, so the file is source, not an asset. An SVG that must stay a file, or
+// whose CSS/SMIL animation has to run as written, cannot be imported this way; see the Loggy bullet
+// in AGENTS.md. Set before `withNativeWind` so it wraps this transformer.
+config.transformer = {
+  ...config.transformer,
+  babelTransformerPath: require.resolve('react-native-svg-transformer/expo'),
+};
+config.resolver.assetExts = config.resolver.assetExts.filter((ext) => ext !== 'svg');
+config.resolver.sourceExts = [...config.resolver.sourceExts, 'svg'];
+
 // Sharp is a Node-only native module; stub it so Metro never tries to load it.
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === 'sharp' || moduleName.startsWith('sharp/')) {

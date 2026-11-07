@@ -25,6 +25,11 @@ type DailyHomeFooterProps = {
    * day's log query and its per-log decryption twice for one integer.
    */
   consumedKcal: null | number;
+  /**
+   * True when the summary card above already prints today's calories, so the strip does not
+   * repeat them as an "Eaten" cell.
+   */
+  cardShowsEaten: boolean;
 };
 
 /**
@@ -40,7 +45,12 @@ type DailyHomeFooterProps = {
  * the metric history the step count opens — the screen supplies only the two facts it
  * already holds (the day and the user's TDEE) plus the calories it already subscribes to.
  */
-export function DailyHomeFooter({ consumedKcal, date, tdee }: DailyHomeFooterProps) {
+export function DailyHomeFooter({
+  cardShowsEaten,
+  consumedKcal,
+  date,
+  tdee,
+}: DailyHomeFooterProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
@@ -60,7 +70,7 @@ export function DailyHomeFooter({ consumedKcal, date, tdee }: DailyHomeFooterPro
           consumedKcal,
         });
 
-  const cells = buildDailyStatCells({ energyBalance, steps });
+  const cells = buildDailyStatCells({ energyBalance, includeEaten: !cardShowsEaten, steps });
 
   const toneColor: Record<StatTone, string> = {
     neutral: theme.colors.text.primary,

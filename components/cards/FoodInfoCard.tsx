@@ -72,7 +72,13 @@ export function FoodInfoCard({
               <View className="mb-1 flex-row items-start">
                 <Text className="flex-1 text-xl font-semibold text-text-primary">{food.name}</Text>
                 {onInfoPress ? (
-                  <Pressable className="ml-1 mt-1 self-start" onPress={onInfoPress} hitSlop={8}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.a11y.moreInfo')}
+                    className="ml-1 mt-1 self-start"
+                    onPress={onInfoPress}
+                    hitSlop={8}
+                  >
                     <Info size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                   </Pressable>
                 ) : null}

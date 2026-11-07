@@ -69,8 +69,8 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 
 ## Key Features
 
-> See [CURRENT_FEATURES.md](CURRENT_FEATURES.md) for the complete shipped feature list and
-> [FUTURE_FEATURES.md](FUTURE_FEATURES.md) for the roadmap.
+> See [CURRENT_FEATURES.md](docs/CURRENT_FEATURES.md) for the complete shipped feature list and
+> [FUTURE_FEATURES.md](docs/FUTURE_FEATURES.md) for the roadmap.
 
 ### 🏋️ Track Workouts
 
@@ -131,6 +131,9 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 - Visualize fitness progress with charts and graphs
 - Track body metrics with a smoothed weight trend, editable scale readings, body fat %, and custom measurements
 - Daily and weekly AI-generated insights on workouts and nutrition
+- **Recent training load**: a body map of what you trained this week, and weekly sets per muscle
+- **Strength levels** for your main lifts, compared with your body weight
+- **Your year in Musclog**: a shareable look back at your year, each December
 - **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and days around recorded periods over time
 
 ### 🧠 AI Coach
@@ -158,6 +161,7 @@ It is built with React Native and Expo (Android, iOS and web) and stores data lo
 
 - Export your full database as an encrypted JSON file (encryption optional, configurable)
 - Import data across devices or as a backup, including optical QR transfer directly from the first onboarding screen
+- **Bring your history**: import workouts from Strong, Hevy and FitNotes CSV exports; importing again adds nothing, and an import can be undone
 - Import the complete Musclog GB cartridge database by scanning its Share Data QR stream on Android, iOS, or web
 - Support for JSON format
 
@@ -297,6 +301,7 @@ npm run typecheck                 # TypeScript type checking
 npm run check-translations        # Validate used i18n keys
 npm run check-locale-consistency  # Validate key parity across locales
 npm run screenshots               # Build web and capture Playwright screenshots
+npm run screenshots:wrapped       # Build web and capture only "Your year in Musclog"
 npm run start-clear               # Start Expo with a cleared cache
 ```
 
@@ -310,7 +315,8 @@ MUSCLOG_SCREENSHOT_THEME=kinetic-shock npm run playwright-runner -- tests/screen
 
 Valid themes are `kinetic-depth`, `kinetic-light`, `kinetic-shock`, `kinetic-volt`,
 `kinetic-blush`, `kinetic-varia`, and `kinetic-scope`. Images are saved under
-`screenshots/app-store/<theme>/<device>/`. The screenshot suite enables reduced
+`screenshots/app-store/<theme>/<device>/` (the Wrapped story goes in its `wrapped/`
+subfolder; `npm run screenshots:all` runs both suites and the website images). The screenshot suite enables reduced
 motion, which disables web confetti for every screen and modal. Screenshot commands
 run only the capture suite; SDK compatibility tests remain available separately.
 They use `npm run screenshots:build` to enable the modal fixture in the web export.
@@ -342,11 +348,11 @@ npm run submit-ios                # Submit to App Store Connect
 ## Project Documentation
 
 - [AGENTS.md](AGENTS.md): implementation rules and repository invariants
-- [CURRENT_FEATURES.md](CURRENT_FEATURES.md): complete shipped feature list
-- [FUTURE_FEATURES.md](FUTURE_FEATURES.md): prioritized backlog and scope decisions
-- [DESIGN.md](DESIGN.md): visual system and interaction standards
-- [FIXES.md](FIXES.md): incidents, workarounds, and regression guardrails
-- [RESEARCH.md](RESEARCH.md): consolidated technical and product research
+- [CURRENT_FEATURES.md](docs/CURRENT_FEATURES.md): complete shipped feature list
+- [FUTURE_FEATURES.md](docs/FUTURE_FEATURES.md): prioritized backlog and scope decisions
+- [DESIGN.md](docs/DESIGN.md): visual system and interaction standards
+- [FIXES.md](docs/FIXES.md): incidents, workarounds, and regression guardrails
+- [RESEARCH.md](docs/RESEARCH.md): consolidated technical and product research
 
 ---
 

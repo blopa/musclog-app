@@ -2,16 +2,28 @@ import { Minus, Plus } from 'lucide-react-native';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TextInputInstance } from 'react-native';
-import { Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
+import {
+  Keyboard,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { fitLineFontSize } from '@/utils/fitText';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedIntegerInput,
   sanitizeLocalizedSignedDecimalInput,
 } from '@/utils/localizedDecimalInput';
+
+/** Room the slot keeps free of text: the unit's margins and a little air. */
+const STEPPER_SLOT_INSET = 12;
 
 interface StepperInputProps {
   label: string;
@@ -59,14 +71,25 @@ export const StepperInput: FC<StepperInputProps> = ({
 
   const isPortion = variant === 'portion';
 
-  const valueFontSize = isPortion
-    ? theme.typography.fontSize['4xl']
-    : theme.typography.fontSize['2xl'];
-
-  const unitFontSize = theme.typography.fontSize['2xl'];
+  const { fontScale } = useWindowDimensions();
+  /** The width of the slot between the two buttons, once it has been laid out. */
+  const [slotWidth, setSlotWidth] = useState<number | null>(null);
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(() => formatValue(value));
   const inputRef = useRef<TextInputInstance>(null);
+
+  // The number and its unit share one line. At large text the nominal size (36pt for a portion)
+  // no longer fits between the buttons, so it is worked out from the measured slot, with a
+  // floor, instead of cutting the unit off ("35.3 o").
+  const nominalValueSize = isPortion
+    ? theme.typography.fontSize['4xl']
+    : theme.typography.fontSize['2xl'];
+  const valueFontSize = fitLineFontSize(
+    `${editing ? inputValue : formatValue(value)}${unit ? ` ${unit}` : ''}`,
+    slotWidth === null ? null : slotWidth - STEPPER_SLOT_INSET,
+    { maxSize: nominalValueSize, minSize: theme.typography.fontSize.lg, fontScale }
+  );
+  const unitFontSize = Math.min(theme.typography.fontSize['2xl'], valueFontSize);
 
   // Sync inputValue with value prop when not editing
   useEffect(() => {
@@ -197,6 +220,7 @@ export const StepperInput: FC<StepperInputProps> = ({
             style={{
               backgroundColor: isPortion ? 'transparent' : theme.colors.background.card,
             }}
+            onLayout={(e) => setSlotWidth(e.nativeEvent.layout.width)}
           >
             <TextInput
               ref={inputRef}
@@ -237,6 +261,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               backgroundColor: isPortion ? 'transparent' : theme.colors.background.card,
             }}
             onPress={handleValuePress}
+            onLayout={(e) => setSlotWidth(e.nativeEvent.layout.width)}
           >
             <Text
               className="text-center font-bold text-text-primary"

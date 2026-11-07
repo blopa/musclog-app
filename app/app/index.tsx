@@ -19,6 +19,7 @@ import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
 import { HomeActionsRow } from '@/components/home/HomeActionsRow';
 import { HomeHeatmaps } from '@/components/home/HomeHeatmaps';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
+import { YearInReviewCard } from '@/components/home/YearInReviewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
@@ -436,6 +437,8 @@ export default function HomeScreen() {
           </Text>
           {SHOW_NOTIFICATIONS ? (
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.notifications')}
               className="relative rounded-full bg-bg-overlay p-3"
               onPress={() => setIsNotificationsVisible(true)}
             >
@@ -450,6 +453,7 @@ export default function HomeScreen() {
 
         <View className="mx-4 mb-4 gap-4">
           <ComebackCard />
+          <YearInReviewCard />
           <WorkoutTodayCard activeOnly />
         </View>
         {/* Daily Summary Card */}
@@ -473,6 +477,8 @@ export default function HomeScreen() {
             <DailyHomeFooter
               date={today}
               tdee={currentTdee}
+              // The daily summary card prints today's calories; the streak card does not.
+              cardShowsEaten={homeSummaryCard !== 'weekly_streak'}
               // `null` withholds the energy half of the strip: there is no goal to balance
               // against in intuitive-eating mode, or before one has been set.
               consumedKcal={
@@ -502,7 +508,7 @@ export default function HomeScreen() {
         </View>
         <HomeHeatmaps today={today} />
         <View className="mx-4 mb-6">
-          <View className="mb-2 flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-text-primary">
               {t('home.sections.recentFoods')}
             </Text>
@@ -598,7 +604,7 @@ export default function HomeScreen() {
 
         {/* Recent Workouts */}
         <View className="mx-4 mb-6">
-          <View className="mb-2 flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-text-primary">
               {t('home.sections.recentWorkouts')}
             </Text>

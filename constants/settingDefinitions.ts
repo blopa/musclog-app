@@ -8,6 +8,7 @@ import {
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
 import {
   ACTIVE_GYM_ID_SETTING_TYPE,
+  ANIMATED_LOGGY_SETTING_TYPE,
   APP_LOCK_SCOPES_SETTING_TYPE,
   type AppLockScope,
   AUTO_START_REST_TIMER_SETTING_TYPE,
@@ -51,10 +52,12 @@ import {
   REVIEW_WEEKDAY_SETTING_TYPE,
   serializeAppLockScopes,
   SHOW_HOME_STEPS_SETTING_TYPE,
+  SHOW_LOGGY_SETTING_TYPE,
   WEEKLY_REVIEW_WELCOME_SEEN_SETTING_TYPE,
   WORKOUT_AUTONOMY_SETTING_TYPE,
   WORKOUT_VIEW_SETTING_TYPE,
   type WorkoutAutonomy,
+  YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
 } from '@/constants/settings';
 import {
   type ComebackState,
@@ -167,6 +170,8 @@ export const SETTINGS = {
     parseHomeHeatmapLayout
   ),
   foodDiaryCompact: booleanSetting(FOOD_DIARY_COMPACT_SETTING_TYPE, false),
+  animatedLoggy: booleanSetting(ANIMATED_LOGGY_SETTING_TYPE, true),
+  showLoggy: booleanSetting(SHOW_LOGGY_SETTING_TYPE, true),
   foodDiaryGrouping: choiceSetting<FoodDiaryGrouping>(
     FOOD_DIARY_GROUPING_SETTING_TYPE,
     parseFoodDiaryGrouping
@@ -199,6 +204,16 @@ export const SETTINGS = {
     parse: parseComebackState,
     serialize: serializeComebackState,
   } satisfies SettingDefinition<ComebackState>,
+  /** Null until the user dismisses this year's card; a stored year hides that year's card only. */
+  yearReviewDismissedYear: {
+    type: YEAR_REVIEW_DISMISSED_YEAR_SETTING_TYPE,
+    defaultValue: null,
+    parse: (raw: string) => {
+      const year = Number(raw);
+      return raw !== '' && Number.isInteger(year) ? year : null;
+    },
+    serialize: (value: number | null) => (value === null ? '' : String(value)),
+  } satisfies SettingDefinition<number | null>,
 } as const;
 
 /** Reads a setting out of an already-loaded `type → value` map (the reactive context's view). */

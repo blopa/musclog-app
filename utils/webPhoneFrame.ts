@@ -4,7 +4,12 @@
  */
 export const WEB_DESKTOP_PHONE_FRAME_MIN_WIDTH = 1024;
 
-export type WebModalLayerVariant = 'fullscreen' | 'centered';
+/**
+ * `fullscreen`: a layer filling the viewport. `centered`: the same, centering its direct child
+ * (a root that is itself the backdrop of one dialog). `layer`: positioning only, for a root whose
+ * own inner wrapper does the centering.
+ */
+export type WebModalLayerVariant = 'fullscreen' | 'centered' | 'layer';
 
 /** Native / non-web: desktop phone frame is never active. */
 export function useWebDesktopPhoneFrame(): boolean {

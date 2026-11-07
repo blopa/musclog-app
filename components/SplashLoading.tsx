@@ -10,7 +10,7 @@ const LOGO_SIZE = 128;
  * Inline styles only, no `className`: the root `/` route renders this before
  * `app/app/_layout.tsx` (which imports `global.css`) has been evaluated, so
  * NativeWind classes resolve to nothing here and the logo drew at its 1024px
- * intrinsic size. See `FIXES.md`.
+ * intrinsic size. See `docs/FIXES.md`.
  */
 export function SplashLoading() {
   const colors = useBootColors();

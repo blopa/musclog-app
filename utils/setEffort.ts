@@ -11,6 +11,17 @@
 export type SetEffortRecord = { repsInReserve: number; rirRecorded?: boolean };
 
 /**
+ * The scale both effort inputs share, written two ways (RPE = 10 − RIR): RPE 10 is a set with
+ * nothing left in reserve.
+ */
+export const RPE_AT_FAILURE = 10;
+
+/** RPE 8 is two reps in reserve. Unrated stays null, never a fabricated zero. */
+export function repsInReserveFromRpe(rpe: number | null): number | null {
+  return rpe === null ? null : Math.min(9, Math.max(0, RPE_AT_FAILURE - rpe));
+}
+
+/**
  * Writes a set's effort: a number rates it, `null` or `undefined` leaves it (or makes it) unrated.
  * Callers that mean "do not touch the rating" must not call this at all.
  */

@@ -11,6 +11,7 @@ import { FITNESS_OPTIONS, WEIGHT_OPTIONS } from '@/components/onboarding/onboard
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { type FitnessGoal, type WeightGoal } from '@/database/models/User';
+import { useOptionColumns } from '@/hooks/useOptionColumns';
 import { useTheme } from '@/hooks/useTheme';
 import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
 import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
@@ -19,6 +20,11 @@ import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 export default function PersonalizedGoalsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { columns, onGridLayout } = useOptionColumns(
+    FITNESS_OPTIONS.map((opt) => t(opt.labelKey)),
+    // Card padding and border, icon, the gaps beside it, the radio dot.
+    { fontSize: theme.typography.fontSize.sm, chrome: 81, gap: 16 }
+  );
   const router = useRouter();
 
   const [fitnessGoal, setFitnessGoal] = useState<FitnessGoal>('general');
@@ -91,7 +97,7 @@ export default function PersonalizedGoalsScreen() {
                 {t('onboarding.quickGoals.fitnessFocus').toUpperCase()}
               </Text>
 
-              <View className="flex-row flex-wrap gap-3">
+              <View className="flex-row flex-wrap gap-3" onLayout={onGridLayout}>
                 {FITNESS_OPTIONS.map((opt) => {
                   const isSelected = fitnessGoal === opt.value;
                   const iconColor = isSelected
@@ -102,23 +108,26 @@ export default function PersonalizedGoalsScreen() {
                       key={opt.value}
                       onPress={() => setFitnessGoal(opt.value)}
                       style={{
-                        width: '47%',
+                        width: columns === 2 ? '47%' : '100%',
                         backgroundColor: theme.colors.background.cardElevated,
                         borderRadius: theme.borderRadius.xl,
                         borderWidth: 1.5,
                         borderColor: isSelected ? theme.colors.accent.primary : 'transparent',
-                        padding: 16,
+                        paddingVertical: 16,
+                        paddingHorizontal: 12,
                         flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'space-between',
+                        // A long label wraps in its own column and never runs under the dot.
+                        gap: 8,
                       }}
                       accessibilityRole="radio"
                       accessibilityState={{ checked: isSelected }}
                     >
-                      <View className="flex-row items-center gap-2">
+                      <View className="min-w-0 flex-1 flex-row items-center gap-2">
                         <opt.icon size={18} color={iconColor} />
                         <Text
-                          className="font-semibold"
+                          className="min-w-0 shrink font-semibold"
                           style={{
                             color: isSelected
                               ? theme.colors.accent.primary
@@ -131,6 +140,7 @@ export default function PersonalizedGoalsScreen() {
                       </View>
                       <View
                         style={{
+                          flexShrink: 0,
                           width: 20,
                           height: 20,
                           borderRadius: 10,

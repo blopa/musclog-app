@@ -245,10 +245,11 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
               onPress={() => setLanguageMenuVisible(true)}
               icon={<Languages size={theme.iconSize.xl} color={theme.colors.text.primary} />}
               rightIcon={
-                <View className="flex-row items-center gap-2">
+                <View className="min-w-0 max-w-[45%] shrink flex-row items-center gap-2">
                   <Text
-                    className="text-sm font-medium"
+                    className="shrink text-sm font-medium"
                     style={{ color: theme.colors.accent.primary }}
+                    numberOfLines={1}
                   >
                     {currentLanguageLabel}
                   </Text>

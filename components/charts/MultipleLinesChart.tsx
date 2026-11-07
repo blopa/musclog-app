@@ -398,7 +398,7 @@ export function MultipleLinesChart({
 
       {series.length > 0 ? (
         <View
-          className="flex-row items-center justify-around border-t border-border-default pt-6"
+          className="flex-row flex-wrap items-center justify-around gap-x-4 gap-y-3 border-t border-border-default pt-6"
           style={{
             borderTopColor: theme.colors.border.light,
             borderTopWidth: 1,

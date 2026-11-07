@@ -147,7 +147,8 @@ export function ConfirmationModal({
             ) : null}
 
             {/* Buttons */}
-            <View className="flex-row" style={{ gap: theme.spacing.gap.md }}>
+            {/* Wraps: a long translation of either label stacks the two instead of breaking a word. */}
+            <View className="flex-row flex-wrap" style={{ gap: theme.spacing.gap.md }}>
               <Button
                 label={defaultCancelLabel}
                 variant="outline"

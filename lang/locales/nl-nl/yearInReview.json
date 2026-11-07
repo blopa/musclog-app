@@ -1,0 +1,184 @@
+{
+  "yearInReview": {
+    "title": "Jouw jaar in Musclog",
+    "empty": "Er is dit jaar nog niets vastgelegd. Het overzicht vult zich terwijl je traint en bijhoudt.",
+    "back": "Terug",
+    "next": "Volgende",
+    "done": "Klaar",
+    "stepOf": "{{current}} van {{total}}",
+    "shareButton": "Delen",
+    "shareSheetTitle": "Deel je jaar",
+    "includeWeight": "Gewichtsverandering toevoegen",
+    "includeNutrition": "Voeding toevoegen",
+    "shareHint": "Beide staan standaard uit. Zonder deze opties toont de afbeelding geen lichaamsgewicht en geen voedingscijfers.",
+    "shareAction": "Afbeelding delen",
+    "intro": {
+      "body": "Zo zagen je training en bijhouden eruit."
+    },
+    "sessions": {
+      "title": "Trainingen",
+      "body_one": "training afgerond",
+      "body_few": "trainingen afgerond",
+      "body_many": "trainingen afgerond",
+      "body_other": "trainingen afgerond"
+    },
+    "heatmap": {
+      "title": "Trainingsdagen",
+      "days_one": "dag getraind",
+      "days_few": "dagen getraind",
+      "days_many": "dagen getraind",
+      "days_other": "dagen getraind",
+      "legend": {
+        "workout": "Training",
+        "food": "Eten",
+        "both": "Beide"
+      }
+    },
+    "streak": {
+      "title": "Langste reeks",
+      "body_one": "week achter elkaar met een training",
+      "body_few": "weken achter elkaar met een training",
+      "body_many": "weken achter elkaar met een training",
+      "body_other": "weken achter elkaar met een training"
+    },
+    "volume": {
+      "title": "Totaal getild",
+      "body": "Gewicht maal herhalingen over je werkseries.",
+      "perWorkout": "{{unit}} per training"
+    },
+    "topExercises": {
+      "title": "Meest getraind",
+      "sets_one": "{{n}} serie",
+      "sets_few": "{{n}} series",
+      "sets_many": "{{n}} series",
+      "sets_other": "{{n}} series"
+    },
+    "records": {
+      "title": "Persoonlijke records",
+      "body_one": "nieuw persoonlijk record",
+      "body_few": "nieuwe persoonlijke records",
+      "body_many": "nieuwe persoonlijke records",
+      "body_other": "nieuwe persoonlijke records"
+    },
+    "busiestMonth": {
+      "title": "Drukste maand",
+      "body_one": "{{n}} training in die maand.",
+      "body_few": "{{n}} trainingen in die maand.",
+      "body_many": "{{n}} trainingen in die maand.",
+      "body_other": "{{n}} trainingen in die maand."
+    },
+    "trainingTime": {
+      "title": "Gebruikelijk trainingsmoment",
+      "hours": "{{n}} uur getraind, uit sessies met een bekende lengte.",
+      "buckets": {
+        "morning": "Ochtend",
+        "afternoon": "Middag",
+        "evening": "Avond",
+        "night": "Nacht"
+      }
+    },
+    "nutrition": {
+      "title": "Voeding bijgehouden",
+      "meals_one": "maaltijd vastgelegd",
+      "meals_few": "maaltijden vastgelegd",
+      "meals_many": "maaltijden vastgelegd",
+      "meals_other": "maaltijden vastgelegd",
+      "days_one": "dag met voeding vastgelegd",
+      "days_few": "dagen met voeding vastgelegd",
+      "days_many": "dagen met voeding vastgelegd",
+      "days_other": "dagen met voeding vastgelegd"
+    },
+    "foodStreak": {
+      "title": "Langste logreeks",
+      "body_one": "dag op rij met eten gelogd",
+      "body_few": "dagen op rij met eten gelogd",
+      "body_many": "dagen op rij met eten gelogd",
+      "body_other": "dagen op rij met eten gelogd",
+      "chart": "Dagen met eten gelogd, maand voor maand."
+    },
+    "favouriteMeal": {
+      "title": "Meest gelogde maaltijd",
+      "days_one": "{{n}} dag",
+      "days_few": "{{n}} dagen",
+      "days_many": "{{n}} dagen",
+      "days_other": "{{n}} dagen",
+      "captions": {
+        "breakfast": "Belangrijkste maaltijd van de dag, volgens elke cornflakesdoos.",
+        "lunch": "De brandstof voor halverwege de dag.",
+        "dinner": "De grote aan het eind van de dag.",
+        "snack": "Tussendoortjes tellen ook mee.",
+        "other": "Lastig te plaatsen, makkelijk te loggen."
+      }
+    },
+    "protein": {
+      "title": "Eiwit, bij elkaar opgeteld",
+      "caption": "{{unit}} eiwit",
+      "body": "Gram voor gram, uit het eiwit in elke maaltijd die je logde. Niet het gewicht van het eten.",
+      "compare": {
+        "wheyBag_one": "Dat is ongeveer {{n}} zak wei-eiwit.",
+        "wheyBag_few": "Dat is ongeveer {{n}} zakken wei-eiwit.",
+        "wheyBag_many": "Dat is ongeveer {{n}} zakken wei-eiwit.",
+        "wheyBag_other": "Dat is ongeveer {{n}} zakken wei-eiwit.",
+        "cat_one": "Dat is ongeveer {{n}} kat.",
+        "cat_few": "Dat is ongeveer {{n}} katten.",
+        "cat_many": "Dat is ongeveer {{n}} katten.",
+        "cat_other": "Dat is ongeveer {{n}} katten.",
+        "bowlingBall_one": "Dat is ongeveer {{n}} bowlingbal.",
+        "bowlingBall_few": "Dat is ongeveer {{n}} bowlingballen.",
+        "bowlingBall_many": "Dat is ongeveer {{n}} bowlingballen.",
+        "bowlingBall_other": "Dat is ongeveer {{n}} bowlingballen.",
+        "barbell_one": "Dat is ongeveer {{n}} olympische halterstang.",
+        "barbell_few": "Dat is ongeveer {{n}} olympische halterstangen.",
+        "barbell_many": "Dat is ongeveer {{n}} olympische halterstangen.",
+        "barbell_other": "Dat is ongeveer {{n}} olympische halterstangen."
+      },
+      "chicken_one": "kipfilet aan eiwit, broccoli niet inbegrepen",
+      "chicken_few": "kipfilets aan eiwit, broccoli niet inbegrepen",
+      "chicken_many": "kipfilets aan eiwit, broccoli niet inbegrepen",
+      "chicken_other": "kipfilets aan eiwit, broccoli niet inbegrepen"
+    },
+    "macros": {
+      "title": "Waar de grammen heen gingen",
+      "protein": "Eiwit",
+      "carbs": "Koolhydraten",
+      "fat": "Vet",
+      "body": "Alle grammen in het eten dat je logde, bij elkaar opgeteld."
+    },
+    "weight": {
+      "title": "Lichaamsgewicht",
+      "unchanged": "Geen verschil tussen je eerste en laatste weging.",
+      "caption": "Van je eerste tot je laatste weging."
+    },
+    "outro": {
+      "title": "Dat was het jaar",
+      "body": "Blijf bijhouden om het verhaal van volgend jaar te zien."
+    },
+    "share": {
+      "sessions": "Trainingen",
+      "activeDays": "Actieve dagen",
+      "volume": "Totaal getild",
+      "topExercise": "Meest getraind",
+      "records": "Persoonlijke records",
+      "meals": "Maaltijden vastgelegd",
+      "protein": "Eiwit",
+      "weight": "Gewichtsverandering"
+    },
+    "homeCard": {
+      "title": "Jouw {{year}} in Musclog",
+      "body": "Bekijk hoe je training eruitzag.",
+      "open": "Open je jaar",
+      "dismiss": "Verbergen"
+    },
+    "settingsRow": {
+      "title": "Jouw jaar in Musclog",
+      "subtitle": "Een terugblik op je training en bijhouden"
+    },
+    "notification": {
+      "title": "Jouw {{year}} in Musclog is klaar",
+      "body": "Bekijk hoe je training er dit jaar uitzag."
+    },
+    "loadFailed": "Je jaar kon niet worden geladen.",
+    "retry": "Opnieuw proberen",
+    "seeYear": "Bekijk {{year}} tot nu toe"
+  }
+}

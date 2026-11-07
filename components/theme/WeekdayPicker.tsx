@@ -11,7 +11,17 @@ type WeekdayPickerProps = {
 export function WeekdayPicker({ days, selectedDays, onToggleDay }: WeekdayPickerProps) {
   const theme = useTheme();
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        // Seven 40pt targets are wider than a phone at large text: wrap rather than cut the last
+        // days off, and keep the targets at full size.
+        flexWrap: 'wrap',
+        rowGap: theme.spacing.gap.sm,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
       {days.map((day, index) => {
         const isSelected = selectedDays.includes(index);
         return (

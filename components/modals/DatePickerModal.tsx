@@ -257,10 +257,20 @@ export function DatePickerModal({
                   <ChevronDown size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 </Pressable>
                 <View className="flex-row items-center gap-1">
-                  <Pressable className="rounded-full p-1" onPress={handlePreviousMonth}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.a11y.previousMonth')}
+                    className="rounded-full p-1"
+                    onPress={handlePreviousMonth}
+                  >
                     <ChevronLeft size={theme.iconSize.md} color={theme.colors.text.secondary} />
                   </Pressable>
-                  <Pressable className="rounded-full p-1" onPress={handleNextMonth}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.a11y.nextMonth')}
+                    className="rounded-full p-1"
+                    onPress={handleNextMonth}
+                  >
                     <ChevronRight size={theme.iconSize.md} color={theme.colors.text.secondary} />
                   </Pressable>
                 </View>
@@ -306,11 +316,6 @@ export function DatePickerModal({
                             className="absolute inset-0 rounded-full"
                             style={{
                               backgroundColor: theme.colors.accent.primary,
-                              shadowColor: theme.colors.accent.primary,
-                              shadowOffset: theme.shadowOffset.lg,
-                              shadowOpacity: theme.shadowOpacity.medium,
-                              shadowRadius: theme.shadowRadius.md,
-                              elevation: theme.elevation.xl,
                             }}
                           />
                           <Text

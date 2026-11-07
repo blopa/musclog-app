@@ -1,0 +1,59 @@
+/* Loggy logging it — contained entirely in this SVG. A burst of pencil strokes
+   from the shoulder with his tongue working along, then he lifts the pencil to
+   check what he wrote. */
+#upper {
+    transform-origin: 256px 432px;
+    animation: loggy-nod 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#pencil, #arm-l {
+    transform-origin: 146px 305px;
+    animation: loggy-scribble 3.2s ease-in-out infinite;
+}
+#tongue {
+    transform-origin: 294px 335px;
+    animation: loggy-tongue 3.2s ease-in-out infinite;
+}
+#face-focused-eye-l {
+    transform-origin: 218px 285px;
+    animation: loggy-blink 3.2s linear infinite;
+}
+
+@keyframes loggy-nod {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(.6deg); }
+    74% { transform: rotate(-.8deg); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    74% { transform: rotate(-5deg); }
+}
+@keyframes loggy-scribble {
+    0%, 58%, 100% { transform: rotate(0deg); }
+    6% { transform: rotate(2.6deg); }
+    12% { transform: rotate(-1.4deg); }
+    18% { transform: rotate(2.8deg); }
+    24% { transform: rotate(-1.6deg); }
+    30% { transform: rotate(2.4deg); }
+    36% { transform: rotate(-1.2deg); }
+    42% { transform: rotate(2.6deg); }
+    48% { transform: rotate(-1.4deg); }
+    54% { transform: rotate(.8deg); }
+    70%, 84% { transform: rotate(-4deg); }
+}
+@keyframes loggy-tongue {
+    0%, 58%, 100% { transform: rotate(0deg); }
+    12%, 36% { transform: rotate(-7deg); }
+    24%, 48% { transform: rotate(6deg); }
+}
+@keyframes loggy-blink {
+    0%, 74%, 78.5%, 100% { transform: scaleY(1); }
+    75.5%, 77% { transform: scaleY(.07); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

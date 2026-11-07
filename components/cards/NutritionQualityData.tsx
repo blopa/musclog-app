@@ -70,15 +70,10 @@ function ScoreCard({ label, score }: { label: string; score: NutritionQualitySco
           borderRadius: 18,
           alignItems: 'center',
           justifyContent: 'center',
-          // iOS shadow props only, deliberately no `elevation`: this badge renders inside
-          // FoodNutritionSectionCard's collapsed accordion, whose fade overlay hides clipped
-          // content by painting over it. Android composites elevated views in a separate Z pass
-          // that can paint above that later, non-elevated overlay, leaking the badge's colored
-          // shadow through the fade on some devices.
-          shadowColor: colors.bg,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.55,
-          shadowRadius: 10,
+          // No shadow and no `elevation`: this badge renders inside FoodNutritionSectionCard's
+          // collapsed accordion, whose fade overlay hides clipped content by painting over it.
+          // Android composites elevated views in a separate Z pass that can paint above that
+          // later, non-elevated overlay.
         }}
       >
         <Text style={{ color: colors.text, fontWeight: '700', fontSize: 38, lineHeight: 44 }}>
@@ -125,11 +120,7 @@ function NovaRow({ group, description }: { group: number; description: string })
           borderRadius: 10,
           alignItems: 'center',
           justifyContent: 'center',
-          // iOS shadow props only, deliberately no `elevation` — see NutriScoreCard above.
-          shadowColor: colors.bg,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.5,
-          shadowRadius: 5,
+          // No shadow or `elevation` — see NutriScoreCard above.
         }}
       >
         <Text style={{ color: colors.text, fontWeight: '700', fontSize: 20, lineHeight: 24 }}>

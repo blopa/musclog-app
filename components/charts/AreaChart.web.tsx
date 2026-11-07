@@ -18,6 +18,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import {
   getXAxisLabelEdgeMargin,
+  X_AXIS_LABEL_EDGE_MARGIN_WEB,
   X_AXIS_LABEL_OFFSET,
   X_AXIS_LABEL_WIDTH,
   XAxisLabel,
@@ -131,7 +132,7 @@ export function AreaChart({
   const yTickValues = yAxisLabels?.map((l) => l.yDomainValue) ?? [0, 25, 50, 75, 100];
 
   return (
-    <View className={className} style={{ marginTop, width: '100%', minWidth: 320 }}>
+    <View className={className} style={{ marginTop, width: '100%', minWidth: 0 }}>
       {title != null || subtitle != null ? (
         <View style={{ marginBottom: 0 }}>
           {title != null ? (
@@ -380,7 +381,10 @@ export function AreaChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
-                  marginLeft: getXAxisLabelEdgeMargin(label.positionPercent, 10),
+                  marginLeft: getXAxisLabelEdgeMargin(
+                    label.positionPercent,
+                    X_AXIS_LABEL_EDGE_MARGIN_WEB
+                  ),
                 }}
                 numberOfLines={1}
               >

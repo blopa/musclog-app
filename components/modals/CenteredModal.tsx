@@ -1,12 +1,12 @@
 import { X } from 'lucide-react-native';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { sheetSurfaceColor } from '@/components/sheetSurfaceColor';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
-
 type CenteredModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -29,8 +29,9 @@ export function CenteredModal({
   maxWidth,
   isLoading = false,
 }: CenteredModalProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
-  const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'layer' });
 
   return (
     <Modal
@@ -69,6 +70,7 @@ export function CenteredModal({
                   ) : null}
                 </View>
                 <Pressable
+                  accessibilityLabel={t('common.close')}
                   accessibilityRole="button"
                   className="h-11 w-11 items-center justify-center"
                   onPress={isLoading ? undefined : onClose}

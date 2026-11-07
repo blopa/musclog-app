@@ -1,5 +1,6 @@
 import {
   formatAppDecimal,
+  formatAppGroupedInteger,
   formatAppInteger,
   formatAppRoundedDecimal,
 } from '@/utils/formatAppNumber';
@@ -17,5 +18,16 @@ describe('formatAppNumber', () => {
 
   it('rounds then formats with formatAppRoundedDecimal', () => {
     expect(formatAppRoundedDecimal('en-US', 12.345, 2)).toBe('12.35');
+  });
+});
+
+describe('formatAppGroupedInteger', () => {
+  it("groups thousands by locale, for a screen's one large figure", () => {
+    expect(formatAppGroupedInteger('en-US', 74333)).toBe('74,333');
+    expect(formatAppGroupedInteger('de-DE', 74333)).toBe('74.333');
+  });
+
+  it('rounds to a whole number', () => {
+    expect(formatAppGroupedInteger('en-US', 1234.6)).toBe('1,235');
   });
 });

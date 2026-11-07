@@ -166,7 +166,7 @@
       "progressionModeWeightFirst": "Priorizar Progressão de Peso",
       "progressionModeWeightFirstSubtitle": "Aumentar o peso diretamente quando o RIR está alto, em vez de adicionar repetições",
       "enableAdvancedDataManagement": "Habilitar Gerenciamento Avançado de Dados",
-      "enableAdvancedDataManagementSubtitle": "Desbloqueia acesso direto aos dados do app (somente para usuários avançados)",
+      "enableAdvancedDataManagementSubtitle": "Permite acesso direto aos dados do app (somente para usuários avançados)",
       "enableAdvancedDataManagementConfirmTitle": "Somente para Usuários Avançados",
       "enableAdvancedDataManagementConfirmMessage": "Isso é apenas para usuários avançados. Mexer nos dados aqui pode corromper seu app de forma irreparável. Use apenas se souber o que está fazendo.",
       "dataManagement": "Gerenciamento de dados",
@@ -344,6 +344,18 @@
       "fats": "Gorduras",
       "fiber": "Fibra",
       "alcohol": "Álcool"
+    },
+    "loggy": {
+      "sectionTitle": "Loggy",
+      "sectionSubtitle": "Escolha como o mascote aparece.",
+      "show": {
+        "title": "Mostrar o Loggy",
+        "description": "O mascote aparece em telas de boas-vindas, telas vazias e comemorações. Desative para escondê-lo em todo lugar. Seu coach de IA mantém a imagem."
+      },
+      "animated": {
+        "title": "Loggy animado",
+        "description": "O Loggy se mexe um pouco quando aparece. Desative para vê-lo sempre parado."
+      }
     },
     "foodDiary": {
       "sectionTitle": "Diário alimentar",

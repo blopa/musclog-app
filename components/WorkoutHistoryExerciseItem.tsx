@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
 
 import Exercise from '@/database/models/Exercise';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 
-import { SetData, SetRow } from './WorkoutHistorySetRow';
+import { PARTIALS_COLUMN_FLEX, SetData, SetRow, WEIGHT_COLUMN_FLEX } from './WorkoutHistorySetRow';
 
 /**
  * Exercise data for display in workout history.
@@ -36,6 +37,8 @@ export function ExerciseItem({
 }: ExerciseItemProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  // The table is indented past the timeline; a cramped layout needs that room for its columns.
+  const isCramped = useIsCramped();
   const hasCurrentSet = exercise.sets.some((set) => set.isCurrent && !set.isSkipped);
 
   return (
@@ -92,7 +95,7 @@ export function ExerciseItem({
       </View>
 
       {/* Sets Table */}
-      <View className="ml-5 pl-8">
+      <View className={isCramped ? '' : 'ml-5 pl-8'}>
         <View
           className="overflow-hidden rounded-control border"
           style={{
@@ -108,22 +111,25 @@ export function ExerciseItem({
               backgroundColor: theme.colors.background.ink3,
             }}
           >
-            <View className="w-8 items-center py-2">
-              <Text className="text-sm font-semibold text-text-secondary">#</Text>
+            <View className="w-6 items-center py-2">
+              <Text className="text-xs font-semibold text-text-secondary">#</Text>
             </View>
-            <View className="flex-1 items-center py-2">
-              <Text className="text-sm font-semibold text-text-secondary">
+            <View className="min-w-0 items-center px-0.5 py-2" style={{ flex: WEIGHT_COLUMN_FLEX }}>
+              <Text className="text-center text-xs font-semibold text-text-secondary">
                 {t('workoutSession.weight')}
               </Text>
             </View>
-            <View className="flex-1 items-center py-2">
-              <Text className="text-sm font-semibold text-text-secondary">
+            <View className="min-w-0 flex-1 items-center px-0.5 py-2">
+              <Text className="text-center text-xs font-semibold text-text-secondary">
                 {t('workoutSession.reps')}
               </Text>
             </View>
             {!isPreview ? (
-              <View className="flex-1 items-center py-2">
-                <Text className="text-sm font-semibold text-text-secondary">
+              <View
+                className="min-w-0 items-center px-0.5 py-2"
+                style={{ flex: PARTIALS_COLUMN_FLEX }}
+              >
+                <Text className="text-center text-xs font-semibold text-text-secondary">
                   {t('workoutSession.partials')}
                 </Text>
               </View>

@@ -107,21 +107,23 @@ export function EndWorkoutModal({
                   borderBottomColor: theme.colors.border.dark,
                 }}
               >
-                <View className="flex-row items-center justify-between p-6">
-                  <View className="flex-row items-center gap-3">
-                    <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">
+                <View className="flex-row items-center justify-between gap-3 p-6">
+                  <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                    <View className="h-12 w-12 shrink-0 items-center justify-center rounded-full bg-bg-overlay">
                       <Flag
                         size={theme.iconSize.sm}
                         color={theme.colors.accent.secondary}
                         fill={theme.colors.accent.secondary}
                       />
                     </View>
-                    <Text className="text-lg font-semibold text-text-primary">
+                    <Text className="min-w-0 flex-1 text-lg font-semibold text-text-primary">
                       {t('endWorkout.title')}
                     </Text>
                   </View>
                   <Pressable
-                    className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.close')}
+                    className="active:bg-bg-card-elevated h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bg-overlay"
                     onPress={isBusy ? undefined : onClose}
                     disabled={isBusy}
                   >

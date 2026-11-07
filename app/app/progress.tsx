@@ -19,12 +19,15 @@ import { MoodCaloriesChart } from '@/components/progress/MoodCaloriesChart';
 import { MoodHistoryChart } from '@/components/progress/MoodHistoryChart';
 import { MoodMacrosChart } from '@/components/progress/MoodMacrosChart';
 import { MoodVolumeChart } from '@/components/progress/MoodVolumeChart';
+import { MuscleLoadCard } from '@/components/progress/MuscleLoadCard';
 import { NutritionCharts } from '@/components/progress/NutritionCharts';
 import { ProgressChartSection } from '@/components/progress/ProgressChartSection';
 import { ProgressDateFilter } from '@/components/progress/ProgressDateFilter';
 import { ProgressInsightsSection } from '@/components/progress/ProgressInsightsSection';
 import { RecoveryTrainingChart } from '@/components/progress/RecoveryTrainingChart';
+import { StrengthLevelsCard } from '@/components/progress/StrengthLevelsCard';
 import { VolumeCaloriesChart } from '@/components/progress/VolumeCaloriesChart';
+import { WeeklyMuscleSetsCard } from '@/components/progress/WeeklyMuscleSetsCard';
 import { WorkoutCharts } from '@/components/progress/WorkoutCharts';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { MenuButton } from '@/components/theme/MenuButton';
@@ -33,6 +36,7 @@ import { ChartTooltipProvider, useChartTooltip } from '@/context/ChartTooltipCon
 import { useAiEnabled } from '@/hooks/useAiEnabled';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMuscleLoad } from '@/hooks/useMuscleLoad';
 import { useProgressData } from '@/hooks/useProgressData';
 import { useSettings } from '@/hooks/useSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
@@ -230,6 +234,7 @@ function ProgressScreenContent({
 }: any) {
   const { dismissAll } = useChartTooltip();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const muscleLoad = useMuscleLoad();
   const supplementSeriesDefinitions = Array.from(
     (['daily', 'weekly', 'monthly'] as const).reduce((map, aggregationKey) => {
       for (const series of allAggregationData[aggregationKey]?.supplementIntakeSeries ?? []) {
@@ -296,6 +301,20 @@ function ProgressScreenContent({
                     workoutVolumeHistory={data?.workoutVolumeHistory || []}
                     muscleGroupSets={data?.muscleGroupSets || []}
                   />
+
+                  <View style={{ marginBottom: 16 }}>
+                    <MuscleLoadCard
+                      load={muscleLoad.load}
+                      sets={muscleLoad.sets}
+                      isLoading={muscleLoad.isLoading}
+                    />
+                  </View>
+                  <View style={{ marginBottom: 16 }}>
+                    <WeeklyMuscleSetsCard load={muscleLoad.load} />
+                  </View>
+                  <View style={{ marginBottom: 16 }}>
+                    <StrengthLevelsCard />
+                  </View>
                 </>
               ) : null}
 

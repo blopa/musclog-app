@@ -73,6 +73,8 @@ function SetCard({
                 }}
               >
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.moveUp')}
                   onPress={onMoveUp}
                   disabled={isFirst}
                   hitSlop={8}
@@ -85,6 +87,8 @@ function SetCard({
                   />
                 </Pressable>
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.moveDown')}
                   onPress={onMoveDown}
                   disabled={isLast}
                   hitSlop={8}

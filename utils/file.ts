@@ -331,6 +331,11 @@ export function shouldSeedDevData() {
   return false;
 }
 
+/** The layout audit seeds its extra records on web only (see `utils/file.web.ts`). */
+export function shouldSeedLayoutAuditData() {
+  return false;
+}
+
 const FOOD_IMAGES_DIR = `${documentDirectory}food_images/`;
 const MEAL_IMAGES_DIR = `${documentDirectory}meals/`;
 

@@ -260,11 +260,6 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             className="h-48 w-48 items-center justify-center rounded-full border-[10px]"
             style={{
               borderColor: statusColor,
-              shadowColor: statusColor,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.3,
-              shadowRadius: 15,
-              elevation: 10,
             }}
           >
             <Text

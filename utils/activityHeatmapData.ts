@@ -44,6 +44,11 @@ type MealLogLike = {
   type: string;
 };
 
+/** The calendar day a log belongs to, `yyyy-MM-dd`. The key is a UTC midnight, so its UTC date parts are the day. */
+function mealDayIso(log: MealLogLike): string {
+  return new Date(utcNormalizedDayKey(log.date, log.timezone)).toISOString().slice(0, 10);
+}
+
 /**
  * Distinct meal types logged per calendar day. The day comes from `utcNormalizedDayKey`, so a
  * log made in another timezone stays on the calendar day the person lived it, and only the
@@ -52,14 +57,31 @@ type MealLogLike = {
 export function nutritionHeatmapDays(logs: readonly MealLogLike[]): ActivityHeatmapDay[] {
   const mealsByDay = new Map<string, Set<string>>();
   for (const log of logs) {
-    // The key is a UTC midnight, so its UTC date parts are the calendar day.
-    const iso = new Date(utcNormalizedDayKey(log.date, log.timezone)).toISOString().slice(0, 10);
+    const iso = mealDayIso(log);
     const meals = mealsByDay.get(iso) ?? new Set<string>();
     meals.add(log.type);
     mealsByDay.set(iso, meals);
   }
 
   return [...mealsByDay].map(([date, meals]) => ({ date, value: meals.size }));
+}
+
+/** The same days and meal types as `nutritionHeatmapDays`, one entry per pair instead of a count. */
+export function nutritionMealEntries(
+  logs: readonly MealLogLike[]
+): { day: string; type: string }[] {
+  const seen = new Set<string>();
+  const entries: { day: string; type: string }[] = [];
+  for (const log of logs) {
+    const day = mealDayIso(log);
+    const key = `${day}|${log.type}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      entries.push({ day, type: log.type });
+    }
+  }
+
+  return entries;
 }
 
 /**

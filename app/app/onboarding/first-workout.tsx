@@ -7,6 +7,7 @@ import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import { LoggyPose } from '@/components/LoggyPose';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MaybeLaterButton } from '@/components/MaybeLaterButton';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
@@ -48,6 +49,8 @@ const HOW_IT_WORKS_STEPS = [
     bodyKey: 'onboarding.firstWorkout.stepNextBody',
   },
 ] as const;
+
+const FIRST_WORKOUT_POSE_HEIGHT = 104;
 
 const isExperience = (value: unknown): value is LiftingExperience =>
   value === 'beginner' || value === 'intermediate' || value === 'advanced';
@@ -231,17 +234,28 @@ export default function FirstWorkoutScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="px-6 pt-10">
-            <Text className="mb-1 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
-              {t('onboarding.firstWorkout.title')}
-            </Text>
-            <Text
-              className="mb-8"
-              style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm }}
-            >
-              {template
-                ? t('onboarding.firstWorkout.subtitlePlan')
-                : t('onboarding.firstWorkout.subtitleEmpty')}
-            </Text>
+            {/* The last step of setup: Loggy is ready to train, so the title does not stand alone. */}
+            <View className="mb-8 flex-row items-center gap-3">
+              <View className="min-w-0 flex-1">
+                <Text
+                  className="mb-1 text-2xl font-bold"
+                  style={{ color: theme.colors.text.primary }}
+                >
+                  {t('onboarding.firstWorkout.title')}
+                </Text>
+                <Text
+                  style={{
+                    color: theme.colors.text.secondary,
+                    fontSize: theme.typography.fontSize.sm,
+                  }}
+                >
+                  {template
+                    ? t('onboarding.firstWorkout.subtitlePlan')
+                    : t('onboarding.firstWorkout.subtitleEmpty')}
+                </Text>
+              </View>
+              <LoggyPose pose="default" height={FIRST_WORKOUT_POSE_HEIGHT} />
+            </View>
 
             {template ? (
               <View

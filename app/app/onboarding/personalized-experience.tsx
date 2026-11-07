@@ -20,6 +20,7 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { type LiftingExperience } from '@/database/models/User';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 import { type ActivityLevel } from '@/utils/aiOnboarding/contract';
 import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardingDraft';
@@ -98,6 +99,8 @@ export default function PersonalizedExperienceScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  // The leading icon tile gives its room to the label when the layout is cramped.
+  const isCramped = useIsCramped();
 
   const [experience, setExperience] = useState<LiftingExperience>('beginner');
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>(2);
@@ -178,7 +181,7 @@ export default function PersonalizedExperienceScreen() {
                   <Pressable
                     key={opt.value}
                     onPress={() => setExperience(opt.value)}
-                    className="flex-row items-center justify-between rounded-control px-4 py-4"
+                    className="flex-row items-center justify-between gap-3 rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,
@@ -187,25 +190,27 @@ export default function PersonalizedExperienceScreen() {
                     accessibilityRole="radio"
                     accessibilityState={{ checked: isSelected }}
                   >
-                    <View className="flex-row items-center gap-3">
-                      <View
-                        className="items-center justify-center rounded-full"
-                        style={{
-                          width: 36,
-                          height: 36,
-                          backgroundColor: isSelected
-                            ? theme.colors.accent.primary + '22'
-                            : theme.colors.background.card,
-                        }}
-                      >
-                        <opt.icon
-                          size={18}
-                          color={
-                            isSelected ? theme.colors.accent.primary : theme.colors.text.secondary
-                          }
-                        />
-                      </View>
-                      <View>
+                    <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                      {isCramped ? null : (
+                        <View
+                          className="items-center justify-center rounded-full"
+                          style={{
+                            width: 36,
+                            height: 36,
+                            backgroundColor: isSelected
+                              ? theme.colors.accent.primary + '22'
+                              : theme.colors.background.card,
+                          }}
+                        >
+                          <opt.icon
+                            size={18}
+                            color={
+                              isSelected ? theme.colors.accent.primary : theme.colors.text.secondary
+                            }
+                          />
+                        </View>
+                      )}
+                      <View className="min-w-0 flex-1">
                         <Text
                           className="font-semibold"
                           style={{
@@ -229,7 +234,7 @@ export default function PersonalizedExperienceScreen() {
                     </View>
 
                     <View
-                      className="items-center justify-center rounded-full"
+                      className="shrink-0 items-center justify-center rounded-full"
                       style={{
                         width: 24,
                         height: 24,
@@ -259,7 +264,7 @@ export default function PersonalizedExperienceScreen() {
                   <Pressable
                     key={opt.value}
                     onPress={() => setActivityLevel(opt.value)}
-                    className="flex-row items-center justify-between rounded-control px-4 py-4"
+                    className="flex-row items-center justify-between gap-3 rounded-control px-4 py-4"
                     style={{
                       backgroundColor: theme.colors.background.cardElevated,
                       borderWidth: 1.5,
@@ -268,25 +273,27 @@ export default function PersonalizedExperienceScreen() {
                     accessibilityRole="radio"
                     accessibilityState={{ checked: isSelected }}
                   >
-                    <View className="flex-row items-center gap-3">
-                      <View
-                        className="items-center justify-center rounded-full"
-                        style={{
-                          width: 36,
-                          height: 36,
-                          backgroundColor: isSelected
-                            ? theme.colors.accent.primary + '22'
-                            : theme.colors.background.card,
-                        }}
-                      >
-                        <opt.icon
-                          size={18}
-                          color={
-                            isSelected ? theme.colors.accent.primary : theme.colors.text.secondary
-                          }
-                        />
-                      </View>
-                      <View>
+                    <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                      {isCramped ? null : (
+                        <View
+                          className="items-center justify-center rounded-full"
+                          style={{
+                            width: 36,
+                            height: 36,
+                            backgroundColor: isSelected
+                              ? theme.colors.accent.primary + '22'
+                              : theme.colors.background.card,
+                          }}
+                        >
+                          <opt.icon
+                            size={18}
+                            color={
+                              isSelected ? theme.colors.accent.primary : theme.colors.text.secondary
+                            }
+                          />
+                        </View>
+                      )}
+                      <View className="min-w-0 flex-1">
                         <Text
                           className="font-semibold"
                           style={{
@@ -310,7 +317,7 @@ export default function PersonalizedExperienceScreen() {
                     </View>
 
                     <View
-                      className="items-center justify-center rounded-full"
+                      className="shrink-0 items-center justify-center rounded-full"
                       style={{
                         width: 24,
                         height: 24,

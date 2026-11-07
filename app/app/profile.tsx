@@ -393,6 +393,8 @@ export default function ProfileScreen() {
                     ) : null}
                   </View>
                   <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.a11y.editProfile')}
                     className="absolute -bottom-1 -right-1 h-9 w-9 items-center justify-center rounded-full border-2 border-bg-primary"
                     style={{ backgroundColor: theme.colors.accent.primary }}
                     onPress={() => setIsEditPersonalVisible(true)}
@@ -418,7 +420,7 @@ export default function ProfileScreen() {
 
         {/* Current Stats Section */}
         <View className="mb-6 px-4">
-          <View className="mb-2 flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-text-primary">
               {t('profile.currentStats')}
             </Text>

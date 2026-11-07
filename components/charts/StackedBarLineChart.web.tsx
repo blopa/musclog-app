@@ -15,6 +15,7 @@ import { useChartTooltip } from '@/context/ChartTooltipContext';
 import { useTheme } from '@/hooks/useTheme';
 import {
   getXAxisLabelEdgeMargin,
+  X_AXIS_LABEL_EDGE_MARGIN_WEB,
   X_AXIS_LABEL_OFFSET,
   X_AXIS_LABEL_WIDTH,
   XAxisLabel,
@@ -354,7 +355,10 @@ export function StackedBarLineChart({
                       fontWeight: '500',
                       color: theme.colors.text.tertiary,
                       textAlign: 'center',
-                      marginLeft: getXAxisLabelEdgeMargin(label.positionPercent, 10),
+                      marginLeft: getXAxisLabelEdgeMargin(
+                        label.positionPercent,
+                        X_AXIS_LABEL_EDGE_MARGIN_WEB
+                      ),
                     }}
                     numberOfLines={1}
                   >
@@ -428,9 +432,12 @@ export function StackedBarLineChart({
       <View
         style={{
           flexDirection: 'row',
+          // Wraps: two long series names side by side ran past both edges of the card.
+          flexWrap: 'wrap',
           justifyContent: 'center',
           alignItems: 'center',
-          gap: 24,
+          columnGap: 24,
+          rowGap: 4,
           marginTop: 8,
         }}
       >

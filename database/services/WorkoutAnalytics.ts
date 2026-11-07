@@ -77,6 +77,8 @@ export class WorkoutAnalytics {
         Q.where('completion_status', 'performed'),
         // Warm-ups are real work but not working sets: see `isWorkingSet`.
         Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
+        // A timed set (reps 0, e.g. a loaded carry) has no rep count to rank or project.
+        Q.where('reps', Q.notEq(0)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -124,6 +126,8 @@ export class WorkoutAnalytics {
         Q.where('completion_status', 'performed'),
         // Warm-ups are real work but not working sets: see `isWorkingSet`.
         Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
+        // A timed set (reps 0, e.g. a loaded carry) has no rep count to rank or project.
+        Q.where('reps', Q.notEq(0)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -343,6 +347,8 @@ export class WorkoutAnalytics {
         Q.where('completion_status', 'performed'),
         // Warm-ups are real work but not working sets: see `isWorkingSet`.
         Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
+        // A timed set (reps 0, e.g. a loaded carry) has no rep count to rank or project.
+        Q.where('reps', Q.notEq(0)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
@@ -548,6 +554,8 @@ export class WorkoutAnalytics {
         Q.where('completion_status', 'performed'),
         // Warm-ups are real work but not working sets: see `isWorkingSet`.
         Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
+        // A timed set (reps 0, e.g. a loaded carry) has no rep count to rank or project.
+        Q.where('reps', Q.notEq(0)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();

@@ -9,7 +9,7 @@ import Exercise, {
   type MuscleGroup,
 } from '@/database/models/Exercise';
 import type ExerciseAlias from '@/database/models/ExerciseAlias';
-import ExerciseMuscle from '@/database/models/ExerciseMuscle';
+import ExerciseMuscle, { type MuscleRole } from '@/database/models/ExerciseMuscle';
 import Muscle from '@/database/models/Muscle';
 import { fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
 import { appExerciseId, buildExerciseCloudUrl } from '@/utils/exerciseImage';
@@ -61,21 +61,26 @@ async function fetchExerciseMuscles(exerciseIds: string[]): Promise<ExerciseMusc
   return fetchByIds<ExerciseMuscle>('exercise_muscles', 'exercise_id', exerciseIds);
 }
 
-function desiredLinkIds(
+/**
+ * The link set an entry should have, keyed by muscle id. A target muscle is `secondary` only when
+ * the catalogue names it solely as a secondary muscle; anything else is `primary`.
+ */
+function desiredLinks(
   entry: ExerciseCatalogueEntry,
   muscleNameToId: ReadonlyMap<string, string>
-): Set<string> | null {
-  const ids = new Set<string>();
+): Map<string, MuscleRole> | null {
+  const secondaryNames = new Set(entry.secondaryMuscles ?? []);
+  const links = new Map<string, MuscleRole>();
   for (const muscleName of entry.targetMuscles) {
     const muscleId = muscleNameToId.get(muscleName);
     if (!muscleId) {
       return null;
     }
 
-    ids.add(muscleId);
+    links.set(muscleId, secondaryNames.has(muscleName) ? 'secondary' : 'primary');
   }
 
-  return ids;
+  return links;
 }
 
 /**
@@ -220,8 +225,8 @@ export class AppExerciseCatalogueService {
       for (const entry of catalogue) {
         const exerciseId = appExerciseId(entry.exerciseSlug);
         const existing = exerciseById.get(exerciseId);
-        const desiredMuscleIds = desiredLinkIds(entry, muscleNameToId);
-        if (!desiredMuscleIds) {
+        const desiredMuscles = desiredLinks(entry, muscleNameToId);
+        if (!desiredMuscles) {
           report.conflicts.push(`${exerciseId}: target muscle is not seeded`);
           continue;
         }
@@ -273,7 +278,7 @@ export class AppExerciseCatalogueService {
         for (const link of linksByExerciseId.get(exerciseId) ?? []) {
           const shouldRetain =
             !link.deletedAt &&
-            desiredMuscleIds.has(link.muscleId) &&
+            desiredMuscles.has(link.muscleId) &&
             !retainedMuscleIds.has(link.muscleId);
           if (!shouldRetain) {
             operations.push(link.prepareDestroyPermanently());
@@ -282,10 +287,11 @@ export class AppExerciseCatalogueService {
           }
 
           retainedMuscleIds.add(link.muscleId);
-          if (link.role !== 'primary') {
+          const desiredRole = desiredMuscles.get(link.muscleId) ?? 'primary';
+          if (link.role !== desiredRole) {
             operations.push(
               link.prepareUpdate((record) => {
-                record.role = 'primary';
+                record.role = desiredRole;
                 record.updatedAt = now;
               })
             );
@@ -293,7 +299,7 @@ export class AppExerciseCatalogueService {
           }
         }
 
-        for (const muscleId of desiredMuscleIds) {
+        for (const [muscleId, role] of desiredMuscles) {
           if (retainedMuscleIds.has(muscleId)) {
             continue;
           }
@@ -302,7 +308,7 @@ export class AppExerciseCatalogueService {
             database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
               link.exerciseId = exerciseId;
               link.muscleId = muscleId;
-              link.role = 'primary';
+              link.role = role;
               link.createdAt = now;
               link.updatedAt = now;
               link.deletedAt = undefined;
@@ -340,8 +346,8 @@ export class AppExerciseCatalogueService {
     return catalogue.every((entry) => {
       const exerciseId = appExerciseId(entry.exerciseSlug);
       const exercise = exerciseById.get(exerciseId);
-      const expectedMuscleIds = desiredLinkIds(entry, muscleNameToId);
-      if (!exercise || !expectedMuscleIds || !exerciseMatchesCatalogue(exercise, entry)) {
+      const expectedMuscles = desiredLinks(entry, muscleNameToId);
+      if (!exercise || !expectedMuscles || !exerciseMatchesCatalogue(exercise, entry)) {
         return false;
       }
 
@@ -349,10 +355,8 @@ export class AppExerciseCatalogueService {
         (link) => !link.deletedAt
       );
       return (
-        exerciseLinks.length === expectedMuscleIds.size &&
-        exerciseLinks.every(
-          (link) => link.role === 'primary' && expectedMuscleIds.has(link.muscleId)
-        )
+        exerciseLinks.length === expectedMuscles.size &&
+        exerciseLinks.every((link) => expectedMuscles.get(link.muscleId) === link.role)
       );
     });
   }

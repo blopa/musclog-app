@@ -5,7 +5,7 @@ import { THEMES } from '@/theme';
 
 import { CardVariant, resolveCardSurface } from '../cardSurface';
 
-/** DESIGN.md's 1.09x "a layer edge is visible" floor for a tonal seam. */
+/** docs/DESIGN.md's 1.09x "a layer edge is visible" floor for a tonal seam. */
 const MIN_SEAM = 1.09;
 
 describe('resolveCardSurface', () => {

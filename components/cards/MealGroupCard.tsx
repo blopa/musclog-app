@@ -212,7 +212,7 @@ export const MealGroupCard = memo(function MealGroupCard({
           </View>
 
           {/* Calories row */}
-          <View className="mb-0.5 flex-row items-center gap-3">
+          <View className="mb-0.5 flex-row flex-wrap items-center gap-x-3 gap-y-0.5">
             {timeLabel ? (
               <Text className="text-xs font-semibold tabular-nums text-text-primary">
                 {timeLabel}
@@ -229,7 +229,7 @@ export const MealGroupCard = memo(function MealGroupCard({
 
           {/* Macros row */}
           {isCompact ? null : (
-            <View className="flex-row items-center gap-3">
+            <View className="flex-row flex-wrap items-center gap-x-3 gap-y-0.5">
               <MacroItem
                 icon={Zap}
                 value={protein}

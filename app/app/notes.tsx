@@ -231,6 +231,7 @@ export default function NotesScreen() {
                 buttonLabel={t('emptyStates.notes.buttonLabel')}
                 buttonVariant="gradientCta"
                 bare
+                pose="writing"
                 onButtonPress={() => setIsCreateVisible(true)}
               />
             ) : null}

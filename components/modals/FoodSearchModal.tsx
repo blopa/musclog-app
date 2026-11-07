@@ -137,7 +137,7 @@ type FoodSearchModalProps = {
   /**
    * Follow-up modals opened from this modal (e.g. after {@link onFoodPicked}). Rendered inside the
    * outer `FullScreenModal` so iOS presents them from the active controller — see
-   * `FIXES.md`. Not for visible content; use only to host child modals.
+   * `docs/FIXES.md`. Not for visible content; use only to host child modals.
    */
   children?: ReactNode;
   /** Called when food(s) have been tracked so the parent can refresh logs (e.g. daily nutrition list). */
@@ -313,6 +313,8 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
 
       {/* Add Button */}
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('common.a11y.add')}
         className="h-8 w-8 items-center justify-center rounded-full bg-bg-overlay active:bg-accent-primary"
         onPress={onAddPress}
         style={{
@@ -1263,6 +1265,8 @@ export function FoodSearchModal({
                 autoFocus
               />
               <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('common.a11y.scanBarcode')}
                 className="absolute inset-y-0 right-0 items-center justify-center pr-2"
                 onPress={onBarcodeScanPress}
                 hitSlop={12}

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import {
   formatAppDecimal,
+  formatAppGroupedInteger,
   formatAppInteger,
   formatAppNumber,
   formatAppRoundedDecimal,
@@ -23,6 +24,11 @@ export function useFormatAppNumber() {
     [locale]
   );
 
+  const formatGroupedInteger = useCallback(
+    (value: number) => formatAppGroupedInteger(locale, value),
+    [locale]
+  );
+
   const formatDecimal = useCallback(
     (value: number, maxFractionDigits: number, options?: Intl.NumberFormatOptions) =>
       formatAppDecimal(locale, value, maxFractionDigits, options),
@@ -40,5 +46,12 @@ export function useFormatAppNumber() {
     [locale]
   );
 
-  return { locale, formatInteger, formatDecimal, formatNumber, formatRoundedDecimal };
+  return {
+    locale,
+    formatInteger,
+    formatGroupedInteger,
+    formatDecimal,
+    formatNumber,
+    formatRoundedDecimal,
+  };
 }

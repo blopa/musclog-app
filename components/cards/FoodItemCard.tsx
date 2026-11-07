@@ -207,7 +207,9 @@ export const FoodItemCard = memo(function FoodItemCard({
           {description && variant === 'default' ? (
             <Text className="mb-1 truncate text-sm text-text-secondary">{description}</Text>
           ) : null}
-          <View className="flex-row items-center gap-3">
+          {/* The figure rows wrap instead of running on: at large text or in a longer language they
+              used to overflow the card and slide under the menu button. */}
+          <View className="flex-row flex-wrap items-center gap-x-3 gap-y-0.5">
             {timeLabel ? (
               <Text className="text-xs font-semibold tabular-nums text-text-primary">
                 {timeLabel}
@@ -223,7 +225,7 @@ export const FoodItemCard = memo(function FoodItemCard({
             />
           </View>
           {variant === 'default' ? (
-            <View className="flex-row items-center gap-3">
+            <View className="flex-row flex-wrap items-center gap-x-3 gap-y-0.5">
               <MacroItem
                 icon={Zap}
                 value={p}

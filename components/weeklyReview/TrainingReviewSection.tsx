@@ -71,11 +71,13 @@ export function ReviewSectionHeader({
   const { t } = useTranslation();
   const theme = useTheme();
   return (
-    <View className="flex-row items-center gap-3">
+    // The badge wraps under the title when a long one ("Entrenamiento") leaves it no room, rather
+    // than running past the edge of the card.
+    <View className="flex-row flex-wrap items-center gap-x-3 gap-y-2">
       <View className="h-10 w-10 items-center justify-center rounded-control bg-accent-primary/10">
         <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
       </View>
-      <Text className="flex-1 text-xl font-bold text-text-primary">{title}</Text>
+      <Text className="shrink grow text-xl font-bold text-text-primary">{title}</Text>
       {done == null ? null : (
         <View
           className={`flex-row items-center gap-1 rounded-tag px-2.5 py-1 ${done ? 'bg-accent-primary' : 'bg-bg-overlay'}`}

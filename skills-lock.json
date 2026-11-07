@@ -7,6 +7,36 @@
       "skillPath": "skills/agent-device/SKILL.md",
       "computedHash": "3187ae73a1a8b055e20630d64c86e5bb7576341b495c9a755f5e3ec7927c0302"
     },
+    "baseline-ui": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/baseline-ui/SKILL.md",
+      "computedHash": "dfcb3e778b57ad1cba92375689bb8265fa5aef78fba523a744f5220b3c619901"
+    },
+    "canvas-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/canvas-design/SKILL.md",
+      "computedHash": "3fa7ea60170023ad8268bf9fd734ea75dd404279a2ef8ddf5abaa1102ad8e5f4"
+    },
+    "component-canvas": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/component-canvas/SKILL.md",
+      "computedHash": "9c29e39bc6d0b8812b1862e9d99c838e790c12bc93a81f8f9b213555dc2de823"
+    },
+    "create-canvas": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/create-canvas/SKILL.md",
+      "computedHash": "a073d5a7584e2a6e5dec8813073d0cb24077b4e3a075825a0016b235efa2a1a5"
+    },
+    "create-design-md": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/create-design-md/SKILL.md",
+      "computedHash": "5376526e2d60d21ab85fdba2ae15d1ee7be41fa3ee5b76a8717a08327d6459b1"
+    },
     "deslop-ui": {
       "source": "kmaida/deslop-skills",
       "sourceType": "github",
@@ -37,11 +67,59 @@
       "skillPath": "plugins/expo/skills/expo-native-ui/SKILL.md",
       "computedHash": "3e7374ba3679e4e57cbe6aa97c8bcc17c977b7c526b00e0e67b9e0ccd119ba68"
     },
+    "extract-design-system": {
+      "source": "arvindrk/extract-design-system",
+      "sourceType": "github",
+      "skillPath": "skills/extract-design-system/SKILL.md",
+      "computedHash": "5f231fda377e304b202848f09ecc0fd42839355e76f60e06c3ceb7a643c15500"
+    },
+    "fixing-accessibility": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/fixing-accessibility/SKILL.md",
+      "computedHash": "4fa8f5a772b4eef3d28a54c136b507d070e54e2c326578f65eaf5e5a0118b38a"
+    },
+    "fixing-metadata": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/fixing-metadata/SKILL.md",
+      "computedHash": "699e13890fb50acffa02dfd2d5b0e719bd916a9e2b7e6035bdc4513fc73d9174"
+    },
+    "fixing-motion-performance": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/fixing-motion-performance/SKILL.md",
+      "computedHash": "426dcf33f23419643f2aab71e2253e1a5b5684a808fabb8a4ad135e489ed7a0f"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "c671292d4973a711bc857fc619f015f533ca9b49afc78c25c23d5b0811194bbf"
+    },
     "improve-retention": {
       "source": "wondelai/skills",
       "sourceType": "github",
       "skillPath": "improve-retention/SKILL.md",
       "computedHash": "5910c41fd9a047b010b4630e6a96dcbce8ae4c7ec4d13d950ee05bca104c2655"
+    },
+    "improve-ui": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/improve-ui/SKILL.md",
+      "computedHash": "5bd7689c5508c6bd8166f796b3d1bd32255077447595b14b60fac9847dce63f1"
+    },
+    "interface-details": {
+      "source": "detaildotdesign/skill",
+      "sourceType": "github",
+      "skillPath": "skills/SKILL.md",
+      "computedHash": "4687698e216021a54c1ee960aabe332a8f4acddae0f2b43b250ba4dc494625ce"
+    },
+    "make-interfaces-feel-better": {
+      "source": "jakubkrehel/make-interfaces-feel-better",
+      "sourceType": "github",
+      "skillPath": "skills/make-interfaces-feel-better/SKILL.md",
+      "computedHash": "c8b15b529e088a318b2d3c17f0a97e15a7b1ce9ddab8bbdf9209e6ab7315cbde"
     },
     "microinteractions": {
       "source": "wondelai/skills",
@@ -61,11 +139,23 @@
       "skillPath": "SKILL.md",
       "computedHash": "1e80f88915cf93d24b3c71c3f91b5901a2c42f66a23c4e5df9b08b3f2659c135"
     },
+    "oklch-skill": {
+      "source": "jakubkrehel/oklch-skill",
+      "sourceType": "github",
+      "skillPath": "skills/oklch-skill/SKILL.md",
+      "computedHash": "3825dcd7ea094655e9f07280185ba9da1d10d08f44cf06a8c316eb42334d7cd3"
+    },
     "personal-trainer": {
       "source": "npapatheodorou/personal-trainer-skill",
       "sourceType": "github",
       "skillPath": "personal-trainer/SKILL.md",
       "computedHash": "239142198011e2baa149182ee8b9993622232672f14bdef1b92e82dd6313187b"
+    },
+    "prototype": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "skillPath": "skills/prototype/SKILL.md",
+      "computedHash": "77be567d8c946608fdd15e61b62ab383cdf289a194dce2479828b7eda860d3ba"
     },
     "react-native-best-practices": {
       "source": "callstackincubator/agent-skills",
@@ -84,6 +174,18 @@
       "sourceType": "github",
       "skillPath": "skills/schoenfeld-hypertrophy/SKILL.md",
       "computedHash": "800042ef2877ad9793808abeb956d7dbcf008c8a53a87087d359f666b5342eb1"
+    },
+    "ui-skills-root": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ui-skills-root/SKILL.md",
+      "computedHash": "e3120361faa5a0ef5fba9b67d91e00c90002f3c9ca092c5325d2391dab8c619e"
+    },
+    "userinterface-wiki": {
+      "source": "raphaelsalaja/userinterface-wiki",
+      "sourceType": "github",
+      "skillPath": "skills/SKILL.md",
+      "computedHash": "7bd58aa2aaf874dd421b18700ee688b02ce72276612d7115ad6849d4878e115e"
     },
     "ux-heuristics": {
       "source": "wondelai/skills",

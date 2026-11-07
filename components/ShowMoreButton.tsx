@@ -13,7 +13,10 @@ export default function ShowMoreButton({
   ...rest
 }: ShowMoreButtonProps) {
   return (
-    <Pressable onPress={onPress} {...rest}>
+    // A bare text link is about 12pt tall. It gets the 44pt touch height through its own box, kept
+    // inside the heading row it sits in (a negative margin would push the target outside its
+    // parent, where iOS discards touches). Callers drop the row's bottom margin to match.
+    <Pressable onPress={onPress} className="min-h-11 justify-center" {...rest}>
       <Text className={className ?? 'text-sm font-medium text-text-accent'}>{label}</Text>
     </Pressable>
   );

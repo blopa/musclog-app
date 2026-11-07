@@ -2,6 +2,7 @@ import { activityLevel } from '@/utils/activityHeatmap';
 import {
   NUTRITION_HEATMAP_MAX_VALUE,
   nutritionHeatmapDays,
+  nutritionMealEntries,
   WORKOUT_HEATMAP_MAX_VALUE,
   workoutHeatmapDays,
 } from '@/utils/activityHeatmapData';
@@ -71,5 +72,23 @@ describe('heatmap scales', () => {
     expect(
       [1, 2, 3, 4, 5].map((meals) => activityLevel(meals, NUTRITION_HEATMAP_MAX_VALUE))
     ).toEqual([1, 2, 3, 4, 4]);
+  });
+});
+
+describe('nutritionMealEntries', () => {
+  it('lists each meal type once per calendar day, on the same days the heatmap uses', () => {
+    const logs = [
+      { date: new Date(2026, 9, 12, 8).getTime(), timezone: null, type: 'breakfast' },
+      { date: new Date(2026, 9, 12, 9).getTime(), timezone: null, type: 'breakfast' },
+      { date: new Date(2026, 9, 12, 13).getTime(), timezone: null, type: 'lunch' },
+      { date: new Date(2026, 9, 13, 13).getTime(), timezone: null, type: 'lunch' },
+    ];
+
+    const entries = nutritionMealEntries(logs);
+
+    expect(entries).toHaveLength(3);
+    expect(new Set(entries.map((entry) => entry.day))).toEqual(
+      new Set(nutritionHeatmapDays(logs).map((day) => day.date))
+    );
   });
 });

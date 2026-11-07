@@ -352,7 +352,8 @@ export default function WorkoutSummaryScreen() {
           />
         ) : null}
       </WorkoutSummaryCelebration>
-      {showConfetti ? <ConfettiOverlay /> : null}
+      {/* The celebration above already stands Loggy up, so the confetti brings only itself. */}
+      {showConfetti ? <ConfettiOverlay withLoggy={false} /> : null}
       <ConfirmationModal
         visible={showHealthPrompt}
         onClose={() => setShowHealthPrompt(false)}

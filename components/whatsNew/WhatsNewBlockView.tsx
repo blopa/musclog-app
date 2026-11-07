@@ -13,8 +13,8 @@ import type { useWhatsNewChoiceValues } from '@/hooks/useWhatsNewChoiceValues';
 import type { WhatsNewAction } from '@/utils/whatsNew/catalog';
 import type { WhatsNewBlock } from '@/utils/whatsNew/schema';
 
-import { WhatsNewIconBadge } from './WhatsNewIconBadge';
 import { whatsNewIcons } from './whatsNewIcons';
+import { WhatsNewPicture } from './WhatsNewPicture';
 
 type Props = {
   block: WhatsNewBlock;
@@ -33,7 +33,7 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
       const Icon = block.icon ? whatsNewIcons[block.icon] : null;
       return (
         <View className="gap-4">
-          {Icon ? <WhatsNewIconBadge icon={Icon} size="page" /> : null}
+          <WhatsNewPicture icon={Icon} pose={block.pose} />
           <Text accessibilityRole="header" className="text-2xl font-bold text-text-primary">
             {t(block.titleKey)}
           </Text>

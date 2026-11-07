@@ -316,6 +316,8 @@ export function CreateEditPlanModal({
                     const selected = icon === option.value;
                     return (
                       <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={t('common.a11y.chooseIcon')}
                         key={option.value}
                         onPress={() => setIcon(option.value)}
                         className={`h-12 w-12 items-center justify-center rounded-control ${selected ? 'bg-accent-primary' : 'bg-bg-secondary'}`}
@@ -373,6 +375,8 @@ export function CreateEditPlanModal({
                       {member.template.name}
                     </Text>
                     <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.a11y.moveUp')}
                       onPress={() => moveMember(member.templateId, -1)}
                       disabled={index === 0}
                       className="p-2"
@@ -385,6 +389,8 @@ export function CreateEditPlanModal({
                       />
                     </Pressable>
                     <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.a11y.moveDown')}
                       onPress={() => moveMember(member.templateId, 1)}
                       disabled={index === visibleMembers.length - 1}
                       className="p-2"

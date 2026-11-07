@@ -42,7 +42,7 @@ export function CycleHealthSettings() {
         {t('cycle.complete.healthTitle')}
       </Text>
       <Text className="text-sm text-text-secondary">{t('cycle.complete.healthHint')}</Text>
-      <View className="flex-row gap-2">
+      <View className="flex-row flex-wrap gap-2">
         {[30, 90, 365].map((n) => (
           <Chip
             key={n}

@@ -33,10 +33,6 @@ export function ToggleInput(props: TogglableSettingsProps) {
         overflow: 'hidden',
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.border.light,
-        shadowColor: theme.colors.accent.primary,
-        shadowOpacity: theme.shadowOpacity.veryLight,
-        shadowRadius: theme.shadowRadius.sm,
-        shadowOffset: theme.shadowOffset.sm,
       }}
     >
       {props.header}
@@ -52,6 +48,8 @@ export function ToggleInput(props: TogglableSettingsProps) {
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  // A gap, so a wrapped description never runs under the switch's own box.
+                  gap: theme.spacing.gap.sm,
                   padding: theme.spacing.padding.md,
                   backgroundColor: pressed ? theme.colors.background.overlay : undefined,
                   opacity: it.disabled ? 0.4 : 1,
@@ -63,10 +61,11 @@ export function ToggleInput(props: TogglableSettingsProps) {
                     alignItems: 'center',
                     gap: theme.spacing.gap.sm,
                     flex: 1,
+                    minWidth: 0,
                   }}
                 >
                   {it.icon}
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, minWidth: 0 }}>
                     <Text
                       style={{
                         fontSize: theme.typography.fontSize.sm,
@@ -89,17 +88,19 @@ export function ToggleInput(props: TogglableSettingsProps) {
                     ) : null}
                   </View>
                 </View>
-                <Switch
-                  accessibilityLabel={it.label}
-                  disabled={it.disabled}
-                  value={it.value}
-                  onValueChange={it.onValueChange}
-                  trackColor={{
-                    false: theme.colors.background.overlay,
-                    true: theme.colors.accent.primary,
-                  }}
-                  thumbColor={theme.colors.background.alwaysWhite}
-                />
+                <View style={{ flexShrink: 0 }}>
+                  <Switch
+                    accessibilityLabel={it.label}
+                    disabled={it.disabled}
+                    value={it.value}
+                    onValueChange={it.onValueChange}
+                    trackColor={{
+                      false: theme.colors.background.overlay,
+                      true: theme.colors.accent.primary,
+                    }}
+                    thumbColor={theme.colors.background.alwaysWhite}
+                  />
+                </View>
               </View>
             )}
           </Pressable>

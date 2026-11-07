@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 
 type FoodNotFoundModalProps = {
@@ -25,6 +26,10 @@ export function FoodNotFoundModal({
 }: FoodNotFoundModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const isCramped = useIsCramped();
+  // When the layout is cramped the leading icon tile takes the room the label needs ("Personalizado" broke
+  // mid-word beside it); the label and its description say everything the icon does.
+  const showIcons = !isCramped;
 
   return (
     <BottomPopUpMenu
@@ -60,10 +65,12 @@ export function FoodNotFoundModal({
                 padding: 16,
               }}
             >
-              <View className="h-12 w-12 items-center justify-center rounded-control bg-text-always-white/20">
-                <Camera size={theme.iconSize.xl} color={theme.colors.text.onAccent} />
-              </View>
-              <View className="flex-1">
+              {showIcons ? (
+                <View className="h-12 w-12 items-center justify-center rounded-control bg-text-always-white/20">
+                  <Camera size={theme.iconSize.xl} color={theme.colors.text.onAccent} />
+                </View>
+              ) : null}
+              <View className="min-w-0 flex-1">
                 <Text
                   className="text-lg font-semibold"
                   style={{ color: theme.colors.text.onAccent }}
@@ -87,10 +94,12 @@ export function FoodNotFoundModal({
           }}
           className="flex-row items-center gap-4 rounded-card border border-border-default bg-bg-overlay p-4"
         >
-          <View className="h-12 w-12 items-center justify-center rounded-control bg-ink/10">
-            <Search size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </View>
-          <View className="flex-1">
+          {showIcons ? (
+            <View className="h-12 w-12 items-center justify-center rounded-control bg-ink/10">
+              <Search size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            </View>
+          ) : null}
+          <View className="min-w-0 flex-1">
             <Text className="text-lg font-semibold text-text-primary">
               {t('nutrition.searchAgain')}
             </Text>
@@ -107,10 +116,12 @@ export function FoodNotFoundModal({
           }}
           className="flex-row items-center gap-4 rounded-card border border-border-default bg-bg-overlay p-4"
         >
-          <View className="h-12 w-12 items-center justify-center rounded-control bg-ink/10">
-            <Edit size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </View>
-          <View className="flex-1">
+          {showIcons ? (
+            <View className="h-12 w-12 items-center justify-center rounded-control bg-ink/10">
+              <Edit size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            </View>
+          ) : null}
+          <View className="min-w-0 flex-1">
             <Text className="text-lg font-semibold text-text-primary">
               {t('nutrition.createCustom')}
             </Text>

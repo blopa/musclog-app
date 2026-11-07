@@ -32,7 +32,7 @@ export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
 
   const emptyState = (
     <ProgressChartSection title={t('progress.correlationView.moodHistory')}>
-      <View className="mb-4 flex-row items-center gap-2">
+      <View className="mb-4 flex-row flex-wrap items-center gap-2">
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}
@@ -76,7 +76,7 @@ export function MoodHistoryChart({ allData }: MoodHistoryChartProps) {
       title={t('progress.correlationView.moodHistory')}
       subtitle={t('progress.mood.avgMood')}
     >
-      <View className="mb-4 flex-row items-center gap-2">
+      <View className="mb-4 flex-row flex-wrap items-center gap-2">
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}

@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
-import { Platform, Pressable, Text, View } from 'react-native';
+import { ReactNode, useState } from 'react';
+import { Platform, Pressable, Text, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
+import { labelsFitEvenly } from '@/utils/fitText';
 
 type Option = {
   label: string;
@@ -40,6 +41,13 @@ type TestSegmentedControlProps = {
   fullWidth?: boolean;
 };
 
+// The pill's track is `p-1` on each side, its options sit `gap-1` apart and each has `px-3`.
+const PILL_TRACK_PADDING = 8;
+const PILL_OPTION_GAP = 4;
+const PILL_OPTION_PADDING = 24;
+/** An option's icon and the `gap-1.5` after it. */
+const PILL_ICON_ROOM = 22;
+
 export function SegmentedControl({
   options,
   value,
@@ -48,6 +56,20 @@ export function SegmentedControl({
   fullWidth = false,
 }: TestSegmentedControlProps) {
   const theme = useTheme();
+  const { fontScale } = useWindowDimensions();
+  const [trackWidth, setTrackWidth] = useState<number | null>(null);
+  // A full-width pill shares its track evenly while every label's longest word fits its share;
+  // once one does not (a long translation, large text) the options size to their labels and wrap.
+  const sharesEvenly = labelsFitEvenly(
+    options.map((option) => option.label),
+    trackWidth === null ? null : trackWidth - PILL_TRACK_PADDING,
+    {
+      fontSize: theme.typography.fontSize.sm,
+      chrome: PILL_OPTION_PADDING + (options.some((option) => option.icon) ? PILL_ICON_ROOM : 0),
+      gap: PILL_OPTION_GAP,
+      fontScale,
+    }
+  );
   const containerBase = 'flex-row rounded-control';
   const segmentBorderRadius = theme.borderRadius.xs;
 
@@ -60,7 +82,7 @@ export function SegmentedControl({
       case 'outline':
         return `${containerBase} bg-transparent border border-border-light`;
       case 'pill':
-        return `flex-row rounded-control bg-bg-overlay p-1 ${fullWidth ? 'self-stretch' : 'self-start'}`;
+        return `flex-row flex-wrap gap-1 rounded-control bg-bg-overlay p-1 ${fullWidth ? 'self-stretch' : 'self-start'}`;
       default:
         return `${containerBase} bg-bg-card`;
     }
@@ -73,7 +95,11 @@ export function SegmentedControl({
 
   if (variant === 'pill') {
     return (
-      <View className={containerClass} accessibilityRole="radiogroup">
+      <View
+        className={containerClass}
+        accessibilityRole="radiogroup"
+        onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+      >
         {options.map((option) => {
           const isSelected = value === option.value;
           return (
@@ -85,7 +111,7 @@ export function SegmentedControl({
               onPress={() => onValueChange(option.value)}
               // The track's padding brings the pill to the 44pt target.
               hitSlop={{ top: 4, bottom: 4 }}
-              className={`min-h-9 min-w-0 flex-row items-center gap-1.5 rounded-inner px-3 py-2 ${fullWidth ? 'flex-1 justify-center' : ''} ${isSelected ? 'bg-accent-primary' : ''}`}
+              className={`min-h-9 min-w-0 flex-row items-center gap-1.5 rounded-inner px-3 py-2 ${fullWidth ? (sharesEvenly ? 'flex-1 justify-center' : 'flex-auto justify-center') : ''} ${isSelected ? 'bg-accent-primary' : ''}`}
             >
               {renderIcon(option, isSelected)}
               <Text
@@ -107,6 +133,9 @@ export function SegmentedControl({
       className={containerClass}
       accessibilityRole="radiogroup"
       style={{
+        // Options that cannot all fit on one row (long translations, large text) wrap onto the
+        // next instead of breaking a word like "Intermediate" down to single letters.
+        flexWrap: 'wrap',
         // Allow translated labels and larger accessibility text to grow the track.
         minHeight: theme.size['12'],
         padding: theme.spacing.padding.xs,

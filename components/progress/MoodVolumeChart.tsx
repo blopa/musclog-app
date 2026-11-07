@@ -33,7 +33,7 @@ export function MoodVolumeChart({ allData, units }: MoodVolumeChartProps) {
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
   const aggregationToggle = (
-    <View className="mb-4 flex-row items-center gap-2">
+    <View className="mb-4 flex-row flex-wrap items-center gap-2">
       {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
         <TouchableOpacity
           key={agg}

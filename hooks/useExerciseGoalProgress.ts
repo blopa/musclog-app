@@ -26,6 +26,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [bodyWeight, setBodyWeight] = useState(0);
   const [loadMultiplier, setLoadMultiplier] = useState(1.0);
   const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('other');
+  const [muscleGroup, setMuscleGroup] = useState<string | null>(null);
   const [hasPerformed1RMDate, setHasPerformed1RMDate] = useState<number | null>(null);
   const [recentAverage1RM, setRecentAverage1RM] = useState<number | null>(null);
   const [currentBaseline1rm, setCurrentBaseline1rm] = useState<number | null>(
@@ -55,6 +56,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
           setBodyWeight(inputs.bodyWeight);
           setLoadMultiplier(inputs.loadMultiplier);
           setUserGender(inputs.userGender);
+          setMuscleGroup(inputs.muscleGroup);
         }
       } else if (goal.goalType === 'consistency') {
         const count = await WorkoutService.getRollingWeeklyCompletedWorkoutCount();
@@ -138,6 +140,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
         bodyWeight,
         loadMultiplier,
         userGender,
+        muscleGroup,
       },
       currentBaseline1rm
     );
@@ -148,6 +151,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
     bodyWeight,
     loadMultiplier,
     userGender,
+    muscleGroup,
     hasPerformed1RMDate,
     recentAverage1RM,
   ]);

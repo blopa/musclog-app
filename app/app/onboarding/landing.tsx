@@ -2,9 +2,18 @@ import { useRouter } from 'expo-router';
 import { Bot, Download, Lock, ScanLine, Settings2, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Linking,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LoggyPose } from '@/components/LoggyPose';
 import { MasterLayout } from '@/components/MasterLayout';
 import { CenteredModal } from '@/components/modals/CenteredModal';
 import { OpticalReceiveModal } from '@/components/modals/OpticalReceiveModal';
@@ -12,22 +21,36 @@ import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { seedDevData } from '@/database/seeders/dev';
+import { seedLayoutAuditData } from '@/database/seeders/layoutAudit';
 import { seedProductionData } from '@/database/seeders/prod';
 import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { isProduction } from '@/utils/app';
-import { importDatabase, shouldSeedDevData } from '@/utils/file';
+import { importDatabase, shouldSeedDevData, shouldSeedLayoutAuditData } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
+
+/** The most Loggy takes, on a tall phone. */
+const LANDING_POSE_MAX_HEIGHT = 152;
+/** Below this he reads as a smudge, so a short phone gets no Loggy rather than a tiny one. */
+const LANDING_POSE_MIN_HEIGHT = 88;
+/**
+ * What the rest of the screen needs: the three setup buttons and their notes, the title block and
+ * its padding. The hero is a flex child with no scroll, so a pose taller than what is left pushes
+ * the description under the buttons (it did on a 640pt phone, with the old 96pt logo too).
+ */
+const LANDING_RESERVED_HEIGHT = 640;
 
 export default function LandingScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
+  const { height: windowHeight } = useWindowDimensions();
+  const poseHeight = Math.min(LANDING_POSE_MAX_HEIGHT, windowHeight - LANDING_RESERVED_HEIGHT);
   const getInitStatusText = () => {
     if (initPhase === 'migrating' && initStep) {
       return t('onboarding.landing.migratingStep', {
@@ -80,6 +103,9 @@ export default function LandingScreen() {
         // access via http://localhost:8081/onboarding/landing?demoModeEnabled=true
         if (shouldSeedDevData()) {
           await seedDevData();
+          if (shouldSeedLayoutAuditData()) {
+            await seedLayoutAuditData();
+          }
 
           router.navigate('/app');
         }
@@ -137,219 +163,171 @@ export default function LandingScreen() {
 
       {/* Main Content */}
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
-        {/* Import actions - Top Right */}
-        <View className="absolute right-4 top-4 z-10 flex-row gap-2">
-          <TouchableOpacity
-            className="rounded-control p-2"
-            style={{
-              backgroundColor: theme.colors.background.scrim30,
-              opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
-            }}
-            onPress={() => setImportModalVisible(true)}
-            disabled={isInitializing}
-            accessibilityLabel={t('onboarding.landing.importData')}
-            accessibilityRole="button"
-          >
-            <Download size={20} color={theme.colors.text.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="rounded-control p-2"
-            style={{
-              backgroundColor: theme.colors.background.scrim30,
-              opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
-            }}
-            onPress={() => setOpticalImportVisible(true)}
-            disabled={isInitializing}
-            accessibilityLabel={t('onboarding.landing.importOptically')}
-            accessibilityRole="button"
-          >
-            <ScanLine size={20} color={theme.colors.text.primary} />
-          </TouchableOpacity>
-        </View>
-
-        <View className="w-full max-w-md flex-1 justify-between self-center px-6">
-          {/* Top Spacer */}
-          <View style={{ height: theme.size['12'] }} />
-
-          {/* Hero Section */}
-          <View className="flex-1 items-center justify-center gap-8 py-6">
-            {/* The app's own mark, the same one the splash screen shows. */}
-            <Image
-              source={require('@/assets/logo.png')}
-              accessibilityIgnoresInvertColors
-              style={{ width: theme.size['96'], height: theme.size['96'] }}
-              resizeMode="contain"
-            />
-
-            {/* Typography Section */}
-            <View className="mt-4 items-center gap-2">
-              {/* App Name */}
-              <Text
-                className="font-bold leading-none"
+        {/* Scrolls, so that at large text or on a short phone the hero and the buttons stack
+            instead of drawing over each other. */}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="w-full max-w-md grow justify-between self-center px-6">
+            {/* Import actions, top right. In the scrolling content rather than laid over it, so
+                they never sit on top of the title once the page is scrolled. */}
+            <View
+              className="flex-row items-center justify-end gap-2"
+              style={{ height: theme.size['12'] }}
+            >
+              <TouchableOpacity
+                className="rounded-control p-2"
                 style={{
-                  color: theme.colors.text.primary,
-                  fontSize: theme.typography.fontSize['4xl'],
-                  lineHeight: theme.typography.fontSize['4xl'] * 1.1,
+                  backgroundColor: theme.colors.background.scrim30,
+                  opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
                 }}
+                onPress={() => setImportModalVisible(true)}
+                disabled={isInitializing}
+                accessibilityLabel={t('onboarding.landing.importData')}
+                accessibilityRole="button"
               >
-                {t('onboarding.landing.appName')}
-              </Text>
-
-              {/* Tagline */}
-              <Text
-                className="font-bold"
+                <Download size={20} color={theme.colors.text.primary} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="rounded-control p-2"
                 style={{
-                  color: theme.colors.accent.primary,
-                  fontSize: theme.typography.fontSize.lg,
+                  backgroundColor: theme.colors.background.scrim30,
+                  opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
                 }}
+                onPress={() => setOpticalImportVisible(true)}
+                disabled={isInitializing}
+                accessibilityLabel={t('onboarding.landing.importOptically')}
+                accessibilityRole="button"
               >
-                {t('onboarding.landing.tagline')}
-              </Text>
+                <ScanLine size={20} color={theme.colors.text.primary} />
+              </TouchableOpacity>
+            </View>
 
-              {/* Description */}
-              <Text
-                className="mt-2 text-center"
-                style={{
-                  color: theme.colors.text.tertiary,
-                  fontSize: theme.typography.fontSize.sm,
-                  maxWidth: theme.maxWidth.md,
-                  lineHeight: theme.typography.fontSize.sm * 1.5,
-                }}
-              >
-                {t('onboarding.landing.description')}
-              </Text>
+            {/* Hero Section */}
+            <View className="grow items-center justify-center gap-8 py-6">
+              {/* The splash screen already showed the app's mark; this is where Loggy shows up, in
+                his default pose (pencil and clipboard: he is here to keep your log). */}
+              {poseHeight >= LANDING_POSE_MIN_HEIGHT ? (
+                <LoggyPose pose="default" height={poseHeight} />
+              ) : null}
 
-              {/* Privacy note */}
-              <View className="mt-3 flex-row items-center gap-2">
-                <Lock size={14} color={theme.colors.text.secondary} />
+              {/* Typography Section */}
+              <View className="mt-4 items-center gap-2">
+                {/* App Name */}
                 <Text
+                  className="font-bold leading-none"
                   style={{
-                    color: theme.colors.text.secondary,
-                    fontSize: theme.typography.fontSize.xs,
+                    color: theme.colors.text.primary,
+                    fontSize: theme.typography.fontSize['4xl'],
+                    lineHeight: theme.typography.fontSize['4xl'] * 1.1,
                   }}
                 >
-                  {t('onboarding.landing.storedLocally')}
+                  {t('onboarding.landing.appName')}
                 </Text>
-              </View>
-            </View>
-          </View>
 
-          {/* Loading state or button block */}
-          <View className="gap-3 pb-8 pt-4">
-            {isInitializing ? (
-              <View className="items-center gap-4">
-                {initPhase === 'migrating' ? (
+                {/* Tagline */}
+                <Text
+                  className="font-bold"
+                  style={{
+                    color: theme.colors.accent.primary,
+                    fontSize: theme.typography.fontSize.lg,
+                  }}
+                >
+                  {t('onboarding.landing.tagline')}
+                </Text>
+
+                {/* Description */}
+                <Text
+                  className="mt-2 text-center"
+                  style={{
+                    color: theme.colors.text.tertiary,
+                    fontSize: theme.typography.fontSize.sm,
+                    maxWidth: theme.maxWidth.md,
+                    lineHeight: theme.typography.fontSize.sm * 1.5,
+                  }}
+                >
+                  {t('onboarding.landing.description')}
+                </Text>
+
+                {/* Privacy note */}
+                <View className="mt-3 flex-row items-center gap-2">
+                  <Lock size={14} color={theme.colors.text.secondary} />
                   <Text
-                    className="text-center"
                     style={{
                       color: theme.colors.text.secondary,
-                      fontSize: theme.typography.fontSize.sm,
-                      lineHeight: theme.typography.fontSize.sm * 1.4,
-                      paddingHorizontal: theme.size[4],
+                      fontSize: theme.typography.fontSize.xs,
                     }}
                   >
-                    {t('onboarding.landing.migratingPreamble')}
-                  </Text>
-                ) : null}
-                <ActivityIndicator size="large" color={theme.colors.text.primary} />
-                <View className="items-center gap-1">
-                  {initPhase === 'migrating' &&
-                  initStep &&
-                  initProgressTotal != null &&
-                  initProgressTotal > 0 &&
-                  initProgressCurrent != null ? (
-                    <Text
-                      className="text-center font-medium tabular-nums"
-                      style={{
-                        color: theme.colors.text.primary,
-                        fontSize: theme.typography.fontSize.xl,
-                      }}
-                    >
-                      {formatInteger(initProgressCurrent)} / {formatInteger(initProgressTotal)}
-                    </Text>
-                  ) : null}
-                  <View style={{ height: theme.size.xs }} />
-                  <Text
-                    className="text-center"
-                    style={{
-                      color: theme.colors.text.primary,
-                      fontSize: theme.typography.fontSize.lg,
-                    }}
-                  >
-                    {getInitStatusText()}
+                    {t('onboarding.landing.storedLocally')}
                   </Text>
                 </View>
               </View>
-            ) : (
-              <>
-                {/* Personalized Setup — the gradientCta variant already reads as the
-                    recommended choice against Quick Setup's outline button below. */}
-                <View>
-                  <Button
-                    label={t('onboarding.landing.personalizedSetup')}
-                    labelAccessory={t('onboarding.landing.personalizedSetupSteps')}
-                    onPress={() => router.navigate('/app/onboarding/personalized-preferences')}
-                    icon={Settings2}
-                    iconPosition="left"
-                    variant="gradientCta"
-                    size="md"
-                    width="full"
-                  />
+            </View>
+
+            {/* Loading state or button block */}
+            <View className="gap-3 pb-8 pt-4">
+              {isInitializing ? (
+                <View className="items-center gap-4">
+                  {initPhase === 'migrating' ? (
+                    <Text
+                      className="text-center"
+                      style={{
+                        color: theme.colors.text.secondary,
+                        fontSize: theme.typography.fontSize.sm,
+                        lineHeight: theme.typography.fontSize.sm * 1.4,
+                        paddingHorizontal: theme.size[4],
+                      }}
+                    >
+                      {t('onboarding.landing.migratingPreamble')}
+                    </Text>
+                  ) : null}
+                  <ActivityIndicator size="large" color={theme.colors.text.primary} />
+                  <View className="items-center gap-1">
+                    {initPhase === 'migrating' &&
+                    initStep &&
+                    initProgressTotal != null &&
+                    initProgressTotal > 0 &&
+                    initProgressCurrent != null ? (
+                      <Text
+                        className="text-center font-medium tabular-nums"
+                        style={{
+                          color: theme.colors.text.primary,
+                          fontSize: theme.typography.fontSize.xl,
+                        }}
+                      >
+                        {formatInteger(initProgressCurrent)} / {formatInteger(initProgressTotal)}
+                      </Text>
+                    ) : null}
+                    <View style={{ height: theme.size.xs }} />
+                    <Text
+                      className="text-center"
+                      style={{
+                        color: theme.colors.text.primary,
+                        fontSize: theme.typography.fontSize.lg,
+                      }}
+                    >
+                      {getInitStatusText()}
+                    </Text>
+                  </View>
                 </View>
-                <Text
-                  className="text-center"
-                  style={{
-                    color: theme.colors.text.tertiary,
-                    fontSize: theme.typography.fontSize.xs,
-                  }}
-                >
-                  {t('onboarding.landing.personalizedSetupSubtitle')}
-                </Text>
-
-                {/* Quick Setup */}
-                <Button
-                  label={t('onboarding.landing.quickSetup')}
-                  labelAccessory={t('onboarding.landing.quickSetupSteps')}
-                  onPress={() => router.navigate('/app/onboarding/quick-preferences')}
-                  icon={Zap}
-                  iconPosition="left"
-                  variant="outline"
-                  size="md"
-                  width="full"
-                />
-                <Text
-                  className="text-center"
-                  style={{
-                    color: theme.colors.text.tertiary,
-                    fontSize: theme.typography.fontSize.xs,
-                  }}
-                >
-                  {t('onboarding.landing.quickSetupSubtitle')}
-                </Text>
-
-                {/* Set up with AI — shown whether or not an AI is configured: the ChatGPT/Claude
-                    hand-off and the file import need none, and the screen offers free AI. */}
-                <Button
-                  label={t('onboarding.landing.aiSetup')}
-                  onPress={() => router.navigate(aiSetupRoute('setup', 'onboarding') as never)}
-                  icon={Bot}
-                  iconPosition="left"
-                  variant="outline"
-                  size="md"
-                  width="full"
-                />
-                <Text
-                  className="text-center"
-                  style={{
-                    color: theme.colors.text.tertiary,
-                    fontSize: theme.typography.fontSize.xs,
-                  }}
-                >
-                  {t('onboarding.landing.aiSetupSubtitle')}
-                </Text>
-
-                {/* Terms / Footer Text */}
-                <View className="mt-2">
+              ) : (
+                <>
+                  {/* Personalized Setup — the gradientCta variant already reads as the
+                    recommended choice against Quick Setup's outline button below. */}
+                  <View>
+                    <Button
+                      label={t('onboarding.landing.personalizedSetup')}
+                      labelAccessory={t('onboarding.landing.personalizedSetupSteps')}
+                      onPress={() => router.navigate('/app/onboarding/personalized-preferences')}
+                      icon={Settings2}
+                      iconPosition="left"
+                      variant="gradientCta"
+                      size="md"
+                      width="full"
+                    />
+                  </View>
                   <Text
                     className="text-center"
                     style={{
@@ -357,33 +335,88 @@ export default function LandingScreen() {
                       fontSize: theme.typography.fontSize.xs,
                     }}
                   >
-                    {t('onboarding.landing.termsAndPrivacy')}
+                    {t('onboarding.landing.personalizedSetupSubtitle')}
                   </Text>
 
+                  {/* Quick Setup */}
+                  <Button
+                    label={t('onboarding.landing.quickSetup')}
+                    labelAccessory={t('onboarding.landing.quickSetupSteps')}
+                    onPress={() => router.navigate('/app/onboarding/quick-preferences')}
+                    icon={Zap}
+                    iconPosition="left"
+                    variant="outline"
+                    size="md"
+                    width="full"
+                  />
                   <Text
-                    accessibilityRole="link"
-                    onPress={async () => {
-                      const url = 'https://musclog.app/terms';
-                      try {
-                        await Linking.openURL(url);
-                      } catch (e) {
-                        console.error('Failed to open privacy link', e);
-                      }
-                    }}
-                    className="mt-1 text-center"
+                    className="text-center"
                     style={{
-                      color: theme.colors.accent.primary,
+                      color: theme.colors.text.tertiary,
                       fontSize: theme.typography.fontSize.xs,
-                      textDecorationLine: 'underline',
                     }}
                   >
-                    {t('onboarding.landing.viewTerms')}
+                    {t('onboarding.landing.quickSetupSubtitle')}
                   </Text>
-                </View>
-              </>
-            )}
+
+                  {/* Set up with AI — shown whether or not an AI is configured: the ChatGPT/Claude
+                    hand-off and the file import need none, and the screen offers free AI. */}
+                  <Button
+                    label={t('onboarding.landing.aiSetup')}
+                    onPress={() => router.navigate(aiSetupRoute('setup', 'onboarding') as never)}
+                    icon={Bot}
+                    iconPosition="left"
+                    variant="outline"
+                    size="md"
+                    width="full"
+                  />
+                  <Text
+                    className="text-center"
+                    style={{
+                      color: theme.colors.text.tertiary,
+                      fontSize: theme.typography.fontSize.xs,
+                    }}
+                  >
+                    {t('onboarding.landing.aiSetupSubtitle')}
+                  </Text>
+
+                  {/* Terms / Footer Text */}
+                  <View className="mt-2">
+                    <Text
+                      className="text-center"
+                      style={{
+                        color: theme.colors.text.tertiary,
+                        fontSize: theme.typography.fontSize.xs,
+                      }}
+                    >
+                      {t('onboarding.landing.termsAndPrivacy')}
+                    </Text>
+
+                    <Text
+                      accessibilityRole="link"
+                      onPress={async () => {
+                        const url = 'https://musclog.app/terms';
+                        try {
+                          await Linking.openURL(url);
+                        } catch (e) {
+                          console.error('Failed to open privacy link', e);
+                        }
+                      }}
+                      className="mt-1 text-center"
+                      style={{
+                        color: theme.colors.accent.primary,
+                        fontSize: theme.typography.fontSize.xs,
+                        textDecorationLine: 'underline',
+                      }}
+                    >
+                      {t('onboarding.landing.viewTerms')}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
 
       {/* Import confirmation modal */}

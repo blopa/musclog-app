@@ -1,0 +1,31 @@
+/* Loggy pointing at a rising bar chart on an easel. His upper body bobs gently while his
+   shoes and the easel stay planted, the leaf sways, and his pointing arm taps toward the bars.
+   Every layer opens and ends on the still's own frame. */
+#upper {
+    animation: loggy-bob 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#arm-l, #hand-l {
+    transform-origin: 145px 355px;
+    animation: loggy-chart-point 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-chart-point {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 62% { transform: rotate(2.2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

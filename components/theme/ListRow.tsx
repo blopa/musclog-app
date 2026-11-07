@@ -132,11 +132,7 @@ export function ListRow({
         >
           {title}
         </Text>
-        {subtitle ? (
-          <Text className="text-xs text-text-secondary" numberOfLines={isGrouped ? 1 : undefined}>
-            {subtitle}
-          </Text>
-        ) : null}
+        {subtitle ? <Text className="text-xs text-text-secondary">{subtitle}</Text> : null}
       </View>
       {value ? (
         <Text className="shrink-0 text-sm text-text-secondary" numberOfLines={1}>

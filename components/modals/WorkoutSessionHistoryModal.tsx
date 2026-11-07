@@ -497,8 +497,8 @@ export function WorkoutSessionHistoryModal({
       <View className="gap-6 px-4 pb-8 pt-4">
         {/* Workout Summary: the workout's name leads, then what each exercise will start at. */}
         <View className="gap-2">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-1">
+          <View className="flex-row items-center justify-between gap-3">
+            <View className="min-w-0 flex-1">
               <Text
                 className="mb-0.5 block text-sm font-semibold"
                 style={{ color: theme.colors.accent.primary }}
@@ -515,7 +515,7 @@ export function WorkoutSessionHistoryModal({
               ) : null}
             </View>
             {!isPreview && shouldShowTimer ? (
-              <View className="items-end">
+              <View className="shrink-0 items-end">
                 <Text className="font-mono text-3xl font-bold tabular-nums text-text-primary">
                   {`${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`}
                 </Text>
@@ -527,7 +527,7 @@ export function WorkoutSessionHistoryModal({
           </View>
 
           {/* Stats Pills */}
-          <View className="mt-1 flex-row items-center gap-3">
+          <View className="mt-1 flex-row flex-wrap items-center gap-x-3 gap-y-2">
             <View
               className="flex-row items-center gap-1.5 rounded-control px-3 py-1.5"
               style={{ backgroundColor: theme.colors.status.info20 }}

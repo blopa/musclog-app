@@ -65,7 +65,7 @@ export async function restoreLegacyV1Database(dump: LegacyV1Dump): Promise<void>
     const units = await SettingsService.getUnits();
     const language = await SettingsService.getLanguage();
 
-    // A reset under a running boot migration throws (see FIXES.md).
+    // A reset under a running boot migration throws (see docs/FIXES.md).
     await waitForBootMigrations();
     await createPreRestoreBackup();
 

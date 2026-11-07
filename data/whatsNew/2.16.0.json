@@ -1,0 +1,80 @@
+{
+  "version": "2.16.0",
+  "pages": [
+    {
+      "id": "loggy",
+      "blocks": [
+        {
+          "id": "loggy",
+          "type": "info",
+          "icon": "smile",
+          "pose": "running",
+          "titleKey": "whatsNew.releases.v2_16_0.loggy.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.loggy.description"
+        },
+        {
+          "id": "showLoggy",
+          "type": "choice",
+          "setting": "showLoggy",
+          "titleKey": "whatsNew.releases.v2_16_0.loggy.show.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.loggy.show.description"
+        },
+        {
+          "id": "animatedLoggy",
+          "type": "choice",
+          "setting": "animatedLoggy",
+          "titleKey": "whatsNew.releases.v2_16_0.loggy.animated.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.loggy.animated.description"
+        }
+      ]
+    },
+    {
+      "id": "importHistory",
+      "blocks": [
+        {
+          "id": "importHistory",
+          "type": "info",
+          "icon": "shuffle",
+          "titleKey": "whatsNew.releases.v2_16_0.importHistory.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.importHistory.description"
+        }
+      ]
+    },
+    {
+      "id": "yearInReview",
+      "blocks": [
+        {
+          "id": "yearInReview",
+          "type": "info",
+          "icon": "calendar",
+          "titleKey": "whatsNew.releases.v2_16_0.yearInReview.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.yearInReview.description"
+        }
+      ]
+    },
+    {
+      "id": "strengthLevels",
+      "blocks": [
+        {
+          "id": "strengthLevels",
+          "type": "info",
+          "icon": "dumbbell",
+          "titleKey": "whatsNew.releases.v2_16_0.strengthLevels.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.strengthLevels.description"
+        }
+      ]
+    },
+    {
+      "id": "trainingLoad",
+      "blocks": [
+        {
+          "id": "trainingLoad",
+          "type": "info",
+          "icon": "trendingUp",
+          "titleKey": "whatsNew.releases.v2_16_0.trainingLoad.title",
+          "descriptionKey": "whatsNew.releases.v2_16_0.trainingLoad.description"
+        }
+      ]
+    }
+  ]
+}

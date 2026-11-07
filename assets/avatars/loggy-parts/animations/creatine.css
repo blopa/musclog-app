@@ -1,0 +1,39 @@
+/* Loggy taking his daily scoop of creatine. The hand and scoop tip together from the wrist
+   toward his grin while the tub in his other hand settles slightly, the leaf sways, and the
+   shoes stay planted as the upper body bobs. Every layer opens and ends on the still's frame. */
+#upper {
+    animation: loggy-bob 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#scoop, #hand-l {
+    transform-origin: 80px 280px;
+    animation: loggy-scoop-tip 3.2s ease-in-out infinite;
+}
+#tub, #hand-r {
+    transform-origin: 435px 410px;
+    animation: loggy-tub-hold 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-scoop-tip {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 62% { transform: rotate(2.5deg); }
+}
+@keyframes loggy-tub-hold {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-1.5deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

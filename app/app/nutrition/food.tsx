@@ -4,11 +4,9 @@ import {
   Copy,
   Edit,
   GitMerge,
-  ListPlus,
   QrCode,
   Save,
   Scale,
-  ScanLine,
   Scissors,
   Sparkles,
   Trash2,
@@ -51,6 +49,7 @@ import { CopyDayPromptCard } from '@/components/nutrition/CopyDayPromptCard';
 import { DiaryActionPanels } from '@/components/nutrition/DiaryActionPanels';
 import type { DiaryActionRequest, DiaryPanelKind } from '@/components/nutrition/diaryActions';
 import { FastingDayCard } from '@/components/nutrition/FastingDayCard';
+import { FoodQuickActions } from '@/components/nutrition/FoodQuickActions';
 import {
   cardKeysOfMeal,
   diaryGroupKey,
@@ -66,7 +65,6 @@ import {
 } from '@/components/nutrition/foodTypes';
 import { MealSectionsList } from '@/components/nutrition/MealSectionsList';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
-import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
@@ -1373,64 +1371,28 @@ export default function FoodScreen() {
                     ) : null}
 
                     {/* Scan Buttons */}
-                    <View className="gap-2">
-                      <View className="flex-row gap-2">
-                        <Button
-                          label={t('food.actions.scanBarcode')}
-                          icon={ScanLine}
-                          variant="secondary"
-                          size="sm"
-                          width="flex-1"
-                          onPress={() => {
-                            openCamera({
-                              mode: 'barcode-scan',
-                              hideCameraModePicker: false,
-                              showBarcodeTextSearch: true,
-                              logDate: selectedDate,
-                            });
-                          }}
-                        />
-                        {isAiConfigured ? (
-                          <Button
-                            label={t('food.actions.aiCamera')}
-                            icon={Sparkles}
-                            variant="secondaryGradient"
-                            size="sm"
-                            width="flex-1"
-                            onPress={() => {
-                              openCamera({
-                                mode: 'ai-meal-photo',
-                                hideCameraModePicker: false,
-                                logDate: selectedDate,
-                              });
-                            }}
-                          />
-                        ) : null}
-                      </View>
-                      <View className="flex-row gap-2">
-                        <Button
-                          // label={t('food.actions.goToToday')}
-                          label={t('food.actions.myMeals')}
-                          // icon={Calendar}
-                          icon={UtensilsCrossed}
-                          variant="secondary"
-                          size="sm"
-                          width="flex-1"
-                          // onPress={goToToday}
-                          onPress={screenModals.myMeals.open}
-                        />
-                        <Button
-                          label={t('food.actions.moreFoodOptions')}
-                          icon={ListPlus}
-                          variant="secondaryGradient"
-                          size="sm"
-                          width="flex-1"
-                          onPress={() => {
-                            openAddFoodModal();
-                          }}
-                        />
-                      </View>
-                    </View>
+                    <FoodQuickActions
+                      isAiConfigured={isAiConfigured}
+                      onScanBarcode={() => {
+                        openCamera({
+                          mode: 'barcode-scan',
+                          hideCameraModePicker: false,
+                          showBarcodeTextSearch: true,
+                          logDate: selectedDate,
+                        });
+                      }}
+                      onAiCamera={() => {
+                        openCamera({
+                          mode: 'ai-meal-photo',
+                          hideCameraModePicker: false,
+                          logDate: selectedDate,
+                        });
+                      }}
+                      onMyMeals={screenModals.myMeals.open}
+                      onMoreOptions={() => {
+                        openAddFoodModal();
+                      }}
+                    />
 
                     <MealSectionsList
                       byMealType={dailyNutrients?.byMealType}
@@ -1689,7 +1651,7 @@ export default function FoodScreen() {
 
         {/* Optical send. A screen-level sibling on purpose: the menu that opens it dismisses itself
           first, so a modal parked in its children would unmount before it could appear
-          (FIXES.md). */}
+          (docs/FIXES.md). */}
         {shareTarget ? (
           <ShareOpticalSendModal
             onClose={() => setShareTarget(null)}

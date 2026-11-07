@@ -72,6 +72,7 @@ import enUsLock from './locales/en-us/lock.json';
 import enUsLogSetPerformance from './locales/en-us/logSetPerformance.json';
 import enUsMealFoods from './locales/en-us/meal_foods.json';
 import enUsMeals from './locales/en-us/meals.json';
+import enUsMuscleLoad from './locales/en-us/muscleLoad.json';
 import enUsNotes from './locales/en-us/notes.json';
 import enUsNotifications from './locales/en-us/notifications.json';
 import enUsNutrition from './locales/en-us/nutrition.json';
@@ -92,6 +93,7 @@ import enUsSettings from './locales/en-us/settings.json';
 import enUsSnackbar from './locales/en-us/snackbar.json';
 import enUsSpiderChart from './locales/en-us/spiderChart.json';
 import enUsStartWorkout from './locales/en-us/startWorkout.json';
+import enUsStrengthLevels from './locales/en-us/strengthLevels.json';
 import enUsTimePicker from './locales/en-us/timePicker.json';
 import enUsTokenType from './locales/en-us/token_type.json';
 import enUsUserMenu from './locales/en-us/userMenu.json';
@@ -106,6 +108,7 @@ import enUsWorkoutTemplateSets from './locales/en-us/workout_template_sets.json'
 import enUsWorkoutDetail from './locales/en-us/workoutDetail.json';
 import enUsWorkoutDetails from './locales/en-us/workoutDetails.json';
 import enUsWorkoutHistory from './locales/en-us/workoutHistory.json';
+import enUsWorkoutImport from './locales/en-us/workoutImport.json';
 import enUsWorkoutLog from './locales/en-us/workoutLog.json';
 import enUsWorkoutOptions from './locales/en-us/workoutOptions.json';
 import enUsWorkoutReminder from './locales/en-us/workoutReminder.json';
@@ -114,6 +117,7 @@ import enUsWorkoutSession from './locales/en-us/workoutSession.json';
 import enUsWorkoutSettings from './locales/en-us/workoutSettings.json';
 import enUsWorkoutSummary from './locales/en-us/workoutSummary.json';
 import enUsWorkTimer from './locales/en-us/workTimer.json';
+import enUsYearInReview from './locales/en-us/yearInReview.json';
 // es-es
 import esEsAccessToken from './locales/es-es/access_token.json';
 import esEsAddMeal from './locales/es-es/addMeal.json';
@@ -159,6 +163,7 @@ import esEsLock from './locales/es-es/lock.json';
 import esEsLogSetPerformance from './locales/es-es/logSetPerformance.json';
 import esEsMealFoods from './locales/es-es/meal_foods.json';
 import esEsMeals from './locales/es-es/meals.json';
+import esEsMuscleLoad from './locales/es-es/muscleLoad.json';
 import esEsNotes from './locales/es-es/notes.json';
 import esEsNotifications from './locales/es-es/notifications.json';
 import esEsNutrition from './locales/es-es/nutrition.json';
@@ -179,6 +184,7 @@ import esEsSettings from './locales/es-es/settings.json';
 import esEsSnackbar from './locales/es-es/snackbar.json';
 import esEsSpiderChart from './locales/es-es/spiderChart.json';
 import esEsStartWorkout from './locales/es-es/startWorkout.json';
+import esEsStrengthLevels from './locales/es-es/strengthLevels.json';
 import esEsTimePicker from './locales/es-es/timePicker.json';
 import esEsTokenType from './locales/es-es/token_type.json';
 import esEsUserMenu from './locales/es-es/userMenu.json';
@@ -193,6 +199,7 @@ import esEsWorkoutTemplateSets from './locales/es-es/workout_template_sets.json'
 import esEsWorkoutDetail from './locales/es-es/workoutDetail.json';
 import esEsWorkoutDetails from './locales/es-es/workoutDetails.json';
 import esEsWorkoutHistory from './locales/es-es/workoutHistory.json';
+import esEsWorkoutImport from './locales/es-es/workoutImport.json';
 import esEsWorkoutLog from './locales/es-es/workoutLog.json';
 import esEsWorkoutOptions from './locales/es-es/workoutOptions.json';
 import esEsWorkoutReminder from './locales/es-es/workoutReminder.json';
@@ -201,6 +208,7 @@ import esEsWorkoutSession from './locales/es-es/workoutSession.json';
 import esEsWorkoutSettings from './locales/es-es/workoutSettings.json';
 import esEsWorkoutSummary from './locales/es-es/workoutSummary.json';
 import esEsWorkTimer from './locales/es-es/workTimer.json';
+import esEsYearInReview from './locales/es-es/yearInReview.json';
 // nl-nl
 import nlNlAccessToken from './locales/nl-nl/access_token.json';
 import nlNlAddMeal from './locales/nl-nl/addMeal.json';
@@ -246,6 +254,7 @@ import nlNlLock from './locales/nl-nl/lock.json';
 import nlNlLogSetPerformance from './locales/nl-nl/logSetPerformance.json';
 import nlNlMealFoods from './locales/nl-nl/meal_foods.json';
 import nlNlMeals from './locales/nl-nl/meals.json';
+import nlNlMuscleLoad from './locales/nl-nl/muscleLoad.json';
 import nlNlNotes from './locales/nl-nl/notes.json';
 import nlNlNotifications from './locales/nl-nl/notifications.json';
 import nlNlNutrition from './locales/nl-nl/nutrition.json';
@@ -266,6 +275,7 @@ import nlNlSettings from './locales/nl-nl/settings.json';
 import nlNlSnackbar from './locales/nl-nl/snackbar.json';
 import nlNlSpiderChart from './locales/nl-nl/spiderChart.json';
 import nlNlStartWorkout from './locales/nl-nl/startWorkout.json';
+import nlNlStrengthLevels from './locales/nl-nl/strengthLevels.json';
 import nlNlTimePicker from './locales/nl-nl/timePicker.json';
 import nlNlTokenType from './locales/nl-nl/token_type.json';
 import nlNlUserMenu from './locales/nl-nl/userMenu.json';
@@ -280,6 +290,7 @@ import nlNlWorkoutTemplateSets from './locales/nl-nl/workout_template_sets.json'
 import nlNlWorkoutDetail from './locales/nl-nl/workoutDetail.json';
 import nlNlWorkoutDetails from './locales/nl-nl/workoutDetails.json';
 import nlNlWorkoutHistory from './locales/nl-nl/workoutHistory.json';
+import nlNlWorkoutImport from './locales/nl-nl/workoutImport.json';
 import nlNlWorkoutLog from './locales/nl-nl/workoutLog.json';
 import nlNlWorkoutOptions from './locales/nl-nl/workoutOptions.json';
 import nlNlWorkoutReminder from './locales/nl-nl/workoutReminder.json';
@@ -288,6 +299,7 @@ import nlNlWorkoutSession from './locales/nl-nl/workoutSession.json';
 import nlNlWorkoutSettings from './locales/nl-nl/workoutSettings.json';
 import nlNlWorkoutSummary from './locales/nl-nl/workoutSummary.json';
 import nlNlWorkTimer from './locales/nl-nl/workTimer.json';
+import nlNlYearInReview from './locales/nl-nl/yearInReview.json';
 // pt-br
 import ptBrAccessToken from './locales/pt-br/access_token.json';
 import ptBrAddMeal from './locales/pt-br/addMeal.json';
@@ -333,6 +345,7 @@ import ptBrLock from './locales/pt-br/lock.json';
 import ptBrLogSetPerformance from './locales/pt-br/logSetPerformance.json';
 import ptBrMealFoods from './locales/pt-br/meal_foods.json';
 import ptBrMeals from './locales/pt-br/meals.json';
+import ptBrMuscleLoad from './locales/pt-br/muscleLoad.json';
 import ptBrNotes from './locales/pt-br/notes.json';
 import ptBrNotifications from './locales/pt-br/notifications.json';
 import ptBrNutrition from './locales/pt-br/nutrition.json';
@@ -353,6 +366,7 @@ import ptBrSettings from './locales/pt-br/settings.json';
 import ptBrSnackbar from './locales/pt-br/snackbar.json';
 import ptBrSpiderChart from './locales/pt-br/spiderChart.json';
 import ptBrStartWorkout from './locales/pt-br/startWorkout.json';
+import ptBrStrengthLevels from './locales/pt-br/strengthLevels.json';
 import ptBrTimePicker from './locales/pt-br/timePicker.json';
 import ptBrTokenType from './locales/pt-br/token_type.json';
 import ptBrUserMenu from './locales/pt-br/userMenu.json';
@@ -367,6 +381,7 @@ import ptBrWorkoutTemplateSets from './locales/pt-br/workout_template_sets.json'
 import ptBrWorkoutDetail from './locales/pt-br/workoutDetail.json';
 import ptBrWorkoutDetails from './locales/pt-br/workoutDetails.json';
 import ptBrWorkoutHistory from './locales/pt-br/workoutHistory.json';
+import ptBrWorkoutImport from './locales/pt-br/workoutImport.json';
 import ptBrWorkoutLog from './locales/pt-br/workoutLog.json';
 import ptBrWorkoutOptions from './locales/pt-br/workoutOptions.json';
 import ptBrWorkoutReminder from './locales/pt-br/workoutReminder.json';
@@ -375,6 +390,7 @@ import ptBrWorkoutSession from './locales/pt-br/workoutSession.json';
 import ptBrWorkoutSettings from './locales/pt-br/workoutSettings.json';
 import ptBrWorkoutSummary from './locales/pt-br/workoutSummary.json';
 import ptBrWorkTimer from './locales/pt-br/workTimer.json';
+import ptBrYearInReview from './locales/pt-br/yearInReview.json';
 // ru-ru
 import ruRuAccessToken from './locales/ru-ru/access_token.json';
 import ruRuAddMeal from './locales/ru-ru/addMeal.json';
@@ -420,6 +436,7 @@ import ruRuLock from './locales/ru-ru/lock.json';
 import ruRuLogSetPerformance from './locales/ru-ru/logSetPerformance.json';
 import ruRuMealFoods from './locales/ru-ru/meal_foods.json';
 import ruRuMeals from './locales/ru-ru/meals.json';
+import ruRuMuscleLoad from './locales/ru-ru/muscleLoad.json';
 import ruRuNotes from './locales/ru-ru/notes.json';
 import ruRuNotifications from './locales/ru-ru/notifications.json';
 import ruRuNutrition from './locales/ru-ru/nutrition.json';
@@ -440,6 +457,7 @@ import ruRuSettings from './locales/ru-ru/settings.json';
 import ruRuSnackbar from './locales/ru-ru/snackbar.json';
 import ruRuSpiderChart from './locales/ru-ru/spiderChart.json';
 import ruRuStartWorkout from './locales/ru-ru/startWorkout.json';
+import ruRuStrengthLevels from './locales/ru-ru/strengthLevels.json';
 import ruRuTimePicker from './locales/ru-ru/timePicker.json';
 import ruRuTokenType from './locales/ru-ru/token_type.json';
 import ruRuUserMenu from './locales/ru-ru/userMenu.json';
@@ -454,6 +472,7 @@ import ruRuWorkoutTemplateSets from './locales/ru-ru/workout_template_sets.json'
 import ruRuWorkoutDetail from './locales/ru-ru/workoutDetail.json';
 import ruRuWorkoutDetails from './locales/ru-ru/workoutDetails.json';
 import ruRuWorkoutHistory from './locales/ru-ru/workoutHistory.json';
+import ruRuWorkoutImport from './locales/ru-ru/workoutImport.json';
 import ruRuWorkoutLog from './locales/ru-ru/workoutLog.json';
 import ruRuWorkoutOptions from './locales/ru-ru/workoutOptions.json';
 import ruRuWorkoutReminder from './locales/ru-ru/workoutReminder.json';
@@ -462,6 +481,7 @@ import ruRuWorkoutSession from './locales/ru-ru/workoutSession.json';
 import ruRuWorkoutSettings from './locales/ru-ru/workoutSettings.json';
 import ruRuWorkoutSummary from './locales/ru-ru/workoutSummary.json';
 import ruRuWorkTimer from './locales/ru-ru/workTimer.json';
+import ruRuYearInReview from './locales/ru-ru/yearInReview.json';
 // untranslated
 import untranslated from './locales/untranslated.json';
 
@@ -538,6 +558,7 @@ const resources = {
       ...enUsLogSetPerformance,
       ...enUsMealFoods,
       ...enUsMeals,
+      ...enUsMuscleLoad,
       ...enUsNotes,
       ...enUsNotifications,
       ...enUsNutrition,
@@ -558,6 +579,7 @@ const resources = {
       ...enUsSnackbar,
       ...enUsSpiderChart,
       ...enUsStartWorkout,
+      ...enUsStrengthLevels,
       ...enUsTimePicker,
       ...enUsTokenType,
       ...enUsUserMenu,
@@ -570,6 +592,7 @@ const resources = {
       ...enUsWorkoutDetail,
       ...enUsWorkoutDetails,
       ...enUsWorkoutHistory,
+      ...enUsWorkoutImport,
       ...enUsWorkoutLog,
       ...enUsWorkoutOptions,
       ...enUsWorkoutReminder,
@@ -580,6 +603,7 @@ const resources = {
       ...enUsWorkoutLogs,
       ...enUsWorkoutTemplateSets,
       ...enUsWorkouts,
+      ...enUsYearInReview,
     },
   },
   [ES_ES]: {
@@ -629,6 +653,7 @@ const resources = {
       ...esEsLogSetPerformance,
       ...esEsMealFoods,
       ...esEsMeals,
+      ...esEsMuscleLoad,
       ...esEsNotes,
       ...esEsNotifications,
       ...esEsNutrition,
@@ -649,6 +674,7 @@ const resources = {
       ...esEsSnackbar,
       ...esEsSpiderChart,
       ...esEsStartWorkout,
+      ...esEsStrengthLevels,
       ...esEsTimePicker,
       ...esEsTokenType,
       ...esEsUserMenu,
@@ -661,6 +687,7 @@ const resources = {
       ...esEsWorkoutDetail,
       ...esEsWorkoutDetails,
       ...esEsWorkoutHistory,
+      ...esEsWorkoutImport,
       ...esEsWorkoutLog,
       ...esEsWorkoutOptions,
       ...esEsWorkoutReminder,
@@ -671,6 +698,7 @@ const resources = {
       ...esEsWorkoutLogs,
       ...esEsWorkoutTemplateSets,
       ...esEsWorkouts,
+      ...esEsYearInReview,
     },
   },
   [NL_NL]: {
@@ -720,6 +748,7 @@ const resources = {
       ...nlNlLogSetPerformance,
       ...nlNlMealFoods,
       ...nlNlMeals,
+      ...nlNlMuscleLoad,
       ...nlNlNotes,
       ...nlNlNotifications,
       ...nlNlNutrition,
@@ -740,6 +769,7 @@ const resources = {
       ...nlNlSnackbar,
       ...nlNlSpiderChart,
       ...nlNlStartWorkout,
+      ...nlNlStrengthLevels,
       ...nlNlTimePicker,
       ...nlNlTokenType,
       ...nlNlUserMenu,
@@ -752,6 +782,7 @@ const resources = {
       ...nlNlWorkoutDetail,
       ...nlNlWorkoutDetails,
       ...nlNlWorkoutHistory,
+      ...nlNlWorkoutImport,
       ...nlNlWorkoutLog,
       ...nlNlWorkoutOptions,
       ...nlNlWorkoutReminder,
@@ -762,6 +793,7 @@ const resources = {
       ...nlNlWorkoutLogs,
       ...nlNlWorkoutTemplateSets,
       ...nlNlWorkouts,
+      ...nlNlYearInReview,
     },
   },
   [PT_BR]: {
@@ -811,6 +843,7 @@ const resources = {
       ...ptBrLogSetPerformance,
       ...ptBrMealFoods,
       ...ptBrMeals,
+      ...ptBrMuscleLoad,
       ...ptBrNotes,
       ...ptBrNotifications,
       ...ptBrNutrition,
@@ -831,6 +864,7 @@ const resources = {
       ...ptBrSnackbar,
       ...ptBrSpiderChart,
       ...ptBrStartWorkout,
+      ...ptBrStrengthLevels,
       ...ptBrTimePicker,
       ...ptBrTokenType,
       ...ptBrUserMenu,
@@ -843,6 +877,7 @@ const resources = {
       ...ptBrWorkoutDetail,
       ...ptBrWorkoutDetails,
       ...ptBrWorkoutHistory,
+      ...ptBrWorkoutImport,
       ...ptBrWorkoutLog,
       ...ptBrWorkoutOptions,
       ...ptBrWorkoutReminder,
@@ -853,6 +888,7 @@ const resources = {
       ...ptBrWorkoutLogs,
       ...ptBrWorkoutTemplateSets,
       ...ptBrWorkouts,
+      ...ptBrYearInReview,
     },
   },
   [RU_RU]: {
@@ -902,6 +938,7 @@ const resources = {
       ...ruRuLogSetPerformance,
       ...ruRuMealFoods,
       ...ruRuMeals,
+      ...ruRuMuscleLoad,
       ...ruRuNotes,
       ...ruRuNotifications,
       ...ruRuNutrition,
@@ -922,6 +959,7 @@ const resources = {
       ...ruRuSnackbar,
       ...ruRuSpiderChart,
       ...ruRuStartWorkout,
+      ...ruRuStrengthLevels,
       ...ruRuTimePicker,
       ...ruRuTokenType,
       ...ruRuUserMenu,
@@ -934,6 +972,7 @@ const resources = {
       ...ruRuWorkoutDetail,
       ...ruRuWorkoutDetails,
       ...ruRuWorkoutHistory,
+      ...ruRuWorkoutImport,
       ...ruRuWorkoutLog,
       ...ruRuWorkoutOptions,
       ...ruRuWorkoutReminder,
@@ -944,6 +983,7 @@ const resources = {
       ...ruRuWorkoutLogs,
       ...ruRuWorkoutTemplateSets,
       ...ruRuWorkouts,
+      ...ruRuYearInReview,
     },
   },
 };

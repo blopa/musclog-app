@@ -43,6 +43,7 @@ export function StepperInlineInput({
   step = 1,
   maxFractionDigits = 1,
 }: StepperInlineInputProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { i18n } = useTranslation();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
@@ -162,8 +163,9 @@ export function StepperInlineInput({
   );
 
   return (
-    <View className="flex-row items-center justify-between overflow-hidden rounded-control border border-border-accent bg-bg-card p-5">
-      <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-3">
+    <View className="flex-row flex-wrap items-center justify-between gap-x-2 gap-y-3 overflow-hidden rounded-control border border-border-accent bg-bg-card p-5">
+      {/* Wraps the stepper below the label once large text leaves the label no room beside it. */}
+      <View className="min-w-0 shrink grow basis-[96px] flex-row items-center gap-3">
         {Icon ? (
           <View
             className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-control`}
@@ -186,8 +188,10 @@ export function StepperInlineInput({
           ) : null}
         </View>
       </View>
-      <View className="flex-shrink-0 flex-row items-center gap-2">
+      <View className="ml-auto flex-shrink-0 flex-row items-center gap-2">
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.decrease')}
           className="h-10 min-w-[40px] items-center justify-center rounded-full border"
           style={{
             backgroundColor: theme.colors.accent.primary10,
@@ -251,6 +255,8 @@ export function StepperInlineInput({
           </Pressable>
         )}
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.increase')}
           className="h-10 min-w-[40px] items-center justify-center rounded-full border"
           style={{
             backgroundColor: theme.colors.accent.primary10,

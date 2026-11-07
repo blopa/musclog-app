@@ -29,7 +29,7 @@
       },
       "workoutCompleted": {
         "title": "Workout voltooid",
-        "description": "Goed gedaan met het voltooien van {{workoutName}}. Je hebt {{calories}} kcal verbrand."
+        "description": "{{workoutName}} voltooid. Je hebt {{calories}} kcal verbrand."
       },
       "kudosReceived": {
         "title": "Kudo's ontvangen",
@@ -47,7 +47,7 @@
       },
       "workoutReminderMorning": {
         "title": "Workout-herinnering",
-        "body": "Klaar om vandaag je {{workoutName}} workout te knallen??"
+        "body": "Vandaag staat je {{workoutName}} workout op het programma."
       },
       "nutritionOverview": {
         "title": "Dagelijks voedingsoverzicht",
