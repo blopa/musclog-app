@@ -1,0 +1,40 @@
+{
+  "category": "retro",
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "retro",
+      "date": "2026-08-17",
+      "excerpt": "I logged a few weeks of food on a 1998 cartridge and then realised it was stuck in there for life. So the Game Boy now beams its save into my phone as a stream of fountain-coded QR codes — no cable, no network, no handshake.",
+      "slug": "2026/08/breaking-my-data-out-of-a-game-boy-cartridge",
+      "tags": [
+        "Game Boy",
+        "GBDK",
+        "C",
+        "QR Codes",
+        "Retro",
+        "Homebrew",
+        "Optical Transfer"
+      ],
+      "title": "Breaking my data out of a Game Boy cartridge"
+    },
+    {
+      "category": "retro",
+      "date": "2026-08-01",
+      "excerpt": "I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, charts drawn with background tiles, and 291 free bytes in the one bank that cannot be paged out.",
+      "slug": "2026/08/creating-a-calorie-tracker-for-the-game-boy-color",
+      "tags": [
+        "Game Boy",
+        "GBDK",
+        "C",
+        "Retro",
+        "Homebrew",
+        "Nutrition",
+        "WasmBoy"
+      ],
+      "title": "Creating a calorie tracker for the Game Boy Color"
+    }
+  ],
+  "totalPages": 1,
+  "totalPosts": 2
+}

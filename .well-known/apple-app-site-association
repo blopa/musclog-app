@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["PVG62J652G.com.werules.logger"],
+        "components": [{ "/": "/open" }]
+      }
+    ]
+  }
+}
