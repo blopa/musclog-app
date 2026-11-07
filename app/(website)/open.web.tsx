@@ -54,7 +54,7 @@ export default function Open() {
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-xl flex-col justify-center px-4 py-20">
-      <WebsiteLoggy pose="reading" eager className="mb-6 h-28 w-auto self-start sm:h-32" />
+      <WebsiteLoggy pose="reading" className="mb-6 h-28 w-auto self-start sm:h-32" />
       <h1 className="text-balance text-4xl font-bold leading-tight text-text-primary sm:text-5xl">
         {t('title')}
       </h1>

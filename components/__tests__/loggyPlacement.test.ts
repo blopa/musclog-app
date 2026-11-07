@@ -113,6 +113,30 @@ describe('Loggy placement', () => {
     expect(home.match(/<MeetLoggy \/>/g)).toHaveLength(1);
   });
 
+  // A poster's ground is Loggy's own colour (`POSTER_GROUNDS`), so a themed log could vanish into
+  // it: a pink one on the coral poster, a golden one on the yellow. Everywhere else his greens
+  // follow the theme, so no other file pins them.
+  it('draws him in his classic green on the year story posters, and only there', () => {
+    const posterFiles = [
+      'components/yearInReview/posterKit.tsx',
+      'components/yearInReview/YearShareCard.tsx',
+    ];
+
+    for (const path of posterFiles) {
+      const poses = sourceOf(path).match(/<LoggyPose\b[\s\S]*?\/>/g) ?? [];
+
+      expect(poses.length).toBeGreaterThan(0);
+      expect(poses.filter((pose) => !/appearance="classic"/.test(pose))).toEqual([]);
+    }
+
+    expect(
+      files
+        .filter(({ source }) => /appearance="classic"/.test(source))
+        .map(({ path }) => path)
+        .sort()
+    ).toEqual(posterFiles.sort());
+  });
+
   it('keeps the website off the app component: his image is a file, not LoggyPose', () => {
     const websiteFiles = files.filter(({ path }) => /\(website\)|components\/website\//.test(path));
 

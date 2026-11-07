@@ -1,8 +1,10 @@
 /**
- * The colours of Loggy's own artwork (`assets/avatars/loggy-poses/*.svg`). They are fixed, like a
- * photo's: a green log on an emerald or rose brand fill disappears, so a surface built around Loggy
- * takes its ground from here and not from the theme (see docs/DESIGN.md, "Surfaces that do not follow
- * the theme"). `constants/__tests__/loggyPalette.test.ts` holds them to the artwork.
+ * The colours of Loggy's own artwork (`assets/avatars/loggy-poses/*.svg`), the green he was drawn
+ * in. On an ordinary screen his three greens follow the theme (`constants/loggyTheme.js`), but a
+ * surface built around him cannot: a green log on an emerald or rose brand fill disappears, and a
+ * pink one on a coral poster would too. So such a surface takes its ground from here and not from
+ * the theme, and draws him `appearance="classic"` (see docs/DESIGN.md, "Surfaces that do not follow
+ * the theme"). `constants/__tests__/loggyPalette.test.ts` holds these to the artwork.
  */
 export const LOGGY_PALETTE = {
   ink: '#1b314d',

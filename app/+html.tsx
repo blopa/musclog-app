@@ -3,6 +3,7 @@ import { type PropsWithChildren } from 'react';
 
 import { qrCodeSvgData } from '@/components/website/qrCodeSvg';
 import { GOOGLE_PLAY_URL } from '@/components/website/storeLinks';
+import { websiteLoggyCss } from '@/components/website/websiteLoggyAssets';
 import enUsWebsite from '@/lang/locales/en-us/website.json';
 import esEsWebsite from '@/lang/locales/es-es/website.json';
 import nlNlWebsite from '@/lang/locales/nl-nl/website.json';
@@ -80,10 +81,16 @@ const LANDING_I18N_SCRIPT = `(${landingI18nPatcher.toString()})(${JSON.stringify
  *
  * Only the two mode defaults are inlined — the mirror carries its own map, so
  * the other four palettes never have to travel in the HTML.
+ *
+ * It also names the theme on `<html data-theme-id>`, which is what the stylesheet that picks the
+ * Loggy image for a theme (`websiteLoggyCss`) selects on: an image cannot read the custom
+ * properties above, and swapping it after hydration would flash the default green first.
+ * `ThemeProvider` keeps the attribute current when the theme changes.
  */
 function themePrepainter(
   storageKey: string,
-  fallbacks: { dark: Record<string, string>; light: Record<string, string> }
+  fallbacks: { dark: Record<string, string>; light: Record<string, string> },
+  fallbackIds: { dark: string; light: string }
 ) {
   try {
     const raw = localStorage.getItem(storageKey);
@@ -96,6 +103,11 @@ function themePrepainter(
     for (const name of Object.keys(variables)) {
       document.documentElement.style.setProperty(name, variables[name]);
     }
+
+    document.documentElement.setAttribute(
+      'data-theme-id',
+      mirrored?.themeId ?? (prefersLight ? fallbackIds.light : fallbackIds.dark)
+    );
   } catch (_) {}
 }
 
@@ -104,7 +116,13 @@ const THEME_PREPAINT_SCRIPT = `(${themePrepainter.toString()})(${JSON.stringify(
 )}, ${JSON.stringify({
   dark: themeCssVariables[DEFAULT_THEME_BY_MODE.dark],
   light: themeCssVariables[DEFAULT_THEME_BY_MODE.light],
+})}, ${JSON.stringify({
+  dark: DEFAULT_THEME_BY_MODE.dark,
+  light: DEFAULT_THEME_BY_MODE.light,
 })});`;
+
+// Rendered in Node at export time, with the same base URL the page's other assets get.
+const LOGGY_CSS = websiteLoggyCss(process.env.EXPO_BASE_URL);
 
 /**
  * Sets --phone-scale on :root so the fixed-size phone frame (920×445px natural)
@@ -219,6 +237,8 @@ export default function Root({ children }: PropsWithChildren) {
             min-height: 0 !important;
           }
         `}</style>
+        {/* Which Loggy image each theme gets: chosen in CSS so there is no flash of the wrong one */}
+        <style dangerouslySetInnerHTML={{ __html: LOGGY_CSS }} />
         {headNodes}
       </head>
       <body

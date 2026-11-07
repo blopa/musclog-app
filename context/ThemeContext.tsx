@@ -99,6 +99,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       document.documentElement.style.setProperty(name, String(variableValue));
     }
 
+    // What the website's Loggy stylesheet selects on; `app/+html.tsx` sets it before first paint.
+    document.documentElement.setAttribute('data-theme-id', themeId);
+
     // Leaving the variables on :root when this provider unmounts is deliberate:
     // removing them would drop the page back to the Tailwind defaults mid-session.
   }, [themeId]);
@@ -132,6 +135,15 @@ export function ThemeScope({ children, themeId }: { children: ReactNode; themeId
       <View style={[{ flex: 1 }, THEME_VARIABLES[themeId]]}>{children}</View>
     </ThemeContext.Provider>
   );
+}
+
+/**
+ * The active theme, or `null` outside a ThemeProvider (a test that renders one component, a
+ * surface drawn on its own). For the few readers that have a sensible default, such as Loggy's
+ * colours; everything else wants `useThemeContext`, which fails loudly.
+ */
+export function useThemeContextOrNull(): ThemeContextValue | null {
+  return useContext(ThemeContext) ?? null;
 }
 
 export function useThemeContext(): ThemeContextValue {

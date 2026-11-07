@@ -23,6 +23,7 @@ const path = require('node:path');
 const { optimize } = require('svgo'); // Reached through react-native-svg-transformer.
 const prettier = require('prettier');
 
+const { THEMED_COLOR_PATTERN } = require('../constants/loggyTheme');
 const { readAttributes } = require('./lib/svgAttributes');
 
 const ROOT = path.join(__dirname, '..');
@@ -343,6 +344,25 @@ const PATH_PROPS = {
   'stroke-width': 'strokeWidth',
 };
 
+/**
+ * A themed fill (`var(--loggy-body, #47ad92)`, written by `palette.css`) becomes the prop
+ * `{colors.body}`, so the pose paints the greens it is given instead of the ones it was drawn in.
+ * Any other `var(...)` is refused: it would reach react-native-svg as an unreadable colour.
+ */
+function colorProp(value) {
+  const themed = new RegExp(`^${THEMED_COLOR_PATTERN.source}$`).exec(value);
+
+  if (themed) {
+    return `{colors.${themed[1]}}`;
+  }
+
+  if (value.includes('var(')) {
+    throw new Error(`Unsupported colour "${value}": only the themed Loggy greens may use var()`);
+  }
+
+  return JSON.stringify(value);
+}
+
 function pathElement(node) {
   const unsupported = Object.keys(node.attributes).filter((name) => !PATH_PROPS[name]);
 
@@ -351,7 +371,11 @@ function pathElement(node) {
   }
 
   const props = Object.entries(node.attributes)
-    .map(([name, value]) => `${PATH_PROPS[name]}=${JSON.stringify(value)}`)
+    .map(([name, value]) =>
+      name === 'fill' || name === 'stroke'
+        ? `${PATH_PROPS[name]}=${colorProp(value)}`
+        : `${PATH_PROPS[name]}=${JSON.stringify(value)}`
+    )
     .join(' ');
 
   return `<Path ${props} />`;
@@ -450,7 +474,7 @@ import type { LoggyAnimation } from '@/utils/loggyAnimation';
 
 const ANIMATION: LoggyAnimation = ${JSON.stringify(animation)};
 
-function Art({ clock, ...props }: LoggyAnimatedArtProps) {
+function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
   return (
     <Svg viewBox=${JSON.stringify(viewBox)} {...props}>
       ${body}
