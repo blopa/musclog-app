@@ -718,10 +718,13 @@ describe('Website: no decorative layers', () => {
   it('keeps the homepage to sections that each carry their own content', () => {
     // Three title-plus-description columns in a row (principles, then steps) read as a template,
     // and the "How it works" steps restated the hero. The capability list is the one `#features`
-    // target the header links to, and the privacy claim is made once, in the hero.
+    // target the header links to, and the privacy claim is made once, in the hero. The one other
+    // section is the short mascot introduction (`MeetLoggy`): a paragraph beside his picture, not a
+    // row of matching columns, and the only place the homepage draws him.
     const home = stripComments(readFileSync(join(root, 'app/(website)/home.web.tsx'), 'utf8'));
     expect(home).not.toMatch(/export function (Features|HowItWorks)\b/);
     expect(home).not.toMatch(/website\.(features|howItWorks)\b/);
     expect(home.match(/id="features"/g)).toHaveLength(1);
+    expect(home.match(/<WebsiteLoggy\b/g)).toHaveLength(1);
   });
 });

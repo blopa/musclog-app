@@ -25,6 +25,12 @@ export const OPEN_LINK_BASE_URL = 'https://musclog.app/open';
  */
 export const OPEN_LINK_SUGGESTED_MAX_CHARS = 8000;
 
+/**
+ * How long the `/open` bridge page waits before it sends the visitor on to the app by itself. A
+ * browser may refuse that automatic launch (it wants a tap), so the button stays on the page.
+ */
+export const OPEN_FORWARD_SECONDS = 5;
+
 /** What a link can carry. Each kind opens the screen that owns the matching import. */
 export const OPEN_LINK_KINDS = ['workout', 'food'] as const;
 export type OpenLinkKind = (typeof OPEN_LINK_KINDS)[number];

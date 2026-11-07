@@ -12,6 +12,7 @@ import {
   HEADING_TEXT,
   ink,
 } from '@/components/website/websiteColors';
+import { WebsiteLoggy } from '@/components/website/WebsiteLoggy';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { SoftwareApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
@@ -111,6 +112,37 @@ export function FeatureGrid() {
             </div>
           ))}
         </dl>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * A short introduction to the mascot, the only place the homepage shows him. His picture sits
+ * beside the text and is the section's one illustration; with "Show Loggy" off the text simply
+ * stands alone, which is why he is a direct child of the flex row (no wrapper left to hold a gap).
+ */
+export function MeetLoggy() {
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.loggy' });
+
+  return (
+    <section className="border-t py-16 md:py-20" style={SECTION_RULE}>
+      <div className="container mx-auto flex flex-col gap-8 px-4 md:flex-row md:items-center md:justify-between md:gap-16">
+        <div className="max-w-xl">
+          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
+            {t('title')}
+          </h2>
+          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
+            {t('description')}
+          </p>
+          <p className="mt-3 text-sm" style={{ color: BODY_TEXT_SOFT }}>
+            {t('setting')}
+          </p>
+        </div>
+        <WebsiteLoggy
+          pose="wave"
+          className="order-first h-40 w-auto self-start md:order-last md:h-56 md:shrink-0 md:self-auto"
+        />
       </div>
     </section>
   );
@@ -646,6 +678,7 @@ export default function Home() {
         <Hero />
         <ScreenshotShowcase />
         <FeatureGrid />
+        <MeetLoggy />
         <Themes />
         <CTA />
       </main>

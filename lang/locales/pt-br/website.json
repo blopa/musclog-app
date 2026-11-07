@@ -240,6 +240,11 @@
         }
       }
     },
+    "loggy": {
+      "title": "Conheça o Loggy",
+      "description": "O Loggy é o mascote do Musclog: um tronco com um lápis e uma prancheta. Ele aparece em poucos momentos, como a sua primeira refeição registrada, um treino concluído ou a retrospectiva do seu ano, e é a voz padrão do treinador de IA.",
+      "setting": "Não curtiu? Uma configuração o esconde em todo o app."
+    },
     "cta": {
       "title": "Baixe o Musclog",
       "description": "Mantenha seus registros de treino e alimentação no seu próprio dispositivo. Grátis e de código aberto.",
@@ -435,6 +440,8 @@
       "descriptionFood": "Seu registro de alimentação está pronto. Abra no Musclog para revisar antes de salvar qualquer coisa.",
       "descriptionEmpty": "Este link não tem dados para importar. Volte ao chat e toque no link novamente.",
       "openButton": "Abrir no Musclog",
+      "countdown": "Abrindo o Musclog em {{seconds}}…",
+      "forwarded": "Se o Musclog não abriu, toque no botão abaixo.",
       "installHint": "Ainda não tem o Musclog?",
       "installLink": "Baixar Musclog"
     },

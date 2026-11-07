@@ -5,8 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.werules.logger",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_PLAY_APP_SIGNING_CERT_SHA256",
-        "REPLACE_WITH_EAS_UPLOAD_KEY_CERT_SHA256"
+        "36:BE:92:A1:A4:CE:83:4E:D6:FB:09:2F:7E:38:E7:04:38:20:58:61:67:72:9C:79:6B:A4:3D:35:CD:C7:7A:D8",
+        "1F:69:26:44:79:83:30:55:8F:CC:B7:89:A0:DA:E5:BB:8B:94:87:FC:B5:62:F1:9D:2D:0C:AB:5A:C2:0E:E7:24"
       ]
     }
   }

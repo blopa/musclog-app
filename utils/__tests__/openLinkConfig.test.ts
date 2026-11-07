@@ -49,6 +49,18 @@ describe('app link verification files', () => {
     expect(assetLinks[0].target.sha256_cert_fingerprints.length).toBeGreaterThan(0);
   });
 
+  // A fingerprint is a hash of the PUBLIC certificate, so it belongs in this public file. A
+  // placeholder (or a typo) means Android never verifies the link and every tap lands on the web page.
+  it('lists real SHA-256 certificate fingerprints, not placeholders', () => {
+    const fingerprints: string[] = assetLinks[0].target.sha256_cert_fingerprints;
+
+    for (const fingerprint of fingerprints) {
+      expect(fingerprint).toMatch(/^([0-9A-F]{2}:){31}[0-9A-F]{2}$/);
+    }
+
+    expect(new Set(fingerprints).size).toBe(fingerprints.length);
+  });
+
   it('names the iOS bundle id and claims only /open', () => {
     expect(aasa.applinks.details).toHaveLength(1);
     expect(aasa.applinks.details[0].appIDs).toHaveLength(1);

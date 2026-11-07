@@ -240,6 +240,11 @@
         }
       }
     },
+    "loggy": {
+      "title": "Maak kennis met Loggy",
+      "description": "Loggy is de mascotte van Musclog: een boomstam met een potlood en een klembord. Hij verschijnt op een paar momenten, zoals je eerste gelogde maaltijd, een afgeronde training of de terugblik op je jaar, en hij is de standaardstem van de AI-coach.",
+      "setting": "Geen fan? Eén instelling verbergt hem overal in de app."
+    },
     "cta": {
       "title": "Download Musclog",
       "description": "Bewaar je trainings- en voedingslogs op je eigen apparaat. Gratis en open source.",
@@ -435,6 +440,8 @@
       "descriptionFood": "Je voedingslog is klaar. Open het in Musclog om het te bekijken voordat er iets wordt opgeslagen.",
       "descriptionEmpty": "Deze link bevat geen gegevens om te importeren. Ga terug naar je chat en tik de link opnieuw aan.",
       "openButton": "Openen in Musclog",
+      "countdown": "Musclog wordt geopend over {{seconds}}…",
+      "forwarded": "Is Musclog niet geopend? Tik dan op de knop hieronder.",
       "installHint": "Heb je Musclog nog niet?",
       "installLink": "Download Musclog"
     },
