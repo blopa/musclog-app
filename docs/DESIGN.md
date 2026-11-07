@@ -548,6 +548,9 @@ subtitle.
     appears. The type refuses a pose on the carded form. An empty list inside a card keeps its icon.
   - **A recoverable failure** uses `LOGGY_FAILURE_POSE`, never `panic`: a wrong file is not an
     emergency. It is `shrug`, the puzzled pose, and one line (`LOGGY_FAILURE_POSE`) changes it.
+  - **The public website** has its own short list (below, under Website), drawn by `WebsiteLoggy`
+    and not by `LoggyPose`: the homepage introduction, the download page, the FAQ header, the
+    `/open` bridge and an exercise search with no results.
   - **Never** on the coach (the persona owns that avatar), cycle tracking, app locks, weight, body
     fat or calorie-target screens, settings, destructive confirmations, the live workout session
     or a permanent card such as the strength levels (a flexing Loggy beside a Novice grade reads as
@@ -629,6 +632,20 @@ The public website is a normal React web UI using HTML elements and Tailwind cla
 brand palette but not the mobile component primitives. Use semantic elements, visible keyboard focus,
 responsive content width, and plain `<a href>` links for website navigation unless a documented
 router exception applies.
+
+**Loggy on the website** is a short list, held by `components/__tests__/loggyPlacement.test.ts`
+like the app's: the homepage's "Meet Loggy" introduction (`wave`, the only place the homepage
+shows him), the top of the download page (`lifting`), the FAQ header (`thinking`), the `/open`
+bridge an assistant's link lands on (`reading`: review before anything is saved) and an exercise
+search with no results (`shrug`, in place of the icon). Never on legal pages, the contact page, the
+calculator, the progress and rep-marker tools, the Game Boy and comparison pages, or the blog. He
+is an `<img>` of the generated animated SVG (`WebsiteLoggy`), always decorative (`alt=""`), with
+the words beside him carrying the meaning, and the section around him never depends on him: with
+"Show Loggy" off (the web demo shares the browser's storage) nothing is rendered and a stand-in
+falls back to its icon (`useWebsiteLoggyVisible`). **Reduced motion is decided by the browser, not
+by script**: the `<picture>` offers the still (`loggy-<pose>-still.svg`) under
+`(prefers-reduced-motion: reduce)`, so those visitors never download the animation. The "Animated
+Loggy" setting is an app setting and does not apply here.
 
 Narrow viewports get the primary navigation from the header's burger menu, not from a duplicated set
 of links in the footer. The footer is for secondary and legal links only. A new primary destination

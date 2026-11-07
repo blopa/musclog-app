@@ -240,6 +240,11 @@
         }
       }
     },
+    "loggy": {
+      "title": "Meet Loggy",
+      "description": "Loggy is the Musclog mascot: a log with a pencil and a clipboard. He shows up at a few moments, like your first logged meal, a finished workout or the look back at your year, and he is the default voice of the AI coach.",
+      "setting": "Not a fan? One setting hides him everywhere in the app."
+    },
     "cta": {
       "title": "Get Musclog",
       "description": "Keep your training and food logs on your own device. Free and open source.",

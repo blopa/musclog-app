@@ -240,6 +240,11 @@
         }
       }
     },
+    "loggy": {
+      "title": "Conoce a Loggy",
+      "description": "Loggy es la mascota de Musclog: un tronco con un lápiz y una tablilla sujetapapeles. Aparece en unos pocos momentos, como tu primera comida registrada, un entrenamiento terminado o el repaso de tu año, y es la voz por defecto del entrenador de IA.",
+      "setting": "¿No te convence? Un ajuste lo oculta en toda la app."
+    },
     "cta": {
       "title": "Consigue Musclog",
       "description": "Guarda tus registros de entrenamiento y comida en tu propio dispositivo. Gratis y de código abierto.",

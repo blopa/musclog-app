@@ -32,6 +32,23 @@ const MAY_RENDER_LOGGY: Record<string, string> = {
   'components/yearInReview/posterKit.tsx': 'each poster of the story',
 };
 
+/**
+ * The public website's own short list (docs/DESIGN.md → "Website"): `WebsiteLoggy` is his animated
+ * SVG as a plain image, not `LoggyPose`, so it is held separately.
+ */
+const MAY_RENDER_WEBSITE_LOGGY: Record<string, string> = {
+  'app/(website)/download.web.tsx': 'the page that starts the install (lifting, ready to train)',
+  'app/(website)/exercises.web.tsx': 'no results for a search, in place of the icon (shrug)',
+  'app/(website)/faq.web.tsx': 'above the questions (thinking)',
+  'app/(website)/home.web.tsx': 'the one introduction on the homepage (wave)',
+  'app/(website)/open.web.tsx':
+    'the page an assistant link lands on (reading, review before saving)',
+};
+
+/** Pages he never appears on: legal text, tools that show a person's numbers, long reading. */
+const NEVER_WEBSITE_LOGGY =
+  /privacy|terms|contact|calculator|progress|rep-marker|gameboy|alternatives|posts|blog/i;
+
 /** The two screens whose whole-screen empty state passes `pose` to `EmptyStateCard`. */
 const EMPTY_STATE_POSE_CALLERS = [
   'app/app/notes.tsx',
@@ -76,6 +93,36 @@ describe('Loggy placement', () => {
       .sort();
 
     expect(users).toEqual(Object.keys(MAY_RENDER_LOGGY).sort());
+  });
+
+  it('is drawn on the website only by the pages the design allows', () => {
+    const users = files
+      .filter(({ source }) => /<WebsiteLoggy\b/.test(source))
+      .map(({ path }) => path)
+      .sort();
+
+    expect(users).toEqual(Object.keys(MAY_RENDER_WEBSITE_LOGGY).sort());
+    expect(users.filter((path) => NEVER_WEBSITE_LOGGY.test(path))).toEqual([]);
+  });
+
+  it('shows him once on the homepage, as the introduction and nowhere else on it', () => {
+    const home = sourceOf('app/(website)/home.web.tsx');
+
+    expect(home.match(/<WebsiteLoggy\b/g)).toHaveLength(1);
+    expect(home).toMatch(/export function MeetLoggy\(\)/);
+    expect(home.match(/<MeetLoggy \/>/g)).toHaveLength(1);
+  });
+
+  it('keeps the website off the app component: his image is a file, not LoggyPose', () => {
+    const websiteFiles = files.filter(({ path }) => /\(website\)|components\/website\//.test(path));
+
+    expect(websiteFiles.filter(({ source }) => /<LoggyPose\b|<LoggyCameo\b/.test(source))).toEqual(
+      []
+    );
+  });
+
+  it('falls back to the icon when he is hidden where he stands in for it', () => {
+    expect(sourceOf('app/(website)/exercises.web.tsx')).toMatch(/loggyVisible \? \(/);
   });
 
   it('is requested by an empty state only on the two whole-screen first-use screens', () => {

@@ -16,6 +16,7 @@ jest.mock('react-i18next', () => ({
 jest.mock('expo-router', () => ({ Link: 'a' }));
 jest.mock('lucide-react-native', () => ({ Code2: () => null, ArrowRight: () => null }));
 jest.mock('@/components/website/StoreButtons', () => ({ StoreButtons: () => null }));
+jest.mock('@/components/website/WebsiteLoggy', () => ({ WebsiteLoggy: () => null }));
 jest.mock('@/components/website/WebsiteStructuredData', () => ({}));
 jest.mock('@/components/website/WebsiteWrapper', () => ({}));
 

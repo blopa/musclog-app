@@ -17,6 +17,7 @@ import {
   scrim,
   surface,
 } from '@/components/website/websiteColors';
+import { useWebsiteLoggyVisible, WebsiteLoggy } from '@/components/website/WebsiteLoggy';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { type ExerciseCatalogueEntry, getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import i18n from '@/lang/lang';
@@ -234,6 +235,7 @@ function ExerciseCard({
 export default function ExercisesPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.exercises' });
   const { t: tEx } = useTranslation();
+  const loggyVisible = useWebsiteLoggyVisible();
 
   const locale = i18n.resolvedLanguage ?? i18n.language ?? 'en-us';
 
@@ -479,12 +481,16 @@ export default function ExercisesPage() {
 
             {filtered.length === 0 ? (
               <div className="py-24 text-center">
-                <div
-                  className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-                  style={{ backgroundColor: ink(0.04) }}
-                >
-                  <Dumbbell className="h-8 w-8" color={MUTED} />
-                </div>
+                {loggyVisible ? (
+                  <WebsiteLoggy pose="shrug" className="mx-auto mb-4 h-32 w-auto" />
+                ) : (
+                  <div
+                    className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{ backgroundColor: ink(0.04) }}
+                  >
+                    <Dumbbell className="h-8 w-8" color={MUTED} />
+                  </div>
+                )}
                 <p className="text-lg font-semibold text-text-primary">{t('noResults')}</p>
                 <button
                   type="button"

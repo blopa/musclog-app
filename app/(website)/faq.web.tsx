@@ -18,6 +18,7 @@ import {
   ink,
   MUTED,
 } from '@/components/website/websiteColors';
+import { WebsiteLoggy } from '@/components/website/WebsiteLoggy';
 import { fixedPageMetadata } from '@/components/website/websiteMetadata';
 import { FaqPageJsonLd, type FaqPageJsonLdItem } from '@/components/website/WebsiteStructuredData';
 import { SUPPORT_MAILTO_URL } from '@/constants/misc';
@@ -297,6 +298,7 @@ export default function Faq() {
         <div className="container relative z-10 mx-auto max-w-4xl px-4">
           {/* Hero */}
           <div className="mb-14 text-center">
+            <WebsiteLoggy pose="thinking" eager className="mx-auto mb-6 h-28 w-auto md:h-36" />
             <h1 className="mb-4 text-4xl font-bold text-text-primary md:text-5xl">
               {t('titlePrefix')}{' '}
               <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('titleHighlight')}</span>
