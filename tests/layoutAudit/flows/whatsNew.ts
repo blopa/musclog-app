@@ -4,8 +4,14 @@ import path from 'path';
 import { WHATS_NEW_SEEN_THROUGH_KEY } from '@/constants/whatsNew';
 import { APP_URL } from '@/tests/helpers/screenshotSession';
 
-import { clickTopmost, closeOverlay, copyPattern, type FlowContext, type FlowRunner } from '../flowKit';
-import { countOpenLayers } from '../inPage';
+import {
+  clickTopmost,
+  closeOverlay,
+  copyPattern,
+  type FlowContext,
+  type FlowRunner,
+} from '@/tests/layoutAudit/flowKit';
+import { countOpenLayers } from '@/tests/layoutAudit/inPage';
 
 /** A version older than every announcement, as an upgrade from an old install has stored. */
 const OLD_SEEN_THROUGH = '2.0.0';

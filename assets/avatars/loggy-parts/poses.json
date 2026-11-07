@@ -48,7 +48,8 @@
     "trophy",
     "lifting",
     "salad",
-    "shrug"
+    "shrug",
+    "reading"
   ],
   "poses": {
     "celebrating": {
@@ -307,6 +308,24 @@
       "animated": {
         "upper": ["arm-l", "hand-l", "body", "arm-r", "hand-r"]
       }
+    },
+    "reading": {
+      "viewBox": "0 0 512 640",
+      "face": "reading",
+      "alternateFaces": true,
+      "layers": [
+        "arm-r/reading",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-l/reading",
+        "hand-r/reading",
+        "leg-r/reading",
+        "leg-l/reading",
+        "book/reading",
+        "hand-l/reading"
+      ]
     },
     "running": {
       "viewBox": "-30 0 560 640",

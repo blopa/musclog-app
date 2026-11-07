@@ -80,7 +80,9 @@ export function localeCopy(
 ): string {
   for (const dir of [locale.toLowerCase(), 'en-us']) {
     try {
-      let value: unknown = JSON.parse(fs.readFileSync(path.join(root, dir, `${file}.json`), 'utf8'));
+      let value: unknown = JSON.parse(
+        fs.readFileSync(path.join(root, dir, `${file}.json`), 'utf8')
+      );
       for (const key of keyPath) {
         value = (value as Record<string, unknown> | undefined)?.[key];
       }
@@ -159,7 +161,11 @@ export async function clickTopmost(locator: Locator): Promise<void> {
       continue;
     }
 
-    await candidate.scrollIntoViewIfNeeded({ timeout: 3000 }).catch(() => undefined);
+    // Centred, not "if needed": scrolled only to the bottom edge it would sit under the tab bar.
+    await candidate
+      .evaluate((node) => node.scrollIntoView({ block: 'center', inline: 'center' }))
+      .catch(() => undefined);
+    await candidate.page().waitForTimeout(150);
     const onTop = await candidate
       .evaluate((node) => {
         const box = node.getBoundingClientRect();

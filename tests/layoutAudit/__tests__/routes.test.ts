@@ -1,11 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
+import { declaredStep } from '../flowKit';
 import { FLOW_RUNNERS } from '../flows/registry';
 import {
   AUDIT_FLOWS,
   AUDIT_ONLY_MODAL_BUTTONS,
   MAIN_ROUTES,
+  MODAL_COVERAGE,
   MODAL_AUDIT_BUTTONS,
   ONBOARDING_ROUTES,
   UNAUDITED_ROUTES,
@@ -152,5 +154,45 @@ describe('modal fixture coverage', () => {
       []
     );
     expect(new Set(MODAL_AUDIT_BUTTONS).size).toBe(MODAL_AUDIT_BUTTONS.length);
+  });
+});
+
+describe('modal coverage', () => {
+  /** Every modal, sheet and menu component: the files a person can open over a screen. */
+  function overlayFiles(directory: string, prefix: string): string[] {
+    return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+      if (entry.isDirectory()) {
+        return entry.name === '__tests__'
+          ? []
+          : overlayFiles(path.join(directory, entry.name), `${prefix}${entry.name}/`);
+      }
+
+      return /(Modal|Sheet|Menu)(\.web)?\.tsx$/.test(entry.name) ? [`${prefix}${entry.name}`] : [];
+    });
+  }
+
+  const files = overlayFiles(path.join(ROOT, 'components'), 'components/');
+
+  it('says how every modal, sheet and menu is audited, or why it is not', () => {
+    expect(files.filter((file) => !(file in MODAL_COVERAGE))).toEqual([]);
+  });
+
+  it('lists no file that is gone', () => {
+    expect(Object.keys(MODAL_COVERAGE).filter((file) => !files.includes(file))).toEqual([]);
+  });
+
+  it('points at fixture buttons and flow steps that exist, and gives every gap a reason', () => {
+    const broken = Object.entries(MODAL_COVERAGE).filter(([, coverage]) => {
+      if ('fixture' in coverage) {
+        return !MODAL_AUDIT_BUTTONS.includes(coverage.fixture);
+      }
+
+      if ('flow' in coverage) {
+        return !AUDIT_FLOWS.some((flow) => declaredStep(flow, coverage.flow));
+      }
+
+      return coverage.unaudited.length < 20;
+    });
+    expect(broken.map(([file]) => file)).toEqual([]);
   });
 });

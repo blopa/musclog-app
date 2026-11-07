@@ -15,6 +15,7 @@ import Magnify from '@/assets/avatars/loggy-poses/loggy-magnify.svg';
 import Nutrition from '@/assets/avatars/loggy-poses/loggy-nutrition.svg';
 import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
 import Pointing from '@/assets/avatars/loggy-poses/loggy-pointing.svg';
+import Reading from '@/assets/avatars/loggy-poses/loggy-reading.svg';
 import Running from '@/assets/avatars/loggy-poses/loggy-running.svg';
 import Salad from '@/assets/avatars/loggy-poses/loggy-salad.svg';
 import Shrug from '@/assets/avatars/loggy-poses/loggy-shrug.svg';
@@ -34,6 +35,7 @@ import { LoggyMagnifyAnimated } from '@/components/loggy/animated/LoggyMagnifyAn
 import { LoggyNutritionAnimated } from '@/components/loggy/animated/LoggyNutritionAnimated';
 import { LoggyPanicAnimated } from '@/components/loggy/animated/LoggyPanicAnimated';
 import { LoggyPointingAnimated } from '@/components/loggy/animated/LoggyPointingAnimated';
+import { LoggyReadingAnimated } from '@/components/loggy/animated/LoggyReadingAnimated';
 import { LoggyRunningAnimated } from '@/components/loggy/animated/LoggyRunningAnimated';
 import { LoggySaladAnimated } from '@/components/loggy/animated/LoggySaladAnimated';
 import { LoggyShrugAnimated } from '@/components/loggy/animated/LoggyShrugAnimated';
@@ -58,6 +60,7 @@ export type LoggyPoseName =
   | 'nutrition'
   | 'panic'
   | 'pointing'
+  | 'reading'
   | 'running'
   | 'salad'
   | 'shrug'
@@ -90,6 +93,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
   nutrition: { Art: Nutrition, aspect: 1 },
   panic: { Art: Panic, aspect: 0.8 },
   pointing: { Art: Pointing, aspect: 1 },
+  reading: { Art: Reading, aspect: 0.8 },
   running: { Art: Running, aspect: 0.875 },
   salad: { Art: Salad, aspect: 0.8 },
   shrug: { Art: Shrug, aspect: 0.875 },
@@ -117,6 +121,7 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   nutrition: LoggyNutritionAnimated,
   panic: LoggyPanicAnimated,
   pointing: LoggyPointingAnimated,
+  reading: LoggyReadingAnimated,
   running: LoggyRunningAnimated,
   salad: LoggySaladAnimated,
   shrug: LoggyShrugAnimated,

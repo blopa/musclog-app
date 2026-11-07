@@ -1,6 +1,11 @@
 import { APP_URL } from '@/tests/helpers/screenshotSession';
 
-import { clickTopmost, closeOverlay, type FlowContext, type FlowRunner } from '../flowKit';
+import {
+  clickTopmost,
+  closeOverlay,
+  type FlowContext,
+  type FlowRunner,
+} from '@/tests/layoutAudit/flowKit';
 
 /** The demo template whose first two exercises share a superset group (`seedDevData`). */
 export const SUPERSET_TEMPLATE = 'Grouped Test Workout';
@@ -44,7 +49,10 @@ export const workoutFlow: FlowRunner = async (ctx) => {
   // Set states: warm-ups added to the first exercise, one done, one skipped, then the superset's
   // two working sets completed, which starts a working rest.
   await clickTopmost(
-    page.getByRole('button', { name: ctx.copy('workoutSession', ['trainingFlow', 'actions', 'warmup']), exact: true })
+    page.getByRole('button', {
+      name: ctx.copy('workoutSession', ['trainingFlow', 'actions', 'warmup']),
+      exact: true,
+    })
   );
   await ctx.settle(800);
   const completeIds = await page
@@ -206,7 +214,9 @@ async function legacyRestScreens(ctx: FlowContext, workoutLogId: string): Promis
   const screens: [step: string, path: string | null][] = [
     [
       'workout-rest-timer',
-      lastDone ? `rest-timer?workoutLogId=${workoutLogId}&completedSetOrder=${lastDone.set_order}` : null,
+      lastDone
+        ? `rest-timer?workoutLogId=${workoutLogId}&completedSetOrder=${lastDone.set_order}`
+        : null,
     ],
     [
       'workout-rest-over',

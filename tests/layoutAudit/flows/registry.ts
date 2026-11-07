@@ -1,10 +1,10 @@
-import type { FlowRunner } from '../flowKit';
-import { comebackFlow } from './comeback';
-import { cycleFlow } from './cycle';
-import { diaryFlow } from './diary';
-import { weeklyReviewFlow } from './weeklyReview';
-import { whatsNewFlow } from './whatsNew';
-import { workoutFlow } from './workout';
+import type { FlowRunner } from '@/tests/layoutAudit/flowKit';
+import { comebackFlow } from '@/tests/layoutAudit/flows/comeback';
+import { cycleFlow } from '@/tests/layoutAudit/flows/cycle';
+import { diaryFlow } from '@/tests/layoutAudit/flows/diary';
+import { weeklyReviewFlow } from '@/tests/layoutAudit/flows/weeklyReview';
+import { whatsNewFlow } from '@/tests/layoutAudit/flows/whatsNew';
+import { workoutFlow } from '@/tests/layoutAudit/flows/workout';
 
 /**
  * The code behind each `AUDIT_FLOWS` entry, by its name. `routes.test.ts` checks the two lists
