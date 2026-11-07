@@ -226,6 +226,9 @@
       "backgroundColor": "#0d1210",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
+      "associatedDomains": [
+        "applinks:musclog.app"
+      ],
       "buildNumber": "328",
       "entitlements": {
         "com.apple.developer.usernotifications.time-sensitive": true
@@ -244,6 +247,23 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "musclog.app",
+              "path": "/open"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
       "versionCode": 328,
       "adaptiveIcon": {
         "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",

@@ -1,4 +1,5 @@
 import { isOnboardingCompleted } from '@/utils/onboardingService';
+import { OPEN_LINK_ROUTES, parseOpenLink, setPendingOpenLink } from '@/utils/openLink';
 
 // This file intercepts native deep link intents before Expo Router processes them.
 // On cold start, imperative router.navigate() before the Root Layout mounts causes:
@@ -10,6 +11,8 @@ import { isOnboardingCompleted } from '@/utils/onboardingService';
 // - open-nutrition / open-cycle / open-home (and any future screen-based actions): return the target route directly.
 //   redirectSystemPath sets the *initial* route, which Expo Router handles natively
 //   with no imperative navigation involved — no race condition possible.
+// - open links (`https://musclog.app/open#workout=...`, utils/openLink.ts): the payload is stashed
+//   for the screen that owns it and the initial route is that screen.
 
 /** Valid deep link actions that can be processed */
 const VALID_ACTIONS = ['open-camera', 'open-nutrition', 'open-cycle', 'open-home'] as const;
@@ -29,6 +32,20 @@ function isValidAction(action: string | null): action is ValidAction {
 
 export const redirectSystemPath = async ({ path, initial }: { path: string; initial: boolean }) => {
   try {
+    // An open link (`https://musclog.app/open#workout=...`) is checked first: its payload is free
+    // text and may contain "action=", which must not reach the widget branch below.
+    const open = parseOpenLink(path);
+    if (open.matches) {
+      // Like the widget shortcuts, stay inert until onboarding is done.
+      if (!(await isOnboardingCompleted())) {
+        return null;
+      }
+
+      // The payload waits for the screen that owns it; a link with none just opens the app.
+      setPendingOpenLink(open.link);
+      return open.link ? OPEN_LINK_ROUTES[open.link.kind] : '/app';
+    }
+
     if (path.includes('action=')) {
       const fullUrl = `http://localhost${path.startsWith('/') ? path : `/${path}`}`;
       const url = new URL(fullUrl);

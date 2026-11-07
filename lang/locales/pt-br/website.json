@@ -13,6 +13,10 @@
           "title": "Baixar Musclog",
           "description": "Baixe o Musclog para Android ou entre no TestFlight do iOS e comece a acompanhar treinos, nutricao e progresso com seus dados privados no dispositivo."
         },
+        "open": {
+          "title": "Abrir no Musclog",
+          "description": "Abra no app Musclog um plano de treino ou registro de alimentação criado pelo seu assistente de IA."
+        },
         "exercises": {
           "title": "Biblioteca de exercicios do Musclog",
           "description": "Explore a biblioteca de exercicios do Musclog com grupos musculares, equipamentos, mecanica, instrucoes e visuais para montar treinos melhores."
@@ -424,6 +428,15 @@
       "subtitle": "Baixe o Musclog agora e mantenha treinos, nutrição e progresso em um só lugar privado.",
       "googleLabel": "Baixar Musclog no Google Play",
       "appleLabel": "Baixar Musclog na App Store"
+    },
+    "open": {
+      "title": "Abrir no Musclog",
+      "descriptionWorkout": "Seu plano de treino está pronto. Abra no Musclog para revisar antes de salvar qualquer coisa.",
+      "descriptionFood": "Seu registro de alimentação está pronto. Abra no Musclog para revisar antes de salvar qualquer coisa.",
+      "descriptionEmpty": "Este link não tem dados para importar. Volte ao chat e toque no link novamente.",
+      "openButton": "Abrir no Musclog",
+      "installHint": "Ainda não tem o Musclog?",
+      "installLink": "Baixar Musclog"
     },
     "footer": {
       "privacyPolicy": "Política de Privacidade",

@@ -49,6 +49,14 @@ jobs:
           cp -rL public/images/. dist/images/
           cp -rL public/musclog-app/images/. dist/musclog-app/images/
 
+      # App Links / Universal Links ownership files. Copied explicitly: they sit in a dot-folder,
+      # and the OS fetches them from exactly /.well-known/ with no redirect.
+      - name: Copy app link verification files to dist
+        run: |
+          rm -rf dist/.well-known
+          mkdir -p dist/.well-known
+          cp -rL public/.well-known/. dist/.well-known/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:

@@ -13,6 +13,10 @@
           "title": "Musclog downloaden",
           "description": "Download Musclog voor Android of doe mee met de iOS TestFlight en track workouts, voeding en voortgang met je data prive op je apparaat."
         },
+        "open": {
+          "title": "Openen in Musclog",
+          "description": "Open een trainingsschema of voedingslog van je AI-assistent in de Musclog-app."
+        },
         "exercises": {
           "title": "Musclog oefenbibliotheek",
           "description": "Blader door de oefenbibliotheek van Musclog met spiergroepen, materiaal, bewegingstype, instructies en visuals om betere workouts te bouwen."
@@ -424,6 +428,15 @@
       "subtitle": "Download Musclog nu en houd je training, voeding en voortgang op een priveplek bij.",
       "googleLabel": "Download Musclog via Google Play",
       "appleLabel": "Download Musclog via de App Store"
+    },
+    "open": {
+      "title": "Openen in Musclog",
+      "descriptionWorkout": "Je trainingsschema is klaar. Open het in Musclog om het te bekijken voordat er iets wordt opgeslagen.",
+      "descriptionFood": "Je voedingslog is klaar. Open het in Musclog om het te bekijken voordat er iets wordt opgeslagen.",
+      "descriptionEmpty": "Deze link bevat geen gegevens om te importeren. Ga terug naar je chat en tik de link opnieuw aan.",
+      "openButton": "Openen in Musclog",
+      "installHint": "Heb je Musclog nog niet?",
+      "installLink": "Download Musclog"
     },
     "footer": {
       "privacyPolicy": "Privacybeleid",
