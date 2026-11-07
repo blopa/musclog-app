@@ -414,6 +414,7 @@ export const MODAL_COVERAGE: Record<string, ModalCoverage> = {
   'components/modals/FreeSessionExerciseCompleteModal.tsx': {
     fixture: 'Open Free Session Exercise Complete Modal',
   },
+  'components/modals/ExternalFoodLogModal.tsx': { fixture: 'Open External Food Log Modal' },
   'components/modals/ExternalWorkoutPlanModal.tsx': { fixture: 'Open External Workout Plan Modal' },
   'components/modals/FullScreenModal.tsx': { fixture: 'Open Full Screen Modal' },
   'components/modals/GenerateWorkoutWithAiModal.tsx': {

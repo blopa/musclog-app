@@ -299,7 +299,11 @@
       "quickTrackMeal": "Quick track meal",
       "quickTrackMealDescription": "Build a meal, track it now. Optionally save to My Meals.",
       "trackFromSaved": "Track from saved for later",
-      "trackFromSavedDescription": "Pick a meal you saved earlier"
+      "trackFromSavedDescription": "Pick a meal you saved earlier",
+      "externalLog": {
+        "title": "Track with ChatGPT or Claude",
+        "description": "Describe or photograph your food in your own AI app"
+      }
     },
     "quickTrackMeal": {
       "title": "Quick track meal",
@@ -631,6 +635,77 @@
       "deleteSuccess_few": "{{count}} items deleted",
       "deleteSuccess_many": "{{count}} items deleted",
       "deleteSuccess_other": "{{count}} items deleted"
+    },
+    "externalLog": {
+      "title": "Track with ChatGPT or Claude",
+      "intro": "ChatGPT or Claude can work out what you ate from a description or a photo, then give you a file to bring back. You leave Musclog for a moment; nothing is saved until you review it here.",
+      "steps": {
+        "one": "Open ChatGPT or Claude. The instructions are copied for you: paste them into the chat.",
+        "two": "Tell it what you ate. It will end with a file called musclog-food-log.json.",
+        "three": "Come back to Musclog and import that file, or paste its text."
+      },
+      "leaveSection": "Step 1: ask the assistant",
+      "backSection": "Step 2: bring your food back",
+      "openChatgpt": "Open ChatGPT",
+      "openClaude": "Open Claude",
+      "copy": "Copy",
+      "share": "Share",
+      "copied": "Instructions copied",
+      "copiedPaste": "Instructions copied. Paste them into the chat if the box is empty.",
+      "fallback": "Couldn't open the app or site. The instructions are copied: open ChatGPT or Claude yourself and paste them.",
+      "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
+      "importFile": "Import a food file",
+      "pasteJson": "Paste JSON",
+      "noFile": "No file? Paste the JSON instead.",
+      "paste": {
+        "title": "Paste food JSON",
+        "subtitle": "Paste the JSON the assistant gave you.",
+        "placeholder": "Paste the JSON here"
+      },
+      "errors": {
+        "empty": "There is nothing to import.",
+        "fileRead": "That file could not be read. Try another one, or paste the text instead.",
+        "newerVersion": "This file was made for a newer version of Musclog. Update the app, then import it again.",
+        "notJson": "That doesn't look like a food file. Pick the musclog-food-log.json file the assistant gave you, or paste its JSON.",
+        "tooLarge": "That file is too large to be a food file.",
+        "wrongSchema": "That isn't a Musclog food file. Check that you picked the file the assistant made.",
+        "invalidLog": "This file has no usable foods. Ask the assistant to write it again.",
+        "noFoods": "None of the foods in this file could be read. Ask the assistant to write it again.",
+        "lookup": "Couldn't check this file against your foods. Try again."
+      },
+      "review": {
+        "intro": "Check what was understood before it is logged. Nothing is saved until you log it.",
+        "foodsLabel": "What you ate",
+        "totalLabel": "Total",
+        "foodCount_one": "{{count}} food",
+        "foodCount_few": "{{count}} foods",
+        "foodCount_many": "{{count}} foods",
+        "foodCount_other": "{{count}} foods",
+        "item": "{{grams}} g · {{kcal}} kcal",
+        "remove": "Remove {{name}}",
+        "groupTitle": "Log as one meal",
+        "groupSubtitle": "Shows as a single entry in your diary",
+        "mealNameLabel": "Meal name",
+        "mealNamePlaceholder": "Name this meal",
+        "unresolved_one": "{{count}} food couldn't be matched and has no numbers of its own, so it will be left out: {{names}}",
+        "unresolved_few": "{{count}} foods couldn't be matched and have no numbers of their own, so they will be left out: {{names}}",
+        "unresolved_many": "{{count}} foods couldn't be matched and have no numbers of their own, so they will be left out: {{names}}",
+        "unresolved_other": "{{count}} foods couldn't be matched and have no numbers of their own, so they will be left out: {{names}}",
+        "skipped_one": "{{count}} food in the file couldn't be read and was left out",
+        "skipped_few": "{{count}} foods in the file couldn't be read and were left out",
+        "skipped_many": "{{count}} foods in the file couldn't be read and were left out",
+        "skipped_other": "{{count}} foods in the file couldn't be read and were left out",
+        "log_one": "Log food",
+        "log_few": "Log {{count}} foods",
+        "log_many": "Log {{count}} foods",
+        "log_other": "Log {{count}} foods",
+        "differentFile": "Use a different file",
+        "logged_one": "Food logged",
+        "logged_few": "{{count}} foods logged",
+        "logged_many": "{{count}} foods logged",
+        "logged_other": "{{count}} foods logged",
+        "logError": "Couldn't log the food. Try again."
+      }
     }
   }
 }

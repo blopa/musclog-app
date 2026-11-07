@@ -299,7 +299,11 @@
       "quickTrackMeal": "Registrar Refeição Rápida",
       "quickTrackMealDescription": "Monte uma refeição, registre agora. Opcionalmente salve em Minhas Refeições.",
       "trackFromSaved": "Registrar de Salvas para Depois",
-      "trackFromSavedDescription": "Escolha uma refeição salva anteriormente"
+      "trackFromSavedDescription": "Escolha uma refeição salva anteriormente",
+      "externalLog": {
+        "title": "Registrar com ChatGPT ou Claude",
+        "description": "Descreva ou fotografe sua comida no seu próprio app de IA"
+      }
     },
     "quickTrackMeal": {
       "title": "Registrar Refeição Rápida",
@@ -631,6 +635,77 @@
       "deleteSuccess_few": "{{count}} itens excluídos",
       "deleteSuccess_many": "{{count}} itens excluídos",
       "deleteSuccess_other": "{{count}} itens excluídos"
+    },
+    "externalLog": {
+      "title": "Registrar com ChatGPT ou Claude",
+      "intro": "O ChatGPT ou o Claude podem descobrir o que você comeu a partir de uma descrição ou foto e dar um arquivo para você trazer de volta. Você sai do Musclog por um momento; nada é salvo até você revisar aqui.",
+      "steps": {
+        "one": "Abra o ChatGPT ou o Claude. As instruções são copiadas para você: cole no chat.",
+        "two": "Conte o que você comeu. Ele vai terminar com um arquivo chamado musclog-food-log.json.",
+        "three": "Volte ao Musclog e importe esse arquivo ou cole o texto."
+      },
+      "leaveSection": "Passo 1: pergunte ao assistente",
+      "backSection": "Passo 2: traga sua comida de volta",
+      "openChatgpt": "Abrir o ChatGPT",
+      "openClaude": "Abrir o Claude",
+      "copy": "Copiar",
+      "share": "Compartilhar",
+      "copied": "Instruções copiadas",
+      "copiedPaste": "Instruções copiadas. Cole no chat se a caixa estiver vazia.",
+      "fallback": "Não foi possível abrir o app ou o site. As instruções foram copiadas: abra o ChatGPT ou o Claude e cole.",
+      "privacy": "Apenas as instruções são copiadas. Nada sobre você nem chave de API é incluído.",
+      "importFile": "Importar um arquivo de comida",
+      "pasteJson": "Colar JSON",
+      "noFile": "Sem arquivo? Cole o JSON.",
+      "paste": {
+        "title": "Colar JSON da comida",
+        "subtitle": "Cole o JSON que o assistente deu.",
+        "placeholder": "Cole o JSON aqui"
+      },
+      "errors": {
+        "empty": "Não há nada para importar.",
+        "fileRead": "Não foi possível ler esse arquivo. Tente outro ou cole o texto.",
+        "newerVersion": "Este arquivo é de uma versão mais nova do Musclog. Atualize o app e importe de novo.",
+        "notJson": "Isso não parece um arquivo de comida. Escolha o arquivo musclog-food-log.json que o assistente deu ou cole o JSON.",
+        "tooLarge": "Esse arquivo é grande demais para ser um arquivo de comida.",
+        "wrongSchema": "Esse não é um arquivo de comida do Musclog. Confira se escolheu o que o assistente criou.",
+        "invalidLog": "Este arquivo não tem alimentos utilizáveis. Peça ao assistente para escrevê-lo de novo.",
+        "noFoods": "Nenhum alimento deste arquivo pôde ser lido. Peça ao assistente para escrevê-lo de novo.",
+        "lookup": "Não foi possível conferir este arquivo com seus alimentos. Tente de novo."
+      },
+      "review": {
+        "intro": "Revise o que foi entendido antes de registrar. Nada é salvo até você registrar.",
+        "foodsLabel": "O que você comeu",
+        "totalLabel": "Total",
+        "foodCount_one": "{{count}} alimento",
+        "foodCount_few": "{{count}} alimentos",
+        "foodCount_many": "{{count}} alimentos",
+        "foodCount_other": "{{count}} alimentos",
+        "item": "{{grams}} g · {{kcal}} kcal",
+        "remove": "Remover {{name}}",
+        "groupTitle": "Registrar como uma refeição",
+        "groupSubtitle": "Aparece como uma única entrada no seu diário",
+        "mealNameLabel": "Nome da refeição",
+        "mealNamePlaceholder": "Dê um nome a esta refeição",
+        "unresolved_one": "{{count}} alimento não pôde ser identificado e não tem números próprios, então ficará de fora: {{names}}",
+        "unresolved_few": "{{count}} alimentos não puderam ser identificados e não têm números próprios, então ficarão de fora: {{names}}",
+        "unresolved_many": "{{count}} alimentos não puderam ser identificados e não têm números próprios, então ficarão de fora: {{names}}",
+        "unresolved_other": "{{count}} alimentos não puderam ser identificados e não têm números próprios, então ficarão de fora: {{names}}",
+        "skipped_one": "{{count}} alimento do arquivo não pôde ser lido e ficou de fora",
+        "skipped_few": "{{count}} alimentos do arquivo não puderam ser lidos e ficaram de fora",
+        "skipped_many": "{{count}} alimentos do arquivo não puderam ser lidos e ficaram de fora",
+        "skipped_other": "{{count}} alimentos do arquivo não puderam ser lidos e ficaram de fora",
+        "log_one": "Registrar alimento",
+        "log_few": "Registrar {{count}} alimentos",
+        "log_many": "Registrar {{count}} alimentos",
+        "log_other": "Registrar {{count}} alimentos",
+        "differentFile": "Usar outro arquivo",
+        "logged_one": "Alimento registrado",
+        "logged_few": "{{count}} alimentos registrados",
+        "logged_many": "{{count}} alimentos registrados",
+        "logged_other": "{{count}} alimentos registrados",
+        "logError": "Não foi possível registrar o alimento. Tente de novo."
+      }
     }
   }
 }

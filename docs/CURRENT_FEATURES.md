@@ -75,6 +75,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Search food databases: Open Food Facts, USDA, Musclog barcode DB, local-only
 - Barcode scanner for instant product lookup
 - AI food photo estimation — snap a photo, get macros; when logging an AI-estimated meal (from the camera or the coach) you choose the date and the time of day, not just the day
+- "Track with ChatGPT or Claude" in the Add food sheet (no AI provider needed): Musclog copies instructions, ChatGPT or Claude works out what you ate from a description, photo or label and writes a `musclog-food-log.json`, which comes back as a file or pasted JSON. One or several foods; a review screen shows the totals and every food (each can be removed), lists foods it could not use before anything is saved, and lets you choose the day, time and meal and whether several foods are logged as one named meal or as separate entries. Foundation foods can be offered to the assistant (the same switch as the in-app AI) so matched foods use Musclog's own macros
 - Tap any meal photo (diary, meal groups, coach chat and attachments) to open it full screen: pinch to zoom up to 5×, drag to pan, double-tap to zoom, swipe down to close, and save or share it from the viewer
 - OCR label scanning to extract nutrition info from packaging (optional local pre-processing)
 - Create custom foods manually with full nutrition values

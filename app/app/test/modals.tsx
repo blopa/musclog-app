@@ -27,6 +27,7 @@ import { CreateFoodPortionModal } from '@/components/modals/CreateFoodPortionMod
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
+import { ExternalFoodLogModal } from '@/components/modals/ExternalFoodLogModal';
 import { ExternalWorkoutPlanModal } from '@/components/modals/ExternalWorkoutPlanModal';
 import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import {
@@ -186,6 +187,7 @@ export default function ModalsTestScreen() {
   // Create Workout Options Modal
   const [isCreateWorkoutOptionsVisible, setIsCreateWorkoutOptionsVisible] = useState(false);
   const [isExternalWorkoutPlanVisible, setIsExternalWorkoutPlanVisible] = useState(false);
+  const [isExternalFoodLogVisible, setIsExternalFoodLogVisible] = useState(false);
 
   // Replace Exercise Modal
   const [isReplaceExerciseVisible, setIsReplaceExerciseVisible] = useState(false);
@@ -682,6 +684,13 @@ export default function ModalsTestScreen() {
               variant="accent"
               width="full"
               onPress={() => setIsAddFoodVisible(true)}
+            />
+            <View className="h-3" />
+            <Button
+              label="Open External Food Log Modal"
+              variant="outline"
+              width="full"
+              onPress={() => setIsExternalFoodLogVisible(true)}
             />
           </View>
 
@@ -1886,9 +1895,16 @@ export default function ModalsTestScreen() {
 
       <FoodDataModal visible={isFoodDataVisible} onClose={() => setIsFoodDataVisible(false)} />
 
+      <ExternalFoodLogModal
+        visible={isExternalFoodLogVisible}
+        onClose={() => setIsExternalFoodLogVisible(false)}
+        logDate={new Date()}
+      />
+
       <AddFoodModal
         visible={isAddFoodVisible}
         onClose={() => setIsAddFoodVisible(false)}
+        onTrackWithExternalAiPress={() => setIsExternalFoodLogVisible(true)}
         onMealTypeSelect={(mealType) => {
           console.log('Meal type selected:', mealType);
         }}

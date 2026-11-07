@@ -30,6 +30,7 @@ import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { CopyDayFromHistoryModal } from '@/components/modals/CopyDayFromHistoryModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
+import { ExternalFoodLogModal } from '@/components/modals/ExternalFoodLogModal';
 import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
@@ -1492,6 +1493,22 @@ export default function FoodScreen() {
           onQuickTrackMealPress={() => {
             screenModals.quickTrackMeal.open();
             closeAddFoodModal();
+          }}
+          onTrackWithExternalAiPress={() => {
+            closeAddFoodModal();
+            screenModals.externalFoodLog.open();
+          }}
+        />
+
+        {/* Track with ChatGPT or Claude (the assistant's file is reviewed here before it is logged) */}
+        <ExternalFoodLogModal
+          visible={screenModals.externalFoodLog.visible}
+          onClose={screenModals.externalFoodLog.close}
+          logDate={selectedDate}
+          initialMealType={addFoodModalPreselectedMealType ?? undefined}
+          onLogged={() => {
+            refresh();
+            triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
           }}
         />
 

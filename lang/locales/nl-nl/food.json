@@ -299,7 +299,11 @@
       "quickTrackMeal": "Snel maaltijd bijhouden",
       "quickTrackMealDescription": "Stel een maaltijd samen, houd het nu bij. Optioneel opslaan in Mijn Maaltijden.",
       "trackFromSaved": "Bijhouden van 'Bewaard voor later'",
-      "trackFromSavedDescription": "Kies een maaltijd die je eerder hebt bewaard"
+      "trackFromSavedDescription": "Kies een maaltijd die je eerder hebt bewaard",
+      "externalLog": {
+        "title": "Bijhouden met ChatGPT of Claude",
+        "description": "Beschrijf of fotografeer je eten in je eigen AI-app"
+      }
     },
     "quickTrackMeal": {
       "title": "Snel maaltijd bijhouden",
@@ -631,6 +635,77 @@
       "deleteSuccess_few": "{{count}} items verwijderd",
       "deleteSuccess_many": "{{count}} items verwijderd",
       "deleteSuccess_other": "{{count}} items verwijderd"
+    },
+    "externalLog": {
+      "title": "Bijhouden met ChatGPT of Claude",
+      "intro": "ChatGPT of Claude kan uit een beschrijving of foto afleiden wat je hebt gegeten en geeft je daarna een bestand om terug te brengen. Je verlaat Musclog even; er wordt niets opgeslagen tot je het hier controleert.",
+      "steps": {
+        "one": "Open ChatGPT of Claude. De instructies worden voor je gekopieerd: plak ze in de chat.",
+        "two": "Vertel wat je hebt gegeten. Aan het eind krijg je een bestand met de naam musclog-food-log.json.",
+        "three": "Kom terug naar Musclog en importeer dat bestand of plak de tekst."
+      },
+      "leaveSection": "Stap 1: vraag het aan de assistent",
+      "backSection": "Stap 2: breng je eten terug",
+      "openChatgpt": "ChatGPT openen",
+      "openClaude": "Claude openen",
+      "copy": "Kopiëren",
+      "share": "Delen",
+      "copied": "Instructies gekopieerd",
+      "copiedPaste": "Instructies gekopieerd. Plak ze in de chat als het vak leeg is.",
+      "fallback": "De app of site kon niet worden geopend. De instructies zijn gekopieerd: open ChatGPT of Claude zelf en plak ze.",
+      "privacy": "Alleen de instructies worden gekopieerd. Er zit niets over jou of een API-sleutel in.",
+      "importFile": "Een eetbestand importeren",
+      "pasteJson": "JSON plakken",
+      "noFile": "Geen bestand? Plak de JSON.",
+      "paste": {
+        "title": "Eten-JSON plakken",
+        "subtitle": "Plak de JSON die de assistent je gaf.",
+        "placeholder": "Plak de JSON hier"
+      },
+      "errors": {
+        "empty": "Er is niets om te importeren.",
+        "fileRead": "Dat bestand kon niet worden gelezen. Probeer een ander bestand of plak de tekst.",
+        "newerVersion": "Dit bestand is gemaakt voor een nieuwere versie van Musclog. Werk de app bij en importeer opnieuw.",
+        "notJson": "Dit lijkt geen eetbestand. Kies het bestand musclog-food-log.json van de assistent of plak de JSON.",
+        "tooLarge": "Dat bestand is te groot voor een eetbestand.",
+        "wrongSchema": "Dit is geen Musclog-eetbestand. Controleer of je het bestand van de assistent hebt gekozen.",
+        "invalidLog": "Dit bestand bevat geen bruikbare voedingsmiddelen. Vraag de assistent het opnieuw te schrijven.",
+        "noFoods": "Geen enkel voedingsmiddel in dit bestand kon worden gelezen. Vraag de assistent het opnieuw te schrijven.",
+        "lookup": "Dit bestand kon niet met je voedingsmiddelen worden vergeleken. Probeer het opnieuw."
+      },
+      "review": {
+        "intro": "Controleer wat er is begrepen voordat het wordt gelogd. Er wordt niets opgeslagen tot je het logt.",
+        "foodsLabel": "Wat je hebt gegeten",
+        "totalLabel": "Totaal",
+        "foodCount_one": "{{count}} voedingsmiddel",
+        "foodCount_few": "{{count}} voedingsmiddelen",
+        "foodCount_many": "{{count}} voedingsmiddelen",
+        "foodCount_other": "{{count}} voedingsmiddelen",
+        "item": "{{grams}} g · {{kcal}} kcal",
+        "remove": "{{name}} verwijderen",
+        "groupTitle": "Als één maaltijd loggen",
+        "groupSubtitle": "Verschijnt als één item in je dagboek",
+        "mealNameLabel": "Naam van de maaltijd",
+        "mealNamePlaceholder": "Geef deze maaltijd een naam",
+        "unresolved_one": "{{count}} voedingsmiddel kon niet worden herkend en heeft geen eigen cijfers, dus het wordt weggelaten: {{names}}",
+        "unresolved_few": "{{count}} voedingsmiddelen konden niet worden herkend en hebben geen eigen cijfers, dus ze worden weggelaten: {{names}}",
+        "unresolved_many": "{{count}} voedingsmiddelen konden niet worden herkend en hebben geen eigen cijfers, dus ze worden weggelaten: {{names}}",
+        "unresolved_other": "{{count}} voedingsmiddelen konden niet worden herkend en hebben geen eigen cijfers, dus ze worden weggelaten: {{names}}",
+        "skipped_one": "{{count}} voedingsmiddel in het bestand kon niet worden gelezen en is weggelaten",
+        "skipped_few": "{{count}} voedingsmiddelen in het bestand konden niet worden gelezen en zijn weggelaten",
+        "skipped_many": "{{count}} voedingsmiddelen in het bestand konden niet worden gelezen en zijn weggelaten",
+        "skipped_other": "{{count}} voedingsmiddelen in het bestand konden niet worden gelezen en zijn weggelaten",
+        "log_one": "Voedingsmiddel loggen",
+        "log_few": "{{count}} voedingsmiddelen loggen",
+        "log_many": "{{count}} voedingsmiddelen loggen",
+        "log_other": "{{count}} voedingsmiddelen loggen",
+        "differentFile": "Een ander bestand gebruiken",
+        "logged_one": "Voedingsmiddel gelogd",
+        "logged_few": "{{count}} voedingsmiddelen gelogd",
+        "logged_many": "{{count}} voedingsmiddelen gelogd",
+        "logged_other": "{{count}} voedingsmiddelen gelogd",
+        "logError": "Het loggen is mislukt. Probeer het opnieuw."
+      }
     }
   }
 }

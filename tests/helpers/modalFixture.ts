@@ -92,4 +92,5 @@ export const MODAL_BUTTON_TEXTS = [
   'Open Add Exercise To Session Modal',
   'Open Saved For Later Modal',
   'Open External Workout Plan Modal',
+  'Open External Food Log Modal',
 ];

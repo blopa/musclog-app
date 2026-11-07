@@ -10,6 +10,7 @@ export function useFoodScreenModals() {
   const [foodSearchInitialTab, setFoodSearchInitialTab] = useState<FoodSearchTab>('all');
   const [isMyMealsModalVisible, setIsMyMealsModalVisible] = useState(false);
   const [isQuickTrackMealModalVisible, setIsQuickTrackMealModalVisible] = useState(false);
+  const [isExternalFoodLogVisible, setIsExternalFoodLogVisible] = useState(false);
   const [isCreateCustomFoodVisible, setIsCreateCustomFoodVisible] = useState(false);
   const [hasSavedForLaterItems, setHasSavedForLaterItems] = useState(false);
   const [isSavedForLaterModalVisible, setIsSavedForLaterModalVisible] = useState(false);
@@ -39,6 +40,8 @@ export function useFoodScreenModals() {
   const closeMyMeals = useCallback(() => setIsMyMealsModalVisible(false), []);
   const openQuickTrackMeal = useCallback(() => setIsQuickTrackMealModalVisible(true), []);
   const closeQuickTrackMeal = useCallback(() => setIsQuickTrackMealModalVisible(false), []);
+  const openExternalFoodLog = useCallback(() => setIsExternalFoodLogVisible(true), []);
+  const closeExternalFoodLog = useCallback(() => setIsExternalFoodLogVisible(false), []);
   const openDailySummaryMenu = useCallback(() => setIsDailySummaryMenuVisible(true), []);
   const closeDailySummaryMenu = useCallback(() => setIsDailySummaryMenuVisible(false), []);
   const openGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(true), []);
@@ -90,6 +93,11 @@ export function useFoodScreenModals() {
       visible: isQuickTrackMealModalVisible,
       open: openQuickTrackMeal,
       close: closeQuickTrackMeal,
+    },
+    externalFoodLog: {
+      visible: isExternalFoodLogVisible,
+      open: openExternalFoodLog,
+      close: closeExternalFoodLog,
     },
     dailySummaryMenu: {
       visible: isDailySummaryMenuVisible,
