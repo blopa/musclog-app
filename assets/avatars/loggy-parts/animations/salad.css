@@ -1,0 +1,39 @@
+/* Loggy enjoying a fresh bowl of salad. His left arm, hand and fork tip a bite of lettuce
+   toward his grin while his other hand cradles the salad bowl, the leaf sways, and the
+   shoes stay planted as the upper body bobs. Every layer opens and ends on the still's frame. */
+#upper {
+    animation: loggy-bob 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#arm-l, #fork, #hand-l {
+    transform-origin: 145px 318px;
+    animation: loggy-fork-bite 3.2s ease-in-out infinite;
+}
+#bowl, #hand-r {
+    transform-origin: 374px 395px;
+    animation: loggy-bowl-hold 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-fork-bite {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 62% { transform: rotate(2.2deg); }
+}
+@keyframes loggy-bowl-hold {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-1.5deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

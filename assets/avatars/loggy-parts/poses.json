@@ -46,7 +46,8 @@
     "creatine",
     "pointing",
     "trophy",
-    "lifting"
+    "lifting",
+    "salad"
   ],
   "poses": {
     "celebrating": {
@@ -323,6 +324,27 @@
       ],
       "animated": {
         "upper": ["arm-r", "body", "arm-l", "pencil"]
+      }
+    },
+    "salad": {
+      "viewBox": "0 0 512 640",
+      "face": "salad",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "arm-l/salad",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "fork/salad",
+        "hand-l/salad",
+        "bowl/salad",
+        "hand-r/salad"
+      ],
+      "animated": {
+        "upper": ["arm-l", "body", "fork", "hand-l", "bowl", "hand-r"]
       }
     },
     "thinking": {

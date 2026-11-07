@@ -16,6 +16,7 @@ import Nutrition from '@/assets/avatars/loggy-poses/loggy-nutrition.svg';
 import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
 import Pointing from '@/assets/avatars/loggy-poses/loggy-pointing.svg';
 import Running from '@/assets/avatars/loggy-poses/loggy-running.svg';
+import Salad from '@/assets/avatars/loggy-poses/loggy-salad.svg';
 import Thinking from '@/assets/avatars/loggy-poses/loggy-thinking.svg';
 import Trophy from '@/assets/avatars/loggy-poses/loggy-trophy.svg';
 import Wave from '@/assets/avatars/loggy-poses/loggy-wave.svg';
@@ -33,6 +34,7 @@ import { LoggyNutritionAnimated } from '@/components/loggy/animated/LoggyNutriti
 import { LoggyPanicAnimated } from '@/components/loggy/animated/LoggyPanicAnimated';
 import { LoggyPointingAnimated } from '@/components/loggy/animated/LoggyPointingAnimated';
 import { LoggyRunningAnimated } from '@/components/loggy/animated/LoggyRunningAnimated';
+import { LoggySaladAnimated } from '@/components/loggy/animated/LoggySaladAnimated';
 import { LoggyThinkingAnimated } from '@/components/loggy/animated/LoggyThinkingAnimated';
 import { LoggyTrophyAnimated } from '@/components/loggy/animated/LoggyTrophyAnimated';
 import { LoggyWaveAnimated } from '@/components/loggy/animated/LoggyWaveAnimated';
@@ -55,6 +57,7 @@ export type LoggyPoseName =
   | 'panic'
   | 'pointing'
   | 'running'
+  | 'salad'
   | 'thinking'
   | 'trophy'
   | 'wave'
@@ -85,6 +88,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
   panic: { Art: Panic, aspect: 0.8 },
   pointing: { Art: Pointing, aspect: 1 },
   running: { Art: Running, aspect: 0.875 },
+  salad: { Art: Salad, aspect: 0.8 },
   thinking: { Art: Thinking, aspect: 0.767 },
   trophy: { Art: Trophy, aspect: 0.875 },
   wave: { Art: Wave, aspect: 0.875 },
@@ -110,6 +114,7 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   panic: LoggyPanicAnimated,
   pointing: LoggyPointingAnimated,
   running: LoggyRunningAnimated,
+  salad: LoggySaladAnimated,
   thinking: LoggyThinkingAnimated,
   trophy: LoggyTrophyAnimated,
   wave: LoggyWaveAnimated,
