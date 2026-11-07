@@ -3,6 +3,9 @@ import {
   fitLineFontSize,
   labelsFitEvenly,
   layoutActionLabel,
+  layoutIconRow,
+  layoutTableColumns,
+  layoutToggleRow,
   longestWord,
 } from '@/utils/fitText';
 
@@ -157,5 +160,188 @@ describe('labelsFitEvenly', () => {
     expect(labelsFitEvenly(['Uithoudingsvermogen', 'Kracht'], 342, grid)).toBe(false);
     // At 1.3x the phone is 264pt wide, and half of it no longer holds "Strength" beside its icon.
     expect(labelsFitEvenly(['Strength'], 264, { ...grid, fontScale: 1.3 })).toBe(false);
+  });
+});
+
+describe('layoutToggleRow', () => {
+  // A 40pt icon tile and its gap, a 52pt switch and its gap, as ToggleInput passes them.
+  const options = { fontSize: 14, minSize: 12, iconRoom: 48, switchRoom: 60, dropIcon: false };
+  const texts = ['Daily supplement reminder', 'Show a reminder on the home screen'];
+
+  it('is the designed row until the width is known', () => {
+    expect(layoutToggleRow(texts, null, options)).toEqual({
+      showIcon: true,
+      stackSwitch: false,
+      fontSize: 14,
+    });
+    expect(layoutToggleRow(texts, 0, { ...options, dropIcon: true })).toEqual({
+      showIcon: false,
+      stackSwitch: false,
+      fontSize: 14,
+    });
+  });
+
+  it('keeps the icon and the switch beside the text while the longest word fits', () => {
+    // "supplement" (10 glyphs, about 79px) in 300 - 48 - 60.
+    expect(layoutToggleRow(texts, 300, options)).toEqual({
+      showIcon: true,
+      stackSwitch: false,
+      fontSize: 14,
+    });
+  });
+
+  it('moves the switch under the text before it touches the icon or the type', () => {
+    // "supplementherinneringen" (23 glyphs, about 180px) cannot sit beside a switch in 250px but
+    // fits the 202px left once only the icon is taken off.
+    const dutch = ['Dagelijkse Supplementherinnering', 'Toon dagelijkse supplementherinneringen'];
+    expect(layoutToggleRow(dutch, 250, options)).toEqual({
+      showIcon: true,
+      stackSwitch: true,
+      fontSize: 14,
+    });
+  });
+
+  it('gives the icon its room away when stacking alone is not enough', () => {
+    const dutch = ['Dagelijkse Supplementherinnering'];
+    expect(layoutToggleRow(dutch, 200, options)).toEqual({
+      showIcon: false,
+      stackSwitch: true,
+      fontSize: 14,
+    });
+  });
+
+  it('drops the icon from the start when the layout is cramped, and still moves the switch', () => {
+    // Without the icon: 190 - 60 = 130px beside the switch, too little for 180px of word.
+    const dutch = ['Dagelijkse Supplementherinnering', 'Toon dagelijkse supplementherinneringen'];
+    expect(layoutToggleRow(dutch, 190, { ...options, dropIcon: true })).toEqual({
+      showIcon: false,
+      stackSwitch: true,
+      fontSize: 14,
+    });
+    expect(layoutToggleRow(['Reminders'], 190, { ...options, dropIcon: true })).toEqual({
+      showIcon: false,
+      stackSwitch: false,
+      fontSize: 14,
+    });
+  });
+
+  it('shrinks the type a little, never below the minimum, once the whole row cannot hold the word', () => {
+    // 26 glyphs of "Vruchtbaarheidsschattingen" need about 204px at 14; 190px holds 13.
+    const long = ['Vruchtbaarheidsschattingen tonen'];
+    expect(layoutToggleRow(long, 190, { ...options, dropIcon: true })).toEqual({
+      showIcon: false,
+      stackSwitch: true,
+      fontSize: 13,
+    });
+    expect(layoutToggleRow(long, 100, { ...options, dropIcon: true }).fontSize).toBe(12);
+  });
+
+  it('judges a toggle without an icon the same way', () => {
+    const noIcon = { ...options, iconRoom: 0 };
+    expect(layoutToggleRow(['Reminders'], 150, noIcon).showIcon).toBe(false);
+    expect(layoutToggleRow(['Reminders'], 150, noIcon).stackSwitch).toBe(false);
+  });
+
+  it('divides the room by the OS text scale, since native text is drawn larger', () => {
+    const plain = layoutToggleRow(['Supplementherinneringen'], 230, { ...options, iconRoom: 0 });
+    const large = layoutToggleRow(['Supplementherinneringen'], 230, {
+      ...options,
+      iconRoom: 0,
+      fontScale: 1.3,
+    });
+    expect(plain.stackSwitch).toBe(true);
+    expect(large.fontSize).toBeLessThan(plain.fontSize);
+  });
+});
+
+describe('layoutIconRow', () => {
+  // A 24pt icon and its 12pt gap, a 16pt chevron and its 12pt gap, 16pt type.
+  const options = { fontSize: 16, minSize: 14, iconRoom: 36, trailingRoom: 28, dropIcon: false };
+
+  it('is the designed row until the width is known', () => {
+    expect(layoutIconRow(['Workouts'], null, options)).toEqual({ showIcon: true, fontSize: 16 });
+    expect(layoutIconRow(['Workouts'], 0, { ...options, dropIcon: true })).toEqual({
+      showIcon: false,
+      fontSize: 16,
+    });
+  });
+
+  it('keeps the icon while the longest word fits beside it', () => {
+    // "Workouts" is 8 glyphs, about 72px, in 230 - 36 - 28.
+    expect(layoutIconRow(['Workouts', 'Past sessions'], 230, options)).toEqual({
+      showIcon: true,
+      fontSize: 16,
+    });
+  });
+
+  it('gives the icon its room before the type shrinks', () => {
+    // "Trainingsbestanden" (18 glyphs, about 161px) fits 198 - 28 = 170 once the icon is gone.
+    expect(layoutIconRow(['BLE Trainingsbestanden'], 198, options)).toEqual({
+      showIcon: false,
+      fontSize: 16,
+    });
+  });
+
+  it('drops the icon from the start when the layout is cramped', () => {
+    expect(layoutIconRow(['Workouts'], 230, { ...options, dropIcon: true })).toEqual({
+      showIcon: false,
+      fontSize: 16,
+    });
+  });
+
+  it('draws the type a little smaller, never below the minimum, when the word still does not fit', () => {
+    // 18 glyphs in 150 - 28 = 122px hold 12px of type; the minimum is 14.
+    expect(layoutIconRow(['Trainingsbestanden'], 150, options)).toEqual({
+      showIcon: false,
+      fontSize: 14,
+    });
+    // 18 glyphs in 170 - 28 = 142px hold 14px of type, and with a lower minimum it is not clamped.
+    expect(layoutIconRow(['Trainingsbestanden'], 170, { ...options, minSize: 10 })).toEqual({
+      showIcon: false,
+      fontSize: 14,
+    });
+  });
+});
+
+describe('layoutTableColumns', () => {
+  const options = { maxSize: 12, minSize: 10, padding: 4, minBasis: 28 };
+  const russian = ['Подход', 'ВЕС', 'Повторы', 'Частичные', 'RIR'];
+
+  it('sizes the columns for the design size until the width is known', () => {
+    const { fontSize } = layoutTableColumns(russian, null, options);
+    expect(fontSize).toBe(12);
+  });
+
+  it('gives each column the width of its own longest word, not the longest of all', () => {
+    const { fontSize, bases } = layoutTableColumns(russian, 400, options);
+    expect(fontSize).toBe(12);
+    // 9 glyphs of "Частичные" at 12px (0.56 of the size): 61px plus 4px of padding.
+    expect(bases[3]).toBe(65);
+    // "ВЕС" is 3 glyphs, so it takes the minimum, not a ninth of the table.
+    expect(bases[1]).toBe(28);
+    expect(bases[3]).toBeGreaterThan(bases[0]);
+  });
+
+  it('keeps the design size while every column fits the table', () => {
+    const { fontSize, bases } = layoutTableColumns(russian, 250, options);
+    expect(fontSize).toBe(12);
+    expect(bases.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(250);
+  });
+
+  it('shrinks the header a little when the table is narrower than the words need', () => {
+    const { fontSize, bases } = layoutTableColumns(russian, 213, options);
+    expect(fontSize).toBeLessThan(12);
+    expect(fontSize).toBeGreaterThanOrEqual(10);
+    expect(bases.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(213);
+  });
+
+  it('stops at the minimum size rather than drawing unreadable headers', () => {
+    expect(layoutTableColumns(russian, 100, options).fontSize).toBe(10);
+  });
+
+  it('divides the room by the OS text scale, since native text is drawn larger', () => {
+    const plain = layoutTableColumns(russian, 250, options);
+    const large = layoutTableColumns(russian, 250, { ...options, fontScale: 1.3 });
+    expect(large.fontSize).toBeLessThan(plain.fontSize);
   });
 });

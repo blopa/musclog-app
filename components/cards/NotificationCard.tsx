@@ -66,7 +66,9 @@ export function NotificationCard({
           )}
         </View>
 
-        <View className="flex-row items-center justify-between">
+        {/* The action and the time share the row while both fit; otherwise the time drops to its
+            own line instead of being cut off by the card's edge. */}
+        <View className="flex-row flex-wrap items-center justify-between gap-x-3 gap-y-2">
           {hasAction ? (
             <>
               <Button
@@ -75,12 +77,12 @@ export function NotificationCard({
                 width="auto"
                 onPress={onActionPress}
               />
-              <Text className="text-sm" style={{ color: theme.colors.text.tertiary }}>
+              <Text className="min-w-0 text-sm" style={{ color: theme.colors.text.tertiary }}>
                 {time}
               </Text>
             </>
           ) : (
-            <Text className="text-sm" style={{ color: theme.colors.text.tertiary }}>
+            <Text className="min-w-0 text-sm" style={{ color: theme.colors.text.tertiary }}>
               {time}
             </Text>
           )}

@@ -147,3 +147,198 @@ export function layoutActionLabel(
 
   return { showIcon: false, fontSize: Math.max(minSize, Math.min(maxSize, alone)) };
 }
+
+/** Words in a semibold text face average about this share of the size, narrower than a numeral. */
+export const WORD_GLYPH_RATIO = 0.56;
+
+type ToggleRowOptions = {
+  /** The size the row's text is designed at. */
+  fontSize: number;
+  /** The smallest size worth drawing; below it the row overflows rather than shrink further. */
+  minSize: number;
+  /** What the leading icon takes from the text beside it: its width plus the gap. 0 without one. */
+  iconRoom: number;
+  /** What the switch takes from the text beside it: its width plus the gap. */
+  switchRoom: number;
+  /** The decoration gives way before anything else is tried (`isCrampedLayout`). */
+  dropIcon: boolean;
+  fontScale?: number;
+  glyphWidthRatio?: number;
+};
+
+type ToggleRowLayout = {
+  showIcon: boolean;
+  /** The switch sits under the text instead of beside it, which gives the text the whole row. */
+  stackSwitch: boolean;
+  fontSize: number;
+};
+
+/**
+ * Lays out one settings toggle (icon, label with description, switch) inside `rowWidth`, never
+ * breaking a word. The longest word of any of `texts` decides. In order: keep the row as designed;
+ * move the switch under the text (the text then has the whole row); give the icon's room to the
+ * text; and only when even that is too narrow, draw the type a little smaller down to `minSize`.
+ * `dropIcon` (a cramped layout) removes the icon from the start. Before the row is measured
+ * (`null`, the first frame) it is the designed row.
+ */
+export function layoutToggleRow(
+  texts: string[],
+  rowWidth: number | null,
+  {
+    fontSize,
+    minSize,
+    iconRoom,
+    switchRoom,
+    dropIcon,
+    fontScale,
+    glyphWidthRatio = WORD_GLYPH_RATIO,
+  }: ToggleRowOptions
+): ToggleRowLayout {
+  const hasIcon = iconRoom > 0 && !dropIcon;
+
+  if (rowWidth === null || rowWidth <= 0) {
+    return { showIcon: hasIcon, stackSwitch: false, fontSize };
+  }
+
+  const word = texts.map(longestWord).reduce((a, b) => (b.length > a.length ? b : a), '');
+  const fits = (room: number) =>
+    fittingSize(word, room, fontSize, fontScale, glyphWidthRatio) >= fontSize;
+  const roomWithIcon = hasIcon ? iconRoom : 0;
+
+  if (fits(rowWidth - roomWithIcon - switchRoom)) {
+    return { showIcon: hasIcon, stackSwitch: false, fontSize };
+  }
+
+  if (fits(rowWidth - roomWithIcon)) {
+    return { showIcon: hasIcon, stackSwitch: true, fontSize };
+  }
+
+  if (fits(rowWidth)) {
+    return { showIcon: false, stackSwitch: true, fontSize };
+  }
+
+  const shrunk = fittingSize(word, rowWidth, fontSize, fontScale, glyphWidthRatio);
+
+  return {
+    showIcon: false,
+    stackSwitch: true,
+    fontSize: Math.max(minSize, Math.min(fontSize, shrunk)),
+  };
+}
+
+type IconRowOptions = {
+  /** The size the row's text is designed at. */
+  fontSize: number;
+  /** The smallest size worth drawing; below it the row overflows rather than shrink further. */
+  minSize: number;
+  /** What the leading icon takes from the text: its width plus the gap. */
+  iconRoom: number;
+  /** What the trailing chevron takes from the text: its width plus the gap. */
+  trailingRoom: number;
+  /** The decoration gives way before anything else is tried (`isCrampedLayout`). */
+  dropIcon: boolean;
+  fontScale?: number;
+  glyphWidthRatio?: number;
+};
+
+type IconRowLayout = {
+  showIcon: boolean;
+  fontSize: number;
+};
+
+/**
+ * Lays out a navigation row (leading icon, text, trailing chevron) inside `rowWidth` without
+ * breaking a word: the icon gives its room to the text when the longest word does not fit beside
+ * it (always while `dropIcon`), and only then is the type drawn a little smaller, down to
+ * `minSize`. The chevron is the row's affordance and stays. Before the row is measured (`null`) it
+ * is the designed row.
+ */
+export function layoutIconRow(
+  texts: string[],
+  rowWidth: number | null,
+  {
+    fontSize,
+    minSize,
+    iconRoom,
+    trailingRoom,
+    dropIcon,
+    fontScale,
+    glyphWidthRatio = WORD_GLYPH_RATIO,
+  }: IconRowOptions
+): IconRowLayout {
+  if (rowWidth === null || rowWidth <= 0) {
+    return { showIcon: !dropIcon, fontSize };
+  }
+
+  const word = texts.map(longestWord).reduce((a, b) => (b.length > a.length ? b : a), '');
+  const fitted = (room: number) => fittingSize(word, room, fontSize, fontScale, glyphWidthRatio);
+
+  if (!dropIcon && fitted(rowWidth - iconRoom - trailingRoom) >= fontSize) {
+    return { showIcon: true, fontSize };
+  }
+
+  const alone = fitted(rowWidth - trailingRoom);
+
+  return { showIcon: false, fontSize: Math.max(minSize, Math.min(fontSize, alone)) };
+}
+
+type TableColumnsOptions = {
+  /** The header size the design asks for; used whenever every column's longest word fits. */
+  maxSize: number;
+  /** The smallest header size worth drawing; below it the columns shrink instead. */
+  minSize: number;
+  /** What a column spends beside its header word: its horizontal padding. */
+  padding: number;
+  /** No column is narrower than this, so a short header ("Reps") still holds a value. */
+  minBasis: number;
+  fontScale?: number;
+  glyphWidthRatio?: number;
+};
+
+type TableColumns = {
+  /** The size the header labels are drawn at. */
+  fontSize: number;
+  /** Each column's flex basis; give the header and every row the same ones, with `flexGrow: 1`. */
+  bases: number[];
+};
+
+/**
+ * Column widths for a table whose header words must stay whole ("Частичные" beside "Повторы").
+ * Equal columns are as wide as the longest header word needs for EVERY column, which is what broke
+ * a five-column sets table on a narrow phone; here each column is as wide as its own longest word
+ * (at least `minBasis`) and the room left over is shared by `flexGrow`. When even that is wider
+ * than the table, the header type shrinks a little, down to `minSize`. Before the table is
+ * measured (`null`) the columns are sized for `maxSize`.
+ */
+export function layoutTableColumns(
+  labels: string[],
+  tableWidth: number | null,
+  {
+    maxSize,
+    minSize,
+    padding,
+    minBasis,
+    fontScale = 1,
+    glyphWidthRatio = WORD_GLYPH_RATIO,
+  }: TableColumnsOptions
+): TableColumns {
+  const words = labels.map(longestWord);
+  const basesAt = (size: number) =>
+    words.map((word) =>
+      Math.max(minBasis, Math.ceil(word.length * size * glyphWidthRatio * fontScale) + padding)
+    );
+  const total = (bases: number[]) => bases.reduce((sum, basis) => sum + basis, 0);
+
+  if (tableWidth === null || tableWidth <= 0) {
+    return { fontSize: maxSize, bases: basesAt(maxSize) };
+  }
+
+  for (let size = maxSize; size > minSize; size -= 1) {
+    const bases = basesAt(size);
+    if (total(bases) <= tableWidth) {
+      return { fontSize: size, bases };
+    }
+  }
+
+  return { fontSize: minSize, bases: basesAt(minSize) };
+}

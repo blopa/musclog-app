@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { useWindowDimensions } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 
-import { labelsFitEvenly } from '@/utils/fitText';
-
-/** Words in a semibold text face average about this share of the size, narrower than a numeral. */
-const WORD_GLYPH_RATIO = 0.56;
+import { labelsFitEvenly, WORD_GLYPH_RATIO } from '@/utils/fitText';
 
 type OptionColumnsOptions = {
   fontSize: number;

@@ -569,8 +569,11 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
           className="rounded-card border bg-bg-card p-5"
           style={{ borderColor: theme.colors.background.ink5 }}
         >
-          <View className="mb-6 flex-row items-center justify-between">
+          {/* The title and the bodyweight switch share the row while both fit; otherwise the
+              switch drops under the title instead of running over it. */}
+          <View className="mb-6 flex-row flex-wrap items-center justify-between gap-x-3 gap-y-2">
             <Text
+              className="min-w-0 shrink"
               style={{
                 fontSize: theme.typography.fontSize.lg,
                 fontWeight: theme.typography.fontWeight.bold,
@@ -579,7 +582,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             >
               {t('workouts.addExercise.createSet')}
             </Text>
-            <View className="flex-row items-center gap-2">
+            <View className="shrink-0 flex-row items-center gap-2">
               <Text
                 style={{
                   fontSize: theme.typography.fontSize.xs,

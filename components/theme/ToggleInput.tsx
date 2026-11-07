@@ -1,7 +1,9 @@
-import { Fragment, ReactNode } from 'react';
-import { Pressable, Switch, Text, View } from 'react-native';
+import { Fragment, ReactNode, useState } from 'react';
+import { Pressable, Switch, Text, useWindowDimensions, View } from 'react-native';
 
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
+import { layoutToggleRow } from '@/utils/fitText';
 
 type ToggleItem = {
   key: string;
@@ -17,6 +19,114 @@ type TogglableSettingsProps = {
   items: ToggleItem[];
   header?: ReactNode;
 };
+
+/** The room a switch takes beside the text on either platform (Android 52, iOS 51), gap excluded. */
+const SWITCH_WIDTH = 52;
+/** The leading icon tile when it has not been measured yet (`theme.size['10']`). */
+const DEFAULT_ICON_WIDTH = 40;
+/** The smallest the row's text is drawn when even the whole row cannot hold its longest word. */
+const MIN_TEXT_SIZE = 12;
+
+function ToggleRow({ item }: { item: ToggleItem }) {
+  const theme = useTheme();
+  const { fontScale } = useWindowDimensions();
+  const cramped = useIsCramped();
+  const [rowWidth, setRowWidth] = useState<number | null>(null);
+  const [iconWidth, setIconWidth] = useState(DEFAULT_ICON_WIDTH);
+  const gap = theme.spacing.gap.sm;
+  const rowPadding = theme.spacing.padding.md;
+
+  // A long word (Dutch "Supplementherinneringen", Russian "редактирование") must never be broken.
+  // In order: the switch drops under the text so the text gets the whole row, the icon gives its
+  // room away (always while cramped), and only then does the type shrink a little.
+  const { showIcon, stackSwitch, fontSize } = layoutToggleRow(
+    item.subtitle ? [item.label, item.subtitle] : [item.label],
+    rowWidth === null ? null : rowWidth - rowPadding * 2,
+    {
+      fontSize: theme.typography.fontSize.sm,
+      minSize: MIN_TEXT_SIZE,
+      iconRoom: item.icon ? iconWidth + gap : 0,
+      switchRoom: SWITCH_WIDTH + gap,
+      dropIcon: cramped,
+      fontScale,
+    }
+  );
+
+  return (
+    <Pressable
+      disabled={item.disabled}
+      onPress={() => !item.disabled && item.onValueChange(!item.value)}
+    >
+      {({ pressed }) => (
+        <View
+          onLayout={(event) => setRowWidth(event.nativeEvent.layout.width)}
+          style={{
+            flexDirection: stackSwitch ? 'column' : 'row',
+            alignItems: stackSwitch ? 'stretch' : 'center',
+            justifyContent: 'space-between',
+            // A gap, so a wrapped description never runs under the switch's own box.
+            gap,
+            padding: rowPadding,
+            backgroundColor: pressed ? theme.colors.background.overlay : undefined,
+            opacity: item.disabled ? 0.4 : 1,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap,
+              flexShrink: stackSwitch ? 0 : 1,
+              flexGrow: stackSwitch ? 0 : 1,
+              minWidth: 0,
+            }}
+          >
+            {showIcon ? (
+              <View onLayout={(event) => setIconWidth(event.nativeEvent.layout.width)}>
+                {item.icon}
+              </View>
+            ) : null}
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text
+                style={{
+                  fontSize,
+                  color: theme.colors.text.primary,
+                  fontWeight: theme.typography.fontWeight.medium,
+                }}
+              >
+                {item.label}
+              </Text>
+              {item.subtitle ? (
+                <Text
+                  style={{
+                    fontSize,
+                    color: theme.colors.text.secondary,
+                    marginTop: theme.spacing.padding.xsHalf,
+                  }}
+                >
+                  {item.subtitle}
+                </Text>
+              ) : null}
+            </View>
+          </View>
+          <View style={{ flexShrink: 0, alignSelf: stackSwitch ? 'flex-end' : undefined }}>
+            <Switch
+              accessibilityLabel={item.label}
+              disabled={item.disabled}
+              value={item.value}
+              onValueChange={item.onValueChange}
+              trackColor={{
+                false: theme.colors.background.overlay,
+                true: theme.colors.accent.primary,
+              }}
+              thumbColor={theme.colors.background.alwaysWhite}
+            />
+          </View>
+        </View>
+      )}
+    </Pressable>
+  );
+}
 
 export function ToggleInput(props: TogglableSettingsProps) {
   const theme = useTheme();
@@ -38,72 +148,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
       {props.header}
       {items.map((it, idx) => (
         <Fragment key={it.key}>
-          <Pressable
-            disabled={it.disabled}
-            onPress={() => !it.disabled && it.onValueChange(!it.value)}
-          >
-            {({ pressed }) => (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  // A gap, so a wrapped description never runs under the switch's own box.
-                  gap: theme.spacing.gap.sm,
-                  padding: theme.spacing.padding.md,
-                  backgroundColor: pressed ? theme.colors.background.overlay : undefined,
-                  opacity: it.disabled ? 0.4 : 1,
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: theme.spacing.gap.sm,
-                    flex: 1,
-                    minWidth: 0,
-                  }}
-                >
-                  {it.icon}
-                  <View style={{ flex: 1, minWidth: 0 }}>
-                    <Text
-                      style={{
-                        fontSize: theme.typography.fontSize.sm,
-                        color: theme.colors.text.primary,
-                        fontWeight: theme.typography.fontWeight.medium,
-                      }}
-                    >
-                      {it.label}
-                    </Text>
-                    {it.subtitle ? (
-                      <Text
-                        style={{
-                          fontSize: theme.typography.fontSize.sm,
-                          color: theme.colors.text.secondary,
-                          marginTop: theme.spacing.padding.xsHalf,
-                        }}
-                      >
-                        {it.subtitle}
-                      </Text>
-                    ) : null}
-                  </View>
-                </View>
-                <View style={{ flexShrink: 0 }}>
-                  <Switch
-                    accessibilityLabel={it.label}
-                    disabled={it.disabled}
-                    value={it.value}
-                    onValueChange={it.onValueChange}
-                    trackColor={{
-                      false: theme.colors.background.overlay,
-                      true: theme.colors.accent.primary,
-                    }}
-                    thumbColor={theme.colors.background.alwaysWhite}
-                  />
-                </View>
-              </View>
-            )}
-          </Pressable>
+          <ToggleRow item={it} />
           {idx < items.length - 1 ? (
             <View
               style={{

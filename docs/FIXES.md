@@ -83,6 +83,30 @@ screens those fixes touched, and the Language row still breaks in English there.
 `tests/layoutAudit/__tests__/` and the unit tests beside each helper (`fitText`, `crampedLayout`,
 `bodyFigureScale`, `chartUtils`).
 
+### Follow-up: the modal surface was baselined instead of fixed (November 2026)
+
+A modals-only sweep (Dutch and Russian, the two 1.3× profiles) still reported 44 error groups, and
+37 of them were already in `baseline.json` as "a single long word has no break point and fits no
+one-column row". That reason was wrong: they were one layout failing. `ToggleInput` kept a 40pt
+icon tile, the text and a 52pt switch on one row, which left about 100pt for the text on a 264pt
+layout, so "Supplementherinneringen" and "редактирование" could never fit while the same words fit
+a full-width row. The rest were the same pattern in other rows: the shared data-log item card
+(Food, Meal, Exercise, Metric and Goal data), `SettingsCard`, a notification's action and time, the
+Create set header, Body metrics' range picker, the Filter workouts footer, and the past workout's
+five equal columns ("Частичные" over "Повторы").
+
+Each is now fixed in its component, in the order the rules ask for (wrap, wrap the row, drop
+decoration, then a little smaller type): `layoutToggleRow` (switch under the text, then icon, then
+type to 12pt), `layoutIconRow` (icon, then title to 14pt), `layoutTableColumns` (a basis per column
+from its own longest word, header type to 10pt), the data-log card drops its icon tile when
+cramped, and the other rows are `flex-wrap` with a `shrink-0` control. Past workout detail's RIR
+column header is `workoutDetail.rirShort`, with the spelled-out wording as its accessibility label.
+The 41 baseline entries these covered (40 word-breaks and the Past workout detail overlap) were
+removed; a full modals sweep (five languages, three profiles) then reported 0 errors besides the
+accepted Eco-Score "E" under the collapsed nutrition preview. The Progress legend error above is a
+separate surface and is untouched. Lesson: an unfixable-sounding baseline reason ("no break point")
+is a symptom to check against a wider row, not an acceptance.
+
 ## Workout summary stats were white on a light card (November 2026)
 
 ### Symptom

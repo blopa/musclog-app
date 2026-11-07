@@ -640,8 +640,10 @@ export default function BodyMetricsHistoryModal({
               ) : currentMetric ? (
                 <GenericCard variant="flat">
                   <View className="p-5">
-                    <View className="mb-6 flex-row items-center justify-between">
-                      <View>
+                    {/* The title and the range picker share the row while both fit; otherwise the
+                        picker drops under the figure instead of running off the card's edge. */}
+                    <View className="mb-6 flex-row flex-wrap items-center justify-between gap-3">
+                      <View className="min-w-0 shrink">
                         <Text className="mb-1 text-xs font-medium text-text-secondary">
                           {`${t('bodyMetrics.current.label')} ${currentMetric.label}`}
                         </Text>
@@ -657,7 +659,7 @@ export default function BodyMetricsHistoryModal({
                         </View>
                       </View>
                       <View
-                        className="flex-row rounded-control p-1"
+                        className="shrink-0 flex-row rounded-control p-1"
                         style={{ backgroundColor: theme.colors.background.raised50 }}
                       >
                         <Pressable

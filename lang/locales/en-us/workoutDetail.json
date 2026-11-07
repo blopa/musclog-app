@@ -26,6 +26,7 @@
     "prBadge": "PR",
     "remove": "Remove",
     "rir": "RIR (reps in reserve)",
+    "rirShort": "RIR",
     "syncToHealthConnect": "Sync to Health Connect",
     "shareMessage": "I've just finished a workout with volume {{volume}} {{unit}} and burned {{calories}} calories",
     "inputs": {

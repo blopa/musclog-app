@@ -285,6 +285,23 @@ or in Spanish):
   line) and the summary card's `131,9/180g`, whose goal drops under the value instead of running
   into the next column. A workout name takes two lines before it is cut.
 - A grouped `ListRow` subtitle wraps rather than ending in an ellipsis: it is the explanation.
+- A settings toggle (`ToggleInput`) keeps its icon, text and switch on one row while the longest
+  word of its label or description fits beside the switch. Otherwise the switch drops under the
+  text, right-aligned, so the text has the whole row ("Supplementherinneringen",
+  "редактирование"); an icon is dropped when cramped or when the word needs its room, and only
+  then does the type shrink, never below 12pt. A navigation row (`SettingsCard`) drops its icon
+  the same way and then shrinks its title to 14pt at the smallest, keeping the chevron.
+- A table with a header (the past workout's sets table) sizes each column from its own longest
+  header word and shares what is left, rather than five equal columns that overlap their
+  neighbours in Russian or Dutch; the header type may shrink to 10pt. A header too long for its
+  column (reps in reserve) shows its abbreviation and keeps the full wording as the accessibility
+  label.
+- A card that lists records with a leading icon tile (the Food, Meal, Exercise, Metric and Goal
+  data modals) drops the tile when cramped; the name and the figures it carried are the content.
+- A title with a control or a timestamp beside it (a notification's "Start now" and its age, the
+  Create set header and its bodyweight switch, a chart card's range picker, a pair of footer
+  buttons) is a wrapping row: the control moves under the title rather than over it or off the
+  card.
 - The food diary's four quick actions (`FoodQuickActions`) share a row only while each gets
   `QUICK_ACTION_MIN_WIDTH` (150pt) multiplied by the font scale, and stack full width otherwise, so
   a label never breaks mid-word in a half-width button.

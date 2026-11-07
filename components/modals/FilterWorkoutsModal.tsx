@@ -175,50 +175,58 @@ export function FilterWorkoutsModal({
             borderTopColor: theme.colors.border.light,
           }}
         >
+          {/* Both buttons share the row while their labels fit; otherwise the row wraps and each
+              takes the full width, so a long translation (Russian "Применить фильтры") is never
+              pushed past the screen's edge. Apply keeps twice Clear's share of the row. */}
           <View
             style={{
               flexDirection: 'row',
+              flexWrap: 'wrap',
               gap: theme.spacing.gap.base,
             }}
           >
-            <Button
-              label={t('workouts.filterWorkouts.clearFilters')}
-              variant="outline"
-              width="flex-1"
-              onPress={handleClear}
-              size="sm"
-            />
-            <Button
-              label={t('workouts.filterWorkouts.applyFilters')}
-              variant="gradientCta"
-              width="flex-2"
-              onPress={handleApply}
-              size="sm"
-              icon={
-                <View
-                  style={{
-                    backgroundColor: theme.colors.background.scrim20,
-                    borderRadius: theme.borderRadius.sm,
-                    paddingHorizontal: theme.spacing.padding.sm,
-                    paddingVertical: theme.spacing.padding.xsHalf,
-                    minWidth: theme.size['6'],
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text
+            <View style={{ flexGrow: 1, flexBasis: 140 }}>
+              <Button
+                label={t('workouts.filterWorkouts.clearFilters')}
+                variant="outline"
+                width="full"
+                onPress={handleClear}
+                size="sm"
+              />
+            </View>
+            <View style={{ flexGrow: 2, flexBasis: 140 }}>
+              <Button
+                label={t('workouts.filterWorkouts.applyFilters')}
+                variant="gradientCta"
+                width="full"
+                onPress={handleApply}
+                size="sm"
+                icon={
+                  <View
                     style={{
-                      fontSize: theme.typography.fontSize.sm,
-                      fontWeight: theme.typography.fontWeight.bold,
-                      color: theme.colors.text.primary,
+                      backgroundColor: theme.colors.background.scrim20,
+                      borderRadius: theme.borderRadius.sm,
+                      paddingHorizontal: theme.spacing.padding.sm,
+                      paddingVertical: theme.spacing.padding.xsHalf,
+                      minWidth: theme.size['6'],
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
-                    {activeFilterCount}
-                  </Text>
-                </View>
-              }
-              iconPosition="right"
-            />
+                    <Text
+                      style={{
+                        fontSize: theme.typography.fontSize.sm,
+                        fontWeight: theme.typography.fontWeight.bold,
+                        color: theme.colors.text.primary,
+                      }}
+                    >
+                      {activeFilterCount}
+                    </Text>
+                  </View>
+                }
+                iconPosition="right"
+              />
+            </View>
           </View>
         </View>
       }
