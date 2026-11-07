@@ -355,7 +355,7 @@ export function DailySummaryCard({
             {dailyMacroItems.length > 0 ? (
               <View className="flex-row gap-2">
                 {dailyMacroItems.map((macro) => (
-                  <View key={macro.label} className="flex-1 gap-1.5">
+                  <View key={macro.label} className="min-w-0 flex-1 gap-1.5">
                     {/* Label above the figure: side by side they fought for width and the label truncated. */}
                     <View className="gap-0.5">
                       <Text
@@ -383,7 +383,9 @@ export function DailySummaryCard({
                         />
                       ) : null}
                       {!highlightThresholds || macro.status === 'not-reached' ? (
-                        <View className="flex-row items-baseline">
+                        {/* Wraps: a four-column row is narrow, and "131,9/180g" used to run into
+                            the next column's figure at large text or in a longer language. */}
+                        <View className="flex-row flex-wrap items-baseline">
                           <Text
                             className="text-xs font-semibold tabular-nums"
                             style={{

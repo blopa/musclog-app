@@ -23,7 +23,9 @@ const getSizeConfig = (theme: Theme) => {
   return {
     sm: {
       iconSize: theme.iconSize.sm,
-      touchableSize: undefined,
+      // 32pt, the audit's smallest acceptable target: the glyph is 16pt, and a 24pt box around it
+      // was a quarter smaller than anything else a thumb is asked to hit.
+      touchableSize: 'h-8 w-8',
       padding: 'p-1',
     },
     md: {

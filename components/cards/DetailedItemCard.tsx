@@ -53,32 +53,31 @@ export function DetailedItemCard({ item, onPress, ctaLabel, description }: Detai
         {/* Info */}
         <View className="min-w-0 flex-1 gap-1">
           {ctaLabel}
-          <Text className="mt-1 truncate text-lg font-semibold leading-tight text-text-primary">
+          {/* Two lines, not one ellipsised: "Upper Body Power" lost its last word at large text. */}
+          <Text
+            className="mt-1 text-lg font-semibold leading-tight text-text-primary"
+            numberOfLines={2}
+          >
             {item.name}
           </Text>
           {description ? <Text className="text-sm text-text-secondary">{description}</Text> : null}
 
-          <View className="mt-1 flex-row items-center gap-3">
+          {/* The three figures wrap instead of running past the card's edge ("1h 10m" was cut off
+              at large text). Each carries its own icon, so they need no dot between them: a
+              separator would land at the end of a line the moment the row wraps. */}
+          <View className="mt-1 flex-row flex-wrap items-center gap-x-3 gap-y-1">
             <View className="flex-row items-center gap-1">
               <item.itemOne.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
               <Text className="text-sm" style={{ color: theme.colors.overlay.ink60 }}>
                 {item.itemOne.value}
               </Text>
             </View>
-            <View
-              className="h-1 w-1 rounded-full"
-              style={{ backgroundColor: theme.colors.overlay.ink20 }}
-            />
             <View className="flex-row items-center gap-1">
               <item.itemTwo.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
               <Text className="text-sm" style={{ color: theme.colors.overlay.ink60 }}>
                 {item.itemTwo.value}
               </Text>
             </View>
-            <View
-              className="h-1 w-1 rounded-full"
-              style={{ backgroundColor: theme.colors.overlay.ink20 }}
-            />
             <View className="flex-row items-center gap-1">
               <item.itemThree.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
               <Text className="text-sm font-medium" style={{ color: theme.colors.overlay.ink80 }}>

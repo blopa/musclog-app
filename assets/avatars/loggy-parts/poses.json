@@ -208,6 +208,27 @@
         "upper": ["magnifier", "arm-r", "hand-r", "body", "arm-l", "hand-l"]
       }
     },
+    "nutrition": {
+      "viewBox": "-178 0 640 640",
+      "face": "cheerful",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "board/nutrition",
+        "arm-l/nutrition",
+        "hand-l/nutrition",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-r/nutrition",
+        "hand-r/nutrition"
+      ],
+      "animated": {
+        "upper": ["arm-l", "hand-l", "body", "arm-r", "hand-r"]
+      }
+    },
     "panic": {
       "viewBox": "0 0 512 640",
       "face": "panicked",

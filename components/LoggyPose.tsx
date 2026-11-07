@@ -11,6 +11,7 @@ import Drinking from '@/assets/avatars/loggy-poses/loggy-drinking.svg';
 import Eating from '@/assets/avatars/loggy-poses/loggy-eating.svg';
 import Flex from '@/assets/avatars/loggy-poses/loggy-flex.svg';
 import Magnify from '@/assets/avatars/loggy-poses/loggy-magnify.svg';
+import Nutrition from '@/assets/avatars/loggy-poses/loggy-nutrition.svg';
 import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
 import Running from '@/assets/avatars/loggy-poses/loggy-running.svg';
 import Thinking from '@/assets/avatars/loggy-poses/loggy-thinking.svg';
@@ -24,6 +25,7 @@ import { LoggyDrinkingAnimated } from '@/components/loggy/animated/LoggyDrinking
 import { LoggyEatingAnimated } from '@/components/loggy/animated/LoggyEatingAnimated';
 import { LoggyFlexAnimated } from '@/components/loggy/animated/LoggyFlexAnimated';
 import { LoggyMagnifyAnimated } from '@/components/loggy/animated/LoggyMagnifyAnimated';
+import { LoggyNutritionAnimated } from '@/components/loggy/animated/LoggyNutritionAnimated';
 import { LoggyPanicAnimated } from '@/components/loggy/animated/LoggyPanicAnimated';
 import { LoggyRunningAnimated } from '@/components/loggy/animated/LoggyRunningAnimated';
 import { LoggyThinkingAnimated } from '@/components/loggy/animated/LoggyThinkingAnimated';
@@ -42,6 +44,7 @@ export type LoggyPoseName =
   | 'eating'
   | 'flex'
   | 'magnify'
+  | 'nutrition'
   | 'panic'
   | 'running'
   | 'thinking'
@@ -68,6 +71,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
   eating: { Art: Eating, aspect: 0.8 },
   flex: { Art: Flex, aspect: 0.8 },
   magnify: { Art: Magnify, aspect: 0.844 },
+  nutrition: { Art: Nutrition, aspect: 1 },
   panic: { Art: Panic, aspect: 0.8 },
   running: { Art: Running, aspect: 0.875 },
   thinking: { Art: Thinking, aspect: 0.767 },
@@ -89,6 +93,7 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   eating: LoggyEatingAnimated,
   flex: LoggyFlexAnimated,
   magnify: LoggyMagnifyAnimated,
+  nutrition: LoggyNutritionAnimated,
   panic: LoggyPanicAnimated,
   running: LoggyRunningAnimated,
   thinking: LoggyThinkingAnimated,

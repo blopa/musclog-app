@@ -47,7 +47,7 @@ function NavSlotButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
-      className="flex-1 items-center justify-center gap-1"
+      className="min-w-0 flex-1 items-center justify-center gap-1"
       onPress={onPress}
       onPressIn={onPressIn}
     >
@@ -62,9 +62,13 @@ function NavSlotButton({
           />
         ) : null}
       </View>
+      {/* One line, held to the slot: a label wider than its fifth of the bar used to spill into the
+          neighbouring tab and the camera button. Labels are written to fit; this keeps one that
+          does not (a long translation, a large font) from overlapping instead. */}
       <Text
         maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
-        className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
+        numberOfLines={1}
+        className={`max-w-full text-center text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
       >
         {label}
       </Text>
