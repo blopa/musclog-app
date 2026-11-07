@@ -9,9 +9,15 @@ import { addOpacityToHex } from '@/theme';
 type BottomButtonWrapperProps = {
   children: ReactNode;
   effect?: 'gradient' | 'blur';
+  /** Reports the bar's height, so a body that scrolls beneath it can pad by exactly that much. */
+  onHeightChange?: (height: number) => void;
 };
 
-export function BottomButtonWrapper({ effect = 'gradient', children }: BottomButtonWrapperProps) {
+export function BottomButtonWrapper({
+  effect = 'gradient',
+  children,
+  onHeightChange,
+}: BottomButtonWrapperProps) {
   const theme = useTheme();
 
   const renderContent = () => (
@@ -35,7 +41,13 @@ export function BottomButtonWrapper({ effect = 'gradient', children }: BottomBut
   };
 
   return (
-    <View className="absolute bottom-0 left-0 right-0" style={wrapperStyle}>
+    <View
+      className="absolute bottom-0 left-0 right-0"
+      style={wrapperStyle}
+      onLayout={
+        onHeightChange ? (event) => onHeightChange(event.nativeEvent.layout.height) : undefined
+      }
+    >
       {effect === 'blur' ? (
         <BlurView intensity={60} tint="dark" className="w-full">
           {renderContent()}

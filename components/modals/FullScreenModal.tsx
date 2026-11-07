@@ -58,6 +58,10 @@ export function FullScreenModal({
   const { t } = useTranslation();
   const theme = useTheme();
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
+  // The footer floats over the body, so the body pads by the footer's real height: a footer that
+  // wraps (stacked buttons at large text or in a long translation) is taller than the fixed room
+  // a one-row footer needs, and used to cover the last rows of the content.
+  const [footerHeight, setFooterHeight] = useState(0);
 
   // Force remount of Modal when visibility changes to prevent "ghost" native window
   // that captures touches. See: https://github.com/facebook/react-native/issues/29455
@@ -155,7 +159,12 @@ export function FullScreenModal({
                 showsVerticalScrollIndicator={false}
                 style={webScrollViewStyle}
                 contentContainerStyle={{
-                  paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
+                  paddingBottom: footer
+                    ? Math.max(
+                        theme.spacing.padding['4xl'],
+                        footerHeight + theme.spacing.padding.sm
+                      )
+                    : theme.spacing.padding.lg,
                 }}
                 bottomOffset={16}
               >
@@ -169,7 +178,7 @@ export function FullScreenModal({
 
             {/* optional footer */}
             {footer ? (
-              <BottomButtonWrapper>
+              <BottomButtonWrapper onHeightChange={setFooterHeight}>
                 {footer}
                 <View style={{ height: theme.spacing.margin.base }} />
               </BottomButtonWrapper>

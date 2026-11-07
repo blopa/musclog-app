@@ -74,9 +74,11 @@ export const MealSectionHeader = memo(function MealSectionHeader({
     <View
       className={`flex-row items-center justify-between gap-3 ${compact ? 'mb-1 mt-3' : 'mb-2 mt-5'}`}
     >
-      <Text className="shrink text-lg font-semibold text-text-primary">{title}</Text>
-      <View className="flex-row items-center gap-1">
-        <View className="items-end">
+      {/* The meal's name keeps its width; the totals take what is left and wrap, so a wide macro line
+          ("P: 237 g · C: 150 g · G: 47 g") never pushes the menu button past the screen's edge. */}
+      <Text className="shrink-0 text-lg font-semibold text-text-primary">{title}</Text>
+      <View className="min-w-0 shrink flex-row items-center gap-1">
+        <View className="min-w-0 shrink items-end">
           <Text
             className="text-sm font-semibold tabular-nums text-text-primary"
             style={intuitiveMode ? blurFilter(5) : undefined}
@@ -87,7 +89,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
           </Text>
           {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
             <View
-              className="flex-row items-center"
+              className="flex-row flex-wrap items-center justify-end"
               style={intuitiveMode ? blurFilter(4) : undefined}
             >
               <Text

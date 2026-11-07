@@ -54,6 +54,8 @@ import {
  *                             of them (a flow runs when its own name or any step's matches)
  *  - MUSCLOG_LAYOUT_SURFACES  comma list of `screens`, `modals`, `onboarding`, `flows` (default all)
  *  - MUSCLOG_LAYOUT_PSEUDO_FACTOR  how much `pseudo` stretches text (default 1.4)
+ *  - MUSCLOG_LAYOUT_TIMING    `1` prints, per test, where its time went (waits, in-page collection,
+ *                             analysis, screenshots); changes nothing else
  */
 
 const LOCALES = resolveLocales(process.env.MUSCLOG_LAYOUT_LOCALES);
@@ -67,6 +69,9 @@ const SURFACES = new Set(
     .map((s) => s.trim())
 );
 const PSEUDO_FACTOR = Number(process.env.MUSCLOG_LAYOUT_PSEUDO_FACTOR ?? 1.4);
+const TIMING = process.env.MUSCLOG_LAYOUT_TIMING === '1';
+/** How long the DOM must sit still after a page is loaded or tapped before it is measured. */
+const SETTLE_QUIET_MS = 300;
 /** The locale a `pseudo` run renders in before its text is stretched. */
 const PSEUDO_BASE_LOCALE = 'en-US';
 
@@ -106,6 +111,24 @@ function createAuditor(
   const fontScale = Number(/-fs([\d.]+)$/.exec(profile)?.[1] ?? 1);
   const pseudo = localeSpec === 'pseudo';
   const entries: ShardEntry[] = [];
+  const spent = new Map<string, { ms: number; calls: number }>();
+  /** Runs `run`; with `MUSCLOG_LAYOUT_TIMING=1` the time it took is added to `phase`'s total. */
+  const timed = async <T>(phase: string, run: () => Promise<T> | T): Promise<T> => {
+    if (!TIMING) {
+      return run();
+    }
+
+    const start = Date.now();
+    try {
+      return await run();
+    } finally {
+      const total = spent.get(phase) ?? { ms: 0, calls: 0 };
+      total.ms += Date.now() - start;
+      total.calls += 1;
+      spent.set(phase, total);
+    }
+  };
+  const startedAt = Date.now();
   const base = () => ({
     platform: 'web' as const,
     group,
@@ -116,21 +139,25 @@ function createAuditor(
   });
 
   const settle = async (extraMs = 1200) => {
-    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => undefined);
+    await timed('settle: networkidle', () =>
+      page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => undefined)
+    );
     // A cold route is a blank page until its bundle runs; wait for any text before measuring.
-    await page
-      .waitForFunction(() => document.body.innerText.trim().length > 0, undefined, {
-        timeout: 15000,
-      })
-      .catch(() => undefined);
+    await timed('settle: first text', () =>
+      page
+        .waitForFunction(() => document.body.innerText.trim().length > 0, undefined, {
+          timeout: 15000,
+        })
+        .catch(() => undefined)
+    );
     // The app draws in English until its settings load from the database. Measuring that frame
     // would audit the wrong language (and a half-loaded screen), so wait for the locale's copy.
     if (signatures.length > 0) {
-      await waitForLocale(page, signatures, 8000);
+      await timed('settle: locale copy', () => waitForLocale(page, signatures, 8000));
     }
 
-    await waitForStableText(page);
-    await page.waitForTimeout(extraMs);
+    await timed('settle: text stable', () => waitForStableText(page));
+    await timed('settle: quiet', () => waitForQuiet(page, SETTLE_QUIET_MS, extraMs));
   };
 
   const record: Auditor['record'] = (entry) => {
@@ -151,7 +178,9 @@ function createAuditor(
     );
     try {
       fs.mkdirSync(path.dirname(file), { recursive: true });
-      await page.screenshot({ path: file, type: 'jpeg', quality: 80, fullPage: false });
+      await timed('screenshot', () =>
+        page.screenshot({ path: file, type: 'jpeg', quality: 80, fullPage: false })
+      );
       return path.relative(REPORT_DIR, file);
     } catch {
       return undefined;
@@ -161,19 +190,23 @@ function createAuditor(
   const audit: Auditor['audit'] = async ({ surface, name, url, onlyNew }) => {
     for (const pass of ['top', 'end'] as const) {
       if (pass === 'end') {
-        const moved = await page.evaluate(scrollLargestToEnd, onlyNew);
+        const moved = await timed('audit: scroll to end', () =>
+          page.evaluate(scrollLargestToEnd, onlyNew)
+        );
         if (!moved) {
           return;
         }
 
-        await page.waitForTimeout(400);
+        await timed('audit: wait after scroll', () => waitForQuiet(page, 150, 400));
       }
 
       if (pseudo) {
         await page.evaluate(applyPseudoLocale, PSEUDO_FACTOR);
       }
 
-      const snapshot = await page.evaluate(collectLayoutSnapshot, { onlyNew });
+      const snapshot = await timed('audit: collect in page', () =>
+        page.evaluate(collectLayoutSnapshot, { onlyNew })
+      );
       if (snapshot.nodes.length === 0) {
         entries.push({
           ...base(),
@@ -197,13 +230,31 @@ function createAuditor(
         pass,
         status: 'audited',
         note: snapshot.capped ? 'node cap reached; later content not examined' : undefined,
-        findings: analyzeSnapshot(snapshot, { pass }),
+        findings: await timed('audit: analyze', () => analyzeSnapshot(snapshot, { pass })),
         screenshot: await capture(surface, name, pass),
       });
     }
   };
 
   const flush = (suffix: string) => {
+    if (TIMING) {
+      const total = Date.now() - startedAt;
+      const accounted = [...spent.values()].reduce((sum, entry) => sum + entry.ms, 0);
+      const rows = [...spent.entries()]
+        .sort((a, b) => b[1].ms - a[1].ms)
+        .map(
+          ([phase, { ms, calls }]) =>
+            `  ${phase.padEnd(26)} ${String(ms).padStart(7)} ms  ${String(calls).padStart(4)} calls`
+        );
+      console.log(
+        [
+          `[timing] ${profile} ${localeSpec} ${suffix}: ${total} ms total`,
+          ...rows,
+          `  ${'everything else (seed, clicks, goto)'.padEnd(26)} ${String(total - accounted).padStart(7)} ms`,
+        ].join('\n')
+      );
+    }
+
     fs.mkdirSync(SHARD_DIR, { recursive: true });
     fs.writeFileSync(
       path.join(SHARD_DIR, `${slug(profile)}__${slug(localeSpec)}__${suffix}.json`),
@@ -229,16 +280,61 @@ function waitForLocale(page: Page, signatures: string[], timeout: number): Promi
     .catch(() => false);
 }
 
+/**
+ * Clock-like text (`00:01:44`, `0:58`) changes every second on a live workout, so it is compared
+ * with its digits masked: a ticking clock is not "the page is still loading".
+ */
+function maskClocks(text: string): string {
+  return text.replace(/\d{1,2}:\d{2}(?::\d{2})?/g, '#:##');
+}
+
 /** Waits until the page text stops changing (loading skeletons, counters, late data). */
 async function waitForStableText(page: Page): Promise<void> {
   let previous = '';
   let stableReads = 0;
-  for (let attempt = 0; attempt < 25 && stableReads < 2; attempt++) {
-    const text = await page.evaluate(() => document.body.innerText).catch(() => '');
+  for (let attempt = 0; attempt < 50 && stableReads < 2; attempt++) {
+    const text = maskClocks(await page.evaluate(() => document.body.innerText).catch(() => ''));
     stableReads = text === previous ? stableReads + 1 : 0;
     previous = text;
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(200);
   }
+}
+
+/**
+ * Waits until nothing in the document has changed for `quietMs`, at most `maxMs`. It replaces a
+ * fixed sleep after a tap or a scroll: a page that is ready is measured as soon as it is quiet,
+ * and one that never goes quiet (a running animation) still waits the whole `maxMs`, so this is
+ * never slower than the sleep it stands in for.
+ */
+async function waitForQuiet(page: Page, quietMs: number, maxMs: number): Promise<void> {
+  await page
+    .evaluate(
+      ({ quiet, max }) =>
+        new Promise<void>((resolve) => {
+          let quietTimer: ReturnType<typeof setTimeout>;
+          const finish = () => {
+            observer.disconnect();
+            clearTimeout(quietTimer);
+            clearTimeout(capTimer);
+            resolve();
+          };
+          const arm = () => {
+            clearTimeout(quietTimer);
+            quietTimer = setTimeout(finish, quiet);
+          };
+          const observer = new MutationObserver(arm);
+          observer.observe(document.documentElement, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            characterData: true,
+          });
+          const capTimer = setTimeout(finish, max);
+          arm();
+        }),
+      { quiet: quietMs, max: maxMs }
+    )
+    .catch(() => undefined);
 }
 
 /**
