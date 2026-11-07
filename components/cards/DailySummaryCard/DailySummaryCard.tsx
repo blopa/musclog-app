@@ -383,8 +383,8 @@ export function DailySummaryCard({
                         />
                       ) : null}
                       {!highlightThresholds || macro.status === 'not-reached' ? (
-                        {/* Wraps: a four-column row is narrow, and "131,9/180g" used to run into
-                            the next column's figure at large text or in a longer language. */}
+                        // Wraps: a four-column row is narrow, and "131,9/180g" used to run into
+                        // the next column's figure at large text or in a longer language.
                         <View className="flex-row flex-wrap items-baseline">
                           <Text
                             className="text-xs font-semibold tabular-nums"

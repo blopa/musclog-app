@@ -508,7 +508,7 @@ export default function HomeScreen() {
         </View>
         <HomeHeatmaps today={today} />
         <View className="mx-4 mb-6">
-          <View className="mb-2 flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-text-primary">
               {t('home.sections.recentFoods')}
             </Text>
@@ -604,7 +604,7 @@ export default function HomeScreen() {
 
         {/* Recent Workouts */}
         <View className="mx-4 mb-6">
-          <View className="mb-2 flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-text-primary">
               {t('home.sections.recentWorkouts')}
             </Text>

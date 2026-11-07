@@ -420,7 +420,7 @@ export default function ProfileScreen() {
 
         {/* Current Stats Section */}
         <View className="mb-6 px-4">
-          <View className="mb-2 flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between">
             <Text className="text-lg font-semibold text-text-primary">
               {t('profile.currentStats')}
             </Text>

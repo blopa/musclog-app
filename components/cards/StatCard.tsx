@@ -62,10 +62,7 @@ export function StatCard({
 
   return (
     <GenericCard variant="flat" fill>
-      <View
-        className="p-4"
-        onLayout={(event) => setCardWidth(event.nativeEvent.layout.width)}
-      >
+      <View className="p-4" onLayout={(event) => setCardWidth(event.nativeEvent.layout.width)}>
         <View className="mb-2 flex-row items-start justify-between">
           <Text className="text-sm text-text-secondary">{title}</Text>
           <Icon size={theme.iconSize.sm} color={iconColor} />

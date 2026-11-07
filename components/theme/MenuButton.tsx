@@ -30,7 +30,7 @@ const getSizeConfig = (theme: Theme) => {
     },
     md: {
       iconSize: theme.iconSize.md,
-      touchableSize: undefined,
+      touchableSize: 'h-8 w-8',
       padding: 'p-1.5',
     },
     lg: {

@@ -133,6 +133,7 @@ const LINEAR_GRADIENT_ALLOWLIST = [
   'components/cards/GenericCard.tsx',
   'components/modals/ExerciseGoalCreationModal.tsx',
   'components/modals/SmartCameraShell.tsx',
+  'components/nutrition/FoodQuickActions.tsx',
   'components/modals/ViewExerciseModal.tsx',
   'components/theme/Slider.tsx',
   'components/workout/session/ExerciseHeader.tsx',
@@ -421,6 +422,7 @@ const SPARKLES_ALLOWLIST = [
   'components/modals/GenerateWorkoutWithAiModal.tsx',
   'components/modals/NotificationsModal.tsx',
   'components/modals/SmartCameraShell.tsx',
+  'components/nutrition/FoodQuickActions.tsx',
 ];
 /** Proper nouns that keep their capitals inside a sentence-case label. */
 const PROPER_NOUNS =

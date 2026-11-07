@@ -265,6 +265,30 @@ Dense controls may draw smaller and pad their hit area with `hitSlop` (`Chip` an
 padding or `hitSlop`; on iOS, negative margins and out-of-bounds `hitSlop` can be clipped by the
 parent; see `docs/FIXES.md`.
 
+`MenuButton` draws a 32pt box at `sm` and `md` (the glyph stays 16–20pt), `ShowMoreButton` and the
+inline date and time chips are 44pt tall through their own box, and a heading row that holds one
+drops its bottom margin because the 44pt row already leaves the gap under the title.
+
+**A label never spills out of its box.** Text that can be wider than its slot is held to it, by
+the layout and not by hoping the copy is short (the layout audit found each of these at large text
+or in Spanish):
+
+- A tab label is one line (`numberOfLines={1}`) and written to fit a fifth of the bar: es-ES says
+  "Entrenos", not "Entrenamientos", which ran under the neighbouring tab and the camera button.
+- A home tile (`ActionButton`) and a stat card figure (`StatCard`) shrink their longest word to the
+  width they measured, through `utils/fitText.ts`, because react-native-web ignores
+  `adjustsFontSizeToFit`. A tile drops its icon (decorative; the label names the action) before the
+  label would fall under 13pt, and no label goes under 10pt; native text is sized against the OS
+  font scale.
+- A row of figures wraps (`flex-wrap`, `gap-x-3 gap-y-0.5`): the food and meal cards' kcal and
+  macro rows, a workout card's three stats (no dot separators, which would end up at the end of a
+  line) and the summary card's `131,9/180g`, whose goal drops under the value instead of running
+  into the next column. A workout name takes two lines before it is cut.
+- A grouped `ListRow` subtitle wraps rather than ending in an ellipsis: it is the explanation.
+- The food diary's four quick actions (`FoodQuickActions`) share a row only while each gets
+  `QUICK_ACTION_MIN_WIDTH` (150pt) multiplied by the font scale, and stack full width otherwise, so
+  a label never breaks mid-word in a half-width button.
+
 ## Components
 
 ### Buttons
