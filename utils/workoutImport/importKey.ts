@@ -30,6 +30,11 @@ export function sessionImportKeys(session: ImportedSession): string[] {
   ];
 }
 
+/** Whether any key the session writes is already in `keys` (the live keys, or those queued so far). */
+export function isSessionPresent(session: ImportedSession, keys: ReadonlySet<string>): boolean {
+  return sessionImportKeys(session).some((key) => keys.has(key));
+}
+
 function canonicalStart(raw: string): string {
   const parsed = parseDateText(raw);
   if (!parsed) {

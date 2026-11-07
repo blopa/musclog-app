@@ -5,8 +5,8 @@ import { LOGGY_FAILURE_POSE, LoggyPose } from '@/components/LoggyPose';
 import { StatStrip, type StatStripItem } from '@/components/StatStrip';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import type { ImportFailureKind, ImportSummaryLike } from '@/utils/workoutImport/importFlow';
-import type { SkippedRow } from '@/utils/workoutImport/types';
+import type { ImportFailureKind } from '@/utils/workoutImport/importFlow';
+import type { ImportSummary, SkippedRow } from '@/utils/workoutImport/types';
 
 /** Whole keys, so the translation scanner sees every failure. */
 const FAILURE_TEXT_KEY = {
@@ -71,7 +71,7 @@ export function ImportFailedView({ failure }: { failure: ImportFailureKind }) {
 }
 
 type ImportSummaryViewProps = {
-  summary: ImportSummaryLike;
+  summary: ImportSummary;
   skipped: readonly SkippedRow[];
 };
 

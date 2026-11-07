@@ -1,6 +1,5 @@
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
-import { View } from 'react-native';
 
 import { LoggyCameo } from '@/components/LoggyCameo';
 import type { LoggyPoseName } from '@/components/LoggyPose';
@@ -43,19 +42,17 @@ const ConfettiOverlay = ({ withLoggy = true, pose }: Props) => {
   // Fixed to the viewport like the confetti canvas: this overlay mounts inside whichever screen
   // fired it, and Loggy belongs at the bottom of the window, not of that screen's container.
   return (
-    <View
-      pointerEvents="none"
+    <div
+      aria-hidden
       style={{
-        position: 'fixed' as never,
-        top: 0,
-        left: 0,
-        width: '100vw' as never,
-        height: '100vh' as never,
+        position: 'fixed',
+        inset: 0,
+        pointerEvents: 'none',
         zIndex: 999999,
       }}
     >
       <LoggyCameo pose={pose} />
-    </View>
+    </div>
   );
 };
 

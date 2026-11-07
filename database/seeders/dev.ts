@@ -24,6 +24,7 @@ import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
+import { seedLayoutAuditData } from '@/database/seeders/layoutAudit';
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
 import { CycleTrackingService } from '@/database/services/CycleTrackingService';
 import { ExerciseService } from '@/database/services/ExerciseService';
@@ -2214,7 +2215,17 @@ const clearAsyncStorage = async () => {
   }
 };
 
-export async function seedDevData(clear: boolean = true): Promise<boolean> {
+type SeedDevDataOptions = {
+  /** Reset the database first (the default). */
+  clear?: boolean;
+  /** Add the layout audit's extra records on top of the demo data (`seedLayoutAuditData`). */
+  layoutAuditData?: boolean;
+};
+
+export async function seedDevData({
+  clear = true,
+  layoutAuditData = false,
+}: SeedDevDataOptions = {}): Promise<boolean> {
   // return true;
 
   if (clear) {
@@ -2366,6 +2377,10 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   await SettingsService.setGoogleGeminiApiKey('dev-gemini-api-key-12345');
   await SettingsService.setDumpLlmRequests(true);
   console.log('Seeded Gemini AI settings: enabled=true, apiKey=dev-gemini-api-key-12345');
+
+  if (layoutAuditData) {
+    await seedLayoutAuditData();
+  }
 
   console.log(
     `Dev data seeding complete. User: ${userSeeded ? 'seeded' : 'skipped'}, Exercises: ${exercisesSeeded ? 'seeded' : 'skipped'}, Workout Templates: ${workoutData.templatesCreated}, Workout History: ${workoutData.workoutsCreated} workouts, User Metrics: ${userMetricsSeeded.created} metrics, Foods: ${foodsSeeded.created} foods, Nutrition logs: ${nutritionSeeded.created}, Meals: ${mealsSeeded.created} meals, Chat messages: ${chatSeeded.created}`

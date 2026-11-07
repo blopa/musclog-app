@@ -495,4 +495,8 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
   );
 }
 
-export const LoggyDrinkingAnimated: LoggyAnimatedPose = { Art, animation: ANIMATION };
+export const LoggyDrinkingAnimated: LoggyAnimatedPose = {
+  Art,
+  animation: ANIMATION,
+  size: [540, 640],
+};

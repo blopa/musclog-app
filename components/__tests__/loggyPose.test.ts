@@ -27,21 +27,27 @@ describe('LoggyPose', () => {
   });
 
   // The still is the generated component drawn without a clock, so the pose table holds the one
-  // component per pose and the proportions of the SVG that is generated beside it.
-  it.each(svgs)(
-    '%s is in the pose table with its generated component and real proportions',
-    (svg) => {
-      const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
-      const component = `Loggy${pose.charAt(0).toUpperCase()}${pose.slice(1)}Animated`;
-      const entry = new RegExp(`\\b${pose}: \\{ pose: ${component}, aspect: ([0-9.]+) \\}`).exec(
-        source
-      );
+  // component per pose; its proportions are written into it by the generator, from the same SVG.
+  it.each(svgs)('%s is in the pose table with its generated component', (svg) => {
+    const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
+    const component = `Loggy${pose.charAt(0).toUpperCase()}${pose.slice(1)}Animated`;
 
-      expect(source).toContain(`'@/components/loggy/animated/${component}'`);
-      expect(entry).not.toBeNull();
-      expect(Number(entry?.[1])).toBeCloseTo(viewBoxAspect(join(POSES, svg)), 2);
-    }
-  );
+    expect(source).toContain(`'@/components/loggy/animated/${component}'`);
+    expect(source).toMatch(new RegExp(`\\b${pose}: ${component},`));
+  });
+
+  it.each(svgs)('%s carries the proportions of its SVG', (svg) => {
+    const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
+    const component = `Loggy${pose.charAt(0).toUpperCase()}${pose.slice(1)}Animated`;
+    const generated = readFileSync(
+      join(root, 'components', 'loggy', 'animated', `${component}.tsx`),
+      'utf8'
+    );
+    const size = /size: \[(\d+(?:\.\d+)?), (\d+(?:\.\d+)?)\]/.exec(generated);
+
+    expect(size).not.toBeNull();
+    expect(Number(size?.[1]) / Number(size?.[2])).toBeCloseTo(viewBoxAspect(join(POSES, svg)), 2);
+  });
 
   it('imports no SVG: a pose can only be drawn in the colours it is given', () => {
     expect(source).not.toMatch(/\.svg'/);

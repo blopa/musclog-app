@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import type { LayoutChangeEvent } from 'react-native';
-import { useWindowDimensions } from 'react-native';
-
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { labelsFitEvenly, WORD_GLYPH_RATIO } from '@/utils/fitText';
 
 type OptionColumnsOptions = {
@@ -22,8 +19,7 @@ export function useOptionColumns(
   labels: string[],
   { fontSize, chrome, gap }: OptionColumnsOptions
 ) {
-  const { fontScale } = useWindowDimensions();
-  const [gridWidth, setGridWidth] = useState<number | null>(null);
+  const { width: gridWidth, fontScale, onLayout: onGridLayout } = useMeasuredWidth();
   const twoColumns = labelsFitEvenly(labels, gridWidth, {
     fontSize,
     chrome,
@@ -33,8 +29,5 @@ export function useOptionColumns(
     glyphWidthRatio: WORD_GLYPH_RATIO,
   });
 
-  return {
-    columns: twoColumns ? 2 : 1,
-    onGridLayout: (event: LayoutChangeEvent) => setGridWidth(event.nativeEvent.layout.width),
-  };
+  return { columns: twoColumns ? 2 : 1, onGridLayout };
 }

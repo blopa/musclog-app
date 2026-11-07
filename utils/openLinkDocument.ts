@@ -1,8 +1,12 @@
 import { extractJsonCandidate, utf8ByteLength } from '@/utils/aiOnboarding/contractParse';
+import type { DocumentParseError } from '@/utils/externalDocument';
 import { findOpenLinkInText, type OpenLinkKind } from '@/utils/openLink';
 
-/** The parse failures every external document shares. */
-export type OpenDocumentError = 'empty' | 'tooLarge' | 'notJson' | 'wrongSchema';
+/** The parse failures `readDocumentText` itself can raise, before any contract reads the body. */
+export type OpenDocumentError = Extract<
+  DocumentParseError,
+  'empty' | 'tooLarge' | 'notJson' | 'wrongSchema'
+>;
 
 /** A pasted chat message can hold the link, the JSON block and prose, so the scan is bounded wider. */
 const RAW_TEXT_FACTOR = 4;

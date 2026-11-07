@@ -20,7 +20,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { optimize } = require('svgo'); // Reached through react-native-svg-transformer.
+const { optimize } = require('svgo');
 const prettier = require('prettier');
 
 const { THEMED_COLOR_PATTERN } = require('../constants/loggyTheme');
@@ -421,6 +421,16 @@ async function generateOne(file) {
     throw new Error(`${file} has no viewBox`);
   }
 
+  // Width and height of the drawing: `LoggyPose` takes its proportions from here.
+  const [, , width, height] = viewBox
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+
+  if (!(width > 0 && height > 0)) {
+    throw new Error(`${file} has a viewBox without a width and a height`);
+  }
+
   const prepared = dropHiddenGroups(source.replace(/<style>[\s\S]*?<\/style>/, '')).replace(
     /class="(s\d+)"/g,
     (_, cls) => {
@@ -483,7 +493,7 @@ function Art({ clock, colors, ...props }: LoggyAnimatedArtProps) {
   );
 }
 
-export const ${name}: LoggyAnimatedPose = { Art, animation: ANIMATION };
+export const ${name}: LoggyAnimatedPose = { Art, animation: ANIMATION, size: [${width}, ${height}] };
 `;
 
   const outputPath = path.join(OUTPUT_DIR, `${name}.tsx`);

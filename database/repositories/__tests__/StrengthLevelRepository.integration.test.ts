@@ -152,14 +152,19 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe('StrengthLevelRepository.fetchGrades', () => {
+/** The grades alone; the state also says whether a missing weigh-in is what is withholding them. */
+async function fetchGrades(exerciseIds: readonly string[], now: number) {
+  return (await StrengthLevelRepository.fetchGradeState(exerciseIds, now)).grades;
+}
+
+describe('StrengthLevelRepository.fetchGradeState grades', () => {
   it('grades a lift from its best qualifying working set', async () => {
     await trainLift(SQUAT, [
       { weight: 60, reps: 5 },
       { weight: 100, reps: 5, rir: 2 },
     ]);
 
-    const grades = await StrengthLevelRepository.fetchGrades([SQUAT], NOW);
+    const grades = await fetchGrades([SQUAT], NOW);
     const squat = grades.get(SQUAT);
 
     expect(squat).toBeDefined();
@@ -171,13 +176,13 @@ describe('StrengthLevelRepository.fetchGrades', () => {
   it('ignores warm-up sets', async () => {
     await trainLift(SQUAT, [{ weight: 200, reps: 5, setType: 'warmup' }]);
 
-    expect((await StrengthLevelRepository.fetchGrades([SQUAT], NOW)).has(SQUAT)).toBe(false);
+    expect((await fetchGrades([SQUAT], NOW)).has(SQUAT)).toBe(false);
   });
 
   it('ignores sets over ten reps', async () => {
     await trainLift(SQUAT, [{ weight: 100, reps: 12 }]);
 
-    expect((await StrengthLevelRepository.fetchGrades([SQUAT], NOW)).has(SQUAT)).toBe(false);
+    expect((await fetchGrades([SQUAT], NOW)).has(SQUAT)).toBe(false);
   });
 
   it('ignores deleted logs', async () => {
@@ -185,13 +190,13 @@ describe('StrengthLevelRepository.fetchGrades', () => {
     const blockId = await addExerciseBlock(logId, SQUAT);
     await addSet(blockId, { weight: 120, reps: 5 });
 
-    expect((await StrengthLevelRepository.fetchGrades([SQUAT], NOW)).has(SQUAT)).toBe(false);
+    expect((await fetchGrades([SQUAT], NOW)).has(SQUAT)).toBe(false);
   });
 
   it('ignores training outside the window', async () => {
     await trainLift(SQUAT, [{ weight: 120, reps: 5 }], NOW - 400 * MS_PER_SOLAR_DAY);
 
-    expect((await StrengthLevelRepository.fetchGrades([SQUAT], NOW)).has(SQUAT)).toBe(false);
+    expect((await fetchGrades([SQUAT], NOW)).has(SQUAT)).toBe(false);
   });
 
   it('gives nothing without a weigh-in, and says so', async () => {
@@ -214,7 +219,7 @@ describe('StrengthLevelRepository.fetchGrades', () => {
   it('leaves out a lift whose multiplier is zero, even when trained', async () => {
     await trainLift(STRETCH, [{ weight: 40, reps: 5 }]);
 
-    expect((await StrengthLevelRepository.fetchGrades([STRETCH], NOW)).has(STRETCH)).toBe(false);
+    expect((await fetchGrades([STRETCH], NOW)).has(STRETCH)).toBe(false);
   });
 
   it('decrypts the body weight exactly once, however many lifts and sets it reads', async () => {
@@ -227,7 +232,7 @@ describe('StrengthLevelRepository.fetchGrades', () => {
       { weight: 22, reps: 6 },
     ]);
 
-    const grades = await StrengthLevelRepository.fetchGrades([SQUAT, CURL], NOW);
+    const grades = await fetchGrades([SQUAT, CURL], NOW);
 
     expect(grades.size).toBe(2);
     expect(decryptCalls).toBe(1);
@@ -236,7 +241,7 @@ describe('StrengthLevelRepository.fetchGrades', () => {
   it('returns an empty map for an empty id list without touching the database', async () => {
     const spy = jest.spyOn(UserMetricService, 'getLatest');
 
-    expect((await StrengthLevelRepository.fetchGrades([], NOW)).size).toBe(0);
+    expect((await fetchGrades([], NOW)).size).toBe(0);
     expect(spy).not.toHaveBeenCalled();
   });
 });

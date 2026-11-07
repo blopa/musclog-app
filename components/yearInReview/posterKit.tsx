@@ -8,9 +8,10 @@ import { YEAR_STORY_ART } from '@/components/yearInReview/yearStoryArt';
 import { MAX_CHROME_FONT_SCALE } from '@/constants/fontScale';
 import { POSTER_GROUNDS, type PosterGround } from '@/constants/loggyPalette';
 import type { Units } from '@/constants/settings';
+import { fitFontSize } from '@/utils/fitText';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import type { YearStoryCard } from '@/utils/yearInReview/storyCards';
-import { fitFontSize, storyScale } from '@/utils/yearInReview/storyLayout';
+import { storyScale } from '@/utils/yearInReview/storyLayout';
 import type { YearInReview } from '@/utils/yearInReview/types';
 
 export const POSTER_PADDING = 24;

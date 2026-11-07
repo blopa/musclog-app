@@ -1,4 +1,4 @@
-import { fitFontSize, storyScale } from '@/utils/yearInReview/storyLayout';
+import { storyScale } from '@/utils/yearInReview/storyLayout';
 
 describe('storyScale', () => {
   it('shrinks a poster on a small phone but keeps it readable', () => {
@@ -9,22 +9,5 @@ describe('storyScale', () => {
 
   it('stops growing on a tall screen', () => {
     expect(storyScale(2000)).toBe(1.2);
-  });
-});
-
-describe('fitFontSize', () => {
-  it('keeps a short figure at the full size', () => {
-    expect(fitFontSize('7', 310, 132)).toBe(132);
-  });
-
-  it('shrinks a long figure so it stays on one line', () => {
-    const size = fitFontSize('1,204,332', 310, 132);
-
-    expect(size).toBeLessThan(132);
-    expect(size * 9 * 0.62).toBeLessThanOrEqual(310);
-  });
-
-  it('does not divide by nothing', () => {
-    expect(fitFontSize('', 310, 132)).toBe(132);
   });
 });

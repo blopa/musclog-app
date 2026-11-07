@@ -27,19 +27,11 @@ import { mergePersonalizedSetup, readPersonalizedSetup } from '@/utils/onboardin
 import { PERSONALIZED_SETUP_STEPS, PERSONALIZED_STEP } from '@/utils/onboardingRoutes';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 
-type ExperienceOption = {
-  value: LiftingExperience;
-  labelKey: string;
-  descKey: string;
-  icon: LucideIcon;
-};
+type ChoiceOption = { labelKey: string; descKey: string; icon: LucideIcon };
 
-type ActivityOption = {
-  value: ActivityLevel;
-  labelKey: string;
-  descKey: string;
-  icon: LucideIcon;
-};
+type ExperienceOption = ChoiceOption & { value: LiftingExperience };
+
+type ActivityOption = ChoiceOption & { value: ActivityLevel };
 
 const EXPERIENCE_OPTIONS: ExperienceOption[] = [
   {
@@ -95,13 +87,90 @@ const ACTIVITY_OPTIONS: ActivityOption[] = [
   },
 ];
 
+/** One radio row of a choice list: an icon tile (dropped when cramped), the words and a radio dot. */
+function ChoiceRow({
+  option,
+  isSelected,
+  onPress,
+}: {
+  option: ChoiceOption;
+  isSelected: boolean;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
+  const { t } = useTranslation();
+  // The leading icon tile gives its room to the label when the layout is cramped.
+  const isCramped = useIsCramped();
+  const Icon = option.icon;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className="flex-row items-center justify-between gap-3 rounded-control px-4 py-4"
+      style={{
+        backgroundColor: theme.colors.background.cardElevated,
+        borderWidth: 1.5,
+        borderColor: isSelected ? theme.colors.accent.primary : 'transparent',
+      }}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: isSelected }}
+    >
+      <View className="min-w-0 flex-1 flex-row items-center gap-3">
+        {isCramped ? null : (
+          <View
+            className="items-center justify-center rounded-full"
+            style={{
+              width: 36,
+              height: 36,
+              backgroundColor: isSelected
+                ? theme.colors.accent.primary + '22'
+                : theme.colors.background.card,
+            }}
+          >
+            <Icon
+              size={18}
+              color={isSelected ? theme.colors.accent.primary : theme.colors.text.secondary}
+            />
+          </View>
+        )}
+        <View className="min-w-0 flex-1">
+          <Text
+            className="font-semibold"
+            style={{
+              color: isSelected ? theme.colors.accent.primary : theme.colors.text.primary,
+              fontSize: theme.typography.fontSize.base,
+            }}
+          >
+            {t(option.labelKey)}
+          </Text>
+          <Text
+            style={{ color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.xs }}
+          >
+            {t(option.descKey)}
+          </Text>
+        </View>
+      </View>
+
+      <View
+        className="shrink-0 items-center justify-center rounded-full"
+        style={{
+          width: 24,
+          height: 24,
+          borderWidth: 2,
+          borderColor: isSelected ? theme.colors.accent.primary : theme.colors.border.light,
+          backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
+        }}
+      >
+        {isSelected ? <Check size={14} color={theme.colors.text.primary} /> : null}
+      </View>
+    </Pressable>
+  );
+}
+
 export default function PersonalizedExperienceScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  // The leading icon tile gives its room to the label when the layout is cramped.
-  const isCramped = useIsCramped();
-
   const [experience, setExperience] = useState<LiftingExperience>('beginner');
   const [activityLevel, setActivityLevel] = useState<ActivityLevel>(2);
   const [isSaving, setIsSaving] = useState(false);
@@ -175,81 +244,14 @@ export default function PersonalizedExperienceScreen() {
                 {t('onboarding.personalizedExperience.experienceLabel')}
               </Text>
 
-              {EXPERIENCE_OPTIONS.map((opt) => {
-                const isSelected = experience === opt.value;
-                return (
-                  <Pressable
-                    key={opt.value}
-                    onPress={() => setExperience(opt.value)}
-                    className="flex-row items-center justify-between gap-3 rounded-control px-4 py-4"
-                    style={{
-                      backgroundColor: theme.colors.background.cardElevated,
-                      borderWidth: 1.5,
-                      borderColor: isSelected ? theme.colors.accent.primary : 'transparent',
-                    }}
-                    accessibilityRole="radio"
-                    accessibilityState={{ checked: isSelected }}
-                  >
-                    <View className="min-w-0 flex-1 flex-row items-center gap-3">
-                      {isCramped ? null : (
-                        <View
-                          className="items-center justify-center rounded-full"
-                          style={{
-                            width: 36,
-                            height: 36,
-                            backgroundColor: isSelected
-                              ? theme.colors.accent.primary + '22'
-                              : theme.colors.background.card,
-                          }}
-                        >
-                          <opt.icon
-                            size={18}
-                            color={
-                              isSelected ? theme.colors.accent.primary : theme.colors.text.secondary
-                            }
-                          />
-                        </View>
-                      )}
-                      <View className="min-w-0 flex-1">
-                        <Text
-                          className="font-semibold"
-                          style={{
-                            color: isSelected
-                              ? theme.colors.accent.primary
-                              : theme.colors.text.primary,
-                            fontSize: theme.typography.fontSize.base,
-                          }}
-                        >
-                          {t(opt.labelKey)}
-                        </Text>
-                        <Text
-                          style={{
-                            color: theme.colors.text.secondary,
-                            fontSize: theme.typography.fontSize.xs,
-                          }}
-                        >
-                          {t(opt.descKey)}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View
-                      className="shrink-0 items-center justify-center rounded-full"
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderWidth: 2,
-                        borderColor: isSelected
-                          ? theme.colors.accent.primary
-                          : theme.colors.border.light,
-                        backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
-                      }}
-                    >
-                      {isSelected ? <Check size={14} color={theme.colors.text.primary} /> : null}
-                    </View>
-                  </Pressable>
-                );
-              })}
+              {EXPERIENCE_OPTIONS.map((option) => (
+                <ChoiceRow
+                  key={option.value}
+                  option={option}
+                  isSelected={experience === option.value}
+                  onPress={() => setExperience(option.value)}
+                />
+              ))}
             </View>
 
             {/* Activity Level */}
@@ -258,81 +260,14 @@ export default function PersonalizedExperienceScreen() {
                 {t('onboarding.personalizedExperience.activityLevelLabel')}
               </Text>
 
-              {ACTIVITY_OPTIONS.map((opt) => {
-                const isSelected = activityLevel === opt.value;
-                return (
-                  <Pressable
-                    key={opt.value}
-                    onPress={() => setActivityLevel(opt.value)}
-                    className="flex-row items-center justify-between gap-3 rounded-control px-4 py-4"
-                    style={{
-                      backgroundColor: theme.colors.background.cardElevated,
-                      borderWidth: 1.5,
-                      borderColor: isSelected ? theme.colors.accent.primary : 'transparent',
-                    }}
-                    accessibilityRole="radio"
-                    accessibilityState={{ checked: isSelected }}
-                  >
-                    <View className="min-w-0 flex-1 flex-row items-center gap-3">
-                      {isCramped ? null : (
-                        <View
-                          className="items-center justify-center rounded-full"
-                          style={{
-                            width: 36,
-                            height: 36,
-                            backgroundColor: isSelected
-                              ? theme.colors.accent.primary + '22'
-                              : theme.colors.background.card,
-                          }}
-                        >
-                          <opt.icon
-                            size={18}
-                            color={
-                              isSelected ? theme.colors.accent.primary : theme.colors.text.secondary
-                            }
-                          />
-                        </View>
-                      )}
-                      <View className="min-w-0 flex-1">
-                        <Text
-                          className="font-semibold"
-                          style={{
-                            color: isSelected
-                              ? theme.colors.accent.primary
-                              : theme.colors.text.primary,
-                            fontSize: theme.typography.fontSize.base,
-                          }}
-                        >
-                          {t(opt.labelKey)}
-                        </Text>
-                        <Text
-                          style={{
-                            color: theme.colors.text.secondary,
-                            fontSize: theme.typography.fontSize.xs,
-                          }}
-                        >
-                          {t(opt.descKey)}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View
-                      className="shrink-0 items-center justify-center rounded-full"
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderWidth: 2,
-                        borderColor: isSelected
-                          ? theme.colors.accent.primary
-                          : theme.colors.border.light,
-                        backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
-                      }}
-                    >
-                      {isSelected ? <Check size={14} color={theme.colors.text.primary} /> : null}
-                    </View>
-                  </Pressable>
-                );
-              })}
+              {ACTIVITY_OPTIONS.map((option) => (
+                <ChoiceRow
+                  key={option.value}
+                  option={option}
+                  isSelected={activityLevel === option.value}
+                  onPress={() => setActivityLevel(option.value)}
+                />
+              ))}
             </View>
           </View>
         </ScrollView>

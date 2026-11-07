@@ -5,17 +5,19 @@
 import type { ExerciseResolution } from './commitPlan';
 import type { ExerciseMatch } from './exerciseMatch';
 import { inferCustomExercise } from './exerciseMatch';
-import { sessionImportKeys } from './importKey';
+import { isSessionPresent } from './importKey';
 import type {
   ImportedSession,
+  ImportFailure,
+  ImportSummary,
   ImportWeightUnit,
   SkippedRow,
   WorkoutImportResult,
   WorkoutImportSource,
 } from './types';
 
-export type ImportFailureKind =
-  'empty' | 'unknownFormat' | 'noRows' | 'tooLarge' | 'nothingNew' | 'readFailed';
+/** The parser's failures plus the ones only the flow can meet (size, nothing new, a failed read). */
+export type ImportFailureKind = ImportFailure | 'tooLarge' | 'nothingNew' | 'readFailed';
 
 export type ImportStep = 'pick' | 'unit' | 'review' | 'saving' | 'summary' | 'failed';
 
@@ -28,17 +30,6 @@ export type ExerciseChoice =
 export interface ImportProgress {
   done: number;
   total: number;
-}
-
-export interface ImportSummaryLike {
-  batchId: string;
-  sessionsImported: number;
-  sessionsAlreadyHere: number;
-  setsImported: number;
-  exercisesCreated: number;
-  timedSets: number;
-  cardioImported: number;
-  exercisesSkipped: number;
 }
 
 export interface ImportFlowState {
@@ -60,7 +51,7 @@ export interface ImportFlowState {
   choices: Record<string, ExerciseChoice>;
   progress: ImportProgress | null;
   saveFailed: boolean;
-  summary: ImportSummaryLike | null;
+  summary: ImportSummary | null;
 }
 
 export const INITIAL_IMPORT_FLOW: ImportFlowState = {
@@ -99,7 +90,7 @@ export type ImportFlowAction =
   | { type: 'setRememberAlias'; name: string; value: boolean }
   | { type: 'saveStarted' }
   | { type: 'saveProgress'; progress: ImportProgress }
-  | { type: 'saveSucceeded'; summary: ImportSummaryLike }
+  | { type: 'saveSucceeded'; summary: ImportSummary }
   | { type: 'saveFailed' }
   | { type: 'cancel' };
 
@@ -111,7 +102,7 @@ export function partitionSessions(
   const fresh: ImportedSession[] = [];
   let alreadyHere = 0;
   for (const session of sessions) {
-    if (sessionImportKeys(session).some((key) => existingKeys.has(key))) {
+    if (isSessionPresent(session, existingKeys)) {
       alreadyHere += 1;
     } else {
       fresh.push(session);

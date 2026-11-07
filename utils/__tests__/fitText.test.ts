@@ -1,4 +1,5 @@
 import {
+  fitFontSize,
   fitLabelFontSize,
   fitLineFontSize,
   labelsFitEvenly,
@@ -343,5 +344,22 @@ describe('layoutTableColumns', () => {
     const plain = layoutTableColumns(russian, 250, options);
     const large = layoutTableColumns(russian, 250, { ...options, fontScale: 1.3 });
     expect(large.fontSize).toBeLessThan(plain.fontSize);
+  });
+});
+
+describe('fitFontSize', () => {
+  it('keeps a short figure at the full size', () => {
+    expect(fitFontSize('7', 310, 132)).toBe(132);
+  });
+
+  it('shrinks a long figure so it stays on one line', () => {
+    const size = fitFontSize('1,204,332', 310, 132);
+
+    expect(size).toBeLessThan(132);
+    expect(size * 9 * 0.62).toBeLessThanOrEqual(310);
+  });
+
+  it('does not divide by nothing', () => {
+    expect(fitFontSize('', 310, 132)).toBe(132);
   });
 });

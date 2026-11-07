@@ -216,7 +216,8 @@ describe('Loggy placement', () => {
       .map(({ path }) => path)
       .sort();
 
-    // `LoggyPose.tsx` names it in the pose type; the art table is the one place it is chosen.
-    expect(users).toEqual(['components/LoggyPose.tsx', 'components/yearInReview/yearStoryArt.ts']);
+    // `LoggyPose.tsx` registers it as a table key (unquoted); the art table is the one place it is
+    // chosen by name.
+    expect(users).toEqual(['components/yearInReview/yearStoryArt.ts']);
   });
 });

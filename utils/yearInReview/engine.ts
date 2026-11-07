@@ -1,3 +1,5 @@
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
 import {
   type TrainingTimeBucket,
   YEAR_MEAL_TYPES,
@@ -30,40 +32,30 @@ const TRAINING_TIME_ORDER: readonly TrainingTimeBucket[] = [
 ];
 
 const TOP_EXERCISE_COUNT = 3;
-const DAY_MS = 86_400_000;
 const MS_PER_SECOND = 1000;
 const MINUTES_PER_HOUR = 60;
 /** Real-world offsets run from UTC-12 to UTC+14. Anything outside is treated as malformed. */
 const MAX_OFFSET_MINUTES = 14 * MINUTES_PER_HOUR;
-const OFFSET_PATTERN = /^([+-])(\d{2}):?(\d{2})$/;
+const COMPACT_OFFSET = /^([+-]\d{2})(\d{2})$/;
 const DAY_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
- * Minutes east of UTC for a stored "±HH:MM" or "±HHMM" offset, or `null` when it is missing or
- * malformed. Malformed offsets fall back to device time, which the callers handle.
+ * Minutes east of UTC for a stored "±HH:MM" (or compact "±HHMM") offset, or `null` when it is
+ * missing or malformed. The reading itself is the app's one offset parser; this only refuses what
+ * no place on Earth has (minutes past 59, or beyond UTC+14), which falls back to device time.
  */
 export function parseOffsetMinutes(timezone: string | null): number | null {
   if (!timezone) {
     return null;
   }
 
-  const match = OFFSET_PATTERN.exec(timezone);
-  if (!match) {
+  const withColon = timezone.replace(COMPACT_OFFSET, '$1:$2');
+  const total = parseTimezoneOffsetMinutes(withColon);
+  if (total === null || Number(withColon.slice(4)) >= MINUTES_PER_HOUR) {
     return null;
   }
 
-  const hours = Number(match[2]);
-  const minutes = Number(match[3]);
-  if (minutes >= MINUTES_PER_HOUR) {
-    return null;
-  }
-
-  const total = hours * MINUTES_PER_HOUR + minutes;
-  if (total > MAX_OFFSET_MINUTES) {
-    return null;
-  }
-
-  return match[1] === '-' ? -total : total;
+  return Math.abs(total) > MAX_OFFSET_MINUTES ? null : total;
 }
 
 type LocalParts = {
@@ -79,8 +71,8 @@ type LocalParts = {
 };
 
 function partsFromCalendar(year: number, month: number, day: number, hour: number): LocalParts {
-  const dayNumber = Math.round(Date.UTC(year, month, day) / DAY_MS);
-  const weekday = (new Date(dayNumber * DAY_MS).getUTCDay() + 6) % 7;
+  const dayNumber = Math.round(Date.UTC(year, month, day) / MS_PER_SOLAR_DAY);
+  const weekday = (new Date(dayNumber * MS_PER_SOLAR_DAY).getUTCDay() + 6) % 7;
 
   return { year, month, day, hour, dayNumber, weekday };
 }
@@ -328,7 +320,7 @@ function longestDayRunOf(days: Iterable<string>): number | null {
   const numbers = [...days]
     .map((day) => {
       const [year, month, date] = day.split('-').map(Number);
-      return Math.round(Date.UTC(year, month - 1, date) / DAY_MS);
+      return Math.round(Date.UTC(year, month - 1, date) / MS_PER_SOLAR_DAY);
     })
     .sort((a, b) => a - b);
 

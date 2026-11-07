@@ -1,3 +1,4 @@
+import type { MuscleGroup } from '@/database/models/Exercise';
 import {
   loadBenchmarkFor,
   MAX_E1RM_REPS,
@@ -8,6 +9,7 @@ import {
   RS_NOVICE,
   type StrengthGender,
   strengthGenderFactor,
+  type StrengthSubject,
 } from '@/utils/relativeStrength';
 import { calculateAverage1RM } from '@/utils/workoutCalculator';
 
@@ -22,7 +24,7 @@ export interface StrengthGradeInput {
   bodyWeightKg: number | null;
   loadMultiplier: number;
   gender: StrengthGender;
-  muscleGroup: string | null;
+  muscleGroup: MuscleGroup | null;
 }
 
 export interface StrengthGrade {
@@ -95,22 +97,14 @@ export function gradeStrength(input: StrengthGradeInput): StrengthGrade | null {
   }
 
   const benchmark = loadBenchmarkFor(loadMultiplier);
+  const subject: StrengthSubject = { bodyWeightKg, loadMultiplier, gender, muscleGroup };
 
   if (gender === 'other') {
-    const maleScale = normalizedRelativeStrength(
-      estimated1RmKg,
-      bodyWeightKg,
-      loadMultiplier,
-      'other',
-      muscleGroup
-    );
-    const femaleScale = normalizedRelativeStrength(
-      estimated1RmKg,
-      bodyWeightKg,
-      loadMultiplier,
-      'female',
-      muscleGroup
-    );
+    const maleScale = normalizedRelativeStrength(estimated1RmKg, { ...subject, gender: 'other' });
+    const femaleScale = normalizedRelativeStrength(estimated1RmKg, {
+      ...subject,
+      gender: 'female',
+    });
     const level = levelFor(maleScale);
     const femaleLevel = levelFor(femaleScale);
     return {
@@ -122,13 +116,7 @@ export function gradeStrength(input: StrengthGradeInput): StrengthGrade | null {
     };
   }
 
-  const normalized = normalizedRelativeStrength(
-    estimated1RmKg,
-    bodyWeightKg,
-    loadMultiplier,
-    gender,
-    muscleGroup
-  );
+  const normalized = normalizedRelativeStrength(estimated1RmKg, subject);
   const level = levelFor(normalized);
   const next = nextAbove(level);
   const factor = strengthGenderFactor(gender, muscleGroup);

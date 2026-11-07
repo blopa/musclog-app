@@ -10,6 +10,7 @@ import {
   RS_INTERMEDIATE,
   RS_NOVICE,
   strengthGenderFactor,
+  type StrengthSubject,
 } from '@/utils/relativeStrength';
 import { calculateAverage1RM } from '@/utils/workoutCalculator';
 
@@ -58,21 +59,44 @@ describe('relativeStrength', () => {
   });
 
   describe('normalizedRelativeStrength', () => {
+    const subject = (overrides: Partial<StrengthSubject>): StrengthSubject => ({
+      bodyWeightKg: 80,
+      loadMultiplier: 1,
+      gender: 'male',
+      ...overrides,
+    });
+
     it('divides e1RM by bodyweight times the load benchmark times the factor', () => {
-      expect(normalizedRelativeStrength(120, 80, 1.5, 'male')).toBeCloseTo(1);
-      expect(normalizedRelativeStrength(120, 80, 1.5, 'female', 'legs')).toBeCloseTo(
-        120 / (80 * 1.5 * 0.75)
-      );
+      expect(
+        normalizedRelativeStrength(120, subject({ loadMultiplier: 1.5, gender: 'male' }))
+      ).toBeCloseTo(1);
+      expect(
+        normalizedRelativeStrength(
+          120,
+          subject({ loadMultiplier: 1.5, gender: 'female', muscleGroup: 'legs' })
+        )
+      ).toBeCloseTo(120 / (80 * 1.5 * 0.75));
     });
 
     it('treats a stored loadMultiplier of 0 as 1 instead of dividing by zero', () => {
-      expect(normalizedRelativeStrength(80, 80, 0, 'male')).toBe(1);
-      expect(Number.isFinite(normalizedRelativeStrength(80, 80, 0, 'male'))).toBe(true);
+      expect(normalizedRelativeStrength(80, subject({ loadMultiplier: 0, gender: 'male' }))).toBe(
+        1
+      );
+      expect(
+        Number.isFinite(
+          normalizedRelativeStrength(80, subject({ loadMultiplier: 0, gender: 'male' }))
+        )
+      ).toBe(true);
     });
 
     it('is the same number whether a female lift has no group or the default group', () => {
-      expect(normalizedRelativeStrength(100, 80, 1, 'female')).toBeCloseTo(
-        normalizedRelativeStrength(100, 80, 1, 'female', 'core')
+      expect(
+        normalizedRelativeStrength(100, subject({ loadMultiplier: 1, gender: 'female' }))
+      ).toBeCloseTo(
+        normalizedRelativeStrength(
+          100,
+          subject({ loadMultiplier: 1, gender: 'female', muscleGroup: 'core' })
+        )
       );
     });
   });

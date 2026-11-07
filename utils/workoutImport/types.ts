@@ -57,3 +57,15 @@ export type WorkoutImportResult =
       skipped: SkippedRow[];
     }
   | { ok: false; failure: ImportFailure };
+
+/** What a finished import reports; written by the commit service, shown by the summary step. */
+export interface ImportSummary {
+  batchId: string;
+  sessionsImported: number;
+  sessionsAlreadyHere: number;
+  setsImported: number;
+  cardioImported: number;
+  exercisesCreated: number;
+  exercisesSkipped: number;
+  timedSets: number;
+}

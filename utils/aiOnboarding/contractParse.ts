@@ -8,16 +8,10 @@ import {
   normalizeAnswers,
   type OnboardingAnswersDraft,
 } from '@/utils/aiOnboarding/contract';
+import { type DocumentParseError, readEnvelope } from '@/utils/externalDocument';
 import { isRecord } from '@/utils/isRecord';
 
-export type ContractParseError =
-  | 'empty'
-  | 'tooLarge'
-  | 'notJson'
-  | 'notAnObject'
-  | 'wrongSchema'
-  | 'newerVersion'
-  | 'invalidVersion';
+export type ContractParseError = DocumentParseError;
 
 export type ContractParseResult =
   | {
@@ -155,23 +149,17 @@ export function parseContractText(text: string, today: Date): ContractParseResul
     return { ok: false, error: 'notJson' };
   }
 
-  if (!isRecord(parsed)) {
-    return { ok: false, error: 'notAnObject' };
+  const envelope = readEnvelope(parsed, { schemaId: CONTRACT_SCHEMA_ID, major: CONTRACT_MAJOR });
+  if (!envelope.ok) {
+    return envelope;
   }
 
-  if (parsed.schema !== CONTRACT_SCHEMA_ID) {
-    return { ok: false, error: 'wrongSchema' };
-  }
-
-  const version = parsed.version;
-  if (typeof version !== 'number' || !Number.isFinite(version) || version < 1) {
-    return { ok: false, error: 'invalidVersion' };
-  }
-
-  if (Math.trunc(version) > CONTRACT_MAJOR) {
-    return { ok: false, error: 'newerVersion' };
-  }
-
-  const { draft, issues, warnings } = normalizeAnswers(parsed, today);
-  return { ok: true, draft, issues, droppedKeys: collectDroppedKeys(parsed), warnings };
+  const { draft, issues, warnings } = normalizeAnswers(envelope.record, today);
+  return {
+    ok: true,
+    draft,
+    issues,
+    droppedKeys: collectDroppedKeys(envelope.record),
+    warnings,
+  };
 }

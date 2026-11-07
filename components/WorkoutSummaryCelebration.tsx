@@ -11,8 +11,7 @@ import { WorkoutSummaryStatsCard } from './cards/WorkoutSummaryStatsCard';
 import { LoggyPose, useLoggyVisible } from './LoggyPose';
 import { Button } from './theme/Button';
 import { WorkoutSummaryHeader } from './WorkoutSummaryHeader';
-
-const SUMMARY_POSE_HEIGHT = 176;
+import { SUMMARY_POSE_HEIGHT, summaryPoseFor } from './workoutSummaryPose';
 
 type WorkoutSummaryCelebrationProps = {
   children?: ReactNode;
@@ -80,10 +79,7 @@ export function WorkoutSummaryCelebration({
           {/* The finished workout's face. The confetti above it brings no second Loggy. */}
           {showLoggy ? (
             <View className="mb-6">
-              <LoggyPose
-                pose={personalRecords > 0 ? 'trophy' : 'celebrating'}
-                height={SUMMARY_POSE_HEIGHT}
-              />
+              <LoggyPose pose={summaryPoseFor(personalRecords)} height={SUMMARY_POSE_HEIGHT} />
             </View>
           ) : null}
           <WorkoutSummaryHeader />

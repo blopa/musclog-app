@@ -1,6 +1,7 @@
-import { ReactNode, useState } from 'react';
-import { Platform, Pressable, Text, useWindowDimensions, View } from 'react-native';
+import type { ReactNode } from 'react';
+import { Platform, Pressable, Text, View } from 'react-native';
 
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useTheme } from '@/hooks/useTheme';
 import { labelsFitEvenly } from '@/utils/fitText';
 
@@ -56,8 +57,7 @@ export function SegmentedControl({
   fullWidth = false,
 }: TestSegmentedControlProps) {
   const theme = useTheme();
-  const { fontScale } = useWindowDimensions();
-  const [trackWidth, setTrackWidth] = useState<number | null>(null);
+  const { width: trackWidth, fontScale, onLayout: onTrackLayout } = useMeasuredWidth();
   // A full-width pill shares its track evenly while every label's longest word fits its share;
   // once one does not (a long translation, large text) the options size to their labels and wrap.
   const sharesEvenly = labelsFitEvenly(
@@ -95,11 +95,7 @@ export function SegmentedControl({
 
   if (variant === 'pill') {
     return (
-      <View
-        className={containerClass}
-        accessibilityRole="radiogroup"
-        onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
-      >
+      <View className={containerClass} accessibilityRole="radiogroup" onLayout={onTrackLayout}>
         {options.map((option) => {
           const isSelected = value === option.value;
           return (

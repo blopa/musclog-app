@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+import {
+  type DocumentParseError,
+  type NormalizerError,
+  readEnvelope,
+  trimmedText,
+} from '@/utils/externalDocument';
+import { isRecord } from '@/utils/isRecord';
+
 /**
  * The workout-plan contract: the one shape ChatGPT or Claude is asked to write when someone builds
  * a plan outside the app. Everything that comes back (a file or pasted text) is untrusted until it
@@ -92,16 +100,7 @@ export type WorkoutPlanDraft = {
   workouts: PlanWorkout[];
 };
 
-export type PlanParseError =
-  | 'empty'
-  | 'tooLarge'
-  | 'notJson'
-  | 'notAnObject'
-  | 'wrongSchema'
-  | 'invalidVersion'
-  | 'newerVersion'
-  | 'invalidPlan'
-  | 'noExercises';
+export type PlanParseError = DocumentParseError | 'invalidPlan' | 'noExercises';
 
 export type NormalizedPlan =
   | {
@@ -112,19 +111,8 @@ export type NormalizedPlan =
     }
   | {
       ok: false;
-      error: Extract<
-        PlanParseError,
-        | 'wrongSchema'
-        | 'invalidVersion'
-        | 'newerVersion'
-        | 'invalidPlan'
-        | 'noExercises'
-        | 'notAnObject'
-      >;
+      error: NormalizerError<PlanParseError>;
     };
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /** A whole number from a number or a numeric string ("8"); anything else is not a number. */
 function toWholeNumber(value: unknown): number | undefined {
@@ -156,15 +144,6 @@ function readReps(value: unknown): { reps?: number; minReps?: number } {
   return { reps: toWholeNumber(value) };
 }
 
-function text(value: unknown, max: number): string | undefined {
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-
-  const trimmed = value.trim();
-  return trimmed ? trimmed.slice(0, max) : undefined;
-}
-
 function readExercise(raw: unknown): PlanExercise | null {
   if (!isRecord(raw)) {
     return null;
@@ -172,13 +151,13 @@ function readExercise(raw: unknown): PlanExercise | null {
 
   const { reps, minReps: rangeMin } = readReps(raw.reps);
   const candidate = {
-    exerciseSlug: text(raw.exerciseSlug, SLUG_MAX),
+    exerciseSlug: trimmedText(raw.exerciseSlug, SLUG_MAX),
     sets: toWholeNumber(raw.sets),
     reps,
     minReps: toWholeNumber(raw.minReps) ?? rangeMin,
     restSeconds: toWholeNumber(raw.restSeconds),
-    notes: text(raw.notes, NOTES_MAX),
-    supersetGroup: text(raw.supersetGroup, SUPERSET_GROUP_MAX),
+    notes: trimmedText(raw.notes, NOTES_MAX),
+    supersetGroup: trimmedText(raw.supersetGroup, SUPERSET_GROUP_MAX),
   };
   const parsed = exerciseSchema.safeParse(candidate);
   if (!parsed.success) {
@@ -210,25 +189,15 @@ function readWeekDays(value: unknown): number[] {
  * newer major version is refused rather than half-understood. An exercise that cannot be read is
  * left out and counted, never repaired by guessing.
  */
-export function normalizeWorkoutPlan(raw: unknown): NormalizedPlan {
-  if (!isRecord(raw)) {
-    return { ok: false, error: 'notAnObject' };
+export function normalizeWorkoutPlan(parsed: unknown): NormalizedPlan {
+  const envelope = readEnvelope(parsed, { schemaId: PLAN_SCHEMA_ID, major: PLAN_MAJOR });
+  if (!envelope.ok) {
+    return envelope;
   }
 
-  if (raw.schema !== PLAN_SCHEMA_ID) {
-    return { ok: false, error: 'wrongSchema' };
-  }
+  const raw = envelope.record;
 
-  const version = raw.version;
-  if (typeof version !== 'number' || !Number.isInteger(version) || version < 1) {
-    return { ok: false, error: 'invalidVersion' };
-  }
-
-  if (version > PLAN_MAJOR) {
-    return { ok: false, error: 'newerVersion' };
-  }
-
-  const title = text(raw.title, TITLE_MAX);
+  const title = trimmedText(raw.title, TITLE_MAX);
   if (!title || !Array.isArray(raw.workouts) || raw.workouts.length === 0) {
     return { ok: false, error: 'invalidPlan' };
   }
@@ -251,7 +220,7 @@ export function normalizeWorkoutPlan(raw: unknown): NormalizedPlan {
     }
 
     if (exercises.length > 0) {
-      workouts.push({ name: text(rawWorkout.name, WORKOUT_NAME_MAX), exercises });
+      workouts.push({ name: trimmedText(rawWorkout.name, WORKOUT_NAME_MAX), exercises });
     }
   }
 
@@ -268,7 +237,7 @@ export function normalizeWorkoutPlan(raw: unknown): NormalizedPlan {
     skippedExercises,
     plan: {
       title,
-      description: text(raw.description, DESCRIPTION_MAX),
+      description: trimmedText(raw.description, DESCRIPTION_MAX),
       difficulty,
       weekDays: readWeekDays(raw.weekdays),
       workouts,

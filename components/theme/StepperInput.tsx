@@ -2,17 +2,10 @@ import { Minus, Plus } from 'lucide-react-native';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TextInputInstance } from 'react-native';
-import {
-  Keyboard,
-  Platform,
-  Pressable,
-  Text,
-  TextInput,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { Keyboard, Platform, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useTheme } from '@/hooks/useTheme';
 import { fitLineFontSize } from '@/utils/fitText';
 import {
@@ -71,9 +64,8 @@ export const StepperInput: FC<StepperInputProps> = ({
 
   const isPortion = variant === 'portion';
 
-  const { fontScale } = useWindowDimensions();
   /** The width of the slot between the two buttons, once it has been laid out. */
-  const [slotWidth, setSlotWidth] = useState<number | null>(null);
+  const { width: slotWidth, fontScale, onLayout: onSlotLayout } = useMeasuredWidth();
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState(() => formatValue(value));
   const inputRef = useRef<TextInputInstance>(null);
@@ -220,7 +212,7 @@ export const StepperInput: FC<StepperInputProps> = ({
             style={{
               backgroundColor: isPortion ? 'transparent' : theme.colors.background.card,
             }}
-            onLayout={(e) => setSlotWidth(e.nativeEvent.layout.width)}
+            onLayout={onSlotLayout}
           >
             <TextInput
               ref={inputRef}
@@ -261,7 +253,7 @@ export const StepperInput: FC<StepperInputProps> = ({
               backgroundColor: isPortion ? 'transparent' : theme.colors.background.card,
             }}
             onPress={handleValuePress}
-            onLayout={(e) => setSlotWidth(e.nativeEvent.layout.width)}
+            onLayout={onSlotLayout}
           >
             <Text
               className="text-center font-bold text-text-primary"

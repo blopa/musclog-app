@@ -4,6 +4,7 @@ import {
   projectGoal,
   weightedLinearRegressionSlope,
 } from '@/utils/exerciseGoalProjection';
+import { FEMALE_STRENGTH_FACTOR_LEGS, type StrengthSubject } from '@/utils/relativeStrength';
 
 describe('exerciseGoalProjection', () => {
   describe('weightedLinearRegressionSlope', () => {
@@ -125,37 +126,85 @@ describe('exerciseGoalProjection', () => {
   });
 
   describe('estimateConservativeTargetDate', () => {
+    const lifter = (overrides: Partial<StrengthSubject> = {}): StrengthSubject => ({
+      bodyWeightKg: 80,
+      loadMultiplier: 1.0,
+      gender: 'other',
+      ...overrides,
+    });
+
     it('returns today when target is already reached', () => {
-      const date = estimateConservativeTargetDate(100, 100, 80);
+      const date = estimateConservativeTargetDate(100, 100, lifter());
       expect(date.getTime()).toBeLessThanOrEqual(Date.now() + 86400000);
     });
 
     it('returns today when current 1RM is invalid', () => {
-      const date = estimateConservativeTargetDate(0, 120, 80);
+      const date = estimateConservativeTargetDate(0, 120, lifter());
       expect(date.getTime()).toBeLessThanOrEqual(Date.now() + 86400000);
     });
 
     it('gives a shorter timeline for novices than intermediates', () => {
       // Novice: 80kg lifter, 50kg 1RM → 70kg target (RS 0.625, cap 1.5%)
-      const noviceDate = estimateConservativeTargetDate(50, 70, 80, 1.0, 'male');
+      const noviceDate = estimateConservativeTargetDate(50, 70, lifter({ gender: 'male' }));
       // Intermediate: 80kg lifter, 120kg 1RM → 140kg target (RS 1.5, cap 0.5%)
-      const intermediateDate = estimateConservativeTargetDate(120, 140, 80, 1.0, 'male');
+      const intermediateDate = estimateConservativeTargetDate(120, 140, lifter({ gender: 'male' }));
 
       // Novice should be faster because higher cap % outweighs lower baseline
       expect(noviceDate.getTime()).toBeLessThan(intermediateDate.getTime());
     });
 
     it('caps timeline at 104 weeks (2 years)', () => {
-      const date = estimateConservativeTargetDate(200, 300, 80, 1.0, 'male');
+      const date = estimateConservativeTargetDate(200, 300, lifter({ gender: 'male' }));
       const twoYearsMs = 104 * 7 * 24 * 60 * 60 * 1000;
       expect(date.getTime()).toBeLessThanOrEqual(Date.now() + twoYearsMs + 86400000);
     });
 
     it('applies gender factor (female gets longer timeline for same absolute weight)', () => {
-      const maleDate = estimateConservativeTargetDate(80, 100, 60, 1.0, 'male');
-      const femaleDate = estimateConservativeTargetDate(80, 100, 60, 1.0, 'female');
+      const maleDate = estimateConservativeTargetDate(
+        80,
+        100,
+        lifter({ bodyWeightKg: 60, gender: 'male' })
+      );
+      const femaleDate = estimateConservativeTargetDate(
+        80,
+        100,
+        lifter({ bodyWeightKg: 60, gender: 'female' })
+      );
       // Female is treated as more advanced due to 0.7 factor, so timeline should be longer
       expect(femaleDate.getTime()).toBeGreaterThanOrEqual(maleDate.getTime());
     });
+  });
+});
+
+describe('projectGoal relative strength', () => {
+  const dayMs = 24 * 60 * 60 * 1000;
+  const dataPoints: ProgressiveOverloadDataPoint[] = [
+    { date: 0, weight: 80, reps: 1, volume: 80, estimated1RM: 80 },
+    { date: 7 * dayMs, weight: 81, reps: 1, volume: 81, estimated1RM: 81 },
+    { date: 14 * dayMs, weight: 82, reps: 1, volume: 82, estimated1RM: 82 },
+  ];
+  const inputs = { dataPoints, baseline1rm: 80, targetWeight: 120 };
+
+  // The simulation's starting tier used to ignore the lifter's sex (it divided by bodyweight and
+  // benchmark alone) while the weeks after it applied the female scale. Now one scale serves the
+  // whole projection, so a female lifter is exactly a male lifter whose bodyweight is scaled by
+  // her benchmark factor.
+  it('puts a female lifter on the female scale from the first simulated week', () => {
+    const female = projectGoal({
+      ...inputs,
+      bodyWeight: 60,
+      userGender: 'female',
+      muscleGroup: 'legs',
+    });
+    const maleEquivalent = projectGoal({
+      ...inputs,
+      bodyWeight: 60 * FEMALE_STRENGTH_FACTOR_LEGS,
+      userGender: 'male',
+    });
+
+    expect(female.projectedWeeks).not.toBeNull();
+    expect(female.projectedWeeks).toBe(maleEquivalent.projectedWeeks);
+    expect(female.status).toBe(maleEquivalent.status);
+    expect(female.isRealistic).toBe(maleEquivalent.isRealistic);
   });
 });

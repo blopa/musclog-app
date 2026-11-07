@@ -1,5 +1,3 @@
-import { fitFontSize } from '@/utils/yearInReview/storyLayout';
-
 /**
  * Sizing a label to the box it was given. `adjustsFontSizeToFit` would do it natively, but
  * react-native-web ignores it, so a long word ("Entrenamiento", "Masculino") overflowed its tile on
@@ -7,11 +5,41 @@ import { fitFontSize } from '@/utils/yearInReview/storyLayout';
  * every platform gets the same answer.
  */
 
+/**
+ * A digit or letter of bold system type is about this wide, as a share of its font size. It is the
+ * estimate for figures (a number and its unit, a poster's hero figure) and, for lack of a measured
+ * one, for the labels that have always been fitted with it.
+ */
+export const NUMERAL_GLYPH_RATIO = 0.62;
+
+/** Words in a semibold text face average about this share of the size, narrower than a numeral. */
+export const WORD_GLYPH_RATIO = 0.56;
+
+/**
+ * The largest size at which `text` fits one line of `availableWidth`, capped at `maxSize`. Worked
+ * out rather than left to `adjustsFontSizeToFit`, which react-native-web ignores, so a large
+ * "1,204,332" fits on every platform.
+ */
+export function fitFontSize(
+  text: string,
+  availableWidth: number,
+  maxSize: number,
+  glyphWidthRatio: number = NUMERAL_GLYPH_RATIO
+): number {
+  const widest = text.length * glyphWidthRatio;
+  return widest > 0 ? Math.min(maxSize, Math.floor(availableWidth / widest)) : maxSize;
+}
+
 /** The widest word of a label. Lines wrap between words, so this is what has to fit on one line. */
 export function longestWord(text: string): string {
   return text
     .split(/\s+/)
     .reduce((widest, word) => (word.length > widest.length ? word : widest), '');
+}
+
+/** The widest word across several texts (a row's title and its description). */
+function widestWord(texts: readonly string[]): string {
+  return texts.map(longestWord).reduce((a, b) => (b.length > a.length ? b : a), '');
 }
 
 type FitLabelOptions = {
@@ -148,22 +176,23 @@ export function layoutActionLabel(
   return { showIcon: false, fontSize: Math.max(minSize, Math.min(maxSize, alone)) };
 }
 
-/** Words in a semibold text face average about this share of the size, narrower than a numeral. */
-export const WORD_GLYPH_RATIO = 0.56;
-
-type ToggleRowOptions = {
+/** What a settings or navigation row asks of its layout, whatever sits at its trailing edge. */
+type RowFitOptions = {
   /** The size the row's text is designed at. */
   fontSize: number;
   /** The smallest size worth drawing; below it the row overflows rather than shrink further. */
   minSize: number;
   /** What the leading icon takes from the text beside it: its width plus the gap. 0 without one. */
   iconRoom: number;
-  /** What the switch takes from the text beside it: its width plus the gap. */
-  switchRoom: number;
   /** The decoration gives way before anything else is tried (`isCrampedLayout`). */
   dropIcon: boolean;
   fontScale?: number;
   glyphWidthRatio?: number;
+};
+
+type ToggleRowOptions = RowFitOptions & {
+  /** What the switch takes from the text beside it: its width plus the gap. */
+  switchRoom: number;
 };
 
 type ToggleRowLayout = {
@@ -200,7 +229,7 @@ export function layoutToggleRow(
     return { showIcon: hasIcon, stackSwitch: false, fontSize };
   }
 
-  const word = texts.map(longestWord).reduce((a, b) => (b.length > a.length ? b : a), '');
+  const word = widestWord(texts);
   const fits = (room: number) =>
     fittingSize(word, room, fontSize, fontScale, glyphWidthRatio) >= fontSize;
   const roomWithIcon = hasIcon ? iconRoom : 0;
@@ -226,19 +255,9 @@ export function layoutToggleRow(
   };
 }
 
-type IconRowOptions = {
-  /** The size the row's text is designed at. */
-  fontSize: number;
-  /** The smallest size worth drawing; below it the row overflows rather than shrink further. */
-  minSize: number;
-  /** What the leading icon takes from the text: its width plus the gap. */
-  iconRoom: number;
+type IconRowOptions = RowFitOptions & {
   /** What the trailing chevron takes from the text: its width plus the gap. */
   trailingRoom: number;
-  /** The decoration gives way before anything else is tried (`isCrampedLayout`). */
-  dropIcon: boolean;
-  fontScale?: number;
-  glyphWidthRatio?: number;
 };
 
 type IconRowLayout = {
@@ -270,7 +289,7 @@ export function layoutIconRow(
     return { showIcon: !dropIcon, fontSize };
   }
 
-  const word = texts.map(longestWord).reduce((a, b) => (b.length > a.length ? b : a), '');
+  const word = widestWord(texts);
   const fitted = (room: number) => fittingSize(word, room, fontSize, fontScale, glyphWidthRatio);
 
   if (!dropIcon && fitted(rowWidth - iconRoom - trailingRoom) >= fontSize) {

@@ -35,9 +35,14 @@ import type {
 import {
   CARDIO_KEY_INFIX,
   cardioImportKey,
+  isSessionPresent,
   sessionImportKeys,
 } from '@/utils/workoutImport/importKey';
-import type { ImportedSession, WorkoutImportSource } from '@/utils/workoutImport/types';
+import type {
+  ImportedSession,
+  ImportSummary,
+  WorkoutImportSource,
+} from '@/utils/workoutImport/types';
 import {
   estimateWorkoutKcalFromSets,
   type WorkoutEnergyProfile,
@@ -55,17 +60,6 @@ export interface ImportCommitInput {
   /** Translated, for a session the file gives no name. */
   fallbackWorkoutName: string;
   onProgress?: (done: number, total: number) => void;
-}
-
-export interface ImportSummary {
-  batchId: string;
-  sessionsImported: number;
-  sessionsAlreadyHere: number;
-  setsImported: number;
-  cardioImported: number;
-  exercisesCreated: number;
-  exercisesSkipped: number;
-  timedSets: number;
 }
 
 export interface ImportBatch {
@@ -100,10 +94,6 @@ interface CommitContext {
 function sessionKeyOf(storedKey: string): string {
   const at = storedKey.indexOf(CARDIO_KEY_INFIX);
   return at === -1 ? storedKey : storedKey.slice(0, at);
-}
-
-function isAlreadyHere(session: ImportedSession, liveKeys: ReadonlySet<string>): boolean {
-  return sessionImportKeys(session).some((key) => liveKeys.has(key));
 }
 
 interface ImportedLogFields {
@@ -406,7 +396,7 @@ async function writeSessions(
   };
 
   for (const session of sessions) {
-    if (isAlreadyHere(session, seenKeys)) {
+    if (isSessionPresent(session, seenKeys)) {
       totals.sessionsAlreadyHere += 1;
       done += 1;
       continue;
@@ -501,7 +491,7 @@ export class WorkoutImportService {
 
       // A session already here writes nothing, so it must not leave a new exercise behind either.
       const namesToWrite = new Set(
-        distinctBlockNames(input.sessions.filter((session) => !isAlreadyHere(session, liveKeys)))
+        distinctBlockNames(input.sessions.filter((session) => !isSessionPresent(session, liveKeys)))
       );
       const custom = prepareCustomExercises(
         [...resolved.custom].filter(([fileName]) => namesToWrite.has(fileName))

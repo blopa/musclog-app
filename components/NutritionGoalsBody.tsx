@@ -67,6 +67,7 @@ import {
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
 import { PastTdeeWindowNote } from './nutrition/PastTdeeWindowNote';
+import { TargetFieldHeader } from './nutrition/TargetFieldHeader';
 import { Button } from './theme/Button';
 import { MacrosPizzaChart } from './theme/MacrosPizzaChart';
 import { SegmentedControl } from './theme/SegmentedControl';
@@ -1002,6 +1003,24 @@ export function NutritionGoalsBody({
         } as any)
       : {};
 
+  // A dynamic goal needs its target weight, so it can be set but not cleared.
+  const setTargetWeightAction = {
+    label: t('editFitnessDetails.fatPercentageNotSet'),
+    onPress: () => {
+      didAutofillDynamicTargetWeight.current = false;
+      setTargetWeight(kgToDisplay(defaultTargetWeightKg, units));
+    },
+  };
+  const clearTargetWeightAction = isDynamic
+    ? null
+    : {
+        label: t('common.clear'),
+        onPress: () => {
+          didAutofillDynamicTargetWeight.current = false;
+          setTargetWeight(null);
+        },
+      };
+
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false} style={webScrollViewStyle}>
       <View className="gap-4 px-6 pb-6 pt-2">
@@ -1402,43 +1421,11 @@ export function NutritionGoalsBody({
         <View className="gap-4">
           {/* Target Weight */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between gap-3">
-              <Text className="shrink text-sm font-medium text-text-secondary">
-                {t('nutritionGoals.targetWeight')}
-                {isDynamic ? <Text style={{ color: theme.colors.status.error }}> *</Text> : null}
-              </Text>
-              {targetWeight === null ? (
-                <Pressable
-                  onPress={() => {
-                    didAutofillDynamicTargetWeight.current = false;
-                    setTargetWeight(kgToDisplay(defaultTargetWeightKg, units));
-                  }}
-                  className="shrink active:opacity-70"
-                >
-                  <Text
-                    className="text-right text-sm font-medium"
-                    style={{ color: theme.colors.text.tertiary }}
-                  >
-                    {t('editFitnessDetails.fatPercentageNotSet')}
-                  </Text>
-                </Pressable>
-              ) : !isDynamic ? (
-                <Pressable
-                  onPress={() => {
-                    didAutofillDynamicTargetWeight.current = false;
-                    setTargetWeight(null);
-                  }}
-                  className="shrink active:opacity-70"
-                >
-                  <Text
-                    className="text-right text-sm font-medium"
-                    style={{ color: theme.colors.text.tertiary }}
-                  >
-                    {t('common.clear')}
-                  </Text>
-                </Pressable>
-              ) : null}
-            </View>
+            <TargetFieldHeader
+              label={t('nutritionGoals.targetWeight')}
+              required={isDynamic}
+              action={targetWeight === null ? setTargetWeightAction : clearTargetWeightAction}
+            />
             {targetWeight !== null ? (
               <StepperInlineInput
                 label={t('nutritionGoals.targetWeight')}
@@ -1472,36 +1459,17 @@ export function NutritionGoalsBody({
 
           {/* Target Body Fat */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between gap-3">
-              <Text className="shrink text-sm font-medium text-text-secondary">
-                {t('nutritionGoals.targetBodyFat')}
-              </Text>
-              {targetBodyFat === null ? (
-                <Pressable
-                  onPress={() => setTargetBodyFat(15)}
-                  className="shrink active:opacity-70"
-                >
-                  <Text
-                    className="text-right text-sm font-medium"
-                    style={{ color: theme.colors.text.tertiary }}
-                  >
-                    {t('editFitnessDetails.fatPercentageNotSet')}
-                  </Text>
-                </Pressable>
-              ) : (
-                <Pressable
-                  onPress={() => setTargetBodyFat(null)}
-                  className="shrink active:opacity-70"
-                >
-                  <Text
-                    className="text-right text-sm font-medium"
-                    style={{ color: theme.colors.text.tertiary }}
-                  >
-                    {t('common.clear')}
-                  </Text>
-                </Pressable>
-              )}
-            </View>
+            <TargetFieldHeader
+              label={t('nutritionGoals.targetBodyFat')}
+              action={
+                targetBodyFat === null
+                  ? {
+                      label: t('editFitnessDetails.fatPercentageNotSet'),
+                      onPress: () => setTargetBodyFat(15),
+                    }
+                  : { label: t('common.clear'), onPress: () => setTargetBodyFat(null) }
+              }
+            />
             {targetBodyFat !== null ? (
               <StepperInlineInput
                 label={t('nutritionGoals.targetBodyFat')}
@@ -1520,40 +1488,24 @@ export function NutritionGoalsBody({
 
           {/* Target BMI */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between gap-3">
-              <Text className="shrink text-sm font-medium text-text-secondary">
-                {t('nutritionGoals.targetBMI')}
-              </Text>
-              {targetBMI === null ? (
-                <Pressable
-                  onPress={() => {
-                    if (userHeightM !== null && targetWeight !== null) {
-                      const weightKg = displayToKg(targetWeight, units);
-                      setTargetBMI(bmiFromWeightAndHeightM(weightKg, userHeightM));
-                    } else {
-                      setTargetBMI(23.5);
+            <TargetFieldHeader
+              label={t('nutritionGoals.targetBMI')}
+              action={
+                targetBMI === null
+                  ? {
+                      label: t('editFitnessDetails.fatPercentageNotSet'),
+                      onPress: () => {
+                        if (userHeightM !== null && targetWeight !== null) {
+                          const weightKg = displayToKg(targetWeight, units);
+                          setTargetBMI(bmiFromWeightAndHeightM(weightKg, userHeightM));
+                        } else {
+                          setTargetBMI(23.5);
+                        }
+                      },
                     }
-                  }}
-                  className="shrink active:opacity-70"
-                >
-                  <Text
-                    className="text-right text-sm font-medium"
-                    style={{ color: theme.colors.text.tertiary }}
-                  >
-                    {t('editFitnessDetails.fatPercentageNotSet')}
-                  </Text>
-                </Pressable>
-              ) : (
-                <Pressable onPress={() => setTargetBMI(null)} className="shrink active:opacity-70">
-                  <Text
-                    className="text-right text-sm font-medium"
-                    style={{ color: theme.colors.text.tertiary }}
-                  >
-                    {t('common.clear')}
-                  </Text>
-                </Pressable>
-              )}
-            </View>
+                  : { label: t('common.clear'), onPress: () => setTargetBMI(null) }
+              }
+            />
             {targetBMI !== null ? (
               <StepperInlineInput
                 label={t('nutritionGoals.targetBMI')}
@@ -1572,42 +1524,26 @@ export function NutritionGoalsBody({
 
           {/* Target FFMI */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between gap-3">
-              <Text className="shrink text-sm font-medium text-text-secondary">
-                {t('nutritionGoals.targetFFMI')}
-              </Text>
-              {targetFFMI === null ? (
-                <Pressable
-                  onPress={() => {
-                    if (userHeightM !== null && targetWeight !== null && targetBodyFat) {
-                      const weightKg = displayToKg(targetWeight, units);
-                      setTargetFFMI(
-                        ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat)
-                      );
-                    } else {
-                      setTargetFFMI(21.0);
+            <TargetFieldHeader
+              label={t('nutritionGoals.targetFFMI')}
+              action={
+                targetFFMI === null
+                  ? {
+                      label: t('editFitnessDetails.fatPercentageNotSet'),
+                      onPress: () => {
+                        if (userHeightM !== null && targetWeight !== null && targetBodyFat) {
+                          const weightKg = displayToKg(targetWeight, units);
+                          setTargetFFMI(
+                            ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat)
+                          );
+                        } else {
+                          setTargetFFMI(21.0);
+                        }
+                      },
                     }
-                  }}
-                  className="shrink active:opacity-70"
-                >
-                  <Text
-                    className="text-right text-sm font-medium"
-                    style={{ color: theme.colors.text.tertiary }}
-                  >
-                    {t('editFitnessDetails.fatPercentageNotSet')}
-                  </Text>
-                </Pressable>
-              ) : (
-                <Pressable onPress={() => setTargetFFMI(null)} className="shrink active:opacity-70">
-                  <Text
-                    className="text-right text-sm font-medium"
-                    style={{ color: theme.colors.text.tertiary }}
-                  >
-                    {t('common.clear')}
-                  </Text>
-                </Pressable>
-              )}
-            </View>
+                  : { label: t('common.clear'), onPress: () => setTargetFFMI(null) }
+              }
+            />
             {targetFFMI !== null ? (
               <StepperInlineInput
                 label={t('nutritionGoals.targetFFMI')}

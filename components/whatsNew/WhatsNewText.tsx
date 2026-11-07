@@ -1,6 +1,7 @@
-import { type ComponentProps, useState } from 'react';
-import { type LayoutChangeEvent, Text, useWindowDimensions } from 'react-native';
+import type { ComponentProps } from 'react';
+import { Text } from 'react-native';
 
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { fitLabelFontSize } from '@/utils/fitText';
 
 type Props = Omit<ComponentProps<typeof Text>, 'children' | 'style'> & {
@@ -17,16 +18,11 @@ type Props = Omit<ComponentProps<typeof Text>, 'children' | 'style'> & {
  * The width is measured after layout, so the first frame draws `size` and the correction follows.
  */
 export function WhatsNewText({ children, size, minSize, ...props }: Props) {
-  const { fontScale } = useWindowDimensions();
-  const [width, setWidth] = useState<number | null>(null);
+  const { width, fontScale, onLayout } = useMeasuredWidth();
   const fontSize = fitLabelFontSize(children, width, { maxSize: size, minSize, fontScale });
 
-  const measure = (event: LayoutChangeEvent) => {
-    setWidth(event.nativeEvent.layout.width);
-  };
-
   return (
-    <Text {...props} onLayout={measure} style={{ fontSize }}>
+    <Text {...props} onLayout={onLayout} style={{ fontSize }}>
       {children}
     </Text>
   );

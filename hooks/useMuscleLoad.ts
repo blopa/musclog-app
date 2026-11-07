@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 
-import { database } from '@/database/database-instance';
 import {
   MuscleLoadRepository,
   type MuscleLoadSetDetail,
 } from '@/database/repositories/MuscleLoadRepository';
+import { useTableQuery } from '@/hooks/useTableQuery';
 import type { MuscleSlug } from '@/utils/muscleGroupMapping';
 import { computeMuscleLoad, type MuscleLoadEntry } from '@/utils/muscleLoad';
 
@@ -26,67 +26,24 @@ export interface UseMuscleLoadResult {
 
 const EMPTY_SNAPSHOT: MuscleLoadSnapshot = { sets: [], now: 0 };
 
+async function readSnapshot(): Promise<MuscleLoadSnapshot> {
+  const now = Date.now();
+
+  return { sets: await MuscleLoadRepository.fetchRecentSets(now), now };
+}
+
 /**
  * Recent training load for the Progress screen. Reads once on mount and again whenever a session
- * or its sets change. Only the newest read may publish, so a slow earlier read can't overwrite a
- * later one. A failed read shows as no load rather than throwing into render.
+ * or its sets change. A failed read shows as no load rather than throwing into render.
  */
 export function useMuscleLoad(): UseMuscleLoadResult {
-  const [snapshot, setSnapshot] = useState<MuscleLoadSnapshot>(EMPTY_SNAPSHOT);
-  const [isLoading, setIsLoading] = useState(true);
-  const latestRequestRef = useRef(0);
-
-  const refresh = useCallback(async () => {
-    const requestId = ++latestRequestRef.current;
-    const now = Date.now();
-
-    try {
-      const sets = await MuscleLoadRepository.fetchRecentSets(now);
-      if (requestId === latestRequestRef.current) {
-        setSnapshot({ sets, now });
-      }
-    } catch (error) {
-      console.error('Error loading muscle load:', error);
-      if (requestId === latestRequestRef.current) {
-        setSnapshot({ sets: [], now });
-      }
-    } finally {
-      if (requestId === latestRequestRef.current) {
-        setIsLoading(false);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
-
-    // Every read is deferred to a timer, so the effect body itself never sets state.
-    const schedule = (delayMs: number) => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-
-      timer = setTimeout(() => {
-        timer = undefined;
-        void refresh();
-      }, delayMs);
-    };
-
-    schedule(0);
-
-    const subscription = database
-      .withChangesForTables(['workout_logs', 'workout_log_sets'])
-      .subscribe(() => schedule(RELOAD_DEBOUNCE_MS));
-
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-
-      subscription.unsubscribe();
-    };
-  }, [refresh]);
-
+  const { data: snapshot, isLoading } = useTableQuery({
+    tables: ['workout_logs', 'workout_log_sets'],
+    load: readSnapshot,
+    empty: EMPTY_SNAPSHOT,
+    scope: 'useMuscleLoad',
+    debounceMs: RELOAD_DEBOUNCE_MS,
+  });
   const load = useMemo(() => computeMuscleLoad(snapshot.sets, snapshot.now), [snapshot]);
 
   return { load, sets: snapshot.sets, isLoading };

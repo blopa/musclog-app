@@ -31,33 +31,11 @@ import {
 } from '@/components/loggy/useLoggyColors';
 import { useSettings } from '@/hooks/useSettings';
 
-export type LoggyPoseName =
-  | 'celebrating'
-  | 'coffee'
-  | 'creatine'
-  | 'default'
-  | 'drinking'
-  | 'eating'
-  | 'flex'
-  | 'lifting'
-  | 'magnify'
-  | 'nutrition'
-  | 'panic'
-  | 'pointing'
-  | 'reading'
-  | 'running'
-  | 'salad'
-  | 'shrug'
-  | 'thinking'
-  | 'trophy'
-  | 'wave'
-  | 'writing';
-
 /**
- * Each pose's generated component and its width over height: the `viewBox` of its SVG, since the
- * canvases differ. The components are generated, not drawn here: edit a part in
+ * Each pose's generated component, which carries its own proportions (the `viewBox` of its SVG,
+ * since the canvases differ). The components are generated, not drawn here: edit a part in
  * `assets/avatars/loggy-parts` and run `npm run generate-loggy` (the same run writes the SVGs in
- * `assets/avatars/loggy-poses`, which `loggyPose.test.ts` holds these aspects equal to).
+ * `assets/avatars/loggy-poses`).
  *
  * One component serves both ways of drawing him. Given a clock it moves its layers by their CSS
  * `@keyframes`, which react-native-svg cannot run itself, so Reanimated drives them
@@ -65,28 +43,30 @@ export type LoggyPoseName =
  * keyframes open and close on the identity frame, so that is exactly the drawn pose. That still is
  * what he is drawn as under reduced motion or with "Animated Loggy" off.
  */
-const POSES: Record<LoggyPoseName, { pose: LoggyAnimatedPose; aspect: number }> = {
-  celebrating: { pose: LoggyCelebratingAnimated, aspect: 0.875 },
-  coffee: { pose: LoggyCoffeeAnimated, aspect: 0.859 },
-  creatine: { pose: LoggyCreatineAnimated, aspect: 0.8 },
-  default: { pose: LoggyDefaultAnimated, aspect: 0.8 },
-  drinking: { pose: LoggyDrinkingAnimated, aspect: 0.844 },
-  eating: { pose: LoggyEatingAnimated, aspect: 0.8 },
-  flex: { pose: LoggyFlexAnimated, aspect: 0.8 },
-  lifting: { pose: LoggyLiftingAnimated, aspect: 1 },
-  magnify: { pose: LoggyMagnifyAnimated, aspect: 0.844 },
-  nutrition: { pose: LoggyNutritionAnimated, aspect: 1 },
-  panic: { pose: LoggyPanicAnimated, aspect: 0.8 },
-  pointing: { pose: LoggyPointingAnimated, aspect: 1 },
-  reading: { pose: LoggyReadingAnimated, aspect: 0.8 },
-  running: { pose: LoggyRunningAnimated, aspect: 0.875 },
-  salad: { pose: LoggySaladAnimated, aspect: 0.8 },
-  shrug: { pose: LoggyShrugAnimated, aspect: 0.875 },
-  thinking: { pose: LoggyThinkingAnimated, aspect: 0.767 },
-  trophy: { pose: LoggyTrophyAnimated, aspect: 0.875 },
-  wave: { pose: LoggyWaveAnimated, aspect: 0.875 },
-  writing: { pose: LoggyWritingAnimated, aspect: 0.8 },
-};
+const POSES = {
+  celebrating: LoggyCelebratingAnimated,
+  coffee: LoggyCoffeeAnimated,
+  creatine: LoggyCreatineAnimated,
+  default: LoggyDefaultAnimated,
+  drinking: LoggyDrinkingAnimated,
+  eating: LoggyEatingAnimated,
+  flex: LoggyFlexAnimated,
+  lifting: LoggyLiftingAnimated,
+  magnify: LoggyMagnifyAnimated,
+  nutrition: LoggyNutritionAnimated,
+  panic: LoggyPanicAnimated,
+  pointing: LoggyPointingAnimated,
+  reading: LoggyReadingAnimated,
+  running: LoggyRunningAnimated,
+  salad: LoggySaladAnimated,
+  shrug: LoggyShrugAnimated,
+  thinking: LoggyThinkingAnimated,
+  trophy: LoggyTrophyAnimated,
+  wave: LoggyWaveAnimated,
+  writing: LoggyWritingAnimated,
+} as const satisfies Record<string, LoggyAnimatedPose>;
+
+export type LoggyPoseName = keyof typeof POSES;
 
 /**
  * The pose for a recoverable failure (a file that would not import, a screen that failed to load).
@@ -143,7 +123,7 @@ function AnimatedLoggy({
   height: number;
   width: number;
 }) {
-  const { Art, animation } = POSES[pose].pose;
+  const { Art, animation } = POSES[pose];
   const clock = useLoggyClock(animation.loopMs);
 
   return (
@@ -173,8 +153,8 @@ export function LoggyPose({ pose, height, animated, visible, appearance }: Loggy
   const { animatedLoggy, showLoggy } = useSettings();
   const colors = useLoggyColors(appearance);
   const shouldAnimate = animated ?? animatedLoggy;
-  const { pose: art, aspect } = POSES[pose];
-  const width = height * aspect;
+  const { Art, size } = POSES[pose];
+  const width = (height * size[0]) / size[1];
 
   if (!(visible ?? showLoggy)) {
     return null;
@@ -184,5 +164,5 @@ export function LoggyPose({ pose, height, animated, visible, appearance }: Loggy
     return <AnimatedLoggy colors={colors} pose={pose} height={height} width={width} />;
   }
 
-  return <art.Art {...HIDDEN_FROM_ASSISTIVE_TECH} colors={colors} height={height} width={width} />;
+  return <Art {...HIDDEN_FROM_ASSISTIVE_TECH} colors={colors} height={height} width={width} />;
 }

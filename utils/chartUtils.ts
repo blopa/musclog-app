@@ -69,12 +69,16 @@ export function getXAxisLabelEdgeMargin(positionPercent: number, edgeOffset: num
  * @param data Array of objects with an 'x' numeric property (usually timestamp)
  * @param formatFn Optional function to format the x value into a string label
  * @param locale date-fns locale for default `MMM d` labels (when `formatFn` is omitted)
+ * @param windowWidth the window width the plot is drawn in; it decides how many labels fit. Left
+ *   out it is read from the window when the labels are built, so a caller that re-renders when the
+ *   window resizes (`useWindowDimensions`) passes it to stay in step.
  * @returns Array of XAxisLabel objects
  */
 export function getXAxisLabels<T extends { x: number }>(
   data: T[],
   formatFn?: (x: number) => string,
-  locale: Locale = enUS
+  locale: Locale = enUS,
+  windowWidth: number = Dimensions.get('window').width
 ): XAxisLabel[] {
   if (data.length === 0) {
     return [];
@@ -90,7 +94,7 @@ export function getXAxisLabels<T extends { x: number }>(
   }
 
   const formatLabel = formatFn || ((x: number) => format(new Date(x), 'MMM d', { locale }));
-  const maxLabels = maxXLabelsForWidth(Dimensions.get('window').width);
+  const maxLabels = maxXLabelsForWidth(windowWidth);
 
   // If we have few enough points, show all of them
   if (data.length <= maxLabels) {

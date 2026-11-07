@@ -1,7 +1,8 @@
 import { Fragment, ReactNode, useState } from 'react';
-import { Pressable, Switch, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, Switch, Text, View } from 'react-native';
 
 import { useIsCramped } from '@/hooks/useIsCramped';
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useTheme } from '@/hooks/useTheme';
 import { layoutToggleRow } from '@/utils/fitText';
 
@@ -29,9 +30,8 @@ const MIN_TEXT_SIZE = 12;
 
 function ToggleRow({ item }: { item: ToggleItem }) {
   const theme = useTheme();
-  const { fontScale } = useWindowDimensions();
   const cramped = useIsCramped();
-  const [rowWidth, setRowWidth] = useState<number | null>(null);
+  const { width: rowWidth, fontScale, onLayout: onRowLayout } = useMeasuredWidth();
   const [iconWidth, setIconWidth] = useState(DEFAULT_ICON_WIDTH);
   const gap = theme.spacing.gap.sm;
   const rowPadding = theme.spacing.padding.md;
@@ -59,7 +59,7 @@ function ToggleRow({ item }: { item: ToggleItem }) {
     >
       {({ pressed }) => (
         <View
-          onLayout={(event) => setRowWidth(event.nativeEvent.layout.width)}
+          onLayout={onRowLayout}
           style={{
             flexDirection: stackSwitch ? 'column' : 'row',
             alignItems: stackSwitch ? 'stretch' : 'center',

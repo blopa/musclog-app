@@ -8,6 +8,7 @@ import { Accordion } from '@/components/theme/Accordion';
 import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
+import type { MuscleGroup } from '@/database/models/Exercise';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
@@ -20,7 +21,7 @@ export type ExerciseData = {
   id: string;
   name: string;
   type: string;
-  muscleGroup: string;
+  muscleGroup: MuscleGroup;
   imageUrl?: string;
   loadMultiplier?: number;
 };

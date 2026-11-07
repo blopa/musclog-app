@@ -1,8 +1,8 @@
 import Body from '@mjcdev/react-body-highlighter';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useTheme } from '@/hooks/useTheme';
 import { bodyFigureScale } from '@/utils/bodyFigureScale';
 import { buildSlugIntensityMap, type MuscleSlug } from '@/utils/muscleGroupMapping';
@@ -17,7 +17,7 @@ type BodyHighlighterProps = {
   scale?: number;
 };
 
-/** The `gap-8` between the front and back figures. */
+/** The gap between the front and back figures: drawn from this, and the figures' scale is worked out from it. */
 const FIGURE_GAP = 32;
 
 export default function BodyHighlighter({
@@ -29,7 +29,7 @@ export default function BodyHighlighter({
   const { t } = useTranslation();
   const theme = useTheme();
   const intensityMap = slugIntensities ?? buildSlugIntensityMap(muscleGroups);
-  const [width, setWidth] = useState<number | null>(null);
+  const { width, onLayout } = useMeasuredWidth();
   // The two figures are 200 wide each at scale 1, wider than a phone: they were shrunk by the
   // layout and cut off, so the scale follows the room the pair actually has.
   const figureScale = bodyFigureScale(width, scale, FIGURE_GAP);
@@ -63,8 +63,9 @@ export default function BodyHighlighter({
 
   return (
     <View
-      className="flex-row items-start justify-center gap-8 py-4"
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      className="flex-row items-start justify-center py-4"
+      style={{ gap: FIGURE_GAP }}
+      onLayout={onLayout}
     >
       <View className="items-center gap-2">
         <Text className="text-xs font-semibold" style={{ color: theme.colors.text.tertiary }}>

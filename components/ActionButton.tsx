@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react-native';
-import { useState } from 'react';
-import { Pressable, Text, useWindowDimensions } from 'react-native';
+import { Pressable, Text } from 'react-native';
 
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useTheme } from '@/hooks/useTheme';
 import { layoutActionLabel } from '@/utils/fitText';
 
@@ -12,7 +12,7 @@ import { layoutActionLabel } from '@/utils/fitText';
  */
 export type ActionButtonTone = 'accent' | 'muted';
 
-/** `px-4` and `gap-3` on the tile, in points: the label's room is worked out from them. */
+/** The tile's horizontal padding and the gap beside the icon: drawn from these, and the label's room is worked out from them. */
 const TILE_PADDING_X = 16;
 const TILE_GAP = 12;
 const LABEL_MAX_SIZE = 16;
@@ -40,8 +40,7 @@ type ActionButtonProps = {
  */
 export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonProps) {
   const theme = useTheme();
-  const { fontScale } = useWindowDimensions();
-  const [tileWidth, setTileWidth] = useState<number | null>(null);
+  const { width: tileWidth, fontScale, onLayout } = useMeasuredWidth();
   // "Entrenamiento" does not fit beside an icon in half a narrow screen, least of all at large
   // text, and a label that overflows its tile lands on the next one. The tile measures itself and
   // shrinks the label to its room, then gives up the icon (decorative: the label names the action)
@@ -79,10 +78,15 @@ export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonP
       accessibilityRole="button"
       // The label carries a deliberate line break for the tile; a screen reader reads one phrase.
       accessibilityLabel={label.replace(/\n/g, ' ')}
-      className="w-full flex-row items-center gap-3 rounded-control px-4 py-3 active:opacity-80"
-      style={{ minHeight: theme.size['16'], backgroundColor: config.bgColor }}
+      className="w-full flex-row items-center rounded-control py-3 active:opacity-80"
+      style={{
+        minHeight: theme.size['16'],
+        backgroundColor: config.bgColor,
+        paddingHorizontal: TILE_PADDING_X,
+        gap: TILE_GAP,
+      }}
       onPress={onPress}
-      onLayout={(event) => setTileWidth(event.nativeEvent.layout.width)}
+      onLayout={onLayout}
     >
       {showIcon ? (
         <Icon

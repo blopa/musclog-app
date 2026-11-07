@@ -150,21 +150,27 @@ describe('maxXLabelsForWidth', () => {
 
 describe('getXAxisLabels on a narrow window', () => {
   const data = Array.from({ length: 12 }, (_, i) => ({ x: i * 1000 }));
-  let spy: jest.SpyInstance;
-
-  afterEach(() => spy?.mockRestore());
 
   it('subsamples to the labels that fit, still keeping both ends', () => {
-    spy = jest.spyOn(Dimensions, 'get').mockReturnValue({
+    const labels = getXAxisLabels(data, undefined, undefined, 264);
+    expect(labels.length).toBe(maxXLabelsForWidth(264));
+    expect(labels[0].positionPercent).toBe(0);
+    expect(labels[labels.length - 1].positionPercent).toBe(100);
+  });
+
+  it('reads the window itself when it is not told the width', () => {
+    const spy = jest.spyOn(Dimensions, 'get').mockReturnValue({
       width: 264,
       height: 600,
       scale: 1,
       fontScale: 1,
     });
-    const labels = getXAxisLabels(data);
-    expect(labels.length).toBe(maxXLabelsForWidth(264));
-    expect(labels[0].positionPercent).toBe(0);
-    expect(labels[labels.length - 1].positionPercent).toBe(100);
+
+    try {
+      expect(getXAxisLabels(data).length).toBe(maxXLabelsForWidth(264));
+    } finally {
+      spy.mockRestore();
+    }
   });
 });
 
