@@ -1,4 +1,5 @@
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
+import { YEAR_IN_REVIEW_ROUTE } from '@/constants/yearInReviewRoute';
 import { aiSetupRoute } from '@/utils/onboardingRoutes';
 
 export const WHATS_NEW_ICONS = [
@@ -16,11 +17,20 @@ export const WHATS_NEW_ICONS = [
   'settings',
   'bot',
   'smile',
+  'fileUp',
+  'undo',
+  'share',
+  'scale',
+  'activity',
 ] as const;
 export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
 
-/** Loggy poses an info block may show in place of its icon (a subset of `LoggyPoseName`). */
-export const WHATS_NEW_POSES = ['running'] as const;
+/**
+ * Loggy poses an info block may show in place of its icon (a subset of `LoggyPoseName`). Each is
+ * the joke or the job of the page that names it: `running` introduces him, `writing` is the
+ * import, `trophy` the year story, `flex` strength levels and `magnify` the training-load map.
+ */
+export const WHATS_NEW_POSES = ['running', 'writing', 'trophy', 'flex', 'magnify'] as const;
 export type WhatsNewPoseName = (typeof WHATS_NEW_POSES)[number];
 
 /** Facts about the person's data that can gate a whole page of a release. */
@@ -86,6 +96,9 @@ export const WHATS_NEW_ACTIONS = [
   'openWeeklyReview',
   'openWorkouts',
   'openProfileAiSetup',
+  'openWorkoutImport',
+  'openYearInReview',
+  'openProgress',
 ] as const;
 export type WhatsNewAction = (typeof WHATS_NEW_ACTIONS)[number];
 export const WHATS_NEW_ACTION_CATALOG = {
@@ -94,6 +107,9 @@ export const WHATS_NEW_ACTION_CATALOG = {
   openWeeklyReview: { kind: 'route', route: WEEKLY_REVIEW_ROUTE },
   openWorkouts: { kind: 'route', route: '/app/workout/workouts' },
   openProfileAiSetup: { kind: 'route', route: aiSetupRoute('setup', 'profile') },
+  openWorkoutImport: { kind: 'modal' },
+  openYearInReview: { kind: 'route', route: YEAR_IN_REVIEW_ROUTE },
+  openProgress: { kind: 'route', route: '/app/progress' },
 } as const satisfies Record<WhatsNewAction, { kind: 'modal' } | { kind: 'route'; route: string }>;
 export type WhatsNewRoute = Extract<
   (typeof WHATS_NEW_ACTION_CATALOG)[WhatsNewAction],

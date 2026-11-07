@@ -34,7 +34,13 @@ export type WhatsNewBlock = BlockBase &
         options?: WhatsNewOption[];
       })
     | { type: 'featureList'; titleKey?: WhatsNewKey; items: WhatsNewFeature[] }
-    | (Copy & { type: 'action'; action: WhatsNewAction; labelKey: WhatsNewKey })
+    | (Copy & {
+        type: 'action';
+        action: WhatsNewAction;
+        labelKey: WhatsNewKey;
+        /** The page's main button, drawn filled; the others stay outlined. */
+        primary?: boolean;
+      })
   );
 /** `requires` shows the page only to people for whom that condition holds. */
 export type WhatsNewPage = BlockBase & { blocks: WhatsNewBlock[]; requires?: WhatsNewCondition };
@@ -223,8 +229,17 @@ export function parseWhatsNewRelease(
       }
 
       case 'action':
-        properties(value, [...common, 'action', 'icon', 'labelKey', 'descriptionKey'], path);
+        properties(
+          value,
+          [...common, 'action', 'icon', 'labelKey', 'descriptionKey', 'primary'],
+          path
+        );
         if (!copy(value, ['labelKey'], path)) {
+          return null;
+        }
+
+        if (value.primary !== undefined && typeof value.primary !== 'boolean') {
+          issue(path, 'primary must be a boolean');
           return null;
         }
 

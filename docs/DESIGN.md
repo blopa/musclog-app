@@ -507,8 +507,9 @@ subtitle.
     result or failure, a year with nothing in it, the year story (each pose is that page's joke:
     the longest run is `running`, the busiest month is `panic`).
   - **Beginnings.** The onboarding landing (`wave`, in place of the app mark the splash already
-    showed), the last setup step (`flex`), the first page of What's new (`wave`; later pages keep
-    their icons) and the one-time Weekly Review welcome (`default`).
+    showed), the last setup step (`flex`), the first page of What's new (`wave`; a later page keeps its icon unless it names a
+    `pose` — the 2.16.0 pages do, each the page's own subject: `running`, `writing`, `trophy`, `flex`, `magnify`, sized
+    from the window height in `WhatsNewPicture`) and the one-time Weekly Review welcome (`default`).
   - **Finishing a workout** (`celebrating`, in place of the trophy). The confetti on that screen
     brings no second Loggy (`ConfettiOverlay withLoggy={false}`).
   - **Once-ever firsts** (first meal, workout, goal, `ConfettiActivity`): `ConfettiOverlay` shows a

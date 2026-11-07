@@ -153,19 +153,88 @@
         },
         "importHistory": {
           "title": "Traga seu histórico de treinos",
-          "description": "Importe seus treinos do Strong, Hevy ou FitNotes nas Configurações. Importar o mesmo arquivo duas vezes não adiciona nada, e você pode desfazer uma importação."
+          "description": "Vindo de outro app? Traga seus treinos anteriores para que seus recordes e sua evolução comecem do primeiro dia.",
+          "items": {
+            "apps": {
+              "label": "Strong, Hevy e FitNotes",
+              "description": "Escolha o arquivo que você exportou do app."
+            },
+            "twice": {
+              "label": "Pode repetir sem medo",
+              "description": "Importar o mesmo arquivo duas vezes não adiciona nada."
+            },
+            "undo": {
+              "label": "Fácil de desfazer",
+              "description": "Remova tudo o que uma importação trouxe quando quiser."
+            }
+          },
+          "action": {
+            "label": "Importar treinos",
+            "description": "Você também pode fazer isso depois em Configurações → Backups e dados."
+          }
         },
         "yearInReview": {
           "title": "Seu ano no Musclog",
-          "description": "Todo dezembro, relembre seu ano: sessões, recordes e os dias em que você treinou. Compartilhe se quiser; peso e nutrição ficam de fora, a menos que você os inclua."
+          "description": "Todo dezembro, relembre tudo o que você fez no ano.",
+          "items": {
+            "look": {
+              "label": "Sessões, recordes e dias treinados",
+              "description": "Seu ano em números e pôsteres para passar um a um."
+            },
+            "share": {
+              "label": "Compartilhe como imagem",
+              "description": "Poste ou guarde só para você."
+            },
+            "private": {
+              "label": "Privado por padrão",
+              "description": "Peso e alimentação ficam de fora, a menos que você os inclua."
+            }
+          },
+          "action": {
+            "label": "Ver meu ano até agora"
+          }
         },
         "strengthLevels": {
           "title": "Níveis de força",
-          "description": "Veja como seus principais levantamentos se comparam ao seu peso corporal e o que falta para o próximo nível. Eles estão em Progresso e em cada exercício."
+          "description": "Veja como seus principais exercícios se comparam ao seu peso corporal e o que falta para o próximo nível.",
+          "items": {
+            "bodyWeight": {
+              "label": "Comparado ao seu peso corporal",
+              "description": "Precisa de uma pesagem: registre seu peso para ver seus níveis."
+            },
+            "next": {
+              "label": "O que o próximo nível exige",
+              "description": "A carga para chegar ao próximo nível."
+            },
+            "where": {
+              "label": "No Progresso e em cada exercício",
+              "description": "Você encontra nos dois lugares."
+            }
+          },
+          "action": {
+            "label": "Abrir Progresso"
+          }
         },
         "trainingLoad": {
           "title": "Carga de treino recente",
-          "description": "Um mapa do corpo em Progresso mostra o que você treinou na última semana, junto com suas séries semanais por músculo."
+          "description": "Um mapa do corpo em Progresso mostra o que você treinou na última semana.",
+          "items": {
+            "map": {
+              "label": "Os últimos 7 dias no mapa do corpo",
+              "description": "Os músculos que você trabalhou aparecem mais escuros."
+            },
+            "sets": {
+              "label": "Séries semanais por músculo",
+              "description": "Os números ficam ao lado do mapa."
+            },
+            "load": {
+              "label": "Carga, não prontidão",
+              "description": "Mostra o que você treinou, não se você deve treinar de novo."
+            }
+          },
+          "action": {
+            "label": "Abrir Progresso"
+          }
         }
       }
     }

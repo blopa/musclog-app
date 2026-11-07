@@ -153,19 +153,88 @@
         },
         "importHistory": {
           "title": "Neem je trainingsgeschiedenis mee",
-          "description": "Importeer je workouts uit Strong, Hevy of FitNotes via Instellingen. Hetzelfde bestand twee keer importeren voegt niets toe, en je kunt een import ongedaan maken."
+          "description": "Kom je van een andere app? Neem je eerdere trainingen mee, zodat je records en voortgang vanaf dag één beginnen.",
+          "items": {
+            "apps": {
+              "label": "Strong, Hevy en FitNotes",
+              "description": "Kies het bestand dat je uit de app hebt geëxporteerd."
+            },
+            "twice": {
+              "label": "Veilig te herhalen",
+              "description": "Hetzelfde bestand twee keer importeren voegt niets toe."
+            },
+            "undo": {
+              "label": "Makkelijk ongedaan te maken",
+              "description": "Verwijder alles wat een import heeft toegevoegd wanneer je wilt."
+            }
+          },
+          "action": {
+            "label": "Trainingen importeren",
+            "description": "Je kunt dit ook later doen via Instellingen → Back-ups en gegevens."
+          }
         },
         "yearInReview": {
           "title": "Jouw jaar in Musclog",
-          "description": "Kijk elke december terug op je jaar: trainingen, records en de dagen dat je trainde. Deel het als je wilt; gewicht en voeding blijven erbuiten, tenzij je ze toevoegt."
+          "description": "Kijk elke december terug op alles wat je dit jaar deed.",
+          "items": {
+            "look": {
+              "label": "Sessies, records en getrainde dagen",
+              "description": "Je jaar in cijfers en posters waar je doorheen bladert."
+            },
+            "share": {
+              "label": "Deel het als afbeelding",
+              "description": "Plaats het online of hou het voor jezelf."
+            },
+            "private": {
+              "label": "Standaard privé",
+              "description": "Gewicht en voeding blijven erbuiten tenzij je ze toevoegt."
+            }
+          },
+          "action": {
+            "label": "Bekijk je jaar tot nu toe"
+          }
         },
         "strengthLevels": {
           "title": "Krachtniveaus",
-          "description": "Zie hoe je belangrijkste liften zich verhouden tot je lichaamsgewicht en wat het volgende niveau vraagt. Je vindt ze bij Voortgang en bij elke oefening."
+          "description": "Zie hoe je belangrijkste oefeningen zich verhouden tot je lichaamsgewicht en wat het volgende niveau vraagt.",
+          "items": {
+            "bodyWeight": {
+              "label": "Vergeleken met je lichaamsgewicht",
+              "description": "Vraagt om een weging: log je gewicht om je niveaus te zien."
+            },
+            "next": {
+              "label": "Wat het volgende niveau vraagt",
+              "description": "Het gewicht dat je moet tillen voor het volgende niveau."
+            },
+            "where": {
+              "label": "Bij Voortgang en bij elke oefening",
+              "description": "Je vindt ze op beide plekken."
+            }
+          },
+          "action": {
+            "label": "Voortgang openen"
+          }
         },
         "trainingLoad": {
           "title": "Recente trainingsbelasting",
-          "description": "Een lichaamskaart bij Voortgang toont wat je de afgelopen week hebt getraind, met je wekelijkse sets per spier ernaast."
+          "description": "Een lichaamskaart bij Voortgang toont wat je de afgelopen week hebt getraind.",
+          "items": {
+            "map": {
+              "label": "De afgelopen 7 dagen op een lichaamskaart",
+              "description": "De spieren die je trainde zijn donkerder."
+            },
+            "sets": {
+              "label": "Wekelijkse sets per spier",
+              "description": "De cijfers staan naast de kaart."
+            },
+            "load": {
+              "label": "Belasting, geen gereedheid",
+              "description": "Het toont wat je trainde, niet of je weer moet trainen."
+            }
+          },
+          "action": {
+            "label": "Voortgang openen"
+          }
         }
       }
     }

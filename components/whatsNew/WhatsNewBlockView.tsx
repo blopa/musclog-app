@@ -118,7 +118,8 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
       return (
         <View className="gap-2">
           <Button
-            variant="outline"
+            variant={block.primary ? 'accent' : 'outline'}
+            width={block.primary ? 'full' : undefined}
             label={t(block.labelKey)}
             icon={block.icon ? whatsNewIcons[block.icon] : undefined}
             disabled={disabled}

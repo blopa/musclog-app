@@ -153,19 +153,88 @@
         },
         "importHistory": {
           "title": "Bring your training history",
-          "description": "Import your workouts from Strong, Hevy or FitNotes in Settings. Importing the same file twice adds nothing, and you can undo an import."
+          "description": "Moving from another app? Bring your past workouts over, so your records and progress start from day one.",
+          "items": {
+            "apps": {
+              "label": "Strong, Hevy and FitNotes",
+              "description": "Pick the file you exported from the app."
+            },
+            "twice": {
+              "label": "Safe to repeat",
+              "description": "Importing the same file twice adds nothing."
+            },
+            "undo": {
+              "label": "Easy to undo",
+              "description": "Remove everything an import added whenever you like."
+            }
+          },
+          "action": {
+            "label": "Import workouts",
+            "description": "You can also do this later in Settings → Backups and data."
+          }
         },
         "yearInReview": {
           "title": "Your year in Musclog",
-          "description": "Each December, look back at your year: sessions, records and the days you trained. Share it if you like; weight and nutrition stay out unless you add them."
+          "description": "Each December, look back at everything you did this year.",
+          "items": {
+            "look": {
+              "label": "Sessions, records and days trained",
+              "description": "Your year as numbers and posters you can flip through."
+            },
+            "share": {
+              "label": "Share it as an image",
+              "description": "Post it, or keep it to yourself."
+            },
+            "private": {
+              "label": "Private by default",
+              "description": "Weight and nutrition stay out unless you add them."
+            }
+          },
+          "action": {
+            "label": "See your year so far"
+          }
         },
         "strengthLevels": {
           "title": "Strength levels",
-          "description": "See how your main lifts compare with your body weight, and what the next level takes. You'll find them on Progress and on each lift."
+          "description": "See how your main lifts compare with your body weight, and what the next level takes.",
+          "items": {
+            "bodyWeight": {
+              "label": "Compared with your body weight",
+              "description": "Needs a weigh-in: log your weight to see your levels."
+            },
+            "next": {
+              "label": "What the next level takes",
+              "description": "The load to lift to reach the next level."
+            },
+            "where": {
+              "label": "On Progress and on each lift",
+              "description": "You'll find them in both places."
+            }
+          },
+          "action": {
+            "label": "Open progress"
+          }
         },
         "trainingLoad": {
           "title": "Recent training load",
-          "description": "A body map on Progress shows what you trained in the last week, with your weekly sets per muscle beside it."
+          "description": "A body map on Progress shows what you trained over the last week.",
+          "items": {
+            "map": {
+              "label": "The last 7 days on a body map",
+              "description": "The muscles you worked show up darker."
+            },
+            "sets": {
+              "label": "Weekly sets per muscle",
+              "description": "The numbers sit right beside the map."
+            },
+            "load": {
+              "label": "Load, not readiness",
+              "description": "It shows what you trained, not whether you should train again."
+            }
+          },
+          "action": {
+            "label": "Open progress"
+          }
         }
       }
     }

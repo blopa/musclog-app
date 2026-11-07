@@ -1,13 +1,16 @@
 import type { LucideIcon } from 'lucide-react-native';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 
 import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import type { WhatsNewPoseName } from '@/utils/whatsNew/catalog';
 
 import { WhatsNewIconBadge } from './WhatsNewIconBadge';
 
-/** Large enough to read as the page's picture, small enough to leave room for the switches below. */
-const LOGGY_HEIGHT = 160;
+/** The pose takes this share of the window's height, so a tall phone gets a big Loggy... */
+const LOGGY_HEIGHT_SHARE = 0.22;
+/** ...within these bounds: never a thumbnail, and never so tall the copy below leaves the screen. */
+const LOGGY_MIN_HEIGHT = 120;
+const LOGGY_MAX_HEIGHT = 190;
 
 /**
  * The picture above an info block's heading: Loggy in `pose` when the block names one, otherwise
@@ -22,11 +25,15 @@ export function WhatsNewPicture({
   pose?: WhatsNewPoseName;
 }) {
   const loggyVisible = useLoggyVisible();
+  const { height: windowHeight } = useWindowDimensions();
+  const height = Math.round(
+    Math.min(LOGGY_MAX_HEIGHT, Math.max(LOGGY_MIN_HEIGHT, windowHeight * LOGGY_HEIGHT_SHARE))
+  );
 
   if (pose && loggyVisible) {
     return (
       <View className="items-center">
-        <LoggyPose pose={pose} height={LOGGY_HEIGHT} />
+        <LoggyPose pose={pose} height={height} />
       </View>
     );
   }

@@ -54,6 +54,10 @@ jest.mock('@/components/modals/WorkoutSettingsModal', () => ({
   WorkoutSettingsModal: ({ onClose }: any) =>
     require('react').createElement('button', { onClick: onClose }, 'Close settings'),
 }));
+jest.mock('@/components/modals/WorkoutImportModal', () => ({
+  WorkoutImportModal: ({ onClose }: any) =>
+    require('react').createElement('button', { onClick: onClose }, 'Close import'),
+}));
 jest.mock('@/components/modals/LogCardioModal', () => ({
   LogCardioModal: ({ onClose }: any) =>
     require('react').createElement('button', { onClick: onClose }, 'Close cardio'),
@@ -74,6 +78,13 @@ const flow: WhatsNewFlow = {
           labelKey: 'whatsNew.openSettings',
         },
         { id: 'cardio', type: 'action', action: 'openCardioLog', labelKey: 'whatsNew.openCardio' },
+        {
+          id: 'import',
+          type: 'action',
+          action: 'openWorkoutImport',
+          labelKey: 'whatsNew.openImport',
+          primary: true,
+        },
       ],
     },
     {
@@ -114,6 +125,14 @@ test('child modals return to the same page without dismissing and clear when the
   rerender(createElement(WhatsNewModal, props));
   expect(screen.queryByRole('button', { name: 'Close cardio' })).toBeNull();
   expect(screen.getByRole('heading', { name: 'whatsNew.intro.title' })).toBeTruthy();
+});
+test('the import button opens the import flow inside the tour and returns to its page', () => {
+  const { onDismiss } = setup();
+  click('whatsNew.next');
+  click('whatsNew.openImport');
+  click('Close import');
+  expect(onDismiss).not.toHaveBeenCalled();
+  expect(screen.getByRole('button', { name: 'whatsNew.openImport' })).toBeTruthy();
 });
 test('route actions wait for dismissal persistence, then navigate exactly once', async () => {
   let resolve!: () => void;

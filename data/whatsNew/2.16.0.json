@@ -35,8 +35,42 @@
           "id": "importHistory",
           "type": "info",
           "icon": "shuffle",
+          "pose": "writing",
           "titleKey": "whatsNew.releases.v2_16_0.importHistory.title",
           "descriptionKey": "whatsNew.releases.v2_16_0.importHistory.description"
+        },
+        {
+          "id": "open",
+          "type": "action",
+          "action": "openWorkoutImport",
+          "icon": "fileUp",
+          "labelKey": "whatsNew.releases.v2_16_0.importHistory.action.label",
+          "primary": true,
+          "descriptionKey": "whatsNew.releases.v2_16_0.importHistory.action.description"
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "apps",
+              "icon": "list",
+              "labelKey": "whatsNew.releases.v2_16_0.importHistory.items.apps.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.importHistory.items.apps.description"
+            },
+            {
+              "id": "twice",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_16_0.importHistory.items.twice.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.importHistory.items.twice.description"
+            },
+            {
+              "id": "undo",
+              "icon": "undo",
+              "labelKey": "whatsNew.releases.v2_16_0.importHistory.items.undo.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.importHistory.items.undo.description"
+            }
+          ]
         }
       ]
     },
@@ -47,8 +81,41 @@
           "id": "yearInReview",
           "type": "info",
           "icon": "calendar",
+          "pose": "trophy",
           "titleKey": "whatsNew.releases.v2_16_0.yearInReview.title",
           "descriptionKey": "whatsNew.releases.v2_16_0.yearInReview.description"
+        },
+        {
+          "id": "open",
+          "type": "action",
+          "action": "openYearInReview",
+          "icon": "calendar",
+          "labelKey": "whatsNew.releases.v2_16_0.yearInReview.action.label",
+          "primary": true
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "look",
+              "icon": "dumbbell",
+              "labelKey": "whatsNew.releases.v2_16_0.yearInReview.items.look.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.yearInReview.items.look.description"
+            },
+            {
+              "id": "share",
+              "icon": "share",
+              "labelKey": "whatsNew.releases.v2_16_0.yearInReview.items.share.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.yearInReview.items.share.description"
+            },
+            {
+              "id": "private",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_16_0.yearInReview.items.private.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.yearInReview.items.private.description"
+            }
+          ]
         }
       ]
     },
@@ -59,8 +126,41 @@
           "id": "strengthLevels",
           "type": "info",
           "icon": "dumbbell",
+          "pose": "flex",
           "titleKey": "whatsNew.releases.v2_16_0.strengthLevels.title",
           "descriptionKey": "whatsNew.releases.v2_16_0.strengthLevels.description"
+        },
+        {
+          "id": "open",
+          "type": "action",
+          "action": "openProgress",
+          "icon": "trendingUp",
+          "labelKey": "whatsNew.releases.v2_16_0.strengthLevels.action.label",
+          "primary": true
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "bodyWeight",
+              "icon": "scale",
+              "labelKey": "whatsNew.releases.v2_16_0.strengthLevels.items.bodyWeight.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.strengthLevels.items.bodyWeight.description"
+            },
+            {
+              "id": "next",
+              "icon": "target",
+              "labelKey": "whatsNew.releases.v2_16_0.strengthLevels.items.next.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.strengthLevels.items.next.description"
+            },
+            {
+              "id": "where",
+              "icon": "layout",
+              "labelKey": "whatsNew.releases.v2_16_0.strengthLevels.items.where.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.strengthLevels.items.where.description"
+            }
+          ]
         }
       ]
     },
@@ -71,8 +171,41 @@
           "id": "trainingLoad",
           "type": "info",
           "icon": "trendingUp",
+          "pose": "magnify",
           "titleKey": "whatsNew.releases.v2_16_0.trainingLoad.title",
           "descriptionKey": "whatsNew.releases.v2_16_0.trainingLoad.description"
+        },
+        {
+          "id": "open",
+          "type": "action",
+          "action": "openProgress",
+          "icon": "trendingUp",
+          "labelKey": "whatsNew.releases.v2_16_0.trainingLoad.action.label",
+          "primary": true
+        },
+        {
+          "id": "highlights",
+          "type": "featureList",
+          "items": [
+            {
+              "id": "map",
+              "icon": "activity",
+              "labelKey": "whatsNew.releases.v2_16_0.trainingLoad.items.map.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.trainingLoad.items.map.description"
+            },
+            {
+              "id": "sets",
+              "icon": "list",
+              "labelKey": "whatsNew.releases.v2_16_0.trainingLoad.items.sets.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.trainingLoad.items.sets.description"
+            },
+            {
+              "id": "load",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_16_0.trainingLoad.items.load.label",
+              "descriptionKey": "whatsNew.releases.v2_16_0.trainingLoad.items.load.description"
+            }
+          ]
         }
       ]
     }
