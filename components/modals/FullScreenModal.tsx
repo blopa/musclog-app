@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
+import { footerClearance } from '@/components/modals/footerClearance';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
@@ -160,9 +161,10 @@ export function FullScreenModal({
                 style={webScrollViewStyle}
                 contentContainerStyle={{
                   paddingBottom: footer
-                    ? Math.max(
+                    ? footerClearance(
+                        footerHeight,
                         theme.spacing.padding['4xl'],
-                        footerHeight + theme.spacing.padding.sm
+                        theme.spacing.padding.sm
                       )
                     : theme.spacing.padding.lg,
                 }}
