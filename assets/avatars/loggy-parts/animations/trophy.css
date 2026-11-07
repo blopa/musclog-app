@@ -1,0 +1,50 @@
+/* Loggy hoisting his golden trophy. His upper body bobs gently while his shoes stay
+   planted, the leaf sways, his trophy arm lifts proudly from the shoulder, and the two
+   golden sparkles pulse in alternating phase. Every layer opens and ends on the still's
+   own frame. */
+#upper {
+    animation: loggy-bob 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#arm-l, #trophy, #hand-l {
+    transform-origin: 145px 336px;
+    animation: loggy-trophy-hoist 3.2s ease-in-out infinite;
+}
+#sparkle-l {
+    transform-origin: 190px 81px;
+    animation: loggy-sparkle-l 3.2s ease-in-out infinite;
+}
+#sparkle-r {
+    transform-origin: 439px 234px;
+    animation: loggy-sparkle-r 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-trophy-hoist {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 60% { transform: rotate(2.2deg); }
+}
+@keyframes loggy-sparkle-l {
+    0%, 100% { transform: scale(1, 1); }
+    40% { transform: scale(1.12, 1.12); }
+    75% { transform: scale(.92, .92); }
+}
+@keyframes loggy-sparkle-r {
+    0%, 100% { transform: scale(1, 1); }
+    35% { transform: scale(.92, .92); }
+    70% { transform: scale(1.12, 1.12); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

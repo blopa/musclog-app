@@ -16,6 +16,7 @@ import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
 import Pointing from '@/assets/avatars/loggy-poses/loggy-pointing.svg';
 import Running from '@/assets/avatars/loggy-poses/loggy-running.svg';
 import Thinking from '@/assets/avatars/loggy-poses/loggy-thinking.svg';
+import Trophy from '@/assets/avatars/loggy-poses/loggy-trophy.svg';
 import Wave from '@/assets/avatars/loggy-poses/loggy-wave.svg';
 import Writing from '@/assets/avatars/loggy-poses/loggy-writing.svg';
 import { LoggyCelebratingAnimated } from '@/components/loggy/animated/LoggyCelebratingAnimated';
@@ -31,6 +32,7 @@ import { LoggyPanicAnimated } from '@/components/loggy/animated/LoggyPanicAnimat
 import { LoggyPointingAnimated } from '@/components/loggy/animated/LoggyPointingAnimated';
 import { LoggyRunningAnimated } from '@/components/loggy/animated/LoggyRunningAnimated';
 import { LoggyThinkingAnimated } from '@/components/loggy/animated/LoggyThinkingAnimated';
+import { LoggyTrophyAnimated } from '@/components/loggy/animated/LoggyTrophyAnimated';
 import { LoggyWaveAnimated } from '@/components/loggy/animated/LoggyWaveAnimated';
 import { LoggyWritingAnimated } from '@/components/loggy/animated/LoggyWritingAnimated';
 import type { LoggyAnimatedPose } from '@/components/loggy/LoggyLayer';
@@ -51,6 +53,7 @@ export type LoggyPoseName =
   | 'pointing'
   | 'running'
   | 'thinking'
+  | 'trophy'
   | 'wave'
   | 'writing';
 
@@ -79,6 +82,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
   pointing: { Art: Pointing, aspect: 1 },
   running: { Art: Running, aspect: 0.875 },
   thinking: { Art: Thinking, aspect: 0.767 },
+  trophy: { Art: Trophy, aspect: 0.875 },
   wave: { Art: Wave, aspect: 0.875 },
   writing: { Art: Writing, aspect: 0.8 },
 };
@@ -102,6 +106,7 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   pointing: LoggyPointingAnimated,
   running: LoggyRunningAnimated,
   thinking: LoggyThinkingAnimated,
+  trophy: LoggyTrophyAnimated,
   wave: LoggyWaveAnimated,
   writing: LoggyWritingAnimated,
 };

@@ -44,7 +44,8 @@
     "pondering",
     "drinking",
     "creatine",
-    "pointing"
+    "pointing",
+    "trophy"
   ],
   "poses": {
     "celebrating": {
@@ -308,6 +309,28 @@
       ],
       "animated": {
         "upper": ["body", "arm-l", "hand-l", "clipboard", "hand-r"]
+      }
+    },
+    "trophy": {
+      "viewBox": "-60 0 560 640",
+      "face": "trophy",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "sparkles/trophy",
+        "arm-l/trophy",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "trophy/trophy",
+        "hand-l/trophy",
+        "arm-r/hip",
+        "hand-r/hip"
+      ],
+      "animated": {
+        "upper": ["arm-l", "body", "trophy", "hand-l", "arm-r", "hand-r"]
       }
     },
     "wave": {
