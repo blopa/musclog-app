@@ -13,6 +13,7 @@ import Flex from '@/assets/avatars/loggy-poses/loggy-flex.svg';
 import Magnify from '@/assets/avatars/loggy-poses/loggy-magnify.svg';
 import Nutrition from '@/assets/avatars/loggy-poses/loggy-nutrition.svg';
 import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
+import Pointing from '@/assets/avatars/loggy-poses/loggy-pointing.svg';
 import Running from '@/assets/avatars/loggy-poses/loggy-running.svg';
 import Thinking from '@/assets/avatars/loggy-poses/loggy-thinking.svg';
 import Wave from '@/assets/avatars/loggy-poses/loggy-wave.svg';
@@ -27,6 +28,7 @@ import { LoggyFlexAnimated } from '@/components/loggy/animated/LoggyFlexAnimated
 import { LoggyMagnifyAnimated } from '@/components/loggy/animated/LoggyMagnifyAnimated';
 import { LoggyNutritionAnimated } from '@/components/loggy/animated/LoggyNutritionAnimated';
 import { LoggyPanicAnimated } from '@/components/loggy/animated/LoggyPanicAnimated';
+import { LoggyPointingAnimated } from '@/components/loggy/animated/LoggyPointingAnimated';
 import { LoggyRunningAnimated } from '@/components/loggy/animated/LoggyRunningAnimated';
 import { LoggyThinkingAnimated } from '@/components/loggy/animated/LoggyThinkingAnimated';
 import { LoggyWaveAnimated } from '@/components/loggy/animated/LoggyWaveAnimated';
@@ -46,6 +48,7 @@ export type LoggyPoseName =
   | 'magnify'
   | 'nutrition'
   | 'panic'
+  | 'pointing'
   | 'running'
   | 'thinking'
   | 'wave'
@@ -73,6 +76,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
   magnify: { Art: Magnify, aspect: 0.844 },
   nutrition: { Art: Nutrition, aspect: 1 },
   panic: { Art: Panic, aspect: 0.8 },
+  pointing: { Art: Pointing, aspect: 1 },
   running: { Art: Running, aspect: 0.875 },
   thinking: { Art: Thinking, aspect: 0.767 },
   wave: { Art: Wave, aspect: 0.875 },
@@ -95,6 +99,7 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   magnify: LoggyMagnifyAnimated,
   nutrition: LoggyNutritionAnimated,
   panic: LoggyPanicAnimated,
+  pointing: LoggyPointingAnimated,
   running: LoggyRunningAnimated,
   thinking: LoggyThinkingAnimated,
   wave: LoggyWaveAnimated,

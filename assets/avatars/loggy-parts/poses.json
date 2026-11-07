@@ -43,7 +43,8 @@
     "overjoyed",
     "pondering",
     "drinking",
-    "creatine"
+    "creatine",
+    "pointing"
   ],
   "poses": {
     "celebrating": {
@@ -248,6 +249,27 @@
       ],
       "animated": {
         "upper": ["body", "arm-l", "arm-r"]
+      }
+    },
+    "pointing": {
+      "viewBox": "-148 0 640 640",
+      "face": "pointing",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "board/pointing",
+        "arm-l/pointing",
+        "hand-l/pointing",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        },
+        "arm-r/hip",
+        "hand-r/hip"
+      ],
+      "animated": {
+        "upper": ["arm-l", "hand-l", "body", "arm-r", "hand-r"]
       }
     },
     "running": {
