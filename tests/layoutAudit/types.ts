@@ -54,6 +54,12 @@ export interface LayoutNode {
   coveredShare: number;
   /** False when the node is off screen and no scroller could bring it into view. */
   reachable: boolean;
+  /**
+   * How far (px) the node reaches outside the nearest ancestor that paints a surface (a background
+   * or a border) without clipping: a button hanging off the edge of its card. Absent where the
+   * snapshot cannot tell what paints (an Android dump), null when it stays inside.
+   */
+  escapes?: { by: number; surface: string } | null;
 }
 
 export interface LayoutSnapshot {
@@ -74,7 +80,8 @@ export type FindingKind =
   | 'overflow-x'
   | 'unreachable'
   | 'small-target'
-  | 'tight-gap';
+  | 'tight-gap'
+  | 'escaped';
 
 export type Severity = 'error' | 'warn' | 'info';
 

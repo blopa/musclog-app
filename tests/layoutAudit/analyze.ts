@@ -302,6 +302,49 @@ function clippingFindings(snapshot: LayoutSnapshot): Finding[] {
   return findings;
 }
 
+/** Below this a node hanging past its surface is a rounding artefact or a hairline border. */
+const MIN_ESCAPE_PX = 2;
+/** From here a control or field visibly hangs off its card: an error, not a nudge. */
+const ESCAPE_ERROR_PX = 4;
+/** A smaller node (a count badge on an icon) overhangs its tile on purpose. */
+const BADGE_MAX_PX = 24;
+
+/**
+ * Controls, fields and text that reach outside the surface they sit on (the nearest ancestor that
+ * paints a background or border and does not clip): the ✓ of a set row poking past the row's grey
+ * box. Nothing clips them, so neither `clipped` nor `overlap` can see it.
+ */
+function escapeFindings(snapshot: LayoutSnapshot): Finding[] {
+  const findings: Finding[] = [];
+  for (const node of snapshot.nodes) {
+    const escape = node.escapes;
+    if (!escape || escape.by < MIN_ESCAPE_PX || node.visible.length === 0) {
+      continue;
+    }
+
+    const rect = node.rects[0];
+    const badge = rect.w <= BADGE_MAX_PX && rect.h <= BADGE_MAX_PX;
+    let severity: Severity = 'warn';
+    if (badge) {
+      severity = 'info';
+    } else if (node.kind !== 'text' && escape.by >= ESCAPE_ERROR_PX) {
+      severity = 'error';
+    }
+
+    findings.push({
+      kind: 'escaped',
+      severity,
+      message: `${describe(node)} reaches ${Math.round(escape.by)}px outside the surface it sits on (${escape.surface})`,
+      labels: [node.label],
+      paths: [node.path],
+      rects: node.visible,
+      chrome: isChrome(node),
+    });
+  }
+
+  return findings;
+}
+
 function truncationFindings(snapshot: LayoutSnapshot): Finding[] {
   const byId = new Map(snapshot.nodes.map((node) => [node.id, node]));
   return snapshot.nodes
@@ -483,6 +526,7 @@ export function analyzeSnapshot(snapshot: LayoutSnapshot, options: AnalyzeOption
     ...overlapFindings(snapshot, pass),
     ...occlusionFindings(snapshot, pass),
     ...clippingFindings(snapshot),
+    ...escapeFindings(snapshot),
     ...truncationFindings(snapshot),
     ...wordBreakFindings(snapshot),
     ...pageFindings(snapshot),

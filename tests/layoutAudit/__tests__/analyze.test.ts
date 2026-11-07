@@ -520,3 +520,40 @@ describe('a bar laid over a scroller rather than fixed', () => {
     expect(kinds(analyzeSnapshot(snapshot([a, b]), { pass: 'top' }))).toEqual(['overlap']);
   });
 });
+
+describe('escaped', () => {
+  const escaped = (partial: Partial<LayoutNode>) =>
+    analyzeSnapshot(snapshot([node(partial)])).filter((finding) => finding.kind === 'escaped');
+
+  it('calls a control hanging off its card an error, naming the surface', () => {
+    const [finding] = escaped({
+      kind: 'interactive',
+      label: 'Complete set',
+      rects: [box(200, 20, 52, 40)],
+      escapes: { by: 22, surface: 'div[data-testid=set-row]' },
+    });
+    expect(finding.severity).toBe('error');
+    expect(finding.message).toContain('22px outside');
+    expect(finding.message).toContain('set-row');
+  });
+
+  it('keeps text that spills a little to a warning and a small badge to a note', () => {
+    expect(
+      escaped({ kind: 'text', rects: [box(0, 0, 80, 20)], escapes: { by: 6, surface: 'div' } })[0]
+        .severity
+    ).toBe('warn');
+    expect(
+      escaped({
+        kind: 'interactive',
+        rects: [box(0, 0, 18, 18)],
+        escapes: { by: 6, surface: 'div' },
+      })[0].severity
+    ).toBe('info');
+  });
+
+  it('ignores hairline overhangs and nodes the snapshot could not judge', () => {
+    expect(escaped({ kind: 'interactive', escapes: { by: 1.5, surface: 'div' } })).toEqual([]);
+    expect(escaped({ kind: 'interactive', escapes: null })).toEqual([]);
+    expect(escaped({ kind: 'interactive' })).toEqual([]);
+  });
+});

@@ -74,6 +74,38 @@ describe('collectLayoutSnapshot', () => {
     expect(snapshot.viewport).toEqual({ width: 360, height: 780 });
   });
 
+  it('measures how far a control reaches past the painted box it sits on', () => {
+    render(`
+      <div style="background-color: rgb(230, 230, 230)" data-rect="10,10,220,60">
+        <button aria-label="Complete set" data-rect="200,20,52,40"></button>
+        <button aria-label="Inside" data-rect="20,20,40,40"></button>
+      </div>`);
+    const byLabel = (label: string) =>
+      collectLayoutSnapshot({ onlyNew: false }).nodes.find((node) => node.label === label);
+
+    expect(byLabel('Complete set')?.escapes).toEqual({ by: 22, surface: 'div' });
+    expect(byLabel('Inside')?.escapes).toBeNull();
+  });
+
+  it('takes a border as a surface, but not a transparent box, and lets a scroller reset it', () => {
+    render(`
+      <div style="border-right-width: 1px; border-right-style: solid; border-right-color: rgb(0, 0, 0)" data-rect="0,0,100,50">
+        <div style="background-color: rgba(0, 0, 0, 0)" data-rect="0,0,100,50">
+          <button aria-label="Hangs off" data-rect="80,0,40,40"></button>
+        </div>
+        <div style="overflow-x: auto" data-rect="0,0,100,50">
+          <button aria-label="Scrolled" data-rect="150,0,40,40"></button>
+        </div>
+      </div>`);
+    const scroller = document.querySelectorAll('div')[2] as HTMLElement;
+    Object.defineProperty(scroller, 'scrollWidth', { value: 200, configurable: true });
+    Object.defineProperty(scroller, 'clientWidth', { value: 100, configurable: true });
+    const nodes = collectLayoutSnapshot({ onlyNew: false }).nodes;
+
+    expect(nodes.find((node) => node.label === 'Hangs off')?.escapes?.by).toBe(20);
+    expect(nodes.find((node) => node.label === 'Scrolled')?.escapes).toBeNull();
+  });
+
   it('finds controls by role and tabindex, and skips plain wrappers', () => {
     render(`
       <div data-rect="0,0,360,100">

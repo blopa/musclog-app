@@ -70,6 +70,10 @@ export const workoutFlow: FlowRunner = async (ctx) => {
   await sessionSheets(ctx, tf);
 
   if (workoutLogId) {
+    // The rest timer screen resumes the session's stored rest and leaves at once when it has run
+    // out, so a fresh rest is started first: the next exercise's working set.
+    await clickTopmost(page.getByTestId(completeIds[completeIds.length - 2]));
+    await ctx.settle(800);
     await legacyRestScreens(ctx, workoutLogId);
     await page.goto(sessionUrl, { timeout: 60000 });
     await ctx.settle(1500);
@@ -94,7 +98,6 @@ export const workoutFlow: FlowRunner = async (ctx) => {
   );
   await ctx.settle(800);
   await ctx.overlay('workout-summary (session feedback)');
-  await closeOverlay(ctx);
 };
 
 /** The rest bar while resting (expanded), in its last seconds, and after it ran out. */
@@ -225,6 +228,12 @@ async function legacyRestScreens(ctx: FlowContext, workoutLogId: string): Promis
 
     await page.goto(`${APP_URL}/workout/${path}`, { timeout: 60000 });
     await ctx.settle(1500);
+    const screen = path.split('?')[0];
+    if (!new URL(page.url()).pathname.endsWith(screen)) {
+      ctx.skip(step, `opened ${screen}, which went on to ${new URL(page.url()).pathname}`);
+      continue;
+    }
+
     await ctx.screen(step);
   }
 }

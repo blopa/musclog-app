@@ -332,6 +332,11 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     scrollContext: string;
     scrollsY: boolean;
     scrollsX: boolean;
+    /**
+     * The nearest ancestor that paints a surface (a background or a border) and the box it paints.
+     * Reset by a scroller (scrolled content may run past it) and by a fixed layer (a sheet).
+     */
+    surface: { rect: Rect; path: string } | null;
   }
 
   const documentScroller = document.scrollingElement;
@@ -343,6 +348,67 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     scrollsY:
       !!documentScroller && documentScroller.scrollHeight > documentScroller.clientHeight + 1,
     scrollsX: false,
+    surface: null,
+  };
+
+  /** Alpha of a computed `rgb()`/`rgba()` colour; `transparent` is 0. */
+  const alphaOf = (color: string): number => {
+    if (!color || color === 'transparent') {
+      return 0;
+    }
+
+    const match = /rgba?\(([^)]+)\)/.exec(color);
+    if (!match) {
+      return 1;
+    }
+
+    const parts = match[1].split(/[\s,/]+/).filter(Boolean);
+    return parts.length >= 4 ? parseFloat(parts[3]) : 1;
+  };
+
+  /** The element draws a visible box: a background, or a border on any side. */
+  const paintsSurface = (style: CSSStyleDeclaration): boolean => {
+    if (alphaOf(style.backgroundColor) > 0.05) {
+      return true;
+    }
+
+    const sides = ['Top', 'Right', 'Bottom', 'Left'] as const;
+    for (let i = 0; i < sides.length; i++) {
+      const side = sides[i];
+      if (
+        (parseFloat(style.getPropertyValue('border-' + side.toLowerCase() + '-width')) || 0) >= 1 &&
+        style.getPropertyValue('border-' + side.toLowerCase() + '-style') !== 'none' &&
+        alphaOf(style.getPropertyValue('border-' + side.toLowerCase() + '-color')) > 0.05
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  /** How far `rects` reach outside `surface`, in px (0 when they stay inside). */
+  const escapeOf = (
+    rects: Rect[],
+    surface: Context['surface']
+  ): { by: number; surface: string } | null => {
+    if (!surface || rects.length === 0) {
+      return null;
+    }
+
+    let by = 0;
+    for (let i = 0; i < rects.length; i++) {
+      const r = rects[i];
+      by = Math.max(
+        by,
+        surface.rect.x - r.x,
+        r.x + r.w - (surface.rect.x + surface.rect.w),
+        surface.rect.y - r.y,
+        r.y + r.h - (surface.rect.y + surface.rect.h)
+      );
+    }
+
+    return by > 0.5 ? { by: round(by), surface: surface.path } : null;
   };
 
   const isPointerRoot = (element: Element, style: CSSStyleDeclaration): boolean => {
@@ -361,7 +427,14 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     kind: LayoutNode['kind'],
     label: string,
     rects: Rect[],
-    flags: { spillsX: boolean; spillsY: boolean; truncated: boolean; brokenWords?: string[] }
+    flags: {
+      spillsX: boolean;
+      spillsY: boolean;
+      truncated: boolean;
+      brokenWords?: string[];
+      /** The surface the node must stay on (the one around the element, not its own). */
+      surface: Context['surface'];
+    }
   ): number => {
     const contentRects = clipAll(rects, context.hard);
     const visibleRects = clipAll(contentRects, context.soft);
@@ -405,6 +478,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
       coveredByFixed: false,
       coveredShare: 0,
       reachable,
+      escapes: escapeOf(contentRects, flags.surface),
     });
     elements.push(element);
     return id;
@@ -451,6 +525,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
           scrollContext: 'fixed:' + nextContextId++,
           scrollsX: false,
           scrollsY: false,
+          surface: null,
         }
       : context;
 
@@ -485,10 +560,15 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
       }
 
       if (scrollerX || scrollerY) {
+        inner.surface = null;
         inner.scrollContext = 'scroll:' + nextContextId++;
         inner.scrollsX = own.scrollsX || scrollerX;
         inner.scrollsY = own.scrollsY || scrollerY;
       }
+    }
+
+    if (hasArea && !scrollerX && !scrollerY && paintsSurface(style)) {
+      inner.surface = { rect: boxRect, path: pathOf(element) };
     }
 
     let boxNodeId: number | null = null;
@@ -520,6 +600,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
         spillsX: !isMedia && hidesX && element.scrollWidth > element.clientWidth + 1,
         spillsY: !isMedia && hidesY && element.scrollHeight > element.clientHeight + 1,
         truncated: false,
+        surface: own.surface,
       });
       inner.parentId = boxNodeId;
     }
@@ -552,6 +633,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
             spillsY: standalone && !truncated && hidesY && cutY,
             truncated,
             brokenWords: truncated ? [] : splitWords(texts, rects.length),
+            surface: own.surface,
           }
         );
       }

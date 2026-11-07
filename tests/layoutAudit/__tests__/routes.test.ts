@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
+import { FLOW_RUNNERS } from '../flows/registry';
 import {
+  AUDIT_FLOWS,
   AUDIT_ONLY_MODAL_BUTTONS,
   MAIN_ROUTES,
   MODAL_AUDIT_BUTTONS,
@@ -32,6 +34,7 @@ describe('screen coverage', () => {
   const known = new Set([
     ...MAIN_ROUTES.map((route) => route.file),
     ...ONBOARDING_ROUTES.map((route) => route.file),
+    ...AUDIT_FLOWS.flatMap((flow) => flow.files),
     ...UNAUDITED_ROUTES.map((route) => route.file),
   ]);
 
@@ -58,6 +61,27 @@ describe('screen coverage', () => {
   it('starts every path with a slash, or is the home route', () => {
     const paths = [...MAIN_ROUTES, ...ONBOARDING_ROUTES].map((route) => route.path);
     expect(paths.every((route) => route === '' || route.startsWith('/'))).toBe(true);
+  });
+});
+
+describe('flows', () => {
+  const routeNames = [...MAIN_ROUTES, ...ONBOARDING_ROUTES].map((route) => route.name);
+  const steps = AUDIT_FLOWS.flatMap((flow) => flow.steps);
+
+  it('has a runner for every declared flow and declares every runner', () => {
+    expect(Object.keys(FLOW_RUNNERS).sort()).toEqual(AUDIT_FLOWS.map((flow) => flow.name).sort());
+  });
+
+  it('keeps step names unique and apart from route names, since they key the report', () => {
+    expect(new Set(steps).size).toBe(steps.length);
+    expect(steps.filter((step) => routeNames.includes(step))).toEqual([]);
+  });
+
+  it('lets no route file be both a flow file and unaudited', () => {
+    const unaudited = new Set(UNAUDITED_ROUTES.map((route) => route.file));
+    expect(AUDIT_FLOWS.flatMap((flow) => flow.files).filter((file) => unaudited.has(file))).toEqual(
+      []
+    );
   });
 });
 
