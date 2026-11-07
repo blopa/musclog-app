@@ -1,7 +1,4 @@
 import { APP_URL } from '@/tests/helpers/screenshotSession';
-import { COMEBACK_RAMP_WEEKS } from '@/utils/comeback/comebackProgram';
-import { COMEBACK_OFFER_MIN_GAP_DAYS, COMEBACK_STALL_DAYS } from '@/utils/comeback/lapse';
-
 import {
   clickTopmost,
   closeOverlay,
@@ -9,6 +6,8 @@ import {
   type FlowRunner,
 } from '@/tests/layoutAudit/flowKit';
 import { countOpenLayers } from '@/tests/layoutAudit/inPage';
+import { COMEBACK_RAMP_WEEKS } from '@/utils/comeback/comebackProgram';
+import { COMEBACK_OFFER_MIN_GAP_DAYS, COMEBACK_STALL_DAYS } from '@/utils/comeback/lapse';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

@@ -1,5 +1,4 @@
 import { APP_URL } from '@/tests/helpers/screenshotSession';
-
 import {
   clickTopmost,
   closeOverlay,

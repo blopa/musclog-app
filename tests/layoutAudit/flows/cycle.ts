@@ -1,6 +1,4 @@
 import { APP_URL } from '@/tests/helpers/screenshotSession';
-import { CYCLE_REMINDER_KINDS } from '@/utils/cycle/cycleReminders';
-
 import {
   clickTopmost,
   closeOverlay,
@@ -9,6 +7,7 @@ import {
   type FlowContext,
   type FlowRunner,
 } from '@/tests/layoutAudit/flowKit';
+import { CYCLE_REMINDER_KINDS } from '@/utils/cycle/cycleReminders';
 
 /**
  * The cycle screen with records behind it (the demo's four periods plus the audit seed's day logs

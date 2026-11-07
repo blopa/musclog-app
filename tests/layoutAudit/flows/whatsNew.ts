@@ -3,7 +3,6 @@ import path from 'path';
 
 import { WHATS_NEW_SEEN_THROUGH_KEY } from '@/constants/whatsNew';
 import { APP_URL } from '@/tests/helpers/screenshotSession';
-
 import {
   clickTopmost,
   closeOverlay,

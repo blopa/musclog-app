@@ -1,5 +1,4 @@
 import { APP_URL } from '@/tests/helpers/screenshotSession';
-
 import {
   clickTopmost,
   closeOverlay,
@@ -125,10 +124,26 @@ async function restTimerSteps(ctx: FlowContext, tf: (key: string) => string): Pr
   // The countdown keeps moving, so these two are measured as soon as they show, not after the
   // usual wait for the text to settle.
   const getReady = tf('getReady');
-  for (let press = 0; press < 12 && !(await label()).includes(getReady); press++) {
+  // −15 s at a time until about 20 s are left, then wait: one press too many jumps straight past
+  // the "Get ready" window to the end of the rest.
+  const remaining = async () => {
+    const match = /(\d+):(\d{2})/.exec(await label());
+    return match ? Number(match[1]) * 60 + Number(match[2]) : 0;
+  };
+
+  for (let press = 0; press < 12 && (await remaining()) > 20; press++) {
     await clickTopmost(bar.getByRole('button', { name: tf('minus15'), exact: true }));
     await page.waitForTimeout(300);
   }
+
+  await page
+    .waitForFunction(
+      ({ testId, text }) =>
+        document.querySelector(`[data-testid="${testId}"]`)?.textContent?.includes(text) ?? false,
+      { testId: 'session-rest-timer', text: getReady },
+      { timeout: 25000 }
+    )
+    .catch(() => undefined);
 
   if ((await label()).includes(getReady)) {
     await ctx.screen('workout-session (get ready)');
