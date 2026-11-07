@@ -43,14 +43,21 @@ with `ThemeScope` from `context/ThemeContext.tsx`. A scope changes the context v
 variables together; do not add a second forced-theme context or hand-pick a parallel set of tokens.
 Components outside the viewfinder keep following the user's selected theme.
 
-Loggy is the other such surface. His artwork has fixed colors, like a photo, and a green log on an
-emerald or rose brand fill disappears, so anything built around him takes its ground from
-`LOGGY_PALETTE` (`constants/loggyPalette.ts`, the artwork's own colors) instead of the theme: the
-year story's posters and the share image. The Home offer is an ordinary themed card (`bg-bg-card`,
-accent `Button`) that only carries a Loggy. `POSTER_GROUNDS` lists each ground with
-the ink, highlight, mark and track drawn on it, and is held to AA in
+Loggy is the other such surface, in part. His outline, cream, tan, coral, sky and gold are fixed,
+like a photo, but his three greens follow the theme (`constants/loggyTheme.js`: a pink theme draws a
+pink log, Volt a golden one), so on an ordinary themed surface he matches the screen he is on. A
+surface built around him cannot let the green move: a pink log on the coral poster would disappear,
+and a green one on an emerald or rose brand fill already did. So anything built around him takes
+its ground from `LOGGY_PALETTE` (`constants/loggyPalette.ts`, the artwork's own colors) instead of
+the theme, and draws him `appearance="classic"` (the green he was drawn in): the year story's
+posters and the share image. The Home offer is an ordinary themed card (`bg-bg-card`, accent
+`Button`) that only carries a Loggy, so he follows the theme there. `POSTER_GROUNDS` lists each
+ground with the ink, highlight, mark and track drawn on it, and is held to AA in
 `constants/__tests__/loggyPalette.test.ts`. Keep it to those surfaces: the chrome around a poster
 (header, progress, buttons) still follows the theme.
+
+Food in his hands is not him: the lettuce in the salad bowl and on the fork is drawn in fixed
+greens (`s19`–`s21` of `palette.css`), so it stays a salad in every theme.
 
 Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, never a literal
 white or the regular on-surface ink.
@@ -639,12 +646,16 @@ shows him), the top of the download page (`lifting`), the FAQ header (`thinking`
 bridge an assistant's link lands on (`reading`: review before anything is saved) and an exercise
 search with no results (`shrug`, in place of the icon). Never on legal pages, the contact page, the
 calculator, the progress and rep-marker tools, the Game Boy and comparison pages, or the blog. He
-is an `<img>` of the generated animated SVG (`WebsiteLoggy`), always decorative (`alt=""`), with
-the words beside him carrying the meaning, and the section around him never depends on him: with
+is the generated animated SVG as a CSS background (`WebsiteLoggy`), always decorative (no alt text),
+in the greens of the visitor's theme, with the words beside him carrying the meaning, and the section around him never depends on him: with
 "Show Loggy" off (the web demo shares the browser's storage) nothing is rendered and a stand-in
-falls back to its icon (`useWebsiteLoggyVisible`). **Reduced motion is decided by the browser, not
-by script**: the `<picture>` offers the still (`loggy-<pose>-still.svg`) under
-`(prefers-reduced-motion: reduce)`, so those visitors never download the animation. The "Animated
+falls back to its icon (`useWebsiteLoggyVisible`). **The theme and reduced motion are decided by
+the stylesheet, not by script**: each palette has its own copy of every pose
+(`public/images/loggy/<palette>/loggy-<pose>.svg`) and `websiteLoggyCss` picks it from
+`html[data-theme-id]`, which the blocking script in `app/+html.tsx` sets before the body renders (a
+script that swapped the image after hydration would flash the default green in the very theme the
+visitor chose to escape it). Under `(prefers-reduced-motion: reduce)` the same rules select the
+still (`loggy-<pose>-still.svg`), so those visitors never download the animation. The "Animated
 Loggy" setting is an app setting and does not apply here.
 
 Narrow viewports get the primary navigation from the header's burger menu, not from a duplicated set

@@ -368,6 +368,8 @@ This project is open source. See the [LICENSE](LICENSE) file for details.
 
 The bundled exercise data and photos come from [free-exercise-db](https://github.com/yuhonas/free-exercise-db), a public-domain project released under CC0.
 
+**Loggy**, the mascot, is public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/): use him anywhere, for anything, with no attribution. The poses are in [`assets/avatars/loggy-poses`](assets/avatars/loggy-poses) (animated ones in `loggy-animated`, the parts they are built from in `loggy-parts`), and the scope and legal text are in [`assets/avatars/LOGGY_LICENSE.txt`](assets/avatars/LOGGY_LICENSE.txt). The Musclog name and logo are not part of that, and the code that draws him stays under the project's license.
+
 ---
 
 ## Resources

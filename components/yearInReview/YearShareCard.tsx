@@ -91,7 +91,7 @@ export function YearShareCard({ captureRef, fields, units }: Props) {
     >
       {showLoggy ? (
         <View style={{ bottom: -4, position: 'absolute', right: -10 }}>
-          <LoggyPose pose="flex" height={POSE_HEIGHT} animated={false} />
+          <LoggyPose appearance="classic" pose="flex" height={POSE_HEIGHT} animated={false} />
         </View>
       ) : null}
 

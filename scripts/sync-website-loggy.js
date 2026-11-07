@@ -3,8 +3,8 @@
 'use strict';
 
 /**
- * Publishes the animated Loggy SVGs the public website draws as plain `<img>` files:
- * `assets/avatars/loggy-animated/loggy-<pose>.svg` -> `public/images/loggy/loggy-<pose>.svg`,
+ * Publishes the animated Loggy SVGs the public website draws, once per theme palette:
+ * `assets/avatars/loggy-animated/loggy-<pose>.svg` -> `public/images/loggy/<palette>/loggy-<pose>.svg`,
  * plus `loggy-<pose>-still.svg`, the same file with its animation switched off.
  *
  * The website does not use `components/LoggyPose.tsx`: that component compiles every pose into
@@ -13,13 +13,26 @@
  * still is 200 KB and `default` alone is 210 KB, so the public bundle ships what a page uses,
  * not the whole set.
  *
+ * Each palette gets its own copy because an `<img>` or a CSS background cannot read the page's
+ * theme: Loggy's three greens are written into the file (`constants/loggyTheme.js` says what they
+ * are in each theme), and a stylesheet (`components/website/websiteLoggyAssets.ts`) chooses the
+ * copy for the visitor's theme. Themes drawn in the same greens share one directory, named for the
+ * first of them in the registry (`loggyPaletteId`).
+ *
  * The copies are generated, never edited: `npm run generate-loggy` runs this after the SVGs are
  * rebuilt, and `components/website/__tests__/websiteLoggy.test.ts` fails when one is stale or when
- * `WEBSITE_LOGGY_POSES` in `WebsiteLoggy.tsx` names a different set.
+ * `WEBSITE_LOGGY_POSES` in `websiteLoggyAssets.ts` names a different set.
  */
 
 const fs = require('node:fs');
 const path = require('node:path');
+
+const {
+  applyLoggyColors,
+  loggyColorsForTheme,
+  loggyPaletteId,
+} = require('../constants/loggyTheme');
+const { THEME_IDS } = require('../theme.registry');
 
 const ROOT = path.join(__dirname, '..');
 const SOURCE_DIR = path.join(ROOT, 'assets', 'avatars', 'loggy-animated');
@@ -28,9 +41,17 @@ const OUTPUT_DIR = path.join(ROOT, 'public', 'images', 'loggy');
 /** The poses the website uses, in alphabetical order: each is one spot in `WebsiteLoggy`'s callers. */
 const WEBSITE_POSES = ['lifting', 'reading', 'shrug', 'thinking', 'wave'];
 
+/** One directory per distinct palette, named for the first theme that uses it. */
+const PALETTE_IDS = [...new Set(THEME_IDS.map(loggyPaletteId))];
+
 /** `loggy-wave.svg` is the animated file; `loggy-wave-still.svg` is the same drawing, not moving. */
 function fileName(pose, still = false) {
   return `loggy-${pose}${still ? '-still' : ''}.svg`;
+}
+
+/** Where a palette's file is, relative to `OUTPUT_DIR`, with forward slashes. */
+function relativeFile(paletteId, pose, still = false) {
+  return `${paletteId}/${fileName(pose, still)}`;
 }
 
 /**
@@ -38,7 +59,7 @@ function fileName(pose, still = false) {
  * so this is the drawn pose. It is the animated file plus one rule rather than a second drawing
  * (the generated still keeps all fifty faces and is five times the size), so it can never differ
  * from the animation it replaces. A page serves it to a visitor who asked for reduced motion
- * (`<picture>` in `WebsiteLoggy`), so that visitor never downloads the animated file at all.
+ * (`websiteLoggyCss`), so that visitor never downloads the animated file at all.
  */
 function stillSvg(animatedSvg) {
   const marker = '</style>';
@@ -49,16 +70,9 @@ function stillSvg(animatedSvg) {
   return animatedSvg.replace(marker, `\t* { animation: none !important; }\n\t${marker}`);
 }
 
-/** Publishes the website's poses (animated and still) and removes any other `loggy-*.svg`. */
-function syncWebsiteLoggy() {
-  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-
-  const wanted = new Set(WEBSITE_POSES.flatMap((pose) => [fileName(pose), fileName(pose, true)]));
-  for (const file of fs.readdirSync(OUTPUT_DIR)) {
-    if (/^loggy-.*\.svg$/.test(file) && !wanted.has(file)) {
-      fs.rmSync(path.join(OUTPUT_DIR, file));
-    }
-  }
+/** Every published file's path (relative to `OUTPUT_DIR`) and contents, without writing anything. */
+function generateAll() {
+  const files = {};
 
   for (const pose of WEBSITE_POSES) {
     const source = path.join(SOURCE_DIR, fileName(pose));
@@ -66,12 +80,61 @@ function syncWebsiteLoggy() {
       throw new Error(`${path.relative(ROOT, source)} is missing: run npm run generate-loggy`);
     }
 
-    const animated = fs.readFileSync(source, 'utf8');
-    fs.writeFileSync(path.join(OUTPUT_DIR, fileName(pose)), animated);
-    fs.writeFileSync(path.join(OUTPUT_DIR, fileName(pose, true)), stillSvg(animated));
+    const artwork = fs.readFileSync(source, 'utf8');
+
+    for (const paletteId of PALETTE_IDS) {
+      const animated = applyLoggyColors(artwork, loggyColorsForTheme(paletteId));
+
+      files[relativeFile(paletteId, pose)] = animated;
+      files[relativeFile(paletteId, pose, true)] = stillSvg(animated);
+    }
   }
 
-  return [...wanted].sort();
+  return files;
+}
+
+/** Every `.svg` under `directory`, relative to it, with forward slashes. */
+function listPublished(directory) {
+  if (!fs.existsSync(directory)) {
+    return [];
+  }
+
+  return fs
+    .readdirSync(directory, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.svg'))
+    .map((entry) =>
+      path.relative(directory, path.join(entry.parentPath, entry.name)).split(path.sep).join('/')
+    )
+    .sort();
+}
+
+/** Publishes the website's poses (animated and still, per palette) and removes anything else. */
+function syncWebsiteLoggy() {
+  const files = generateAll();
+
+  for (const stale of listPublished(OUTPUT_DIR)) {
+    if (!(stale in files)) {
+      fs.rmSync(path.join(OUTPUT_DIR, stale));
+    }
+  }
+
+  // A directory a removed palette left behind is empty now.
+  for (const entry of fs.existsSync(OUTPUT_DIR) ? fs.readdirSync(OUTPUT_DIR) : []) {
+    const directory = path.join(OUTPUT_DIR, entry);
+
+    if (fs.statSync(directory).isDirectory() && fs.readdirSync(directory).length === 0) {
+      fs.rmdirSync(directory);
+    }
+  }
+
+  for (const [relative, contents] of Object.entries(files)) {
+    const target = path.join(OUTPUT_DIR, relative);
+
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, contents);
+  }
+
+  return Object.keys(files).sort();
 }
 
 if (require.main === module) {
@@ -79,4 +142,15 @@ if (require.main === module) {
   console.log(`[sync-website-loggy] ${files.length} files -> ${path.relative(ROOT, OUTPUT_DIR)}`);
 }
 
-module.exports = { OUTPUT_DIR, SOURCE_DIR, WEBSITE_POSES, fileName, stillSvg, syncWebsiteLoggy };
+module.exports = {
+  OUTPUT_DIR,
+  PALETTE_IDS,
+  SOURCE_DIR,
+  WEBSITE_POSES,
+  fileName,
+  generateAll,
+  listPublished,
+  relativeFile,
+  stillSvg,
+  syncWebsiteLoggy,
+};

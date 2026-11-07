@@ -115,7 +115,9 @@ export function Poster({ title, children }: { title: string; children: ReactNode
           pointerEvents="none"
           style={{ bottom: -POSE_BLEED_BOTTOM, position: 'absolute', right: -POSE_BLEED_RIGHT }}
         >
-          <LoggyPose pose={pose} height={size.height * poseShare} />
+          {/* Classic green: the ground is Loggy's own colour, not the theme's, and a pink log
+              on the coral poster would disappear. */}
+          <LoggyPose appearance="classic" pose={pose} height={size.height * poseShare} />
         </Animated.View>
       ) : null}
       {/* A style, not a class: NativeWind does not reach reanimated's Animated.View. */}

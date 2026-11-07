@@ -6,6 +6,12 @@
  * Keep the `s<number>` names: scripts/generate-loggy-animated.js reads them. Change a colour here
  * and every pose follows; add a colour as the next number. The same hex values are named in
  * constants/loggyPalette.ts.
+ *
+ * Loggy's own greens (`s1`, `s3`, `s4`, `s7`) are THEMED: each is written `var(--loggy-<role>,
+ * <classic hex>)`, so a renderer that knows nothing about themes draws the classic green, and the
+ * generators and the website sync swap in the theme's colour for the role
+ * (constants/loggyTheme.js, which lists the same four classes). A green that is not Loggy (a
+ * lettuce leaf) must not use them: give it a fixed class, or it would turn pink in a pink theme.
  */
 
 /* flat fills */
@@ -13,20 +19,20 @@
   fill: #1b314d;
 } /* ink: outlines, pupils, brows */
 .s1 {
-  fill: #47ad92;
-} /* body green */
+  fill: var(--loggy-body, #47ad92);
+} /* body green (themed) */
 .s2 {
   fill: #fcf9f4;
 } /* cream */
 .s3 {
-  fill: #2f7e78;
-} /* deep green */
+  fill: var(--loggy-deep, #2f7e78);
+} /* deep green (themed) */
 .s5 {
   fill: #efd9b4;
 } /* tan */
 .s7 {
-  fill: #3d9183;
-} /* shaded green */
+  fill: var(--loggy-shade, #3d9183);
+} /* shaded green (themed) */
 .s8 {
   fill: #ee8074;
 } /* coral: mouths and tongues */
@@ -48,10 +54,19 @@
 .s18 {
   fill: #f5c84c;
 } /* gold: trophy and sparkles */
+.s19 {
+  fill: #47ad92;
+} /* lettuce: food green, the same in every theme */
+.s20 {
+  fill: #2f7e78;
+} /* lettuce stalk and tomato calyx */
+.s21 {
+  fill: #3d9183;
+} /* lettuce in shade */
 
 /* filled shapes with their own ink outline (face extras and held props) */
 .s4 {
-  fill: #47ad92;
+  fill: var(--loggy-body, #47ad92);
   stroke: #1b314d;
   stroke-linejoin: round;
   stroke-width: 4.8;

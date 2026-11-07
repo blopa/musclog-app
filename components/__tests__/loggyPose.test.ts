@@ -26,16 +26,25 @@ describe('LoggyPose', () => {
     expect(svgs.length).toBeGreaterThan(0);
   });
 
-  it.each(svgs)('%s is imported by the pose table', (svg) => {
-    expect(source).toContain(`'@/assets/avatars/loggy-poses/${svg}'`);
-  });
+  // The still is the generated component drawn without a clock, so the pose table holds the one
+  // component per pose and the proportions of the SVG that is generated beside it.
+  it.each(svgs)(
+    '%s is in the pose table with its generated component and real proportions',
+    (svg) => {
+      const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
+      const component = `Loggy${pose.charAt(0).toUpperCase()}${pose.slice(1)}Animated`;
+      const entry = new RegExp(`\\b${pose}: \\{ pose: ${component}, aspect: ([0-9.]+) \\}`).exec(
+        source
+      );
 
-  it.each(svgs)('%s is in the pose table at its real proportions', (svg) => {
-    const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
-    const entry = new RegExp(`\\b${pose}: \\{\\s*Art: \\w+,\\s*aspect: ([0-9.]+)`).exec(source);
+      expect(source).toContain(`'@/components/loggy/animated/${component}'`);
+      expect(entry).not.toBeNull();
+      expect(Number(entry?.[1])).toBeCloseTo(viewBoxAspect(join(POSES, svg)), 2);
+    }
+  );
 
-    expect(entry).not.toBeNull();
-    expect(Number(entry?.[1])).toBeCloseTo(viewBoxAspect(join(POSES, svg)), 2);
+  it('imports no SVG: a pose can only be drawn in the colours it is given', () => {
+    expect(source).not.toMatch(/\.svg'/);
   });
 
   it('ships no rasterised copies beside the SVGs', () => {
@@ -66,13 +75,23 @@ describe('animated Loggy', () => {
     expect(paths.filter((path) => !still.has(path))).toEqual([]);
   });
 
-  // The component is generated (`npm run generate-loggy-animated`); this checks it is registered.
-  it.each(animated)('%s has its generated component in the animated pose table', (svg) => {
+  // Each component is generated and paints Loggy's greens from `colors`, so a theme can recolour
+  // him; a pose that kept the hex would stay emerald in every theme.
+  it.each(animated)('%s paints his greens from the colours it is given', (svg) => {
     const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
     const component = `Loggy${pose.charAt(0).toUpperCase()}${pose.slice(1)}Animated`;
+    const generated = readFileSync(
+      join(root, 'components', 'loggy', 'animated', `${component}.tsx`),
+      'utf8'
+    );
 
-    expect(source).toContain(`'@/components/loggy/animated/${component}'`);
-    expect(source).toMatch(new RegExp(`\\b${pose}: ${component},`));
+    expect(generated).toContain('fill={colors.body}');
+    expect(generated).not.toContain('var(');
+    // The salad's lettuce is food, drawn in the same greens in every theme; no other pose has a
+    // fixed copy of one.
+    if (pose !== 'salad') {
+      expect(generated).not.toMatch(/"#(47ad92|2f7e78|3d9183)"/i);
+    }
   });
 
   it.each(animated)('%s stands still under reduced motion', (svg) => {

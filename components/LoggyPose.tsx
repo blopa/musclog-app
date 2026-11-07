@@ -1,28 +1,7 @@
-import type { ComponentType } from 'react';
 import { Platform } from 'react-native';
 import { useReducedMotion } from 'react-native-reanimated';
 import type { SvgProps } from 'react-native-svg';
 
-import Celebrating from '@/assets/avatars/loggy-poses/loggy-celebrating.svg';
-import Coffee from '@/assets/avatars/loggy-poses/loggy-coffee.svg';
-import Creatine from '@/assets/avatars/loggy-poses/loggy-creatine.svg';
-import Default from '@/assets/avatars/loggy-poses/loggy-default.svg';
-import Drinking from '@/assets/avatars/loggy-poses/loggy-drinking.svg';
-import Eating from '@/assets/avatars/loggy-poses/loggy-eating.svg';
-import Flex from '@/assets/avatars/loggy-poses/loggy-flex.svg';
-import Lifting from '@/assets/avatars/loggy-poses/loggy-lifting.svg';
-import Magnify from '@/assets/avatars/loggy-poses/loggy-magnify.svg';
-import Nutrition from '@/assets/avatars/loggy-poses/loggy-nutrition.svg';
-import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
-import Pointing from '@/assets/avatars/loggy-poses/loggy-pointing.svg';
-import Reading from '@/assets/avatars/loggy-poses/loggy-reading.svg';
-import Running from '@/assets/avatars/loggy-poses/loggy-running.svg';
-import Salad from '@/assets/avatars/loggy-poses/loggy-salad.svg';
-import Shrug from '@/assets/avatars/loggy-poses/loggy-shrug.svg';
-import Thinking from '@/assets/avatars/loggy-poses/loggy-thinking.svg';
-import Trophy from '@/assets/avatars/loggy-poses/loggy-trophy.svg';
-import Wave from '@/assets/avatars/loggy-poses/loggy-wave.svg';
-import Writing from '@/assets/avatars/loggy-poses/loggy-writing.svg';
 import { LoggyCelebratingAnimated } from '@/components/loggy/animated/LoggyCelebratingAnimated';
 import { LoggyCoffeeAnimated } from '@/components/loggy/animated/LoggyCoffeeAnimated';
 import { LoggyCreatineAnimated } from '@/components/loggy/animated/LoggyCreatineAnimated';
@@ -45,6 +24,11 @@ import { LoggyWaveAnimated } from '@/components/loggy/animated/LoggyWaveAnimated
 import { LoggyWritingAnimated } from '@/components/loggy/animated/LoggyWritingAnimated';
 import type { LoggyAnimatedPose } from '@/components/loggy/LoggyLayer';
 import { useLoggyClock } from '@/components/loggy/useLoggyClock';
+import {
+  type LoggyAppearance,
+  type LoggyColors,
+  useLoggyColors,
+} from '@/components/loggy/useLoggyColors';
 import { useSettings } from '@/hooks/useSettings';
 
 export type LoggyPoseName =
@@ -70,65 +54,38 @@ export type LoggyPoseName =
   | 'writing';
 
 /**
- * Width over height of each pose: the `viewBox` of its SVG, since the canvases differ. Each SVG is
- * compiled to a component at build time by react-native-svg-transformer (`metro.config.js`). The
- * SVGs are generated, not drawn here: edit a part in `assets/avatars/loggy-parts` and run
- * `npm run generate-loggy`.
+ * Each pose's generated component and its width over height: the `viewBox` of its SVG, since the
+ * canvases differ. The components are generated, not drawn here: edit a part in
+ * `assets/avatars/loggy-parts` and run `npm run generate-loggy` (the same run writes the SVGs in
+ * `assets/avatars/loggy-poses`, which `loggyPose.test.ts` holds these aspects equal to).
  *
- * These are the static poses, and the fallback for `animated` under reduced motion. The animated
- * ones (`assets/avatars/loggy-animated/`) are layers moved by CSS `@keyframes`, which
- * react-native-svg cannot run, so they are not imported here: `ANIMATED_POSES` holds components
- * generated from them, with the layers driven by Reanimated.
+ * One component serves both ways of drawing him. Given a clock it moves its layers by their CSS
+ * `@keyframes`, which react-native-svg cannot run itself, so Reanimated drives them
+ * (`components/loggy/LoggyLayer.tsx`); given none every layer is a plain group, and a layer's
+ * keyframes open and close on the identity frame, so that is exactly the drawn pose. That still is
+ * what he is drawn as under reduced motion or with "Animated Loggy" off.
  */
-const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: number }> = {
-  celebrating: { Art: Celebrating, aspect: 0.875 },
-  coffee: { Art: Coffee, aspect: 0.859 },
-  creatine: { Art: Creatine, aspect: 0.8 },
-  default: { Art: Default, aspect: 0.8 },
-  drinking: { Art: Drinking, aspect: 0.844 },
-  eating: { Art: Eating, aspect: 0.8 },
-  flex: { Art: Flex, aspect: 0.8 },
-  lifting: { Art: Lifting, aspect: 1 },
-  magnify: { Art: Magnify, aspect: 0.844 },
-  nutrition: { Art: Nutrition, aspect: 1 },
-  panic: { Art: Panic, aspect: 0.8 },
-  pointing: { Art: Pointing, aspect: 1 },
-  reading: { Art: Reading, aspect: 0.8 },
-  running: { Art: Running, aspect: 0.875 },
-  salad: { Art: Salad, aspect: 0.8 },
-  shrug: { Art: Shrug, aspect: 0.875 },
-  thinking: { Art: Thinking, aspect: 0.767 },
-  trophy: { Art: Trophy, aspect: 0.875 },
-  wave: { Art: Wave, aspect: 0.875 },
-  writing: { Art: Writing, aspect: 0.8 },
-};
-
-/**
- * The animated twin of each pose, generated by `npm run generate-loggy` (the drawing is the
- * still's, path for path: both are built from the parts in `assets/avatars/loggy-parts`). Its
- * aspect is the still's: `loggyPose.test.ts` holds them equal.
- */
-const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
-  celebrating: LoggyCelebratingAnimated,
-  coffee: LoggyCoffeeAnimated,
-  creatine: LoggyCreatineAnimated,
-  default: LoggyDefaultAnimated,
-  drinking: LoggyDrinkingAnimated,
-  eating: LoggyEatingAnimated,
-  flex: LoggyFlexAnimated,
-  lifting: LoggyLiftingAnimated,
-  magnify: LoggyMagnifyAnimated,
-  nutrition: LoggyNutritionAnimated,
-  panic: LoggyPanicAnimated,
-  pointing: LoggyPointingAnimated,
-  reading: LoggyReadingAnimated,
-  running: LoggyRunningAnimated,
-  salad: LoggySaladAnimated,
-  shrug: LoggyShrugAnimated,
-  thinking: LoggyThinkingAnimated,
-  trophy: LoggyTrophyAnimated,
-  wave: LoggyWaveAnimated,
-  writing: LoggyWritingAnimated,
+const POSES: Record<LoggyPoseName, { pose: LoggyAnimatedPose; aspect: number }> = {
+  celebrating: { pose: LoggyCelebratingAnimated, aspect: 0.875 },
+  coffee: { pose: LoggyCoffeeAnimated, aspect: 0.859 },
+  creatine: { pose: LoggyCreatineAnimated, aspect: 0.8 },
+  default: { pose: LoggyDefaultAnimated, aspect: 0.8 },
+  drinking: { pose: LoggyDrinkingAnimated, aspect: 0.844 },
+  eating: { pose: LoggyEatingAnimated, aspect: 0.8 },
+  flex: { pose: LoggyFlexAnimated, aspect: 0.8 },
+  lifting: { pose: LoggyLiftingAnimated, aspect: 1 },
+  magnify: { pose: LoggyMagnifyAnimated, aspect: 0.844 },
+  nutrition: { pose: LoggyNutritionAnimated, aspect: 1 },
+  panic: { pose: LoggyPanicAnimated, aspect: 0.8 },
+  pointing: { pose: LoggyPointingAnimated, aspect: 1 },
+  reading: { pose: LoggyReadingAnimated, aspect: 0.8 },
+  running: { pose: LoggyRunningAnimated, aspect: 0.875 },
+  salad: { pose: LoggySaladAnimated, aspect: 0.8 },
+  shrug: { pose: LoggyShrugAnimated, aspect: 0.875 },
+  thinking: { pose: LoggyThinkingAnimated, aspect: 0.767 },
+  trophy: { pose: LoggyTrophyAnimated, aspect: 0.875 },
+  wave: { pose: LoggyWaveAnimated, aspect: 0.875 },
+  writing: { pose: LoggyWritingAnimated, aspect: 0.8 },
 };
 
 /**
@@ -151,6 +108,12 @@ type LoggyPoseProps = {
    * only the `/app/test/loggy` comparison forces it.
    */
   visible?: boolean;
+  /**
+   * The greens he is drawn in. Left out he follows the active theme; `classic` pins the green he
+   * was drawn in, for a surface that takes its colours from him instead of from the theme (the
+   * Year in Musclog posters).
+   */
+  appearance?: LoggyAppearance;
   pose: LoggyPoseName;
   height: number;
 };
@@ -170,18 +133,28 @@ const HIDDEN_FROM_ASSISTIVE_TECH: SvgProps =
       };
 
 function AnimatedLoggy({
+  colors,
   pose,
   height,
   width,
 }: {
+  colors: LoggyColors;
   pose: LoggyPoseName;
   height: number;
   width: number;
 }) {
-  const { Art, animation } = ANIMATED_POSES[pose];
+  const { Art, animation } = POSES[pose].pose;
   const clock = useLoggyClock(animation.loopMs);
 
-  return <Art {...HIDDEN_FROM_ASSISTIVE_TECH} clock={clock} height={height} width={width} />;
+  return (
+    <Art
+      {...HIDDEN_FROM_ASSISTIVE_TECH}
+      clock={clock}
+      colors={colors}
+      height={height}
+      width={width}
+    />
+  );
 }
 
 /**
@@ -195,11 +168,12 @@ export function useLoggyVisible(): boolean {
 }
 
 /** The mascot at a given height. Always decorative: the words around it carry the meaning. */
-export function LoggyPose({ pose, height, animated, visible }: LoggyPoseProps) {
+export function LoggyPose({ pose, height, animated, visible, appearance }: LoggyPoseProps) {
   const reduceMotion = useReducedMotion();
   const { animatedLoggy, showLoggy } = useSettings();
+  const colors = useLoggyColors(appearance);
   const shouldAnimate = animated ?? animatedLoggy;
-  const { Art, aspect } = POSES[pose];
+  const { pose: art, aspect } = POSES[pose];
   const width = height * aspect;
 
   if (!(visible ?? showLoggy)) {
@@ -207,8 +181,8 @@ export function LoggyPose({ pose, height, animated, visible }: LoggyPoseProps) {
   }
 
   if (shouldAnimate && !reduceMotion) {
-    return <AnimatedLoggy pose={pose} height={height} width={width} />;
+    return <AnimatedLoggy colors={colors} pose={pose} height={height} width={width} />;
   }
 
-  return <Art {...HIDDEN_FROM_ASSISTIVE_TECH} height={height} width={width} />;
+  return <art.Art {...HIDDEN_FROM_ASSISTIVE_TECH} colors={colors} height={height} width={width} />;
 }

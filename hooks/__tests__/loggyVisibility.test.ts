@@ -12,6 +12,7 @@ const mockSettings = { showLoggy: true, animatedLoggy: false };
 
 jest.mock('@/hooks/useSettings', () => ({ useSettings: () => mockSettings }));
 jest.mock('@/hooks/useTheme', () => ({
+  useThemeIdOrNull: () => null,
   useTheme: () => ({
     iconSize: { '5xl': 64 },
     colors: { text: { tertiary: '#999' } },

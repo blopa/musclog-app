@@ -51,7 +51,7 @@ export default function Download() {
     <>
       <main className="relative flex min-h-[calc(100vh-8rem)] items-center justify-center overflow-hidden px-4 py-20">
         <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col items-center text-center">
-          <WebsiteLoggy pose="lifting" eager className="mb-6 h-32 w-auto sm:h-40" />
+          <WebsiteLoggy pose="lifting" className="mb-6 h-32 w-auto sm:h-40" />
           <h1 className="max-w-lg text-balance text-4xl font-bold leading-tight text-text-primary sm:text-5xl">
             {t('title')}
           </h1>
