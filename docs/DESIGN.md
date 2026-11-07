@@ -460,6 +460,16 @@ the same as a pushed screen header, with a 36pt control-radius close button (a d
 shared shells route a header through a gradient; a purple-to-transparent wash was a copy-pasted
 pattern across eight files and added nothing over the surface color.
 
+**A footer that floats over a scrolling body is accounted for by measuring it.** `FullScreenModal`
+draws its footer (`BottomButtonWrapper`) on top of the body, so the body pads its bottom by the
+footer's measured height (`footerClearance`, never less than the one-row minimum). Buttons in a
+footer take `grow basis-[Npx]` inside a `flex-wrap` row, so at large text or in a long translation
+they stack instead of hanging out of the sheet, and the taller footer still clears the last row.
+A fixed padding sized for one row hid the end of the content once a footer wrapped. A
+`CenteredModal` whose body can outgrow a short window (a form with several fields, a list of
+choices) passes `scrollable`: the sheet is bounded to the window, only the body scrolls, and the
+title row and the footer stay on screen.
+
 ### Home
 
 Home opens on the day it is about: the avatar on the left and a date heading ("Monday, Oct 19")
@@ -629,6 +639,8 @@ Three layers find cramped layouts without looking at every screen by hand. None 
    **What it can reach.** Screens and onboarding steps open by URL; modals open from the `/app/test/modals` fixture with its props. Everything a URL cannot carry is a **flow** (`tests/layoutAudit/flows/`, declared in `AUDIT_FLOWS` in `routes.ts`): a live workout started from the library and finished (both views, warm-ups, a skipped set, a superset, the rest bar while resting, in its last seconds and run out, each session sheet, End workout, the summary and its feedback sheet); the What's new tour as an upgrader sees it, page by page with its modal actions, and the Settings replay; a Weekly Review decided, its missing weigh-in logged, its recommendation edited and applied, an earlier review, a legacy check-in and a week with nothing logged; a comeback from Home's offer through every setup step to running, tailored, edited, stalled and graduated; the food diary's entry, grouped meal, My meals, a saved meal, the day menu and bulk selection; the cycle screen's day log, sheets, history tabs and a reminder's explainer. A flow taps its way through, the way a person does, and moves the page clock (`page.clock.setFixedTime`) for anything that needs time to pass. Each flow runs in its own seeded context because it changes the data. The rest timer, rest over and exercise transition screens are no longer opened by the session (it shows its rest in `RestTimerBar`); they still ship, so the workout flow opens them by URL with the live session's own ids. The audit seeds the demo data plus its own records (`database/seeders/layoutAudit.ts`, only in a screenshots build and only with `layoutAuditData=true`, so the store captures keep their data): notes, cycle day logs and a context, a snack, an "other" entry and a grouped meal in today's diary, two goals and a plan. `MODAL_COVERAGE` says how every `*Modal`, `*Sheet` and `*Menu` component is audited (fixture button, flow step, or why not); `routes.test.ts` fails on a new one that is missing, so "not scripted yet" entries are the open gaps.
 
    `quick` is the default set; `MUSCLOG_LAYOUT_SET=phones|all` widens it. It is slow by design (a full default run is every screen × 3 profiles × 5 languages), so narrow with `MUSCLOG_LAYOUT_ONLY=food,home`, `MUSCLOG_LAYOUT_SURFACES=screens,modals,onboarding,flows` and `MUSCLOG_LAYOUT_LOCALES=ru-RU,nl-NL`. A flow runs when `MUSCLOG_LAYOUT_ONLY` names it (`workout`, `comeback-flow`) or one of its steps (`weekly-review (applied)`), and then measures only the steps that are named. Add `pseudo` to the locales to stretch English by 40% when a translation does not exist yet.
+
+   **Speed.** Waiting, not measuring, is what a run costs (a 142 s workout-flow test spent 103 s asleep and about 1.4 s collecting, analysing and taking screenshots), so `settle` waits for readiness rather than a fixed time: the page text has to be the same on two reads 200 ms apart (clock-like text such as `00:01:44` is masked, since a live workout's clocks change it every second), then the DOM has to be quiet for 300 ms, with the step's `extraMs` as the cap, so a page that never goes quiet waits exactly as long as before. `MUSCLOG_LAYOUT_WORKERS` sets the worker count (default 2; 6 is comfortable on a 16-core machine), and `MUSCLOG_LAYOUT_TIMING=1` prints, per test, how long each phase took. The same 20-test workout run went from 17.9 to 3.7 minutes with the same findings (only time-dependent labels differ).
 
 2. **Static scan (`npm run layout:scan`).** Ranks files by risky JSX patterns (a flex-row of text that cannot shrink, Buttons sharing a row without `flex-1`, literal widths of 240+ px, literal heights around text, absolute siblings of text, manual window math). Noisy; use it to choose where to look and to catch a pattern before it ships.
 

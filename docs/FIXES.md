@@ -1274,3 +1274,14 @@ native production builds.
 Each modal capture reloads the fixture before the next one. Escape alone leaves
 non-dismissible modals (such as session feedback) open, blocking subsequent
 buttons and causing missing captures.
+
+### A wrapped modal footer covered the end of the content
+
+`FullScreenModal` draws its footer on top of the scrolling body (`BottomButtonWrapper` is
+`absolute bottom-0`) and reserved a fixed 120px at the bottom of the body for it, enough for one row
+of buttons. When the comeback setup footer was changed so that Back and Next stack at large text
+(its Russian final label does not fit beside the other button), the footer became Skip, Back and
+Next in a column, far taller than 120px, and covered the last row of every step in every
+locale, English included (the layout audit's comeback errors went from 11 to 143 on one pass). The body now pads by the footer's measured height (`footerClearance`, never below the old
+minimum), so a footer may wrap without hiding content. Any new footer layout is checked at 1.3×
+text, where a footer that is taller than one row is expected.
