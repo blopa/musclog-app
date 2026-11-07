@@ -13,7 +13,11 @@ export const BASELINE_PATH = path.resolve(process.cwd(), 'tests', 'layoutAudit',
 
 export type Surface = 'screen' | 'modal';
 /** Where `report.html` files an entry: the three tests of the audit. */
-export type ReportGroup = 'screens' | 'onboarding' | 'modals';
+/**
+ * `flows` holds what is reached by tapping through a state a URL cannot carry (a live workout, the
+ * What's new tour, a Weekly Review being decided, a comeback being set up), one entry per step.
+ */
+export type ReportGroup = 'screens' | 'onboarding' | 'modals' | 'flows';
 export type EntryStatus = 'audited' | 'redirected' | 'skipped' | 'failed';
 
 /** One audited page or modal under one profile and locale. */

@@ -21,6 +21,7 @@ const POSES: LoggyPoseName[] = [
   'pointing',
   'running',
   'salad',
+  'shrug',
   'thinking',
   'trophy',
   'writing',

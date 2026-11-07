@@ -4,6 +4,8 @@
 import {
   applyPseudoLocale,
   collectLayoutSnapshot,
+  countOpenLayers,
+  isolateTopLayer,
   markBaseline,
   markBaselineOutsideLayer,
   scrollLargestToEnd,
@@ -230,7 +232,6 @@ describe('collectLayoutSnapshot', () => {
     render('<div id="root"></div>');
     expect(markBaselineOutsideLayer('[data-testid="missing"]')).toBe(false);
   });
-
   it('marks a control covered by a layer outside its own scroller as scrolling under it', () => {
     render(`
       <div id="screen">
@@ -290,6 +291,53 @@ describe('collectLayoutSnapshot', () => {
     expect(control?.coveredShare).toBe(0);
     expect(control?.coveredBy).toBeNull();
     document.elementFromPoint = () => null;
+  });
+});
+
+describe('isolateTopLayer', () => {
+  /**
+   * The page, two closed modal hosts, an open sheet and a sub-sheet opened over it. A real host is
+   * 0 px wide and its `position: fixed` content carries the box, as the sub-sheet's does here.
+   */
+  const STACKED = `
+    <div class="shell"><div id="root"><p data-rect="0,0,100,20">Page</p></div></div>
+    <div data-rect="0,0,360,780"></div>
+    <div data-rect="0,0,360,780"><div data-rect="0,0,360,780"><p data-rect="10,10,100,20">Tour page</p></div></div>
+    <div data-rect="0,0,360,780"></div>
+    <div data-rect="0,0,0,780"><div data-rect="0,300,360,480"><p data-rect="10,310,100,20">Sub-sheet</p></div></div>
+    <div data-rect="0,0,0,0"><p>Static landing copy</p></div>`;
+
+  it('measures only the last open modal host, skipping empty hosts, the page and hidden markup', () => {
+    render(STACKED);
+
+    expect(isolateTopLayer()).toBe(true);
+    expect(collectLayoutSnapshot({ onlyNew: true }).nodes.map((node) => node.label)).toEqual([
+      'Sub-sheet',
+    ]);
+  });
+
+  it('clears an earlier baseline inside the layer, so a step that changed in place is measured', () => {
+    render(STACKED);
+    markBaseline();
+
+    expect(isolateTopLayer()).toBe(true);
+    expect(collectLayoutSnapshot({ onlyNew: true }).nodes.map((node) => node.label)).toEqual([
+      'Sub-sheet',
+    ]);
+  });
+
+  it('counts the open overlays by the same rule', () => {
+    render(STACKED);
+    expect(countOpenLayers()).toBe(2);
+  });
+
+  it('changes nothing when no overlay is open', () => {
+    render(`<div class="shell"><div id="root"><p data-rect="0,0,100,20">Page</p></div></div>
+      <div data-rect="0,0,360,780"></div>`);
+
+    expect(isolateTopLayer()).toBe(false);
+    expect(countOpenLayers()).toBe(0);
+    expect(document.body.querySelectorAll('[data-la-base]')).toHaveLength(0);
   });
 });
 

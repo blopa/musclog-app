@@ -139,27 +139,124 @@ export const ONBOARDING_ROUTES: AuditRoute[] = [
 ].map((route) => ({ ...route, area: 'onboarding' as const }));
 
 /**
- * Route files that are not audited as their own page. The live-workout screens are reached by
- * starting a workout (see `auditWorkoutSession` in the spec); the rest need state a URL cannot
- * carry.
+ * A state no URL can carry, reached by tapping through the app (see `tests/layoutAudit/flows/`).
+ * Each flow runs in its own seeded browser context, since it changes the data as it goes (a
+ * workout is started and finished, a review decided, a comeback begun). `steps` are the report
+ * names the flow measures; one ending in `)` may carry a variant inside the brackets
+ * (`whats-new (tour page 3)`), and measuring a name that is not declared here fails that step.
  */
+export interface AuditFlow {
+  name: string;
+  /** Route files under `app/app/` the flow audits (they need no entry of their own). */
+  files: string[];
+  steps: string[];
+}
+
+export const AUDIT_FLOWS: AuditFlow[] = [
+  {
+    name: 'workout',
+    files: [
+      'workout/workout-session',
+      'workout/workout-summary',
+      'workout/rest-timer',
+      'workout/rest-over',
+      'workout/exercise-transition',
+    ],
+    steps: [
+      'workout-session (guided)',
+      'workout-session (inline)',
+      'workout-session (set states)',
+      'workout-session (rest panel)',
+      'workout-session (get ready)',
+      'workout-session (rest over)',
+      'workout-session (set details)',
+      'workout-session (why)',
+      'workout-session (notes)',
+      'workout-session (workout options)',
+      'workout-session (end workout)',
+      'workout-rest-timer',
+      'workout-rest-over',
+      'workout-exercise-transition',
+      'workout-summary',
+      'workout-summary (session feedback)',
+    ],
+  },
+  {
+    name: 'whats-new',
+    files: [],
+    steps: [
+      'whats-new (tour intro)',
+      'whats-new (tour page)',
+      'whats-new (workout settings)',
+      'whats-new (cardio log)',
+      'whats-new (replay intro)',
+      'whats-new (replay page)',
+    ],
+  },
+  {
+    name: 'weekly-review-flow',
+    files: [],
+    steps: [
+      'weekly-review (training decided)',
+      'weekly-review (weekly targets)',
+      'weekly-review (log weight)',
+      'weekly-review (recommendation ready)',
+      'weekly-review (edit recommendation)',
+      'weekly-review (applied)',
+      'weekly-review (earlier review)',
+      'weekly-review (legacy check-in)',
+      'weekly-review (week off)',
+    ],
+  },
+  {
+    name: 'comeback-flow',
+    files: [],
+    steps: [
+      'comeback (home offer)',
+      'comeback (setup)',
+      'comeback (running)',
+      'comeback (home active)',
+      'comeback (tailor)',
+      'comeback (edit)',
+      'comeback (home stalled)',
+      'comeback (graduated)',
+    ],
+  },
+  {
+    name: 'diary',
+    files: [],
+    steps: [
+      'diary (food entry)',
+      'diary (grouped meal)',
+      'diary (my meals)',
+      'diary (saved meal)',
+      'diary (day summary menu)',
+      'diary (selection)',
+    ],
+  },
+  {
+    name: 'cycle-flow',
+    files: [],
+    steps: [
+      'cycle (logged day)',
+      'cycle (prediction details)',
+      'cycle (appointment summary)',
+      'cycle (log past period)',
+      'cycle (periods)',
+      'cycle (edit period)',
+      'cycle (compare)',
+      'cycle (trends)',
+    ],
+  },
+];
+
+/** Route files that are not audited at all, with the reason. */
 export const UNAUDITED_ROUTES: UnauditedRoute[] = [
   { file: '_layout', reason: 'layout, renders no screen of its own' },
   {
     file: 'nutrition/checkin-list',
     reason: 'deprecated redirect to the Weekly Review, kept for saved links',
   },
-  {
-    file: 'workout/workout-session',
-    reason: 'audited through the Start workout flow, which needs a template and an active log',
-  },
-  {
-    file: 'workout/workout-summary',
-    reason: 'needs a just-finished workout log; finishing a session is not scripted',
-  },
-  { file: 'workout/rest-timer', reason: 'needs a running rest timer from a live session' },
-  { file: 'workout/rest-over', reason: 'needs a rest timer that has just ended' },
-  { file: 'workout/exercise-transition', reason: 'needs the next exercise of a live session' },
 ];
 
 /**

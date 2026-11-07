@@ -5,8 +5,19 @@ import path from 'path';
 import { installFixtureRoutes, APP_URL, seedDemoData } from './helpers/screenshotSession';
 import { analyzeSnapshot } from './layoutAudit/analyze';
 import {
+  declaredStep,
+  type FlowContext,
+  flowSelection,
+  liveRows,
+  localeCopy,
+  readLokiChunks,
+  stepName,
+} from './layoutAudit/flowKit';
+import { FLOW_RUNNERS } from './layoutAudit/flows/registry';
+import {
   applyPseudoLocale,
   collectLayoutSnapshot,
+  isolateTopLayer,
   markBaseline,
   markBaselineOutsideLayer,
   scrollLargestToEnd,
@@ -22,9 +33,11 @@ import {
   type Surface,
 } from './layoutAudit/report';
 import {
+  AUDIT_FLOWS,
   MAIN_ROUTES,
   MODAL_AUDIT_BUTTONS,
   ONBOARDING_ROUTES,
+  type AuditFlow,
   type AuditRoute,
 } from './layoutAudit/routes';
 
@@ -37,8 +50,9 @@ import {
  *  - MUSCLOG_LAYOUT_LOCALES   comma list of locale tags; default `all` = every bundled locale
  *                             (en-US, es-ES, nl-NL, pt-BR, ru-RU); add `pseudo` for English
  *                             lengthened by 40%
- *  - MUSCLOG_LAYOUT_ONLY      comma list; only screens/modals whose name contains one of them
- *  - MUSCLOG_LAYOUT_SURFACES  comma list of `screens`, `modals`, `onboarding` (default all)
+ *  - MUSCLOG_LAYOUT_ONLY      comma list; only screens/modals/flow steps whose name contains one
+ *                             of them (a flow runs when its own name or any step's matches)
+ *  - MUSCLOG_LAYOUT_SURFACES  comma list of `screens`, `modals`, `onboarding`, `flows` (default all)
  *  - MUSCLOG_LAYOUT_PSEUDO_FACTOR  how much `pseudo` stretches text (default 1.4)
  */
 
@@ -48,7 +62,7 @@ const ONLY = (process.env.MUSCLOG_LAYOUT_ONLY ?? '')
   .map((value) => value.trim().toLowerCase())
   .filter(Boolean);
 const SURFACES = new Set(
-  (process.env.MUSCLOG_LAYOUT_SURFACES ?? 'screens,modals,onboarding')
+  (process.env.MUSCLOG_LAYOUT_SURFACES ?? 'screens,modals,onboarding,flows')
     .split(',')
     .map((s) => s.trim())
 );
@@ -306,36 +320,6 @@ async function auditRoutes(
 }
 
 /**
- * Reads one string of the locale's own copy (`lang/locales/<locale>/<file>.json`, at `keyPath`);
- * English when the locale has none, `fallback` when neither does.
- */
-function localeCopy(locale: string, file: string, keyPath: string[], fallback: string): string {
-  for (const dir of [locale.toLowerCase(), 'en-us']) {
-    try {
-      let value: unknown = JSON.parse(
-        fs.readFileSync(path.join(__dirname, '..', 'lang', 'locales', dir, `${file}.json`), 'utf8')
-      );
-      for (const key of keyPath) {
-        value = (value as Record<string, unknown> | undefined)?.[key];
-      }
-
-      if (typeof value === 'string' && value.length > 0) {
-        return value;
-      }
-    } catch {
-      // Try the next directory.
-    }
-  }
-
-  return fallback;
-}
-
-/** The locale's own copy for the Start workout button; English when it has none. */
-function startWorkoutLabel(locale: string): string {
-  return localeCopy(locale, 'workout', ['workout', 'startWorkout'], 'Start workout');
-}
-
-/**
  * Measures a route's one-time intro sheet on its own, then closes it through its button so the
  * screen underneath is measured as a person sees it afterwards. A sheet that is not there (the
  * seeded data did not trigger it) is nothing to do; one that cannot be closed is recorded and the
@@ -385,47 +369,6 @@ async function auditIntroSheet(
       status: 'failed',
       note: `could not measure or close the intro sheet: ${(error as Error).message.split('\n')[0]}`,
       screenshot: await auditor.capture('modal', name, 'top'),
-    });
-  }
-}
-
-/** The live session is reached by starting a workout from the library, never by URL. */
-async function auditWorkoutSession(page: Page, auditor: Auditor, locale: string): Promise<void> {
-  const name = 'workout-session';
-  const url = `${APP_URL}/workout/workout-session`;
-  if (!wanted(name)) {
-    return;
-  }
-
-  try {
-    await page.goto(`${APP_URL}/workout/workouts`, { timeout: 60000 });
-    await auditor.settle();
-    const label = startWorkoutLabel(locale);
-    const start = page
-      .getByRole('button', { name: new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') })
-      .first();
-    if ((await start.count()) === 0) {
-      auditor.record({
-        surface: 'screen',
-        name,
-        url,
-        status: 'skipped',
-        note: `no "${label}" button on the workouts screen (no template in the demo data?)`,
-      });
-      return;
-    }
-
-    await start.click();
-    await page.waitForURL(/workout-session/, { timeout: 20000 });
-    await auditor.settle(2000);
-    await auditor.audit({ surface: 'screen', name, url: page.url(), onlyNew: false });
-  } catch (error) {
-    auditor.record({
-      surface: 'screen',
-      name,
-      url,
-      status: 'skipped',
-      note: `could not start a workout: ${(error as Error).message.split('\n')[0]}`,
     });
   }
 }
@@ -483,7 +426,114 @@ async function auditModals(page: Page, auditor: Auditor): Promise<void> {
 }
 
 /**
- * Seeds the demo data (in English: the labels clicked below are English), then moves the app to
+ * Runs one flow from `tests/layoutAudit/flows/`. A step the flow could not reach is recorded as
+ * failed, and every declared step it never got to as skipped, so a broken flow shows up in the
+ * report instead of silently auditing less.
+ */
+async function runFlow(
+  page: Page,
+  auditor: Auditor,
+  flow: AuditFlow,
+  locale: string,
+  measures: (step: string) => boolean
+): Promise<void> {
+  const url = () => page.url();
+  const reached = new Set<string>();
+  const check = (name: string) => {
+    const step = declaredStep(flow, name);
+    if (!step) {
+      throw new Error(`flow ${flow.name} measured "${name}", which AUDIT_FLOWS does not declare`);
+    }
+
+    reached.add(step);
+    return step;
+  };
+
+  const ctx: FlowContext = {
+    page,
+    locale,
+    copy: (file, keyPath, fallback = keyPath.join('.')) =>
+      localeCopy(locale, file, keyPath, fallback),
+    settle: (extraMs) => auditor.settle(extraMs),
+    screen: async (step, variant) => {
+      const name = stepName(step, variant);
+      if (!measures(check(name))) {
+        return;
+      }
+
+      console.log(`[layout] flow ${flow.name}: ${name}`);
+      await auditor.audit({ surface: 'screen', name, url: url(), onlyNew: false });
+    },
+    overlay: async (step, variant) => {
+      const name = stepName(step, variant);
+      if (!measures(check(name))) {
+        return;
+      }
+
+      console.log(`[layout] flow ${flow.name}: ${name}`);
+      if (!(await page.evaluate(isolateTopLayer))) {
+        auditor.record({
+          surface: 'modal',
+          name,
+          url: url(),
+          status: 'failed',
+          note: 'no overlay was open to measure',
+          screenshot: await auditor.capture('modal', name, 'top'),
+        });
+        return;
+      }
+
+      await auditor.audit({ surface: 'modal', name, url: url(), onlyNew: true });
+    },
+    skip: (step, note, variant) => {
+      const name = stepName(step, variant);
+      if (measures(check(name))) {
+        auditor.record({ surface: 'screen', name, url: url(), status: 'skipped', note });
+      }
+    },
+    rows: async (table) => {
+      // LokiJS saves 500 ms after a write; what the store holds trails the screen until then.
+      await page.waitForTimeout(1500);
+      return liveRows(await page.evaluate(readLokiChunks), table);
+    },
+  };
+
+  try {
+    await FLOW_RUNNERS[flow.name](ctx);
+  } catch (error) {
+    const note = (error as Error).message.split('\n')[0];
+    const pending = flow.steps.filter((step) => !reached.has(step) && measures(step));
+    const [first, ...rest] = pending;
+    if (first) {
+      auditor.record({
+        surface: 'screen',
+        name: first,
+        url: url(),
+        status: 'failed',
+        note,
+        screenshot: await auditor.capture('screen', first, 'top'),
+      });
+    }
+
+    for (const step of rest) {
+      auditor.record({
+        surface: 'screen',
+        name: step,
+        url: url(),
+        status: 'skipped',
+        note: `not reached: ${first} failed first`,
+      });
+    }
+
+    if (!first) {
+      throw error;
+    }
+  }
+}
+
+/**
+ * Seeds the demo data plus the audit's own extra records (in English: the labels clicked below are
+ * English), then moves the app to
  * `locale` the way a person does and proves it renders there.
  */
 async function seedInLocale(
@@ -492,7 +542,7 @@ async function seedInLocale(
   locale: string,
   signatures: string[]
 ): Promise<void> {
-  await seedDemoData(page);
+  await seedDemoData(page, { layoutAuditData: true });
   if (signatures.length > 0) {
     await selectAppLanguage(page, locale);
   }
@@ -523,7 +573,6 @@ for (const localeSpec of LOCALES) {
           await installFixtureRoutes(page);
           await seedInLocale(page, auditor, locale, signatures);
           await auditRoutes(page, auditor, MAIN_ROUTES, 'screen', locale, signatures);
-          await auditWorkoutSession(page, auditor, locale);
         } finally {
           auditor.flush('screens');
         }
@@ -540,6 +589,23 @@ for (const localeSpec of LOCALES) {
           auditor.flush('modals');
         }
       });
+
+      // One test (one browser context, one fresh seed) per flow: a flow changes the data as it
+      // goes, so it never shares a database with the screens above or with another flow.
+      for (const flow of AUDIT_FLOWS) {
+        test(`flow: ${flow.name}`, async ({ page }, testInfo) => {
+          const selection = flowSelection(flow, wanted);
+          test.skip(!SURFACES.has('flows') || !selection.runs, 'flow is not selected');
+          const auditor = createAuditor(page, testInfo, localeSpec, signatures, 'flows');
+          try {
+            await installFixtureRoutes(page);
+            await seedInLocale(page, auditor, locale, signatures);
+            await runFlow(page, auditor, flow, locale, selection.measures);
+          } finally {
+            auditor.flush(`flow-${slug(flow.name)}`);
+          }
+        });
+      }
     });
 
     // A fresh install has no stored language yet, so it follows the browser's locale.

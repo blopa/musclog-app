@@ -44,8 +44,16 @@ export async function navigateTo(page: Page, url: string) {
   await page.waitForTimeout(3000);
 }
 
-export async function seedDemoData(page: Page) {
-  await page.goto(`${APP_URL}/onboarding/landing?demoModeEnabled=true`, { timeout: 60000 });
+/**
+ * Seeds the demo data. `layoutAuditData` adds the layout audit's extra records on top
+ * (`database/seeders/layoutAudit.ts`: notes, cycle day logs, a grouped meal, goals, a plan); the
+ * store and website captures leave it off, so they keep the demo data they were framed around.
+ */
+export async function seedDemoData(page: Page, { layoutAuditData = false } = {}) {
+  const extra = layoutAuditData ? '&layoutAuditData=true' : '';
+  await page.goto(`${APP_URL}/onboarding/landing?demoModeEnabled=true${extra}`, {
+    timeout: 60000,
+  });
   await page.waitForURL(/\/app\/?$/, { timeout: 120000 });
   // LokiJS autosaves every 500ms; leaving earlier discards the demo data.
   await page.waitForTimeout(2000);

@@ -11,6 +11,7 @@
     ['screens', 'Screens'],
     ['onboarding', 'Onboarding'],
     ['modals', 'Modals'],
+    ['flows', 'Flows (state reached by tapping)'],
   ];
   const SEVERITY_LABEL = { error: 'error', warn: 'warning', info: 'note' };
 

@@ -21,13 +21,14 @@ import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { seedDevData } from '@/database/seeders/dev';
+import { seedLayoutAuditData } from '@/database/seeders/layoutAudit';
 import { seedProductionData } from '@/database/seeders/prod';
 import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { isProduction } from '@/utils/app';
-import { importDatabase, shouldSeedDevData } from '@/utils/file';
+import { importDatabase, shouldSeedDevData, shouldSeedLayoutAuditData } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { aiSetupRoute } from '@/utils/onboardingRoutes';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
@@ -102,6 +103,9 @@ export default function LandingScreen() {
         // access via http://localhost:8081/onboarding/landing?demoModeEnabled=true
         if (shouldSeedDevData()) {
           await seedDevData();
+          if (shouldSeedLayoutAuditData()) {
+            await seedLayoutAuditData();
+          }
 
           router.navigate('/app');
         }

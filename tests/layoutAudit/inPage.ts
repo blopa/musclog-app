@@ -54,6 +54,69 @@ export function markBaselineOutsideLayer(selector: string): boolean {
   return true;
 }
 
+/**
+ * For an overlay that is already open when it is measured (a tour that opens with its page, the
+ * next page of a multi-step sheet, a sheet opened over another sheet): isolates the topmost one.
+ * react-native-web gives every mounted Modal a host `<div>` directly under `<body>`, empty while
+ * closed, and a nested modal mounts after the one it opened from, so the last host whose content
+ * has a box is what is on top. Everything outside it is stamped and every stamp inside it is cleared
+ * (content an earlier baseline saw, such as a step's own header, is measured again). Returns false,
+ * changing nothing, when no overlay is open.
+ */
+export function isolateTopLayer(): boolean {
+  const root = document.getElementById('root');
+  const layers = Array.from(document.body.children).filter((child) => {
+    if (child.tagName !== 'DIV' || child.children.length === 0) {
+      return false;
+    }
+
+    if (root && (child === root || child.contains(root))) {
+      return false;
+    }
+
+    // The host itself is 0 px wide; its content is a `position: fixed` child with the real box.
+    const box = (child.firstElementChild ?? child).getBoundingClientRect();
+    return box.width > 0 && box.height > 0;
+  });
+  const layer = layers[layers.length - 1];
+  if (!layer) {
+    return false;
+  }
+
+  const all = document.querySelectorAll('*');
+  for (let i = 0; i < all.length; i++) {
+    if (layer.contains(all[i])) {
+      all[i].removeAttribute('data-la-base');
+    } else {
+      all[i].setAttribute('data-la-base', '1');
+    }
+  }
+
+  return true;
+}
+
+/**
+ * How many overlays are open, by the same rule as `isolateTopLayer` (repeated, not shared: a
+ * function run through `page.evaluate` cannot call another). A flow closes an overlay and checks
+ * the count went down before it moves on.
+ */
+export function countOpenLayers(): number {
+  const root = document.getElementById('root');
+  return Array.from(document.body.children).filter((child) => {
+    if (child.tagName !== 'DIV' || child.children.length === 0) {
+      return false;
+    }
+
+    if (root && (child === root || child.contains(root))) {
+      return false;
+    }
+
+    // The host itself is 0 px wide; its content is a `position: fixed` child with the real box.
+    const box = (child.firstElementChild ?? child).getBoundingClientRect();
+    return box.width > 0 && box.height > 0;
+  }).length;
+}
+
 export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
   const BASE_ATTR = 'data-la-base';
   const NODE_CAP = 4000;

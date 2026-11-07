@@ -47,7 +47,8 @@
     "pointing",
     "trophy",
     "lifting",
-    "salad"
+    "salad",
+    "shrug"
   ],
   "poses": {
     "celebrating": {
@@ -345,6 +346,27 @@
       ],
       "animated": {
         "upper": ["arm-l", "body", "fork", "hand-l", "bowl", "hand-r"]
+      }
+    },
+    "shrug": {
+      "viewBox": "-15 0 560 640",
+      "face": "shrug",
+      "alternateFaces": true,
+      "layers": [
+        "leg-l/standing",
+        "leg-r/standing",
+        "question/shrug",
+        "arm-l/shrug",
+        "hand-l/shrug",
+        "arm-r/shrug",
+        "hand-r/shrug",
+        {
+          "group": "body",
+          "children": ["log/default", "leaf/default", "sweatband/default", "@face"]
+        }
+      ],
+      "animated": {
+        "upper": ["question", "arm-l", "hand-l", "arm-r", "hand-r", "body"]
       }
     },
     "thinking": {
