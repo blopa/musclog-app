@@ -3,6 +3,35 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## The Pages deploy was cancelled after 10 minutes while syncing files (November 2026)
+
+### Symptom
+
+The website deploy failed with `Current status: syncing_files` repeated until `Error: Timeout
+reached, aborting!` and `Canceling Pages deployment...`. The site was not updated.
+
+### Cause
+
+`deploy-gh-pages.yml` used to push `dist/` to an orphan `gh-pages` branch
+(`peaceiris/actions-gh-pages`). With Pages set to "Deploy from a branch", GitHub then runs its own
+built-in `pages-build-deployment` workflow, whose `actions/deploy-pages` step keeps the action's
+10 minute default `timeout`. That workflow is not in the repository, so the limit could not be
+changed. Syncing the whole site (about 2,000 files, mostly exercise photos) can take longer than that.
+
+### Fix
+
+The workflow now builds `dist/`, uploads it with `actions/upload-pages-artifact` and deploys it in a
+second job with `actions/deploy-pages` and `timeout: 1800000` (30 minutes), so the limit is ours.
+This needs **Settings → Pages → Build and deployment → Source: GitHub Actions**; with the source
+still on "Deploy from a branch" the deploy job fails because the site isn't set up for Actions.
+
+- `upload-pages-artifact` v4+ leaves out every dot-entry unless `include-hidden-files: true`. Keep it:
+  without it `/.well-known/` (the App Links / Universal Links ownership files) vanishes from the site.
+- The `gh-pages` branch is no longer written; it can be deleted once the new deploy has gone through.
+- The custom domain comes from the repository's Pages settings, not from `public/CNAME`.
+- If 30 minutes is still not enough, the sync itself is the problem (look at the size of `dist/`,
+  see `scripts/generate-exercise-images.js`), not the timeout.
+
 ## Dialogs ran off narrow screens, and rows broke words at large text (November 2026)
 
 ### Symptom

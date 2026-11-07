@@ -34,7 +34,7 @@ const repoRoot = path.join(__dirname, '..');
 const outputRoot = path.join(repoRoot, 'public', 'images', 'exercises');
 
 // 512px/q65 measured at ~13 KB per image, ~22 MB for all 1746. The whole directory is
-// re-pushed to the gh-pages orphan branch on every deploy, so size is a running cost.
+// re-uploaded to GitHub Pages on every deploy, so size is a running cost.
 const TARGET_WIDTH = 512;
 const WEBP_OPTIONS = { effort: 6, quality: 65 };
 
