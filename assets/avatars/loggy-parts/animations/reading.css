@@ -11,7 +11,7 @@
 }
 #book,
 #hand-l {
-  transform-origin: 252px 508px;
+  transform-origin: 266px 508px;
   animation: loggy-book-read 3.2s ease-in-out infinite;
 }
 #arm-r,
@@ -20,7 +20,7 @@
   animation: loggy-temple-tap 3.2s ease-in-out infinite;
 }
 #foot-l {
-  transform-origin: 252px 508px;
+  transform-origin: 258px 494px;
   animation: loggy-foot-bob 3.2s ease-in-out infinite;
 }
 
