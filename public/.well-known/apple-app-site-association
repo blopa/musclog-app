@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["REPLACE_WITH_APPLE_TEAM_ID.com.werules.logger"],
+        "appIDs": ["PVG62J652G.com.werules.logger"],
         "components": [{ "/": "/open" }]
       }
     ]
