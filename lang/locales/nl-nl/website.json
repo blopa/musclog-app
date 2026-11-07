@@ -440,6 +440,8 @@
       "descriptionFood": "Je voedingslog is klaar. Open het in Musclog om het te bekijken voordat er iets wordt opgeslagen.",
       "descriptionEmpty": "Deze link bevat geen gegevens om te importeren. Ga terug naar je chat en tik de link opnieuw aan.",
       "openButton": "Openen in Musclog",
+      "countdown": "Musclog wordt geopend over {{seconds}}…",
+      "forwarded": "Is Musclog niet geopend? Tik dan op de knop hieronder.",
       "installHint": "Heb je Musclog nog niet?",
       "installLink": "Download Musclog"
     },

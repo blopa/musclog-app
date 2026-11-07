@@ -440,6 +440,8 @@
       "descriptionFood": "Tu registro de comida está listo. Ábrelo en Musclog para revisarlo antes de guardar nada.",
       "descriptionEmpty": "Este enlace no contiene datos para importar. Vuelve a tu chat y toca el enlace de nuevo.",
       "openButton": "Abrir en Musclog",
+      "countdown": "Abriendo Musclog en {{seconds}}…",
+      "forwarded": "Si Musclog no se abrió, toca el botón de abajo.",
       "installHint": "¿Aún no tienes Musclog?",
       "installLink": "Descargar Musclog"
     },

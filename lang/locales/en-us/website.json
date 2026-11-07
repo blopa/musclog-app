@@ -440,6 +440,8 @@
       "descriptionFood": "Your food log is ready. Open it in Musclog to review it before anything is saved.",
       "descriptionEmpty": "This link has no data to import. Go back to your chat and tap the link again.",
       "openButton": "Open in Musclog",
+      "countdown": "Opening Musclog in {{seconds}}…",
+      "forwarded": "If Musclog didn't open, tap the button below.",
       "installHint": "Don't have Musclog yet?",
       "installLink": "Download Musclog"
     },

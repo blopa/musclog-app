@@ -440,6 +440,8 @@
       "descriptionFood": "Запись питания готова. Откройте её в Musclog и проверьте, прежде чем что-либо сохранится.",
       "descriptionEmpty": "В этой ссылке нет данных для импорта. Вернитесь в чат и нажмите на ссылку ещё раз.",
       "openButton": "Открыть в Musclog",
+      "countdown": "Открываем Musclog через {{seconds}}…",
+      "forwarded": "Если Musclog не открылся, нажмите кнопку ниже.",
       "installHint": "Ещё нет Musclog?",
       "installLink": "Скачать Musclog"
     },
