@@ -1,0 +1,58 @@
+/* Loggy shoulder-pressing a pair of heavy dumbbells. His upper body bobs with the strain
+   while his shoes stay planted, the leaf sways, both arms press the dumbbells slightly
+   upward from the shoulders, and the sweat drops pulse at the peak of the press. Every
+   layer opens and ends on the still's own frame. */
+#upper {
+    animation: loggy-bob 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#arm-l, #dumbbell-l, #hand-l {
+    transform-origin: 145px 340px;
+    animation: loggy-press-l 3.2s ease-in-out infinite;
+}
+#arm-r, #dumbbell-r, #hand-r {
+    transform-origin: 368px 340px;
+    animation: loggy-press-r 3.2s ease-in-out infinite;
+}
+#drops-l {
+    transform-origin: 108px 152px;
+    animation: loggy-drops-l 3.2s ease-in-out infinite;
+}
+#drops-r {
+    transform-origin: 405px 152px;
+    animation: loggy-drops-r 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-press-l {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 60% { transform: rotate(2.2deg); }
+}
+@keyframes loggy-press-r {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 60% { transform: rotate(-2.2deg); }
+}
+@keyframes loggy-drops-l {
+    0%, 100% { transform: scale(1, 1); }
+    40% { transform: scale(1.1, 1.1); }
+    75% { transform: scale(.94, .94); }
+}
+@keyframes loggy-drops-r {
+    0%, 100% { transform: scale(1, 1); }
+    35% { transform: scale(.94, .94); }
+    70% { transform: scale(1.1, 1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

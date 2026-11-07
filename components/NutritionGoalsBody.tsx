@@ -1061,7 +1061,7 @@ export function NutritionGoalsBody({
               <Text className="mb-1 text-xs font-medium text-text-secondary">
                 {t('nutritionGoals.totalDailyCalories')}
               </Text>
-              <View className="w-full flex-row items-center justify-center gap-6">
+              <View className="w-full flex-row items-center justify-center gap-3">
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={t('common.a11y.decrease')}
@@ -1078,7 +1078,9 @@ export function NutritionGoalsBody({
                   <Minus size={theme.iconSize.lg} color={theme.colors.text.primary} />
                 </Pressable>
 
-                <View className="min-w-[140px] flex-row items-baseline justify-center gap-2">
+                {/* The unit wraps under the figure when the card is too narrow for both beside the
+                    two buttons (large text); a fixed minimum width pushed the buttons out of the card. */}
+                <View className="min-w-0 shrink flex-row flex-wrap items-baseline justify-center gap-x-2">
                   {isDynamic ? (
                     isResolvingDynamicPreview ? (
                       <ActivityIndicator size="small" color={theme.colors.text.primary} />
@@ -1203,8 +1205,8 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-card border border-border-accent bg-bg-card p-4">
-            <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
+          <View className="flex-row flex-wrap items-center justify-between gap-x-3 gap-y-2 overflow-hidden rounded-card border border-border-accent bg-bg-card p-4">
+            <View className="min-w-0 shrink grow basis-[150px] flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
                   className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-control"
@@ -1222,7 +1224,7 @@ export function NutritionGoalsBody({
                 </Text>
               </View>
             </View>
-            <View className="min-w-0 flex-1 flex-row items-center justify-end gap-2">
+            <View className="min-w-0 shrink grow basis-[170px] flex-row items-center justify-end gap-2">
               <View className="min-w-0 flex-1 overflow-hidden">
                 <DatePickerInput
                   className="min-w-0 flex-1"
@@ -1400,8 +1402,8 @@ export function NutritionGoalsBody({
         <View className="gap-4">
           {/* Target Weight */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">
+            <View className="flex-row items-center justify-between gap-3">
+              <Text className="shrink text-sm font-medium text-text-secondary">
                 {t('nutritionGoals.targetWeight')}
                 {isDynamic ? <Text style={{ color: theme.colors.status.error }}> *</Text> : null}
               </Text>
@@ -1411,10 +1413,10 @@ export function NutritionGoalsBody({
                     didAutofillDynamicTargetWeight.current = false;
                     setTargetWeight(kgToDisplay(defaultTargetWeightKg, units));
                   }}
-                  className="active:opacity-70"
+                  className="shrink active:opacity-70"
                 >
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('editFitnessDetails.fatPercentageNotSet')}
@@ -1426,10 +1428,10 @@ export function NutritionGoalsBody({
                     didAutofillDynamicTargetWeight.current = false;
                     setTargetWeight(null);
                   }}
-                  className="active:opacity-70"
+                  className="shrink active:opacity-70"
                 >
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('common.clear')}
@@ -1470,23 +1472,29 @@ export function NutritionGoalsBody({
 
           {/* Target Body Fat */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">
+            <View className="flex-row items-center justify-between gap-3">
+              <Text className="shrink text-sm font-medium text-text-secondary">
                 {t('nutritionGoals.targetBodyFat')}
               </Text>
               {targetBodyFat === null ? (
-                <Pressable onPress={() => setTargetBodyFat(15)} className="active:opacity-70">
+                <Pressable
+                  onPress={() => setTargetBodyFat(15)}
+                  className="shrink active:opacity-70"
+                >
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('editFitnessDetails.fatPercentageNotSet')}
                   </Text>
                 </Pressable>
               ) : (
-                <Pressable onPress={() => setTargetBodyFat(null)} className="active:opacity-70">
+                <Pressable
+                  onPress={() => setTargetBodyFat(null)}
+                  className="shrink active:opacity-70"
+                >
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('common.clear')}
@@ -1512,8 +1520,8 @@ export function NutritionGoalsBody({
 
           {/* Target BMI */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">
+            <View className="flex-row items-center justify-between gap-3">
+              <Text className="shrink text-sm font-medium text-text-secondary">
                 {t('nutritionGoals.targetBMI')}
               </Text>
               {targetBMI === null ? (
@@ -1526,19 +1534,19 @@ export function NutritionGoalsBody({
                       setTargetBMI(23.5);
                     }
                   }}
-                  className="active:opacity-70"
+                  className="shrink active:opacity-70"
                 >
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('editFitnessDetails.fatPercentageNotSet')}
                   </Text>
                 </Pressable>
               ) : (
-                <Pressable onPress={() => setTargetBMI(null)} className="active:opacity-70">
+                <Pressable onPress={() => setTargetBMI(null)} className="shrink active:opacity-70">
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('common.clear')}
@@ -1564,8 +1572,8 @@ export function NutritionGoalsBody({
 
           {/* Target FFMI */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-text-secondary">
+            <View className="flex-row items-center justify-between gap-3">
+              <Text className="shrink text-sm font-medium text-text-secondary">
                 {t('nutritionGoals.targetFFMI')}
               </Text>
               {targetFFMI === null ? (
@@ -1580,19 +1588,19 @@ export function NutritionGoalsBody({
                       setTargetFFMI(21.0);
                     }
                   }}
-                  className="active:opacity-70"
+                  className="shrink active:opacity-70"
                 >
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('editFitnessDetails.fatPercentageNotSet')}
                   </Text>
                 </Pressable>
               ) : (
-                <Pressable onPress={() => setTargetFFMI(null)} className="active:opacity-70">
+                <Pressable onPress={() => setTargetFFMI(null)} className="shrink active:opacity-70">
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('common.clear')}
@@ -1618,7 +1626,7 @@ export function NutritionGoalsBody({
 
           {/* Target date for body metrics */}
           <View
-            className="flex-row items-center justify-between gap-3 overflow-hidden rounded-card border bg-bg-card p-4"
+            className="flex-row flex-wrap items-center justify-between gap-3 overflow-hidden rounded-card border bg-bg-card p-4"
             style={{
               borderColor:
                 isDynamic && targetDate === null
@@ -1626,7 +1634,9 @@ export function NutritionGoalsBody({
                   : theme.colors.border.brand,
             }}
           >
-            <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
+            {/* Label and date wrap onto two lines when the two halves of a phone-width card leave
+                neither enough room (the date was squeezed to a sliver at large text). */}
+            <View className="min-w-0 shrink grow basis-[120px] flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
                   className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-control"
@@ -1645,7 +1655,7 @@ export function NutritionGoalsBody({
                 </Text>
               </View>
             </View>
-            <View className="min-w-0 flex-1 flex-row items-center justify-end gap-2">
+            <View className="min-w-0 shrink grow basis-[96px] flex-row items-center justify-end gap-2">
               <View className="min-w-0 flex-1 overflow-hidden">
                 <DatePickerInput
                   className="min-w-0 flex-1"

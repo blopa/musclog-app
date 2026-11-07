@@ -14,10 +14,16 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
   const { t } = useTranslation();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
-  const renderStat = (label: string, value: string, colorClass: string) => (
+  // The unit is its own text in a centered, wrapping row: in a quarter-width cell at large text
+  // "126.6 g" no longer fits, and as one string it split at the space and left a bare "g" on the
+  // left of the next line. As two items the unit drops under the figure, centered.
+  const renderStat = (label: string, value: string, colorClass: string, unit?: string) => (
     <View className="flex-1 items-center justify-center p-2">
-      <Text className="text-xs text-text-tertiary">{label}</Text>
-      <Text className={`text-lg font-semibold tabular-nums ${colorClass}`}>{value}</Text>
+      <Text className="text-center text-xs text-text-tertiary">{label}</Text>
+      <View className="flex-row flex-wrap items-baseline justify-center">
+        <Text className={`text-lg font-semibold tabular-nums ${colorClass}`}>{value}</Text>
+        {unit ? <Text className="ml-1 text-xs font-medium text-text-tertiary">{unit}</Text> : null}
+      </View>
     </View>
   );
 
@@ -52,23 +58,27 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
             <View className="flex-row flex-wrap">
               {renderStat(
                 t('progress.averageIntakeProtein'),
-                `${formatDecimal(avg.protein, 1)} g`,
-                'text-text-primary'
+                formatDecimal(avg.protein, 1),
+                'text-text-primary',
+                t('common.units.g')
               )}
               {renderStat(
                 t('progress.averageIntakeCarbs'),
-                `${formatDecimal(avg.carbs, 1)} g`,
-                'text-text-primary'
+                formatDecimal(avg.carbs, 1),
+                'text-text-primary',
+                t('common.units.g')
               )}
               {renderStat(
                 t('progress.averageIntakeFat'),
-                `${formatDecimal(avg.fat, 1)} g`,
-                'text-text-primary'
+                formatDecimal(avg.fat, 1),
+                'text-text-primary',
+                t('common.units.g')
               )}
               {renderStat(
                 t('progress.averageIntakeFiber'),
-                `${formatDecimal(avg.fiber, 1)} g`,
-                'text-text-primary'
+                formatDecimal(avg.fiber, 1),
+                'text-text-primary',
+                t('common.units.g')
               )}
             </View>
           </View>

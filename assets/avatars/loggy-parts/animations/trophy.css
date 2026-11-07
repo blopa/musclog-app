@@ -10,7 +10,7 @@
     animation: loggy-leaf-sway 3.2s ease-in-out infinite;
 }
 #arm-l, #trophy, #hand-l {
-    transform-origin: 145px 336px;
+    transform-origin: 145px 308px;
     animation: loggy-trophy-hoist 3.2s ease-in-out infinite;
 }
 #sparkle-l {

@@ -5,6 +5,7 @@ import {
   applyPseudoLocale,
   collectLayoutSnapshot,
   markBaseline,
+  markBaselineOutsideLayer,
   scrollLargestToEnd,
 } from '../inPage';
 
@@ -164,6 +165,17 @@ describe('collectLayoutSnapshot', () => {
     expect(text?.lossRatio).toBe(0);
   });
 
+  it("records a field's content box, so padding reserved for a control laid over it counts", () => {
+    render(
+      '<input id="f" aria-label="Barcode" data-rect="0,0,300,48" style="border:0;padding:0 40px 0 16px" />' +
+        '<input id="g" aria-label="Plain" data-rect="0,100,300,48" style="border:0;padding:0" />'
+    );
+    const snapshot = collectLayoutSnapshot({ onlyNew: false });
+    expect(byLabel(snapshot, 'Barcode')?.rects).toEqual([{ x: 16, y: 0, w: 244, h: 48 }]);
+    // No padding: the whole box is where the text can be.
+    expect(byLabel(snapshot, 'Plain')?.rects).toEqual([{ x: 0, y: 100, w: 300, h: 48 }]);
+  });
+
   it('names the words a layout split across lines, but not hyphenated or short ones', () => {
     render('<p data-lines="2" data-rect="0,0,100,40">Сканировать штрих-код и ещё</p>');
     const text = collectLayoutSnapshot({ onlyNew: false }).nodes[0];
@@ -192,6 +204,66 @@ describe('collectLayoutSnapshot', () => {
     expect(collectLayoutSnapshot({ onlyNew: true }).nodes.map((node) => node.label)).toEqual([
       'Sheet title',
     ]);
+  });
+
+  it('isolates a sheet portalled out of the page, so the page it covers is not measured', () => {
+    render(`
+      <div id="root"><p data-rect="0,0,100,20">Page</p></div>
+      <div id="portal"><div data-rect="0,400,360,380"><p id="inner" data-testid="intro" data-rect="10,410,100,20">Welcome</p></div></div>`);
+
+    expect(markBaselineOutsideLayer('[data-testid="intro"]')).toBe(true);
+    expect(collectLayoutSnapshot({ onlyNew: true }).nodes.map((node) => node.label)).toEqual([
+      'Welcome',
+    ]);
+  });
+
+  it('refuses to isolate a sheet that lives in the page itself, and stamps nothing', () => {
+    render(`<div id="root"><p data-testid="intro" data-rect="0,0,100,20">Welcome</p></div>`);
+
+    expect(markBaselineOutsideLayer('[data-testid="intro"]')).toBe(false);
+    expect(collectLayoutSnapshot({ onlyNew: true }).nodes.map((node) => node.label)).toEqual([
+      'Welcome',
+    ]);
+  });
+
+  it('reports a missing sheet as not isolated', () => {
+    render('<div id="root"></div>');
+    expect(markBaselineOutsideLayer('[data-testid="missing"]')).toBe(false);
+  });
+
+  it('marks a control covered by a layer outside its own scroller as scrolling under it', () => {
+    render(`
+      <div id="screen">
+        <div id="list" style="overflow-y:auto"><button data-rect="0,300,100,40">Pay</button></div>
+        <div id="bar" data-rect="0,280,360,80">Continue</div>
+      </div>`);
+    scroller('#list', 900, 500);
+    const bar = document.querySelector('#bar') as Element;
+    document.elementFromPoint = () => bar;
+    const control = collectLayoutSnapshot({ onlyNew: false }).nodes.find(
+      (node) => node.kind === 'interactive'
+    );
+    expect(control?.coveredShare).toBe(1);
+    // The bar is absolute over the scroller, not fixed, yet the list scrolls under it.
+    expect(control?.coveredByFixed).toBe(true);
+    document.elementFromPoint = () => null;
+  });
+
+  it('does not excuse a control covered by something inside its own scroller', () => {
+    render(`
+      <div id="list" style="overflow-y:auto">
+        <button data-rect="0,300,100,40">Pay</button>
+        <div id="banner" data-rect="0,300,100,40">Banner</div>
+      </div>`);
+    scroller('#list', 900, 500);
+    const banner = document.querySelector('#banner') as Element;
+    document.elementFromPoint = () => banner;
+    const control = collectLayoutSnapshot({ onlyNew: false }).nodes.find(
+      (node) => node.kind === 'interactive'
+    );
+    expect(control?.coveredShare).toBe(1);
+    expect(control?.coveredByFixed).toBe(false);
+    document.elementFromPoint = () => null;
   });
 
   it('hit-tests a control and names what is on top of it', () => {

@@ -82,24 +82,28 @@ function WorkoutSummaryCard({
           borderRadius: theme.borderRadius.xl,
         }}
       >
+        {/* In the flow, not floated over the corner: at large text it sat on top of the Calories
+            figure and hid its label. */}
         {onEdit ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('common.edit')}
-            onPress={onEdit}
-            className="absolute right-3 top-3 z-10 h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: theme.colors.background.ink10 }}
-          >
-            <Edit size={14} color={theme.colors.text.secondary} />
-          </Pressable>
+          <View className="mb-1 items-end">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.edit')}
+              onPress={onEdit}
+              className="h-8 w-8 items-center justify-center rounded-full"
+              style={{ backgroundColor: theme.colors.background.ink10 }}
+            >
+              <Edit size={14} color={theme.colors.text.secondary} />
+            </Pressable>
+          </View>
         ) : null}
-        <View className="flex-row gap-4">
+        <View className="flex-row gap-2">
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
             <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.totalTime')}
             </Text>
-            <View className="flex-row items-baseline gap-1">
+            <View className="flex-row flex-wrap items-baseline gap-x-1">
               <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {durationDisplay.value}
               </Text>
@@ -113,13 +117,13 @@ function WorkoutSummaryCard({
 
           {/* Volume */}
           <View
-            className="flex-1 flex-col border-l pl-4"
+            className="flex-1 flex-col border-l pl-2"
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.volume')}
             </Text>
-            <View className="flex-row items-baseline gap-1">
+            <View className="flex-row flex-wrap items-baseline gap-x-1">
               <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {formatDisplayWeightKg(locale, units, volume)}
               </Text>
@@ -131,13 +135,13 @@ function WorkoutSummaryCard({
 
           {/* Calories */}
           <View
-            className="flex-1 flex-col border-l pl-4"
+            className="flex-1 flex-col border-l pl-2"
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.calories')}
             </Text>
-            <View className="flex-row items-baseline gap-1">
+            <View className="flex-row flex-wrap items-baseline gap-x-1">
               <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {formatInteger(calories)}
               </Text>
@@ -173,7 +177,7 @@ function SetRow({ set }: SetRowProps) {
         opacity: set.isSkipped ? 0.6 : 1,
       }}
     >
-      <View className="w-12 items-center py-3">
+      <View className="w-10 items-center py-3">
         <View className="flex-row items-center gap-1">
           {set.isHighlighted && !set.isSkipped ? (
             <Trophy size={12} color={theme.colors.accent.primary} />
@@ -226,7 +230,7 @@ function SetsTable({ sets }: SetsTableProps) {
     <View
       className="mt-0 overflow-hidden"
       style={{
-        paddingHorizontal: theme.spacing.padding.base,
+        paddingHorizontal: theme.spacing.padding.sm,
         paddingBottom: theme.spacing.padding.base,
       }}
     >
@@ -238,26 +242,28 @@ function SetsTable({ sets }: SetsTableProps) {
           borderBottomColor: theme.colors.background.ink5,
         }}
       >
-        <View className="w-12 items-center py-2">
+        <View className="w-10 items-center py-2">
           <Text className="text-xs font-semibold text-text-tertiary">{t('workoutDetail.set')}</Text>
         </View>
-        <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">
+        <View className="min-w-0 flex-1 items-center px-0.5 py-2">
+          <Text className="text-center text-xs font-semibold text-text-tertiary">
             {t('workoutDetail.weight')}
           </Text>
         </View>
-        <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">
+        <View className="min-w-0 flex-1 items-center px-0.5 py-2">
+          <Text className="text-center text-xs font-semibold text-text-tertiary">
             {t('workoutDetail.reps')}
           </Text>
         </View>
-        <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">
+        <View className="min-w-0 flex-1 items-center px-0.5 py-2">
+          <Text className="text-center text-xs font-semibold text-text-tertiary">
             {t('workoutDetail.partial')}
           </Text>
         </View>
-        <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">{t('workoutDetail.rir')}</Text>
+        <View className="min-w-0 flex-1 items-center px-0.5 py-2">
+          <Text className="text-center text-xs font-semibold text-text-tertiary">
+            {t('workoutDetail.rir')}
+          </Text>
         </View>
       </View>
 
@@ -293,9 +299,9 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
           borderBottomColor: theme.colors.background.ink5,
         }}
       >
-        <View className="flex-row items-center gap-3">
+        <View className="min-w-0 flex-1 flex-row items-center gap-3">
           <View
-            className="h-10 w-10 items-center justify-center rounded-full"
+            className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: exercise.iconBgColor }}
           >
             {createElement(exercise.icon, {
@@ -303,7 +309,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
               color: exercise.iconColor,
             })}
           </View>
-          <View>
+          <View className="min-w-0 flex-1">
             <Text
               className="font-bold text-text-primary"
               style={{ textDecorationLine: exercise.isSkipped ? 'line-through' : 'none' }}
@@ -320,7 +326,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
             </Text>
           </View>
         </View>
-        <View className="flex-row items-center gap-1">
+        <View className="shrink-0 flex-row items-center gap-1">
           <MenuButton
             size="md"
             color={theme.colors.text.tertiary}

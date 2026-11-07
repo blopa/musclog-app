@@ -15,6 +15,17 @@ export interface AuditRoute {
   file: string;
   /** Needs a signed-off onboarding (demo data) before it shows what a user sees. */
   area: 'main' | 'onboarding';
+  /**
+   * A sheet the route opens by itself the first time (a one-time welcome). It would otherwise sit
+   * over every capture, hiding the screen and flagging everything under it as occluded, so the
+   * audit measures the sheet alone, dismisses it through its button, then measures the screen.
+   */
+  introSheet?: {
+    /** The `testID` of a view inside the sheet. */
+    testId: string;
+    /** Where the dismiss button's translated label lives: a `lang/locales/<locale>/<file>.json` key path. */
+    dismiss: { file: string; keyPath: string[] };
+  };
 }
 
 /** A route file that is deliberately not audited, with the reason. */
@@ -34,7 +45,16 @@ export const MAIN_ROUTES: AuditRoute[] = [
   { name: 'notes', path: '/notes', file: 'notes', area: 'main' },
   { name: 'cycle', path: '/cycle', file: 'cycle', area: 'main' },
   { name: 'comeback', path: '/comeback', file: 'comeback', area: 'main' },
-  { name: 'weekly-review', path: '/weekly-review', file: 'weekly-review', area: 'main' },
+  {
+    name: 'weekly-review',
+    path: '/weekly-review',
+    file: 'weekly-review',
+    area: 'main',
+    introSheet: {
+      testId: 'weekly-review-welcome',
+      dismiss: { file: 'workoutSession', keyPath: ['weeklyReview', 'welcome', 'cta'] },
+    },
+  },
   {
     name: 'year-in-review',
     path: `/year-in-review?year=${YEAR}`,

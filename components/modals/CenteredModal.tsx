@@ -31,7 +31,7 @@ export function CenteredModal({
 }: CenteredModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const webBackdropStyle = useWebModalLayerStyle({ variant: 'centered' });
+  const webBackdropStyle = useWebModalLayerStyle({ variant: 'layer' });
 
   return (
     <Modal

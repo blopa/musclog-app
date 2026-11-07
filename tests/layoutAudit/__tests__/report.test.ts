@@ -6,6 +6,7 @@ import {
   aggregate,
   markSharedChrome,
   CHROME_SCOPE_NAME,
+  BASELINE_PATH,
   baselineFrom,
   emptyBaseline,
   fingerprint,
@@ -282,5 +283,28 @@ describe('markSharedChrome', () => {
   it('puts it in the viewer data too, so the page and the report agree', () => {
     const data = buildViewerData(onScreens(['food', 'home', 'progress']));
     expect(data.entries.every((item) => item.findings[0].c)).toBe(true);
+  });
+});
+
+describe('the committed baseline', () => {
+  const baseline = readBaseline(BASELINE_PATH);
+
+  it('is read as a version-1 baseline, not discarded as malformed', () => {
+    expect(baseline.version).toBe(1);
+    expect(Object.keys(baseline.accepted).length).toBeGreaterThan(0);
+  });
+
+  it('gives every accepted finding a reason: an unexplained entry is a finding hidden, not accepted', () => {
+    const unexplained = Object.entries(baseline.accepted)
+      .filter(([, reason]) => reason.trim().length < 30)
+      .map(([key]) => key);
+    expect(unexplained).toEqual([]);
+  });
+
+  it('accepts only errors by fingerprint shape (kind|surface|screen|labels)', () => {
+    const malformed = Object.keys(baseline.accepted).filter(
+      (key) => key.split('|').length < 4 || !/^[a-z-]+\|(screen|modal)\|/.test(key)
+    );
+    expect(malformed).toEqual([]);
   });
 });

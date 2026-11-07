@@ -24,7 +24,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
   if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.recoveryTraining')}>
-        <View className="mb-4 flex-row items-center gap-2">
+        <View className="mb-4 flex-row flex-wrap items-center gap-2">
           {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
             <TouchableOpacity
               key={agg}
@@ -63,7 +63,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
 
   return (
     <ProgressChartSection title={t('progress.correlationView.recoveryTraining')}>
-      <View className="mb-4 flex-row items-center gap-2">
+      <View className="mb-4 flex-row flex-wrap items-center gap-2">
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}

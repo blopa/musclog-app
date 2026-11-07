@@ -21,6 +21,39 @@ export function markBaseline(): number {
   return all.length;
 }
 
+/**
+ * For a sheet that opens by itself with its page (a one-time welcome): stamps everything OUTSIDE
+ * the top-level layer holding `selector`, so a snapshot of what is new is the sheet alone and the
+ * page it covers is not reported as occluded by it. react-native-web portals a Modal to a direct
+ * child of `<body>`; returns false, stamping nothing, when `selector` is missing or sits in the
+ * page itself (`#root`), where the sheet cannot be told apart from what it covers.
+ */
+export function markBaselineOutsideLayer(selector: string): boolean {
+  const target = document.querySelector(selector);
+  if (!target) {
+    return false;
+  }
+
+  const root = document.getElementById('root');
+  if (root?.contains(target)) {
+    return false;
+  }
+
+  let layer: Element = target;
+  while (layer.parentElement && layer.parentElement !== document.body) {
+    layer = layer.parentElement;
+  }
+
+  const all = document.querySelectorAll('*');
+  for (let i = 0; i < all.length; i++) {
+    if (!layer.contains(all[i])) {
+      all[i].setAttribute('data-la-base', '1');
+    }
+  }
+
+  return true;
+}
+
 export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
   const BASE_ATTR = 'data-la-base';
   const NODE_CAP = 4000;
@@ -45,6 +78,20 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     w: round(box.width),
     h: round(box.height),
   });
+  /** The box minus border and padding: where a field's own text can appear. */
+  const contentBox = (box: Rect, style: CSSStyleDeclaration): Rect => {
+    const left = (parseFloat(style.borderLeftWidth) || 0) + (parseFloat(style.paddingLeft) || 0);
+    const right = (parseFloat(style.borderRightWidth) || 0) + (parseFloat(style.paddingRight) || 0);
+    const top = (parseFloat(style.borderTopWidth) || 0) + (parseFloat(style.paddingTop) || 0);
+    const bottom =
+      (parseFloat(style.borderBottomWidth) || 0) + (parseFloat(style.paddingBottom) || 0);
+    const w = box.w - left - right;
+    const h = box.h - top - bottom;
+    return w > 0 && h > 0
+      ? { x: round(box.x + left), y: round(box.y + top), w: round(w), h: round(h) }
+      : box;
+  };
+
   const areaOf = (rect: Rect): number => Math.max(0, rect.w) * Math.max(0, rect.h);
   const totalArea = (rects: Rect[]): number => {
     let sum = 0;
@@ -187,6 +234,24 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     }
 
     return false;
+  };
+
+  /** The nearest ancestor that really scrolls vertically (its content is taller than its box). */
+  const scrollerOf = (element: Element): Element | null => {
+    let current: Element | null = element.parentElement;
+    while (current && current !== document.body) {
+      const overflowY = window.getComputedStyle(current).overflowY;
+      if (
+        (overflowY === 'auto' || overflowY === 'scroll') &&
+        current.scrollHeight > current.clientHeight + 1
+      ) {
+        return current;
+      }
+
+      current = current.parentElement;
+    }
+
+    return null;
   };
 
   const describeHit = (element: Element): string => {
@@ -385,7 +450,10 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
         boxKind = 'input';
       }
 
-      boxNodeId = record(element, own, own.parentId, boxKind, label, [boxRect], {
+      // A field's typed text lives in its content box, so the padding it reserves for an icon or a
+      // button laid over its edge counts: that control then sits beside the text, not on it.
+      const boxRects = isInput ? [contentBox(boxRect, style)] : [boxRect];
+      boxNodeId = record(element, own, own.parentId, boxKind, label, boxRects, {
         spillsX: !isMedia && hidesX && element.scrollWidth > element.clientWidth + 1,
         spillsY: !isMedia && hidesY && element.scrollHeight > element.clientHeight + 1,
         truncated: false,
@@ -464,6 +532,7 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
     }
 
     const owner = elements[i];
+    const ownerScroller = scrollerOf(owner);
     let covered = 0;
     let coveredBy: string | null = null;
     let coveredByFixed = false;
@@ -485,7 +554,13 @@ export function collectLayoutSnapshot(options: CollectOptions): LayoutSnapshot {
 
       covered++;
       coveredBy = coveredBy ?? describeHit(hit);
-      coveredByFixed = coveredByFixed || inFixedBox(hit);
+      // A fixed or sticky bar, or any layer outside the scroller the control sits in (the app's
+      // pinned bottom bar is `absolute`, not fixed): the content scrolls under it, and only what is
+      // still under it once scrolled to the end is a real occlusion.
+      coveredByFixed =
+        coveredByFixed ||
+        inFixedBox(hit) ||
+        (ownerScroller !== null && !ownerScroller.contains(hit));
     }
 
     node.coveredShare = covered / SAMPLE_POINTS.length;

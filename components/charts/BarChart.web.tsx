@@ -9,6 +9,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import {
   getXAxisLabelEdgeMargin,
+  X_AXIS_LABEL_EDGE_MARGIN_WEB,
   X_AXIS_LABEL_OFFSET,
   X_AXIS_LABEL_WIDTH,
   XAxisLabel,
@@ -281,7 +282,10 @@ export function BarChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
-                  marginLeft: getXAxisLabelEdgeMargin(label.positionPercent, 10),
+                  marginLeft: getXAxisLabelEdgeMargin(
+                    label.positionPercent,
+                    X_AXIS_LABEL_EDGE_MARGIN_WEB
+                  ),
                 }}
                 numberOfLines={1}
               >

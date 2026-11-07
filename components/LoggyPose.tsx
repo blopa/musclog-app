@@ -10,6 +10,7 @@ import Default from '@/assets/avatars/loggy-poses/loggy-default.svg';
 import Drinking from '@/assets/avatars/loggy-poses/loggy-drinking.svg';
 import Eating from '@/assets/avatars/loggy-poses/loggy-eating.svg';
 import Flex from '@/assets/avatars/loggy-poses/loggy-flex.svg';
+import Lifting from '@/assets/avatars/loggy-poses/loggy-lifting.svg';
 import Magnify from '@/assets/avatars/loggy-poses/loggy-magnify.svg';
 import Nutrition from '@/assets/avatars/loggy-poses/loggy-nutrition.svg';
 import Panic from '@/assets/avatars/loggy-poses/loggy-panic.svg';
@@ -26,6 +27,7 @@ import { LoggyDefaultAnimated } from '@/components/loggy/animated/LoggyDefaultAn
 import { LoggyDrinkingAnimated } from '@/components/loggy/animated/LoggyDrinkingAnimated';
 import { LoggyEatingAnimated } from '@/components/loggy/animated/LoggyEatingAnimated';
 import { LoggyFlexAnimated } from '@/components/loggy/animated/LoggyFlexAnimated';
+import { LoggyLiftingAnimated } from '@/components/loggy/animated/LoggyLiftingAnimated';
 import { LoggyMagnifyAnimated } from '@/components/loggy/animated/LoggyMagnifyAnimated';
 import { LoggyNutritionAnimated } from '@/components/loggy/animated/LoggyNutritionAnimated';
 import { LoggyPanicAnimated } from '@/components/loggy/animated/LoggyPanicAnimated';
@@ -47,6 +49,7 @@ export type LoggyPoseName =
   | 'drinking'
   | 'eating'
   | 'flex'
+  | 'lifting'
   | 'magnify'
   | 'nutrition'
   | 'panic'
@@ -76,6 +79,7 @@ const POSES: Record<LoggyPoseName, { Art: ComponentType<SvgProps>; aspect: numbe
   drinking: { Art: Drinking, aspect: 0.844 },
   eating: { Art: Eating, aspect: 0.8 },
   flex: { Art: Flex, aspect: 0.8 },
+  lifting: { Art: Lifting, aspect: 1 },
   magnify: { Art: Magnify, aspect: 0.844 },
   nutrition: { Art: Nutrition, aspect: 1 },
   panic: { Art: Panic, aspect: 0.8 },
@@ -100,6 +104,7 @@ const ANIMATED_POSES: Record<LoggyPoseName, LoggyAnimatedPose> = {
   drinking: LoggyDrinkingAnimated,
   eating: LoggyEatingAnimated,
   flex: LoggyFlexAnimated,
+  lifting: LoggyLiftingAnimated,
   magnify: LoggyMagnifyAnimated,
   nutrition: LoggyNutritionAnimated,
   panic: LoggyPanicAnimated,

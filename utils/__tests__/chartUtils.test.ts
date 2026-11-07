@@ -1,8 +1,13 @@
+import { Dimensions } from 'react-native';
+
 import {
   getPaddedYDomain,
+  getXAxisLabelEdgeMargin,
   getTimeSeriesXDomain,
   getXAxisLabels,
   MAX_X_LABELS,
+  maxXLabelsForWidth,
+  X_AXIS_LABEL_EDGE_MARGIN_WEB,
   X_AXIS_LABEL_WIDTH,
 } from '@/utils/chartUtils';
 
@@ -113,5 +118,72 @@ describe('getPaddedYDomain', () => {
 
   it('never returns a negative floor', () => {
     expect(getPaddedYDomain([{ y: 1 }, { y: 100 }])[0]).toBe(0);
+  });
+});
+
+describe('maxXLabelsForWidth', () => {
+  it('keeps the full cap on a large phone and wider', () => {
+    // The plot loses about 150px to the page, the card and two y axes, so six 44px slots need a
+    // window of about 370px; the narrowest phones print five.
+    expect(maxXLabelsForWidth(390)).toBe(MAX_X_LABELS);
+    expect(maxXLabelsForWidth(1280)).toBe(MAX_X_LABELS);
+    expect(maxXLabelsForWidth(344)).toBe(MAX_X_LABELS - 1);
+  });
+
+  it('prints fewer labels as the layout narrows, never fewer than the two ends', () => {
+    // A 344px phone at 1.3x text lays out in 264px.
+    expect(maxXLabelsForWidth(264)).toBeLessThan(MAX_X_LABELS);
+    expect(maxXLabelsForWidth(264)).toBeGreaterThanOrEqual(2);
+    expect(maxXLabelsForWidth(100)).toBe(2);
+  });
+
+  it('leaves a label box of room between neighbours at the width it picked', () => {
+    for (let width = 160; width <= 360; width += 8) {
+      const labels = maxXLabelsForWidth(width);
+      if (labels > 2) {
+        const plot = width - 150;
+        expect(plot / (labels - 1)).toBeGreaterThanOrEqual(X_AXIS_LABEL_WIDTH);
+      }
+    }
+  });
+});
+
+describe('getXAxisLabels on a narrow window', () => {
+  const data = Array.from({ length: 12 }, (_, i) => ({ x: i * 1000 }));
+  let spy: jest.SpyInstance;
+
+  afterEach(() => spy?.mockRestore());
+
+  it('subsamples to the labels that fit, still keeping both ends', () => {
+    spy = jest.spyOn(Dimensions, 'get').mockReturnValue({
+      width: 264,
+      height: 600,
+      scale: 1,
+      fontScale: 1,
+    });
+    const labels = getXAxisLabels(data);
+    expect(labels.length).toBe(maxXLabelsForWidth(264));
+    expect(labels[0].positionPercent).toBe(0);
+    expect(labels[labels.length - 1].positionPercent).toBe(100);
+  });
+});
+
+describe('getXAxisLabelEdgeMargin', () => {
+  it('pushes the first label right and the last one left, and leaves the others centred', () => {
+    expect(getXAxisLabelEdgeMargin(0, 20)).toBe(20);
+    expect(getXAxisLabelEdgeMargin(100, 20)).toBe(-20);
+    expect(getXAxisLabelEdgeMargin(40, 20)).toBe(0);
+  });
+
+  it('moves a centred label by half the margin, so the web offset must clear half the text', () => {
+    // A margin on a centred item shifts it by margin / 2, so the old web offset of 10 moved the
+    // last label only 5px. The label's right end sits half its width (about 14px for "07/11" at
+    // 10px) past the plot edge; the web offset must pull most of that back (a few pixels past the
+    // edge is a warning, 20% of the ink cut is an error) without crowding the neighbouring label.
+    const shift = Math.abs(getXAxisLabelEdgeMargin(100, X_AXIS_LABEL_EDGE_MARGIN_WEB)) / 2;
+    const overhang = (5 * 10 * 0.56) / 2 - shift;
+    expect(shift).toBeGreaterThan(5);
+    expect(overhang / (5 * 10 * 0.56)).toBeLessThan(0.2);
+    expect(shift).toBeLessThanOrEqual(10);
   });
 });

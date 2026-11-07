@@ -19,6 +19,12 @@ import { FullScreenModal } from './FullScreenModal';
 import { TimePickerInput } from './TimePickerInput';
 import { TimePickerModal } from './TimePickerModal';
 
+/**
+ * A date or time card needs about 230px (icon, edit mark and a "November 7, 2026" line). Two of
+ * them stop sharing a row below that, so on a phone they stack instead of crushing their text.
+ */
+const DATE_TIME_FIELD_CLASS = 'grow basis-[240px]';
+
 // Divider component
 function SectionDivider() {
   return <View className="bg-background-white10 h-px" />;
@@ -213,16 +219,16 @@ export default function EditWorkoutMetadataModal({
           </View>
 
           <View className="gap-6">
-            <View className="flex-row gap-4">
+            <View className="flex-row flex-wrap gap-4">
               <DatePickerInput
-                className="flex-1"
+                className={DATE_TIME_FIELD_CLASS}
                 label={t('workoutDetail.startDate')}
                 selectedDate={startedAt}
                 onPress={() => setPickerConfig({ type: 'date', target: 'started', visible: true })}
                 variant="default"
               />
               <TimePickerInput
-                className="flex-1"
+                className={DATE_TIME_FIELD_CLASS}
                 label={t('workoutDetail.startTime')}
                 selectedTime={startedAt}
                 onPress={() => setPickerConfig({ type: 'time', target: 'started', visible: true })}
@@ -230,9 +236,9 @@ export default function EditWorkoutMetadataModal({
               />
             </View>
 
-            <View className="flex-row gap-4">
+            <View className="flex-row flex-wrap gap-4">
               <DatePickerInput
-                className="flex-1"
+                className={DATE_TIME_FIELD_CLASS}
                 label={t('workoutDetail.endDate')}
                 selectedDate={completedAt}
                 onPress={() =>
@@ -241,7 +247,7 @@ export default function EditWorkoutMetadataModal({
                 variant="default"
               />
               <TimePickerInput
-                className="flex-1"
+                className={DATE_TIME_FIELD_CLASS}
                 label={t('workoutDetail.endTime')}
                 selectedTime={completedAt}
                 onPress={() =>

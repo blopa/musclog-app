@@ -120,7 +120,7 @@ export function WorkoutCard({
             <MenuButton size="sm" onPress={onMore} className="w-14" />
           </View>
         ) : (
-          <View className="flex-row gap-2">
+          <View className="flex-row flex-wrap gap-2">
             {onArchive ? (
               <Button
                 label={t('workouts.archive')}

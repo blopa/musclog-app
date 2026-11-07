@@ -186,7 +186,9 @@ export function AddFoodModal({
                   />
                 ) : null}
               </ListGroup>
-              <View className="flex-row items-stretch gap-3 pt-1">
+              {/* Wraps: two outline buttons with long labels cannot share a phone-width row without
+                  breaking a word, so they stack. */}
+              <View className="flex-row flex-wrap items-stretch gap-3 pt-1">
                 <Button
                   label={t('food.addFoodModal.createCustomFood')}
                   icon={Edit}

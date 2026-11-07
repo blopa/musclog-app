@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Text, View } from 'react-native';
 
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './GenericCard';
@@ -15,6 +16,8 @@ type NewWorkoutCardProps = {
 
 export function NewWorkoutCard({ icon, title, subtitle, onPress }: NewWorkoutCardProps) {
   const theme = useTheme();
+  // When the layout is cramped the icon tile and the chevron would leave the title a word's width; they give way.
+  const isCramped = useIsCramped();
 
   return (
     <GenericCard onPress={onPress} isPressable={true} variant="flat">
@@ -26,21 +29,23 @@ export function NewWorkoutCard({ icon, title, subtitle, onPress }: NewWorkoutCar
           gap: theme.spacing.gap.base,
         }}
       >
-        <View
-          style={{
-            width: theme.size['12'],
-            height: theme.size['12'],
-            borderRadius: theme.borderRadius.full,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: theme.colors.background.ink5,
-            borderWidth: theme.borderWidth.thin,
-            borderColor: theme.colors.background.ink5,
-          }}
-        >
-          {icon}
-        </View>
-        <View style={{ flex: 1 }}>
+        {isCramped ? null : (
+          <View
+            style={{
+              width: theme.size['12'],
+              height: theme.size['12'],
+              borderRadius: theme.borderRadius.full,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: theme.colors.background.ink5,
+              borderWidth: theme.borderWidth.thin,
+              borderColor: theme.colors.background.ink5,
+            }}
+          >
+            {icon}
+          </View>
+        )}
+        <View style={{ flex: 1, minWidth: 0 }}>
           <Text
             style={{
               fontSize: theme.typography.fontSize.lg,
@@ -62,7 +67,9 @@ export function NewWorkoutCard({ icon, title, subtitle, onPress }: NewWorkoutCar
             </Text>
           ) : null}
         </View>
-        <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+        {isCramped ? null : (
+          <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+        )}
       </View>
     </GenericCard>
   );

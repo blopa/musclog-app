@@ -24,8 +24,14 @@ type FitLabelOptions = {
 };
 
 /** The size at which `word` fits one line of `width`, before any minimum is applied. */
-function fittingSize(word: string, width: number, maxSize: number, fontScale = 1): number {
-  return fitFontSize(word, width / Math.max(1, fontScale), maxSize);
+function fittingSize(
+  word: string,
+  width: number,
+  maxSize: number,
+  fontScale = 1,
+  glyphWidthRatio?: number
+): number {
+  return fitFontSize(word, width / Math.max(1, fontScale), maxSize, glyphWidthRatio);
 }
 
 /**
@@ -44,6 +50,63 @@ export function fitLabelFontSize(
   const fitted = fittingSize(longestWord(text), availableWidth, maxSize, fontScale);
 
   return Math.max(minSize, Math.min(maxSize, fitted));
+}
+
+/**
+ * Like `fitLabelFontSize`, for text that must stay on ONE line whole (a number and its unit, which
+ * do not wrap between words): the room has to hold all of `text`, not just its longest word.
+ */
+export function fitLineFontSize(
+  text: string,
+  availableWidth: number | null,
+  { maxSize, minSize, fontScale }: FitLabelOptions
+): number {
+  if (availableWidth === null || availableWidth <= 0) {
+    return maxSize;
+  }
+
+  return Math.max(
+    minSize,
+    Math.min(maxSize, fittingSize(text, availableWidth, maxSize, fontScale))
+  );
+}
+
+type EvenSplitOptions = {
+  /** The size the labels are drawn at. */
+  fontSize: number;
+  /** What each option spends beside its label: horizontal padding, and an icon with its gap. */
+  chrome: number;
+  /** The space between neighbouring options. */
+  gap: number;
+  fontScale?: number;
+  /** How many options share the row; the option count by default (a grid asks about 2). */
+  columns?: number;
+  /** The width of an average glyph as a share of the size; words in a text face run narrower than the default. */
+  glyphWidthRatio?: number;
+};
+
+/**
+ * Whether every label's longest word fits at `fontSize` when `rowWidth` is shared evenly between
+ * the options. A segmented control splits its track evenly while that holds and lets the options
+ * wrap onto another row once it does not, instead of breaking a word ("Estructura/do"). Before the
+ * width is known (`null`) it says yes, which is what the first frame draws.
+ */
+export function labelsFitEvenly(
+  labels: string[],
+  rowWidth: number | null,
+  { fontSize, chrome, gap, fontScale, columns, glyphWidthRatio }: EvenSplitOptions
+): boolean {
+  if (rowWidth === null || rowWidth <= 0 || labels.length === 0) {
+    return true;
+  }
+
+  const shared = columns ?? labels.length;
+  const each = (rowWidth - gap * (shared - 1)) / shared - chrome;
+
+  return labels.every(
+    (label) =>
+      fittingSize(longestWord(label), each, fontSize, fontScale, glyphWidthRatio) >= fontSize
+  );
 }
 
 type ActionLabelOptions = FitLabelOptions & {

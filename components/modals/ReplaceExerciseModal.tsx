@@ -348,7 +348,7 @@ export function ReplaceExerciseModal({
   const showEmpty = !isLoading && everythingShown.length === 0;
 
   const pickFooter = (
-    <View className="flex-row items-stretch gap-3">
+    <View className="flex-row flex-wrap items-stretch gap-3">
       <Button
         label={t('replaceExercise.addReason')}
         variant="outline"
@@ -371,7 +371,7 @@ export function ReplaceExerciseModal({
   );
 
   const reasonFooter = (
-    <View className="flex-row items-stretch gap-3">
+    <View className="flex-row flex-wrap items-stretch gap-3">
       <Button
         label={t('replaceExercise.back')}
         variant="outline"

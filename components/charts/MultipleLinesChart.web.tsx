@@ -10,6 +10,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import {
   getXAxisLabelEdgeMargin,
+  X_AXIS_LABEL_EDGE_MARGIN_WEB,
   X_AXIS_LABEL_OFFSET,
   X_AXIS_LABEL_WIDTH,
   XAxisLabel,
@@ -386,7 +387,10 @@ export function MultipleLinesChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
-                  marginLeft: getXAxisLabelEdgeMargin(label.positionPercent, 10),
+                  marginLeft: getXAxisLabelEdgeMargin(
+                    label.positionPercent,
+                    X_AXIS_LABEL_EDGE_MARGIN_WEB
+                  ),
                 }}
                 numberOfLines={1}
               >
@@ -399,7 +403,7 @@ export function MultipleLinesChart({
 
       {series.length > 0 ? (
         <View
-          className="flex-row items-center justify-around border-t border-border-default pt-6"
+          className="flex-row flex-wrap items-center justify-around gap-x-4 gap-y-3 border-t border-border-default pt-6"
           style={{
             borderTopColor: theme.colors.border.light,
             borderTopWidth: 1,

@@ -8,6 +8,7 @@ import {
   applyPseudoLocale,
   collectLayoutSnapshot,
   markBaseline,
+  markBaselineOutsideLayer,
   scrollLargestToEnd,
 } from './layoutAudit/inPage';
 import { selectAppLanguage } from './layoutAudit/language';
@@ -285,6 +286,7 @@ async function auditRoutes(
         localeChecked = true;
       }
 
+      await auditIntroSheet(page, auditor, route, url, locale);
       await auditor.audit({ surface: 'screen', name: route.name, url, onlyNew: false });
     } catch (error) {
       if (!localeChecked && (error as Error).message.startsWith('the app is not rendering')) {
@@ -303,22 +305,88 @@ async function auditRoutes(
   }
 }
 
-/** Reads the locale's own copy for the Start workout button; English when it has none. */
-function startWorkoutLabel(locale: string): string {
+/**
+ * Reads one string of the locale's own copy (`lang/locales/<locale>/<file>.json`, at `keyPath`);
+ * English when the locale has none, `fallback` when neither does.
+ */
+function localeCopy(locale: string, file: string, keyPath: string[], fallback: string): string {
   for (const dir of [locale.toLowerCase(), 'en-us']) {
     try {
-      const copy = JSON.parse(
-        fs.readFileSync(path.join(__dirname, '..', 'lang', 'locales', dir, 'workout.json'), 'utf8')
-      ) as { workout?: { startWorkout?: string } };
-      if (copy.workout?.startWorkout) {
-        return copy.workout.startWorkout;
+      let value: unknown = JSON.parse(
+        fs.readFileSync(path.join(__dirname, '..', 'lang', 'locales', dir, `${file}.json`), 'utf8')
+      );
+      for (const key of keyPath) {
+        value = (value as Record<string, unknown> | undefined)?.[key];
+      }
+
+      if (typeof value === 'string' && value.length > 0) {
+        return value;
       }
     } catch {
       // Try the next directory.
     }
   }
 
-  return 'Start workout';
+  return fallback;
+}
+
+/** The locale's own copy for the Start workout button; English when it has none. */
+function startWorkoutLabel(locale: string): string {
+  return localeCopy(locale, 'workout', ['workout', 'startWorkout'], 'Start workout');
+}
+
+/**
+ * Measures a route's one-time intro sheet on its own, then closes it through its button so the
+ * screen underneath is measured as a person sees it afterwards. A sheet that is not there (the
+ * seeded data did not trigger it) is nothing to do; one that cannot be closed is recorded and the
+ * screen is measured behind it anyway.
+ */
+async function auditIntroSheet(
+  page: Page,
+  auditor: Auditor,
+  route: AuditRoute,
+  url: string,
+  locale: string
+): Promise<void> {
+  const sheet = route.introSheet;
+  if (!sheet) {
+    return;
+  }
+
+  const selector = `[data-testid="${sheet.testId}"]`;
+  if ((await page.locator(selector).count()) === 0) {
+    return;
+  }
+
+  const name = `${route.name} (intro)`;
+  try {
+    if (await page.evaluate(markBaselineOutsideLayer, selector)) {
+      await auditor.audit({ surface: 'modal', name, url, onlyNew: true });
+    } else {
+      auditor.record({
+        surface: 'modal',
+        name,
+        url,
+        status: 'skipped',
+        note: 'the intro sheet is not in a layer of its own, so it cannot be told apart from the page',
+        screenshot: await auditor.capture('modal', name, 'top'),
+      });
+    }
+
+    const label = localeCopy(locale, sheet.dismiss.file, sheet.dismiss.keyPath, 'Got it');
+    await page.getByRole('button', { name: label, exact: true }).last().click();
+    await page.locator(selector).waitFor({ state: 'detached', timeout: 10000 });
+    await auditor.settle(800);
+  } catch (error) {
+    auditor.record({
+      surface: 'modal',
+      name,
+      url,
+      status: 'failed',
+      note: `could not measure or close the intro sheet: ${(error as Error).message.split('\n')[0]}`,
+      screenshot: await auditor.capture('modal', name, 'top'),
+    });
+  }
 }
 
 /** The live session is reached by starting a workout from the library, never by URL. */

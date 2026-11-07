@@ -3,6 +3,86 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Dialogs ran off narrow screens, and rows broke words at large text (November 2026)
+
+### Symptom
+
+The layout audit (`npm run layout:audit`) found 1289 error findings. Reading them, a few causes
+accounted for most: `CenteredModal` dialogs (Edit set details) were 384px wide on a 276px layout,
+with their title and Save button cut off at both edges; two-up button rows and segmented controls
+broke words mid-letter ("Archi/ve", "Intermedia/te") once the text grew; the Weekly Review was
+never audited at all, because its one-time welcome sheet sat over every capture and flagged the page
+beneath as occluded; and a long tail of rows, cards, charts and non-scrolling screens (landing,
+"exercise complete", the progress charts) that overlapped or cut off at large text or in Dutch,
+Spanish and Russian.
+
+### Cause
+
+- `useWebModalLayerStyle({ variant: 'centered' })` puts `align-items: center` on the modal root. That
+  is right for a root that is itself one dialog's backdrop, but `CenteredModal` centres through its
+  own inner wrapper, which the root's `align-items` then shrank to its content: the dialog's
+  `w-full` stopped at its widest child and ignored the screen.
+- `Button.web.tsx` has `overflow: hidden`, which makes a flex item's automatic minimum width 0, so a
+  `flex-1` or auto-width button in a row shrank below its own longest word. `SegmentedControl`
+  options had `min-w-0` for the same reason.
+- Several modals pinned a block under a `scrollable={false}` area (the Time Picker's AM/PM toggle,
+  the Meal Estimation selectors, AI-not-configured's card, the Create exercise footer), so on a
+  short screen the footer sat on top of content nothing could scroll. The landing and "exercise
+  complete" screens centred their content in a box that could not scroll at all.
+- **A `fontScale` check never fires on web.** Large text on web (and in the audit's emulation) is a
+  narrower viewport, not a bigger `fontScale`, so rules written as "above 1.15×, drop the icon"
+  fixed nothing there. `isCrampedLayout` (`utils/crampedLayout.ts`) divides the window width by the
+  text scale, so both arrive at the same answer.
+- Several components assumed room they did not have: a `minWidth: 320` on the web area chart (the
+  chart, its last x label and its legend ran 40px past the card), 200px-wide body figures side by
+  side, the last x label of every web chart cut by its own edge (a margin on a centred item moves
+  it by half the margin), the last line-chart point drawn half outside its svg, seven 40pt weekday
+  circles in one row, a 60pt number between two 56pt buttons, and `47%`-wide goal cards holding an
+  icon, a label and a radio dot.
+
+### Fix
+
+`CenteredModal` uses the new positioning-only `layer` variant. Flex buttons keep
+`min-width: min-content`, an auto-width button no longer shrinks (`flex-shrink: 0`,
+`max-width: 100%`) and rows of them wrap. Text-plus-control rows take `min-w-0 flex-1` and
+`shrink-0`. Pinned blocks scroll or the body reserves their height. Where wrapping is not enough
+the answer is measured through `utils/fitText.ts` (`fitLineFontSize`, `labelsFitEvenly`): the
+stepper value fits its slot, a full-width pill splits evenly only while every label fits and
+otherwise wraps, `useOptionColumns` gives the goal cards one column or two, `bodyFigureScale` fits
+the front and back figures. Decoration beside a label (icon tiles, chevrons, sheet header icons,
+mood captions) gives way when `isCrampedLayout`. Chart edge labels, legends, the last line-chart
+point and the area chart's minimum width are corrected. The rules are in AGENTS.md ("Large text and
+long translations").
+
+The audit itself got six corrections so a finding means something: a route's intro sheet is
+measured on its own, dismissed through its button, and the screen is measured behind it
+(`AuditRoute.introSheet`); a small button inside a field is that field's adornment, and a field is
+measured by its content box (the padding it reserves for that button counts); a nameless control
+with nothing inside it (a chart's touch layer, a poster's tap zone) is a hit layer with no ink and
+takes no part in overlap checks; a control under a layer outside its own scroller (the pinned
+bottom bar) is only an occlusion once scrolled to the end; and an element parked at `left: -9999px`
+is not content that is cut off.
+
+### Result
+
+Full runs went from 1289 error groups, to 421, to 200; the narrowed runs after that took the
+audited surfaces to 14. `tests/layoutAudit/baseline.json` now accepts 67 findings, each with its
+reason: the faded Eco-Score "E" under the collapsed nutrition preview, the calorie watermark, and
+single words of 13 or more letters (Dutch and Russian compounds, "Lichaamsvetpercentage") that have
+no break point and fit no one-column row at 1.3× text on the narrowest phone.
+
+Twenty-four error groups remain, all at 1.3× text on the narrowest phones except one overlap that
+also shows at default size, and mostly in Dutch, Spanish, Portuguese and Russian: the End workout
+buttons, the cycle onboarding option labels, the AI review rows and the Russian "other" option, the
+Settings language row, a Russian label pair in the Add exercise rows, the Progress legend and the
+pt-BR y label that meets the last date, the 33% cut on a Progress chart svg (listed once under "app
+chrome"), the Body metrics history "6M" chip, the Notifications timestamp, the Filter workouts apply
+button in Russian, a Russian mood chip in the Cycle log, and a Russian goal subtitle. A final
+all-locale run was not repeated after the last round of fixes; the narrowed run covered only the
+screens those fixes touched, and the Language row still breaks in English there. Pinned by
+`tests/layoutAudit/__tests__/` and the unit tests beside each helper (`fitText`, `crampedLayout`,
+`bodyFigureScale`, `chartUtils`).
+
 ## Workout summary stats were white on a light card (November 2026)
 
 ### Symptom

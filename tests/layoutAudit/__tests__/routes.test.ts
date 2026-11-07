@@ -61,6 +61,56 @@ describe('screen coverage', () => {
   });
 });
 
+describe('intro sheets', () => {
+  const withSheet = MAIN_ROUTES.filter((route) => route.introSheet);
+  const localeDirs = fs
+    .readdirSync(path.join(ROOT, 'lang', 'locales'), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+
+  it('covers the Weekly Review welcome, which opens over the screen on first visit', () => {
+    expect(withSheet.map((route) => route.name)).toContain('weekly-review');
+  });
+
+  it('names a test id that a component in the app still sets', () => {
+    const sources = ['components', 'app']
+      .map((dir) => fs.readdirSync(path.join(ROOT, dir), { recursive: true, encoding: 'utf8' }))
+      .flatMap((files, index) =>
+        files
+          .filter((file) => file.endsWith('.tsx'))
+          .map((file) =>
+            fs.readFileSync(path.join(ROOT, ['components', 'app'][index], file), 'utf8')
+          )
+      )
+      .join('\n');
+    const missing = withSheet.filter(
+      (route) => !sources.includes(`testID="${route.introSheet?.testId}"`)
+    );
+    expect(missing.map((route) => route.name)).toEqual([]);
+  });
+
+  it('has the dismiss button copy in every bundled locale, so no locale clicks a stale label', () => {
+    const missing: string[] = [];
+    for (const route of withSheet) {
+      const { file, keyPath } = route.introSheet!.dismiss;
+      for (const dir of localeDirs) {
+        let value: unknown = JSON.parse(
+          fs.readFileSync(path.join(ROOT, 'lang', 'locales', dir, `${file}.json`), 'utf8')
+        );
+        for (const key of keyPath) {
+          value = (value as Record<string, unknown> | undefined)?.[key];
+        }
+
+        if (typeof value !== 'string' || value.length === 0) {
+          missing.push(`${route.name}:${dir}`);
+        }
+      }
+    }
+
+    expect(missing).toEqual([]);
+  });
+});
+
 describe('modal fixture coverage', () => {
   const source = fs.readFileSync(path.join(APP_DIR, 'test', 'modals.tsx'), 'utf8');
   const fixtureLabels = [...source.matchAll(/label=\{?"([^"]+)"\}?/g)].map((match) => match[1]);

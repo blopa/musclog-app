@@ -17,6 +17,7 @@ import { computeKeyboardSheetLift } from '@/components/keyboardSheetLift';
 import { sheetSurfaceColor } from '@/components/sheetSurfaceColor';
 import { SurfaceColorProvider } from '@/context/SurfaceColorContext';
 import { useAppSafeAreaInsets } from '@/hooks/useAppSafeAreaInsets';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -54,6 +55,8 @@ export function BottomPopUp({
     !scrollable && Platform.OS !== 'web' ? { height: effectiveMaxHeight } : undefined;
 
   const theme = useTheme();
+  // The header icon is decorative; in a cramped layout it would leave the title a few letters of width.
+  const isCramped = useIsCramped();
   const insets = useAppSafeAreaInsets();
   /** Published to descendants so content can fade out to the real surface behind it. */
   const sheetSurfaceColorValue = sheetSurfaceColor(theme);
@@ -270,10 +273,12 @@ export function BottomPopUp({
             >
               {/* Header */}
               <View className="border-b border-border-dark">
-                <View className="flex-row items-center justify-between px-6 py-4">
-                  <View className="flex-1 flex-row items-center gap-3">
-                    {headerIcon ? <View>{headerIcon}</View> : null}
-                    <View className="flex-1">
+                <View className="flex-row items-center justify-between gap-3 px-6 py-4">
+                  <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                    {headerIcon && !isCramped ? (
+                      <View className="shrink-0">{headerIcon}</View>
+                    ) : null}
+                    <View className="min-w-0 flex-1">
                       <Text className="text-lg font-semibold text-text-primary">{title}</Text>
                       {subtitle ? (
                         <Text className="mt-0.5 text-sm text-text-secondary">{subtitle}</Text>
@@ -284,7 +289,7 @@ export function BottomPopUp({
                     <Pressable
                       accessibilityRole="button"
                       hitSlop={4}
-                      className="h-9 w-9 items-center justify-center rounded-control bg-bg-overlay active:opacity-70"
+                      className="h-9 w-9 shrink-0 items-center justify-center rounded-control bg-bg-overlay active:opacity-70"
                       onPress={() => onClose?.()}
                       {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                     >

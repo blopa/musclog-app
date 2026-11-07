@@ -92,7 +92,7 @@ export function CycleObservationInputs({
       return (
         <View key={key} className="gap-2">
           <Text className="text-sm font-semibold text-text-primary">{label}</Text>
-          <View className="flex-row gap-2">
+          <View className="flex-row flex-wrap gap-2">
             {[true, false].map((choice) => (
               <Chip
                 key={String(choice)}
@@ -126,7 +126,7 @@ export function CycleObservationInputs({
           <Text className="text-sm font-semibold text-text-primary">
             {t('cycle.daySheet.pill.label')}
           </Text>
-          <View className="flex-row gap-2">
+          <View className="flex-row flex-wrap gap-2">
             {(['taken', 'skipped'] as const).map((choice) => (
               <Chip
                 key={choice}

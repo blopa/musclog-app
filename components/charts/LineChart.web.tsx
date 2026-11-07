@@ -9,6 +9,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import {
   getXAxisLabelEdgeMargin,
+  X_AXIS_LABEL_EDGE_MARGIN_WEB,
   X_AXIS_LABEL_OFFSET,
   X_AXIS_LABEL_WIDTH,
   XAxisLabel,
@@ -157,6 +158,9 @@ export function LineChart({
 
   // Use provided domains or default to chart dimensions
   const xDomainFinal = xDomain || [0, chartWidth];
+  // The last point sits on the chart's right edge and, when it is the peak, on its top edge, so it
+  // is drawn inside a margin of its own radius and stroke instead of being cut in half.
+  const edgePadding = showLastPoint ? lastPointSize + lastPointStrokeWidth : 0;
   const yDomainFinal = yDomain || [0, chartHeight];
 
   // Last data point for the circle marker
@@ -210,7 +214,10 @@ export function LineChart({
                 e.stopPropagation();
                 const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
                 const clickX = e.clientX - rect.left;
-                const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+                const ratio = Math.max(
+                  0,
+                  Math.min(1, clickX / Math.max(1, rect.width - edgePadding))
+                );
                 const xValue = xDomainFinal[0] + ratio * (xDomainFinal[1] - xDomainFinal[0]);
                 let nearest = data[0];
                 let minDist = Math.abs(data[0].x - xValue);
@@ -233,7 +240,7 @@ export function LineChart({
         ) : null}
         <VictoryChart
           height={height}
-          padding={{ left: 0, right: 0, top: 0, bottom: 0 }}
+          padding={{ left: 0, right: edgePadding, top: edgePadding, bottom: 0 }}
           domain={{ x: xDomainFinal, y: yDomainFinal }}
           style={{
             parent: {
@@ -371,7 +378,10 @@ export function LineChart({
                   fontWeight: '500',
                   color: theme.colors.text.tertiary,
                   textAlign: 'center',
-                  marginLeft: getXAxisLabelEdgeMargin(label.positionPercent, 10),
+                  marginLeft: getXAxisLabelEdgeMargin(
+                    label.positionPercent,
+                    X_AXIS_LABEL_EDGE_MARGIN_WEB
+                  ),
                 }}
                 numberOfLines={1}
               >

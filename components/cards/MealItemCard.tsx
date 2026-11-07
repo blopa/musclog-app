@@ -14,14 +14,19 @@ type MacroProps = {
   value: string;
   color: string;
   intuitiveMode?: boolean;
+  /** A hairline on the left, separating it from the macro before it. */
+  divided?: boolean;
 };
 
-const Macro = ({ label, value, color, intuitiveMode = false }: MacroProps) => {
+const Macro = ({ label, value, color, intuitiveMode = false, divided = false }: MacroProps) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
   return (
-    <View className="flex-col gap-y-0.5">
+    <View
+      className={divided ? 'ml-3 flex-col gap-y-0.5 border-l pl-3' : 'flex-col gap-y-0.5'}
+      style={divided ? { borderLeftColor: theme.colors.border.subtle } : undefined}
+    >
       <Text className="font-bold" style={{ color, fontSize: theme.typography.fontSize.xs }}>
         {label}
       </Text>
@@ -101,8 +106,8 @@ export function MealItemCard({
           </View>
         </View>
         <View className="flex-1">
-          <View className="flex-row items-start justify-between">
-            <View className="flex-1">
+          <View className="flex-row items-start justify-between gap-x-1">
+            <View className="min-w-0 flex-1">
               <Text
                 className="mb-0.5 font-bold"
                 style={{
@@ -124,38 +129,28 @@ export function MealItemCard({
             </View>
             <MenuButton size="sm" onPress={onMenuPress} color={theme.colors.text.secondary} />
           </View>
-          <View className="flex-row items-center gap-x-3 pt-2">
+          {/* Wraps when the three do not fit beside the picture (large text, two-decimal values)
+              instead of running the last one out of the card. */}
+          <View className="flex-row flex-wrap gap-y-1 pt-2">
             <Macro
               label={t('food.macros.proteinLegend')}
               value={macros.protein}
               color={theme.colors.status.errorLight}
               intuitiveMode={intuitiveEatingMode}
             />
-            <View
-              className="w-[1px]"
-              style={{
-                backgroundColor: theme.colors.border.subtle,
-                height: theme.size[5],
-              }}
-            />
             <Macro
               label={t('food.macros.carbsLegend')}
               value={macros.carbs}
               color={theme.colors.status.brandPale}
               intuitiveMode={intuitiveEatingMode}
-            />
-            <View
-              className="w-[1px]"
-              style={{
-                backgroundColor: theme.colors.border.subtle,
-                height: theme.size[5],
-              }}
+              divided
             />
             <Macro
               label={t('food.macros.fatLegend')}
               value={macros.fat}
               color={theme.colors.status.amber}
               intuitiveMode={intuitiveEatingMode}
+              divided
             />
           </View>
         </View>

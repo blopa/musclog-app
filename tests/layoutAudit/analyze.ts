@@ -111,6 +111,26 @@ function isBackdrop(node: LayoutNode, viewport: LayoutSnapshot['viewport']): boo
   return node.rects.some((rect) => area(rect) > screen * BACKDROP_SHARE);
 }
 
+/**
+ * A transparent hit area: a control with no name and nothing inside it (the layer a chart lays over
+ * itself to read the touch position). It has no ink, so there is nothing for it to collide with;
+ * what sits under it is meant to.
+ */
+function hitLayerIds(nodes: LayoutNode[]): Set<number> {
+  const parents = new Set<number>();
+  for (const node of nodes) {
+    if (node.parent !== null) {
+      parents.add(node.parent);
+    }
+  }
+
+  return new Set(
+    nodes
+      .filter((node) => node.kind === 'interactive' && node.label === '' && !parents.has(node.id))
+      .map((node) => node.id)
+  );
+}
+
 function comparableRects(a: LayoutNode, b: LayoutNode): [Rect[], Rect[]] {
   return a.scrollContext === b.scrollContext ? [a.rects, b.rects] : [a.visible, b.visible];
 }
@@ -125,9 +145,31 @@ function isGlyph(node: LayoutNode): boolean {
   return node.kind === 'text' && node.label.length <= 2;
 }
 
+/** The largest side of a control that counts as a field's adornment: a 44px target and its slack. */
+const ADORNMENT_MAX_PX = 56;
+
+/**
+ * A small control laid mostly inside a field: its trailing adornment (the eye of a password field,
+ * a clear button). The field's box contains it by construction, so the pair is layered rather
+ * than colliding; whether the typed text clears it is the field's padding, which a box cannot say.
+ */
+function isFieldAdornment(a: LayoutNode, b: LayoutNode, overlap: OverlapMeasure): boolean {
+  const [field, control] = a.kind === 'input' ? [a, b] : [b, a];
+  return (
+    field.kind === 'input' &&
+    control.kind === 'interactive' &&
+    overlap.ratio >= 0.5 &&
+    control.rects.every((rect) => rect.w <= ADORNMENT_MAX_PX && rect.h <= ADORNMENT_MAX_PX)
+  );
+}
+
 function overlapSeverity(a: LayoutNode, b: LayoutNode, overlap: OverlapMeasure): Severity {
   if (a.kind === 'image' || b.kind === 'image') {
     return overlap.ratio >= 0.5 ? 'warn' : 'info';
+  }
+
+  if (isFieldAdornment(a, b, overlap)) {
+    return 'info';
   }
 
   // An icon glyph or a unit laid over a control or a field is a layered design (the search icon
@@ -160,9 +202,12 @@ function describe(node: LayoutNode): string {
 
 function overlapFindings(snapshot: LayoutSnapshot, pass: AnalyzePass): Finding[] {
   const byId = new Map(snapshot.nodes.map((node) => [node.id, node]));
+  const hitLayers = hitLayerIds(snapshot.nodes);
   const candidates = snapshot.nodes.filter(
     (node) =>
-      !isBackdrop(node, snapshot.viewport) && (node.rects.length > 0 || node.visible.length > 0)
+      !isBackdrop(node, snapshot.viewport) &&
+      !hitLayers.has(node.id) &&
+      (node.rects.length > 0 || node.visible.length > 0)
   );
   const findings: Finding[] = [];
   for (let i = 0; i < candidates.length; i++) {
@@ -297,6 +342,26 @@ function wordBreakFindings(snapshot: LayoutSnapshot): Finding[] {
     });
 }
 
+/**
+ * How far from the screen an element is parked on purpose (`left: -9999px`) to be measured or
+ * captured without being seen: an icon sheet for a chart export, a hidden clone. A carousel's next
+ * slide is a screen or two away; nothing meant to be read sits thousands of pixels out.
+ */
+const PARKED_OFF_SCREEN_PX = 5000;
+
+function isParkedOffScreen(node: LayoutNode, viewport: LayoutSnapshot['viewport']): boolean {
+  return (
+    node.rects.length > 0 &&
+    node.rects.every(
+      (rect) =>
+        rect.x + rect.w < -PARKED_OFF_SCREEN_PX ||
+        rect.y + rect.h < -PARKED_OFF_SCREEN_PX ||
+        rect.x > viewport.width + PARKED_OFF_SCREEN_PX ||
+        rect.y > viewport.height + PARKED_OFF_SCREEN_PX * 10
+    )
+  );
+}
+
 function pageFindings(snapshot: LayoutSnapshot): Finding[] {
   const findings: Finding[] = [];
   if (snapshot.documentWidth > snapshot.viewport.width + 1) {
@@ -311,7 +376,7 @@ function pageFindings(snapshot: LayoutSnapshot): Finding[] {
   }
 
   for (const node of snapshot.nodes) {
-    if (!node.reachable && node.rects.length > 0) {
+    if (!node.reachable && node.rects.length > 0 && !isParkedOffScreen(node, snapshot.viewport)) {
       findings.push({
         kind: 'unreachable',
         severity: 'error',

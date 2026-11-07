@@ -7,12 +7,14 @@ import {
   Pressable,
   ScrollView,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
+import { fitFontSize } from '@/utils/yearInReview/storyLayout';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -20,6 +22,9 @@ const ITEM_HEIGHT = 52;
 const VISIBLE_ITEMS = 5;
 const PICKER_VIEW_HEIGHT = VISIBLE_ITEMS * ITEM_HEIGHT;
 const PADDING_TOP = Math.floor((VISIBLE_ITEMS - 1) / 2) * ITEM_HEIGHT;
+/** The page's own side padding, and the room the AM/PM label beside the clock takes at most. */
+const CLOCK_SIDE_PADDING = 20;
+const CLOCK_PERIOD_LABEL_ROOM = 56;
 
 type TimePickerModalProps = {
   visible: boolean;
@@ -54,6 +59,7 @@ export function TimePickerModal({
 }: TimePickerModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { width: windowWidth } = useWindowDimensions();
   const hoursScrollRef = useRef<ScrollViewInstance>(null);
   const minutesScrollRef = useRef<ScrollViewInstance>(null);
 
@@ -173,13 +179,18 @@ export function TimePickerModal({
   const displayHour = h12.toString().padStart(2, '0');
   const displayMinute = selectedMinuteIndex.toString().padStart(2, '0');
   const amPmLabel = isPm ? 'PM' : 'AM';
+  // 96pt "03:17" is wider than a phone at large text, so it takes the largest size that fits.
+  const clockFontSize = fitFontSize(
+    `${displayHour}:${displayMinute}`,
+    windowWidth - CLOCK_SIDE_PADDING * 2 - CLOCK_PERIOD_LABEL_ROOM,
+    theme.typography.fontSize['8xl']
+  );
 
   return (
     <FullScreenModal
       visible={visible}
       onClose={onClose}
       title={title}
-      scrollable={false}
       showHeader={true}
       footer={
         <View className="items-center gap-3">
@@ -208,18 +219,18 @@ export function TimePickerModal({
         </View>
       }
     >
-      <View className="flex-1 flex-col items-center justify-start gap-8 bg-bg-primary pb-8 pt-4">
+      <View className="flex-col items-center justify-start gap-8 bg-bg-primary px-5 pb-8 pt-4">
         {/* Time display */}
         <View className="items-center gap-2">
           <View className="flex-row items-end">
             <Text
               className="font-bold text-text-primary"
               style={{
-                fontSize: theme.typography.fontSize['8xl'],
+                fontSize: clockFontSize,
                 textShadowColor: theme.colors.background.scrim30,
                 textShadowOffset: { width: 0, height: 2 },
                 textShadowRadius: 8,
-                lineHeight: theme.typography.fontSize['8xl'] * 1.05,
+                lineHeight: clockFontSize * 1.05,
               }}
             >
               {displayHour}:{displayMinute}

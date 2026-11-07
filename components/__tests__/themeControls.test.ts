@@ -169,7 +169,16 @@ describe('theme controls', () => {
   it('stretches a fullWidth pill and shares the track between its options', () => {
     const source = code('components/theme/SegmentedControl.tsx');
     expect(source).toContain("fullWidth ? 'self-stretch' : 'self-start'");
-    expect(source).toContain("fullWidth ? 'flex-1 justify-center' : ''");
+    expect(source).toContain("sharesEvenly ? 'flex-1 justify-center'");
+  });
+
+  it('lets a full-width pill size to its labels and wrap when they cannot share the track', () => {
+    // Even thirds broke "Estructurado" mid-word at large text; the even split now holds only while
+    // every label's longest word fits its share (`labelsFitEvenly`), and the track wraps.
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source).toContain("'flex-auto justify-center'");
+    expect(source).toMatch(/flex-row flex-wrap gap-1 rounded-control bg-bg-overlay p-1/);
+    expect(source).toContain('labelsFitEvenly');
   });
 
   it.each(THEMED_FILES)('%s builds its controls from components/theme', (path) => {

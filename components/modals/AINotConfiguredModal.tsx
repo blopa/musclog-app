@@ -51,10 +51,9 @@ export function AINotConfiguredModal({
       onClose={onClose}
       title={t('ai.notConfiguredModal.title')}
       subtitle={t('ai.notConfiguredModal.subtitle')}
-      scrollable={false}
       footer={footer}
     >
-      <View className="flex-1 justify-start px-5 pb-4 pt-3">
+      <View className="justify-start px-5 pb-4 pt-3">
         <View pointerEvents="none" style={{ height: theme.spacing.padding['3xl'] }} />
         <View className="mb-6 items-center">
           <View className="relative">

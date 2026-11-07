@@ -38,12 +38,18 @@ function getWidthStyle(width: ThemeButtonWidth): React.CSSProperties {
   switch (width) {
     case 'full':
       return { width: '100%' };
+    // `overflow: hidden` on the button makes a flex item's automatic minimum width 0, so a button
+    // in a two-up row shrank below its own longest word ("Confirm", "Archive") and broke it
+    // across lines. `min-content` keeps the equal split while it fits and stops at the word when
+    // it does not.
     case 'flex-1':
-      return { flex: 1 };
+      return { flex: 1, minWidth: 'min-content' };
     case 'flex-2':
-      return { flex: 2 };
+      return { flex: 2, minWidth: 'min-content' };
     default:
-      return { alignSelf: 'flex-start' };
+      // Never squeezed below its label by a neighbour: a row of actions wraps (flex-wrap) instead.
+      // The cap keeps a label wider than its container wrapping by word inside the button.
+      return { alignSelf: 'flex-start', flexShrink: 0, maxWidth: '100%' };
   }
 }
 

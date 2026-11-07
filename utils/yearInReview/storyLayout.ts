@@ -20,7 +20,12 @@ export function storyScale(posterHeight: number): number {
  * out rather than left to `adjustsFontSizeToFit`, which react-native-web ignores, so a large
  * "1,204,332" fits on every platform.
  */
-export function fitFontSize(text: string, availableWidth: number, maxSize: number): number {
-  const widest = text.length * GLYPH_WIDTH_RATIO;
+export function fitFontSize(
+  text: string,
+  availableWidth: number,
+  maxSize: number,
+  glyphWidthRatio: number = GLYPH_WIDTH_RATIO
+): number {
+  const widest = text.length * glyphWidthRatio;
   return widest > 0 ? Math.min(maxSize, Math.floor(availableWidth / widest)) : maxSize;
 }

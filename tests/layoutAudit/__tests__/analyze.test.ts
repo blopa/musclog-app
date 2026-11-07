@@ -101,6 +101,39 @@ describe('overlap', () => {
     expect(fullyInside[0]).toMatchObject({ kind: 'overlap', severity: 'info' });
   });
 
+  it('calls a small control laid inside a field its adornment (a note), not a collision', () => {
+    const field = node({ kind: 'input', label: 'API key', rects: [box(0, 0, 300, 44)] });
+    const eye = node({ kind: 'interactive', label: 'Show value', rects: [box(262, 6, 32, 32)] });
+    expect(analyzeSnapshot(snapshot([field, eye]))[0]).toMatchObject({
+      kind: 'overlap',
+      severity: 'info',
+    });
+
+    // A button nearly as big as the field is a second control on top of it, not an adornment, so
+    // it keeps the ordinary reading of two controls on each other (a warning once contained).
+    const cover = node({ kind: 'interactive', label: 'Cover', rects: [box(40, 0, 260, 44)] });
+    expect(analyzeSnapshot(snapshot([field, cover]))[0]).toMatchObject({ severity: 'warn' });
+  });
+
+  it('skips a nameless control with nothing inside it: a transparent hit layer has no ink', () => {
+    const layer = node({ kind: 'interactive', label: '', rects: [box(0, 0, 300, 120)] });
+    const axisLabel = node({ label: '172 lbs', rects: [box(-10, 40, 40, 14)] });
+    expect(kinds(analyzeSnapshot(snapshot([layer, axisLabel])))).not.toContain('overlap');
+
+    // A named control, or one that holds content, is still a control that can be collided with.
+    const named = node({ kind: 'interactive', label: 'Chart', rects: [box(0, 0, 300, 120)] });
+    expect(kinds(analyzeSnapshot(snapshot([named, axisLabel])))).toContain('overlap');
+    const holder = node({ kind: 'interactive', label: '', rects: [box(0, 0, 300, 120)] });
+    const inner = node({
+      kind: 'image',
+      label: 'icon',
+      parent: holder.id,
+      rects: [box(250, 5, 20, 20)],
+    });
+    const other = node({ label: 'Total', rects: [box(-10, 40, 40, 14)] });
+    expect(kinds(analyzeSnapshot(snapshot([holder, inner, other])))).toContain('overlap');
+  });
+
   it('calls two controls that overlap an error', () => {
     const findings = analyzeSnapshot(
       snapshot([
@@ -265,6 +298,20 @@ describe('page and reachability', () => {
       snapshot([node({ reachable: false, rects: [box(400, 0, 50, 20)] })])
     );
     expect(findings[0]).toMatchObject({ kind: 'unreachable', severity: 'error' });
+  });
+
+  it('ignores an element parked thousands of pixels off screen on purpose', () => {
+    const parked = node({
+      kind: 'image',
+      label: '',
+      rects: [box(-9999, -9999, 300, 300)],
+      reachable: false,
+    });
+    const cutOff = node({ label: 'Save', rects: [box(0, 1600, 100, 20)], reachable: false });
+    const findings = analyzeSnapshot(snapshot([parked, cutOff]));
+    expect(findings.filter((f) => f.kind === 'unreachable').map((f) => f.labels[0])).toEqual([
+      'Save',
+    ]);
   });
 });
 
