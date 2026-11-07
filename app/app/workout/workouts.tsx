@@ -24,6 +24,7 @@ import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { CreateEditPlanModal } from '@/components/modals/CreateEditPlanModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
+import { ExternalWorkoutPlanModal } from '@/components/modals/ExternalWorkoutPlanModal';
 import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { LogCardioModal } from '@/components/modals/LogCardioModal';
@@ -145,6 +146,7 @@ export default function WorkoutsScreen() {
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
   const [isGenerateWithAiModalVisible, setIsGenerateWithAiModalVisible] = useState(false);
+  const [isExternalPlanVisible, setIsExternalPlanVisible] = useState(false);
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isDeletingWorkoutTemplate, setIsDeletingWorkoutTemplate] = useState(false);
   const [isCreateFromTemplateConfirmationVisible, setIsCreateFromTemplateConfirmationVisible] =
@@ -491,6 +493,10 @@ export default function WorkoutsScreen() {
             setIsCreateOptionsVisible(false);
             setIsGenerateWithAiModalVisible(true);
           }}
+          onBuildWithExternalAi={() => {
+            setIsCreateOptionsVisible(false);
+            setIsExternalPlanVisible(true);
+          }}
           onCreateEmptyTemplate={() => {
             setIsCreateOptionsVisible(false);
             setEditingTemplateId(undefined);
@@ -512,6 +518,10 @@ export default function WorkoutsScreen() {
             templateId={editingTemplateId}
           />
         ) : null}
+        <ExternalWorkoutPlanModal
+          visible={isExternalPlanVisible}
+          onClose={() => setIsExternalPlanVisible(false)}
+        />
         <GenerateWorkoutWithAiModal
           visible={isGenerateWithAiModalVisible}
           onClose={() => setIsGenerateWithAiModalVisible(false)}

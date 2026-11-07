@@ -14,13 +14,25 @@ type PasteJsonSheetProps = {
   /** Receives the pasted text; the caller validates it and reports a problem through `error`. */
   onSubmit: (text: string) => void;
   error?: string | null;
+  /** Wording for a caller that is not onboarding; each falls back to the setup-file copy. */
+  title?: string;
+  subtitle?: string;
+  placeholder?: string;
 };
 
 /**
  * Where a setup written by ChatGPT or Claude can be pasted when saving a file was not possible.
  * The text is never sent anywhere from here: it is handed to the caller, which validates it.
  */
-export function PasteJsonSheet({ visible, onClose, onSubmit, error }: PasteJsonSheetProps) {
+export function PasteJsonSheet({
+  visible,
+  onClose,
+  onSubmit,
+  error,
+  title,
+  subtitle,
+  placeholder,
+}: PasteJsonSheetProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [text, setText] = useState('');
@@ -29,8 +41,8 @@ export function PasteJsonSheet({ visible, onClose, onSubmit, error }: PasteJsonS
     <BottomPopUp
       visible={visible}
       onClose={onClose}
-      title={t('aiOnboarding.external.paste.title')}
-      subtitle={t('aiOnboarding.external.paste.subtitle')}
+      title={title ?? t('aiOnboarding.external.paste.title')}
+      subtitle={subtitle ?? t('aiOnboarding.external.paste.subtitle')}
       footer={
         <View className="gap-3">
           <Button
@@ -54,7 +66,7 @@ export function PasteJsonSheet({ visible, onClose, onSubmit, error }: PasteJsonS
           label=""
           value={text}
           onChangeText={setText}
-          placeholder={t('aiOnboarding.external.paste.placeholder')}
+          placeholder={placeholder ?? t('aiOnboarding.external.paste.placeholder')}
           multiline
           numberOfLines={8}
           autoCapitalize="none"

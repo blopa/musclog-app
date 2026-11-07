@@ -91,4 +91,5 @@ export const MODAL_BUTTON_TEXTS = [
   'Open Visual Settings Modal',
   'Open Add Exercise To Session Modal',
   'Open Saved For Later Modal',
+  'Open External Workout Plan Modal',
 ];

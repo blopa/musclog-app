@@ -1,4 +1,4 @@
-import { Dumbbell, Library, PlusCircle, Sparkles } from 'lucide-react-native';
+import { Bot, Dumbbell, Library, PlusCircle, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -14,6 +14,8 @@ type CreateWorkoutOptionsModalProps = {
   onCreateEmptyTemplate: () => void;
   onBrowseTemplates: () => void;
   onStartFreeTraining?: () => void;
+  /** Opens the ChatGPT/Claude hand-off; offered without an in-app AI provider, so it is not gated. */
+  onBuildWithExternalAi?: () => void;
   isAiEnabled?: boolean;
 };
 
@@ -24,6 +26,7 @@ export function CreateWorkoutOptionsModal({
   onCreateEmptyTemplate,
   onBrowseTemplates,
   onStartFreeTraining,
+  onBuildWithExternalAi,
   isAiEnabled = false,
 }: CreateWorkoutOptionsModalProps) {
   const theme = useTheme();
@@ -111,6 +114,15 @@ export function CreateWorkoutOptionsModal({
               title={t('workouts.createWorkoutOptions.generateWithAi')}
               subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
               onPress={onGenerateWithAi}
+            />
+          ) : null}
+
+          {onBuildWithExternalAi ? (
+            <NewWorkoutCard
+              icon={<Bot size={theme.iconSize.xl} color={theme.colors.text.secondary} />}
+              title={t('workouts.createWorkoutOptions.externalAi')}
+              subtitle={t('workouts.createWorkoutOptions.externalAiSubtitle')}
+              onPress={onBuildWithExternalAi}
             />
           ) : null}
 

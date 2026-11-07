@@ -147,7 +147,9 @@
       "createFromEmptyTemplate": "Legen sjabloon maken",
       "createFromEmptyTemplateSubtitle": "Ontwerp je eigen routine vanaf nul, oefening voor oefening.",
       "browseTemplates": "Bladeren door sjablonen",
-      "browseTemplatesSubtitle": "Verken door experts gemaakte programma's en favorieten van de community."
+      "browseTemplatesSubtitle": "Verken door experts gemaakte programma's en favorieten van de community.",
+      "externalAi": "Maken met ChatGPT of Claude",
+      "externalAiSubtitle": "Chat met een assistent buiten Musclog en importeer daarna het plan dat die schrijft."
     },
     "browseTemplatesModal": {
       "title": "Sjablonen bladeren",
@@ -207,6 +209,60 @@
       "cancel": "Annuleren",
       "successMessage": "Workouts succesvol gemaakt",
       "successMessageWithPlan": "{{planName}} gemaakt met {{count}} workouts"
+    },
+    "externalPlan": {
+      "title": "Maken met ChatGPT of Claude",
+      "intro": "ChatGPT of Claude kan vragen stellen over je doelen en apparatuur en geeft je daarna een bestand om terug te brengen. Je verlaat Musclog even; er wordt niets opgeslagen tot je het plan hier controleert.",
+      "steps": {
+        "one": "Open ChatGPT of Claude. De instructies worden voor je gekopieerd: plak ze in de chat.",
+        "two": "Beantwoord de vragen. Aan het eind krijg je een bestand met de naam musclog-workout-plan.json.",
+        "three": "Kom terug naar Musclog en importeer dat bestand of plak de tekst."
+      },
+      "leaveSection": "Stap 1: vraag het aan de assistent",
+      "backSection": "Stap 2: breng het plan terug",
+      "openChatgpt": "ChatGPT openen",
+      "openClaude": "Claude openen",
+      "copy": "Kopiëren",
+      "share": "Delen",
+      "copied": "Instructies gekopieerd",
+      "copiedPaste": "Instructies gekopieerd. Plak ze in de chat als het vak leeg is.",
+      "fallback": "De app of site kon niet worden geopend. De instructies zijn gekopieerd: open ChatGPT of Claude zelf en plak ze.",
+      "privacy": "Alleen de instructies worden gekopieerd. Er zit niets over jou of een API-sleutel in.",
+      "importFile": "Een planbestand importeren",
+      "pasteJson": "JSON plakken",
+      "noFile": "Geen bestand? Plak de JSON.",
+      "paste": {
+        "title": "Plan-JSON plakken",
+        "subtitle": "Plak de JSON die de assistent je gaf.",
+        "placeholder": "Plak de JSON hier"
+      },
+      "errors": {
+        "empty": "Er is niets om te importeren.",
+        "fileRead": "Dat bestand kon niet worden gelezen. Probeer een ander bestand of plak de tekst.",
+        "newerVersion": "Dit plan is gemaakt voor een nieuwere versie van Musclog. Werk de app bij en importeer opnieuw.",
+        "notJson": "Dit lijkt geen planbestand. Kies het bestand musclog-workout-plan.json van de assistent of plak de JSON.",
+        "tooLarge": "Dat bestand is te groot voor een planbestand.",
+        "wrongSchema": "Dit is geen Musclog-planbestand. Controleer of je het bestand van de assistent hebt gekozen.",
+        "invalidPlan": "Dit bestand bevat geen bruikbaar plan. Vraag de assistent het opnieuw te schrijven.",
+        "noExercises": "Geen enkele oefening in dit bestand kon worden gelezen. Vraag de assistent het opnieuw te schrijven."
+      },
+      "review": {
+        "intro": "Controleer het plan voordat het wordt toegevoegd. Er wordt niets opgeslagen tot je het aanmaakt.",
+        "weeklyOn": "Wekelijks op {{days}}",
+        "rotating": "Wisselt tussen de workouts, zonder vaste dagen",
+        "setsReps": "{{sets}} × {{reps}}",
+        "setsRepsRange": "{{sets}} × {{min}}–{{max}}",
+        "unmatched_one": "{{count}} oefening staat niet in Musclog en wordt weggelaten: {{names}}",
+        "unmatched_few": "{{count}} oefeningen staan niet in Musclog en worden weggelaten: {{names}}",
+        "unmatched_many": "{{count}} oefeningen staan niet in Musclog en worden weggelaten: {{names}}",
+        "unmatched_other": "{{count}} oefeningen staan niet in Musclog en worden weggelaten: {{names}}",
+        "skipped_one": "{{count}} oefening in het bestand kon niet worden gelezen en is weggelaten",
+        "skipped_few": "{{count}} oefeningen in het bestand konden niet worden gelezen en zijn weggelaten",
+        "skipped_many": "{{count}} oefeningen in het bestand konden niet worden gelezen en zijn weggelaten",
+        "skipped_other": "{{count}} oefeningen in het bestand konden niet worden gelezen en zijn weggelaten",
+        "create": "Plan aanmaken",
+        "differentFile": "Een ander bestand gebruiken"
+      }
     },
     "aiGeneration": {
       "comingSoon": "AI-workoutgeneratie komt binnenkort.",

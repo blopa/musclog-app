@@ -147,7 +147,9 @@
       "createFromEmptyTemplate": "Create from empty template",
       "createFromEmptyTemplateSubtitle": "Design your own routine from scratch, exercise by exercise.",
       "browseTemplates": "Browse templates",
-      "browseTemplatesSubtitle": "Explore expert-created programs and community favorites."
+      "browseTemplatesSubtitle": "Explore expert-created programs and community favorites.",
+      "externalAi": "Build with ChatGPT or Claude",
+      "externalAiSubtitle": "Chat with an assistant outside Musclog, then import the plan it writes."
     },
     "browseTemplatesModal": {
       "title": "Browse templates",
@@ -207,6 +209,60 @@
       "cancel": "Cancel",
       "successMessage": "Workouts created successfully",
       "successMessageWithPlan": "{{planName}} created with {{count}} workouts"
+    },
+    "externalPlan": {
+      "title": "Build with ChatGPT or Claude",
+      "intro": "ChatGPT or Claude can ask about your goals and equipment, then give you a file to bring back. You leave Musclog for a moment; nothing is saved until you review the plan here.",
+      "steps": {
+        "one": "Open ChatGPT or Claude. The instructions are copied for you: paste them into the chat.",
+        "two": "Answer its questions. It will end with a file called musclog-workout-plan.json.",
+        "three": "Come back to Musclog and import that file, or paste its text."
+      },
+      "leaveSection": "Step 1: ask the assistant",
+      "backSection": "Step 2: bring the plan back",
+      "openChatgpt": "Open ChatGPT",
+      "openClaude": "Open Claude",
+      "copy": "Copy",
+      "share": "Share",
+      "copied": "Instructions copied",
+      "copiedPaste": "Instructions copied. Paste them into the chat if the box is empty.",
+      "fallback": "Couldn't open the app or site. The instructions are copied: open ChatGPT or Claude yourself and paste them.",
+      "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
+      "importFile": "Import a plan file",
+      "pasteJson": "Paste JSON",
+      "noFile": "No file? Paste the JSON instead.",
+      "paste": {
+        "title": "Paste plan JSON",
+        "subtitle": "Paste the JSON the assistant gave you.",
+        "placeholder": "Paste the JSON here"
+      },
+      "errors": {
+        "empty": "There is nothing to import.",
+        "fileRead": "That file could not be read. Try another one, or paste the text instead.",
+        "newerVersion": "This plan was made for a newer version of Musclog. Update the app, then import it again.",
+        "notJson": "That doesn't look like a plan file. Pick the musclog-workout-plan.json file the assistant gave you, or paste its JSON.",
+        "tooLarge": "That file is too large to be a plan file.",
+        "wrongSchema": "That isn't a Musclog plan file. Check that you picked the file the assistant made.",
+        "invalidPlan": "This file has no usable plan. Ask the assistant to write it again.",
+        "noExercises": "None of the exercises in this file could be read. Ask the assistant to write it again."
+      },
+      "review": {
+        "intro": "Check the plan before it is added. Nothing is saved until you create it.",
+        "weeklyOn": "Weekly on {{days}}",
+        "rotating": "Rotates through its workouts, no fixed days",
+        "setsReps": "{{sets}} × {{reps}}",
+        "setsRepsRange": "{{sets}} × {{min}}–{{max}}",
+        "unmatched_one": "{{count}} exercise isn't in Musclog and will be left out: {{names}}",
+        "unmatched_few": "{{count}} exercises aren't in Musclog and will be left out: {{names}}",
+        "unmatched_many": "{{count}} exercises aren't in Musclog and will be left out: {{names}}",
+        "unmatched_other": "{{count}} exercises aren't in Musclog and will be left out: {{names}}",
+        "skipped_one": "{{count}} exercise in the file couldn't be read and was left out",
+        "skipped_few": "{{count}} exercises in the file couldn't be read and were left out",
+        "skipped_many": "{{count}} exercises in the file couldn't be read and were left out",
+        "skipped_other": "{{count}} exercises in the file couldn't be read and were left out",
+        "create": "Create plan",
+        "differentFile": "Use a different file"
+      }
     },
     "aiGeneration": {
       "comingSoon": "AI workout generation is coming soon.",
