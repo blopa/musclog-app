@@ -638,11 +638,11 @@
     },
     "externalLog": {
       "title": "Track with ChatGPT or Claude",
-      "intro": "ChatGPT or Claude can work out what you ate from a description or a photo, then give you a file to bring back. You leave Musclog for a moment; nothing is saved until you review it here.",
+      "intro": "ChatGPT or Claude can work out what you ate from a description or a photo, then give you a link that opens it here. You leave Musclog for a moment; nothing is saved until you review it.",
       "steps": {
         "one": "Open ChatGPT or Claude. The instructions are copied for you: paste them into the chat.",
-        "two": "Tell it what you ate. It will end with a file called musclog-food-log.json.",
-        "three": "Come back to Musclog and import that file, or paste its text."
+        "two": "Tell it what you ate. It will end with an \"Open in Musclog\" link and the log as JSON.",
+        "three": "Tap the link on this phone. If it doesn't open Musclog, paste the JSON (or the link) or import the file."
       },
       "leaveSection": "Step 1: ask the assistant",
       "backSection": "Step 2: bring your food back",
@@ -656,10 +656,10 @@
       "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
       "importFile": "Import a food file",
       "pasteJson": "Paste JSON",
-      "noFile": "No file? Paste the JSON instead.",
+      "noFile": "No link? Paste the JSON or the link, or import the file.",
       "paste": {
         "title": "Paste food JSON",
-        "subtitle": "Paste the JSON the assistant gave you.",
+        "subtitle": "Paste the JSON or the link the assistant gave you.",
         "placeholder": "Paste the JSON here"
       },
       "errors": {
@@ -705,7 +705,8 @@
         "logged_many": "{{count}} foods logged",
         "logged_other": "{{count}} foods logged",
         "logError": "Couldn't log the food. Try again."
-      }
+      },
+      "linkError": "The link from your assistant couldn't be read. {{reason}} Paste the JSON block from the chat instead."
     }
   }
 }

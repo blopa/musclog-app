@@ -1,6 +1,6 @@
 import * as Clipboard from 'expo-clipboard';
 import { ClipboardPaste, Copy, FileUp, Share2 } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
 
@@ -12,6 +12,7 @@ import { getAllLocaleExerciseNamesBySlug, getExerciseCatalogue } from '@/data/ex
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
+import type { IncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useTheme } from '@/hooks/useTheme';
 import { buildExternalChatUrl, type ExternalTarget } from '@/utils/aiOnboarding/instructions';
 import { MAX_PLAN_BYTES, type PlanParseError } from '@/utils/aiWorkoutPlan/contract';
@@ -42,6 +43,11 @@ type ExternalWorkoutPlanModalProps = {
   onClose: () => void;
   /** Called once the plan exists, so the screen behind can refresh. */
   onCreated?: () => void;
+  /**
+   * The text of a tapped open link (`/open#workout=…`). Read once per `key`: success opens the
+   * review directly, failure explains why on the first step.
+   */
+  incoming?: IncomingOpenLink | null;
 };
 
 type Review = { resolved: ResolvedPlan; skippedExercises: number };
@@ -56,6 +62,7 @@ export function ExternalWorkoutPlanModal({
   visible,
   onClose,
   onCreated,
+  incoming = null,
 }: ExternalWorkoutPlanModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -70,6 +77,8 @@ export function ExternalWorkoutPlanModal({
   const [fileError, setFileError] = useState<string | null>(null);
   const [fallbackNotice, setFallbackNotice] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const handledLinkKey = useRef<number | null>(null);
 
   const catalogue = useMemo(() => (visible ? getExerciseCatalogue(locale) : []), [visible, locale]);
   const displayNames = useMemo(
@@ -140,8 +149,26 @@ export function ExternalWorkoutPlanModal({
     return null;
   };
 
+  // The newest link wins, replacing a review that is already open. Declared after `accept`, run
+  // through a named helper so the state updates are not set directly in the effect body.
+  const acceptIncoming = (link: IncomingOpenLink) => {
+    const problem = accept(link.text);
+    setLinkError(problem ? t('workouts.externalPlan.linkError', { reason: problem }) : null);
+  };
+
+  useEffect(() => {
+    if (!visible || !incoming || handledLinkKey.current === incoming.key) {
+      return;
+    }
+
+    handledLinkKey.current = incoming.key;
+    acceptIncoming(incoming);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the link, not on the handlers
+  }, [visible, incoming]);
+
   const importFile = async () => {
     setFileError(null);
+    setLinkError(null);
     try {
       const picked = await pickTextFile({ maxBytes: MAX_PLAN_BYTES });
       if (picked.status === 'cancelled') {
@@ -214,6 +241,7 @@ export function ExternalWorkoutPlanModal({
   const close = () => {
     setReview(null);
     setFileError(null);
+    setLinkError(null);
     setFallbackNotice(false);
     onClose();
   };
@@ -346,6 +374,12 @@ export function ExternalWorkoutPlanModal({
             ))}
           </View>
 
+          {linkError ? (
+            <Text style={textStyle(theme.colors.status.error, theme.typography.fontSize.sm)}>
+              {linkError}
+            </Text>
+          ) : null}
+
           <View className="gap-3">
             <SectionLabel>{t('workouts.externalPlan.leaveSection')}</SectionLabel>
             <Button
@@ -413,6 +447,7 @@ export function ExternalWorkoutPlanModal({
               width="full"
               onPress={() => {
                 setPasteError(null);
+                setLinkError(null);
                 setPasteOpen(true);
               }}
             />

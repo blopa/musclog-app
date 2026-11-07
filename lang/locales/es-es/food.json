@@ -638,11 +638,11 @@
     },
     "externalLog": {
       "title": "Registrar con ChatGPT o Claude",
-      "intro": "ChatGPT o Claude pueden averiguar qué comiste a partir de una descripción o una foto y darte un archivo para traer de vuelta. Sales de Musclog un momento; no se guarda nada hasta que lo revises aquí.",
+      "intro": "ChatGPT o Claude pueden averiguar qué comiste a partir de una descripción o una foto y darte un enlace que lo abre aquí. Sales de Musclog un momento; no se guarda nada hasta que lo revises.",
       "steps": {
         "one": "Abre ChatGPT o Claude. Las instrucciones se copian por ti: pégalas en el chat.",
-        "two": "Cuéntale qué comiste. Terminará con un archivo llamado musclog-food-log.json.",
-        "three": "Vuelve a Musclog e importa ese archivo o pega su texto."
+        "two": "Cuéntale qué comiste. Terminará con un enlace «Abrir en Musclog» y el registro en JSON.",
+        "three": "Toca el enlace en este teléfono. Si no abre Musclog, pega el JSON (o el enlace) o importa el archivo."
       },
       "leaveSection": "Paso 1: pregunta al asistente",
       "backSection": "Paso 2: trae tu comida de vuelta",
@@ -656,10 +656,10 @@
       "privacy": "Solo se copian las instrucciones. No se incluye nada sobre ti ni ninguna clave de API.",
       "importFile": "Importar un archivo de comida",
       "pasteJson": "Pegar JSON",
-      "noFile": "¿Sin archivo? Pega el JSON.",
+      "noFile": "¿Sin enlace? Pega el JSON o el enlace, o importa el archivo.",
       "paste": {
         "title": "Pegar JSON de comida",
-        "subtitle": "Pega el JSON que te dio el asistente.",
+        "subtitle": "Pega el JSON o el enlace que te dio el asistente.",
         "placeholder": "Pega el JSON aquí"
       },
       "errors": {
@@ -705,7 +705,8 @@
         "logged_many": "{{count}} alimentos registrados",
         "logged_other": "{{count}} alimentos registrados",
         "logError": "No se pudo registrar el alimento. Inténtalo de nuevo."
-      }
+      },
+      "linkError": "No se pudo leer el enlace de tu asistente. {{reason}} Pega en su lugar el bloque JSON del chat."
     }
   }
 }

@@ -1,9 +1,22 @@
 ---
-title: 'Bring your own AI: log food and build workouts with ChatGPT or Claude'
+title: 'Bring your own AI: log food and build workouts with ChatGPT or Claude, then tap once to bring them home'
 date: '2026-11-07'
 category: 'product-updates'
-description: 'Musclog can now track food and build a workout plan with ChatGPT or Claude: you copy a prompt, chat in your own assistant, and bring a small JSON file back. The interesting part is everything that happens after the file arrives: what gets validated, what gets left out, and why I only found a carbs bug by taking the screenshots for this post.'
-tags: ['Musclog', 'React Native', 'Expo', 'AI', 'ChatGPT', 'Claude', 'TypeScript', 'Privacy']
+description: 'Musclog can now track food and build a workout plan with ChatGPT or Claude. You copy a prompt, chat in your own assistant, and tap one link to land on a review screen in the app. The interesting part is the link itself, and everything that happens after it arrives.'
+tags:
+  [
+    'Musclog',
+    'React Native',
+    'Expo',
+    'AI',
+    'ChatGPT',
+    'Claude',
+    'TypeScript',
+    'Privacy',
+    'Deep links',
+    'Android',
+    'iOS',
+  ]
 ---
 
 Most of the time I log food the boring way. Search, pick, set a portion, save. It works, and it is also the reason people stop logging by Thursday.
@@ -21,21 +34,138 @@ Neither needs an API key, a Musclog account or an AI provider set up in the app.
 
 ## The trick, in one picture
 
-You tap the button. Musclog copies a block of instructions to your clipboard and opens ChatGPT or Claude. You paste them, answer a few questions (or send a photo), and at the end the assistant gives you a JSON file or a JSON block. You come back, import or paste it, and Musclog takes it from there.
+You tap the button. Musclog copies a block of instructions to your clipboard and opens ChatGPT or Claude. You paste them, answer a few questions (or send a photo), and at the end the assistant gives you a link. There are three ways back, in order of effort:
 
-![The first step: open ChatGPT or Claude with the instructions already copied, then import the file or paste its JSON when you come back](/images/blog/2026/11/external-food-instructions.webp)
+1. **Tap the link.** It opens Musclog on the review screen.
+2. **Paste the JSON.** The assistant always puts the same data in a code block under the link. Paste it, or paste the link itself, into **Paste JSON**.
+3. **Import the file**, if your assistant can create one.
+
+![The first step: open ChatGPT or Claude with the instructions already copied, then bring the result back by tapping its link, pasting it or importing the file](/images/blog/2026/11/external-food-instructions.webp)
 
 ```mermaid
 flowchart TD
-    Y[You tell the assistant what you ate, or what program you want] --> F[It writes a JSON file]
-    F --> P{Musclog parses and validates it}
+    Y[You tell the assistant what you ate, or what program you want] --> L[It writes an Open in Musclog link and the same JSON underneath]
+    L -- You tap the link --> P
+    L -- Link does not open the app --> J[You paste the JSON or the link into Paste JSON]
+    J --> P{Musclog parses and validates it}
     P -- Parts it cannot use --> W[Left out, and listed on the review screen]
     P -- Parts it can --> R[Review screen]
     W --> R
     R -- You tap Log or Create plan --> S[Musclog's own services write the data]
 ```
 
-The assistant never talks to Musclog. There is no API in the middle, no key and no account. The only thing that crosses over is a small text file that you carry yourself, which Musclog treats as untrusted input.
+The assistant never talks to Musclog. There is no API in the middle, no key and no account. The only thing that crosses over is text that you carry yourself, by tap or by clipboard, which Musclog treats as untrusted input. All three roads end in the same parser, so there is one set of rules to trust.
+
+## One tap back: a link that carries the file
+
+The prompt used to end with "now import the file". That is a lot to ask of someone standing in a kitchen with a phone. So it now ends with this:
+
+```text
+[Open in Musclog](https://musclog.app/open#food=%7B%22schema%22%3A%22musclog-food-log%22%2C...)
+```
+
+The whole food log, minified and percent-encoded, sits after the `#`. Tapping it opens Musclog on the food diary with the review already open. Nothing is saved until you confirm, exactly as before.
+
+### Why the data goes in the fragment
+
+Everything after a `#` stays in the browser. It is never sent in the request, so it does not reach GitHub Pages, a CDN or any server log. A meal or a training plan is not something I want in anybody's access logs, including mine. The `/open` page also reads the fragment once and removes it from the address bar, so the analytics script, which reads the page URL, never sees it either.
+
+### How the tap reaches the app
+
+```mermaid
+sequenceDiagram
+    participant A as Assistant chat
+    participant O as Phone OS
+    participant M as Musclog app
+    participant W as musclog.app/open
+    A->>O: You tap the link
+    alt App Link / Universal Link verified
+        O->>M: Opens the app with the full URL
+    else Not verified, or an in-app browser
+        O->>W: Opens the page in a browser
+        W->>M: Its button opens com.werules.logger://open#...
+    end
+    M->>M: Stores the payload, routes to the food or workout screen
+    M->>M: The screen opens the review
+```
+
+Only **`/open`** is claimed. On Android that is one `intentFilters` entry in `app.json` with an exact `path`:
+
+```json
+"intentFilters": [
+  {
+    "action": "VIEW",
+    "autoVerify": true,
+    "data": [{ "scheme": "https", "host": "musclog.app", "path": "/open" }],
+    "category": ["BROWSABLE", "DEFAULT"]
+  }
+]
+```
+
+On iOS it is the `components` entry of `apple-app-site-association`:
+
+```json
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["PVG62J652G.com.werules.logger"],
+        "components": [{ "/": "/open" }]
+      }
+    ]
+  }
+}
+```
+
+Every other page on musclog.app, the blog included, stays in the browser. I did not want a link to a blog post to open an app.
+
+### Why the page's button uses a custom scheme
+
+When the OS does not open the app (no app installed, an in-app browser, or a tap from another musclog.app page), you land on the `/open` page. Its **Open in Musclog** button is the `com.werules.logger://open#...` twin of the same link. In-app browsers do not fire Universal Links, and a user tap is what lets a browser launch a custom scheme at all.
+
+![The /open page on a phone: Open in Musclog, a line saying the workout plan is ready, and a button that launches the app](/images/blog/2026/11/open-bridge-page.webp)
+
+### The `action=` story
+
+The app already had widget shortcuts that arrive as `?action=open-nutrition` and similar. The code that routes them looks for `action=` in the incoming path. A payload is free text, and a food note can easily contain the characters `action=`. So the open-link branch runs first, and only exactly `/open` can reach it:
+
+```ts
+const open = parseOpenLink(path);
+if (open.matches) {
+  if (!(await isOnboardingCompleted())) {
+    return null;
+  }
+
+  setPendingOpenLink(open.link);
+  return open.link ? OPEN_LINK_ROUTES[open.link.kind] : '/app';
+}
+
+if (path.includes('action=')) {
+  // widget shortcuts
+}
+```
+
+The payload is parked in a small pending slot, and the screen that owns the import picks it up: `useOpenLinkHandler` takes it on focus, so a cold start, a link tapped while the app is on another screen and a link tapped while you are already on the target screen all land. Only the **focused** screen takes it, because a second copy of the same screen lower in the stack would otherwise open a modal nobody can see.
+
+### The parentheses gotcha
+
+`encodeURIComponent` leaves `( ) ! ' *` alone. An unescaped `)` ends a markdown link early, so a perfectly good `"Bench press (barbell)"` would cut the link in half. The prompt therefore names the characters that stay unescaped (`A-Z a-z 0-9 - _ . ~`, the RFC 3986 unreserved set) and tells the assistant to encode everything else, with Python's `urllib.parse.quote(minified, safe='')` as the recipe, then decode the link back and compare. Musclog's own `encodeOpenPayload` follows the same rule, so the tests build links the way the assistant is told to.
+
+If the assistant cannot encode reliably, or the link would pass 8000 characters, it is told to skip the link and say so. The JSON block underneath is the real safety net, not the link.
+
+### ChatGPT's "Check this link is safe"
+
+ChatGPT can stop and ask you to confirm a link it cannot verify as a public page, and a link that carries a one-off payload is never a public page. OpenAI describes the reasoning in [its post about link safety for AI agents](https://openai.com/index/ai-agent-link-safety/): a URL that carries conversation data is exactly the shape of data exfiltration the check guards against.
+
+I think that is the correct behavior. In this case the data goes from your assistant to your own phone, so you can tap through. The prompt tells the assistant to mention it, and the JSON block under the link is there for anyone who would rather not. **Paste JSON** accepts the JSON block, and it also accepts the link itself, or a whole copied chat message that has either in it. If the link is damaged but the JSON block is fine, the block wins.
+
+### Behind a lock
+
+If you have turned on the workout or nutrition lock, the link still opens the app, but the review waits. The payload is held above the lock gate, and the review opens once you unlock.
+
+### The dev-only double-effect bug
+
+The `/open` page removes the fragment from the address bar after reading it. In development, React runs effects twice. The second run saw the already-removed, empty fragment and wiped the page state, so the button vanished. Only a link with a payload replaces the state now.
 
 ## What a food file looks like
 
@@ -199,7 +329,7 @@ The workout side is the same trick with a different file, `musclog-workout-plan`
 
 ![The create workout options screen with Start free training, Generate with AI, Build with ChatGPT or Claude, Create from empty template and Browse templates](/images/blog/2026/11/external-workout-options.webp)
 
-The file names exercises by their catalogue slug, so the prompt lists **all 873 of them**, which makes it roughly 25 KB. That is far too long for a prefilled link, so for this one copy-and-paste is genuinely the only path (I explained the link story in the setup post).
+The file names exercises by their catalogue slug, so the prompt lists **all 873 of them**, which makes it roughly 25 KB. That is far too long for a prefilled chat link, so the prompt still travels by clipboard. The way back is the part that got shorter: one tap.
 
 An assistant that has been told "give the reps as a range" will happily write `"8-12"` as text. The reader accepts that and turns it into a top of 12 and a bottom of 8, the way bundled programs store a range:
 
@@ -232,7 +362,7 @@ Three more choices, all aimed at one thing: nothing about this path is special o
 
 ## What I tested, and what I know I have not
 
-There are 56 new tests: the pure contract and parsing code, the grouping rules, the service with its dependencies mocked, and the integration test above against the real nutrition service. I broke the carbs conversion, the review totals and the grouping on purpose, and each time the suite noticed.
+There are 56 tests for the food and plan contracts: the pure contract and parsing code, the grouping rules, the service with its dependencies mocked, and the integration test above against the real nutrition service. The link adds 44 more: the encoder (including `( ) ! ' *` and non-ASCII), finding a link inside a markdown link, angle brackets, a bare URL and a whole copied message, rejecting other hosts and other paths, a damaged link falling back to the JSON block, a food link pasted into workouts, the 64 KB cap applying to the decoded payload, a link built the way the prompt tells Python to build it, the focused-screen rule of the hook, and the lock wiring. I broke the carbs conversion, the review totals and the grouping on purpose, and each time the suite noticed.
 
 What I can not test is the other side of the file. How a given model behaves on its worst day is out of my hands, which is exactly why the design never needs it to be right, only reviewable. If an assistant writes something Musclog rejects, the review tells you what it left out, and I would love to see that file.
 
@@ -242,7 +372,8 @@ There is also one gap I want to be upfront about. The in-app AI plan generator c
 
 - Only the instructions are copied. Nothing about you and no API key is in them.
 - Musclog never sees a photo. The photo goes from you to your assistant.
-- The file is capped at 64 KB, identified by its `schema` field, version-checked and read food by food and exercise by exercise.
+- The data in a link lives in the URL fragment, which never leaves your phone and is removed from the address bar on the bridge page before analytics can read it.
+- The file or link is capped at 64 KB, identified by its `schema` field, version-checked and read food by food and exercise by exercise.
 - Whatever Musclog could not use is listed, never silently dropped.
 
 Both buttons are in this release. If you try one, I want to hear how your assistant did.

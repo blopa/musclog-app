@@ -1,4 +1,9 @@
 import exercisesData from '@/data/exercisesData.json';
+import {
+  buildOpenHttpsUrl,
+  OPEN_LINK_BASE_URL,
+  OPEN_LINK_SUGGESTED_MAX_CHARS,
+} from '@/utils/openLink';
 import { MAX_PLAN_BYTES, PLAN_MAJOR, PLAN_SCHEMA_ID, planDocumentSchema } from '../contract';
 import {
   buildPlanJsonSchema,
@@ -313,6 +318,72 @@ describe('planToRawTemplate', () => {
   });
 });
 
+describe('parseWorkoutPlanText with an open link', () => {
+  const json = JSON.stringify(document());
+  const link = buildOpenHttpsUrl({ kind: 'workout', payload: json });
+
+  it.each([
+    ['a bare link', link],
+    ['a markdown link', `[Open in Musclog](${link})`],
+    [
+      'a whole message with the link and the block',
+      `Done!\n[Open in Musclog](${link})\n\n\`\`\`json\n${json}\n\`\`\``,
+    ],
+  ])('reads %s', (_name, text) => {
+    expect(parseWorkoutPlanText(text)).toMatchObject({
+      ok: true,
+      plan: { title: 'Upper / lower' },
+    });
+  });
+
+  it('reads a link the prompt rule produced (Python quote with safe="")', () => {
+    // urllib.parse.quote(minified, safe='') escapes everything but A-Za-z0-9_.-~
+    const python = json.replace(/[^A-Za-z0-9_.\-~]/g, (character) =>
+      Array.from(
+        Buffer.from(character, 'utf8'),
+        (byte) => `%${byte.toString(16).toUpperCase().padStart(2, '0')}`
+      ).join('')
+    );
+    expect(parseWorkoutPlanText(`[Open](${OPEN_LINK_BASE_URL}#workout=${python})`)).toMatchObject({
+      ok: true,
+    });
+  });
+
+  it('falls back to the JSON block when the link is damaged', () => {
+    const damaged = `${OPEN_LINK_BASE_URL}#workout=%7B%22broken`;
+    const text = `[Open in Musclog](${damaged})\n\n\`\`\`json\n${json}\n\`\`\``;
+
+    expect(parseWorkoutPlanText(text)).toMatchObject({ ok: true });
+  });
+
+  it('reports the link problem when there is no usable block either', () => {
+    expect(parseWorkoutPlanText(`${OPEN_LINK_BASE_URL}#workout=%7B%22broken`)).toEqual({
+      ok: false,
+      error: 'notJson',
+    });
+  });
+
+  it('refuses a food link as the wrong document', () => {
+    const food = buildOpenHttpsUrl({ kind: 'food', payload: json });
+    expect(parseWorkoutPlanText(food)).toEqual({ ok: false, error: 'wrongSchema' });
+  });
+
+  it('applies the size cap to the decoded payload, not to the message around it', () => {
+    const prose = 'chat '.repeat(2000);
+    expect(parseWorkoutPlanText(`${prose}${link}`)).toMatchObject({ ok: true });
+
+    const big = buildOpenHttpsUrl({ kind: 'workout', payload: ' '.repeat(MAX_PLAN_BYTES + 1) });
+    expect(parseWorkoutPlanText(big)).toEqual({ ok: false, error: 'tooLarge' });
+  });
+
+  it('bounds the scan of a huge paste', () => {
+    expect(parseWorkoutPlanText('x'.repeat(MAX_PLAN_BYTES * 4 + 1))).toEqual({
+      ok: false,
+      error: 'tooLarge',
+    });
+  });
+});
+
 describe('buildWorkoutPlanInstructions', () => {
   const text = buildWorkoutPlanInstructions({ language: 'pt-BR', exerciseSlugs: SLUGS });
 
@@ -335,6 +406,17 @@ describe('buildWorkoutPlanInstructions', () => {
     expect(text).toMatch(/Do not include loads/);
     expect(text).toMatch(/single JSON code block/);
     expect(text).toMatch(/could not validate/);
+  });
+
+  it('asks for the open link, its encoding rule and the JSON fallback', () => {
+    expect(WORKOUT_INSTRUCTIONS_REVISION).toBe(2);
+    expect(text).toContain(`[Open in Musclog](${OPEN_LINK_BASE_URL}#workout=<encoded JSON>)`);
+    expect(text).toContain('A-Z a-z 0-9 - _ . ~');
+    expect(text).toContain("urllib.parse.quote(minified, safe='')");
+    expect(text).toContain(String(OPEN_LINK_SUGGESTED_MAX_CHARS));
+    expect(text).toMatch(/Paste JSON/);
+    expect(text).toMatch(/phone that has Musclog/);
+    expect(text).not.toMatch(/import the file/);
   });
 
   it('holds nothing about the person and is deterministic', () => {

@@ -638,11 +638,11 @@
     },
     "externalLog": {
       "title": "Bijhouden met ChatGPT of Claude",
-      "intro": "ChatGPT of Claude kan uit een beschrijving of foto afleiden wat je hebt gegeten en geeft je daarna een bestand om terug te brengen. Je verlaat Musclog even; er wordt niets opgeslagen tot je het hier controleert.",
+      "intro": "ChatGPT of Claude kan uit een beschrijving of foto afleiden wat je hebt gegeten en geeft je daarna een link die het hier opent. Je verlaat Musclog even; er wordt niets opgeslagen tot je het controleert.",
       "steps": {
         "one": "Open ChatGPT of Claude. De instructies worden voor je gekopieerd: plak ze in de chat.",
-        "two": "Vertel wat je hebt gegeten. Aan het eind krijg je een bestand met de naam musclog-food-log.json.",
-        "three": "Kom terug naar Musclog en importeer dat bestand of plak de tekst."
+        "two": "Vertel wat je hebt gegeten. Aan het eind krijg je een link \"Openen in Musclog\" en het logboek als JSON.",
+        "three": "Tik op de link op deze telefoon. Opent die Musclog niet, plak dan de JSON (of de link) of importeer het bestand."
       },
       "leaveSection": "Stap 1: vraag het aan de assistent",
       "backSection": "Stap 2: breng je eten terug",
@@ -656,10 +656,10 @@
       "privacy": "Alleen de instructies worden gekopieerd. Er zit niets over jou of een API-sleutel in.",
       "importFile": "Een eetbestand importeren",
       "pasteJson": "JSON plakken",
-      "noFile": "Geen bestand? Plak de JSON.",
+      "noFile": "Geen link? Plak de JSON of de link, of importeer het bestand.",
       "paste": {
         "title": "Eten-JSON plakken",
-        "subtitle": "Plak de JSON die de assistent je gaf.",
+        "subtitle": "Plak de JSON of de link die de assistent je gaf.",
         "placeholder": "Plak de JSON hier"
       },
       "errors": {
@@ -705,7 +705,8 @@
         "logged_many": "{{count}} voedingsmiddelen gelogd",
         "logged_other": "{{count}} voedingsmiddelen gelogd",
         "logError": "Het loggen is mislukt. Probeer het opnieuw."
-      }
+      },
+      "linkError": "De link van je assistent kon niet worden gelezen. {{reason}} Plak in plaats daarvan het JSON-blok uit de chat."
     }
   }
 }

@@ -47,6 +47,7 @@ import { ActiveWorkoutExistsError, WorkoutService } from '@/database/services/Wo
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useIncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
@@ -147,6 +148,12 @@ export default function WorkoutsScreen() {
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
   const [isGenerateWithAiModalVisible, setIsGenerateWithAiModalVisible] = useState(false);
   const [isExternalPlanVisible, setIsExternalPlanVisible] = useState(false);
+  // A tapped open link (`/open#workout=…`) goes straight to the plan review in the same modal.
+  const showExternalPlan = useCallback(() => setIsExternalPlanVisible(true), []);
+  const { incoming: incomingPlan, clearIncoming: clearIncomingPlan } = useIncomingOpenLink(
+    'workout',
+    showExternalPlan
+  );
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isDeletingWorkoutTemplate, setIsDeletingWorkoutTemplate] = useState(false);
   const [isCreateFromTemplateConfirmationVisible, setIsCreateFromTemplateConfirmationVisible] =
@@ -520,7 +527,11 @@ export default function WorkoutsScreen() {
         ) : null}
         <ExternalWorkoutPlanModal
           visible={isExternalPlanVisible}
-          onClose={() => setIsExternalPlanVisible(false)}
+          onClose={() => {
+            setIsExternalPlanVisible(false);
+            clearIncomingPlan();
+          }}
+          incoming={incomingPlan}
         />
         <GenerateWorkoutWithAiModal
           visible={isGenerateWithAiModalVisible}

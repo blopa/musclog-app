@@ -1,9 +1,14 @@
 import {
+  buildOpenHttpsUrl,
   buildOpenSchemeUrl,
+  encodeOpenPayload,
+  findOpenLinkInText,
   MAX_OPEN_LINK_PAYLOAD_CHARS,
+  OPEN_LINK_BASE_URL,
   parseOpenFragment,
   parseOpenLink,
   setPendingOpenLink,
+  subscribePendingOpenLink,
   takePendingOpenLink,
 } from '../openLink';
 
@@ -130,5 +135,80 @@ describe('pending open link', () => {
     setPendingOpenLink({ kind: 'food', payload: 'new' });
 
     expect(takePendingOpenLink('food')).toEqual({ kind: 'food', payload: 'new' });
+  });
+});
+
+describe('encodeOpenPayload', () => {
+  it('leaves only the RFC 3986 unreserved characters alone', () => {
+    expect(encodeOpenPayload('AZaz09-_.~')).toBe('AZaz09-_.~');
+    expect(encodeOpenPayload('Bench press (barbell)!')).toBe('Bench%20press%20%28barbell%29%21');
+    expect(encodeOpenPayload("it's 5*5")).toBe('it%27s%205%2A5');
+    expect(encodeOpenPayload('100% ñ ✓ 🥦')).toMatch(
+      /^100%25%20%C3%B1%20%E2%9C%93%20%F0%9F%A5%A6$/
+    );
+  });
+
+  it('never emits a character that ends a markdown link or a URL early', () => {
+    expect(encodeOpenPayload(`${PLAN}() []<>"'\\`)).toMatch(/^[A-Za-z0-9\-_.~%]*$/);
+  });
+
+  it('round-trips through decodeURIComponent', () => {
+    const text = `${PLAN} (x) ! * ' ñ 🥦`;
+    expect(decodeURIComponent(encodeOpenPayload(text))).toBe(text);
+  });
+});
+
+describe('buildOpenHttpsUrl', () => {
+  it('is the shape the assistant is told to write and parses back', () => {
+    const link = { kind: 'workout', payload: `${PLAN} (barbell) ñ` } as const;
+    const url = buildOpenHttpsUrl(link);
+
+    expect(url.startsWith(`${OPEN_LINK_BASE_URL}#workout=`)).toBe(true);
+    expect(parseOpenLink(url)).toEqual({ matches: true, link });
+  });
+});
+
+describe('findOpenLinkInText', () => {
+  const link = { kind: 'food', payload: '{"a":"(b)"}' } as const;
+  const url = buildOpenHttpsUrl(link);
+
+  it.each([
+    ['a markdown link', `Here you go: [Open in Musclog](${url}) enjoy`],
+    ['an angle-bracket link', `<${url}>`],
+    ['a bare URL', `Tap ${url}\nthen done`],
+    ['a quoted URL', `href="${url}"`],
+    ['the custom scheme', buildOpenSchemeUrl(link)],
+    ['a whole copied message', `Sure!\n\n[Open in Musclog](${url})\n\n\`\`\`json\n{}\n\`\`\`\n`],
+  ])('finds the link in %s', (_name, text) => {
+    expect(findOpenLinkInText(text)).toEqual(link);
+  });
+
+  it('returns the first link that carries a payload', () => {
+    expect(findOpenLinkInText(`${OPEN_LINK_BASE_URL} then ${url}`)).toEqual(link);
+  });
+
+  it.each([
+    'no link here',
+    'https://evil.example/open#food=%7B%7D',
+    'https://musclog.app/download#food=%7B%7D',
+    'https://musclog.app/openfoo#food=%7B%7D',
+    'https://musclog.app/open',
+    'https://musclog.app/open#cycle=%7B%7D',
+  ])('finds nothing in %s', (text) => {
+    expect(findOpenLinkInText(text)).toBeNull();
+  });
+});
+
+describe('subscribePendingOpenLink', () => {
+  it('notifies listeners when a link is stored, until they unsubscribe', () => {
+    const listener = jest.fn();
+    const unsubscribe = subscribePendingOpenLink(listener);
+
+    setPendingOpenLink({ kind: 'food', payload: 'p' });
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    unsubscribe();
+    setPendingOpenLink({ kind: 'food', payload: 'q' });
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });

@@ -212,11 +212,11 @@
     },
     "externalPlan": {
       "title": "Build with ChatGPT or Claude",
-      "intro": "ChatGPT or Claude can ask about your goals and equipment, then give you a file to bring back. You leave Musclog for a moment; nothing is saved until you review the plan here.",
+      "intro": "ChatGPT or Claude can ask about your goals and equipment, then give you a link that opens the plan here. You leave Musclog for a moment; nothing is saved until you review the plan.",
       "steps": {
         "one": "Open ChatGPT or Claude. The instructions are copied for you: paste them into the chat.",
-        "two": "Answer its questions. It will end with a file called musclog-workout-plan.json.",
-        "three": "Come back to Musclog and import that file, or paste its text."
+        "two": "Answer its questions. It will end with an \"Open in Musclog\" link and the plan as JSON.",
+        "three": "Tap the link on this phone. If it doesn't open Musclog, paste the JSON (or the link) or import the file."
       },
       "leaveSection": "Step 1: ask the assistant",
       "backSection": "Step 2: bring the plan back",
@@ -230,10 +230,10 @@
       "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
       "importFile": "Import a plan file",
       "pasteJson": "Paste JSON",
-      "noFile": "No file? Paste the JSON instead.",
+      "noFile": "No link? Paste the JSON or the link, or import the file.",
       "paste": {
         "title": "Paste plan JSON",
-        "subtitle": "Paste the JSON the assistant gave you.",
+        "subtitle": "Paste the JSON or the link the assistant gave you.",
         "placeholder": "Paste the JSON here"
       },
       "errors": {
@@ -262,7 +262,8 @@
         "skipped_other": "{{count}} exercises in the file couldn't be read and were left out",
         "create": "Create plan",
         "differentFile": "Use a different file"
-      }
+      },
+      "linkError": "The link from your assistant couldn't be read. {{reason}} Paste the JSON block from the chat instead."
     },
     "aiGeneration": {
       "comingSoon": "AI workout generation is coming soon.",

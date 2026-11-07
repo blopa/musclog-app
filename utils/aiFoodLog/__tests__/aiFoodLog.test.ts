@@ -1,4 +1,10 @@
 import {
+  buildOpenHttpsUrl,
+  OPEN_LINK_BASE_URL,
+  OPEN_LINK_SUGGESTED_MAX_CHARS,
+} from '@/utils/openLink';
+
+import {
   buildFoodLogDocumentSchema,
   FOOD_LOG_MAJOR,
   FOOD_LOG_SCHEMA_ID,
@@ -190,6 +196,41 @@ describe('parseFoodLogText', () => {
   });
 });
 
+describe('parseFoodLogText with an open link', () => {
+  const json = JSON.stringify(document());
+  const link = buildOpenHttpsUrl({ kind: 'food', payload: json });
+
+  it.each([
+    ['a bare link', link],
+    ['a markdown link', `[Open in Musclog](${link})`],
+    [
+      'a whole message with the link and the block',
+      `Logged.\n[Open in Musclog](${link})\n\n\`\`\`json\n${json}\n\`\`\``,
+    ],
+  ])('reads %s', (_name, text) => {
+    expect(parseFoodLogText(text)).toMatchObject({ ok: true, skippedFoods: 0 });
+  });
+
+  it('falls back to the JSON block when the link is damaged', () => {
+    const damaged = `${OPEN_LINK_BASE_URL}#food=%7B%22broken`;
+    const text = `[Open in Musclog](${damaged})\n\n\`\`\`json\n${json}\n\`\`\``;
+
+    expect(parseFoodLogText(text)).toMatchObject({ ok: true });
+  });
+
+  it('refuses a workout link as the wrong document', () => {
+    const workout = buildOpenHttpsUrl({ kind: 'workout', payload: json });
+    expect(parseFoodLogText(workout)).toEqual({ ok: false, error: 'wrongSchema' });
+  });
+
+  it('applies the size cap to the decoded payload, not to the message around it', () => {
+    expect(parseFoodLogText(`${'chat '.repeat(2000)}${link}`)).toMatchObject({ ok: true });
+
+    const big = buildOpenHttpsUrl({ kind: 'food', payload: ' '.repeat(MAX_FOOD_LOG_BYTES + 1) });
+    expect(parseFoodLogText(big)).toEqual({ ok: false, error: 'tooLarge' });
+  });
+});
+
 describe('the document schema', () => {
   it('accepts exactly what the instructions describe', () => {
     const schema = buildFoodLogDocumentSchema({ withFoodIds: false });
@@ -212,6 +253,16 @@ describe('the document schema', () => {
 
 describe('buildFoodLogInstructions', () => {
   const instructions = buildFoodLogInstructions({ language: 'pt-BR' });
+
+  it('asks for the open link, its encoding rule and the JSON fallback', () => {
+    expect(FOOD_LOG_INSTRUCTIONS_REVISION).toBe(2);
+    expect(instructions).toContain(`[Open in Musclog](${OPEN_LINK_BASE_URL}#food=<encoded JSON>)`);
+    expect(instructions).toContain('A-Z a-z 0-9 - _ . ~');
+    expect(instructions).toContain("urllib.parse.quote(minified, safe='')");
+    expect(instructions).toContain(String(OPEN_LINK_SUGGESTED_MAX_CHARS));
+    expect(instructions).toMatch(/Paste JSON/);
+    expect(instructions).not.toMatch(/import the file/);
+  });
 
   it('names the contract, its revision, the language and the file to hand back', () => {
     expect(instructions).toContain(`schema ${FOOD_LOG_SCHEMA_ID} v${FOOD_LOG_MAJOR}`);

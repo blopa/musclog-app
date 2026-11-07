@@ -1,6 +1,6 @@
 import * as Clipboard from 'expo-clipboard';
 import { ClipboardPaste, Copy, FileUp, Share2, X } from 'lucide-react-native';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, View } from 'react-native';
 
@@ -17,6 +17,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models/NutritionLog';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
+import type { IncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useSettings } from '@/hooks/useSettings';
 import { useSubModalState, useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
@@ -74,6 +75,11 @@ type ExternalFoodLogModalProps = {
   initialMealType?: MealType;
   /** Called once the food is logged, so the screen behind can refresh. */
   onLogged?: () => void;
+  /**
+   * The text of a tapped open link (`/open#food=…`). Read once per `key`: success opens the review
+   * directly (on `logDate`, the diary's selected day), failure explains why on the first step.
+   */
+  incoming?: IncomingOpenLink | null;
 };
 
 /** What the person is reviewing: the foods that can be logged and how they will be logged. */
@@ -117,6 +123,7 @@ export function ExternalFoodLogModal({
   logDate,
   initialMealType,
   onLogged,
+  incoming = null,
 }: ExternalFoodLogModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -136,7 +143,9 @@ export function ExternalFoodLogModal({
   const [fileError, setFileError] = useState<string | null>(null);
   const [fallbackNotice, setFallbackNotice] = useState(false);
   const [isLogging, setIsLogging] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
   const isReading = useRef(false);
+  const handledLinkKey = useRef<number | null>(null);
 
   const copyInstructions = async (): Promise<string | null> => {
     try {
@@ -217,8 +226,26 @@ export function ExternalFoodLogModal({
     }
   };
 
+  // The newest link wins, replacing a review that is already open. Run through a named helper so
+  // the state updates are not set directly in the effect body.
+  const acceptIncoming = async (link: IncomingOpenLink) => {
+    const problem = await accept(link.text);
+    setLinkError(problem ? t('food.externalLog.linkError', { reason: problem }) : null);
+  };
+
+  useEffect(() => {
+    if (!visible || !incoming || handledLinkKey.current === incoming.key) {
+      return;
+    }
+
+    handledLinkKey.current = incoming.key;
+    void acceptIncoming(incoming);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the link, not on the handlers
+  }, [visible, incoming]);
+
   const importFile = async () => {
     setFileError(null);
+    setLinkError(null);
     try {
       const picked = await pickTextFile({ maxBytes: MAX_FOOD_LOG_BYTES });
       if (picked.status === 'cancelled') {
@@ -244,6 +271,7 @@ export function ExternalFoodLogModal({
 
   const close = () => {
     setFileError(null);
+    setLinkError(null);
     setFallbackNotice(false);
     onClose();
   };
@@ -493,6 +521,12 @@ export function ExternalFoodLogModal({
             ))}
           </View>
 
+          {linkError ? (
+            <Text style={textStyle(theme.colors.status.error, theme.typography.fontSize.sm)}>
+              {linkError}
+            </Text>
+          ) : null}
+
           <View className="gap-3">
             <SectionLabel>{t('food.externalLog.leaveSection')}</SectionLabel>
             <Button
@@ -556,6 +590,7 @@ export function ExternalFoodLogModal({
               width="full"
               onPress={() => {
                 setPasteError(null);
+                setLinkError(null);
                 setPasteOpen(true);
               }}
             />

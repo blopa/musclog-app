@@ -50,13 +50,13 @@ import { CopyDayPromptCard } from '@/components/nutrition/CopyDayPromptCard';
 import { DiaryActionPanels } from '@/components/nutrition/DiaryActionPanels';
 import type { DiaryActionRequest, DiaryPanelKind } from '@/components/nutrition/diaryActions';
 import { FastingDayCard } from '@/components/nutrition/FastingDayCard';
-import { FoodQuickActions } from '@/components/nutrition/FoodQuickActions';
 import {
   cardKeysOfMeal,
   diaryGroupKey,
   diaryLogKey,
   resolveDiarySelection,
 } from '@/components/nutrition/foodDiarySelection';
+import { FoodQuickActions } from '@/components/nutrition/FoodQuickActions';
 import {
   mealFoodsFromEntries,
   type MealGroup,
@@ -96,6 +96,7 @@ import { useFoodScreenModals } from '@/hooks/useFoodScreenModals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMealGroupUi } from '@/hooks/useMealGroupUi';
 import { useMealUi } from '@/hooks/useMealUi';
+import { useIncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
@@ -217,6 +218,11 @@ export default function FoodScreen() {
   } = useMealGroupUi();
 
   const screenModals = useFoodScreenModals();
+  // A tapped open link (`/open#food=…`) goes straight to the review in the external food log modal.
+  const { incoming: incomingFoodLog, clearIncoming: clearIncomingFoodLog } = useIncomingOpenLink(
+    'food',
+    screenModals.externalFoodLog.open
+  );
   // `date` (yyyy-MM-dd) opens the diary on a specific day, e.g. a day the Weekly Review is missing.
   const { date: dateParam } = useLocalSearchParams<{ date?: string }>();
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayFromParam(dateParam));
@@ -1503,7 +1509,11 @@ export default function FoodScreen() {
         {/* Track with ChatGPT or Claude (the assistant's file is reviewed here before it is logged) */}
         <ExternalFoodLogModal
           visible={screenModals.externalFoodLog.visible}
-          onClose={screenModals.externalFoodLog.close}
+          onClose={() => {
+            screenModals.externalFoodLog.close();
+            clearIncomingFoodLog();
+          }}
+          incoming={incomingFoodLog}
           logDate={selectedDate}
           initialMealType={addFoodModalPreselectedMealType ?? undefined}
           onLogged={() => {

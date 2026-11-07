@@ -212,11 +212,11 @@
     },
     "externalPlan": {
       "title": "Criar com ChatGPT ou Claude",
-      "intro": "O ChatGPT ou o Claude podem perguntar sobre seus objetivos e equipamentos e dar um arquivo para você trazer de volta. Você sai do Musclog por um momento; nada é salvo até você revisar o plano aqui.",
+      "intro": "O ChatGPT ou o Claude podem perguntar sobre seus objetivos e equipamentos e dar um link que abre o plano aqui. Você sai do Musclog por um momento; nada é salvo até você revisar o plano.",
       "steps": {
         "one": "Abra o ChatGPT ou o Claude. As instruções são copiadas para você: cole no chat.",
-        "two": "Responda às perguntas. Ele vai terminar com um arquivo chamado musclog-workout-plan.json.",
-        "three": "Volte ao Musclog e importe esse arquivo ou cole o texto."
+        "two": "Responda às perguntas. Ele vai terminar com um link \"Abrir no Musclog\" e o plano em JSON.",
+        "three": "Toque no link neste celular. Se ele não abrir o Musclog, cole o JSON (ou o link) ou importe o arquivo."
       },
       "leaveSection": "Passo 1: pergunte ao assistente",
       "backSection": "Passo 2: traga o plano de volta",
@@ -230,10 +230,10 @@
       "privacy": "Apenas as instruções são copiadas. Nada sobre você nem chave de API é incluído.",
       "importFile": "Importar um arquivo de plano",
       "pasteJson": "Colar JSON",
-      "noFile": "Sem arquivo? Cole o JSON.",
+      "noFile": "Sem link? Cole o JSON ou o link, ou importe o arquivo.",
       "paste": {
         "title": "Colar JSON do plano",
-        "subtitle": "Cole o JSON que o assistente deu.",
+        "subtitle": "Cole o JSON ou o link que o assistente deu.",
         "placeholder": "Cole o JSON aqui"
       },
       "errors": {
@@ -262,7 +262,8 @@
         "skipped_other": "{{count}} exercícios do arquivo não puderam ser lidos e ficaram de fora",
         "create": "Criar plano",
         "differentFile": "Usar outro arquivo"
-      }
+      },
+      "linkError": "Não foi possível ler o link do seu assistente. {{reason}} Cole o bloco JSON do chat no lugar."
     },
     "aiGeneration": {
       "comingSoon": "Geração de treino por IA em breve.",

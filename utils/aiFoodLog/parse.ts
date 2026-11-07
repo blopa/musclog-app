@@ -1,4 +1,4 @@
-import { extractJsonCandidate, utf8ByteLength } from '@/utils/aiOnboarding/contractParse';
+import { parseJsonDocument, readDocumentText } from '@/utils/openLinkDocument';
 
 import {
   type FoodLogDraft,
@@ -10,31 +10,20 @@ import {
 export type FoodLogParseResult =
   { ok: true; log: FoodLogDraft; skippedFoods: number } | { ok: false; error: FoodLogParseError };
 
+const fail = (error: FoodLogParseError): FoodLogParseResult => ({ ok: false, error });
+
 /**
- * Reads pasted or imported text as a food log. The text is length-capped, the JSON is pulled out of
- * any code fence or sentence the assistant wrapped around it, and the document is then identified,
- * version-checked and validated by {@link normalizeFoodLog}.
+ * Reads pasted, imported or linked text as a food log. The JSON is pulled out of any code fence or
+ * sentence the assistant wrapped around it, or out of an open link (`/open#food=…`) anywhere in the
+ * text (`readDocumentText`), is length-capped, and is then identified, version-checked and
+ * validated by {@link normalizeFoodLog}.
  */
 export function parseFoodLogText(text: string): FoodLogParseResult {
-  if (!text.trim()) {
-    return { ok: false, error: 'empty' };
-  }
-
-  if (utf8ByteLength(text) > MAX_FOOD_LOG_BYTES) {
-    return { ok: false, error: 'tooLarge' };
-  }
-
-  const candidate = extractJsonCandidate(text);
-  if (!candidate) {
-    return { ok: false, error: 'notJson' };
-  }
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(candidate);
-  } catch {
-    return { ok: false, error: 'notJson' };
-  }
-
-  return normalizeFoodLog(parsed);
+  return readDocumentText<FoodLogParseResult>({
+    text,
+    kind: 'food',
+    maxBytes: MAX_FOOD_LOG_BYTES,
+    parseJson: (json) => parseJsonDocument(json, normalizeFoodLog, fail),
+    fail,
+  });
 }

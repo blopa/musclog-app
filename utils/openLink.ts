@@ -16,6 +16,15 @@
 export const OPEN_LINK_SCHEME = 'com.werules.logger';
 export const OPEN_LINK_PATH = '/open';
 
+/** The https spelling an assistant is told to write, and the one tests build links with. */
+export const OPEN_LINK_BASE_URL = 'https://musclog.app/open';
+
+/**
+ * The longest link an assistant is asked to write. Chat apps and messengers truncate or refuse far
+ * longer URLs than this, so past it the assistant skips the link and the JSON block is the way back.
+ */
+export const OPEN_LINK_SUGGESTED_MAX_CHARS = 8000;
+
 /** What a link can carry. Each kind opens the screen that owns the matching import. */
 export const OPEN_LINK_KINDS = ['workout', 'food'] as const;
 export type OpenLinkKind = (typeof OPEN_LINK_KINDS)[number];
@@ -84,16 +93,67 @@ export function parseOpenLink(url: string): OpenLinkParse {
   return { matches: true, link: hashIndex < 0 ? null : parseOpenFragment(url.slice(hashIndex)) };
 }
 
+/**
+ * Percent-encodes everything except the RFC 3986 unreserved characters (`A-Z a-z 0-9 - _ . ~`).
+ * Plain `encodeURIComponent` also leaves `! ' ( ) *` alone, and an unescaped `)` ends a markdown
+ * link early (`Bench press (barbell)`), so those are escaped too. This is the rule the assistant is
+ * told to follow (Python's `urllib.parse.quote(text, safe='')` produces the same string).
+ */
+export function encodeOpenPayload(text: string): string {
+  return encodeURIComponent(text).replace(
+    /[!'()*]/g,
+    (character) => `%${character.charCodeAt(0).toString(16).toUpperCase()}`
+  );
+}
+
+/** The https form of an open link, the shape the assistant writes. */
+export function buildOpenHttpsUrl(link: OpenLink): string {
+  return `${OPEN_LINK_BASE_URL}#${link.kind}=${encodeOpenPayload(link.payload)}`;
+}
+
 /** The custom-scheme twin of an open link, for the bridge page's "Open in Musclog" button. */
 export function buildOpenSchemeUrl(link: OpenLink): string {
-  return `${OPEN_LINK_SCHEME}://open#${link.kind}=${encodeURIComponent(link.payload)}`;
+  return `${OPEN_LINK_SCHEME}://open#${link.kind}=${encodeOpenPayload(link.payload)}`;
+}
+
+const OPEN_URL_IN_TEXT =
+  /(?:https:\/\/musclog\.app\/open|com\.werules\.logger:\/\/\/?open)[^\s)\]>"<]*/gi;
+
+/**
+ * Finds the first open link that carries a payload inside arbitrary text: a markdown `[label](url)`,
+ * `<url>`, a bare URL or a whole copied chat message. A URL ends at whitespace or `)`, `]`, `>`,
+ * `"` or `<`. Each candidate goes through {@link parseOpenLink}, so the host and exact-path rules
+ * stay in one place.
+ */
+export function findOpenLinkInText(text: string): OpenLink | null {
+  for (const match of text.matchAll(OPEN_URL_IN_TEXT)) {
+    const parsed = parseOpenLink(match[0]);
+    if (parsed.matches && parsed.link) {
+      return parsed.link;
+    }
+  }
+
+  return null;
 }
 
 let pending: OpenLink | null = null;
+const pendingListeners = new Set<() => void>();
 
 /** The payload of the link that opened the app, kept for the screen it routed to. */
 export function setPendingOpenLink(link: OpenLink | null) {
   pending = link;
+  pendingListeners.forEach((listener) => listener());
+}
+
+/**
+ * Calls `listener` whenever a link is stored, so a screen that is already open can pick up a link
+ * that arrives while it is showing. {@link takePendingOpenLink} stays the only consumer.
+ */
+export function subscribePendingOpenLink(listener: () => void): () => void {
+  pendingListeners.add(listener);
+  return () => {
+    pendingListeners.delete(listener);
+  };
 }
 
 /** Hands the pending payload to its screen exactly once; another kind's payload stays put. */

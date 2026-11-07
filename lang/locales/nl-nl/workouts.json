@@ -212,11 +212,11 @@
     },
     "externalPlan": {
       "title": "Maken met ChatGPT of Claude",
-      "intro": "ChatGPT of Claude kan vragen stellen over je doelen en apparatuur en geeft je daarna een bestand om terug te brengen. Je verlaat Musclog even; er wordt niets opgeslagen tot je het plan hier controleert.",
+      "intro": "ChatGPT of Claude kan vragen stellen over je doelen en apparatuur en geeft je daarna een link die het plan hier opent. Je verlaat Musclog even; er wordt niets opgeslagen tot je het plan controleert.",
       "steps": {
         "one": "Open ChatGPT of Claude. De instructies worden voor je gekopieerd: plak ze in de chat.",
-        "two": "Beantwoord de vragen. Aan het eind krijg je een bestand met de naam musclog-workout-plan.json.",
-        "three": "Kom terug naar Musclog en importeer dat bestand of plak de tekst."
+        "two": "Beantwoord de vragen. Aan het eind krijg je een link \"Openen in Musclog\" en het plan als JSON.",
+        "three": "Tik op de link op deze telefoon. Opent die Musclog niet, plak dan de JSON (of de link) of importeer het bestand."
       },
       "leaveSection": "Stap 1: vraag het aan de assistent",
       "backSection": "Stap 2: breng het plan terug",
@@ -230,10 +230,10 @@
       "privacy": "Alleen de instructies worden gekopieerd. Er zit niets over jou of een API-sleutel in.",
       "importFile": "Een planbestand importeren",
       "pasteJson": "JSON plakken",
-      "noFile": "Geen bestand? Plak de JSON.",
+      "noFile": "Geen link? Plak de JSON of de link, of importeer het bestand.",
       "paste": {
         "title": "Plan-JSON plakken",
-        "subtitle": "Plak de JSON die de assistent je gaf.",
+        "subtitle": "Plak de JSON of de link die de assistent je gaf.",
         "placeholder": "Plak de JSON hier"
       },
       "errors": {
@@ -262,7 +262,8 @@
         "skipped_other": "{{count}} oefeningen in het bestand konden niet worden gelezen en zijn weggelaten",
         "create": "Plan aanmaken",
         "differentFile": "Een ander bestand gebruiken"
-      }
+      },
+      "linkError": "De link van je assistent kon niet worden gelezen. {{reason}} Plak in plaats daarvan het JSON-blok uit de chat."
     },
     "aiGeneration": {
       "comingSoon": "AI-workoutgeneratie komt binnenkort.",
