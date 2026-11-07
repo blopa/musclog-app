@@ -1,5 +1,5 @@
 ---
-title: 'ChatGPT can log my lunch and write my program, but it still cannot press save'
+title: 'Bring your own AI: log food and build workouts with ChatGPT or Claude'
 date: '2026-11-07'
 category: 'product-updates'
 description: 'Musclog can now track food and build a workout plan with ChatGPT or Claude: you copy a prompt, chat in your own assistant, and bring a small JSON file back. The interesting part is everything that happens after the file arrives: what gets validated, what gets left out, and why I only found a carbs bug by taking the screenshots for this post.'
