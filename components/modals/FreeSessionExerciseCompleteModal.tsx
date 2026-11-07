@@ -1,7 +1,7 @@
 import { CheckCircle, Flag, Plus } from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Text, View } from 'react-native';
+import { Image, ScrollView, Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
@@ -105,7 +105,12 @@ export function FreeSessionExerciseCompleteModal({
       scrollable={false}
       closable={false}
     >
-      <View className="flex-1 px-4">
+      {/* Scrolls, so a short or cramped screen reaches the buttons instead of cutting them off. */}
+      <ScrollView
+        className="flex-1 px-4"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: theme.spacing.padding.lg }}
+        showsVerticalScrollIndicator={false}
+      >
         <View className="flex-row items-center justify-between pb-4 pt-2">
           <View className="flex-1 items-center justify-center px-2">
             <Text className="text-[14px] font-bold" style={{ color: emerald }}>
@@ -115,7 +120,7 @@ export function FreeSessionExerciseCompleteModal({
           <View style={{ width: 40, height: 40 }} />
         </View>
 
-        <View className="flex-1 items-center justify-center">
+        <View className="grow items-center justify-center">
           {/* Success icon: dual-color ring + solid brand-fill circle with check */}
           <View className="mb-8 items-center justify-center">
             <View
@@ -140,11 +145,6 @@ export function FreeSessionExerciseCompleteModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: theme.colors.accent.primary,
-                shadowColor: emerald,
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.2,
-                shadowRadius: 12,
-                elevation: 4,
               }}
             >
               <CheckCircle size={48} color={theme.colors.text.onAccent} strokeWidth={2.5} />
@@ -280,7 +280,7 @@ export function FreeSessionExerciseCompleteModal({
             />
           </View>
         </View>
-      </View>
+      </ScrollView>
     </FullScreenModal>
   );
 }

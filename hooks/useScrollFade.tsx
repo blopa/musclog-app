@@ -2,12 +2,21 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronDown } from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import type { ScrollViewInstance } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+
+import { useSurfaceColor } from '@/context/SurfaceColorContext';
 
 import { useTheme } from './useTheme';
 
+/**
+ * A vertical scroller's "there is more below" cue: a fade into the surface the scroller sits on
+ * (never a fixed scrim, which turned the bottom of a light theme dark) and a chevron that scrolls
+ * to the end. Spread `scrollProps` on the ScrollView, render `FadeIndicator` over it, and use the
+ * returned `scrollRef` for any scrolling of your own.
+ */
 export function useScrollFade() {
   const theme = useTheme();
+  const surface = useSurfaceColor();
   const scrollRef = useRef<ScrollViewInstance>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [isScrollable, setIsScrollable] = useState(false);
@@ -39,7 +48,7 @@ export function useScrollFade() {
     isScrollable && !isAtBottom ? (
       <>
         <LinearGradient
-          colors={['transparent', theme.colors.overlay.backdrop90]}
+          colors={['transparent', surface]}
           style={{
             position: 'absolute',
             bottom: 0,
@@ -71,5 +80,5 @@ export function useScrollFade() {
       </>
     ) : null;
 
-  return { scrollProps, FadeIndicator };
+  return { scrollProps, FadeIndicator, scrollRef };
 }

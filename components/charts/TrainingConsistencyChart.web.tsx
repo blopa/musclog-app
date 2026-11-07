@@ -37,7 +37,6 @@ export function TrainingConsistencyChart({
   columns = 12,
   accentColor,
   emptyColor,
-  showGlowOnMax = true,
   gridHeight = 128,
   gap = 6,
   className,
@@ -177,7 +176,6 @@ export function TrainingConsistencyChart({
               const intensity = Math.max(0, Math.min(5, Math.floor(value)));
               const opacity = OPACITIES[intensity] ?? 0;
               const isEmpty = intensity === 0;
-              const isMax = intensity === 5;
 
               return (
                 <View
@@ -190,11 +188,6 @@ export function TrainingConsistencyChart({
                       backgroundColor: isEmpty ? borderColor : accentColorResolved,
                       opacity: isEmpty ? 1 : opacity,
                       cursor: 'pointer',
-                      ...(showGlowOnMax && isMax && !isEmpty
-                        ? {
-                            boxShadow: `0 0 ${8}px ${accentColorResolved}66`,
-                          }
-                        : {}),
                     },
                     onClick: (e: MouseEvent<HTMLElement>) => {
                       e.stopPropagation();

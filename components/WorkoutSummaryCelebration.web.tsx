@@ -1,18 +1,12 @@
-import {
-  Dumbbell,
-  Flame,
-  Home,
-  MessageCircle,
-  Star,
-  Timer,
-  TrendingUp,
-  Trophy,
-} from 'lucide-react-native';
+import { Dumbbell, Flame, Home, MessageCircle, Star, Timer, TrendingUp } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { useTheme } from '@/hooks/useTheme';
 import { splitDurationLabel } from '@/utils/workout';
+
+const SUMMARY_POSE_HEIGHT = 176;
 
 type WorkoutSummaryCelebrationProps = {
   children?: ReactNode;
@@ -51,18 +45,37 @@ function StatRow({
   showStarIcon = false,
   starColor,
 }: StatRowProps) {
+  // Theme tokens, not hand-named CSS variables: the app's custom properties are `--c-*` channel
+  // triplets, so an invented name never resolved and every theme drew the fallback written beside
+  // it (white values on a light card). The divider likewise has to be the theme's ink hairline.
+  const theme = useTheme();
+
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'row',
+        // The figure and its unit drop under the label, right-aligned, when they cannot sit beside
+        // it, instead of running past the card's clipped edge at large text.
+        flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
+        columnGap: 12,
+        rowGap: 8,
         paddingBottom: showDivider ? 16 : 0,
-        borderBottom: showDivider ? '1px solid rgba(255,255,255,0.05)' : 'none',
+        borderBottom: showDivider ? `1px solid ${theme.colors.background.ink5}` : 'none',
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          flex: '1 1 140px',
+          minWidth: 0,
+        }}
+      >
         <div
           style={{
             borderRadius: 8,
@@ -71,25 +84,42 @@ function StatRow({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            flexShrink: 0,
           }}
         >
           <Icon size={iconSize} color={iconColor} />
         </div>
-        <span style={{ fontWeight: 500, color: 'var(--text-secondary, #9ca3af)' }}>{label}</span>
+        <span style={{ fontWeight: 500, color: theme.colors.text.secondary }}>{label}</span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 4,
+          marginLeft: 'auto',
+          flexShrink: 0,
+        }}
+      >
         {showStarIcon && starColor ? <Star size={16} color={starColor} fill={starColor} /> : null}
         <span
           style={{
             fontSize: 24,
             fontWeight: 700,
-            color: 'var(--text-primary, #fff)',
+            fontVariantNumeric: 'tabular-nums',
+            color: theme.colors.text.primary,
           }}
         >
           {value}
         </span>
         {valueSuffix ? (
-          <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-tertiary, #6b7280)' }}>
+          <span
+            style={{
+              fontSize: 14,
+              fontWeight: 400,
+              color: theme.colors.text.tertiary,
+            }}
+          >
             {valueSuffix}
           </span>
         ) : null}
@@ -111,6 +141,7 @@ export function WorkoutSummaryCelebration({
 }: WorkoutSummaryCelebrationProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const showLoggy = useLoggyVisible();
 
   const gradientCtaStr = theme.colors.accent.primary;
   const workoutStatsStr = theme.colors.accent.primary;
@@ -134,50 +165,15 @@ export function WorkoutSummaryCelebration({
         boxSizing: 'border-box',
       }}
     >
-      {/* Trophy */}
-      <div style={{ position: 'relative', marginBottom: 32 }}>
-        <div
-          style={{
-            width: 128,
-            height: 128,
-            borderRadius: 64,
-            border: `1px solid ${theme.colors.background.ink5}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            overflow: 'hidden',
-            background: `linear-gradient(135deg, ${theme.colors.status.indigo10}, ${theme.colors.status.brandVivid10})`,
-          }}
-        >
-          <Trophy
-            size={theme.size['16']}
-            color={theme.colors.accent.primary}
-            strokeWidth={theme.strokeWidth.medium}
+      {/* The finished workout's face, in place of the trophy and its three stars. */}
+      {showLoggy ? (
+        <div style={{ marginBottom: 24 }}>
+          <LoggyPose
+            pose={personalRecords > 0 ? 'trophy' : 'celebrating'}
+            height={SUMMARY_POSE_HEIGHT}
           />
         </div>
-        <div style={{ position: 'absolute', top: -8, right: -8 }}>
-          <Star
-            size={theme.iconSize.lg}
-            color={theme.colors.status.amber}
-            fill={theme.colors.status.amber}
-          />
-        </div>
-        <div style={{ position: 'absolute', bottom: -4, left: -16 }}>
-          <Star
-            size={theme.iconSize.md}
-            color={theme.colors.accent.primary}
-            fill={theme.colors.accent.primary}
-          />
-        </div>
-        <div style={{ position: 'absolute', top: 0, left: -8 }}>
-          <Star
-            size={theme.iconSize.sm}
-            color={theme.colors.status.indigoLight}
-            fill={theme.colors.status.indigoLight}
-          />
-        </div>
-      </div>
+      ) : null}
 
       {/* Title */}
       <span

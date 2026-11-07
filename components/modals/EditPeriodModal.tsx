@@ -107,6 +107,7 @@ export function EditPeriodModal({ visible, onClose, period, isLatest }: EditPeri
       visible={visible}
       onClose={onClose}
       title={t('cycle.edit.title')}
+      scrollable
       footer={
         <View className="flex-row gap-4">
           <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />

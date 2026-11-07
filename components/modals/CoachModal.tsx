@@ -2,7 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import type { TFunction } from 'i18next';
+import i18n, { type TFunction } from 'i18next';
 import {
   Copy,
   Dumbbell,
@@ -408,6 +408,8 @@ const renderSend = (
   return (
     <View style={styles.sendContainer}>
       <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={i18n.t('common.a11y.send')}
         onPress={() => {
           if (!isDisabled && props.onSend) {
             props.onSend({ text: effectiveText }, true);
@@ -489,6 +491,8 @@ function SeededComposer({
     <View style={styles.composerWrapper}>
       {isImageAttachmentEnabled ? (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.attachFile')}
           onPress={onAttachFile}
           className="mr-2 items-center justify-center p-2 active:scale-90"
           style={({ pressed }) => ({
@@ -562,6 +566,8 @@ const renderInputToolbar = (
               />
             </ZoomableThumbnail>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.removeImage')}
               onPress={onRemoveImage}
               className="absolute -right-2 -top-2 rounded-full p-1 shadow-sm"
               style={{ backgroundColor: theme.colors.background.hairline }}
@@ -587,7 +593,12 @@ const renderInputToolbar = (
             <Text className="text-xs font-medium text-text-primary">
               {getPendingIntentionDisplayText(pendingIntention, t)}
             </Text>
-            <Pressable onPress={onClearIntention} className="p-0.5">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.remove')}
+              onPress={onClearIntention}
+              className="p-0.5"
+            >
               <X size={14} color={theme.colors.accent.primary} />
             </Pressable>
           </View>
@@ -1369,6 +1380,7 @@ export function CoachModal({
       headerRight={headerRight}
       scrollable={false}
       showConfetti={showConfetti}
+      confettiWithLoggy={false}
     >
       <View className="flex-1 bg-bg-primary">
         <View

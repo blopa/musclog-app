@@ -1,5 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { readAsStringAsync } from 'expo-file-system/legacy';
+import { Platform } from 'react-native';
 
 export type PickTextFileResult =
   | { status: 'picked'; text: string; name: string }
@@ -30,7 +31,11 @@ export async function pickTextFile({
     return { status: 'tooLarge' };
   }
 
-  const text = await readAsStringAsync(asset.uri);
+  // On web the picker hands back a browser File; the native file APIs do not read a blob URI.
+  const text =
+    Platform.OS === 'web' && asset.file
+      ? await asset.file.text()
+      : await readAsStringAsync(asset.uri);
   // Some providers report no size, so the length check also guards the unknown-size case.
   return text.length > maxBytes
     ? { status: 'tooLarge' }

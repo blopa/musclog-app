@@ -5,6 +5,7 @@ import { Animated, Platform, Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { Modal } from '@/components/theme/Modal';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -23,6 +24,7 @@ export function EndWorkoutModal({
 }: EndWorkoutModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const cramped = useIsCramped();
   const [scaleAnim] = useState(() => new Animated.Value(0));
   const [opacityAnim] = useState(() => new Animated.Value(0));
   const [isSaving, setIsSaving] = useState(false);
@@ -107,21 +109,29 @@ export function EndWorkoutModal({
                   borderBottomColor: theme.colors.border.dark,
                 }}
               >
-                <View className="flex-row items-center justify-between p-6">
-                  <View className="flex-row items-center gap-3">
-                    <View className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay">
-                      <Flag
-                        size={theme.iconSize.sm}
-                        color={theme.colors.accent.secondary}
-                        fill={theme.colors.accent.secondary}
-                      />
-                    </View>
-                    <Text className="text-lg font-semibold text-text-primary">
+                <View
+                  className={`flex-row items-center justify-between gap-3 ${cramped ? 'p-5' : 'p-6'}`}
+                >
+                  <View className="min-w-0 flex-1 flex-row items-center gap-3">
+                    {/* The flag tile is decoration: on a cramped layout the title gets the width
+                        it needs, so no word in it breaks. */}
+                    {cramped ? null : (
+                      <View className="h-12 w-12 shrink-0 items-center justify-center rounded-full bg-bg-overlay">
+                        <Flag
+                          size={theme.iconSize.sm}
+                          color={theme.colors.accent.secondary}
+                          fill={theme.colors.accent.secondary}
+                        />
+                      </View>
+                    )}
+                    <Text className="min-w-0 flex-1 text-lg font-semibold text-text-primary">
                       {t('endWorkout.title')}
                     </Text>
                   </View>
                   <Pressable
-                    className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.close')}
+                    className="active:bg-bg-card-elevated h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bg-overlay"
                     onPress={isBusy ? undefined : onClose}
                     disabled={isBusy}
                   >

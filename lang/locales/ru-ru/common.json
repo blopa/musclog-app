@@ -152,6 +152,36 @@
       "minutes": "{{value}} мин назад",
       "hours": "{{value}} ч назад",
       "days": "{{value}} д назад"
+    },
+    "a11y": {
+      "notifications": "Уведомления",
+      "editProfile": "Редактировать профиль",
+      "previousDay": "Предыдущий день",
+      "nextDay": "Следующий день",
+      "previousMonth": "Предыдущий месяц",
+      "nextMonth": "Следующий месяц",
+      "openCamera": "Открыть камеру",
+      "chooseFromGallery": "Выбрать из галереи",
+      "takePhoto": "Сделать снимок",
+      "increase": "Увеличить",
+      "decrease": "Уменьшить",
+      "moreInfo": "Подробнее",
+      "moreOptions": "Другие действия",
+      "add": "Добавить",
+      "dismiss": "Скрыть",
+      "remove": "Убрать",
+      "scanBarcode": "Сканировать штрихкод",
+      "send": "Отправить",
+      "attachFile": "Прикрепить файл",
+      "removeImage": "Удалить изображение",
+      "choosePhoto": "Выбрать фото",
+      "chooseIcon": "Выбрать значок",
+      "moveUp": "Переместить вверх",
+      "moveDown": "Переместить вниз",
+      "filter": "Фильтр",
+      "clearSearch": "Очистить поиск",
+      "showValue": "Показать значение",
+      "hideValue": "Скрыть значение"
     }
   }
 }

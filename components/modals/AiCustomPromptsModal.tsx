@@ -64,6 +64,8 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
       title={t('settings.aiSettings.manageCustomPrompts')}
       headerRight={
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.add')}
           onPress={() => setIsAddModalVisible(true)}
           className="h-10 w-10 items-center justify-center rounded-full active:bg-bg-overlay"
         >
@@ -103,12 +105,16 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
                     </Text>
                     <View className="flex-row items-center gap-2">
                       <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={t('common.edit')}
                         onPress={() => setEditingPrompt(prompt)}
                         className="h-8 w-8 items-center justify-center rounded-full active:bg-bg-overlay"
                       >
                         <Edit2 size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                       </Pressable>
                       <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={t('common.delete')}
                         onPress={() => setPromptToDelete(prompt)}
                         className="h-8 w-8 items-center justify-center rounded-full active:bg-bg-overlay"
                       >

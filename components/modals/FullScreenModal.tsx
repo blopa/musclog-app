@@ -1,5 +1,6 @@
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject, useLayoutEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
@@ -9,10 +10,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
+import { footerClearance } from '@/components/modals/footerClearance';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
+
+/** The room a header title asks for beside the back arrow; less than this and an action wraps. */
+const HEADER_TITLE_BASIS = 140;
 
 type FullScreenModalProps = {
   visible: boolean;
@@ -28,6 +33,11 @@ type FullScreenModalProps = {
   closable?: boolean;
   scrollViewRef?: RefObject<KeyboardAwareScrollViewRef | null>;
   showConfetti?: boolean;
+  /**
+   * Whether Loggy pops in with the confetti. `false` on a surface the coach persona owns: someone who
+   * picked Sherlock must not see Loggy appear in their chat.
+   */
+  confettiWithLoggy?: boolean;
 };
 
 export function FullScreenModal({
@@ -44,9 +54,15 @@ export function FullScreenModal({
   closable = true,
   scrollViewRef,
   showConfetti = false,
+  confettiWithLoggy = true,
 }: FullScreenModalProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
+  // The footer floats over the body, so the body pads by the footer's real height: a footer that
+  // wraps (stacked buttons at large text or in a long translation) is taller than the fixed room
+  // a one-row footer needs, and used to cover the last rows of the content.
+  const [footerHeight, setFooterHeight] = useState(0);
 
   // Force remount of Modal when visibility changes to prevent "ghost" native window
   // that captures touches. See: https://github.com/facebook/react-native/issues/29455
@@ -97,6 +113,9 @@ export function FullScreenModal({
               <View
                 style={{
                   flexDirection: 'row',
+                  // A wide action beside a long title (large text, a translation) drops to its own
+                  // line instead of squeezing the title until it breaks mid-word.
+                  flexWrap: 'wrap',
                   alignItems: 'center',
                   gap: theme.spacing.gap.sm,
                   minHeight: theme.size['14'],
@@ -107,6 +126,7 @@ export function FullScreenModal({
               >
                 {closable ? (
                   <Pressable
+                    accessibilityLabel={t('common.back')}
                     accessibilityRole="button"
                     style={{
                       padding: theme.spacing.padding.md,
@@ -118,7 +138,7 @@ export function FullScreenModal({
                     <ArrowLeft size={theme.iconSize.md} color={theme.colors.text.primary} />
                   </Pressable>
                 ) : null}
-                <View style={{ flex: 1 }}>
+                <View style={{ flexGrow: 1, flexShrink: 1, flexBasis: HEADER_TITLE_BASIS }}>
                   <Text className="text-lg font-semibold text-text-primary">{title}</Text>
                   {subtitle ? (
                     <Text className="mt-0.5 text-sm font-normal text-text-secondary">
@@ -126,7 +146,7 @@ export function FullScreenModal({
                     </Text>
                   ) : null}
                 </View>
-                {headerRight ? <View>{headerRight}</View> : null}
+                {headerRight ? <View style={{ marginLeft: 'auto' }}>{headerRight}</View> : null}
               </View>
             </View>
           ) : null}
@@ -140,7 +160,13 @@ export function FullScreenModal({
                 showsVerticalScrollIndicator={false}
                 style={webScrollViewStyle}
                 contentContainerStyle={{
-                  paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
+                  paddingBottom: footer
+                    ? footerClearance(
+                        footerHeight,
+                        theme.spacing.padding['4xl'],
+                        theme.spacing.padding.sm
+                      )
+                    : theme.spacing.padding.lg,
                 }}
                 bottomOffset={16}
               >
@@ -154,7 +180,7 @@ export function FullScreenModal({
 
             {/* optional footer */}
             {footer ? (
-              <BottomButtonWrapper>
+              <BottomButtonWrapper onHeightChange={setFooterHeight}>
                 {footer}
                 <View style={{ height: theme.spacing.margin.base }} />
               </BottomButtonWrapper>
@@ -162,7 +188,7 @@ export function FullScreenModal({
           </View>
         </SwipeToReturnWrapper>
       </SafeAreaView>
-      {showConfetti ? <ConfettiOverlay /> : null}
+      {showConfetti ? <ConfettiOverlay withLoggy={confettiWithLoggy} /> : null}
     </Modal>
   );
 }

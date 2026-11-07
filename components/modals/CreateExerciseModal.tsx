@@ -185,7 +185,12 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
         showsVerticalScrollIndicator={false}
         bottomOffset={16}
       >
-        <View className="px-4 py-2" style={{ gap: theme.spacing.gap.xl }}>
+        <View
+          className="px-4 pt-2"
+          // The pinned Create button sits over the bottom of this scroller, so the last field
+          // needs the clearance FullScreenModal gives its own scrolling body.
+          style={{ gap: theme.spacing.gap.xl, paddingBottom: theme.spacing.padding['4xl'] }}
+        >
           {/* Exercise Name */}
           <View>
             <TextInput

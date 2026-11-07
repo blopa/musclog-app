@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "accepted": {
+    "overlap|modal|Open Food Details Modal|e|meer voedingsinformatie tonen": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Food Details Modal|e|show more nutrition details": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Food Details Modal|e|ver mais detalhes nutricionais": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Food Details Modal|e|ver más detalles nutricionales": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Food Details Modal|e|показать больше сведений о питании": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Scanned Food Details Modal|e|meer voedingsinformatie tonen": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Scanned Food Details Modal|e|show more nutrition details": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Scanned Food Details Modal|e|ver mais detalhes nutricionais": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Scanned Food Details Modal|e|ver más detalles nutricionales": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "overlap|modal|Open Scanned Food Details Modal|e|показать больше сведений о питании": "The Eco-Score grade peeking under the collapsed preview's fade, behind the 'Show more' link: the overlap is the design (FoodNutritionSectionCard paints the fade over clipped content).",
+    "word-break|screen|personalized-goals|uithoudingsvermogen": "A single 19-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "word-break|screen|quick-goals|uithoudingsvermogen": "A single 19-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "overlap|screen|nutrition-goals-results|meta de calorias diárias|": "The faint lightning-bolt watermark laid behind the daily calories heading; decorative, and the heading stays legible over it.",
+    "overlap|screen|nutrition-goals-results|objetivo de calorías diarias|": "The faint lightning-bolt watermark laid behind the daily calories heading; decorative, and the heading stays legible over it.",
+    "overlap|screen|nutrition-goals-results|дневная норма калорий|": "The faint lightning-bolt watermark laid behind the daily calories heading; decorative, and the heading stays legible over it.",
+    "overlap|screen|nutrition-goals-results|dagelijks caloriedoel|": "The faint lightning-bolt watermark laid behind the daily calories heading; decorative, and the heading stays legible over it.",
+    "word-break|screen|settings|trackingvoorkeuren": "A single 18-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "word-break|screen|settings|trainingsinstellingen": "A single 21-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "overlap|screen|nutrition-goals-results|daily calorie target|": "The faint lightning-bolt watermark laid behind the daily calories heading; decorative, and the heading stays legible over it.",
+    "word-break|screen|ai-review|activiteitsniveau": "A single 17-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "word-break|screen|ai-review|geboortedatum": "A single 13-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "word-break|screen|ai-review|gewichtssuggesties": "A single 18-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "word-break|screen|ai-review|trainingservaring": "A single 17-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "word-break|screen|ai-review|trainingsfocus": "A single 14-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "word-break|screen|ai-review|vetpercentage": "A single 13-letter word did not fit its one-column row at 1.3x text on the narrowest phone; it has no break point, and native text wraps it the same way (no hyphenation is offered).",
+    "word-break|screen|food|дополнительные параметры": "'Дополнительные' cannot fit a half-width quick action on the narrowest phone (344pt, 150pt minimum tile); the only alternative is a single column for every language."
+  }
+}

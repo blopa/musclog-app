@@ -1,18 +1,24 @@
 import {
+  Activity,
   Bot,
   Calendar,
   Dumbbell,
+  FileUp,
   Flame,
   Heart,
   Layout,
   List,
   type LucideIcon,
+  Scale,
   Settings,
+  Share2,
   Shield,
   Shuffle,
+  Smile,
   Target,
   Timer,
   TrendingUp,
+  Undo2,
 } from 'lucide-react-native';
 
 import type { WhatsNewIconName } from '@/utils/whatsNew/catalog';
@@ -31,4 +37,10 @@ export const whatsNewIcons: Record<WhatsNewIconName, LucideIcon> = {
   flame: Flame,
   settings: Settings,
   bot: Bot,
+  smile: Smile,
+  fileUp: FileUp,
+  undo: Undo2,
+  share: Share2,
+  scale: Scale,
+  activity: Activity,
 };

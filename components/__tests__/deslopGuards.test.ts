@@ -62,6 +62,26 @@ describe('Phase 1: buttons and shape', () => {
     expect(occurrences(/shadows\.(accentGlow|accentGlowLarge|roseGlow)\b/)).toEqual([]);
   });
 
+  it('casts no colored shadow, whichever way it is spelled', () => {
+    // A halo is a shadow tinted with a brand, status or variable color. The token-name check above
+    // missed `shadow-accent-primary/50`, `shadowColor: theme.colors.accent.primary` and
+    // `shadowColor: statusColor`, so this one reads the value: only the neutral shadow tokens used
+    // by chart tooltips and floating buttons may set `shadowColor`.
+    expect(
+      occurrences(
+        /\bshadowColor\s*:[ \t]*(?![ \t]|theme\.colors\.(shadow|text\.onAccent)\b)[^,\n]+/g
+      )
+    ).toEqual([]);
+    expect(
+      occurrences(
+        /\bshadow-(accent|brand|status|purple|emerald|rose|indigo|teal|green|blue|red|orange|yellow|pink)[\w-]*/g
+      )
+    ).toEqual([]);
+    expect(occurrences(/boxShadow\s*:\s*`[^`]*\$\{(?!theme\.colors\.background\.scrim)/g)).toEqual(
+      []
+    );
+  });
+
   it('does not define the glow shadows in the theme either', () => {
     const theme = readFileSync(join(root, 'theme.ts'), 'utf8');
     expect(theme).not.toMatch(/\b(accentGlow|accentGlowLarge|roseGlow)\b/);
@@ -113,6 +133,7 @@ const LINEAR_GRADIENT_ALLOWLIST = [
   'components/cards/GenericCard.tsx',
   'components/modals/ExerciseGoalCreationModal.tsx',
   'components/modals/SmartCameraShell.tsx',
+  'components/nutrition/FoodQuickActions.tsx',
   'components/modals/ViewExerciseModal.tsx',
   'components/theme/Slider.tsx',
   'components/workout/session/ExerciseHeader.tsx',
@@ -299,6 +320,26 @@ describe('Phase 5: Home and the hero surfaces', () => {
     expect(home).toMatch(/<WeeklyReviewCard compact quietUntilReady \/>/);
   });
 
+  it('states each daily-summary figure once: no percentage beside a bar that already shows it', () => {
+    const card = stripComments(
+      readFileSync(join(root, 'components/cards/DailySummaryCard/DailySummaryCard.tsx'), 'utf8')
+    );
+    expect(card).not.toMatch(/Math\.round\((calorieProgress|macro\.progress)\)\)\}%/);
+    const home = stripComments(readFileSync(join(root, 'app/app/index.tsx'), 'utf8'));
+    expect(home).toMatch(/cardShowsEaten=\{homeSummaryCard !== 'weekly_streak'\}/);
+  });
+
+  // Deliberate exception to the "one accent signal" rule: the waiting Weekly Review is the app's
+  // once-a-week call to action, so it keeps its accent border, tinted fill, solid icon chip and
+  // solid badge. A deslop pass removed them and the owner asked for them back; this stops it
+  // happening again.
+  it('keeps the waiting Weekly Review loud: accent border, tinted fill, icon chip and badge', () => {
+    const card = stripComments(readFileSync(join(root, 'components/WeeklyReviewCard.tsx'), 'utf8'));
+    expect(card).toMatch(/border-accent-primary bg-accent-primary\/10/);
+    expect(card).toMatch(/rounded-control \$\{ready \? 'bg-accent-primary'/);
+    expect(card).toMatch(/rounded-tag px-2 py-0\.5 \$\{ready \? 'bg-accent-primary'/);
+  });
+
   it('shows the cycle day once, inside the wheel', () => {
     const cycle = stripComments(readFileSync(join(root, 'app/app/cycle.tsx'), 'utf8'));
     expect(cycle).not.toMatch(/dayCounter|focus\.currentPhase/);
@@ -306,13 +347,15 @@ describe('Phase 5: Home and the hero surfaces', () => {
 });
 
 /**
- * Phase 6: motion and decoration have to carry information. The two loops left are progress
- * spinners (rotation, on the native driver); TextInput's border colour cannot use the native
- * driver, which is why it is the one JS-driven animation.
+ * Phase 6: motion and decoration have to carry information. The loops left are progress spinners
+ * (rotation, on the native driver) and the animated Loggy's clock (`LoggyPose`, following the
+ * `animated_loggy` setting and drawn as the still under reduced motion); TextInput's border colour cannot use the
+ * native driver, which is why it is the one JS-driven animation.
  */
 const ANIMATED_LOOP_ALLOWLIST = [
   'app/app/workout/rest-timer.tsx',
   'components/CameraProcessingIndicator.tsx',
+  'components/loggy/useLoggyClock.ts',
 ];
 
 describe('Phase 6: empty states, illustrations and decorative motion', () => {
@@ -379,10 +422,11 @@ const SPARKLES_ALLOWLIST = [
   'components/modals/GenerateWorkoutWithAiModal.tsx',
   'components/modals/NotificationsModal.tsx',
   'components/modals/SmartCameraShell.tsx',
+  'components/nutrition/FoodQuickActions.tsx',
 ];
 /** Proper nouns that keep their capitals inside a sentence-case label. */
 const PROPER_NOUNS =
-  /\b(Health Connect|Apple( Health| Intelligence)?|Open Food Facts|Foundation Foods|Weekly Review|Kinetic \w+|Game Boy|Gemini|Google( AI Studio)?|Claude|Comeback|OpenAI|HealthKit|Musclog|Loggy|Sherlock Holmes|Monday|Smith|Discord|GitHub|NHS|Keiser|Tonal)\b/g;
+  /\b(Health Connect|Apple( Health| Intelligence)?|Open Food Facts|Foundation Foods|Weekly Review|Kinetic \w+|Game Boy|Gemini|Google( AI Studio)?|Claude|Comeback|OpenAI|HealthKit|Musclog|Loggy|Sherlock Holmes|Monday|Smith|Discord|GitHub|NHS|Keiser|Tonal|Strong|Hevy|FitNotes)\b/g;
 const SMALL_WORDS = new Set([
   'a',
   'an',
@@ -410,6 +454,35 @@ describe('Phase 7: copy', () => {
       .filter(([key, value]) => value.includes('—') && !EM_DASH_ALLOWLIST.includes(key))
       .map(([key]) => key);
     expect(dashes).toEqual([]);
+  });
+
+  it('writes no marketing filler in en-us copy, the website included', () => {
+    // The phrases that read as generated: journeys, crushing workouts, "powerful" engines, "train
+    // smarter". Say what the feature does instead. "Unlock" stays where it is the literal action
+    // (the app lock and the transfer passphrase).
+    const filler =
+      /\b(journey|crush(?:ing|es|ed)?|powerful|smarter|effortless(?:ly)?|supercharge[sd]?|seamless(?:ly)?|elevate[sd]?|game[- ]chang\w*|revolutioni[sz]\w*|lock in|unleash\w*|digital sovereignty)\b/i;
+    const unlockAllowed = new Set(['cycle.json', 'opticalTransfer.json']);
+    const dir = localeDir('en-us');
+    const hits: string[] = [];
+    const walk = (node: unknown, file: string, key: string) => {
+      if (typeof node === 'string') {
+        const unlock = /\bunlock\w*/i.test(node) && !unlockAllowed.has(file);
+        if (filler.test(node) || unlock) {
+          hits.push(`${file}:${key} = ${node}`);
+        }
+      } else if (node && typeof node === 'object') {
+        for (const [child, value] of Object.entries(node)) {
+          walk(value, file, key ? `${key}.${child}` : child);
+        }
+      }
+    };
+    for (const name of readdirSync(dir)) {
+      if (name.endsWith('.json')) {
+        walk(JSON.parse(readFileSync(join(dir, name), 'utf8')), name, '');
+      }
+    }
+    expect(hits).toEqual([]);
   });
 
   it('keeps exclamation marks for real celebrations', () => {
@@ -466,6 +539,7 @@ describe('Phase 8: screen headers and wayfinding', () => {
     ['app/app/cycle.tsx', 'cycle', '"cycle"'],
     ['app/app/weekly-review.tsx', 'checkin', '{WEEKLY_REVIEW_LOCK_AREAS}'],
     ['app/app/comeback.tsx', null, '{COMEBACK_LOCK_AREAS}'],
+    ['app/app/year-in-review.tsx', null, '{YEAR_IN_REVIEW_LOCK_AREAS}'],
     ['app/app/workout/workouts.tsx', 'workouts', '"workout"'],
     ['app/app/nutrition/food.tsx', 'food', '"nutrition"'],
     // The AI setup screens hide the bar and gate nothing: they hold no records, only answers.
@@ -639,5 +713,15 @@ describe('Website: no decorative layers', () => {
     ['cast shadows', /shadow-(\[|2xl|xl|lg)/],
   ])('has no %s', (_label, pattern) => {
     expect(offenders(pattern)).toEqual([]);
+  });
+
+  it('keeps the homepage to sections that each carry their own content', () => {
+    // Three title-plus-description columns in a row (principles, then steps) read as a template,
+    // and the "How it works" steps restated the hero. The capability list is the one `#features`
+    // target the header links to, and the privacy claim is made once, in the hero.
+    const home = stripComments(readFileSync(join(root, 'app/(website)/home.web.tsx'), 'utf8'));
+    expect(home).not.toMatch(/export function (Features|HowItWorks)\b/);
+    expect(home).not.toMatch(/website\.(features|howItWorks)\b/);
+    expect(home.match(/id="features"/g)).toHaveLength(1);
   });
 });

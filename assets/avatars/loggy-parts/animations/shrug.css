@@ -1,0 +1,48 @@
+/* Loggy shrugging with both palms up and a puzzled question mark beside his head. His upper
+   body bobs gently while his shoes stay planted, the leaf sways, both arms lift slightly in
+   a shrug from the shoulders, and the question mark tilts and pulses. Every layer opens and
+   ends on the still's own frame. */
+#upper {
+    animation: loggy-bob 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#arm-l, #hand-l {
+    transform-origin: 140px 305px;
+    animation: loggy-shrug-l 3.2s ease-in-out infinite;
+}
+#arm-r, #hand-r {
+    transform-origin: 388px 305px;
+    animation: loggy-shrug-r 3.2s ease-in-out infinite;
+}
+#question {
+    transform-origin: 452px 150px;
+    animation: loggy-question 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-shrug-l {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 60% { transform: rotate(2.5deg); }
+}
+@keyframes loggy-shrug-r {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 60% { transform: rotate(-2.5deg); }
+}
+@keyframes loggy-question {
+    0%, 100% { transform: rotate(0deg) scale(1, 1); }
+    50% { transform: rotate(4deg) scale(1.06, 1.06); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

@@ -186,7 +186,7 @@ export default function AiExternalScreen() {
               width="full"
               onPress={() => open('claude')}
             />
-            <View className="flex-row gap-3">
+            <View className="flex-row flex-wrap gap-3">
               <Button
                 label={t('aiOnboarding.external.copy')}
                 icon={Copy}

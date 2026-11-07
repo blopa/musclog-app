@@ -26,7 +26,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
   if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.proteinBodyComp')}>
-        <View className="mb-4 flex-row items-center gap-2">
+        <View className="mb-4 flex-row flex-wrap items-center gap-2">
           {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
             <TouchableOpacity
               key={agg}
@@ -80,7 +80,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
 
   return (
     <ProgressChartSection title={t('progress.correlationView.proteinBodyComp')}>
-      <View className="mb-4 flex-row items-center gap-2">
+      <View className="mb-4 flex-row flex-wrap items-center gap-2">
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}

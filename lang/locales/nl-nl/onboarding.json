@@ -6,7 +6,7 @@
     "getStarted": "Aan de slag",
     "steps": {
       "step1": {
-        "title": "Moeiteloos bijhouden",
+        "title": "Log in seconden",
         "description": "Weg met het notitieboekje. Log je sets, herhalingen en gewichten in seconden en visualiseer je krachttoename over de tijd."
       },
       "step2": {
@@ -19,7 +19,7 @@
       },
       "step4": {
         "title": "Laten we het persoonlijk maken",
-        "description": "Om je reis op maat te maken en je winst met precisie bij te houden, willen we graag wat meer weten over je fitnessverleden."
+        "description": "Een paar vragen over je trainingsverleden helpen ons om realistische startdoelen in te stellen."
       }
     },
     "fitnessInfo": {
@@ -237,7 +237,7 @@
     "musclogApi": {
       "title": "Musclog AI",
       "freeBadge": "Gratis",
-      "subtitle": "Verbeter je fitnesstraject met AI-gestuurde inzichten.",
+      "subtitle": "Krijg AI-inzichten over je training en voeding.",
       "features": {
         "coach": {
           "title": "AI Trainingsassistent",
@@ -365,7 +365,7 @@
       "stepAddBody": "Zoek in de bibliotheek en voeg oefeningen toe tijdens je training.",
       "stepLogTitle": "Log je sets",
       "stepLogBody": "Voer gewicht en herhalingen in en de rusttimer start vanzelf.",
-      "stepNextTitle": "Slimmer de volgende keer",
+      "stepNextTitle": "Volgend gewicht voorgesteld",
       "stepNextBody": "We onthouden je cijfers en stellen je volgende gewicht voor.",
       "planHint": "Tik op \"{{action}}\" om dit schema aan je profiel toe te voegen, of op \"{{later}}\" om later zelf een training te kiezen."
     },

@@ -29,8 +29,8 @@ export function CaloriesBurnedCard() {
       <GenericCard variant="flat">
         <View className="flex flex-col gap-1 p-6">
           {/* Header row */}
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
+          <View className="flex-row items-center justify-between gap-2">
+            <View className="min-w-0 flex-1 flex-row items-center gap-2">
               <MaterialIcons
                 name="local-fire-department"
                 size={theme.iconSize.lg}
@@ -40,7 +40,13 @@ export function CaloriesBurnedCard() {
                 {t('progress.caloriesBurnedToday')}
               </Text>
             </View>
-            <Pressable onPress={() => setModalVisible(true)} hitSlop={12} style={{ padding: 4 }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.moreInfo')}
+              onPress={() => setModalVisible(true)}
+              hitSlop={12}
+              style={{ padding: 4, flexShrink: 0 }}
+            >
               <Info size={16} color={theme.colors.text.secondary} />
             </Pressable>
           </View>

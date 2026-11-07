@@ -74,64 +74,6 @@ export function CTA() {
   );
 }
 
-/** The three product principles, as plain columns rather than three matching cards. */
-export function Features() {
-  const { t } = useTranslation(undefined, { keyPrefix: 'website.features' });
-
-  const principles = [
-    {
-      title: t('strengthTracking.title'),
-      description: t('strengthTracking.description'),
-    },
-    {
-      title: t('privacyFirst.title'),
-      description: t('privacyFirst.description'),
-      link: { text: t('privacyFirst.link'), href: '/privacy' },
-    },
-    {
-      title: t('openSource.title'),
-      description: t('openSource.description'),
-      link: { text: t('openSource.link'), href: GITHUB_REPO_URL, external: true },
-    },
-  ];
-
-  return (
-    <section id="features" className="border-t py-16 md:py-20" style={SECTION_RULE}>
-      <div className="container mx-auto px-4">
-        <div className="mb-10 max-w-2xl md:mb-12">
-          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
-            {t('title')}
-          </h2>
-          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
-            {t('description')}
-          </p>
-        </div>
-
-        <div className="grid gap-x-12 gap-y-10 md:grid-cols-3">
-          {principles.map((item) => (
-            <div key={item.title}>
-              <h3 className="text-xl font-bold text-text-primary">{item.title}</h3>
-              <p className="mt-2 leading-relaxed" style={{ color: BODY_TEXT }}>
-                {item.description}
-              </p>
-              {item.link ? (
-                <a
-                  href={item.link.href}
-                  {...(item.link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="mt-3 inline-block text-sm font-semibold underline underline-offset-4 hover:text-accent-bright"
-                  style={{ color: HEADING_TEXT }}
-                >
-                  {item.link.text}
-                </a>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /** Every capability as one scannable list; the section is the container, not each row. */
 export function FeatureGrid() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.featureGrid' });
@@ -148,7 +90,7 @@ export function FeatureGrid() {
   ] as const;
 
   return (
-    <section className="border-t py-16 md:py-20" style={SECTION_RULE}>
+    <section id="features" className="border-t py-16 md:py-20" style={SECTION_RULE}>
       <div className="container mx-auto px-4">
         <div className="mb-10 max-w-2xl md:mb-12">
           <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
@@ -627,46 +569,6 @@ export function Themes() {
   );
 }
 
-export function HowItWorks() {
-  const { t } = useTranslation(undefined, { keyPrefix: 'website.howItWorks' });
-
-  const steps = ['step1', 'step2', 'step3'] as const;
-
-  return (
-    <section className="border-t py-16 md:py-20" style={SECTION_RULE}>
-      <div className="container mx-auto px-4">
-        <div className="mb-10 max-w-2xl md:mb-12">
-          <h2 className="text-balance text-3xl font-bold text-text-primary md:text-4xl">
-            {t('title')}
-          </h2>
-          <p className="mt-3 text-base md:text-lg" style={{ color: BODY_TEXT }}>
-            {t('description')}
-          </p>
-        </div>
-
-        <ol className="grid gap-x-12 gap-y-8 md:grid-cols-3">
-          {steps.map((step, index) => (
-            <li key={step}>
-              <span
-                className="text-sm font-bold tabular-nums"
-                style={{ color: BRAND_GREEN_BRIGHT }}
-              >
-                {index + 1}
-              </span>
-              <h3 className="mt-1 text-xl font-bold text-text-primary">
-                {t(`steps.${step}.title`)}
-              </h3>
-              <p className="mt-2 leading-relaxed" style={{ color: BODY_TEXT }}>
-                {t(`steps.${step}.description`)}
-              </p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  );
-}
-
 export function Hero() {
   const themeId = useThemeId();
   const { t } = useTranslation(undefined, { keyPrefix: 'website.hero' });
@@ -742,11 +644,9 @@ export default function Home() {
       <SoftwareApplicationJsonLd description={t('website.seo.routes.home.description')} />
       <main>
         <Hero />
-        <Features />
         <ScreenshotShowcase />
         <FeatureGrid />
         <Themes />
-        <HowItWorks />
         <CTA />
       </main>
     </>

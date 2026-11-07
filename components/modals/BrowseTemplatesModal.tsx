@@ -207,7 +207,8 @@ export function BrowseTemplatesModal({
           <Text className="mb-4 text-lg font-semibold text-text-primary">{template.title}</Text>
 
           {/* Stats */}
-          <View className="flex-row items-center gap-6 border-t border-ink/5 pt-3">
+          {/* Wraps: three labelled figures ("21 упражнение") do not fit one phone-width row. */}
+          <View className="flex-row flex-wrap items-center gap-x-6 gap-y-3 border-t border-ink/5 pt-3">
             <View className="flex-col gap-0.5">
               <Text className="text-xs font-semibold text-text-secondary">
                 {t('workouts.browseTemplatesModal.stats.duration')}

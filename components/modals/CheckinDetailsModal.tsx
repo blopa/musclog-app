@@ -18,6 +18,7 @@ import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -46,6 +47,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const { goal: currentGoal } = useCurrentNutritionGoal();
   const { units, intuitiveEatingMode } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const cramped = useIsCramped();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [metrics, setMetrics] = useState<CheckinMetrics | null>(null);
@@ -260,11 +262,6 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             className="h-48 w-48 items-center justify-center rounded-full border-[10px]"
             style={{
               borderColor: statusColor,
-              shadowColor: statusColor,
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.3,
-              shadowRadius: 15,
-              elevation: 10,
             }}
           >
             <Text
@@ -318,12 +315,12 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             borderColor: theme.colors.border.accent,
           }}
         >
-          <View className="flex-row justify-between">
-            <View>
+          <View className="flex-row flex-wrap justify-between gap-x-4 gap-y-3">
+            <View className="grow basis-[150px]">
               <Text className="text-xs font-semibold text-text-tertiary">
                 {t('nutrition.checkin.weightTrend')}
               </Text>
-              <View className="mt-1 flex-row items-baseline">
+              <View className="mt-1 flex-row flex-wrap items-baseline gap-y-1">
                 <Text className="text-3xl font-bold tabular-nums text-text-primary">
                   {formatDecimal(displayActualWeight, 1)}
                 </Text>
@@ -342,7 +339,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 </View>
               </View>
             </View>
-            <View className="items-end">
+            <View className="shrink-0 items-end">
               <Text className="text-xs font-semibold text-text-tertiary">
                 {t('nutrition.checkin.target')}
               </Text>
@@ -370,7 +367,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 dayInstant.getDay()
               ];
               return {
-                label: t(`common.days.short.${dayKey}`),
+                // A cramped width cannot fit seven three-letter names, so the strip shows the
+                // initial; the full day name stays in the translation, not on screen.
+                label: cramped
+                  ? t(`common.days.letter.${dayKey}`)
+                  : t(`common.days.short.${dayKey}`),
                 positionPercent: (i / 6) * 100,
               };
             })}

@@ -11,7 +11,7 @@ import { getDismissedInsights, setInsightDismissed } from '@/utils/activeWorkout
  * Context for the session. Deliberately no cycle card: the cycle observations ("your volume
  * was lower near your period") are pattern summaries for the cycle screen. Shown at the start
  * of a session they read as a prediction that today will go worse — a nudge the evidence does
- * not support (phase effects on strength are trivial and inconsistent; see RESEARCH.md).
+ * not support (phase effects on strength are trivial and inconsistent; see docs/RESEARCH.md).
  */
 export function WorkoutSessionInsights({ logId, startedAt }: { logId: string; startedAt: number }) {
   const { t } = useTranslation();

@@ -6,7 +6,7 @@
     "getStarted": "Get started",
     "steps": {
       "step1": {
-        "title": "Effortless tracking",
+        "title": "Track in seconds",
         "description": "Ditch the notebook. Log your sets, reps, and weights in seconds and visualize your strength gains over time."
       },
       "step2": {
@@ -19,7 +19,7 @@
       },
       "step4": {
         "title": "Let's get personal",
-        "description": "To tailor your journey and track your gains with precision, we'd love to know a bit more about your fitness history."
+        "description": "A few questions about your training history help us set realistic starting targets."
       }
     },
     "fitnessInfo": {
@@ -274,7 +274,7 @@
     "musclogApi": {
       "title": "Musclog AI",
       "freeBadge": "Free",
-      "subtitle": "Enhance your fitness journey with AI-powered insights.",
+      "subtitle": "Get AI insights on your training and nutrition.",
       "features": {
         "coach": {
           "title": "AI workout assistant",
@@ -365,7 +365,7 @@
       "stepAddBody": "Search the library and add movements as you train.",
       "stepLogTitle": "Log your sets",
       "stepLogBody": "Enter weight and reps, and the rest timer starts for you.",
-      "stepNextTitle": "Get smarter next time",
+      "stepNextTitle": "Next load, suggested",
       "stepNextBody": "We remember your numbers and suggest your next load.",
       "planHint": "Tap \"{{action}}\" to add this plan to your profile, or \"{{later}}\" to pick a workout yourself later."
     },

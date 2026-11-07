@@ -24,6 +24,7 @@ import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { CreateEditPlanModal } from '@/components/modals/CreateEditPlanModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
+import { ExternalWorkoutPlanModal } from '@/components/modals/ExternalWorkoutPlanModal';
 import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { LogCardioModal } from '@/components/modals/LogCardioModal';
@@ -46,6 +47,7 @@ import { ActiveWorkoutExistsError, WorkoutService } from '@/database/services/Wo
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
+import { useIncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
@@ -145,6 +147,13 @@ export default function WorkoutsScreen() {
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
   const [isGenerateWithAiModalVisible, setIsGenerateWithAiModalVisible] = useState(false);
+  const [isExternalPlanVisible, setIsExternalPlanVisible] = useState(false);
+  // A tapped open link (`/open#workout=…`) goes straight to the plan review in the same modal.
+  const showExternalPlan = useCallback(() => setIsExternalPlanVisible(true), []);
+  const { incoming: incomingPlan, clearIncoming: clearIncomingPlan } = useIncomingOpenLink(
+    'workout',
+    showExternalPlan
+  );
   const [isDeleteConfirmationVisible, setIsDeleteConfirmationVisible] = useState(false);
   const [isDeletingWorkoutTemplate, setIsDeletingWorkoutTemplate] = useState(false);
   const [isCreateFromTemplateConfirmationVisible, setIsCreateFromTemplateConfirmationVisible] =
@@ -327,7 +336,7 @@ export default function WorkoutsScreen() {
         }
       />
       <AreaLockGate area="workout">
-        {showConfetti ? <ConfettiOverlay /> : null}
+        {showConfetti ? <ConfettiOverlay pose="lifting" /> : null}
         <View className="flex-1">
           <KeyboardAwareScrollView
             className="flex-1"
@@ -491,6 +500,10 @@ export default function WorkoutsScreen() {
             setIsCreateOptionsVisible(false);
             setIsGenerateWithAiModalVisible(true);
           }}
+          onBuildWithExternalAi={() => {
+            setIsCreateOptionsVisible(false);
+            setIsExternalPlanVisible(true);
+          }}
           onCreateEmptyTemplate={() => {
             setIsCreateOptionsVisible(false);
             setEditingTemplateId(undefined);
@@ -512,6 +525,14 @@ export default function WorkoutsScreen() {
             templateId={editingTemplateId}
           />
         ) : null}
+        <ExternalWorkoutPlanModal
+          visible={isExternalPlanVisible}
+          onClose={() => {
+            setIsExternalPlanVisible(false);
+            clearIncomingPlan();
+          }}
+          incoming={incomingPlan}
+        />
         <GenerateWorkoutWithAiModal
           visible={isGenerateWithAiModalVisible}
           onClose={() => setIsGenerateWithAiModalVisible(false)}
@@ -717,7 +738,7 @@ export default function WorkoutsScreen() {
         of the menus that open them, not `children` of those menus: every menu item closes its menu
         before running its handler, and a hidden `Modal` renders no children — so a follow-up modal
         parked inside one is unmounted the moment it is meant to appear. Sibling placement is safe
-        here for the reason FIXES.md allows it: only one of these is ever
+        here for the reason docs/FIXES.md allows it: only one of these is ever
         visible at a time, so no dismissed modal is left holding the iOS presenter.
       */}
         {planAssignment.modals}

@@ -2,7 +2,7 @@
   "emptyStates": {
     "workouts": {
       "title": "Nog geen workouts",
-      "description": "Je fitnessreis begint bij je eerste herhaling. Plan je routine en houd je voortgang hier bij.",
+      "description": "Plan je routine en log hier je eerste training.",
       "buttonLabel": "Maak je eerste workout"
     },
     "foods": {

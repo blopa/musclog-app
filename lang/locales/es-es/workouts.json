@@ -147,7 +147,9 @@
       "createFromEmptyTemplate": "Crear desde Plantilla Vacía",
       "createFromEmptyTemplateSubtitle": "Diseña tu propia rutina desde cero, ejercicio por ejercicio.",
       "browseTemplates": "Explorar Plantillas",
-      "browseTemplatesSubtitle": "Explora programas creados por expertos y los favoritos de la comunidad."
+      "browseTemplatesSubtitle": "Explora programas creados por expertos y los favoritos de la comunidad.",
+      "externalAi": "Crear con ChatGPT o Claude",
+      "externalAiSubtitle": "Conversa con un asistente fuera de Musclog y luego importa el plan que escriba."
     },
     "browseTemplatesModal": {
       "title": "Explorar Plantillas",
@@ -207,6 +209,61 @@
       "cancel": "Cancelar",
       "successMessage": "Entrenamientos creados con éxito",
       "successMessageWithPlan": "{{planName}} creado con {{count}} entrenamientos"
+    },
+    "externalPlan": {
+      "title": "Crear con ChatGPT o Claude",
+      "intro": "ChatGPT o Claude pueden preguntarte por tus objetivos y tu equipo, y darte un enlace que abre el plan aquí. Sales de Musclog un momento; no se guarda nada hasta que revises el plan.",
+      "steps": {
+        "one": "Abre ChatGPT o Claude. Las instrucciones se copian por ti: pégalas en el chat.",
+        "two": "Responde a sus preguntas. Terminará con un enlace «Abrir en Musclog» y el plan en JSON.",
+        "three": "Toca el enlace en este teléfono. Si no abre Musclog, pega el JSON (o el enlace) o importa el archivo."
+      },
+      "leaveSection": "Paso 1: pregunta al asistente",
+      "backSection": "Paso 2: trae el plan de vuelta",
+      "openChatgpt": "Abrir ChatGPT",
+      "openClaude": "Abrir Claude",
+      "copy": "Copiar",
+      "share": "Compartir",
+      "copied": "Instrucciones copiadas",
+      "copiedPaste": "Instrucciones copiadas. Pégalas en el chat si el cuadro está vacío.",
+      "fallback": "No se pudo abrir la app o el sitio. Las instrucciones están copiadas: abre ChatGPT o Claude tú mismo y pégalas.",
+      "privacy": "Solo se copian las instrucciones. No se incluye nada sobre ti ni ninguna clave de API.",
+      "importFile": "Importar un archivo de plan",
+      "pasteJson": "Pegar JSON",
+      "noFile": "¿Sin enlace? Pega el JSON o el enlace, o importa el archivo.",
+      "paste": {
+        "title": "Pegar JSON del plan",
+        "subtitle": "Pega el JSON o el enlace que te dio el asistente.",
+        "placeholder": "Pega el JSON aquí"
+      },
+      "errors": {
+        "empty": "No hay nada que importar.",
+        "fileRead": "No se pudo leer ese archivo. Prueba con otro o pega el texto.",
+        "newerVersion": "Este plan es de una versión más reciente de Musclog. Actualiza la app y vuelve a importarlo.",
+        "notJson": "Eso no parece un archivo de plan. Elige el archivo musclog-workout-plan.json que te dio el asistente o pega su JSON.",
+        "tooLarge": "Ese archivo es demasiado grande para ser un plan.",
+        "wrongSchema": "Ese no es un archivo de plan de Musclog. Comprueba que elegiste el que creó el asistente.",
+        "invalidPlan": "Este archivo no tiene un plan utilizable. Pide al asistente que lo escriba de nuevo.",
+        "noExercises": "No se pudo leer ningún ejercicio de este archivo. Pide al asistente que lo escriba de nuevo."
+      },
+      "review": {
+        "intro": "Revisa el plan antes de añadirlo. No se guarda nada hasta que lo crees.",
+        "weeklyOn": "Semanal: {{days}}",
+        "rotating": "Rota entre sus entrenamientos, sin días fijos",
+        "setsReps": "{{sets}} × {{reps}}",
+        "setsRepsRange": "{{sets}} × {{min}}–{{max}}",
+        "unmatched_one": "{{count}} ejercicio no está en Musclog y se dejará fuera: {{names}}",
+        "unmatched_few": "{{count}} ejercicios no están en Musclog y se dejarán fuera: {{names}}",
+        "unmatched_many": "{{count}} ejercicios no están en Musclog y se dejarán fuera: {{names}}",
+        "unmatched_other": "{{count}} ejercicios no están en Musclog y se dejarán fuera: {{names}}",
+        "skipped_one": "{{count}} ejercicio del archivo no se pudo leer y se dejó fuera",
+        "skipped_few": "{{count}} ejercicios del archivo no se pudieron leer y se dejaron fuera",
+        "skipped_many": "{{count}} ejercicios del archivo no se pudieron leer y se dejaron fuera",
+        "skipped_other": "{{count}} ejercicios del archivo no se pudieron leer y se dejaron fuera",
+        "create": "Crear plan",
+        "differentFile": "Usar otro archivo"
+      },
+      "linkError": "No se pudo leer el enlace de tu asistente. {{reason}} Pega en su lugar el bloque JSON del chat."
     },
     "aiGeneration": {
       "comingSoon": "La generación de entrenamientos con IA llegará pronto.",

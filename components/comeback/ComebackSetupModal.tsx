@@ -636,26 +636,32 @@ function ComebackSetupBody({
       {SKIPPABLE.includes(stepKey) ? (
         <TextButton label={t('comeback.setup.skip')} onPress={skip} />
       ) : null}
-      <View className="flex-row gap-3">
-        <Button
-          label={isFirst ? t('common.cancel') : t('common.back')}
-          variant="outline"
-          size="md"
-          width="flex-1"
-          icon={isFirst ? undefined : ChevronLeft}
-          iconPosition="left"
-          onPress={goBack}
-        />
-        <Button
-          label={nextLabel}
-          variant="accent"
-          size="md"
-          width="flex-1"
-          loading={busy}
-          disabled={busy || (stepKey === 'goal' && weightProblem)}
-          onPress={isLast ? () => void finish() : goNext}
-          testID="comeback-next"
-        />
+      {/* Two buttons share the row while both fit; otherwise the row wraps and each takes the full
+          width, so the Russian final label is never pushed past the dialog's edge. */}
+      <View className="flex-row flex-wrap gap-3">
+        <View className="grow basis-[140px]">
+          <Button
+            label={isFirst ? t('common.cancel') : t('common.back')}
+            variant="outline"
+            size="md"
+            width="full"
+            icon={isFirst ? undefined : ChevronLeft}
+            iconPosition="left"
+            onPress={goBack}
+          />
+        </View>
+        <View className="grow basis-[140px]">
+          <Button
+            label={nextLabel}
+            variant="accent"
+            size="md"
+            width="full"
+            loading={busy}
+            disabled={busy || (stepKey === 'goal' && weightProblem)}
+            onPress={isLast ? () => void finish() : goNext}
+            testID="comeback-next"
+          />
+        </View>
       </View>
     </View>
   );

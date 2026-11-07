@@ -170,11 +170,6 @@ export function CycleTrackingChart({
             marginLeft: -3,
             backgroundColor: theme.colors.text.primary,
             borderRadius: 3,
-            shadowColor: theme.colors.text.primary,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.6,
-            shadowRadius: 8,
-            elevation: 8,
             alignItems: 'center',
           }}
         >

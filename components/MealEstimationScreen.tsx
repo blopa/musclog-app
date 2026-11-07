@@ -179,6 +179,8 @@ export function MealEstimationScreen({
                   {/* Action Buttons */}
                   <View className="flex-row gap-2">
                     <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.edit')}
                       onPress={() => onEditItem(item)}
                       className="rounded-control p-2"
                       style={{ backgroundColor: theme.colors.background.secondary }}
@@ -186,6 +188,8 @@ export function MealEstimationScreen({
                       <Edit2 size={16} color={theme.colors.text.secondary} />
                     </TouchableOpacity>
                     <TouchableOpacity
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.delete')}
                       onPress={() => onDeleteItem(item.id)}
                       className="rounded-control p-2"
                       style={{ backgroundColor: theme.colors.background.secondary }}
@@ -213,28 +217,28 @@ export function MealEstimationScreen({
             </TouchableOpacity>
           </View>
         </View>
+        {/* Meal Context Selectors. They scroll with the estimate: pinned under it, on a short screen
+            they took the whole height and left no way to reach the items or the Confirm button. */}
+        <View className="px-4 pb-2">
+          <View className="mb-4">
+            <DatePickerInput
+              label={t('food.quickTrackMeal.date')}
+              selectedDate={selectedDate}
+              onPress={onShowDatePicker}
+              variant="default"
+            />
+          </View>
+
+          <View className="mb-4">
+            <OptionsSelector<MealType>
+              title={t('food.quickTrackMeal.mealType')}
+              options={mealTypeOptions}
+              selectedId={selectedMealType}
+              onSelect={onMealTypeChange}
+            />
+          </View>
+        </View>
       </ScrollView>
-
-      {/* Meal Context Selectors */}
-      <View className="px-4 pt-4">
-        <View className="mb-4">
-          <DatePickerInput
-            label={t('food.quickTrackMeal.date')}
-            selectedDate={selectedDate}
-            onPress={onShowDatePicker}
-            variant="default"
-          />
-        </View>
-
-        <View className="mb-4">
-          <OptionsSelector<MealType>
-            title={t('food.quickTrackMeal.mealType')}
-            options={mealTypeOptions}
-            selectedId={selectedMealType}
-            onSelect={onMealTypeChange}
-          />
-        </View>
-      </View>
 
       {/* Bottom Action Button */}
       <View

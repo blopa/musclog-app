@@ -1,0 +1,83 @@
+/* Loggy seated cross-legged reading a book. He breathes gently, his leaf sways, the book tilts
+   slightly as he reads, his right hand taps his temple in thought, and his front sneaker bobs.
+   Every layer opens and ends on the still's own frame. */
+#body {
+  transform-origin: 265px 440px;
+  animation: loggy-breathe 3.2s ease-in-out infinite;
+}
+#leaf {
+  transform-origin: 320px 121px;
+  animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#book,
+#hand-l {
+  transform-origin: 266px 508px;
+  animation: loggy-book-read 3.2s ease-in-out infinite;
+}
+#arm-r,
+#hand-r {
+  transform-origin: 388px 365px;
+  animation: loggy-temple-tap 3.2s ease-in-out infinite;
+}
+#foot-l {
+  transform-origin: 258px 494px;
+  animation: loggy-foot-bob 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.01, 0.992);
+  }
+}
+@keyframes loggy-leaf-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(4deg);
+  }
+  64% {
+    transform: rotate(-2deg);
+  }
+}
+@keyframes loggy-book-read {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(0, -2px) rotate(-0.8deg);
+  }
+}
+@keyframes loggy-temple-tap {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(-1.5deg);
+  }
+  70% {
+    transform: rotate(0.8deg);
+  }
+}
+@keyframes loggy-foot-bob {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-1.6deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #loggy-idle,
+  #loggy-idle * {
+    animation: none !important;
+  }
+}

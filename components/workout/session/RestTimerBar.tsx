@@ -85,27 +85,31 @@ export function RestTimerBar({
           style={{ height: '100%', width: `${fraction * 100}%` }}
         />
       </View>
-      <View className="flex-row items-center gap-3 px-4 py-2">
+      <View className="flex-row flex-wrap items-center gap-3 px-4 py-2">
+        {/* Grows and shrinks (not `flex-1`, whose basis 0 never wraps) so the title wraps instead of
+            running under the chips beside it in long translations or at large text. */}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${label} ${resting ? clock(remaining) : ''}`}
           accessibilityState={{ expanded }}
           onPress={onToggleExpanded}
-          className="min-h-12 flex-1 flex-row items-center gap-2"
+          className="min-h-12 min-w-0 shrink grow flex-row items-center gap-2"
         >
           <Timer
             size={theme.iconSize.md}
             color={resting ? theme.colors.accent.primary : theme.colors.text.secondary}
           />
-          <Text className={`text-sm font-semibold ${resting ? tone : 'text-text-secondary'}`}>
+          <Text
+            className={`min-w-0 shrink text-sm font-semibold ${resting ? tone : 'text-text-secondary'}`}
+          >
             {label}
           </Text>
           {/* Idle, the clock is the length a rest will have — it must not read as a countdown. */}
           <Text
             className={
               resting
-                ? `text-xl font-bold tabular-nums ${tone}`
-                : 'text-base font-medium tabular-nums text-text-tertiary'
+                ? `shrink-0 text-xl font-bold tabular-nums ${tone}`
+                : 'shrink-0 text-base font-medium tabular-nums text-text-tertiary'
             }
           >
             {resting ? clock(remaining) : clock(defaultRest)}

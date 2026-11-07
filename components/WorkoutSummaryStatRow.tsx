@@ -28,15 +28,18 @@ export function WorkoutSummaryStatRow({
   const theme = useTheme();
   return (
     <View
-      className={`flex-row items-center justify-between ${showDivider ? 'border-b border-ink/5 pb-4' : ''}`}
+      className={`flex-row flex-wrap items-center justify-between gap-x-3 gap-y-2 ${showDivider ? 'border-b border-ink/5 pb-4' : ''}`}
     >
-      <View className="flex-row items-center gap-3">
-        <View className="rounded-control p-2" style={{ backgroundColor: iconBgColor }}>
+      {/* The label group takes what the figure leaves (`grow` with a basis, because `flex-1` has
+          none and never wraps) and wraps its words. When the figure and its unit cannot sit beside
+          it, they drop to their own right-aligned line instead of running past the card's edge. */}
+      <View className="min-w-0 grow basis-[140px] flex-row items-center gap-3">
+        <View className="shrink-0 rounded-control p-2" style={{ backgroundColor: iconBgColor }}>
           <Icon size={theme.iconSize.lg} color={iconColor} />
         </View>
-        <Text className="font-medium text-text-secondary">{label}</Text>
+        <Text className="min-w-0 flex-1 font-medium text-text-secondary">{label}</Text>
       </View>
-      <View className="flex-row items-center gap-1">
+      <View className="ml-auto shrink-0 flex-row items-center gap-1">
         {showStarIcon ? (
           <Star
             size={theme.iconSize.sm}

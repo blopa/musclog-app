@@ -28,6 +28,11 @@ jest.mock('@/database/repositories/ActivityRepository', () => ({
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: { get: () => mockState() },
 }));
+jest.mock('@/services/YearReviewNotificationService', () => ({
+  YearReviewNotificationService: {
+    scheduleYearReview: (options: unknown) => mockRun('yearReview', options),
+  },
+}));
 jest.mock('@/services/CycleNotificationService', () => ({
   CycleNotificationService: { scheduleMenstrualCycleNotifications: () => mockRun() },
 }));
@@ -49,7 +54,28 @@ describe('refreshAllNotifications', () => {
 
   it('re-plans every reminder family', async () => {
     await refreshAllNotifications();
-    expect(mockRun).toHaveBeenCalledTimes(6);
+    expect(mockRun).toHaveBeenCalledTimes(7);
+  });
+
+  it('passes the same back-off to the year-review planner', async () => {
+    await refreshAllNotifications();
+    expect(optionsFor('yearReview')).toEqual({ backOff: false });
+  });
+
+  it('a failed year-review plan does not stop the other reminders', async () => {
+    const { YearReviewNotificationService } = jest.requireMock(
+      '@/services/YearReviewNotificationService'
+    );
+    const original = YearReviewNotificationService.scheduleYearReview;
+    YearReviewNotificationService.scheduleYearReview = async () => {
+      throw new Error('scheduler down');
+    };
+    try {
+      await expect(refreshAllNotifications()).resolves.toBeUndefined();
+      expect(optionsFor('workout')).toEqual({ backOff: false });
+    } finally {
+      YearReviewNotificationService.scheduleYearReview = original;
+    }
   });
 
   it('keeps reminders on for someone who is active', async () => {

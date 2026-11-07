@@ -137,6 +137,105 @@
           "title": "A private, encrypted cycle diary",
           "description": "Your periods and day logs are now encrypted on your device. Predictions show how confident they are, and the fertile-window estimate is optional and off by default. Reminders can be as discreet as you like, and a read-only Cycle widget shows nothing personal under an app lock."
         }
+      },
+      "v2_16_0": {
+        "loggy": {
+          "title": "Meet Loggy",
+          "description": "Loggy is Musclog's mascot. He welcomes you, keeps empty screens company and turns up when you reach a first. You can change how he appears below, or later in Settings → Appearance and home.",
+          "show": {
+            "title": "Show Loggy",
+            "description": "Turn off to hide him everywhere. Your AI coach keeps its picture."
+          },
+          "animated": {
+            "title": "Animated Loggy",
+            "description": "Turn off to always see him standing still. Only applies while Loggy is shown."
+          }
+        },
+        "importHistory": {
+          "title": "Bring your training history",
+          "description": "Moving from another app? Bring your past workouts over, so your records and progress start from day one.",
+          "items": {
+            "apps": {
+              "label": "Strong, Hevy and FitNotes",
+              "description": "Pick the file you exported from the app."
+            },
+            "twice": {
+              "label": "Safe to repeat",
+              "description": "Importing the same file twice adds nothing."
+            },
+            "undo": {
+              "label": "Easy to undo",
+              "description": "Remove everything an import added whenever you like."
+            }
+          },
+          "action": {
+            "label": "Import workouts",
+            "description": "You can also do this later in Settings → Backups and data."
+          }
+        },
+        "yearInReview": {
+          "title": "Your year in Musclog",
+          "description": "Each December, look back at everything you did this year.",
+          "items": {
+            "look": {
+              "label": "Sessions, records and days trained",
+              "description": "Your year as numbers and posters you can flip through."
+            },
+            "share": {
+              "label": "Share it as an image",
+              "description": "Post it, or keep it to yourself."
+            },
+            "private": {
+              "label": "Private by default",
+              "description": "Weight and nutrition stay out unless you add them."
+            }
+          },
+          "action": {
+            "label": "See your year so far"
+          }
+        },
+        "strengthLevels": {
+          "title": "Strength levels",
+          "description": "See how your main lifts compare with your body weight, and what the next level takes.",
+          "items": {
+            "bodyWeight": {
+              "label": "Compared with your body weight",
+              "description": "Needs a weigh-in: log your weight to see your levels."
+            },
+            "next": {
+              "label": "What the next level takes",
+              "description": "The load to lift to reach the next level."
+            },
+            "where": {
+              "label": "On Progress and on each lift",
+              "description": "You'll find them in both places."
+            }
+          },
+          "action": {
+            "label": "Open progress"
+          }
+        },
+        "trainingLoad": {
+          "title": "Recent training load",
+          "description": "A body map on Progress shows what you trained over the last week.",
+          "items": {
+            "map": {
+              "label": "The last 7 days on a body map",
+              "description": "The muscles you worked show up darker."
+            },
+            "sets": {
+              "label": "Weekly sets per muscle",
+              "description": "The numbers sit right beside the map."
+            },
+            "load": {
+              "label": "Load, not readiness",
+              "description": "It shows what you trained, not whether you should train again."
+            }
+          },
+          "action": {
+            "label": "Open progress"
+          }
+        }
       }
     }
   }

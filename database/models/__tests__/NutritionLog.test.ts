@@ -115,3 +115,47 @@ describe('NutritionLog.hasSnapshot', () => {
     await expect(makeLog({}).hasSnapshot()).resolves.toBe(false);
   });
 });
+
+describe('NutritionLog.getMacroGrams', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('decrypts only protein, carbs and fat', async () => {
+    await makeLog({}).getMacroGrams();
+
+    expect(mockDecryptNumber).toHaveBeenCalledTimes(3);
+    expect(decryptJson).not.toHaveBeenCalled();
+    expect(decryptOptionalString).not.toHaveBeenCalled();
+  });
+
+  it('agrees with getNutrients for a per-100g snapshot', async () => {
+    const log = makeLog({ amount: 150 });
+    const { protein, carbs, fat } = await log.getNutrients();
+
+    expect(await log.getMacroGrams()).toEqual({ protein, carbs, fat });
+  });
+
+  it('agrees with getNutrients for a per-serving snapshot', async () => {
+    const log = makeLog({ snapshotBasis: 'per_serving', amount: 2 });
+    const { protein, carbs, fat } = await log.getNutrients();
+
+    expect(await log.getMacroGrams()).toEqual({ protein, carbs, fat });
+    expect(protein).toBe(26);
+  });
+
+  it('scales a portion by its gram weight', async () => {
+    const log = makeLog({
+      amount: 2,
+      portionId: 'p',
+      portion: Promise.resolve({ gramWeight: 50 }),
+    });
+
+    // 2 portions x 50 g = 100 g, so the per-100g snapshot counts once.
+    expect(await log.getMacroGrams()).toEqual({ protein: 13, carbs: 67, fat: 7 });
+  });
+
+  it('clamps negative logged values to zero', async () => {
+    const macros = await makeLog({ amount: 100, loggedProteinRaw: '-3' }).getMacroGrams();
+
+    expect(macros.protein).toBe(0);
+  });
+});

@@ -42,6 +42,9 @@ export default class WorkoutLog extends Model {
   @field('notes') notes?: string; // how the whole session went
   @field('distance_m') distanceM?: number; // a logged walk/run, in metres
   @field('activity') activity?: string; // 'walk' | 'run' for a quick cardio log
+  @field('import_source') importSource?: string; // the app a file import came from
+  @field('import_key') importKey?: string; // stable session identity across imports
+  @field('import_batch_id') importBatchId?: string; // one per import, for undo
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;

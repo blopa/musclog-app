@@ -24,10 +24,12 @@ import { ListGroup } from '@/components/theme/ListGroup';
 import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { COMEBACK_ROUTE } from '@/constants/comebackRoute';
 import { SETTINGS } from '@/constants/settingDefinitions';
+import { YEAR_IN_REVIEW_ROUTE } from '@/constants/yearInReviewRoute';
 import { SettingsService } from '@/database/services/SettingsService';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { isAppLockSupported } from '@/utils/appLock';
+import { yearReviewSeason } from '@/utils/yearInReview/season';
 
 type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 
@@ -161,6 +163,13 @@ export default function SettingsScreen() {
                 t('comeback.settings.title'),
                 t('comeback.settings.subtitle'),
                 () => router.push(COMEBACK_ROUTE)
+              )}
+              {row(
+                'calendar-month',
+                t('yearInReview.settingsRow.title'),
+                t('yearInReview.settingsRow.subtitle'),
+                () =>
+                  router.push(`${YEAR_IN_REVIEW_ROUTE}?year=${yearReviewSeason(new Date()).year}`)
               )}
               {row(
                 'bluetooth',

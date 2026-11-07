@@ -151,6 +151,9 @@ export function LineChart({
   }
 
   const xDomainFinal = xDomain ?? [0, chartWidth];
+  // The last point sits on the chart's right edge and, when it is the peak, on its top edge, so it
+  // is drawn inside a margin of its own radius and stroke instead of being cut in half.
+  const edgePadding = showLastPoint ? lastPointSize / 2 + lastPointStrokeWidth : 0;
   const yDomainFinal = yDomain ?? [0, chartHeight];
   const curveType = INTERPOLATION_TO_CURVE[interpolation];
   const lineColorResolved = lineColor ?? theme.colors.accent.primary;
@@ -211,7 +214,7 @@ export function LineChart({
           xKey="x"
           yKeys={['y', 'scatterY']}
           domain={{ x: xDomainFinal, y: yDomainFinal }}
-          padding={0}
+          padding={{ left: 0, right: edgePadding, top: edgePadding, bottom: 0 }}
           axisOptions={{
             lineColor: showGridLines ? (gridLineColor ?? theme.colors.border.light) : 'transparent',
             labelColor: 'transparent',

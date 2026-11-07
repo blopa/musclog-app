@@ -82,11 +82,6 @@ export function MacroInput({
           width: size === 'half' ? '47%' : '100%',
           padding: config.padding,
           borderColor: isFocused ? borderColor : theme.colors.background.ink10,
-          shadowColor: highlightColor,
-          shadowOffset: theme.shadowOffset.zero,
-          shadowOpacity: theme.shadowOpacity.veryLight,
-          shadowRadius: theme.shadows.radius8.shadowRadius,
-          elevation: theme.elevation.sm,
         } as any
       }
     >

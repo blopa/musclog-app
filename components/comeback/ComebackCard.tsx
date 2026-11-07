@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
 import { Check, ChevronRight, HeartHandshake, RotateCcw } from 'lucide-react-native';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { ComebackSetupModal } from '@/components/comeback/ComebackSetupModal';
+import { LoggyPose } from '@/components/LoggyPose';
 import { Button } from '@/components/theme/Button';
 import { TextButton } from '@/components/theme/TextButton';
 import { COMEBACK_ROUTE } from '@/constants/comebackRoute';
@@ -12,6 +13,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { ComebackService } from '@/database/services/ComebackService';
 import { useComebackOffer } from '@/hooks/useComebackOffer';
 import { useComebackState } from '@/hooks/useComebackState';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyWorkoutProgress } from '@/hooks/useWeeklyWorkoutProgress';
 import type { ComebackSetupResult } from '@/services/comebackSetup';
@@ -24,6 +26,7 @@ import {
 import { minimumDayKey } from '@/utils/comeback/comebackTransitions';
 import { isComebackStalled } from '@/utils/comeback/lapse';
 import { handleError } from '@/utils/handleError';
+import { yearReviewSeason } from '@/utils/yearInReview/season';
 
 /**
  * Home's way into comeback mode. It says nothing at all unless it has something to say:
@@ -32,6 +35,8 @@ import { handleError } from '@/utils/handleError';
  *  - when a running comeback has gone quiet, a gentle "pick up where you left off".
  * The graduation message lives on the workout summary, so it appears once, where it is earned.
  */
+const OFFER_POSE_HEIGHT = 88;
+
 const OFFER_BODY_KEYS: Record<ComebackTrack, string> = {
   workout: 'comeback.offer.bodyWorkout',
   nutrition: 'comeback.offer.bodyFood',
@@ -41,12 +46,15 @@ const OFFER_BODY_KEYS: Record<ComebackTrack, string> = {
 export function ComebackCard() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const cramped = useIsCramped();
   const router = useRouter();
   const { showSnackbar } = useSnackbar();
   const { state, phase, week, rampWeeks, today, isLoading } = useComebackState();
   const { lapse, shouldOffer, refresh } = useComebackOffer();
   const { workoutsThisWeek } = useWeeklyWorkoutProgress();
   const [setupOpen, setSetupOpen] = useState(false);
+  // Fixed for the screen's life, like the year card's own read of the date.
+  const yearCardSeason = useMemo(() => yearReviewSeason(new Date()).active, []);
   // True while a tap's write is in flight, so a second tap cannot race it.
   const [pending, setPending] = useState(false);
 
@@ -108,19 +116,22 @@ export function ComebackCard() {
               {t('comeback.card.stalledTitle')}
             </Text>
             <Text className="text-sm text-text-secondary">{t('comeback.card.stalledBody')}</Text>
-            <View className="flex-row gap-3">
+            {/* Stacked, not side by side: the two long translations ("Начать неделю 1 заново") do not
+                fit a row beside each other at large text, and a row's flex-1 buttons cannot shrink
+                below their words, so the restart button hung out of the card. */}
+            <View className="gap-3">
               <Button
                 label={t('comeback.card.stalledContinue')}
                 variant="accent"
                 size="md"
-                width="flex-1"
+                width="full"
                 onPress={() => router.push(COMEBACK_ROUTE)}
               />
               <Button
                 label={t('comeback.card.stalledRestart')}
                 variant="outline"
                 size="md"
-                width="flex-1"
+                width="full"
                 icon={RotateCcw}
                 loading={pending}
                 onPress={() => void run(() => ComebackService.restartWeekOne())}
@@ -151,9 +162,13 @@ export function ComebackCard() {
             onPress={() => router.push(COMEBACK_ROUTE)}
             className="flex-row items-center gap-3 active:opacity-80"
           >
-            <View className="h-11 w-11 items-center justify-center rounded-control bg-bg-overlay">
-              <HeartHandshake size={theme.iconSize.md} color={theme.colors.accent.primary} />
-            </View>
+            {/* Decoration gives way on a narrow or large-text screen, so the week line keeps the row
+                and "Возвращение," is not broken across lines. The pressable keeps its label. */}
+            {cramped ? null : (
+              <View className="h-11 w-11 items-center justify-center rounded-control bg-bg-overlay">
+                <HeartHandshake size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              </View>
+            )}
             <View className="min-w-0 flex-1 gap-0.5">
               <Text className="text-base font-semibold text-text-primary">
                 {t('comeback.card.week', { week, total: rampWeeks })}
@@ -169,7 +184,9 @@ export function ComebackCard() {
                 </Text>
               ) : null}
             </View>
-            <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+            {cramped ? null : (
+              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+            )}
           </Pressable>
           <Button
             label={doneToday ? t('comeback.card.minimumDone') : t('comeback.card.minimum')}
@@ -211,10 +228,19 @@ export function ComebackCard() {
           className="gap-3 rounded-card border border-border-light bg-bg-card p-4"
           testID="comeback-card-offer"
         >
-          <Text className="text-base font-semibold text-text-primary">
-            {t('comeback.offer.title')}
-          </Text>
-          <Text className="text-sm text-text-secondary">{t(bodyKey, { count: days })}</Text>
+          {/* Loggy only on the offer: a welcome back without a word about the gap. The running
+              ramp and the stalled card stay plain, since a face there would read as watching. In
+              the year-in-review season the year card sits right below with its own Loggy, and one
+              screen shows him once, so the offer is plain then. */}
+          <View className="flex-row items-center gap-3">
+            <View className="min-w-0 flex-1 gap-1">
+              <Text className="text-base font-semibold text-text-primary">
+                {t('comeback.offer.title')}
+              </Text>
+              <Text className="text-sm text-text-secondary">{t(bodyKey, { count: days })}</Text>
+            </View>
+            {yearCardSeason ? null : <LoggyPose pose="coffee" height={OFFER_POSE_HEIGHT} />}
+          </View>
           <View className="flex-row items-center gap-3">
             <Button
               label={t('comeback.offer.start')}

@@ -1,0 +1,7 @@
+<?xml-stylesheet type="text/css" href="../palette.css"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 0 640 700">
+	<g id="log-side">
+		<path class="s1" d="m139 322c-3 13-4.5 23-4.5 30c0 8 3.5 16 8 24l5.5 0l0-54z"/>
+		<path class="s0" d="m133 322c-3 13-4.5 23-4.5 30c0 8 2.5 16 8.5 24l5.5 0c-4.5-8-8-16-8-24c0-7 1.5-17 4.5-30z"/>
+	</g>
+</svg>

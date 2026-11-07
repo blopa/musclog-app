@@ -1,0 +1,58 @@
+/* Loggy's double flex — contained entirely in this SVG. Two squeezes, then a
+   breather. The shoes stay planted; only the upper body lifts. */
+#upper {
+    animation: loggy-lift 2.8s ease-in-out infinite;
+}
+#body {
+    transform-origin: 270px 445px;
+    animation: loggy-puff 2.8s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-shake 2.8s ease-in-out infinite;
+}
+#arm-l, #hand-l {
+    transform-origin: 150px 340px;
+    animation: loggy-flex-l 2.8s ease-in-out infinite;
+}
+#arm-r, #hand-r {
+    transform-origin: 372px 340px;
+    animation: loggy-flex-r 2.8s ease-in-out infinite;
+}
+
+@keyframes loggy-lift {
+    0%, 58%, 100% { transform: translateY(0); }
+    14%, 22% { transform: translateY(-5px); }
+    31% { transform: translateY(-1px); }
+    42%, 49% { transform: translateY(-5px); }
+}
+@keyframes loggy-puff {
+    0%, 58%, 100% { transform: scale(1, 1); }
+    14%, 22% { transform: scale(1.012, 1.004); }
+    31% { transform: scale(1.002, 1); }
+    42%, 49% { transform: scale(1.012, 1.004); }
+}
+@keyframes loggy-leaf-shake {
+    0%, 8%, 76%, 100% { transform: rotate(0deg); }
+    16% { transform: rotate(-7deg); }
+    25% { transform: rotate(4deg); }
+    34% { transform: rotate(-3deg); }
+    44% { transform: rotate(-7deg); }
+    54% { transform: rotate(5deg); }
+    65% { transform: rotate(-2deg); }
+}
+@keyframes loggy-flex-l {
+    0%, 58%, 100% { transform: rotate(0deg) scale(1); }
+    14%, 22% { transform: rotate(5deg) scale(1.035); }
+    31% { transform: rotate(1deg) scale(1.005); }
+    42%, 49% { transform: rotate(5deg) scale(1.035); }
+}
+@keyframes loggy-flex-r {
+    0%, 58%, 100% { transform: rotate(0deg) scale(1); }
+    14%, 22% { transform: rotate(-5deg) scale(1.035); }
+    31% { transform: rotate(-1deg) scale(1.005); }
+    42%, 49% { transform: rotate(-5deg) scale(1.035); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

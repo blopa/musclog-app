@@ -188,6 +188,9 @@ export const schema = appSchema({
         { name: 'notes', type: 'string', isOptional: true }, // how the whole session went
         { name: 'distance_m', type: 'number', isOptional: true }, // a logged walk/run, in metres
         { name: 'activity', type: 'string', isOptional: true }, // 'walk' | 'run' for a quick cardio log
+        { name: 'import_source', type: 'string', isOptional: true }, // the app a file import came from
+        { name: 'import_key', type: 'string', isOptional: true, isIndexed: true }, // stable session identity across imports
+        { name: 'import_batch_id', type: 'string', isOptional: true, isIndexed: true }, // one per import, for undo
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

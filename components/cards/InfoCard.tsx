@@ -1,9 +1,9 @@
 import { LucideIcon, X } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
-
 export type InsightCardVariant = 'accent' | 'neutral' | 'warning' | 'success';
 
 export type InsightCardSize = 'xs' | 'sm' | 'md';
@@ -29,6 +29,7 @@ export function InfoCard({
   inlineLabel = false,
   size = 'md',
 }: InsightCardProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -123,7 +124,12 @@ export function InfoCard({
                   {label}
                 </Text>
                 {onDismiss ? (
-                  <Pressable onPress={onDismiss} hitSlop={8}>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.a11y.dismiss')}
+                    onPress={onDismiss}
+                    hitSlop={8}
+                  >
                     <X size={iconSize} color={accentColor} />
                   </Pressable>
                 ) : null}

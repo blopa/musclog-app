@@ -124,6 +124,17 @@ export function formatAppInteger(
   }).format(value);
 }
 
+/**
+ * A whole number with thousands separators, for the one large figure a screen exists to show (a
+ * year's "74,333 lb"). Everything else stays ungrouped: this is display only, never for a value
+ * that is typed, parsed or lined up in a table.
+ */
+export function formatAppGroupedInteger(locale: string, value: number): string {
+  return getAppNumberFormatter(locale, { maximumFractionDigits: 0, useGrouping: true }).format(
+    value
+  );
+}
+
 /** Decimals with at most `maxFractionDigits` fractional digits (macros, weight). No grouping. */
 export function formatAppDecimal(
   locale: string,

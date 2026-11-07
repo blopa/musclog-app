@@ -37,7 +37,14 @@ export function useWebDesktopPhoneFrame(): boolean {
   return Platform.OS === 'web' && matches;
 }
 
-export type WebModalLayerVariant = 'fullscreen' | 'centered';
+/**
+ * `fullscreen`: a layer filling the viewport. `centered`: the same, centering its direct child
+ * (a root that is itself the backdrop of one dialog). `layer`: positioning only, for a root whose
+ * own inner wrapper does the centering: `align-items: center` on that root would shrink the
+ * wrapper to its content, so a dialog's `w-full` stopped at its widest content and ran off a
+ * narrow screen (Edit set details was 384px wide on a 276px viewport).
+ */
+export type WebModalLayerVariant = 'fullscreen' | 'centered' | 'layer';
 
 type WebModalLayerOptions = {
   variant?: WebModalLayerVariant;
@@ -87,6 +94,7 @@ export function useWebModalLayerStyle(
       bottom: 0,
       width: '100vw',
       height: '100dvh',
+      // Only a full-screen layer restricts panning to vertical; dialogs may scroll sideways inside.
       ...(variant === 'fullscreen' ? { touchAction: 'pan-y' as const } : {}),
       ...centeredExtras,
     };

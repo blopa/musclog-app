@@ -2,7 +2,14 @@ import { format } from 'date-fns';
 import { Download, Edit, Info, RefreshCw, Share2, Trophy } from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -31,6 +38,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { healthConnectService } from '@/services/healthConnect';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
 import { formatDistance, formatPace } from '@/utils/cardioFormat';
+import { layoutTableColumns } from '@/utils/fitText';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
@@ -82,22 +90,28 @@ function WorkoutSummaryCard({
           borderRadius: theme.borderRadius.xl,
         }}
       >
+        {/* In the flow, not floated over the corner: at large text it sat on top of the Calories
+            figure and hid its label. */}
         {onEdit ? (
-          <Pressable
-            onPress={onEdit}
-            className="absolute right-3 top-3 z-10 h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: theme.colors.background.ink10 }}
-          >
-            <Edit size={14} color={theme.colors.text.secondary} />
-          </Pressable>
+          <View className="mb-1 items-end">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.edit')}
+              onPress={onEdit}
+              className="h-8 w-8 items-center justify-center rounded-full"
+              style={{ backgroundColor: theme.colors.background.ink10 }}
+            >
+              <Edit size={14} color={theme.colors.text.secondary} />
+            </Pressable>
+          </View>
         ) : null}
-        <View className="flex-row gap-4">
+        <View className="flex-row gap-2">
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
             <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.totalTime')}
             </Text>
-            <View className="flex-row items-baseline gap-1">
+            <View className="flex-row flex-wrap items-baseline gap-x-1">
               <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {durationDisplay.value}
               </Text>
@@ -111,13 +125,13 @@ function WorkoutSummaryCard({
 
           {/* Volume */}
           <View
-            className="flex-1 flex-col border-l pl-4"
+            className="flex-1 flex-col border-l pl-2"
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.volume')}
             </Text>
-            <View className="flex-row items-baseline gap-1">
+            <View className="flex-row flex-wrap items-baseline gap-x-1">
               <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {formatDisplayWeightKg(locale, units, volume)}
               </Text>
@@ -129,13 +143,13 @@ function WorkoutSummaryCard({
 
           {/* Calories */}
           <View
-            className="flex-1 flex-col border-l pl-4"
+            className="flex-1 flex-col border-l pl-2"
             style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text className="text-xs font-semibold text-text-primary" style={{ opacity: 0.8 }}>
               {t('workoutDetail.calories')}
             </Text>
-            <View className="flex-row items-baseline gap-1">
+            <View className="flex-row flex-wrap items-baseline gap-x-1">
               <Text className="text-2xl font-bold tabular-nums text-text-primary">
                 {formatInteger(calories)}
               </Text>
@@ -150,12 +164,19 @@ function WorkoutSummaryCard({
   );
 }
 
+/** One column of the sets table: as wide as its header word needs, then an equal share of the rest. */
+function tableColumnStyle(basis: number) {
+  return { flexBasis: basis, flexGrow: 1, flexShrink: 1, minWidth: 0 } as const;
+}
+
 // Component: Set Row
 type SetRowProps = {
   set: WorkoutSet;
+  /** The flex bases of the five columns, shared with the table header so they line up. */
+  columns: number[];
 };
 
-function SetRow({ set }: SetRowProps) {
+function SetRow({ set, columns }: SetRowProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const textDecorationLine = set.isSkipped ? ('line-through' as const) : ('none' as const);
@@ -171,7 +192,7 @@ function SetRow({ set }: SetRowProps) {
         opacity: set.isSkipped ? 0.6 : 1,
       }}
     >
-      <View className="w-12 items-center py-3">
+      <View className="items-center py-3" style={tableColumnStyle(columns[0])}>
         <View className="flex-row items-center gap-1">
           {set.isHighlighted && !set.isSkipped ? (
             <Trophy size={12} color={theme.colors.accent.primary} />
@@ -187,22 +208,22 @@ function SetRow({ set }: SetRowProps) {
           </Text>
         </View>
       </View>
-      <View className="flex-1 items-center py-3">
+      <View className="items-center py-3" style={tableColumnStyle(columns[1])}>
         <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
           {set.weight}
         </Text>
       </View>
-      <View className="flex-1 items-center py-3">
+      <View className="items-center py-3" style={tableColumnStyle(columns[2])}>
         <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
           {set.reps}
         </Text>
       </View>
-      <View className="flex-1 items-center py-3">
+      <View className="items-center py-3" style={tableColumnStyle(columns[3])}>
         <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
           {set.partial}
         </Text>
       </View>
-      <View className="flex-1 items-center py-3">
+      <View className="items-center py-3" style={tableColumnStyle(columns[4])}>
         <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
           {set.rirRecorded === false ? t('trainingFlow.unrated') : set.repsInReserve}
         </Text>
@@ -219,12 +240,43 @@ type SetsTableProps = {
 function SetsTable({ sets }: SetsTableProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { fontScale } = useWindowDimensions();
+  const [tableWidth, setTableWidth] = useState<number | null>(null);
+  const headers = [
+    t('workoutDetail.set'),
+    t('workoutDetail.weight'),
+    t('workoutDetail.reps'),
+    t('workoutDetail.partial'),
+    // The spelled-out "reps in reserve" is in the editor; a column header only has room for the
+    // abbreviation (its accessibility label keeps the full wording).
+    t('workoutDetail.rirShort'),
+  ];
+  // Every header word stays whole: each column is as wide as its own word needs and the rest is
+  // shared, instead of five equal columns that "Частичные" overflowed into "Повторы".
+  const { fontSize, bases } = layoutTableColumns(
+    headers,
+    tableWidth === null ? null : tableWidth - theme.spacing.padding.sm * 2,
+    {
+      maxSize: theme.typography.fontSize.xs,
+      minSize: 10,
+      padding: 4,
+      minBasis: 28,
+      fontScale,
+    }
+  );
+  const headerStyle = {
+    fontSize,
+    fontWeight: theme.typography.fontWeight.semibold,
+    color: theme.colors.text.tertiary,
+    textAlign: 'center',
+  } as const;
 
   return (
     <View
       className="mt-0 overflow-hidden"
+      onLayout={(event) => setTableWidth(event.nativeEvent.layout.width)}
       style={{
-        paddingHorizontal: theme.spacing.padding.base,
+        paddingHorizontal: theme.spacing.padding.sm,
         paddingBottom: theme.spacing.padding.base,
       }}
     >
@@ -236,33 +288,29 @@ function SetsTable({ sets }: SetsTableProps) {
           borderBottomColor: theme.colors.background.ink5,
         }}
       >
-        <View className="w-12 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">{t('workoutDetail.set')}</Text>
+        <View className="items-center py-2" style={tableColumnStyle(bases[0])}>
+          <Text style={headerStyle}>{headers[0]}</Text>
         </View>
-        <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">
-            {t('workoutDetail.weight')}
+        <View className="items-center px-0.5 py-2" style={tableColumnStyle(bases[1])}>
+          <Text style={headerStyle}>{headers[1]}</Text>
+        </View>
+        <View className="items-center px-0.5 py-2" style={tableColumnStyle(bases[2])}>
+          <Text style={headerStyle}>{headers[2]}</Text>
+        </View>
+        <View className="items-center px-0.5 py-2" style={tableColumnStyle(bases[3])}>
+          <Text style={headerStyle}>{headers[3]}</Text>
+        </View>
+        <View className="items-center px-0.5 py-2" style={tableColumnStyle(bases[4])}>
+          <Text accessibilityLabel={t('workoutDetail.rir')} style={headerStyle}>
+            {headers[4]}
           </Text>
-        </View>
-        <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">
-            {t('workoutDetail.reps')}
-          </Text>
-        </View>
-        <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">
-            {t('workoutDetail.partial')}
-          </Text>
-        </View>
-        <View className="flex-1 items-center py-2">
-          <Text className="text-xs font-semibold text-text-tertiary">{t('workoutDetail.rir')}</Text>
         </View>
       </View>
 
       {/* Table Rows */}
       <View>
         {sets.map((set, index) => (
-          <SetRow key={index} set={set} />
+          <SetRow key={index} set={set} columns={bases} />
         ))}
       </View>
     </View>
@@ -291,9 +339,9 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
           borderBottomColor: theme.colors.background.ink5,
         }}
       >
-        <View className="flex-row items-center gap-3">
+        <View className="min-w-0 flex-1 flex-row items-center gap-3">
           <View
-            className="h-10 w-10 items-center justify-center rounded-full"
+            className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: exercise.iconBgColor }}
           >
             {createElement(exercise.icon, {
@@ -301,7 +349,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
               color: exercise.iconColor,
             })}
           </View>
-          <View>
+          <View className="min-w-0 flex-1">
             <Text
               className="font-bold text-text-primary"
               style={{ textDecorationLine: exercise.isSkipped ? 'line-through' : 'none' }}
@@ -318,7 +366,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
             </Text>
           </View>
         </View>
-        <View className="flex-row items-center gap-1">
+        <View className="shrink-0 flex-row items-center gap-1">
           <MenuButton
             size="md"
             color={theme.colors.text.tertiary}
@@ -768,7 +816,7 @@ export default function PastWorkoutDetailModal({
 
       {/* Sub-modals are rendered inside FullScreenModal so iOS presents them from
             the active UIViewController rather than the blocked host controller.
-            See FIXES.md for the fix pattern. */}
+            See docs/FIXES.md for the fix pattern. */}
       <PastWorkoutBottomMenu
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}

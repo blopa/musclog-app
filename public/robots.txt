@@ -4,6 +4,7 @@
 # Standard web crawlers
 User-agent: *
 Allow: /
+Disallow: /open
 Disallow: /test
 
 # AI assistants / answer engines — explicitly allowed for citation and

@@ -1,6 +1,7 @@
 import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 import { enUS } from 'date-fns/locale';
+import { Dimensions } from 'react-native';
 
 import i18n from '@/lang/lang';
 
@@ -25,6 +26,29 @@ export interface YAxisLabel {
 export const MAX_X_LABELS = 6;
 export const X_AXIS_LABEL_WIDTH = 40;
 export const X_AXIS_LABEL_OFFSET = 20;
+/** The least gap between two printed labels: the label box plus a few pixels of air. */
+const X_AXIS_LABEL_MIN_GAP = X_AXIS_LABEL_WIDTH + 4;
+/** What a plot loses to the page padding, the card padding and the y axis, off the window width. */
+const X_AXIS_GUTTERS = 150;
+
+/**
+ * How many x labels fit a window `windowWidth` wide: `MAX_X_LABELS` on a normal phone, fewer on a
+ * narrow one or at large text, where the layout width shrinks and six 40px labels ran into each
+ * other ("10/25 10/28 10/30"). N labels need N - 1 gaps of `X_AXIS_LABEL_MIN_GAP` across the plot.
+ */
+export function maxXLabelsForWidth(windowWidth: number): number {
+  const plotWidth = windowWidth - X_AXIS_GUTTERS;
+  const fitting = Math.floor(plotWidth / X_AXIS_LABEL_MIN_GAP) + 1;
+  return Math.max(2, Math.min(MAX_X_LABELS, fitting));
+}
+
+/**
+ * The edge offset the web charts pass to `getXAxisLabelEdgeMargin`. A margin on a centred label
+ * moves it by HALF of itself, so 10 only moved the last label 5px and its right end ("11/7") was
+ * cut by the chart's edge; 20 moves it 10px, which leaves a five-character date a few pixels past the plot edge (a note, not
+ * a cut) without crowding its neighbour.
+ */
+export const X_AXIS_LABEL_EDGE_MARGIN_WEB = 20;
 
 export function getXAxisLabelEdgeMargin(positionPercent: number, edgeOffset: number): number {
   if (positionPercent === 0) {
@@ -66,9 +90,10 @@ export function getXAxisLabels<T extends { x: number }>(
   }
 
   const formatLabel = formatFn || ((x: number) => format(new Date(x), 'MMM d', { locale }));
+  const maxLabels = maxXLabelsForWidth(Dimensions.get('window').width);
 
   // If we have few enough points, show all of them
-  if (data.length <= MAX_X_LABELS) {
+  if (data.length <= maxLabels) {
     return data.map((d, i) => ({
       label: formatLabel(d.x),
       positionPercent: (i / (data.length - 1)) * 100,
@@ -78,7 +103,7 @@ export function getXAxisLabels<T extends { x: number }>(
   // Otherwise, subsample, keeping the gaps between printed labels even
   const lastIndex = data.length - 1;
 
-  return pickEvenLabelIndices(data.length).map((index) => ({
+  return pickEvenLabelIndices(data.length, maxLabels).map((index) => ({
     label: formatLabel(data[index].x),
     positionPercent: (index / lastIndex) * 100,
   }));
@@ -88,17 +113,17 @@ export function getXAxisLabels<T extends { x: number }>(
 const MAX_LABEL_GAP_RATIO = 1.5;
 
 /**
- * Indices of the points to label out of `count` (> MAX_X_LABELS), always including both ends.
+ * Indices of the points to label out of `count` (> `maxLabels`), always including both ends.
  *
  * Stepping by `(count - 1) / (MAX_X_LABELS - 1)` and rounding leaves some gaps a point wider than
  * others — with 7 points it printed indices 0, 1, 2, 4, 5, 6, so one gap was double the rest and
- * read as a label missing from the axis. This takes the most labels (up to MAX_X_LABELS) whose
+ * read as a label missing from the axis. This takes the most labels (up to `maxLabels`) whose
  * widest gap is within MAX_LABEL_GAP_RATIO of the narrowest.
  */
-function pickEvenLabelIndices(count: number): number[] {
+function pickEvenLabelIndices(count: number, maxLabels: number): number[] {
   const lastIndex = count - 1;
 
-  for (let labelCount = MAX_X_LABELS; labelCount > 2; labelCount--) {
+  for (let labelCount = maxLabels; labelCount > 2; labelCount--) {
     const step = lastIndex / (labelCount - 1);
     const indices = Array.from({ length: labelCount }, (_, i) => Math.round(i * step));
     const gaps = indices.slice(1).map((index, i) => index - indices[i]);

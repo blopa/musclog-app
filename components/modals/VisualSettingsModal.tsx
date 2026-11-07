@@ -162,6 +162,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     homeHeatmapLayout,
     foodDiaryCompact,
     foodDiaryGrouping,
+    animatedLoggy,
+    showLoggy,
   } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
@@ -505,6 +507,39 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
               />
             </View>
           ) : null}
+        </View>
+
+        <View style={{ marginHorizontal: theme.spacing.padding.base }}>
+          <Text className="mb-1 px-1 text-lg font-semibold text-text-primary">
+            {t('settings.loggy.sectionTitle')}
+          </Text>
+          <Text className="mb-3 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.loggy.sectionSubtitle')}
+          </Text>
+          <ToggleInput
+            items={[
+              {
+                key: 'show_loggy',
+                label: t('settings.loggy.show.title'),
+                subtitle: t('settings.loggy.show.description'),
+                value: showLoggy,
+                onValueChange: (v: boolean) => void SettingsService.set(SETTINGS.showLoggy, v),
+              },
+              // How he moves only matters while he is shown.
+              ...(showLoggy
+                ? [
+                    {
+                      key: 'animated_loggy',
+                      label: t('settings.loggy.animated.title'),
+                      subtitle: t('settings.loggy.animated.description'),
+                      value: animatedLoggy,
+                      onValueChange: (v: boolean) =>
+                        void SettingsService.set(SETTINGS.animatedLoggy, v),
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </View>
       </View>
       <BottomPopUp

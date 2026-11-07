@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 
 /**
@@ -15,6 +16,13 @@ export type SetData = Pick<WorkoutLogSet, 'weight' | 'reps' | 'partials'> & {
   isWarmup?: boolean;
 };
 
+/**
+ * Column weights shared with `SetRow` so the header sits over its values. Weight carries a unit
+ * ("176.4 lb") and partial reps a long header, so neither gets a third of what is left.
+ */
+export const WEIGHT_COLUMN_FLEX = 1.3;
+export const PARTIALS_COLUMN_FLEX = 0.95;
+
 type SetRowProps = {
   set: SetData;
   isLast: boolean;
@@ -24,6 +32,7 @@ type SetRowProps = {
 
 export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps) {
   const theme = useTheme();
+  const isCramped = useIsCramped();
   const isCurrent = set.isCurrent;
   const isSkipped = set.isSkipped ?? false;
   const isHighlighted = isCurrent && !isSkipped;
@@ -57,7 +66,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
       }}
     >
       {/* Set Number */}
-      <View className="w-8 items-center">
+      <View className="w-6 items-center">
         <View
           className="h-5 w-5 items-center justify-center rounded-full"
           style={{
@@ -79,9 +88,9 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
       </View>
 
       {/* Weight */}
-      <View className="flex-1 items-center">
+      <View className="min-w-0 items-center px-0.5" style={{ flex: WEIGHT_COLUMN_FLEX }}>
         <Text
-          className="text-base font-semibold tabular-nums"
+          className={`${isCramped ? 'text-sm' : 'text-base'} font-semibold tabular-nums`}
           style={{ color: valueColor, textDecorationLine: textDecoration }}
         >
           {set.weight}
@@ -90,7 +99,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
       </View>
 
       {/* Reps */}
-      <View className="flex-1 items-center">
+      <View className="min-w-0 flex-1 items-center px-0.5">
         <Text
           className="text-base font-semibold tabular-nums"
           style={{ color: valueColor, textDecorationLine: textDecoration }}
@@ -101,7 +110,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
 
       {/* Partials */}
       {!isPreview ? (
-        <View className="flex-1 items-center">
+        <View className="min-w-0 items-center px-0.5" style={{ flex: PARTIALS_COLUMN_FLEX }}>
           <Text
             className="text-sm tabular-nums"
             style={{

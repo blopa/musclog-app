@@ -152,6 +152,36 @@
       "minutes": "hace {{value}} min",
       "hours": "hace {{value}} h",
       "days": "hace {{value}} d"
+    },
+    "a11y": {
+      "notifications": "Notificaciones",
+      "editProfile": "Editar perfil",
+      "previousDay": "Día anterior",
+      "nextDay": "Día siguiente",
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "openCamera": "Abrir cámara",
+      "chooseFromGallery": "Elegir de la galería",
+      "takePhoto": "Hacer foto",
+      "increase": "Aumentar",
+      "decrease": "Disminuir",
+      "moreInfo": "Más información",
+      "moreOptions": "Más opciones",
+      "add": "Añadir",
+      "dismiss": "Descartar",
+      "remove": "Quitar",
+      "scanBarcode": "Escanear código de barras",
+      "send": "Enviar",
+      "attachFile": "Adjuntar un archivo",
+      "removeImage": "Quitar imagen",
+      "choosePhoto": "Elegir una foto",
+      "chooseIcon": "Elegir icono",
+      "moveUp": "Subir",
+      "moveDown": "Bajar",
+      "filter": "Filtrar",
+      "clearSearch": "Borrar búsqueda",
+      "showValue": "Mostrar valor",
+      "hideValue": "Ocultar valor"
     }
   }
 }

@@ -1,10 +1,10 @@
 import { Minus, Plus } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { TextInputInstance } from 'react-native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
-
 interface NewNumericalInputProps {
   label: string;
   value: number;
@@ -22,6 +22,7 @@ export default function NewNumericalInput({
   step = 1,
   variant = 'default',
 }: NewNumericalInputProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [inputValue, setInputValue] = useState(value.toString());
   const inputRef = useRef<TextInputInstance | null>(null);
@@ -80,7 +81,13 @@ export default function NewNumericalInput({
         className={`flex w-full flex-row items-center justify-between rounded-card ${isCompact ? 'gap-0.5 px-2.5 py-1.5' : 'gap-2 px-4 py-3'}`}
         style={{ backgroundColor: theme.colors.background.filterTab }}
       >
-        <Pressable onPress={handleDecrement} className="flex-shrink-0" hitSlop={12}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.decrease')}
+          onPress={handleDecrement}
+          className="flex-shrink-0"
+          hitSlop={12}
+        >
           <Minus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
         <TextInput
@@ -94,7 +101,13 @@ export default function NewNumericalInput({
           placeholderTextColor={theme.colors.text.secondary}
           selectTextOnFocus={true}
         />
-        <Pressable onPress={handleIncrement} className="flex-shrink-0" hitSlop={12}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.increase')}
+          onPress={handleIncrement}
+          className="flex-shrink-0"
+          hitSlop={12}
+        >
           <Plus size={isCompact ? 16 : 20} color={theme.colors.accent.secondary} strokeWidth={3} />
         </Pressable>
       </View>

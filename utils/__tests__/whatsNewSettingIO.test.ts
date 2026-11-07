@@ -28,6 +28,16 @@ test('reads persisted defaults, writes only valid values', async () => {
   await expect(writeWhatsNewSetting('reviewWeekday', 7)).rejects.toThrow();
   expect(SettingsService.set).toHaveBeenCalledTimes(1);
 });
+test('Loggy toggles read and write the same settings as Appearance and home', async () => {
+  expect(await WHATS_NEW_SETTING_IO.showLoggy.read()).toBe(true);
+  expect(await WHATS_NEW_SETTING_IO.animatedLoggy.read()).toBe(true);
+  await writeWhatsNewSetting('showLoggy', false);
+  await writeWhatsNewSetting('animatedLoggy', false);
+  expect(SettingsService.set).toHaveBeenCalledWith(SETTINGS.showLoggy, false);
+  expect(SettingsService.set).toHaveBeenCalledWith(SETTINGS.animatedLoggy, false);
+  await expect(writeWhatsNewSetting('showLoggy', 'off')).rejects.toThrow();
+  expect(SettingsService.set).toHaveBeenCalledTimes(2);
+});
 test('reschedules only after a successful weekday write', async () => {
   await writeWhatsNewSetting('reviewWeekday', 5);
   expect(SettingsService.set).toHaveBeenCalledWith(SETTINGS.reviewWeekday, 5);

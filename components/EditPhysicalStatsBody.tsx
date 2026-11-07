@@ -213,14 +213,17 @@ export function EditPhysicalStatsBody({
 
           {/* Fat Percentage */}
           <View className="mt-4">
-            <View className="flex-row items-center justify-between">
+            <View className="flex-row flex-wrap items-center justify-between gap-x-3 gap-y-1">
               <Text className="text-sm font-medium text-text-secondary">
                 {t('editFitnessDetails.fatPercentage')}
               </Text>
               {fatPercentage === null ? (
-                <Pressable onPress={() => setFatPercentage(20)} className="active:opacity-70">
+                <Pressable
+                  onPress={() => setFatPercentage(20)}
+                  className="ml-auto shrink active:opacity-70"
+                >
                   <Text
-                    className="text-sm font-medium"
+                    className="text-right text-sm font-medium"
                     style={{ color: theme.colors.text.tertiary }}
                   >
                     {t('editFitnessDetails.fatPercentageNotSet')}

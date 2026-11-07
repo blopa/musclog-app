@@ -102,11 +102,6 @@ export function WeeklyStreakCard({
                           backgroundColor: filled
                             ? theme.colors.accent.primary
                             : theme.colors.background.ink10,
-                          shadowColor: theme.colors.accent.primary,
-                          shadowOffset: { width: 0, height: 0 },
-                          shadowOpacity: filled ? 0.45 : 0,
-                          shadowRadius: filled ? 8 : 0,
-                          elevation: filled ? 3 : 0,
                         }}
                       />
                     </Fragment>

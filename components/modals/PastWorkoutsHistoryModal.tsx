@@ -65,6 +65,8 @@ function SearchAndFilterHeader({
           />
         </View>
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.a11y.filter')}
           className="h-12 w-12 items-center justify-center border"
           style={{
             backgroundColor: theme.colors.background.card,
@@ -208,17 +210,17 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
     >
       <GenericCard variant="flat" isPressable={true} onPress={onPress}>
         <View className="flex-col gap-4 p-4">
-          <View className="flex-row items-start justify-between">
-            <View className="flex-row items-center gap-3">
+          <View className="flex-row items-start justify-between gap-2">
+            <View className="min-w-0 flex-1 flex-row items-center gap-3">
               <View
-                className="h-12 w-12 items-center justify-center rounded-control"
+                className="h-12 w-12 shrink-0 items-center justify-center rounded-control"
                 style={{
                   backgroundColor: workout.iconBgOpacity,
                 }}
               >
                 <Icon size={theme.iconSize.xl} color={workout.iconBgColor} />
               </View>
-              <View>
+              <View className="min-w-0 flex-1">
                 <Text
                   className="font-bold"
                   style={{
@@ -240,7 +242,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
             </View>
             {workout.prCount ? (
               <View
-                className="flex-row items-center gap-1 rounded-tag px-2 py-0.5"
+                className="shrink-0 flex-row items-center gap-1 rounded-tag px-2 py-0.5"
                 style={{
                   backgroundColor: theme.colors.status.brandBright10,
                 }}
@@ -265,11 +267,13 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
             ) : null}
           </View>
 
-          <View className="flex-row gap-2">
+          {/* Tiles size to their label ("Длительность") and wrap onto a second row only when the
+              three cannot sit side by side, instead of breaking the word. */}
+          <View className="flex-row flex-wrap gap-2">
             {workout.stats.map((stat, statIndex) => (
               <View
                 key={statIndex}
-                className="flex-1 rounded-control p-2"
+                className="grow rounded-control p-2"
                 style={{
                   backgroundColor: theme.colors.background.ink5,
                 }}

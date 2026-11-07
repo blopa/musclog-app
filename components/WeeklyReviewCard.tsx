@@ -80,12 +80,16 @@ export function WeeklyReviewCard({
     );
   }
 
+  // A review that is waiting is deliberately loud: accent border, tinted fill, solid icon chip and
+  // solid status badge. It is a once-a-week call to action, and the accent frame is what makes it
+  // read as "something is due" rather than another row. A deslop pass flattened it once and the
+  // owner asked for it back, so deslopGuards.test.ts pins it. Do not strip it again.
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`${t('weeklyReview.title')}, ${statusLabel}`}
       onPress={() => router.push(WEEKLY_REVIEW_ROUTE)}
-      className={`flex-row items-center gap-3 rounded-card border ${ready ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'} ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
+      className={`flex-row items-center gap-3 rounded-card border active:opacity-70 ${ready ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'} ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
       testID="weekly-review-entry"
     >
       <View
@@ -100,7 +104,7 @@ export function WeeklyReviewCard({
         <Text className={`font-semibold text-text-primary ${compact ? 'text-sm' : 'text-base'}`}>
           {t('weeklyReview.title')}
         </Text>
-        {/* Status as its own pill on the second line: beside the title it ran into it, and in
+        {/* Status as its own badge on the second line: beside the title it ran into it, and in
             compact mode the week it refers to was not shown at all. */}
         <View className="flex-row flex-wrap items-center" style={{ gap: 6 }}>
           <View

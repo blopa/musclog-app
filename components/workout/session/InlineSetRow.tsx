@@ -136,7 +136,7 @@ export function InlineSetRow({
         accessibilityRole="button"
         accessibilityLabel={`${setName}, ${t('trainingFlow.usePrevious')}`}
         onPress={() => onEdit(draftFromPrevious(values, previous, units, locale))}
-        className={compact ? 'justify-center' : 'min-w-0 flex-1 justify-center'}
+        className="min-w-0 flex-1 justify-center"
         style={{ minHeight: 44 }}
         testID={`set-${set.id}-previous`}
       >
@@ -145,16 +145,38 @@ export function InlineSetRow({
         </Text>
       </Pressable>
     ) : (
-      <Text
-        className={
-          compact ? 'text-sm text-text-secondary' : 'min-w-0 flex-1 text-sm text-text-secondary'
-        }
-      >
+      <Text className="min-w-0 flex-1 text-sm text-text-secondary">
         {previous
           ? `${formatDisplayWeightKg(locale, units, previous.weightKg)} × ${formatInteger(previous.reps, { useGrouping: false })}`
           : '–'}
       </Text>
     );
+
+  // The complete button sits at the end of the entry line, or — on a narrow layout where the
+  // fields, the set number and the check would not fit the row — on the line under the fields,
+  // beside last time's numbers. The row itself never grows past its surface.
+  const checkButton = (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={done ? t('trainingFlow.reopen') : t('trainingFlow.complete')}
+      accessibilityState={{ disabled: busy, checked: done }}
+      disabled={busy}
+      onPress={onComplete}
+      testID={`set-${set.id}-complete`}
+      className={`items-center justify-center rounded-control ${done ? 'bg-accent-primary' : 'border border-border-default bg-bg-cardElevated'}`}
+      style={{ width: SET_TABLE_COLUMNS.check, height: 44 }}
+    >
+      {skipped ? (
+        <SkipForward size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+      ) : (
+        <Check
+          size={theme.iconSize.md}
+          strokeWidth={3}
+          color={done ? theme.colors.text.onAccent : theme.colors.text.tertiary}
+        />
+      )}
+    </Pressable>
+  );
 
   return (
     <View className={`rounded-control border px-1 py-1 ${surface}`} testID={`set-${set.id}`}>
@@ -182,28 +204,14 @@ export function InlineSetRow({
         {compact ? <View className="flex-1" /> : previousCell}
         {input('weight', t('workoutSession.weight'), SET_TABLE_COLUMNS.weight)}
         {input('reps', t('workoutSession.reps'), SET_TABLE_COLUMNS.reps)}
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={done ? t('trainingFlow.reopen') : t('trainingFlow.complete')}
-          accessibilityState={{ disabled: busy, checked: done }}
-          disabled={busy}
-          onPress={onComplete}
-          testID={`set-${set.id}-complete`}
-          className={`items-center justify-center rounded-control ${done ? 'bg-accent-primary' : 'border border-border-default bg-bg-cardElevated'}`}
-          style={{ width: SET_TABLE_COLUMNS.check, height: 44 }}
-        >
-          {skipped ? (
-            <SkipForward size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-          ) : (
-            <Check
-              size={theme.iconSize.md}
-              strokeWidth={3}
-              color={done ? theme.colors.text.onAccent : theme.colors.text.tertiary}
-            />
-          )}
-        </Pressable>
+        {compact ? null : checkButton}
       </View>
-      {compact ? previousCell : null}
+      {compact ? (
+        <View className="flex-row items-center gap-2">
+          {previousCell}
+          {checkButton}
+        </View>
+      ) : null}
       {isCurrent && editable ? (
         <View className="gap-1 px-1 pb-2 pt-1">
           <RirQuickPick

@@ -13,6 +13,10 @@
           "title": "Descargar Musclog",
           "description": "Descarga Musclog para Android o entra en TestFlight para iOS y empieza a registrar entrenamientos, nutricion y progreso con tus datos privados en tu dispositivo."
         },
+        "open": {
+          "title": "Abrir en Musclog",
+          "description": "Abre en la app Musclog un plan de entrenamiento o un registro de comida creado por tu asistente de IA."
+        },
         "exercises": {
           "title": "Biblioteca de ejercicios de Musclog",
           "description": "Explora la biblioteca de ejercicios de Musclog con grupos musculares, equipo, mecanica, instrucciones y visuales para crear mejores entrenamientos."
@@ -79,7 +83,7 @@
       "badge2": "Sin cuenta necesaria",
       "title1": "Controla Tus",
       "title2": "Datos de Fitness",
-      "subheading": "Un rastreador de fitness local-first, open-source. Sin cuentas, sin rastreo, sin nube. Solo tú y tus ganancias.",
+      "subheading": "Registra entrenamientos, comidas y medidas corporales. Tus datos se quedan en tu dispositivo y la app funciona sin conexión.",
       "github": "Ver en GitHub",
       "demoEyebrow": "Vista instantánea",
       "demoTitle": "Prueba la demo web",
@@ -198,27 +202,9 @@
       "description": "Elige la paleta que encaje con tu entrenamiento. Todas las pantallas la siguen, incluidos los gráficos, la cámara y la barra de pestañas.",
       "footnote": "Cámbialo cuando quieras en Ajustes. Musclog también sigue el modo claro u oscuro de tu dispositivo si prefieres no elegir."
     },
-    "features": {
-      "title": "Construido para Rendimiento y Privacidad",
-      "description": "Sin telemetría, sin rastreo, sin suscripción. Solo un motor potente para tu viaje de fitness.",
-      "strengthTracking": {
-        "title": "Rastreo de Fuerza Offline",
-        "description": "Registra tus sets y repeticiones directamente en tu dispositivo. Sin internet necesaria. Tus datos nunca salen de tu bolsillo."
-      },
-      "privacyFirst": {
-        "title": "Privacidad en Primer Lugar",
-        "description": "Sin registros, sin logins y sin rastreo de terceros. Musclog respeta tu soberanía digital.",
-        "link": "Política de privacidad"
-      },
-      "openSource": {
-        "title": "Open Source",
-        "description": "Musclog es impulsado por la comunidad. Audita el código, contribuye con funciones o haz un fork para personalizarlo.",
-        "link": "Ver código"
-      }
-    },
     "featureGrid": {
-      "title": "Todo lo que Necesitas para Entrenar de Forma Más Inteligente",
-      "description": "Desde el entrenamiento con IA hasta análisis detallados, Musclog ofrece las herramientas para que tengas control total de tu viaje de fitness.",
+      "title": "Qué Hace Musclog",
+      "description": "Herramientas para registrar, planificar y revisar. Las funciones con IA son opcionales.",
       "items": {
         "aiCoach": {
           "title": "Entrenador de IA (Loggy)",
@@ -254,27 +240,9 @@
         }
       }
     },
-    "howItWorks": {
-      "title": "Cómo Funciona",
-      "description": "Empieza en minutos. Sin configuración complicada, sin suscripciones, sin recopilación de datos.",
-      "steps": {
-        "step1": {
-          "title": "Descarga y Empieza",
-          "description": "Instala Musclog desde la App Store o Google Play. Sin cuenta: solo ábrela y empieza a registrar."
-        },
-        "step2": {
-          "title": "Registra Tu Entrenamiento",
-          "description": "Registra sets, repeticiones y pesos. Escanea códigos de barras o haz fotos para registrar comidas. Todo se queda en tu dispositivo."
-        },
-        "step3": {
-          "title": "Sigue el Progreso",
-          "description": "Revisa check-ins semanales, visualiza tendencias y deja que el entrenador de IA te ayude a optimizar tu enfoque."
-        }
-      }
-    },
     "cta": {
-      "title": "¿Listo para empezar?",
-      "description": "Descarga Musclog y guarda tus registros de entrenamiento y comida en tu propio dispositivo. Sin cuenta ni suscripción.",
+      "title": "Consigue Musclog",
+      "description": "Guarda tus registros de entrenamiento y comida en tu propio dispositivo. Gratis y de código abierto.",
       "download": "Descargar Ahora",
       "close": "Cerrar",
       "sourceCode": "Ver Código Fuente"
@@ -358,7 +326,7 @@
       "hero": {
         "eyebrow": "Visor de progreso para escritorio",
         "title": "Importa aquí los datos exportados de tu app Musclog",
-        "description": "Sube tu exportación JSON de Musclog para desbloquear un panel de progreso en el navegador con tendencias de peso, patrones de nutrición, volumen de entrenamiento y correlaciones clave optimizadas para pantallas grandes.",
+        "description": "Sube tu exportación JSON de Musclog para abrir un panel de progreso en el navegador con tendencias de peso, patrones de nutrición, volumen de entrenamiento y correlaciones clave optimizadas para pantallas grandes.",
         "points": {
           "weight": {
             "title": "Peso y composición corporal",
@@ -456,10 +424,19 @@
     "download": {
       "pageTitle": "Descargar Musclog",
       "eyebrow": "Empieza a registrar hoy",
-      "title": "¿Listo para enfocarte?",
+      "title": "Descarga Musclog",
       "subtitle": "Descarga Musclog ahora y mantén tu entrenamiento, nutrición y progreso en un solo lugar privado.",
       "googleLabel": "Descargar Musclog en Google Play",
       "appleLabel": "Descargar Musclog en la App Store"
+    },
+    "open": {
+      "title": "Abrir en Musclog",
+      "descriptionWorkout": "Tu plan de entrenamiento está listo. Ábrelo en Musclog para revisarlo antes de guardar nada.",
+      "descriptionFood": "Tu registro de comida está listo. Ábrelo en Musclog para revisarlo antes de guardar nada.",
+      "descriptionEmpty": "Este enlace no contiene datos para importar. Vuelve a tu chat y toca el enlace de nuevo.",
+      "openButton": "Abrir en Musclog",
+      "installHint": "¿Aún no tienes Musclog?",
+      "installLink": "Descargar Musclog"
     },
     "footer": {
       "privacyPolicy": "Política de Privacidad",
@@ -481,7 +458,7 @@
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidad",
-      "lastUpdated": "Última actualización: 25 de abril de 2026",
+      "lastUpdated": "Última actualización: 5 de noviembre de 2026",
       "highlights": {
         "dataProtection": {
           "title": "Protección de datos",
@@ -689,12 +666,14 @@
             "Ubicación geográfica general (a nivel de país o ciudad, no ubicación precisa)",
             "Tipo de navegador, tipo de dispositivo y sistema operativo",
             "Sitio web o motor de búsqueda de referencia",
-            "Eventos de interacción anónimos (p. ej., clics en enlaces)"
+            "Eventos de interacción anónimos (p. ej., clics en enlaces)",
+            "Las etiquetas de campaña (utm_source, utm_medium, utm_campaign) del enlace por el que llegaste, asociadas a los clics en Google Play, App Store y la demo"
           ],
           "content4": "Base legal para GA4: Consentimiento (RGPD Art. 6(1)(a)). Puedes retirar tu consentimiento en cualquier momento haciendo clic en \"Configuración de cookies\" en el pie de página. La retirada del consentimiento impedirá cualquier recopilación adicional y no afectará la legalidad del procesamiento realizado antes de la retirada.",
           "content5": "Los datos de GA4 se retienen en Google Analytics durante 14 meses de forma predeterminada. Google actúa como procesador de datos bajo un Acuerdo de Procesamiento de Datos. Para más información sobre cómo Google maneja los datos, consulta la",
           "googlePrivacyPolicy": "Política de Privacidad de Google",
-          "content6": "Tu elección de consentimiento se almacena localmente en tu navegador (localStorage) y nunca se envía a nuestros servidores. Se utiliza únicamente para recordar tu preferencia entre visitas."
+          "content6": "Tu elección de consentimiento se almacena localmente en tu navegador (localStorage) y nunca se envía a nuestros servidores. Se utiliza únicamente para recordar tu preferencia entre visitas.",
+          "content7": "Si el enlace que seguiste lleva etiquetas de campaña (por ejemplo ?utm_source=reddit), el sitio las guarda en el almacenamiento de sesión de tu navegador hasta que cierres la pestaña, para saber qué publicación o anuncio llevó a la visita. Solo se envían a Google Analytics después de que aceptes la analítica. Cuando abres Google Play desde este sitio, las mismas etiquetas se añaden al enlace de la tienda como referencia de instalación, lo que nos permite ver en Google Play Console cuántas instalaciones vinieron de cada campaña; Google Play las recibe porque seguiste ese enlace, no desde el almacenamiento de tu navegador. Las etiquetas describen el enlace, nunca a ti, y no contienen datos personales."
         }
       },
       "appVsWebsite": {
@@ -728,7 +707,7 @@
     "terms": {
       "titleStart": "Términos y",
       "conditions": "Condiciones",
-      "lastUpdated": "Última actualización: 25 de abril de 2026",
+      "lastUpdated": "Última actualización: 5 de noviembre de 2026",
       "highlights": {
         "agreement": {
           "title": "Acuerdo de uso",

@@ -35,6 +35,14 @@ export const WHATS_NEW_SETTING_IO: SettingIO = {
     read: () => SettingsService.get(SETTINGS.restTimerHaptics),
     write: (v) => SettingsService.set(SETTINGS.restTimerHaptics, v),
   },
+  showLoggy: {
+    read: () => SettingsService.get(SETTINGS.showLoggy),
+    write: (v) => SettingsService.set(SETTINGS.showLoggy, v),
+  },
+  animatedLoggy: {
+    read: () => SettingsService.get(SETTINGS.animatedLoggy),
+    write: (v) => SettingsService.set(SETTINGS.animatedLoggy, v),
+  },
   reviewWeekday: {
     read: () => SettingsService.get(SETTINGS.reviewWeekday),
     write: async (value) => {

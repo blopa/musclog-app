@@ -78,7 +78,7 @@ export function DatePickerInput({
         accessibilityRole="button"
         onPress={onPress}
         disabled={disabled}
-        className={`flex-row items-center gap-2 ${className ?? ''}`}
+        className={`min-h-11 flex-row items-center gap-2 ${className ?? ''}`}
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       >
         <Text className="text-xl font-semibold text-text-primary">{display}</Text>

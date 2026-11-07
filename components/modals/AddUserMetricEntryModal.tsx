@@ -1,7 +1,7 @@
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -19,6 +19,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
+import { fitLineFontSize } from '@/utils/fitText';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
@@ -83,6 +84,9 @@ export default function AddUserMetricEntryModal({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [pagerHeight, setPagerHeight] = useState<number | null>(null);
+  const { fontScale } = useWindowDimensions();
+  /** The width between the stepper buttons, which the big number has to fit. */
+  const [valueSlotWidth, setValueSlotWidth] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const pageIndexToMetric: MetricType[] = ['weight', 'body_fat', 'height'];
@@ -323,6 +327,8 @@ export default function AddUserMetricEntryModal({
       }
     };
 
+    const valueText = config.step < 1 ? formatDecimal(value, 1) : formatInteger(Math.round(value));
+
     return (
       <View className="p-6">
         {/* Metric Input Section */}
@@ -341,6 +347,8 @@ export default function AddUserMetricEntryModal({
             }}
           >
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.decrease')}
               onPress={handleDecrement}
               className="h-14 w-14 items-center justify-center rounded-full"
               style={{
@@ -352,13 +360,29 @@ export default function AddUserMetricEntryModal({
               <Minus size={theme.iconSize.xl} color={theme.colors.text.primary} />
             </Pressable>
 
-            <View className="flex-1 items-center">
-              <Text className="text-center text-6xl font-bold text-text-primary">
-                {config.step < 1 ? formatDecimal(value, 1) : formatInteger(Math.round(value))}
+            <View
+              className="min-w-0 flex-1 items-center"
+              onLayout={(e) => setValueSlotWidth(e.nativeEvent.layout.width)}
+            >
+              <Text
+                className="text-center font-bold text-text-primary"
+                // 60pt does not fit between the buttons at large text ("154" ran under both).
+                style={{
+                  fontSize: fitLineFontSize(valueText, valueSlotWidth, {
+                    maxSize: theme.typography.fontSize['6xl'],
+                    minSize: theme.typography.fontSize['2xl'],
+                    fontScale,
+                  }),
+                }}
+                numberOfLines={1}
+              >
+                {valueText}
               </Text>
             </View>
 
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.increase')}
               onPress={handleIncrementAction}
               className="h-14 w-14 items-center justify-center rounded-full"
               style={{

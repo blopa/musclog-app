@@ -42,6 +42,7 @@ jest.mock('@/data/exercisesData.json', () => [
     equipmentType: 'barbell',
     mechanicType: 'compound',
     targetMuscles: ['pectoralis_major', 'triceps'],
+    secondaryMuscles: ['triceps'],
     loadMultiplier: 1,
   },
   {
@@ -268,7 +269,7 @@ const currentCatalogue = () => [
 
 const currentCatalogueLinks = () => [
   { exerciseId: 'fx-Bench_Press', muscleId: 'muscle-chest', role: 'primary' },
-  { exerciseId: 'fx-Bench_Press', muscleId: 'muscle-triceps', role: 'primary' },
+  { exerciseId: 'fx-Bench_Press', muscleId: 'muscle-triceps', role: 'secondary' },
   { exerciseId: 'fx-Squat', muscleId: 'muscle-quads', role: 'primary' },
   { exerciseId: 'fx-Deadlift', muscleId: 'muscle-hamstrings', role: 'primary' },
   { exerciseId: 'fx-Smith_Machine_Squat', muscleId: 'muscle-quads', role: 'primary' },
@@ -306,7 +307,8 @@ describe('AppExerciseCatalogueService', () => {
 
   it('removes duplicate and stale links while normalizing retained roles', async () => {
     const links = currentCatalogueLinks();
-    links.find(({ muscleId }) => muscleId === 'muscle-triceps')!.role = 'secondary';
+    // The pre-secondary-muscle state: every link was written as primary.
+    links.find(({ muscleId }) => muscleId === 'muscle-triceps')!.role = 'primary';
     mockDb.setTables({
       exercises: currentCatalogue(),
       exercise_muscles: [
@@ -320,6 +322,64 @@ describe('AppExerciseCatalogueService', () => {
 
     expect(report).toMatchObject({ linksDestroyed: 2, linksUpdated: 1 });
     expect(await AppExerciseCatalogueService.isComplete()).toBe(true);
+  });
+
+  it('writes the role of each link from the primary and secondary muscle lists', async () => {
+    await AppExerciseCatalogueService.sync();
+
+    const roles = mockDb
+      .getTable('exercise_muscles')
+      .filter(({ exerciseId }) => exerciseId === 'fx-Bench_Press')
+      .map(({ muscleId, role }) => [muscleId, role]);
+    expect(roles).toEqual(
+      expect.arrayContaining([
+        ['muscle-chest', 'primary'],
+        ['muscle-triceps', 'secondary'],
+      ])
+    );
+    expect(roles).toHaveLength(2);
+  });
+
+  it('reconciles an all-primary link set to the catalogue roles without re-creating links', async () => {
+    mockDb.setTables({
+      exercises: currentCatalogue(),
+      exercise_muscles: currentCatalogueLinks().map((link) => ({ ...link, role: 'primary' })),
+    });
+
+    const report = await AppExerciseCatalogueService.sync();
+
+    expect(report).toMatchObject({ linksCreated: 0, linksDestroyed: 0, linksUpdated: 1 });
+    const triceps = mockDb
+      .getTable('exercise_muscles')
+      .find(
+        ({ exerciseId, muscleId }) =>
+          exerciseId === 'fx-Bench_Press' && muscleId === 'muscle-triceps'
+      );
+    expect(triceps.role).toBe('secondary');
+    expect(await AppExerciseCatalogueService.isComplete()).toBe(true);
+  });
+
+  it('treats an all-primary link set as incomplete until sync corrects its roles', async () => {
+    mockDb.setTables({
+      exercises: currentCatalogue(),
+      exercise_muscles: currentCatalogueLinks().map((link) => ({ ...link, role: 'primary' })),
+    });
+
+    expect(await AppExerciseCatalogueService.isComplete()).toBe(false);
+  });
+
+  it('is a no-op on the second sync, with no link updates', async () => {
+    await AppExerciseCatalogueService.sync();
+
+    const second = await AppExerciseCatalogueService.sync();
+
+    expect(second).toMatchObject({
+      exercisesCreated: 0,
+      exercisesUpdated: 0,
+      linksCreated: 0,
+      linksUpdated: 0,
+      linksDestroyed: 0,
+    });
   });
 
   it('persists generated Smith-machine equipment without localized-name inference', async () => {

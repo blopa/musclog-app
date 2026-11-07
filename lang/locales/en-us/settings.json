@@ -166,7 +166,7 @@
       "progressionModeWeightFirst": "Prioritize weight progression",
       "progressionModeWeightFirstSubtitle": "Increase weight directly when RIR is high, rather than adding reps",
       "enableAdvancedDataManagement": "Enable advanced data management",
-      "enableAdvancedDataManagementSubtitle": "Unlock raw access to your app data (for advanced users only)",
+      "enableAdvancedDataManagementSubtitle": "Allow raw access to your app data (for advanced users only)",
       "enableAdvancedDataManagementConfirmTitle": "Advanced users only",
       "enableAdvancedDataManagementConfirmMessage": "This is only for advanced users. Playing around with the data here can crash your app beyond repair. Only use it if you know what you're doing.",
       "dataManagement": "Data management",
@@ -344,6 +344,18 @@
       "fats": "Fats",
       "fiber": "Fiber",
       "alcohol": "Alcohol"
+    },
+    "loggy": {
+      "sectionTitle": "Loggy",
+      "sectionSubtitle": "Choose how the mascot appears.",
+      "show": {
+        "title": "Show Loggy",
+        "description": "The mascot appears on welcome screens, empty screens and celebrations. Turn off to hide him everywhere. Your AI coach keeps its picture."
+      },
+      "animated": {
+        "title": "Animated Loggy",
+        "description": "Loggy moves a little when he shows up. Turn off to always see him standing still."
+      }
     },
     "foodDiary": {
       "sectionTitle": "Food diary",

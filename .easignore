@@ -110,6 +110,8 @@ devenv.local.yaml
 
 # Large assets used only for documentation/marketing or fetched from cloud
 screenshots
+# Local output of `npm run layout:audit` (annotated screenshots and reports)
+layout-audit-report
 docs
 examples
 data/examples

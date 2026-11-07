@@ -13,6 +13,8 @@ jest.mock('@/utils/whatsNew/settingIO', () => ({
       autoStartRestTimer: true,
       restTimerHaptics: true,
       reviewWeekday: 1,
+      showLoggy: true,
+      animatedLoggy: true,
     }).map(([setting, value]) => [setting, { read: jest.fn(async () => value) }])
   ),
   writeWhatsNewSetting: jest.fn(async () => undefined),

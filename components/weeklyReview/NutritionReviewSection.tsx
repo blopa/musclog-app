@@ -288,22 +288,28 @@ export function NutritionReviewSection({
           disabled={busy}
           onPress={onApply}
         />
-        <View className="flex-row gap-3">
-          <Button
-            label={t('weeklyReview.keepShort')}
-            variant="outline"
-            width="flex-1"
-            disabled={busy}
-            onPress={onKeep}
-          />
-          <Button
-            label={t('weeklyReview.editShort')}
-            icon={PencilLine}
-            variant="outline"
-            width="flex-1"
-            disabled={busy}
-            onPress={onEdit}
-          />
+        {/* Each action takes half the row but wraps to its own line when a label cannot fit
+            beside the other (flex-1 has no basis, so it never wraps). */}
+        <View className="flex-row flex-wrap gap-3">
+          <View className="grow basis-[140px]">
+            <Button
+              label={t('weeklyReview.keepShort')}
+              variant="outline"
+              width="full"
+              disabled={busy}
+              onPress={onKeep}
+            />
+          </View>
+          <View className="grow basis-[140px]">
+            <Button
+              label={t('weeklyReview.editShort')}
+              icon={PencilLine}
+              variant="outline"
+              width="full"
+              disabled={busy}
+              onPress={onEdit}
+            />
+          </View>
         </View>
       </View>
     );

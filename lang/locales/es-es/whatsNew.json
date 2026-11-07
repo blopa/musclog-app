@@ -137,6 +137,105 @@
           "title": "Un diario del ciclo privado y cifrado",
           "description": "Tus periodos y registros diarios ahora se cifran en tu dispositivo. Las predicciones indican su nivel de confianza y la estimación de la ventana fértil es opcional y viene desactivada. Los recordatorios pueden ser tan discretos como quieras, y un widget de ciclo de solo lectura no muestra nada personal con un bloqueo de la app."
         }
+      },
+      "v2_16_0": {
+        "loggy": {
+          "title": "Conoce a Loggy",
+          "description": "Loggy es la mascota de Musclog. Te da la bienvenida, acompaña las pantallas vacías y aparece cuando logras algo por primera vez. Puedes cambiar cómo aparece aquí abajo o más tarde en Ajustes → Apariencia e inicio.",
+          "show": {
+            "title": "Mostrar a Loggy",
+            "description": "Desactívalo para ocultarlo en todas partes. Tu coach de IA conserva su imagen."
+          },
+          "animated": {
+            "title": "Loggy animado",
+            "description": "Desactívalo para verlo siempre quieto. Solo se aplica mientras Loggy se muestra."
+          }
+        },
+        "importHistory": {
+          "title": "Trae tu historial de entrenamiento",
+          "description": "¿Vienes de otra app? Trae tus entrenamientos anteriores para que tus récords y tu progreso empiecen desde el primer día.",
+          "items": {
+            "apps": {
+              "label": "Strong, Hevy y FitNotes",
+              "description": "Elige el archivo que exportaste de la app."
+            },
+            "twice": {
+              "label": "Se puede repetir sin miedo",
+              "description": "Importar el mismo archivo dos veces no añade nada."
+            },
+            "undo": {
+              "label": "Fácil de deshacer",
+              "description": "Quita todo lo que añadió una importación cuando quieras."
+            }
+          },
+          "action": {
+            "label": "Importar entrenamientos",
+            "description": "También puedes hacerlo más tarde en Ajustes → Copias y datos."
+          }
+        },
+        "yearInReview": {
+          "title": "Tu año en Musclog",
+          "description": "Cada diciembre, repasa todo lo que hiciste durante el año.",
+          "items": {
+            "look": {
+              "label": "Sesiones, récords y días entrenados",
+              "description": "Tu año en números y en pósters que puedes ir pasando."
+            },
+            "share": {
+              "label": "Compártelo como imagen",
+              "description": "Publícalo o guárdalo para ti."
+            },
+            "private": {
+              "label": "Privado por defecto",
+              "description": "El peso y la nutrición quedan fuera si no los añades."
+            }
+          },
+          "action": {
+            "label": "Ver mi año hasta ahora"
+          }
+        },
+        "strengthLevels": {
+          "title": "Niveles de fuerza",
+          "description": "Mira cómo se comparan tus levantamientos principales con tu peso corporal y qué hace falta para el siguiente nivel.",
+          "items": {
+            "bodyWeight": {
+              "label": "Comparado con tu peso corporal",
+              "description": "Necesita un pesaje: registra tu peso para ver tus niveles."
+            },
+            "next": {
+              "label": "Qué hace falta para el siguiente nivel",
+              "description": "La carga que levantar para llegar al siguiente nivel."
+            },
+            "where": {
+              "label": "En Progreso y en cada ejercicio",
+              "description": "Los encontrarás en ambos sitios."
+            }
+          },
+          "action": {
+            "label": "Abrir Progreso"
+          }
+        },
+        "trainingLoad": {
+          "title": "Carga de entrenamiento reciente",
+          "description": "Un mapa corporal en Progreso muestra lo que entrenaste durante la última semana.",
+          "items": {
+            "map": {
+              "label": "Los últimos 7 días en un mapa corporal",
+              "description": "Los músculos que trabajaste aparecen más oscuros."
+            },
+            "sets": {
+              "label": "Series semanales por músculo",
+              "description": "Los números están junto al mapa."
+            },
+            "load": {
+              "label": "Carga, no disposición",
+              "description": "Muestra lo que entrenaste, no si deberías volver a entrenar."
+            }
+          },
+          "action": {
+            "label": "Abrir Progreso"
+          }
+        }
       }
     }
   }

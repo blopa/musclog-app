@@ -23,3 +23,21 @@ describe('food diary settings', () => {
     expect(def.parse(def.serialize(false))).toBe(false);
   });
 });
+
+describe('animated Loggy setting', () => {
+  it('is on by default and round-trips', () => {
+    const def = SETTINGS.animatedLoggy;
+    expect(def.defaultValue).toBe(true);
+    expect(def.parse(def.serialize(false))).toBe(false);
+    expect(def.parse(def.serialize(true))).toBe(true);
+  });
+});
+
+describe('show Loggy setting', () => {
+  it('is on by default and round-trips', () => {
+    const def = SETTINGS.showLoggy;
+    expect(def.defaultValue).toBe(true);
+    expect(def.parse(def.serialize(false))).toBe(false);
+    expect(def.parse(def.serialize(true))).toBe(true);
+  });
+});

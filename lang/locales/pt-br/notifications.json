@@ -29,7 +29,7 @@
       },
       "workoutCompleted": {
         "title": "Treino concluído",
-        "description": "Ótimo trabalho no {{workoutName}}. Você queimou {{calories}} kcal."
+        "description": "{{workoutName}} concluído. Você queimou {{calories}} kcal."
       },
       "kudosReceived": {
         "title": "Kudos Recebido",
@@ -47,7 +47,7 @@
       },
       "workoutReminderMorning": {
         "title": "Lembrete de Treino",
-        "body": "Pronto para arrasar no seu treino {{workoutName}} hoje??"
+        "body": "Hoje é dia do seu treino {{workoutName}}."
       },
       "nutritionOverview": {
         "title": "Resumo Diário de Nutrição",

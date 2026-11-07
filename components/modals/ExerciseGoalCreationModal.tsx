@@ -260,6 +260,7 @@ export default function ExerciseGoalCreationModal({
       bodyWeight,
       loadMultiplier: selectedExercise.loadMultiplier ?? 1.0,
       userGender,
+      muscleGroup: selectedExercise.muscleGroup || null,
     });
 
     const setDate = () => {
@@ -272,7 +273,8 @@ export default function ExerciseGoalCreationModal({
             targetKg,
             bodyWeight,
             selectedExercise.loadMultiplier ?? 1.0,
-            userGender
+            userGender,
+            selectedExercise.muscleGroup || null
           )
         );
       }
@@ -393,6 +395,7 @@ export default function ExerciseGoalCreationModal({
       bodyWeight,
       loadMultiplier: selectedExercise.loadMultiplier ?? 1.0,
       userGender,
+      muscleGroup: selectedExercise.muscleGroup || null,
     });
   }, [
     selectedExercise,
@@ -834,6 +837,8 @@ export default function ExerciseGoalCreationModal({
             }}
           >
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.decrease')}
               onPress={() => {
                 if (goalType === '1rm') {
                   setTargetWeightDisplay((parseFloat(targetWeightDisplay) - 2.5).toString());
@@ -873,6 +878,8 @@ export default function ExerciseGoalCreationModal({
               </Text>
             </View>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('common.a11y.increase')}
               onPress={() => {
                 if (goalType === '1rm') {
                   setTargetWeightDisplay((parseFloat(targetWeightDisplay) + 2.5).toString());

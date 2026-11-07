@@ -2,25 +2,33 @@ import { expect, test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
+import muscleLoadCopy from '../lang/locales/en-us/muscleLoad.json';
 import settingsCopy from '../lang/locales/en-us/settings.json';
-import { DEFAULT_THEME_BY_MODE, THEME_IDS } from '../theme.registry';
+import strengthLevelsCopy from '../lang/locales/en-us/strengthLevels.json';
+import workoutImportCopy from '../lang/locales/en-us/workoutImport.json';
+import { MODAL_BUTTON_TEXTS } from './helpers/modalFixture';
+import {
+  APP_URL,
+  appStoreScreenshotDir,
+  BASE_URL,
+  capture,
+  navigateTo,
+  resolveScreenshotTheme,
+  seedDemoData,
+  selectTheme,
+} from './helpers/screenshotSession';
 
-// App screens live under /app; the site root is the marketing website.
-const BASE_URL =
-  process.env.MUSCLOG_TEST_BASE_URL ?? `http://localhost:${process.env.MUSCLOG_TEST_PORT ?? 8081}`;
-const APP_URL = `${BASE_URL}/app`;
-const SCREENSHOT_THEME = process.env.MUSCLOG_SCREENSHOT_THEME ?? DEFAULT_THEME_BY_MODE.dark;
-if (!THEME_IDS.includes(SCREENSHOT_THEME)) {
-  throw new Error(
-    `Unknown MUSCLOG_SCREENSHOT_THEME "${SCREENSHOT_THEME}". Choose one of: ${THEME_IDS.join(', ')}`
-  );
-}
+const SCREENSHOT_THEME = resolveScreenshotTheme();
 
 const OFF_PRODUCT_FIXTURE = fs.readFileSync(
   path.join(__dirname, 'fixtures', 'off-product-3017620425035.json'),
   'utf8'
 );
-const SCREENSHOT_BASE_DIR = path.join('screenshots/app-store', SCREENSHOT_THEME);
+// A Strong export (weights carry no unit) with one lift the catalogue cannot match, so the import
+// walks through every step: file, kg or lb, exercise choice, saving and the summary.
+const STRONG_EXPORT_FILE = path.join(__dirname, 'fixtures', 'strong-export.csv');
+// CSS pixels of the card's top padding and border, kept in view above a card's heading.
+const CARD_EDGE_OFFSET = 40;
 
 test.describe('App Store Screenshots', () => {
   // Suppress celebration effects before the app mounts, including after page.goto().
@@ -29,11 +37,7 @@ test.describe('App Store Screenshots', () => {
 
   test('Capture key screens and all modals', async ({ page }, testInfo) => {
     const projectName = testInfo.project.name;
-    const screenshotDir = path.join(SCREENSHOT_BASE_DIR, projectName);
-
-    if (!fs.existsSync(screenshotDir)) {
-      fs.mkdirSync(screenshotDir, { recursive: true });
-    }
+    const screenshotDir = appStoreScreenshotDir(SCREENSHOT_THEME, projectName);
 
     const takeScreenshot = async (name: string, waitTime = 2000) => {
       console.log(`[${projectName}] Capturing: ${name}`);
@@ -46,11 +50,6 @@ test.describe('App Store Screenshots', () => {
         path: path.join(screenshotDir, `${name}.png`),
         fullPage: false,
       });
-    };
-
-    const navigateTo = async (url: string) => {
-      await page.goto(url, { timeout: 60000 });
-      await page.waitForTimeout(3000);
     };
 
     // The food fixtures look up barcode 3017620425035. Serve a recorded Open Food Facts response and
@@ -73,7 +72,7 @@ test.describe('App Store Screenshots', () => {
 
     // Apply the real persisted preference after seeding so full-page navigation keeps it.
     console.log(`[${projectName}] Selecting theme: ${SCREENSHOT_THEME}`);
-    await navigateTo(`${BASE_URL}/`);
+    await navigateTo(page, `${BASE_URL}/`);
     await page.getByRole('button', { name: 'Preferences', exact: true }).click();
     await page.getByRole('tab', { name: 'Theme', exact: true }).click();
     const themeLabel =
@@ -85,7 +84,7 @@ test.describe('App Store Screenshots', () => {
     // The website radio reflects the synchronous theme mirror, not a durable DB save.
     // LokiJS autosaves every 500ms; unloading immediately discards the pending write.
     await page.waitForTimeout(1500);
-    await navigateTo(APP_URL);
+    await navigateTo(page, APP_URL);
     await expect
       .poll(() =>
         page.evaluate(() => JSON.parse(localStorage.getItem('musclog_theme') ?? '{}').themeId)
@@ -94,108 +93,20 @@ test.describe('App Store Screenshots', () => {
 
     // 2. Main Screens
     await takeScreenshot('01-home', 3000);
-    await navigateTo(`${APP_URL}/nutrition/food`);
+    await navigateTo(page, `${APP_URL}/nutrition/food`);
     await takeScreenshot('02-food', 3000);
-    await navigateTo(`${APP_URL}/progress`);
+    await navigateTo(page, `${APP_URL}/progress`);
     await takeScreenshot('03-progress', 3000);
-    await navigateTo(`${APP_URL}/profile`);
+    await navigateTo(page, `${APP_URL}/profile`);
     await takeScreenshot('04-profile', 3000);
-    await navigateTo(`${APP_URL}/settings`);
+    await navigateTo(page, `${APP_URL}/settings`);
     await takeScreenshot('05-settings', 3000);
 
     // 3. Modals Test Screen
     console.log(`[${projectName}] Navigating to modals test screen...`);
-    await navigateTo(`${APP_URL}/test/modals`);
+    await navigateTo(page, `${APP_URL}/test/modals`);
 
-    // TODO: cant we somehow load the copies by loading the en-us json file? Then if we update the copies, this script will still work
-    const modalButtonTexts = [
-      'Open Select Modal (list rows)',
-      'Open Add Exercise Modal',
-      'Open Nutrition Goals Modal',
-      'Open Basic Settings Modal',
-      'Open Data Settings Modal',
-      'Open App Preferences Modal',
-      'Open AI Settings Modal',
-      'Open AI Not Configured Modal',
-      'Open Edit Personal Info Modal',
-      'Open Edit Fitness Details Modal',
-      'Default Variant',
-      'Destructive',
-      'Primary',
-      'Open End Workout Modal',
-      'Open User Menu Modal',
-      'Open Session Feedback Modal',
-      'Open Edit Set Details Modal',
-      'Open Log Set Performance Modal',
-      'Open Food Details Modal',
-      'Open Nutrition Log Data Modal',
-      'Open Food Data Modal',
-      'Open Add Food Modal',
-      'Open Add Meal Modal',
-      'Open Create Meal Modal',
-      'Open My Meals Modal',
-      'Open Food Search Modal',
-      'Open Food Not Found Modal',
-      'Open Barcode Camera Modal',
-      'Open Notifications Modal',
-      'Open Workout Options Modal',
-      'Open Create Workout Options',
-      'Open Session Overview',
-      'Open Replace Exercise Modal',
-      'Open Workout History Modal',
-      'Open Filter Workouts Modal',
-      'Open Add Food Item to Meal Modal',
-      'Open Centered Modal',
-      'Open Coach Modal',
-      'Open Full Screen Modal',
-      'Open New Custom Food Modal',
-      'Open Exercises Modal',
-      'Open View Exercise Modal',
-      'Open Create Exercise Modal',
-      'Open Goals Management Modal',
-      'Open Past Workouts History Modal',
-      'Open Body Metrics History Modal',
-      'Open Add User Metric Entry Modal',
-      'Open Edit Past Workout Data Modal',
-      'Open Past Workout Detail Modal',
-      'Open Edit Workout Metadata Modal',
-      'Open Create Workout Modal',
-      'Open Portion Sizes Picker Modal',
-      'Open Create Food Portion Modal',
-      'Open Browse Templates Modal',
-      'Open Log Meal Modal',
-      'Open Meal Data Modal',
-      'Open Exercise Data Modal',
-      'Open Workout Log Data Modal',
-      'Open Workout Template Data Modal',
-      'Open User Metric Data Modal',
-      'Open Food Portion Data Modal',
-      'Open Meal Estimation Modal',
-      'Open Time Picker Modal',
-      'Open Free Session Exercise Complete Modal',
-      'Open Nutrition Goal Data Modal',
-      'Open Import Nutrition Modal',
-      'Open Import Workouts Modal',
-      'Open Nutrition Confirmation Modal',
-      'Open Retrospective Nutrition Modal',
-      'Open AI Nutrition Context Modal',
-      'Open AI Custom Prompts Modal',
-      'Open AI Custom Prompt Edit Modal',
-      'Open Cycle Log Modal',
-      'Open Generic Edit Modal',
-      'Move Mode',
-      'Copy Mode',
-      'Split Mode',
-      'Open Notifications Settings Modal',
-      'Open Past Workout Bottom Menu',
-      'Open Past Workouts Filter Menu',
-      'Open Recent Nutrition History Modal',
-      'Open Scanned Food Details Modal',
-      'Open Smart Camera Modal',
-      'Open Visual Settings Modal',
-      'Open Add Exercise To Session Modal',
-      'Open Saved For Later Modal',
-    ];
+    const modalButtonTexts = MODAL_BUTTON_TEXTS;
 
     console.log(`[${projectName}] Capturing ${modalButtonTexts.length} modals.`);
 
@@ -221,11 +132,105 @@ test.describe('App Store Screenshots', () => {
         failedModals.push(text);
         console.log(`[${projectName}] Error on "${text}": ${(err as any)?.message}`);
         await page.keyboard.press('Escape');
-        await navigateTo(`${APP_URL}/test/modals`);
+        await navigateTo(page, `${APP_URL}/test/modals`);
       }
     }
 
     expect(failedModals, 'Every requested modal must produce a screenshot').toEqual([]);
+    console.log(`[${projectName}] Completed.`);
+  });
+
+  // The screens the modals fixture cannot show: they read the seeded history (Progress) or walk a
+  // flow that needs a real file (Import workouts). It runs in its own context, so importing the
+  // sample export never leaks sessions into the captures of the test above.
+  test('Capture strength levels and the workout import flow', async ({ page }, testInfo) => {
+    const projectName = testInfo.project.name;
+    const screenshotDir = appStoreScreenshotDir(SCREENSHOT_THEME, projectName);
+    const shot = (name: string, waitTime?: number) =>
+      capture(page, path.join(screenshotDir, `${name}.png`), waitTime);
+    const importCopy = workoutImportCopy.workoutImport;
+
+    console.log(`[${projectName}] Seeding demo data and selecting theme: ${SCREENSHOT_THEME}`);
+    await seedDemoData(page);
+    await selectTheme(page, SCREENSHOT_THEME);
+
+    // 1. Progress: the cards sit under the charts, so each is scrolled to the top of the list,
+    // then back a little so the card's own edge and padding stay in the frame.
+    await navigateTo(page, `${APP_URL}/progress`);
+    const scrollToCard = async (title: string) => {
+      const heading = page.getByText(title, { exact: true }).first();
+      await heading.waitFor({ state: 'visible', timeout: 30000 });
+      await heading.evaluate((element, cardEdgeOffset) => {
+        element.scrollIntoView({ block: 'start' });
+        let scroller = element.parentElement;
+        while (scroller && scroller.scrollHeight <= scroller.clientHeight) {
+          scroller = scroller.parentElement;
+        }
+
+        scroller?.scrollBy(0, -cardEdgeOffset);
+      }, CARD_EDGE_OFFSET);
+    };
+
+    await scrollToCard(muscleLoadCopy.muscleLoad.weekly.title);
+    await shot('06-progress-weekly-sets');
+    await scrollToCard(strengthLevelsCopy.strengthLevels.title);
+    await shot('07-progress-strength-levels');
+
+    // 2. Import workouts, from Settings → Backups and data.
+    const openImport = async () => {
+      await navigateTo(page, `${APP_URL}/settings`);
+      await page.getByText(settingsCopy.settings.advancedSettings.title, { exact: true }).click();
+      await page.getByText(importCopy.entry.title, { exact: true }).first().click();
+      await page.getByText(importCopy.pick.title, { exact: true }).waitFor();
+    };
+
+    await openImport();
+    await shot('08-import-pick', 1500);
+
+    // The picker is a hidden <input type="file">; answering its chooser is what a person's tap does.
+    const fileChooser = page.waitForEvent('filechooser');
+    await page.getByText(importCopy.pick.chooseFile, { exact: true }).click();
+    await (await fileChooser).setFiles(STRONG_EXPORT_FILE);
+
+    // The file states no unit, so the flow asks before it reads a single weight.
+    await page.getByText(importCopy.unit.title, { exact: true }).waitFor();
+    // The demo account is imperial and the sample's weights are kilograms, so pick the unit the
+    // way a person with this file would.
+    await page.getByText(importCopy.unit.kg, { exact: true }).click();
+    await shot('09-import-unit', 1500);
+    await page.getByText(importCopy.unit.continue, { exact: true }).click();
+
+    // The text also labels the summary strip above the list; the heading is the section itself.
+    await page.getByRole('heading', { name: importCopy.review.needsChoice }).waitFor();
+    await shot('10-import-review', 1500);
+
+    // Every name without a match needs a choice before Import turns on; creating it as a custom
+    // exercise keeps the sample's sets. The button's visible label is just "Create", so it is found
+    // by its accessible name ("Create as custom: <exercise>"). The sample holds a lift the
+    // catalogue cannot match, so a missing button means the sample no longer exercises this step.
+    const createCustom = page.getByRole('button', {
+      name: new RegExp(`^${importCopy.review.createCustom}: `),
+    });
+    await expect(createCustom.first()).toBeVisible();
+    for (let guard = 0; guard < 20 && (await createCustom.count()) > 0; guard++) {
+      await createCustom.first().click();
+      await page.waitForTimeout(300);
+    }
+
+    await expect(createCustom, 'Every unmatched name should have a choice').toHaveCount(0);
+    await shot('11-import-review-resolved', 1500);
+
+    await page.getByText(/^Import \d+ sessions?$/).click();
+    await page.getByText(/^\d+ sessions? imported$/).waitFor({ timeout: 60000 });
+    await shot('12-import-summary', 1500);
+
+    // The imported batch is listed on the first step from now on, with its undo.
+    await page.getByText(importCopy.summary.done, { exact: true }).click();
+    // LokiJS autosaves every 500ms; reopening reloads the page and must find the batch saved.
+    await page.waitForTimeout(1500);
+    await openImport();
+    await expect(page.getByText(importCopy.pick.past, { exact: true }).first()).toBeVisible();
+    await shot('13-import-past', 1500);
     console.log(`[${projectName}] Completed.`);
   });
 });

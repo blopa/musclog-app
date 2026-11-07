@@ -2,6 +2,7 @@ import { Check, LucideIcon } from 'lucide-react-native';
 import { ComponentType, memo, ReactElement, useCallback, useMemo } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 
+import { useIsCramped } from '@/hooks/useIsCramped';
 import { useTheme } from '@/hooks/useTheme';
 
 export type SelectorOption<T extends string | number> = {
@@ -35,7 +36,11 @@ const OptionItem = memo(
     disabled?: boolean;
   }) => {
     const theme = useTheme();
+    const cramped = useIsCramped();
     const Icon = option.icon as any;
+    // The icon tile is decoration: on a cramped layout it gives way so the description keeps the
+    // row and a long word ("progressievoorstellen") is not broken. A photo is content and stays.
+    const showTile = !cramped || Boolean(option.imageUrl?.trim());
     const handlePress = useCallback(() => {
       onSelect(option.id);
     }, [option.id, onSelect]);
@@ -73,31 +78,33 @@ const OptionItem = memo(
                 flex: 1,
               }}
             >
-              <View
-                style={{
-                  width: theme.size['10'],
-                  height: theme.size['10'],
-                  borderRadius: theme.borderRadius.full,
-                  backgroundColor: option.iconBgColor,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: 'hidden',
-                }}
-              >
-                {option.imageUrl?.trim() ? (
-                  <Image
-                    source={{ uri: option.imageUrl }}
-                    style={{
-                      width: theme.size['10'],
-                      height: theme.size['10'],
-                      borderRadius: theme.borderRadius.full,
-                    }}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <Icon size={theme.iconSize.lg} color={option.iconColor} />
-                )}
-              </View>
+              {showTile ? (
+                <View
+                  style={{
+                    width: theme.size['10'],
+                    height: theme.size['10'],
+                    borderRadius: theme.borderRadius.full,
+                    backgroundColor: option.iconBgColor,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {option.imageUrl?.trim() ? (
+                    <Image
+                      source={{ uri: option.imageUrl }}
+                      style={{
+                        width: theme.size['10'],
+                        height: theme.size['10'],
+                        borderRadius: theme.borderRadius.full,
+                      }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Icon size={theme.iconSize.lg} color={option.iconColor} />
+                  )}
+                </View>
+              ) : null}
               <View style={{ flex: 1 }}>
                 <Text
                   style={{

@@ -29,7 +29,7 @@
       },
       "workoutCompleted": {
         "title": "Workout completed",
-        "description": "Great job crushing {{workoutName}}. You burned {{calories}} kcal."
+        "description": "{{workoutName}} complete. You burned {{calories}} kcal."
       },
       "kudosReceived": {
         "title": "Kudos received",
@@ -47,7 +47,7 @@
       },
       "workoutReminderMorning": {
         "title": "Workout reminder",
-        "body": "Ready to crush your {{workoutName}} workout today??"
+        "body": "Your {{workoutName}} workout is on today."
       },
       "nutritionOverview": {
         "title": "Daily nutrition overview",

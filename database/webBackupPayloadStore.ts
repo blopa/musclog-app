@@ -5,7 +5,7 @@
  * UTF-16 code units, so it tops out around 2.5M characters — less than one real user's export.
  * Storing dumps there made `createPreExerciseCatalogueBackup()` fail with
  * `QuotaExceededError` on every boot once a database was big enough to matter, which
- * permanently blocked `LegacyExerciseCatalogueMigration` on web (see `FIXES.md`). IndexedDB has
+ * permanently blocked `LegacyExerciseCatalogueMigration` on web (see `docs/FIXES.md`). IndexedDB has
  * no such cap, so payloads live there and only the small metadata index stays in localStorage.
  *
  * Payloads written by older builds are still read back from localStorage, and deletes clear

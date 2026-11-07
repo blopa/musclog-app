@@ -1,0 +1,88 @@
+/*
+ * Loggy's one style sheet. Every part names its colours by these classes, and every pose built
+ * from the parts shares the numbering (so a path reads the same in a still and in its animated
+ * twin). Only the classes a pose uses are written into its SVG.
+ *
+ * Keep the `s<number>` names: scripts/generate-loggy-animated.js reads them. Change a colour here
+ * and every pose follows; add a colour as the next number. The same hex values are named in
+ * constants/loggyPalette.ts.
+ */
+
+/* flat fills */
+.s0 {
+  fill: #1b314d;
+} /* ink: outlines, pupils, brows */
+.s1 {
+  fill: #47ad92;
+} /* body green */
+.s2 {
+  fill: #fcf9f4;
+} /* cream */
+.s3 {
+  fill: #2f7e78;
+} /* deep green */
+.s5 {
+  fill: #efd9b4;
+} /* tan */
+.s7 {
+  fill: #3d9183;
+} /* shaded green */
+.s8 {
+  fill: #ee8074;
+} /* coral: mouths and tongues */
+.s13 {
+  fill: #c9dcdb;
+} /* pale grey-blue */
+.s14 {
+  fill: #e1ece8;
+} /* pale mint */
+.s15 {
+  fill: #000000;
+} /* black */
+.s16 {
+  fill: #8ad4ec;
+} /* sky: water */
+.s17 {
+  fill: #d3966e;
+} /* roast: chicken */
+.s18 {
+  fill: #f5c84c;
+} /* gold: trophy and sparkles */
+
+/* filled shapes with their own ink outline (face extras and held props) */
+.s4 {
+  fill: #47ad92;
+  stroke: #1b314d;
+  stroke-linejoin: round;
+  stroke-width: 4.8;
+}
+.s6 {
+  fill: #fcf9f4;
+  stroke: #1b314d;
+  stroke-linejoin: round;
+  stroke-width: 4.8;
+}
+.s9 {
+  fill: #8ad4ec;
+  stroke: #1b314d;
+  stroke-linejoin: round;
+  stroke-width: 3.6;
+}
+.s10 {
+  fill: #ee8074;
+  stroke: #1b314d;
+  stroke-linejoin: round;
+  stroke-width: 4.8;
+}
+.s11 {
+  fill: #8ad4ec;
+  stroke: #1b314d;
+  stroke-linejoin: round;
+  stroke-width: 4.8;
+}
+.s12 {
+  fill: #f5c84c;
+  stroke: #1b314d;
+  stroke-linejoin: round;
+  stroke-width: 4.8;
+}

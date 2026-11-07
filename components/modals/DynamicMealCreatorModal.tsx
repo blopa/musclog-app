@@ -43,6 +43,7 @@ function IngredientRow({
   kcalLabel,
   onRemove,
 }: IngredientRowProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   return (
     <View
@@ -73,6 +74,8 @@ function IngredientRow({
       </View>
       {onRemove ? (
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('common.delete')}
           onPress={() => onRemove(ingredient.localId)}
           style={{ padding: theme.spacing.padding.sm }}
           hitSlop={8}

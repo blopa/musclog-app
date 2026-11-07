@@ -3,11 +3,13 @@ import {
   WHATS_NEW_ACTIONS,
   WHATS_NEW_CONDITIONS,
   WHATS_NEW_ICONS,
+  WHATS_NEW_POSES,
   WHATS_NEW_SETTING_CATALOG,
   WHATS_NEW_SETTINGS,
   type WhatsNewAction,
   type WhatsNewCondition,
   type WhatsNewIconName,
+  type WhatsNewPoseName,
   type WhatsNewSetting,
 } from './catalog';
 import { compareVersions, parseVersion } from './version';
@@ -24,7 +26,7 @@ export type WhatsNewFeature = Copy & {
 };
 export type WhatsNewBlock = BlockBase &
   (
-    | (Copy & { type: 'info'; titleKey: WhatsNewKey })
+    | (Copy & { type: 'info'; titleKey: WhatsNewKey; pose?: WhatsNewPoseName })
     | (Omit<Copy, 'icon'> & {
         type: 'choice';
         setting: WhatsNewSetting;
@@ -32,7 +34,13 @@ export type WhatsNewBlock = BlockBase &
         options?: WhatsNewOption[];
       })
     | { type: 'featureList'; titleKey?: WhatsNewKey; items: WhatsNewFeature[] }
-    | (Copy & { type: 'action'; action: WhatsNewAction; labelKey: WhatsNewKey })
+    | (Copy & {
+        type: 'action';
+        action: WhatsNewAction;
+        labelKey: WhatsNewKey;
+        /** The page's main button, drawn filled; the others stay outlined. */
+        primary?: boolean;
+      })
   );
 /** `requires` shows the page only to people for whom that condition holds. */
 export type WhatsNewPage = BlockBase & { blocks: WhatsNewBlock[]; requires?: WhatsNewCondition };
@@ -120,7 +128,12 @@ export function parseWhatsNewRelease(
     const common = ['id', 'type', 'supersededIn'];
     switch (value.type) {
       case 'info':
-        properties(value, [...common, 'icon', 'titleKey', 'descriptionKey'], path);
+        properties(value, [...common, 'icon', 'pose', 'titleKey', 'descriptionKey'], path);
+        if (value.pose !== undefined && !contains(WHATS_NEW_POSES, value.pose)) {
+          issue(path, 'unknown pose');
+          return null;
+        }
+
         if (!copy(value, ['titleKey'], path)) {
           return null;
         }
@@ -216,8 +229,17 @@ export function parseWhatsNewRelease(
       }
 
       case 'action':
-        properties(value, [...common, 'action', 'icon', 'labelKey', 'descriptionKey'], path);
+        properties(
+          value,
+          [...common, 'action', 'icon', 'labelKey', 'descriptionKey', 'primary'],
+          path
+        );
         if (!copy(value, ['labelKey'], path)) {
+          return null;
+        }
+
+        if (value.primary !== undefined && typeof value.primary !== 'boolean') {
+          issue(path, 'primary must be a boolean');
           return null;
         }
 

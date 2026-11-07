@@ -156,10 +156,10 @@ export function AINutritionTrackingContextModal({
         </View>
 
         {/* Action Buttons */}
-        <View className="flex-row gap-3">
+        <View className="flex-row flex-wrap gap-3">
           <Pressable
             onPress={handleCancel}
-            className="flex-1 rounded-control border px-6 py-4"
+            className="grow basis-[110px] rounded-control border px-4 py-4"
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
             style={{
               backgroundColor: theme.colors.background.neutralWashStrong,
@@ -172,15 +172,20 @@ export function AINutritionTrackingContextModal({
           </Pressable>
           <Pressable
             onPress={handleApply}
-            className="flex-[2] rounded-control px-6 py-4 active:scale-[0.98]"
+            className="grow-[2] basis-[150px] rounded-control px-4 py-4 active:scale-[0.98]"
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
             style={{ backgroundColor: theme.colors.accent.primary }}
           >
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="text-sm font-semibold" style={{ color: theme.colors.text.onAccent }}>
+              <Text
+                className="min-w-0 shrink text-center text-sm font-semibold"
+                style={{ color: theme.colors.text.onAccent }}
+              >
                 {applyLabel ?? t('food.aiNutritionContext.applyContext')}
               </Text>
-              <CheckCircle size={theme.iconSize.md} color={theme.colors.text.onAccent} />
+              <View className="shrink-0">
+                <CheckCircle size={theme.iconSize.md} color={theme.colors.text.onAccent} />
+              </View>
             </View>
           </Pressable>
         </View>

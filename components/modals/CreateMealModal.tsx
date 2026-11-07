@@ -736,6 +736,8 @@ export function CreateMealModal({
                   <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
                   <View className="absolute bottom-2 right-2 flex-row gap-2">
                     <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.a11y.choosePhoto')}
                       onPress={handlePickImage}
                       style={{
                         width: 40,
@@ -751,6 +753,8 @@ export function CreateMealModal({
                       <Camera size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
                     </Pressable>
                     <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.a11y.removeImage')}
                       onPress={handleRemoveImage}
                       style={{
                         width: 40,
@@ -981,7 +985,12 @@ export function CreateMealModal({
                       </Text>
                     </View>
                   </View>
-                  <Pressable onPress={() => handleRemoveIngredient(item.localId)} className="p-2">
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t('common.delete')}
+                    onPress={() => handleRemoveIngredient(item.localId)}
+                    className="p-2"
+                  >
                     <Trash2 size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
                   </Pressable>
                 </View>

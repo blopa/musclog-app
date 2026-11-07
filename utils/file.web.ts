@@ -316,6 +316,19 @@ export function shouldSeedDevData() {
   return false;
 }
 
+/**
+ * The layout audit's extra records (`seedLayoutAuditData`) on top of the demo data. Only a
+ * screenshots build honours `layoutAuditData=true`, so a production page can never be made to seed
+ * them, and the store captures (which do not pass it) keep the demo data they expect.
+ */
+export function shouldSeedLayoutAuditData() {
+  if (process.env.EXPO_PUBLIC_SCREENSHOT_MODE !== '1' || typeof window === 'undefined') {
+    return false;
+  }
+
+  return new URLSearchParams(window.location.search).get('layoutAuditData') === 'true';
+}
+
 async function ensureFoodImagesDir(): Promise<void> {
   // TODO
 }

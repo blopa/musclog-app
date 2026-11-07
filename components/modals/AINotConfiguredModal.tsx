@@ -51,10 +51,9 @@ export function AINotConfiguredModal({
       onClose={onClose}
       title={t('ai.notConfiguredModal.title')}
       subtitle={t('ai.notConfiguredModal.subtitle')}
-      scrollable={false}
       footer={footer}
     >
-      <View className="flex-1 justify-start px-5 pb-4 pt-3">
+      <View className="justify-start px-5 pb-4 pt-3">
         <View pointerEvents="none" style={{ height: theme.spacing.padding['3xl'] }} />
         <View className="mb-6 items-center">
           <View className="relative">
@@ -94,11 +93,6 @@ export function AINotConfiguredModal({
             borderColor: theme.colors.border.light,
             padding: theme.spacing.padding.xl,
             gap: theme.spacing.gap.lg,
-            shadowColor: theme.colors.status.purple,
-            shadowOffset: { width: 0, height: 10 },
-            shadowOpacity: 0.1,
-            shadowRadius: 20,
-            elevation: 5,
           }}
         >
           <View className="flex-row gap-4">

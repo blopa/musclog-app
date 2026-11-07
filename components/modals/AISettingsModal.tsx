@@ -956,11 +956,12 @@ export function AISettingsModal({
                     backgroundColor: theme.colors.accent.primary20,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    flexShrink: 0,
                   }}
                 >
                   <Settings2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
                 </View>
-                <View>
+                <View className="min-w-0 flex-1">
                   <Text className="text-sm font-medium text-text-primary">
                     {t('settings.aiSettings.manageCustomPrompts')}
                   </Text>

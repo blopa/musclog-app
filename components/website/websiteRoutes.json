@@ -15,6 +15,10 @@
       "summary": "Get Musclog for Android (Play Store) or join the iOS TestFlight."
     }
   },
+  "open": {
+    "path": "/open",
+    "robots": "noindex, nofollow, noarchive"
+  },
   "exercises": {
     "path": "/exercises",
     "llms": {

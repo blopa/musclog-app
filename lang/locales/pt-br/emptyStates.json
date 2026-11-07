@@ -2,7 +2,7 @@
   "emptyStates": {
     "workouts": {
       "title": "Nenhum Treino Ainda",
-      "description": "Sua jornada de fitness começa com sua primeira repetição. Planeje sua rotina e acompanhe seu progresso aqui.",
+      "description": "Planeje sua rotina e registre seu primeiro treino aqui.",
       "buttonLabel": "Criar Seu Primeiro Treino"
     },
     "foods": {

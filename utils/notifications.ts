@@ -8,8 +8,10 @@ import {
   CYCLE_SNOOZE_NOTIFICATION_TYPE,
   GOAL_AT_RISK_NOTIFICATION_TYPE,
   NOTIFICATION_ACTIONS,
+  YEAR_REVIEW_NOTIFICATION_TYPE,
 } from '@/constants/notificationActions';
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
+import { YEAR_IN_REVIEW_ROUTE } from '@/constants/yearInReviewRoute';
 import { CycleNotificationService } from '@/services/CycleNotificationService';
 import { NotificationService } from '@/services/NotificationService';
 import { isCycleReminderKind } from '@/utils/cycle/cycleReminders';
@@ -81,6 +83,16 @@ export async function handleNotificationResponse(response: Notifications.Notific
       // Home makes the offer itself (ComebackCard), so the nudge only has to land there.
       router.navigate('/app');
       break;
+
+    case YEAR_REVIEW_NOTIFICATION_TYPE: {
+      const year = data['year'];
+      router.navigate(
+        year
+          ? `${YEAR_IN_REVIEW_ROUTE}?year=${encodeURIComponent(String(year))}`
+          : YEAR_IN_REVIEW_ROUTE
+      );
+      break;
+    }
 
     case 'nutrition-overview':
       router.navigate('/app/nutrition/food');

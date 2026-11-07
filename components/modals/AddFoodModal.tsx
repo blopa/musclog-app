@@ -1,6 +1,7 @@
 import {
   Clock,
   Edit,
+  MessageSquareText,
   MoreHorizontal,
   PlusCircle,
   ScanLine,
@@ -30,6 +31,11 @@ type AddFoodModalProps = {
   onCreateCustomFoodPress?: () => void;
   onTrackCustomMealPress?: () => void;
   onQuickTrackMealPress?: () => void;
+  /**
+   * Track with ChatGPT or Claude outside the app. Offered whenever the caller supplies it, even with
+   * no AI provider set up: the assistant is the person's own and Musclog only reads its file back.
+   */
+  onTrackWithExternalAiPress?: () => void;
   isAiEnabled?: boolean;
   showTrackByMealType?: boolean;
   hasSavedMeals?: boolean;
@@ -46,6 +52,7 @@ export function AddFoodModal({
   onCreateCustomFoodPress,
   onTrackCustomMealPress,
   onQuickTrackMealPress,
+  onTrackWithExternalAiPress,
   isAiEnabled = true,
   showTrackByMealType = true,
   hasSavedMeals = false,
@@ -165,6 +172,17 @@ export function AddFoodModal({
                     }}
                   />
                 ) : null}
+                {onTrackWithExternalAiPress ? (
+                  <TrackingMethodButton
+                    icon={MessageSquareText}
+                    title={t('food.addFoodModal.externalLog.title')}
+                    description={t('food.addFoodModal.externalLog.description')}
+                    onPress={() => {
+                      onTrackWithExternalAiPress();
+                      onClose();
+                    }}
+                  />
+                ) : null}
                 <TrackingMethodButton
                   icon={PlusCircle}
                   title={t('food.addFoodModal.quickTrackMeal')}
@@ -186,7 +204,9 @@ export function AddFoodModal({
                   />
                 ) : null}
               </ListGroup>
-              <View className="flex-row items-stretch gap-3 pt-1">
+              {/* Wraps: two outline buttons with long labels cannot share a phone-width row without
+                  breaking a word, so they stack. */}
+              <View className="flex-row flex-wrap items-stretch gap-3 pt-1">
                 <Button
                   label={t('food.addFoodModal.createCustomFood')}
                   icon={Edit}

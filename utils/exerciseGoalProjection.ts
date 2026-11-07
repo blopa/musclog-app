@@ -1,5 +1,12 @@
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
 import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import {
+  MAX_E1RM_REPS,
+  normalizedRelativeStrength,
+  RS_ADVANCED,
+  RS_ELITE,
+  RS_INTERMEDIATE,
+} from '@/utils/relativeStrength';
 
 export interface ProjectionInputs {
   dataPoints: ProgressiveOverloadDataPoint[]; // Sorted by date ascending
@@ -8,6 +15,7 @@ export interface ProjectionInputs {
   bodyWeight?: number; // Optional but highly recommended for realism nudges
   loadMultiplier?: number; // From Exercise model, ensures i18n independence
   userGender?: 'male' | 'female' | 'other';
+  muscleGroup?: string | null; // Selects the female strength benchmark for the body region
   hasPerformed1RMDate?: number | null; // Date of first actual 1RM set at/above target logged
   currentEstimated1RM?: number | null; // Override derived from recent first-set average
 }
@@ -92,13 +100,14 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     bodyWeight,
     loadMultiplier = 1.0,
     userGender = 'other',
+    muscleGroup = null,
     hasPerformed1RMDate = null,
   } = inputs;
 
   // Scientific Refinement: Filter out high-rep sets (reps > 10) for 1RM prediction.
   // Standard formulas (Brzycki, Epley) lose significant accuracy beyond 10 reps
   // as the set becomes a measure of metabolic endurance rather than neurological strength.
-  const dataPoints = rawDataPoints.filter((dp) => dp.reps <= 10);
+  const dataPoints = rawDataPoints.filter((dp) => dp.reps <= MAX_E1RM_REPS);
 
   // No history at all
   if (dataPoints.length === 0) {
@@ -194,19 +203,21 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
   // We use loadMultiplier to normalize relative strength across different exercises.
   const bw = bodyWeight && bodyWeight > 0 ? bodyWeight : 80; // fallback to 80kg if unknown
 
-  // Sex-Aware Normalization: Women typically have absolute strength caps $\sim 60-70\%$ of men.
-  // We adjust the relative strength benchmark to ensure training tiers are accurate for both sexes.
-  const genderFactor = userGender === 'female' ? 0.7 : 1.0;
   // Bodyweight and cardio exercises store a loadMultiplier of 0 — they have no
   // external load to benchmark against. The `?? 1.0` default above only catches
   // null/undefined, so a stored 0 reached this divisor and made the ratio Infinity,
   // tiering every bodyweight goal as advanced.
-  const loadBenchmark = loadMultiplier > 0 ? loadMultiplier : 1.0;
-  const normalizedRelativeStrength = currentEstimated1RM / (bw * loadBenchmark * genderFactor);
+  const relativeStrength = normalizedRelativeStrength(
+    currentEstimated1RM,
+    bw,
+    loadMultiplier,
+    userGender,
+    muscleGroup
+  );
 
   // Stalling threshold: 0.1 kg/week for novices, 0.05 kg/week for advanced.
   // Capped at 0.05kg to ensure we don't flag progress smaller than what can be physically loaded (microplates).
-  const stallingThreshold = normalizedRelativeStrength > 1.5 ? 0.05 : 0.1;
+  const stallingThreshold = relativeStrength >= RS_ADVANCED ? 0.05 : 0.1;
 
   let status: ProjectionResult['status'];
   if (weeklyProgressionRate > stallingThreshold) {
@@ -238,7 +249,8 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     bodyWeight ?? 0,
     weeklyProgressionRate,
     loadMultiplier,
-    userGender
+    userGender,
+    muscleGroup
   );
 
   // Calculate non-linear projection using a step-simulation.
@@ -250,8 +262,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
   const MAX_SIM_WEEKS = 104; // 2 years hard cap
 
   // Determine user's current "Performance Ratio" vs the theoretical cap for their tier.
-  const currentRS = currentEstimated1RM / (bw * loadMultiplier);
-  const currentCapPercent = getRealisticWeeklyRateCapPercent(currentRS);
+  const currentCapPercent = getRealisticWeeklyRateCapPercent(relativeStrength);
   const currentCapKg = (currentCapPercent / 100) * currentEstimated1RM;
 
   // performanceRatio > 1 means they are currently outperforming standard realistic bounds
@@ -262,7 +273,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
     simWeeks += 1;
 
     // Recalculate cap for the simulated weight level
-    const simRS = sim1RM / (bw * loadMultiplier * genderFactor);
+    const simRS = normalizedRelativeStrength(sim1RM, bw, loadMultiplier, userGender, muscleGroup);
     const simCapPercent = getRealisticWeeklyRateCapPercent(simRS);
     const simCapKg = (simCapPercent / 100) * sim1RM;
 
@@ -298,11 +309,11 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
  * based on the lifter's training tier.
  */
 export function getRealisticWeeklyRateCapPercent(normalizedRS: number): number {
-  if (normalizedRS < 1.0) {
+  if (normalizedRS < RS_INTERMEDIATE) {
     return 1.5;
   } // Novice
 
-  if (normalizedRS < 1.8) {
+  if (normalizedRS < RS_ELITE) {
     return 0.5;
   } // Intermediate
 
@@ -320,15 +331,21 @@ export function estimateConservativeTargetDate(
   targetWeight: number,
   bodyWeight: number,
   loadMultiplier: number = 1.0,
-  userGender: 'male' | 'female' | 'other' = 'other'
+  userGender: 'male' | 'female' | 'other' = 'other',
+  muscleGroup: string | null = null
 ): Date {
   if (current1RM <= 0 || targetWeight <= current1RM) {
     return new Date();
   }
 
   const bw = bodyWeight > 0 ? bodyWeight : 80;
-  const genderFactor = userGender === 'female' ? 0.7 : 1.0;
-  const normalizedRS = current1RM / (bw * loadMultiplier * genderFactor);
+  const normalizedRS = normalizedRelativeStrength(
+    current1RM,
+    bw,
+    loadMultiplier,
+    userGender,
+    muscleGroup
+  );
   const capPercent = getRealisticWeeklyRateCapPercent(normalizedRS);
   const weeklyGainKg = current1RM * (capPercent / 100);
 
@@ -350,7 +367,8 @@ export function isProgressionRateRealistic(
   bodyWeight: number,
   requiredRatePerWeek: number,
   loadMultiplier: number = 1.0,
-  userGender: 'male' | 'female' | 'other' = 'other'
+  userGender: 'male' | 'female' | 'other' = 'other',
+  muscleGroup: string | null = null
 ): boolean {
   if (currentWeight <= 0) {
     return true;
@@ -363,10 +381,14 @@ export function isProgressionRateRealistic(
     return percentPerWeek <= 1.0;
   }
 
-  // Normalize relative strength using the loadMultiplier and gender factor.
-  const genderFactor = userGender === 'female' ? 0.7 : 1.0;
-  const normalizedRelativeStrength = currentWeight / (bodyWeight * loadMultiplier * genderFactor);
-  const upperThreshold = getRealisticWeeklyRateCapPercent(normalizedRelativeStrength);
+  const relativeStrength = normalizedRelativeStrength(
+    currentWeight,
+    bodyWeight,
+    loadMultiplier,
+    userGender,
+    muscleGroup
+  );
+  const upperThreshold = getRealisticWeeklyRateCapPercent(relativeStrength);
 
   return percentPerWeek <= upperThreshold;
 }

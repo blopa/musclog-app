@@ -155,7 +155,7 @@ describe('theme controls', () => {
   it('uses the full-width pill for every setting value in the notification settings', () => {
     // A form of settings mixed four pills with one full-width elevated control, which looks like
     // a view switcher and made the same kind of choice look like two; and pills that hugged their
-    // options left a ragged edge beside the full-width cards (see DESIGN.md → Buttons).
+    // options left a ragged edge beside the full-width cards (see docs/DESIGN.md → Buttons).
     const source = code('components/modals/NotificationsSettingsModal.tsx');
     const controls = source.split('<SegmentedControl').slice(1);
     expect(controls.length).toBeGreaterThan(0);
@@ -169,7 +169,16 @@ describe('theme controls', () => {
   it('stretches a fullWidth pill and shares the track between its options', () => {
     const source = code('components/theme/SegmentedControl.tsx');
     expect(source).toContain("fullWidth ? 'self-stretch' : 'self-start'");
-    expect(source).toContain("fullWidth ? 'flex-1 justify-center' : ''");
+    expect(source).toContain("sharesEvenly ? 'flex-1 justify-center'");
+  });
+
+  it('lets a full-width pill size to its labels and wrap when they cannot share the track', () => {
+    // Even thirds broke "Estructurado" mid-word at large text; the even split now holds only while
+    // every label's longest word fits its share (`labelsFitEvenly`), and the track wraps.
+    const source = code('components/theme/SegmentedControl.tsx');
+    expect(source).toContain("'flex-auto justify-center'");
+    expect(source).toMatch(/flex-row flex-wrap gap-1 rounded-control bg-bg-overlay p-1/);
+    expect(source).toContain('labelsFitEvenly');
   });
 
   it.each(THEMED_FILES)('%s builds its controls from components/theme', (path) => {

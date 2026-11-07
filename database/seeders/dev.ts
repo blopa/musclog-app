@@ -2,8 +2,9 @@ import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { subDays } from 'date-fns';
 
-import { ENCRYPTION_KEY } from '@/constants/database';
+import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
 import { database } from '@/database/database-instance';
+import { waitForBootMigrations, waitForDbReady } from '@/database/dbReady';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from '@/database/encryptionHelpers';
 import ChatMessage from '@/database/models/ChatMessage';
 import Exercise, {
@@ -2218,6 +2219,13 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
 
   if (clear) {
     try {
+      // The boot migration chain starts right after markDbReady(); resetting under it throws
+      // "database is being reset" in every migration. Wait for readiness, yield one macrotask so
+      // the chain has registered itself, then drain it (see waitForBootMigrations()).
+      await waitForDbReady();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await waitForBootMigrations();
+
       // Note: unsafeResetDatabase() MUST be called inside a write transaction
       await database.write(async () => {
         await database.unsafeResetDatabase();
@@ -2341,6 +2349,11 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
   // The same completion real onboarding writes, which also records the What's new tour as seen: a
   // freshly seeded demo user has nothing that "changed" and must not be greeted as an upgrader.
   await setOnboardingCompleted();
+
+  // clearAsyncStorage() above dropped the production seeding flag. Without it, the next visit to
+  // the landing screen runs seedProductionData(), which resets the database under the mounted app
+  // (and wipes the demo data), so the demo database counts as seeded too.
+  await AsyncStorage.setItem(SEEDING_COMPLETE_KEY, 'true');
 
   // Store screenshots are built with EXPO_PUBLIC_SCREENSHOT_MODE; the daily water question is a
   // transient prompt that only adds noise to them. Regular demo mode keeps it.

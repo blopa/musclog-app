@@ -402,7 +402,10 @@ export function StackedBarLineChart({
       ) : null}
 
       {/* Legend: stacked bar (4 small squares) + line */}
-      <View className="flex-row items-center justify-center gap-6" style={{ marginTop: 16 }}>
+      <View
+        className="flex-row flex-wrap items-center justify-center gap-x-6 gap-y-1"
+        style={{ marginTop: 16 }}
+      >
         <View className="flex-row items-center gap-2">
           <View className="flex-row gap-0.5">
             {colors.slice(0, 4).map((c, i) => (

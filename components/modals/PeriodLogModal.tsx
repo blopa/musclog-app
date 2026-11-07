@@ -121,6 +121,7 @@ export function PeriodLogModal({
       visible={visible}
       onClose={onClose}
       title={t(titleKey)}
+      scrollable
       footer={
         <View className="flex-row gap-4">
           <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />

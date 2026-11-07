@@ -11,6 +11,7 @@ import Animated, {
   cancelAnimation,
   Easing,
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withRepeat,
   withTiming,
@@ -150,7 +151,10 @@ type ScanLineProps = {
 function ScanLine({ active, frameHeight }: ScanLineProps) {
   const theme = useTheme();
   const progress = useSharedValue(0);
-  const isRunning = active && frameHeight > 0;
+  // Reanimated would jump a repeating sweep to its end under reduced motion, parking the glow
+  // band at the bottom of the frame like a rendering fault, so the line is not drawn at all.
+  const reduceMotion = useReducedMotion();
+  const isRunning = active && frameHeight > 0 && !reduceMotion;
   const glowHeight = Math.min(SCAN_LINE_GLOW_HEIGHT, frameHeight * SCAN_LINE_GLOW_FRAME_SHARE);
 
   useEffect(() => {

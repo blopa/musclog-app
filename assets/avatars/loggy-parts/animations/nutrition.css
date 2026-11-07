@@ -1,0 +1,40 @@
+/* Loggy presenting the nutrition food pyramid on an easel. His upper body bobs gently while
+   his shoes and the easel stay planted, the leaf sways, his left hand taps toward the top of
+   the pyramid, and his right hand gestures toward his grin. Every layer opens and ends on
+   the still's own frame. */
+#upper {
+    animation: loggy-bob 3.2s ease-in-out infinite;
+}
+#leaf {
+    transform-origin: 320px 121px;
+    animation: loggy-leaf-sway 3.2s ease-in-out infinite;
+}
+#arm-l, #hand-l {
+    transform-origin: 135px 395px;
+    animation: loggy-pyramid-point 3.2s ease-in-out infinite;
+}
+#hand-r {
+    transform-origin: 345px 415px;
+    animation: loggy-mouth-point 3.2s ease-in-out infinite;
+}
+
+@keyframes loggy-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+@keyframes loggy-leaf-sway {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(4deg); }
+    64% { transform: rotate(-2deg); }
+}
+@keyframes loggy-pyramid-point {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 62% { transform: rotate(2.2deg); }
+}
+@keyframes loggy-mouth-point {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #loggy-idle, #loggy-idle * { animation: none !important; }
+}

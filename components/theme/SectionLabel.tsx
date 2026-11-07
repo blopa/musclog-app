@@ -13,7 +13,7 @@ type SectionLabelProps = {
 
 /**
  * The one small label above a group of content. Sentence case, no letter-spacing: tracked
- * all-caps is reserved for unit and weekday abbreviations (see DESIGN.md, Typography).
+ * all-caps is reserved for unit and weekday abbreviations (see docs/DESIGN.md, Typography).
  */
 export function SectionLabel({
   children,

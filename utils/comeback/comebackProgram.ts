@@ -12,7 +12,7 @@ import {
 /**
  * The comeback ramp in one place. The research behind it gives the SHAPE — a few sets, plenty of reps in
  * reserve, add one thing at a time, never double up after a miss — but not load percentages, so the
- * numbers below are product choices (recorded in RESEARCH.md) and live only here.
+ * numbers below are product choices (recorded in docs/RESEARCH.md) and live only here.
  */
 
 /** Weeks of eased training before ordinary progression takes over. */

@@ -1,7 +1,18 @@
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';
+import { View } from 'react-native';
 
-const ConfettiOverlay = () => {
+import { LoggyCameo } from '@/components/LoggyCameo';
+import type { LoggyPoseName } from '@/components/LoggyPose';
+
+type Props = {
+  /** See `ConfettiOverlay.tsx`: the default, and off for a screen that already shows him. */
+  withLoggy?: boolean;
+  /** See `ConfettiOverlay.tsx`. */
+  pose?: LoggyPoseName;
+};
+
+const ConfettiOverlay = ({ withLoggy = true, pose }: Props) => {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
@@ -25,7 +36,27 @@ const ConfettiOverlay = () => {
     };
   }, []);
 
-  return null;
+  if (!withLoggy) {
+    return null;
+  }
+
+  // Fixed to the viewport like the confetti canvas: this overlay mounts inside whichever screen
+  // fired it, and Loggy belongs at the bottom of the window, not of that screen's container.
+  return (
+    <View
+      pointerEvents="none"
+      style={{
+        position: 'fixed' as never,
+        top: 0,
+        left: 0,
+        width: '100vw' as never,
+        height: '100vh' as never,
+        zIndex: 999999,
+      }}
+    >
+      <LoggyCameo pose={pose} />
+    </View>
+  );
 };
 
 export default ConfettiOverlay;

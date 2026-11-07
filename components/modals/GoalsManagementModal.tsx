@@ -347,10 +347,10 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
       scrollable={false}
       showConfetti={showConfetti}
     >
-      <View className="flex-row border-b border-border-light px-4">
+      <View className="flex-row flex-wrap gap-x-6 border-b border-border-light px-4">
         <Pressable
           onPress={() => setActiveTab('nutrition')}
-          className={`mr-6 py-4 ${activeTab === 'nutrition' ? 'border-b-2 border-accent-primary' : ''}`}
+          className={`py-4 ${activeTab === 'nutrition' ? 'border-b-2 border-accent-primary' : ''}`}
         >
           <Text
             className={`text-sm font-semibold ${activeTab === 'nutrition' ? 'text-accent-primary' : 'text-text-tertiary'}`}

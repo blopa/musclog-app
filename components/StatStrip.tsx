@@ -37,7 +37,17 @@ type StatStripProps = {
   items: StatStripItem[];
   palette: StatStripPalette;
   className?: string;
+  /**
+   * `md` for a strip sharing a screen with other figures (Home). `lg` when the strip is the
+   * screen's main read: a few results to take in, not to scan past.
+   */
+  size?: 'md' | 'lg';
 };
+
+const SIZE = {
+  md: { value: 'text-base', unit: 'text-[10px]', label: 'text-xs', cell: 'py-2.5' },
+  lg: { value: 'text-2xl', unit: 'text-sm', label: 'text-sm', cell: 'py-3' },
+} as const;
 
 /**
  * A row of labelled figures divided by hairlines: the number first, its label under it.
@@ -47,17 +57,19 @@ type StatStripProps = {
  * kind of read — a handful of numbers to scan across — and drew themselves two
  * different ways before this component existed.
  */
-export function StatStrip({ className, items, palette }: StatStripProps) {
+export function StatStrip({ className, items, palette, size = 'md' }: StatStripProps) {
   if (items.length === 0) {
     return null;
   }
 
+  const type = SIZE[size];
+
   const renderBody = (item: StatStripItem) => (
-    <View className="flex-1 items-center justify-center px-1 py-2.5">
+    <View className={`flex-1 items-center justify-center px-1 ${type.cell}`}>
       <View className="flex-row items-center">
         {item.icon ?? null}
         <Text
-          className="text-base font-semibold tabular-nums"
+          className={`font-semibold tabular-nums ${type.value}`}
           maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
           numberOfLines={1}
           style={[{ color: item.valueColor }, item.valueStyle]}
@@ -66,7 +78,7 @@ export function StatStrip({ className, items, palette }: StatStripProps) {
         </Text>
         {item.unit ? (
           <Text
-            className="ml-1 text-[10px] font-medium"
+            className={`ml-1 font-medium ${type.unit}`}
             maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
             style={{ color: palette.unit }}
           >
@@ -80,7 +92,7 @@ export function StatStrip({ className, items, palette }: StatStripProps) {
         the row still reads across.
       */}
       <Text
-        className="mt-0.5 text-center text-xs font-medium"
+        className={`mt-0.5 text-center font-medium ${type.label}`}
         maxFontSizeMultiplier={MAX_CHROME_FONT_SCALE}
         numberOfLines={2}
         style={{ color: palette.label }}

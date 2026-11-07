@@ -1,9 +1,10 @@
 import { Annoyed, Frown, Laugh, type LucideIcon, Meh, Smile } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
 import { Slider } from '@/components/theme/Slider';
 import { useTheme } from '@/hooks/useTheme';
+import { isCrampedLayout } from '@/utils/crampedLayout';
 
 import { GenericCard } from './GenericCard';
 
@@ -19,6 +20,16 @@ type MoodSelectorCardProps = {
 
 const MOOD_ICONS: LucideIcon[] = [Frown, Annoyed, Meh, Smile, Laugh];
 
+/**
+ * In a cramped layout (large text, a narrow window) five translated words ("Нормально",
+ * "Gemiddeld") no longer fit under their icons. The chosen mood is also named in the tag beside
+ * the question, and every icon keeps its accessibility label, so the captions give way rather
+ * than being cut off.
+ */
+export function showMoodCaptions(windowWidth: number, fontScale: number): boolean {
+  return !isCrampedLayout(windowWidth, fontScale);
+}
+
 export function MoodSelectorCard({
   value,
   onChange,
@@ -28,6 +39,8 @@ export function MoodSelectorCard({
 }: MoodSelectorCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { width, fontScale } = useWindowDimensions();
+  const showCaptions = showMoodCaptions(width, fontScale);
 
   return (
     <GenericCard variant="flat">
@@ -87,17 +100,19 @@ export function MoodSelectorCard({
                     color={isSelected ? theme.colors.accent.primary : theme.colors.text.tertiary}
                     strokeWidth={isSelected ? 2.5 : 2}
                   />
-                  <Text
-                    className={`text-xs font-semibold ${
-                      isSelected ? 'text-accent-primary' : 'text-text-tertiary'
-                    }`}
-                    style={{ opacity: isSelected ? 1 : 0.4 }}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit
-                    minimumFontScale={0.7}
-                  >
-                    {t(`bodyMetrics.addEntry.moods.${moodValue}`)}
-                  </Text>
+                  {showCaptions ? (
+                    <Text
+                      className={`text-xs font-semibold ${
+                        isSelected ? 'text-accent-primary' : 'text-text-tertiary'
+                      }`}
+                      style={{ opacity: isSelected ? 1 : 0.4 }}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.7}
+                    >
+                      {t(`bodyMetrics.addEntry.moods.${moodValue}`)}
+                    </Text>
+                  ) : null}
                 </Pressable>
               );
             })}

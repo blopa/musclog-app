@@ -25,7 +25,7 @@ export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps
   if (!data || data.length === 0) {
     return (
       <ProgressChartSection title={t('progress.correlationView.volumeCalories')}>
-        <View className="mb-4 flex-row items-center gap-2">
+        <View className="mb-4 flex-row flex-wrap items-center gap-2">
           {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
             <TouchableOpacity
               key={agg}
@@ -58,7 +58,7 @@ export function VolumeCaloriesChart({ allData, units }: VolumeCaloriesChartProps
 
   return (
     <ProgressChartSection title={t('progress.correlationView.volumeCalories')}>
-      <View className="mb-4 flex-row items-center gap-2">
+      <View className="mb-4 flex-row flex-wrap items-center gap-2">
         {(['daily', 'weekly', 'monthly'] as TimeAggregation[]).map((agg) => (
           <TouchableOpacity
             key={agg}

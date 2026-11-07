@@ -105,3 +105,57 @@ describe('the coach persona page of 2.15.2', () => {
     expect(description).toMatch(/Only the wording changes/);
   });
 });
+
+describe('the pages of 2.16.0', () => {
+  const release = whatsNewReleases.find((candidate) => candidate.version === '2.16.0');
+  const feature = (id: string) => release?.pages.find((candidate) => candidate.id === id);
+
+  it.each([
+    ['importHistory', 'writing', 'openWorkoutImport'],
+    ['yearInReview', 'trophy', 'openYearInReview'],
+    ['strengthLevels', 'flex', 'openProgress'],
+    ['trainingLoad', 'magnify', 'openProgress'],
+  ])(
+    '%s has a pose, one filled button into the feature (above the fold) and a list of what it does',
+    (id, pose, action) => {
+      const blocks = feature(id)?.blocks ?? [];
+
+      expect(blocks.map((block) => block.type)).toEqual(['info', 'action', 'featureList']);
+      expect(blocks[0]).toMatchObject({ type: 'info', pose });
+      expect(blocks[1]).toMatchObject({ type: 'action', action, primary: true });
+      // Nothing in the list is tappable: it describes the feature, the button opens it.
+      const list = blocks[2] as Extract<(typeof blocks)[number], { type: 'featureList' }>;
+      expect(list.items).toHaveLength(3);
+      expect(list.items.every((item) => item.action === undefined)).toBe(true);
+    }
+  );
+
+  it('opens the import flow in place, as a modal inside the tour', () => {
+    expect(WHATS_NEW_ACTION_CATALOG.openWorkoutImport).toEqual({ kind: 'modal' });
+  });
+
+  it('rejects a primary flag that is not a boolean', () => {
+    const { issues } = parseWhatsNewRelease(
+      {
+        version: '2.16.0',
+        pages: [
+          {
+            id: 'p',
+            blocks: [
+              {
+                id: 'a',
+                type: 'action',
+                action: 'openProgress',
+                labelKey: 'whatsNew.x',
+                primary: 'yes',
+              },
+            ],
+          },
+        ],
+      },
+      '2.16.0.json'
+    );
+
+    expect(issues).toContain('2.16.0.json.pages[0].blocks[0]: primary must be a boolean');
+  });
+});

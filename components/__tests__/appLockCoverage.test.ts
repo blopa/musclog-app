@@ -48,6 +48,7 @@ describe('each lockable area gates all of its screens', () => {
     ['app/app/progress.tsx', 'area="progress"'],
     ['app/app/nutrition/food.tsx', 'area="nutrition"'],
     ['app/app/weekly-review.tsx', 'area={WEEKLY_REVIEW_LOCK_AREAS}'],
+    ['app/app/year-in-review.tsx', 'area={YEAR_IN_REVIEW_LOCK_AREAS}'],
     ['app/app/workout/workouts.tsx', 'area="workout"'],
     ['app/app/workout/workout-session.tsx', 'area="workout"'],
     ['app/app/workout/workout-summary.tsx', 'area="workout"'],

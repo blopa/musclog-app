@@ -55,7 +55,7 @@ const WEEKLY_REVIEW_LOCK_AREAS = ['workout', 'nutrition'] as const;
 
 /**
  * The one sheet or modal open over the review. One value instead of a flag per sheet: two of them
- * could never be up at once anyway (sibling modals break presentation on iOS, see FIXES.md), and a
+ * could never be up at once anyway (sibling modals break presentation on iOS, see docs/FIXES.md), and a
  * union makes "which one is open" a single question with a single answer.
  */
 type ReviewPanel =
@@ -328,7 +328,7 @@ export default function WeeklyReviewScreen() {
     }
   };
 
-  // One modal at a time: sibling modals break presentation on iOS (see FIXES.md).
+  // One modal at a time: sibling modals break presentation on iOS (see docs/FIXES.md).
   let modal: ReactNode = null;
   if (
     data &&

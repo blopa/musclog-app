@@ -325,7 +325,11 @@ export function PortionSizesPickerModal({
             placeholder={t('portionSizes.searchPlaceholder')}
             icon={
               searchQuery ? (
-                <Pressable onPress={() => setSearchQuery('')}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.a11y.clearSearch')}
+                  onPress={() => setSearchQuery('')}
+                >
                   <X size={theme.iconSize.lg} color={theme.colors.text.secondary} />
                 </Pressable>
               ) : (

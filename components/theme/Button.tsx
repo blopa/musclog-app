@@ -45,6 +45,8 @@ type ThemeButtonProps = {
   className?: string;
   style?: ViewStyle;
   testID?: string;
+  /** What a screen reader says instead of the label, when the label needs its row for context. */
+  accessibilityLabel?: string;
 };
 
 const widthClasses = {
@@ -102,6 +104,7 @@ export function Button({
   loading = false,
   style,
   testID,
+  accessibilityLabel,
 }: ThemeButtonProps) {
   const theme = useTheme();
   const metrics = getButtonMetrics(theme)[size];
@@ -205,6 +208,7 @@ export function Button({
         className={widthClasses[width]}
         style={buttonStyle}
         accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
         accessibilityState={{ disabled: true, busy: loading }}
         testID={testID}
       >
@@ -216,6 +220,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       testID={testID}
       className={widthClasses[width]}
       style={buttonStyle}

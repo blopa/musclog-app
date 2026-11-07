@@ -166,7 +166,7 @@
       "progressionModeWeightFirst": "Prioriteit aan gewichtsprogessie",
       "progressionModeWeightFirstSubtitle": "Verhoog het gewicht direct als de RIR hoog is, in plaats van herhalingen toe te voegen",
       "enableAdvancedDataManagement": "Geavanceerd gegevensbeheer inschakelen",
-      "enableAdvancedDataManagementSubtitle": "Ontgrendel ruwe toegang tot je app-gegevens (alleen voor geavanceerde gebruikers)",
+      "enableAdvancedDataManagementSubtitle": "Sta ruwe toegang tot je app-gegevens toe (alleen voor geavanceerde gebruikers)",
       "enableAdvancedDataManagementConfirmTitle": "Alleen voor geavanceerde gebruikers",
       "enableAdvancedDataManagementConfirmMessage": "Dit is alleen voor geavanceerde gebruikers. Het rommelen met de gegevens hier kan je app onherstelbaar laten crashen. Gebruik dit alleen als je weet wat je doet.",
       "dataManagement": "Gegevensbeheer",
@@ -344,6 +344,18 @@
       "fats": "Vetten",
       "fiber": "Vezels",
       "alcohol": "Alcohol"
+    },
+    "loggy": {
+      "sectionTitle": "Loggy",
+      "sectionSubtitle": "Kies hoe de mascotte verschijnt.",
+      "show": {
+        "title": "Loggy tonen",
+        "description": "De mascotte verschijnt op welkomstschermen, lege schermen en bij vieringen. Zet uit om hem overal te verbergen. Je AI-coach houdt zijn afbeelding."
+      },
+      "animated": {
+        "title": "Geanimeerde Loggy",
+        "description": "Loggy beweegt een beetje als hij verschijnt. Zet uit om hem altijd stilstaand te zien."
+      }
     },
     "foodDiary": {
       "sectionTitle": "Voedingsdagboek",

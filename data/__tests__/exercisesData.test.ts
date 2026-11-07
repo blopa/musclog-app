@@ -12,6 +12,22 @@ const { POPULAR_EXERCISE_SLUGS } = require('../../scripts/exercise-popularity-po
   POPULAR_EXERCISE_SLUGS: Set<string>;
 };
 
+const { resolveSecondaryMuscles, resolveTargetMuscles } =
+  require('../../scripts/exercise-catalogue-mapping') as {
+    resolveSecondaryMuscles: (entry: SourceEntry) => string[];
+    resolveTargetMuscles: (entry: SourceEntry) => string[];
+  };
+
+interface SourceEntry {
+  name: string;
+  category: string;
+  force: string | null;
+  mechanic: string | null;
+  equipment: string | null;
+  primaryMuscles: string[];
+  secondaryMuscles: string[];
+}
+
 const EXERCISE_JSON_MUSCLE_GROUPS = [
   'abdomen',
   'arms',
@@ -114,6 +130,7 @@ describe('exercise catalogue schema', () => {
       'loadMultiplier',
       'mechanicType',
       'muscleGroup',
+      'secondaryMuscles',
       'targetMuscles',
     ]);
   });
@@ -180,6 +197,67 @@ describe('exercise catalogue schema', () => {
       .map(({ muscle, name }) => `${name}: ${muscle}`);
 
     expect(offenders).toEqual([]);
+  });
+
+  it('keeps every secondary muscle a subset of the target muscles, without repeats', () => {
+    const offenders = exercisesData
+      .filter(({ secondaryMuscles = [], targetMuscles }) =>
+        secondaryMuscles.some((muscle) => !targetMuscles.includes(muscle))
+      )
+      .map(({ __exerciseName }) => __exerciseName);
+    const duplicated = exercisesData
+      .filter(
+        ({ secondaryMuscles = [] }) => new Set(secondaryMuscles).size !== secondaryMuscles.length
+      )
+      .map(({ __exerciseName }) => __exerciseName);
+
+    expect(offenders).toEqual([]);
+    expect(duplicated).toEqual([]);
+  });
+
+  it('lists secondary-only muscles after the primary ones, and keeps a primary target', () => {
+    const offenders = exercisesData
+      .filter(({ secondaryMuscles = [], targetMuscles }) => {
+        const primaries = targetMuscles.slice(0, targetMuscles.length - secondaryMuscles.length);
+        return (
+          primaries.length === 0 ||
+          JSON.stringify(targetMuscles.slice(targetMuscles.length - secondaryMuscles.length)) !==
+            JSON.stringify(secondaryMuscles)
+        );
+      })
+      .map(({ __exerciseName }) => __exerciseName);
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('keeps a muscle named by both halves of the source as primary', () => {
+    const entry: SourceEntry = {
+      name: 'Synthetic Press',
+      category: 'strength',
+      force: 'push',
+      mechanic: 'compound',
+      equipment: 'barbell',
+      primaryMuscles: ['chest'],
+      secondaryMuscles: ['chest', 'triceps'],
+    };
+
+    expect(resolveTargetMuscles(entry)).toEqual(['pectoralis_major', 'triceps']);
+    expect(resolveSecondaryMuscles(entry)).toEqual(['triceps']);
+  });
+
+  it('reports no secondary muscles when the source lists none', () => {
+    const entry: SourceEntry = {
+      name: 'Synthetic Curl',
+      category: 'strength',
+      force: 'pull',
+      mechanic: 'isolation',
+      equipment: 'dumbbell',
+      primaryMuscles: ['biceps'],
+      secondaryMuscles: [],
+    };
+
+    expect(resolveSecondaryMuscles(entry)).toEqual([]);
+    expect(resolveTargetMuscles(entry)).toEqual(['biceps']);
   });
 
   it('gives every exercise at least one target muscle, without repeats', () => {
