@@ -1,4 +1,5 @@
 import { Check, SkipForward } from 'lucide-react-native';
+import { Fragment, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
@@ -15,40 +16,47 @@ import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 import { RirQuickPick } from './RirQuickPick';
 import type { SessionSetRowModel } from './sessionModel';
 import { draftFromPrevious, type SetDraftField } from './setDraft';
-
-/**
- * Column widths shared by the header and every row, so they always line up. The inputs are kept
- * just wide enough for "102.5" / "12" so "Last time" — the column lifters read before every set —
- * is not truncated on a 390pt phone.
- */
-export const SET_TABLE_COLUMNS = { set: 32, weight: 66, reps: 50, check: 48 } as const;
+import {
+  entryLineColumns,
+  isCompactSetTable,
+  SET_TABLE_COLUMNS,
+  type SetTableColumn,
+} from './setTableLayout';
 
 function useCompactSetTable() {
   const { width, fontScale } = useWindowDimensions();
-  return width / fontScale < 400;
+  return isCompactSetTable(width, fontScale);
 }
 
 export function SetTableHeader({ weightUnit }: { weightUnit: string }) {
   const { t } = useTranslation();
   const compact = useCompactSetTable();
   const label = 'text-xs font-medium text-text-tertiary';
-  return (
-    <View className="flex-row items-center gap-2 px-1" accessibilityElementsHidden>
+  const cells: Record<SetTableColumn, ReactNode> = {
+    set: (
       <Text className={label} style={{ width: SET_TABLE_COLUMNS.set, textAlign: 'center' }}>
         {t('trainingFlow.columns.set')}
       </Text>
-      {compact ? (
-        <View className="flex-1" />
-      ) : (
-        <Text className={`${label} flex-1`}>{t('trainingFlow.columns.previous')}</Text>
-      )}
+    ),
+    previous: <Text className={`${label} flex-1`}>{t('trainingFlow.columns.previous')}</Text>,
+    spacer: <View className="flex-1" />,
+    weight: (
       <Text className={label} style={{ width: SET_TABLE_COLUMNS.weight, textAlign: 'center' }}>
         {weightUnit}
       </Text>
+    ),
+    reps: (
       <Text className={label} style={{ width: SET_TABLE_COLUMNS.reps, textAlign: 'center' }}>
         {t('trainingFlow.columns.reps')}
       </Text>
-      <View style={{ width: SET_TABLE_COLUMNS.check }} />
+    ),
+    check: <View style={{ width: SET_TABLE_COLUMNS.check }} />,
+  };
+  return (
+    <View className="flex-row items-center gap-2 px-1" accessibilityElementsHidden>
+      {entryLineColumns(compact).map((column) => (
+        <Fragment key={column}>{cells[column]}</Fragment>
+      ))}
     </View>
   );
 }
@@ -178,6 +186,16 @@ export function InlineSetRow({
     </Pressable>
   );
 
+  // The same column list the header renders from, so the two can't disagree about what the
+  // entry line holds. The set cell leads; the rest follow in the list's order.
+  const entryCells: Record<Exclude<SetTableColumn, 'set'>, ReactNode> = {
+    previous: previousCell,
+    spacer: <View className="flex-1" />,
+    weight: input('weight', t('workoutSession.weight'), SET_TABLE_COLUMNS.weight),
+    reps: input('reps', t('workoutSession.reps'), SET_TABLE_COLUMNS.reps),
+    check: checkButton,
+  };
+
   return (
     <View className={`rounded-control border px-1 py-1 ${surface}`} testID={`set-${set.id}`}>
       <View className="flex-row items-center gap-2">
@@ -201,10 +219,11 @@ export function InlineSetRow({
             </Text>
           ) : null}
         </Pressable>
-        {compact ? <View className="flex-1" /> : previousCell}
-        {input('weight', t('workoutSession.weight'), SET_TABLE_COLUMNS.weight)}
-        {input('reps', t('workoutSession.reps'), SET_TABLE_COLUMNS.reps)}
-        {compact ? null : checkButton}
+        {entryLineColumns(compact)
+          .filter((column) => column !== 'set')
+          .map((column) => (
+            <Fragment key={column}>{entryCells[column]}</Fragment>
+          ))}
       </View>
       {compact ? (
         <View className="flex-row items-center gap-2">

@@ -105,7 +105,8 @@ export function ExerciseItem({
         >
           {/* Table Header */}
           <View
-            className="flex-row border-b"
+            // px-2 matches the rows' container padding below, so each header sits over its values.
+            className="flex-row border-b px-2"
             style={{
               borderBottomColor: theme.colors.border.light,
               backgroundColor: theme.colors.background.ink3,
