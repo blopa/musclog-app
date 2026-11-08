@@ -50,6 +50,9 @@
     <loc>https://musclog.app/blog/category/engineering</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/category/guides</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/category/machine-learning</loc>
   </url>
   <url>
@@ -125,9 +128,15 @@
     <loc>https://musclog.app/blog/2026/11/bring-your-own-ai-log-food-and-build-workouts</loc>
   </url>
   <url>
+    <loc>https://musclog.app/blog/2026/11/how-to-track-gym-progress</loc>
+  </url>
+  <url>
     <loc>https://musclog.app/blog/2026/11/i-stopped-after-a-summer-of-travel-so-musclog-can-ease-you-back-in</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/2026/11/my-ai-coach-can-be-dracula-but-it-cannot-change-your-numbers</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/2026/11/my-mascot-was-a-kettlebell-named-loggy-until-i-remembered-what-a-log-is</loc>
   </url>
 </urlset>
