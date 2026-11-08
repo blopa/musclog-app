@@ -1338,3 +1338,19 @@ Next in a column, far taller than 120px, and covered the last row of every step 
 locale, English included (the layout audit's comeback errors went from 11 to 143 on one pass). The body now pads by the footer's measured height (`footerClearance`, never below the old
 minimum), so a footer may wrap without hiding content. Any new footer layout is checked at 1.3×
 text, where a footer that is taller than one row is expected.
+
+## Boot "still running" reports measured wall-clock time (2.15.5)
+
+Sentry reported `Boot migration is still running` for `ExerciseService.backfillSearchText` with
+`elapsedMs: 11011749` (about 3 hours). The migration was not stuck: the report is a `setTimeout`
+started at boot and the OS suspended the backgrounded JS runtime, so the timer fired on the next
+resume with the whole gap counted. `database/bootForegroundClock.ts` (`BootForegroundClock`) is now
+the clock for the boot slow reports and the DB-ready probe's retry budget and watchdog: its time
+advances only while `AppState` is `active`, and an interval it could not observe (a timer that fires
+while `AppState` already says background) is dropped rather than counted. Reports carry both
+`elapsedMs` (wall) and `foregroundElapsedMs`, and a cancelled boot reports nothing. Never time a boot
+step with a bare `setTimeout`/`Date.now()` difference. `ExerciseService.backfillSearchText` also
+looks for a missing row with a `take(1)` read before opening a writer, so the common launch with
+nothing to fill does not queue behind other writers. Pinned by
+`database/__tests__/{bootForegroundClock,dbBootCoordinator}.test.ts` and
+`database/services/__tests__/ExerciseService.search.test.ts`.
