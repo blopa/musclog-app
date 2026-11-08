@@ -1,5 +1,25 @@
 # Musclog Guide
 
+## Orchestration (all coding agents; keep this section first)
+
+**For any non-trivial task (several independent subtasks, or more than a few files), act as the orchestrator. This is an explicit instruction to delegate to sub-agents**, using the tool's native `worker` / `worker-lite` agents (`.claude/agents/`, `.codex/agents/`, `.agents/agents/`). Do trivial work yourself (a question, a lookup, a one-file edit, anything cheaper to do than to brief), and do everything yourself when the tool cannot delegate or no cheaper worker exists for your model.
+
+- **Orchestrator** (the session model): inspects the code first; owns architecture, decomposition into dependency-ordered subtasks, integration, cross-cutting review and final validation; reviews every worker's diff (not its report); has fixes delegated or makes them; reports the result. Delegate features, independent UI components, tests, isolated bug fixes, independent-module refactors and repetitive transformations.
+- **Worker brief** (self-contained, so workers never rediscover the architecture): the goal; the exact files it may edit; the rules from this file that apply; the acceptance checks; "reply with files changed, checks run and results, open questions".
+- **Workers** follow this file, write or update tests, run focused checks and escalate decisions outside their brief. They never stage, commit, stash or reset, and never run `npm run lint:all` (it runs `git add .`).
+- **Cost ladder**: spawn only a model strictly cheaper than yours, never a higher tier, and the cheapest capable one (`worker-lite` for mechanical, well-specified edits; `worker` for work that needs judgment). If you cannot tell which model you are, use only `worker-lite`.
+- **Parallelism and depth**: run workers concurrently only when their subtasks are independent and their files disjoint, at most 4 at once. Orchestrator, then worker, then at most one nested layer for small isolated pieces. `worker-lite` and the lowest tier never delegate.
+- **Spawn by agent name** so its pinned model applies. Don't override it upward, and don't use a fork or a general-purpose agent for implementation (they run on your own model).
+- **Validate before reporting done** (orchestrator): the relevant Jest suites, `npm run typecheck`, `npm run lint:eslint`, `npx prettier --check` on changed files, and the translation checks when copy changed. Not `npm run lint:all`.
+
+| Tool        | `worker` pins   | `worker-lite` pins | Who may spawn                                             |
+| ----------- | --------------- | ------------------ | --------------------------------------------------------- |
+| Claude Code | `sonnet`        | `haiku`            | Fable or Opus: both. Sonnet: `worker-lite`. Haiku: none.  |
+| Codex       | `gpt-6.1-terra` | `gpt-6-luna`       | Astra or Sol: both. Terra: `worker-lite`. Luna: none.     |
+| Antigravity | `flash`         | none               | Gemini Pro-tier: `worker`. Flash or any non-Gemini: none. |
+
+The agent files hold the same pins (`utils/__tests__/agentOrchestration.test.ts` fails on drift). To change a tier, edit that tool's agent-file `model` line and its row here. What each tool enforces and what it only asks for: `docs/RESEARCH.md` → Agent orchestration.
+
 ## Expo Skills
 
 @.claude/skills/expo-tailwind-setup/SKILL.md
