@@ -302,7 +302,8 @@
         "web-development": "Web development",
         "engineering": "Engineering",
         "retro": "Retro",
-        "machine-learning": "Machine learning"
+        "machine-learning": "Machine learning",
+        "guides": "Guides"
       }
     },
     "gameboy": {
