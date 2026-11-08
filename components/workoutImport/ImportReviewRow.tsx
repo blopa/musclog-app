@@ -92,7 +92,7 @@ export function ImportReviewRow({
   }
 
   let outcome: string;
-  if (choice.kind === 'pick') {
+  if (choice.kind === 'existing') {
     outcome = choice.exerciseName;
   } else if (choice.kind === 'create') {
     outcome = t('workoutImport.review.createCustom');
@@ -132,7 +132,7 @@ export function ImportReviewRow({
       {expanded ? (
         <View className="gap-3 px-4 pb-4">
           {actions}
-          {choice.kind === 'pick' ? (
+          {choice.kind === 'existing' ? (
             <ToggleInput
               items={[
                 {

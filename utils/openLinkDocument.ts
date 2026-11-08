@@ -94,3 +94,29 @@ export function parseJsonDocument<R>(
 
   return normalize(parsed);
 }
+
+/**
+ * The parser of one contract: text in (JSON, a fenced block or an open link anywhere in it), a
+ * result out. The contract supplies its open-link `kind`, its size cap and its `normalize`; the
+ * reading is {@link readDocumentText} and {@link parseJsonDocument}, the same for every contract.
+ */
+export function documentParser<R extends { ok: boolean }>({
+  kind,
+  maxBytes,
+  normalize,
+  fail,
+}: {
+  kind: OpenLinkKind;
+  maxBytes: number;
+  normalize: (parsed: unknown) => R;
+  fail: (error: OpenDocumentError) => R;
+}): (text: string) => R {
+  return (text) =>
+    readDocumentText<R>({
+      text,
+      kind,
+      maxBytes,
+      parseJson: (json) => parseJsonDocument(json, normalize, fail),
+      fail,
+    });
+}

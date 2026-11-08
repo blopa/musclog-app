@@ -216,8 +216,38 @@ export const SETTINGS = {
   } satisfies SettingDefinition<number | null>,
 } as const;
 
+export type SettingName = keyof typeof SETTINGS;
+
+/** What a named setting reads to. */
+export type SettingValue<N extends SettingName> = ReturnType<(typeof SETTINGS)[N]['parse']>;
+
+/** The defaults of several settings at once, each under its `SETTINGS` name. */
+export function defaultSettings<N extends SettingName>(
+  names: readonly N[]
+): { [K in N]: SettingValue<K> } {
+  return Object.fromEntries(names.map((name) => [name, SETTINGS[name].defaultValue])) as {
+    [K in N]: SettingValue<K>;
+  };
+}
+
+/** Several settings out of an already-loaded `type → value` map, each under its `SETTINGS` name. */
+export function readSettings<N extends SettingName>(
+  map: ReadonlyMap<string, string>,
+  names: readonly N[]
+): { [K in N]: SettingValue<K> } {
+  return Object.fromEntries(
+    names.map((name) => [name, readSetting<unknown>(map, SETTINGS[name])])
+  ) as {
+    [K in N]: SettingValue<K>;
+  };
+}
+
 /** Reads a setting out of an already-loaded `type → value` map (the reactive context's view). */
-export function readSetting<T>(map: ReadonlyMap<string, string>, setting: SettingDefinition<T>): T {
+export function readSetting<T>(
+  map: ReadonlyMap<string, string>,
+  // Reading needs no `serialize`, which is what keeps a union of definitions assignable here.
+  setting: Pick<SettingDefinition<T>, 'type' | 'defaultValue' | 'parse'>
+): T {
   const raw = map.get(setting.type);
   return raw === undefined ? setting.defaultValue : setting.parse(raw);
 }

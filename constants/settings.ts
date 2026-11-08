@@ -692,48 +692,6 @@ export const APP_LOCK_AREAS = APP_LOCK_SCOPES.filter(
   (scope): scope is AppLockArea => scope !== 'app'
 );
 
-export type UseSettingsResult = {
-  units: Units;
-  isLoading: boolean;
-  weightUnit: 'kg' | 'lbs';
-  heightUnit: 'cm' | 'in';
-  notificationsWorkoutReminders: boolean;
-  notificationsActiveWorkout: boolean;
-  notificationsNutritionOverview: boolean;
-  notificationsMenstrualCycle: boolean;
-  notificationsRestTimer: boolean;
-  notificationsWorkoutDuration: boolean;
-  foodSearchSource: FoodSearchSource;
-  chartTooltipPosition: ChartTooltipPosition;
-  alwaysAllowFoodEditing: boolean;
-  showWeightPrediction: boolean;
-  useThinkingMode: boolean;
-  requireExportEncryption: boolean;
-  disableMinimumCalories: boolean;
-  useBfForCalculations: boolean;
-  intuitiveEatingMode: boolean;
-  enableFastedDay: boolean;
-  cycleShowPredictions: boolean;
-  cycleShowFertility: boolean;
-  cycleNotificationStyle: CycleNotificationStyle;
-  cycleQuickLogRaw: string;
-  cycleVariabilityHintDismissed: boolean;
-  appLockScopes: readonly AppLockScope[];
-  progressionMode: ProgressionMode;
-  /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
-  nutritionDisplay: string;
-  nutritionLogHistoryDays: NutritionLogHistoryDays;
-  workoutHistoryDays: WorkoutHistoryDays;
-  homeSummaryCard: HomeSummaryCard;
-  homeHeatmaps: HomeHeatmaps;
-  homeHeatmapLayout: HomeHeatmapLayout;
-  showHomeSteps: boolean;
-  foodDiaryCompact: boolean;
-  animatedLoggy: boolean;
-  showLoggy: boolean;
-  foodDiaryGrouping: FoodDiaryGrouping;
-};
-
 /** Unknown names (a newer build, a hand-edited backup) and 'off' are dropped; order is canonical. */
 export function parseAppLockScopes(raw: string | undefined | null): AppLockScope[] {
   const stored = new Set((raw ?? '').split(','));

@@ -39,7 +39,12 @@ export function longestWord(text: string): string {
 
 /** The widest word across several texts (a row's title and its description). */
 function widestWord(texts: readonly string[]): string {
-  return texts.map(longestWord).reduce((a, b) => (b.length > a.length ? b : a), '');
+  return longestWord(texts.join(' '));
+}
+
+/** The room inside a measured box once `inset` is taken from each side; `null` until it is measured. */
+export function insetWidth(width: number | null, inset: number): number | null {
+  return width === null ? null : width - 2 * inset;
 }
 
 type FitLabelOptions = {
@@ -62,6 +67,49 @@ function fittingSize(
   return fitFontSize(word, width / Math.max(1, fontScale), maxSize, glyphWidthRatio);
 }
 
+type Rung<Layout> = {
+  /** The width the longest word has to fit in if this layout is chosen. */
+  room: number;
+  layout: Layout;
+};
+
+type RungOptions = {
+  /** The largest size, which a layout is drawn at whenever it fits. */
+  maxSize: number;
+  /** The smallest size worth drawing; the last rung shrinks to it rather than go below. */
+  minSize: number;
+  /** A rung before the last is chosen when the word fits its room at this size or larger. */
+  acceptAt: number;
+  fontScale?: number;
+  glyphWidthRatio?: number;
+};
+
+/**
+ * Picks among layouts ordered from the one the design asks for to the one that gives the most room
+ * to the text (the icon, then the switch, give way in turn). The first rung whose room holds `word`
+ * at `acceptAt` or larger is used, at the size that fits it; the last rung is the fallback and
+ * shrinks the type, down to `minSize`, instead of giving up another piece of the row.
+ */
+function pickRung<Layout>(
+  word: string,
+  rungs: readonly [Rung<Layout>, ...Rung<Layout>[]],
+  { maxSize, minSize, acceptAt, fontScale, glyphWidthRatio }: RungOptions
+): Layout & { fontSize: number } {
+  const sizeIn = (room: number) => fittingSize(word, room, maxSize, fontScale, glyphWidthRatio);
+
+  for (const { room, layout } of rungs.slice(0, -1)) {
+    const size = sizeIn(room);
+
+    if (size >= acceptAt) {
+      return { ...layout, fontSize: size };
+    }
+  }
+
+  const last = rungs[rungs.length - 1];
+
+  return { ...last.layout, fontSize: Math.max(minSize, Math.min(maxSize, sizeIn(last.room))) };
+}
+
 /**
  * The font size at which the label's longest word fits `availableWidth` on a line, between
  * `minSize` and `maxSize`. Before the width is known (`null`, the first frame) it is `maxSize`.
@@ -69,15 +117,9 @@ function fittingSize(
 export function fitLabelFontSize(
   text: string,
   availableWidth: number | null,
-  { maxSize, minSize, fontScale }: FitLabelOptions
+  options: FitLabelOptions
 ): number {
-  if (availableWidth === null || availableWidth <= 0) {
-    return maxSize;
-  }
-
-  const fitted = fittingSize(longestWord(text), availableWidth, maxSize, fontScale);
-
-  return Math.max(minSize, Math.min(maxSize, fitted));
+  return fitLineFontSize(longestWord(text), availableWidth, options);
 }
 
 /**
@@ -165,15 +207,14 @@ export function layoutActionLabel(
     return { showIcon: true, fontSize: maxSize };
   }
 
-  const word = longestWord(label);
-  const beside = fittingSize(word, contentWidth - iconWidth - gap, maxSize, fontScale);
-  if (beside >= comfortableSize) {
-    return { showIcon: true, fontSize: beside };
-  }
-
-  const alone = fittingSize(word, contentWidth, maxSize, fontScale);
-
-  return { showIcon: false, fontSize: Math.max(minSize, Math.min(maxSize, alone)) };
+  return pickRung(
+    longestWord(label),
+    [
+      { room: contentWidth - iconWidth - gap, layout: { showIcon: true } },
+      { room: contentWidth, layout: { showIcon: false } },
+    ],
+    { maxSize, minSize, acceptAt: comfortableSize, fontScale }
+  );
 }
 
 /** What a settings or navigation row asks of its layout, whatever sits at its trailing edge. */
@@ -229,30 +270,20 @@ export function layoutToggleRow(
     return { showIcon: hasIcon, stackSwitch: false, fontSize };
   }
 
-  const word = widestWord(texts);
-  const fits = (room: number) =>
-    fittingSize(word, room, fontSize, fontScale, glyphWidthRatio) >= fontSize;
   const roomWithIcon = hasIcon ? iconRoom : 0;
 
-  if (fits(rowWidth - roomWithIcon - switchRoom)) {
-    return { showIcon: hasIcon, stackSwitch: false, fontSize };
-  }
-
-  if (fits(rowWidth - roomWithIcon)) {
-    return { showIcon: hasIcon, stackSwitch: true, fontSize };
-  }
-
-  if (fits(rowWidth)) {
-    return { showIcon: false, stackSwitch: true, fontSize };
-  }
-
-  const shrunk = fittingSize(word, rowWidth, fontSize, fontScale, glyphWidthRatio);
-
-  return {
-    showIcon: false,
-    stackSwitch: true,
-    fontSize: Math.max(minSize, Math.min(fontSize, shrunk)),
-  };
+  return pickRung(
+    widestWord(texts),
+    [
+      {
+        room: rowWidth - roomWithIcon - switchRoom,
+        layout: { showIcon: hasIcon, stackSwitch: false },
+      },
+      { room: rowWidth - roomWithIcon, layout: { showIcon: hasIcon, stackSwitch: true } },
+      { room: rowWidth, layout: { showIcon: false, stackSwitch: true } },
+    ],
+    { maxSize: fontSize, minSize, acceptAt: fontSize, fontScale, glyphWidthRatio }
+  );
 }
 
 type IconRowOptions = RowFitOptions & {
@@ -289,16 +320,15 @@ export function layoutIconRow(
     return { showIcon: !dropIcon, fontSize };
   }
 
-  const word = widestWord(texts);
-  const fitted = (room: number) => fittingSize(word, room, fontSize, fontScale, glyphWidthRatio);
+  const withoutIcon = { room: rowWidth - trailingRoom, layout: { showIcon: false } };
 
-  if (!dropIcon && fitted(rowWidth - iconRoom - trailingRoom) >= fontSize) {
-    return { showIcon: true, fontSize };
-  }
-
-  const alone = fitted(rowWidth - trailingRoom);
-
-  return { showIcon: false, fontSize: Math.max(minSize, Math.min(fontSize, alone)) };
+  return pickRung(
+    widestWord(texts),
+    dropIcon
+      ? [withoutIcon]
+      : [{ room: rowWidth - iconRoom - trailingRoom, layout: { showIcon: true } }, withoutIcon],
+    { maxSize: fontSize, minSize, acceptAt: fontSize, fontScale, glyphWidthRatio }
+  );
 }
 
 type TableColumnsOptions = {

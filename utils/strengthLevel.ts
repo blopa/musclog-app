@@ -1,6 +1,5 @@
 import type { MuscleGroup } from '@/database/models/Exercise';
 import {
-  loadBenchmarkFor,
   MAX_E1RM_REPS,
   normalizedRelativeStrength,
   RS_ADVANCED,
@@ -96,11 +95,10 @@ export function gradeStrength(input: StrengthGradeInput): StrengthGrade | null {
     return null;
   }
 
-  const benchmark = loadBenchmarkFor(loadMultiplier);
   const subject: StrengthSubject = { bodyWeightKg, loadMultiplier, gender, muscleGroup };
 
   if (gender === 'other') {
-    const maleScale = normalizedRelativeStrength(estimated1RmKg, { ...subject, gender: 'other' });
+    const maleScale = normalizedRelativeStrength(estimated1RmKg, subject);
     const femaleScale = normalizedRelativeStrength(estimated1RmKg, {
       ...subject,
       gender: 'female',
@@ -126,7 +124,7 @@ export function gradeStrength(input: StrengthGradeInput): StrengthGrade | null {
     upperLevel: null,
     normalizedStrength: normalized,
     nextLevel: next?.level ?? null,
-    nextLevelKg: next ? next.boundary * bodyWeightKg * benchmark * factor : null,
+    nextLevelKg: next ? next.boundary * bodyWeightKg * loadMultiplier * factor : null,
   };
 }
 

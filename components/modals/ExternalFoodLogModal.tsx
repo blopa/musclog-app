@@ -16,7 +16,9 @@ import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models/NutritionLog';
 import {
+  EMPTY_IMPORT_ERROR_KEY,
   type ExternalHandoffCopy,
+  SHARED_HANDOFF_COPY,
   useExternalAssistantImport,
 } from '@/hooks/useExternalAssistantImport';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -53,7 +55,7 @@ import { TimePickerModal } from './TimePickerModal';
 
 /** What the person is told for each way an imported file can be unusable. */
 const IMPORT_ERROR_KEYS: Record<FoodLogParseError, string> = {
-  empty: 'food.externalLog.errors.empty',
+  empty: EMPTY_IMPORT_ERROR_KEY,
   tooLarge: 'food.externalLog.errors.tooLarge',
   notJson: 'food.externalLog.errors.notJson',
   notAnObject: 'food.externalLog.errors.notJson',
@@ -65,26 +67,16 @@ const IMPORT_ERROR_KEYS: Record<FoodLogParseError, string> = {
 };
 
 const HANDOFF_COPY: ExternalHandoffCopy = {
+  ...SHARED_HANDOFF_COPY,
   intro: 'food.externalLog.intro',
   steps: [
     'food.externalLog.steps.one',
     'food.externalLog.steps.two',
     'food.externalLog.steps.three',
   ],
-  leaveSection: 'food.externalLog.leaveSection',
-  openChatgpt: 'food.externalLog.openChatgpt',
-  openClaude: 'food.externalLog.openClaude',
-  copy: 'food.externalLog.copy',
-  share: 'food.externalLog.share',
-  fallback: 'food.externalLog.fallback',
-  privacy: 'food.externalLog.privacy',
   backSection: 'food.externalLog.backSection',
   importFile: 'food.externalLog.importFile',
-  pasteJson: 'food.externalLog.pasteJson',
   noFile: 'food.externalLog.noFile',
-  copiedPaste: 'food.externalLog.copiedPaste',
-  copied: 'food.externalLog.copied',
-  fileRead: 'food.externalLog.errors.fileRead',
   tooLarge: IMPORT_ERROR_KEYS.tooLarge,
   linkError: 'food.externalLog.linkError',
 };

@@ -40,6 +40,28 @@ export type ExternalHandoffCopy = {
   linkError?: string;
 };
 
+/**
+ * The wording every hand-off shares (the onboarding file, the workout plan, the food log), as whole
+ * keys. A caller spreads it into its own table and adds only what is its own: the intro, the
+ * steps, the second section's heading, the import button and the failures that name the file.
+ */
+export const SHARED_HANDOFF_COPY = {
+  leaveSection: 'common.externalAssistant.leaveSection',
+  openChatgpt: 'common.externalAssistant.openChatgpt',
+  openClaude: 'common.externalAssistant.openClaude',
+  copy: 'common.externalAssistant.copy',
+  share: 'common.externalAssistant.share',
+  fallback: 'common.externalAssistant.fallback',
+  privacy: 'common.externalAssistant.privacy',
+  pasteJson: 'common.externalAssistant.pasteJson',
+  copiedPaste: 'common.externalAssistant.copiedPaste',
+  copied: 'common.externalAssistant.copied',
+  fileRead: 'common.externalAssistant.errors.fileRead',
+} as const satisfies Partial<ExternalHandoffCopy>;
+
+/** What a caller says when it is given nothing to read; the same words for every document. */
+export const EMPTY_IMPORT_ERROR_KEY = 'common.externalAssistant.errors.empty';
+
 type ExternalAssistantImportOptions = {
   /** The instructions to copy. May read settings, so it may be async. */
   buildInstructions: () => string | Promise<string>;

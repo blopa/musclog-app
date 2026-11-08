@@ -1,6 +1,6 @@
 import { redirectSystemPath } from '../../app/+native-intent';
 import { isOnboardingCompleted } from '../onboardingService';
-import { setPendingOpenLink, takePendingOpenLink } from '../openLink';
+import { setPendingOpenLink, takePendingOpenLink } from '../openLinkInbox';
 
 jest.mock('../onboardingService', () => ({ isOnboardingCompleted: jest.fn() }));
 

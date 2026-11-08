@@ -10,7 +10,9 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { getAllLocaleExerciseNamesBySlug, getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import {
+  EMPTY_IMPORT_ERROR_KEY,
   type ExternalHandoffCopy,
+  SHARED_HANDOFF_COPY,
   useExternalAssistantImport,
 } from '@/hooks/useExternalAssistantImport';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -27,7 +29,7 @@ import { FullScreenModal } from './FullScreenModal';
 
 /** What the person is told for each way an imported file can be unusable. */
 const IMPORT_ERROR_KEYS: Record<PlanParseError, string> = {
-  empty: 'workouts.externalPlan.errors.empty',
+  empty: EMPTY_IMPORT_ERROR_KEY,
   tooLarge: 'workouts.externalPlan.errors.tooLarge',
   notJson: 'workouts.externalPlan.errors.notJson',
   notAnObject: 'workouts.externalPlan.errors.notJson',
@@ -39,26 +41,16 @@ const IMPORT_ERROR_KEYS: Record<PlanParseError, string> = {
 };
 
 const HANDOFF_COPY: ExternalHandoffCopy = {
+  ...SHARED_HANDOFF_COPY,
   intro: 'workouts.externalPlan.intro',
   steps: [
     'workouts.externalPlan.steps.one',
     'workouts.externalPlan.steps.two',
     'workouts.externalPlan.steps.three',
   ],
-  leaveSection: 'workouts.externalPlan.leaveSection',
-  openChatgpt: 'workouts.externalPlan.openChatgpt',
-  openClaude: 'workouts.externalPlan.openClaude',
-  copy: 'workouts.externalPlan.copy',
-  share: 'workouts.externalPlan.share',
-  fallback: 'workouts.externalPlan.fallback',
-  privacy: 'workouts.externalPlan.privacy',
   backSection: 'workouts.externalPlan.backSection',
   importFile: 'workouts.externalPlan.importFile',
-  pasteJson: 'workouts.externalPlan.pasteJson',
   noFile: 'workouts.externalPlan.noFile',
-  copiedPaste: 'workouts.externalPlan.copiedPaste',
-  copied: 'workouts.externalPlan.copied',
-  fileRead: 'workouts.externalPlan.errors.fileRead',
   tooLarge: IMPORT_ERROR_KEYS.tooLarge,
   linkError: 'workouts.externalPlan.linkError',
 };

@@ -8,7 +8,9 @@ import { ScreenHeader } from '@/components/theme/ScreenHeader';
 import { TextButton } from '@/components/theme/TextButton';
 import { useAiSetupSession } from '@/hooks/useAiSetupSession';
 import {
+  EMPTY_IMPORT_ERROR_KEY,
   type ExternalHandoffCopy,
+  SHARED_HANDOFF_COPY,
   useExternalAssistantImport,
 } from '@/hooks/useExternalAssistantImport';
 import { MAX_CONTRACT_BYTES } from '@/utils/aiOnboarding/contract';
@@ -17,7 +19,7 @@ import { buildExternalInstructions } from '@/utils/aiOnboarding/instructions';
 
 /** What the person is told for each way an imported file can be unusable. */
 const IMPORT_ERROR_KEYS: Record<ContractParseError, string> = {
-  empty: 'aiOnboarding.external.errors.empty',
+  empty: EMPTY_IMPORT_ERROR_KEY,
   tooLarge: 'aiOnboarding.external.errors.tooLarge',
   notJson: 'aiOnboarding.external.errors.notJson',
   notAnObject: 'aiOnboarding.external.errors.notJson',
@@ -27,26 +29,16 @@ const IMPORT_ERROR_KEYS: Record<ContractParseError, string> = {
 };
 
 const HANDOFF_COPY: ExternalHandoffCopy = {
+  ...SHARED_HANDOFF_COPY,
   intro: 'aiOnboarding.external.intro',
   steps: [
     'aiOnboarding.external.steps.one',
     'aiOnboarding.external.steps.two',
     'aiOnboarding.external.steps.three',
   ],
-  leaveSection: 'aiOnboarding.external.leaveSection',
-  openChatgpt: 'aiOnboarding.external.openChatgpt',
-  openClaude: 'aiOnboarding.external.openClaude',
-  copy: 'aiOnboarding.external.copy',
-  share: 'aiOnboarding.external.share',
-  fallback: 'aiOnboarding.external.fallback',
-  privacy: 'aiOnboarding.external.privacy',
   backSection: 'aiOnboarding.external.backSection',
   importFile: 'aiOnboarding.external.importFile',
-  pasteJson: 'aiOnboarding.external.pasteJson',
   noFile: 'aiOnboarding.external.noFile',
-  copiedPaste: 'aiOnboarding.external.copiedPaste',
-  copied: 'aiOnboarding.external.copied',
-  fileRead: 'aiOnboarding.external.errors.fileRead',
   tooLarge: IMPORT_ERROR_KEYS.tooLarge,
 };
 

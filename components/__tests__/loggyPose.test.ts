@@ -5,6 +5,11 @@ const root = join(__dirname, '..', '..');
 const POSES = join(root, 'assets', 'avatars', 'loggy-poses');
 const ANIMATED = join(root, 'assets', 'avatars', 'loggy-animated');
 const source = readFileSync(join(root, 'components', 'LoggyPose.tsx'), 'utf8');
+// The generator writes the pose table, so a pose with a drawing cannot be left out of it.
+const registry = readFileSync(
+  join(root, 'components', 'loggy', 'animated', 'loggyPoses.ts'),
+  'utf8'
+);
 
 /** The aspect the component draws at: width over height of the SVG's own `viewBox`. */
 function viewBoxAspect(file: string): number {
@@ -32,8 +37,13 @@ describe('LoggyPose', () => {
     const pose = svg.replace(/^loggy-/, '').replace(/\.svg$/, '');
     const component = `Loggy${pose.charAt(0).toUpperCase()}${pose.slice(1)}Animated`;
 
-    expect(source).toContain(`'@/components/loggy/animated/${component}'`);
-    expect(source).toMatch(new RegExp(`\\b${pose}: ${component},`));
+    expect(registry).toContain(`'@/components/loggy/animated/${component}'`);
+    expect(registry).toMatch(new RegExp(`\\b${pose}: ${component},`));
+  });
+
+  it('draws every pose from that table and keeps no list of its own', () => {
+    expect(source).toContain("from '@/components/loggy/animated/loggyPoses'");
+    expect(source).not.toMatch(/components\/loggy\/animated\/Loggy\w+Animated/);
   });
 
   it.each(svgs)('%s carries the proportions of its SVG', (svg) => {

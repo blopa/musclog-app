@@ -110,7 +110,7 @@ export function WorkoutImportModal({ visible, onClose }: WorkoutImportModalProps
   const handleExercisePicked = useCallback(
     (name: string, exercise: ExerciseData) => {
       const choice: ExerciseChoice = {
-        kind: 'pick',
+        kind: 'existing',
         exerciseId: exercise.id,
         exerciseName: exercise.name,
         rememberAlias: true,

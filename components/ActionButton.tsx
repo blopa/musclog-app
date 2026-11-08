@@ -3,7 +3,7 @@ import { Pressable, Text } from 'react-native';
 
 import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useTheme } from '@/hooks/useTheme';
-import { layoutActionLabel } from '@/utils/fitText';
+import { insetWidth, layoutActionLabel } from '@/utils/fitText';
 
 /**
  * There are two styles here, not four. `workout`/`food` and `accent`/`neutral` were
@@ -12,8 +12,7 @@ import { layoutActionLabel } from '@/utils/fitText';
  */
 export type ActionButtonTone = 'accent' | 'muted';
 
-/** The tile's horizontal padding and the gap beside the icon: drawn from these, and the label's room is worked out from them. */
-const TILE_PADDING_X = 16;
+/** The gap beside the icon: drawn from this, and the label's room is worked out from it. */
 const TILE_GAP = 12;
 const LABEL_MAX_SIZE = 16;
 /** Beside the icon the label stays at least this large; below it the icon gives way. */
@@ -40,23 +39,21 @@ type ActionButtonProps = {
  */
 export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonProps) {
   const theme = useTheme();
+  // Drawn from this, and the label's room is worked out from it.
+  const tilePadding = theme.spacing.padding.base;
   const { width: tileWidth, fontScale, onLayout } = useMeasuredWidth();
   // "Entrenamiento" does not fit beside an icon in half a narrow screen, least of all at large
   // text, and a label that overflows its tile lands on the next one. The tile measures itself and
   // shrinks the label to its room, then gives up the icon (decorative: the label names the action)
   // before the label gets smaller than it can be read.
-  const { showIcon, fontSize } = layoutActionLabel(
-    label,
-    tileWidth === null ? null : tileWidth - 2 * TILE_PADDING_X,
-    {
-      iconWidth: theme.iconSize.lg,
-      gap: TILE_GAP,
-      comfortableSize: LABEL_COMFORTABLE_SIZE,
-      maxSize: LABEL_MAX_SIZE,
-      minSize: LABEL_MIN_SIZE,
-      fontScale,
-    }
-  );
+  const { showIcon, fontSize } = layoutActionLabel(label, insetWidth(tileWidth, tilePadding), {
+    iconWidth: theme.iconSize.lg,
+    gap: TILE_GAP,
+    comfortableSize: LABEL_COMFORTABLE_SIZE,
+    maxSize: LABEL_MAX_SIZE,
+    minSize: LABEL_MIN_SIZE,
+    fontScale,
+  });
 
   const toneConfig: Record<ActionButtonTone, ToneStyle> = {
     accent: {
@@ -82,7 +79,7 @@ export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonP
       style={{
         minHeight: theme.size['16'],
         backgroundColor: config.bgColor,
-        paddingHorizontal: TILE_PADDING_X,
+        paddingHorizontal: tilePadding,
         gap: TILE_GAP,
       }}
       onPress={onPress}

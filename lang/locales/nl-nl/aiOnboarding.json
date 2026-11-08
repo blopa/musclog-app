@@ -16,24 +16,15 @@
     },
     "external": {
       "backSection": "Stap 2: kom terug met je setup",
-      "copied": "Instructies gekopieerd",
-      "copiedPaste": "Instructies gekopieerd. Plak ze in de chat als het vak leeg is.",
-      "copy": "Kopiëren",
       "errors": {
-        "empty": "Er is niets om te importeren.",
-        "fileRead": "Dat bestand kon niet worden gelezen. Probeer een ander bestand of plak de tekst.",
         "newerVersion": "Deze setup is gemaakt voor een nieuwere versie van Musclog. Werk de app bij en importeer opnieuw.",
         "notJson": "Dit lijkt geen setup-bestand. Kies het bestand musclog-onboarding.json van de assistent of plak de JSON.",
         "tooLarge": "Dat bestand is te groot voor een setup-bestand.",
         "wrongSchema": "Dit is geen Musclog-setupbestand. Controleer of je het bestand van de assistent hebt gekozen."
       },
-      "fallback": "De app of site kon niet worden geopend. De instructies zijn gekopieerd: open ChatGPT of Claude zelf en plak ze.",
       "importFile": "Een setup-bestand importeren",
       "intro": "ChatGPT of Claude kan de vragen voor je stellen en geeft je daarna een bestand om terug te brengen. Je verlaat Musclog even; er wordt niets toegepast tot je het hier controleert.",
-      "leaveSection": "Stap 1: vraag het aan de assistent",
       "noFile": "Geen bestand? Plak de JSON, of ga terug naar de formulieren.",
-      "openChatgpt": "ChatGPT openen",
-      "openClaude": "Claude openen",
       "paste": {
         "fromClipboard": "Plakken van klembord",
         "import": "Importeren",
@@ -41,9 +32,6 @@
         "subtitle": "Plak de JSON die de assistent je gaf.",
         "title": "Setup-JSON plakken"
       },
-      "pasteJson": "JSON plakken",
-      "privacy": "Alleen de instructies worden gekopieerd. Er zit niets over jou of een API-sleutel in.",
-      "share": "Delen",
       "steps": {
         "one": "Open ChatGPT of Claude. De instructies worden voor je gekopieerd: plak ze in de chat.",
         "three": "Kom terug naar Musclog en importeer dat bestand, of plak de tekst.",

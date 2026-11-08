@@ -4,7 +4,7 @@ import { Pressable, Switch, Text, View } from 'react-native';
 import { useIsCramped } from '@/hooks/useIsCramped';
 import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useTheme } from '@/hooks/useTheme';
-import { layoutToggleRow } from '@/utils/fitText';
+import { insetWidth, layoutToggleRow } from '@/utils/fitText';
 
 type ToggleItem = {
   key: string;
@@ -41,7 +41,7 @@ function ToggleRow({ item }: { item: ToggleItem }) {
   // room away (always while cramped), and only then does the type shrink a little.
   const { showIcon, stackSwitch, fontSize } = layoutToggleRow(
     item.subtitle ? [item.label, item.subtitle] : [item.label],
-    rowWidth === null ? null : rowWidth - rowPadding * 2,
+    insetWidth(rowWidth, rowPadding),
     {
       fontSize: theme.typography.fontSize.sm,
       minSize: MIN_TEXT_SIZE,

@@ -2,6 +2,7 @@ import {
   fitFontSize,
   fitLabelFontSize,
   fitLineFontSize,
+  insetWidth,
   labelsFitEvenly,
   layoutActionLabel,
   layoutIconRow,
@@ -361,5 +362,19 @@ describe('fitFontSize', () => {
 
   it('does not divide by nothing', () => {
     expect(fitFontSize('', 310, 132)).toBe(132);
+  });
+});
+
+describe('insetWidth', () => {
+  it('keeps a missing width missing', () => {
+    expect(insetWidth(null, 16)).toBeNull();
+  });
+
+  it('takes the inset off both sides', () => {
+    expect(insetWidth(300, 16)).toBe(268);
+  });
+
+  it('goes negative rather than clamping when the box is narrower than twice the inset', () => {
+    expect(insetWidth(20, 16)).toBe(-12);
   });
 });

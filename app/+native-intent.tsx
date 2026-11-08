@@ -1,5 +1,6 @@
 import { isOnboardingCompleted } from '@/utils/onboardingService';
-import { OPEN_LINK_ROUTES, parseOpenLink, setPendingOpenLink } from '@/utils/openLink';
+import { OPEN_LINK_ROUTES, parseOpenLink } from '@/utils/openLink';
+import { setPendingOpenLink } from '@/utils/openLinkInbox';
 
 // This file intercepts native deep link intents before Expo Router processes them.
 // On cold start, imperative router.navigate() before the Root Layout mounts causes:

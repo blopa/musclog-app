@@ -16,24 +16,15 @@
     },
     "external": {
       "backSection": "Step 2: come back with your setup",
-      "copied": "Instructions copied",
-      "copiedPaste": "Instructions copied. Paste them into the chat if the box is empty.",
-      "copy": "Copy",
       "errors": {
-        "empty": "There is nothing to import.",
-        "fileRead": "That file could not be read. Try another one, or paste the text instead.",
         "newerVersion": "This setup was made for a newer version of Musclog. Update the app, then import it again.",
         "notJson": "That doesn't look like a setup file. Pick the musclog-onboarding.json file the assistant gave you, or paste its JSON.",
         "tooLarge": "That file is too large to be a setup file.",
         "wrongSchema": "That isn't a Musclog setup file. Check that you picked the file the assistant made."
       },
-      "fallback": "Couldn't open the app or site. The instructions are copied: open ChatGPT or Claude yourself and paste them.",
       "importFile": "Import a setup file",
       "intro": "ChatGPT or Claude can ask the questions for you, then give you a file to bring back. You leave Musclog for a moment; nothing is applied until you review it here.",
-      "leaveSection": "Step 1: ask the assistant",
       "noFile": "No file? Paste the JSON instead, or go back to the setup forms.",
-      "openChatgpt": "Open ChatGPT",
-      "openClaude": "Open Claude",
       "paste": {
         "fromClipboard": "Paste from clipboard",
         "import": "Import",
@@ -41,9 +32,6 @@
         "subtitle": "Paste the JSON the assistant gave you.",
         "title": "Paste setup JSON"
       },
-      "pasteJson": "Paste JSON",
-      "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
-      "share": "Share",
       "steps": {
         "one": "Open ChatGPT or Claude. The instructions are copied for you: paste them into the chat.",
         "three": "Come back to Musclog and import that file, or paste its text.",

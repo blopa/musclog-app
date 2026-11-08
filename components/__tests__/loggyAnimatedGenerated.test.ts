@@ -27,7 +27,11 @@ describe('generated animated Loggy', () => {
   it('is up to date with the SVGs', async () => {
     const generated = await generateAll();
 
-    expect(Object.keys(generated)).toHaveLength(svgs.length);
+    // One component per SVG, plus the shared path data and the pose table.
+    expect(Object.keys(generated)).toHaveLength(svgs.length + 2);
+    expect(Object.keys(generated).filter((file) => file.endsWith('Animated.tsx'))).toHaveLength(
+      svgs.length
+    );
 
     for (const [path, contents] of Object.entries(generated)) {
       expect({ path, same: readFileSync(path, 'utf8') === contents }).toEqual({ path, same: true });

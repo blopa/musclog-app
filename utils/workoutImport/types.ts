@@ -1,3 +1,5 @@
+import type { CardioActivity } from '@/utils/cardioEnergy';
+
 export type WorkoutImportSource = 'strong' | 'hevy' | 'fitnotes' | 'fitnotes2';
 export type ImportWeightUnit = 'kg' | 'lbs';
 export type ImportedSetType = 'normal' | 'warmup' | 'failure' | 'drop_set';
@@ -21,7 +23,7 @@ export interface ImportedExerciseBlock {
 
 export interface ImportedCardio {
   name: string;
-  activity: 'walk' | 'run';
+  activity: CardioActivity;
   distanceM: number;
   durationSeconds: number | null;
   notes: string | null;

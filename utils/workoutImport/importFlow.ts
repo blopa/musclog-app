@@ -21,9 +21,13 @@ export type ImportFailureKind = ImportFailure | 'tooLarge' | 'nothingNew' | 'rea
 
 export type ImportStep = 'pick' | 'unit' | 'review' | 'saving' | 'summary' | 'failed';
 
-/** What the person chose for one exercise name in the file. */
+/**
+ * What the person chose for one exercise name in the file. The commit's own `ExerciseResolution`
+ * for an existing exercise, plus the name the screen shows; a new exercise is only inferred from
+ * the file's name and category once the import is saved (`resolutionsFor`).
+ */
 export type ExerciseChoice =
-  | { kind: 'pick'; exerciseId: string; exerciseName: string; rememberAlias: boolean }
+  | (Extract<ExerciseResolution, { kind: 'existing' }> & { exerciseName: string })
   | { kind: 'create' }
   | { kind: 'skip' };
 
@@ -120,7 +124,7 @@ export function defaultChoicesFor(
   for (const match of matches) {
     if (match.kind !== 'unmatched' && match.exerciseId) {
       choices[match.name] = {
-        kind: 'pick',
+        kind: 'existing',
         exerciseId: match.exerciseId,
         exerciseName: match.exerciseName ?? match.name,
         rememberAlias: false,
@@ -156,20 +160,20 @@ export function resolutionsFor(state: ImportFlowState): Map<string, ExerciseReso
       continue;
     }
 
-    if (choice.kind === 'pick') {
+    if (choice.kind === 'existing') {
       out.set(match.name, {
         kind: 'existing',
         exerciseId: choice.exerciseId,
         rememberAlias: choice.rememberAlias,
       });
-    } else if (choice.kind === 'skip') {
-      out.set(match.name, { kind: 'skip' });
-    } else {
+    } else if (choice.kind === 'create') {
       out.set(match.name, {
         kind: 'create',
         name: match.name,
         ...inferCustomExercise(match.name, match.category),
       });
+    } else {
+      out.set(match.name, choice);
     }
   }
 
@@ -249,7 +253,7 @@ export function importFlowReducer(
 
     case 'setRememberAlias': {
       const choice = state.choices[action.name];
-      if (choice?.kind !== 'pick') {
+      if (choice?.kind !== 'existing') {
         return state;
       }
 

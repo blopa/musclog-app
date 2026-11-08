@@ -16,24 +16,15 @@
     },
     "external": {
       "backSection": "Passo 2: volte com sua configuração",
-      "copied": "Instruções copiadas",
-      "copiedPaste": "Instruções copiadas. Cole no chat se a caixa estiver vazia.",
-      "copy": "Copiar",
       "errors": {
-        "empty": "Não há nada para importar.",
-        "fileRead": "Não foi possível ler esse arquivo. Tente outro ou cole o texto.",
         "newerVersion": "Esta configuração é de uma versão mais nova do Musclog. Atualize o app e importe de novo.",
         "notJson": "Isso não parece um arquivo de configuração. Escolha o arquivo musclog-onboarding.json que o assistente deu ou cole o JSON.",
         "tooLarge": "Esse arquivo é grande demais para ser de configuração.",
         "wrongSchema": "Esse não é um arquivo de configuração do Musclog. Confira se escolheu o que o assistente criou."
       },
-      "fallback": "Não foi possível abrir o app ou o site. As instruções foram copiadas: abra o ChatGPT ou o Claude e cole.",
       "importFile": "Importar um arquivo de configuração",
       "intro": "O ChatGPT ou o Claude podem fazer as perguntas e dar um arquivo para você trazer de volta. Você sai do Musclog por um momento; nada é aplicado até você revisar aqui.",
-      "leaveSection": "Passo 1: pergunte ao assistente",
       "noFile": "Sem arquivo? Cole o JSON ou volte aos formulários.",
-      "openChatgpt": "Abrir o ChatGPT",
-      "openClaude": "Abrir o Claude",
       "paste": {
         "fromClipboard": "Colar da área de transferência",
         "import": "Importar",
@@ -41,9 +32,6 @@
         "subtitle": "Cole o JSON que o assistente deu.",
         "title": "Colar JSON de configuração"
       },
-      "pasteJson": "Colar JSON",
-      "privacy": "Apenas as instruções são copiadas. Nada sobre você nem chave de API é incluído.",
-      "share": "Compartilhar",
       "steps": {
         "one": "Abra o ChatGPT ou o Claude. As instruções são copiadas para você: cole no chat.",
         "three": "Volte ao Musclog e importe esse arquivo ou cole o texto.",
