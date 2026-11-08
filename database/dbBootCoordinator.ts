@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
+import { BootForegroundClock } from '@/database/bootForegroundClock';
 import { startDbDurabilityMonitoring } from '@/database/dbDurability';
 import {
   isDbReady,
@@ -54,10 +55,6 @@ type Cancelled = () => boolean;
 
 const bootMigrationDoneKey = (tag: string) => `boot_migration_done:${tag}`;
 const bootMigrationCutoffKey = (tag: string) => `boot_migration_cutoff:${tag}`;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 function isDbReadyRetryableError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err);
@@ -218,42 +215,45 @@ async function waitForExistingDbReady(cancelled: Cancelled): Promise<void> {
     return;
   }
 
+  const foreground = new BootForegroundClock();
   const startedAt = Date.now();
   const elapsed = () => Date.now() - startedAt;
   let attempt = 0;
+  let stopped = false;
 
-  const slowTimer = setTimeout(() => {
-    if (!cancelled()) {
+  const slowTimer = foreground.setTimeout(() => {
+    if (!stopped && !cancelled()) {
       captureBootException(
         new Error('DB-ready probe is still waiting'),
         'AppBoot.dbReadyProbe.slow',
         {
           attempt,
           elapsedMs: elapsed(),
+          foregroundElapsedMs: foreground.elapsed(),
         }
       );
     }
   }, DB_READY_PROBE_SLOW_REPORT_MS);
 
   const probe = async (): Promise<void> => {
-    while (!cancelled()) {
+    while (!cancelled() && !stopped) {
       try {
         await SettingsService.getAnonymousBugReport();
         return;
       } catch (err: unknown) {
-        if (cancelled()) {
+        if (cancelled() || stopped) {
           return;
         }
 
-        if (isDbReadyRetryableError(err) && elapsed() < DB_READY_PROBE_MAX_ELAPSED_MS) {
+        if (isDbReadyRetryableError(err) && foreground.elapsed() < DB_READY_PROBE_MAX_ELAPSED_MS) {
           attempt += 1;
-          await sleep(200);
+          await foreground.delay(200);
           continue;
         }
 
         if (isDbReadyRetryableError(err)) {
           throw new Error(
-            `DB-ready probe timed out after ${elapsed()}ms and ${attempt} retry attempt(s)`
+            `DB-ready probe timed out after ${foreground.elapsed()}ms foreground time and ${attempt} retry attempt(s)`
           );
         }
 
@@ -262,6 +262,7 @@ async function waitForExistingDbReady(cancelled: Cancelled): Promise<void> {
         captureBootException(err, 'AppBoot.dbReadyProbe', {
           attempt,
           elapsedMs: elapsed(),
+          foregroundElapsedMs: foreground.elapsed(),
           retryable: false,
         });
         return;
@@ -269,9 +270,8 @@ async function waitForExistingDbReady(cancelled: Cancelled): Promise<void> {
     }
   };
 
-  let watchdogTimer: ReturnType<typeof setTimeout> | undefined;
   const watchdog = new Promise<void>((resolve, reject) => {
-    watchdogTimer = setTimeout(() => {
+    foreground.setTimeout(() => {
       if (cancelled()) {
         resolve();
         return;
@@ -279,7 +279,7 @@ async function waitForExistingDbReady(cancelled: Cancelled): Promise<void> {
 
       reject(
         new Error(
-          `DB-ready probe watchdog elapsed after ${elapsed()}ms and ${attempt} retry attempt(s)`
+          `DB-ready probe watchdog elapsed after ${elapsed()}ms (${foreground.elapsed()}ms foreground) and ${attempt} retry attempt(s)`
         )
       );
     }, DB_READY_PROBE_MAX_ELAPSED_MS);
@@ -288,22 +288,27 @@ async function waitForExistingDbReady(cancelled: Cancelled): Promise<void> {
   try {
     await Promise.race([probe(), watchdog]);
   } finally {
-    clearTimeout(slowTimer);
-    clearTimeout(watchdogTimer);
+    stopped = true;
+    foreground.clearTimeout(slowTimer);
+    foreground.dispose();
   }
 }
 
-async function runBootMigration(m: BootMigration): Promise<void> {
+async function runBootMigration(m: BootMigration, cancelled: Cancelled): Promise<void> {
+  const foreground = new BootForegroundClock();
   const startedAt = Date.now();
-  const slowTimer = setTimeout(() => {
-    captureBootException(
-      new Error('Boot migration is still running'),
-      'AppBoot.bootMigration.slow',
-      {
-        tag: m.tag,
-        elapsedMs: Date.now() - startedAt,
-      }
-    );
+  const slowTimer = foreground.setTimeout(() => {
+    if (!cancelled()) {
+      captureBootException(
+        new Error('Boot migration is still running'),
+        'AppBoot.bootMigration.slow',
+        {
+          tag: m.tag,
+          elapsedMs: Date.now() - startedAt,
+          foregroundElapsedMs: foreground.elapsed(),
+        }
+      );
+    }
   }, BOOT_MIGRATION_SLOW_REPORT_MS);
 
   try {
@@ -319,13 +324,16 @@ async function runBootMigration(m: BootMigration): Promise<void> {
       await AsyncStorage.removeItem(bootMigrationCutoffKey(m.tag));
     }
   } catch (err) {
-    captureBootException(err, 'AppBoot.bootMigration', {
-      tag: m.tag,
-      runOnce: m.runOnce === true,
-      webOnly: m.webOnly === true,
-    });
+    if (!cancelled()) {
+      captureBootException(err, 'AppBoot.bootMigration', {
+        tag: m.tag,
+        runOnce: m.runOnce === true,
+        webOnly: m.webOnly === true,
+      });
+    }
   } finally {
-    clearTimeout(slowTimer);
+    foreground.clearTimeout(slowTimer);
+    foreground.dispose();
     advanceBootProgressStep();
   }
 }
@@ -336,7 +344,7 @@ async function runBootMigrations(migrations: BootMigration[], cancelled: Cancell
       return;
     }
 
-    await runBootMigration(m);
+    await runBootMigration(m, cancelled);
   }
 }
 

@@ -164,6 +164,34 @@ describe('ExerciseService.backfillSearchText', () => {
     database.get.mockReturnValue({ query: jest.fn(() => ({ fetch: jest.fn(async () => []) })) });
 
     expect(await ExerciseService.backfillSearchText()).toBe(0);
+    expect(database.write).not.toHaveBeenCalled();
+    expect(database.batch).not.toHaveBeenCalled();
+  });
+
+  it('rechecks inside the writer when preflight finds rows that another writer fills', async () => {
+    const exercise = missingRow('user-1', 'Pec Deck');
+    const preflightQuery = queryRecorder([exercise]);
+    const writerQuery = queryRecorder([]);
+    const aliasesQuery = queryRecorder([]);
+    const exerciseQuery = jest
+      .fn()
+      .mockReturnValueOnce(preflightQuery)
+      .mockReturnValueOnce(writerQuery);
+    database.get.mockImplementation((table: string) => {
+      if (table === 'exercises') {
+        return { query: exerciseQuery };
+      }
+      return { query: jest.fn(() => aliasesQuery) };
+    });
+
+    expect(await ExerciseService.backfillSearchText()).toBe(0);
+
+    expect(exerciseQuery.mock.calls[0]).toHaveLength(2);
+    expect(exerciseQuery.mock.calls[0][1]).toEqual({ kind: 'take', count: 1 });
+    expect(exerciseQuery.mock.calls[1]).toHaveLength(1);
+    expect(database.write).toHaveBeenCalledTimes(1);
+    expect(writerQuery.extend).not.toHaveBeenCalled();
+    expect(aliasesQuery.fetch).not.toHaveBeenCalled();
     expect(database.batch).not.toHaveBeenCalled();
   });
 
