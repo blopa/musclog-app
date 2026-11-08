@@ -511,6 +511,87 @@ html.hide-desktop-wrapper .expo-web-app-shell {
   border-radius: 1rem;
 }
 
+/* Adjacent images in a post (utils/blogMarkdownGallery.ts): a row of phone screenshots that
+   swipes, snaps and scrolls with the arrow keys without any script. `aspect-ratio` reserves each
+   frame (every capture is 390x844) so nothing shifts while the images load; an image of another
+   shape is letterboxed inside it. The previous/next row stays `hidden` until
+   hooks/useBlogGalleries.ts runs. */
+.blog-prose .blog-gallery {
+  margin: 1.75rem 0;
+}
+
+.blog-prose .blog-gallery-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.75rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+
+.blog-prose .blog-gallery-track:focus-visible,
+.blog-prose .blog-gallery-button:focus-visible {
+  outline: 2px solid rgb(var(--c-accent-primary));
+  outline-offset: 2px;
+}
+
+.blog-prose .blog-gallery-item {
+  flex: 0 0 min(15rem, 68%);
+  margin: 0;
+  scroll-snap-align: start;
+}
+
+.blog-prose .blog-gallery img {
+  width: 100%;
+  max-height: none;
+  margin: 0;
+  aspect-ratio: 390 / 844;
+  object-fit: contain;
+  border: 1px solid rgb(var(--c-ink-DEFAULT) / 12%);
+  border-radius: 12px;
+  background-color: rgb(var(--c-bg-card));
+}
+
+.blog-prose .blog-gallery figcaption {
+  margin-top: 0.5rem;
+  color: rgb(var(--c-text-tertiary));
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.blog-prose .blog-gallery-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.blog-prose .blog-gallery-nav[hidden] {
+  display: none;
+}
+
+.blog-prose .blog-gallery-button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 1px solid rgb(var(--c-ink-DEFAULT) / 12%);
+  border-radius: 8px;
+  background: transparent;
+  color: rgb(var(--c-text-primary));
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.blog-prose .blog-gallery-button:hover:not(:disabled) {
+  background-color: rgb(var(--c-ink-DEFAULT) / 8%);
+}
+
+.blog-prose .blog-gallery-button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
 .blog-prose hr {
   border: 0;
   border-top: 1px solid rgb(var(--c-ink-DEFAULT) / 12%);

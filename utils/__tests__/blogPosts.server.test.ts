@@ -50,16 +50,29 @@ describe('blogPosts.server', () => {
     expect(dates).toEqual([...dates].sort().reverse());
   });
 
-  it('renders a shipped post body to HTML without exposing Markdown to the client', async () => {
-    const [newest] = await loadBlogPostSummaries();
-    const post = await loadBlogPost(newest.slug);
+  it('renders every shipped post body to HTML without exposing Markdown to the client', async () => {
+    // Every post, not the newest one: whichever post is newest may be a guide with no code in it.
+    const summaries = await loadBlogPostSummaries();
+    const posts = await Promise.all(summaries.map((summary) => loadBlogPost(summary.slug)));
 
-    expect(post.html).toContain('<p>');
-    expect(post.html).toContain('<h2>');
-    // Fenced code arrives highlighted, not as Markdown backticks.
-    expect(post.html).toMatch(/<pre class="hljs"><code class="language-[a-z]+">/);
-    expect(post.html).toContain('<span class="hljs-keyword">');
-    expect(post.html).not.toContain('```');
+    for (const post of posts) {
+      expect(post.html).toContain('<p>');
+      expect(post.html).toContain('<h2>');
+      expect(post.html).not.toContain('```');
+      // Fenced code arrives highlighted (or as a diagram), never as a bare <pre>.
+      for (const [openTag] of post.html.matchAll(/<pre\b[^>]*>/g)) {
+        expect(openTag).toMatch(/class="(hljs|mermaid)"/);
+      }
+    }
+
+    // At least one shipped post has code, so the highlighter is exercised on real content too.
+    const highlighted = posts.filter((post) =>
+      /<pre class="hljs"><code class="language-[a-z]+">/.test(post.html)
+    );
+    expect(highlighted.length).toBeGreaterThan(0);
+    expect(highlighted.some((post) => post.html.includes('<span class="hljs-keyword">'))).toBe(
+      true
+    );
   });
 
   it('leaves a mermaid fence as escaped source for the browser to draw, not as highlighted code', () => {
