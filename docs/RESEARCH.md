@@ -699,6 +699,19 @@ Notes that explain the choices:
 - **Claude Code reads `AGENTS.md` only when no `CLAUDE.md` exists** (v2.1.277+), so there is no
   `CLAUDE.md`; adding one without `@AGENTS.md` silently drops every project rule
   (`utils/__tests__/agentOrchestration.test.ts` fails on that).
+- **Under-delegation was observed and is why the policy is a split, not a judgment call.** A Sonnet
+  orchestrator was told to delegate, announced that it would hand the mechanical items to
+  `worker-lite`, and then did almost all of them itself under the old escape hatch "anything cheaper to
+  do than to brief", leaving one task with Haiku in a 40-item change. Two things were unclear: that a
+  session whose only allowed worker is `worker-lite` has one tier, not none (the table's "Sonnet:
+  `worker-lite`" reads like a limit and is a to-do), and what counts as trivial. The section now lists
+  what the orchestrator keeps (design decisions, edits shorter than their brief, lookups, integration
+  and validation), sends everything else to a worker, and asks for a `delegated`/`kept` line per subtask
+  in the report, so a thin delegation shows up in the result instead of when the user asks. In the same
+  session the agent's files appeared staged, could not be explained from the repo's scripts or
+  `.claude/settings.json`, and were unstaged by the agent; they were the user's own staging from their
+  editor, committed minutes later. So the validation step looks at `git status --short` and reports
+  what is staged, but never unstages it.
 - **The orchestrator's tier is not known to the tool**, so "who may spawn what" is a rule the
   orchestrator applies to itself. The only native control that depends on the parent is the per-call
   `model` parameter, which is not used: workers are chosen by name so the pinned model applies.
