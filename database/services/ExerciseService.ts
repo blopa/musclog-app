@@ -323,6 +323,14 @@ export class ExerciseService {
    * resumes by itself because it only ever selects rows still missing the column.
    */
   static async backfillSearchText(): Promise<number> {
+    const preflight = await database
+      .get<Exercise>('exercises')
+      .query(missingSearchTextClause(), Q.take(1))
+      .fetch();
+    if (preflight.length === 0) {
+      return 0;
+    }
+
     return await database.write(async () => {
       const missing = await database
         .get<Exercise>('exercises')
