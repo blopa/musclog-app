@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
 import type { MealType } from '@/database/models/NutritionLog';
+import {
+  type DocumentParseError,
+  type NormalizerError,
+  readEnvelope,
+  trimmedText,
+} from '@/utils/externalDocument';
 import { isRecord } from '@/utils/isRecord';
 
 /**
@@ -105,16 +111,7 @@ export type FoodLogDraft = {
   foods: FoodLogFood[];
 };
 
-export type FoodLogParseError =
-  | 'empty'
-  | 'tooLarge'
-  | 'notJson'
-  | 'notAnObject'
-  | 'wrongSchema'
-  | 'invalidVersion'
-  | 'newerVersion'
-  | 'invalidLog'
-  | 'noFoods';
+export type FoodLogParseError = DocumentParseError | 'invalidLog' | 'noFoods';
 
 export type NormalizedFoodLog =
   | {
@@ -125,10 +122,7 @@ export type NormalizedFoodLog =
     }
   | {
       ok: false;
-      error: Extract<
-        FoodLogParseError,
-        'notAnObject' | 'wrongSchema' | 'invalidVersion' | 'newerVersion' | 'invalidLog' | 'noFoods'
-      >;
+      error: NormalizerError<FoodLogParseError>;
     };
 
 const round1 = (value: number): number => Math.round(value * 10) / 10;
@@ -149,15 +143,6 @@ function toNumber(value: unknown): number | undefined {
   return undefined;
 }
 
-function text(value: unknown, max: number): string | undefined {
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-
-  const trimmed = value.trim();
-  return trimmed ? trimmed.slice(0, max) : undefined;
-}
-
 /** A number kept only when it sits inside the range the contract allows; never clamped. */
 function bounded(value: unknown, schema: z.ZodNumber): number | undefined {
   const number = toNumber(value);
@@ -174,13 +159,13 @@ function readFood(raw: unknown): FoodLogFood | null {
     return null;
   }
 
-  const name = text(raw.name, FOOD_NAME_MAX);
+  const name = trimmedText(raw.name, FOOD_NAME_MAX);
   const grams = bounded(raw.grams, gramsSchema);
   if (!name || grams === undefined) {
     return null;
   }
 
-  const foodId = text(raw.foodId, FOOD_ID_MAX);
+  const foodId = trimmedText(raw.foodId, FOOD_ID_MAX);
   const calories = bounded(raw.calories, caloriesSchema);
   const protein = bounded(raw.protein, macroSchema);
   const carbs = bounded(raw.carbs, macroSchema);
@@ -213,24 +198,13 @@ function readFood(raw: unknown): FoodLogFood | null {
  * version is refused rather than half-understood. A food that cannot be read is left out and
  * counted, never repaired by guessing.
  */
-export function normalizeFoodLog(raw: unknown): NormalizedFoodLog {
-  if (!isRecord(raw)) {
-    return { ok: false, error: 'notAnObject' };
+export function normalizeFoodLog(parsed: unknown): NormalizedFoodLog {
+  const envelope = readEnvelope(parsed, { schemaId: FOOD_LOG_SCHEMA_ID, major: FOOD_LOG_MAJOR });
+  if (!envelope.ok) {
+    return envelope;
   }
 
-  if (raw.schema !== FOOD_LOG_SCHEMA_ID) {
-    return { ok: false, error: 'wrongSchema' };
-  }
-
-  const version = raw.version;
-  if (typeof version !== 'number' || !Number.isInteger(version) || version < 1) {
-    return { ok: false, error: 'invalidVersion' };
-  }
-
-  if (version > FOOD_LOG_MAJOR) {
-    return { ok: false, error: 'newerVersion' };
-  }
-
+  const raw = envelope.record;
   if (!Array.isArray(raw.foods) || raw.foods.length === 0) {
     return { ok: false, error: 'invalidLog' };
   }
@@ -254,7 +228,7 @@ export function normalizeFoodLog(raw: unknown): NormalizedFoodLog {
     ? (raw.mealType as FoodLogMealType)
     : undefined;
 
-  const mealName = text(raw.mealName, MEAL_NAME_MAX);
+  const mealName = trimmedText(raw.mealName, MEAL_NAME_MAX);
 
   return {
     ok: true,

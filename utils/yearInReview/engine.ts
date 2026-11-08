@@ -1,3 +1,5 @@
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
 import {
   type TrainingTimeBucket,
   YEAR_MEAL_TYPES,
@@ -30,40 +32,30 @@ const TRAINING_TIME_ORDER: readonly TrainingTimeBucket[] = [
 ];
 
 const TOP_EXERCISE_COUNT = 3;
-const DAY_MS = 86_400_000;
 const MS_PER_SECOND = 1000;
 const MINUTES_PER_HOUR = 60;
 /** Real-world offsets run from UTC-12 to UTC+14. Anything outside is treated as malformed. */
 const MAX_OFFSET_MINUTES = 14 * MINUTES_PER_HOUR;
-const OFFSET_PATTERN = /^([+-])(\d{2}):?(\d{2})$/;
+const COMPACT_OFFSET = /^([+-]\d{2})(\d{2})$/;
 const DAY_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
- * Minutes east of UTC for a stored "±HH:MM" or "±HHMM" offset, or `null` when it is missing or
- * malformed. Malformed offsets fall back to device time, which the callers handle.
+ * Minutes east of UTC for a stored "±HH:MM" (or compact "±HHMM") offset, or `null` when it is
+ * missing or malformed. The reading itself is the app's one offset parser; this only refuses what
+ * no place on Earth has (minutes past 59, or beyond UTC+14), which falls back to device time.
  */
 export function parseOffsetMinutes(timezone: string | null): number | null {
   if (!timezone) {
     return null;
   }
 
-  const match = OFFSET_PATTERN.exec(timezone);
-  if (!match) {
+  const withColon = timezone.replace(COMPACT_OFFSET, '$1:$2');
+  const total = parseTimezoneOffsetMinutes(withColon);
+  if (total === null || Number(withColon.slice(4)) >= MINUTES_PER_HOUR) {
     return null;
   }
 
-  const hours = Number(match[2]);
-  const minutes = Number(match[3]);
-  if (minutes >= MINUTES_PER_HOUR) {
-    return null;
-  }
-
-  const total = hours * MINUTES_PER_HOUR + minutes;
-  if (total > MAX_OFFSET_MINUTES) {
-    return null;
-  }
-
-  return match[1] === '-' ? -total : total;
+  return Math.abs(total) > MAX_OFFSET_MINUTES ? null : total;
 }
 
 type LocalParts = {
@@ -79,8 +71,8 @@ type LocalParts = {
 };
 
 function partsFromCalendar(year: number, month: number, day: number, hour: number): LocalParts {
-  const dayNumber = Math.round(Date.UTC(year, month, day) / DAY_MS);
-  const weekday = (new Date(dayNumber * DAY_MS).getUTCDay() + 6) % 7;
+  const dayNumber = Math.round(Date.UTC(year, month, day) / MS_PER_SOLAR_DAY);
+  const weekday = (new Date(dayNumber * MS_PER_SOLAR_DAY).getUTCDay() + 6) % 7;
 
   return { year, month, day, hour, dayNumber, weekday };
 }
@@ -189,6 +181,34 @@ function positiveFinite(value: number): number {
   return Number.isFinite(value) && value > 0 ? value : 0;
 }
 
+/** A count or total of nothing is no figure at all, so a card never has to show a zero. */
+function positiveOrNull(value: number): number | null {
+  return value > 0 ? value : null;
+}
+
+/**
+ * The first of `items` with the highest positive score, or `null` when none scores: a tie goes to
+ * the earlier item, so every "favourite" of the review breaks ties the same way.
+ */
+function highest<T>(items: readonly T[], score: (item: T) => number): T | null {
+  let best: T | null = null;
+  let bestScore = 0;
+  for (const item of items) {
+    const itemScore = score(item);
+    if (itemScore > bestScore) {
+      best = item;
+      bestScore = itemScore;
+    }
+  }
+
+  return best;
+}
+
+/** Whether a well-formed `yyyy-MM-dd` key falls in `year`. */
+function isDayOfYear(day: string, year: number): boolean {
+  return DAY_KEY_PATTERN.test(day) && day.startsWith(`${year}-`);
+}
+
 function volumeOf(sessions: YearSession[]): number | null {
   let total = 0;
   for (const { workout } of sessions) {
@@ -199,7 +219,7 @@ function volumeOf(sessions: YearSession[]): number | null {
     }
   }
 
-  return total > 0 ? total : null;
+  return positiveOrNull(total);
 }
 
 function trainingSecondsOf(sessions: YearSession[]): number | null {
@@ -248,16 +268,9 @@ function busiestMonthOf(sessions: YearSession[]): YearInReview['busiestMonth'] {
     counts[local.month] += 1;
   }
 
-  let best: { month: number; sessions: number } | null = null;
-  for (let month = 0; month < counts.length; month++) {
-    const count = counts[month];
-    // Strictly greater, so a tie keeps the earlier month.
-    if (count > 0 && (best === null || count > best.sessions)) {
-      best = { month, sessions: count };
-    }
-  }
+  const month = highest([...counts.keys()], (index) => counts[index]);
 
-  return best;
+  return month === null ? null : { month, sessions: counts[month] };
 }
 
 /** Sessions per time-of-day bucket, or `null` below the number of timed sessions that makes a pattern. */
@@ -286,20 +299,7 @@ function trainingTimeCountsOf(sessions: YearSession[]): Record<TrainingTimeBucke
 function favouriteTrainingTimeOf(
   counts: Record<TrainingTimeBucket, number> | null
 ): TrainingTimeBucket | null {
-  if (counts === null) {
-    return null;
-  }
-
-  let favourite: TrainingTimeBucket | null = null;
-  let best = 0;
-  for (const bucket of TRAINING_TIME_ORDER) {
-    if (counts[bucket] > best) {
-      best = counts[bucket];
-      favourite = bucket;
-    }
-  }
-
-  return favourite;
+  return counts === null ? null : highest(TRAINING_TIME_ORDER, (bucket) => counts[bucket]);
 }
 
 /** One total per logged day, dropping malformed keys and days outside the year. */
@@ -309,15 +309,12 @@ function mealsByDayOf(
 ): Map<string, number> {
   const byDay = new Map<string, number>();
   for (const entry of nutritionDays) {
-    if (!DAY_KEY_PATTERN.test(entry.day) || !entry.day.startsWith(`${year}-`)) {
+    const meals = positiveFinite(entry.meals);
+    if (!isDayOfYear(entry.day, year) || meals === 0) {
       continue;
     }
 
-    if (!Number.isFinite(entry.meals) || entry.meals <= 0) {
-      continue;
-    }
-
-    byDay.set(entry.day, (byDay.get(entry.day) ?? 0) + entry.meals);
+    byDay.set(entry.day, (byDay.get(entry.day) ?? 0) + meals);
   }
 
   return byDay;
@@ -328,7 +325,7 @@ function longestDayRunOf(days: Iterable<string>): number | null {
   const numbers = [...days]
     .map((day) => {
       const [year, month, date] = day.split('-').map(Number);
-      return Math.round(Date.UTC(year, month - 1, date) / DAY_MS);
+      return Math.round(Date.UTC(year, month - 1, date) / MS_PER_SOLAR_DAY);
     })
     .sort((a, b) => a - b);
 
@@ -356,7 +353,7 @@ function mealTypesOf(
   >;
 
   for (const { day, type } of entries) {
-    if (!DAY_KEY_PATTERN.test(day) || !day.startsWith(`${year}-`)) {
+    if (!isDayOfYear(day, year)) {
       continue;
     }
 
@@ -368,12 +365,7 @@ function mealTypesOf(
     }
   }
 
-  let favourite: YearMealType | null = null;
-  for (const type of YEAR_MEAL_TYPES) {
-    if (counts[type] > 0 && (favourite === null || counts[type] > counts[favourite])) {
-      favourite = type;
-    }
-  }
+  const favourite = highest(YEAR_MEAL_TYPES, (type) => counts[type]);
 
   return favourite === null ? null : { counts, favourite };
 }
@@ -386,11 +378,10 @@ function macroGramsOf(
     return null;
   }
 
-  const clean = (grams: number) => (Number.isFinite(grams) && grams > 0 ? grams : 0);
   const macros = {
-    protein: clean(totals.proteinG),
-    carbs: clean(totals.carbsG),
-    fat: clean(totals.fatG),
+    protein: positiveFinite(totals.proteinG),
+    carbs: positiveFinite(totals.carbsG),
+    fat: positiveFinite(totals.fatG),
   };
 
   return macros.protein + macros.carbs + macros.fat > 0 ? macros : null;
@@ -452,19 +443,19 @@ export function buildYearInReview(input: YearInReviewInput): YearInReview {
 
   return {
     year,
-    sessions: sessionCount > 0 ? sessionCount : null,
-    activeDays: activeDayCount > 0 ? activeDayCount : null,
+    sessions: positiveOrNull(sessionCount),
+    activeDays: positiveOrNull(activeDayCount),
     workoutDays,
     longestWeeklyStreak: longestWeeklyStreakOf(sessions),
     totalVolumeKg: volumeOf(sessions),
     trainingSeconds: trainingSecondsOf(sessions),
     topExercises: sessions.length > 0 ? topExercisesOf(sessions) : [],
-    personalRecords: prsInYear > 0 ? prsInYear : null,
+    personalRecords: positiveOrNull(prsInYear),
     busiestMonth: busiestMonthOf(sessions),
     favouriteTrainingTime: favouriteTrainingTimeOf(trainingTimeCounts),
     trainingTimeCounts,
-    mealsLogged: mealsLogged > 0 ? mealsLogged : null,
-    nutritionDaysLogged: nutritionDayCount > 0 ? nutritionDayCount : null,
+    mealsLogged: positiveOrNull(mealsLogged),
+    nutritionDaysLogged: positiveOrNull(nutritionDayCount),
     nutritionDays: [...mealsByDay]
       .map(([day, value]) => ({ day, value }))
       .sort((a, b) => a.day.localeCompare(b.day)),

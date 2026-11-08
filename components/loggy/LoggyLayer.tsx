@@ -26,6 +26,8 @@ export type LoggyAnimatedArtProps = SvgProps & { clock?: LoggyClock; colors: Log
 export type LoggyAnimatedPose = {
   Art: ComponentType<LoggyAnimatedArtProps>;
   animation: LoggyAnimation;
+  /** The width and height of the drawing's `viewBox`, which give the pose its proportions. */
+  size: readonly [width: number, height: number];
 };
 
 const AnimatedG = Animated.createAnimatedComponent(G);

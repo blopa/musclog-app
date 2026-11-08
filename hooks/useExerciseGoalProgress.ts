@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { database } from '@/database';
+import type { MuscleGroup } from '@/database/models/Exercise';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
@@ -26,7 +27,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
   const [bodyWeight, setBodyWeight] = useState(0);
   const [loadMultiplier, setLoadMultiplier] = useState(1.0);
   const [userGender, setUserGender] = useState<'male' | 'female' | 'other'>('other');
-  const [muscleGroup, setMuscleGroup] = useState<string | null>(null);
+  const [muscleGroup, setMuscleGroup] = useState<MuscleGroup | null>(null);
   const [hasPerformed1RMDate, setHasPerformed1RMDate] = useState<number | null>(null);
   const [recentAverage1RM, setRecentAverage1RM] = useState<number | null>(null);
   const [currentBaseline1rm, setCurrentBaseline1rm] = useState<number | null>(

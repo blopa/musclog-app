@@ -70,7 +70,10 @@ describe('credentials stay out of everything the AI setup shares', () => {
   it('opens external chats with the instructions only, never user data', () => {
     const external = read('app/app/onboarding/ai-external.tsx');
 
-    expect(external).toContain('buildExternalChatUrl');
+    // The screen builds only the instructions; the shared hook is what opens the chat with them.
+    expect(external).toContain('buildExternalInstructions');
+    expect(external).toContain('useExternalAssistantImport');
+    expect(read('hooks/useExternalAssistantImport.ts')).toContain('buildExternalChatUrl');
     expect(external).not.toMatch(
       /SettingsService|UserService|UserMetricService|loadProfileSnapshot/
     );

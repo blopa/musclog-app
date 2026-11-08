@@ -6,11 +6,17 @@ on:
       - main
   workflow_dispatch: # Allows manual triggering from the Actions tab
 
+# One Pages deployment at a time. A newer push waits for the running one instead of cancelling it
+# mid-sync, which would leave the site half published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -57,10 +63,30 @@ jobs:
           mkdir -p dist/.well-known
           cp -rL public/.well-known/. dist/.well-known/
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      # include-hidden-files is required: since v4 the action drops every dot-entry by default,
+      # which would silently remove /.well-known/ (app link verification) from the published site.
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
-          force_orphan: true
+          path: ./dist
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # Backstop for a deployment that hangs: the action's own timeout below ends it first.
+    timeout-minutes: 40
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Syncing ~2,000 files (the exercise photos are most of them) has run past the action's
+      # 10 minute default, which cancels the deployment. Allow 30 minutes (milliseconds).
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+        with:
+          timeout: 1800000

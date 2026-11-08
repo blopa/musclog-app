@@ -6,11 +6,11 @@ import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
 import { POSTER_GROUNDS } from '@/constants/loggyPalette';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { fitFontSize } from '@/utils/fitText';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { macroMassInUnits, massFractionDigits } from '@/utils/yearInReview/foodFigures';
 import type { YearShareFields } from '@/utils/yearInReview/shareFields';
-import { fitFontSize } from '@/utils/yearInReview/storyLayout';
 
 /** Fixed logical size, so the captured PNG has the same proportions on every device. */
 export const YEAR_SHARE_CARD_WIDTH = 330;

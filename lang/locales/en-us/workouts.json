@@ -218,18 +218,8 @@
         "two": "Answer its questions. It will end with an \"Open in Musclog\" link and the plan as JSON.",
         "three": "Tap the link on this phone. If it doesn't open Musclog, paste the JSON (or the link) or import the file."
       },
-      "leaveSection": "Step 1: ask the assistant",
       "backSection": "Step 2: bring the plan back",
-      "openChatgpt": "Open ChatGPT",
-      "openClaude": "Open Claude",
-      "copy": "Copy",
-      "share": "Share",
-      "copied": "Instructions copied",
-      "copiedPaste": "Instructions copied. Paste them into the chat if the box is empty.",
-      "fallback": "Couldn't open the app or site. The instructions are copied: open ChatGPT or Claude yourself and paste them.",
-      "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
       "importFile": "Import a plan file",
-      "pasteJson": "Paste JSON",
       "noFile": "No link? Paste the JSON or the link, or import the file.",
       "paste": {
         "title": "Paste plan JSON",
@@ -237,8 +227,6 @@
         "placeholder": "Paste the JSON here"
       },
       "errors": {
-        "empty": "There is nothing to import.",
-        "fileRead": "That file could not be read. Try another one, or paste the text instead.",
         "newerVersion": "This plan was made for a newer version of Musclog. Update the app, then import it again.",
         "notJson": "That doesn't look like a plan file. Pick the musclog-workout-plan.json file the assistant gave you, or paste its JSON.",
         "tooLarge": "That file is too large to be a plan file.",

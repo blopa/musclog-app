@@ -1,3 +1,4 @@
+import type { LoggyPoseName } from '@/components/LoggyPose';
 import { WEEKLY_REVIEW_ROUTE } from '@/constants/weeklyReviewRoute';
 import { YEAR_IN_REVIEW_ROUTE } from '@/constants/yearInReviewRoute';
 import { aiSetupRoute } from '@/utils/onboardingRoutes';
@@ -30,7 +31,13 @@ export type WhatsNewIconName = (typeof WHATS_NEW_ICONS)[number];
  * the joke or the job of the page that names it: `running` introduces him, `writing` is the
  * import, `trophy` the year story, `flex` strength levels and `magnify` the training-load map.
  */
-export const WHATS_NEW_POSES = ['running', 'writing', 'trophy', 'flex', 'magnify'] as const;
+export const WHATS_NEW_POSES = [
+  'running',
+  'writing',
+  'trophy',
+  'flex',
+  'magnify',
+] as const satisfies readonly LoggyPoseName[];
 export type WhatsNewPoseName = (typeof WHATS_NEW_POSES)[number];
 
 /** Facts about the person's data that can gate a whole page of a release. */

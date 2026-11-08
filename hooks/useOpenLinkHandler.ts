@@ -1,7 +1,8 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { type OpenLinkKind, subscribePendingOpenLink, takePendingOpenLink } from '@/utils/openLink';
+import type { OpenLinkKind } from '@/utils/openLink';
+import { subscribePendingOpenLink, takePendingOpenLink } from '@/utils/openLinkInbox';
 
 /**
  * Hands the payload of an open link (`https://musclog.app/open#<kind>=…`) to the screen that owns

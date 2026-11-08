@@ -7,10 +7,16 @@ import {
   DEFAULT_GEMINI_MODEL,
   DEFAULT_OPENAI_MODEL,
 } from '@/constants/ai';
-import type { CoachPersonaId } from '@/constants/coachPersonas';
 import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
-import { readSetting, SETTINGS } from '@/constants/settingDefinitions';
+import {
+  defaultSettings,
+  readSetting,
+  readSettings,
+  type SettingName,
+  SETTINGS,
+  type SettingValue,
+} from '@/constants/settingDefinitions';
 import {
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
@@ -22,7 +28,6 @@ import {
   CLAUDE_API_KEY_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
-  type CycleNotificationStyle,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   ENABLE_FASTED_DAY_SETTING_TYPE,
@@ -30,14 +35,11 @@ import {
   ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
   FOOD_SEARCH_SOURCE_SETTING_TYPE,
-  type FoodDiaryGrouping,
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   HOME_ACTIONS_SETTING_TYPE,
   HOME_SUMMARY_CARD_SETTING_TYPE,
-  type HomeHeatmapLayout,
-  type HomeHeatmaps,
   type HomeSummaryCard,
   INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
@@ -66,9 +68,6 @@ import {
   type ProgressionMode,
   READ_HEALTH_DATA_SETTING_TYPE,
   REQUIRE_EXPORT_ENCRYPTION_SETTING_TYPE,
-  type RestAlertSound,
-  type RestHapticStrength,
-  type RestHeadsUpSeconds,
   SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
@@ -83,10 +82,8 @@ import {
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
-  type UseSettingsResult,
   WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
-  type WorkoutAutonomy,
   type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
@@ -105,7 +102,37 @@ import {
 import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
-type SettingsState = {
+/**
+ * The settings the context holds under their own `SETTINGS` name and value. They are defined once,
+ * in `constants/settingDefinitions.ts` (key, default, parsing), so adding a plain setting to the
+ * context is one name in this list: the type, the default and the read all follow from it.
+ */
+const REGISTERED_SETTINGS = [
+  'enableClaude',
+  'cycleShowPredictions',
+  'cycleShowFertility',
+  'cycleNotificationStyle',
+  'cycleVariabilityHintDismissed',
+  'workoutAutonomy',
+  'autoStartRestTimer',
+  'restTimerHaptics',
+  'restAlertSound',
+  'restHapticStrength',
+  'restHeadsUpSeconds',
+  'defaultRestSeconds',
+  'homeHeatmaps',
+  'homeHeatmapLayout',
+  'coachPersona',
+  'showHomeSteps',
+  'foodDiaryCompact',
+  'animatedLoggy',
+  'showLoggy',
+  'foodDiaryGrouping',
+] as const satisfies readonly SettingName[];
+
+type RegisteredSettings = { [K in (typeof REGISTERED_SETTINGS)[number]]: SettingValue<K> };
+
+type SettingsState = RegisteredSettings & {
   units: Units;
   theme: ThemeOption;
   connectHealthData: boolean;
@@ -123,7 +150,6 @@ type SettingsState = {
   localLlmBaseUrl: string;
   enableGoogleGemini: boolean;
   enableOpenAi: boolean;
-  enableClaude: boolean;
   enableLocalLlm: boolean;
   dailyNutritionInsights: boolean;
   workoutInsights: boolean;
@@ -157,11 +183,7 @@ type SettingsState = {
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
   enableFastedDay: boolean;
-  cycleShowPredictions: boolean;
-  cycleShowFertility: boolean;
-  cycleNotificationStyle: CycleNotificationStyle;
   cycleQuickLogRaw: string;
-  cycleVariabilityHintDismissed: boolean;
   /**
    * The raw stored list, NOT the parsed array (same rule as `homeActionsRaw`): a field that is
    * reallocated per derivation would re-render every `useSettings()` consumer on any write.
@@ -172,28 +194,18 @@ type SettingsState = {
   /** `gyms.id` of the profile being trained in, '' for none. */
   activeGymId: string;
   /** How much of a started workout's numbers the app decides. */
-  workoutAutonomy: WorkoutAutonomy;
   /** Start the rest timer on its own after a set. */
-  autoStartRestTimer: boolean;
   /** Haptic countdown on the rest timer. */
-  restTimerHaptics: boolean;
   /** Whether the rest-over notification makes a sound. */
-  restAlertSound: RestAlertSound;
   /** How firm the haptic countdown is. */
-  restHapticStrength: RestHapticStrength;
   /** Seconds before a rest ends that it turns to "get ready" (0 = never). */
-  restHeadsUpSeconds: RestHeadsUpSeconds;
   /** Rest, in seconds, after a set that names none of its own. */
-  defaultRestSeconds: number;
   nutritionDisplay: string;
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
-  homeHeatmaps: HomeHeatmaps;
-  homeHeatmapLayout: HomeHeatmapLayout;
-  coachPersona: CoachPersonaId;
   /**
    * The raw stored setting, NOT the parsed array.
    *
@@ -204,11 +216,6 @@ type SettingsState = {
    * once, in a `useMemo` on the context value.
    */
   homeActionsRaw: string;
-  showHomeSteps: boolean;
-  foodDiaryCompact: boolean;
-  animatedLoggy: boolean;
-  showLoggy: boolean;
-  foodDiaryGrouping: FoodDiaryGrouping;
   isLoading: boolean;
 };
 
@@ -229,6 +236,7 @@ const _settingsStateIsFlat: NonPrimitiveFields<SettingsState> extends never ? tr
 void _settingsStateIsFlat;
 
 const DEFAULT_STATE: SettingsState = {
+  ...defaultSettings(REGISTERED_SETTINGS),
   language: DEFAULT_LANG,
   units: getDefaultUnits(),
   theme: 'system',
@@ -247,7 +255,6 @@ const DEFAULT_STATE: SettingsState = {
   localLlmBaseUrl: 'http://localhost:11434/v1',
   enableGoogleGemini: true,
   enableOpenAi: true,
-  enableClaude: SETTINGS.enableClaude.defaultValue,
   enableLocalLlm: false,
   dailyNutritionInsights: true,
   workoutInsights: false,
@@ -280,37 +287,18 @@ const DEFAULT_STATE: SettingsState = {
   useBfForCalculations: false,
   intuitiveEatingMode: false,
   enableFastedDay: false,
-  cycleShowPredictions: SETTINGS.cycleShowPredictions.defaultValue,
-  cycleShowFertility: SETTINGS.cycleShowFertility.defaultValue,
-  cycleNotificationStyle: SETTINGS.cycleNotificationStyle.defaultValue,
   cycleQuickLogRaw: SETTINGS.cycleQuickLog.defaultValue,
-  cycleVariabilityHintDismissed: SETTINGS.cycleVariabilityHintDismissed.defaultValue,
   appLockScopesRaw: '',
   includeFiberInCarbs: true,
   progressionMode: 'reps_first',
   activeGymId: '',
-  workoutAutonomy: SETTINGS.workoutAutonomy.defaultValue,
-  autoStartRestTimer: SETTINGS.autoStartRestTimer.defaultValue,
-  restTimerHaptics: SETTINGS.restTimerHaptics.defaultValue,
-  restAlertSound: SETTINGS.restAlertSound.defaultValue,
-  restHapticStrength: SETTINGS.restHapticStrength.defaultValue,
-  restHeadsUpSeconds: SETTINGS.restHeadsUpSeconds.defaultValue,
-  defaultRestSeconds: SETTINGS.defaultRestSeconds.defaultValue,
   nutritionDisplay: '11111',
   advancedDataManagement: false,
   bleGenerateChartPayload: false,
   nutritionLogHistoryDays: 'none',
   workoutHistoryDays: 'none',
   homeSummaryCard: 'daily_summary',
-  homeHeatmaps: SETTINGS.homeHeatmaps.defaultValue,
-  homeHeatmapLayout: SETTINGS.homeHeatmapLayout.defaultValue,
-  coachPersona: SETTINGS.coachPersona.defaultValue,
   homeActionsRaw: '',
-  showHomeSteps: SETTINGS.showHomeSteps.defaultValue,
-  foodDiaryCompact: SETTINGS.foodDiaryCompact.defaultValue,
-  animatedLoggy: SETTINGS.animatedLoggy.defaultValue,
-  showLoggy: SETTINGS.showLoggy.defaultValue,
-  foodDiaryGrouping: SETTINGS.foodDiaryGrouping.defaultValue,
   isLoading: true,
 };
 
@@ -394,6 +382,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     rawHomeSummaryCard === 'weekly_streak' ? 'weekly_streak' : 'daily_summary';
 
   return {
+    ...readSettings(map, REGISTERED_SETTINGS),
     language,
     units,
     theme,
@@ -416,7 +405,6 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     localLlmBaseUrl: getString(map, LOCAL_LLM_BASE_URL_SETTING_TYPE, 'http://localhost:11434/v1'),
     enableGoogleGemini: getBoolean(map, ENABLE_GOOGLE_GEMINI_SETTING_TYPE, true),
     enableOpenAi: getBoolean(map, ENABLE_OPENAI_SETTING_TYPE, true),
-    enableClaude: readSetting(map, SETTINGS.enableClaude),
     enableLocalLlm: getBoolean(map, ENABLE_LOCAL_LLM_SETTING_TYPE, false),
     dailyNutritionInsights: getBoolean(map, DAILY_NUTRITION_INSIGHTS_SETTING_TYPE, true),
     workoutInsights: getBoolean(map, WORKOUT_INSIGHTS_SETTING_TYPE),
@@ -450,130 +438,41 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     useBfForCalculations: getBoolean(map, USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
     enableFastedDay: getBoolean(map, ENABLE_FASTED_DAY_SETTING_TYPE, false),
-    cycleShowPredictions: readSetting(map, SETTINGS.cycleShowPredictions),
-    cycleShowFertility: readSetting(map, SETTINGS.cycleShowFertility),
-    cycleNotificationStyle: readSetting(map, SETTINGS.cycleNotificationStyle),
     cycleQuickLogRaw: readSetting(map, SETTINGS.cycleQuickLog),
-    cycleVariabilityHintDismissed: readSetting(map, SETTINGS.cycleVariabilityHintDismissed),
     appLockScopesRaw: map.get(SETTINGS.appLockScopes.type) ?? '',
     includeFiberInCarbs: getBoolean(map, INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, true),
     progressionMode,
     // State fields stay primitive and non-null: no active gym is the empty string here.
     activeGymId: readSetting(map, SETTINGS.activeGymId) ?? '',
-    workoutAutonomy: readSetting(map, SETTINGS.workoutAutonomy),
-    autoStartRestTimer: readSetting(map, SETTINGS.autoStartRestTimer),
-    restTimerHaptics: readSetting(map, SETTINGS.restTimerHaptics),
-    restAlertSound: readSetting(map, SETTINGS.restAlertSound),
-    restHapticStrength: readSetting(map, SETTINGS.restHapticStrength),
-    restHeadsUpSeconds: readSetting(map, SETTINGS.restHeadsUpSeconds),
-    defaultRestSeconds: readSetting(map, SETTINGS.defaultRestSeconds),
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
     bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
     nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
     workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
     homeSummaryCard,
-    homeHeatmaps: readSetting(map, SETTINGS.homeHeatmaps),
-    homeHeatmapLayout: readSetting(map, SETTINGS.homeHeatmapLayout),
-    coachPersona: readSetting(map, SETTINGS.coachPersona),
     homeActionsRaw: map.get(HOME_ACTIONS_SETTING_TYPE) ?? '',
-    showHomeSteps: readSetting(map, SETTINGS.showHomeSteps),
-    foodDiaryCompact: readSetting(map, SETTINGS.foodDiaryCompact),
-    animatedLoggy: readSetting(map, SETTINGS.animatedLoggy),
-    showLoggy: readSetting(map, SETTINGS.showLoggy),
-    foodDiaryGrouping: readSetting(map, SETTINGS.foodDiaryGrouping),
     isLoading: false,
   };
 }
 
-export type SettingsContextType = UseSettingsResult & {
-  theme: ThemeOption;
-  connectHealthData: boolean;
-  readHealthData: boolean;
-  writeHealthData: boolean;
-  anonymousBugReport: boolean;
-  googleGeminiApiKey: string;
-  googleGeminiModel: string;
-  openAiApiKey: string;
-  openAiModel: string;
-  claudeApiKey: string;
-  claudeModel: string;
-  localLlmApiKey: string;
-  localLlmModel: string;
-  localLlmBaseUrl: string;
-  enableGoogleGemini: boolean;
-  enableOpenAi: boolean;
-  enableClaude: boolean;
-  enableLocalLlm: boolean;
-  dailyNutritionInsights: boolean;
-  workoutInsights: boolean;
-  notifications: boolean;
-  notificationsWorkoutReminders: boolean;
-  notificationsActiveWorkout: boolean;
-  notificationsNutritionOverview: boolean;
-  notificationsMenstrualCycle: boolean;
-  notificationsRestTimer: boolean;
-  notificationsWorkoutDuration: boolean;
-  useOcrBeforeAi: boolean;
-  useOnDeviceAi: boolean;
-  useMusclogFreeTier: boolean;
-  sendFoundationFoodsToLlm: boolean;
-  useThinkingMode: boolean;
+/**
+ * What `useSettings()` returns: the state, with the two stored lists replaced by what they parse to
+ * (`homeActions`, `appLockScopes`), the API keys decrypted, and what the provider derives.
+ */
+export type SettingsContextType = Omit<SettingsState, 'homeActionsRaw' | 'appLockScopesRaw'> & {
+  weightUnit: 'kg' | 'lbs';
+  heightUnit: 'cm' | 'in';
   isAiConfigured: boolean;
   isAiMealPhotoEnabled: boolean;
   /** The provider that would answer an AI request now; null when none is configured. */
   aiProvider: AiProviderKind | null;
-  navSlot1: NavItemKey;
-  navSlot2: NavItemKey;
-  navSlot3: NavItemKey;
-  conversationContext: 'general' | 'exercise' | 'nutrition';
-  chartTooltipPosition: ChartTooltipPosition;
-  language: string;
-  maxAiMemories: number;
-  showDailyMoodPrompt: boolean;
-  showDailyWaterPrompt: boolean;
-  showDailySupplementPrompt: boolean;
-  alwaysAllowFoodEditing: boolean;
-  showWeightPrediction: boolean;
-  requireExportEncryption: boolean;
-  disableMinimumCalories: boolean;
-  useBfForCalculations: boolean;
-  intuitiveEatingMode: boolean;
-  enableFastedDay: boolean;
-  cycleShowPredictions: boolean;
-  cycleShowFertility: boolean;
-  cycleNotificationStyle: CycleNotificationStyle;
-  cycleQuickLogRaw: string;
-  cycleVariabilityHintDismissed: boolean;
+  homeActions: readonly HomeActionKey[];
   appLockScopes: readonly AppLockScope[];
   /**
    * True while `appLockScopes` is only a default: settings are still loading and
    * no mirror said what they are. Every area must then count as locked.
    */
   appLockScopesPending: boolean;
-  includeFiberInCarbs: boolean;
-  progressionMode: ProgressionMode;
-  activeGymId: string;
-  workoutAutonomy: WorkoutAutonomy;
-  autoStartRestTimer: boolean;
-  restTimerHaptics: boolean;
-  restAlertSound: RestAlertSound;
-  restHapticStrength: RestHapticStrength;
-  restHeadsUpSeconds: RestHeadsUpSeconds;
-  defaultRestSeconds: number;
-  nutritionDisplay: string;
-  advancedDataManagement: boolean;
-  bleGenerateChartPayload: boolean;
-  homeSummaryCard: HomeSummaryCard;
-  homeHeatmaps: HomeHeatmaps;
-  homeHeatmapLayout: HomeHeatmapLayout;
-  coachPersona: CoachPersonaId;
-  homeActions: readonly HomeActionKey[];
-  showHomeSteps: boolean;
-  foodDiaryCompact: boolean;
-  animatedLoggy: boolean;
-  showLoggy: boolean;
-  foodDiaryGrouping: FoodDiaryGrouping;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);

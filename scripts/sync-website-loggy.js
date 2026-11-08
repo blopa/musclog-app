@@ -20,8 +20,10 @@
  * first of them in the registry (`loggyPaletteId`).
  *
  * The copies are generated, never edited: `npm run generate-loggy` runs this after the SVGs are
- * rebuilt, and `components/website/__tests__/websiteLoggy.test.ts` fails when one is stale or when
- * `WEBSITE_LOGGY_POSES` in `websiteLoggyAssets.ts` names a different set.
+ * rebuilt, and `components/website/__tests__/websiteLoggy.test.ts` fails when one is stale. The same
+ * run writes `components/website/websiteLoggyPoses.json`, the pose set and each pose's `viewBox`
+ * size, which `websiteLoggyAssets.ts` reads: the set of poses and their proportions are named here
+ * once, not copied into the TypeScript.
  */
 
 const fs = require('node:fs');
@@ -37,6 +39,7 @@ const { THEME_IDS } = require('../theme.registry');
 const ROOT = path.join(__dirname, '..');
 const SOURCE_DIR = path.join(ROOT, 'assets', 'avatars', 'loggy-animated');
 const OUTPUT_DIR = path.join(ROOT, 'public', 'images', 'loggy');
+const POSES_FILE = path.join(ROOT, 'components', 'website', 'websiteLoggyPoses.json');
 
 /** The poses the website uses, in alphabetical order: each is one spot in `WebsiteLoggy`'s callers. */
 const WEBSITE_POSES = ['lifting', 'reading', 'shrug', 'thinking', 'wave'];
@@ -68,6 +71,28 @@ function stillSvg(animatedSvg) {
   }
 
   return animatedSvg.replace(marker, `\t* { animation: none !important; }\n\t${marker}`);
+}
+
+/** The width and height of a pose's `viewBox`, so a page can reserve its box before the file loads. */
+function viewBoxSize(pose) {
+  const source = fs.readFileSync(path.join(SOURCE_DIR, fileName(pose)), 'utf8');
+  const [, , width, height] = (/viewBox="([^"]+)"/.exec(source)?.[1] ?? '')
+    .trim()
+    .split(/[\s,]+/)
+    .map(Number);
+
+  if (!(width > 0 && height > 0)) {
+    throw new Error(`loggy-${pose}.svg has no usable viewBox`);
+  }
+
+  return { width, height };
+}
+
+/** The contents of `websiteLoggyPoses.json`: every website pose and its `viewBox` size. */
+function generatePoses() {
+  const poses = Object.fromEntries(WEBSITE_POSES.map((pose) => [pose, viewBoxSize(pose)]));
+
+  return `${JSON.stringify(poses, null, 2)}\n`;
 }
 
 /** Every published file's path (relative to `OUTPUT_DIR`) and contents, without writing anything. */
@@ -134,6 +159,8 @@ function syncWebsiteLoggy() {
     fs.writeFileSync(target, contents);
   }
 
+  fs.writeFileSync(POSES_FILE, generatePoses());
+
   return Object.keys(files).sort();
 }
 
@@ -145,10 +172,12 @@ if (require.main === module) {
 module.exports = {
   OUTPUT_DIR,
   PALETTE_IDS,
+  POSES_FILE,
   SOURCE_DIR,
   WEBSITE_POSES,
   fileName,
   generateAll,
+  generatePoses,
   listPublished,
   relativeFile,
   stillSvg,

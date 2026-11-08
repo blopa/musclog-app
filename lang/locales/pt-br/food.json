@@ -644,18 +644,8 @@
         "two": "Conte o que você comeu. Ele vai terminar com um link \"Abrir no Musclog\" e o registro em JSON.",
         "three": "Toque no link neste celular. Se ele não abrir o Musclog, cole o JSON (ou o link) ou importe o arquivo."
       },
-      "leaveSection": "Passo 1: pergunte ao assistente",
       "backSection": "Passo 2: traga sua comida de volta",
-      "openChatgpt": "Abrir o ChatGPT",
-      "openClaude": "Abrir o Claude",
-      "copy": "Copiar",
-      "share": "Compartilhar",
-      "copied": "Instruções copiadas",
-      "copiedPaste": "Instruções copiadas. Cole no chat se a caixa estiver vazia.",
-      "fallback": "Não foi possível abrir o app ou o site. As instruções foram copiadas: abra o ChatGPT ou o Claude e cole.",
-      "privacy": "Apenas as instruções são copiadas. Nada sobre você nem chave de API é incluído.",
       "importFile": "Importar um arquivo de comida",
-      "pasteJson": "Colar JSON",
       "noFile": "Sem link? Cole o JSON ou o link, ou importe o arquivo.",
       "paste": {
         "title": "Colar JSON da comida",
@@ -663,8 +653,6 @@
         "placeholder": "Cole o JSON aqui"
       },
       "errors": {
-        "empty": "Não há nada para importar.",
-        "fileRead": "Não foi possível ler esse arquivo. Tente outro ou cole o texto.",
         "newerVersion": "Este arquivo é de uma versão mais nova do Musclog. Atualize o app e importe de novo.",
         "notJson": "Isso não parece um arquivo de comida. Escolha o arquivo musclog-food-log.json que o assistente deu ou cole o JSON.",
         "tooLarge": "Esse arquivo é grande demais para ser um arquivo de comida.",

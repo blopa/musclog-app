@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import type Exercise from '@/database/models/Exercise';
+import type { MuscleGroup } from '@/database/models/Exercise';
 import ExerciseGoal, { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
 import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
@@ -19,7 +20,7 @@ export interface OneRmGoalInputs {
   bodyWeight: number;
   loadMultiplier: number;
   userGender: 'male' | 'female' | 'other';
-  muscleGroup: string | null;
+  muscleGroup: MuscleGroup | null;
 }
 
 /** A span of time whose training should not count as evidence (a deliberately lighter week). */

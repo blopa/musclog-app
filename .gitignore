@@ -88,9 +88,16 @@ devenv.local.yaml
 # direnv
 .direnv
 
-.codex
+.codex/*
 .claude/*
 
+# Shared agent config (orchestration workers, limits); everything else stays local
+!.codex/config.toml
+!.codex/agents/
+!.codex/agents/**
+!.claude/settings.json
+!.claude/agents/
+!.claude/agents/**
 !.claude/skills/
 !.claude/skills/**
 

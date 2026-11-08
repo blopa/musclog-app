@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/theme/Button';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
-import { fitFontSize } from '@/utils/yearInReview/storyLayout';
+import { fitFontSize } from '@/utils/fitText';
 
 import { FullScreenModal } from './FullScreenModal';
 

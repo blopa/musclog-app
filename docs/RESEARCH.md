@@ -677,3 +677,69 @@ objects are everyday sizes (a 1 kg bag of whey at about 80% protein, a cat 4.5 k
 compared with food: "that is 300 pizzas" reads as a verdict on eating. The jokes borrow shared gym
 and diary culture (the chicken, rice and broccoli meal that [Mel Magazine](https://melmagazine.com/en-us/story/chicken-broccoli-rice-bodybuilding-meme)
 traces to bodybuilding, and "I'll log it later", the usual way diary tracking lapses) and stay on the food, never the person.
+
+## Agent orchestration: what each tool enforces
+
+The policy is the "Orchestration" section at the top of `AGENTS.md`; the tool files only pin models
+and limits. It must stay first: Codex reads `AGENTS.md` up to `project_doc_max_bytes` (32 KiB by
+default) and Antigravity truncates a rule file at 24,000 bytes, while this file is about 268 KB, so a
+section added at the end is invisible to both (measured with `codex debug prompt-input`: the block
+Codex receives is 32,829 characters). The same cap hides the rest of the project rules from Codex.
+Raising it for this repo is one line in `.codex/config.toml` (`project_doc_max_bytes = 400000`, honoured
+in a trusted project; it costs about 60k extra tokens per Codex agent thread), left unset on purpose.
+
+| Tool        | Worker models                                 | Enforced by the tool                                                                                    | Only asked for in `AGENTS.md`                                              |
+| ----------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Claude Code | `.claude/agents/*.md` `model:` (aliases)      | Pinned worker models; `worker-lite` has no `Agent` tool; nesting depth and concurrent-subagent ceilings | Which worker the session model may spawn; no forks or general-purpose      |
+| Codex       | `.codex/agents/*.toml` `model` (pinned slugs) | Pinned worker models and effort; concurrent-thread ceiling                                              | Which worker the session model may spawn; nesting depth; lite not spawning |
+| Antigravity | `.agents/agents/worker.md` `model: flash`     | Pinned worker tier; `tools` allow-list leaves out the subagent tools (untested, tool not installed)     | Which model may spawn; nesting depth (fixed at 10 by the tool)             |
+
+Notes that explain the choices:
+
+- **Claude Code reads `AGENTS.md` only when no `CLAUDE.md` exists** (v2.1.277+), so there is no
+  `CLAUDE.md`; adding one without `@AGENTS.md` silently drops every project rule
+  (`utils/__tests__/agentOrchestration.test.ts` fails on that).
+- **Under-delegation was observed and is why the policy is a split, not a judgment call.** A Sonnet
+  orchestrator was told to delegate, announced that it would hand the mechanical items to
+  `worker-lite`, and then did almost all of them itself under the old escape hatch "anything cheaper to
+  do than to brief", leaving one task with Haiku in a 40-item change. Two things were unclear: that a
+  session whose only allowed worker is `worker-lite` has one tier, not none (the table's "Sonnet:
+  `worker-lite`" reads like a limit and is a to-do), and what counts as trivial. The section now lists
+  what the orchestrator keeps (design decisions, edits shorter than their brief, lookups, integration
+  and validation), sends everything else to a worker, and asks for a `delegated`/`kept` line per subtask
+  in the report, so a thin delegation shows up in the result instead of when the user asks. In the same
+  session the agent's files appeared staged, could not be explained from the repo's scripts or
+  `.claude/settings.json`, and were unstaged by the agent; they were the user's own staging from their
+  editor, committed minutes later. So the validation step looks at `git status --short` and reports
+  what is staged, but never unstages it.
+- **The orchestrator's tier is not known to the tool**, so "who may spawn what" is a rule the
+  orchestrator applies to itself. The only native control that depends on the parent is the per-call
+  `model` parameter, which is not used: workers are chosen by name so the pinned model applies.
+- **`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` and `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` in
+  `.claude/settings.json` `env` work** (depth 1, 2 and 3 gave exactly 1, 2 and 3 layers in a live run;
+  a concurrency limit of 1 ran one subagent and rejected the other two). `worker-lite`'s
+  `disallowedTools: Agent` also holds with depth to spare. Judge such tests from the session transcripts, not from a model's description of its
+  own tools: a middle worker collapsed a two-step chain and models misreport their tool lists.
+- **Codex (0.163.0, multi-agent V2), measured from the session logs in `~/.codex/sessions`:** the
+  project `.codex/agents` files are found and their `model`/`model_reasoning_effort` win over the
+  parent's (root `gpt-6.1-sol` spawned `worker` on `gpt-6.1-terra` and `worker-lite` on
+  `gpt-6-luna`). `[agents] max_concurrent_threads_per_session` is enforced (a limit of 1 allowed one
+  child, the rest failed with "agent thread limit reached"); the separate
+  `features.multi_agent_v2.max_concurrent_threads_per_session` counts the root thread too and is
+  not set. `agents.max_depth` is **not** enforced (a depth-3 thread appeared with it at 2), and
+  `[features] multi_agent = false` inside an agent file does not remove its ability to spawn, so
+  nesting depth and a leaf `worker-lite` are instructions only, and a task that explicitly asks a
+  worker to spawn can override them. Codex only delegates when the user or `AGENTS.md` explicitly
+  asks, which is why the section says "explicit instruction to delegate". Test with
+  `codex exec ... < /dev/null`: it waits on an open stdin.
+- **Cross-provider delegation is not supported by any of these tools' subagent files**: Claude `model`
+  takes Claude aliases or IDs, Codex a Codex model slug, Antigravity `inherit`, `flash` or `pro`.
+- **Tier order used** (list prices from third-party summaries, consistent with the model catalogue
+  descriptions): Codex Astra ($10/$50 per million tokens) above Sol ($2/$10), Terra ($1/$5) and Luna
+  ($0.10/$0.50). Re-check when a catalogue changes: `codex debug models` prints the descriptions.
+- **Changing a tier**: edit that tool's agent-file `model` line and its row in the `AGENTS.md` table;
+  the test fails if they disagree. Claude aliases follow new releases without any edit.
+- Other tools read `AGENTS.md` natively (Copilot, Cursor, Windsurf, Roo Code, Kilo Code, Cline) and
+  get the policy as instructions only; none of them has a documented file-based way to bind a worker
+  to a cheaper model that this repo could configure without per-user settings. Gemini CLI reads
+  `GEMINI.md` unless `context.fileName` lists `AGENTS.md`; it is not configured here.

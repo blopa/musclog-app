@@ -11,6 +11,7 @@ import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
+import type { MuscleGroup } from '@/database/models/Exercise';
 import { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
@@ -43,7 +44,7 @@ type MuscleGroupFilter = 'all' | 'chest' | 'back' | 'legs' | 'arms';
 type ExerciseData = {
   id: string;
   name: string;
-  muscleGroup: string;
+  muscleGroup: MuscleGroup;
   imageUrl?: string;
   loadMultiplier?: number;
 };
@@ -268,14 +269,12 @@ export default function ExerciseGoalCreationModal({
         setTargetDate(proj.projectedDate);
       } else {
         setTargetDate(
-          estimateConservativeTargetDate(
-            current1RM,
-            targetKg,
-            bodyWeight,
-            selectedExercise.loadMultiplier ?? 1.0,
-            userGender,
-            selectedExercise.muscleGroup || null
-          )
+          estimateConservativeTargetDate(current1RM, targetKg, {
+            bodyWeightKg: bodyWeight,
+            loadMultiplier: selectedExercise.loadMultiplier ?? 1.0,
+            gender: userGender,
+            muscleGroup: selectedExercise.muscleGroup || null,
+          })
         );
       }
     };

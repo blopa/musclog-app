@@ -11,7 +11,7 @@ import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { createPreRestoreBackup } from '@/database/preMigrationBackup';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
-import { estimateCardioKcal } from '@/utils/cardioEnergy';
+import { type CardioActivity, estimateCardioKcal } from '@/utils/cardioEnergy';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { normalizeNote } from '@/utils/noteText';
 import { repsInReserveFromRpe, writeSetEffort } from '@/utils/setEffort';
@@ -35,9 +35,14 @@ import type {
 import {
   CARDIO_KEY_INFIX,
   cardioImportKey,
+  isSessionPresent,
   sessionImportKeys,
 } from '@/utils/workoutImport/importKey';
-import type { ImportedSession, WorkoutImportSource } from '@/utils/workoutImport/types';
+import type {
+  ImportedSession,
+  ImportSummary,
+  WorkoutImportSource,
+} from '@/utils/workoutImport/types';
 import {
   estimateWorkoutKcalFromSets,
   type WorkoutEnergyProfile,
@@ -55,17 +60,6 @@ export interface ImportCommitInput {
   /** Translated, for a session the file gives no name. */
   fallbackWorkoutName: string;
   onProgress?: (done: number, total: number) => void;
-}
-
-export interface ImportSummary {
-  batchId: string;
-  sessionsImported: number;
-  sessionsAlreadyHere: number;
-  setsImported: number;
-  cardioImported: number;
-  exercisesCreated: number;
-  exercisesSkipped: number;
-  timedSets: number;
 }
 
 export interface ImportBatch {
@@ -102,10 +96,6 @@ function sessionKeyOf(storedKey: string): string {
   return at === -1 ? storedKey : storedKey.slice(0, at);
 }
 
-function isAlreadyHere(session: ImportedSession, liveKeys: ReadonlySet<string>): boolean {
-  return sessionImportKeys(session).some((key) => liveKeys.has(key));
-}
-
 interface ImportedLogFields {
   workoutName: string;
   type: 'free' | 'cardio';
@@ -115,7 +105,7 @@ interface ImportedLogFields {
   totalVolume: number;
   kcal: number;
   notes: string | null;
-  cardio?: { activity: 'walk' | 'run'; distanceM: number };
+  cardio?: { activity: CardioActivity; distanceM: number };
 }
 
 /** The `workout_logs` row of an imported session, strength or cardio. */
@@ -406,7 +396,7 @@ async function writeSessions(
   };
 
   for (const session of sessions) {
-    if (isAlreadyHere(session, seenKeys)) {
+    if (isSessionPresent(session, seenKeys)) {
       totals.sessionsAlreadyHere += 1;
       done += 1;
       continue;
@@ -482,15 +472,14 @@ export class WorkoutImportService {
       console.warn('Pre-import backup failed; importing anyway:', error);
     }
 
-    const [profile, bodyWeightKg] = await Promise.all([
-      loadWorkoutEnergyProfile(),
-      UserMetricService.getUserBodyWeightKgForVolume(),
-    ]);
-
     const chosenIds = [...input.resolutions.values()].flatMap((resolution) =>
       resolution.kind === 'existing' ? [resolution.exerciseId] : []
     );
-    const existingInfos = await loadExerciseInfos(chosenIds);
+    const [profile, bodyWeightKg, existingInfos] = await Promise.all([
+      loadWorkoutEnergyProfile(),
+      UserMetricService.getUserBodyWeightKgForVolume(),
+      loadExerciseInfos(chosenIds),
+    ]);
     const names = distinctBlockNames(input.sessions);
     const resolved = partitionResolutions(names, input.resolutions, existingInfos);
 
@@ -501,7 +490,7 @@ export class WorkoutImportService {
 
       // A session already here writes nothing, so it must not leave a new exercise behind either.
       const namesToWrite = new Set(
-        distinctBlockNames(input.sessions.filter((session) => !isAlreadyHere(session, liveKeys)))
+        distinctBlockNames(input.sessions.filter((session) => !isSessionPresent(session, liveKeys)))
       );
       const custom = prepareCustomExercises(
         [...resolved.custom].filter(([fileName]) => namesToWrite.has(fileName))

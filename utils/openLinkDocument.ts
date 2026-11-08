@@ -1,8 +1,12 @@
 import { extractJsonCandidate, utf8ByteLength } from '@/utils/aiOnboarding/contractParse';
+import type { DocumentParseError } from '@/utils/externalDocument';
 import { findOpenLinkInText, type OpenLinkKind } from '@/utils/openLink';
 
-/** The parse failures every external document shares. */
-export type OpenDocumentError = 'empty' | 'tooLarge' | 'notJson' | 'wrongSchema';
+/** The parse failures `readDocumentText` itself can raise, before any contract reads the body. */
+export type OpenDocumentError = Extract<
+  DocumentParseError,
+  'empty' | 'tooLarge' | 'notJson' | 'wrongSchema'
+>;
 
 /** A pasted chat message can hold the link, the JSON block and prose, so the scan is bounded wider. */
 const RAW_TEXT_FACTOR = 4;
@@ -89,4 +93,30 @@ export function parseJsonDocument<R>(
   }
 
   return normalize(parsed);
+}
+
+/**
+ * The parser of one contract: text in (JSON, a fenced block or an open link anywhere in it), a
+ * result out. The contract supplies its open-link `kind`, its size cap and its `normalize`; the
+ * reading is {@link readDocumentText} and {@link parseJsonDocument}, the same for every contract.
+ */
+export function documentParser<R extends { ok: boolean }>({
+  kind,
+  maxBytes,
+  normalize,
+  fail,
+}: {
+  kind: OpenLinkKind;
+  maxBytes: number;
+  normalize: (parsed: unknown) => R;
+  fail: (error: OpenDocumentError) => R;
+}): (text: string) => R {
+  return (text) =>
+    readDocumentText<R>({
+      text,
+      kind,
+      maxBytes,
+      parseJson: (json) => parseJsonDocument(json, normalize, fail),
+      fail,
+    });
 }

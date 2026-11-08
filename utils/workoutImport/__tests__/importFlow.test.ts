@@ -145,7 +145,7 @@ describe('importFlowReducer', () => {
   it('keeps unmatched names without a default, so save stays disabled', () => {
     const state = reviewed([session('a', ['Bench Press', 'Zercher Squat'])], [matched, unmatched]);
     expect(state.choices['Bench Press']).toMatchObject({
-      kind: 'pick',
+      kind: 'existing',
       exerciseId: 'ex-1',
       rememberAlias: false,
     });
@@ -199,7 +199,7 @@ describe('importFlowReducer', () => {
       type: 'choose',
       name: 'Zercher Squat',
       choice: {
-        kind: 'pick',
+        kind: 'existing',
         exerciseId: 'ex-9',
         exerciseName: 'Front Squat',
         rememberAlias: true,

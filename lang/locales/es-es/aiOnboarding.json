@@ -16,24 +16,15 @@
     },
     "external": {
       "backSection": "Paso 2: vuelve con tu configuración",
-      "copied": "Instrucciones copiadas",
-      "copiedPaste": "Instrucciones copiadas. Pégalas en el chat si el cuadro está vacío.",
-      "copy": "Copiar",
       "errors": {
-        "empty": "No hay nada que importar.",
-        "fileRead": "No se pudo leer ese archivo. Prueba con otro o pega el texto.",
         "newerVersion": "Esta configuración es de una versión más reciente de Musclog. Actualiza la app y vuelve a importarla.",
         "notJson": "Eso no parece un archivo de configuración. Elige el archivo musclog-onboarding.json que te dio el asistente o pega su JSON.",
         "tooLarge": "Ese archivo es demasiado grande para ser de configuración.",
         "wrongSchema": "Ese no es un archivo de configuración de Musclog. Comprueba que elegiste el que creó el asistente."
       },
-      "fallback": "No se pudo abrir la app o el sitio. Las instrucciones están copiadas: abre ChatGPT o Claude tú mismo y pégalas.",
       "importFile": "Importar un archivo de configuración",
       "intro": "ChatGPT o Claude pueden hacerte las preguntas y darte un archivo para traer de vuelta. Sales de Musclog un momento; no se aplica nada hasta que lo revises aquí.",
-      "leaveSection": "Paso 1: pregunta al asistente",
       "noFile": "¿Sin archivo? Pega el JSON o vuelve a los formularios.",
-      "openChatgpt": "Abrir ChatGPT",
-      "openClaude": "Abrir Claude",
       "paste": {
         "fromClipboard": "Pegar del portapapeles",
         "import": "Importar",
@@ -41,9 +32,6 @@
         "subtitle": "Pega el JSON que te dio el asistente.",
         "title": "Pegar JSON de configuración"
       },
-      "pasteJson": "Pegar JSON",
-      "privacy": "Solo se copian las instrucciones. No se incluye nada sobre ti ni ninguna clave de API.",
-      "share": "Compartir",
       "steps": {
         "one": "Abre ChatGPT o Claude. Las instrucciones se copian por ti: pégalas en el chat.",
         "three": "Vuelve a Musclog e importa ese archivo o pega su texto.",

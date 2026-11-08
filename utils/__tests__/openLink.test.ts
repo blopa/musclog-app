@@ -7,10 +7,12 @@ import {
   OPEN_LINK_BASE_URL,
   parseOpenFragment,
   parseOpenLink,
+} from '../openLink';
+import {
   setPendingOpenLink,
   subscribePendingOpenLink,
   takePendingOpenLink,
-} from '../openLink';
+} from '../openLinkInbox';
 
 const PLAN = JSON.stringify({ schema: 'musclog-workout-plan', note: 'a=b&c=d #1 100%' });
 

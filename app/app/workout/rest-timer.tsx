@@ -428,8 +428,8 @@ export default function RestTimerScreen() {
             contentContainerStyle={{
               flexGrow: 1,
               justifyContent: 'center',
-              gap: 32,
-              paddingTop: 8,
+              gap: theme.spacing.gap['2xl'],
+              paddingTop: theme.spacing.padding.sm,
             }}
             showsVerticalScrollIndicator={false}
           >

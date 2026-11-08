@@ -182,6 +182,22 @@
       "clearSearch": "Limpar busca",
       "showValue": "Mostrar valor",
       "hideValue": "Ocultar valor"
+    },
+    "externalAssistant": {
+      "copied": "Instruções copiadas",
+      "copiedPaste": "Instruções copiadas. Cole no chat se a caixa estiver vazia.",
+      "copy": "Copiar",
+      "errors": {
+        "empty": "Não há nada para importar.",
+        "fileRead": "Não foi possível ler esse arquivo. Tente outro ou cole o texto."
+      },
+      "fallback": "Não foi possível abrir o app ou o site. As instruções foram copiadas: abra o ChatGPT ou o Claude e cole.",
+      "leaveSection": "Passo 1: pergunte ao assistente",
+      "openChatgpt": "Abrir o ChatGPT",
+      "openClaude": "Abrir o Claude",
+      "pasteJson": "Colar JSON",
+      "privacy": "Apenas as instruções são copiadas. Nada sobre você nem chave de API é incluído.",
+      "share": "Compartilhar"
     }
   }
 }

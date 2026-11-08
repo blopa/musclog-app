@@ -182,6 +182,22 @@
       "clearSearch": "Clear search",
       "showValue": "Show value",
       "hideValue": "Hide value"
+    },
+    "externalAssistant": {
+      "copied": "Instructions copied",
+      "copiedPaste": "Instructions copied. Paste them into the chat if the box is empty.",
+      "copy": "Copy",
+      "errors": {
+        "empty": "There is nothing to import.",
+        "fileRead": "That file could not be read. Try another one, or paste the text instead."
+      },
+      "fallback": "Couldn't open the app or site. The instructions are copied: open ChatGPT or Claude yourself and paste them.",
+      "leaveSection": "Step 1: ask the assistant",
+      "openChatgpt": "Open ChatGPT",
+      "openClaude": "Open Claude",
+      "pasteJson": "Paste JSON",
+      "privacy": "Only the instructions are copied. Nothing about you, and no API key, is included.",
+      "share": "Share"
     }
   }
 }

@@ -1,5 +1,5 @@
+import type { MuscleGroup } from '@/database/models/Exercise';
 import {
-  loadBenchmarkFor,
   MAX_E1RM_REPS,
   normalizedRelativeStrength,
   RS_ADVANCED,
@@ -8,6 +8,7 @@ import {
   RS_NOVICE,
   type StrengthGender,
   strengthGenderFactor,
+  type StrengthSubject,
 } from '@/utils/relativeStrength';
 import { calculateAverage1RM } from '@/utils/workoutCalculator';
 
@@ -22,7 +23,7 @@ export interface StrengthGradeInput {
   bodyWeightKg: number | null;
   loadMultiplier: number;
   gender: StrengthGender;
-  muscleGroup: string | null;
+  muscleGroup: MuscleGroup | null;
 }
 
 export interface StrengthGrade {
@@ -94,23 +95,14 @@ export function gradeStrength(input: StrengthGradeInput): StrengthGrade | null {
     return null;
   }
 
-  const benchmark = loadBenchmarkFor(loadMultiplier);
+  const subject: StrengthSubject = { bodyWeightKg, loadMultiplier, gender, muscleGroup };
 
   if (gender === 'other') {
-    const maleScale = normalizedRelativeStrength(
-      estimated1RmKg,
-      bodyWeightKg,
-      loadMultiplier,
-      'other',
-      muscleGroup
-    );
-    const femaleScale = normalizedRelativeStrength(
-      estimated1RmKg,
-      bodyWeightKg,
-      loadMultiplier,
-      'female',
-      muscleGroup
-    );
+    const maleScale = normalizedRelativeStrength(estimated1RmKg, subject);
+    const femaleScale = normalizedRelativeStrength(estimated1RmKg, {
+      ...subject,
+      gender: 'female',
+    });
     const level = levelFor(maleScale);
     const femaleLevel = levelFor(femaleScale);
     return {
@@ -122,13 +114,7 @@ export function gradeStrength(input: StrengthGradeInput): StrengthGrade | null {
     };
   }
 
-  const normalized = normalizedRelativeStrength(
-    estimated1RmKg,
-    bodyWeightKg,
-    loadMultiplier,
-    gender,
-    muscleGroup
-  );
+  const normalized = normalizedRelativeStrength(estimated1RmKg, subject);
   const level = levelFor(normalized);
   const next = nextAbove(level);
   const factor = strengthGenderFactor(gender, muscleGroup);
@@ -138,7 +124,7 @@ export function gradeStrength(input: StrengthGradeInput): StrengthGrade | null {
     upperLevel: null,
     normalizedStrength: normalized,
     nextLevel: next?.level ?? null,
-    nextLevelKg: next ? next.boundary * bodyWeightKg * benchmark * factor : null,
+    nextLevelKg: next ? next.boundary * bodyWeightKg * loadMultiplier * factor : null,
   };
 }
 

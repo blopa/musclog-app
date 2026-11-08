@@ -5,7 +5,7 @@
 import { act, renderHook } from '@testing-library/react';
 
 import { useIncomingOpenLink, useOpenLinkHandler } from '@/hooks/useOpenLinkHandler';
-import { setPendingOpenLink } from '@/utils/openLink';
+import { setPendingOpenLink } from '@/utils/openLinkInbox';
 
 // The mocked focus effect runs its callback only while `mockFocused.current` is true, like the real
 // one runs only for the focused screen.

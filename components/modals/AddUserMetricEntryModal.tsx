@@ -1,7 +1,7 @@
 import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -16,6 +16,7 @@ import { database } from '@/database';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
@@ -84,9 +85,8 @@ export default function AddUserMetricEntryModal({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [pagerHeight, setPagerHeight] = useState<number | null>(null);
-  const { fontScale } = useWindowDimensions();
   /** The width between the stepper buttons, which the big number has to fit. */
-  const [valueSlotWidth, setValueSlotWidth] = useState<number | null>(null);
+  const { width: valueSlotWidth, fontScale, onLayout: onValueSlotLayout } = useMeasuredWidth();
   const [isSaving, setIsSaving] = useState(false);
 
   const pageIndexToMetric: MetricType[] = ['weight', 'body_fat', 'height'];
@@ -360,10 +360,7 @@ export default function AddUserMetricEntryModal({
               <Minus size={theme.iconSize.xl} color={theme.colors.text.primary} />
             </Pressable>
 
-            <View
-              className="min-w-0 flex-1 items-center"
-              onLayout={(e) => setValueSlotWidth(e.nativeEvent.layout.width)}
-            >
+            <View className="min-w-0 flex-1 items-center" onLayout={onValueSlotLayout}>
               <Text
                 className="text-center font-bold text-text-primary"
                 // 60pt does not fit between the buttons at large text ("154" ran under both).

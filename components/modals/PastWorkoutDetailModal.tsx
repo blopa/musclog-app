@@ -2,14 +2,7 @@ import { format } from 'date-fns';
 import { Download, Edit, Info, RefreshCw, Share2, Trophy } from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  Platform,
-  Pressable,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -30,6 +23,7 @@ import { useEditWorkoutSets } from '@/hooks/useEditWorkoutSets';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useExerciseVolumeTrend } from '@/hooks/useExerciseVolumeTrend';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useMeasuredWidth } from '@/hooks/useMeasuredWidth';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { usePastWorkoutDetail } from '@/hooks/usePastWorkoutDetail';
 import { useSettings } from '@/hooks/useSettings';
@@ -240,8 +234,7 @@ type SetsTableProps = {
 function SetsTable({ sets }: SetsTableProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { fontScale } = useWindowDimensions();
-  const [tableWidth, setTableWidth] = useState<number | null>(null);
+  const { width: tableWidth, fontScale, onLayout: onTableLayout } = useMeasuredWidth();
   const headers = [
     t('workoutDetail.set'),
     t('workoutDetail.weight'),
@@ -274,7 +267,7 @@ function SetsTable({ sets }: SetsTableProps) {
   return (
     <View
       className="mt-0 overflow-hidden"
-      onLayout={(event) => setTableWidth(event.nativeEvent.layout.width)}
+      onLayout={onTableLayout}
       style={{
         paddingHorizontal: theme.spacing.padding.sm,
         paddingBottom: theme.spacing.padding.base,

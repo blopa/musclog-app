@@ -3,6 +3,8 @@
  * converted to kg and metres, numeric sanity checked. Session grouping and
  * skipping happen in sessions.ts.
  */
+import type { CardioActivity } from '@/utils/cardioEnergy';
+
 import { parseDateText } from './parseDate';
 import {
   distanceUnitFactor,
@@ -54,8 +56,6 @@ export interface MappingContext {
   distance: DistanceColumn | null;
   distanceUnitIndex: number | null;
 }
-
-export type CardioActivity = 'walk' | 'run';
 
 export function buildMappingContext(
   source: WorkoutImportSource,

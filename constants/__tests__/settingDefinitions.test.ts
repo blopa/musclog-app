@@ -1,5 +1,10 @@
 import { DEFAULT_REST_SECONDS } from '@/constants/restTimer';
-import { readSetting, SETTINGS } from '@/constants/settingDefinitions';
+import {
+  defaultSettings,
+  readSetting,
+  readSettings,
+  SETTINGS,
+} from '@/constants/settingDefinitions';
 import { DEFAULT_WORKOUT_AUTONOMY } from '@/constants/settings';
 
 describe('SETTINGS', () => {
@@ -102,5 +107,34 @@ describe('appLockScopes', () => {
     expect(serialize(['progress', 'cycle', 'cycle', 'workout'])).toBe('cycle,workout,progress');
     expect(parse('progress,nonsense,nutrition,progress')).toEqual(['nutrition', 'progress']);
     expect(parse(serialize(['nutrition', 'workout']))).toEqual(['workout', 'nutrition']);
+  });
+});
+
+describe('defaultSettings and readSettings', () => {
+  const names = ['showLoggy', 'animatedLoggy', 'restHeadsUpSeconds'] as const;
+
+  it('defaults each name to its SETTINGS default', () => {
+    expect(defaultSettings(names)).toEqual({
+      showLoggy: SETTINGS.showLoggy.defaultValue,
+      animatedLoggy: SETTINGS.animatedLoggy.defaultValue,
+      restHeadsUpSeconds: SETTINGS.restHeadsUpSeconds.defaultValue,
+    });
+    expect(defaultSettings(['showLoggy'])).toEqual({ showLoggy: true });
+  });
+
+  it('reads each name from its own type and falls back to the default when absent', () => {
+    const values = readSettings(new Map([['show_loggy', 'false']]), names);
+
+    expect(values.showLoggy).toBe(false);
+    expect(values.animatedLoggy).toBe(true);
+    expect(values.restHeadsUpSeconds).toBe(SETTINGS.restHeadsUpSeconds.defaultValue);
+  });
+
+  it('equals the defaults for an empty map', () => {
+    expect(readSettings(new Map(), names)).toEqual(defaultSettings(names));
+  });
+
+  it('returns exactly the requested keys', () => {
+    expect(Object.keys(readSettings(new Map(), ['showLoggy']))).toEqual(['showLoggy']);
   });
 });

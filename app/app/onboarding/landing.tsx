@@ -1,5 +1,13 @@
 import { useRouter } from 'expo-router';
-import { Bot, Download, Lock, ScanLine, Settings2, Zap } from 'lucide-react-native';
+import {
+  Bot,
+  Download,
+  Lock,
+  type LucideIcon,
+  ScanLine,
+  Settings2,
+  Zap,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -21,7 +29,6 @@ import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { seedDevData } from '@/database/seeders/dev';
-import { seedLayoutAuditData } from '@/database/seeders/layoutAudit';
 import { seedProductionData } from '@/database/seeders/prod';
 import { verifyDatabaseTables } from '@/database/verify';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -38,19 +45,59 @@ const LANDING_POSE_MAX_HEIGHT = 152;
 /** Below this he reads as a smudge, so a short phone gets no Loggy rather than a tiny one. */
 const LANDING_POSE_MIN_HEIGHT = 88;
 /**
- * What the rest of the screen needs: the three setup buttons and their notes, the title block and
- * its padding. The hero is a flex child with no scroll, so a pose taller than what is left pushes
+ * What the rest of the screen needs at default text size: the three setup buttons and their notes,
+ * the title block and its padding. The hero is a flex child with no scroll, so a pose taller than what is left pushes
  * the description under the buttons (it did on a 640pt phone, with the old 96pt logo too).
  */
 const LANDING_RESERVED_HEIGHT = 640;
+
+type SetupOptionProps = {
+  label: string;
+  labelAccessory?: string;
+  /** The line under the button that says what the setup is. */
+  note: string;
+  icon: LucideIcon;
+  variant: 'gradientCta' | 'outline';
+  onPress: () => void;
+};
+
+/** One way to start: the button, and under it one line saying what it is. */
+function SetupOption({ label, labelAccessory, note, icon, variant, onPress }: SetupOptionProps) {
+  const theme = useTheme();
+
+  return (
+    <>
+      <Button
+        label={label}
+        labelAccessory={labelAccessory}
+        onPress={onPress}
+        icon={icon}
+        iconPosition="left"
+        variant={variant}
+        size="md"
+        width="full"
+      />
+      <Text
+        className="text-center"
+        style={{ color: theme.colors.text.tertiary, fontSize: theme.typography.fontSize.xs }}
+      >
+        {note}
+      </Text>
+    </>
+  );
+}
 
 export default function LandingScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
-  const { height: windowHeight } = useWindowDimensions();
-  const poseHeight = Math.min(LANDING_POSE_MAX_HEIGHT, windowHeight - LANDING_RESERVED_HEIGHT);
+  const { height: windowHeight, fontScale } = useWindowDimensions();
+  // The text and buttons grow with the OS text scale, so the room they take does too.
+  const poseHeight = Math.min(
+    LANDING_POSE_MAX_HEIGHT,
+    windowHeight - LANDING_RESERVED_HEIGHT * Math.max(1, fontScale)
+  );
   const getInitStatusText = () => {
     if (initPhase === 'migrating' && initStep) {
       return t('onboarding.landing.migratingStep', {
@@ -102,10 +149,7 @@ export default function LandingScreen() {
 
         // access via http://localhost:8081/onboarding/landing?demoModeEnabled=true
         if (shouldSeedDevData()) {
-          await seedDevData();
-          if (shouldSeedLayoutAuditData()) {
-            await seedLayoutAuditData();
-          }
+          await seedDevData({ layoutAuditData: shouldSeedLayoutAuditData() });
 
           router.navigate('/app');
         }
@@ -316,69 +360,31 @@ export default function LandingScreen() {
                 <>
                   {/* Personalized Setup — the gradientCta variant already reads as the
                     recommended choice against Quick Setup's outline button below. */}
-                  <View>
-                    <Button
-                      label={t('onboarding.landing.personalizedSetup')}
-                      labelAccessory={t('onboarding.landing.personalizedSetupSteps')}
-                      onPress={() => router.navigate('/app/onboarding/personalized-preferences')}
-                      icon={Settings2}
-                      iconPosition="left"
-                      variant="gradientCta"
-                      size="md"
-                      width="full"
-                    />
-                  </View>
-                  <Text
-                    className="text-center"
-                    style={{
-                      color: theme.colors.text.tertiary,
-                      fontSize: theme.typography.fontSize.xs,
-                    }}
-                  >
-                    {t('onboarding.landing.personalizedSetupSubtitle')}
-                  </Text>
-
-                  {/* Quick Setup */}
-                  <Button
+                  <SetupOption
+                    label={t('onboarding.landing.personalizedSetup')}
+                    labelAccessory={t('onboarding.landing.personalizedSetupSteps')}
+                    note={t('onboarding.landing.personalizedSetupSubtitle')}
+                    icon={Settings2}
+                    variant="gradientCta"
+                    onPress={() => router.navigate('/app/onboarding/personalized-preferences')}
+                  />
+                  <SetupOption
                     label={t('onboarding.landing.quickSetup')}
                     labelAccessory={t('onboarding.landing.quickSetupSteps')}
-                    onPress={() => router.navigate('/app/onboarding/quick-preferences')}
+                    note={t('onboarding.landing.quickSetupSubtitle')}
                     icon={Zap}
-                    iconPosition="left"
                     variant="outline"
-                    size="md"
-                    width="full"
+                    onPress={() => router.navigate('/app/onboarding/quick-preferences')}
                   />
-                  <Text
-                    className="text-center"
-                    style={{
-                      color: theme.colors.text.tertiary,
-                      fontSize: theme.typography.fontSize.xs,
-                    }}
-                  >
-                    {t('onboarding.landing.quickSetupSubtitle')}
-                  </Text>
-
                   {/* Set up with AI — shown whether or not an AI is configured: the ChatGPT/Claude
                     hand-off and the file import need none, and the screen offers free AI. */}
-                  <Button
+                  <SetupOption
                     label={t('onboarding.landing.aiSetup')}
-                    onPress={() => router.navigate(aiSetupRoute('setup', 'onboarding') as never)}
+                    note={t('onboarding.landing.aiSetupSubtitle')}
                     icon={Bot}
-                    iconPosition="left"
                     variant="outline"
-                    size="md"
-                    width="full"
+                    onPress={() => router.navigate(aiSetupRoute('setup', 'onboarding') as never)}
                   />
-                  <Text
-                    className="text-center"
-                    style={{
-                      color: theme.colors.text.tertiary,
-                      fontSize: theme.typography.fontSize.xs,
-                    }}
-                  >
-                    {t('onboarding.landing.aiSetupSubtitle')}
-                  </Text>
 
                   {/* Terms / Footer Text */}
                   <View className="mt-2">

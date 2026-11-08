@@ -1,0 +1,9 @@
+# Project-level Codex settings (loaded only for trusted projects). Orchestration policy: AGENTS.md.
+[agents]
+# Runtime ceilings. The policy in AGENTS.md asks for at most 4 workers at once and one nested layer.
+# Verified on Codex 0.163.0 (multi-agent V2): this concurrency key is enforced (a limit of 1 allowed
+# one child; extra spawns fail with "agent thread limit reached"). `max_depth` is NOT enforced on V2
+# (a depth-3 thread was created with it set to 2) and only applies to V1 models, so nesting depth
+# and `worker-lite` not delegating are instructions in AGENTS.md. `max_threads` is the legacy alias.
+max_concurrent_threads_per_session = 6
+max_depth = 2

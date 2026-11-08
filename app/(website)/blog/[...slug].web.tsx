@@ -11,6 +11,7 @@ import { BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT, hue } from '@/components/web
 import { metadataForPage, websiteCopy } from '@/components/website/websiteMetadata';
 import { BlogPostSeo } from '@/components/website/WebsiteSeo';
 import { BlogPostingJsonLd } from '@/components/website/WebsiteStructuredData';
+import { useBlogGalleries } from '@/hooks/useBlogGalleries';
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const { loadBlogPostSummaries } = await import('@/utils/blogPosts.server');
@@ -36,6 +37,7 @@ function formatPostDate(date: string, locale: string): string {
 export default function BlogPostPage() {
   const post = useLoaderData<typeof loader>();
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
+  useBlogGalleries('blog-post-body', post.slug);
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const canonicalPath = blogPostPath(post.slug);
   const category = t(`categories.${post.category}`);

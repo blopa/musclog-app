@@ -644,18 +644,8 @@
         "two": "Vertel wat je hebt gegeten. Aan het eind krijg je een link \"Openen in Musclog\" en het logboek als JSON.",
         "three": "Tik op de link op deze telefoon. Opent die Musclog niet, plak dan de JSON (of de link) of importeer het bestand."
       },
-      "leaveSection": "Stap 1: vraag het aan de assistent",
       "backSection": "Stap 2: breng je eten terug",
-      "openChatgpt": "ChatGPT openen",
-      "openClaude": "Claude openen",
-      "copy": "Kopiëren",
-      "share": "Delen",
-      "copied": "Instructies gekopieerd",
-      "copiedPaste": "Instructies gekopieerd. Plak ze in de chat als het vak leeg is.",
-      "fallback": "De app of site kon niet worden geopend. De instructies zijn gekopieerd: open ChatGPT of Claude zelf en plak ze.",
-      "privacy": "Alleen de instructies worden gekopieerd. Er zit niets over jou of een API-sleutel in.",
       "importFile": "Een eetbestand importeren",
-      "pasteJson": "JSON plakken",
       "noFile": "Geen link? Plak de JSON of de link, of importeer het bestand.",
       "paste": {
         "title": "Eten-JSON plakken",
@@ -663,8 +653,6 @@
         "placeholder": "Plak de JSON hier"
       },
       "errors": {
-        "empty": "Er is niets om te importeren.",
-        "fileRead": "Dat bestand kon niet worden gelezen. Probeer een ander bestand of plak de tekst.",
         "newerVersion": "Dit bestand is gemaakt voor een nieuwere versie van Musclog. Werk de app bij en importeer opnieuw.",
         "notJson": "Dit lijkt geen eetbestand. Kies het bestand musclog-food-log.json van de assistent of plak de JSON.",
         "tooLarge": "Dat bestand is te groot voor een eetbestand.",

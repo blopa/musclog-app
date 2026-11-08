@@ -2,34 +2,14 @@ import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LOGGY_POSES } from '@/components/loggy/animated/loggyPoses';
 import { LoggyPose, type LoggyPoseName } from '@/components/LoggyPose';
 import { THEME_IDS } from '@/constants/settings';
 import { ThemeScope } from '@/context/ThemeContext';
 import { useTheme } from '@/hooks/useTheme';
 import { THEMES } from '@/theme';
 
-const POSES: LoggyPoseName[] = [
-  'default',
-  'wave',
-  'celebrating',
-  'coffee',
-  'creatine',
-  'drinking',
-  'eating',
-  'flex',
-  'lifting',
-  'magnify',
-  'nutrition',
-  'panic',
-  'pointing',
-  'reading',
-  'running',
-  'salad',
-  'shrug',
-  'thinking',
-  'trophy',
-  'writing',
-];
+const POSES = Object.keys(LOGGY_POSES) as LoggyPoseName[];
 
 /** The poses shown in every theme: the body, the stripes and props, and food that must stay green. */
 const THEME_POSES: LoggyPoseName[] = ['wave', 'lifting', 'salad'];

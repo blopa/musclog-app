@@ -3,10 +3,9 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { LoggyPose, useLoggyVisible } from '@/components/LoggyPose';
+import { SUMMARY_POSE_HEIGHT, summaryPoseFor } from '@/components/workoutSummaryPose';
 import { useTheme } from '@/hooks/useTheme';
 import { splitDurationLabel } from '@/utils/workout';
-
-const SUMMARY_POSE_HEIGHT = 176;
 
 type WorkoutSummaryCelebrationProps = {
   children?: ReactNode;
@@ -168,10 +167,7 @@ export function WorkoutSummaryCelebration({
       {/* The finished workout's face, in place of the trophy and its three stars. */}
       {showLoggy ? (
         <div style={{ marginBottom: 24 }}>
-          <LoggyPose
-            pose={personalRecords > 0 ? 'trophy' : 'celebrating'}
-            height={SUMMARY_POSE_HEIGHT}
-          />
+          <LoggyPose pose={summaryPoseFor(personalRecords)} height={SUMMARY_POSE_HEIGHT} />
         </div>
       ) : null}
 

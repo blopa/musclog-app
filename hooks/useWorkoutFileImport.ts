@@ -21,10 +21,6 @@ import type { ImportWeightUnit } from '@/utils/workoutImport/types';
 /** Larger exports (years of history) are common, so the limit is generous but finite. */
 export const MAX_IMPORT_FILE_BYTES = 30 * 1024 * 1024;
 
-export function accountWeightUnit(units: 'metric' | 'imperial'): ImportWeightUnit {
-  return getWeightUnit(units);
-}
-
 /**
  * Drives the import screen. The reducer holds every decision; this hook only performs the file,
  * database and save steps and reports their results back as actions.
@@ -83,7 +79,7 @@ export function useWorkoutFileImport() {
     }
 
     // The unit shown on the unit step must be the one this parse uses.
-    const assumedWeightUnit = accountWeightUnit(units);
+    const assumedWeightUnit = getWeightUnit(units);
     dispatch({ type: 'fileChosen', fileName: picked.name, text: picked.text, assumedWeightUnit });
     if (picked.text.trim() === '') {
       dispatch({ type: 'failed', failure: 'empty' });

@@ -30,19 +30,23 @@ const { LOGGY_CLASSIC, loggyColorsForTheme, loggyPaletteId } =
 const {
   OUTPUT_DIR,
   PALETTE_IDS,
+  POSES_FILE,
   SOURCE_DIR,
   WEBSITE_POSES,
   fileName,
   generateAll,
+  generatePoses,
   listPublished,
   stillSvg,
 } = require('../../../scripts/sync-website-loggy') as {
   OUTPUT_DIR: string;
   PALETTE_IDS: string[];
+  POSES_FILE: string;
   SOURCE_DIR: string;
   WEBSITE_POSES: string[];
   fileName: (pose: string, still?: boolean) => string;
   generateAll: () => Record<string, string>;
+  generatePoses: () => string;
   listPublished: (directory: string) => string[];
   stillSvg: (animatedSvg: string) => string;
 };
@@ -111,6 +115,10 @@ describe('the Loggy files the website serves', () => {
     }
   );
 
+  it('list their poses and sizes in the generated file the page reads', () => {
+    expect(readFileSync(POSES_FILE, 'utf8')).toBe(generatePoses());
+  });
+
   it('refuses an SVG with no style block to hold the still rule', () => {
     expect(() => stillSvg('<svg></svg>')).toThrow(/no <style> block/);
   });
@@ -120,7 +128,10 @@ describe('the Loggy files the website serves', () => {
     const match = /viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)\s*"/.exec(svg);
 
     expect(match).not.toBeNull();
-    expect(WEBSITE_LOGGY_VIEWBOX[pose]).toEqual([Number(match?.[1]), Number(match?.[2])]);
+    expect(WEBSITE_LOGGY_VIEWBOX[pose]).toEqual({
+      width: Number(match?.[1]),
+      height: Number(match?.[2]),
+    });
   });
 
   it.each([...WEBSITE_LOGGY_POSES])(

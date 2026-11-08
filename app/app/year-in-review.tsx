@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft, Share2 } from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, type LayoutChangeEvent, Pressable, Text, View } from 'react-native';
 
@@ -15,15 +15,12 @@ import { YearShareSheet } from '@/components/yearInReview/YearShareSheet';
 import { YearStoryCardView } from '@/components/yearInReview/YearStoryCardView';
 import type { AppLockArea } from '@/constants/settings';
 import { useAppLock } from '@/context/AppLockContext';
-import { YearInReviewRepository } from '@/database/repositories/YearInReviewRepository';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
+import { useStoryPager } from '@/hooks/useStoryPager';
 import { useTheme } from '@/hooks/useTheme';
-import { handleError } from '@/utils/handleError';
-import { buildYearInReview } from '@/utils/yearInReview/engine';
+import { useYearInReview } from '@/hooks/useYearInReview';
 import { yearReviewSeason } from '@/utils/yearInReview/season';
-import { buildYearStoryCards } from '@/utils/yearInReview/storyCards';
-import type { YearInReviewInput } from '@/utils/yearInReview/types';
 
 /** The workout and nutrition records this review reads. The weight card has its own progress check. */
 const YEAR_IN_REVIEW_LOCK_AREAS: AppLockArea[] = ['workout', 'nutrition'];
@@ -51,48 +48,14 @@ export default function YearInReviewScreen() {
   const year = yearFromParam(yearParam, season.year);
   const showWeight = !isLocked('progress');
 
-  const [input, setInput] = useState<YearInReviewInput | null>(null);
-  const [index, setIndex] = useState(0);
+  const { review, cards, failed: loadFailed, retry } = useYearInReview(year, showWeight);
+  const { current, isFirst, isLast, back, next } = useStoryPager(cards.length);
   const [shareOpen, setShareOpen] = useState(false);
-  const [loadFailed, setLoadFailed] = useState(false);
-  const [attempt, setAttempt] = useState(0);
   const [poster, setPoster] = useState<PosterSize | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    YearInReviewRepository.load(year, { includeWeight: showWeight })
-      .then((loaded) => {
-        if (!cancelled) {
-          setInput(loaded);
-        }
-      })
-      .catch((error: unknown) => {
-        void handleError(error, 'yearInReview.load');
-        if (!cancelled) {
-          setLoadFailed(true);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [year, showWeight, attempt]);
-
-  // A result for another year is not shown: the previous year's figures never linger under a new one.
-  const review = useMemo(
-    () => (input && input.year === year ? buildYearInReview(input) : null),
-    [input, year]
-  );
-  const cards = useMemo(
-    () => (review ? buildYearStoryCards(review, { showWeight }) : []),
-    [review, showWeight]
-  );
+  const openShare = useCallback(() => setShareOpen(true), []);
 
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const current = Math.min(index, Math.max(cards.length - 1, 0));
   const card = cards[current];
-  const isFirst = current === 0;
-  const isLast = current >= cards.length - 1;
   const canShare = review !== null && review.sessions !== null;
   const thisYear = new Date().getFullYear();
 
@@ -114,7 +77,7 @@ export default function YearInReviewScreen() {
             <IconButton
               icon={Share2}
               accessibilityLabel={t('yearInReview.shareButton')}
-              onPress={() => setShareOpen(true)}
+              onPress={openShare}
               variant="ghost"
             />
           ) : null
@@ -132,10 +95,7 @@ export default function YearInReviewScreen() {
               pose={LOGGY_FAILURE_POSE}
               message={t('yearInReview.loadFailed')}
               actionLabel={t('yearInReview.retry')}
-              onAction={() => {
-                setLoadFailed(false);
-                setAttempt((value) => value + 1);
-              }}
+              onAction={retry}
             />
           ) : null}
           {!loadFailed && review !== null && !review.hasContent ? (
@@ -187,14 +147,10 @@ export default function YearInReviewScreen() {
                   A shortcut only: the buttons below stay the way in for a screen reader.
                 */}
                 <View className="absolute inset-0 flex-row">
+                  <Pressable accessible={false} onPress={back} style={{ flex: BACK_TAP_SHARE }} />
                   <Pressable
                     accessible={false}
-                    onPress={() => setIndex(Math.max(0, current - 1))}
-                    style={{ flex: BACK_TAP_SHARE }}
-                  />
-                  <Pressable
-                    accessible={false}
-                    onPress={() => setIndex(Math.min(cards.length - 1, current + 1))}
+                    onPress={next}
                     style={{ flex: 1 - BACK_TAP_SHARE }}
                   />
                 </View>
@@ -205,7 +161,7 @@ export default function YearInReviewScreen() {
                   <IconButton
                     icon={ChevronLeft}
                     accessibilityLabel={t('yearInReview.back')}
-                    onPress={() => setIndex(Math.max(0, current - 1))}
+                    onPress={back}
                     size="lg"
                   />
                 )}
@@ -226,7 +182,7 @@ export default function YearInReviewScreen() {
                           label={t('yearInReview.shareButton')}
                           icon={Share2}
                           variant="accent"
-                          onPress={() => setShareOpen(true)}
+                          onPress={openShare}
                           width="full"
                         />
                       </View>
@@ -237,7 +193,7 @@ export default function YearInReviewScreen() {
                     <Button
                       label={t('yearInReview.next')}
                       variant="accent"
-                      onPress={() => setIndex(current + 1)}
+                      onPress={next}
                       width="full"
                     />
                   </View>

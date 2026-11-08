@@ -1,11 +1,11 @@
-import * as Clipboard from 'expo-clipboard';
-import { ClipboardPaste, Copy, FileUp, Share2, X } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { X } from 'lucide-react-native';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { PasteJsonSheet } from '@/components/aiOnboarding/PasteJsonSheet';
 import { FoodInfoCard } from '@/components/cards/FoodInfoCard';
+import { ExternalAssistantHandoff } from '@/components/externalAssistant/ExternalAssistantHandoff';
 import { FilterTabs } from '@/components/FilterTabs';
 import { inferMealTypeFromHour } from '@/components/nutrition/foodDiaryLayout';
 import { Button } from '@/components/theme/Button';
@@ -15,8 +15,13 @@ import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models/NutritionLog';
+import {
+  EMPTY_IMPORT_ERROR_KEY,
+  type ExternalHandoffCopy,
+  SHARED_HANDOFF_COPY,
+  useExternalAssistantImport,
+} from '@/hooks/useExternalAssistantImport';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useNativeShareText } from '@/hooks/useNativeShareText';
 import type { IncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useSettings } from '@/hooks/useSettings';
 import { useSubModalState, useSubModalVisibility } from '@/hooks/useSubModalVisibility';
@@ -38,11 +43,9 @@ import {
   type FoodLogIngredient,
   sumIngredients,
 } from '@/utils/aiFoodLog/logPlan';
-import { buildExternalChatUrl, type ExternalTarget } from '@/utils/aiOnboarding/instructions';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
-import { pickTextFile } from '@/utils/pickTextFile';
 
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
@@ -52,7 +55,7 @@ import { TimePickerModal } from './TimePickerModal';
 
 /** What the person is told for each way an imported file can be unusable. */
 const IMPORT_ERROR_KEYS: Record<FoodLogParseError, string> = {
-  empty: 'food.externalLog.errors.empty',
+  empty: EMPTY_IMPORT_ERROR_KEY,
   tooLarge: 'food.externalLog.errors.tooLarge',
   notJson: 'food.externalLog.errors.notJson',
   notAnObject: 'food.externalLog.errors.notJson',
@@ -61,6 +64,21 @@ const IMPORT_ERROR_KEYS: Record<FoodLogParseError, string> = {
   newerVersion: 'food.externalLog.errors.newerVersion',
   invalidLog: 'food.externalLog.errors.invalidLog',
   noFoods: 'food.externalLog.errors.noFoods',
+};
+
+const HANDOFF_COPY: ExternalHandoffCopy = {
+  ...SHARED_HANDOFF_COPY,
+  intro: 'food.externalLog.intro',
+  steps: [
+    'food.externalLog.steps.one',
+    'food.externalLog.steps.two',
+    'food.externalLog.steps.three',
+  ],
+  backSection: 'food.externalLog.backSection',
+  importFile: 'food.externalLog.importFile',
+  noFile: 'food.externalLog.noFile',
+  tooLarge: IMPORT_ERROR_KEYS.tooLarge,
+  linkError: 'food.externalLog.linkError',
 };
 
 type ExternalFoodLogModalProps = {
@@ -128,78 +146,19 @@ export function ExternalFoodLogModal({
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { showSnackbar } = useSnackbar();
-  const { shareText } = useNativeShareText();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
-  // These three reset on their own when the parent closes, so no stale review or open picker
-  // survives behind a closed modal.
+  // These reset on their own when the parent closes, so no stale review or open picker survives
+  // behind a closed modal.
   const [review, setReview] = useSubModalState<Review | null>(visible, null);
-  const [pasteOpen, setPasteOpen] = useSubModalVisibility(visible);
   const [showDatePicker, setShowDatePicker] = useSubModalVisibility(visible);
   const [showTimePicker, setShowTimePicker] = useSubModalVisibility(visible);
-  const [pasteError, setPasteError] = useState<string | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
-  const [fallbackNotice, setFallbackNotice] = useState(false);
   const [isLogging, setIsLogging] = useState(false);
-  const [linkError, setLinkError] = useState<string | null>(null);
-  const isReading = useRef(false);
-  const handledLinkKey = useRef<number | null>(null);
-
-  const copyInstructions = async (): Promise<string | null> => {
-    try {
-      const instructions = await loadFoodLogInstructions(locale);
-      await Clipboard.setStringAsync(instructions);
-      return instructions;
-    } catch (error) {
-      handleError(error, 'ExternalFoodLogModal.copy');
-      return null;
-    }
-  };
-
-  const open = async (target: ExternalTarget) => {
-    setFallbackNotice(false);
-    const instructions = await copyInstructions();
-    if (!instructions) {
-      setFallbackNotice(true);
-      return;
-    }
-
-    showSnackbar('success', t('food.externalLog.copiedPaste'), { duration: 4000 });
-    try {
-      // The prompt can carry the foundation foods list, so a prefilled link is often too long; the
-      // clipboard copy above is what always works.
-      await Linking.openURL(buildExternalChatUrl(target, instructions).url);
-    } catch {
-      setFallbackNotice(true);
-    }
-  };
-
-  const copyOnly = async () => {
-    setFallbackNotice(false);
-    if (await copyInstructions()) {
-      showSnackbar('success', t('food.externalLog.copied'));
-    } else {
-      setFallbackNotice(true);
-    }
-  };
-
-  const share = async () => {
-    try {
-      await shareText(await loadFoodLogInstructions(locale));
-    } catch (error) {
-      handleError(error, 'ExternalFoodLogModal.share');
-    }
-  };
 
   /** Reads imported text; on success the review opens. Returns the problem to show, if any. */
   const accept = async (text: string): Promise<string | null> => {
-    if (isReading.current) {
-      return null;
-    }
-
-    isReading.current = true;
     try {
       const result = await readExternalFoodLog(text);
       if (!result.ok) {
@@ -221,58 +180,23 @@ export function ExternalFoodLogModal({
     } catch (error) {
       handleError(error, 'ExternalFoodLogModal.accept');
       return t('food.externalLog.errors.lookup');
-    } finally {
-      isReading.current = false;
     }
   };
 
-  // The newest link wins, replacing a review that is already open. Run through a named helper so
-  // the state updates are not set directly in the effect body.
-  const acceptIncoming = async (link: IncomingOpenLink) => {
-    const problem = await accept(link.text);
-    setLinkError(problem ? t('food.externalLog.linkError', { reason: problem }) : null);
-  };
-
-  useEffect(() => {
-    if (!visible || !incoming || handledLinkKey.current === incoming.key) {
-      return;
-    }
-
-    handledLinkKey.current = incoming.key;
-    void acceptIncoming(incoming);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the link, not on the handlers
-  }, [visible, incoming]);
-
-  const importFile = async () => {
-    setFileError(null);
-    setLinkError(null);
-    try {
-      const picked = await pickTextFile({ maxBytes: MAX_FOOD_LOG_BYTES });
-      if (picked.status === 'cancelled') {
-        return;
-      }
-
-      setFileError(
-        picked.status === 'tooLarge' ? t(IMPORT_ERROR_KEYS.tooLarge) : await accept(picked.text)
-      );
-    } catch (error) {
-      handleError(error, 'ExternalFoodLogModal.importFile');
-      setFileError(t('food.externalLog.errors.fileRead'));
-    }
-  };
-
-  const submitPasted = async (text: string) => {
-    const error = await accept(text);
-    setPasteError(error);
-    if (!error) {
-      setPasteOpen(false);
-    }
-  };
+  const handoff = useExternalAssistantImport({
+    // The prompt can carry the foundation foods list, so a prefilled link is often too long; the
+    // clipboard copy is what always works.
+    buildInstructions: () => loadFoodLogInstructions(locale),
+    maxBytes: MAX_FOOD_LOG_BYTES,
+    accept,
+    copy: HANDOFF_COPY,
+    scope: 'ExternalFoodLogModal',
+    visible,
+    incoming,
+  });
 
   const close = () => {
-    setFileError(null);
-    setLinkError(null);
-    setFallbackNotice(false);
+    handoff.reset();
     onClose();
   };
 
@@ -318,12 +242,6 @@ export function ExternalFoodLogModal({
   };
 
   const textStyle = (color: string, size: number) => ({ color, fontSize: size });
-
-  const steps = [
-    'food.externalLog.steps.one',
-    'food.externalLog.steps.two',
-    'food.externalLog.steps.three',
-  ] as const;
 
   const renderReview = (current: Review) => {
     const { ingredients, grouping } = current;
@@ -506,106 +424,11 @@ export function ExternalFoodLogModal({
       {review ? (
         renderReview(review)
       ) : (
-        <View className="gap-6 px-4 pb-12 pt-4">
-          <View className="gap-2">
-            <Text style={textStyle(theme.colors.text.secondary, theme.typography.fontSize.base)}>
-              {t('food.externalLog.intro')}
-            </Text>
-            {steps.map((key, index) => (
-              <Text
-                key={key}
-                style={textStyle(theme.colors.text.primary, theme.typography.fontSize.base)}
-              >
-                {`${formatInteger(index + 1)}. ${t(key)}`}
-              </Text>
-            ))}
-          </View>
-
-          {linkError ? (
-            <Text style={textStyle(theme.colors.status.error, theme.typography.fontSize.sm)}>
-              {linkError}
-            </Text>
-          ) : null}
-
-          <View className="gap-3">
-            <SectionLabel>{t('food.externalLog.leaveSection')}</SectionLabel>
-            <Button
-              label={t('food.externalLog.openChatgpt')}
-              variant="accent"
-              width="full"
-              onPress={() => open('chatgpt')}
-            />
-            <Button
-              label={t('food.externalLog.openClaude')}
-              variant="accent"
-              width="full"
-              onPress={() => open('claude')}
-            />
-            <View className="flex-row flex-wrap gap-3">
-              <Button
-                label={t('food.externalLog.copy')}
-                icon={Copy}
-                variant="outline"
-                size="sm"
-                width="flex-1"
-                onPress={copyOnly}
-              />
-              <Button
-                label={t('food.externalLog.share')}
-                icon={Share2}
-                variant="outline"
-                size="sm"
-                width="flex-1"
-                onPress={share}
-              />
-            </View>
-            {fallbackNotice ? (
-              <Text style={textStyle(theme.colors.status.error, theme.typography.fontSize.sm)}>
-                {t('food.externalLog.fallback')}
-              </Text>
-            ) : null}
-            <Text style={textStyle(theme.colors.text.tertiary, theme.typography.fontSize.sm)}>
-              {t('food.externalLog.privacy')}
-            </Text>
-          </View>
-
-          <View className="gap-3">
-            <SectionLabel>{t('food.externalLog.backSection')}</SectionLabel>
-            <Button
-              label={t('food.externalLog.importFile')}
-              icon={FileUp}
-              variant="accent"
-              width="full"
-              onPress={importFile}
-            />
-            {fileError ? (
-              <Text style={textStyle(theme.colors.status.error, theme.typography.fontSize.sm)}>
-                {fileError}
-              </Text>
-            ) : null}
-            <Button
-              label={t('food.externalLog.pasteJson')}
-              icon={ClipboardPaste}
-              variant="outline"
-              width="full"
-              onPress={() => {
-                setPasteError(null);
-                setLinkError(null);
-                setPasteOpen(true);
-              }}
-            />
-            <Text style={textStyle(theme.colors.text.tertiary, theme.typography.fontSize.sm)}>
-              {t('food.externalLog.noFile')}
-            </Text>
-          </View>
-        </View>
+        <ExternalAssistantHandoff copy={HANDOFF_COPY} handoff={handoff} />
       )}
 
       <PasteJsonSheet
-        visible={pasteOpen}
-        onClose={() => setPasteOpen(false)}
-        onSubmit={submitPasted}
-        error={pasteError}
+        {...handoff.pasteSheetProps}
         title={t('food.externalLog.paste.title')}
         subtitle={t('food.externalLog.paste.subtitle')}
         placeholder={t('food.externalLog.paste.placeholder')}

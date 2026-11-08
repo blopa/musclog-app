@@ -7,10 +7,9 @@ import type Exercise from '@/database/models/Exercise';
 import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
-import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
-import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
+import { fetchMapByIds } from '@/database/queryByIds';
 import { toWorkoutLogSetSnapshot } from '@/database/workoutLogSetSnapshot';
+import { fetchCompletedSetHistory } from '@/database/workoutSetHistory';
 import { nutritionHeatmapDays, nutritionMealEntries } from '@/utils/activityHeatmapData';
 import { dayKeyRange, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { isWorkingSet } from '@/utils/workoutSetCompletion';
@@ -56,6 +55,10 @@ function yearBounds(year: number): {
     yearEnd,
   };
 }
+
+/** What the weight card gets while the progress area is locked: no weigh-in is read at all. */
+const NO_WEIGH_INS: Promise<Pick<YearInReviewInput, 'firstWeighIn' | 'lastWeighIn'>> =
+  Promise.resolve({ firstWeighIn: null, lastWeighIn: null });
 
 /** A set as the loader reads it: the engine's input plus what the record rule needs. */
 type LoggedSet = {
@@ -105,37 +108,35 @@ export class YearInReviewRepository {
   ): Promise<YearInReviewInput> {
     const { readStart, readEnd, yearStart, yearEnd } = yearBounds(year);
 
-    // Every completed session up to the end of the read: personal records need the whole history
-    // before the year, so the walk covers all of it, one query for the logs and one per table.
-    const logs = await database
-      .get<WorkoutLog>('workout_logs')
-      .query(
-        Q.where('completed_at', Q.notEq(null)),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('started_at', Q.lte(readEnd)),
-        Q.sortBy('started_at', Q.asc)
-      )
-      .fetch();
+    // The three reads share nothing, and the food macros are a decrypt per log: start them together.
+    const [workoutData, nutritionData, weighIns] = await Promise.all([
+      YearInReviewRepository.readWorkouts(readStart, readEnd),
+      YearInReviewRepository.readNutrition(yearStart, yearEnd),
+      options.includeWeight
+        ? YearInReviewRepository.readWeighIns(yearStart, yearEnd)
+        : NO_WEIGH_INS,
+    ]);
 
-    const logIds = logs.map((log) => log.id);
-    const logExercises = await fetchByIds<WorkoutLogExercise>(
-      'workout_log_exercises',
-      'workout_log_id',
-      logIds,
-      Q.where('deleted_at', Q.eq(null))
-    );
+    return { year, ...workoutData, ...nutritionData, ...weighIns };
+  }
+
+  /**
+   * The sessions of the read window as the engine takes them, and the personal records found over
+   * the whole history before it: records need every earlier session, so the walk covers all of it.
+   */
+  private static async readWorkouts(
+    readStart: number,
+    readEnd: number
+  ): Promise<Pick<YearInReviewInput, 'workouts' | 'personalRecords'>> {
+    const { logs, logExercises, sets } = await fetchCompletedSetHistory({
+      startedTo: readEnd,
+      oldestFirst: true,
+    });
     const logExerciseById = new Map(logExercises.map((le) => [le.id, le]));
-
-    const sets = await fetchByIds<WorkoutLogSet>(
-      'workout_log_sets',
-      'log_exercise_id',
-      logExercises.map((le) => le.id),
-      Q.where('deleted_at', Q.eq(null))
-    );
-
-    const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))];
     // Deleted exercises included: history keeps their name, and a retired one was still trained.
-    const exercises = await fetchMapByIds<Exercise>('exercises', 'id', exerciseIds);
+    const exercises = await fetchMapByIds<Exercise>('exercises', 'id', [
+      ...new Set(logExercises.map((le) => le.exerciseId)),
+    ]);
 
     const setsByLog = new Map<string, LoggedSet[]>();
     for (const row of sets) {
@@ -201,29 +202,23 @@ export class YearInReviewRepository {
       });
     }
 
-    const personalRecords = findPersonalRecords(allSessions);
+    return { workouts, personalRecords: findPersonalRecords(allSessions) };
+  }
 
+  /** The year's food: logged days, meal types and the macro totals. */
+  private static async readNutrition(
+    yearStart: Date,
+    yearEnd: Date
+  ): Promise<Pick<YearInReviewInput, 'nutritionDays' | 'mealEntries' | 'nutritionTotals'>> {
     const foodLogs = await YearInReviewRepository.readFoodLogs(yearStart, yearEnd);
-    const nutritionDays = nutritionHeatmapDays(foodLogs).map((day) => ({
-      day: day.date,
-      meals: day.value,
-    }));
-    const mealEntries = nutritionMealEntries(foodLogs);
-    const nutritionTotals = await YearInReviewRepository.sumMacros(foodLogs);
-
-    const { firstWeighIn, lastWeighIn } = options.includeWeight
-      ? await YearInReviewRepository.readWeighIns(yearStart, yearEnd)
-      : { firstWeighIn: null, lastWeighIn: null };
 
     return {
-      year,
-      workouts,
-      personalRecords,
-      nutritionDays,
-      mealEntries,
-      nutritionTotals,
-      firstWeighIn,
-      lastWeighIn,
+      nutritionDays: nutritionHeatmapDays(foodLogs).map((day) => ({
+        day: day.date,
+        meals: day.value,
+      })),
+      mealEntries: nutritionMealEntries(foodLogs),
+      nutritionTotals: await YearInReviewRepository.sumMacros(foodLogs),
     };
   }
 
@@ -275,8 +270,10 @@ export class YearInReviewRepository {
         Q.where('date', Q.lte(endOfDay(yearEnd).getTime()))
       );
 
-    const [first] = await inYear.extend(Q.sortBy('date', Q.asc), Q.take(1)).fetch();
-    const [last] = await inYear.extend(Q.sortBy('date', Q.desc), Q.take(1)).fetch();
+    const [[first], [last]] = await Promise.all([
+      inYear.extend(Q.sortBy('date', Q.asc), Q.take(1)).fetch(),
+      inYear.extend(Q.sortBy('date', Q.desc), Q.take(1)).fetch(),
+    ]);
 
     return {
       firstWeighIn: first ? await toWeighIn(first) : null,

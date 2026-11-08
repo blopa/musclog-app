@@ -1,13 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
-
-import { database } from '@/database/database-instance';
 import {
+  EMPTY_STRENGTH_STATE,
   type ExerciseStrengthGrade,
-  type StrengthGradeState,
   StrengthLevelRepository,
 } from '@/database/repositories/StrengthLevelRepository';
+import { useTableQuery } from '@/hooks/useTableQuery';
 
-const EMPTY: StrengthGradeState = { grades: new Map(), performedWithoutWeighIn: false };
+/** The tables a strength level is computed from: sessions, their sets, and the body weight. */
+const STRENGTH_TABLES = [
+  'workout_logs',
+  'workout_log_exercises',
+  'workout_log_sets',
+  'user_metrics',
+] as const;
 
 export interface UseStrengthLevelsOptions {
   /** Off while the workout area is locked: nothing is read, nothing is shown. */
@@ -22,9 +26,8 @@ export interface UseStrengthLevelsResult {
 }
 
 /**
- * Strength grades for the given lifts, reloaded when a workout or a weigh-in changes. A response
- * that finishes after a newer request has started is dropped, so a slow read never overwrites
- * fresher data. A failed read leaves no grades rather than throwing into render.
+ * Strength grades for the given lifts, reloaded when a workout or a weigh-in changes. A failed
+ * read leaves no grades rather than throwing into render.
  */
 export function useStrengthLevels(
   exerciseIds: readonly string[],
@@ -32,64 +35,18 @@ export function useStrengthLevels(
 ): UseStrengthLevelsResult {
   // Callers pass a fresh array each render; the joined key is what actually identifies the query.
   const idKey = [...new Set(exerciseIds)].sort().join('|');
-  const [state, setState] = useState<StrengthGradeState>(EMPTY);
-  const [isLoading, setIsLoading] = useState(false);
-  const requestRef = useRef(0);
-  const inactive = !enabled || idKey === '';
-
-  useEffect(() => {
-    if (inactive) {
-      return;
-    }
-
-    let cancelled = false;
-    const ids = idKey.split('|');
-    const load = async () => {
-      const request = ++requestRef.current;
-      setIsLoading(true);
-      try {
-        const next = await StrengthLevelRepository.fetchGradeState(ids, Date.now());
-        if (!cancelled && request === requestRef.current) {
-          setState(next);
-        }
-      } catch (error) {
-        console.error('Error loading strength levels:', error);
-        if (!cancelled && request === requestRef.current) {
-          setState(EMPTY);
-        }
-      } finally {
-        if (!cancelled && request === requestRef.current) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    load();
-    const subscription = database
-      .withChangesForTables([
-        'workout_logs',
-        'workout_log_exercises',
-        'workout_log_sets',
-        'user_metrics',
-      ])
-      .subscribe(() => {
-        load();
-      });
-
-    return () => {
-      cancelled = true;
-      subscription.unsubscribe();
-    };
-  }, [idKey, inactive]);
-
-  // While inactive the state from an earlier query is not shown; a re-enabled query reloads.
-  if (inactive) {
-    return { grades: EMPTY.grades, performedWithoutWeighIn: false, isLoading: false };
-  }
+  const { data, isLoading } = useTableQuery({
+    tables: STRENGTH_TABLES,
+    key: idKey,
+    enabled: enabled && idKey !== '',
+    load: () => StrengthLevelRepository.fetchGradeState(idKey.split('|'), Date.now()),
+    empty: EMPTY_STRENGTH_STATE,
+    scope: 'useStrengthLevels',
+  });
 
   return {
-    grades: state.grades,
-    performedWithoutWeighIn: state.performedWithoutWeighIn,
+    grades: data.grades,
+    performedWithoutWeighIn: data.performedWithoutWeighIn,
     isLoading,
   };
 }

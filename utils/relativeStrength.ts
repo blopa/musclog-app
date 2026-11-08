@@ -35,7 +35,10 @@ export const FEMALE_STRENGTH_FACTOR_DEFAULT = 0.7;
  * Factor that scales the strength benchmark for a lifter's sex and the body region of
  * the lift. `other` is graded on the male scale; `gradeStrength` also reports the female scale.
  */
-export function strengthGenderFactor(gender: StrengthGender, muscleGroup?: string | null): number {
+export function strengthGenderFactor(
+  gender: StrengthGender,
+  muscleGroup?: MuscleGroup | null
+): number {
   if (gender !== 'female') {
     return 1;
   }
@@ -44,7 +47,7 @@ export function strengthGenderFactor(gender: StrengthGender, muscleGroup?: strin
     return FEMALE_STRENGTH_FACTOR_DEFAULT;
   }
 
-  switch (muscleGroupFamily(muscleGroup as MuscleGroup)) {
+  switch (muscleGroupFamily(muscleGroup)) {
     case 'legs':
       return FEMALE_STRENGTH_FACTOR_LEGS;
     case 'torso':
@@ -60,13 +63,20 @@ export function loadBenchmarkFor(loadMultiplier: number): number {
   return loadMultiplier > 0 ? loadMultiplier : 1;
 }
 
+/** Who is lifting what: the facts a lift's relative strength is measured against. */
+export type StrengthSubject = {
+  bodyWeightKg: number;
+  /** `Exercise.loadMultiplier`. A stored 0 (bodyweight, holds, cardio) falls back to 1. */
+  loadMultiplier: number;
+  gender: StrengthGender;
+  /** The lift's muscle group, which picks the female benchmark for its body region. */
+  muscleGroup?: MuscleGroup | null;
+};
+
 /** Estimated 1RM divided by the bodyweight-and-benchmark reference, for the sex and body region. */
 export function normalizedRelativeStrength(
   estimated1RmKg: number,
-  bodyWeightKg: number,
-  loadMultiplier: number,
-  gender: StrengthGender,
-  muscleGroup?: string | null
+  { bodyWeightKg, loadMultiplier, gender, muscleGroup }: StrengthSubject
 ): number {
   return (
     estimated1RmKg /

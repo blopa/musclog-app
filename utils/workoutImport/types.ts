@@ -1,3 +1,5 @@
+import type { CardioActivity } from '@/utils/cardioEnergy';
+
 export type WorkoutImportSource = 'strong' | 'hevy' | 'fitnotes' | 'fitnotes2';
 export type ImportWeightUnit = 'kg' | 'lbs';
 export type ImportedSetType = 'normal' | 'warmup' | 'failure' | 'drop_set';
@@ -21,7 +23,7 @@ export interface ImportedExerciseBlock {
 
 export interface ImportedCardio {
   name: string;
-  activity: 'walk' | 'run';
+  activity: CardioActivity;
   distanceM: number;
   durationSeconds: number | null;
   notes: string | null;
@@ -57,3 +59,15 @@ export type WorkoutImportResult =
       skipped: SkippedRow[];
     }
   | { ok: false; failure: ImportFailure };
+
+/** What a finished import reports; written by the commit service, shown by the summary step. */
+export interface ImportSummary {
+  batchId: string;
+  sessionsImported: number;
+  sessionsAlreadyHere: number;
+  setsImported: number;
+  cardioImported: number;
+  exercisesCreated: number;
+  exercisesSkipped: number;
+  timedSets: number;
+}

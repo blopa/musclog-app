@@ -1,0 +1,22 @@
+{
+  "lifting": {
+    "width": 640,
+    "height": 640
+  },
+  "reading": {
+    "width": 512,
+    "height": 640
+  },
+  "shrug": {
+    "width": 560,
+    "height": 640
+  },
+  "thinking": {
+    "width": 512,
+    "height": 668
+  },
+  "wave": {
+    "width": 560,
+    "height": 640
+  }
+}

@@ -1,3 +1,4 @@
+import websiteLoggyPoses from '@/components/website/websiteLoggyPoses.json';
 import { LOGGY_CLASSIC, loggyColorsForTheme, loggyPaletteId } from '@/constants/loggyTheme';
 import { THEME_IDS } from '@/theme.registry';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
@@ -16,23 +17,19 @@ import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
  * theme the visitor chose to get away from it.
  */
 
-/** The poses the website draws, in alphabetical order: each is one spot in `WebsiteLoggy`'s callers. */
-export const WEBSITE_LOGGY_POSES = ['lifting', 'reading', 'shrug', 'thinking', 'wave'] as const;
-
-export type WebsiteLoggyPose = (typeof WEBSITE_LOGGY_POSES)[number];
+export type WebsiteLoggyPose = keyof typeof websiteLoggyPoses;
 
 /**
- * Each SVG's `viewBox` width and height. They give the element its aspect ratio so the browser
- * reserves the right box before the file arrives, whatever size the caller's classes give it;
- * `websiteLoggy.test.ts` reads them back from the files.
+ * The poses the website draws, each with its `viewBox` width and height. The file is written by
+ * `scripts/sync-website-loggy.js` (which owns the set), so it cannot name a pose with no published
+ * file. The size gives the element its aspect ratio, so the browser reserves the right box before
+ * the file arrives, whatever size the caller's classes give it; `websiteLoggy.test.ts` reads it
+ * back from the SVGs.
  */
-export const WEBSITE_LOGGY_VIEWBOX: Record<WebsiteLoggyPose, readonly [number, number]> = {
-  lifting: [640, 640],
-  reading: [512, 640],
-  shrug: [560, 640],
-  thinking: [512, 668],
-  wave: [560, 640],
-};
+export const WEBSITE_LOGGY_VIEWBOX: Record<WebsiteLoggyPose, { width: number; height: number }> =
+  websiteLoggyPoses;
+
+export const WEBSITE_LOGGY_POSES = Object.keys(websiteLoggyPoses) as WebsiteLoggyPose[];
 
 /** The media query under which the still replaces the animation. */
 export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
@@ -63,7 +60,7 @@ export function websiteLoggySrc(
 
 /** The inline style that reserves a pose's box. */
 export function websiteLoggyBox(pose: WebsiteLoggyPose): { aspectRatio: string } {
-  const [width, height] = WEBSITE_LOGGY_VIEWBOX[pose];
+  const { width, height } = WEBSITE_LOGGY_VIEWBOX[pose];
 
   return { aspectRatio: `${width} / ${height}` };
 }

@@ -1,33 +1,35 @@
-import * as Clipboard from 'expo-clipboard';
-import { ClipboardPaste, Copy, FileUp, Share2 } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { PasteJsonSheet } from '@/components/aiOnboarding/PasteJsonSheet';
+import { ExternalAssistantHandoff } from '@/components/externalAssistant/ExternalAssistantHandoff';
 import { Button } from '@/components/theme/Button';
 import { SectionLabel } from '@/components/theme/SectionLabel';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { getAllLocaleExerciseNamesBySlug, getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
+import {
+  EMPTY_IMPORT_ERROR_KEY,
+  type ExternalHandoffCopy,
+  SHARED_HANDOFF_COPY,
+  useExternalAssistantImport,
+} from '@/hooks/useExternalAssistantImport';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useNativeShareText } from '@/hooks/useNativeShareText';
 import type { IncomingOpenLink } from '@/hooks/useOpenLinkHandler';
 import { useTheme } from '@/hooks/useTheme';
-import { buildExternalChatUrl, type ExternalTarget } from '@/utils/aiOnboarding/instructions';
 import { MAX_PLAN_BYTES, type PlanParseError } from '@/utils/aiWorkoutPlan/contract';
 import { buildWorkoutPlanInstructions } from '@/utils/aiWorkoutPlan/instructions';
 import { parseWorkoutPlanText } from '@/utils/aiWorkoutPlan/parse';
 import { type ResolvedPlan, resolvePlanExercises } from '@/utils/aiWorkoutPlan/resolveExercises';
 import { planToRawTemplate } from '@/utils/aiWorkoutPlan/toTemplate';
 import { handleError } from '@/utils/handleError';
-import { pickTextFile } from '@/utils/pickTextFile';
 
 import { FullScreenModal } from './FullScreenModal';
 
 /** What the person is told for each way an imported file can be unusable. */
 const IMPORT_ERROR_KEYS: Record<PlanParseError, string> = {
-  empty: 'workouts.externalPlan.errors.empty',
+  empty: EMPTY_IMPORT_ERROR_KEY,
   tooLarge: 'workouts.externalPlan.errors.tooLarge',
   notJson: 'workouts.externalPlan.errors.notJson',
   notAnObject: 'workouts.externalPlan.errors.notJson',
@@ -36,6 +38,21 @@ const IMPORT_ERROR_KEYS: Record<PlanParseError, string> = {
   newerVersion: 'workouts.externalPlan.errors.newerVersion',
   invalidPlan: 'workouts.externalPlan.errors.invalidPlan',
   noExercises: 'workouts.externalPlan.errors.noExercises',
+};
+
+const HANDOFF_COPY: ExternalHandoffCopy = {
+  ...SHARED_HANDOFF_COPY,
+  intro: 'workouts.externalPlan.intro',
+  steps: [
+    'workouts.externalPlan.steps.one',
+    'workouts.externalPlan.steps.two',
+    'workouts.externalPlan.steps.three',
+  ],
+  backSection: 'workouts.externalPlan.backSection',
+  importFile: 'workouts.externalPlan.importFile',
+  noFile: 'workouts.externalPlan.noFile',
+  tooLarge: IMPORT_ERROR_KEYS.tooLarge,
+  linkError: 'workouts.externalPlan.linkError',
 };
 
 type ExternalWorkoutPlanModalProps = {
@@ -67,65 +84,17 @@ export function ExternalWorkoutPlanModal({
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { showSnackbar } = useSnackbar();
-  const { shareText } = useNativeShareText();
   const { formatInteger } = useFormatAppNumber();
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
   const [review, setReview] = useState<Review | null>(null);
-  const [pasteOpen, setPasteOpen] = useState(false);
-  const [pasteError, setPasteError] = useState<string | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
-  const [fallbackNotice, setFallbackNotice] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const [linkError, setLinkError] = useState<string | null>(null);
-  const handledLinkKey = useRef<number | null>(null);
 
   const catalogue = useMemo(() => (visible ? getExerciseCatalogue(locale) : []), [visible, locale]);
   const displayNames = useMemo(
     () => new Map(catalogue.map((entry) => [entry.exerciseSlug, entry.name])),
     [catalogue]
   );
-
-  const instructions = () =>
-    buildWorkoutPlanInstructions({
-      language: locale,
-      exerciseSlugs: catalogue.map((entry) => entry.exerciseSlug),
-    });
-
-  const copyInstructions = async (): Promise<boolean> => {
-    try {
-      await Clipboard.setStringAsync(instructions());
-      return true;
-    } catch (error) {
-      handleError(error, 'ExternalWorkoutPlanModal.copy');
-      return false;
-    }
-  };
-
-  const open = async (target: ExternalTarget) => {
-    setFallbackNotice(false);
-    const copied = await copyInstructions();
-    if (copied) {
-      showSnackbar('success', t('workouts.externalPlan.copiedPaste'), { duration: 4000 });
-    }
-
-    try {
-      // The prompt carries the whole exercise list, so a prefilled link is rarely short enough;
-      // the clipboard copy above is what always works.
-      await Linking.openURL(buildExternalChatUrl(target, instructions()).url);
-    } catch {
-      setFallbackNotice(true);
-    }
-  };
-
-  const copyOnly = async () => {
-    setFallbackNotice(false);
-    if (await copyInstructions()) {
-      showSnackbar('success', t('workouts.externalPlan.copied'));
-    } else {
-      setFallbackNotice(true);
-    }
-  };
 
   /** Validates imported text; on success the review opens. Returns the problem to show, if any. */
   const accept = (text: string): string | null => {
@@ -149,48 +118,21 @@ export function ExternalWorkoutPlanModal({
     return null;
   };
 
-  // The newest link wins, replacing a review that is already open. Declared after `accept`, run
-  // through a named helper so the state updates are not set directly in the effect body.
-  const acceptIncoming = (link: IncomingOpenLink) => {
-    const problem = accept(link.text);
-    setLinkError(problem ? t('workouts.externalPlan.linkError', { reason: problem }) : null);
-  };
-
-  useEffect(() => {
-    if (!visible || !incoming || handledLinkKey.current === incoming.key) {
-      return;
-    }
-
-    handledLinkKey.current = incoming.key;
-    acceptIncoming(incoming);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on the link, not on the handlers
-  }, [visible, incoming]);
-
-  const importFile = async () => {
-    setFileError(null);
-    setLinkError(null);
-    try {
-      const picked = await pickTextFile({ maxBytes: MAX_PLAN_BYTES });
-      if (picked.status === 'cancelled') {
-        return;
-      }
-
-      setFileError(
-        picked.status === 'tooLarge' ? t(IMPORT_ERROR_KEYS.tooLarge) : accept(picked.text)
-      );
-    } catch (error) {
-      handleError(error, 'ExternalWorkoutPlanModal.importFile');
-      setFileError(t('workouts.externalPlan.errors.fileRead'));
-    }
-  };
-
-  const submitPasted = (text: string) => {
-    const error = accept(text);
-    setPasteError(error);
-    if (!error) {
-      setPasteOpen(false);
-    }
-  };
+  const handoff = useExternalAssistantImport({
+    // The prompt carries the whole exercise list, so a prefilled link is rarely short enough; the
+    // clipboard copy is what always works.
+    buildInstructions: () =>
+      buildWorkoutPlanInstructions({
+        language: locale,
+        exerciseSlugs: catalogue.map((entry) => entry.exerciseSlug),
+      }),
+    maxBytes: MAX_PLAN_BYTES,
+    accept,
+    copy: HANDOFF_COPY,
+    scope: 'ExternalWorkoutPlanModal',
+    visible,
+    incoming,
+  });
 
   const create = async () => {
     if (!review || isCreating) {
@@ -240,17 +182,9 @@ export function ExternalWorkoutPlanModal({
 
   const close = () => {
     setReview(null);
-    setFileError(null);
-    setLinkError(null);
-    setFallbackNotice(false);
+    handoff.reset();
     onClose();
   };
-
-  const steps = [
-    'workouts.externalPlan.steps.one',
-    'workouts.externalPlan.steps.two',
-    'workouts.externalPlan.steps.three',
-  ] as const;
 
   const renderReview = (current: Review) => {
     const { resolved, skippedExercises } = current;
@@ -359,110 +293,11 @@ export function ExternalWorkoutPlanModal({
       {review ? (
         renderReview(review)
       ) : (
-        <View className="gap-6 px-4 pb-12 pt-4">
-          <View className="gap-2">
-            <Text style={textStyle(theme.colors.text.secondary, theme.typography.fontSize.base)}>
-              {t('workouts.externalPlan.intro')}
-            </Text>
-            {steps.map((key, index) => (
-              <Text
-                key={key}
-                style={textStyle(theme.colors.text.primary, theme.typography.fontSize.base)}
-              >
-                {`${formatInteger(index + 1)}. ${t(key)}`}
-              </Text>
-            ))}
-          </View>
-
-          {linkError ? (
-            <Text style={textStyle(theme.colors.status.error, theme.typography.fontSize.sm)}>
-              {linkError}
-            </Text>
-          ) : null}
-
-          <View className="gap-3">
-            <SectionLabel>{t('workouts.externalPlan.leaveSection')}</SectionLabel>
-            <Button
-              label={t('workouts.externalPlan.openChatgpt')}
-              variant="accent"
-              width="full"
-              onPress={() => open('chatgpt')}
-            />
-            <Button
-              label={t('workouts.externalPlan.openClaude')}
-              variant="accent"
-              width="full"
-              onPress={() => open('claude')}
-            />
-            <View className="flex-row flex-wrap gap-3">
-              <Button
-                label={t('workouts.externalPlan.copy')}
-                icon={Copy}
-                variant="outline"
-                size="sm"
-                width="flex-1"
-                onPress={copyOnly}
-              />
-              <Button
-                label={t('workouts.externalPlan.share')}
-                icon={Share2}
-                variant="outline"
-                size="sm"
-                width="flex-1"
-                onPress={() =>
-                  shareText(instructions()).catch((error) =>
-                    handleError(error, 'ExternalWorkoutPlanModal.share')
-                  )
-                }
-              />
-            </View>
-            {fallbackNotice ? (
-              <Text style={textStyle(theme.colors.status.error, theme.typography.fontSize.sm)}>
-                {t('workouts.externalPlan.fallback')}
-              </Text>
-            ) : null}
-            <Text style={textStyle(theme.colors.text.tertiary, theme.typography.fontSize.sm)}>
-              {t('workouts.externalPlan.privacy')}
-            </Text>
-          </View>
-
-          <View className="gap-3">
-            <SectionLabel>{t('workouts.externalPlan.backSection')}</SectionLabel>
-            <Button
-              label={t('workouts.externalPlan.importFile')}
-              icon={FileUp}
-              variant="accent"
-              width="full"
-              onPress={importFile}
-            />
-            {fileError ? (
-              <Text style={textStyle(theme.colors.status.error, theme.typography.fontSize.sm)}>
-                {fileError}
-              </Text>
-            ) : null}
-            <Button
-              label={t('workouts.externalPlan.pasteJson')}
-              icon={ClipboardPaste}
-              variant="outline"
-              width="full"
-              onPress={() => {
-                setPasteError(null);
-                setLinkError(null);
-                setPasteOpen(true);
-              }}
-            />
-            <Text style={textStyle(theme.colors.text.tertiary, theme.typography.fontSize.sm)}>
-              {t('workouts.externalPlan.noFile')}
-            </Text>
-          </View>
-        </View>
+        <ExternalAssistantHandoff copy={HANDOFF_COPY} handoff={handoff} />
       )}
 
       <PasteJsonSheet
-        visible={pasteOpen}
-        onClose={() => setPasteOpen(false)}
-        onSubmit={submitPasted}
-        error={pasteError}
+        {...handoff.pasteSheetProps}
         title={t('workouts.externalPlan.paste.title')}
         subtitle={t('workouts.externalPlan.paste.subtitle')}
         placeholder={t('workouts.externalPlan.paste.placeholder')}

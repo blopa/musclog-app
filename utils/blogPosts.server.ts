@@ -11,6 +11,7 @@ import {
   SAFE_SLUG_SEGMENT,
   totalBlogPages,
 } from '@/components/website/blogRoutes';
+import { blogGallery } from '@/utils/blogMarkdownGallery';
 
 export interface BlogPostSummary {
   category: string;
@@ -89,7 +90,7 @@ const markdownRenderer = new MarkdownIt({
 
     return `<pre class="hljs"><code${languageClass}>${highlighted}</code></pre>`;
   },
-});
+}).use(blogGallery);
 
 function frontmatterError(relativePath: string, message: string): Error {
   return new Error(`Invalid blog frontmatter in ${relativePath}: ${message}`);
