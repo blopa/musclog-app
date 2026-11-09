@@ -162,9 +162,9 @@
                 "initialLayout": "widgets/ActivityHeatmapWidget.tsx"
               },
               "android": {
-                "minWidth": 200,
+                "minWidth": 110,
                 "minHeight": 40,
-                "targetCellWidth": 3,
+                "targetCellWidth": 2,
                 "targetCellHeight": 1,
                 "resizeMode": "none",
                 "initialLayout": "widgets/ActivityHeatmapWidget.android.tsx"

@@ -20,8 +20,8 @@ const mockSupportedViews = [
 const SUPPORTED_VIEWS = new Set(mockSupportedViews);
 // Glance containers hold at most this many children.
 const MAX_CHILDREN = 10;
-// The activity widget's declared minWidth in app.json, in dp: the narrowest 3-cell footprint.
-const ACTIVITY_MIN_WIDTH_DP = 200;
+// The activity widget's declared minWidth in app.json, in dp: the narrowest 2-cell footprint.
+const ACTIVITY_MIN_WIDTH_DP = 110;
 // The shortest one-cell height a portrait launcher gives a widget, in dp.
 const ACTIVITY_MIN_HEIGHT_DP = 80;
 // The nutrition widget's declared minWidth in app.json, in dp: the narrowest it can be placed.
@@ -187,10 +187,10 @@ describe('Android widget layouts', () => {
       }
     });
 
-    // 30 squares for each of the two sources, each a fixed box in a level color.
+    // 30 squares for each of the two sources (two rows of 15), each a fixed box in a level color.
     expect(squares).toHaveLength(2 * 30);
     const colors = new Set(activity.levelColors);
-    const SQUARE = { width: 4, height: 12 };
+    const SQUARE = { width: 4, height: 7 };
     for (const square of squares) {
       const size = modifiersOf(square).find((modifier) => modifier.$type === 'size');
       const fill = modifiersOf(square).find((modifier) => modifier.$type === 'background');
@@ -214,7 +214,7 @@ describe('Android widget layouts', () => {
         strips.push(node);
       }
     });
-    expect(strips).toHaveLength(2);
+    expect(strips).toHaveLength(4);
     for (const strip of strips) {
       let rowWidth = 0;
       walk(strip, (node) => {
@@ -225,11 +225,11 @@ describe('Android widget layouts', () => {
           rowWidth += fixed.width as number;
         }
       });
-      expect(rowWidth).toBe(30 * SQUARE.width + 29 * 2);
+      expect(rowWidth).toBe(15 * SQUARE.width + 14 * 2);
       expect(rowWidth + padding.start + padding.end).toBeLessThanOrEqual(ACTIVITY_MIN_WIDTH_DP);
     }
 
-    // One cell of height: two labels (10sp, about 13dp), their strips and the spacers between.
+    // One cell of height: two labels (10sp, about 13dp), their two strips each and the spacers between.
     let spacers = 0;
     walk(content, (node) => {
       const fixed = modifiersOf(node).find((modifier) => modifier.$type === 'height');
@@ -238,7 +238,7 @@ describe('Android widget layouts', () => {
       }
     });
     const LABEL_DP = 13;
-    const columnHeight = 2 * (LABEL_DP + SQUARE.height) + spacers;
+    const columnHeight = 2 * LABEL_DP + 4 * SQUARE.height + spacers;
     expect(columnHeight + padding.top + padding.bottom).toBeLessThanOrEqual(ACTIVITY_MIN_HEIGHT_DP);
   });
 
