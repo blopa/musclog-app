@@ -1379,7 +1379,6 @@ export default function FoodScreen() {
 
                     {/* Scan Buttons */}
                     <FoodQuickActions
-                      isAiConfigured={isAiConfigured}
                       onScanBarcode={() => {
                         openCamera({
                           mode: 'barcode-scan',
@@ -1388,13 +1387,7 @@ export default function FoodScreen() {
                           logDate: selectedDate,
                         });
                       }}
-                      onAiCamera={() => {
-                        openCamera({
-                          mode: 'ai-meal-photo',
-                          hideCameraModePicker: false,
-                          logDate: selectedDate,
-                        });
-                      }}
+                      onSearchFood={() => screenModals.foodSearch.open('all')}
                       onMyMeals={screenModals.myMeals.open}
                       onMoreOptions={() => {
                         openAddFoodModal();
