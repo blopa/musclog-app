@@ -338,9 +338,9 @@
     "periodHint": "Os sete dias completos antes do seu dia de revisão",
     "showAll": "Ver tudo ({{count}})",
     "showFewer": "Ver menos",
-    "reasonEmpirical": "Pelos seus registros, você gasta cerca de {{expenditure}} kcal por dia, e seu peso de tendência mudou {{change}} nesta semana. Estas metas mantêm você no ritmo do seu objetivo.",
-    "reasonEmpiricalNoTrend": "Pelos seus registros, você gasta cerca de {{expenditure}} kcal por dia. Estas metas mantêm você no ritmo do seu objetivo.",
-    "reasonBaseline": "Estimado pelo seu perfil, ainda não pelos seus registros: cerca de {{expenditure}} kcal por dia. Continue registrando comida e peso para personalizar.",
+    "reasonEmpirical": "Pelos seus registros, você gasta cerca de {{expenditure}} por dia, e seu peso de tendência mudou {{change}} nesta semana. Estas metas mantêm você no ritmo do seu objetivo.",
+    "reasonEmpiricalNoTrend": "Pelos seus registros, você gasta cerca de {{expenditure}} por dia. Estas metas mantêm você no ritmo do seu objetivo.",
+    "reasonBaseline": "Estimado pelo seu perfil, ainda não pelos seus registros: cerca de {{expenditure}} por dia. Continue registrando comida e peso para personalizar.",
     "largeChangeTitle": "É uma mudança grande",
     "largeChangeBody": "Mudar as calorias em {{percent}}% em uma única semana é agressivo, e o Musclog não recomenda. Grandes variações costumam vir de refeições não registradas ou de algumas pesagens incomuns, então confira o diário desta semana ou mantenha suas metas atuais.",
     "reviewFoodLog": "Revisar registro de alimentos",
@@ -416,7 +416,7 @@
       "comeback": "Você está na rampa de retomada, então a progressão a segue."
     },
     "belowFloorTitle": "Abaixo do mínimo de calorias",
-    "belowFloorBody": "Isso está abaixo do seu mínimo de {{minimum}} kcal. Você desativou o mínimo de calorias nas configurações avançadas; ir tão baixo não é recomendado e pode não ser seguro.",
+    "belowFloorBody": "Isso está abaixo do seu mínimo de {{minimum}}. Você desativou o mínimo de calorias nas configurações avançadas; ir tão baixo não é recomendado e pode não ser seguro.",
     "estimateShort": "Estimativa",
     "halfStatus": {
       "done": "{{half}}: revisado",
@@ -425,9 +425,9 @@
     "targetsEditor": {
       "invalidCalories": "Informe uma meta de calorias acima de 0.",
       "invalidMacro": "Informe um número (0 ou mais).",
-      "macroTotal": "Estes macros somam {{kcal}} kcal.",
-      "mismatch": "Estes macros somam {{kcal}} kcal, o que não bate com a meta de calorias.",
-      "useMacroTotal": "Usar {{kcal}} kcal"
+      "macroTotal": "Estes macros somam {{kcal}}.",
+      "mismatch": "Estes macros somam {{kcal}}, o que não bate com a meta de calorias.",
+      "useMacroTotal": "Usar {{kcal}}"
     },
     "comebackCheckin": {
       "title": "Avaliação da retomada",

@@ -256,6 +256,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Fitness profile: weight, height, body fat %, goal type, activity level, experience level
 - Language selection and full multilingual support for English, Spanish, Dutch, Brazilian Portuguese, and Russian, including the built-in exercise catalogue
 - Metric or imperial units applied consistently throughout the app
+- Energy shown in kilocalories or kilojoules (Settings → Basic settings → Energy unit). Display only: data, goals and every calculation stay in kilocalories (1 kcal = 4.184 kJ), and a calorie field typed in kJ that is left untouched keeps the exact stored kilocalories
+- Settings → Backups and data → Storage (iOS and Android): what Musclog keeps on the device (database, your photos, sensor recordings, safety backups, downloaded exercise pictures, temporary files) with a one-tap clear for the two that rebuild themselves — exercise pictures and leftover temporary files older than an hour. Your data, photos and registered safety backups are never offered for clearing
 - Named theme selection: Kinetic Depth, Kinetic Light, Kinetic Shock, Kinetic Volt, or Kinetic Blush,
   plus a System option that follows the device's light/dark appearance
 - Theme-matched app icon on Android and iOS: picking a named theme switches the home-screen icon to

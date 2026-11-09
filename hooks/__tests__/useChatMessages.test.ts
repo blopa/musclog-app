@@ -26,6 +26,11 @@ jest.mock('@/lang/lang', () => ({
 }));
 jest.mock('react-native-gifted-chat', () => ({}));
 jest.mock('expo-crypto', () => ({ randomUUID: () => 'uuid' }));
+jest.mock('@/hooks/useEnergyUnit', () => ({
+  useEnergyUnit: () => ({
+    formatEnergyWithUnit: (kcal: number) => `${kcal} kcal`,
+  }),
+}));
 jest.mock('@/hooks/useConfettiTrigger', () => ({
   useConfettiTrigger: () => ({ triggerConfetti: jest.fn(), showConfetti: false }),
 }));

@@ -2,6 +2,7 @@
  * Writes completed workouts to Apple Health (HKWorkout).
  */
 
+import { formatEnergyWithUnitLabel } from '@/utils/energyLabel';
 import {
   AuthorizationStatus,
   authorizationStatusFor,
@@ -119,7 +120,9 @@ export async function writeWorkoutToHealthConnect(
     const noteParts: string[] = [];
     if (payload.caloriesBurned != null && payload.caloriesBurned > 0) {
       noteParts.push(
-        i18n.t('healthConnect.workoutCaloriesNote', { calories: payload.caloriesBurned })
+        i18n.t('healthConnect.workoutCaloriesNote', {
+          calories: formatEnergyWithUnitLabel(payload.caloriesBurned, 'kcal'),
+        })
       );
     }
 

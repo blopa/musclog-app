@@ -3,6 +3,7 @@ import { memo, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -69,6 +70,7 @@ export const MealSectionHeader = memo(function MealSectionHeader({
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
 
   return (
     <View
@@ -84,8 +86,8 @@ export const MealSectionHeader = memo(function MealSectionHeader({
             style={intuitiveMode ? blurFilter(5) : undefined}
           >
             {intuitiveMode
-              ? `0 ${t('food.common.kcal')}`
-              : `${formatInteger(Math.round(totalCalories), { useGrouping: false })} ${t('food.common.kcal')}`}
+              ? `0 ${unitLabel}`
+              : `${formatEnergy(totalCalories, { useGrouping: false })} ${unitLabel}`}
           </Text>
           {totalProtein > 0 || totalCarbs > 0 || totalFat > 0 ? (
             <View

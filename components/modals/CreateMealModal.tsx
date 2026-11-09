@@ -26,6 +26,7 @@ import {
   type Ingredient,
   useEditMealIngredients,
 } from '@/hooks/useEditMealIngredients';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -133,6 +134,7 @@ export function CreateMealModal({
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
   const { units, intuitiveEatingMode } = useSettings();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const massUnit = getMassUnitLabel(units);
   const stepDisplay = units === 'imperial' ? 0.5 : 10;
   const stepAmount = units === 'imperial' ? displayToGrams(0.5, units) : 10;
@@ -980,8 +982,10 @@ export function CreateMealModal({
                           intuitiveEatingMode ? blurFilter(4) : undefined,
                         ]}
                       >
-                        {intuitiveEatingMode ? '0' : formatRoundedDecimal(item.calories, 2)}{' '}
-                        {t('common.kcal')}
+                        {intuitiveEatingMode
+                          ? '0'
+                          : formatRoundedDecimal(toDisplay(item.calories), 2)}{' '}
+                        {unitLabel}
                       </Text>
                     </View>
                   </View>

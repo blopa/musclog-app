@@ -8,7 +8,7 @@ import { CircadianScienceModal } from '@/components/modals/CircadianScienceModal
 import { PastTdeeWindowNote } from '@/components/nutrition/PastTdeeWindowNote';
 import { useCircadianBurn } from '@/hooks/useCircadianBurn';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './GenericCard';
@@ -16,7 +16,7 @@ import { GenericCard } from './GenericCard';
 export function CaloriesBurnedCard() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergy, formatEnergyWithUnit, unitLabel } = useEnergyUnit();
   const { tdee, historicalWindow } = useEmpiricalTDEE();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,12 +52,12 @@ export function CaloriesBurnedCard() {
           </View>
 
           <Text className="text-3xl font-bold tabular-nums text-text-primary">
-            {formatInteger(caloriesBurned)}{' '}
-            <Text className="text-lg font-normal text-text-secondary">{t('progress.kcal')}</Text>
+            {formatEnergy(caloriesBurned)}{' '}
+            <Text className="text-lg font-normal text-text-secondary">{unitLabel}</Text>
           </Text>
 
           <Text className="mt-1 text-sm text-text-secondary">
-            {t('progress.caloriesBurnedSubtitle', { tdee: formatInteger(tdee) })}
+            {t('progress.caloriesBurnedSubtitle', { tdee: formatEnergyWithUnit(tdee) })}
           </Text>
           {historicalWindow?.fromPastWindow ? (
             <PastTdeeWindowNote startMs={historicalWindow.startMs} endMs={historicalWindow.endMs} />

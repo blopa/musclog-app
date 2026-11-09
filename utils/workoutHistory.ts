@@ -2,7 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { format } from 'date-fns';
 import { Activity, Dumbbell, Square } from 'lucide-react-native';
 
-import type { Units } from '@/constants/settings';
+import type { EnergyUnit, Units } from '@/constants/settings';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
@@ -20,6 +20,7 @@ import {
 import { isCardioActivity } from './cardioEnergy';
 import { formatDistance, formatPace } from './cardioFormat';
 import { getDateFnsLocale } from './dateFnsLocale';
+import { formatEnergyAmount } from './energyUnit';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { getWeightUnitI18nKey } from './units';
 import { isPerformedWorkoutSet } from './workoutSetCompletion';
@@ -266,7 +267,8 @@ export async function processWorkouts(
   filters: WorkoutFilters,
   t: TranslationFunction,
   units: Units,
-  theme: Theme
+  theme: Theme,
+  energyUnit: EnergyUnit = 'kcal'
 ): Promise<WorkoutHistoryItem[]> {
   const locale = getDateFnsLocale(i18n.language);
   const appLocale = i18n.resolvedLanguage ?? i18n.language;
@@ -354,7 +356,9 @@ export async function processWorkouts(
       if (workout.caloriesBurned && workout.caloriesBurned > 0) {
         stats.push({
           label: t('pastWorkoutHistory.stats.calories'),
-          value: `${formatAppInteger(appLocale, workout.caloriesBurned)} ${t('common.kcal')}`,
+          value: `${formatEnergyAmount(appLocale, workout.caloriesBurned, energyUnit)} ${t(
+            energyUnit === 'kj' ? 'common.energyUnit.kj' : 'common.energyUnit.kcal'
+          )}`,
         });
       }
 

@@ -16,7 +16,7 @@
     "pace": "Tempo",
     "ended": "Afgerond",
     "estimate": "Geschatte calorieën",
-    "estimateValue": "{{kcal}} kcal",
+    "estimateValue": "{{kcal}}",
     "estimateNoWeight": "Voeg je gewicht toe in je profiel om calorieën te schatten.",
     "estimateHint": "Geschat op basis van je snelheid en lichaamsgewicht op vlak terrein.",
     "watchCalories": "Calorieën van mijn horloge (optioneel)",

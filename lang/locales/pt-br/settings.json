@@ -35,7 +35,11 @@
       "foodSearchMusclog": "Musclog",
       "foodSearchMusclogDescription": "Banco de dados de código de barras Musclog (apenas leitura de código de barras)",
       "foodSearchNone": "Nenhum",
-      "foodSearchNoneDescription": "Pesquisar apenas no seu banco de dados local"
+      "foodSearchNoneDescription": "Pesquisar apenas no seu banco de dados local",
+      "energyUnit": "Unidade de energia",
+      "energyUnitKcal": "Quilocalorias",
+      "energyUnitKj": "Quilojoules",
+      "energyUnitHint": "Muda como a energia é mostrada e digitada. Seus dados continuam salvos em quilocalorias."
     },
     "migration": {
       "title": "Migração de Dados",
@@ -201,7 +205,55 @@
       "openSettingsFailedMessage": "Não foi possível abrir as configurações do app. Por favor, abra-as manualmente.",
       "dangerZone": "Zona de perigo",
       "opticalTransfer": "Transferência óptica",
-      "opticalTransferSubtitle": "Leve seus dados para outro celular com luz"
+      "opticalTransferSubtitle": "Leve seus dados para outro celular com luz",
+      "storage": {
+        "title": "Armazenamento",
+        "total": "Usado pelo Musclog",
+        "units": {
+          "b": "B",
+          "kb": "KB",
+          "mb": "MB",
+          "gb": "GB"
+        },
+        "categories": {
+          "database": {
+            "name": "Banco de dados",
+            "description": "Seus registros, metas e configurações"
+          },
+          "photos": {
+            "name": "Suas fotos",
+            "description": "Fotos de alimentos, refeições e exercícios personalizados"
+          },
+          "sensorRecordings": {
+            "name": "Gravações de sensores",
+            "description": "Dados salvos de sensores de treino conectados"
+          },
+          "recoveryPoints": {
+            "name": "Backups de segurança",
+            "description": "Backups automáticos feitos antes de atualizações e restaurações. Gerencie em Backups locais"
+          },
+          "exerciseImages": {
+            "name": "Imagens de exercícios",
+            "description": "Imagens de demonstração baixadas. Elas são baixadas de novo quando necessário"
+          },
+          "temporary": {
+            "name": "Arquivos temporários",
+            "description": "Sobras de exportações, compartilhamentos e edição de fotos"
+          }
+        },
+        "clear": "Limpar",
+        "clearTitle": "Limpar {{name}}?",
+        "clearMessage": {
+          "exerciseImages": "As imagens são baixadas de novo na próxima vez que um exercício for exibido. Seus dados não são afetados.",
+          "temporary": "Remove arquivos restantes com mais de uma hora. Seus dados e backups de segurança não são afetados."
+        },
+        "freed": "{{size}} liberados",
+        "nothingToClear": "Nada para limpar",
+        "clearFailed": "Não foi possível limpar o armazenamento",
+        "unavailable": "Não foi possível ler o armazenamento agora.",
+        "retry": "Tentar de novo"
+      },
+      "storageSubtitle": "Veja o que o Musclog guarda neste aparelho e libere espaço"
     },
     "chatMessages": {
       "title": "Mensagens do Chat",

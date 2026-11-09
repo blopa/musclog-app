@@ -64,7 +64,7 @@
       "targetShort": "Doel: {{value}}%",
       "weeklyBreakdown": "Wekelijkse uitsplitsing",
       "weekProgress": "Week {{current}} van {{total}}",
-      "summaryIntro": "Je mikte op {{target}} kcal/dag, maar het gemiddelde was",
+      "summaryIntro": "Je mikte op {{target}}/dag, maar het gemiddelde was",
       "summaryOutro": "Ondanks het resultaat voltooide je",
       "workoutsCount": "workouts",
       "noWorkouts": "geen workouts",
@@ -76,7 +76,7 @@
       "activeMinutes": "Actieve minuten",
       "vsLastWeek": "{{prefix}}{{value}}% vs vorige week",
       "adherence": "Wekelijkse naleving",
-      "summary": "Je mikte op {{targetKcal}} kcal/dag, maar het gemiddelde was {{actualKcal}} kcal/dag. Je hebt {{workouts}} workouts voltooid.",
+      "summary": "Je mikte op {{targetKcal}}/dag, maar het gemiddelde was {{actualKcal}}/dag. Je hebt {{workouts}} workouts voltooid.",
       "weightComparison": "Gewicht: {{actual}} / {{target}} {{unit}}",
       "insufficientData": "Je hebt deze week minder dan 4 keer je gewicht gelogd. Gemiddelden kunnen minder nauwkeurig zijn.",
       "keepMacros": "Behoud mijn huidige macro's",
@@ -103,9 +103,7 @@
         }
       }
     },
-    "common": {
-      "kcal": "kcal"
-    },
+    "common": {},
     "createMeal": {
       "estimated": "Geschat",
       "totalNutrition": "Totale voedingswaarde"

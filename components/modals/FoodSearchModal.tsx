@@ -56,6 +56,7 @@ import { type MealType } from '@/database/models';
 import Meal from '@/database/models/Meal';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { NutritionService } from '@/database/services/NutritionService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFavoriteFoods } from '@/hooks/useFavoriteFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
@@ -263,6 +264,7 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { toDisplay, unitLabel } = useEnergyUnit();
 
   const macroSummary = t('food.manageFoodLibrary.macrosFormat', {
     protein: intuitiveMode ? '0' : formatRoundedDecimal(mealData.protein, 2),
@@ -306,7 +308,7 @@ function MealSearchCard({ mealData, onAddPress, intuitiveMode = false }: MealSea
           className="mt-0.5 text-sm text-text-secondary"
           style={intuitiveMode ? blurFilter(4) : undefined}
         >
-          {intuitiveMode ? '0' : formatRoundedDecimal(mealData.calories, 2)} {t('food.common.kcal')}{' '}
+          {intuitiveMode ? '0' : formatRoundedDecimal(toDisplay(mealData.calories), 2)} {unitLabel}{' '}
           • {macroSummary}
         </Text>
       </View>
@@ -344,7 +346,7 @@ export function FoodSearchModal({
 }: FoodSearchModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const { showSnackbar } = useSnackbar();
   const { foodSearchSource, intuitiveEatingMode, units } = useSettings();
   const [searchQuery, setSearchQuery] = useState('');
@@ -432,7 +434,7 @@ export function FoodSearchModal({
         name: food.name ?? '',
         description: t('food.descriptionFormat', {
           brand: food.brand || t('foodSearch.customFoodLabel'),
-          calories: formatInteger(
+          calories: formatEnergyWithUnit(
             resolveRoundedPer100gCaloriesForDisplay({
               calories: food.calories,
               protein: food.protein,
@@ -463,7 +465,7 @@ export function FoodSearchModal({
   }, [
     recentFoodsRaw,
     t,
-    formatInteger,
+    formatEnergyWithUnit,
     units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
@@ -651,7 +653,7 @@ export function FoodSearchModal({
               name: f.name ?? t('food.generic'),
               description: t('food.descriptionFormat', {
                 brand: f.brand || t('foodSearch.customFoodLabel'),
-                calories: formatInteger(
+                calories: formatEnergyWithUnit(
                   resolveRoundedPer100gCaloriesForDisplay({
                     calories: f.calories,
                     protein: f.protein,
@@ -704,7 +706,7 @@ export function FoodSearchModal({
     searchQuery,
     mealType,
     t,
-    formatInteger,
+    formatEnergyWithUnit,
     units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
@@ -720,7 +722,7 @@ export function FoodSearchModal({
           name: f.name ?? t('food.generic'),
           description: t('food.descriptionFormat', {
             brand: f.brand || t('foodSearch.customFoodLabel'),
-            calories: formatInteger(
+            calories: formatEnergyWithUnit(
               resolveRoundedPer100gCaloriesForDisplay({
                 calories: f.calories,
                 protein: f.protein,
@@ -750,7 +752,7 @@ export function FoodSearchModal({
   }, [
     favoriteFoodsRaw,
     t,
-    formatInteger,
+    formatEnergyWithUnit,
     units,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,

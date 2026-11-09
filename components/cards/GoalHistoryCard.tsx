@@ -6,6 +6,7 @@ import { Text, View } from 'react-native';
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { EatingPhaseBadge } from '@/components/EatingPhaseBadge';
 import { MenuButton } from '@/components/theme/MenuButton';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -48,6 +49,7 @@ export function GoalHistoryCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal, locale } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const { units } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const weightDisplay =
@@ -158,12 +160,12 @@ export function GoalHistoryCard({
                 ) : (
                   <>
                     <Text className="text-lg font-semibold text-text-primary">
-                      {formatInteger(goal.calories)}{' '}
+                      {formatEnergy(goal.calories)}{' '}
                       <Text
                         className="font-normal text-text-secondary"
                         style={{ fontSize: theme.typography.fontSize.xs }}
                       >
-                        {t('goalHistoryCard.kcal')}
+                        {unitLabel}
                       </Text>
                     </Text>
                     <Text

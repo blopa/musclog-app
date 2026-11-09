@@ -5,6 +5,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { GenericCard } from '@/components/cards/GenericCard';
 import Food from '@/database/models/Food';
 import NutritionLog from '@/database/models/NutritionLog';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -42,24 +43,25 @@ function MacroRow({
   label,
   value,
   unit,
+  energy = false,
 }: {
   icon: LucideIcon;
   label: string;
   value: number;
   unit: string;
+  /** `value` is kilocalories; shown in the person's energy unit. */
+  energy?: boolean;
 }) {
   const theme = useTheme();
-  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergy } = useEnergyUnit();
 
   return (
     <View className="flex-row items-center gap-2">
       <Icon size={14} color={theme.colors.text.secondary} />
       <Text className="flex-1 text-sm text-text-secondary">{label}</Text>
       <Text className="text-sm font-semibold text-text-primary">
-        {unit === 'kcal'
-          ? formatInteger(Math.round(value), { useGrouping: false })
-          : formatRoundedDecimal(value, 1)}{' '}
-        {unit}
+        {energy ? formatEnergy(value) : formatRoundedDecimal(value, 1)} {unit}
       </Text>
     </View>
   );
@@ -75,7 +77,8 @@ export function MealGroupDetailsModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const { units, intuitiveEatingMode } = useSettings();
-  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const massUnit = getMassUnitLabel(units);
 
@@ -97,7 +100,8 @@ export function MealGroupDetailsModal({
                 icon={Flame}
                 label={t('food.calories')}
                 value={totalNutrients.calories}
-                unit="kcal"
+                unit={unitLabel}
+                energy
               />
               <MacroRow
                 icon={Zap}
@@ -151,12 +155,8 @@ export function MealGroupDetailsModal({
 
                   <View className="items-end">
                     <Text className="text-sm font-semibold text-text-primary">
-                      {intuitiveEatingMode
-                        ? '—'
-                        : formatInteger(Math.round(entry.nutrients.calories), {
-                            useGrouping: false,
-                          })}{' '}
-                      kcal
+                      {intuitiveEatingMode ? '—' : formatEnergy(entry.nutrients.calories)}{' '}
+                      {unitLabel}
                     </Text>
                     <Text className="text-xs text-text-secondary">
                       {intuitiveEatingMode

@@ -29,7 +29,7 @@
       },
       "workoutCompleted": {
         "title": "Workout voltooid",
-        "description": "{{workoutName}} voltooid. Je hebt {{calories}} kcal verbrand."
+        "description": "{{workoutName}} voltooid. Je hebt {{calories}} verbrand."
       },
       "kudosReceived": {
         "title": "Kudo's ontvangen",

@@ -1,5 +1,7 @@
+import type { EnergyUnit } from '@/constants/settings';
 import type { NutritionTargets } from '@/database/services/NutritionTargetService';
 import { goalCaloriesFromMacros } from '@/utils/carbsConvention';
+import { displayToEnergyKcal, energyKcalAfterEdit, energyToDisplay } from '@/utils/energyUnit';
 import { getDecimalSeparator, parseStrictLocalizedNumber } from '@/utils/localizedDecimalInput';
 
 export const TARGET_FIELDS = ['totalCalories', 'protein', 'carbs', 'fats', 'fiber'] as const;
@@ -16,10 +18,22 @@ export const MACRO_CALORIE_MISMATCH_SHARE = 0.05;
 const formatField = (value: number, locale: string) =>
   new Intl.NumberFormat(locale, { useGrouping: false, maximumFractionDigits: 1 }).format(value);
 
-/** The editor's text fields for a set of targets, in the locale's own notation. */
-export function targetsDraftFrom(targets: NutritionTargets, locale: string): TargetsDraft {
+/**
+ * The editor's text fields for a set of targets, in the locale's own notation. The calorie field
+ * is shown in `energyUnit` (whole numbers); the targets themselves stay in kilocalories.
+ */
+export function targetsDraftFrom(
+  targets: NutritionTargets,
+  locale: string,
+  energyUnit: EnergyUnit = 'kcal'
+): TargetsDraft {
   return Object.fromEntries(
-    TARGET_FIELDS.map((field) => [field, formatField(targets[field], locale)])
+    TARGET_FIELDS.map((field) => [
+      field,
+      field === 'totalCalories' && energyUnit !== 'kcal'
+        ? formatField(Math.round(energyToDisplay(targets[field], energyUnit)), locale)
+        : formatField(targets[field], locale),
+    ])
   ) as TargetsDraft;
 }
 
@@ -38,11 +52,25 @@ export type TargetsDraftReading = {
  * Reads the editor's draft. Strict on purpose: the lenient decimal parser turns an emptied field
  * into 0 and "2.300" into 2,3 for a comma locale, and these numbers become the user's targets.
  */
-export function readTargetsDraft(draft: TargetsDraft, locale: string): TargetsDraftReading {
+export function readTargetsDraft(
+  draft: TargetsDraft,
+  locale: string,
+  energyUnit: EnergyUnit = 'kcal',
+  /** The calorie target the draft started from, in kilocalories: an untouched field keeps it exactly. */
+  initialCalories?: number
+): TargetsDraftReading {
   const separator = getDecimalSeparator(locale);
   const values = Object.fromEntries(
     TARGET_FIELDS.map((field) => [field, parseStrictLocalizedNumber(draft[field], separator)])
   ) as Record<TargetField, number | null>;
+  if (energyUnit !== 'kcal' && values.totalCalories != null && values.totalCalories > 0) {
+    // The field is typed in kJ; everything below (and the saved targets) is kilocalories.
+    values.totalCalories =
+      initialCalories != null
+        ? energyKcalAfterEdit(initialCalories, values.totalCalories, energyUnit)
+        : Math.round(displayToEnergyKcal(values.totalCalories, energyUnit));
+  }
+
   const invalid = TARGET_FIELDS.filter(
     (field) => values[field] == null || (field === 'totalCalories' && values[field] <= 0)
   );

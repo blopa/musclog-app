@@ -6,6 +6,7 @@ import type { ScrollViewInstance } from 'react-native';
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { MacrosPizzaChart } from '@/components/theme/MacrosPizzaChart';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -51,6 +52,7 @@ export function FoodInfoCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const { width: windowWidth } = useWindowDimensions();
   const [macroViewIndex, setMacroViewIndex] = useState(0);
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
@@ -101,13 +103,11 @@ export function FoodInfoCard({
             >
               {intuitiveMode
                 ? '000'
-                : formatInteger(Math.round(food.calories), {
+                : formatEnergy(food.calories, {
                     useGrouping: false,
                   })}
             </Text>
-            <Text className="text-xs font-semibold text-text-secondary">
-              {t('food.common.kcal')}
-            </Text>
+            <Text className="text-xs font-semibold text-text-secondary">{unitLabel}</Text>
           </View>
         </View>
 

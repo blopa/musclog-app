@@ -64,7 +64,7 @@
       "targetShort": "Цель: {{value}}%",
       "weeklyBreakdown": "Недельная разбивка",
       "weekProgress": "Неделя {{current}} из {{total}}",
-      "summaryIntro": "Вы стремились к {{target}} ккал/день, но в среднем потребляли",
+      "summaryIntro": "Вы стремились к {{target}}/день, но в среднем потребляли",
       "summaryOutro": "Несмотря на результат, вы завершили",
       "workoutsCount": "тренировок",
       "noWorkouts": "нет тренировок",
@@ -76,7 +76,7 @@
       "activeMinutes": "Активные минуты",
       "vsLastWeek": "{{prefix}}{{value}}% по сравнению с прошлой неделей",
       "adherence": "Соблюдение плана",
-      "summary": "Вы стремились к {{targetKcal}} ккал/день, но в среднем потребляли {{actualKcal}} ккал/день. Вы завершили {{workouts}} тренировок.",
+      "summary": "Вы стремились к {{targetKcal}}/день, но в среднем потребляли {{actualKcal}}/день. Вы завершили {{workouts}} тренировок.",
       "weightComparison": "Вес: {{actual}} / {{target}} {{unit}}",
       "insufficientData": "На этой неделе вы записывали вес менее 4 раз. Средние значения могут быть менее точными.",
       "keepMacros": "Сохранить текущие макросы",
@@ -103,9 +103,7 @@
         }
       }
     },
-    "common": {
-      "kcal": "ккал"
-    },
+    "common": {},
     "createMeal": {
       "estimated": "Оценочно",
       "totalNutrition": "Общая питательная ценность"

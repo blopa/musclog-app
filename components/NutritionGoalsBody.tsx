@@ -36,6 +36,7 @@ import {
 } from '@/constants/nutrition';
 import { type EatingPhase } from '@/database/models';
 import { UserMetricService } from '@/database/services/UserMetricService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -295,7 +296,13 @@ export function NutritionGoalsBody({
   const { t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
   const { units } = useSettings();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergy, formatEnergyWithUnit, unitLabel, toDisplay, kcalAfterEdit } =
+    useEnergyUnit();
+  // The calorie field is typed in the person's unit; the goal itself is always kilocalories.
+  const calorieFieldText = useCallback(
+    (kcal: number) => String(Math.round(toDisplay(kcal))),
+    [toDisplay]
+  );
   const showIcons = screenWidth >= 415;
   const defaultTargetWeightKg = 75;
   const defaultGoalStartDate = showGoalStartDate ? localDayStartMs(new Date()) : null;
@@ -335,7 +342,7 @@ export function NutritionGoalsBody({
   const previousEatingPhase = useRef(initialGoals.eatingPhase);
   const [isCalorieEditing, setIsCalorieEditing] = useState(false);
   const [calorieInputValue, setCalorieInputValue] = useState(() =>
-    initialGoals.totalCalories.toString()
+    String(Math.round(toDisplay(initialGoals.totalCalories)))
   );
   const calorieInputRef = useRef<TextInputInstance>(null);
 
@@ -421,7 +428,7 @@ export function NutritionGoalsBody({
       setDynamicPreview(null);
       setIsResolvingDynamicPreview(false);
       didAutofillDynamicTargetWeight.current = false;
-      setCalorieInputValue(initialGoals.totalCalories.toString());
+      setCalorieInputValue(calorieFieldText(initialGoals.totalCalories));
       preciseMacros.current = {
         protein: initialGoals.protein,
         carbs: initialGoals.carbs,
@@ -612,7 +619,7 @@ export function NutritionGoalsBody({
         setCarbs(macros.carbs);
         setFats(macros.fats);
         setFiber(fiberValue);
-        setCalorieInputValue(finalCalories.toString());
+        setCalorieInputValue(calorieFieldText(finalCalories));
         syncMacroRatios();
       };
 
@@ -739,12 +746,12 @@ export function NutritionGoalsBody({
   useEffect(() => {
     if (!isCalorieEditing) {
       const sync = () => {
-        setCalorieInputValue(totalCalories.toString());
+        setCalorieInputValue(calorieFieldText(totalCalories));
       };
 
       sync();
     }
-  }, [totalCalories, isCalorieEditing]);
+  }, [totalCalories, isCalorieEditing, calorieFieldText]);
 
   const handleCaloriePress = () => {
     setIsCalorieEditing(true);
@@ -761,9 +768,9 @@ export function NutritionGoalsBody({
     setIsCalorieEditing(false);
     const num = parseInt(calorieInputValue, 10);
     if (!Number.isNaN(num)) {
-      handleCaloriesChange(num);
+      handleCaloriesChange(kcalAfterEdit(totalCalories, num));
     } else {
-      setCalorieInputValue(totalCalories.toString());
+      setCalorieInputValue(calorieFieldText(totalCalories));
     }
   };
 
@@ -1061,7 +1068,7 @@ export function NutritionGoalsBody({
           >
             <Text className="text-sm text-text-secondary">
               {t('nutritionGoals.dynamicInfo', {
-                kcal: formatInteger(effectiveCalories),
+                kcal: formatEnergyWithUnit(effectiveCalories),
               })}
             </Text>
           </View>
@@ -1105,7 +1112,7 @@ export function NutritionGoalsBody({
                       <ActivityIndicator size="small" color={theme.colors.text.primary} />
                     ) : (
                       <Text className="text-4xl font-bold tabular-nums text-text-primary">
-                        {formatInteger(effectiveCalories)}
+                        {formatEnergy(effectiveCalories)}
                       </Text>
                     )
                   ) : isCalorieEditing ? (
@@ -1127,13 +1134,11 @@ export function NutritionGoalsBody({
                   ) : (
                     <Pressable onPress={handleCaloriePress}>
                       <Text className="text-4xl font-bold tabular-nums text-text-primary">
-                        {formatInteger(totalCalories)}
+                        {formatEnergy(totalCalories)}
                       </Text>
                     </Pressable>
                   )}
-                  <Text className="text-lg font-semibold text-accent-primary">
-                    {t('food.common.kcal')}
-                  </Text>
+                  <Text className="text-lg font-semibold text-accent-primary">{unitLabel}</Text>
                 </View>
 
                 <Pressable
@@ -1156,7 +1161,9 @@ export function NutritionGoalsBody({
               {effectiveTdeeEstimate != null ? (
                 <View className="mt-3 items-center gap-1">
                   <Text className="text-xs text-text-secondary">
-                    {t('nutritionGoals.tdeeHint', { kcal: formatInteger(effectiveTdeeEstimate) })}
+                    {t('nutritionGoals.tdeeHint', {
+                      kcal: formatEnergyWithUnit(effectiveTdeeEstimate),
+                    })}
                   </Text>
                   {isDynamic && dynamicPreview?.pastEmpiricalWindow ? (
                     <PastTdeeWindowNote
@@ -1177,10 +1184,10 @@ export function NutritionGoalsBody({
                     >
                       {effectiveCalories < effectiveTdeeEstimate
                         ? t('nutritionGoals.calorieDeficit', {
-                            kcal: formatInteger(effectiveTdeeEstimate - effectiveCalories),
+                            kcal: formatEnergyWithUnit(effectiveTdeeEstimate - effectiveCalories),
                           })
                         : t('nutritionGoals.calorieSurplus', {
-                            kcal: formatInteger(effectiveCalories - effectiveTdeeEstimate),
+                            kcal: formatEnergyWithUnit(effectiveCalories - effectiveTdeeEstimate),
                           })}
                     </Text>
                   ) : (
@@ -1194,7 +1201,7 @@ export function NutritionGoalsBody({
                         units === 'imperial'
                           ? 'nutritionGoals.kcalPerLbTissueHint'
                           : 'nutritionGoals.kcalPerKgTissueHint',
-                        { kcal: formatInteger(effectiveKcalPerKgHint) }
+                        { kcal: formatEnergyWithUnit(effectiveKcalPerKgHint) }
                       )}
                     </Text>
                   ) : null}
@@ -1290,7 +1297,7 @@ export function NutritionGoalsBody({
             <View className="gap-4">
               <StepperInlineInput
                 label={t('nutritionGoals.protein')}
-                subtitle={t('nutritionGoals.kcalPerGram.protein')}
+                subtitle={t('nutritionGoals.perGram', { energy: formatEnergyWithUnit(4) })}
                 value={protein}
                 unit="g"
                 maxFractionDigits={0}
@@ -1319,7 +1326,7 @@ export function NutritionGoalsBody({
               />
               <StepperInlineInput
                 label={t('nutritionGoals.carbohydrates')}
-                subtitle={t('nutritionGoals.kcalPerGram.carbs')}
+                subtitle={t('nutritionGoals.perGram', { energy: formatEnergyWithUnit(4) })}
                 value={carbs}
                 unit="g"
                 maxFractionDigits={0}
@@ -1348,7 +1355,7 @@ export function NutritionGoalsBody({
               />
               <StepperInlineInput
                 label={t('nutritionGoals.fats')}
-                subtitle={t('nutritionGoals.kcalPerGram.fats')}
+                subtitle={t('nutritionGoals.perGram', { energy: formatEnergyWithUnit(9) })}
                 value={fats}
                 unit="g"
                 maxFractionDigits={0}
@@ -1377,7 +1384,7 @@ export function NutritionGoalsBody({
               />
               <StepperInlineInput
                 label={t('food.macros.fiber')}
-                subtitle={t('nutritionGoals.kcalPerGram.fiber')}
+                subtitle={t('nutritionGoals.perGram', { energy: formatEnergyWithUnit(2) })}
                 value={fiber}
                 unit="g"
                 maxFractionDigits={0}

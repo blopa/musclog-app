@@ -29,7 +29,7 @@
       },
       "workoutCompleted": {
         "title": "Тренировка завершена",
-        "description": "Тренировка {{workoutName}} завершена. Вы сожгли {{calories}} ккал."
+        "description": "Тренировка {{workoutName}} завершена. Вы сожгли {{calories}}."
       },
       "kudosReceived": {
         "title": "Получены поздравления",

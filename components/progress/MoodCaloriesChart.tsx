@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { BarLineChart } from '@/components/charts/BarLineChart';
 import { MoodCaloriesPoint, TimeAggregation } from '@/database/services/ProgressService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
@@ -27,6 +28,7 @@ export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const [aggregation, setAggregation] = useState<TimeAggregation>('daily');
   const data = (allData && allData[aggregation]) || [];
 
@@ -61,7 +63,8 @@ export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
     );
   }
 
-  const maxCal = Math.max(...data.map((d) => d.calories), 1);
+  // The data stays in kcal; the chart draws the person's unit.
+  const maxCal = Math.max(...data.map((d) => toDisplay(d.calories)), 1);
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
@@ -74,7 +77,7 @@ export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
       <BarLineChart
         data={data.map((d, i) => ({
           x: i,
-          steps: d.calories,
+          steps: toDisplay(d.calories),
           heartRate: d.mood,
         }))}
         height={250}
@@ -92,7 +95,7 @@ export function MoodCaloriesChart({ allData }: MoodCaloriesChartProps) {
           t('progress.mood.okay'),
           t('progress.mood.great'),
         ]}
-        stepsFormatter={(v) => `${formatInteger(Math.round(v))} ${t('progress.kcal')}`}
+        stepsFormatter={(v) => `${formatInteger(Math.round(v))} ${unitLabel}`}
         heartRateFormatter={(v) => {
           const key = MOOD_KEYS[Math.round(v)];
           return key ? t(`progress.mood.${key}`) : formatDecimal(v, 1);

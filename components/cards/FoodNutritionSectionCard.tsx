@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { useSurfaceColor } from '@/context/SurfaceColorContext';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
@@ -111,6 +112,7 @@ export function FoodNutritionSectionCard({
   const surfaceColor = useSurfaceColor();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
   const [nutritionExpanded, setNutritionExpanded] = useState(false);
 
@@ -264,7 +266,7 @@ export function FoodNutritionSectionCard({
             icon={AlertCircle}
             label={t('food.foodDetails.caloriesTooLowTitle')}
             message={t('food.foodDetails.caloriesTooLowBody', {
-              inferred: formatRoundedDecimal(caloriesTooLowWarning.inferredCalories, 1),
+              inferred: `${formatRoundedDecimal(toDisplay(caloriesTooLowWarning.inferredCalories), 1)} ${unitLabel}`,
             })}
             expandable={false}
             size="sm"
@@ -272,7 +274,7 @@ export function FoodNutritionSectionCard({
           <Pressable onPress={caloriesTooLowWarning.onAccept} hitSlop={8} className="self-start">
             <Text className="text-xs font-semibold" style={{ color: theme.colors.status.warning }}>
               {t('food.foodDetails.caloriesTooLowAction', {
-                inferred: formatRoundedDecimal(caloriesTooLowWarning.inferredCalories, 1),
+                inferred: `${formatRoundedDecimal(toDisplay(caloriesTooLowWarning.inferredCalories), 1)} ${unitLabel}`,
               })}
             </Text>
           </Pressable>

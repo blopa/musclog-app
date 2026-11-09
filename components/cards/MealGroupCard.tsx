@@ -17,6 +17,7 @@ import { Image, Text, View } from 'react-native';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { ZoomableThumbnail } from '@/components/ZoomableThumbnail';
 import { type MealType } from '@/database/models';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -151,6 +152,7 @@ export const MealGroupCard = memo(function MealGroupCard({
 }: MealGroupCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const isCompact = variant === 'compact';
 
   const { Icon, bgColor, iconColor } = getMealIconAndColor(mealType, theme);
@@ -220,8 +222,8 @@ export const MealGroupCard = memo(function MealGroupCard({
             ) : null}
             <MacroItem
               icon={Flame}
-              value={calories}
-              label={t('food.common.kcal')}
+              value={toDisplay(calories)}
+              label={unitLabel}
               valueMode="integer"
               intuitiveMode={intuitiveMode}
             />

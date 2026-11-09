@@ -242,7 +242,7 @@
     "deficit": {
       "title": "Ready for a small deficit?",
       "body": "You have eaten at maintenance for two weeks. If you want, you can move to a gentle deficit now.",
-      "numbers": "{{from}} kcal to {{to}} kcal a day, with {{protein}} g of protein",
+      "numbers": "{{from}} to {{to}} a day, with {{protein}} g of protein",
       "accept": "Apply the deficit",
       "decline": "Stay at maintenance",
       "applied": "Your targets are updated",

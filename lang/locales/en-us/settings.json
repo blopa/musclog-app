@@ -35,7 +35,11 @@
       "foodSearchMusclog": "Musclog",
       "foodSearchMusclogDescription": "Musclog barcode database (barcode scanning only)",
       "foodSearchNone": "None",
-      "foodSearchNoneDescription": "Search only in your local database"
+      "foodSearchNoneDescription": "Search only in your local database",
+      "energyUnit": "Energy unit",
+      "energyUnitKcal": "Kilocalories",
+      "energyUnitKj": "Kilojoules",
+      "energyUnitHint": "Changes how energy is shown and entered. Your data stays stored in kilocalories."
     },
     "migration": {
       "title": "Data migration",
@@ -201,7 +205,55 @@
       "openSettingsFailedMessage": "Unable to open app settings. Please open them manually.",
       "dangerZone": "Danger zone",
       "opticalTransfer": "Optical transfer",
-      "opticalTransferSubtitle": "Move your data to another phone with light"
+      "opticalTransferSubtitle": "Move your data to another phone with light",
+      "storage": {
+        "title": "Storage",
+        "total": "Used by Musclog",
+        "units": {
+          "b": "B",
+          "kb": "KB",
+          "mb": "MB",
+          "gb": "GB"
+        },
+        "categories": {
+          "database": {
+            "name": "Database",
+            "description": "Your logs, goals and settings"
+          },
+          "photos": {
+            "name": "Your photos",
+            "description": "Photos of foods, meals and custom exercises"
+          },
+          "sensorRecordings": {
+            "name": "Sensor recordings",
+            "description": "Data saved from connected workout sensors"
+          },
+          "recoveryPoints": {
+            "name": "Safety backups",
+            "description": "Automatic backups made before updates and restores. Manage them in Local backups"
+          },
+          "exerciseImages": {
+            "name": "Exercise pictures",
+            "description": "Downloaded demonstration images. They download again when needed"
+          },
+          "temporary": {
+            "name": "Temporary files",
+            "description": "Leftovers from exports, sharing and photo editing"
+          }
+        },
+        "clear": "Clear",
+        "clearTitle": "Clear {{name}}?",
+        "clearMessage": {
+          "exerciseImages": "The pictures download again the next time an exercise is shown. Your data is not affected.",
+          "temporary": "Removes leftover files older than an hour. Your data and safety backups are not affected."
+        },
+        "freed": "Freed {{size}}",
+        "nothingToClear": "Nothing to clear",
+        "clearFailed": "Couldn't clear storage",
+        "unavailable": "Couldn't read storage right now.",
+        "retry": "Try again"
+      },
+      "storageSubtitle": "See what Musclog keeps on this device and free up space"
     },
     "chatMessages": {
       "title": "Chat messages",

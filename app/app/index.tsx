@@ -53,6 +53,7 @@ import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
@@ -113,6 +114,7 @@ export default function HomeScreen() {
     showHomeSteps,
   } = useSettings();
   const { openCamera } = useSmartCamera();
+  const { formatEnergy } = useEnergyUnit();
   const { openCoach } = useCoach();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
 
@@ -652,7 +654,7 @@ export default function HomeScreen() {
                     item={{
                       name: workout.name,
                       media: workout.image,
-                      itemOne: { value: workout.calories, icon: Flame },
+                      itemOne: { value: formatEnergy(workout.calories), icon: Flame },
                       itemTwo: { value: workout.duration, icon: Clock },
                       itemThree: {
                         value: workout.prs !== null ? workout.prs : '--',

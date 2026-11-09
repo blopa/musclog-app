@@ -21,8 +21,11 @@ import { ListGroup } from '@/components/theme/ListGroup';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { type FoodSearchSource } from '@/constants/settings';
+import { SETTINGS } from '@/constants/settingDefinitions';
+import { type EnergyUnit, type FoodSearchSource } from '@/constants/settings';
+import SettingsService from '@/database/services/SettingsService';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useSettings } from '@/hooks/useSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
 import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '@/lang/lang';
@@ -56,6 +59,10 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
+  const { energyUnit } = useSettings();
+  const handleEnergyUnitChange = (next: EnergyUnit) => {
+    void SettingsService.set(SETTINGS.energyUnit, next);
+  };
   const [foodSearchMenuVisible, setFoodSearchMenuVisible] = useState(false);
   const [languageMenuVisible, setLanguageMenuVisible] = useState(false);
 
@@ -164,6 +171,11 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     },
   ];
 
+  const energyUnitOptions = [
+    { label: t('settings.basicSettings.energyUnitKcal'), value: 'kcal' },
+    { label: t('settings.basicSettings.energyUnitKj'), value: 'kj' },
+  ];
+
   const healthSettingsItems = [
     {
       key: 'connect',
@@ -207,6 +219,27 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
               value={units || 'metric'}
               onValueChange={(val) => handleUnitsChange(val as 'metric' | 'imperial')}
             />
+          </View>
+        </View>
+
+        {/* Energy unit: display only, data stays in kilocalories */}
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <Text className="mb-3 px-5 text-lg font-semibold text-text-primary">
+            {t('settings.basicSettings.energyUnit')}
+          </Text>
+          <View className="gap-2">
+            <SegmentedControl
+              options={energyUnitOptions}
+              value={energyUnit}
+              onValueChange={(val) => handleEnergyUnitChange(val as EnergyUnit)}
+            />
+            <Text className="px-5 text-sm text-text-secondary">
+              {t('settings.basicSettings.energyUnitHint')}
+            </Text>
           </View>
         </View>
 

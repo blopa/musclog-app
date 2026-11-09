@@ -1,9 +1,10 @@
-import { Units } from '@/constants/settings';
+import { type EnergyUnit, Units } from '@/constants/settings';
 import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { components } from '@/types/usda-types';
 
 import { totalCarbsForFoodSource } from './carbsConvention';
+import { formatEnergyWithUnitLabel } from './energyLabel';
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 import { gramsToDisplay } from './unitConversion';
 import { getMassUnitI18nKey } from './units';
@@ -38,7 +39,11 @@ export function mapUSDANutritient(
   return nutrient ? (nutrient.value ?? nutrient.amount) : undefined;
 }
 
-export function mapUSDAFoodToUnified(food: USDAFood, units: Units = 'metric'): UnifiedFoodResult {
+export function mapUSDAFoodToUnified(
+  food: USDAFood,
+  units: Units = 'metric',
+  energyUnit: EnergyUnit = 'kcal'
+): UnifiedFoodResult {
   const brandedFood = food as USDAFoodWithServingFields;
   const nutrients = food.foodNutrients as USDANutrient[] | undefined;
 
@@ -83,7 +88,7 @@ export function mapUSDAFoodToUnified(food: USDAFood, units: Units = 'metric'): U
     calories !== undefined
       ? i18n.t('food.descriptionFormat', {
           brand: brand || food.dataType || i18n.t('food.generic'),
-          calories,
+          calories: formatEnergyWithUnitLabel(calories, energyUnit),
           amount: descriptionAmount,
           unit: descriptionUnit,
         })

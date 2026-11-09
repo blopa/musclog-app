@@ -22,6 +22,7 @@ import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
@@ -29,7 +30,6 @@ import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { isCoachReplyBusy } from '@/services/coachReplyStore';
 import { startCoachReply } from '@/services/coachReplyStream';
-import { formatAppInteger } from '@/utils/formatAppNumber';
 import { displayWeightKgNumeric, formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
@@ -40,6 +40,7 @@ import { buildWorkoutCompletedSummaryForLLM } from '@/utils/workoutAI';
 export default function WorkoutSummaryScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutLogId?: string; showSessionFeedback?: string }>();
   const workoutLogId = params.workoutLogId;
@@ -243,7 +244,6 @@ export default function WorkoutSummaryScreen() {
   };
 
   const handleShareSummary = async () => {
-    const locale = i18n.resolvedLanguage ?? i18n.language;
     const lines = [
       t('workoutSummary.shareText'),
       '',
@@ -252,7 +252,7 @@ export default function WorkoutSummaryScreen() {
       ...(caloriesBurned > 0
         ? [
             `${t('workoutSummary.caloriesBurned')}: ${t('common.amount_kcal', {
-              amount: formatAppInteger(locale, caloriesBurned),
+              amount: formatEnergyWithUnit(caloriesBurned),
             })}`,
           ]
         : []),

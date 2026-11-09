@@ -3,6 +3,7 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { BLOCK_FRACTIONS, type BlockKey } from '@/constants/circadian';
 import { useCircadianBurn } from '@/hooks/useCircadianBurn';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { circadianInstantRate } from '@/utils/circadianBurn';
@@ -62,6 +63,7 @@ function PhaseCard({
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
 
   const PHASE_COLOR: Record<BlockKey, { color: string; bg: string }> = {
     earlySlеep: { color: theme.colors.status.info, bg: theme.colors.status.info10 },
@@ -100,7 +102,7 @@ function PhaseCard({
             </View>
             <View className="rounded-tag px-2.5 py-0.5" style={{ backgroundColor: color + '22' }}>
               <Text className="text-[10px] font-bold" style={{ color }}>
-                {pct}% · ~{kcalForBlock} kcal
+                {pct}% · ~{formatEnergy(kcalForBlock)} {unitLabel}
               </Text>
             </View>
           </View>
@@ -137,6 +139,7 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
+  const { toDisplay, unitLabel } = useEnergyUnit();
 
   // Per-second, since the hero is a live counter, and only while the modal is up.
   const { blockKey: currentBlockKey, burned } = useCircadianBurn(tdee, {
@@ -171,10 +174,10 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
             className="mt-2 font-bold text-text-primary"
             style={{ fontSize: 52, lineHeight: 56 }}
           >
-            {formatInteger(Math.floor(burned))}
+            {formatInteger(Math.floor(toDisplay(burned)))}
             <Text style={{ fontSize: 22, fontWeight: '400', color: theme.colors.text.secondary }}>
               {' '}
-              kcal
+              {unitLabel}
             </Text>
           </Text>
         </View>
@@ -183,16 +186,16 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
           {/* ── Rate stats row ─────────────────────────────────── */}
           <View className="mb-5 flex-row gap-2">
             <RateStat
-              label={t('progress.circadianModal.perHour')}
-              value={`${formatInteger(Math.round(perHour))}`}
+              label={t('progress.circadianModal.perHour', { unit: unitLabel })}
+              value={`${formatInteger(Math.round(toDisplay(perHour)))}`}
             />
             <RateStat
-              label={t('progress.circadianModal.perMinute')}
-              value={formatDecimal(perMinute, 1)}
+              label={t('progress.circadianModal.perMinute', { unit: unitLabel })}
+              value={formatDecimal(toDisplay(perMinute), 1)}
             />
             <RateStat
-              label={t('progress.circadianModal.perSecond')}
-              value={formatDecimal(perSecond, 3)}
+              label={t('progress.circadianModal.perSecond', { unit: unitLabel })}
+              value={formatDecimal(toDisplay(perSecond), 3)}
             />
           </View>
 

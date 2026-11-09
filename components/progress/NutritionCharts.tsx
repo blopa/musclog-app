@@ -13,6 +13,7 @@ import {
   CALORIES_FOR_PROTEIN,
 } from '@/constants/nutrition';
 import { DailyNutrition, MetricPoint } from '@/database/services/ProgressService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
@@ -34,6 +35,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
   const theme = useTheme();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
 
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const computeLeftAxisLabels = useCallback(
     (maxVal: number): string[] => {
       if (maxVal <= 0) {
@@ -171,10 +173,10 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
       case 'calories': {
         return (
           <BarChart
-            data={nutritionHistory.map((d) => ({ x: d.date, y: d.calories }))}
+            data={nutritionHistory.map((d) => ({ x: d.date, y: toDisplay(d.calories) }))}
             height={200}
             barColor={theme.colors.accent.primary}
-            tooltipFormatter={(p) => `${formatInteger(Math.round(p.y))} ${t('progress.kcal')}`}
+            tooltipFormatter={(p) => `${formatInteger(Math.round(p.y))} ${unitLabel}`}
             xAxisLabels={xAxisLabels}
           />
         );
@@ -186,10 +188,10 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
             data={nutritionHistory.map((d) => ({
               x: d.date,
               segments: [
-                d.protein * CALORIES_FOR_PROTEIN,
-                digestibleCarbs(d.carbs, d.fiber) * CALORIES_FOR_CARBS,
-                d.fat * CALORIES_FOR_FAT,
-                d.fiber * CALORIES_FOR_FIBER,
+                toDisplay(d.protein * CALORIES_FOR_PROTEIN),
+                toDisplay(digestibleCarbs(d.carbs, d.fiber) * CALORIES_FOR_CARBS),
+                toDisplay(d.fat * CALORIES_FOR_FAT),
+                toDisplay(d.fiber * CALORIES_FOR_FIBER),
               ],
             }))}
             height={200}
@@ -200,14 +202,14 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
       }
 
       case 'combined': {
-        const maxCal = Math.max(...combinedData.map((d) => d.calories));
+        const maxCal = toDisplay(Math.max(...combinedData.map((d) => d.calories)));
         const calDomain: [number, number] = [0, maxCal * 1.2];
 
         return (
           <BarLineChart
             data={combinedData.map((d, i) => ({
               x: i,
-              steps: d.calories,
+              steps: toDisplay(d.calories),
               heartRate: d.weight,
             }))}
             height={200}
@@ -223,7 +225,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
               formatDecimal(Math.min(...combinedData.map((d) => d.weight)), 0),
               formatDecimal(Math.max(...combinedData.map((d) => d.weight)), 0),
             ]}
-            stepsFormatter={(v) => `${formatDecimal(Math.round(v), 0)} ${t('progress.kcal')}`}
+            stepsFormatter={(v) => `${formatDecimal(Math.round(v), 0)} ${unitLabel}`}
             heartRateFormatter={(v) => `${formatDecimal(v, 1)} ${weightLabel}`}
             xAxisLabels={xAxisLabels}
           />
@@ -236,15 +238,15 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
             data={combinedData.map((d, i) => ({
               x: i,
               segments: [
-                d.protein * CALORIES_FOR_PROTEIN,
-                digestibleCarbs(d.carbs, d.fiber) * CALORIES_FOR_CARBS,
-                d.fat * CALORIES_FOR_FAT,
-                d.fiber * CALORIES_FOR_FIBER,
+                toDisplay(d.protein * CALORIES_FOR_PROTEIN),
+                toDisplay(digestibleCarbs(d.carbs, d.fiber) * CALORIES_FOR_CARBS),
+                toDisplay(d.fat * CALORIES_FOR_FAT),
+                toDisplay(d.fiber * CALORIES_FOR_FIBER),
               ],
               lineValue: d.weight,
             }))}
             height={200}
-            barSeriesLabel={`${t('progress.nutritionView.macros')} (${t('progress.kcal')})`}
+            barSeriesLabel={`${t('progress.nutritionView.macros')} (${unitLabel})`}
             lineSeriesLabel={`${t('progress.weight')} (${weightLabel})`}
             stackColors={macroColors}
             lineDomain={[

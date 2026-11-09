@@ -114,7 +114,7 @@ function sharedCameraImage(): Promise<string> {
 
 export function WidgetSync() {
   const { theme } = useThemeContext();
-  const { isLoading, appLockScopes } = useSettings();
+  const { isLoading, appLockScopes, energyUnit } = useSettings();
   const { i18n, t } = useTranslation();
   const today = useLocalToday();
   const locale = i18n.resolvedLanguage ?? i18n.language;
@@ -147,6 +147,7 @@ export function WidgetSync() {
             palette,
             locale,
             translate: (key) => t(key),
+            energyUnit,
           }),
         };
       },
@@ -239,7 +240,7 @@ export function WidgetSync() {
     };
     // The lock decides whether the cycle widget may show the day, so a change to it must
     // re-publish at once rather than at the next foreground.
-  }, [isLoading, locale, t, theme, today, appLockScopes]);
+  }, [isLoading, locale, t, theme, today, appLockScopes, energyUnit]);
 
   return null;
 }

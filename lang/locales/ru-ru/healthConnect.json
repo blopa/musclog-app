@@ -3,7 +3,7 @@
     "initializeFirst": "Пожалуйста, сначала инициализируйте Health Connect",
     "openSettings": "Открыть настройки",
     "permissionsDenied": "Разрешения Health Connect отклонены",
-    "workoutCaloriesNote": "Калории: {{calories}} ккал",
+    "workoutCaloriesNote": "Калории: {{calories}}",
     "workoutVolumeNote": "Объём: {{volume}} {{unit}}",
     "repsWeightFormat": "{{reps}}×{{weight}} {{unit}}"
   }

@@ -6,6 +6,7 @@ import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { StatStrip } from '@/components/StatStrip';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -72,6 +73,7 @@ export function DailySummaryCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
 
   const [pageWidth, setPageWidth] = useState(windowWidth);
   const [currentPage, setCurrentPage] = useState(0);
@@ -258,7 +260,7 @@ export function DailySummaryCard({
                       ...(intuitiveMode ? blurFilter(8) : {}),
                     }}
                   >
-                    {intuitiveMode ? '00' : formatInteger(Math.round(calories.consumed))}
+                    {intuitiveMode ? '00' : formatEnergy(calories.consumed)}
                   </Text>
 
                   <View className="flex-col">
@@ -270,7 +272,7 @@ export function DailySummaryCard({
                         marginTop: theme.spacing.margin.md,
                       }}
                     >
-                      {`/ ${formatInteger(Math.round(calories.goal))}`}
+                      {`/ ${formatEnergy(calories.goal)}`}
                     </Text>
                     <Text
                       className="font-semibold tabular-nums"
@@ -279,7 +281,7 @@ export function DailySummaryCard({
                         color: theme.colors.colorfulCard.ink70,
                       }}
                     >
-                      {t('dailySummaryCard.kcal')}
+                      {unitLabel}
                     </Text>
                   </View>
                 </View>
@@ -317,8 +319,8 @@ export function DailySummaryCard({
                       style={{ color: theme.colors.colorfulCard.ink90 }}
                     >
                       {calories.remaining >= 0
-                        ? `${formatInteger(Math.round(calories.remaining))} ${t('dailySummaryCard.remaining')}`
-                        : `${formatInteger(Math.round(Math.abs(calories.remaining)))} ${t('dailySummaryCard.over')}`}
+                        ? `${formatEnergy(calories.remaining)} ${t('dailySummaryCard.remaining')}`
+                        : `${formatEnergy(Math.abs(calories.remaining))} ${t('dailySummaryCard.over')}`}
                     </Text>
                   )}
                   <View className="flex-row items-center gap-2">
@@ -480,7 +482,7 @@ export function DailySummaryCard({
                       ...(intuitiveMode ? blurFilter(8) : {}),
                     }}
                   >
-                    {intuitiveMode ? '00' : formatInteger(Math.round(weeklyAverages!.calories))}
+                    {intuitiveMode ? '00' : formatEnergy(weeklyAverages!.calories)}
                   </Text>
                   <View className="flex-col">
                     <Text
@@ -491,7 +493,7 @@ export function DailySummaryCard({
                         marginTop: theme.spacing.margin.md,
                       }}
                     >
-                      {t('dailySummaryCard.kcal')}
+                      {unitLabel}
                     </Text>
                     <Text
                       className="font-semibold tabular-nums"

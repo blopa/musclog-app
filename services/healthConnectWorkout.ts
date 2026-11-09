@@ -3,6 +3,7 @@
  * Checks write permission first; skips silently if not granted or on non-Android.
  */
 
+import { formatEnergyWithUnitLabel } from '@/utils/energyLabel';
 import { Platform } from 'react-native';
 import { ExerciseSegmentType, ExerciseType, RecordingMethod } from 'react-native-health-connect';
 
@@ -178,7 +179,9 @@ export async function writeWorkoutToHealthConnect(
     const noteParts: string[] = [];
     if (payload.caloriesBurned != null && payload.caloriesBurned > 0) {
       noteParts.push(
-        i18n.t('healthConnect.workoutCaloriesNote', { calories: payload.caloriesBurned })
+        i18n.t('healthConnect.workoutCaloriesNote', {
+          calories: formatEnergyWithUnitLabel(payload.caloriesBurned, 'kcal'),
+        })
       );
     }
 

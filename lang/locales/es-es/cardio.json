@@ -16,7 +16,7 @@
     "pace": "Ritmo",
     "ended": "Terminó",
     "estimate": "Calorías estimadas",
-    "estimateValue": "{{kcal}} kcal",
+    "estimateValue": "{{kcal}}",
     "estimateNoWeight": "Añade tu peso en el perfil para estimar las calorías.",
     "estimateHint": "Estimado a partir de tu velocidad y peso corporal en terreno llano.",
     "watchCalories": "Calorías de mi reloj (opcional)",

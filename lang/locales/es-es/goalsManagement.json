@@ -31,7 +31,7 @@
       "regenerateCheckinsDesc": "Eliminar y volver a crear las revisiones para este objetivo",
       "deleteGoal": "Eliminar objetivo",
       "deleteGoalDesc": "Eliminar este objetivo del historial",
-      "subtitleFormat": "{{calories}} kcal • {{phase}} • Objetivo {{targetWeight}} {{unit}}",
+      "subtitleFormat": "{{calories}} • {{phase}} • Objetivo {{targetWeight}} {{unit}}",
       "phaseCut": "Definición",
       "phaseMaintain": "Mantenimiento",
       "phaseBulk": "Volumen"

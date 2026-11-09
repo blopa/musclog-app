@@ -6,6 +6,7 @@ import { Button } from '@/components/theme/Button';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { ComebackNutritionService } from '@/database/services/ComebackNutritionService';
 import { ComebackService } from '@/database/services/ComebackService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import {
   COMEBACK_DEFICIT_OFFER_WEEK,
@@ -36,6 +37,7 @@ export function ComebackDeficitOffer({ state }: { state: ComebackState }) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { formatInteger } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const [preview, setPreview] = useState<ComebackNutritionTargets | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -89,8 +91,8 @@ export function ComebackDeficitOffer({ state }: { state: ComebackState }) {
       {preview && preview.deficitCalories > 0 ? (
         <Text className="text-sm tabular-nums text-text-primary">
           {t('comeback.deficit.numbers', {
-            from: formatInteger(preview.maintenanceCalories),
-            to: formatInteger(preview.totalCalories),
+            from: formatEnergyWithUnit(preview.maintenanceCalories),
+            to: formatEnergyWithUnit(preview.totalCalories),
             protein: formatInteger(preview.protein),
           })}
         </Text>

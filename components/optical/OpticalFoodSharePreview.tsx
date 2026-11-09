@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import type { FoodShareSummary } from '@/utils/share/shareEnvelope';
@@ -14,7 +15,8 @@ interface OpticalFoodSharePreviewProps {
 export function OpticalFoodSharePreview({ summary }: OpticalFoodSharePreviewProps) {
   const { t } = useTranslation();
   const { units } = useSettings();
-  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
 
   return (
     <View className="gap-4">
@@ -35,7 +37,7 @@ export function OpticalFoodSharePreview({ summary }: OpticalFoodSharePreviewProp
         </Text>
         <Text className="text-sm font-semibold text-text-primary">
           {t('food.meals.manageMealData.caloriesMacrosFormat', {
-            calories: formatInteger(summary.nutrients.calories),
+            calories: formatEnergyWithUnit(summary.nutrients.calories),
             carbs: formatRoundedDecimal(summary.nutrients.carbs, 1),
             fat: formatRoundedDecimal(summary.nutrients.fat, 1),
             protein: formatRoundedDecimal(summary.nutrients.protein, 1),

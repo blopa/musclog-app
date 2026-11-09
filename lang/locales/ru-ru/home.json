@@ -37,8 +37,7 @@
       "eaten": "Съедено",
       "deficit": "Дефицит",
       "surplus": "Профицит",
-      "even": "Баланс",
-      "kcal": "ккал"
+      "even": "Баланс"
     },
     "heatmaps": {
       "lastWeeks_one": "Последняя {{count}} неделя",

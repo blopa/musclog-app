@@ -7,6 +7,12 @@ import { THEME_DEFINITIONS, THEME_IDS as REGISTRY_THEME_IDS } from '@/theme.regi
 export const UNITS_SETTING_TYPE = 'unit_system';
 
 /**
+ * Setting type for the unit energy is DISPLAYED in (`parseEnergyUnit`): 'kcal' (default) | 'kj'.
+ * Display only: the database, goals and every calculation stay in kilocalories.
+ */
+export const ENERGY_UNIT_SETTING_TYPE = 'energy_unit';
+
+/**
  * Setting type for theme preference (stored in WatermelonDB settings table).
  * value: 'system' | one of THEME_IDS.
  */
@@ -619,6 +625,14 @@ export function parseHomeHeatmaps(raw: string | null | undefined): HomeHeatmaps 
 
 export function parseHomeHeatmapLayout(raw: string | null | undefined): HomeHeatmapLayout {
   return HOME_HEATMAP_LAYOUT_OPTIONS.find((option) => option === raw) ?? 'full';
+}
+
+export const ENERGY_UNIT_OPTIONS = ['kcal', 'kj'] as const;
+export type EnergyUnit = (typeof ENERGY_UNIT_OPTIONS)[number];
+
+/** Anything unrecognized (a newer build, a hand-edited backup) keeps kilocalories. */
+export function parseEnergyUnit(raw: string | null | undefined): EnergyUnit {
+  return ENERGY_UNIT_OPTIONS.find((option) => option === raw) ?? 'kcal';
 }
 
 export const FOOD_DIARY_GROUPING_OPTIONS = ['categories', 'time'] as const;

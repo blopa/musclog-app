@@ -35,7 +35,11 @@
       "foodSearchMusclog": "Musclog",
       "foodSearchMusclogDescription": "Musclog barcode-database (alleen barcode scannen)",
       "foodSearchNone": "Geen",
-      "foodSearchNoneDescription": "Zoek alleen in je lokale database"
+      "foodSearchNoneDescription": "Zoek alleen in je lokale database",
+      "energyUnit": "Energie-eenheid",
+      "energyUnitKcal": "Kilocalorieën",
+      "energyUnitKj": "Kilojoules",
+      "energyUnitHint": "Wijzigt hoe energie wordt getoond en ingevoerd. Je gegevens blijven opgeslagen in kilocalorieën."
     },
     "migration": {
       "title": "Gegevensmigratie",
@@ -201,7 +205,55 @@
       "openSettingsFailedMessage": "Kan app-instellingen niet openen. Open ze handmatig.",
       "dangerZone": "Gevarenzone",
       "opticalTransfer": "Optische overdracht",
-      "opticalTransferSubtitle": "Verplaats je gegevens met licht naar een andere telefoon"
+      "opticalTransferSubtitle": "Verplaats je gegevens met licht naar een andere telefoon",
+      "storage": {
+        "title": "Opslag",
+        "total": "Gebruikt door Musclog",
+        "units": {
+          "b": "B",
+          "kb": "KB",
+          "mb": "MB",
+          "gb": "GB"
+        },
+        "categories": {
+          "database": {
+            "name": "Database",
+            "description": "Je logs, doelen en instellingen"
+          },
+          "photos": {
+            "name": "Je foto's",
+            "description": "Foto's van voedingsmiddelen, maaltijden en eigen oefeningen"
+          },
+          "sensorRecordings": {
+            "name": "Sensoropnames",
+            "description": "Opgeslagen gegevens van verbonden trainingssensoren"
+          },
+          "recoveryPoints": {
+            "name": "Veiligheidsback-ups",
+            "description": "Automatische back-ups vóór updates en herstel. Beheer ze bij Lokale back-ups"
+          },
+          "exerciseImages": {
+            "name": "Oefeningafbeeldingen",
+            "description": "Gedownloade voorbeeldafbeeldingen. Ze worden opnieuw gedownload wanneer nodig"
+          },
+          "temporary": {
+            "name": "Tijdelijke bestanden",
+            "description": "Restanten van exports, delen en fotobewerking"
+          }
+        },
+        "clear": "Wissen",
+        "clearTitle": "{{name}} wissen?",
+        "clearMessage": {
+          "exerciseImages": "De afbeeldingen worden opnieuw gedownload zodra een oefening wordt getoond. Je gegevens blijven ongewijzigd.",
+          "temporary": "Verwijdert overgebleven bestanden die ouder zijn dan een uur. Je gegevens en veiligheidsback-ups blijven ongewijzigd."
+        },
+        "freed": "{{size}} vrijgemaakt",
+        "nothingToClear": "Niets om te wissen",
+        "clearFailed": "Opslag wissen mislukt",
+        "unavailable": "Opslag kon nu niet worden gelezen.",
+        "retry": "Opnieuw proberen"
+      },
+      "storageSubtitle": "Bekijk wat Musclog op dit apparaat bewaart en maak ruimte vrij"
     },
     "chatMessages": {
       "title": "Chatberichten",

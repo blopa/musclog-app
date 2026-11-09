@@ -2,8 +2,8 @@
   "foodSearch": {
     "commonFoods": "Популярные продукты",
     "customFoodLabel": "Пользовательский продукт",
-    "foodDescriptionFormat": "{{brand}} • {{calories}} ккал",
-    "foodDescriptionPer100g": "{{brand}} • {{calories}} ккал на 100г",
+    "foodDescriptionFormat": "{{brand}} • {{calories}}",
+    "foodDescriptionPer100g": "{{brand}} • {{calories}} на 100г",
     "recentHistory": "Недавняя история",
     "viewAll": "Показать все",
     "yourFoods": "Ваши продукты ({{count}})",

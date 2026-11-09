@@ -25,6 +25,8 @@ import {
   type CycleNotificationStyle,
   DEFAULT_REST_SECONDS_SETTING_TYPE,
   ENABLE_CLAUDE_SETTING_TYPE,
+  ENERGY_UNIT_SETTING_TYPE,
+  type EnergyUnit,
   FOOD_DIARY_COMPACT_SETTING_TYPE,
   FOOD_DIARY_GROUPING_SETTING_TYPE,
   type FoodDiaryGrouping,
@@ -35,6 +37,7 @@ import {
   NOTIFICATIONS_WEEKLY_REVIEW_SETTING_TYPE,
   parseAppLockScopes,
   parseCycleNotificationStyle,
+  parseEnergyUnit,
   parseFoodDiaryGrouping,
   parseHomeHeatmapLayout,
   parseHomeHeatmaps,
@@ -169,6 +172,8 @@ export const SETTINGS = {
     HOME_HEATMAP_LAYOUT_SETTING_TYPE,
     parseHomeHeatmapLayout
   ),
+  /** Display unit for energy; values are always stored and computed in kcal. */
+  energyUnit: choiceSetting<EnergyUnit>(ENERGY_UNIT_SETTING_TYPE, parseEnergyUnit),
   foodDiaryCompact: booleanSetting(FOOD_DIARY_COMPACT_SETTING_TYPE, false),
   animatedLoggy: booleanSetting(ANIMATED_LOGGY_SETTING_TYPE, true),
   showLoggy: booleanSetting(SHOW_LOGGY_SETTING_TYPE, true),

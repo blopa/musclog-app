@@ -19,6 +19,7 @@ import {
   MIN_WEEKLY_WEIGHT_ENTRIES,
   type WeeklyReviewService,
 } from '@/database/services/WeeklyReviewService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -88,6 +89,7 @@ export function NutritionReviewSection({
   const theme = useTheme();
   const { units } = useSettings();
   const { locale, formatInteger, formatNumber } = useFormatAppNumber();
+  const { formatEnergy, formatEnergyWithUnit, toDisplay, unitLabel } = useEnergyUnit();
   if (data.intuitive) {
     return (
       <View className="rounded-card border border-border-light bg-bg-card p-4">
@@ -117,6 +119,11 @@ export function NutritionReviewSection({
   const decided = !!data.review?.nutritionReviewedAt;
   const signed = (value: number) =>
     formatNumber(value, { signDisplay: 'exceptZero', maximumFractionDigits: 0 });
+  // Targets are stored in kcal and grams. Calories are shown in the person's unit, grams unchanged.
+  const shownTarget = (field: TargetField, value: number) =>
+    field === 'totalCalories' ? toDisplay(value) : value;
+  const targetText = (field: TargetField, value: number) =>
+    field === 'totalCalories' ? formatEnergy(value) : formatInteger(Math.round(value));
   const date = (value: number) =>
     new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'short', day: 'numeric' }).format(
       value
@@ -127,14 +134,14 @@ export function NutritionReviewSection({
   let reason: string;
   if ('trendChangeKg' in why) {
     reason = t(why.key, {
-      expenditure: formatInteger(why.expenditure),
+      expenditure: formatEnergyWithUnit(why.expenditure),
       change: `${formatNumber(kgToDisplay(why.trendChangeKg, units), {
         signDisplay: 'exceptZero',
         maximumFractionDigits: 1,
       })} ${weightUnit}`,
     });
   } else if ('expenditure' in why) {
-    reason = t(why.key, { expenditure: formatInteger(why.expenditure) });
+    reason = t(why.key, { expenditure: formatEnergyWithUnit(why.expenditure) });
   } else {
     // `collectData` states the thresholds `canApply` checks, so the copy cannot drift from them.
     reason = t(why.key, {
@@ -374,21 +381,24 @@ export function NutritionReviewSection({
         {TARGET_FIELDS.map((field, index) => {
           const current = data.current![field];
           const next = shownRecommendation?.[field] ?? current;
-          const delta = Math.round(next) - Math.round(current);
+          const delta =
+            Math.round(shownTarget(field, next)) - Math.round(shownTarget(field, current));
           return (
             <View
               key={field}
               className={`flex-row items-center px-3 py-2.5 ${index ? 'border-t border-border-light' : ''}`}
             >
               {/* The label already carries its unit: "Calories (kcal)". */}
-              <Text className="flex-1 text-sm text-text-primary">{t(MACRO_LABEL_KEYS[field])}</Text>
+              <Text className="flex-1 text-sm text-text-primary">
+                {t(MACRO_LABEL_KEYS[field], { unit: unitLabel })}
+              </Text>
               <Text className="w-20 text-right text-sm text-text-secondary">
-                {formatInteger(Math.round(current))}
+                {targetText(field, current)}
               </Text>
               <Text
                 className={`w-28 text-right text-sm ${estimate ? 'text-text-tertiary' : 'font-semibold text-text-primary'}`}
               >
-                {formatInteger(Math.round(next))}
+                {targetText(field, next)}
                 {delta ? (
                   <Text
                     className={`text-xs font-semibold ${estimate ? 'text-text-tertiary' : 'text-accent-primary'}`}
@@ -412,7 +422,7 @@ export function NutritionReviewSection({
           </Text>
           <Text className="text-sm text-text-secondary">
             {t('weeklyReview.belowFloorBody', {
-              minimum: formatInteger(recommendation.minimumCalories),
+              minimum: formatEnergyWithUnit(recommendation.minimumCalories),
             })}
           </Text>
         </View>
@@ -488,6 +498,7 @@ function NutritionEmptyState({
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const current = data.current!;
   const reviewable = hasWeeklyActivity(data.activity);
   let footer: ReactNode = null;
@@ -523,8 +534,11 @@ function NutritionEmptyState({
         <StatStrip
           items={COMPACT_TARGET_FIELDS.map((field) => ({
             key: field,
-            value: formatInteger(Math.round(current[field])),
-            label: t(MACRO_LABEL_KEYS[field]),
+            value:
+              field === 'totalCalories'
+                ? formatEnergy(current[field])
+                : formatInteger(Math.round(current[field])),
+            label: t(MACRO_LABEL_KEYS[field], { unit: unitLabel }),
             valueColor: theme.colors.text.primary,
           }))}
           palette={{

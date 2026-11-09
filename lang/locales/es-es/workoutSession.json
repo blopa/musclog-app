@@ -338,9 +338,9 @@
     "periodHint": "Los siete días completos antes de tu día de revisión",
     "showAll": "Ver todo ({{count}})",
     "showFewer": "Ver menos",
-    "reasonEmpirical": "Según tus registros, gastas unas {{expenditure}} kcal al día y tu peso de tendencia cambió {{change}} esta semana. Estos objetivos te mantienen al ritmo de tu meta.",
-    "reasonEmpiricalNoTrend": "Según tus registros, gastas unas {{expenditure}} kcal al día. Estos objetivos te mantienen al ritmo de tu meta.",
-    "reasonBaseline": "Estimado a partir de tu perfil, todavía no de tus registros: unas {{expenditure}} kcal al día. Sigue registrando comida y peso para personalizarlo.",
+    "reasonEmpirical": "Según tus registros, gastas unas {{expenditure}} al día y tu peso de tendencia cambió {{change}} esta semana. Estos objetivos te mantienen al ritmo de tu meta.",
+    "reasonEmpiricalNoTrend": "Según tus registros, gastas unas {{expenditure}} al día. Estos objetivos te mantienen al ritmo de tu meta.",
+    "reasonBaseline": "Estimado a partir de tu perfil, todavía no de tus registros: unas {{expenditure}} al día. Sigue registrando comida y peso para personalizarlo.",
     "largeChangeTitle": "Es un cambio grande",
     "largeChangeBody": "Cambiar las calorías un {{percent}}% en una sola semana es agresivo y Musclog no lo recomienda. Los cambios grandes suelen deberse a comidas sin registrar o a pesajes inusuales, así que revisa el registro de esta semana o mantén tus objetivos actuales.",
     "reviewFoodLog": "Revisar registro de comidas",
@@ -416,7 +416,7 @@
       "comeback": "Estás en tu rampa de retorno, así que la progresión la sigue."
     },
     "belowFloorTitle": "Por debajo del mínimo de calorías",
-    "belowFloorBody": "Esto está por debajo de tu mínimo de {{minimum}} kcal. Desactivaste el mínimo de calorías en los ajustes avanzados; bajar tanto no se recomienda y puede no ser seguro.",
+    "belowFloorBody": "Esto está por debajo de tu mínimo de {{minimum}}. Desactivaste el mínimo de calorías en los ajustes avanzados; bajar tanto no se recomienda y puede no ser seguro.",
     "estimateShort": "Estimación",
     "halfStatus": {
       "done": "{{half}}: revisado",
@@ -425,9 +425,9 @@
     "targetsEditor": {
       "invalidCalories": "Introduce un objetivo de calorías mayor que 0.",
       "invalidMacro": "Introduce un número (0 o más).",
-      "macroTotal": "Estos macros suman {{kcal}} kcal.",
-      "mismatch": "Estos macros suman {{kcal}} kcal, que no coincide con el objetivo de calorías.",
-      "useMacroTotal": "Usar {{kcal}} kcal"
+      "macroTotal": "Estos macros suman {{kcal}}.",
+      "mismatch": "Estos macros suman {{kcal}}, que no coincide con el objetivo de calorías.",
+      "useMacroTotal": "Usar {{kcal}}"
     },
     "comebackCheckin": {
       "title": "Revisión del retorno",

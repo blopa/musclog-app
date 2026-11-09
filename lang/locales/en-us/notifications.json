@@ -29,7 +29,7 @@
       },
       "workoutCompleted": {
         "title": "Workout completed",
-        "description": "{{workoutName}} complete. You burned {{calories}} kcal."
+        "description": "{{workoutName}} complete. You burned {{calories}}."
       },
       "kudosReceived": {
         "title": "Kudos received",

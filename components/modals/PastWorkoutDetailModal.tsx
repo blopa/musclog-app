@@ -20,6 +20,7 @@ import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/
 import { useChartCapture } from '@/hooks/useChartCapture';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useEditWorkoutSets } from '@/hooks/useEditWorkoutSets';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useExerciseVolumeTrend } from '@/hooks/useExerciseVolumeTrend';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -72,7 +73,8 @@ function WorkoutSummaryCard({
 }: WorkoutSummaryCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { formatInteger, locale } = useFormatAppNumber();
+  const { locale } = useFormatAppNumber();
+  const { formatEnergy, unitLabel } = useEnergyUnit();
   const durationDisplay = formatWorkoutDuration(totalTime);
 
   return (
@@ -145,10 +147,10 @@ function WorkoutSummaryCard({
             </Text>
             <View className="flex-row flex-wrap items-baseline gap-x-1">
               <Text className="text-2xl font-bold tabular-nums text-text-primary">
-                {formatInteger(calories)}
+                {formatEnergy(calories)}
               </Text>
               <Text className="text-xs font-medium text-text-primary" style={{ opacity: 0.8 }}>
-                {t('common.kcal')}
+                {unitLabel}
               </Text>
             </View>
           </View>
@@ -437,7 +439,8 @@ export default function PastWorkoutDetailModal({
   const dateFnsLocale = useDateFnsLocale();
   const { units } = useSettings();
   const { unitsFor } = useExerciseUserSettings();
-  const { formatInteger, locale } = useFormatAppNumber();
+  const { locale } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
 
@@ -580,7 +583,7 @@ export default function PastWorkoutDetailModal({
       const message = t('workoutDetail.shareMessage', {
         volume: formatDisplayWeightKg(locale, units, workout.volume),
         unit: t(weightUnitKey),
-        calories: formatInteger(workout.calories),
+        calories: formatEnergyWithUnit(workout.calories),
       });
 
       await shareText(message);

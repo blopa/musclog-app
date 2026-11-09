@@ -22,6 +22,7 @@ import {
   useCameraCaptureFlow,
 } from '@/hooks/useCameraCaptureFlow';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
@@ -202,6 +203,7 @@ export default function SmartCameraModal({
   const { t, i18n } = useTranslation();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
     getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
@@ -391,7 +393,7 @@ export default function SmartCameraModal({
                 'success',
                 t('food.aiCamera.analysisSuccess', {
                   name: result.name,
-                  kcal: result.kcal,
+                  kcal: formatEnergyWithUnit(result.kcal),
                   protein: result.protein,
                   carbs: result.carbs,
                   fat: result.fat,
@@ -427,7 +429,7 @@ export default function SmartCameraModal({
                 'success',
                 t('food.aiCamera.analysisSuccess', {
                   name: result.name,
-                  kcal: result.kcal,
+                  kcal: formatEnergyWithUnit(result.kcal),
                   protein: result.protein,
                   carbs: result.carbs,
                   fat: result.fat,
@@ -482,7 +484,7 @@ export default function SmartCameraModal({
               'success',
               t('food.aiCamera.analysisSuccess', {
                 name: mealName,
-                kcal: formatRoundedDecimal(totalKcal, 2),
+                kcal: formatEnergyWithUnit(totalKcal),
                 protein: formatRoundedDecimal(totalProtein, 2),
                 carbs: formatRoundedDecimal(totalCarbs, 2),
                 fat: formatRoundedDecimal(totalFat, 2),
@@ -517,6 +519,7 @@ export default function SmartCameraModal({
       cameraMode,
       aiContext,
       formatRoundedDecimal,
+      formatEnergyWithUnit,
       isAIVisionEnabled,
       i18n.language,
       i18n.resolvedLanguage,

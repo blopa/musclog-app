@@ -31,7 +31,7 @@
       "regenerateCheckinsDesc": "Delete and recreate check-ins for this goal",
       "deleteGoal": "Delete goal",
       "deleteGoalDesc": "Remove this goal from history",
-      "subtitleFormat": "{{calories}} kcal • {{phase}} • Target {{targetWeight}} {{unit}}",
+      "subtitleFormat": "{{calories}} • {{phase}} • Target {{targetWeight}} {{unit}}",
       "phaseCut": "Cut",
       "phaseMaintain": "Maintain",
       "phaseBulk": "Bulk"

@@ -17,6 +17,7 @@ import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useIsCramped } from '@/hooks/useIsCramped';
 import { useSettings } from '@/hooks/useSettings';
@@ -46,6 +47,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { goal: currentGoal } = useCurrentNutritionGoal();
   const { units, intuitiveEatingMode } = useSettings();
+  const { formatEnergy, formatEnergyWithUnit, unitLabel } = useEnergyUnit();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const cramped = useIsCramped();
   const [checkin, setCheckin] = useState<NutritionCheckin | null>(null);
@@ -409,7 +411,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         >
           <Text className="text-base font-medium leading-relaxed text-text-secondary">
             {t('nutrition.checkin.summaryIntro', {
-              target: formatInteger(currentGoal?.totalCalories ?? 0),
+              target: formatEnergyWithUnit(currentGoal?.totalCalories ?? 0),
             })}
             <Text
               style={[
@@ -421,9 +423,9 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               {intuitiveEatingMode
                 ? t('common.labelColonValue', {
                     label: t('common.time.daily'),
-                    value: `0 ${t('common.kcal')}`,
+                    value: `0 ${unitLabel}`,
                   })
-                : `${formatInteger(avgCalories)} ${t('common.kcal')}/${t('common.time.daily').toLowerCase()}`}
+                : `${formatEnergy(avgCalories)} ${unitLabel}/${t('common.time.daily').toLowerCase()}`}
             </Text>
             . {t('nutrition.checkin.summaryOutro')}
             <Text
@@ -456,8 +458,8 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 className="mt-1 text-xl font-bold text-text-primary"
                 style={intuitiveEatingMode ? blurFilter(4) : undefined}
               >
-                {intuitiveEatingMode ? '0' : formatInteger(avgCalories)}{' '}
-                <Text className="text-xs font-medium text-text-tertiary">{t('common.kcal')}</Text>
+                {intuitiveEatingMode ? '0' : formatEnergy(avgCalories)}{' '}
+                <Text className="text-xs font-medium text-text-tertiary">{unitLabel}</Text>
               </Text>
             </View>
             <View

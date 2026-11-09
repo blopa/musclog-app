@@ -8,6 +8,7 @@ import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import Food from '@/database/models/Food';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
@@ -37,15 +38,16 @@ function FoodResultCard({
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
+  const { toDisplay, unitLabel } = useEnergyUnit();
   const isPerServing = food.resolvedNutritionBasis === 'per_serving';
   const calories = formatRoundedDecimal(
-    isPerServing ? food.calories * amount : (food.calories * amount) / 100,
+    toDisplay(isPerServing ? food.calories * amount : (food.calories * amount) / 100),
     2
   );
 
   const calorieLabel = intuitiveEatingMode
-    ? `0 ${t('common.kcal')}`
-    : `${isSelected ? calories : formatRoundedDecimal(food.calories, 2)} ${t('common.kcal')}`;
+    ? `0 ${unitLabel}`
+    : `${isSelected ? calories : formatRoundedDecimal(toDisplay(food.calories), 2)} ${unitLabel}`;
 
   return (
     <View

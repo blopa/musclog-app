@@ -1,10 +1,11 @@
-import { Units } from '@/constants/settings';
+import { type EnergyUnit, Units } from '@/constants/settings';
 import { type FoodLabels } from '@/database/models/Food';
 import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
 
 import { totalCarbsForFoodSource } from './carbsConvention';
+import { formatEnergyWithUnitLabel } from './energyLabel';
 import type { FoodDisplayQuality } from './foodDisplayQuality';
 import { resolveRoundedPer100gCaloriesForDisplay, toFiniteMacro } from './inferCaloriesFromMacros';
 import { getProductName as _getProductName } from './productName';
@@ -611,7 +612,8 @@ export function getOffDisplayQuality(
 
 export function mapOpenFoodFactsProduct(
   product: SearchResultProduct,
-  units: Units = 'metric'
+  units: Units = 'metric',
+  energyUnit: EnergyUnit = 'kcal'
 ): UnifiedFoodResult {
   const nutriments = getNutrimentsWithFallback(product);
   const parsedNutrition = parseOpenFoodFactsNutritionPer100g(product);
@@ -683,7 +685,7 @@ export function mapOpenFoodFactsProduct(
     description: calories
       ? i18n.t('food.descriptionFormat', {
           brand: product.brands || product.generic_name || i18n.t('food.generic'),
-          calories,
+          calories: formatEnergyWithUnitLabel(calories, energyUnit),
           amount: units === 'imperial' ? Math.round(gramsToDisplay(100, units)) : 100,
           unit: i18n.t(getMassUnitI18nKey(units)),
         })

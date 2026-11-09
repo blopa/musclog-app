@@ -31,7 +31,7 @@
       "regenerateCheckinsDesc": "Удалить и пересоздать отметки для этой цели",
       "deleteGoal": "Удалить цель",
       "deleteGoalDesc": "Удалить эту цель из истории",
-      "subtitleFormat": "{{calories}} ккал • {{phase}} • Цель {{targetWeight}} {{unit}}",
+      "subtitleFormat": "{{calories}} • {{phase}} • Цель {{targetWeight}} {{unit}}",
       "phaseCut": "Сушка",
       "phaseMaintain": "Поддержание",
       "phaseBulk": "Набор"

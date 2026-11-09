@@ -38,6 +38,7 @@ import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { useCoachReply } from '@/hooks/useCoachReply';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import AiService from '@/services/AiService';
 import {
   isCoachReplyBusy,
@@ -262,6 +263,7 @@ export function useChatMessages(
   initialIntention?: ChatIntention
 ): UseChatMessagesResult {
   const { t } = useTranslation();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
   const [pendingCoachMessage, setPendingCoachMessage] = useState<ExtendedIMessage | null>(null);
@@ -860,7 +862,7 @@ export function useChatMessages(
             msg4User: t('coach.success.trackMealReady', {
               count: normalizedMeals.length,
               meals: mealNames,
-              calories: totalCalories,
+              calories: formatEnergyWithUnit(totalCalories),
             }),
             sumMsg: `Analyzed ${normalizedMeals.length} meal(s) (${totalCalories} kcal total)`,
           };
@@ -934,7 +936,7 @@ export function useChatMessages(
         setIsSending(false);
       }
     },
-    [isSending, t, clearFailedMessageText, conversationContext]
+    [isSending, t, clearFailedMessageText, conversationContext, formatEnergyWithUnit]
   );
 
   const markMealAsTracked = useCallback(

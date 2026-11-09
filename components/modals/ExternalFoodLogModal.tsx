@@ -15,6 +15,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models/NutritionLog';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import {
   EMPTY_IMPORT_ERROR_KEY,
   type ExternalHandoffCopy,
@@ -146,8 +147,9 @@ export function ExternalFoodLogModal({
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { showSnackbar } = useSnackbar();
-  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
   // These reset on their own when the parent closes, so no stale review or open picker survives
@@ -298,7 +300,7 @@ export function ExternalFoodLogModal({
                 >
                   {t('food.externalLog.review.item', {
                     grams: formatRoundedDecimal(ingredient.grams, 1),
-                    kcal: formatInteger(Math.round(ingredient.kcal)),
+                    kcal: formatEnergyWithUnit(ingredient.kcal),
                   })}
                 </Text>
               </View>

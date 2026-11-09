@@ -31,7 +31,7 @@
       "regenerateCheckinsDesc": "Verwijder en maak controles voor dit doel opnieuw aan",
       "deleteGoal": "Doel verwijderen",
       "deleteGoalDesc": "Verwijder dit doel uit de geschiedenis",
-      "subtitleFormat": "{{calories}} kcal • {{phase}} • Doel {{targetWeight}} {{unit}}",
+      "subtitleFormat": "{{calories}} • {{phase}} • Doel {{targetWeight}} {{unit}}",
       "phaseCut": "Droogtrainen",
       "phaseMaintain": "Onderhoud",
       "phaseBulk": "Bulken"

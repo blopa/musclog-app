@@ -4,7 +4,7 @@
     "customFood": "Custom food",
     "generic": "Generic",
     "notAvailable": "N/A",
-    "descriptionFormat": "{{brand}} • {{calories}} kcal per {{amount}} {{unit}}",
+    "descriptionFormat": "{{brand}} • {{calories}} per {{amount}} {{unit}}",
     "unitGrams": "g",
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
@@ -61,7 +61,7 @@
       "duplicateFoodDesc": "Create a copy to modify",
       "deleteFood": "Delete food",
       "deleteFoodDesc": "Remove this food from your library",
-      "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
+      "caloriesMacrosFormat": "{{calories}} • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
       "macrosFormat": "{{protein}}g P • {{carbs}}g C • {{fat}}g F",
       "unknownFood": "Unknown"
     },
@@ -93,7 +93,7 @@
       "description": "Add a custom portion size for foods"
     },
     "manageFoodData": {
-      "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
+      "caloriesMacrosFormat": "{{calories}} • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
       "unknownFood": "Unknown"
     },
     "header": {
@@ -139,14 +139,14 @@
       "sourceDate": "Source date",
       "copyDayRecentDays": "Recent days",
       "copyDayNoRecentDays": "No recent days with logged food.",
-      "copyDayRecentDaySummary_one": "{{count}} item · {{calories}} kcal",
-      "copyDayRecentDaySummary_other": "{{count}} items · {{calories}} kcal",
+      "copyDayRecentDaySummary_one": "{{count}} item · {{calories}}",
+      "copyDayRecentDaySummary_other": "{{count}} items · {{calories}}",
       "copyDayItemsToCopy": "Items to copy",
       "copyDaySelectAll": "Select all",
       "copyDayDeselectAll": "Deselect all",
-      "copyDayItemCalories": "{{calories}} kcal",
-      "copyDaySelectionSummary_one": "Copying {{count}} item · {{calories}} kcal",
-      "copyDaySelectionSummary_other": "Copying {{count}} items · {{calories}} kcal",
+      "copyDayItemCalories": "{{calories}}",
+      "copyDaySelectionSummary_one": "Copying {{count}} item · {{calories}}",
+      "copyDaySelectionSummary_other": "Copying {{count}} items · {{calories}}",
       "copyDayTargetNotEmpty_one": "This day already has {{count}} item. The copy will be added on top.",
       "copyDayTargetNotEmpty_other": "This day already has {{count}} items. The copy will be added on top.",
       "copyDaySourceEmpty": "No food was logged on that day.",
@@ -245,7 +245,7 @@
         "removeFromFavorites": "Remove from favorites",
         "removeFromFavoritesDesc": "Remove from favorites list",
         "endOfHistory": "End of meal history",
-        "caloriesMacrosFormat": "{{calories}} kcal • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
+        "caloriesMacrosFormat": "{{calories}} • {{protein}}g P • {{carbs}}g C • {{fat}}g F",
         "unknownMeal": "Unknown meal",
         "noMeals": "No meals yet",
         "noMealsDesc": "Create custom meals to see them here"
@@ -335,9 +335,7 @@
       "200g": "Double portion",
       "250g": "Big portion"
     },
-    "common": {
-      "kcal": "kcal"
-    },
+    "common": {},
     "foodDetails": {
       "editFoodInfo": "Edit food info",
       "editFoodInfoSubtitle": "Correct name, barcode or macros if the AI got them wrong.",
@@ -405,8 +403,8 @@
       "tryAnotherSource": "Try another source >",
       "tryAnotherSourceNotFound": "No nutrition data found from other sources.",
       "caloriesTooLowTitle": "Calories don't match the macros",
-      "caloriesTooLowBody": "The reported calories don't match what the macros suggest. Inferred value: {{inferred}} kcal / 100g.",
-      "caloriesTooLowAction": "Update to {{inferred}} kcal >",
+      "caloriesTooLowBody": "The reported calories don't match what the macros suggest. Inferred value: {{inferred}} / 100g.",
+      "caloriesTooLowAction": "Update to {{inferred}} >",
       "showMoreNutrition": "Show more nutrition details"
     },
     "addFoodItemToMeal": {
@@ -485,7 +483,7 @@
       "onDeviceNotSupported": "Meal photo analysis is not available with Apple Intelligence. Please configure OpenAI or Gemini in Settings.",
       "mealLoggedSuccess": "Meal logged.",
       "mealLoggingFailed": "Failed to log meal. Please try again.",
-      "analysisSuccess": "{{name}}: {{kcal}} kcal, P {{protein}}g C {{carbs}}g F {{fat}}g"
+      "analysisSuccess": "{{name}}: {{kcal}}, P {{protein}}g C {{carbs}}g F {{fat}}g"
     },
     "aiNutritionContext": {
       "title": "Add context for AI",
@@ -669,7 +667,7 @@
         "foodCount_few": "{{count}} foods",
         "foodCount_many": "{{count}} foods",
         "foodCount_other": "{{count}} foods",
-        "item": "{{grams}} g · {{kcal}} kcal",
+        "item": "{{grams}} g · {{kcal}}",
         "remove": "Remove {{name}}",
         "groupTitle": "Log as one meal",
         "groupSubtitle": "Shows as a single entry in your diary",

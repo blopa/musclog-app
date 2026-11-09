@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -52,6 +53,7 @@ export function CaloriesRemainingCard({
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const { formatEnergy } = useEnergyUnit();
 
   const needsVerticalLayout =
     willOverflow(macros.protein.amount, macros.protein.goal) ||
@@ -67,10 +69,10 @@ export function CaloriesRemainingCard({
               <Text className="mb-2 text-sm text-text-secondary">{t('food.calories')}</Text>
               <View className="mb-1 flex-row items-baseline gap-2">
                 <Text className="text-6xl font-bold text-text-primary">
-                  {formatInteger(Math.round(calories.consumed), { useGrouping: false })}
+                  {formatEnergy(calories.consumed, { useGrouping: false })}
                 </Text>
                 <Text className="text-2xl text-text-secondary">
-                  / {formatInteger(Math.round(calories.total), { useGrouping: false })}
+                  / {formatEnergy(calories.total, { useGrouping: false })}
                 </Text>
                 <Text
                   className="ml-auto text-3xl font-semibold tabular-nums"

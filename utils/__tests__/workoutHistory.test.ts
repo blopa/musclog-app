@@ -340,6 +340,21 @@ describe('processWorkouts', () => {
     ]);
   });
 
+  it('shows the calories stat in kilojoules when asked', async () => {
+    const [item] = await processWorkouts(
+      [workoutLog({ caloriesBurned: 320 })],
+      ALL_WORKOUTS,
+      t,
+      'metric',
+      theme,
+      'kj'
+    );
+
+    expect(
+      item.stats.find((stat) => stat.label === 'pastWorkoutHistory.stats.calories')?.value
+    ).toBe('1339 common.energyUnit.kj');
+  });
+
   it('appends volume and calorie stats only when they are non-zero', async () => {
     const [withExtras] = await processWorkouts(
       [workoutLog({ totalVolume: 1234, caloriesBurned: 320 })],
@@ -351,7 +366,7 @@ describe('processWorkouts', () => {
     expect(withExtras.stats).toEqual([
       { label: 'pastWorkoutHistory.stats.duration', value: '45 common.min' },
       { label: 'pastWorkoutHistory.stats.volume', value: '1.2k workoutSession.kg' },
-      { label: 'pastWorkoutHistory.stats.calories', value: '320 common.kcal' },
+      { label: 'pastWorkoutHistory.stats.calories', value: '320 common.energyUnit.kcal' },
     ]);
 
     const [withZeroes] = await processWorkouts(
@@ -388,7 +403,7 @@ describe('processWorkouts', () => {
       { label: 'pastWorkoutHistory.stats.duration', value: '50 common.min' },
       { label: 'pastWorkoutHistory.stats.distance', value: '5 km' },
       { label: 'pastWorkoutHistory.stats.pace', value: '10:00 /km' },
-      { label: 'pastWorkoutHistory.stats.calories', value: '210 common.kcal' },
+      { label: 'pastWorkoutHistory.stats.calories', value: '210 common.energyUnit.kcal' },
     ]);
   });
 

@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { IconButton } from '@/components/theme/IconButton';
-import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 
 type FoodSelectionBarProps = {
   itemCount: number;
@@ -27,7 +27,7 @@ export function FoodSelectionBar({
   onActionsPress,
 }: FoodSelectionBarProps) {
   const { t } = useTranslation();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
 
   return (
     <View
@@ -48,7 +48,7 @@ export function FoodSelectionBar({
         {intuitiveMode ? null : (
           <Text className="text-xs tabular-nums text-text-secondary" numberOfLines={1}>
             {t('common.amount_kcal', {
-              amount: formatInteger(Math.round(calories), { useGrouping: false }),
+              amount: formatEnergyWithUnit(calories),
             })}
           </Text>
         )}

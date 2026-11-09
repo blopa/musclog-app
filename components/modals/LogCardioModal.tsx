@@ -11,6 +11,7 @@ import { CARDIO_ACTIVITY_LABEL_KEYS } from '@/components/workout/restrictionLabe
 import { useSnackbar } from '@/context/SnackbarContext';
 import { CardioLogService } from '@/database/services/CardioLogService';
 import { UserMetricService } from '@/database/services/UserMetricService';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -52,6 +53,7 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
   const { t } = useTranslation();
   const { units } = useSettings();
   const { locale } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const { showSnackbar } = useSnackbar();
 
   const [activity, setActivity] = useState<CardioActivity>('run');
@@ -274,7 +276,7 @@ export function LogCardioModal({ visible, onClose, onLogged }: LogCardioModalPro
             <Text style={{ color: theme.colors.text.secondary }}>{t('cardio.estimate')}</Text>
             <Text className="font-bold" style={{ color: theme.colors.text.primary }}>
               {estimatedKcal > 0
-                ? t('cardio.estimateValue', { kcal: estimatedKcal })
+                ? t('cardio.estimateValue', { kcal: formatEnergyWithUnit(estimatedKcal) })
                 : t('cardio.noPace')}
             </Text>
           </View>

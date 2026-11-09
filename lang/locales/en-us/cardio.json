@@ -16,7 +16,7 @@
     "pace": "Pace",
     "ended": "Finished",
     "estimate": "Estimated calories",
-    "estimateValue": "{{kcal}} kcal",
+    "estimateValue": "{{kcal}}",
     "estimateNoWeight": "Add your weight in your profile to estimate calories.",
     "estimateHint": "Estimated from your speed and body weight on level ground.",
     "watchCalories": "Calories from my watch (optional)",

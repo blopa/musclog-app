@@ -29,6 +29,7 @@ import { NutritionCheckinService } from '@/database/services/NutritionCheckinSer
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -62,6 +63,7 @@ export default function NutritionGoalsResults() {
   const { units, useBfForCalculations } = useSettings();
   const weightUnitKey = getWeightUnitI18nKey(units);
   const { formatDecimal, formatInteger } = useFormatAppNumber();
+  const { formatEnergy, formatEnergyWithUnit, unitLabel } = useEnergyUnit();
 
   const params = useLocalSearchParams<{
     aiGenerated?: string;
@@ -462,10 +464,11 @@ export default function NutritionGoalsResults() {
     displayData?.maxTargetCalories !== undefined &&
     displayData.minTargetCalories !== displayData.maxTargetCalories;
 
-  const formattedCalories = displayData ? formatInteger(displayData.targetCalories) : '0';
+  const formattedCalories = displayData ? formatEnergy(displayData.targetCalories) : '0';
 
+  // The range key is "Range: {{range}}", so the unit is part of the range value.
   const formattedCalorieRange = hasCalorieRange
-    ? `${formatInteger(displayData!.minTargetCalories!)} – ${formatInteger(displayData!.maxTargetCalories!)}`
+    ? `${formatEnergy(displayData!.minTargetCalories!)} – ${formatEnergy(displayData!.maxTargetCalories!)} ${unitLabel}`
     : null;
 
   return (
@@ -595,7 +598,7 @@ export default function NutritionGoalsResults() {
                     fontWeight: theme.typography.fontWeight.bold,
                   }}
                 >
-                  {t('nutritionGoals.results.kcal')}
+                  {unitLabel}
                 </Text>
               </View>
 
@@ -639,10 +642,10 @@ export default function NutritionGoalsResults() {
                   >
                     {displayData.dailyCalorieDeficit != null
                       ? t('nutritionGoals.results.dailyDeficit', {
-                          kcal: formatInteger(displayData.dailyCalorieDeficit),
+                          kcal: formatEnergyWithUnit(displayData.dailyCalorieDeficit),
                         })
                       : t('nutritionGoals.results.dailySurplus', {
-                          kcal: formatInteger(displayData.dailyCalorieSurplus!),
+                          kcal: formatEnergyWithUnit(displayData.dailyCalorieSurplus!),
                         })}
                   </Text>
                 </View>

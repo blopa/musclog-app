@@ -93,6 +93,7 @@ import { useFastingDay } from '@/hooks/useFastingDay';
 import { useFoodDiarySelection } from '@/hooks/useFoodDiarySelection';
 import { useFoodItemUi } from '@/hooks/useFoodItemUi';
 import { useFoodScreenModals } from '@/hooks/useFoodScreenModals';
+import { useEnergyUnit } from '@/hooks/useEnergyUnit';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMealGroupUi } from '@/hooks/useMealGroupUi';
 import { useMealUi } from '@/hooks/useMealUi';
@@ -141,7 +142,8 @@ function mealHasUngroupedDuplicateFoods(mealFoods: { log: NutritionLog }[]): boo
 export default function FoodScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
-  const { formatInteger, locale: appLocale } = useFormatAppNumber();
+  const { locale: appLocale } = useFormatAppNumber();
+  const { formatEnergyWithUnit } = useEnergyUnit();
   const {
     units,
     isAiConfigured,
@@ -1656,7 +1658,7 @@ export default function FoodScreen() {
           visible={isFoodMenuVisible}
           onClose={closeFoodMenu}
           title={selectedFoodItem?.displayName ?? t('food.generic')}
-          subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${t('common.amount_kcal', { amount: formatInteger(Math.round(selectedFoodItem?.nutrients?.calories || 0), { useGrouping: false }) })}`}
+          subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${t('common.amount_kcal', { amount: formatEnergyWithUnit(selectedFoodItem?.nutrients?.calories || 0) })}`}
           items={foodMenuItems}
         />
 
