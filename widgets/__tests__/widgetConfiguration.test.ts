@@ -26,20 +26,20 @@ it('configures both platforms, previews, identities, and existing compact Androi
     targetCellHeight: 2,
   });
   expect(config.widgets[1].android).toMatchObject({ targetCellWidth: 1, targetCellHeight: 1 });
-  // Two labelled strips of thirty 4dp squares fit one row of three cells; no title row.
+  // Two labelled strips of thirty 4dp squares fit one row of two cells; no title row.
   expect(config.widgets[2].android).toMatchObject({
-    minWidth: 200,
+    minWidth: 110,
     minHeight: 40,
-    targetCellWidth: 3,
+    targetCellWidth: 2,
     targetCellHeight: 1,
   });
   const activityInfo = readFileSync(
     join(root, 'android/app/src/main/res/xml/activity_heatmap_info.xml'),
     'utf8'
   );
-  expect(activityInfo).toContain('android:minWidth="200dp"');
+  expect(activityInfo).toContain('android:minWidth="110dp"');
   expect(activityInfo).toContain('android:minHeight="40dp"');
-  expect(activityInfo).toContain('android:targetCellWidth="3"');
+  expect(activityInfo).toContain('android:targetCellWidth="2"');
   expect(activityInfo).toContain('android:targetCellHeight="1"');
   expect(config.widgets[3].android).toMatchObject({ targetCellWidth: 2, targetCellHeight: 1 });
   expect(config.widgets[0].ios.supportedFamilies).toEqual(['systemSmall', 'systemMedium']);
