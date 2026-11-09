@@ -113,7 +113,7 @@ type BottomRightControlProps = {
 
 /**
  * The slot to the right of the shutter. A component rather than a value built in
- * the modal body, so its `useTheme()` resolves inside the viewfinder's `ThemeScope`.
+ * the modal body, so its `useTheme()` resolves where it is rendered.
  */
 function BottomRightControl({
   aiContext,

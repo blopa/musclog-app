@@ -38,10 +38,11 @@ preferred access pattern.
 ### Surfaces that do not follow the theme
 
 Some surfaces are not the app's background: a camera viewfinder, a photo, or a scrim over either.
-Their content is white-on-dark whatever the user picked, so the camera surface pins Kinetic Depth
-with `ThemeScope` from `context/ThemeContext.tsx`. A scope changes the context value and NativeWind
-variables together; do not add a second forced-theme context or hand-pick a parallel set of tokens.
-Components outside the viewfinder keep following the user's selected theme.
+The camera viewfinder follows the user's selected theme (it once pinned Kinetic Depth, which ignored
+the choice); its text and icons use the `alwaysWhite` tokens so they stay legible over the preview in
+every palette. A surface that truly must pin a palette wraps in `ThemeScope` from
+`context/ThemeContext.tsx`, which changes the context value and NativeWind variables together; do not
+add a second forced-theme context or hand-pick a parallel set of tokens.
 
 Loggy is the other such surface, in part. His outline, cream, tan, coral, sky and gold are fixed,
 like a photo, but his three greens follow the theme (`constants/loggyTheme.js`: a pink theme draws a

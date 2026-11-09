@@ -17,8 +17,7 @@ type SmartCameraRoundButtonProps = {
 /**
  * The circular control on the camera chrome.
  *
- * It reads its own colours, so a caller that builds it outside the viewfinder's
- * `ThemeScope` still gets the pinned palette: the hook runs where the element is
+ * It reads its own colours through `useTheme()`, so the hook runs where the element is
  * rendered, not where it was constructed.
  */
 export function SmartCameraRoundButton({
