@@ -129,7 +129,7 @@ function SmartCameraShellBody({
     return (
       <View
         className="flex-1 items-center justify-center"
-        style={{ backgroundColor: theme.colors.background.primary }}
+        style={{ backgroundColor: theme.colors.background.scrim90 }}
       >
         <Text style={{ color: theme.colors.text.alwaysWhite }}>
           {t('food.aiCamera.requestingPermission')}
@@ -142,7 +142,7 @@ function SmartCameraShellBody({
     return (
       <View
         className="flex-1 items-center justify-center px-6"
-        style={{ backgroundColor: theme.colors.background.primary }}
+        style={{ backgroundColor: theme.colors.background.scrim90 }}
       >
         <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.alwaysWhite }}>
           {t('food.aiCamera.permissionRequired')}
@@ -157,7 +157,7 @@ function SmartCameraShellBody({
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+    <View className="flex-1" style={{ backgroundColor: theme.colors.background.scrim90 }}>
       <SystemBars style="light" />
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Camera Background */}
@@ -176,7 +176,7 @@ function SmartCameraShellBody({
               pointerEvents="none"
               style={[
                 StyleSheet.absoluteFill,
-                { backgroundColor: theme.colors.background.primary },
+                { backgroundColor: theme.colors.background.scrim90 },
               ]}
             />
           ) : null}

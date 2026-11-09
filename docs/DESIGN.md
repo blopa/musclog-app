@@ -38,9 +38,12 @@ preferred access pattern.
 ### Surfaces that do not follow the theme
 
 Some surfaces are not the app's background: a camera viewfinder, a photo, or a scrim over either.
-The camera viewfinder follows the user's selected theme (it once pinned Kinetic Depth, which ignored
-the choice); its text and icons use the `alwaysWhite` tokens so they stay legible over the preview in
-every palette. A surface that truly must pin a palette wraps in `ThemeScope` from
+The camera viewfinder follows the user's selected theme for its accents (frame corners, scan line,
+active mode tab) but not for its surfaces: it once pinned Kinetic Depth, which ignored the choice, and
+following the theme outright puts near-black icons on the live preview in the light palettes. Chrome that
+sits on the preview therefore uses fixed tokens (`text.alwaysWhite`, `overlay.alwaysWhite*`,
+`background.scrim*`), never `text.primary`, `background.primary`, `neutralWash` or `ink*`, which flip with
+the palette. A surface that truly must pin a palette wraps in `ThemeScope` from
 `context/ThemeContext.tsx`, which changes the context value and NativeWind variables together; do not
 add a second forced-theme context or hand-pick a parallel set of tokens.
 

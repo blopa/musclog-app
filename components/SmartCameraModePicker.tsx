@@ -26,7 +26,7 @@ function ModePickerTab({
 }: ModePickerTabProps) {
   const theme = useTheme();
   const isActive = mode === activeMode;
-  const color = isActive ? theme.colors.text.onAccent : theme.colors.text.secondary;
+  const color = isActive ? theme.colors.text.onAccent : theme.colors.overlay.alwaysWhite70;
 
   return (
     <Pressable
@@ -106,9 +106,9 @@ export function SmartCameraModePicker({
       <View
         className="w-full max-w-sm flex-row items-stretch justify-between rounded-card p-1.5"
         style={{
-          backgroundColor: theme.colors.background.neutralWash,
+          backgroundColor: theme.colors.background.scrim80,
           borderWidth: theme.borderWidth.thin,
-          borderColor: theme.colors.background.ink10,
+          borderColor: theme.colors.overlay.alwaysWhite20,
         }}
       >
         {tabs.map((tab) => (
