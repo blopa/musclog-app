@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useWindowDimensions, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * The least room a quick action gets beside its neighbour: icon, padding and the longest word of
@@ -44,6 +45,7 @@ export function FoodQuickActions({
   onMoreOptions,
 }: FoodQuickActionsProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { fontScale } = useWindowDimensions();
   const basis = quickActionBasis(fontScale);
 
@@ -73,6 +75,7 @@ export function FoodQuickActions({
               <Button
                 label={t('food.actions.aiCamera')}
                 icon={Sparkles}
+                iconColor={theme.colors.accent.secondary}
                 variant="secondaryGradient"
                 size="sm"
                 width="full"
