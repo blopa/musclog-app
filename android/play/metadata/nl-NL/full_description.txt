@@ -1,0 +1,34 @@
+<b>Musclog - Lift, Log, Repeat</b>
+
+Musclog houdt je trainingen en je voeding bij in één app. Geen account, geen advertenties en je gegevens blijven op je telefoon. Gratis en open source.
+
+<b>Trainen</b>
+• Trainingsschema's, planning, herinneringen en rusttimers, met plaatberekening voor de stang en schijven van jouw sportschool.
+• Progressie die uitlegt waarom elk getal verandert, plus een Wekelijkse review van je training en voeding.
+• Supersets, warming-ups, notities per oefening en eenheden per oefening.
+• Honderden oefeningen met foto's, doorzoekbaar in je eigen taal.
+• Importeer je geschiedenis uit Strong, Hevy of FitNotes.
+• Krachtniveaus, persoonlijke records en recente trainingsbelasting per spier.
+• Comebackmodus: een rustigere herstart als je een tijd weg was.
+
+<b>Eten</b>
+• Voedingsdagboek met scanner voor barcodes en voedingswaardetabellen.
+• Zoek in Open Food Facts en de USDA-database, of maak je eigen producten en maaltijden.
+• Calorie- en macrodoelen die meebewegen met je werkelijke gewichtstrend, in kcal of kJ.
+
+<b>Ken je lichaam</b>
+• Gewicht, vetpercentage, metingen en stemming, met grafieken.
+• Optionele cyclusregistratie: noteer menstruaties en klachten en zie je eigen patronen. Voorspellingen zijn schattingen en er is geen trainingsadvies per fase.
+• Health Connect-synchronisatie voor gewicht, voeding, trainingen en lichaamsmetingen.
+
+<b>AI, alleen als je wilt</b>
+• Chat met een coach, analyseer maaltijdfoto's en laat schema's maken met je eigen Gemini-, OpenAI- of Claude-sleutel, een lokaal model of de gratis optie in de app.
+• Kies hoe de coach tegen je praat. Niets in Musclog vereist AI.
+
+<b>Van jou</b>
+• Gewicht, vetpercentage en voedingslogs worden op je toestel versleuteld. Alles werkt offline.
+• Exporteer of maak een back-up van je gegevens, of verplaats ze naar een andere telefoon door QR-codes te scannen, zonder cloud.
+• Anonieme crashrapporten helpen fouten op te lossen en kun je in de instellingen uitzetten.
+• Widgets op het beginscherm, meerdere kleurthema's, en English, Español, Nederlands, Português (Brasil) en Русский.
+
+Lift, Log, Repeat.

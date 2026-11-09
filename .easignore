@@ -149,3 +149,6 @@ assets/workouts
 # Static public assets and blog source are only used by the website export.
 public
 app/(website)/posts
+
+.release
+android/play

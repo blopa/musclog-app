@@ -54,6 +54,7 @@ The agent files hold the same pins (`utils/__tests__/agentOrchestration.test.ts`
 - `npm run generate-theme-icon-backgrounds`: Generate theme-colored app icon PNGs (transparent, plus opaque copies for iOS) from the palette registry
 - `npm run generate-exercises-data`: Regenerate structural and English exercise data from free-exercise-db
 - `npm run generate-exercise-locales`: Regenerate localized exercise names and descriptions from the English catalogue
+- **Google Play publishing** (`docs/GOOGLE_PLAY.md`): releases and store-listing changes go through `scripts/release-android.sh` and `scripts/play.sh` (gplay), never the Play Console by hand. Never run `play.sh up`, `release-android.sh upload --track production` or any `promote`/`rollout` command unless the user asks for it in that conversation; `plan`, `check`, `pull` and `upload --dry-run` are fine. Never bump versions from those scripts, never commit service-account keys or `~/.gplay/`, and leave the listing images alone (no `--with-images`). Every listing text change covers all five locales (`en-US`, `es-ES`, `nl-NL`, `pt-BR`, `ru-RU`) within Play's limits (title 30, short 80, full 4000) and must match what the app does.
 - `npm run check-version-sync`: Verify Expo, package, Android, and iOS release versions match
 - `npm run reset-project`: Reset project to initial state via script
 - `npm run build-android`: Production build for Android via EAS (AAB for Google Play)

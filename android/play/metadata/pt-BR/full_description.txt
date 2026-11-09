@@ -1,0 +1,34 @@
+<b>Musclog - Lift, Log, Repeat</b>
+
+O Musclog registra seus treinos e sua alimentação em um só app. Sem conta, sem anúncios e com seus dados no seu celular. Gratuito e de código aberto.
+
+<b>Treine</b>
+• Planos de treino, agenda, lembretes e cronômetros de descanso, com cálculo de anilhas para a barra e as anilhas da sua academia.
+• Uma progressão que explica cada número que altera e uma Revisão semanal do seu treino e da sua nutrição.
+• Super-séries, aquecimentos, anotações por exercício e unidades por exercício.
+• Centenas de exercícios com fotos, com busca no seu idioma.
+• Importe seu histórico do Strong, do Hevy ou do FitNotes.
+• Níveis de força, recordes pessoais e carga de treino recente por músculo.
+• Modo retorno: um recomeço mais leve se você ficou um tempo parado.
+
+<b>Coma</b>
+• Diário alimentar com leitor de código de barras e de rótulos nutricionais.
+• Busque no Open Food Facts e na base de dados do USDA, ou crie seus próprios alimentos e refeições.
+• Metas de calorias e macros que se ajustam à tendência real do seu peso, em kcal ou kJ.
+
+<b>Conheça seu corpo</b>
+• Peso, gordura corporal, medidas e humor, com gráficos.
+• Acompanhamento opcional do ciclo menstrual: registre a menstruação e os sintomas e veja seus próprios padrões. As previsões são estimativas e não há conselhos de treino por fase.
+• Sincronização com o Health Connect de peso, nutrição, treinos e métricas corporais.
+
+<b>IA, só se você quiser</b>
+• Converse com um treinador, analise fotos de refeições e gere planos com sua própria chave do Gemini, OpenAI ou Claude, um modelo local ou a opção gratuita incluída no app.
+• Escolha como o treinador fala com você. Nada no Musclog exige IA.
+
+<b>Seu</b>
+• Peso, gordura corporal e registros de alimentos são criptografados no seu dispositivo. Tudo funciona offline.
+• Exporte ou faça backup dos seus dados, ou leve-os para outro celular escaneando QR codes, sem nuvem.
+• Relatórios de falhas anônimos ajudam a corrigir bugs e podem ser desativados nas configurações.
+• Widgets na tela inicial, vários temas de cor, e English, Español, Nederlands, Português (Brasil) e Русский.
+
+Lift, Log, Repeat.

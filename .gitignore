@@ -115,3 +115,6 @@ __pycache__/
 
 # Layout audit output (npm run layout:audit)
 layout-audit-report/
+
+# Android bundles built by scripts/release-android.sh
+.release/
