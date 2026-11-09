@@ -737,6 +737,19 @@ Notes that explain the choices:
 - **Tier order used** (list prices from third-party summaries, consistent with the model catalogue
   descriptions): Codex Astra ($10/$50 per million tokens) above Sol ($2/$10), Terra ($1/$5) and Luna
   ($0.10/$0.50). Re-check when a catalogue changes: `codex debug models` prints the descriptions.
+- **Cheap Agent was evaluated and not adopted; some of its techniques were.**
+  [`cheap-agent`](https://github.com/muaaz9329/cheap-ag) (MIT) sends work to a non-Claude model
+  through OpenCode, which needs a paid provider key or a local model that is good at tool calls. With
+  subscription-only use that adds a backend and hooks but no saving over `worker` and `worker-lite`,
+  and the repo no longer references it. Nothing of it was run end to end. Read from its source, what
+  carries over to native subagents became the "Brief and result protocol" bullet: the `source:` line
+  and one backticked check in a brief, a failing test before a bug fix, a status word first in the
+  reply with `found`/`missing`/`tried`, no re-running a verified `OK`, one retry then ask, and
+  research handed to a cheap read-only worker. Not adopted: its server instructions ("send every code
+  change to delegate", "don't open source files before delegating") contradict keeping judgment work
+  with the orchestrator; its edit guard and failure-takeover hooks (they need the server); worktree
+  isolation (workers here edit disjoint files in the shared tree, and a worktree has no
+  `node_modules`); and per-job turn, minute and cost caps (no native equivalent was verified).
 - **Changing a tier**: edit that tool's agent-file `model` line and its row in the `AGENTS.md` table;
   the test fails if they disagree. Claude aliases follow new releases without any edit.
 - Other tools read `AGENTS.md` natively (Copilot, Cursor, Windsurf, Roo Code, Kilo Code, Cline) and
