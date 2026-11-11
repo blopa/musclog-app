@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 905" width="100%" height="100%">
+  <defs>
+    <!-- Main background gradient (top-left green to bottom-right/top-right deep blue-teal) -->
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="90%" y2="85%">
+      <stop offset="0%" stop-color="#3eb370" />
+      <stop offset="45%" stop-color="#2e7d7b" />
+      <stop offset="100%" stop-color="#295484" />
+    </linearGradient>
+
+    <!-- Subtle gradient for the light green wave -->
+    <linearGradient id="green-wave" x1="30%" y1="100%" x2="100%" y2="20%">
+      <stop offset="0%" stop-color="#4fb372" />
+      <stop offset="100%" stop-color="#55b575" />
+    </linearGradient>
+  </defs>
+
+  <!-- 1. Base Gradient Rectangle -->
+  <rect width="1920" height="905" fill="url(#bg-gradient)" />
+
+  <!-- 2. Midground Light Green Wave -->
+  <path d="M 637 852 
+       C 750 680, 950 615, 1140 622 
+       C 1320 628, 1420 530, 1560 380 
+       C 1670 265, 1790 218, 1920 212 
+       L 1920 600 
+       L 637 852 Z" fill="url(#green-wave)" />
+
+  <!-- 3. Foreground Dark Teal-Blue Wave -->
+  <path d="M 590 905 
+       C 620 865, 637 852, 660 835 
+       C 780 755, 920 745, 1080 730 
+       C 1240 715, 1340 630, 1460 560 
+       C 1600 480, 1770 475, 1920 510 
+       L 1920 905 
+       Z" fill="#235069" />
+</svg>
