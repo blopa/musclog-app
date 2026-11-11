@@ -16,12 +16,13 @@ export function isCompactSetTable(width: number, fontScale: number): boolean {
 
 /**
  * The columns of the entry line, in order. The header and the rows both render from this one
- * list: a compact layout puts the check button (and last time's numbers) on the line under the
- * fields, so the entry line has a spacer in place of "previous" and no check column — a header
- * that kept reserving it sat 56pt to the left of its inputs.
+ * list: a compact layout moves only last time's numbers to the line under the fields, so the
+ * entry line has a spacer in place of "previous". The check stays at the end of the entry line:
+ * the fixed columns (set, weight, reps, check and their gaps) need about 240pt, which fits even
+ * the narrowest phone, and a check dropped to the second line looked like it had no room.
  */
 export function entryLineColumns(compact: boolean): SetTableColumn[] {
   return compact
-    ? ['set', 'spacer', 'weight', 'reps']
+    ? ['set', 'spacer', 'weight', 'reps', 'check']
     : ['set', 'previous', 'weight', 'reps', 'check'];
 }

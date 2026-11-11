@@ -18,8 +18,12 @@
 //                                                          browser window; every edit is saved back
 //                                                          into the snapshot until the window closes
 //
-// APPSCREEN_DIR points at the appscreen checkout (default: ../appscreen next to this repo). Three.js
-// and the headline font load from their CDNs, so rendering needs the network.
+// Which appscreen runs: the checkout in APPSCREEN_DIR (default: ../appscreen next to this repo), or,
+// when there is none, the hosted copy at APPSCREEN_URL (default https://yuzu-hub.github.io/appscreen/).
+// The hosted page cannot reach this repository, so the browser answers its requests for
+// `musclog/screenshots/...` from disk (same origin as far as the page can tell, so the canvas is not
+// tainted and can still be exported). A hosted copy may be newer than the snapshot; a checkout pins
+// the version. Three.js and the headline font load from their CDNs, so rendering needs the network.
 const fs = require('fs');
 const http = require('http');
 const path = require('path');
@@ -27,7 +31,8 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const SNAPSHOT = path.join(ROOT, 'screenshots', 'google-play', 'phone.appscreen.json');
 const LISTING = path.join(ROOT, 'android', 'play', 'metadata');
-const APPSCREEN_DIR = path.resolve(process.env.APPSCREEN_DIR ?? path.join(ROOT, '..', 'appscreen'));
+const DEFAULT_APPSCREEN_DIR = path.join(ROOT, '..', 'appscreen');
+const DEFAULT_APPSCREEN_URL = 'https://yuzu-hub.github.io/appscreen/';
 // What the local server exposes of this repository: the captures, nothing else.
 const SERVED_REPO_PREFIX = '/musclog/screenshots/';
 const SERVED_REPO_DIR = path.join(ROOT, 'screenshots');
@@ -79,12 +84,51 @@ function safeJoin(base, requestPath) {
   return resolved === base || resolved.startsWith(base + path.sep) ? resolved : null;
 }
 
-function startServer() {
+/**
+ * Where appscreen comes from: the checkout in `dir` when it holds an index.html, else the hosted
+ * copy at `url`. `reason` says why the hosted copy was chosen.
+ */
+function resolveAppscreenSource(
+  dir,
+  url,
+  hasIndex = (candidate) => fs.existsSync(path.join(candidate, 'index.html'))
+) {
+  if (hasIndex(dir)) {
+    return { kind: 'local', dir };
+  }
+
+  return { kind: 'remote', url, reason: `no appscreen checkout at ${dir}` };
+}
+
+/** A file under the served `captures` folder for a path that follows its `/musclog/screenshots` prefix. */
+function repoFile(pathname) {
+  return safeJoin(SERVED_REPO_DIR, pathname.slice(SERVED_REPO_PREFIX.length - 1));
+}
+
+/**
+ * Makes appscreen reachable and returns its page URL, `close` and whether the browser must serve
+ * this repository's files itself (the hosted page cannot reach them).
+ */
+async function startAppscreen(source) {
+  if (source.kind === 'remote') {
+    console.log(`Using the hosted appscreen at ${source.url} (${source.reason}).`);
+    return { pageUrl: source.url, serveRepo: true, close: () => undefined };
+  }
+
+  const server = await startServer(source.dir);
+  return {
+    pageUrl: `http://127.0.0.1:${server.address().port}/index.html`,
+    serveRepo: false,
+    close: () => server.close(),
+  };
+}
+
+function startServer(appscreenDir) {
   const server = http.createServer((req, res) => {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
     const file = pathname.startsWith(SERVED_REPO_PREFIX)
-      ? safeJoin(SERVED_REPO_DIR, pathname.slice(SERVED_REPO_PREFIX.length - 1))
-      : safeJoin(APPSCREEN_DIR, pathname === '/' ? '/index.html' : pathname);
+      ? repoFile(pathname)
+      : safeJoin(appscreenDir, pathname === '/' ? '/index.html' : pathname);
     if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
       res.writeHead(404);
       res.end('Not Found');
@@ -201,14 +245,45 @@ async function launch({ headless }) {
   });
 }
 
+/** Answers the hosted page's requests for this repository's captures from disk. */
+async function serveRepoInBrowser(page, pageUrl) {
+  const base = new URL('.', pageUrl);
+  const prefix = `${base.pathname}${SERVED_REPO_PREFIX.slice(1)}`;
+  await page.route(
+    (url) => url.origin === base.origin && url.pathname.startsWith(prefix),
+    (route) => {
+      const pathname = decodeURIComponent(new URL(route.request().url()).pathname);
+      const file = safeJoin(SERVED_REPO_DIR, pathname.slice(prefix.length - 1));
+      if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
+        return route.fulfill({ status: 404, body: 'Not Found' });
+      }
+
+      return route.fulfill({
+        path: file,
+        contentType: MIME_TYPES[path.extname(file).toLowerCase()] ?? 'application/octet-stream',
+        headers: { 'Cache-Control': 'no-store' },
+      });
+    }
+  );
+}
+
 /** Opens appscreen with the snapshot as its current project. */
-async function openProject(browser, baseUrl, snapshot, viewport) {
+async function openProject(browser, appscreen, snapshot, viewport) {
   const page = await browser.newPage({ viewport });
   page.on('pageerror', (error) => console.error(`appscreen: ${error.message}`));
-  await page.goto(`${baseUrl}/index.html`);
-  await page.waitForFunction(() => typeof db !== 'undefined' && db !== null, null, {
-    timeout: 60000,
-  });
+  if (appscreen.serveRepo) {
+    await serveRepoInBrowser(page, appscreen.pageUrl);
+  }
+
+  await page.goto(appscreen.pageUrl);
+  await page
+    .waitForFunction(() => typeof db !== 'undefined' && db !== null, null, { timeout: 60000 })
+    .catch(() => {
+      throw new Error(
+        `${appscreen.pageUrl} did not become appscreen (no IndexedDB handle "db"). ` +
+          'Check the URL, or use a checkout (APPSCREEN_DIR).'
+      );
+    });
 
   // Write the project and make it current, the way appscreen's own project switcher does.
   await page.evaluate(
@@ -313,12 +388,11 @@ async function renderScreenshot(page, index, lang) {
 async function render() {
   const snapshot = readSnapshot();
   checkSnapshot(snapshot);
-  const server = await startServer();
-  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const appscreen = await startAppscreen(appscreenSource());
   const browser = await launch({ headless: true });
   const outputs = [];
   try {
-    const page = await openProject(browser, baseUrl, snapshot, { width: 1400, height: 900 });
+    const page = await openProject(browser, appscreen, snapshot, { width: 1400, height: 900 });
     await loadFonts(page);
     for (const lang of snapshot.projectLanguages) {
       for (let index = 0; index < snapshot.screenshots.length; index++) {
@@ -336,7 +410,7 @@ async function render() {
     }
   } finally {
     await browser.close();
-    server.close();
+    appscreen.close();
   }
 
   // Everything rendered: only now touch the listing, so a failure never leaves it half updated.
@@ -361,10 +435,9 @@ async function render() {
 async function studio() {
   const snapshot = readSnapshot();
   checkSnapshot(snapshot);
-  const server = await startServer();
-  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const appscreen = await startAppscreen(appscreenSource());
   const browser = await launch({ headless: false });
-  const page = await openProject(browser, baseUrl, snapshot, null);
+  const page = await openProject(browser, appscreen, snapshot, null);
   await loadFonts(page);
   console.log(
     `Editing ${path.relative(ROOT, SNAPSHOT)} in appscreen. Changes are saved as you make them; ` +
@@ -411,16 +484,27 @@ async function studio() {
     });
   });
   await browser.close().catch(() => undefined);
-  server.close();
+  appscreen.close();
 }
 
-module.exports = { OUTPUT_WIDTH, PLAY_LOCALES, SNAPSHOT, snapshotProblems, snapshotSources };
+/** The appscreen to drive, from APPSCREEN_DIR / APPSCREEN_URL (see the header). */
+function appscreenSource() {
+  return resolveAppscreenSource(
+    path.resolve(process.env.APPSCREEN_DIR ?? DEFAULT_APPSCREEN_DIR),
+    process.env.APPSCREEN_URL ?? DEFAULT_APPSCREEN_URL
+  );
+}
+
+module.exports = {
+  OUTPUT_WIDTH,
+  PLAY_LOCALES,
+  SNAPSHOT,
+  resolveAppscreenSource,
+  snapshotProblems,
+  snapshotSources,
+};
 
 if (require.main === module) {
-  if (!fs.existsSync(path.join(APPSCREEN_DIR, 'index.html'))) {
-    fail(`no appscreen checkout at ${APPSCREEN_DIR} (set APPSCREEN_DIR)`);
-  }
-
   const mode = process.argv[2] ?? 'render';
   const run = { render, studio }[mode];
   if (!run) {

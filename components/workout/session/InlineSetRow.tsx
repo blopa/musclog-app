@@ -160,9 +160,8 @@ export function InlineSetRow({
       </Text>
     );
 
-  // The complete button sits at the end of the entry line, or — on a narrow layout where the
-  // fields, the set number and the check would not fit the row — on the line under the fields,
-  // beside last time's numbers. The row itself never grows past its surface.
+  // The complete button always sits at the end of the entry line. Only last time's numbers move
+  // to the line under the fields on a narrow layout. The row never grows past its surface.
   const checkButton = (
     <Pressable
       accessibilityRole="button"
@@ -225,12 +224,7 @@ export function InlineSetRow({
             <Fragment key={column}>{entryCells[column]}</Fragment>
           ))}
       </View>
-      {compact ? (
-        <View className="flex-row items-center gap-2">
-          {previousCell}
-          {checkButton}
-        </View>
-      ) : null}
+      {compact ? <View className="flex-row items-center gap-2">{previousCell}</View> : null}
       {isCurrent && editable ? (
         <View className="gap-1 px-1 pb-2 pt-1">
           <RirQuickPick
