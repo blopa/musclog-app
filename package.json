@@ -26,6 +26,7 @@
     "screenshots:google-play-phone:render": "node scripts/google-play-phone-screenshots.js render",
     "screenshots:google-play-phone:studio": "node scripts/google-play-phone-screenshots.js studio",
     "generate-banners": "node scripts/generate-banners.js",
+    "generate-banners:sync": "node scripts/sync-google-play-banners.js",
     "screenshots:google-play-phone": "npm run screenshots:build && npm run screenshots:google-play-phone:capture && npm run screenshots:google-play-phone:render",
     "screenshots:google-play": "npm run screenshots:build && npm run screenshots:google-play:run && npm run screenshots:google-play:sync",
     "layout:scan": "node scripts/layout-risk-scan.js",
