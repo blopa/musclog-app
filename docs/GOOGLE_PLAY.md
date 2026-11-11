@@ -82,8 +82,13 @@ edit and deletes it on exit unless committed, since Play allows one open edit pe
 `--changes-not-sent-for-review` and is only for managed publishing.
 
 Images are not automated yet: `pull` downloads them (the export only writes `*_meta.json`; the files come
-from the public url plus `=s0`, hash-checked) so a fresh `pull` then `plan` shows no changes. Wiring in
-the Playwright screenshots (`npm run screenshots*`) is a later step.
+from the public url plus `=s0`, hash-checked) so a fresh `pull` then `plan` shows no changes.
+
+`npm run screenshots:google-play` regenerates eight of them in the repo: the home, food, Goals management
+and live-workout frames of `sevenInchScreenshots/01-04` and `tenInchScreenshots/02-05` (the mapping is
+`TARGETS` in `scripts/sync-google-play-screenshots.js`; every other listing image is left alone). It only
+rewrites files under `android/play/`; publishing them stays `scripts/play.sh up --with-images`, run on
+request. Captures land in `screenshots/google-play/<tablet-7|tablet-10>/` first.
 
 Every text change covers all locales (`en-US`, `es-ES`, `nl-NL`, `pt-BR`, `ru-RU`, matching the languages
 the app ships) and must match what the app does. Cycle copy never promises phase-based training advice.
