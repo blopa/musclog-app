@@ -8,3 +8,6 @@ utils/repCountingModel/*.js
 # Agent tooling (skills, settings, plans)
 .claude/
 .agents/
+
+# Written by appscreen through scripts/google-play-phone-screenshots.js studio (JSON.stringify)
+screenshots/google-play/phone.appscreen.json

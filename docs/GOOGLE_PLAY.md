@@ -90,6 +90,8 @@ and live-workout frames of `sevenInchScreenshots/01-04` and `tenInchScreenshots/
 rewrites files under `android/play/`; publishing them stays `scripts/play.sh up --with-images`, run on
 request. Captures land in `screenshots/google-play/<tablet-7|tablet-10>/` first.
 
+`npm run screenshots:google-play-phone` regenerates the eight phone screenshots of every locale (`metadata/<locale>/images/phoneScreenshots/01-08.png`, 1080×1920). It captures the real app in each language, then composes each capture into a 3D Samsung Galaxy S25 Ultra with a caption by driving [appscreen](https://github.com/YUZU-Hub/appscreen) headlessly. The layout, captions in all five languages, phone angles and backdrop live in `screenshots/google-play/phone.appscreen.json`; edit it visually with `npm run screenshots:google-play-phone:studio` (appscreen opens on the file and saves every change back), then `npm run screenshots:google-play-phone:render`. The appscreen checkout is `APPSCREEN_DIR` (default `../appscreen`). For the iOS listing later, the same file takes `"device3D": "iphone"`.
+
 Every text change covers all locales (`en-US`, `es-ES`, `nl-NL`, `pt-BR`, `ru-RU`, matching the languages
 the app ships) and must match what the app does. Cycle copy never promises phase-based training advice.
 

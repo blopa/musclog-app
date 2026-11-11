@@ -164,7 +164,15 @@ export const FoodItemCard = memo(function FoodItemCard({
   if (selectionMode) {
     trailingControl = <CardSelectionCheck selected={selected} />;
   } else if (onMorePress) {
-    trailingControl = <MenuButton size="md" onPress={onMorePress} className="flex-shrink-0" />;
+    trailingControl = (
+      <MenuButton
+        size="md"
+        onPress={onMorePress}
+        className="flex-shrink-0"
+        accessibilityLabel={t('common.a11y.moreOptions')}
+        testID="food-item-menu"
+      />
+    );
   }
 
   return (

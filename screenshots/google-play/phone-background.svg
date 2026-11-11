@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="17280" height="3840" viewBox="0 0 17280 3840">
+  <!-- Generated backdrop for the Google Play phone screenshots: 8 slides of 2160x3840, each slide
+       showing its own slice (see screenshots/google-play/phone.appscreen.json). Colours are the
+       kinetic-depth theme: surfaceBase #0d1210, surfaceTint #0c2419, brandSurface #064e3b,
+       brandPrimary #29a577. -->
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1210"/>
+      <stop offset="0.55" stop-color="#0c2419"/>
+      <stop offset="1" stop-color="#0d1210"/>
+    </linearGradient>
+    <linearGradient id="deep" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a5c45"/>
+      <stop offset="1" stop-color="#064e3b"/>
+    </linearGradient>
+  </defs>
+  <rect width="17280" height="3840" fill="url(#base)"/>
+  <path d="M -1080 2342.4 L 0 2342.4 C 1080 2342.4, 1080 1651.1999999999998, 2160 1651.1999999999998 C 3240 1651.1999999999998, 3240 2649.6, 4320 2649.6 C 5400 2649.6, 5400 1574.3999999999996, 6480 1574.3999999999996 C 7560 1574.3999999999996, 7560 2419.2, 8640 2419.2 C 9720 2419.2, 9720 1728, 10800 1728 C 11880 1728, 11880 2726.3999999999996, 12960 2726.3999999999996 C 14040 2726.3999999999996, 14040 1651.1999999999998, 15120 1651.1999999999998 C 16200 1651.1999999999998, 16200 2265.6, 17280 2265.6 L 18360 2265.6 L 18360 3571.2000000000003 L 17280 3571.2000000000003 C 16200 3571.2000000000003, 16200 2956.8, 15120 2956.8 C 14040 2956.8, 14040 4032, 12960 4032 C 11880 4032, 11880 3033.6000000000004, 10800 3033.6000000000004 C 9720 3033.6000000000004, 9720 3724.8, 8640 3724.8 C 7560 3724.8, 7560 2880, 6480 2880 C 5400 2880, 5400 3955.2000000000003, 4320 3955.2000000000003 C 3240 3955.2000000000003, 3240 2956.8, 2160 2956.8 C 1080 2956.8, 1080 3648.0000000000005, 0 3648.0000000000005 L -1080 3648.0000000000005 Z" fill="url(#deep)"/>
+  <path d="M -1080 2217.6 L 0 2217.6 C 1080 2217.6, 1080 3369.6, 2160 3369.6 C 3240 3369.6, 3240 2064, 4320 2064 C 5400 2064, 5400 3139.2, 6480 3139.2 C 7560 3139.2, 7560 1987.2000000000003, 8640 1987.2000000000003 C 9720 1987.2000000000003, 9720 3369.6, 10800 3369.6 C 11880 3369.6, 11880 2140.7999999999997, 12960 2140.7999999999997 C 14040 2140.7999999999997, 14040 3062.3999999999996, 15120 3062.3999999999996 C 16200 3062.3999999999996, 16200 2294.4, 17280 2294.4 L 18360 2294.4 L 18360 2467.2000000000003 L 17280 2467.2000000000003 C 16200 2467.2000000000003, 16200 3235.2, 15120 3235.2 C 14040 3235.2, 14040 2313.6, 12960 2313.6 C 11880 2313.6, 11880 3542.4, 10800 3542.4 C 9720 3542.4, 9720 2160.0000000000005, 8640 2160.0000000000005 C 7560 2160.0000000000005, 7560 3312, 6480 3312 C 5400 3312, 5400 2236.8, 4320 2236.8 C 3240 2236.8, 3240 3542.4, 2160 3542.4 C 1080 3542.4, 1080 2390.4, 0 2390.4 L -1080 2390.4 Z" fill="#29a577"/>
+  <g>
+    <circle cx="2160" cy="3456" r="520" fill="none" stroke="#29a577" stroke-opacity="0.34" stroke-width="14"/>
+    <circle cx="2160" cy="3456" r="700" fill="none" stroke="#29a577" stroke-opacity="0.26" stroke-width="8"/>
+    <circle cx="2160" cy="3456" r="880" fill="none" stroke="#29a577" stroke-opacity="0.18000000000000002" stroke-width="8"/>
+    <circle cx="6480" cy="3379.2" r="520" fill="none" stroke="#29a577" stroke-opacity="0.34" stroke-width="14"/>
+    <circle cx="6480" cy="3379.2" r="700" fill="none" stroke="#29a577" stroke-opacity="0.26" stroke-width="8"/>
+    <circle cx="6480" cy="3379.2" r="880" fill="none" stroke="#29a577" stroke-opacity="0.18000000000000002" stroke-width="8"/>
+    <circle cx="10800" cy="3532.8" r="520" fill="none" stroke="#29a577" stroke-opacity="0.34" stroke-width="14"/>
+    <circle cx="10800" cy="3532.8" r="700" fill="none" stroke="#29a577" stroke-opacity="0.26" stroke-width="8"/>
+    <circle cx="10800" cy="3532.8" r="880" fill="none" stroke="#29a577" stroke-opacity="0.18000000000000002" stroke-width="8"/>
+    <circle cx="15120" cy="3456" r="520" fill="none" stroke="#29a577" stroke-opacity="0.34" stroke-width="14"/>
+    <circle cx="15120" cy="3456" r="700" fill="none" stroke="#29a577" stroke-opacity="0.26" stroke-width="8"/>
+    <circle cx="15120" cy="3456" r="880" fill="none" stroke="#29a577" stroke-opacity="0.18000000000000002" stroke-width="8"/>
+  </g>
+</svg>
