@@ -167,7 +167,28 @@ parse_flags() {
   done
 }
 
-# Shows the plan, enforces the guards, applies it into the open edit.
+# Play allows 8 screenshots per type and language, and `gplay sync` uploads a changed image BEFORE
+# removing the old one, so replacing a full set (8 phone shots) fails with "more than 8 screenshots"
+# (403). The metadata directory is the desired state, so each screenshot type the plan uploads is
+# emptied first, inside the open edit (nothing is public until commit). `sync run` plans again
+# afterwards, so every local file of that type is then uploaded. Single images (icon, feature
+# graphic) replace in place and are left alone.
+clear_screenshot_types_before_upload() {
+  [[ "$WITH_IMAGES" -eq 1 ]] || return 0
+  local locale type remote
+  while IFS=$'\t' read -r locale type; do
+    [[ -n "$locale" ]] || continue
+    remote="$(gplay images list --package "$PACKAGE" --edit "$EDIT_ID" --locale "$locale" --type "$type" \
+      | jq '[.images[]?] | length')"
+    [[ "$remote" -gt 0 ]] || continue
+    note "clearing $remote remote $type for $locale before re-uploading"
+    gplay images delete-all --package "$PACKAGE" --edit "$EDIT_ID" --locale "$locale" --type "$type" --confirm >/dev/null || return 1
+  done < <(jq -r '[(.effects // [])[] | select(.kind == "image.upload" and (.imageType | endswith("Screenshots")))
+    | [.locale, .imageType]] | unique[] | @tsv' "$WORK/plan.json")
+}
+
+# Shows the plan, enforces the guards, applies it into the open edit. Callers run it under `|| rc=$?`,
+# which switches `set -e` off inside it, so every step that can fail returns 1 explicitly.
 apply_into_edit() {
   summarize_plan "$WORK/plan.json"
   if [[ "$WITH_IMAGES" -eq 0 ]] && plan_has_non_listing "$WORK/plan.json"; then
@@ -188,12 +209,16 @@ apply_into_edit() {
     [[ "$ans" == "y" || "$ans" == "Y" ]] || die "aborted."
   }
   if [[ "$has_listing" -eq 1 ]]; then
-    gplay sync run --package "$PACKAGE" --edit "$EDIT_ID" --dir "$META_DIR" --state-dir "$WORK/state" >/dev/null
+    clear_screenshot_types_before_upload
+    gplay sync run --package "$PACKAGE" --edit "$EDIT_ID" --dir "$META_DIR" --state-dir "$WORK/state" >/dev/null \
+      || { echo "error: gplay sync run failed; nothing was committed." >&2; return 1; }
   fi
   if [[ "$has_details" -eq 1 ]]; then
-    gplay details patch --package "$PACKAGE" --edit "$EDIT_ID" --json "@$DETAILS_FILE" >/dev/null
+    gplay details patch --package "$PACKAGE" --edit "$EDIT_ID" --json "@$DETAILS_FILE" >/dev/null \
+      || { echo "error: gplay details patch failed; nothing was committed." >&2; return 1; }
   fi
-  gplay edits validate --package "$PACKAGE" --edit "$EDIT_ID" >/dev/null
+  gplay edits validate --package "$PACKAGE" --edit "$EDIT_ID" >/dev/null \
+    || { echo "error: the edit did not validate; nothing was committed." >&2; return 1; }
 }
 
 cmd_check() {

@@ -81,6 +81,8 @@ without `--with-images`, and a destructive plan without `--allow-destructive`. E
 edit and deletes it on exit unless committed, since Play allows one open edit per app. `--no-review` adds
 `--changes-not-sent-for-review` and is only for managed publishing.
 
+With `--with-images`, each screenshot type the plan uploads is first emptied on Play inside the open edit (`clear_screenshot_types_before_upload`): Play allows 8 per type and `gplay sync` uploads a changed image before removing the old one, so replacing a full set failed with "403: more than 8 screenshots". Nothing is public until commit. A locale that exists in `metadata/` but not on Play makes `plan` fail with "Listing for language 'X' not found" (404): create it first with `gplay listings update --locale X --title ... --short-description ... --full-description ...` in an edit.
+
 Images are not automated yet: `pull` downloads them (the export only writes `*_meta.json`; the files come
 from the public url plus `=s0`, hash-checked) so a fresh `pull` then `plan` shows no changes.
 
