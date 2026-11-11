@@ -6,6 +6,16 @@ const config = getSentryExpoConfig(__dirname);
 
 config.resolver.assetExts = [...(config.resolver.assetExts ?? []), 'wasm'];
 
+// promo-video/ is a separate Remotion package with its own node_modules (React 18, three.js);
+// nothing in the app imports it, so keep Metro from crawling it.
+config.resolver.blockList = [
+  ...[].concat(config.resolver.blockList ?? []),
+  /^promo-video$/,
+  new RegExp(
+    `^${path.join(__dirname, 'promo-video').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\\\/]`
+  ),
+];
+
 // Sharp is a Node-only native module; stub it so Metro never tries to load it.
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === 'sharp' || moduleName.startsWith('sharp/')) {

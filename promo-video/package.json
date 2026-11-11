@@ -1,0 +1,32 @@
+{
+  "name": "musclog-promo-video",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Musclog's promotional video (1920x1080, 58 s), built with Remotion from the repository's own screenshots",
+  "scripts": {
+    "prepare-assets": "node scripts/prepare-assets.js && node scripts/gen-music.js",
+    "studio": "npm run prepare-assets && remotion studio",
+    "render": "npm run prepare-assets && remotion render MusclogPromo out/musclog-promo.mp4 --codec=h264 --crf=17 --audio-codec=aac --audio-bitrate=192k --pixel-format=yuv420p",
+    "still": "npm run prepare-assets && remotion still MusclogPromo",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@react-three/fiber": "^8.18.0",
+    "@remotion/cli": "4.0.489",
+    "@remotion/google-fonts": "4.0.489",
+    "@remotion/three": "4.0.489",
+    "@types/three": "^0.185.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.489",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.6.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
+  }
+}

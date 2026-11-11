@@ -19,6 +19,7 @@ module.exports = defineConfig([
       '**/*.spec.ts',
       '**/*.spec.tsx',
       'gameboy/**',
+      'promo-video/**',
       '.claude/**',
       '.agents/**',
       'training-data/.venv/**',

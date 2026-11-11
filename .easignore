@@ -131,6 +131,10 @@ training-data
 # ships is assets/musclog.gbc (and public/images/musclog.gbc for the web emulator).
 gameboy
 
+# The promotional video (a separate Remotion package with its own node_modules); see
+# AGENTS.md -> promo-video.
+promo-video
+
 # Automated-test and development-only sources are not part of native bundles.
 **/__tests__
 __mocks__
