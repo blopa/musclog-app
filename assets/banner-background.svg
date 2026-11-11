@@ -33,4 +33,17 @@
        C 1600 480, 1770 475, 1920 510 
        L 1920 905 
        Z" fill="#235069" />
+  <!-- 4. Headline and feature list (layout matches the reference banner, scaled to 1920x905) -->
+  <g font-family="Manrope, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif" fill="#ffffff">
+    <text font-size="67" font-weight="700" letter-spacing="1">
+      <tspan x="678" y="312">TRACK YOUR WORKOUTS</tspan>
+      <tspan x="678" y="385">&amp; NUTRITION LIKE A PRO</tspan>
+    </text>
+    <g font-size="31" font-weight="600" letter-spacing="0.5" fill-opacity="0.92">
+      <text x="1046" y="460">• LOG REPS &amp; WEIGHTS</text>
+      <text x="1046" y="502">• SEE YOUR PROGRESS</text>
+      <text x="1046" y="544">• TRACK FOOD &amp; MACROS</text>
+      <text x="1046" y="586">• STAY CONSISTENT</text>
+    </g>
+  </g>
 </svg>
