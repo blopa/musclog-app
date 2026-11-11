@@ -1,0 +1,42 @@
+{
+  "en-US": {
+    "headline": ["Track your workouts", "& nutrition like a pro"],
+    "bullets": ["Log reps & weights", "See your progress", "Track food & macros", "Stay consistent"]
+  },
+  "es-ES": {
+    "headline": ["Registra tus entrenos", "y tu nutrición como un pro"],
+    "bullets": [
+      "Anota repeticiones y pesos",
+      "Mira tu progreso",
+      "Controla comida y macros",
+      "Mantén la constancia"
+    ]
+  },
+  "nl-NL": {
+    "headline": ["Volg je trainingen", "en voeding als een pro"],
+    "bullets": [
+      "Log herhalingen en gewichten",
+      "Zie je vooruitgang",
+      "Volg voeding en macro's",
+      "Blijf consistent"
+    ]
+  },
+  "pt-BR": {
+    "headline": ["Acompanhe seus treinos", "e sua nutrição como um pro"],
+    "bullets": [
+      "Registre repetições e cargas",
+      "Veja seu progresso",
+      "Controle comida e macros",
+      "Mantenha a consistência"
+    ]
+  },
+  "ru-RU": {
+    "headline": ["Отслеживайте тренировки", "и питание как профи"],
+    "bullets": [
+      "Записывайте повторы и веса",
+      "Следите за прогрессом",
+      "Считайте еду и БЖУ",
+      "Тренируйтесь регулярно"
+    ]
+  }
+}

@@ -83,13 +83,14 @@
        C 1600 480, 1770 475, 1920 510 
        L 1920 905 
        Z" fill="#235069" />
-  <!-- 4. Headline and feature list (layout matches the reference banner, scaled to 1920x905) -->
+  <!-- 4. Headline and feature list. scripts/generate-banners.js swaps the copy (assets/banner-copy.json) and font sizes
+       through #banner-headline (2 tspans) and #banner-bullets (4 texts); keep those ids and shapes. -->
   <g font-family="Manrope, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif" fill="#ffffff">
-    <text font-size="67" font-weight="700" letter-spacing="1">
+    <text id="banner-headline" font-size="67" font-weight="700" letter-spacing="1">
       <tspan x="678" y="312">TRACK YOUR WORKOUTS</tspan>
       <tspan x="678" y="385">&amp; NUTRITION LIKE A PRO</tspan>
     </text>
-    <g font-size="31" font-weight="600" letter-spacing="0.5" fill-opacity="0.92">
+    <g id="banner-bullets" font-size="31" font-weight="600" letter-spacing="0.5" fill-opacity="0.92">
       <text x="1046" y="460">• LOG REPS &amp; WEIGHTS</text>
       <text x="1046" y="502">• SEE YOUR PROGRESS</text>
       <text x="1046" y="544">• TRACK FOOD &amp; MACROS</text>
@@ -97,9 +98,10 @@
     </g>
   </g>
   <!-- 5. Phone frame (assets/phoneframe.svg, 422x862 viewBox) placed at x=1575 y=140, 570 tall.
-       The frame's screen is a transparent cutout, so a white screen sits behind it until a screenshot is dropped in. -->
+       The frame's screen is a transparent cutout, so a white screen sits behind it.
+       scripts/generate-banners.js replaces #phone-screen with the localized home screenshot. -->
   <g transform="translate(1383.90 95.70) scale(0.6613)">
-    <rect x="312" y="87" width="376" height="822" rx="49" fill="#ffffff" />
+    <rect id="phone-screen" x="312" y="87" width="376" height="822" rx="49" fill="#ffffff" />
   
 
     <!-- Left Side Buttons -->
