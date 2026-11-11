@@ -1,14 +1,25 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const { OUTPUT_WIDTH, PLAY_LOCALES, SNAPSHOT, snapshotProblems, snapshotSources } =
-  require('../google-play-phone-screenshots') as {
-    OUTPUT_WIDTH: number;
-    PLAY_LOCALES: Record<string, string>;
-    SNAPSHOT: string;
-    snapshotProblems: (snapshot: Snapshot) => string[];
-    snapshotSources: (snapshot: Snapshot) => string[];
-  };
+const {
+  OUTPUT_WIDTH,
+  PLAY_LOCALES,
+  SNAPSHOT,
+  resolveAppscreenSource,
+  snapshotProblems,
+  snapshotSources,
+} = require('../google-play-phone-screenshots') as {
+  OUTPUT_WIDTH: number;
+  PLAY_LOCALES: Record<string, string>;
+  SNAPSHOT: string;
+  resolveAppscreenSource: (
+    dir: string,
+    url: string,
+    hasIndex?: (dir: string) => boolean
+  ) => { kind: string; dir?: string; url?: string; reason?: string };
+  snapshotProblems: (snapshot: Snapshot) => string[];
+  snapshotSources: (snapshot: Snapshot) => string[];
+};
 
 type Snapshot = {
   projectLanguages: string[];
@@ -148,5 +159,33 @@ describe('google-play-phone-screenshots composer', () => {
     copy.screenshots[0].localizedImages.en.src = 'data:image/png;base64,AAAA';
     expect(snapshotSources(copy)).toContain('data:image/png;base64,AAAA');
     expect(snapshotProblems(copy).join('\n')).not.toContain('data:');
+  });
+
+  describe('resolveAppscreenSource', () => {
+    const URL = 'https://yuzu-hub.github.io/appscreen/';
+
+    it('uses the checkout when it holds an index.html', () => {
+      expect(resolveAppscreenSource('/work/appscreen', URL, () => true)).toEqual({
+        kind: 'local',
+        dir: '/work/appscreen',
+      });
+    });
+
+    it('falls back to the hosted copy, and says why, when there is no checkout', () => {
+      expect(resolveAppscreenSource('/work/appscreen', URL, () => false)).toEqual({
+        kind: 'remote',
+        url: URL,
+        reason: 'no appscreen checkout at /work/appscreen',
+      });
+    });
+
+    it('looks for index.html inside the given directory', () => {
+      const asked: string[] = [];
+      resolveAppscreenSource('/work/appscreen', URL, (dir) => {
+        asked.push(dir);
+        return false;
+      });
+      expect(asked).toEqual(['/work/appscreen']);
+    });
   });
 });
