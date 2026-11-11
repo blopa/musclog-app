@@ -87,39 +87,39 @@
   <rect width="1920" height="905" fill="url(#bg-gradient)" />
 
   <!-- 2. Midground Light Green Wave -->
-  <path d="M 637 852 
-       C 750 680, 950 615, 1140 622 
-       C 1320 628, 1420 530, 1560 380 
-       C 1670 265, 1790 218, 1920 212 
+  <path d="M 449 852 
+       C 579 680, 808 615, 1026 622 
+       C 1232 628, 1347 530, 1507 380 
+       C 1633 265, 1771 218, 1920 212 
        L 1920 600 
-       L 637 852 Z" fill="url(#green-wave)" />
+       L 449 852 Z" fill="url(#green-wave)" />
 
   <!-- 3. Foreground Dark Teal-Blue Wave -->
-  <path d="M 590 905 
-       C 620 865, 637 852, 660 835 
-       C 780 755, 920 745, 1080 730 
-       C 1240 715, 1340 630, 1460 560 
-       C 1600 480, 1770 475, 1920 510 
+  <path d="M 395 905 
+       C 430 865, 449 852, 475 835 
+       C 613 755, 773 745, 957 730 
+       C 1140 715, 1255 630, 1393 560 
+       C 1553 480, 1748 475, 1920 510 
        L 1920 905 
        Z" fill="#235069" />
   <!-- 4. Headline and feature list. scripts/generate-banners.js swaps the copy (assets/banner-copy.json) and font sizes
        through #banner-headline (2 tspans) and #banner-bullets (4 texts); keep those ids and shapes. -->
   <g font-family="Manrope, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif" fill="#ffffff" filter="url(#banner-text-shadow)">
     <text id="banner-headline" font-size="67" font-weight="700" letter-spacing="1">
-      <tspan x="678" y="312">TRACK YOUR WORKOUTS</tspan>
-      <tspan x="678" y="385">&amp; NUTRITION LIKE A PRO</tspan>
+      <tspan x="490" y="312">TRACK YOUR WORKOUTS</tspan>
+      <tspan x="490" y="385">&amp; NUTRITION LIKE A PRO</tspan>
     </text>
     <g id="banner-bullets" font-size="31" font-weight="600" letter-spacing="0.5" fill-opacity="0.92">
-      <text x="1046" y="460">• LOG REPS &amp; WEIGHTS</text>
-      <text x="1046" y="502">• SEE YOUR PROGRESS</text>
-      <text x="1046" y="544">• TRACK FOOD &amp; MACROS</text>
-      <text x="1046" y="586">• STAY CONSISTENT</text>
+      <text x="858" y="460">• LOG REPS &amp; WEIGHTS</text>
+      <text x="858" y="502">• SEE YOUR PROGRESS</text>
+      <text x="858" y="544">• TRACK FOOD &amp; MACROS</text>
+      <text x="858" y="586">• STAY CONSISTENT</text>
     </g>
   </g>
-  <!-- 5. Phone frame (assets/phoneframe.svg, 422x862 viewBox) placed at x=1575 y=140, 570 tall.
+  <!-- 5. Phone frame (assets/phoneframe.svg, 422x862 viewBox) placed at x=1460 y=66, 774 tall.
        The frame's screen is a transparent cutout, so a white screen sits behind it.
        scripts/generate-banners.js replaces #phone-screen with the localized home screenshot. -->
-  <g transform="translate(1383.90 95.70) scale(0.6613)">
+  <g transform="translate(1200.10 4.30) scale(0.9)">
     <rect id="phone-screen" x="312" y="87" width="376" height="822" rx="49" fill="#ffffff" />
   
 
@@ -146,8 +146,8 @@
     <!-- Inner Screen Rim Stroke -->
     <rect x="312" y="87" width="376" height="822" rx="49" fill="none" stroke="#000000" stroke-width="1" />
   </g>
-  <!-- 6. App icon (assets/musclog-icon.svg), 528 units wide, left of the headline -->
-  <g transform="translate(-42.33 73.97) scale(0.5847)">
+  <!-- 6. App icon (assets/musclog-icon.svg), 361 units wide, left of the headline -->
+  <g transform="translate(10 189.6) scale(0.4)">
   
 
     <!-- Soft shadow under the tile -->
@@ -180,7 +180,7 @@
     .loggy .s3 { fill: #2f7e78 }
     .loggy .s7 { fill: #3d9183 }
   </style>
-  <g class="loggy" transform="translate(633.75 485.00) scale(0.6250)">
+  <g class="loggy" transform="translate(445.75 485.00) scale(0.6250)">
     <g id="loggy-idle">
     <g id="leg-l">
     <path class="s0" d="m189.6 396.7l-9.5 3.4 1.4 5.6-0.3-1c0 0-9 21.4-13.2 32.2-2.1 5.6-4 11.3-5.6 17-0.9 3-1.4 6.1-1.9 9.2-0.4 3.2-0.8 6.4-0.9 9.6-0.1 4.8 0 9.7 0.4 14.6 0.3 4.9 0.8 9.9 1.5 14.8 1.2 7.9 2.5 15.8 4 23.6 1.3 6.6 3.7 12.9 4.5 19.6 0.3 1.6-1.3 4.7-1.3 4.7l7.7 9.5c0 0 11.5-0.9 17.1-1.7 5.8-0.9 17.2-3.3 17.2-3.3l6.2-12.3-4.5-4.3 1.4-1.6c0 0-3.3-18.2-4.7-27.4-0.9-5.6-1.6-11.3-2.1-17-0.3-3.7-0.3-7.4-0.2-11.2 0-1.8 0-3.8 0.5-5.6 1.2-4.6 2.7-9.2 4.5-13.7 2.3-5.8 4.9-11.5 7.8-17 2.6-5 5-10.1 8.4-14.6 1.5-2 6-4.6 6-4.6 0 0-3.6-8.6-7.2-11.4-5.3-4.3-12.2-6.2-18.4-9.1-6.2-2.8-18.8-8-18.8-8z"/>

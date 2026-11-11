@@ -151,8 +151,8 @@ describe('applyCopy', () => {
 
     expect(headlineSize).toBe(67);
     expect(bulletSize).toBe(31);
-    expect(svg).toContain('<tspan x="678" y="312">');
-    expect(svg).toContain('<text x="1046" y="586">');
+    expect(svg).toContain('<tspan x="490" y="312">');
+    expect(svg).toContain('<text x="858" y="586">');
   });
 
   it('shrinks the text and its letter spacing together when a line is too long', async () => {
@@ -171,9 +171,9 @@ describe('applyCopy', () => {
     expect(bulletSize).toBe(31);
     expect(svg).toContain(`id="banner-headline" font-size="${headlineSize}"`);
     expect(svg).toMatch(/letter-spacing="0\.\d+"/);
-    // The widest line still ends before the phone frame (x=1575).
-    expect(678 + 'A SOMEWHAT LONGER HEADLINE!!'.length * headlineSize * 0.6).toBeLessThanOrEqual(
-      1550
+    // The widest line still ends before the phone frame (x=1460).
+    expect(490 + 'A SOMEWHAT LONGER HEADLINE!!'.length * headlineSize * 0.6).toBeLessThanOrEqual(
+      1410
     );
   });
 
@@ -183,7 +183,7 @@ describe('applyCopy', () => {
     ).rejects.toThrow('no <text id="banner-headline">');
     await expect(
       applyCopy(
-        BACKGROUND.replace(/<text x="1046" y="586">[^<]*<\/text>/, ''),
+        BACKGROUND.replace(/<text x="858" y="586">[^<]*<\/text>/, ''),
         entry,
         'en-US',
         fakeMeasure

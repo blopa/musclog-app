@@ -43,12 +43,12 @@ const LOCALES = ['en-US', 'es-ES', 'nl-NL', 'pt-BR', 'ru-RU'];
 const HEADLINE_LINES = 2;
 const BULLET_COUNT = 4;
 
-// Where text must stop, in the SVG's 1920x905 units: the phone frame starts at x=1575.
-const TEXT_RIGHT_LIMIT = 1550;
+// Where text must stop, in the SVG's 1920x905 units: the phone frame starts at x=1460.
+const TEXT_RIGHT_LIMIT = 1410;
 const MIN_HEADLINE_SIZE = 44;
 const MIN_BULLET_SIZE = 22;
-// The screenshot is shrunk to this width before it is embedded (the screen is about 250 units wide
-// in the banner, so this is 2.5x and keeps the SVG a sensible size).
+// The screenshot is shrunk to this width before it is embedded (the screen is about 340 units wide
+// in the banner, so this is close to 2x and keeps the SVG a sensible size).
 const EMBEDDED_SCREENSHOT_WIDTH = 640;
 
 function fail(message) {
