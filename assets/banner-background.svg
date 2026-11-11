@@ -62,6 +62,25 @@
     <filter id="icon-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7" /></filter>
     <filter id="icon-shadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur stdDeviation="22" /></filter>
     <filter id="icon-text-shadow" x="-10%" y="-20%" width="120%" height="150%"><feGaussianBlur stdDeviation="5" /></filter>
+
+    <!-- Soft halo plus a tight shadow so white text stays readable over the light green wave -->
+    <filter id="banner-text-shadow" x="-5%" y="-20%" width="110%" height="150%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="7" result="halo-blur" />
+      <feOffset in="halo-blur" dy="5" result="halo-offset" />
+      <feComponentTransfer in="halo-offset" result="halo">
+        <feFuncA type="linear" slope="0.5" />
+      </feComponentTransfer>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="1.6" result="tight-blur" />
+      <feOffset in="tight-blur" dy="2.5" result="tight-offset" />
+      <feComponentTransfer in="tight-offset" result="tight">
+        <feFuncA type="linear" slope="0.6" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="halo" />
+        <feMergeNode in="tight" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
 
   <!-- 1. Base Gradient Rectangle -->
@@ -85,7 +104,7 @@
        Z" fill="#235069" />
   <!-- 4. Headline and feature list. scripts/generate-banners.js swaps the copy (assets/banner-copy.json) and font sizes
        through #banner-headline (2 tspans) and #banner-bullets (4 texts); keep those ids and shapes. -->
-  <g font-family="Manrope, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif" fill="#ffffff">
+  <g font-family="Manrope, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif" fill="#ffffff" filter="url(#banner-text-shadow)">
     <text id="banner-headline" font-size="67" font-weight="700" letter-spacing="1">
       <tspan x="678" y="312">TRACK YOUR WORKOUTS</tspan>
       <tspan x="678" y="385">&amp; NUTRITION LIKE A PRO</tspan>
