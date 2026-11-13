@@ -556,8 +556,7 @@
               "Biometrics (fingerprint or face): to lock the application or parts of it, if You turn this on.",
               "Bluetooth and, on older Android versions, location, which Android requires for Bluetooth scanning: to connect to a supported rep-tracking sensor. Musclog does not use or store Your location.",
               "Internet: for food searches, optional AI features and crash reports.",
-              "Vibration and wake lock: for haptic feedback and to keep the screen on during workouts and timers.",
-              "Some libraries Musclog is built with declare other permissions, such as calendar, microphone or storage access. Musclog does not use them to read Your calendar or record audio."
+              "Vibration and wake lock: for haptic feedback and to keep the screen on during workouts and timers."
             ]
           },
           "optionalAi": {

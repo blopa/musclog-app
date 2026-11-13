@@ -556,8 +556,7 @@
               "Biometrie (vingerafdruk of gezicht): om de applicatie of onderdelen daarvan te vergrendelen, als u dit inschakelt.",
               "Bluetooth en, op oudere Android-versies, locatie, die Android vereist voor het zoeken naar Bluetooth-apparaten: om verbinding te maken met een ondersteunde herhalingssensor. Musclog gebruikt of bewaart uw locatie niet.",
               "Internet: voor het zoeken naar voeding, optionele AI-functies en crashrapporten.",
-              "Trillen en wake lock: voor haptische feedback en om het scherm aan te houden tijdens trainingen en timers.",
-              "Sommige bibliotheken waarmee Musclog is gebouwd, declareren andere toestemmingen, zoals toegang tot agenda, microfoon of opslag. Musclog gebruikt deze niet om uw agenda te lezen of audio op te nemen."
+              "Trillen en wake lock: voor haptische feedback en om het scherm aan te houden tijdens trainingen en timers."
             ]
           },
           "optionalAi": {

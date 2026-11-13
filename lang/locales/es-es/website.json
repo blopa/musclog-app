@@ -556,8 +556,7 @@
               "Biometría (huella dactilar o rostro): para bloquear la aplicación o partes de ella, si lo activas.",
               "Bluetooth y, en versiones antiguas de Android, ubicación, que Android exige para buscar dispositivos Bluetooth: para conectarse a un sensor compatible de seguimiento de repeticiones. Musclog no utiliza ni almacena tu ubicación.",
               "Internet: para las búsquedas de alimentos, las funciones de IA opcionales y los informes de fallos.",
-              "Vibración y bloqueo de activación: para la retroalimentación háptica y para mantener la pantalla encendida durante los entrenamientos y temporizadores.",
-              "Algunas bibliotecas con las que está construido Musclog declaran otros permisos, como acceso al calendario, al micrófono o al almacenamiento. Musclog no los utiliza para leer tu calendario ni grabar audio."
+              "Vibración y bloqueo de activación: para la retroalimentación háptica y para mantener la pantalla encendida durante los entrenamientos y temporizadores."
             ]
           },
           "optionalAi": {

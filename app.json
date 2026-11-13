@@ -51,8 +51,7 @@
         "react-native-vision-camera",
         {
           "cameraPermissionText": "Allow $(PRODUCT_NAME) to access your camera",
-          "enableMicrophonePermission": true,
-          "microphonePermissionText": "Allow $(PRODUCT_NAME) to access your microphone",
+          "enableMicrophonePermission": false,
           "enableCodeScanner": true,
           "enableFrameProcessors": false
         }
@@ -301,6 +300,14 @@
         "android.permission.health.WRITE_BASAL_BODY_TEMPERATURE",
         "android.permission.health.READ_INTERMENSTRUAL_BLEEDING",
         "android.permission.health.WRITE_INTERMENSTRUAL_BLEEDING"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "extra": {

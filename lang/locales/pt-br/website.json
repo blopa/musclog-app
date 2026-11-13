@@ -556,8 +556,7 @@
               "Biometria (impressão digital ou reconhecimento facial): para bloquear o aplicativo ou partes dele, se você ativar essa opção.",
               "Bluetooth e, em versões mais antigas do Android, localização, que o Android exige para a busca por Bluetooth: para conectar a um sensor compatível de contagem de repetições. O Musclog não usa nem armazena sua localização.",
               "Internet: para buscas de alimentos, recursos opcionais de IA e relatórios de falhas.",
-              "Vibração e wake lock: para feedback háptico e para manter a tela ligada durante treinos e temporizadores.",
-              "Algumas bibliotecas com as quais o Musclog é construído declaram outras permissões, como acesso ao calendário, ao microfone ou ao armazenamento. O Musclog não as usa para ler seu calendário nem para gravar áudio."
+              "Vibração e wake lock: para feedback háptico e para manter a tela ligada durante treinos e temporizadores."
             ]
           },
           "optionalAi": {
