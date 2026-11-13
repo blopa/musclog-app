@@ -1,32 +1,42 @@
 <b>Musclog - Lift, Log, Repeat</b>
 
-O Musclog registra seus treinos e sua alimentação em um só app. Sem conta, sem anúncios e com seus dados no seu celular. Gratuito e de código aberto.
+O Musclog é um app de registro de treino e contador de calorias, tudo em um só app gratuito e de código aberto. Registre seus treinos de academia e sua alimentação, acompanhe sua evolução e mantenha tudo no seu celular: sem conta, sem anúncios, e o registro funciona offline.
 
-<b>Treine</b>
-• Planos de treino, agenda, lembretes e cronômetros de descanso, com cálculo de anilhas para a barra e as anilhas da sua academia.
-• Uma progressão que explica cada número que altera e uma Revisão semanal do seu treino e da sua nutrição.
-• Super-séries, aquecimentos, anotações por exercício e unidades por exercício.
-• Centenas de exercícios com fotos, com busca no seu idioma.
+<b>Registro de treino e diário de academia</b>
+• Registre séries, repetições e carga em segundos, com cronômetro de descanso, séries de aquecimento, super-séries e anotações em cada exercício.
+• Acompanhe o esforço com RPE ou repetições em reserva (RIR).
+• Mais de 870 exercícios de musculação com fotos e músculos trabalhados, com busca no seu idioma, ou adicione os seus.
+• Fichas de treino prontas: Push Pull Legs, Superior/Inferior, Full Body, PHUL, divisões de 5 dias e rotinas curtas para casa ou sem equipamento. Ou monte seu próprio programa semanal ou rotativo.
+• Sobrecarga progressiva sem complicação: o Musclog sugere sua próxima carga e repetições a partir do último treino e explica cada número que altera. Escolha dupla progressão, regras lineares ou por porcentagem, ou mantenha o controle total.
+• Calculadora de anilhas para a barra e as anilhas da sua academia, em kg ou lb, por exercício se preferir.
+• Troque um exercício quando o aparelho estiver ocupado ou algo doer, e deixe o Musclog lembrar o que evitar.
 • Importe seu histórico do Strong, do Hevy ou do FitNotes.
-• Níveis de força, recordes pessoais e carga de treino recente por músculo.
-• Modo retorno: um recomeço mais leve se você ficou um tempo parado.
 
-<b>Coma</b>
-• Diário alimentar com leitor de código de barras e de rótulos nutricionais.
-• Busque no Open Food Facts e na base de dados do USDA, ou crie seus próprios alimentos e refeições.
-• Metas de calorias e macros que se ajustam à tendência real do seu peso, em kcal ou kJ.
+<b>Veja sua força crescer</b>
+• Recordes pessoais, 1RM estimado e níveis de força nos principais exercícios.
+• Carga de treino recente por músculo em um mapa do corpo e um mapa de calor do calendário dos seus treinos.
+• Uma Revisão semanal do seu treino e da sua nutrição, em que você escolhe progredir, repetir a semana ou pegar mais leve.
+• Modo retorno: um recomeço mais leve depois de uma pausa.
 
-<b>Conheça seu corpo</b>
+<b>Contador de calorias e controle de macros</b>
+• Diário alimentar com leitor de código de barras e leitura de rótulos nutricionais.
+• Busque no Open Food Facts e na base de dados de alimentos do USDA, ou crie seus próprios alimentos e refeições.
+• Metas de calorias, proteína, carboidratos, gordura e fibras para emagrecer, manter o peso ou ganhar massa muscular.
+• Metas que se ajustam à tendência real do seu peso, em kcal ou kJ, métrico ou imperial.
+
+<b>Acompanhamento do corpo</b>
 • Peso, gordura corporal, medidas e humor, com gráficos.
 • Acompanhamento opcional do ciclo menstrual: registre a menstruação e os sintomas e veja seus próprios padrões. As previsões são estimativas e não há conselhos de treino por fase.
 • Sincronização com o Health Connect de peso, nutrição, treinos e métricas corporais.
 
 <b>IA, só se você quiser</b>
-• Converse com um treinador, analise fotos de refeições e gere planos com sua própria chave do Gemini, OpenAI ou Claude, um modelo local ou a opção gratuita incluída no app.
+• Converse com um treinador, estime uma refeição a partir de uma foto e gere planos de treino com sua própria chave do Gemini, OpenAI ou Claude, um modelo local ou a opção gratuita incluída no app.
+• Ou monte um plano ou descreva uma refeição no ChatGPT ou no Claude e traga para o Musclog.
 • Escolha como o treinador fala com você. Nada no Musclog exige IA.
 
-<b>Seu</b>
-• Peso, gordura corporal e registros de alimentos são criptografados no seu dispositivo. Tudo funciona offline.
+<b>Privacidade por padrão</b>
+• Peso, gordura corporal e registros de alimentos são criptografados no seu dispositivo.
+• Bloqueie o app inteiro, ou apenas seus dados de ciclo, treino, alimentação ou progresso, com a digital ou o PIN do seu celular.
 • Exporte ou faça backup dos seus dados, ou leve-os para outro celular escaneando QR codes, sem nuvem.
 • Relatórios de falhas anônimos ajudam a corrigir bugs e podem ser desativados nas configurações.
 • Widgets na tela inicial, vários temas de cor, e English, Español, Nederlands, Português (Brasil) e Русский.
