@@ -18,7 +18,14 @@ import {
 } from '@/constants/settings';
 import { database } from '@/database/database-instance';
 import { SettingsService } from '@/database/services/SettingsService';
+import { closeSentry } from '@/sentry-init';
+import { rememberCrashReportConsent } from '@/utils/crashReportConsent';
 import { decryptDatabaseValue } from '@/utils/encryption';
+
+jest.mock('@/sentry-init', () => ({ closeSentry: jest.fn(async () => undefined) }));
+jest.mock('@/utils/crashReportConsent', () => ({
+  rememberCrashReportConsent: jest.fn(async () => undefined),
+}));
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
@@ -122,6 +129,33 @@ describe('SettingsService', () => {
     (mockDatabase.write as jest.Mock).mockImplementation(async (callback: () => Promise<void>) =>
       callback()
     );
+  });
+
+  describe('anonymous bug report', () => {
+    it('turning it off remembers the choice and shuts Sentry down', async () => {
+      installSettingsTable();
+
+      await SettingsService.setAnonymousBugReport(false);
+
+      expect(rememberCrashReportConsent).toHaveBeenCalledWith(false);
+      expect(closeSentry).toHaveBeenCalledTimes(1);
+    });
+
+    it('turning it on remembers the choice and leaves Sentry alone', async () => {
+      installSettingsTable();
+
+      await SettingsService.setAnonymousBugReport(true);
+
+      expect(rememberCrashReportConsent).toHaveBeenCalledWith(true);
+      expect(closeSentry).not.toHaveBeenCalled();
+    });
+
+    it('refreshes the remembered copy on every read, defaulting to on', async () => {
+      installSettingsTable();
+
+      expect(await SettingsService.getAnonymousBugReport()).toBe(true);
+      expect(rememberCrashReportConsent).toHaveBeenCalledWith(true);
+    });
   });
 
   describe('units', () => {

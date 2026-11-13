@@ -3,6 +3,44 @@
 This file records non-obvious production fixes, their root causes, and the conditions under which a
 workaround can be removed. Keep the short guardrails in `AGENTS.md`; keep the incident history here.
 
+## Steps never synced from Health Connect on Android (November 2026)
+
+### Symptom
+
+The Home step count stayed empty on Android even after the person allowed Health Connect access.
+
+### Cause
+
+`REQUIRED_HEALTH_PERMISSIONS` (`services/healthPermissionsShared.ts`) asks for `Steps` read access,
+but `android.permission.health.READ_STEPS` was missing from `app.json` and the committed
+`AndroidManifest.xml`. Android never grants a Health Connect permission the manifest does not declare,
+so the request silently failed.
+
+### Fix
+
+The permission is declared in both files. `services/__tests__/healthPermissionsManifest.test.ts`
+derives the manifest name of every permission the app requests (including the cycle types in
+`services/cycleHealth.ts`) and fails when one is missing from either file. A new permission also
+needs the Play Console Health apps declaration updated before release.
+
+## Crash reports were sent with the switch off when the database failed (November 2026)
+
+### Symptom
+
+The "Anonymous bug report" switch is stored in the `settings` table. When the database could not be
+read, `utils/sentry.ts` reported anyway, and a failed migration (`database/adapter.ts`) always
+reported; turning the switch off also left Sentry running until the next launch.
+
+### Fix
+
+`utils/crashReportConsent.ts` keeps a device-local copy of the choice in AsyncStorage, refreshed on
+every `SettingsService.getAnonymousBugReport()` (the boot DB-ready probe included) and on every
+change. Both database-failure paths (`utils/sentry.ts`, `database/migrationFailureReport.ts`) read
+that copy and send nothing when it says off; with no copy yet the default (on) applies. Turning the
+switch off calls `closeSentry()` (`sentry-init.ts`). The key is in `ASYNC_STORAGE_EXCLUDED_KEYS`
+because it is rebuilt from the settings table. Pinned by `utils/__tests__/{crashReportConsent,sentryConsent}.test.ts`,
+`database/__tests__/migrationFailureReport.test.ts` and `database/services/__tests__/SettingsService.test.ts`.
+
 ## The Pages deploy was cancelled after 10 minutes while syncing files (November 2026)
 
 ### Symptom

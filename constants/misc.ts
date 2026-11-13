@@ -47,6 +47,12 @@ export const COACH_REPLY_JOURNAL = 'coachReplyJournal';
 export const COACH_RESTORED_COMPOSER = 'coachRestoredComposer';
 
 /**
+ * Device-local copy of the anonymous crash report choice ('true' | 'false'), readable when the
+ * database is not (broken migration, failed open). Rebuilt from the settings table on every read.
+ */
+export const CRASH_REPORT_CONSENT_KEY = 'crashReportConsent';
+
+/**
  * AsyncStorage key for the cached macro-logging streak state.
  * Stores JSON `{ computedDayKey, currentStreak, bestStreak }` so the streak is recomputed
  * at most once per local calendar day. See `utils/macroStreak.ts`.

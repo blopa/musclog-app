@@ -4,6 +4,7 @@ import {
   AI_ONBOARDING_DRAFT,
   COACH_REPLY_JOURNAL,
   COACH_RESTORED_COMPOSER,
+  CRASH_REPORT_CONSENT_KEY,
   PERSONALIZED_BODY_DRAFT,
   SETTINGS_MIRROR_STORAGE_KEY,
   TEMP_NUTRITION_PLAN,
@@ -29,6 +30,8 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([
   // moments of one session, not data.
   COACH_REPLY_JOURNAL,
   COACH_RESTORED_COMPOSER,
+  // Per-device copy of the crash report switch, rebuilt from the settings table.
+  CRASH_REPORT_CONSENT_KEY,
 ]);
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';

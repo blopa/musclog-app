@@ -22,7 +22,8 @@ async function captureBootExceptionWhenDbReady(
   try {
     // Wait for DB-ready so the consent read inside captureException isn't racing
     // the reset window — but swallow a rejection: a failed boot must still report
-    // itself. captureException handles a broken DB on its own (reports anyway).
+    // itself. With a broken DB, captureException falls back to the device-local copy of the
+    // user's crash report choice (utils/crashReportConsent.ts) and still honours "off".
     await waitForDbReady().catch(() => {});
 
     await captureException(error, {

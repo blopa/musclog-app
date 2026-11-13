@@ -466,19 +466,19 @@
     "privacy": {
       "titleStart": "Política de",
       "titleHighlight": "Privacidade",
-      "lastUpdated": "Última atualização: 5 de novembro de 2026",
+      "lastUpdated": "Última atualização: 14 de novembro de 2026",
       "highlights": {
         "dataProtection": {
           "title": "Proteção de dados",
-          "description": "Medidas técnicas e organizacionais abrangentes protegem seus dados."
+          "description": "Os registros sensíveis são criptografados no seu dispositivo, e as solicitações de rede usam HTTPS."
         },
         "localFirst": {
           "title": "Armazenamento local",
-          "description": "Seus dados são armazenados principalmente no seu dispositivo, não em nossos servidores."
+          "description": "Seus dados são armazenados no seu dispositivo. O Musclog não tem contas nem sincronização em nuvem."
         },
         "security": {
-          "title": "Segurança em primeiro lugar",
-          "description": "Criptografia avançada e controles de acesso protegem suas informações."
+          "title": "Você no controle",
+          "description": "Apenas a busca de alimentos, a IA opcional e os relatórios de falhas usam a internet, e você pode desativar cada um deles."
         }
       },
       "intro": "Esta Política de Privacidade descreve nossas políticas e procedimentos relativos à coleta, ao uso, ao armazenamento e à divulgação de suas informações quando você utiliza o Musclog. Ela se aplica tanto ao aplicativo Musclog quanto ao site Musclog, embora as categorias de dados tratadas em cada contexto sejam diferentes. Esta Política de Privacidade também explica seus direitos de privacidade e como a lei o protege.",
@@ -494,10 +494,6 @@
         "definitions": {
           "title": "Definições",
           "items": {
-            "account": {
-              "term": "Conta",
-              "def": "significa uma conta única criada para que você acesse nosso Serviço ou partes dele."
-            },
             "application": {
               "term": "Aplicativo",
               "def": "refere-se ao Musclog, o programa de software fornecido pela Musclog."
@@ -512,7 +508,7 @@
             },
             "personalData": {
               "term": "Dados Pessoais",
-              "def": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo."
+              "def": "significa qualquer informação relativa a uma pessoa física identificada ou identificável."
             },
             "service": {
               "term": "Serviço",
@@ -524,7 +520,7 @@
             },
             "usageData": {
               "term": "Dados de Uso",
-              "def": "Os Dados de Uso são coletados automaticamente ao usar o Serviço, incluindo informações do dispositivo, endereço IP, tipo de navegador e dados de diagnóstico."
+              "def": "significa os dados coletados automaticamente ao usar o Serviço, como tipo de navegador, modelo do dispositivo ou dados de diagnóstico."
             },
             "you": {
               "term": "Você",
@@ -534,56 +530,64 @@
         },
         "collecting": {
           "title": "Coleta e uso de seus Dados Pessoais",
-          "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis que podem ser usadas para contatá-lo ou identificá-lo.",
+          "content": "O Musclog foi projetado para funcionar sem coletar Dados Pessoais. Esta seção explica os casos limitados em que dados saem do seu Dispositivo.",
           "typesCollected": {
             "title": "Tipos de dados coletados",
-            "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis. As informações pessoalmente identificáveis podem incluir, mas não se limitam a:",
-            "items": ["Nome e sobrenome", "Dados de uso"]
-          },
-          "googleOAuth": {
-            "title": "Dados do Google OAuth",
-            "content": "Nosso aplicativo integra o Google OAuth para os seguintes fins:",
+            "content": "O Musclog não pede que você crie uma conta e não solicita seu nome, endereço de e-mail ou número de telefone. Os dados saem do seu Dispositivo apenas nestes casos:",
             "items": [
-              "Para obter seu nome e personalizar sua experiência de usuário.",
-              "Para acessar os recursos de Google Generative AI e aprimorar as funcionalidades do aplicativo.",
-              "Todos os dados são armazenados offline no seu dispositivo e não são enviados para nossos servidores.",
-              "Não compartilhamos seus dados com terceiros para fins de marketing ou outros fins.",
-              "O Google OAuth é opcional e pode ser desativado nas configurações do aplicativo."
+              "Relatórios anônimos de falhas, enquanto estiverem ativados (consulte \"Relatórios anônimos de falhas\" abaixo).",
+              "Buscas de alimentos e códigos de barras escaneados, enviados ao banco de dados de alimentos que você escolher (consulte \"Bancos de dados de alimentos\" abaixo).",
+              "Solicitações que você envia a um recurso opcional de IA, enviadas ao provedor que você escolher (consulte \"Recursos opcionais de IA\" abaixo).",
+              "Dados que você mesmo exporta, copia, compartilha ou transfere para outro dispositivo.",
+              "Dados de Uso das visitas ao site (consulte \"Análise do site\" abaixo)."
             ]
           },
           "usageData": {
             "title": "Dados de uso",
-            "content": "Os Dados de Uso são coletados automaticamente ao usar o Serviço. Os Dados de Uso podem incluir informações como o endereço de Protocolo de Internet do seu dispositivo (p. ex. endereço IP), tipo e versão do navegador, as páginas do nosso Serviço que você visita, a data e hora da sua visita, o tempo gasto nessas páginas, identificadores únicos de dispositivo e outros dados de diagnóstico. Quando você acessa o Serviço por meio de um dispositivo móvel, podemos coletar certas informações automaticamente, incluindo o tipo de dispositivo móvel que você usa, o ID exclusivo do seu dispositivo móvel, o endereço IP do seu dispositivo móvel, seu sistema operacional móvel e o tipo de navegador de Internet móvel que você usa."
+            "content": "Os Dados de Uso são coletados automaticamente no site, conforme descrito em \"Análise do site\" abaixo. O aplicativo Musclog não coleta Dados de Uso, além da versão do aplicativo e do modelo do dispositivo incluídos em um relatório anônimo de falha."
           },
           "appPermissions": {
             "title": "Informações coletadas ao usar o Aplicativo",
-            "content": "Ao usar nosso Aplicativo, para fornecer seus recursos, podemos coletar, com sua permissão prévia:",
+            "content": "Para fornecer seus recursos, o aplicativo pode solicitar as permissões a seguir. Os dados obtidos por meio delas permanecem no seu Dispositivo, salvo indicação em contrário nesta Política de Privacidade:",
             "items": [
-              "Dados de reconhecimento de atividade para rastrear seus treinos e atividades físicas.",
-              "Dados de sensores corporais para monitorar frequência cardíaca, passos e outras métricas de saúde.",
-              "Acesso à Internet para conectar-se aos nossos servidores e fornecer funcionalidades online.",
-              "Dados do calendário para integração com sua agenda e planejamento de treinos.",
-              "Acesso ao armazenamento externo para ler e gravar dados de treino e outras informações.",
-              "Permissão para receber notificações de inicialização concluída para reiniciar tarefas agendadas após a reinicialização do dispositivo.",
-              "Permissão de janela de alerta do sistema para exibir notificações importantes sobre outros aplicativos.",
-              "Permissão de vibração para fornecer feedback háptico durante treinos e notificações.",
-              "Permissão de wake lock para manter o aplicativo em execução durante os treinos.",
-              "Dados de saúde como calorias ativas queimadas, gordura corporal, massa óssea, frequência cardíaca, altura, massa corporal magra, nutrição, passos, calorias totais queimadas e peso para rastreamento abrangente de condicionamento físico."
+              "Câmera: para escanear códigos de barras e rótulos nutricionais, tirar fotos de refeições e receber dados de outro dispositivo por meio de códigos QR.",
+              "Health Connect ou Apple Health: consulte \"Health Connect e Apple Health\" acima.",
+              "Notificações, alarmes exatos e inicialização concluída: para exibir pontualmente lembretes de treino, de descanso, de nutrição e do ciclo, inclusive após a reinicialização do seu Dispositivo.",
+              "Biometria (impressão digital ou reconhecimento facial): para bloquear o aplicativo ou partes dele, se você ativar essa opção.",
+              "Bluetooth e, em versões mais antigas do Android, localização, que o Android exige para a busca por Bluetooth: para conectar a um sensor compatível de contagem de repetições. O Musclog não usa nem armazena sua localização.",
+              "Internet: para buscas de alimentos, recursos opcionais de IA e relatórios de falhas.",
+              "Vibração e wake lock: para feedback háptico e para manter a tela ligada durante treinos e temporizadores.",
+              "Algumas bibliotecas com as quais o Musclog é construído declaram outras permissões, como acesso ao calendário, ao microfone ou ao armazenamento. O Musclog não as usa para ler seu calendário nem para gravar áudio."
             ]
           },
           "optionalAi": {
-            "title": "Recursos opcionais de IA e provedores LLM de terceiros",
-            "content1": "O aplicativo Musclog pode ser usado integralmente offline, exceto por solicitações opcionais a fontes externas de dados nutricionais. Por padrão, o Musclog não envia seus dados de treino, nutrição, saúde ou perfil aos nossos servidores.",
-            "content2": "O Musclog também oferece recursos opcionais de IA que exigem que você configure seu próprio provedor, como OpenAI, Anthropic Claude, Google Gemini, Apple Intelligence no iOS ou um endpoint de LLM local/autohospedado. Esses recursos permanecem desativados, a menos que você os habilite expressamente.",
+            "title": "Recursos opcionais de IA",
+            "content1": "O aplicativo Musclog pode ser usado integralmente offline, exceto por buscas de alimentos, recursos opcionais de IA e relatórios de falhas. O Musclog não envia seus dados de treino, nutrição, saúde ou perfil aos nossos servidores, exceto quando você usa a opção gratuita Musclog AI descrita abaixo.",
+            "content2": "O Musclog oferece recursos opcionais de IA. Eles permanecem desativados até que você escolha um provedor: sua própria chave de API da OpenAI, da Anthropic Claude ou do Google Gemini, um modelo no próprio dispositivo, como o Apple Intelligence no iOS, um endpoint de LLM local ou autohospedado, ou a opção gratuita Musclog AI.",
             "content3": "Se você optar por usar um recurso de IA, os dados que decidir enviar serão enviados ao provedor ou endpoint que você configurar. Se você utilizar um modelo local autohospedado sob seu próprio controle, esses dados poderão permanecer dentro do seu próprio ambiente. Se você utilizar um endpoint hospedado por terceiros, incluindo um serviço hospedado de modelos locais, esse provedor poderá processar os dados de acordo com seus próprios termos e práticas de privacidade. O Musclog não controla a forma como provedores externos processam os dados que você lhes envia.",
-            "content4": "O Musclog também pode oferecer uma opção de LLM gratuito do Musclog. Quando você usa essa opção, sua solicitação é roteada por meio do Cloudflare AI Gateway e depois encaminhada usando uma chave de API gratuita do OpenAI ou do Google Gemini gerenciada pelo Musclog. Se você optar por usar esse recurso, deve entender que sua solicitação poderá ser processada pelo Cloudflare e pelo provedor de modelo downstream selecionado pelo Musclog para essa solicitação.",
-            "content5": "Atualmente, o Musclog oferece suporte a OpenAI, Anthropic Claude, Google Gemini, Apple Intelligence no iOS, endpoints de LLM locais ou autohospedados compatíveis e à rota de LLM gratuito do Musclog. Você deve revisar as políticas de privacidade aplicáveis antes de habilitar provedores de terceiros ou aceitar a opção gratuita, incluindo:",
+            "content4": "Se você escolher a opção gratuita Musclog AI, suas solicitações são enviadas por meio do Cloudflare AI Gateway, operado para o Musclog, e respondidas pelo Google Gemini usando uma chave de API gerenciada pelo Musclog. Uma solicitação contém apenas o que você envia ao recurso de IA, como mensagens de chat, fotos de refeições ou os dados de treino, nutrição e corpo de que esse recurso precisa. As solicitações podem ser mantidas nos logs do gateway por um período limitado, para monitorar erros e abusos, e são processadas pela Cloudflare e pelo Google de acordo com seus próprios termos.",
+            "content5": "Você deve revisar as políticas de privacidade dos provedores que escolher, incluindo:",
             "cloudflarePrivacyPolicy": "Política de Privacidade da Cloudflare",
             "openaiPrivacyPolicy": "Política de Privacidade da OpenAI",
             "anthropicPrivacyPolicy": "Política de Privacidade da Anthropic",
             "googlePrivacyPolicy": "Política de Privacidade do Google",
             "applePrivacyPolicy": "Política de Privacidade da Apple",
             "and": "e"
+          },
+          "healthConnect": {
+            "title": "Health Connect e Apple Health",
+            "content": "Se você conectar o Musclog ao Health Connect (Android) ou ao Apple Health (iOS), o aplicativo lê e grava dados de saúde no seu Dispositivo, somente com as permissões que você conceder:",
+            "items": [
+              "Ele pode ler peso, altura, gordura corporal, massa corporal magra, nutrição, passos, calorias queimadas e taxa metabólica basal e, se você usar o acompanhamento do ciclo e optar por importar, dados do ciclo menstrual.",
+              "Ele pode gravar peso, altura, gordura corporal, massa corporal magra, nutrição, treinos e distância de caminhada ou corrida e, se você optar, dados do ciclo menstrual.",
+              "Os dados de saúde lidos do Health Connect ou do Apple Health permanecem no seu Dispositivo. O Musclog não os envia aos nossos servidores, não os vende nem os usa para publicidade.",
+              "Os dados de saúde são usados apenas para fornecer os recursos de acompanhamento de condicionamento físico, nutrição e corpo do aplicativo.",
+              "Você pode revogar essas permissões a qualquer momento no Health Connect ou no aplicativo Saúde."
+            ]
+          },
+          "foodData": {
+            "title": "Bancos de dados de alimentos",
+            "content": "Quando você busca um alimento ou escaneia um código de barras, o texto da busca ou o código de barras é enviado ao banco de dados de alimentos selecionado nas configurações do aplicativo: Open Food Facts, o banco de dados USDA FoodData Central ou o banco de dados de alimentos do próprio Musclog. Nenhuma conta, nome ou outra informação pessoal é associada a essas solicitações, embora, como qualquer solicitação pela internet, elas revelem seu endereço IP ao serviço que as recebe. Você também pode optar por buscar apenas os alimentos armazenados no seu Dispositivo."
           }
         },
         "trainingData": {
@@ -595,39 +599,35 @@
         "useOfData": {
           "title": "Uso de seus Dados Pessoais",
           "items": [
-            "Para fornecer e manter nosso Serviço, incluindo o monitoramento do uso do nosso Serviço.",
-            "Para fornecer recursos opcionais com tecnologia de IA apenas quando você os habilitar expressamente e configurar seu próprio provedor ou endpoint.",
-            "Para gerenciar sua Conta: para gerenciar seu registro como usuário do Serviço.",
-            "Para a execução de um contrato: o desenvolvimento, cumprimento e execução do contrato de compra dos produtos ou serviços que você adquiriu.",
-            "Para entrar em contato com você por e-mail, chamadas telefônicas, SMS ou outras formas equivalentes de comunicação eletrônica.",
-            "Para fornecer notícias, ofertas especiais e informações gerais sobre outros bens, serviços e eventos.",
-            "Para gerenciar suas solicitações: para atender e gerenciar suas solicitações a nós.",
-            "Para transferências comerciais: podemos usar suas informações para avaliar ou realizar uma fusão, alienação, reestruturação, reorganização, dissolução ou outra venda ou transferência de alguns ou todos os nossos ativos.",
-            "Para outros fins: podemos usar suas informações para análise de dados, identificação de tendências de uso, determinação da eficácia de nossas campanhas promocionais e avaliação e melhoria do nosso Serviço."
+            "Para fornecer os recursos do aplicativo, como o acompanhamento de treinos, nutrição e corpo, que funcionam no seu Dispositivo.",
+            "Para responder às buscas de alimentos e às solicitações opcionais de IA que você fizer.",
+            "Para encontrar e corrigir falhas e bugs, usando relatórios anônimos de falhas enquanto estiverem ativados.",
+            "Para entender como os visitantes usam o site, conforme descrito em \"Análise do site\".",
+            "Para responder a você quando você entrar em contato conosco.",
+            "O Musclog não vende seus dados, não exibe anúncios e não usa seus dados para publicidade ou criação de perfis."
           ]
         },
         "sharing": {
           "title": "Compartilhamento de seus Dados Pessoais",
           "items": [
-            "Com Provedores de Serviços: podemos compartilhar suas informações pessoais com Provedores de Serviços para monitorar e analisar o uso do nosso Serviço.",
-            "Para transferências comerciais: podemos compartilhar ou transferir suas informações pessoais em conexão com qualquer fusão, venda de ativos da Empresa, financiamento ou aquisição.",
-            "Com Afiliadas: podemos compartilhar suas informações com nossas afiliadas, exigindo que essas afiliadas cumpram esta Política de Privacidade.",
-            "Com parceiros comerciais: podemos compartilhar suas informações com nossos parceiros comerciais para oferecer determinados produtos, serviços ou promoções.",
-            "Com outros usuários: quando você compartilha informações pessoais ou interage nas áreas públicas com outros usuários, essas informações podem ser vistas por todos os usuários.",
-            "Com seu consentimento: podemos divulgar suas informações pessoais para qualquer outra finalidade com seu consentimento."
+            "Com os provedores que você escolher: as buscas de alimentos vão para o banco de dados de alimentos que você selecionar, e as solicitações de IA vão para o provedor de IA que você configurar.",
+            "Com Provedores de Serviços que operam partes do Serviço para nós: Sentry (relatórios de falhas), Cloudflare e Google (a opção gratuita Musclog AI), e Vercel e Google Analytics (o site).",
+            "Quando exigido por lei, conforme descrito em \"Divulgação de seus Dados Pessoais\".",
+            "Com seu consentimento, por exemplo quando você mesmo exporta ou compartilha dados.",
+            "Não vendemos seus dados nem os compartilhamos com anunciantes ou corretores de dados."
           ]
         },
         "retention": {
           "title": "Retenção de seus Dados Pessoais",
-          "content": "A Musclog reterá seus Dados Pessoais apenas pelo tempo necessário para os fins estabelecidos nesta Política de Privacidade. Reteremos e usaremos seus Dados Pessoais na medida necessária para cumprir nossas obrigações legais, resolver disputas e fazer cumprir nossos acordos e políticas legais. A Musclog também reterá os Dados de Uso para fins de análise interna. Os Dados de Uso geralmente são retidos por um período mais curto, exceto quando esses dados são usados para fortalecer a segurança ou melhorar a funcionalidade do Serviço, ou quando somos legalmente obrigados a retê-los por períodos mais longos."
+          "content": "Os dados no aplicativo permanecem no seu Dispositivo até que você os exclua ou desinstale o aplicativo. Os relatórios anônimos de falhas são mantidos pelo Sentry por um período limitado e depois excluídos. As solicitações enviadas pela opção gratuita Musclog AI podem ser mantidas nos logs do gateway por um período limitado. Os dados de análise do site são mantidos conforme descrito em \"Análise do site\"."
         },
         "transfer": {
           "title": "Transferência de seus Dados Pessoais",
-          "content": "Suas informações, incluindo Dados Pessoais, são processadas nos escritórios operacionais da Musclog e em quaisquer outros locais onde as partes envolvidas no processamento estejam localizadas. Isso significa que essas informações podem ser transferidas e mantidas em computadores localizados fora do seu estado, província, país ou outra jurisdição governamental, onde as leis de proteção de dados podem ser diferentes das da sua jurisdição. Seu consentimento a esta Política de Privacidade, seguido do envio de tais informações, representa sua concordância com essa transferência. A Musclog tomará todas as medidas razoavelmente necessárias para garantir que seus dados sejam tratados com segurança e de acordo com esta Política de Privacidade."
+          "content": "Relatórios de falhas, buscas de alimentos, solicitações de IA e análises do site são processados pelos serviços citados nesta Política de Privacidade, que podem estar localizados fora do seu país, onde as leis de proteção de dados podem ser diferentes das da sua jurisdição. A Musclog toma medidas razoáveis para garantir que esses dados sejam tratados com segurança e de acordo com esta Política de Privacidade."
         },
         "deletion": {
           "title": "Excluir seus Dados Pessoais",
-          "content": "Você tem o direito de excluir ou solicitar que auxiliemos na exclusão dos Dados Pessoais que coletamos sobre você. Nosso Serviço pode oferecer a você a capacidade de excluir certas informações sobre você dentro do Serviço. Você pode atualizar, corrigir ou excluir suas informações a qualquer momento fazendo login em sua Conta, se tiver uma, e visitando a seção de configurações da conta. Você também pode nos contatar para solicitar acesso, correção ou exclusão de qualquer informação pessoal que nos forneceu. Observe, no entanto, que podemos precisar reter certas informações quando tivermos uma obrigação legal ou base legal para fazê-lo."
+          "content": "Como seus dados são armazenados no seu Dispositivo, você pode excluí-los a qualquer momento: exclua entradas individuais, exclua todos os dados nas configurações de dados do aplicativo ou desinstale o aplicativo. O Musclog não tem conta a ser excluída. Se quiser que o ajudemos a excluir um relatório de falha ou outros dados que saíram do seu Dispositivo, entre em contato conosco por e-mail."
         },
         "disclosure": {
           "title": "Divulgação de seus Dados Pessoais",
@@ -642,11 +642,11 @@
         },
         "security": {
           "title": "Segurança de seus Dados Pessoais",
-          "content": "A segurança de seus Dados Pessoais é importante para nós, mas lembre-se que nenhum método de transmissão pela Internet ou método de armazenamento eletrônico é 100% seguro. Empregamos medidas técnicas e organizacionais abrangentes para proteger seus dados pessoais contra processamento não autorizado ou ilegal, bem como contra perda, destruição ou dano acidental. Essas medidas incluem protocolos de criptografia avançados para dados em trânsito e em repouso, controles de acesso rigorosos e avaliações regulares de segurança."
+          "content": "O Musclog criptografa registros sensíveis no seu Dispositivo, como peso, gordura corporal, registros de alimentos e registros do ciclo menstrual, e suas solicitações de rede usam HTTPS. Você também pode bloquear o aplicativo ou partes dele com a biometria ou o PIN do seu dispositivo. Nenhum método de armazenamento eletrônico ou de transmissão pela Internet é 100% seguro, portanto não podemos garantir segurança absoluta."
         },
         "childrenPrivacy": {
           "title": "Privacidade de crianças",
-          "content": "Nosso Serviço não se dirige a menores de 13 anos. Não coletamos intencionalmente informações pessoalmente identificáveis de menores de 13 anos. Se você for pai ou responsável e souber que seu filho nos forneceu Dados Pessoais, entre em contato conosco. Se soubermos que coletamos Dados Pessoais de alguém com menos de 13 anos sem verificação do consentimento dos pais, tomamos medidas para remover essas informações de nossos servidores."
+          "content": "Nosso Serviço não se destina a menores de 13 anos, e não coletamos intencionalmente Dados Pessoais deles. Se você acredita que uma criança nos enviou Dados Pessoais, por exemplo por e-mail, entre em contato conosco e os excluiremos."
         },
         "links": {
           "title": "Links para outros sites",
@@ -654,15 +654,15 @@
         },
         "changes": {
           "title": "Alterações a esta Política de Privacidade",
-          "content": "Podemos atualizar nossa Política de Privacidade periodicamente. Notificaremos você sobre quaisquer alterações publicando a nova Política de Privacidade nesta página. Informaremos você por e-mail e/ou por um aviso destacado em nosso Serviço antes que a alteração entre em vigor e atualizaremos a data de \"Última atualização\" no topo desta Política de Privacidade. Aconselhamos que você revise esta Política de Privacidade periodicamente para verificar alterações."
+          "content": "Podemos atualizar esta Política de Privacidade periodicamente. Publicaremos a nova versão nesta página e atualizaremos a data de \"Última atualização\" no topo. Alterações significativas também poderão ser anunciadas no aplicativo. As alterações entram em vigor quando são publicadas nesta página."
         },
         "googlePlay": {
           "title": "Rótulos de segurança de dados da Google Play Store",
-          "content": "Nossos rótulos de segurança de dados na Google Play Store estão meticulosamente alinhados com as divulgações fornecidas nesta política de privacidade. Estamos comprometidos em manter um alto padrão de transparência e garantir total conformidade com todos os requisitos e diretrizes da Google Play Store. Os dados coletados são utilizados estritamente para fornecer ou aprimorar a funcionalidade e os recursos do seu aplicativo, e em nenhuma circunstância são usados para fins fora deste escopo, como marketing ou venda a terceiros. O acesso a quaisquer dados do usuário é estritamente regulado e só pode ocorrer após a obtenção do consentimento explícito do usuário."
+          "content": "A seção Segurança dos dados da página do Musclog no Google Play descreve as mesmas práticas desta Política de Privacidade. Se você notar alguma diferença entre elas, avise-nos."
         },
-        "errorReportingFallback": {
-          "title": "Relatório de Falhas Anônimo — Exceção por Falha no Banco de Dados",
-          "content": "O Musclog permite que você ative ou desative relatórios de erros anônimos nas configurações do aplicativo. Essa preferência é armazenada localmente no banco de dados do seu dispositivo. No raro caso de uma falha crítica no banco de dados — por exemplo, quando uma migração de banco de dados falha ao ser concluída — o aplicativo não consegue acessar o banco de dados local para ler sua preferência. Somente nessa circunstância específica, o Musclog enviará um relatório de falha anônimo ao nosso serviço de rastreamento de erros (Sentry) para nos ajudar a identificar e corrigir o problema. O relatório não contém dados pessoais: apenas o tipo de erro, os números de versão do esquema do banco de dados (antes e depois da migração com falha), o modelo do seu dispositivo e a versão do aplicativo. Essa exceção existe exclusivamente para detectar falhas críticas que, de outra forma, seriam invisíveis para nós, e não afeta o funcionamento normal."
+        "crashReports": {
+          "title": "Relatórios anônimos de falhas",
+          "content": "O aplicativo pode enviar relatórios anônimos de falhas ao Sentry, um serviço de rastreamento de erros, para que possamos encontrar e corrigir bugs. Isso vem ativado por padrão e pode ser desativado a qualquer momento com a chave \"Relatório Anônimo de Bugs\" em Configurações → Backups e dados. Enquanto estiver desativado, o aplicativo não envia nenhum relatório de falha, inclusive relatórios sobre falhas no banco de dados. Um relatório contém o erro e o local onde ocorreu, a versão do aplicativo e o modelo do dispositivo. Ele não contém nome, conta nem endereço de e-mail, nem nenhum dos dados de treino, alimentos ou corpo que você registra. Relatórios sobre falhas nativas podem incluir um identificador aleatório que o Sentry cria para a instalação, que não está vinculado a você. Como qualquer solicitação pela internet, um relatório revela seu endereço IP ao Sentry; nós não o usamos para identificar você."
         },
         "analytics": {
           "title": "Análise do site",
@@ -691,8 +691,8 @@
           "items": [
             "Todos os dados inseridos no aplicativo são armazenados localmente no seu dispositivo.",
             "O aplicativo não exige conta e não oferece sincronização em nuvem.",
-            "Não temos acesso aos seus dados de saúde ou condicionamento físico armazenados no aplicativo.",
-            "Os dados sensíveis armazenados pelo aplicativo são criptografados em repouso com AES."
+            "Não temos acesso aos seus dados de treino, nutrição, saúde ou ciclo, exceto o que você optar por enviar por meio da opção gratuita Musclog AI.",
+            "Os dados sensíveis armazenados pelo aplicativo, incluindo os registros do ciclo menstrual, são criptografados em repouso com AES."
           ]
         },
         "website": {

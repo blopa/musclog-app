@@ -53,3 +53,18 @@ export function initializeSentry() {
 export function isSentryInitialized(): boolean {
   return isInitialized;
 }
+
+/** Shut Sentry down (native crash handler included) so nothing more is sent. */
+export async function closeSentry(): Promise<void> {
+  if (!isInitialized) {
+    return;
+  }
+
+  isInitialized = false;
+
+  try {
+    await Sentry.close();
+  } catch {
+    // Nothing more to do: the switch is off either way.
+  }
+}
