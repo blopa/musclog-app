@@ -153,7 +153,7 @@
     "@musclog/witmotion-ble": "file:modules/witmotion-ble",
     "@nozbe/watermelondb": "0.28.0",
     "@openfoodfacts/openfoodfacts-nodejs": "2.0.0-alpha.36",
-    "@react-native-ai/apple": "^0.13.0",
+    "@react-native-ai/apple": "^0.12.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "12.0.1",
     "@react-native-community/slider": "5.2.1",
