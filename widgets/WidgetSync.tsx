@@ -80,30 +80,32 @@ function publishDaily<T>(
 
 let cameraImage: Promise<string> | undefined;
 
+async function copyCameraImage(): Promise<string> {
+  if (!widgetsDirectory) {
+    return '';
+  }
+
+  const asset = await Asset.fromModule(require('../assets/camera-widget.png')).downloadAsync();
+  // Replaced once per launch rather than only when missing, so a changed artwork reaches
+  // installs that already hold the old file (a 1024px copy once broke the iOS tile for good).
+  const destination = new File(widgetsDirectory, 'smart-camera.png');
+  if (asset.localUri) {
+    if (destination.exists) {
+      destination.delete();
+    }
+
+    new File(asset.localUri).copy(destination);
+  }
+
+  // A fresh handle: the one above still reports the state from before delete() and copy().
+  const copied = new File(widgetsDirectory, 'smart-camera.png');
+
+  return copied.exists ? copied.uri : '';
+}
+
 /** The artwork's file URI, or `''` when there is none: a snapshot never carries a null. */
 function sharedCameraImage(): Promise<string> {
-  cameraImage ??= (async () => {
-    if (!widgetsDirectory) {
-      return '';
-    }
-
-    const asset = await Asset.fromModule(require('../assets/camera-widget.png')).downloadAsync();
-    // Replaced once per launch rather than only when missing, so a changed artwork reaches
-    // installs that already hold the old file (a 1024px copy once broke the iOS tile for good).
-    const destination = new File(widgetsDirectory, 'smart-camera.png');
-    if (asset.localUri) {
-      if (destination.exists) {
-        destination.delete();
-      }
-
-      new File(asset.localUri).copy(destination);
-    }
-
-    // A fresh handle: the one above still reports the state from before delete() and copy().
-    const copied = new File(widgetsDirectory, 'smart-camera.png');
-
-    return copied.exists ? copied.uri : '';
-  })().catch((error) => {
+  cameraImage ??= copyCameraImage().catch((error) => {
     cameraImage = undefined;
     void handleError(error, 'widgets.cameraArtwork', { showSnackbar: false });
     return '';

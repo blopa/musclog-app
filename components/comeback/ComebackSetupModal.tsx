@@ -237,11 +237,9 @@ function ComebackSetupBody({
       return next;
     });
 
-  const parsedWeightKg = (() => {
-    const value = parseStrictLocalizedNumber(weightText, getDecimalSeparator(locale));
-
-    return value !== null && value > 0 ? displayToKg(value, units) : null;
-  })();
+  const typedWeight = parseStrictLocalizedNumber(weightText, getDecimalSeparator(locale));
+  const parsedWeightKg =
+    typedWeight !== null && typedWeight > 0 ? displayToKg(typedWeight, units) : null;
   const weightProblem = weightText.trim() !== '' && parsedWeightKg === null;
 
   const goNext = () => {

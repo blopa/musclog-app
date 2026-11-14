@@ -534,6 +534,37 @@ function CompressedSignalChart({ payload }: { payload: BleSetChartPayload }) {
   );
 }
 
+function PipelineAveragesRow({ reps }: { reps: PerRepResult[] }) {
+  const avg = (fn: (r: PerRepResult) => number) =>
+    reps.reduce((s, r) => s + fn(r), 0) / reps.length;
+
+  return (
+    <View className="mt-1 flex-row gap-1 rounded-inner bg-bg-overlay px-2 py-2">
+      <Text className="text-center text-xs font-semibold text-text-tertiary" style={{ flex: 0.5 }}>
+        avg
+      </Text>
+      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+        {(avg((r) => r.durationMs) / 1000).toFixed(2)}s
+      </Text>
+      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+        {(avg((r) => r.phaseADurationMs) / 1000).toFixed(2)}s
+      </Text>
+      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+        {(avg((r) => r.phaseBDurationMs) / 1000).toFixed(2)}s
+      </Text>
+      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+        {avg((r) => r.phaseASpeedDps).toFixed(1)}
+      </Text>
+      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+        {avg((r) => r.phaseBSpeedDps).toFixed(1)}
+      </Text>
+      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+        {avg((r) => r.classifierConfidence).toFixed(2)}
+      </Text>
+    </View>
+  );
+}
+
 export default function WitMotionTestScreen() {
   const wit = useWitMotion();
   const requestPermissions = wit.requestPermissions;
@@ -1067,39 +1098,7 @@ export default function WitMotionTestScreen() {
                 ))}
 
                 {/* Averages row */}
-                {(() => {
-                  const reps = pipelineResult.reps;
-                  const avg = (fn: (r: PerRepResult) => number) =>
-                    reps.reduce((s, r) => s + fn(r), 0) / reps.length;
-                  return (
-                    <View className="mt-1 flex-row gap-1 rounded-inner bg-bg-overlay px-2 py-2">
-                      <Text
-                        className="text-center text-xs font-semibold text-text-tertiary"
-                        style={{ flex: 0.5 }}
-                      >
-                        avg
-                      </Text>
-                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
-                        {(avg((r) => r.durationMs) / 1000).toFixed(2)}s
-                      </Text>
-                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
-                        {(avg((r) => r.phaseADurationMs) / 1000).toFixed(2)}s
-                      </Text>
-                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
-                        {(avg((r) => r.phaseBDurationMs) / 1000).toFixed(2)}s
-                      </Text>
-                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
-                        {avg((r) => r.phaseASpeedDps).toFixed(1)}
-                      </Text>
-                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
-                        {avg((r) => r.phaseBSpeedDps).toFixed(1)}
-                      </Text>
-                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
-                        {avg((r) => r.classifierConfidence).toFixed(2)}
-                      </Text>
-                    </View>
-                  );
-                })()}
+                <PipelineAveragesRow reps={pipelineResult.reps} />
 
                 <Text className="mt-2 text-xs text-text-tertiary">
                   TUT:{' '}

@@ -278,6 +278,7 @@ export default function Faq() {
   );
 
   const activeCategory = faqCategories.find((c) => c.id === activeCategoryId) ?? faqCategories[0];
+  const ActiveCategoryIcon = activeCategory.icon;
 
   const handleCategoryChange = (id: CategoryId) => {
     setActiveCategoryId(id);
@@ -343,20 +344,15 @@ export default function Faq() {
               borderColor: activeCategory.borderColor,
             }}
           >
-            {(() => {
-              const Icon = activeCategory.icon;
-              return (
-                <div
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border"
-                  style={{
-                    backgroundColor: `${activeCategory.color}18`,
-                    borderColor: activeCategory.borderColor,
-                  }}
-                >
-                  <Icon size={18} color={activeCategory.color} />
-                </div>
-              );
-            })()}
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border"
+              style={{
+                backgroundColor: `${activeCategory.color}18`,
+                borderColor: activeCategory.borderColor,
+              }}
+            >
+              <ActiveCategoryIcon size={18} color={activeCategory.color} />
+            </div>
             <div>
               <h2 className="font-semibold text-text-primary">{activeCategory.label}</h2>
               <p className="text-xs" style={{ color: MUTED }}>

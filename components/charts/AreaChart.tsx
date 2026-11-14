@@ -75,6 +75,27 @@ const PEAK_MARKER_R = 4;
 const PEAK_LABEL_WIDTH = 40;
 const PEAK_LABEL_HEIGHT = 24;
 
+function PeakMarker({
+  seriesPoints,
+  pointIndex,
+  color,
+}: {
+  seriesPoints: { x: number; y: number }[] | undefined;
+  pointIndex: number;
+  color: string;
+}) {
+  const peakPixel = seriesPoints?.[pointIndex];
+
+  return peakPixel ? (
+    <Scatter
+      points={toPointsArray([peakPixel])}
+      radius={PEAK_MARKER_R}
+      color={color}
+      style="fill"
+    />
+  ) : null;
+}
+
 export function AreaChart({
   title,
   subtitle,
@@ -262,22 +283,15 @@ export function AreaChart({
                     </React.Fragment>
                   );
                 })}
-                {peak != null && peakSeries != null
-                  ? (() => {
-                      const pts = (points as Record<string, { x: number; y: number }[]>)[
-                        peak!.seriesKey
-                      ];
-                      const peakPixel = pts?.[peak!.pointIndex];
-                      return peakPixel ? (
-                        <Scatter
-                          points={toPointsArray([peakPixel])}
-                          radius={PEAK_MARKER_R}
-                          color={theme.colors.text.primary}
-                          style="fill"
-                        />
-                      ) : null;
-                    })()
-                  : null}
+                {peak != null && peakSeries != null ? (
+                  <PeakMarker
+                    seriesPoints={
+                      (points as Record<string, { x: number; y: number }[]>)[peak.seriesKey]
+                    }
+                    pointIndex={peak.pointIndex}
+                    color={theme.colors.text.primary}
+                  />
+                ) : null}
               </>
             )}
           </CartesianChart>

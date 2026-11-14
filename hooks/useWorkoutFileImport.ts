@@ -107,7 +107,7 @@ export function useWorkoutFileImport() {
     }
 
     let cancelled = false;
-    void (async () => {
+    const loadMatches = async () => {
       try {
         const inputs = await WorkoutImportService.loadMatchInputs();
         if (!cancelled) {
@@ -122,7 +122,9 @@ export function useWorkoutFileImport() {
           dispatch({ type: 'failed', failure: 'readFailed' });
         }
       }
-    })();
+    };
+
+    void loadMatches();
 
     return () => {
       cancelled = true;
